@@ -8,7 +8,7 @@ defmodule Corex.PasswordInput do
   ### Minimal
 
   ```heex
-  <.password_input class="password-input">
+  <.password_input>
     <:label>Password</:label>
     <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
     <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
@@ -18,12 +18,40 @@ defmodule Corex.PasswordInput do
   ### Custom Error
 
   ```heex
-  <.password_input field={@form[:password]} class="password-input">
+  <.password_input field={@form[:password]}>
     <:label>Password</:label>
     <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
+      <.heroicon name="hero-exclamation-circle" />
       {msg}
     </:error>
+    <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
+    <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
+  </.password_input>
+  ```
+
+  <!-- tabs-close -->
+
+  ## Styling
+
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `semantic`, `size`, `radius`.
+
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.password_input semantic="accent" size="md" class="password-input">
+    <:label>Password</:label>
+    <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
+    <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
+  </.password_input>
+  ```
+
+  ### With classes
+
+  ```heex
+  <.password_input class="password-input password-input--accent password-input--md">
+    <:label>Password</:label>
     <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
     <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
   </.password_input>
@@ -53,16 +81,16 @@ defmodule Corex.PasswordInput do
 
   ```heex
   <.form :let={f} for={@form} action={@action} method="post">
-    <.password_input field={f[:password]} class="password-input">
+    <.password_input field={f[:password]}>
       <:label>Password</:label>
       <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
+        <.heroicon name="hero-exclamation-circle" />
         {msg}
       </:error>
       <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
       <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
     </.password_input>
-    <button type="submit">Submit</button>
+    <.action type="submit">Submit</.action>
   </.form>
   ```
 
@@ -111,10 +139,10 @@ defmodule Corex.PasswordInput do
     def render(assigns) do
       ~H"""
       <.form for={@form} phx-change="validate">
-        <.password_input field={@form[:password]} class="password-input">
+        <.password_input field={@form[:password]}>
           <:label>Password</:label>
           <:error :let={msg}>
-            <.heroicon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" />
             {msg}
           </:error>
           <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
@@ -155,7 +183,6 @@ defmodule Corex.PasswordInput do
 
   ```heex
   <.password_input
-    class="password-input"
     on_visibility_change="password_visibility_changed"
   >
     <:label>Password</:label>
@@ -180,7 +207,7 @@ defmodule Corex.PasswordInput do
 
   ## Style
 
-  Use data attributes to target elements:
+  Target parts with `data-scope` and `data-part`, or use [Corex Design](styled.html): `@import "./corex.tailwind.css"` in `app.css`.
 
   ```css
   [data-scope="password-input"][data-part="root"] {}
@@ -189,12 +216,6 @@ defmodule Corex.PasswordInput do
   [data-scope="password-input"][data-part="input"] {}
   [data-scope="password-input"][data-part="visibility-trigger"] {}
   [data-scope="password-input"][data-part="indicator"] {}
-  ```
-
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/password-input.css";
   ```
 
   Stack modifiers on the host (`class` on `<.password_input>`).
@@ -227,6 +248,25 @@ defmodule Corex.PasswordInput do
 
   @doc type: :component
   use Phoenix.Component
+
+  use Corex.Variants,
+    base: "password-input",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size,
+      radius: :radius
+    ],
+    defaults: [
+      width: "full",
+      max_width: "xs",
+      height: "auto",
+      max_height: "none",
+      size: "md"
+    ]
 
   import Corex.Api.Doc
 
@@ -321,6 +361,8 @@ defmodule Corex.PasswordInput do
     <div
       id={@id}
       phx-hook="PasswordInput"
+      class={corex_style_class(assigns)}
+     
       data-loading 
       phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       data-no-icon={if @visible_indicator == [] or @hidden_indicator == [], do: "", else: nil}

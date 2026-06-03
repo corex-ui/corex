@@ -65,6 +65,10 @@ defmodule Corex.Code do
 
   ## Style
 
+  Default host caps use `max-width` at `--container-md`. Override on the host
+  with `width`, `max_width`, `height`, and `max_height` (e.g. `max_width="none"`,
+  `width="full"`, `max_height="lg"` for a full-width scrollable block).
+
   Use data attributes to target elements:
 
   ```css
@@ -91,6 +95,24 @@ defmodule Corex.Code do
 
   @doc type: :component
   use Phoenix.Component
+
+  use Corex.Variants,
+    base: "code",
+    axes: [
+      width: :width,
+      height: :height,
+      max_height: :max_height,
+      size: :size,
+      text: :text,
+      max_width: :max_width
+    ],
+    defaults: [
+      width: "full",
+      max_width: "md",
+      height: "auto",
+      max_height: "none",
+      text: "sm"
+    ]
 
   attr(:code, :string, required: true, doc: "The raw source code to display")
 
@@ -129,11 +151,13 @@ defmodule Corex.Code do
         data-scope="code"
         data-part="root"
         tabindex="0"
+        class={corex_style_class(assigns)}
+       
         {@rest}
       >
         <code data-scope="code" data-part="content">{Phoenix.HTML.raw(@highlighted_html)}</code>
       </pre>
-      <code :if={@inline} data-scope="code" data-part="root" {@rest}>
+      <code :if={@inline} data-scope="code" data-part="root" class={corex_style_class(assigns)} {@rest}>
         <span data-scope="code" data-part="content">{Phoenix.HTML.raw(@highlighted_html)}</span>
       </code>
     """

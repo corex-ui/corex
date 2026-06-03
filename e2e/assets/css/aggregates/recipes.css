@@ -1,0 +1,138 @@
+/* Corex generated design - do not edit */
+@import "../layers/utilities.css";
+@import "../recipes/accordion.css";
+@import "../recipes/angle-slider.css";
+@import "../recipes/avatar.css";
+@import "../recipes/badge.css";
+@import "../recipes/button.css";
+@import "../recipes/carousel.css";
+@import "../recipes/checkbox.css";
+@import "../recipes/clipboard.css";
+@import "../recipes/code.css";
+@import "../recipes/collapsible.css";
+@import "../recipes/color-picker.css";
+@import "../recipes/combobox.css";
+@import "../recipes/data-list.css";
+@import "../recipes/data-table.css";
+@import "../recipes/date-picker.css";
+@import "../recipes/dialog-modal.css";
+@import "../recipes/dialog-side.css";
+@import "../recipes/editable.css";
+@import "../recipes/file-upload.css";
+@import "../recipes/floating-panel.css";
+@import "../recipes/layout-heading.css";
+@import "../recipes/link.css";
+@import "../recipes/listbox.css";
+@import "../recipes/marquee.css";
+@import "../recipes/menu.css";
+@import "../recipes/native-input.css";
+@import "../recipes/number-input.css";
+@import "../recipes/pagination.css";
+@import "../recipes/password-input.css";
+@import "../recipes/pin-input.css";
+@import "../recipes/radio-group.css";
+@import "../recipes/select.css";
+@import "../recipes/signature-pad.css";
+@import "../recipes/switch.css";
+@import "../recipes/tabs.css";
+@import "../recipes/tags-input.css";
+@import "../recipes/timer.css";
+@import "../recipes/toast.css";
+@import "../recipes/toggle.css";
+@import "../recipes/toggle-group.css";
+@import "../recipes/tooltip.css";
+@import "../recipes/tree-navigation.css";
+@import "../recipes/tree-view.css";
+@import "../recipes/box.css";
+@import "../recipes/stack.css";
+@import "../recipes/row.css";
+@import "../recipes/grid.css";
+@import "../recipes/container.css";
+@import "../recipes/spacer.css";
+@import "../recipes/divider.css";
+@import "../recipes/h1.css";
+@import "../recipes/h2.css";
+@import "../recipes/h3.css";
+@import "../recipes/h4.css";
+@import "../recipes/p.css";
+@import "../recipes/lead.css";
+@import "../recipes/small.css";
+@import "../recipes/kbd.css";
+@import "../recipes/blockquote.css";
+@import "../recipes/list.css";
+@import "../recipes/form.css";
+
+.hidden,
+[data-hidden] {
+  display: none !important;
+}
+
+@media (min-width: 40rem) {
+  .hide-from-sm,
+  [data-hide-from="sm"] {
+    display: none !important;
+  }
+}
+
+@media not all and (min-width: 40rem) {
+  .hide-below-sm,
+  [data-hide-below="sm"] {
+    display: none !important;
+  }
+}
+
+@media (min-width: 48rem) {
+  .hide-from-md,
+  [data-hide-from="md"] {
+    display: none !important;
+  }
+}
+
+@media not all and (min-width: 48rem) {
+  .hide-below-md,
+  [data-hide-below="md"] {
+    display: none !important;
+  }
+}
+
+@media (min-width: 64rem) {
+  .hide-from-lg,
+  [data-hide-from="lg"] {
+    display: none !important;
+  }
+}
+
+@media not all and (min-width: 64rem) {
+  .hide-below-lg,
+  [data-hide-below="lg"] {
+    display: none !important;
+  }
+}
+
+@media (min-width: 80rem) {
+  .hide-from-xl,
+  [data-hide-from="xl"] {
+    display: none !important;
+  }
+}
+
+@media not all and (min-width: 80rem) {
+  .hide-below-xl,
+  [data-hide-below="xl"] {
+    display: none !important;
+  }
+}
+
+@media (min-width: 96rem) {
+  .hide-from-2xl,
+  [data-hide-from="2xl"] {
+    display: none !important;
+  }
+}
+
+@media not all and (min-width: 96rem) {
+  .hide-below-2xl,
+  [data-hide-below="2xl"] {
+    display: none !important;
+  }
+}

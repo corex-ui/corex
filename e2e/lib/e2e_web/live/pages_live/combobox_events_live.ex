@@ -99,18 +99,17 @@ defmodule E2eWeb.ComboboxEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.combobox
                 id="combobox-events-server-field"
-                class="combobox"
                 placeholder={~t"Select"}
                 items={@items}
                 on_value_change="combobox_changed"
               >
                 <:empty>No results</:empty>
-                <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+                <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
               </.combobox>
 
               <.data_table
                 id="combobox-events-log-server"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.server_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -137,13 +136,12 @@ defmodule E2eWeb.ComboboxEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.combobox
                 id="combobox-events-client-field"
-                class="combobox"
                 placeholder={~t"Select"}
                 items={@items}
                 on_value_change_client="combobox-changed"
               >
                 <:empty>No results</:empty>
-                <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+                <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
               </.combobox>
 
               <div
@@ -169,7 +167,7 @@ defmodule E2eWeb.ComboboxEventsLive do
 
               <.data_table
                 id="combobox-events-log-client"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.client_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -195,18 +193,17 @@ defmodule E2eWeb.ComboboxEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.combobox
                 id="combobox-events-open-server-field"
-                class="combobox"
                 placeholder={~t"Select"}
                 items={@items}
                 on_open_change="combobox_open_changed"
               >
                 <:empty>No results</:empty>
-                <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+                <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
               </.combobox>
 
               <.data_table
                 id="combobox-events-open-log-server"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.open_server_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -232,13 +229,12 @@ defmodule E2eWeb.ComboboxEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.combobox
                 id="combobox-events-open-client-field"
-                class="combobox"
                 placeholder={~t"Select"}
                 items={@items}
                 on_open_change_client="combobox-open-changed"
               >
                 <:empty>No results</:empty>
-                <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+                <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
               </.combobox>
 
               <div
@@ -266,7 +262,7 @@ defmodule E2eWeb.ComboboxEventsLive do
 
               <.data_table
                 id="combobox-events-open-log-client"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.open_client_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>

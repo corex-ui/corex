@@ -9,7 +9,7 @@ defmodule Corex.SignaturePad do
   ### Basic Usage
 
   ```heex
-  <.signature_pad class="signature-pad">
+  <.signature_pad>
     <:label>Sign here</:label>
     <:clear_trigger>
       <.heroicon name="hero-x-mark" />
@@ -21,8 +21,7 @@ defmodule Corex.SignaturePad do
 
   ```heex
   <.signature_pad
-    on_draw_end="signature_drawn"
-    class="signature-pad">
+    on_draw_end="signature_drawn">
     <:label>Sign here</:label>
     <:clear_trigger>
       <.heroicon name="hero-x-mark" />
@@ -42,8 +41,37 @@ defmodule Corex.SignaturePad do
   <.signature_pad
     drawing_fill="blue"
     drawing_size={3}
-    drawing_simulate_pressure
-    class="signature-pad">
+    drawing_simulate_pressure>
+    <:label>Sign here</:label>
+    <:clear_trigger>
+      <.heroicon name="hero-x-mark" />
+    </:clear_trigger>
+  </.signature_pad>
+  ```
+
+  <!-- tabs-close -->
+
+  ## Styling
+
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `semantic`, `size`, `radius`.
+
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.signature_pad semantic="accent" size="md" class="signature-pad">
+    <:label>Sign here</:label>
+    <:clear_trigger>
+      <.heroicon name="hero-x-mark" />
+    </:clear_trigger>
+  </.signature_pad>
+  ```
+
+  ### With classes
+
+  ```heex
+  <.signature_pad class="signature-pad signature-pad--accent signature-pad--md">
     <:label>Sign here</:label>
     <:clear_trigger>
       <.heroicon name="hero-x-mark" />
@@ -77,17 +105,17 @@ defmodule Corex.SignaturePad do
 
   ```heex
   <.form :let={f} for={@form} action={@action} method="post">
-    <.signature_pad field={f[:signature]} class="signature-pad">
+    <.signature_pad field={f[:signature]}>
       <:label>Sign here</:label>
       <:clear_trigger>
         <.heroicon name="hero-x-mark" />
       </:clear_trigger>
       <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
+        <.heroicon name="hero-exclamation-circle" />
         {msg}
       </:error>
     </.signature_pad>
-    <button type="submit">Submit</button>
+    <.action type="submit">Submit</.action>
   </.form>
   ```
 
@@ -138,14 +166,13 @@ defmodule Corex.SignaturePad do
         <.signature_pad
           field={@form[:signature]}
           id="my-signature-pad"
-          class="signature-pad"
         >
           <:label>Sign here</:label>
           <:clear_trigger>
             <.heroicon name="hero-x-mark" />
           </:clear_trigger>
           <:error :let={msg}>
-            <.heroicon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" />
             {msg}
           </:error>
         </.signature_pad>
@@ -180,7 +207,6 @@ defmodule Corex.SignaturePad do
 
   ```heex
   <.signature_pad
-    class="signature-pad"
     on_draw_end="signature_drawn"
   >
     <:label>Sign here</:label>
@@ -208,7 +234,6 @@ defmodule Corex.SignaturePad do
 
   ```heex
   <.signature_pad
-    class="signature-pad"
     paths={@signature_paths}
     on_draw_end="signature_drawn"
   >
@@ -229,7 +254,7 @@ defmodule Corex.SignaturePad do
 
   ## Style
 
-  Use data attributes to target elements:
+  Target parts with `data-scope` and `data-part`, or use [Corex Design](styled.html): `@import "./corex.tailwind.css"` in `app.css`.
 
   ```css
   [data-scope="signature-pad"][data-part="root"] {}
@@ -241,24 +266,15 @@ defmodule Corex.SignaturePad do
   [data-scope="signature-pad"][data-part="hidden-input"] {}
   ```
 
-  If you wish to use the default Corex styling, you can use the class `signature-pad` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
-
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/signature-pad.css";
-  ```
-
   Drawing stroke color is set with the `drawing_fill` attribute (a CSS color value such as
-  `var(--color-ink)` or `var(--color-accent)`). It is not controlled by root modifier classes.
+  `var(--color-ui-ink)` or `var(--color-accent)`). It is not controlled by root modifier classes.
 
   Trigger color, size, and corner radius use modifier classes on the root:
 
   ```heex
   <.signature_pad
     class="signature-pad signature-pad--accent signature-pad--lg signature-pad--rounded-xl"
-    drawing_fill="var(--color-ink)"
+    drawing_fill="var(--color-ui-ink)"
   >
   ```
 
@@ -274,6 +290,25 @@ defmodule Corex.SignaturePad do
 
   @doc type: :component
   use Phoenix.Component
+
+  use Corex.Variants,
+    base: "signature-pad",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size,
+      radius: :radius
+    ],
+    defaults: [
+      width: "full",
+      max_width: "xs",
+      height: "auto",
+      max_height: "none",
+      size: "md"
+    ]
 
   import Corex.Api.Doc
 
@@ -305,7 +340,7 @@ defmodule Corex.SignaturePad do
 
   attr(:drawing_fill, :string,
     default: "black",
-    doc: "CSS color for drawing strokes (e.g. `var(--color-ink)` or `var(--color-accent)`)"
+    doc: "CSS color for drawing strokes (e.g. `var(--color-ui-ink)` or `var(--color-accent)`)"
   )
 
   attr(:drawing_size, :integer,
@@ -451,6 +486,8 @@ defmodule Corex.SignaturePad do
     <div
       id={@id}
       phx-hook="SignaturePad"
+      class={corex_style_class(assigns)}
+     
       data-loading
       phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])} 
       {@rest}

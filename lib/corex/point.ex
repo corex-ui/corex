@@ -21,16 +21,16 @@ defmodule Corex.Point do
         </:trigger>
         <:title>Panel</:title>
         <:minimize_trigger>
-          <.heroicon name="hero-arrow-down-left" class="icon" />
+          <.heroicon name="hero-arrow-down-left" />
         </:minimize_trigger>
         <:maximize_trigger>
-          <.heroicon name="hero-arrows-pointing-out" class="icon" />
+          <.heroicon name="hero-arrows-pointing-out" />
         </:maximize_trigger>
         <:default_trigger>
-          <.heroicon name="hero-rectangle-stack" class="icon" />
+          <.heroicon name="hero-rectangle-stack" />
         </:default_trigger>
         <:close_trigger>
-          <.heroicon name="hero-x-mark" class="icon" />
+          <.heroicon name="hero-x-mark" />
         </:close_trigger>
         <:content>
           <p>

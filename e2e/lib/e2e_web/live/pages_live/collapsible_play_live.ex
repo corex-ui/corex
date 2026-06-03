@@ -53,7 +53,7 @@ defmodule E2eWeb.CollapsiblePlayLive do
           />
 
           <.toggle_group
-            class="toggle-group toggle-group--sm max-w-7xs"
+            class="toggle-group toggle-group--sm toggle--max-w-7xs"
             id="orientation"
             on_value_change="control_changed"
             multiple={false}
@@ -61,15 +61,15 @@ defmodule E2eWeb.CollapsiblePlayLive do
             value={[@controls.orientation]}
           >
             <:item value="vertical" aria_label={~t"Vertical orientation"}>
-              <.heroicon name="hero-arrows-up-down" class="icon icon--lg" />
+              <.heroicon name="hero-arrows-up-down" />
             </:item>
             <:item value="horizontal" aria_label={~t"Horizontal orientation"}>
-              <.heroicon name="hero-arrows-right-left" class="icon icon--lg" />
+              <.heroicon name="hero-arrows-right-left" />
             </:item>
           </.toggle_group>
 
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="disabled"
             checked={@disabled}
             on_checked_change="control_changed"
@@ -80,7 +80,6 @@ defmodule E2eWeb.CollapsiblePlayLive do
         <:canvas>
           <.collapsible
             id="collapsible-playground-demo"
-            class="collapsible"
             disabled={@disabled}
             dir={@controls.dir}
             orientation={@controls.orientation}

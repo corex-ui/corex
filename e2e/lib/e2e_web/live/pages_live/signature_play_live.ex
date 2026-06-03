@@ -46,7 +46,6 @@ defmodule E2eWeb.SignaturePlayLive do
         <:canvas>
           <.signature_pad
             id="signature-playground"
-            class="signature-pad"
             on_draw_end="draw_end"
             dir={@controls.dir}
           >

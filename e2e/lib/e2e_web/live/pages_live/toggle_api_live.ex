@@ -50,19 +50,19 @@ defmodule E2eWeb.ToggleApiLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <div class="flex flex-wrap gap-4 items-center">
                 <.action
-                  class="button button--sm"
+                  size="sm"
                   phx-click={Corex.Toggle.set_pressed("toggle-api-bind", true)}
                 >
                   Pressed
                 </.action>
                 <.action
-                  class="button button--sm"
+                  size="sm"
                   phx-click={Corex.Toggle.set_pressed("toggle-api-bind", false)}
                 >
                   Not pressed
                 </.action>
               </div>
-              <.toggle id="toggle-api-bind" class="toggle" pressed={false}>
+              <.toggle id="toggle-api-bind" pressed={false}>
                 duis
               </.toggle>
             </div>
@@ -81,7 +81,7 @@ defmodule E2eWeb.ToggleApiLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <div class="flex flex-wrap gap-4 items-center">
                 <.action
-                  class="button button--sm"
+                  size="sm"
                   phx-click={
                     Phoenix.LiveView.JS.dispatch("corex:toggle:set-pressed",
                       to: "#toggle-api-cjs",
@@ -93,7 +93,7 @@ defmodule E2eWeb.ToggleApiLive do
                   Pressed
                 </.action>
                 <.action
-                  class="button button--sm"
+                  size="sm"
                   phx-click={
                     Phoenix.LiveView.JS.dispatch("corex:toggle:set-pressed",
                       to: "#toggle-api-cjs",
@@ -105,7 +105,7 @@ defmodule E2eWeb.ToggleApiLive do
                   Not pressed
                 </.action>
               </div>
-              <.toggle id="toggle-api-cjs" class="toggle" pressed>
+              <.toggle id="toggle-api-cjs" pressed>
                 duis
               </.toggle>
             </div>
@@ -122,10 +122,10 @@ defmodule E2eWeb.ToggleApiLive do
           <:preview>
             <div class="flex flex-col gap-4 items-center w-full">
               <div class="flex flex-wrap gap-4 items-center">
-                <.action class="button button--sm" phx-click="toggle_api_on">Pressed</.action>
-                <.action class="button button--sm" phx-click="toggle_api_off">Not pressed</.action>
+                <.action size="sm" phx-click="toggle_api_on">Pressed</.action>
+                <.action size="sm" phx-click="toggle_api_off">Not pressed</.action>
               </div>
-              <.toggle id="toggle-api-srv" class="toggle" controlled pressed={@api_srv_pressed}>
+              <.toggle id="toggle-api-srv" controlled pressed={@api_srv_pressed}>
                 duis
               </.toggle>
             </div>

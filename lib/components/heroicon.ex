@@ -37,7 +37,7 @@ defmodule Corex.Heroicon do
 
   def heroicon(%{name: "hero-" <> _} = assigns) do
     ~H"""
-    <span class={[@name, @class]} {@rest} />
+    <span class={[@name, @class]} data-icon {@rest} />
     """
   end
 end

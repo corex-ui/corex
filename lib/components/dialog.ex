@@ -9,13 +9,13 @@ defmodule Corex.Dialog do
   ### Minimal
 
   ```heex
-  <.dialog class="dialog">
+  <.dialog>
     <:trigger>Open</:trigger>
     <:content>
       <p>Minimal content.</p>
     </:content>
     <:close_trigger>
-      <.heroicon name="hero-x-mark" class="icon" />
+      <.heroicon name="hero-x-mark" />
     </:close_trigger>
   </.dialog>
   ```
@@ -23,7 +23,7 @@ defmodule Corex.Dialog do
   ### Title and description
 
   ```heex
-  <.dialog class="dialog">
+  <.dialog>
     <:trigger>Open Dialog</:trigger>
     <:title>Dialog Title</:title>
     <:description>
@@ -33,7 +33,7 @@ defmodule Corex.Dialog do
       <p>Body content.</p>
     </:content>
     <:close_trigger>
-      <.heroicon name="hero-x-mark" class="icon" />
+      <.heroicon name="hero-x-mark" />
     </:close_trigger>
   </.dialog>
   ```
@@ -41,24 +41,54 @@ defmodule Corex.Dialog do
   ### Actions in content
 
   ```heex
-  <.dialog id="dialog-anatomy-actions" class="dialog">
+  <.dialog id="dialog-anatomy-actions">
     <:trigger>Open Dialog</:trigger>
     <:title>Confirm</:title>
     <:description>Choose an action to continue.</:description>
     <:content>
       <p>Are you sure you want to continue?</p>
       <div class="flex flex-wrap justify-end gap-2 mt-4">
-        <.action phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)} class="button button--sm button--ghost">
+        <.action phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)}>
           Cancel
         </.action>
-        <.action phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)} class="button button--sm">
+        <.action phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)}>
           Continue
         </.action>
       </div>
     </:content>
     <:close_trigger>
-      <.heroicon name="hero-x-mark" class="icon" />
+      <.heroicon name="hero-x-mark" />
     </:close_trigger>
+  </.dialog>
+  ```
+
+  <!-- tabs-close -->
+
+  ## Styling
+
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `semantic`, `size`, `text`, `radius`.
+
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.dialog semantic="accent" size="md" class="dialog">
+    <:trigger>Open</:trigger>
+    <:title>Dialog Title</:title>
+    <:content><p>Body content.</p></:content>
+    <:close_trigger><.heroicon name="hero-x-mark" /></:close_trigger>
+  </.dialog>
+  ```
+
+  ### With classes
+
+  ```heex
+  <.dialog class="dialog dialog--accent dialog--md">
+    <:trigger>Open</:trigger>
+    <:title>Dialog Title</:title>
+    <:content><p>Body content.</p></:content>
+    <:close_trigger><.heroicon name="hero-x-mark" /></:close_trigger>
   </.dialog>
   ```
 
@@ -92,7 +122,7 @@ defmodule Corex.Dialog do
       </.action>
     </:content>
     <:close_trigger>
-      <.heroicon name="hero-x-mark" class="icon" />
+      <.heroicon name="hero-x-mark" />
     </:close_trigger>
   </.dialog>
   ```
@@ -118,14 +148,14 @@ defmodule Corex.Dialog do
   ### on_open_change
 
   ```heex
-  <.dialog class="dialog" on_open_change="dialog_open_changed">
+  <.dialog on_open_change="dialog_open_changed">
     <:trigger>Open Dialog</:trigger>
     <:title>Dialog Title</:title>
     <:content>
       <p>Dialog content</p>
     </:content>
     <:close_trigger>
-      <.heroicon name="hero-x-mark" class="icon" />
+      <.heroicon name="hero-x-mark" />
     </:close_trigger>
   </.dialog>
   ```
@@ -149,10 +179,10 @@ defmodule Corex.Dialog do
   ### on_open_change_client
 
   ```heex
-  <.dialog id="dialog-events-client" class="dialog" on_open_change_client="dialog-open-changed">
+  <.dialog id="dialog-events-client" on_open_change_client="dialog-open-changed">
     <:trigger>Open</:trigger>
     <:content><p>Content</p></:content>
-    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+    <:close_trigger><.heroicon name="hero-x-mark" /></:close_trigger>
   </.dialog>
   ```
 
@@ -173,14 +203,14 @@ defmodule Corex.Dialog do
   ### Instant
 
   ```heex
-  <.dialog class="dialog" modal animation="instant">
+  <.dialog modal animation="instant">
     <:trigger>Open</:trigger>
     <:title>Instant</:title>
     <:content>
       <p>Native show and hide without JS transitions.</p>
     </:content>
     <:close_trigger>
-      <.heroicon name="hero-x-mark" class="icon" />
+      <.heroicon name="hero-x-mark" />
     </:close_trigger>
   </.dialog>
   ```
@@ -191,7 +221,6 @@ defmodule Corex.Dialog do
 
   ```heex
   <.dialog
-    class="dialog"
     modal
     animation="js"
     animation_options={%Corex.Animation.Scale{duration: 0.3, easing: "ease-out"}}
@@ -199,7 +228,7 @@ defmodule Corex.Dialog do
     <:trigger>Open</:trigger>
     <:title>JS</:title>
     <:content><p>Scaled open and close.</p></:content>
-    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+    <:close_trigger><.heroicon name="hero-x-mark" /></:close_trigger>
   </.dialog>
   ```
 
@@ -212,7 +241,6 @@ defmodule Corex.Dialog do
 
   ```heex
   <.dialog
-    class="dialog"
     animation="custom"
     on_open_change_client="my-dialog-open-changed"
   >
@@ -222,7 +250,7 @@ defmodule Corex.Dialog do
       <p>Motion animates open and close.</p>
     </:content>
     <:close_trigger>
-      <.heroicon name="hero-x-mark" class="icon" />
+      <.heroicon name="hero-x-mark" />
     </:close_trigger>
   </.dialog>
   ```
@@ -263,7 +291,6 @@ defmodule Corex.Dialog do
   ```heex
   <.dialog
     id="delete-item-alert"
-    class="dialog"
     role="alertdialog"
     modal
     close_on_interact_outside={false}
@@ -309,7 +336,7 @@ defmodule Corex.Dialog do
     <:trigger>Open</:trigger>
     <:title>Default</:title>
     <:content><p>Default size.</p></:content>
-    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+    <:close_trigger><.heroicon name="hero-x-mark" /></:close_trigger>
   </.dialog>
   ```
 
@@ -320,7 +347,7 @@ defmodule Corex.Dialog do
     <:trigger>Open</:trigger>
     <:title>Small</:title>
     <:content><p>Compact dialog.</p></:content>
-    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+    <:close_trigger><.heroicon name="hero-x-mark" /></:close_trigger>
   </.dialog>
   ```
 
@@ -331,7 +358,7 @@ defmodule Corex.Dialog do
     <:trigger>Open</:trigger>
     <:title>Large</:title>
     <:content><p>Spacious dialog.</p></:content>
-    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+    <:close_trigger><.heroicon name="hero-x-mark" /></:close_trigger>
   </.dialog>
   ```
 
@@ -342,7 +369,7 @@ defmodule Corex.Dialog do
     <:trigger>Open</:trigger>
     <:title>Larger type</:title>
     <:content><p>Title, description, and body scale with the modifier.</p></:content>
-    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+    <:close_trigger><.heroicon name="hero-x-mark" /></:close_trigger>
   </.dialog>
   ```
 
@@ -353,18 +380,18 @@ defmodule Corex.Dialog do
     <:trigger>Open</:trigger>
     <:title>Rounded panel</:title>
     <:content><p>Corner radius on the content panel and close trigger.</p></:content>
-    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+    <:close_trigger><.heroicon name="hero-x-mark" /></:close_trigger>
   </.dialog>
   ```
 
   ### Side
 
   ```heex
-  <.dialog class="dialog dialog--side" modal>
+  <.dialog class="dialog-side" as="side" modal>
     <:trigger>Open</:trigger>
     <:title>Side panel</:title>
     <:content><p>Slides in from the edge.</p></:content>
-    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+    <:close_trigger><.heroicon name="hero-x-mark" /></:close_trigger>
   </.dialog>
   ```
 
@@ -388,9 +415,15 @@ defmodule Corex.Dialog do
     Trigger
   }
 
-  alias Corex.Api.RespondTo
+  alias Corex.Api.Response
   alias Corex.Dialog.Connect
   alias Corex.Dialog.Translation
+
+  use Corex.Variants,
+    kind: :recipe,
+    recipes: [:modal, :side],
+    default: :modal,
+    defaults: [width: "fit", max_width: "none", height: "auto", max_height: "none", size: "md"]
 
   @doc """
   Renders a dialog component.
@@ -488,6 +521,11 @@ defmodule Corex.Dialog do
 
   attr(:translation, Corex.Dialog.Translation, default: nil, doc: "Override translatable strings")
 
+  attr(:loading, :boolean,
+    default: true,
+    doc: "When true, the host renders with `data-loading` until the hook mounts."
+  )
+
   attr(:rest, :global)
 
   slot :trigger, required: true do
@@ -551,8 +589,10 @@ defmodule Corex.Dialog do
     <div
       id={@id}
       phx-hook="Dialog"
-      data-loading
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+      data-loading={@loading && ""}
+      phx-mounted={@loading && Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+      class={corex_style_class(assigns)}
+     
       {@rest}
       {Connect.props(%Props{
         id: @id,
@@ -584,9 +624,9 @@ defmodule Corex.Dialog do
         {render_slot(@trigger)}
       </button>
 
-      <div phx-mounted={Connect.ignore_backdrop(@backdrop_struct)} {Connect.backdrop(@backdrop_struct, @animation)}></div>
+      <div phx-mounted={Connect.ignore_backdrop(@backdrop_struct)} {Connect.backdrop(@backdrop_struct, @animation, @animation_options)}></div>
       <div phx-mounted={Connect.ignore_positioner(@positioner_struct)} {Connect.positioner(@positioner_struct)}>
-        <div phx-mounted={Connect.ignore_content(@content_struct)} {Connect.content(@content_struct, @animation)}>
+        <div phx-mounted={Connect.ignore_content(@content_struct)} {Connect.content(@content_struct, @animation, @animation_options)}>
           <div data-scope="dialog" data-part="header">
             <h2
               :if={@title != []}
@@ -703,7 +743,7 @@ defmodule Corex.Dialog do
   <.dialog id="my-dialog" class="dialog">
     <:trigger>Open</:trigger>
     <:content><p>Content.</p></:content>
-    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+    <:close_trigger><.heroicon name="hero-x-mark" /></:close_trigger>
   </.dialog>
   ```
 
@@ -718,7 +758,7 @@ defmodule Corex.Dialog do
   """)
 
   def set_open(dialog_id, open) when is_binary(dialog_id) and is_boolean(open) do
-    RespondTo.dispatch_set_open(dialog_id, open, "corex:dialog:set-open")
+    Response.dispatch_set_open(dialog_id, open, "corex:dialog:set-open")
   end
 
   api_doc(~S"""
@@ -729,7 +769,7 @@ defmodule Corex.Dialog do
   <.dialog id="my-dialog" class="dialog">
     <:trigger>Open</:trigger>
     <:content><p>Content.</p></:content>
-    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+    <:close_trigger><.heroicon name="hero-x-mark" /></:close_trigger>
   </.dialog>
   ```
 
@@ -743,6 +783,6 @@ defmodule Corex.Dialog do
   def set_open(socket, dialog_id, open)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(dialog_id) and
              is_boolean(open) do
-    RespondTo.push_set_open(socket, "dialog_set_open", dialog_id, open)
+    Response.push_set_open(socket, "dialog_set_open", dialog_id, open)
   end
 end

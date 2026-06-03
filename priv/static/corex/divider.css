@@ -1,0 +1,100 @@
+/* Corex generated design - do not edit */
+
+[data-divider] {
+  block-size: 0;
+  border: 0;
+  border-top: 1px solid var(--color-border);
+  inline-size: 100%;
+}
+
+[data-divider][data-divider-orientation="horizontal"] {
+  border-top: 1px solid var(--color-border);
+  inline-size: 100%;
+}
+
+@media (min-width: 40rem) {
+  [data-divider][data-divider-orientation-sm="horizontal"] {
+    border-top: 1px solid var(--color-border);
+    inline-size: 100%;
+  }
+}
+
+@media (min-width: 48rem) {
+  [data-divider][data-divider-orientation-md="horizontal"] {
+    border-top: 1px solid var(--color-border);
+    inline-size: 100%;
+  }
+}
+
+@media (min-width: 64rem) {
+  [data-divider][data-divider-orientation-lg="horizontal"] {
+    border-top: 1px solid var(--color-border);
+    inline-size: 100%;
+  }
+}
+
+@media (min-width: 80rem) {
+  [data-divider][data-divider-orientation-xl="horizontal"] {
+    border-top: 1px solid var(--color-border);
+    inline-size: 100%;
+  }
+}
+
+@media (min-width: 96rem) {
+  [data-divider][data-divider-orientation-2xl="horizontal"] {
+    border-top: 1px solid var(--color-border);
+    inline-size: 100%;
+  }
+}
+
+[data-divider][data-divider-orientation="vertical"] {
+  block-size: 100%;
+  border-inline-start: 1px solid var(--color-border);
+  border-top: 0;
+  inline-size: 0;
+}
+
+@media (min-width: 40rem) {
+  [data-divider][data-divider-orientation-sm="vertical"] {
+    block-size: 100%;
+    border-inline-start: 1px solid var(--color-border);
+    border-top: 0;
+    inline-size: 0;
+  }
+}
+
+@media (min-width: 48rem) {
+  [data-divider][data-divider-orientation-md="vertical"] {
+    block-size: 100%;
+    border-inline-start: 1px solid var(--color-border);
+    border-top: 0;
+    inline-size: 0;
+  }
+}
+
+@media (min-width: 64rem) {
+  [data-divider][data-divider-orientation-lg="vertical"] {
+    block-size: 100%;
+    border-inline-start: 1px solid var(--color-border);
+    border-top: 0;
+    inline-size: 0;
+  }
+}
+
+@media (min-width: 80rem) {
+  [data-divider][data-divider-orientation-xl="vertical"] {
+    block-size: 100%;
+    border-inline-start: 1px solid var(--color-border);
+    border-top: 0;
+    inline-size: 0;
+  }
+}
+
+@media (min-width: 96rem) {
+  [data-divider][data-divider-orientation-2xl="vertical"] {
+    block-size: 100%;
+    border-inline-start: 1px solid var(--color-border);
+    border-top: 0;
+    inline-size: 0;
+  }
+}

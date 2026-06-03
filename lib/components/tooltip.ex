@@ -9,7 +9,7 @@ defmodule Corex.Tooltip do
   ### Minimal
 
   ```heex
-  <.tooltip class="tooltip" show_arrow={false}>
+  <.tooltip show_arrow={false}>
     <:trigger>Hover me</:trigger>
     <:content>Tooltip content</:content>
   </.tooltip>
@@ -18,7 +18,7 @@ defmodule Corex.Tooltip do
   ### With arrow
 
   ```heex
-  <.tooltip class="tooltip">
+  <.tooltip>
     <:trigger>Hover me</:trigger>
     <:content>Tooltip content</:content>
   </.tooltip>
@@ -27,9 +27,35 @@ defmodule Corex.Tooltip do
   ### Placement
 
   ```heex
-  <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "bottom"}}>
+  <.tooltip positioning={%Corex.Positioning{placement: "bottom"}}>
     <:trigger>Bottom</:trigger>
     <:content>Tooltip below</:content>
+  </.tooltip>
+  ```
+
+  <!-- tabs-close -->
+
+  ## Styling
+
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `semantic`, `size`, `text`, `radius`.
+
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.tooltip semantic="accent" size="md" class="tooltip">
+    <:trigger>Hover me</:trigger>
+    <:content>Tooltip content</:content>
+  </.tooltip>
+  ```
+
+  ### With classes
+
+  ```heex
+  <.tooltip class="tooltip tooltip--accent tooltip--md">
+    <:trigger>Hover me</:trigger>
+    <:content>Tooltip content</:content>
   </.tooltip>
   ```
 
@@ -60,7 +86,7 @@ defmodule Corex.Tooltip do
   ### on_open_change
 
   ```heex
-  <.tooltip class="tooltip" on_open_change="tooltip_open_changed">
+  <.tooltip on_open_change="tooltip_open_changed">
     <:trigger>Hover me</:trigger>
     <:content>Tooltip content</:content>
   </.tooltip>
@@ -91,7 +117,6 @@ defmodule Corex.Tooltip do
 
   ```heex
   <.tooltip
-    class="tooltip"
     on_trigger_value_change="tooltip_trigger_changed"
   >
     <:trigger value="a">First</:trigger>
@@ -110,19 +135,13 @@ defmodule Corex.Tooltip do
 
   ## Style
 
-  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `tooltip.css`, then set `class="tooltip"` on `<.tooltip>`.
+  Target parts with `data-scope` and `data-part`, or use [Corex Design](styled.html): `@import "./corex.tailwind.css"` in `app.css`.
 
   ```css
   [data-scope="tooltip"][data-part="trigger"] {}
   [data-scope="tooltip"][data-part="positioner"] {}
   [data-scope="tooltip"][data-part="content"] {}
   [data-scope="tooltip"][data-part="arrow"] {}
-  ```
-
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/tooltip.css";
   ```
 
   Stack modifiers on the host (`class` on `<.tooltip>`).
@@ -170,6 +189,26 @@ defmodule Corex.Tooltip do
   alias Corex.Tooltip.Connect
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
+
+  use Corex.Variants,
+    base: "tooltip",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size,
+      text: :text,
+      radius: :radius
+    ],
+    defaults: [
+      width: "fit",
+      max_width: "none",
+      height: "auto",
+      max_height: "none",
+      size: "md"
+    ]
 
   attr(:id, :string,
     required: false,
@@ -293,6 +332,8 @@ defmodule Corex.Tooltip do
       phx-hook="Tooltip"
       data-loading  
       phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}    
+      class={corex_style_class(assigns)}
+     
       {@rest}
       {Connect.props(%Props{
         id: @id,

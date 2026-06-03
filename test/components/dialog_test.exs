@@ -81,6 +81,7 @@ defmodule Corex.DialogTest do
       result = Connect.backdrop(assigns, "js")
       refute Map.has_key?(result, "hidden")
       assert result["data-state"] == "closed"
+      assert result["style"] == "opacity:0.0"
     end
 
     test "omits hidden when closed and animation is custom" do
@@ -88,6 +89,7 @@ defmodule Corex.DialogTest do
       result = Connect.backdrop(assigns, "custom")
       refute Map.has_key?(result, "hidden")
       assert result["data-state"] == "closed"
+      assert result["style"] == "opacity:0.0"
     end
 
     test "omits hidden when open and animation is js" do
@@ -104,7 +106,7 @@ defmodule Corex.DialogTest do
       result = Connect.positioner(assigns)
       assert result["id"] == "dialog:test-dialog:positioner"
       assert result["data-part"] == "positioner"
-      assert result["data-state"] == "closed"
+      refute Map.has_key?(result, "data-state")
       refute Map.has_key?(result, "style")
       refute Map.has_key?(result, "hidden")
     end
@@ -112,7 +114,7 @@ defmodule Corex.DialogTest do
     test "returns positioner attributes when open" do
       assigns = %{id: "test-dialog", dir: "ltr", open: true}
       result = Connect.positioner(assigns)
-      assert result["data-state"] == "open"
+      refute Map.has_key?(result, "data-state")
       refute Map.has_key?(result, "style")
       refute Map.has_key?(result, "hidden")
     end
@@ -179,13 +181,27 @@ defmodule Corex.DialogTest do
       result = Connect.content(assigns, "js")
       refute Map.has_key?(result, "hidden")
       assert result["data-state"] == "closed"
+      assert result["style"] == "opacity:0.0;transform:scale(0.96)"
     end
 
     test "omits hidden when closed and animation is custom" do
-      assigns = %{id: "test-dialog", dir: "ltr", open: false}
+      assigns = %{
+        id: "test-dialog",
+        dir: "ltr",
+        open: false,
+        animation_options: %Scale{opacity_start: 0.1, scale_start: 0.9}
+      }
+
       result = Connect.content(assigns, "custom")
       refute Map.has_key?(result, "hidden")
       assert result["data-state"] == "closed"
+      assert result["style"] == "opacity:0.1;transform:scale(0.9)"
+    end
+
+    test "open content omits closed style when animation is js" do
+      assigns = %{id: "test-dialog", dir: "ltr", open: true}
+      result = Connect.content(assigns, "js")
+      refute Map.has_key?(result, "style")
     end
 
     test "omits hidden when open and animation is js" do

@@ -63,6 +63,7 @@ defmodule Corex.Accordion.Anatomy do
       disabled: false,
       animation: "instant",
       label: nil,
+      animation_options: %Corex.Animation.Height{},
       data: %{}
     ]
 
@@ -75,7 +76,8 @@ defmodule Corex.Accordion.Anatomy do
             disabled: boolean(),
             values: list(String.t()),
             animation: String.t(),
-            label: String.t() | nil
+            label: String.t() | nil,
+            animation_options: Corex.Animation.Height.t()
           }
 
     @ignored_attrs ["data-state", "data-focus", "data-orientation", "dir"]

@@ -79,7 +79,6 @@ defmodule E2eWeb.CollapsibleEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.collapsible
                 id={@id_server}
-                class="collapsible"
                 on_open_change="collapsible_open_changed"
               >
                 <:trigger>Toggle</:trigger>
@@ -91,7 +90,7 @@ defmodule E2eWeb.CollapsibleEventsLive do
 
               <.data_table
                 id="collapsible-events-log-server"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.server_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -118,7 +117,6 @@ defmodule E2eWeb.CollapsibleEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.collapsible
                 id={@id_client}
-                class="collapsible"
                 on_open_change_client={@client_event}
               >
                 <:trigger>Toggle</:trigger>
@@ -153,7 +151,7 @@ defmodule E2eWeb.CollapsibleEventsLive do
 
               <.data_table
                 id="collapsible-events-log-client"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.client_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>

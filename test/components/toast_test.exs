@@ -194,7 +194,7 @@ defmodule Corex.ToastTest do
         render_component(&Corex.Toast.toast_client_error/1,
           toast_group_id: "layout-toast",
           title: "Error",
-          type: :success
+          toast_type: :success
         )
 
       assert result =~ ~S(&quot;type&quot;:&quot;success&quot;)
@@ -203,7 +203,7 @@ defmodule Corex.ToastTest do
         render_component(&Corex.Toast.toast_client_error/1,
           toast_group_id: "layout-toast",
           title: "Error",
-          type: :error
+          toast_type: :error
         )
 
       assert result =~ ~S(&quot;type&quot;:&quot;error&quot;)
@@ -212,7 +212,7 @@ defmodule Corex.ToastTest do
         render_component(&Corex.Toast.toast_client_error/1,
           toast_group_id: "layout-toast",
           title: "Error",
-          type: :unknown_type
+          toast_type: :unknown_type
         )
 
       assert result =~ ~S(&quot;type&quot;:&quot;info&quot;)
@@ -236,7 +236,7 @@ defmodule Corex.ToastTest do
         render_component(&Corex.Toast.toast_server_error/1,
           toast_group_id: "layout-toast",
           title: "Error",
-          type: :success
+          toast_type: :success
         )
 
       assert result =~ ~S(&quot;type&quot;:&quot;success&quot;)
@@ -245,7 +245,7 @@ defmodule Corex.ToastTest do
         render_component(&Corex.Toast.toast_server_error/1,
           toast_group_id: "layout-toast",
           title: "Error",
-          type: :info
+          toast_type: :info
         )
 
       assert result =~ ~S(&quot;type&quot;:&quot;info&quot;)
@@ -254,7 +254,7 @@ defmodule Corex.ToastTest do
         render_component(&Corex.Toast.toast_server_error/1,
           toast_group_id: "layout-toast",
           title: "Error",
-          type: :unknown_type
+          toast_type: :unknown_type
         )
 
       assert result =~ ~S(&quot;type&quot;:&quot;error&quot;)
@@ -278,7 +278,7 @@ defmodule Corex.ToastTest do
         render_component(&Corex.Toast.toast_connected/1,
           toast_group_id: "layout-toast",
           title: "Error",
-          type: :error
+          toast_type: :error
         )
 
       assert result =~ ~S(&quot;type&quot;:&quot;error&quot;)
@@ -287,7 +287,7 @@ defmodule Corex.ToastTest do
         render_component(&Corex.Toast.toast_connected/1,
           toast_group_id: "layout-toast",
           title: "Error",
-          type: :info
+          toast_type: :info
         )
 
       assert result =~ ~S(&quot;type&quot;:&quot;info&quot;)
@@ -296,7 +296,7 @@ defmodule Corex.ToastTest do
         render_component(&Corex.Toast.toast_connected/1,
           toast_group_id: "layout-toast",
           title: "Error",
-          type: :unknown_type
+          toast_type: :unknown_type
         )
 
       assert result =~ ~S(&quot;type&quot;:&quot;success&quot;)
@@ -320,7 +320,7 @@ defmodule Corex.ToastTest do
         render_component(&Corex.Toast.toast_disconnected/1,
           toast_group_id: "layout-toast",
           title: "Error",
-          type: :success
+          toast_type: :success
         )
 
       assert result =~ ~S(&quot;type&quot;:&quot;success&quot;)
@@ -329,7 +329,7 @@ defmodule Corex.ToastTest do
         render_component(&Corex.Toast.toast_disconnected/1,
           toast_group_id: "layout-toast",
           title: "Error",
-          type: :error
+          toast_type: :error
         )
 
       assert result =~ ~S(&quot;type&quot;:&quot;error&quot;)
@@ -338,7 +338,7 @@ defmodule Corex.ToastTest do
         render_component(&Corex.Toast.toast_disconnected/1,
           toast_group_id: "layout-toast",
           title: "Error",
-          type: :unknown_type
+          toast_type: :unknown_type
         )
 
       assert result =~ ~S(&quot;type&quot;:&quot;info&quot;)

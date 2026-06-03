@@ -37,7 +37,7 @@ mix usage_rules.search_docs "on_value_change" -p corex --query-by title
 
 | Sub-rule | When to read |
 |----------|--------------|
-| `corex:installation` | `mix corex.new`, manual install, esbuild, hooks, `use Corex`, `mix corex.design` |
+| `corex:installation` | `mix corex.new`, manual install, esbuild, hooks, `use Corex`, `{:corex_design}` |
 | `corex:components` | HEEx wiring, MCP lookup, data builders, slots, hooks |
 | `corex:design` | Modifiers, tokens, `.typo`, themes — no custom template CSS |
 | `corex:mcp` | Dev MCP plug, `.cursor/mcp.json`, tool call order |
@@ -76,4 +76,4 @@ mix archive.install hex corex_new
 mix corex.new my_app
 ```
 
-Existing app: see `corex:installation`. Design: `mix corex.design` then `corex:design`.
+Existing app: see `corex:installation`. Design: `{:corex_design}` compiler then `corex:design`.

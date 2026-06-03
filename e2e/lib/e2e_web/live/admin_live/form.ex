@@ -20,7 +20,7 @@ defmodule E2eWeb.AdminLive.Form do
           <.navigate
             to={return_path(@return_to, @admin)}
             type="navigate"
-            class="button"
+            as="button"
             aria_label="Cancel"
             title="Cancel"
           >
@@ -30,7 +30,6 @@ defmodule E2eWeb.AdminLive.Form do
           <.dialog
             :if={@live_action == :edit}
             id={"admin-delete-#{@admin.id}"}
-            class="dialog"
             role="alertdialog"
             modal
             close_on_interact_outside={false}
@@ -51,7 +50,8 @@ defmodule E2eWeb.AdminLive.Form do
                 <.action
                   id={"admin-delete-#{@admin.id}-cancel"}
                   phx-click={Corex.Dialog.set_open("admin-delete-#{@admin.id}", false)}
-                  class="button button--sm button--ghost"
+                  size="sm"
+                  variant="ghost"
                 >
                   Cancel
                 </.action>
@@ -61,7 +61,8 @@ defmodule E2eWeb.AdminLive.Form do
                     Corex.Dialog.set_open("admin-delete-#{@admin.id}", false)
                     |> JS.push("delete", value: %{id: @admin.id})
                   }
-                  class="button button--sm button--alert"
+                  size="sm"
+                  semantic="alert"
                 >
                   Delete
                 </.action>
@@ -77,16 +78,16 @@ defmodule E2eWeb.AdminLive.Form do
         phx-change="validate"
         phx-submit="save"
       >
-        <.native_input field={@form[:name]} type="text" class="native-input">
+        <.native_input field={@form[:name]} type="text">
           <:label>Name</:label>
           <:error :let={msg}>
-            <.heroicon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" />
             {msg}
           </:error>
         </.native_input>
 
         <.select
-          class="select max-w-none"
+          class="max-w-none"
           field={@form[:country]}
           deselectable
           translation={%Corex.Select.Translation{placeholder: "Select a country"}}
@@ -103,14 +104,14 @@ defmodule E2eWeb.AdminLive.Form do
             <.heroicon name="hero-chevron-down" />
           </:trigger>
           <:error :let={msg}>
-            <.heroicon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" />
             {msg}
           </:error>
         </.select>
 
         <.combobox
           field={@form[:currency]}
-          class="combobox max-w-none"
+          class="combobox combobox--max-w-none"
           placeholder="Search currency"
           items={currency_items()}
         >
@@ -124,45 +125,45 @@ defmodule E2eWeb.AdminLive.Form do
             <.heroicon name="hero-chevron-down" />
           </:trigger>
           <:error :let={msg}>
-            <.heroicon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" />
             {msg}
           </:error>
         </.combobox>
 
-        <.tags_input field={@form[:tags]} class="tags-input max-w-none">
+        <.tags_input field={@form[:tags]} class="tags-input tags-input--max-w-none">
           <:label>Tags</:label>
           <:close>
             <.heroicon name="hero-x-mark" />
           </:close>
           <:error :let={msg}>
-            <.heroicon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" />
             {msg}
           </:error>
         </.tags_input>
 
-        <.date_picker field={@form[:birth_date]} class="date-picker max-w-none">
+        <.date_picker field={@form[:birth_date]} class="date-picker date-picker--max-w-none">
           <:label>Select a date</:label>
           <:trigger>
-            <.heroicon name="hero-calendar" class="icon" />
+            <.heroicon name="hero-calendar" />
           </:trigger>
           <:prev_trigger>
-            <.heroicon name="hero-chevron-left" class="icon" />
+            <.heroicon name="hero-chevron-left" />
           </:prev_trigger>
           <:next_trigger>
-            <.heroicon name="hero-chevron-right" class="icon" />
+            <.heroicon name="hero-chevron-right" />
           </:next_trigger>
           <:error :let={msg}>
-            <.heroicon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" />
             {msg}
           </:error>
         </.date_picker>
-        <.signature_pad field={@form[:signature]} class="signature-pad">
+        <.signature_pad field={@form[:signature]}>
           <:label>Sign here</:label>
           <:clear_trigger>
             <.heroicon name="hero-x-mark" />
           </:clear_trigger>
           <:error :let={msg}>
-            <.heroicon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" />
             {msg}
           </:error>
         </.signature_pad>
@@ -171,21 +172,21 @@ defmodule E2eWeb.AdminLive.Form do
           min={1.0}
           max={5.0}
           step={1.0}
-          class="number-input max-w-none"
+          class="number-input number-input--max-w-none"
         >
           <:label>Level</:label>
           <:decrement_trigger>
-            <.heroicon name="hero-chevron-down" class="icon" />
+            <.heroicon name="hero-chevron-down" />
           </:decrement_trigger>
           <:increment_trigger>
-            <.heroicon name="hero-chevron-up" class="icon" />
+            <.heroicon name="hero-chevron-up" />
           </:increment_trigger>
           <:error :let={msg}>
-            <.heroicon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" />
             {msg}
           </:error>
         </.number_input>
-        <.checkbox field={@form[:terms]} class="checkbox">
+        <.checkbox field={@form[:terms]}>
           <:label>
             Accept the terms
           </:label>
@@ -193,16 +194,16 @@ defmodule E2eWeb.AdminLive.Form do
             <.heroicon name="hero-check" />
           </:indicator>
           <:error :let={msg}>
-            <.heroicon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" />
             {msg}
           </:error>
         </.checkbox>
 
         <footer class="flex w-full justify-between gap-2">
-          <.navigate to={return_path(@return_to, @admin)} type="navigate" class="button">
+          <.navigate to={return_path(@return_to, @admin)} type="navigate" as="button">
             Cancel
           </.navigate>
-          <.action phx-disable-with="Saving..." type="submit" class="button button--accent">
+          <.action phx-disable-with="Saving..." type="submit" semantic="accent">
             Save Admin
           </.action>
         </footer>

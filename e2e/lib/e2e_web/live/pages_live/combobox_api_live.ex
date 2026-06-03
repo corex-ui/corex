@@ -56,25 +56,24 @@ defmodule E2eWeb.ComboboxApiLive do
             <div class="flex flex-wrap gap-2 items-center w-full justify-center">
               <.action
                 phx-click={Corex.Combobox.set_value("combobox-api-sv-client", ["bel"])}
-                class="button button--sm"
+                size="sm"
               >
                 Belgium
               </.action>
               <.action
                 phx-click={Corex.Combobox.set_value("combobox-api-sv-client", [])}
-                class="button button--sm"
+                size="sm"
               >
                 Clear
               </.action>
             </div>
             <.combobox
               id="combobox-api-sv-client"
-              class="combobox"
               placeholder={~t"Select"}
               items={Corex.List.new(Demo.items_minimal())}
             >
               <:empty>No results</:empty>
-              <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+              <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
             </.combobox>
           </:preview>
         </.demo_section>
@@ -94,17 +93,16 @@ defmodule E2eWeb.ComboboxApiLive do
         >
           <:preview>
             <div class="flex flex-wrap gap-2 items-center w-full justify-center">
-              <.action phx-click="combobox_api_set_value" class="button button--sm">Belgium</.action>
-              <.action phx-click="combobox_api_clear" class="button button--sm">Clear</.action>
+              <.action phx-click="combobox_api_set_value" size="sm">Belgium</.action>
+              <.action phx-click="combobox_api_clear" size="sm">Clear</.action>
             </div>
             <.combobox
               id="combobox-api-sv-server"
-              class="combobox"
               placeholder={~t"Select"}
               items={Corex.List.new(Demo.items_minimal())}
             >
               <:empty>No results</:empty>
-              <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+              <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
             </.combobox>
           </:preview>
         </.demo_section>
@@ -120,7 +118,7 @@ defmodule E2eWeb.ComboboxApiLive do
             <div class="flex flex-wrap gap-2 items-center w-full justify-center">
               <.action
                 type="button"
-                class="button button--sm"
+                size="sm"
                 phx-click={
                   JS.dispatch("corex:combobox:set-value",
                     to: "#combobox-api-sv-js",
@@ -133,7 +131,7 @@ defmodule E2eWeb.ComboboxApiLive do
               </.action>
               <.action
                 type="button"
-                class="button button--sm"
+                size="sm"
                 phx-click={
                   JS.dispatch("corex:combobox:set-value",
                     to: "#combobox-api-sv-js",
@@ -147,12 +145,11 @@ defmodule E2eWeb.ComboboxApiLive do
             </div>
             <.combobox
               id="combobox-api-sv-js"
-              class="combobox"
               placeholder={~t"Select"}
               items={Corex.List.new(Demo.items_minimal())}
             >
               <:empty>No results</:empty>
-              <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+              <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
             </.combobox>
           </:preview>
         </.demo_section>

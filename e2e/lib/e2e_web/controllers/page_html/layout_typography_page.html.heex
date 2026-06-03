@@ -1,0 +1,76 @@
+<Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
+  <.demo_page
+    path={@path}
+    id="layout-typography-page"
+    title={~t"Layout & Typography"}
+    subtitle={~t"Primitives for page structure, copy, and compact labels."}
+  >
+    <.demo_section id="layout-typography-headings" title={~t"Typography"}>
+      <:preview>
+        <.stack gap="lg" width="full">
+          <.h1 semantic="accent" text="2xl">{~t"Heading one"}</.h1>
+          <.h2 text="xl">{~t"Heading two"}</.h2>
+          <.h3 text="lg">{~t"Heading three"}</.h3>
+          <.h4 text="base">{~t"Heading four"}</.h4>
+          <.lead>{~t"Lead paragraph for introductory copy."}</.lead>
+          <.p text="sm">{~t"Body paragraph with the p component."}</.p>
+          <.small text="sm">{~t"Small supporting text."}</.small>
+          <.blockquote>{~t"A short quotation block."}</.blockquote>
+          <.list>
+            <li>{~t"First list item"}</li>
+            <li>{~t"Second list item"}</li>
+          </.list>
+          <.p>
+            {~t"Press"}
+            <.kbd>⌘</.kbd>
+            <.kbd>K</.kbd>
+            {~t"to search."}
+          </.p>
+        </.stack>
+      </:preview>
+    </.demo_section>
+
+    <.demo_section id="layout-typography-layout" title={~t"Layout"}>
+      <:preview>
+        <.container size="lg" width="full">
+          <.stack gap="lg" width="full">
+            <.box padding="lg" radius="md" width="full">
+              <.p>{~t"Box with padding and radius."}</.p>
+            </.box>
+            <.row gap="md" justify="between" width="full" align="center">
+              <.p>{~t"Row start"}</.p>
+              <.spacer />
+              <.p>{~t"Row end"}</.p>
+            </.row>
+            <.divider />
+            <.grid columns="2" gap="md" width="full">
+              <.box padding="md" radius="sm">{~t"Grid cell"}</.box>
+              <.box padding="md" radius="sm">{~t"Grid cell"}</.box>
+            </.grid>
+          </.stack>
+        </.container>
+      </:preview>
+    </.demo_section>
+
+    <.demo_section id="layout-typography-form" title={~t"Form & labels"}>
+      <:preview>
+        <.stack gap="md" width="full">
+          <.form for={@demo_form} id="layout-typography-form-demo">
+            <.stack gap="md" width="full">
+              <.native_input type="text" name="demo[name]" placeholder={~t"Name"} />
+              <.action type="submit" semantic="accent" size="sm">{~t"Submit"}</.action>
+            </.stack>
+          </.form>
+          <.row gap="sm" wrap="wrap">
+            <.badge semantic="accent" size="sm">{~t"Accent"}</.badge>
+            <.badge size="sm">{~t"Muted"}</.badge>
+          </.row>
+          <.p text="sm">
+            <.heroicon name="hero-information-circle" />
+            {~t"Use heroicon without class inside Corex components and slots."}
+          </.p>
+        </.stack>
+      </:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>

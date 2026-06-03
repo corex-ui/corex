@@ -47,7 +47,6 @@ defmodule Corex.FloatingPanelTest do
               close_on_escape={false}
               disabled={true}
               dir="rtl"
-              value_size={%{width: 200, height: 200}}
               size={%{width: 300, height: 300}}
               position={%{x: 20, y: 20}}
               min_size={%{width: 100, height: 100}}
@@ -91,7 +90,7 @@ defmodule Corex.FloatingPanelTest do
       assert html =~ "aria-label=\"Cls\""
       assert html =~ "data-disabled"
       assert html =~ "data-dir=\"rtl\""
-      assert html =~ ~S(&quot;width&quot;:200) and html =~ ~S(&quot;height&quot;:200)
+      assert html =~ ~S(&quot;width&quot;:300) and html =~ ~S(&quot;height&quot;:300)
       assert html =~ ~S(&quot;x&quot;:20) and html =~ ~S(&quot;y&quot;:20)
       assert html =~ "data-grid-size=\"10\""
       assert html =~ "data-persist-rect"

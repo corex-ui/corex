@@ -36,6 +36,9 @@ corex-*.tar
 
 /playground/
 
+# Generated design CSS (consumers run the compiler; never committed).
+/priv/static/corex/
+
 .cursor
 
 /.expert/
@@ -51,6 +54,12 @@ corex-*.tar
 /integration_test/_build/
 /integration_test/deps/
 .dexter.db*
+
+/design/_build/
+/design/deps/
+/design/doc/
+/design/cover/
+/design/tmp/
 
 /.claude/
 

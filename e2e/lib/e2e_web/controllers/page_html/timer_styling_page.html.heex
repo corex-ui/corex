@@ -9,22 +9,24 @@
     id="timer-styling-page"
     title={~t"Timer · Style"}
     subtitle={
-      ~t"Semantic colors, typography, and radius on the timer root (add max-width with utilities such as max-w-md)."
+      ~t"Semantic colors, typography, and radius on the timer root (use timer max-width modifiers such as timer--max-w-md)."
     }
   >
     <.demo_section
-      id="timer-styling-color"
-      title={~t"Color"}
-      code={E2eWeb.Demos.TimerDemo.styling_color_code()}
+      id="timer-styling-semantic"
+      title={~t"Semantic"}
+      values={E2eWeb.Demos.TimerDemo.styling_axis_values(:semantic)}
+      code={E2eWeb.Demos.TimerDemo.styling_semantic_code()}
     >
       <:preview>
-        <E2eWeb.Demos.TimerDemo.styling_color_example />
+        <E2eWeb.Demos.TimerDemo.styling_semantic_example />
       </:preview>
     </.demo_section>
 
     <.demo_section
       id="timer-styling-size"
       title={~t"Size"}
+      values={E2eWeb.Demos.TimerDemo.styling_axis_values(:size)}
       code={E2eWeb.Demos.TimerDemo.styling_size_code()}
     >
       <:preview>
@@ -35,6 +37,7 @@
     <.demo_section
       id="timer-styling-text"
       title={~t"Text"}
+      values={E2eWeb.Demos.TimerDemo.styling_axis_values(:text)}
       code={E2eWeb.Demos.TimerDemo.styling_text_code()}
     >
       <:preview>
@@ -45,6 +48,7 @@
     <.demo_section
       id="timer-styling-radius"
       title={~t"Radius"}
+      values={E2eWeb.Demos.TimerDemo.styling_axis_values(:radius)}
       code={E2eWeb.Demos.TimerDemo.styling_radius_code()}
     >
       <:preview>

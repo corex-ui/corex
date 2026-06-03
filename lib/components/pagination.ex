@@ -11,7 +11,7 @@ defmodule Corex.Pagination do
   ### Minimal
 
   ```heex
-  <.pagination class="pagination" count={95} page_size={10}>
+  <.pagination count={95} page_size={10}>
     <:prev><.heroicon name="hero-chevron-left" /></:prev>
     <:next><.heroicon name="hero-chevron-right" /></:next>
     <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
@@ -22,7 +22,6 @@ defmodule Corex.Pagination do
 
   ```heex
   <.pagination
-    class="pagination"
     count={18}
     page={@page}
     page_size={4}
@@ -61,7 +60,6 @@ defmodule Corex.Pagination do
 
   ```heex
   <.pagination
-    class="pagination"
     count={95}
     page_size={10}
     translation={%Corex.Pagination.Translation{
@@ -74,6 +72,34 @@ defmodule Corex.Pagination do
         )
     }}
   >
+    <:prev><.heroicon name="hero-chevron-left" /></:prev>
+    <:next><.heroicon name="hero-chevron-right" /></:next>
+    <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+  </.pagination>
+  ```
+
+  <!-- tabs-close -->
+
+  ## Styling
+
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `semantic`, `size`, `radius`.
+
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.pagination semantic="accent" size="md" class="pagination" count={95} page_size={10}>
+    <:prev><.heroicon name="hero-chevron-left" /></:prev>
+    <:next><.heroicon name="hero-chevron-right" /></:next>
+    <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+  </.pagination>
+  ```
+
+  ### With classes
+
+  ```heex
+  <.pagination class="pagination pagination--accent pagination--md" count={95} page_size={10}>
     <:prev><.heroicon name="hero-chevron-left" /></:prev>
     <:next><.heroicon name="hero-chevron-right" /></:next>
     <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
@@ -107,7 +133,7 @@ defmodule Corex.Pagination do
 
   ```heex
   <.action phx-click={Corex.Pagination.set_page("pagination-api-bind", 5)} class="button button--sm">5</.action>
-  <.pagination id="pagination-api-bind" class="pagination" count={95} page={5} page_size={10}>
+  <.pagination id="pagination-api-bind" count={95} page={5} page_size={10}>
     <:prev><.heroicon name="hero-chevron-left" /></:prev>
     <:next><.heroicon name="hero-chevron-right" /></:next>
     <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
@@ -138,7 +164,7 @@ defmodule Corex.Pagination do
   ### on_page_change
 
   ```heex
-  <.pagination class="pagination" count={95} page_size={10} on_page_change="pagination_page_changed">
+  <.pagination count={95} page_size={10} on_page_change="pagination_page_changed">
     <:prev><.heroicon name="hero-chevron-left" /></:prev>
     <:next><.heroicon name="hero-chevron-right" /></:next>
     <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
@@ -167,7 +193,6 @@ defmodule Corex.Pagination do
   ```heex
   <.pagination
     id="pagination-events-client"
-    class="pagination"
     count={95}
     page_size={10}
     on_page_change_client="pagination-page-changed"
@@ -196,7 +221,6 @@ defmodule Corex.Pagination do
 
   ```heex
   <.pagination
-    class="pagination"
     count={18}
     page={@page}
     page_size={4}
@@ -222,7 +246,6 @@ defmodule Corex.Pagination do
 
   ```heex
   <.pagination
-    class="pagination"
     count={18}
     page={@page}
     page_size={4}
@@ -241,7 +264,7 @@ defmodule Corex.Pagination do
 
   ## Style
 
-  Target parts with `data-scope` and `data-part`, or import `pagination.css` and stack modifiers on the host.
+  Target parts with `data-scope` and `data-part`, or use [Corex Design](styled.html): `@import "./corex.tailwind.css"` in `app.css`.
 
   ```css
   [data-scope="pagination"][data-part="root"] {}
@@ -249,12 +272,6 @@ defmodule Corex.Pagination do
   [data-scope="pagination"][data-part="ellipsis"] {}
   [data-scope="pagination"][data-part="prev-trigger"][data-disabled] {}
   [data-scope="pagination"][data-part="next-trigger"][data-disabled] {}
-  ```
-
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/pagination.css";
   ```
 
   Stack modifiers on `<.pagination class="pagination ...">`.
@@ -319,6 +336,25 @@ defmodule Corex.Pagination do
 
   @doc type: :component
   use Phoenix.Component
+
+  use Corex.Variants,
+    base: "pagination",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size,
+      radius: :radius
+    ],
+    defaults: [
+      width: "fit",
+      max_width: "md",
+      height: "auto",
+      max_height: "none",
+      size: "md"
+    ]
 
   import Corex.Api.Doc
 
@@ -400,6 +436,8 @@ defmodule Corex.Pagination do
       :if={@total_pages > 1}
       id={@id}
       phx-hook="Pagination"
+      class={corex_style_class(assigns)}
+     
       data-loading
       phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       {@rest}

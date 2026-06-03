@@ -59,12 +59,11 @@ defmodule E2eWeb.AngleSliderPatternsLive do
           <:preview>
             <.async_result :let={angle_slider} assign={@angle_slider}>
               <:loading>
-                <.angle_slider_skeleton class="angle-slider" />
+                <.angle_slider_skeleton />
               </:loading>
 
               <.angle_slider
                 id={@id_async}
-                class="angle-slider"
                 value={angle_slider.value}
                 marker_values={[0, 90, 180, 270]}
               >
@@ -85,7 +84,6 @@ defmodule E2eWeb.AngleSliderPatternsLive do
           <:preview>
             <.angle_slider
               id={@id_controlled}
-              class="angle-slider"
               marker_values={[0, 90, 180, 270]}
               controlled
               value={@value}

@@ -14,7 +14,6 @@ defmodule Corex.TreeView do
 
   ```heex
   <.tree_view
-    class="tree-view"
     items={
       Corex.Tree.new([
         %{label: "Components", value: "components", children: [
@@ -33,7 +32,6 @@ defmodule Corex.TreeView do
 
   ```heex
   <.tree_view
-    class="tree-view"
     items={
       Corex.Tree.new([
         %{label: "Guides", value: "guides"},
@@ -49,7 +47,6 @@ defmodule Corex.TreeView do
 
   ```heex
   <.tree_view
-    class="tree-view"
     items={
       Corex.Tree.new([
         %{label: "src", value: "src", children: [
@@ -75,7 +72,6 @@ defmodule Corex.TreeView do
 
   ```heex
   <.tree_view
-    class="tree-view"
     items={
       Corex.Tree.new([
         %{label: "src", value: "src", children: [
@@ -104,7 +100,6 @@ defmodule Corex.TreeView do
   <.tree_view
     :let={ctx}
     compound
-    class="tree-view"
     items={
       Corex.Tree.new([
         %{label: "Components", value: "components", children: [
@@ -136,6 +131,36 @@ defmodule Corex.TreeView do
 
   `ctx` is a map with `:id`, `:dir`, `:animation`, `:items`, `:expanded_value`, `:value`, and an internal `:index_paths` map. Items referenced from `tree_view_branch` / `tree_view_item` must be present in `ctx.items` (they are resolved to their path).
 
+  ## Styling
+
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `semantic`, `size`, `radius`.
+
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.tree_view semantic="accent" size="md" class="tree-view" items={
+    Corex.Tree.new([
+      %{label: "Guides", value: "guides"},
+      %{label: "Reference", value: "reference"}
+    ])
+  } />
+  ```
+
+  ### With classes
+
+  ```heex
+  <.tree_view class="tree-view tree-view--accent tree-view--md" items={
+    Corex.Tree.new([
+      %{label: "Guides", value: "guides"},
+      %{label: "Reference", value: "reference"}
+    ])
+  } />
+  ```
+
+  <!-- tabs-close -->
+
   ## Patterns
 
   <!-- tabs-open -->
@@ -146,7 +171,6 @@ defmodule Corex.TreeView do
 
   ```heex
   <.tree_view
-    class="tree-view"
     expanded_value={["src", "components"]}
     value={["tree-view.tsx"]}
     items={
@@ -176,7 +200,7 @@ defmodule Corex.TreeView do
     <.async_result :let={tree} assign={@tree}>
       <:loading><.tree_view_skeleton count={3} class="tree-view" /></:loading>
       <:failed>Could not load the tree.</:failed>
-      <.tree_view id="async-tree" class="tree-view" items={tree} />
+      <.tree_view id="async-tree" items={tree} />
     </.async_result>
     """
   end
@@ -194,7 +218,7 @@ defmodule Corex.TreeView do
   Set `:new_tab` on an item to open its destination via `window.open`.
 
   ```heex
-  <.tree_view class="tree-view" redirect items={
+  <.tree_view redirect items={
     Corex.Tree.new([
       %{label: "Home", value: "home", to: "/", redirect: :patch},
       %{label: "External", value: "ext", to: "https://example.com", new_tab: true}
@@ -216,7 +240,6 @@ defmodule Corex.TreeView do
 
   ```heex
   <.tree_view
-    class="tree-view"
     animation="instant"
     items={
       Corex.Tree.new([
@@ -233,7 +256,6 @@ defmodule Corex.TreeView do
 
   ```heex
   <.tree_view
-    class="tree-view"
     animation="js"
     animation_options={%Corex.Animation.Height{duration: 0.3, easing: "ease-out"}}
     items={
@@ -256,7 +278,6 @@ defmodule Corex.TreeView do
 
   ```heex
   <.tree_view
-    class="tree-view"
     animation="custom"
     on_expanded_change_client="my-tree-expanded"
     items={
@@ -348,7 +369,7 @@ defmodule Corex.TreeView do
 
   ## Style
 
-  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `tree-view.css`, then set `class="tree-view"` on `<.tree_view>`.
+  Target parts with `data-scope` and `data-part`, or use [Corex Design](styled.html): `@import "./corex.tailwind.css"` in `app.css`.
 
   ```css
   [data-scope="tree-view"][data-part="root"] {}
@@ -357,12 +378,6 @@ defmodule Corex.TreeView do
   [data-scope="tree-view"][data-part="branch"] {}
   [data-scope="tree-view"][data-part="branch-content"] {}
   [data-scope="tree-view"][data-part="item"] {}
-  ```
-
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/tree-view.css";
   ```
 
   Stack modifiers on the host (`class` on `<.tree_view>`).
@@ -401,6 +416,12 @@ defmodule Corex.TreeView do
 
   alias Corex.TreeView.Anatomy.{Branch, Item, Label, Props, Root}
   alias Corex.TreeView.Connect
+
+  use Corex.Variants,
+    kind: :recipe,
+    recipes: [:treeview, :navigation],
+    default: :treeview,
+    defaults: [width: "full", max_width: "md", height: "auto", max_height: "none", size: "md"]
 
   @doc """
   Renders a tree view. Pass `items` as `Corex.Tree.new/1`. Component id = tree root id; names capitalized from labels.
@@ -493,6 +514,11 @@ defmodule Corex.TreeView do
       "Wired to the host when `animation` is `js` only. Custom transitions ignore this assign. See `Corex.Animation.Height` (opacity, height, `block_interaction`)."
   )
 
+  attr(:loading, :boolean,
+    default: true,
+    doc: "When true, the host renders with `data-loading` until the hook mounts."
+  )
+
   attr(:rest, :global)
 
   slot(:inner_block,
@@ -539,6 +565,7 @@ defmodule Corex.TreeView do
       id: assigns.id,
       dir: assigns.dir,
       animation: assigns.animation,
+      animation_options: assigns.animation_options,
       items: assigns.items,
       index_paths: index_paths,
       expanded_value: assigns.expanded_value,
@@ -551,8 +578,10 @@ defmodule Corex.TreeView do
     <div
       id={@id}
       phx-hook="TreeView"
-      data-loading
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+      data-loading={@loading && ""}
+      phx-mounted={@loading && Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+      class={corex_style_class(assigns)}
+     
       {@rest}
       {Connect.props(%Props{
         id: @id,
@@ -588,6 +617,7 @@ defmodule Corex.TreeView do
             id={@id}
             dir={@dir}
             animation={@animation}
+            animation_options={@animation_options}
             tree_item={item}
             index_path={[i]}
             expanded_value={@expanded_value}
@@ -612,6 +642,7 @@ defmodule Corex.TreeView do
   attr(:id, :string, required: false)
   attr(:dir, :string, required: true)
   attr(:animation, :string, required: true)
+  attr(:animation_options, Corex.Animation.Height, default: %Corex.Animation.Height{})
   attr(:tree_item, :any, required: true)
   attr(:index_path, :list, required: true)
   attr(:expanded_value, :list, default: [])
@@ -667,6 +698,7 @@ defmodule Corex.TreeView do
             id={@id}
             dir={@dir}
             animation={@animation}
+            animation_options={@animation_options}
             tree_item={child}
             index_path={@index_path ++ [j]}
             expanded_value={@expanded_value}
@@ -1132,7 +1164,8 @@ defmodule Corex.TreeView do
       expanded: expanded,
       selected: selected,
       focused: false,
-      animation: assigns.animation
+      animation: assigns.animation,
+      animation_options: Map.get(assigns, :animation_options, %Corex.Animation.Height{})
     }
   end
 
@@ -1166,7 +1199,8 @@ defmodule Corex.TreeView do
       expanded: expanded,
       selected: selected,
       focused: false,
-      animation: ctx.animation
+      animation: ctx.animation,
+      animation_options: Map.get(ctx, :animation_options, %Corex.Animation.Height{})
     }
   end
 

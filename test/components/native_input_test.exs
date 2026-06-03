@@ -186,7 +186,7 @@ defmodule Corex.NativeInputTest do
             {"password", [type: "password", name: "p", value: "secret"]}
           ] do
         result = render_component(&Corex.NativeInput.native_input/1, attrs)
-        assert find_in_html(result, ~s(input[type=#{type}])) != []
+        assert find_in_html(result, "input[type=#{type}]") != []
       end
     end
 

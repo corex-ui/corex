@@ -77,7 +77,6 @@ defmodule E2eWeb.SignatureEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.signature_pad
                 id={@id_server}
-                class="signature-pad"
                 on_draw_end="signature_drawn"
               >
                 <:label>Sign here</:label>
@@ -86,7 +85,7 @@ defmodule E2eWeb.SignatureEventsLive do
 
               <.data_table
                 id="signature-events-log-server"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.server_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -113,7 +112,6 @@ defmodule E2eWeb.SignatureEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.signature_pad
                 id={@id_client}
-                class="signature-pad"
                 on_draw_end_client="signature-drawn"
               >
                 <:label>Sign here</:label>
@@ -142,7 +140,7 @@ defmodule E2eWeb.SignatureEventsLive do
 
               <.data_table
                 id="signature-events-log-client"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.client_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>

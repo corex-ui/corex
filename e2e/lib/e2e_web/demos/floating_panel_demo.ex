@@ -1,25 +1,29 @@
 defmodule E2eWeb.Demos.FloatingPanelDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.Demos.StylingAxes
+
+  def styling_axis_values(axis), do: StylingAxes.styling_axis_values(axis)
+
   def anatomy_basic_code do
     ~S"""
-    <.floating_panel class="floating-panel">
+    <.floating_panel >
       <:trigger class="button button--ghost button--sm">
         <span data-closed>Open panel</span>
         <span data-open>Close panel</span>
       </:trigger>
       <:title>Panel</:title>
       <:minimize_trigger>
-        <.heroicon name="hero-arrow-down-left" class="icon" />
+        <.heroicon name="hero-arrow-down-left" />
       </:minimize_trigger>
       <:maximize_trigger>
-        <.heroicon name="hero-arrows-pointing-out" class="icon" />
+        <.heroicon name="hero-arrows-pointing-out" />
       </:maximize_trigger>
       <:default_trigger>
-        <.heroicon name="hero-rectangle-stack" class="icon" />
+        <.heroicon name="hero-rectangle-stack" />
       </:default_trigger>
       <:close_trigger>
-        <.heroicon name="hero-x-mark" class="icon" />
+        <.heroicon name="hero-x-mark" />
       </:close_trigger>
       <:content>
         <p>
@@ -34,10 +38,10 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
   def api_client_binding_code do
     """
     <div class="layout__row">
-      <.action phx-click={Corex.FloatingPanel.set_open("floating-panel-api-bind", true)} class="button button--sm">
+      <.action phx-click={Corex.FloatingPanel.set_open("floating-panel-api-bind", true)} size="sm">
         Open
       </.action>
-      <.action phx-click={Corex.FloatingPanel.set_open("floating-panel-api-bind", false)} class="button button--sm">
+      <.action phx-click={Corex.FloatingPanel.set_open("floating-panel-api-bind", false)} size="sm">
         Close
       </.action>
     </div>
@@ -51,13 +55,13 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     <div class="layout__row">
       <.action
         phx-click={Corex.FloatingPanel.set_open("floating-panel-api-bind", true)}
-        class="button button--sm"
+        size="sm"
       >
         Open
       </.action>
       <.action
         phx-click={Corex.FloatingPanel.set_open("floating-panel-api-bind", false)}
-        class="button button--sm"
+        size="sm"
       >
         Close
       </.action>
@@ -73,10 +77,10 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
   def api_client_js_heex do
     ~S"""
     <div class="layout__row">
-      <button type="button" id="floating-panel-api-js-open" class="button button--sm">
+      <button type="button" id="floating-panel-api-js-open" size="sm">
         Open
       </button>
-      <button type="button" id="floating-panel-api-js-close" class="button button--sm">
+      <button type="button" id="floating-panel-api-js-close" size="sm">
         Close
       </button>
     </div>
@@ -105,23 +109,23 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
       }
     </script>
 
-    <.floating_panel id="floating-panel-api-js" class="floating-panel">
+    <.floating_panel id="floating-panel-api-js" >
       <:trigger>
         <span data-closed>Open panel</span>
         <span data-open>Close panel</span>
       </:trigger>
       <:title>Panel</:title>
       <:minimize_trigger>
-        <.heroicon name="hero-arrow-down-left" class="icon" />
+        <.heroicon name="hero-arrow-down-left" />
       </:minimize_trigger>
       <:maximize_trigger>
-        <.heroicon name="hero-arrows-pointing-out" class="icon" />
+        <.heroicon name="hero-arrows-pointing-out" />
       </:maximize_trigger>
       <:default_trigger>
-        <.heroicon name="hero-rectangle-stack" class="icon" />
+        <.heroicon name="hero-rectangle-stack" />
       </:default_trigger>
       <:close_trigger>
-        <.heroicon name="hero-x-mark" class="icon" />
+        <.heroicon name="hero-x-mark" />
       </:close_trigger>
       <:content>
         <p>Open and close by dispatching corex:floating-panel:set-open on the panel root.</p>
@@ -157,10 +161,10 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
   def api_client_js_example(assigns) do
     ~H"""
     <div class="layout__row">
-      <button type="button" id="floating-panel-api-js-open" class="button button--sm">
+      <button type="button" id="floating-panel-api-js-open" size="sm">
         Open
       </button>
-      <button type="button" id="floating-panel-api-js-close" class="button button--sm">
+      <button type="button" id="floating-panel-api-js-close" size="sm">
         Close
       </button>
     </div>
@@ -199,10 +203,10 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
   def api_server_heex do
     """
     <div class="layout__row">
-      <.action phx-click="floating_panel_api_server_open" class="button button--sm">
+      <.action phx-click="floating_panel_api_server_open" size="sm">
         Open
       </.action>
-      <.action phx-click="floating_panel_api_server_close" class="button button--sm">
+      <.action phx-click="floating_panel_api_server_close" size="sm">
         Close
       </.action>
     </div>
@@ -226,10 +230,10 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
   def api_server_example(assigns) do
     ~H"""
     <div class="layout__row">
-      <.action phx-click="floating_panel_api_server_open" class="button button--sm">
+      <.action phx-click="floating_panel_api_server_open" size="sm">
         Open
       </.action>
-      <.action phx-click="floating_panel_api_server_close" class="button button--sm">
+      <.action phx-click="floating_panel_api_server_close" size="sm">
         Close
       </.action>
     </div>
@@ -266,22 +270,22 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     """
     <div class="flex flex-col gap-space">
       <div class="flex flex-wrap gap-2">
-        <button type="button" class="button button--sm">
+        <button type="button" size="sm">
           Open
         </button>
-        <button type="button" class="button button--sm">
+        <button type="button" size="sm">
           Close
         </button>
       </div>
       #{anatomy_no_trigger_external_controls_script()}
-      <.floating_panel class="floating-panel">
+      <.floating_panel >
         <:trigger class="sr-only">
           <span data-closed>Open auxiliary panel</span>
           <span data-open>Close auxiliary panel</span>
         </:trigger>
         <:title>Auxiliary panel</:title>
         <:close_trigger>
-          <.heroicon name="hero-x-mark" class="icon" />
+          <.heroicon name="hero-x-mark" />
         </:close_trigger>
         <:content>
           <p>Opened from external buttons; the Zag trigger stays in the tab order but is visually hidden.</p>
@@ -295,22 +299,22 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     ~H"""
     <div class="flex flex-col gap-space">
       <div class="flex flex-wrap gap-2">
-        <button type="button" id="floating-panel-anatomy-no-trigger-open" class="button button--sm">
+        <button type="button" id="floating-panel-anatomy-no-trigger-open" size="sm">
           Open
         </button>
-        <button type="button" id="floating-panel-anatomy-no-trigger-close" class="button button--sm">
+        <button type="button" id="floating-panel-anatomy-no-trigger-close" size="sm">
           Close
         </button>
       </div>
       {Phoenix.HTML.raw(anatomy_no_trigger_external_controls_script())}
-      <.floating_panel id="floating-panel-anatomy-no-trigger" class="floating-panel">
+      <.floating_panel id="floating-panel-anatomy-no-trigger">
         <:trigger class="sr-only">
           <span data-closed>Open auxiliary panel</span>
           <span data-open>Close auxiliary panel</span>
         </:trigger>
         <:title>Auxiliary panel</:title>
         <:close_trigger>
-          <.heroicon name="hero-x-mark" class="icon" />
+          <.heroicon name="hero-x-mark" />
         </:close_trigger>
         <:content>
           <p>
@@ -326,7 +330,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     ~S"""
     <div class="inline-block rounded-md border border-border p-space">
       <.floating_panel
-        class="floating-panel"
+        
         positioning={%Corex.Positioning{placement: "top-start", gutter: 20, flip: true}}
       >
         <:trigger class="button button--ghost button--sm">
@@ -335,7 +339,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         </:trigger>
         <:title>Placement</:title>
         <:close_trigger>
-          <.heroicon name="hero-x-mark" class="icon" />
+          <.heroicon name="hero-x-mark" />
         </:close_trigger>
         <:content>
           <p>
@@ -353,7 +357,6 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     <div class="inline-block rounded-md border border-border p-space">
       <.floating_panel
         id="floating-panel-anatomy-positioning"
-        class="floating-panel"
         positioning={%Corex.Positioning{placement: "top-start", gutter: 20, flip: true}}
       >
         <:trigger class="button button--ghost button--sm">
@@ -362,7 +365,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         </:trigger>
         <:title>Placement</:title>
         <:close_trigger>
-          <.heroicon name="hero-x-mark" class="icon" />
+          <.heroicon name="hero-x-mark" />
         </:close_trigger>
         <:content>
           <p>
@@ -379,7 +382,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
   def anatomy_size_code do
     ~S"""
     <.floating_panel
-      class="floating-panel"
+      
       size={%{width: 380, height: 220}}
       min_size={%{width: 280, height: 160}}
     >
@@ -389,7 +392,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
       </:trigger>
       <:title>Default size</:title>
       <:close_trigger>
-        <.heroicon name="hero-x-mark" class="icon" />
+        <.heroicon name="hero-x-mark" />
       </:close_trigger>
       <:content>
         <p>
@@ -405,7 +408,6 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     ~H"""
     <.floating_panel
       id="floating-panel-anatomy-size"
-      class="floating-panel"
       size={%{width: 380, height: 220}}
       min_size={%{width: 280, height: 160}}
     >
@@ -415,7 +417,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
       </:trigger>
       <:title>Default size</:title>
       <:close_trigger>
-        <.heroicon name="hero-x-mark" class="icon" />
+        <.heroicon name="hero-x-mark" />
       </:close_trigger>
       <:content>
         <p>
@@ -431,23 +433,23 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
 
   def anatomy_basic_example(assigns) do
     ~H"""
-    <.floating_panel id="floating-panel-anatomy" class="floating-panel">
+    <.floating_panel id="floating-panel-anatomy">
       <:trigger>
         <span data-closed>Open panel</span>
         <span data-open>Close panel</span>
       </:trigger>
       <:title>Panel</:title>
       <:minimize_trigger>
-        <.heroicon name="hero-arrow-down-left" class="icon" />
+        <.heroicon name="hero-arrow-down-left" />
       </:minimize_trigger>
       <:maximize_trigger>
-        <.heroicon name="hero-arrows-pointing-out" class="icon" />
+        <.heroicon name="hero-arrows-pointing-out" />
       </:maximize_trigger>
       <:default_trigger>
-        <.heroicon name="hero-rectangle-stack" class="icon" />
+        <.heroicon name="hero-rectangle-stack" />
       </:default_trigger>
       <:close_trigger>
-        <.heroicon name="hero-x-mark" class="icon" />
+        <.heroicon name="hero-x-mark" />
       </:close_trigger>
       <:content>
         <p>
@@ -462,7 +464,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
   def events_server_heex do
     ~S"""
     <.floating_panel
-      class="floating-panel"
+      
       on_open_change="floating_panel_open_changed"
     >
       <:trigger>
@@ -471,16 +473,16 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
       </:trigger>
       <:title>Panel</:title>
       <:minimize_trigger>
-        <.heroicon name="hero-arrow-down-left" class="icon" />
+        <.heroicon name="hero-arrow-down-left" />
       </:minimize_trigger>
       <:maximize_trigger>
-        <.heroicon name="hero-arrows-pointing-out" class="icon" />
+        <.heroicon name="hero-arrows-pointing-out" />
       </:maximize_trigger>
       <:default_trigger>
-        <.heroicon name="hero-rectangle-stack" class="icon" />
+        <.heroicon name="hero-rectangle-stack" />
       </:default_trigger>
       <:close_trigger>
-        <.heroicon name="hero-x-mark" class="icon" />
+        <.heroicon name="hero-x-mark" />
       </:close_trigger>
       <:content>
         <p>Lorem ipsum dolor sit amet.</p>
@@ -500,7 +502,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     ~S"""
     <.floating_panel
       id="fp-events-client"
-      class="floating-panel"
+      
       on_open_change_client="floating-panel-open-changed"
     >
       <:trigger>
@@ -509,16 +511,16 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
       </:trigger>
       <:title>Panel</:title>
       <:minimize_trigger>
-        <.heroicon name="hero-arrow-down-left" class="icon" />
+        <.heroicon name="hero-arrow-down-left" />
       </:minimize_trigger>
       <:maximize_trigger>
-        <.heroicon name="hero-arrows-pointing-out" class="icon" />
+        <.heroicon name="hero-arrows-pointing-out" />
       </:maximize_trigger>
       <:default_trigger>
-        <.heroicon name="hero-rectangle-stack" class="icon" />
+        <.heroicon name="hero-rectangle-stack" />
       </:default_trigger>
       <:close_trigger>
-        <.heroicon name="hero-x-mark" class="icon" />
+        <.heroicon name="hero-x-mark" />
       </:close_trigger>
       <:content>
         <p>Lorem ipsum dolor sit amet.</p>
@@ -550,23 +552,23 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
 
   def floating_panel_api_fixture(assigns) do
     ~H"""
-    <.floating_panel id={@id} class="floating-panel">
+    <.floating_panel id={@id}>
       <:trigger>
         <span data-closed>Open panel</span>
         <span data-open>Close panel</span>
       </:trigger>
       <:title>Panel</:title>
       <:minimize_trigger>
-        <.heroicon name="hero-arrow-down-left" class="icon" />
+        <.heroicon name="hero-arrow-down-left" />
       </:minimize_trigger>
       <:maximize_trigger>
-        <.heroicon name="hero-arrows-pointing-out" class="icon" />
+        <.heroicon name="hero-arrows-pointing-out" />
       </:maximize_trigger>
       <:default_trigger>
-        <.heroicon name="hero-rectangle-stack" class="icon" />
+        <.heroicon name="hero-rectangle-stack" />
       </:default_trigger>
       <:close_trigger>
-        <.heroicon name="hero-x-mark" class="icon" />
+        <.heroicon name="hero-x-mark" />
       </:close_trigger>
       <:content>
         <p>{@inner_text}</p>
@@ -575,25 +577,421 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     """
   end
 
+  defp fp_styling_panel_slots do
+    ~S"""
+      <:trigger class="button button--ghost button--sm">
+        <span data-closed>Open panel</span>
+        <span data-open>Close panel</span>
+      </:trigger>
+      <:title>Panel</:title>
+      <:minimize_trigger>
+        <.heroicon name="hero-arrow-down-left" />
+      </:minimize_trigger>
+      <:maximize_trigger>
+        <.heroicon name="hero-arrows-pointing-out" />
+      </:maximize_trigger>
+      <:default_trigger>
+        <.heroicon name="hero-rectangle-stack" />
+      </:default_trigger>
+      <:close_trigger>
+        <.heroicon name="hero-x-mark" />
+      </:close_trigger>
+      <:content>
+        <p>
+          Congue molestie ipsum gravida a. Sed ac eros luctus, cursus turpis
+          non, pellentesque elit. Pellentesque sagittis fermentum.
+        </p>
+      </:content>
+    """
+  end
+
+  def styling_semantic_code do
+    slots = fp_styling_panel_slots()
+
+    """
+    <.floating_panel>
+    #{slots}
+    </.floating_panel>
+    <.floating_panel semantic="accent">
+    #{slots}
+    </.floating_panel>
+    <.floating_panel semantic="brand">
+    #{slots}
+    </.floating_panel>
+    <.floating_panel semantic="alert">
+    #{slots}
+    </.floating_panel>
+    <.floating_panel semantic="info">
+    #{slots}
+    </.floating_panel>
+    <.floating_panel semantic="success">
+    #{slots}
+    </.floating_panel>
+    """
+  end
+
+  def styling_semantic_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-wrap gap-4 items-start w-full max-w-4xl">
+      <.floating_panel id="floating-panel-style-color-default">
+        <:trigger class="button button--ghost button--sm">
+          <span data-closed>Open (default)</span>
+          <span data-open>Close panel</span>
+        </:trigger>
+        <:title>Panel</:title>
+        <:minimize_trigger>
+          <.heroicon name="hero-arrow-down-left" />
+        </:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" />
+        </:maximize_trigger>
+        <:default_trigger>
+          <.heroicon name="hero-rectangle-stack" />
+        </:default_trigger>
+        <:close_trigger>
+          <.heroicon name="hero-x-mark" />
+        </:close_trigger>
+        <:content>
+          <p>
+            Congue molestie ipsum gravida a. Sed ac eros luctus, cursus turpis
+            non, pellentesque elit. Pellentesque sagittis fermentum.
+          </p>
+        </:content>
+      </.floating_panel>
+      <.floating_panel id="floating-panel-style-color-accent" semantic="accent">
+        <:trigger class="button button--ghost button--sm">
+          <span data-closed>Open (accent)</span>
+          <span data-open>Close panel</span>
+        </:trigger>
+        <:title>Panel</:title>
+        <:minimize_trigger>
+          <.heroicon name="hero-arrow-down-left" />
+        </:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" />
+        </:maximize_trigger>
+        <:default_trigger>
+          <.heroicon name="hero-rectangle-stack" />
+        </:default_trigger>
+        <:close_trigger>
+          <.heroicon name="hero-x-mark" />
+        </:close_trigger>
+        <:content>
+          <p>
+            Congue molestie ipsum gravida a. Sed ac eros luctus, cursus turpis
+            non, pellentesque elit. Pellentesque sagittis fermentum.
+          </p>
+        </:content>
+      </.floating_panel>
+      <.floating_panel id="floating-panel-style-color-brand" semantic="brand">
+        <:trigger class="button button--ghost button--sm">
+          <span data-closed>Open (brand)</span>
+          <span data-open>Close panel</span>
+        </:trigger>
+        <:title>Panel</:title>
+        <:minimize_trigger>
+          <.heroicon name="hero-arrow-down-left" />
+        </:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" />
+        </:maximize_trigger>
+        <:default_trigger>
+          <.heroicon name="hero-rectangle-stack" />
+        </:default_trigger>
+        <:close_trigger>
+          <.heroicon name="hero-x-mark" />
+        </:close_trigger>
+        <:content>
+          <p>
+            Congue molestie ipsum gravida a. Sed ac eros luctus, cursus turpis
+            non, pellentesque elit. Pellentesque sagittis fermentum.
+          </p>
+        </:content>
+      </.floating_panel>
+      <.floating_panel id="floating-panel-style-color-alert" semantic="alert">
+        <:trigger class="button button--ghost button--sm">
+          <span data-closed>Open (alert)</span>
+          <span data-open>Close panel</span>
+        </:trigger>
+        <:title>Panel</:title>
+        <:minimize_trigger>
+          <.heroicon name="hero-arrow-down-left" />
+        </:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" />
+        </:maximize_trigger>
+        <:default_trigger>
+          <.heroicon name="hero-rectangle-stack" />
+        </:default_trigger>
+        <:close_trigger>
+          <.heroicon name="hero-x-mark" />
+        </:close_trigger>
+        <:content>
+          <p>
+            Congue molestie ipsum gravida a. Sed ac eros luctus, cursus turpis
+            non, pellentesque elit. Pellentesque sagittis fermentum.
+          </p>
+        </:content>
+      </.floating_panel>
+      <.floating_panel id="floating-panel-style-color-info" semantic="info">
+        <:trigger class="button button--ghost button--sm">
+          <span data-closed>Open (info)</span>
+          <span data-open>Close panel</span>
+        </:trigger>
+        <:title>Panel</:title>
+        <:minimize_trigger>
+          <.heroicon name="hero-arrow-down-left" />
+        </:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" />
+        </:maximize_trigger>
+        <:default_trigger>
+          <.heroicon name="hero-rectangle-stack" />
+        </:default_trigger>
+        <:close_trigger>
+          <.heroicon name="hero-x-mark" />
+        </:close_trigger>
+        <:content>
+          <p>
+            Congue molestie ipsum gravida a. Sed ac eros luctus, cursus turpis
+            non, pellentesque elit. Pellentesque sagittis fermentum.
+          </p>
+        </:content>
+      </.floating_panel>
+      <.floating_panel id="floating-panel-style-color-success" semantic="success">
+        <:trigger class="button button--ghost button--sm">
+          <span data-closed>Open (success)</span>
+          <span data-open>Close panel</span>
+        </:trigger>
+        <:title>Panel</:title>
+        <:minimize_trigger>
+          <.heroicon name="hero-arrow-down-left" />
+        </:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" />
+        </:maximize_trigger>
+        <:default_trigger>
+          <.heroicon name="hero-rectangle-stack" />
+        </:default_trigger>
+        <:close_trigger>
+          <.heroicon name="hero-x-mark" />
+        </:close_trigger>
+        <:content>
+          <p>
+            Congue molestie ipsum gravida a. Sed ac eros luctus, cursus turpis
+            non, pellentesque elit. Pellentesque sagittis fermentum.
+          </p>
+        </:content>
+      </.floating_panel>
+    </div>
+    """
+  end
+
+  def styling_radius_code do
+    slots = fp_styling_panel_slots()
+
+    """
+    <.floating_panel radius="none">
+    #{slots}
+    </.floating_panel>
+    <.floating_panel radius="sm">
+    #{slots}
+    </.floating_panel>
+    <.floating_panel radius="md">
+    #{slots}
+    </.floating_panel>
+    <.floating_panel radius="lg">
+    #{slots}
+    </.floating_panel>
+    <.floating_panel radius="xl">
+    #{slots}
+    </.floating_panel>
+    <.floating_panel radius="full">
+    #{slots}
+    </.floating_panel>
+    """
+  end
+
+  def styling_radius_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-4 items-start w-full max-w-2xl">
+      <.floating_panel id="floating-panel-style-radius-none" radius="none">
+        <:trigger class="button button--ghost button--sm">
+          <span data-closed>Open (rounded-none)</span>
+          <span data-open>Close panel</span>
+        </:trigger>
+        <:title>Panel</:title>
+        <:minimize_trigger>
+          <.heroicon name="hero-arrow-down-left" />
+        </:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" />
+        </:maximize_trigger>
+        <:default_trigger>
+          <.heroicon name="hero-rectangle-stack" />
+        </:default_trigger>
+        <:close_trigger>
+          <.heroicon name="hero-x-mark" />
+        </:close_trigger>
+        <:content>
+          <p>
+            Congue molestie ipsum gravida a. Sed ac eros luctus, cursus turpis
+            non, pellentesque elit. Pellentesque sagittis fermentum.
+          </p>
+        </:content>
+      </.floating_panel>
+      <.floating_panel id="floating-panel-style-radius-sm" radius="sm">
+        <:trigger class="button button--ghost button--sm">
+          <span data-closed>Open (rounded-sm)</span>
+          <span data-open>Close panel</span>
+        </:trigger>
+        <:title>Panel</:title>
+        <:minimize_trigger>
+          <.heroicon name="hero-arrow-down-left" />
+        </:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" />
+        </:maximize_trigger>
+        <:default_trigger>
+          <.heroicon name="hero-rectangle-stack" />
+        </:default_trigger>
+        <:close_trigger>
+          <.heroicon name="hero-x-mark" />
+        </:close_trigger>
+        <:content>
+          <p>
+            Congue molestie ipsum gravida a. Sed ac eros luctus, cursus turpis
+            non, pellentesque elit. Pellentesque sagittis fermentum.
+          </p>
+        </:content>
+      </.floating_panel>
+      <.floating_panel id="floating-panel-style-radius-md" radius="md">
+        <:trigger class="button button--ghost button--sm">
+          <span data-closed>Open (rounded-md)</span>
+          <span data-open>Close panel</span>
+        </:trigger>
+        <:title>Panel</:title>
+        <:minimize_trigger>
+          <.heroicon name="hero-arrow-down-left" />
+        </:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" />
+        </:maximize_trigger>
+        <:default_trigger>
+          <.heroicon name="hero-rectangle-stack" />
+        </:default_trigger>
+        <:close_trigger>
+          <.heroicon name="hero-x-mark" />
+        </:close_trigger>
+        <:content>
+          <p>
+            Congue molestie ipsum gravida a. Sed ac eros luctus, cursus turpis
+            non, pellentesque elit. Pellentesque sagittis fermentum.
+          </p>
+        </:content>
+      </.floating_panel>
+      <.floating_panel id="floating-panel-style-radius-lg" radius="lg">
+        <:trigger class="button button--ghost button--sm">
+          <span data-closed>Open (rounded-lg)</span>
+          <span data-open>Close panel</span>
+        </:trigger>
+        <:title>Panel</:title>
+        <:minimize_trigger>
+          <.heroicon name="hero-arrow-down-left" />
+        </:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" />
+        </:maximize_trigger>
+        <:default_trigger>
+          <.heroicon name="hero-rectangle-stack" />
+        </:default_trigger>
+        <:close_trigger>
+          <.heroicon name="hero-x-mark" />
+        </:close_trigger>
+        <:content>
+          <p>
+            Congue molestie ipsum gravida a. Sed ac eros luctus, cursus turpis
+            non, pellentesque elit. Pellentesque sagittis fermentum.
+          </p>
+        </:content>
+      </.floating_panel>
+      <.floating_panel id="floating-panel-style-radius-xl" radius="xl">
+        <:trigger class="button button--ghost button--sm">
+          <span data-closed>Open (rounded-xl)</span>
+          <span data-open>Close panel</span>
+        </:trigger>
+        <:title>Panel</:title>
+        <:minimize_trigger>
+          <.heroicon name="hero-arrow-down-left" />
+        </:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" />
+        </:maximize_trigger>
+        <:default_trigger>
+          <.heroicon name="hero-rectangle-stack" />
+        </:default_trigger>
+        <:close_trigger>
+          <.heroicon name="hero-x-mark" />
+        </:close_trigger>
+        <:content>
+          <p>
+            Congue molestie ipsum gravida a. Sed ac eros luctus, cursus turpis
+            non, pellentesque elit. Pellentesque sagittis fermentum.
+          </p>
+        </:content>
+      </.floating_panel>
+      <.floating_panel id="floating-panel-style-radius-full" radius="full">
+        <:trigger class="button button--ghost button--sm">
+          <span data-closed>Open (rounded-full)</span>
+          <span data-open>Close panel</span>
+        </:trigger>
+        <:title>Panel</:title>
+        <:minimize_trigger>
+          <.heroicon name="hero-arrow-down-left" />
+        </:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" />
+        </:maximize_trigger>
+        <:default_trigger>
+          <.heroicon name="hero-rectangle-stack" />
+        </:default_trigger>
+        <:close_trigger>
+          <.heroicon name="hero-x-mark" />
+        </:close_trigger>
+        <:content>
+          <p>
+            Congue molestie ipsum gravida a. Sed ac eros luctus, cursus turpis
+            non, pellentesque elit. Pellentesque sagittis fermentum.
+          </p>
+        </:content>
+      </.floating_panel>
+    </div>
+    """
+  end
+
   defp fp_api_panel_snippet(id, inner_text) do
     """
-    <.floating_panel id="#{id}" class="floating-panel">
+    <.floating_panel id="#{id}" >
       <:trigger>
         <span data-closed>Open panel</span>
         <span data-open>Close panel</span>
       </:trigger>
       <:title>Panel</:title>
       <:minimize_trigger>
-        <.heroicon name="hero-arrow-down-left" class="icon" />
+        <.heroicon name="hero-arrow-down-left" />
       </:minimize_trigger>
       <:maximize_trigger>
-        <.heroicon name="hero-arrows-pointing-out" class="icon" />
+        <.heroicon name="hero-arrows-pointing-out" />
       </:maximize_trigger>
       <:default_trigger>
-        <.heroicon name="hero-rectangle-stack" class="icon" />
+        <.heroicon name="hero-rectangle-stack" />
       </:default_trigger>
       <:close_trigger>
-        <.heroicon name="hero-x-mark" class="icon" />
+        <.heroicon name="hero-x-mark" />
       </:close_trigger>
       <:content>
         <p>#{inner_text}</p>

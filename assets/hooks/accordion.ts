@@ -60,6 +60,8 @@ const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
 
     self.lastValue = readControlledOrDefaultStringList(el, "value", "defaultValue");
 
+    prepareJsHeightInitialState(el, ITEM_CONTENT_SELECTOR);
+
     const accordion = new Accordion(el, {
       id: el.id,
       ...readStringListControlledZagProps(el, "value", "defaultValue"),
@@ -113,8 +115,6 @@ const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
     } as Props);
     accordion.init();
     this.accordion = accordion;
-
-    prepareJsHeightInitialState(el, ITEM_CONTENT_SELECTOR);
 
     const hookApi = { el, pushEvent, canPushServer: canPush };
 

@@ -18,7 +18,7 @@ Reference templates: [corex-ui/soonex](https://github.com/corex-ui/soonex) and [
 
 ## How it works
 
-1. **`mix corex.design`** copies token and component CSS into `assets/corex/`.
+1. **`:corex_design` compiler** generates token and component CSS into `assets/css/` at `mix compile`.
 2. **Esbuild** bundles `assets/js/site.js` as ESM with splitting into `_site/js/`.
 3. **`RootLayout`** loads CSRF meta, `site.css`, and `type="module"` for `site.js`.
 4. **`LiveSocket`** registers only the Corex hooks you import (lazy factories keep chunks small).
@@ -32,15 +32,41 @@ mix tableau.new my_site --template heex --js esbuild --css tailwind
 cd my_site
 ```
 
-Add Corex to `mix.exs`:
+Add Corex and Corex Design to `mix.exs`, and register the compiler in `project/0`:
 
 ```elixir
-{:corex, "~> 0.1.0"}
+def project do
+  [
+    app: :my_site,
+    version: "0.1.0",
+    elixir: "~> 1.18",
+    compilers: Mix.compilers() ++ [:corex_design],
+    deps: deps()
+  ]
+end
+
+def deps do
+  [
+    {:corex, "~> 0.2"},
+    {:corex_design, "~> 0.2"}
+  ]
+end
+```
+
+In `config/config.exs`:
+
+```elixir
+config :corex_design,
+  default_theme: :neo,
+  default_mode: :light,
+  my_site: [
+    output: "assets/css/corex.tailwind.css"
+  ]
 ```
 
 ```bash
 mix deps.get
-mix corex.design
+mix compile
 ```
 
 Configure Esbuild in `config/config.exs` (ESM + splitting for dynamic hook imports):
@@ -60,16 +86,10 @@ Import Corex CSS in `assets/css/site.css`:
 
 ```css
 @import "tailwindcss";
-
-@import "../corex/main.css";
-@import "../corex/theme/neo.css";
-
-@import "../corex/components/typo.css";
-@import "../corex/components/layout.css";
-@import "../corex/components/accordion.css";
+@import "./corex.tailwind.css";
 ```
 
-Add `typo` and `layout` classes on `<body>` in your root layout (see below).
+Add `typo` and `layout` classes on `<body>` and set `data-theme` / `data-mode` on `<html>` in your root layout (see below).
 
 ### Hooks lazy
 
@@ -136,7 +156,7 @@ defmodule MyApp.RootLayout do
   def template(assigns) do
     ~H"""
     <!DOCTYPE html>
-    <html lang="en" dir="ltr">
+    <html lang="en" dir="ltr" data-theme="neo" data-mode="light">
       <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -237,6 +257,6 @@ Point your MCP client at `http://localhost:4004`.
 ## Related
 
 - [Tableau Theming](tableau_theming.html), [Tableau Mode](tableau_mode.html), [Tableau Localize](tableau_localize.html)
-- [Manual installation](manual_installation.html) — Esbuild, `mix corex.design`, `use Corex`
+- [Manual installation](manual_installation.html) — Esbuild, `{:corex_design}`, `use Corex`
 - [MCP](mcp.html) — plug behavior and Phoenix endpoint setup
 - [Installation](installation.html) — `mix corex.new` for full Phoenix apps

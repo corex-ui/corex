@@ -106,7 +106,7 @@ defmodule E2eWeb.CarouselEventsLive do
 
               <.data_table
                 id="carousel-events-log-server"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.server_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -171,7 +171,7 @@ defmodule E2eWeb.CarouselEventsLive do
 
               <.data_table
                 id="carousel-events-log-client"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.client_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>

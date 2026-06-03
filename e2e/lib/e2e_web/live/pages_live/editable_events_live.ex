@@ -72,19 +72,18 @@ defmodule E2eWeb.EditableEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.editable
                 id="editable-events-server"
-                class="editable"
                 value="Edit me"
                 on_value_change="editable_changed"
               >
                 <:label>Label</:label>
-                <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
-                <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
-                <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+                <:edit_trigger><.heroicon name="hero-pencil-square" /></:edit_trigger>
+                <:submit_trigger><.heroicon name="hero-check" /></:submit_trigger>
+                <:cancel_trigger><.heroicon name="hero-x-mark" /></:cancel_trigger>
               </.editable>
 
               <.data_table
                 id="editable-events-log-server"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.server_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -111,14 +110,13 @@ defmodule E2eWeb.EditableEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.editable
                 id="editable-events-client"
-                class="editable"
                 value="Edit me"
                 on_value_change_client="editable-changed"
               >
                 <:label>Label</:label>
-                <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
-                <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
-                <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+                <:edit_trigger><.heroicon name="hero-pencil-square" /></:edit_trigger>
+                <:submit_trigger><.heroicon name="hero-check" /></:submit_trigger>
+                <:cancel_trigger><.heroicon name="hero-x-mark" /></:cancel_trigger>
               </.editable>
 
               <div
@@ -143,7 +141,7 @@ defmodule E2eWeb.EditableEventsLive do
 
               <.data_table
                 id="editable-events-log-client"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.client_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>

@@ -53,10 +53,10 @@ defmodule E2eWeb.CollapsiblePatternsLive do
           <:preview>
             <.async_result :let={panel} assign={@collapsible}>
               <:loading>
-                <.collapsible_skeleton class="collapsible" />
+                <.collapsible_skeleton />
               </:loading>
 
-              <.collapsible id={@id_async} class="collapsible" open={panel.open}>
+              <.collapsible id={@id_async} open={panel.open}>
                 <:trigger>Details</:trigger>
                 <:closed>
                   <.heroicon name="hero-chevron-right" />
@@ -80,7 +80,6 @@ defmodule E2eWeb.CollapsiblePatternsLive do
           <:preview>
             <.collapsible
               id={@id_controlled}
-              class="collapsible"
               controlled
               open={@open}
               on_open_change="patterns_collapsible_changed"

@@ -35,9 +35,10 @@
 
   .home__display {
     margin: 0;
+    font-family: var(--font-display);
     font-size: clamp(var(--text-3xl), 4vw + 0.6rem, var(--text-5xl));
     line-height: 1.05;
-    letter-spacing: -0.025em;
+    letter-spacing: -0.03em;
     font-weight: var(--font-weight-bold);
     color: var(--color-ink);
     text-wrap: balance;
@@ -53,11 +54,19 @@
 
   .home__lede {
     margin: 0;
+    font-family: var(--font-display);
     font-size: var(--text-lg);
     line-height: var(--text-lg--line-height);
     color: var(--color-ink-muted);
     text-wrap: pretty;
     max-width: 36rem;
+  }
+
+  @media (min-width: 64rem) {
+    .home__lede {
+      font-size: var(--text-xl);
+      line-height: var(--text-xl--line-height);
+    }
   }
 
   .home__head {
@@ -222,7 +231,7 @@
   .home__hero__copy {
     display: flex;
     flex-direction: column;
-    gap: --spacing(5);
+    gap: --spacing(6);
     width: 100%;
     align-items: center;
     text-align: center;
@@ -311,25 +320,18 @@
     overflow: hidden;
   }
 
+  .home__card--code {
+    min-height: 0;
+  }
+
+  .home__card--code .code {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
   .home__card--events {
     flex: 1 1 auto;
     min-height: 12rem;
-  }
-
-  .home__card__label {
-    display: inline-flex;
-    align-items: center;
-    gap: --spacing(2);
-    padding: --spacing(1) --spacing(2);
-    align-self: flex-start;
-    border-radius: var(--radius-full);
-    border: 1px solid var(--color-border);
-    background-color: var(--color-root);
-    color: var(--color-ink-muted);
-    font-size: var(--text-xs);
-    line-height: var(--text-xs--line-height);
-    font-weight: var(--font-weight-medium);
-    letter-spacing: 0.04em;
   }
 
   .home__card__header {
@@ -339,10 +341,6 @@
     gap: --spacing(2);
     width: 100%;
     flex-shrink: 0;
-  }
-
-  .home__card__header .home__card__label {
-    align-self: center;
   }
 
   .home__card__hint {
@@ -474,11 +472,6 @@
     background-color: var(--color-border);
   }
 
-  .home__stack__marquee {
-    width: 100%;
-    max-width: none;
-  }
-
   .home__stack__item {
     display: inline-flex;
     align-items: center;
@@ -518,29 +511,6 @@
     font-weight: var(--font-weight-bold);
     color: var(--color-ink);
     text-wrap: balance;
-  }
-
-  .home__cta__install {
-    width: 100%;
-    max-width: 28rem;
-  }
-
-  .home__cta__install [data-scope="clipboard"][data-part="root"] {
-    width: 100%;
-    max-width: none;
-  }
-
-  .home__cta__install [data-scope="clipboard"][data-part="control"] {
-    background-color: var(--color-root);
-    width: 100%;
-    max-width: none;
-  }
-
-  .home__cta__install [data-scope="clipboard"][data-part="input"] {
-    flex: 1;
-    min-width: 0;
-    background-color: transparent;
-    font-family: var(--font-code);
   }
 
   .home__cta__actions {

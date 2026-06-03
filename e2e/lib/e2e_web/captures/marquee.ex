@@ -57,7 +57,7 @@ defmodule CorexWeb.Marquee do
                 %{
                   let: :item,
                   inner_block:
-                    ~S(<.heroicon name={item.icon} class="icon" /><span>{item.name}</span>)
+                    ~S(<.heroicon name={item.icon} /><span>{item.name}</span>)
                 }
               ]
             },

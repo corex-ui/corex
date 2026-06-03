@@ -15,27 +15,20 @@
 
           <ul class="home__bullets" aria_label="Highlights">
             <li :for={bullet <- @hero_bullets} class="home__bullet">
-              <.heroicon name="hero-check" class="home__bullet__icon" />
+              <.heroicon name="hero-check" />
               <span>
                 <strong>{bullet.title}</strong> {bullet.body}
               </span>
             </li>
           </ul>
 
-          <div class="home__hero__cta-row">
-            <.navigate to={~p"/accordion/playground"} class="button button--brand rounded-full">
-              {~t"Browse components"}
-              <.heroicon name="hero-arrow-right" class="icon" />
-            </.navigate>
-            <.navigate
-              to="https://hexdocs.pm/corex/installation.html"
-              class="button button--ghost rounded-full"
-              external
-            >
-              {~t"Visit Hexdocs"}
-              <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
-            </.navigate>
-          </div>
+          <E2eWeb.Demos.NavigateDemo.styling_button_cta_example
+            primary_to={~p"/accordion/playground"}
+            secondary_to="https://hexdocs.pm/corex/installation.html"
+            primary_label={~t"Browse components"}
+            secondary_label={~t"Visit Hexdocs"}
+            class="home__hero__cta-row"
+          />
         </div>
 
         <div
@@ -46,18 +39,44 @@
           <h2 class="sr-only">{~t"Interactive preview"}</h2>
           <div class="home__hero__col home__hero__col--start">
             <div class="home__card home__card--accordion">
-              <div class="home__card__label">
-                <.heroicon name="hero-bars-3-bottom-left" class="icon" />
-                <span>{~t"Accordion"}</span>
+              <div class="home__card__header">
+                <.badge size="sm">
+                  <.heroicon name="hero-bars-3-bottom-left" />
+                  {~t"Accordion"}
+                </.badge>
+                <.navigate
+                  to={~p"/accordion/playground"}
+                  as="button"
+                  size="sm"
+                  variant="ghost"
+                  radius="full"
+                >
+                  {~t"See component"}
+                  <.heroicon name="hero-arrow-right" />
+                </.navigate>
               </div>
               <.accordion
                 id="hero-accordion"
-                class="accordion"
                 value="machine"
                 on_value_change_client="hero-accordion-changed"
-                items={Corex.Content.new(@hero_accordion_items)}
               >
-                <:indicator>
+                <:trigger value="anatomy">
+                  {~t"Anatomy & slots"}
+                </:trigger>
+                <:content value="anatomy">
+                  <p>{~t"Structure, custom slots, compound mode."}</p>
+                </:content>
+                <:indicator value="anatomy">
+                  <.heroicon name="hero-chevron-right" />
+                </:indicator>
+
+                <:trigger value="machine">
+                  {~t"State machines"}
+                </:trigger>
+                <:content value="machine">
+                  <p>{~t"Zag.js powers accessibility, keyboard, and focus."}</p>
+                </:content>
+                <:indicator value="machine">
                   <.heroicon name="hero-chevron-right" />
                 </:indicator>
               </.accordion>
@@ -65,13 +84,13 @@
 
             <div class="home__card home__card--code">
               <div class="home__card__header">
-                <div class="home__card__label">
-                  <.heroicon name="hero-code-bracket" class="icon" />
-                  <span>HEEx</span>
-                </div>
+                <.badge size="sm">
+                  <.heroicon name="hero-code-bracket" />
+                  HEEx
+                </.badge>
                 <.clipboard
                   id="hero-code-clipboard"
-                  class="clipboard clipboard--sm"
+                  size="sm"
                   value={@hero_code}
                   input={false}
                   trigger_aria_label={~t"Copy snippet"}
@@ -86,50 +105,62 @@
                   </:copied>
                 </.clipboard>
               </div>
-              <.code id="hero-code" language={:heex} class="code code--text-xs" code={@hero_code} />
+              <.code
+                id="hero-code"
+                text="xs"
+                width="full"
+                max_width="none"
+                max_height="sm"
+                language={:heex}
+                code={@hero_code}
+              />
             </div>
           </div>
 
           <div class="home__hero__col home__hero__col--end">
             <div class="home__card home__card--api">
-              <div class="home__card__label">
-                <.heroicon name="hero-command-line" class="icon" />
-                <span>API</span>
-              </div>
+              <.badge size="sm">
+                <.heroicon name="hero-command-line" />
+                API
+              </.badge>
               <p class="home__card__hint">{~t"Drive the accordion from anywhere."}</p>
               <div class="home__card__actions">
-                <button
+                <.action
                   type="button"
                   data-hero-accordion-value={Jason.encode!(["anatomy"])}
-                  class="button button--sm button--accent"
+                  variant="solid"
+                  size="sm"
+                  semantic="accent"
                 >
-                  <.heroicon name="hero-chevron-right" class="icon" /> {~t"Open first"}
-                </button>
-                <button
+                  <.heroicon name="hero-chevron-right" /> {~t"Open first"}
+                </.action>
+                <.action
                   type="button"
                   data-hero-accordion-value={Jason.encode!(["anatomy", "machine"])}
-                  class="button button--sm"
+                  variant="solid"
+                  size="sm"
                 >
-                  <.heroicon name="hero-square-3-stack-3d" class="icon" /> {~t"Open all"}
-                </button>
-                <button
+                  <.heroicon name="hero-square-3-stack-3d" /> {~t"Open all"}
+                </.action>
+                <.action
                   type="button"
                   data-hero-accordion-value={Jason.encode!([])}
-                  class="button button--sm"
+                  variant="solid"
+                  size="sm"
                 >
-                  <.heroicon name="hero-x-mark" class="icon" /> {~t"Close all"}
-                </button>
+                  <.heroicon name="hero-x-mark" /> {~t"Close all"}
+                </.action>
               </div>
             </div>
 
             <div class="home__card home__card--events">
-              <div class="home__card__label">
-                <.heroicon name="hero-signal" class="icon" />
-                <span>{~t"Events"}</span>
-              </div>
+              <.badge size="sm">
+                <.heroicon name="hero-signal" />
+                {~t"Events"}
+              </.badge>
               <.data_table
                 id="hero-events-table"
-                class="data-table max-h-2xs home__card__events-table"
+                class="max-h-2xs home__card__events-table"
                 rows={[]}
               >
                 <:col :let={_row} label={~t"Time"}></:col>
@@ -206,7 +237,7 @@
 
       <.marquee
         id="home-stack-marquee"
-        class="marquee marquee--on-layer home__stack__marquee"
+        max_width="full"
         duration={28}
         spacing="0px"
         pause_on_interaction
@@ -234,7 +265,7 @@
 
         <.clipboard
           id="home-install-clipboard"
-          class="clipboard max-w-md"
+          max_width="md"
           value={@install_command}
           trigger_aria_label={~t"Copy install command"}
         >
@@ -248,20 +279,13 @@
           </:copied>
         </.clipboard>
 
-        <div class="home__cta__actions">
-          <.navigate to={~p"/accordion/playground"} class="button button--brand rounded-full">
-            {~t"Browse components"}
-            <.heroicon name="hero-arrow-right" class="icon" />
-          </.navigate>
-          <.navigate
-            to="https://github.com/corex-ui/corex"
-            class="button button--ghost rounded-full"
-            external
-          >
-            {~t"Star on GitHub"}
-            <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
-          </.navigate>
-        </div>
+        <E2eWeb.Demos.NavigateDemo.styling_button_cta_example
+          primary_to={~p"/accordion/playground"}
+          secondary_to="https://github.com/corex-ui/corex"
+          primary_label={~t"Browse components"}
+          secondary_label={~t"Star on GitHub"}
+          class="home__cta__actions"
+        />
       </div>
     </div>
   </section>

@@ -11,13 +11,13 @@ defmodule Corex.Timer do
   ### Minimal
 
   ```heex
-  <.timer start_ms={60_000} class="timer" />
+  <.timer start_ms={60_000} />
   ```
 
   ### With triggers
 
   ```heex
-  <.timer start_ms={60_000} class="timer">
+  <.timer start_ms={60_000}>
     <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
     <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
     <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
@@ -28,7 +28,7 @@ defmodule Corex.Timer do
   ### Countdown
 
   ```heex
-  <.timer countdown start_ms={60_000} target_ms={0} class="timer">
+  <.timer countdown start_ms={60_000} target_ms={0}>
     <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
     <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
     <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
@@ -39,12 +39,32 @@ defmodule Corex.Timer do
   ### Interval tick
 
   ```heex
-  <.timer start_ms={60_000} interval={2000} auto_start class="timer">
+  <.timer start_ms={60_000} interval={2000} auto_start>
     <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
     <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
     <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
     <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
   </.timer>
+  ```
+
+  <!-- tabs-close -->
+
+  ## Styling
+
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `semantic`, `size`, `text`, `radius`.
+
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.timer semantic="accent" size="md" class="timer" start_ms={60_000} />
+  ```
+
+  ### With classes
+
+  ```heex
+  <.timer class="timer timer--accent timer--md" start_ms={60_000} />
   ```
 
   <!-- tabs-close -->
@@ -101,7 +121,6 @@ defmodule Corex.Timer do
     countdown
     start_ms={3_600_000}
     target_ms={0}
-    class="timer"
     on_tick="timer_tick"
     on_complete="timer_complete"
   >
@@ -141,7 +160,6 @@ defmodule Corex.Timer do
     countdown
     start_ms={3_600_000}
     target_ms={0}
-    class="timer"
     on_tick_client="timer-tick"
     on_complete_client="timer-complete"
   >
@@ -187,6 +205,26 @@ defmodule Corex.Timer do
   import Corex.Helpers, only: [respond_to_fields: 1]
 
   @parts [:days, :hours, :minutes, :seconds]
+
+  use Corex.Variants,
+    base: "timer",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size,
+      text: :text,
+      radius: :radius
+    ],
+    defaults: [
+      width: "full",
+      max_width: "none",
+      height: "auto",
+      max_height: "none",
+      size: "md"
+    ]
 
   attr(:id, :string,
     required: false,
@@ -380,6 +418,8 @@ defmodule Corex.Timer do
       phx-hook="Timer"
       data-loading
       phx-mounted={JS.ignore_attributes(["data-loading"])}
+      class={corex_style_class(assigns)}
+     
       {@rest}
       {Connect.props(@props_struct)}
     >

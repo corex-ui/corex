@@ -177,7 +177,7 @@ defmodule Corex.Carousel do
 
   ## Style
 
-  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `carousel.css`, then set `class="carousel"` on `<.carousel>`.
+  Target parts with `data-scope` and `data-part`, or use [Corex Design](styled.html): `@import "./corex.tailwind.css"` in `app.css`.
 
   ```css
   [data-scope="carousel"][data-part="root"] {}
@@ -188,12 +188,6 @@ defmodule Corex.Carousel do
   [data-scope="carousel"][data-part="next-trigger"] {}
   [data-scope="carousel"][data-part="indicator-group"] {}
   [data-scope="carousel"][data-part="indicator"] {}
-  ```
-
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/carousel.css";
   ```
 
   Stack modifiers on the host (`class` on `<.carousel>`).
@@ -315,6 +309,25 @@ defmodule Corex.Carousel do
 
   @doc type: :component
   use Phoenix.Component
+
+  use Corex.Variants,
+    base: "carousel",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size,
+      radius: :radius
+    ],
+    defaults: [
+      width: "full",
+      max_width: "md",
+      height: "auto",
+      max_height: "md",
+      size: "md"
+    ]
 
   import Corex.Api.Doc
 
@@ -446,6 +459,8 @@ defmodule Corex.Carousel do
     <div
       id={@id}
       phx-hook="Carousel"
+      class={corex_style_class(assigns)}
+     
       data-loading      
       phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       data-slide-count={@slide_count}

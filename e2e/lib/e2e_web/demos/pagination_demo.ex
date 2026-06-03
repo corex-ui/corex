@@ -1,6 +1,10 @@
 defmodule E2eWeb.Demos.PaginationDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.Demos.StylingAxes
+
+  def styling_axis_values(axis), do: StylingAxes.styling_axis_values(axis)
+
   @anatomy_count 18
   @anatomy_page_size 6
   @count 95
@@ -11,7 +15,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
 
   def anatomy_minimal_code do
     ~S"""
-    <.pagination class="pagination" count={18} page_size={6}>
+    <.pagination count={95} page_size={10}>
       <:prev><.heroicon name="hero-chevron-left" /></:prev>
       <:next><.heroicon name="hero-chevron-right" /></:next>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
@@ -23,7 +27,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
     assigns = anatomy_assigns(assigns)
 
     ~H"""
-    <.pagination id="pagination-anatomy" class="pagination" count={@count} page_size={@page_size}>
+    <.pagination id="pagination-anatomy" count={@count} page_size={@page_size}>
       <:prev><.heroicon name="hero-chevron-left" /></:prev>
       <:next><.heroicon name="hero-chevron-right" /></:next>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
@@ -31,9 +35,9 @@ defmodule E2eWeb.Demos.PaginationDemo do
     """
   end
 
-  def styling_color_heex do
+  def styling_semantic_heex do
     ~S"""
-    <.pagination class="pagination" count={50} page={3} page_size={10}>
+    <.pagination  count={50} page={3} page_size={10}>
       <:prev><.heroicon name="hero-chevron-left" /></:prev>
       <:next><.heroicon name="hero-chevron-right" /></:next>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
@@ -66,7 +70,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
     """
   end
 
-  def styling_color_example(assigns) do
+  def styling_semantic_example(assigns) do
     assigns = styling_assigns(assigns)
 
     ~H"""
@@ -215,22 +219,22 @@ defmodule E2eWeb.Demos.PaginationDemo do
 
   def styling_max_width_heex do
     ~S"""
-    <.pagination class="pagination max-w-2xs" count={50} page={3} page_size={10}>
+    <.pagination class="pagination pagination--max-w-2xs" count={50} page={3} page_size={10}>
       <:prev><.heroicon name="hero-chevron-left" /></:prev>
       <:next><.heroicon name="hero-chevron-right" /></:next>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
-    <.pagination class="pagination max-w-md" count={50} page={3} page_size={10}>
+    <.pagination class="pagination pagination--max-w-md" count={50} page={3} page_size={10}>
       <:prev><.heroicon name="hero-chevron-left" /></:prev>
       <:next><.heroicon name="hero-chevron-right" /></:next>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
-    <.pagination class="pagination max-w-xl" count={50} page={3} page_size={10}>
+    <.pagination class="pagination pagination--max-w-xl" count={50} page={3} page_size={10}>
       <:prev><.heroicon name="hero-chevron-left" /></:prev>
       <:next><.heroicon name="hero-chevron-right" /></:next>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
-    <.pagination class="pagination max-w-2xl" count={50} page={3} page_size={10}>
+    <.pagination class="pagination pagination--max-w-2xl" count={50} page={3} page_size={10}>
       <:prev><.heroicon name="hero-chevron-left" /></:prev>
       <:next><.heroicon name="hero-chevron-right" /></:next>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
@@ -243,10 +247,10 @@ defmodule E2eWeb.Demos.PaginationDemo do
 
     ~H"""
     <div class="flex flex-col gap-space-lg w-full items-center">
-      <.style_pagination id="pagination-style-max-2xs" class="pagination max-w-2xs" />
-      <.style_pagination id="pagination-style-max-md" class="pagination max-w-md" />
-      <.style_pagination id="pagination-style-max-xl" class="pagination max-w-xl" />
-      <.style_pagination id="pagination-style-max-2xl" class="pagination max-w-2xl" />
+      <.style_pagination id="pagination-style-max-2xs" class="pagination pagination--max-w-2xs" />
+      <.style_pagination id="pagination-style-max-md" class="pagination pagination--max-w-md" />
+      <.style_pagination id="pagination-style-max-xl" class="pagination pagination--max-w-xl" />
+      <.style_pagination id="pagination-style-max-2xl" class="pagination pagination--max-w-2xl" />
     </div>
     """
   end
@@ -290,11 +294,11 @@ defmodule E2eWeb.Demos.PaginationDemo do
   def api_set_page_client_binding_heex do
     ~S"""
     <div class="layout__row">
-      <.action phx-click={Corex.Pagination.set_page("pagination-api-bind", 1)} class="button button--sm">1</.action>
-      <.action phx-click={Corex.Pagination.set_page("pagination-api-bind", 5)} class="button button--sm">5</.action>
-      <.action phx-click={Corex.Pagination.set_page("pagination-api-bind", 9)} class="button button--sm">9</.action>
+      <.action phx-click={Corex.Pagination.set_page("pagination-api-bind", 1)} size="sm">1</.action>
+      <.action phx-click={Corex.Pagination.set_page("pagination-api-bind", 5)} size="sm">5</.action>
+      <.action phx-click={Corex.Pagination.set_page("pagination-api-bind", 9)} size="sm">9</.action>
     </div>
-    <.pagination id="pagination-api-bind" class="pagination" count={95} page={5} page_size={10}>
+    <.pagination id="pagination-api-bind"  count={95} page={5} page_size={10}>
       <:prev><.heroicon name="hero-chevron-left" /></:prev>
       <:next><.heroicon name="hero-chevron-right" /></:next>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
@@ -310,26 +314,25 @@ defmodule E2eWeb.Demos.PaginationDemo do
       <div class="layout__row">
         <.action
           phx-click={Corex.Pagination.set_page("pagination-api-bind", 1)}
-          class="button button--sm"
+          size="sm"
         >
           1
         </.action>
         <.action
           phx-click={Corex.Pagination.set_page("pagination-api-bind", 5)}
-          class="button button--sm"
+          size="sm"
         >
           5
         </.action>
         <.action
           phx-click={Corex.Pagination.set_page("pagination-api-bind", 9)}
-          class="button button--sm"
+          size="sm"
         >
           9
         </.action>
       </div>
       <.pagination
         id="pagination-api-bind"
-        class="pagination"
         count={@count}
         page={5}
         page_size={@page_size}
@@ -344,8 +347,8 @@ defmodule E2eWeb.Demos.PaginationDemo do
 
   def api_set_page_server_heex do
     ~S"""
-    <.action phx-click="pagination_api_page_3" class="button button--sm">Page 3</.action>
-    <.pagination id="pagination-api-srv" class="pagination" count={95} page={@page} page_size={10} controlled on_page_change="pagination_api_page_changed">
+    <.action phx-click="pagination_api_page_3" size="sm">Page 3</.action>
+    <.pagination id="pagination-api-srv"  count={95} page={@page} page_size={10} controlled on_page_change="pagination_api_page_changed">
       <:prev><.heroicon name="hero-chevron-left" /></:prev>
       <:next><.heroicon name="hero-chevron-right" /></:next>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
@@ -373,10 +376,9 @@ defmodule E2eWeb.Demos.PaginationDemo do
 
     ~H"""
     <div class="flex flex-col gap-4 items-center w-full">
-      <.action phx-click="pagination_api_page_3" class="button button--sm">Page 3</.action>
+      <.action phx-click="pagination_api_page_3" size="sm">Page 3</.action>
       <.pagination
         id="pagination-api-srv"
-        class="pagination"
         count={@count}
         page={@page}
         page_size={@page_size}
@@ -393,7 +395,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
 
   def events_server_heex do
     ~S"""
-    <.pagination class="pagination" count={95} page_size={10} on_page_change="pagination_page_changed">
+    <.pagination  count={95} page_size={10} on_page_change="pagination_page_changed">
       <:prev><.heroicon name="hero-chevron-left" /></:prev>
       <:next><.heroicon name="hero-chevron-right" /></:next>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
@@ -412,7 +414,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
     ~S"""
     <.pagination
       id="pagination-events-client"
-      class="pagination"
+      
       count={95}
       page_size={10}
       on_page_change_client="pagination-page-changed"
@@ -451,7 +453,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
   def patterns_controlled_heex do
     ~S"""
     <.pagination
-      class="pagination"
+      
       count={18}
       page={@page}
       page_size={4}
@@ -462,7 +464,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
       <:next><.heroicon name="hero-chevron-right" /></:next>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
-    <p class="text-ink-muted text-sm">Current page: {@page}</p>
+    <p class="text-ui-ink-muted text-sm">Current page: {@page}</p>
     """
   end
 
@@ -488,7 +490,6 @@ defmodule E2eWeb.Demos.PaginationDemo do
     <div class="flex flex-col items-center gap-space-lg w-full">
       <.pagination
         id="pagination-patterns-controlled"
-        class="pagination"
         count={@count}
         page={@page}
         page_size={@page_size}
@@ -499,7 +500,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
         <:next><.heroicon name="hero-chevron-right" /></:next>
         <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
       </.pagination>
-      <p class="text-ink-muted text-sm">Current page: {@page}</p>
+      <p class="text-ui-ink-muted text-sm">Current page: {@page}</p>
     </div>
     """
   end
@@ -509,12 +510,12 @@ defmodule E2eWeb.Demos.PaginationDemo do
     <ul class="flex flex-col gap-space w-full max-w-md">
       <li :for={post <- @posts} class="flex flex-col gap-space-xs p-space rounded-md bg-layer border border-border">
         <h3>{post.title}</h3>
-        <p class="text-ink-muted text-sm">{post.excerpt}</p>
+        <p class="text-ui-ink-muted text-sm">{post.excerpt}</p>
       </li>
     </ul>
 
     <.pagination
-      class="pagination"
+      
       count={18}
       page={@page}
       page_size={4}
@@ -588,12 +589,12 @@ defmodule E2eWeb.Demos.PaginationDemo do
     <ul class="flex flex-col gap-space w-full max-w-md">
       <li :for={post <- @posts} class="flex flex-col gap-space-xs p-space rounded-md bg-layer border border-border">
         <h3>{post.title}</h3>
-        <p class="text-ink-muted text-sm">{post.excerpt}</p>
+        <p class="text-ui-ink-muted text-sm">{post.excerpt}</p>
       </li>
     </ul>
 
     <.pagination
-      class="pagination"
+      
       count={18}
       page={@page}
       page_size={4}
@@ -673,7 +674,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
                   const title = document.createElement("h3");
                   title.textContent = post.title;
                   const excerpt = document.createElement("p");
-                  excerpt.className = "text-ink-muted text-sm";
+                  excerpt.className = "text-ui-ink-muted text-sm";
                   excerpt.textContent = post.excerpt;
                   li.append(title, excerpt);
                   return li;
@@ -694,14 +695,14 @@ defmodule E2eWeb.Demos.PaginationDemo do
           class="flex flex-col gap-space-xs p-space rounded-md bg-layer border border-border"
         >
           <h3>{post.title}</h3>
-          <p class="text-ink-muted text-sm">{post.excerpt}</p>
+          <p class="text-ui-ink-muted text-sm">{post.excerpt}</p>
         </li>
       </ul>
     </div>
 
     <.pagination
       id="pagination-patterns-client"
-      class="pagination"
+      
       count={18}
       page_size={4}
       on_page_change_client="pagination-page-changed"
@@ -813,7 +814,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
         class="flex flex-col gap-space-xs p-space rounded-md bg-layer border border-border"
       >
         <h3>{post.title}</h3>
-        <p class="text-ink-muted text-sm">{post.excerpt}</p>
+        <p class="text-ui-ink-muted text-sm">{post.excerpt}</p>
       </li>
     </ul>
     """
@@ -827,7 +828,6 @@ defmodule E2eWeb.Demos.PaginationDemo do
       <.patterns_posts_list posts={@posts} />
       <.pagination
         id="pagination-patterns-patch"
-        class="pagination"
         count={@count}
         page={@page}
         page_size={@page_size}
@@ -852,7 +852,6 @@ defmodule E2eWeb.Demos.PaginationDemo do
       <.patterns_posts_list posts={@posts} />
       <.pagination
         id="pagination-patterns-server"
-        class="pagination"
         count={@count}
         page={@page}
         page_size={@page_size}
@@ -895,7 +894,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
                     const title = document.createElement("h3");
                     title.textContent = post.title;
                     const excerpt = document.createElement("p");
-                    excerpt.className = "text-ink-muted text-sm";
+                    excerpt.className = "text-ui-ink-muted text-sm";
                     excerpt.textContent = post.excerpt;
                     li.append(title, excerpt);
                     return li;
@@ -916,14 +915,13 @@ defmodule E2eWeb.Demos.PaginationDemo do
             class="flex flex-col gap-space-xs p-space rounded-md bg-layer border border-border"
           >
             <h3>{post.title}</h3>
-            <p class="text-ink-muted text-sm">{post.excerpt}</p>
+            <p class="text-ui-ink-muted text-sm">{post.excerpt}</p>
           </li>
         </ul>
       </div>
 
       <.pagination
         id="pagination-patterns-client"
-        class="pagination"
         count={@count}
         page_size={@page_size}
         on_page_change_client="pagination-page-changed"

@@ -79,7 +79,6 @@ defmodule E2eWeb.RadioGroupEventsLive do
               <.radio_group
                 id="radio-group-events-server"
                 name="rg-events-server"
-                class="radio-group"
                 items={@items}
                 on_value_change="radio_group_changed"
               >
@@ -89,7 +88,7 @@ defmodule E2eWeb.RadioGroupEventsLive do
 
               <.data_table
                 id="radio-group-events-log-server"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.server_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -117,7 +116,6 @@ defmodule E2eWeb.RadioGroupEventsLive do
               <.radio_group
                 id="radio-group-events-client"
                 name="rg-events-client"
-                class="radio-group"
                 items={@items}
                 on_value_change_client="radio-group-changed"
               >
@@ -148,7 +146,7 @@ defmodule E2eWeb.RadioGroupEventsLive do
 
               <.data_table
                 id="radio-group-events-log-client"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.client_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>

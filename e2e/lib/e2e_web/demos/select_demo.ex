@@ -1,6 +1,10 @@
 defmodule E2eWeb.Demos.SelectDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.Demos.StylingAxes
+
+  def styling_axis_values(axis), do: StylingAxes.styling_axis_values(axis)
+
   defp items do
     Corex.List.new([
       %{label: "France", value: "fra"},
@@ -34,7 +38,7 @@ defmodule E2eWeb.Demos.SelectDemo do
   def minimal_code do
     ~S"""
     <.select
-      class="select"
+      
       items={Corex.List.new([
         %{label: "France", value: "fra", disabled: true},
         %{label: "Belgium", value: "bel"},
@@ -55,10 +59,9 @@ defmodule E2eWeb.Demos.SelectDemo do
     ~H"""
     <.select
       id="select-anatomy-minimal"
-      class="select"
       items={items()}
     >
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
     """
   end
@@ -66,7 +69,7 @@ defmodule E2eWeb.Demos.SelectDemo do
   def with_translation_code do
     ~S"""
     <.select
-      class="select"
+      
       items={Corex.List.new([
         %{label: "France", value: "fra"},
         %{label: "Belgium", value: "bel"},
@@ -74,7 +77,7 @@ defmodule E2eWeb.Demos.SelectDemo do
       ])}
       translation={%Corex.Select.Translation{placeholder: "Select a country"}}
     >
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
     """
   end
@@ -83,11 +86,10 @@ defmodule E2eWeb.Demos.SelectDemo do
     ~H"""
     <.select
       id="select-anatomy-translation"
-      class="select"
       items={items()}
       translation={%Corex.Select.Translation{placeholder: "Select a country"}}
     >
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
     """
   end
@@ -95,7 +97,7 @@ defmodule E2eWeb.Demos.SelectDemo do
   def item_indicator_code do
     ~S"""
     <.select
-      class="select"
+      
       items={Corex.List.new([
         %{label: "France", value: "fra"},
         %{label: "Belgium", value: "bel"},
@@ -103,8 +105,8 @@ defmodule E2eWeb.Demos.SelectDemo do
       ])}
     >
       <:label>Country</:label>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-      <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.select>
     """
   end
@@ -113,12 +115,11 @@ defmodule E2eWeb.Demos.SelectDemo do
     ~H"""
     <.select
       id="select-anatomy-item-indicator"
-      class="select"
       items={items()}
     >
       <:label>Country</:label>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-      <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.select>
     """
   end
@@ -126,7 +127,7 @@ defmodule E2eWeb.Demos.SelectDemo do
   def grouped_code do
     ~S"""
     <.select
-      class="select"
+      
       items={Corex.List.new([
         %{label: "France", value: "fra", group: "Europe"},
         %{label: "Belgium", value: "bel", group: "Europe"},
@@ -154,11 +155,10 @@ defmodule E2eWeb.Demos.SelectDemo do
     ~H"""
     <.select
       id="select-anatomy-grouped"
-      class="select"
       items={grouped_items()}
     >
       <:label>Country</:label>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
     """
   end
@@ -166,7 +166,7 @@ defmodule E2eWeb.Demos.SelectDemo do
   def extended_code do
     ~S"""
     <.select
-      class="select"
+      
       items={Corex.List.new([
         %{label: "France", value: "fra"},
         %{label: "Belgium", value: "bel"},
@@ -197,7 +197,6 @@ defmodule E2eWeb.Demos.SelectDemo do
     ~H"""
     <.select
       id="select-anatomy-extended"
-      class="select"
       items={items_extended()}
     >
       <:label>Country of residence</:label>
@@ -205,8 +204,8 @@ defmodule E2eWeb.Demos.SelectDemo do
         <Flagpack.flag name={String.to_atom(item.value)} />
         {item.label}
       </:item>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-      <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.select>
     """
   end
@@ -214,7 +213,7 @@ defmodule E2eWeb.Demos.SelectDemo do
   def extended_grouped_code do
     ~S"""
     <.select
-      class="select"
+      
       items={Corex.List.new([
         %{label: "France", value: "fra", group: "Europe"},
         %{label: "Belgium", value: "bel", group: "Europe"},
@@ -242,7 +241,6 @@ defmodule E2eWeb.Demos.SelectDemo do
     ~H"""
     <.select
       id="select-anatomy-extended-grouped"
-      class="select"
       items={grouped_items()}
     >
       <:label>Country of residence</:label>
@@ -250,102 +248,101 @@ defmodule E2eWeb.Demos.SelectDemo do
         <Flagpack.flag name={String.to_atom(item.value)} />
         {item.label}
       </:item>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-      <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.select>
     """
   end
 
-  def styling_color_code do
+  def styling_semantic_code do
     items_attr =
       ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
 
     value_attr = ~S|value={["fra"]}|
 
     """
-    <.select class="select" #{items_attr} #{value_attr}>
+    <.select  #{items_attr} #{value_attr}>
       <:label>Default</:label>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
-    <.select class="select select--accent" #{items_attr} #{value_attr}>
+    <.select semantic="accent" #{items_attr} #{value_attr}>
       <:label>Accent</:label>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
-    <.select class="select select--brand" #{items_attr} #{value_attr}>
+    <.select semantic="brand" #{items_attr} #{value_attr}>
       <:label>Brand</:label>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
-    <.select class="select select--alert" #{items_attr} #{value_attr}>
+    <.select semantic="alert" #{items_attr} #{value_attr}>
       <:label>Alert</:label>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
-    <.select class="select select--info" #{items_attr} #{value_attr}>
+    <.select semantic="info" #{items_attr} #{value_attr}>
       <:label>Info</:label>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
-    <.select class="select select--success" #{items_attr} #{value_attr}>
+    <.select semantic="success" #{items_attr} #{value_attr}>
       <:label>Success</:label>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
     """
   end
 
-  def styling_color_example(assigns) do
+  def styling_semantic_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
       <.select
         id="select-style-color-default"
-        class="select"
         items={items()}
         value={["fra"]}
       >
         <:label>Default</:label>
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
       </.select>
       <.select
         id="select-style-color-accent"
-        class="select select--accent"
+        semantic="accent"
         items={items()}
         value={["fra"]}
       >
         <:label>Accent</:label>
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
       </.select>
       <.select
         id="select-style-color-brand"
-        class="select select--brand"
+        semantic="brand"
         items={items()}
         value={["fra"]}
       >
         <:label>Brand</:label>
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
       </.select>
       <.select
         id="select-style-color-alert"
-        class="select select--alert"
+        semantic="alert"
         items={items()}
         value={["fra"]}
       >
         <:label>Alert</:label>
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
       </.select>
       <.select
         id="select-style-color-info"
-        class="select select--info"
+        semantic="info"
         items={items()}
         value={["fra"]}
       >
         <:label>Info</:label>
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
       </.select>
       <.select
         id="select-style-color-success"
-        class="select select--success"
+        semantic="success"
         items={items()}
         value={["fra"]}
       >
         <:label>Success</:label>
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
       </.select>
     </div>
     """
@@ -356,17 +353,17 @@ defmodule E2eWeb.Demos.SelectDemo do
       ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
 
     """
-    <.select class="select select--sm" #{items_attr}>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    <.select size="sm" #{items_attr}>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
-    <.select class="select select--md" #{items_attr}>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    <.select size="md" #{items_attr}>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
-    <.select class="select select--lg" #{items_attr}>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    <.select size="lg" #{items_attr}>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
-    <.select class="select select--xl" #{items_attr}>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    <.select size="xl" #{items_attr}>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
     """
   end
@@ -374,17 +371,17 @@ defmodule E2eWeb.Demos.SelectDemo do
   def styling_size_example(assigns) do
     ~H"""
     <div class="flex flex-col gap-4 w-full max-w-md">
-      <.select id="select-style-sm" class="select select--sm" items={items()}>
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      <.select id="select-style-sm" size="sm" items={items()}>
+        <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
       </.select>
-      <.select id="select-style-md" class="select select--md" items={items()}>
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      <.select id="select-style-md" size="md" items={items()}>
+        <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
       </.select>
-      <.select id="select-style-lg" class="select select--lg" items={items()}>
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      <.select id="select-style-lg" size="lg" items={items()}>
+        <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
       </.select>
-      <.select id="select-style-xl" class="select select--xl" items={items()}>
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      <.select id="select-style-xl" size="xl" items={items()}>
+        <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
       </.select>
     </div>
     """
@@ -396,16 +393,16 @@ defmodule E2eWeb.Demos.SelectDemo do
 
     """
     <.select class="select select--text-sm" #{items_attr}>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
     <.select class="select select--text-xl" #{items_attr}>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
     <.select class="select select--text-2xl" #{items_attr}>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
     <.select class="select select--text-4xl" #{items_attr}>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
     """
   end
@@ -414,16 +411,16 @@ defmodule E2eWeb.Demos.SelectDemo do
     ~H"""
     <div class="flex flex-col gap-4 w-full max-w-md">
       <.select id="select-style-text-sm" class="select select--text-sm" items={items()}>
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
       </.select>
       <.select id="select-style-text-xl" class="select select--text-xl" items={items()}>
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
       </.select>
       <.select id="select-style-text-2xl" class="select select--text-2xl" items={items()}>
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
       </.select>
       <.select id="select-style-text-4xl" class="select select--text-4xl" items={items()}>
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
       </.select>
     </div>
     """
@@ -434,20 +431,20 @@ defmodule E2eWeb.Demos.SelectDemo do
       ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
 
     """
-    <.select class="select select--rounded-none" #{items_attr}>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    <.select  class="select select--rounded-none" #{items_attr}>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
-    <.select class="select select--rounded-md" #{items_attr}>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    <.select  class="select select--rounded-md" #{items_attr}>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
-    <.select class="select select--rounded-lg" #{items_attr}>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    <.select  class="select select--rounded-lg" #{items_attr}>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
-    <.select class="select select--rounded-xl" #{items_attr}>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    <.select  class="select select--rounded-xl" #{items_attr}>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
-    <.select class="select select--rounded-full" #{items_attr}>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    <.select  class="select select--rounded-full" #{items_attr}>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
     """
   end
@@ -456,19 +453,19 @@ defmodule E2eWeb.Demos.SelectDemo do
     ~H"""
     <div class="flex flex-col gap-4 w-full max-w-md">
       <.select id="select-style-rounded-none" class="select select--rounded-none" items={items()}>
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
       </.select>
       <.select id="select-style-rounded-md" class="select select--rounded-md" items={items()}>
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
       </.select>
       <.select id="select-style-rounded-lg" class="select select--rounded-lg" items={items()}>
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
       </.select>
       <.select id="select-style-rounded-xl" class="select select--rounded-xl" items={items()}>
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
       </.select>
       <.select id="select-style-rounded-full" class="select select--rounded-full" items={items()}>
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
       </.select>
     </div>
     """
@@ -479,17 +476,17 @@ defmodule E2eWeb.Demos.SelectDemo do
       ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
 
     """
-    <.select class="select max-w-2xs" #{items_attr}>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    <.select  class="select select--max-w-2xs" #{items_attr}>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
-    <.select class="select max-w-md" #{items_attr}>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    <.select  class="select select--max-w-md" #{items_attr}>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
-    <.select class="select max-w-xl" #{items_attr}>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    <.select  class="select select--max-w-xl" #{items_attr}>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
-    <.select class="select max-w-2xl" #{items_attr}>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    <.select  class="select select--max-w-2xl" #{items_attr}>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
     """
   end
@@ -497,17 +494,17 @@ defmodule E2eWeb.Demos.SelectDemo do
   def styling_max_width_example(assigns) do
     ~H"""
     <div class="flex flex-col gap-4 w-full items-start">
-      <.select id="select-style-max-2xs" class="select max-w-2xs" items={items()}>
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      <.select id="select-style-max-2xs" class="select select--max-w-2xs" items={items()}>
+        <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
       </.select>
-      <.select id="select-style-max-md" class="select max-w-md" items={items()}>
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      <.select id="select-style-max-md" class="select select--max-w-md" items={items()}>
+        <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
       </.select>
-      <.select id="select-style-max-xl" class="select max-w-xl" items={items()}>
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      <.select id="select-style-max-xl" class="select select--max-w-xl" items={items()}>
+        <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
       </.select>
-      <.select id="select-style-max-2xl" class="select max-w-2xl" items={items()}>
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      <.select id="select-style-max-2xl" class="select select--max-w-2xl" items={items()}>
+        <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
       </.select>
     </div>
     """
@@ -527,11 +524,11 @@ defmodule E2eWeb.Demos.SelectDemo do
     <.action phx-click={Corex.Select.set_value("select-api-cb", [])}>Clear</.action>
     <.select
       id="select-api-cb"
-      class="select select--accent"
+      semantic="accent"
       items={Corex.List.new(items_minimal())}
       translation={%Corex.Select.Translation{placeholder: "Select"}}
     >
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
     """
   end
@@ -542,11 +539,11 @@ defmodule E2eWeb.Demos.SelectDemo do
     <.action phx-click="select_api_clear">Clear</.action>
     <.select
       id="select-api-srv"
-      class="select select--accent"
+      semantic="accent"
       items={Corex.List.new(items_minimal())}
       translation={%Corex.Select.Translation{placeholder: "Select"}}
     >
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
     """
   end
@@ -587,11 +584,11 @@ defmodule E2eWeb.Demos.SelectDemo do
     ~H"""
     <.select
       id="select-api-overview"
-      class="select select--accent"
+      semantic="accent"
       items={Corex.List.new(items_minimal())}
       translation={%Corex.Select.Translation{placeholder: "Select"}}
     >
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
     """
   end
@@ -605,11 +602,11 @@ defmodule E2eWeb.Demos.SelectDemo do
 
     """
     <.select
-      class="select"
+      
       #{items_attr}
       on_value_change="select_changed"
     >
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
     """
   end
@@ -628,11 +625,11 @@ defmodule E2eWeb.Demos.SelectDemo do
     """
     <.select
       id="select-events-client"
-      class="select"
+      
       #{items_attr}
       on_value_change_client="select-changed"
     >
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.select>
     """
   end
@@ -700,7 +697,7 @@ defmodule E2eWeb.Demos.SelectDemo do
     >
       <.select
         field={@form[:country]}
-        class="select"
+        
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
         items={Corex.List.new([
           %{label: "France", value: "fra"},
@@ -713,14 +710,14 @@ defmodule E2eWeb.Demos.SelectDemo do
       >
         <:label>Country</:label>
         <:trigger>
-          <.heroicon name="hero-chevron-down" class="icon" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.select>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -749,7 +746,7 @@ defmodule E2eWeb.Demos.SelectDemo do
     >
       <.select
         field={@form[:country]}
-        class="select"
+        
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
         items={Corex.List.new([
           %{label: "France", value: "fra"},
@@ -762,14 +759,14 @@ defmodule E2eWeb.Demos.SelectDemo do
       >
         <:label>Country</:label>
         <:trigger>
-          <.heroicon name="hero-chevron-down" class="icon" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.select>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -796,7 +793,7 @@ defmodule E2eWeb.Demos.SelectDemo do
       <.select
         name="user[country]"
         form="select-plain-form"
-        class="select"
+        
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
         items={Corex.List.new([
           %{label: "France", value: "fra"},
@@ -809,10 +806,10 @@ defmodule E2eWeb.Demos.SelectDemo do
       >
         <:label>Country</:label>
         <:trigger>
-          <.heroicon name="hero-chevron-down" class="icon" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
       </.select>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </form>
@@ -840,7 +837,7 @@ defmodule E2eWeb.Demos.SelectDemo do
       phx-submit="save"
     >
       <.select
-        class="select"
+        
         field={@form[:country]}
         items={Corex.List.new([
           %{label: "France", value: "fra"},
@@ -855,14 +852,14 @@ defmodule E2eWeb.Demos.SelectDemo do
       >
         <:label>Country</:label>
         <:trigger>
-          <.heroicon name="hero-chevron-down" class="icon" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.select>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -878,7 +875,7 @@ defmodule E2eWeb.Demos.SelectDemo do
       phx-submit="save_strict"
     >
       <.select
-        class="select"
+        
         field={@form[:country]}
         items={Corex.List.new([
           %{label: "France", value: "fra"},
@@ -893,14 +890,14 @@ defmodule E2eWeb.Demos.SelectDemo do
       >
         <:label>Country</:label>
         <:trigger>
-          <.heroicon name="hero-chevron-down" class="icon" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.select>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -1064,7 +1061,7 @@ defmodule E2eWeb.Demos.SelectDemo do
     >
       <.select
         field={@form[:country]}
-        class="select"
+        
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
         items={Corex.List.new([
           %{label: "France", value: "fra"},
@@ -1077,14 +1074,14 @@ defmodule E2eWeb.Demos.SelectDemo do
       >
         <:label>Country</:label>
         <:trigger>
-          <.heroicon name="hero-chevron-down" class="icon" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.select>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -1116,7 +1113,7 @@ defmodule E2eWeb.Demos.SelectDemo do
     ~S"""
     <.form for={@form} phx-submit="save_phoenix">
       <.select
-        class="select"
+        
         field={@form[:country]}
         items={Corex.List.new([
           %{label: "France", value: "fra"},
@@ -1130,14 +1127,14 @@ defmodule E2eWeb.Demos.SelectDemo do
       >
         <:label>Country</:label>
         <:trigger>
-          <.heroicon name="hero-chevron-down" class="icon" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.select>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -1248,20 +1245,19 @@ defmodule E2eWeb.Demos.SelectDemo do
     >
       <.select
         field={f[:country]}
-        class="select"
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
         items={form_country_items()}
       >
         <:label>Country</:label>
         <:trigger>
-          <.heroicon name="hero-chevron-down" class="icon" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.select>
-      <.action type="submit" id="select-changeset-submit" class="button button--accent">
+      <.action type="submit" id="select-changeset-submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -1280,20 +1276,19 @@ defmodule E2eWeb.Demos.SelectDemo do
     >
       <.select
         field={f[:country]}
-        class="select"
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
         items={form_country_items()}
       >
         <:label>Country</:label>
         <:trigger>
-          <.heroicon name="hero-chevron-down" class="icon" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.select>
-      <.action type="submit" id="select-validate-submit" class="button button--accent">
+      <.action type="submit" id="select-validate-submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -1314,16 +1309,15 @@ defmodule E2eWeb.Demos.SelectDemo do
         id="select-native-country"
         name="user[country]"
         form="select-plain-form"
-        class="select"
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
         items={form_country_items()}
       >
         <:label>Country</:label>
         <:trigger>
-          <.heroicon name="hero-chevron-down" class="icon" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
       </.select>
-      <.action type="submit" id="select-controller-submit" class="button button--accent">
+      <.action type="submit" id="select-controller-submit" semantic="accent">
         Submit
       </.action>
     </form>
@@ -1341,7 +1335,6 @@ defmodule E2eWeb.Demos.SelectDemo do
     >
       <.select
         id="select-form-live-country"
-        class="select"
         field={@form[:country]}
         items={form_country_items()}
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
@@ -1349,14 +1342,14 @@ defmodule E2eWeb.Demos.SelectDemo do
       >
         <:label>Country</:label>
         <:trigger>
-          <.heroicon name="hero-chevron-down" class="icon" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.select>
-      <.action type="submit" id="select-form-live-submit" class="button button--accent">
+      <.action type="submit" id="select-form-live-submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -1374,7 +1367,6 @@ defmodule E2eWeb.Demos.SelectDemo do
     >
       <.select
         id="select-form-live-strict"
-        class="select"
         field={@form[:country]}
         items={form_country_items()}
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
@@ -1382,14 +1374,14 @@ defmodule E2eWeb.Demos.SelectDemo do
       >
         <:label>Country</:label>
         <:trigger>
-          <.heroicon name="hero-chevron-down" class="icon" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.select>
-      <.action type="submit" id="select-form-live-strict-submit" class="button button--accent">
+      <.action type="submit" id="select-form-live-strict-submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -1425,7 +1417,7 @@ defmodule E2eWeb.Demos.SelectDemo do
   def patterns_controlled_heex do
     ~S"""
     <.select
-      class="select"
+      
       controlled
       value={@value}
       items={@items}
@@ -1433,7 +1425,7 @@ defmodule E2eWeb.Demos.SelectDemo do
     >
       <:label>Country</:label>
       <:trigger>
-        <.heroicon name="hero-chevron-down" class="icon" />
+        <.heroicon name="hero-chevron-down" />
       </:trigger>
     </.select>
     """
@@ -1465,17 +1457,17 @@ defmodule E2eWeb.Demos.SelectDemo do
     ~S"""
     <div class="flex flex-col gap-3 w-full max-w-xl">
       <div class="flex flex-wrap gap-2">
-        <.action phx-click="add_item" class="button button--sm button--accent">
+        <.action phx-click="add_item" size="sm" semantic="accent">
           <.heroicon name="hero-plus" /> Add item
         </.action>
-        <.action phx-click="reset" class="button button--sm button--alert">
+        <.action phx-click="reset" size="sm" semantic="alert">
           Reset
         </.action>
       </div>
-      <.select class="select" items={Corex.List.new(@items_list)}>
+      <.select  items={Corex.List.new(@items_list)}>
         <:label>Country</:label>
         <:trigger>
-          <.heroicon name="hero-chevron-down" class="icon" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
       </.select>
     </div>
@@ -1535,17 +1527,17 @@ defmodule E2eWeb.Demos.SelectDemo do
         ~H"""
         <div class="flex flex-col gap-3 w-full max-w-xl">
           <div class="flex flex-wrap gap-2">
-            <.action phx-click="add_item" class="button button--sm button--accent">
+            <.action phx-click="add_item" size="sm" semantic="accent">
               <.heroicon name="hero-plus" /> Add item
             </.action>
-            <.action phx-click="reset" class="button button--sm button--alert">
+            <.action phx-click="reset" size="sm" semantic="alert">
               Reset
             </.action>
           </div>
-          <.select id="stream-select" class="select" items={Corex.List.new(@items_list)}>
+          <.select id="stream-select"  items={Corex.List.new(@items_list)}>
             <:label>Country</:label>
             <:trigger>
-              <.heroicon name="hero-chevron-down" class="icon" />
+              <.heroicon name="hero-chevron-down" />
             </:trigger>
           </.select>
         </div>
@@ -1559,12 +1551,11 @@ defmodule E2eWeb.Demos.SelectDemo do
     ~H"""
     <.select
       id="select-patterns-flat"
-      class="select"
       items={patterns_items_flat()}
       translation={%Corex.Select.Translation{placeholder: "Select a country"}}
     >
       <:trigger>
-        <.heroicon name="hero-chevron-down" class="icon" />
+        <.heroicon name="hero-chevron-down" />
       </:trigger>
     </.select>
     """
@@ -1574,12 +1565,11 @@ defmodule E2eWeb.Demos.SelectDemo do
     ~H"""
     <.select
       id="select-patterns-grouped"
-      class="select"
       items={patterns_items_grouped()}
       translation={%Corex.Select.Translation{placeholder: "Select a country"}}
     >
       <:trigger>
-        <.heroicon name="hero-chevron-down" class="icon" />
+        <.heroicon name="hero-chevron-down" />
       </:trigger>
     </.select>
     """
@@ -1589,7 +1579,6 @@ defmodule E2eWeb.Demos.SelectDemo do
     ~H"""
     <.select
       id="select-patterns-extended"
-      class="select"
       items={patterns_items_flat()}
       translation={%Corex.Select.Translation{placeholder: "Select a country"}}
     >
@@ -1599,10 +1588,10 @@ defmodule E2eWeb.Demos.SelectDemo do
         {item.label}
       </:item>
       <:trigger>
-        <.heroicon name="hero-chevron-down" class="icon" />
+        <.heroicon name="hero-chevron-down" />
       </:trigger>
       <:item_indicator>
-        <.heroicon name="hero-check" class="icon" />
+        <.heroicon name="hero-check" />
       </:item_indicator>
     </.select>
     """
@@ -1612,7 +1601,6 @@ defmodule E2eWeb.Demos.SelectDemo do
     ~H"""
     <.select
       id="select-patterns-extended-grouped"
-      class="select"
       items={patterns_items_grouped()}
       translation={%Corex.Select.Translation{placeholder: "Select a country"}}
     >
@@ -1622,10 +1610,10 @@ defmodule E2eWeb.Demos.SelectDemo do
         {item.label}
       </:item>
       <:trigger>
-        <.heroicon name="hero-chevron-down" class="icon" />
+        <.heroicon name="hero-chevron-down" />
       </:trigger>
       <:item_indicator>
-        <.heroicon name="hero-check" class="icon" />
+        <.heroicon name="hero-check" />
       </:item_indicator>
     </.select>
     """
@@ -1634,7 +1622,7 @@ defmodule E2eWeb.Demos.SelectDemo do
   def patterns_flat_code do
     ~S"""
     <.select
-      class="select"
+      
       items={Corex.List.new([
         %{label: "France", value: "fra"},
         %{label: "Belgium", value: "bel"},
@@ -1646,7 +1634,7 @@ defmodule E2eWeb.Demos.SelectDemo do
       translation={%Corex.Select.Translation{placeholder: "Select a country"}}
     >
       <:trigger>
-        <.heroicon name="hero-chevron-down" class="icon" />
+        <.heroicon name="hero-chevron-down" />
       </:trigger>
     </.select>
     """
@@ -1655,7 +1643,7 @@ defmodule E2eWeb.Demos.SelectDemo do
   def patterns_grouped_code do
     ~S"""
     <.select
-      class="select"
+      
       items={Corex.List.new([
         %{label: "France", value: "fra", group: "Europe"},
         %{label: "Belgium", value: "bel", group: "Europe"},
@@ -1671,7 +1659,7 @@ defmodule E2eWeb.Demos.SelectDemo do
       translation={%Corex.Select.Translation{placeholder: "Select a country"}}
     >
       <:trigger>
-        <.heroicon name="hero-chevron-down" class="icon" />
+        <.heroicon name="hero-chevron-down" />
       </:trigger>
     </.select>
     """
@@ -1680,7 +1668,7 @@ defmodule E2eWeb.Demos.SelectDemo do
   def patterns_extended_code do
     ~S"""
     <.select
-      class="select"
+      
       items={Corex.List.new([
         %{label: "France", value: "fra"},
         %{label: "Belgium", value: "bel"},
@@ -1697,10 +1685,10 @@ defmodule E2eWeb.Demos.SelectDemo do
         {item.label}
       </:item>
       <:trigger>
-        <.heroicon name="hero-chevron-down" class="icon" />
+        <.heroicon name="hero-chevron-down" />
       </:trigger>
       <:item_indicator>
-        <.heroicon name="hero-check" class="icon" />
+        <.heroicon name="hero-check" />
       </:item_indicator>
     </.select>
     """
@@ -1709,7 +1697,7 @@ defmodule E2eWeb.Demos.SelectDemo do
   def patterns_extended_grouped_code do
     ~S"""
     <.select
-      class="select"
+      
       items={Corex.List.new([
         %{label: "France", value: "fra", group: "Europe"},
         %{label: "Belgium", value: "bel", group: "Europe"},
@@ -1726,10 +1714,10 @@ defmodule E2eWeb.Demos.SelectDemo do
         {item.label}
       </:item>
       <:trigger>
-        <.heroicon name="hero-chevron-down" class="icon" />
+        <.heroicon name="hero-chevron-down" />
       </:trigger>
       <:item_indicator>
-        <.heroicon name="hero-check" class="icon" />
+        <.heroicon name="hero-check" />
       </:item_indicator>
     </.select>
     """
@@ -1747,16 +1735,15 @@ defmodule E2eWeb.Demos.SelectDemo do
     >
       <.select
         field={f[:country]}
-        class="select"
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
         items={form_country_items()}
       >
         <:label>Country</:label>
         <:trigger>
-          <.heroicon name="hero-chevron-down" class="icon" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
       </.select>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -1777,17 +1764,16 @@ defmodule E2eWeb.Demos.SelectDemo do
     <.form for={@form} phx-submit="save_phoenix">
       <.select
         id="select-live-form-phoenix-country"
-        class="select"
         field={@form[:country]}
         items={form_country_items()}
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
       >
         <:label>Country</:label>
         <:trigger>
-          <.heroicon name="hero-chevron-down" class="icon" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
       </.select>
-      <.action type="submit" id="select-live-form-phoenix-submit" class="button button--accent">
+      <.action type="submit" id="select-live-form-phoenix-submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -1799,7 +1785,6 @@ defmodule E2eWeb.Demos.SelectDemo do
     <.form for={@form} phx-change="validate" phx-submit="save">
       <.select
         id="select-live-form-ecto-country"
-        class="select"
         field={@form[:country]}
         items={form_country_items()}
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
@@ -1807,14 +1792,14 @@ defmodule E2eWeb.Demos.SelectDemo do
       >
         <:label>Country</:label>
         <:trigger>
-          <.heroicon name="hero-chevron-down" class="icon" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.select>
-      <.action type="submit" id="select-live-form-ecto-submit" class="button button--accent">
+      <.action type="submit" id="select-live-form-ecto-submit" semantic="accent">
         Submit
       </.action>
     </.form>

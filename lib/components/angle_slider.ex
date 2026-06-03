@@ -11,7 +11,7 @@ defmodule Corex.AngleSlider do
   ### Basic
 
   ```heex
-  <.angle_slider class="angle-slider">
+  <.angle_slider>
     <:label>Angle</:label>
   </.angle_slider>
   ```
@@ -19,7 +19,7 @@ defmodule Corex.AngleSlider do
   ### With marks
 
   ```heex
-  <.angle_slider class="angle-slider" marker_values={[0, 90, 180, 270]}>
+  <.angle_slider marker_values={[0, 90, 180, 270]}>
     <:label>Angle</:label>
   </.angle_slider>
   ```
@@ -50,12 +50,36 @@ defmodule Corex.AngleSlider do
         value={@value}
         on_value_change="angle_changed"
         marker_values={[0, 90, 180, 270]}
-        class="angle-slider">
+      >
         <:label>Angle</:label>
       </.angle_slider>
       """
     end
   end
+  ```
+
+  <!-- tabs-close -->
+
+  ## Styling
+
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `semantic`, `size`, `radius`.
+
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.angle_slider semantic="accent" size="md" class="angle-slider" marker_values={[0, 90, 180, 270]}>
+    <:label>Angle</:label>
+  </.angle_slider>
+  ```
+
+  ### With classes
+
+  ```heex
+  <.angle_slider class="angle-slider angle-slider--accent angle-slider--md" marker_values={[0, 90, 180, 270]}>
+    <:label>Angle</:label>
+  </.angle_slider>
   ```
 
   <!-- tabs-close -->
@@ -90,7 +114,6 @@ defmodule Corex.AngleSlider do
 
   ```heex
   <.angle_slider
-    class="angle-slider"
     on_value_change="angle_changed"
     marker_values={[0, 90, 180, 270]}
   >
@@ -115,7 +138,7 @@ defmodule Corex.AngleSlider do
 
   ## Style
 
-  Use data attributes to target elements:
+  Target parts with `data-scope` and `data-part`, or use [Corex Design](styled.html): `@import "./corex.tailwind.css"` in `app.css`.
 
   ```css
   [data-scope="angle-slider"][data-part="root"] {}
@@ -124,15 +147,6 @@ defmodule Corex.AngleSlider do
   [data-scope="angle-slider"][data-part="value-text"] {}
   [data-scope="angle-slider"][data-part="marker-group"] {}
   [data-scope="angle-slider"][data-part="marker"] {}
-  ```
-
-  If you wish to use the default Corex styling, you can use the class `angle-slider` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
-
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/angle-slider.css";
   ```
 
   Stack modifiers on the host (`class` on `<.angle_slider>`).
@@ -170,10 +184,12 @@ defmodule Corex.AngleSlider do
   ```elixir
   <.async_result :let={slider} assign={@slider}>
     <:loading>
-      <.angle_slider_skeleton class="angle-slider" />
+      <.angle_slider_skeleton />
     </:loading>
     <:failed>Could not load.</:failed>
-    <.angle_slider id="async-angle" class="angle-slider" value={slider.value} />
+    <.angle_slider id="async-angle" value={slider.value} marker_values={[0, 90, 180, 270]}>
+      <:label>Angle</:label>
+    </.angle_slider>
   </.async_result>
   ```
 
@@ -196,20 +212,39 @@ defmodule Corex.AngleSlider do
 
   ```heex
   <.form :let={f} for={@form} action={@action} method="post">
-    <.angle_slider field={f[:angle]} class="angle-slider" marker_values={[0, 90, 180, 270]}>
+    <.angle_slider field={f[:angle]} marker_values={[0, 90, 180, 270]}>
       <:label>Angle</:label>
       <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
+        <.heroicon name="hero-exclamation-circle" />
         {msg}
       </:error>
     </.angle_slider>
-    <button type="submit">Submit</button>
+    <.action type="submit">Submit</.action>
   </.form>
   ```
   '''
 
   @doc type: :component
   use Phoenix.Component
+
+  use Corex.Variants,
+    base: "angle-slider",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size,
+      radius: :radius
+    ],
+    defaults: [
+      width: "full",
+      max_width: "none",
+      height: "auto",
+      max_height: "none",
+      size: "md"
+    ]
 
   import Corex.Api.Doc
 
@@ -341,6 +376,8 @@ defmodule Corex.AngleSlider do
     <div
       id={@id}
       phx-hook="AngleSlider"
+      class={corex_style_class(assigns)}
+     
       data-loading
       phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       {@rest}

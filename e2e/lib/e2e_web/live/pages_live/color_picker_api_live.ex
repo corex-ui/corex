@@ -63,10 +63,10 @@ defmodule E2eWeb.ColorPickerApiLive do
         >
           <:preview>
             <div class="layout__row mb-4">
-              <.action phx-click="cp_api_s_value" phx-value-color="#ff0000" class="button button--sm">
+              <.action phx-click="cp_api_s_value" phx-value-semantic="#ff0000" size="sm">
                 Set red
               </.action>
-              <.action phx-click="cp_api_s_value" phx-value-color="#3b82f6" class="button button--sm">
+              <.action phx-click="cp_api_s_value" phx-value-semantic="#3b82f6" size="sm">
                 Set blue
               </.action>
             </div>
@@ -75,7 +75,6 @@ defmodule E2eWeb.ColorPickerApiLive do
               value="#3b82f6"
               label="Set the color (Server)"
               presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
-              class="color-picker"
             />
           </:preview>
         </.demo_section>

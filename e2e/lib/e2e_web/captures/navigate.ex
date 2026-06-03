@@ -17,7 +17,7 @@ defmodule CorexWeb.Navigate do
               inner_block: [
                 %{
                   inner_block:
-                    ~S(Internal Link <span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>)
+                    ~S(Internal Link <span aria-hidden="true"><.heroicon name="hero-arrow-right" /></span>)
                 }
               ]
             },
@@ -28,7 +28,7 @@ defmodule CorexWeb.Navigate do
               inner_block: [
                 %{
                   inner_block:
-                    ~S(<span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>)
+                    ~S(<span aria-hidden="true"><.heroicon name="hero-arrow-right" /></span>)
                 }
               ]
             },

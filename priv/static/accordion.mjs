@@ -7,8 +7,8 @@ import {
   prepareJsHeightInitialState,
   runHeightOpenToValues,
   runHeightOpenTransition,
-  stripHiddenFromProps
-} from "./chunks/chunk-SBA2GV3P.mjs";
+  spreadJsPanelProps
+} from "./chunks/chunk-SWUZHOZO.mjs";
 import {
   readControlledOrDefaultStringList,
   readStringListControlledZagProps
@@ -390,13 +390,11 @@ var Accordion = class extends Component {
         if (animation === "instant") {
           this.spreadProps(contentEl, this.api.getItemContentProps({ value, disabled }));
         } else if (animation === "js" || animation === "custom") {
-          this.spreadProps(
+          spreadJsPanelProps(
             contentEl,
-            stripHiddenFromProps(
-              this.api.getItemContentProps({ value, disabled })
-            )
+            this.api.getItemContentProps({ value, disabled }),
+            (target, next) => this.spreadProps(target, next)
           );
-          contentEl.removeAttribute("hidden");
         }
       }
     }
@@ -423,6 +421,7 @@ var AccordionHook = {
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
     self.lastValue = readControlledOrDefaultStringList(el, "value", "defaultValue");
+    prepareJsHeightInitialState(el, ITEM_CONTENT_SELECTOR);
     const accordion = new Accordion(el, {
       id: el.id,
       ...readStringListControlledZagProps(el, "value", "defaultValue"),
@@ -472,7 +471,6 @@ var AccordionHook = {
     });
     accordion.init();
     this.accordion = accordion;
-    prepareJsHeightInitialState(el, ITEM_CONTENT_SELECTOR);
     const hookApi = { el, pushEvent, canPushServer: canPush };
     const emitValue = createValueEmitter(hookApi, {
       getValue: () => accordion.api.value,

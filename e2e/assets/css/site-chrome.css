@@ -1,0 +1,14 @@
+@import "tailwindcss" source(none);
+@plugin "../vendor/heroicons";
+@source "../css";
+@source "../../lib/e2e_web";
+@import "tailwindcss/utilities.css";
+@import "./corex.tailwind.theme.css";
+
+@import "./shell.css";
+@import "./doc.css";
+@import "./card.css";
+@import "./home.css";
+@import "./prose.css";
+@import "./blog.css";
+@import "./corex.tokens.css";

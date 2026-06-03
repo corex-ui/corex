@@ -1,7 +1,7 @@
 import { connect, machine, type Props, type Api } from "@zag-js/accordion";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
-import { stripHiddenFromProps } from "../lib/animation";
+import { spreadJsPanelProps } from "../lib/animation";
 
 export class Accordion extends Component<Props, Api> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -55,13 +55,11 @@ export class Accordion extends Component<Props, Api> {
         if (animation === "instant") {
           this.spreadProps(contentEl, this.api.getItemContentProps({ value, disabled }));
         } else if (animation === "js" || animation === "custom") {
-          this.spreadProps(
+          spreadJsPanelProps(
             contentEl,
-            stripHiddenFromProps(
-              this.api.getItemContentProps({ value, disabled }) as Record<string, unknown>
-            )
+            this.api.getItemContentProps({ value, disabled }) as Record<string, unknown>,
+            (target, next) => this.spreadProps(target, next)
           );
-          contentEl.removeAttribute("hidden");
         }
       }
     }

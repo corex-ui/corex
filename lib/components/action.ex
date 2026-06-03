@@ -7,25 +7,44 @@ defmodule Corex.Action do
   ## Anatomy
 
   ```heex
-  <.action class="button">Send!</.action>
+  <.action>Send!</.action>
 
-  <.action class="button" phx-click="go">Send!</.action>
+  <.action phx-click="go">Send!</.action>
 
-  <.action class="button" type="submit">Save</.action>
+  <.action type="submit">Save</.action>
 
-  <.action class="button" aria_label="Close dialog">
-    <.heroicon name="hero-x-mark" aria-hidden="true" />
+  <.action aria_label="Close dialog">
+    <:indicator><.heroicon name="hero-x-mark" aria-hidden="true" /></:indicator>
   </.action>
   ```
 
-  ## Style
+  ## Styling
 
-  Import tokens and `button.css`, then set `class="button"` on `<.action>`.
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `semantic`, `variant`, `size`, `shape`, `radius`.
+
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.action semantic="accent" size="lg" class="button">Get started</.action>
+  ```
+
+  ### With classes
+
+  ```heex
+  <.action class="button button--accent button--lg">Get started</.action>
+  ```
+
+  <!-- tabs-close -->
+
+  Default look is `button` (`data-button`). Use `as="link"` for a
+  link-styled control that remains a `<button>` (for example "Show more" actions).
+
+  See [Styled](styled.html) or import generated CSS:
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/button.css";
+  @import "./corex.tailwind.css";
   ```
 
   Stack modifiers on the host.
@@ -72,6 +91,12 @@ defmodule Corex.Action do
   @doc type: :component
   use Phoenix.Component
 
+  use Corex.Variants,
+    kind: :recipe,
+    recipes: [:button, :link],
+    default: :button,
+    defaults: [variant: :solid, size: :md]
+
   attr(:type, :string,
     default: "button",
     values: ["button", "submit", "reset"],
@@ -90,11 +115,18 @@ defmodule Corex.Action do
 
   attr(:rest, :global)
 
-  slot(:inner_block, required: true)
+  slot(:inner_block, required: false)
+
+  slot :indicator, required: false do
+    attr(:class, :string, required: false)
+  end
 
   def action(assigns) do
     ~H"""
-    <button type={@type} aria-label={@aria_label} disabled={@disabled} name={@name} value={@value} {@rest}>
+    <button type={@type} aria-label={@aria_label} disabled={@disabled} name={@name} value={@value} class={corex_style_class(assigns)} {@rest}>
+      <span :if={@indicator != []} data-part="indicator" class={Map.get(Enum.at(@indicator, 0), :class)}>
+        {render_slot(@indicator)}
+      </span>
       {render_slot(@inner_block)}
     </button>
     """

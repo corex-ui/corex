@@ -13,10 +13,10 @@ defmodule Corex.DatePicker do
       <.heroicon name="hero-calendar" />
     </:trigger>
            <:prev_trigger>
-          <.heroicon name="hero-chevron-left" class="icon" />
+          <.heroicon name="hero-chevron-left" />
         </:prev_trigger>
         <:next_trigger>
-          <.heroicon name="hero-chevron-right" class="icon" />
+          <.heroicon name="hero-chevron-right" />
         </:next_trigger>
   </.date_picker>
   ```
@@ -79,16 +79,16 @@ defmodule Corex.DatePicker do
     >
       <:label>Date</:label>
       <:trigger>
-        <.heroicon name="hero-calendar" class="icon" />
+        <.heroicon name="hero-calendar" />
       </:trigger>
       <:prev_trigger>
-        <.heroicon name="hero-chevron-left" class="icon" />
+        <.heroicon name="hero-chevron-left" />
       </:prev_trigger>
       <:next_trigger>
-        <.heroicon name="hero-chevron-right" class="icon" />
+        <.heroicon name="hero-chevron-right" />
       </:next_trigger>
       <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
+        <.heroicon name="hero-exclamation-circle" />
         {msg}
       </:error>
     </.date_picker>
@@ -145,16 +145,16 @@ defmodule Corex.DatePicker do
         <.date_picker field={@form[:birth_date]} class="date-picker">
           <:label>Birth date</:label>
           <:trigger>
-            <.heroicon name="hero-calendar" class="icon" />
+            <.heroicon name="hero-calendar" />
           </:trigger>
           <:prev_trigger>
-            <.heroicon name="hero-chevron-left" class="icon" />
+            <.heroicon name="hero-chevron-left" />
           </:prev_trigger>
           <:next_trigger>
-            <.heroicon name="hero-chevron-right" class="icon" />
+            <.heroicon name="hero-chevron-right" />
           </:next_trigger>
           <:error :let={msg}>
-            <.heroicon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" />
             {msg}
           </:error>
         </.date_picker>
@@ -200,9 +200,9 @@ defmodule Corex.DatePicker do
     on_value_change="date_changed"
   >
     <:label>Select a date</:label>
-    <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-    <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-    <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+    <:trigger><.heroicon name="hero-calendar" /></:trigger>
+    <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+    <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
   </.date_picker>
   ```
 
@@ -244,9 +244,9 @@ defmodule Corex.DatePicker do
     on_value_change="date_changed"
   >
     <:label>Due</:label>
-    <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-    <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-    <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+    <:trigger><.heroicon name="hero-calendar" /></:trigger>
+    <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+    <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
   </.date_picker>
   ```
 
@@ -268,12 +268,6 @@ defmodule Corex.DatePicker do
   [data-scope="date-picker"][data-part="trigger"] {}
   [data-scope="date-picker"][data-part="positioner"] {}
   [data-scope="date-picker"][data-part="content"] {}
-  ```
-
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/date-picker.css";
   ```
 
   Stack modifiers on the host (`class` on `<.date_picker>`).
@@ -312,6 +306,25 @@ defmodule Corex.DatePicker do
 
   @doc type: :component
   use Phoenix.Component
+
+  use Corex.Variants,
+    base: "date-picker",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size,
+      radius: :radius
+    ],
+    defaults: [
+      width: "auto",
+      max_width: "none",
+      height: "auto",
+      max_height: "none",
+      size: "md"
+    ]
 
   import Corex.Api.Doc
   alias Corex.DatePicker.Anatomy
@@ -576,6 +589,8 @@ defmodule Corex.DatePicker do
     <div
       id={@id}
       phx-hook="DatePicker"
+      class={corex_style_class(assigns)}
+     
       data-loading
       phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       {@rest}
@@ -800,7 +815,7 @@ defmodule Corex.DatePicker do
   <.action phx-click={Corex.DatePicker.set_value("my-date-picker", "2024-06-01")}>June</.action>
   <.date_picker id="my-date-picker" class="date-picker" value="2024-01-15">
     <:label>Date</:label>
-    <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
+    <:trigger><.heroicon name="hero-calendar" /></:trigger>
   </.date_picker>
   ```
 
@@ -836,7 +851,7 @@ defmodule Corex.DatePicker do
   <.action phx-click="pick_june" phx-value-value="2024-06-01">June</.action>
   <.date_picker id="my-date-picker" class="date-picker" value="2024-01-15">
     <:label>Date</:label>
-    <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
+    <:trigger><.heroicon name="hero-calendar" /></:trigger>
   </.date_picker>
   ```
 

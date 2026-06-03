@@ -1,6 +1,6 @@
 # Updating Corex
 
-How to pull a newer **0.1.x** release into your app and refresh vendored assets.
+How to pull a newer Corex release into your app and refresh generated design CSS.
 
 ## Elixir dependency
 
@@ -20,19 +20,16 @@ mix compile
 
 ## Design assets
 
-When the release notes mention CSS, tokens, or design files:
+When the release notes mention CSS, tokens, or design files, update both packages and recompile:
 
 ```bash
-mix corex.design --force
+mix deps.update corex corex_design
+mix deps.get
+mix compile
+mix assets.build
 ```
 
-If you use Designex:
-
-```bash
-mix corex.design --designex --force
-```
-
-Compare `assets/corex/VERSION` in your app with the version in `mix deps` after updating.
+Run `mix compile` to refresh `assets/css/` (`corex.tailwind.css`, `layers/`, `recipes/`, `aggregates/`). If you customized `config :corex_design`, review [Design config](design-config.html) for new keys after upgrading. First-time setup is in [Styled](styled.html).
 
 ## After upgrading
 

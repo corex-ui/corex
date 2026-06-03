@@ -137,6 +137,45 @@ defmodule Corex.NavigateTest do
       assert [_] = find_in_html(result, "[data-phx-link]")
     end
 
+    test "default appearance stamps data-link" do
+      result =
+        render_component(&CorexTest.ComponentHelpers.render_navigate_styled/1, %{})
+
+      assert [link] = find_in_html(result, "a")
+      assert Floki.attribute([link], "data-link") != []
+      refute Floki.attribute([link], "data-button") != []
+    end
+
+    test "as button stamps data-button modifiers" do
+      result =
+        render_component(&CorexTest.ComponentHelpers.render_navigate_styled/1,
+          as: "button",
+          semantic: "accent",
+          variant: "solid",
+          size: "lg"
+        )
+
+      assert [link] = find_in_html(result, "a")
+      assert Floki.attribute([link], "data-button") != []
+      assert Enum.any?(Floki.attribute([link], "data-button-semantic"), &(&1 == "accent"))
+      assert Enum.any?(Floki.attribute([link], "data-button-variant"), &(&1 == "solid"))
+    end
+
+    test "disabled navigate omits href and sets aria-disabled" do
+      result =
+        render_component(&CorexTest.ComponentHelpers.render_navigate/1,
+          to: "/about",
+          type: "href",
+          external: false,
+          download: nil,
+          aria_label: nil,
+          disabled: true
+        )
+
+      refute result =~ ~S(href="/about")
+      assert [_] = find_in_html(result, ~S(a[aria-disabled="true"]))
+    end
+
     test "omits href for disallowed destination" do
       result =
         render_with_captured_stderr(fn ->

@@ -56,7 +56,7 @@ defmodule E2eWeb.PasswordInputPlayLive do
           />
 
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="disabled"
             checked={@controls.disabled}
             on_checked_change="control_changed"
@@ -64,7 +64,7 @@ defmodule E2eWeb.PasswordInputPlayLive do
             <:label>Disabled</:label>
           </.switch>
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="read_only"
             checked={@controls.read_only}
             on_checked_change="control_changed"
@@ -72,7 +72,7 @@ defmodule E2eWeb.PasswordInputPlayLive do
             <:label>Read only</:label>
           </.switch>
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="invalid"
             checked={@controls.invalid}
             on_checked_change="control_changed"
@@ -83,7 +83,6 @@ defmodule E2eWeb.PasswordInputPlayLive do
         <:canvas>
           <.password_input
             id="password-input-playground"
-            class="password-input"
             name="user[password]"
             dir={@controls.dir}
             disabled={@controls.disabled}
@@ -91,9 +90,9 @@ defmodule E2eWeb.PasswordInputPlayLive do
             invalid={@controls.invalid}
           >
             <:label>Password</:label>
-            <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+            <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
             <:hidden_indicator>
-              <.heroicon name="hero-eye-slash" class="icon" />
+              <.heroicon name="hero-eye-slash" />
             </:hidden_indicator>
           </.password_input>
         </:canvas>

@@ -2,6 +2,8 @@ defmodule E2eWeb.PagesA11yTest do
   use E2eWeb.ConnCase, async: false
   use Wallaby.Feature
 
+  import E2eWeb.A11yExport
+
   import E2e.AccountsFixtures
 
   setup do
@@ -19,11 +21,12 @@ defmodule E2eWeb.PagesA11yTest do
 
   @locale_path "/" <> E2eWeb.DocA11yRoutes.locale()
 
-  for {name, key} <- @static_pages do
+  for {name, key} <- @static_pages, export <- exports() do
     @name name
     @key key
+    @export export
 
-    feature "#{@name} has no A11y violations", %{session: session} do
+    feature "#{@name} (#{@export} export) has no A11y violations", %{session: session} do
       path =
         case @key do
           :home -> @locale_path
@@ -34,7 +37,7 @@ defmodule E2eWeb.PagesA11yTest do
         end
 
       session
-      |> Wallaby.Browser.visit(path)
+      |> visit_with_export(path, @export)
       |> A11yAudit.Wallaby.assert_no_violations()
     end
   end
@@ -46,20 +49,26 @@ defmodule E2eWeb.PagesA11yTest do
       %{user: user_fixture()}
     end
 
-    feature "Users show has no A11y violations", %{session: session, user: user} do
-      path = ~p"/users/#{user.id}"
+    for export <- exports() do
+      @export export
 
-      session
-      |> Wallaby.Browser.visit(path)
-      |> A11yAudit.Wallaby.assert_no_violations()
-    end
+      feature "Users show (#{@export} export) has no A11y violations", %{
+        session: session,
+        user: user
+      } do
+        session
+        |> visit_with_export(~p"/users/#{user.id}", @export)
+        |> A11yAudit.Wallaby.assert_no_violations()
+      end
 
-    feature "Users edit has no A11y violations", %{session: session, user: user} do
-      path = ~p"/users/#{user.id}/edit"
-
-      session
-      |> Wallaby.Browser.visit(path)
-      |> A11yAudit.Wallaby.assert_no_violations()
+      feature "Users edit (#{@export} export) has no A11y violations", %{
+        session: session,
+        user: user
+      } do
+        session
+        |> visit_with_export(~p"/users/#{user.id}/edit", @export)
+        |> A11yAudit.Wallaby.assert_no_violations()
+      end
     end
   end
 
@@ -70,20 +79,26 @@ defmodule E2eWeb.PagesA11yTest do
       %{admin: admin_fixture()}
     end
 
-    feature "Admins show has no A11y violations", %{session: session, admin: admin} do
-      path = ~p"/admins/#{admin.id}"
+    for export <- exports() do
+      @export export
 
-      session
-      |> Wallaby.Browser.visit(path)
-      |> A11yAudit.Wallaby.assert_no_violations()
-    end
+      feature "Admins show (#{@export} export) has no A11y violations", %{
+        session: session,
+        admin: admin
+      } do
+        session
+        |> visit_with_export(~p"/admins/#{admin.id}", @export)
+        |> A11yAudit.Wallaby.assert_no_violations()
+      end
 
-    feature "Admins edit has no A11y violations", %{session: session, admin: admin} do
-      path = ~p"/admins/#{admin.id}/edit"
-
-      session
-      |> Wallaby.Browser.visit(path)
-      |> A11yAudit.Wallaby.assert_no_violations()
+      feature "Admins edit (#{@export} export) has no A11y violations", %{
+        session: session,
+        admin: admin
+      } do
+        session
+        |> visit_with_export(~p"/admins/#{admin.id}/edit", @export)
+        |> A11yAudit.Wallaby.assert_no_violations()
+      end
     end
   end
 end

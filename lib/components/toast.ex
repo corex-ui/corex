@@ -89,12 +89,6 @@ defmodule Corex.Toast do
   [data-scope="toast"][data-part="action-trigger"] {}
   ```
 
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/toast.css";
-  ```
-
   Stack modifiers on the group host (`class` on `<.toast_group>`).
 
   <!-- tabs-open -->
@@ -117,33 +111,31 @@ defmodule Corex.Toast do
   @doc type: :component
   use Phoenix.Component
 
+  use Corex.Variants,
+    base: "toast",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size,
+      radius: :radius
+    ],
+    defaults: [
+      width: "fit",
+      max_width: "none",
+      height: "auto",
+      max_height: "none",
+      size: "md"
+    ]
+
   import Corex.Api.Doc
 
   alias Corex.Flash
   alias Corex.Toast.Payload, as: ToastPayload
   alias Corex.Toast.Translation
   alias Phoenix.LiveView.JS
-
-  defp toast_duration_dispatch_string(:infinity), do: "Infinity"
-  defp toast_duration_dispatch_string(v), do: v
-
-  defp toast_dispatch_type_string(:info), do: "info"
-  defp toast_dispatch_type_string(:success), do: "success"
-  defp toast_dispatch_type_string(:error), do: "error"
-  defp toast_dispatch_type_string(_), do: nil
-
-  defp toast_dispatch_type_str(type, fallback) do
-    case toast_dispatch_type_string(type) do
-      nil -> fallback
-      s -> s
-    end
-  end
-
-  defp assign_toast_dispatch_strings(assigns, type_fallback) do
-    assigns
-    |> assign(:type_str, toast_dispatch_type_str(assigns.type, type_fallback))
-    |> assign(:duration_str, toast_duration_dispatch_string(assigns.duration))
-  end
 
   @doc type: :component
   @doc """
@@ -246,6 +238,8 @@ defmodule Corex.Toast do
     <div
       id={@id}
       phx-hook="Toast"
+      class={corex_style_class(assigns)}
+     
       data-placement={@placement}
       data-max={@max}
       data-gap={@gap}
@@ -304,8 +298,8 @@ defmodule Corex.Toast do
   attr(:toast_group_id, :string, required: true)
   attr(:title, :string, required: true)
   attr(:description, :string, default: nil)
-  attr(:type, :atom, default: :info, values: [:info, :success, :error])
-  attr(:duration, :any, default: :infinity)
+  attr(:toast_type, :atom, default: :info, values: [:info, :success, :error])
+  attr(:visible_duration, :any, default: :infinity)
 
   def toast_client_error(assigns) do
     assigns = assign_toast_dispatch_strings(assigns, "info")
@@ -354,8 +348,8 @@ defmodule Corex.Toast do
   attr(:toast_group_id, :string, required: true)
   attr(:title, :string, required: true)
   attr(:description, :string, default: nil)
-  attr(:type, :atom, default: :error, values: [:info, :success, :error])
-  attr(:duration, :any, default: :infinity)
+  attr(:toast_type, :atom, default: :error, values: [:info, :success, :error])
+  attr(:visible_duration, :any, default: :infinity)
 
   def toast_server_error(assigns) do
     assigns = assign_toast_dispatch_strings(assigns, "error")
@@ -403,8 +397,8 @@ defmodule Corex.Toast do
   attr(:toast_group_id, :string, required: true)
   attr(:title, :string, required: true)
   attr(:description, :string, default: nil)
-  attr(:type, :atom, default: :success, values: [:info, :success, :error])
-  attr(:duration, :any, default: 5000)
+  attr(:toast_type, :atom, default: :success, values: [:info, :success, :error])
+  attr(:visible_duration, :any, default: 5000)
 
   def toast_connected(assigns) do
     assigns = assign_toast_dispatch_strings(assigns, "success")
@@ -450,8 +444,8 @@ defmodule Corex.Toast do
   attr(:toast_group_id, :string, required: true)
   attr(:title, :string, required: true)
   attr(:description, :string, default: nil)
-  attr(:type, :atom, default: :info, values: [:info, :success, :error])
-  attr(:duration, :any, default: :infinity)
+  attr(:toast_type, :atom, default: :info, values: [:info, :success, :error])
+  attr(:visible_duration, :any, default: :infinity)
 
   def toast_disconnected(assigns) do
     assigns = assign_toast_dispatch_strings(assigns, "info")
@@ -607,5 +601,23 @@ defmodule Corex.Toast do
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(toast_group_id) and
              is_binary(toast_id) do
     Phoenix.LiveView.push_event(socket, "toast-dismiss", %{groupId: toast_group_id, id: toast_id})
+  end
+
+  defp assign_toast_dispatch_strings(assigns, type_fallback) do
+    type_str =
+      case Map.get(assigns, :toast_type) do
+        :info -> "info"
+        :success -> "success"
+        :error -> "error"
+        _ -> type_fallback
+      end
+
+    duration_str =
+      case Map.get(assigns, :visible_duration) do
+        :infinity -> "Infinity"
+        v -> v
+      end
+
+    assign(assigns, type_str: type_str, duration_str: duration_str)
   end
 end

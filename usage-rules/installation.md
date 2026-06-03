@@ -97,16 +97,17 @@ mix compile && mix assets.build
 
 ## Design assets
 
+Add `{:corex_design}`, register the `:corex_design` compiler, set `config :corex_design`, then:
+
 ```sh
-mix corex.design
-mix corex.design --force
+mix compile
+mix assets.build
 ```
 
-When using mode/theme/lang pickers, also import:
+Import the generated bundle in `assets/css/app.css`:
 
 ```css
-@import "../corex/components/toggle.css";
-@import "../corex/components/select.css";
+@import "./corex.tailwind.css";
 ```
 
 ## Optional toast layout

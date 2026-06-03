@@ -30,27 +30,58 @@ defmodule Corex.Navigate do
       </.navigate>
     ```
 
-  ## Style
+  ## Styling
 
-  If you wish to use the default Corex styling, you can use the `link` class on the component.
-  This requires you to install `Mix.Tasks.Corex.Design` first and import the component css file.
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `semantic`, `variant`, `size`, `shape`, `radius`.
 
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/link.css";
-  ```
+  <!-- tabs-open -->
 
-  You can then use modifiers
+  ### With attributes
 
   ```heex
-  <.navigate class="link link--accent link--lg">
+  <.navigate to="/signup" as="button" variant="solid" semantic="accent" size="lg" class="button">
+    Get started
+  </.navigate>
   ```
+
+  ### With classes
+
+  ```heex
+  <.navigate to="/signup" as="button" class="button button--accent button--lg">
+    Get started
+  </.navigate>
+  ```
+
+  <!-- tabs-close -->
+
+  Default look is `link` (`data-link`). Use `as="button"` with
+  `variant`, `semantic`, and `size` for CTA-style links that remain anchors.
+
+  See [Styled](styled.html) or import generated CSS:
+
+  ```css
+  @import "./corex.tailwind.css";
+  ```
+
+  ```heex
+  <.navigate to="/" semantic="accent">Docs</.navigate>
+  <.navigate to="/signup" as="button" variant="solid" semantic="accent" size="lg">Get started</.navigate>
+  <.navigate to="/docs" as="button" variant="solid" semantic="brand" size="lg" radius="full">Browse</.navigate>
+  <.navigate to="https://hexdocs.pm/corex" as="button" variant="ghost" size="lg" radius="full" external>Hexdocs</.navigate>
+  ```
+
+  Solid CTAs need both `variant="solid"` and a `size` step for padding and min-height. Use `semantic="brand"` and `radius="full"` for marketing primary buttons; pair with `variant="ghost"` on a secondary external link.
 
   """
 
   @doc type: :component
   use Phoenix.Component
+  use Corex.Variants, kind: :recipe, recipes: [:button, :link], default: :link
+
+  attr(:disabled, :boolean,
+    default: false,
+    doc: "Marks the link disabled (aria-disabled and data-disabled; href is omitted)"
+  )
 
   attr(:to, :string, required: true, doc: "The destination URL")
 
@@ -93,7 +124,11 @@ defmodule Corex.Navigate do
 
   attr(:rest, :global)
 
-  slot(:inner_block, required: true)
+  slot(:inner_block, required: false)
+
+  slot :indicator, required: false do
+    attr(:class, :string, required: false)
+  end
 
   def navigate(%{replace: true, type: "href"} = assigns) do
     IO.warn("<.navigate> replace has no effect with type=\"href\"")
@@ -146,20 +181,30 @@ defmodule Corex.Navigate do
 
     ~H"""
     <.link
-      href={@type == "href" && @safe_to}
-      navigate={@type == "navigate" && @safe_to}
-      patch={@type == "patch" && @safe_to}
+      href={@type == "href" && href_when_enabled(@disabled, @safe_to)}
+      navigate={@type == "navigate" && href_when_enabled(@disabled, @safe_to)}
+      patch={@type == "patch" && href_when_enabled(@disabled, @safe_to)}
       download={@download}
       aria-label={@aria_label}
+      aria-disabled={@disabled && "true"}
+      data-disabled={@disabled && ""}
       title={@title}
+      class={corex_style_class(assigns)}
+     
       {@replace_attrs}
       {@method_attrs}
       target={@external && "_blank"}
       rel={@external && "noopener noreferrer"}
       {@rest}
     >
+      <span :if={@indicator != []} data-part="indicator" class={Map.get(Enum.at(@indicator, 0), :class)}>
+        {render_slot(@indicator)}
+      </span>
       {render_slot(@inner_block)}
     </.link>
     """
   end
+
+  defp href_when_enabled(true, _to), do: nil
+  defp href_when_enabled(false, to), do: to
 end

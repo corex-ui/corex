@@ -7,10 +7,34 @@ defmodule Corex.PinInput do
   ### Basic
 
   ```heex
-  <.pin_input count={4} class="pin-input">
+  <.pin_input count={4}>
     <:label>Code</:label>
   </.pin_input>
   ```
+
+  ## Styling
+
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `semantic`, `size`, `radius`.
+
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.pin_input count={4} semantic="accent" size="md" class="pin-input">
+    <:label>Code</:label>
+  </.pin_input>
+  ```
+
+  ### With classes
+
+  ```heex
+  <.pin_input count={4} class="pin-input pin-input--accent pin-input--md">
+    <:label>Code</:label>
+  </.pin_input>
+  ```
+
+  <!-- tabs-close -->
 
   ## API
 
@@ -42,7 +66,7 @@ defmodule Corex.PinInput do
   ### on_value_change
 
   ```heex
-  <.pin_input count={4} class="pin-input" on_value_change="pin_changed">
+  <.pin_input count={4} on_value_change="pin_changed">
     <:label>Code</:label>
   </.pin_input>
   ```
@@ -70,7 +94,7 @@ defmodule Corex.PinInput do
 
   ```heex
   <.form for={@form} phx-change="validate">
-    <.pin_input field={@form[:code]} count={4} class="pin-input">
+    <.pin_input field={@form[:code]} count={4}>
       <:label>Verification code</:label>
     </.pin_input>
   </.form>
@@ -78,19 +102,13 @@ defmodule Corex.PinInput do
 
   ## Style
 
-  Use data attributes to target elements:
+  Target parts with `data-scope` and `data-part`, or use [Corex Design](styled.html): `@import "./corex.tailwind.css"` in `app.css`.
 
   ```css
   [data-scope="pin-input"][data-part="root"] {}
   [data-scope="pin-input"][data-part="label"] {}
   [data-scope="pin-input"][data-part="control"] {}
   [data-scope="pin-input"][data-part="input"] {}
-  ```
-
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/pin-input.css";
   ```
 
   Stack modifiers on the host (`class` on `<.pin_input>`).
@@ -136,6 +154,25 @@ defmodule Corex.PinInput do
 
   @doc type: :component
   use Phoenix.Component
+
+  use Corex.Variants,
+    base: "pin-input",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size,
+      radius: :radius
+    ],
+    defaults: [
+      width: "auto",
+      max_width: "md",
+      height: "auto",
+      max_height: "none",
+      size: "md"
+    ]
 
   import Corex.Api.Doc
 
@@ -238,6 +275,8 @@ defmodule Corex.PinInput do
     <div
       id={@id}
       phx-hook="PinInput"
+      class={corex_style_class(assigns)}
+     
       data-loading
       phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       {@rest}

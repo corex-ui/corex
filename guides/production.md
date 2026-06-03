@@ -45,4 +45,4 @@ Visit [http://localhost:4000/](http://localhost:4000/).
 ## Related
 
 - [Manual installation](manual_installation.html) — Esbuild ESM setup
-- [Design](design.html) — CSS you import is the same in prod
+- [Styled](styled.html) — CSS you import is the same in prod

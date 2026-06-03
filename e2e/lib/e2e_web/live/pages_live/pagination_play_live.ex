@@ -130,10 +130,10 @@ defmodule E2eWeb.PaginationPlayLive do
           >
             <:label>Page size</:label>
             <:decrement_trigger>
-              <.heroicon name="hero-chevron-down" class="icon" />
+              <.heroicon name="hero-chevron-down" />
             </:decrement_trigger>
             <:increment_trigger>
-              <.heroicon name="hero-chevron-up" class="icon" />
+              <.heroicon name="hero-chevron-up" />
             </:increment_trigger>
           </.number_input>
 
@@ -148,10 +148,10 @@ defmodule E2eWeb.PaginationPlayLive do
           >
             <:label>Sibling count</:label>
             <:decrement_trigger>
-              <.heroicon name="hero-chevron-down" class="icon" />
+              <.heroicon name="hero-chevron-down" />
             </:decrement_trigger>
             <:increment_trigger>
-              <.heroicon name="hero-chevron-up" class="icon" />
+              <.heroicon name="hero-chevron-up" />
             </:increment_trigger>
           </.number_input>
 
@@ -166,10 +166,10 @@ defmodule E2eWeb.PaginationPlayLive do
           >
             <:label>Boundary count</:label>
             <:decrement_trigger>
-              <.heroicon name="hero-chevron-down" class="icon" />
+              <.heroicon name="hero-chevron-down" />
             </:decrement_trigger>
             <:increment_trigger>
-              <.heroicon name="hero-chevron-up" class="icon" />
+              <.heroicon name="hero-chevron-up" />
             </:increment_trigger>
           </.number_input>
         </:controls>
@@ -181,7 +181,7 @@ defmodule E2eWeb.PaginationPlayLive do
           >
             <div class="w-full flex flex-col gap-space-xs">
               <h2 class="text-lg font-medium">Blog posts</h2>
-              <p class="text-ink-muted text-sm">
+              <p class="text-ui-ink-muted text-sm">
                 Page {@page} of {@total_pages} · {@post_count} posts
               </p>
             </div>
@@ -197,14 +197,13 @@ defmodule E2eWeb.PaginationPlayLive do
                   class="flex flex-col gap-space-xs p-space rounded-md bg-layer border border-border"
                 >
                   <h3>{post.title}</h3>
-                  <p class="text-ink-muted text-sm">{post.excerpt}</p>
+                  <p class="text-ui-ink-muted text-sm">{post.excerpt}</p>
                 </li>
               </ul>
             </.async_result>
 
             <.pagination
               id="pagination-playground"
-              class="pagination"
               count={@post_count}
               page={@page}
               page_size={@page_size}

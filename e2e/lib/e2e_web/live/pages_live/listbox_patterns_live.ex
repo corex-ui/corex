@@ -134,14 +134,14 @@ defmodule E2eWeb.ListboxPatternsLive do
         >
           <:preview>
             <div class="flex flex-wrap gap-2 items-center w-full justify-center">
-              <.action phx-click="add_item" class="button button--sm button--accent">
+              <.action phx-click="add_item" size="sm" semantic="accent">
                 <.heroicon name="hero-plus" /> Add item
               </.action>
-              <.action phx-click="reset" class="button button--sm button--alert">
+              <.action phx-click="reset" size="sm" semantic="alert">
                 Reset
               </.action>
             </div>
-            <.listbox id="stream-listbox" class="listbox" items={Corex.List.new(@items_list)}>
+            <.listbox id="stream-listbox" items={Corex.List.new(@items_list)}>
               <:label>Choose an item</:label>
               <:empty>No items</:empty>
               <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
@@ -169,27 +169,18 @@ defmodule E2eWeb.ListboxPatternsLive do
         >
           <:preview>
             <div class="flex flex-wrap gap-2 items-center w-full justify-center">
-              <.action
-                phx-click="add_to_group"
-                phx-value-group="Europe"
-                class="button button--sm button--accent"
-              >
+              <.action phx-click="add_to_group" phx-value-group="Europe" size="sm" semantic="accent">
                 <.heroicon name="hero-plus" /> Add to Europe
               </.action>
-              <.action
-                phx-click="add_to_group"
-                phx-value-group="Asia"
-                class="button button--sm button--accent"
-              >
+              <.action phx-click="add_to_group" phx-value-group="Asia" size="sm" semantic="accent">
                 <.heroicon name="hero-plus" /> Add to Asia
               </.action>
-              <.action phx-click="reset_grouped" class="button button--sm button--alert">
+              <.action phx-click="reset_grouped" size="sm" semantic="alert">
                 Reset
               </.action>
             </div>
             <.listbox
               id="stream-grouped-listbox"
-              class="listbox"
               items={Corex.List.new(@grouped_items_list)}
             >
               <:label>Choose a country</:label>
@@ -222,7 +213,6 @@ defmodule E2eWeb.ListboxPatternsLive do
               <div class="w-full max-w-md">
                 <.listbox
                   id="listbox-patterns-controlled-field"
-                  class="listbox"
                   items={Demo.items_minimal()}
                   selection_mode="multiple"
                   controlled
@@ -234,7 +224,7 @@ defmodule E2eWeb.ListboxPatternsLive do
                 </.listbox>
               </div>
               <div class="w-full min-w-0" id="listbox-patterns-controlled-state">
-                <p class="text-sm text-ink-muted font-mono break-all text-center">
+                <p class="text-sm text-ui-ink-muted font-mono break-all text-center">
                   value: {inspect(@listbox_controlled_value)}
                 </p>
               </div>

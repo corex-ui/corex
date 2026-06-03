@@ -86,7 +86,6 @@ defmodule E2eWeb.TooltipPatternsLive do
             <div class="flex flex-col gap-4 items-center w-full max-w-xl">
               <.tooltip
                 id="tooltip-pattern-users"
-                class="tooltip"
                 show_arrow={false}
                 on_trigger_value_change="tooltip_pattern_trigger_value"
               >
@@ -124,12 +123,11 @@ defmodule E2eWeb.TooltipPatternsLive do
               <li :for={user <- @users}>
                 <.tooltip
                   id={"tooltip-profile-" <> user.id}
-                  class="tooltip"
                   show_arrow={false}
                   trigger_tag={:span}
                 >
                   <:trigger>
-                    <.navigate to={~p"/admins"} type="navigate" class="link">
+                    <.navigate to={~p"/admins"} type="navigate">
                       {user.first_name}
                     </.navigate>
                   </:trigger>
@@ -164,13 +162,12 @@ defmodule E2eWeb.TooltipPatternsLive do
             <div class="flex flex-col gap-2 items-start w-full max-w-xl">
               <.tooltip
                 id="tooltip-pattern-profile-link-multi-tool"
-                class="tooltip"
                 show_arrow={false}
                 trigger_tag={:span}
                 on_trigger_value_change="tooltip_pattern_link_multi_value"
               >
                 <:trigger :for={user <- @users} value={user.id}>
-                  <.navigate to={~p"/admins"} type="navigate" class="link">
+                  <.navigate to={~p"/admins"} type="navigate">
                     {user.first_name}
                   </.navigate>
                 </:trigger>

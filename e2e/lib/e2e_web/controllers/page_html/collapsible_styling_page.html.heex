@@ -7,22 +7,24 @@
   <.demo_page
     path={@path}
     id="collapsible-styling-page"
-    title={~t"Collapsible · Styling"}
+    title={~t"Collapsible · Style"}
     subtitle={~t"Density and trigger colors via modifier classes on the collapsible root."}
   >
     <.demo_section
-      id="collapsible-styling-color"
-      title={~t"Color"}
-      code={E2eWeb.Demos.CollapsibleDemo.styling_color_code()}
+      id="collapsible-styling-semantic"
+      title={~t"Semantic"}
+      values={E2eWeb.Demos.CollapsibleDemo.styling_axis_values(:semantic)}
+      code={E2eWeb.Demos.CollapsibleDemo.styling_semantic_code()}
     >
       <:preview>
-        <E2eWeb.Demos.CollapsibleDemo.styling_color_example />
+        <E2eWeb.Demos.CollapsibleDemo.styling_semantic_example />
       </:preview>
     </.demo_section>
 
     <.demo_section
       id="collapsible-styling-size"
       title={~t"Size"}
+      values={E2eWeb.Demos.CollapsibleDemo.styling_axis_values(:size)}
       code={E2eWeb.Demos.CollapsibleDemo.styling_size_code()}
     >
       <:preview>

@@ -22,56 +22,66 @@ defmodule E2eWeb.App.Header do
       |> assign(:components_menu, components_menu)
 
     ~H"""
-    <header class="layout__header">
-      <div class="layout__header__content">
-        <div class="layout__row">
-          <.dialog id="menu-dialog" animation="instant" class="dialog dialog--side lg:hidden">
+    <header class="shell-header">
+      <.row width="full" justify="between" align="center" padding_inline="xl" wrap="nowrap" gap="md">
+        <.row wrap="nowrap" align="center" gap="md" grow="fill">
+          <.dialog
+            id="menu-dialog"
+            animation="instant"
+            loading={false}
+            as="side"
+            side="start"
+            class="hide-from-lg"
+            modal
+          >
             <:trigger
-              class="button button--sm button--circle button--ghost"
+              class="button button--sm button--ghost button--square button--rounded-full"
               aria_label={~t"Open menu"}
             >
               <.heroicon name="hero-bars-3" />
             </:trigger>
 
             <:content>
-              <div class="layout__header">
-                <div class="layout__header__content">
-                  <div class="layout__row">
-                    <.action
-                      phx-click={Corex.Dialog.set_open("menu-dialog", false)}
-                      class="button button--sm button--circle button--ghost"
-                      aria_label={~t"Close menu"}
-                    >
-                      <.heroicon name="hero-x-mark" />
-                    </.action>
+              <header class="shell-header">
+                <.row width="full" align="center" padding_inline="xl" wrap="nowrap" gap="md">
+                  <.action
+                    phx-click={Corex.Dialog.set_open("menu-dialog", false)}
+                    semantic="accent"
+                    size="sm"
+                    variant="ghost"
+                    shape="square"
+                    radius="full"
+                    aria_label={~t"Close menu"}
+                  >
+                    <.heroicon name="hero-x-mark" />
+                  </.action>
 
-                    <.navigate
-                      to={~p"/"}
-                      class="ui-link ui-link--brand ui-link--xl flex flex-nowrap items-center
-                 gap-space font-semibold uppercase hover:no-underline"
+                  <.navigate
+                    to={~p"/"}
+                    semantic="brand"
+                    size="xl"
+                    class="hover:text-link flex flex-nowrap items-center gap-space font-semibold uppercase no-underline"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 136 136"
+                      class="h-[1.25em] w-[1.25em] shrink-0"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 136 136"
-                        class="icon icon--lg"
+                      <path
+                        d="M70.573 1.67C33.94 1.67 4.243 31.367 4.243 68c0 36.634 29.697 66.33 66.33 66.33s66.33-29.696 66.33-66.33c0-36.633-29.697-66.33-66.33-66.33m.05 102.736c-20.117 0-36.427-16.308-36.427-36.427 0-20.118 16.31-36.427 36.427-36.427 17.055 0 31.37 11.723 35.333 27.55H89.845c-3.365-7.255-10.713-12.301-19.222-12.301-11.678 0-21.179 9.501-21.179 21.18s9.501 21.178 21.18 21.178c8.539 0 15.907-5.08 19.256-12.377h16.095c-3.939 15.864-18.269 27.624-35.352 27.624"
+                        fill="var(--color-ui-ink-brand)"
                       >
-                        <path
-                          d="M70.573 1.67C33.94 1.67 4.243 31.367 4.243 68c0 36.634 29.697 66.33 66.33 66.33s66.33-29.696 66.33-66.33c0-36.633-29.697-66.33-66.33-66.33m.05 102.736c-20.117 0-36.427-16.308-36.427-36.427 0-20.118 16.31-36.427 36.427-36.427 17.055 0 31.37 11.723 35.333 27.55H89.845c-3.365-7.255-10.713-12.301-19.222-12.301-11.678 0-21.179 9.501-21.179 21.18s9.501 21.178 21.18 21.178c8.539 0 15.907-5.08 19.256-12.377h16.095c-3.939 15.864-18.269 27.624-35.352 27.624"
-                          fill="var(--color-ink-brand)"
-                        >
-                        </path>
-                      </svg>
-                      Corex
-                    </.navigate>
-                  </div>
-                </div>
-              </div>
+                      </path>
+                    </svg>
+                    Corex
+                  </.navigate>
+                </.row>
+              </header>
 
               <div
                 id="layout-menu-nav-scroll"
-                class="flex-1 min-h-0 flex flex-col scrollbar scrollbar--sm overflow-y-auto w-full py-size gap-size bg-layer"
+                class="shell-drawer-nav flex-1 min-h-0 flex flex-col w-full py-size gap-size bg-layer"
                 aria-label={~t"Documentation navigation"}
-                phx-hook="AsideNavScroll"
               >
                 <.drawer_site_nav_tree path={@path} site_nav_tree_id="site-nav-menu" />
                 <.aside_nav_tree_views
@@ -80,32 +90,36 @@ defmodule E2eWeb.App.Header do
                   components_menu={@components_menu}
                   form_tree_id="form-menu"
                   components_tree_id="components-menu"
-                  tree_class="tree-view navigation max-w-3xs"
+                  tree_class="tree-navigation tree-navigation--max-w-3xs"
                 />
               </div>
-              <div
-                class="shrink-0 flex flex-wrap items-center justify-center gap-2 sm:gap-3 border-t border-[var(--color-border)] bg-[var(--color-layer)] p-3 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:hidden"
+              <.row
+                class="shell-drawer-settings"
+                wrap="wrap"
+                justify="center"
+                gap="md"
                 aria-label={~t"Display settings"}
               >
                 <.theme_toggle id="theme-select-menu" theme={@theme} />
                 <.mode_toggle id="mode-switcher-menu" mode={@mode} />
-              </div>
+              </.row>
             </:content>
           </.dialog>
 
           <.navigate
             to={~p"/"}
-            class="ui-link ui-link--brand ui-link--xl hover:text-link flex flex-nowrap items-center
-         gap-space font-semibold uppercase no-underline"
+            semantic="brand"
+            size="xl"
+            class="hover:text-link flex flex-nowrap items-center gap-space font-semibold uppercase no-underline"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 136 136"
-              class="icon icon--lg"
+              class="h-[1.25em] w-[1.25em] shrink-0"
             >
               <path
                 d="M70.573 1.67C33.94 1.67 4.243 31.367 4.243 68c0 36.634 29.697 66.33 66.33 66.33s66.33-29.696 66.33-66.33c0-36.633-29.697-66.33-66.33-66.33m.05 102.736c-20.117 0-36.427-16.308-36.427-36.427 0-20.118 16.31-36.427 36.427-36.427 17.055 0 31.37 11.723 35.333 27.55H89.845c-3.365-7.255-10.713-12.301-19.222-12.301-11.678 0-21.179 9.501-21.179 21.18s9.501 21.178 21.18 21.178c8.539 0 15.907-5.08 19.256-12.377h16.095c-3.939 15.864-18.269 27.624-35.352 27.624"
-                fill="var(--color-ink-brand)"
+                fill="var(--color-ui-ink-brand)"
               >
               </path>
             </svg>
@@ -113,12 +127,12 @@ defmodule E2eWeb.App.Header do
           </.navigate>
 
           <.header_main_nav path={@path} orientation={:horizontal} placement={:header} />
-        </div>
-        <div class="hidden lg:flex layout__row gap-2 sm:gap-4 shrink-0">
+        </.row>
+        <.row hide_below="lg" class="shell-header__toolbar" wrap="nowrap" gap="md" shrink="0">
           <.theme_toggle id="theme-select" theme={@theme} />
           <.mode_toggle id="mode-switcher" mode={@mode} />
-        </div>
-      </div>
+        </.row>
+      </.row>
     </header>
     """
   end

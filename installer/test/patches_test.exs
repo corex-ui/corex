@@ -242,120 +242,56 @@ defmodule Corex.New.PatchesTest do
       end)
     end
 
-    test "adds designex to single-line assets.deploy aliases" do
-      mix_exs = """
-      defmodule MyApp.MixProject do
-        use Mix.Project
-
-        def project do
-          [app: :my_app, version: "0.1.0", aliases: aliases(), deps: deps()]
-        end
-
-        defp deps do
-          [{:phoenix, "~> 1.8.0"}]
-        end
-
-        defp aliases do
-          [
-            "assets.build": ["compile", "tailwind my_app"],
-            "assets.deploy": ["tailwind my_app --minify", "phx.digest"]
-          ]
-        end
-      end
-      """
-
-      in_tmp(:patch_designex_deploy_single_line, fn ->
-        File.write!("mix.exs", mix_exs)
-        Patches.patch_mix_exs(File.cwd!(), designex: true)
-        body = File.read!("mix.exs")
-        assert body =~ ~s("assets.deploy": ["designex corex", "tailwind my_app --minify")
-      end)
-    end
-
-    test "adds designex to multiline assets.deploy aliases" do
-      mix_exs = """
-      defmodule MyApp.MixProject do
-        use Mix.Project
-
-        def project do
-          [app: :my_app, version: "0.1.0", aliases: aliases(), deps: deps()]
-        end
-
-        defp deps do
-          [{:phoenix, "~> 1.8.0"}]
-        end
-
-        defp aliases do
-          [
-            "assets.build": ["compile", "tailwind my_app"],
-            "assets.deploy": [
-              "compile",
-              "tailwind my_app --minify",
-              "phx.digest"
-            ]
-          ]
-        end
-      end
-      """
-
-      in_tmp(:patch_designex_deploy_multiline, fn ->
-        File.write!("mix.exs", mix_exs)
-        Patches.patch_mix_exs(File.cwd!(), designex: true)
-        body = File.read!("mix.exs")
-        assert body =~ "\"compile\", \"designex corex\", \"tailwind my_app --minify\""
-      end)
-    end
-
-    test "adds designex to multiline assets.build aliases" do
-      mix_exs = """
-      defmodule MyApp.MixProject do
-        use Mix.Project
-
-        def project do
-          [app: :my_app, version: "0.1.0", aliases: aliases(), deps: deps()]
-        end
-
-        defp deps do
-          [{:phoenix, "~> 1.8.0"}]
-        end
-
-        defp aliases do
-          [
-            "assets.build": [
-              "compile",
-              "tailwind my_app"
-            ],
-            "assets.deploy": ["tailwind my_app --minify", "phx.digest"]
-          ]
-        end
-      end
-      """
-
-      in_tmp(:patch_mix_exs_designex_multiline, fn ->
-        File.write!("mix.exs", mix_exs)
-        Patches.patch_mix_exs(File.cwd!(), designex: true)
-        body = File.read!("mix.exs")
-        assert body =~ "\"compile\", \"designex corex\""
-        assert body =~ "\"assets.deploy\": [\"designex corex\""
-      end)
-    end
-
-    test "adds designex dep and aliases when designex: true" do
-      in_tmp(:patch_mix_exs_designex, fn ->
+    test "adds corex_design dep and compiler when design: true" do
+      in_tmp(:patch_mix_exs_corex_design, fn ->
         File.write!("mix.exs", @mix_exs_with_aliases)
 
-        Patches.patch_mix_exs(File.cwd!(), designex: true)
+        Patches.patch_mix_exs(File.cwd!(), design: true, otp_app: :my_app)
         body = File.read!("mix.exs")
-        assert body =~ ~r/\{:designex,\s*"~> 1.0",\s*runtime:\s*Mix\.env\(\)\s*==\s*:dev\}/
+        assert body =~ "{:corex_design,"
+        assert body =~ ":corex_design"
+
+        Patches.patch_mix_exs(File.cwd!(), design: true, otp_app: :my_app)
+        body2 = File.read!("mix.exs")
+        assert length(String.split(body2, "{:corex_design,")) == 2
+      end)
+    end
+
+    test "appends corex_design compiler after Mix.compilers for Phoenix apps" do
+      mix_exs = """
+      defmodule MyApp.MixProject do
+        use Mix.Project
+
+        def project do
+          [
+            app: :my_app,
+            version: "0.1.0",
+            elixir: "~> 1.18",
+            compilers: [:phoenix_live_view] ++ Mix.compilers(),
+            deps: deps()
+          ]
+        end
+
+        defp deps, do: [{:phoenix_live_view, "~> 1.1.0"}]
+      end
+      """
+
+      in_tmp(:patch_mix_exs_compiler_order, fn ->
+        File.write!("mix.exs", mix_exs)
+        Patches.patch_mix_exs(File.cwd!(), design: true, otp_app: :my_app)
+        body = File.read!("mix.exs")
 
         assert body =~
-                 ~r/"assets\.build":\s*\[\s*"compile",\s*"designex corex",\s*"tailwind my_app"/
+                 "compilers: [:phoenix_live_view] ++ Mix.compilers() ++ [:corex_design]"
+      end)
+    end
 
-        assert body =~ ~r/"assets\.deploy":\s*\[\s*"designex corex",\s*"tailwind my_app --minify"/
-
-        Patches.patch_mix_exs(File.cwd!(), designex: true)
-        body2 = File.read!("mix.exs")
-        assert Regex.scan(~r/"designex corex"/, body2) |> length() == 2
+    test "skips corex_design when design: false" do
+      in_tmp(:patch_mix_exs_no_design, fn ->
+        File.write!("mix.exs", @mix_exs_with_aliases)
+        Patches.patch_mix_exs(File.cwd!(), design: false)
+        body = File.read!("mix.exs")
+        refute body =~ "{:corex_design,"
       end)
     end
 
@@ -742,22 +678,31 @@ defmodule Corex.New.PatchesTest do
       end)
     end
 
-    test "adds config :designex when designex: true" do
-      in_tmp(:patch_config_designex, fn ->
+    test "adds config :corex_design when design: true" do
+      in_tmp(:patch_config_corex_design, fn ->
         File.mkdir_p!("config")
         File.write!("config/config.exs", @stock_config_exs)
 
-        Patches.patch_config_exs(File.cwd!(), otp_app: :my_app, designex: true)
+        Patches.patch_config_exs(File.cwd!(), otp_app: :my_app, design: true)
         body = File.read!("config/config.exs")
-        assert body =~ "config :designex"
-        assert body =~ ~s(version: "1.0.2")
-        assert body =~ ~s(commit: "1da4b31")
-        assert body =~ ~s(dir: "corex")
-        assert body =~ "--dir=design --script=build.mjs --tokens=tokens"
+        assert body =~ "config :corex_design"
+        assert body =~ "output: \"assets/css/corex.tailwind.css\""
+        refute body =~ "Corex.Design.Theme.Presets.all()"
 
-        Patches.patch_config_exs(File.cwd!(), otp_app: :my_app, designex: true)
+        Patches.patch_config_exs(File.cwd!(), otp_app: :my_app, design: true)
         body2 = File.read!("config/config.exs")
-        assert Regex.scan(~r/config :designex/, body2) |> length() == 1
+        assert Regex.scan(~r/config :corex_design/, body2) |> length() == 1
+      end)
+    end
+
+    test "skips config :corex_design when design: false" do
+      in_tmp(:patch_config_no_design, fn ->
+        File.mkdir_p!("config")
+        File.write!("config/config.exs", @stock_config_exs)
+
+        Patches.patch_config_exs(File.cwd!(), otp_app: :my_app, design: false)
+        body = File.read!("config/config.exs")
+        refute body =~ "config :corex_design"
       end)
     end
   end

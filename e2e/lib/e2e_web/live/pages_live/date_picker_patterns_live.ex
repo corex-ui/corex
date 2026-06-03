@@ -60,7 +60,6 @@ defmodule E2eWeb.DatePickerPatternsLive do
               </p>
               <.date_picker
                 id="date-picker-patterns-controlled"
-                class="date-picker"
                 controlled
                 value={@selected}
                 on_value_change="pattern_date_changed"
@@ -73,9 +72,9 @@ defmodule E2eWeb.DatePickerPatternsLive do
                 }
               >
                 <:label>Date</:label>
-                <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-                <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-                <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+                <:trigger><.heroicon name="hero-calendar" /></:trigger>
+                <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+                <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
               </.date_picker>
             </div>
           </:preview>

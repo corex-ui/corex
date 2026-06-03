@@ -86,7 +86,7 @@ defmodule E2eWeb.TabsEventsLive do
 
               <.data_table
                 id="tabs-events-log-server"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.server_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -144,7 +144,7 @@ defmodule E2eWeb.TabsEventsLive do
 
               <.data_table
                 id="tabs-events-log-client"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.client_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>

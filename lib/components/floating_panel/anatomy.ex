@@ -8,7 +8,6 @@ defmodule Corex.FloatingPanel.Anatomy do
     defstruct [
       :id,
       :size,
-      :default_size,
       :default_position,
       :min_size,
       :max_size,
@@ -41,7 +40,6 @@ defmodule Corex.FloatingPanel.Anatomy do
             dir: String.t(),
             orientation: String.t(),
             size: map() | nil,
-            default_size: map() | nil,
             default_position: map() | nil,
             min_size: map() | nil,
             max_size: map() | nil,

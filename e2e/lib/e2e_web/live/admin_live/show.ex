@@ -20,7 +20,7 @@ defmodule E2eWeb.AdminLive.Show do
           <.navigate
             to={~p"/admins"}
             type="navigate"
-            class="button"
+            as="button"
             aria_label="Back to list"
             title="Back to list"
           >
@@ -29,7 +29,9 @@ defmodule E2eWeb.AdminLive.Show do
           <.navigate
             to={~p"/admins/#{@admin}/edit?return_to=show"}
             type="navigate"
-            class="button button--accent button--square"
+            as="button"
+            semantic="accent"
+            shape="square"
             aria_label="Edit admin"
             title="Edit admin"
           >
@@ -38,7 +40,6 @@ defmodule E2eWeb.AdminLive.Show do
           </.navigate>
           <.dialog
             id={"admin-delete-#{@admin.id}"}
-            class="dialog"
             role="alertdialog"
             modal
             close_on_interact_outside={false}
@@ -59,7 +60,8 @@ defmodule E2eWeb.AdminLive.Show do
                 <.action
                   id={"admin-delete-#{@admin.id}-cancel"}
                   phx-click={Corex.Dialog.set_open("admin-delete-#{@admin.id}", false)}
-                  class="button button--sm button--ghost"
+                  size="sm"
+                  variant="ghost"
                 >
                   Cancel
                 </.action>
@@ -69,7 +71,8 @@ defmodule E2eWeb.AdminLive.Show do
                     Corex.Dialog.set_open("admin-delete-#{@admin.id}", false)
                     |> JS.push("delete", value: %{id: @admin.id})
                   }
-                  class="button button--sm button--alert"
+                  size="sm"
+                  semantic="alert"
                 >
                   Delete
                 </.action>
@@ -79,7 +82,7 @@ defmodule E2eWeb.AdminLive.Show do
         </:actions>
       </.layout_heading>
 
-      <.data_list class="data-list max-w-md">
+      <.data_list class="data-list data-list--max-w-md">
         <:label :for={field <- @fields} value={Atom.to_string(field)}>
           {label(field)}
         </:label>

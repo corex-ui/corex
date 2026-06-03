@@ -81,17 +81,16 @@ defmodule E2eWeb.SelectEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.select
                 id="select-events-server"
-                class="select"
                 items={@items}
                 translation={%Corex.Select.Translation{placeholder: "Select"}}
                 on_value_change="select_changed"
               >
-                <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+                <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
               </.select>
 
               <.data_table
                 id="select-events-log-server"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.server_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -118,12 +117,11 @@ defmodule E2eWeb.SelectEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.select
                 id="select-events-client"
-                class="select"
                 items={@items}
                 translation={%Corex.Select.Translation{placeholder: "Select"}}
                 on_value_change_client="select-changed"
               >
-                <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+                <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
               </.select>
 
               <div
@@ -149,7 +147,7 @@ defmodule E2eWeb.SelectEventsLive do
 
               <.data_table
                 id="select-events-log-client"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.client_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>

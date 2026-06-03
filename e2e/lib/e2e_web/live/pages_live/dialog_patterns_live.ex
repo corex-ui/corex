@@ -48,7 +48,6 @@ defmodule E2eWeb.DialogPatternsLive do
           <:preview>
             <.dialog
               id={@id_controlled}
-              class="dialog"
               controlled
               open={@open}
               on_open_change="patterns_dialog_open_changed"
@@ -76,7 +75,6 @@ defmodule E2eWeb.DialogPatternsLive do
           <:preview>
             <.dialog
               id={@id_alert}
-              class="dialog"
               role="alertdialog"
               modal
               close_on_interact_outside={false}
@@ -91,13 +89,15 @@ defmodule E2eWeb.DialogPatternsLive do
                   <.action
                     id="patterns-dialog-alert-cancel"
                     phx-click={Corex.Dialog.set_open(@id_alert, false)}
-                    class="button button--sm button--ghost"
+                    size="sm"
+                    variant="ghost"
                   >
                     Cancel
                   </.action>
                   <.action
                     phx-click={Corex.Dialog.set_open(@id_alert, false)}
-                    class="button button--sm button--alert"
+                    size="sm"
+                    semantic="alert"
                   >
                     Delete
                   </.action>

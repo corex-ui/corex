@@ -76,7 +76,9 @@ If a label ever fails an audit, the answer is almost always to switch a theme, s
 
 ## A thin `site.css`
 
-The setup is small enough to fit in a paragraph. Run `mix corex.design` once. Files land under `assets/corex/`. In `app.css`, import the Corex base, the theme files you want to expose, the typography, the layout, and one file per component you render. Point Tailwind at the copied directory. Set `data-theme` and `data-mode` on `<html>`. Set `class="typo layout"` on `<body>`. That is the whole story.
+The setup is small enough to fit in a paragraph. This example uses the **per-component vendoring** path: run `mix corex.design` once, files land under `assets/corex/`, and you import anatomy CSS per component. Phoenix apps with Tailwind 4 can instead compile `corex.tailwind.css` via `:corex_design` (see [Styled](https://hexdocs.pm/corex/styled.html)).
+
+In `app.css`, import the Corex base, the theme files you want to expose, the typography, the layout, and one file per component you render. Point Tailwind at the copied directory. Set `data-theme` and `data-mode` on `<html>`. Set `class="typo layout"` on `<body>`. That is the whole story.
 
 ```css
 @import "../corex/main.css";

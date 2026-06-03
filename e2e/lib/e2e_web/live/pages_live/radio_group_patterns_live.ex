@@ -80,7 +80,6 @@ defmodule E2eWeb.RadioGroupPatternsLive do
             <.radio_group
               id="patterns-radio-group-controlled"
               name="patterns-rg"
-              class="radio-group"
               items={Demo.items_for_preview()}
               value={@value}
               controlled
@@ -113,17 +112,16 @@ defmodule E2eWeb.RadioGroupPatternsLive do
           <:preview>
             <div class="flex flex-col gap-3 w-full max-w-xl">
               <div class="flex flex-wrap gap-2">
-                <.action phx-click="add_item" class="button button--sm button--accent">
+                <.action phx-click="add_item" size="sm" semantic="accent">
                   <.heroicon name="hero-plus" /> Add item
                 </.action>
-                <.action phx-click="reset" class="button button--sm button--alert">
+                <.action phx-click="reset" size="sm" semantic="alert">
                   Reset
                 </.action>
               </div>
               <.radio_group
                 id="stream-radio-group"
                 name="stream-rg"
-                class="radio-group"
                 items={@items_list}
                 value={@stream_value}
                 controlled

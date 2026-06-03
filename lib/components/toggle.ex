@@ -9,7 +9,7 @@ defmodule Corex.Toggle do
   ### Minimal
 
   ```heex
-  <.toggle class="toggle">
+  <.toggle>
     lorem
   </.toggle>
   ```
@@ -17,12 +17,12 @@ defmodule Corex.Toggle do
   ### With indicator
 
   ```heex
-  <.toggle class="toggle">
+  <.toggle>
     <:indicator><.heroicon name="hero-bold" /></:indicator>
     Bold
   </.toggle>
 
-  <.toggle class="toggle">
+  <.toggle>
     <:indicator><.heroicon name="hero-bold" /></:indicator>
     <span class="sr-only">Bold</span>
   </.toggle>
@@ -33,9 +33,33 @@ defmodule Corex.Toggle do
   Set `data-toggle-dual-label` on the host to swap visible label text when pressed. Use a second `<span data-pressed>` for the on-state label.
 
   ```heex
-  <.toggle class="toggle" data-toggle-dual-label>
+  <.toggle data-toggle-dual-label>
     <span>lorem</span>
     <span data-pressed>donec</span>
+  </.toggle>
+  ```
+
+  <!-- tabs-close -->
+
+  ## Styling
+
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `semantic`, `variant`, `size`, `text`, `radius`.
+
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.toggle semantic="accent" variant="solid" size="md" class="toggle">
+    lorem
+  </.toggle>
+  ```
+
+  ### With classes
+
+  ```heex
+  <.toggle class="toggle toggle--accent toggle--solid toggle--md">
+    lorem
   </.toggle>
   ```
 
@@ -68,7 +92,6 @@ defmodule Corex.Toggle do
 
   ```heex
   <.toggle
-    class="toggle"
     controlled
     pressed={false}
     on_pressed_change="toggle_pressed_changed"
@@ -99,7 +122,6 @@ defmodule Corex.Toggle do
   ```heex
   <.toggle
     id="toggle-on-pressed-change-client"
-    class="toggle"
     on_pressed_change_client="toggle-client-changed"
   >
     lorem
@@ -123,7 +145,6 @@ defmodule Corex.Toggle do
 
   ```heex
   <.toggle
-    class="toggle"
     controlled
     pressed={@pressed}
     on_pressed_change="toggle_patterns_pressed"
@@ -146,17 +167,11 @@ defmodule Corex.Toggle do
 
   ## Style
 
-  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `toggle.css`, then set `class="toggle"` on `<.toggle>`.
+  Target parts with `data-scope` and `data-part`, or use [Corex Design](styled.html): `@import "./corex.tailwind.css"` in `app.css`.
 
   ```css
   [data-scope="toggle"][data-part="root"] {}
   [data-scope="toggle"][data-part="indicator"] {}
-  ```
-
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/toggle.css";
   ```
 
   Stack modifiers on the host (`class` on `<.toggle>`).
@@ -208,6 +223,28 @@ defmodule Corex.Toggle do
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
+  use Corex.Variants,
+    base: "toggle",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      variant: :visual,
+      size: :size,
+      text: :text,
+      radius: :radius
+    ],
+    defaults: [
+      width: "fit",
+      max_width: "none",
+      height: "auto",
+      max_height: "none",
+      variant: "solid",
+      size: "md"
+    ]
+
   attr(:id, :string, required: false)
 
   attr(:pressed, :boolean,
@@ -247,6 +284,8 @@ defmodule Corex.Toggle do
       phx-hook="Toggle"
       data-loading
       phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+      class={corex_style_class(assigns)}
+     
       {@rest}
       {Connect.props(%Props{
         id: @id,

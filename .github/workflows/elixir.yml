@@ -219,12 +219,6 @@ jobs:
         if: matrix.coveralls
         run: pnpm install --frozen-lockfile
 
-      - name: Verify installer design snapshot
-        if: matrix.coveralls
-        run: |
-          mix assets.build
-          diff -rq priv/design/corex installer/priv/corex_design/corex
-
       - name: Run tests and post coverage to Coveralls
         if: matrix.coveralls
         run: mix coveralls.github
@@ -240,8 +234,6 @@ jobs:
     strategy:
       matrix:
         include:
-          - elixir: 1.17.3
-            otp: 26.2.5.2
           - elixir: 1.18.4
             otp: 27.3
           - elixir: 1.18.4
@@ -324,8 +316,6 @@ jobs:
     strategy:
       matrix:
         include:
-          - elixir: 1.17.3
-            otp: 26.2.5.2
           - elixir: 1.18.4
             otp: 27.3
           - elixir: 1.18.4
@@ -369,14 +359,14 @@ jobs:
           mix compile --force
           mix test --only integration
 
-      - name: Verify corex_new archive embeds priv design snapshot
+      - name: Verify corex_new archive builds
         working-directory: installer
         env:
           MIX_ENV: prod
         run: |
           mix compile --no-deps-check
           mix archive.build -o /tmp/corex_new_archive_check.ez
-          unzip -l /tmp/corex_new_archive_check.ez | grep -q 'priv/corex_design/corex/' || (echo 'missing priv/corex_design in archive'; exit 1)
+          test -s /tmp/corex_new_archive_check.ez
 
   integration-tests:
     name: Integration tests (OTP ${{ matrix.otp }} | Elixir ${{ matrix.elixir }})
@@ -385,8 +375,6 @@ jobs:
     strategy:
       matrix:
         include:
-          - elixir: 1.17.3
-            otp: 26.2.5.2
           - elixir: 1.18.4
             otp: 27.3
           - elixir: 1.18.4

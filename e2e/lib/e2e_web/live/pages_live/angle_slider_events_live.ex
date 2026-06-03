@@ -78,7 +78,6 @@ defmodule E2eWeb.AngleSliderEventsLive do
               <div class="flex flex-wrap gap-6 justify-center w-full">
                 <.angle_slider
                   id={@id_server_change}
-                  class="angle-slider"
                   marker_values={[0.0, 90.0, 180.0, 270.0]}
                   on_value_change="angle_slider_changed"
                 >
@@ -87,7 +86,6 @@ defmodule E2eWeb.AngleSliderEventsLive do
 
                 <.angle_slider
                   id={@id_server_end}
-                  class="angle-slider"
                   marker_values={[0.0, 90.0, 180.0, 270.0]}
                   value={90.0}
                   on_value_change_end="angle_slider_change_ended"
@@ -98,7 +96,7 @@ defmodule E2eWeb.AngleSliderEventsLive do
 
               <.data_table
                 id="angle-slider-events-log-server"
-                class="data-table max-w-4xl"
+                class="data-table data-table--max-w-4xl"
                 rows={@streams.server_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -126,7 +124,6 @@ defmodule E2eWeb.AngleSliderEventsLive do
               <div class="flex flex-wrap gap-6 justify-center w-full">
                 <.angle_slider
                   id={@id_client_change}
-                  class="angle-slider"
                   marker_values={[0.0, 90.0, 180.0, 270.0]}
                   on_value_change_client={@client_event_change}
                 >
@@ -135,7 +132,6 @@ defmodule E2eWeb.AngleSliderEventsLive do
 
                 <.angle_slider
                   id={@id_client_end}
-                  class="angle-slider"
                   marker_values={[0.0, 90.0, 180.0, 270.0]}
                   value={90.0}
                   on_value_change_end_client={@client_event_end}
@@ -170,7 +166,7 @@ defmodule E2eWeb.AngleSliderEventsLive do
 
               <.data_table
                 id="angle-slider-events-log-client"
-                class="data-table max-w-4xl"
+                class="data-table data-table--max-w-4xl"
                 rows={@streams.client_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>

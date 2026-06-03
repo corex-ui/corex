@@ -32,10 +32,10 @@ defmodule E2eWeb.DataTableStyleLive do
   ]
 
   @width_variants [
-    {"max-w-2xs", "data-table-styling-max-w-2xs"},
-    {"max-w-md", "data-table-styling-max-w-md"},
-    {"max-w-xl", "data-table-styling-max-w-xl"},
-    {"max-w-2xl", "data-table-styling-max-w-2xl"}
+    {"data-table--max-w-2xs", "data-table-styling-max-w-2xs"},
+    {"data-table--max-w-md", "data-table-styling-max-w-md"},
+    {"data-table--max-w-xl", "data-table-styling-max-w-xl"},
+    {"data-table--max-w-2xl", "data-table-styling-max-w-2xl"}
   ]
 
   @impl true
@@ -94,13 +94,14 @@ defmodule E2eWeb.DataTableStyleLive do
         path={@path}
         id="data-table-styling-page"
         title="Data Table · Style"
-        subtitle="Semantic ink on column headers, size scale on headers and cells, and host max-width utilities. Tables include sort, selection, and actions."
+        subtitle="Semantic ink on column headers, size scale on headers and cells, and host max-width modifiers. Tables include sort, selection, and actions."
         heading_class="layout-heading"
       >
         <.demo_section
           id="data-table-styling-color"
           title="Color"
-          code_tabs={E2eWeb.Demos.DataTableDemo.styling_color_code_tabs()}
+          values={E2eWeb.Demos.DataTableDemo.styling_axis_values(:semantic)}
+          code_tabs={E2eWeb.Demos.DataTableDemo.styling_semantic_code_tabs()}
         >
           <:preview>
             <div class="flex flex-col gap-4 w-full">
@@ -120,6 +121,7 @@ defmodule E2eWeb.DataTableStyleLive do
         <.demo_section
           id="data-table-styling-size"
           title="Size"
+          values={E2eWeb.Demos.DataTableDemo.styling_axis_values(:size)}
           code_tabs={E2eWeb.Demos.DataTableDemo.styling_size_code_tabs()}
         >
           <:preview>
@@ -140,6 +142,7 @@ defmodule E2eWeb.DataTableStyleLive do
         <.demo_section
           id="data-table-styling-max-width"
           title="Max width"
+          values={E2eWeb.Demos.DataTableDemo.styling_axis_values(:max_width)}
           code_tabs={E2eWeb.Demos.DataTableDemo.styling_max_width_code_tabs()}
         >
           <:preview>
@@ -195,7 +198,7 @@ defmodule E2eWeb.DataTableStyleLive do
       <:col :let={u} label="Role" name={:role}>{u.role}</:col>
       <:col :let={u} label="Status" name={:status}>{u.status}</:col>
       <:action :let={u}>
-        <.action class="button button--sm" aria-label={"Edit #{u.name}"}>
+        <.action size="sm" aria-label={"Edit #{u.name}"}>
           <.heroicon name="hero-pencil-square" />
         </.action>
       </:action>

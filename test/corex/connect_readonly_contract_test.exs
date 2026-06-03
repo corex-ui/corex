@@ -2,7 +2,7 @@ defmodule Corex.ConnectReadonlyContractTest do
   use ExUnit.Case, async: true
 
   @components_root Path.join(Application.app_dir(:corex), "lib/components")
-  @design_root Application.app_dir(:corex, "priv/design")
+  @recipes_root Path.expand("e2e/assets/css/recipes", File.cwd!())
 
   test "hook connect modules do not emit data-read-only on props" do
     for path <- Path.wildcard(Path.join(@components_root, "**/connect.ex")) do
@@ -16,7 +16,7 @@ defmodule Corex.ConnectReadonlyContractTest do
   end
 
   test "design css does not use data-read-only" do
-    for path <- Path.wildcard(Path.join(@design_root, "**/*.css")) do
+    for path <- Path.wildcard(Path.join(@recipes_root, "**/*.css")) do
       refute File.read!(path) =~ "data-read-only",
              "#{path} must use [data-readonly], not [data-read-only]"
     end

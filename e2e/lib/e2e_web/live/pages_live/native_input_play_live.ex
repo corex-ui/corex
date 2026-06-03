@@ -40,7 +40,7 @@ defmodule E2eWeb.NativeInputPlayLive do
           <div class="w-full max-w-lg max-h-[70vh] overflow-y-auto scrollbar scrollbar--sm">
             <.anatomy_all_fields
               id_prefix="native-input-playground"
-              input_class="native-input max-w-md w-full"
+              input_class="native-input native-input--max-w-md w-full"
               dir={@dir}
             />
           </div>

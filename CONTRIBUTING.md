@@ -89,14 +89,14 @@ Generates apps with `corex.new` and asserts install paths. Requires `mix archive
 | `assets/test/lib/` | Unit tests for `assets/lib/` helpers |
 | `assets/components/` | Zag `Component` subclasses; colocated `*.test.ts` per module (helpers + smoke); all modules in `components-contract.test.ts` and `components-smoke.test.ts` |
 | `assets/hooks/` | LiveView hooks; hook-specific logic in `hooks/<name>.ts` + `hooks/<name>.test.ts`; wiring in `hooks-wiring.test.ts` |
-| `priv/design/corex/` | Corex Design tokens and component CSS (source of truth in the package) |
+| `design/lib/corex/design/` | Corex Design pipeline: token model, component recipes, emitters |
 | `priv/static/` | Built JS bundles (generated; run `mix assets.build`) |
 | `e2e/` | Demo LiveViews, Playwright-style tests, `doc_examples.ex` |
 | `installer/` | `corex_new` Mix installer |
 | `guides/` | Hexdocs guides |
 | `test/` | Unit tests for the library |
 
-Design CSS is copied into the installer on `mix assets.build` (`installer/priv/corex_design/`). Consumer apps get a vendored copy via `mix corex.design` into `assets/corex/` (not checked into the `:corex` library repo).
+Styled apps compile CSS via `{:corex_design, ...}` and `config :corex_design` (see `design/` and `guides/styled.md`).
 
 ## Pull requests
 
@@ -169,14 +169,14 @@ Every `attr` and `slot` should have a `doc:` (except `rest` / `:global`).
 ### Corex Design CSS
 
 - Modifiers use BEM-style classes on the host: `accordion accordion--accent accordion--lg`.
-- Implement modifiers with `@utility <component>--*` in `priv/design/corex/components/<name>.css`.
+- Implement modifiers in `design/lib/corex/design/recipes/` (recipe DSL); run `mix compile` or `mix corex.design.build` to inspect emitted CSS under `assets/css/recipes/`.
 - Document Color / Size (and other axes) in the component **Style** section as modifier tables.
 
 ## Adding or changing a component (checklist)
 
 1. Zag hook under `assets/hooks/` and register in the build if new.
 2. Elixir component, Connect, anatomy, tests under `test/`.
-3. Optional design CSS under `priv/design/corex/components/`.
+3. Optional design recipe under `design/lib/corex/design/recipes/`.
 4. E2e anatomy / API / events / styling / patterns pages as needed.
 5. Moduledoc + `Translation` module if user-facing strings exist.
 6. `mix assets.build`, `mix test`, `cd e2e && mix test`.

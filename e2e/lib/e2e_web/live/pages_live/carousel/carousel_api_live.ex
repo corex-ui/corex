@@ -84,27 +84,27 @@ defmodule E2eWeb.CarouselApiLive do
         >
           <:preview>
             <div class="flex flex-wrap gap-2 mb-4">
-              <.action phx-click={Corex.Carousel.play(@id_client)} class="button button--sm">
+              <.action phx-click={Corex.Carousel.play(@id_client)} size="sm">
                 Play
               </.action>
-              <.action phx-click={Corex.Carousel.pause(@id_client)} class="button button--sm">
+              <.action phx-click={Corex.Carousel.pause(@id_client)} size="sm">
                 Pause
               </.action>
-              <.action phx-click={Corex.Carousel.scroll_next(@id_client)} class="button button--sm">
+              <.action phx-click={Corex.Carousel.scroll_next(@id_client)} size="sm">
                 Next
               </.action>
-              <.action phx-click={Corex.Carousel.scroll_prev(@id_client)} class="button button--sm">
+              <.action phx-click={Corex.Carousel.scroll_prev(@id_client)} size="sm">
                 Prev
               </.action>
               <.action
                 phx-click={Corex.Carousel.scroll_next(@id_client, true)}
-                class="button button--sm"
+                size="sm"
               >
                 Next (instant)
               </.action>
               <.action
                 phx-click={Corex.Carousel.scroll_prev(@id_client, true)}
-                class="button button--sm"
+                size="sm"
               >
                 Prev (instant)
               </.action>
@@ -114,7 +114,6 @@ defmodule E2eWeb.CarouselApiLive do
               items={E2eWeb.Demos.CarouselDemo.gallery_images()}
               autoplay
               loop
-              class="carousel"
             >
               <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
               <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>

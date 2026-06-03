@@ -75,4 +75,6 @@ mix usage_rules.search_docs "accordion set_value" -p corex
 
 - [MCP](mcp.html)
 - [Installation](installation.html)
-- [Design](design.html)
+- [Design](design.html) — styling overview
+- [Unstyled](unstyled.html) — attrs and BEM modifiers
+- [Styled](styled.html) — Corex Design CSS

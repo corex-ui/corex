@@ -12,6 +12,12 @@ defmodule Corex.SelectTest do
       assert html =~ ~r/data-part="root"/
     end
 
+    test "renders trigger indicator inside trigger button" do
+      html = render_component(&CorexTest.ComponentHelpers.render_select/1, [])
+      assert html =~ ~r/data-part="trigger"[^>]*>[\s\S]*data-part="indicator"[\s\S]*<\/button>/
+      refute html =~ ~r/<\/button>\s*<span[^>]*data-part="indicator"/
+    end
+
     test "controlled select has data-value" do
       html = render_component(&CorexTest.ComponentHelpers.render_select_controlled_multiple/1, [])
       assert html =~ ~r/data-value="a"/

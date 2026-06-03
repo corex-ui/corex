@@ -1,7 +1,7 @@
 ---
 name: corex-installation
 description: >-
-  Load when running mix corex.new, mix corex.design, adding {:corex} to mix.exs,
+  Load when running mix corex.new, adding {:corex} and {:corex_design} to mix.exs,
   configuring esbuild --format=esm --splitting, LiveSocket with csrfToken and
   hooks: { ...colocatedHooks, ...corex } in assets/js/app.js, use Corex in
   lib/*_web.ex, type="module" on app.js script tag, toggle.css select.css for
@@ -31,11 +31,13 @@ Lazy hooks: PascalCase keys (`Dialog: () => import("corex/dialog")`).
 
 ## Design + optional toast
 
+Add `{:corex_design}`, register the `:corex_design` compiler, set `config :corex_design`, then:
+
 ```sh
-mix corex.design
+mix compile
 ```
 
-Import `toggle.css` / `select.css` when using mode/theme/lang pickers.
+Import `./corex.tailwind.css` in `assets/css/app.css`.
 
 MCP: `plug Corex.MCP` in dev only — see **corex-mcp**.
 

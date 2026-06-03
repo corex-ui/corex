@@ -8,19 +8,23 @@
     path={@path}
     id="action-style-page"
     title={~t"Action · Style"}
-    subtitle={~t"Color, size, corner radius, shape, and disabled modifiers on class=\"button\"."}
+    subtitle={
+      ~t"Variant, semantic, size, corner radius, shape, and disabled modifiers on class=\"button\"."
+    }
   >
     <.demo_section
-      id="action-style-color"
-      title={~t"Color"}
-      code={E2eWeb.Demos.ActionDemo.styling_color_code()}
+      id="action-style-variant-semantic"
+      title={~t"Variant × semantic"}
+      values={E2eWeb.Demos.ActionDemo.styling_variant_semantic_values()}
+      code={E2eWeb.Demos.ActionDemo.styling_variant_semantic_code()}
     >
-      <:preview><E2eWeb.Demos.ActionDemo.styling_color_example /></:preview>
+      <:preview><E2eWeb.Demos.ActionDemo.styling_variant_semantic_example /></:preview>
     </.demo_section>
 
     <.demo_section
       id="action-style-size"
       title={~t"Size"}
+      values={E2eWeb.Demos.ActionDemo.styling_axis_values(:size)}
       code={E2eWeb.Demos.ActionDemo.styling_size_code()}
     >
       <:preview><E2eWeb.Demos.ActionDemo.styling_size_example /></:preview>
@@ -29,14 +33,16 @@
     <.demo_section
       id="action-style-rounded"
       title={~t"Rounded"}
-      code={E2eWeb.Demos.ActionDemo.styling_rounded_code()}
+      values={E2eWeb.Demos.ActionDemo.styling_axis_values(:radius)}
+      code={E2eWeb.Demos.ActionDemo.styling_radius_code()}
     >
-      <:preview><E2eWeb.Demos.ActionDemo.styling_rounded_example /></:preview>
+      <:preview><E2eWeb.Demos.ActionDemo.styling_radius_example /></:preview>
     </.demo_section>
 
     <.demo_section
       id="action-style-shape"
       title={~t"Shape"}
+      values={E2eWeb.Demos.ActionDemo.styling_axis_values(:shape)}
       code={E2eWeb.Demos.ActionDemo.styling_shape_code()}
     >
       <:preview><E2eWeb.Demos.ActionDemo.styling_shape_example /></:preview>

@@ -45,7 +45,6 @@ defmodule E2eWeb.TogglePatternsLive do
           <:preview>
             <.toggle
               id="toggle-patterns-controlled"
-              class="toggle"
               controlled
               pressed={@pressed}
               on_pressed_change="toggle_patterns_pressed"

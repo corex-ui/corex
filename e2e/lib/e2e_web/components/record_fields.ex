@@ -37,7 +37,7 @@ defmodule E2eWeb.RecordFields do
       :if={@path_d_values != []}
       viewBox={@view_box}
       preserveAspectRatio="xMidYMid meet"
-      class="inline-block w-16 h-8 text-ink border border-border rounded"
+      class="inline-block w-16 h-8 text-ui-ink border border-border rounded"
       aria-hidden="true"
     >
       <g

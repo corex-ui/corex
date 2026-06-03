@@ -7,22 +7,24 @@
   <.demo_page
     path={@path}
     id="tooltip-styling-page"
-    title={~t"Tooltip · Styling"}
+    title={~t"Tooltip · Style"}
     subtitle={~t"Semantic colors, size, and typography via modifier classes on the tooltip root."}
   >
     <.demo_section
-      id="tooltip-styling-color"
-      title={~t"Color"}
-      code={E2eWeb.Demos.TooltipDemo.styling_color_code()}
+      id="tooltip-styling-semantic"
+      title={~t"Semantic"}
+      values={E2eWeb.Demos.TooltipDemo.styling_axis_values(:semantic)}
+      code={E2eWeb.Demos.TooltipDemo.styling_semantic_code()}
     >
       <:preview>
-        <E2eWeb.Demos.TooltipDemo.styling_color_example />
+        <E2eWeb.Demos.TooltipDemo.styling_semantic_example />
       </:preview>
     </.demo_section>
 
     <.demo_section
       id="tooltip-styling-size"
       title={~t"Size"}
+      values={E2eWeb.Demos.TooltipDemo.styling_axis_values(:size)}
       code={E2eWeb.Demos.TooltipDemo.styling_size_code()}
     >
       <:preview>
@@ -33,6 +35,7 @@
     <.demo_section
       id="tooltip-styling-text"
       title={~t"Text"}
+      values={E2eWeb.Demos.TooltipDemo.styling_axis_values(:text)}
       code={E2eWeb.Demos.TooltipDemo.styling_text_code()}
     >
       <:preview>

@@ -22,11 +22,18 @@ config :corex_web, E2eWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}],
   check_origin: false,
   code_reloader: true,
+  reloadable_compilers: [:gettext] ++ Mix.compilers() ++ [:corex_design],
   debug_errors: true,
   secret_key_base: "JQ3bjpj3drUYoLh2G4QBZr8KpmxWvAJGLV6DZzv9mIRqOkQqhpZwtu9np9fwDeSX",
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:e2e, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:e2e, ~w(--watch --minify)]}
+    tailwind_site:
+      {Tailwind, :install_and_run,
+       [
+         :e2e,
+         ~w(--watch --input=assets/css/site.css --output=priv/static/assets/css/site.css)
+       ]},
+    corex_design: {Corex.Design, :install_and_run, [:corex_web, ~w(--watch)]}
   ]
 
 # ## SSL Support

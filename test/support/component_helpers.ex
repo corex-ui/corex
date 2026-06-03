@@ -741,9 +741,66 @@ defmodule CorexTest.ComponentHelpers do
     """
   end
 
-  def render_navigate(assigns) do
+  def render_action_styled(assigns) do
+    assigns =
+      assigns
+      |> Map.put_new(:as, nil)
+      |> Map.put_new(:semantic, nil)
+      |> Map.put_new(:size, nil)
+      |> Map.put_new(:variant, nil)
+      |> Map.put_new(:radius, nil)
+      |> Map.put_new(:class, nil)
+
     ~H"""
-    <.navigate to={@to} type={@type} external={@external} download={@download} aria_label={@aria_label}>
+    <.action
+      as={@as}
+      semantic={@semantic}
+      size={@size}
+      variant={@variant}
+      radius={@radius}
+      class={@class}
+    >
+      Save
+    </.action>
+    """
+  end
+
+  def render_navigate_styled(assigns) do
+    assigns =
+      assigns
+      |> Map.put_new(:to, "/")
+      |> Map.put_new(:as, nil)
+      |> Map.put_new(:semantic, nil)
+      |> Map.put_new(:variant, nil)
+      |> Map.put_new(:size, nil)
+
+    ~H"""
+    <.navigate to={@to} as={@as} semantic={@semantic} variant={@variant} size={@size}>
+      Link
+    </.navigate>
+    """
+  end
+
+  def render_action_with_indicator(assigns) do
+    ~H"""
+    <.action aria_label="Close" semantic="accent" shape="square" size="lg">
+      <:indicator><span class="hero-x-mark" data-icon /></:indicator>
+    </.action>
+    """
+  end
+
+  def render_navigate(assigns) do
+    assigns = assign_new(assigns, :disabled, fn -> false end)
+
+    ~H"""
+    <.navigate
+      to={@to}
+      type={@type}
+      external={@external}
+      download={@download}
+      aria_label={@aria_label}
+      disabled={@disabled}
+    >
       Link text
     </.navigate>
     """

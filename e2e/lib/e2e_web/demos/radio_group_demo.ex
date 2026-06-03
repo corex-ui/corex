@@ -1,6 +1,10 @@
 defmodule E2eWeb.Demos.RadioGroupDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.Demos.StylingAxes
+
+  def styling_axis_values(axis), do: StylingAxes.styling_axis_values(axis)
+
   @styling_items_heex ~S"""
   items={[
     %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
@@ -29,7 +33,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     ~S"""
     <.radio_group
       name="rg-minimal"
-      class="radio-group"
+       
       items={[
         %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
         %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
@@ -46,7 +50,6 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     <.radio_group
       id="radio-group-anatomy-minimal"
       name="rg-minimal"
-      class="radio-group"
       items={items()}
     >
       <:label>Choose one</:label>
@@ -58,7 +61,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     ~S"""
     <.radio_group
       name="rg-indicator"
-      class="radio-group"
+       
       items={[
         %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
         %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
@@ -76,7 +79,6 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     <.radio_group
       id="radio-group-anatomy-indicator"
       name="rg-indicator"
-      class="radio-group"
       items={items()}
     >
       <:label>Choose one</:label>
@@ -89,7 +91,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     ~S"""
     <.radio_group
       name="rg-invalid"
-      class="radio-group"
+       
       invalid
       errors={["Required"]}
       items={[
@@ -101,7 +103,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       <:label>Choose one</:label>
       <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
       <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
+        <.heroicon name="hero-exclamation-circle" />
         {msg}
       </:error>
     </.radio_group>
@@ -113,7 +115,6 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     <.radio_group
       id="radio-group-anatomy-invalid"
       name="rg-invalid"
-      class="radio-group"
       invalid
       errors={["Required"]}
       items={items()}
@@ -121,7 +122,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       <:label>Choose one</:label>
       <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
       <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
+        <.heroicon name="hero-exclamation-circle" />
         {msg}
       </:error>
     </.radio_group>
@@ -132,7 +133,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     ~S"""
     <.radio_group
       name="rg-readonly"
-      class="radio-group"
+       
       read_only
       value="lorem"
       items={[
@@ -152,7 +153,6 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     <.radio_group
       id="radio-group-anatomy-readonly"
       name="rg-readonly"
-      class="radio-group"
       read_only
       value="lorem"
       items={items()}
@@ -167,7 +167,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     ~S"""
     <.radio_group
       name="rg-api-binding"
-      class="radio-group"
+       
       items={[
         %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
         %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
@@ -194,7 +194,6 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     <.radio_group
       id="radio-group-api-binding"
       name="rg-api-binding"
-      class="radio-group"
       items={items()}
       on_value_change="radio_group_api_binding"
     >
@@ -208,7 +207,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     ~S"""
     <.radio_group
       name="rg-api-client"
-      class="radio-group"
+       
       items={[
         %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
         %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
@@ -243,7 +242,6 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     <.radio_group
       id="radio-group-api-client"
       name="rg-api-client"
-      class="radio-group"
       items={items()}
       on_value_change_client="radio-group-api-changed"
     >
@@ -255,12 +253,12 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
 
   def api_clear_value_heex do
     ~S"""
-    <.action phx-click={Corex.RadioGroup.clear_value("radio-group-api-clear")} class="button button--sm">
+    <.action phx-click={Corex.RadioGroup.clear_value("radio-group-api-clear")} size="sm">
       Clear
     </.action>
     <.radio_group
       name="rg-api-clear"
-      class="radio-group"
+       
       value="lorem"
       items={[
         %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
@@ -287,14 +285,14 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     <div class="flex flex-col gap-4 w-full max-w-md">
       <.action
         phx-click={Corex.RadioGroup.clear_value("radio-group-api-clear")}
-        class="button button--sm button--alert"
+        size="sm"
+        semantic="alert"
       >
         Clear
       </.action>
       <.radio_group
         id="radio-group-api-clear"
         name="rg-api-clear"
-        class="radio-group"
         value="lorem"
         items={items()}
       >
@@ -307,12 +305,12 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
 
   def api_focus_heex do
     ~S"""
-    <.action phx-click={Corex.RadioGroup.focus("radio-group-api-focus")} class="button button--sm">
+    <.action phx-click={Corex.RadioGroup.focus("radio-group-api-focus")} size="sm">
       Focus group
     </.action>
     <.radio_group
       name="rg-api-focus"
-      class="radio-group"
+       
       items={[
         %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
         %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
@@ -336,10 +334,10 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
   def api_focus_example(assigns) do
     ~H"""
     <div class="flex flex-col gap-4 w-full max-w-md">
-      <.action phx-click={Corex.RadioGroup.focus("radio-group-api-focus")} class="button button--sm">
+      <.action phx-click={Corex.RadioGroup.focus("radio-group-api-focus")} size="sm">
         Focus group
       </.action>
-      <.radio_group id="radio-group-api-focus" name="rg-api-focus" class="radio-group" items={items()}>
+      <.radio_group id="radio-group-api-focus" name="rg-api-focus" items={items()}>
         <:label>Pick</:label>
         <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
       </.radio_group>
@@ -349,15 +347,15 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
 
   def api_server_heex do
     ~S"""
-    <.action phx-click={Corex.RadioGroup.set_value("radio-group-api-server", "duis")} class="button button--sm">
+    <.action phx-click={Corex.RadioGroup.set_value("radio-group-api-server", "duis")} size="sm">
       Set Duis
     </.action>
-    <.action phx-click={Corex.RadioGroup.set_value("radio-group-api-server", "donec")} class="button button--sm">
+    <.action phx-click={Corex.RadioGroup.set_value("radio-group-api-server", "donec")} size="sm">
       Set Donec
     </.action>
     <.radio_group
       name="rg-api-server"
-      class="radio-group"
+       
       value="lorem"
       items={[
         %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
@@ -385,13 +383,13 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       <div class="flex flex-wrap gap-2">
         <.action
           phx-click={Corex.RadioGroup.set_value("radio-group-api-server", "duis")}
-          class="button button--sm"
+          size="sm"
         >
           Set Duis
         </.action>
         <.action
           phx-click={Corex.RadioGroup.set_value("radio-group-api-server", "donec")}
-          class="button button--sm"
+          size="sm"
         >
           Set Donec
         </.action>
@@ -399,7 +397,6 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       <.radio_group
         id="radio-group-api-server"
         name="rg-api-server"
-        class="radio-group"
         value="lorem"
         items={items()}
       >
@@ -414,7 +411,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     ~S"""
     <.radio_group
       name="rg-api-controlled"
-      class="radio-group"
+       
       items={[
         %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
         %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
@@ -445,7 +442,6 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     <.radio_group
       id="radio-group-api-controlled"
       name="rg-api-controlled"
-      class="radio-group"
       items={items()}
       value={@value}
       controlled
@@ -465,7 +461,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     ~S"""
     <.radio_group
       name="rg-events-server"
-      class="radio-group"
+       
       items={[
         %{value: "a", label: "Option A"},
         %{value: "b", label: "Option B"}
@@ -489,7 +485,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     ~S"""
     <.radio_group
       name="rg-events-client"
-      class="radio-group"
+       
       items={[
         %{value: "a", label: "Option A"},
         %{value: "b", label: "Option B"}
@@ -522,7 +518,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     ~S"""
     <.radio_group
       name="patterns-rg"
-      class="radio-group"
+       
       items={[
         %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
         %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
@@ -554,16 +550,16 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     ~S"""
     <div class="flex flex-col gap-3 w-full max-w-xl">
       <div class="flex flex-wrap gap-2">
-        <.action phx-click="add_item" class="button button--sm button--accent">
+        <.action phx-click="add_item" size="sm" semantic="accent">
           <.heroicon name="hero-plus" /> Add item
         </.action>
-        <.action phx-click="reset" class="button button--sm button--alert">
+        <.action phx-click="reset" size="sm" semantic="alert">
           Reset
         </.action>
       </div>
       <.radio_group
         name="stream-rg"
-        class="radio-group"
+         
         items={@items_list}
         value={@stream_value}
         controlled
@@ -638,17 +634,17 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
         ~H"""
         <div class="flex flex-col gap-3 w-full max-w-xl">
           <div class="flex flex-wrap gap-2">
-            <.action phx-click="add_item" class="button button--sm button--accent">
+            <.action phx-click="add_item" size="sm" semantic="accent">
               <.heroicon name="hero-plus" /> Add item
             </.action>
-            <.action phx-click="reset" class="button button--sm button--alert">
+            <.action phx-click="reset" size="sm" semantic="alert">
               Reset
             </.action>
           </div>
           <.radio_group
             id="stream-radio-group"
             name="stream-rg"
-            class="radio-group"
+             
             items={@items_list}
             value={@stream_value}
             controlled
@@ -696,15 +692,15 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       action={~p"/radio-group/form"}
       method="post"
     >
-      <.radio_group field={@form[:choice]} class="radio-group" items={Corex.List.new(#{@form_items_code})}>
+      <.radio_group field={@form[:choice]}   items={Corex.List.new(#{@form_items_code})}>
         <:label>Choose one</:label>
         <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.radio_group>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -735,15 +731,15 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
   def form_doc_live_phoenix_heex do
     ~s"""
     <.form for={@form} phx-submit="save_phoenix">
-      <.radio_group field={@form[:choice]} class="radio-group" items={Corex.List.new(#{@form_items_code})}>
+      <.radio_group field={@form[:choice]}   items={Corex.List.new(#{@form_items_code})}>
         <:label>Choose one</:label>
         <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.radio_group>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -759,7 +755,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     >
       <.radio_group
         field={@form[:choice]}
-        class="radio-group"
+         
         items={[
           %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
           %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
@@ -769,12 +765,12 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
         <:label>Choose one</:label>
         <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.radio_group>
 
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -827,7 +823,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     >
       <.radio_group
         field={@form[:choice]}
-        class="radio-group"
+         
         items={[
           %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
           %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
@@ -837,12 +833,12 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
         <:label>Choose one</:label>
         <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.radio_group>
 
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -893,13 +889,13 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.radio_group
         name="user[choice]"
-        class="radio-group"
+         
         items={#{@form_items_code}}
       >
         <:label>Choose one</:label>
         <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
       </.radio_group>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" semantic="accent">Submit</.action>
     </form>
     """
   end
@@ -926,7 +922,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     >
       <.radio_group
         field={@form[:choice]}
-        class="radio-group"
+         
         items={[
           %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
           %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
@@ -937,12 +933,12 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
         <:label>Choose one</:label>
         <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.radio_group>
 
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -1038,7 +1034,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     >
       <.radio_group
         field={@form[:choice]}
-        class="radio-group"
+         
         items={[
           %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
           %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
@@ -1049,12 +1045,12 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
         <:label>Choose one</:label>
         <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.radio_group>
 
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -1158,13 +1154,12 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     >
       <.radio_group
         field={f[:choice]}
-        class="radio-group"
         items={items()}
       >
         <:label>Choose one</:label>
         <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.radio_group>
@@ -1172,7 +1167,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       <.action
         type="submit"
         id="radio-group-changeset-submit"
-        class="button button--accent"
+        semantic="accent"
       >
         Submit
       </.action>
@@ -1192,13 +1187,12 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     >
       <.radio_group
         field={f[:choice]}
-        class="radio-group"
         items={items()}
       >
         <:label>Choose one</:label>
         <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.radio_group>
@@ -1206,7 +1200,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       <.action
         type="submit"
         id="radio-group-validate-submit"
-        class="button button--accent"
+        semantic="accent"
       >
         Submit
       </.action>
@@ -1227,13 +1221,12 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       <.radio_group
         name="user[choice]"
         id="radio-group-form-native-choice"
-        class="radio-group"
         items={items()}
       >
         <:label>Choose one</:label>
         <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
       </.radio_group>
-      <.action type="submit" id="radio-group-controller-submit" class="button button--accent">
+      <.action type="submit" id="radio-group-controller-submit" semantic="accent">
         Submit
       </.action>
     </form>
@@ -1251,19 +1244,18 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     >
       <.radio_group
         field={@form[:choice]}
-        class="radio-group"
         items={items()}
         on_value_change="choice_changed"
       >
         <:label>Choose one</:label>
         <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.radio_group>
 
-      <.action type="submit" id="radio-group-form-live-submit" class="button button--accent">
+      <.action type="submit" id="radio-group-form-live-submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -1281,13 +1273,12 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     >
       <.radio_group
         field={@form[:choice]}
-        class="radio-group"
         items={items()}
       >
         <:label>Choose one</:label>
         <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.radio_group>
@@ -1295,7 +1286,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       <.action
         type="submit"
         id="radio-group-form-live-strict-submit"
-        class="button button--accent"
+        semantic="accent"
       >
         Submit
       </.action>
@@ -1305,37 +1296,36 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
 
   def styling_items, do: E2eWeb.Demos.DocExamples.radio_items()
 
-  def styling_color_code do
+  def styling_semantic_code do
     """
-    <.radio_group name="rg-style-default" class="radio-group" value="lorem" #{@styling_items_heex}>
+    <.radio_group name="rg-style-default"   value="lorem" #{@styling_items_heex}>
       #{@styling_item_control_heex}
     </.radio_group>
-    <.radio_group name="rg-style-accent" class="radio-group radio-group--accent" value="lorem" #{@styling_items_heex}>
+    <.radio_group name="rg-style-accent" semantic="accent"  value="lorem" #{@styling_items_heex}>
       #{@styling_item_control_heex}
     </.radio_group>
-    <.radio_group name="rg-style-brand" class="radio-group radio-group--brand" value="lorem" #{@styling_items_heex}>
+    <.radio_group name="rg-style-brand" semantic="brand"  value="lorem" #{@styling_items_heex}>
       #{@styling_item_control_heex}
     </.radio_group>
-    <.radio_group name="rg-style-alert" class="radio-group radio-group--alert" value="lorem" #{@styling_items_heex}>
+    <.radio_group name="rg-style-alert" semantic="alert"  value="lorem" #{@styling_items_heex}>
       #{@styling_item_control_heex}
     </.radio_group>
-    <.radio_group name="rg-style-success" class="radio-group radio-group--success" value="lorem" #{@styling_items_heex}>
+    <.radio_group name="rg-style-success" semantic="success"  value="lorem" #{@styling_items_heex}>
       #{@styling_item_control_heex}
     </.radio_group>
-    <.radio_group name="rg-style-info" class="radio-group radio-group--info" value="lorem" #{@styling_items_heex}>
+    <.radio_group name="rg-style-info" semantic="info"  value="lorem" #{@styling_items_heex}>
       #{@styling_item_control_heex}
     </.radio_group>
     """
   end
 
-  def styling_color_example(assigns) do
+  def styling_semantic_example(assigns) do
     _ = assigns
 
     ~H"""
     <.radio_group
       id="radio-group-style-color-default"
       name="rg-style-color-default"
-      class="radio-group"
       value="lorem"
       items={styling_items()}
     >
@@ -1344,7 +1334,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     <.radio_group
       id="radio-group-style-color-accent"
       name="rg-style-color-accent"
-      class="radio-group radio-group--accent"
+      semantic="accent"
       value="lorem"
       items={styling_items()}
     >
@@ -1353,7 +1343,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     <.radio_group
       id="radio-group-style-color-brand"
       name="rg-style-color-brand"
-      class="radio-group radio-group--brand"
+      semantic="brand"
       value="lorem"
       items={styling_items()}
     >
@@ -1362,7 +1352,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     <.radio_group
       id="radio-group-style-color-alert"
       name="rg-style-color-alert"
-      class="radio-group radio-group--alert"
+      semantic="alert"
       value="lorem"
       items={styling_items()}
     >
@@ -1371,7 +1361,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     <.radio_group
       id="radio-group-style-color-success"
       name="rg-style-color-success"
-      class="radio-group radio-group--success"
+      semantic="success"
       value="lorem"
       items={styling_items()}
     >
@@ -1380,7 +1370,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     <.radio_group
       id="radio-group-style-color-info"
       name="rg-style-color-info"
-      class="radio-group radio-group--info"
+      semantic="info"
       value="lorem"
       items={styling_items()}
     >
@@ -1391,16 +1381,16 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
 
   def styling_size_code do
     """
-    <.radio_group name="rg-style-sm" class="radio-group radio-group--sm" value="lorem" #{@styling_items_heex}>
+    <.radio_group name="rg-style-sm" size="sm"  value="lorem" #{@styling_items_heex}>
       #{@styling_item_control_heex}
     </.radio_group>
-    <.radio_group name="rg-style-md" class="radio-group radio-group--md" value="lorem" #{@styling_items_heex}>
+    <.radio_group name="rg-style-md" size="md"  value="lorem" #{@styling_items_heex}>
       #{@styling_item_control_heex}
     </.radio_group>
-    <.radio_group name="rg-style-lg" class="radio-group radio-group--lg" value="lorem" #{@styling_items_heex}>
+    <.radio_group name="rg-style-lg" size="lg"  value="lorem" #{@styling_items_heex}>
       #{@styling_item_control_heex}
     </.radio_group>
-    <.radio_group name="rg-style-xl" class="radio-group radio-group--xl" value="lorem" #{@styling_items_heex}>
+    <.radio_group name="rg-style-xl" size="xl"  value="lorem" #{@styling_items_heex}>
       #{@styling_item_control_heex}
     </.radio_group>
     """
@@ -1413,7 +1403,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     <.radio_group
       id="radio-group-style-sm"
       name="rg-style-sm"
-      class="radio-group radio-group--sm"
+      size="sm"
       value="lorem"
       items={styling_items()}
     >
@@ -1422,7 +1412,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     <.radio_group
       id="radio-group-style-md"
       name="rg-style-md"
-      class="radio-group radio-group--md"
+      size="md"
       value="lorem"
       items={styling_items()}
     >
@@ -1431,7 +1421,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     <.radio_group
       id="radio-group-style-lg"
       name="rg-style-lg"
-      class="radio-group radio-group--lg"
+      size="lg"
       value="lorem"
       items={styling_items()}
     >
@@ -1440,7 +1430,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     <.radio_group
       id="radio-group-style-xl"
       name="rg-style-xl"
-      class="radio-group radio-group--xl"
+      size="xl"
       value="lorem"
       items={styling_items()}
     >
@@ -1451,16 +1441,16 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
 
   def styling_max_width_code do
     """
-    <.radio_group name="rg-style-max-2xs" class="radio-group max-w-2xs" value="lorem" #{@styling_items_heex}>
+    <.radio_group name="rg-style-max-2xs"  class="radio-group radio-group--max-w-2xs" value="lorem" #{@styling_items_heex}>
       #{@styling_item_control_heex}
     </.radio_group>
-    <.radio_group name="rg-style-max-md" class="radio-group max-w-md" value="lorem" #{@styling_items_heex}>
+    <.radio_group name="rg-style-max-md"  class="radio-group radio-group--max-w-md" value="lorem" #{@styling_items_heex}>
       #{@styling_item_control_heex}
     </.radio_group>
-    <.radio_group name="rg-style-max-xl" class="radio-group max-w-xl" value="lorem" #{@styling_items_heex}>
+    <.radio_group name="rg-style-max-xl"  class="radio-group radio-group--max-w-xl" value="lorem" #{@styling_items_heex}>
       #{@styling_item_control_heex}
     </.radio_group>
-    <.radio_group name="rg-style-max-2xl" class="radio-group max-w-2xl" value="lorem" #{@styling_items_heex}>
+    <.radio_group name="rg-style-max-2xl"  class="radio-group radio-group--max-w-2xl" value="lorem" #{@styling_items_heex}>
       #{@styling_item_control_heex}
     </.radio_group>
     """
@@ -1473,7 +1463,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     <.radio_group
       id="radio-group-style-max-2xs"
       name="rg-style-max-2xs"
-      class="radio-group max-w-2xs"
+      class="radio-group radio-group--max-w-2xs"
       value="lorem"
       items={styling_items()}
     >
@@ -1482,7 +1472,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     <.radio_group
       id="radio-group-style-max-md"
       name="rg-style-max-md"
-      class="radio-group max-w-md"
+      class="radio-group radio-group--max-w-md"
       value="lorem"
       items={styling_items()}
     >
@@ -1491,7 +1481,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     <.radio_group
       id="radio-group-style-max-xl"
       name="rg-style-max-xl"
-      class="radio-group max-w-xl"
+      class="radio-group radio-group--max-w-xl"
       value="lorem"
       items={styling_items()}
     >
@@ -1500,7 +1490,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     <.radio_group
       id="radio-group-style-max-2xl"
       name="rg-style-max-2xl"
-      class="radio-group max-w-2xl"
+      class="radio-group radio-group--max-w-2xl"
       value="lorem"
       items={styling_items()}
     >
@@ -1519,11 +1509,11 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       action={~p"/radio-group/form"}
       method="post"
     >
-      <.radio_group field={f[:choice]} class="radio-group" items={items()}>
+      <.radio_group field={f[:choice]} items={items()}>
         <:label>Choose one</:label>
         <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
       </.radio_group>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -1542,11 +1532,11 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
   def form_preview_live_phoenix(assigns) do
     ~H"""
     <.form for={@form} phx-submit="save_phoenix">
-      <.radio_group field={@form[:choice]} class="radio-group" items={items()}>
+      <.radio_group field={@form[:choice]} items={items()}>
         <:label>Choose one</:label>
         <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
       </.radio_group>
-      <.action type="submit" id="radio-group-live-form-phoenix-submit" class="button button--accent">
+      <.action type="submit" id="radio-group-live-form-phoenix-submit" semantic="accent">
         Submit
       </.action>
     </.form>

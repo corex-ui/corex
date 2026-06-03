@@ -75,7 +75,6 @@ defmodule E2eWeb.TooltipEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.tooltip
                 id="tooltip-events"
-                class="tooltip"
                 on_open_change="tooltip_open_changed"
                 on_open_change_client="tooltip-open-changed"
               >
@@ -96,7 +95,11 @@ defmodule E2eWeb.TooltipEventsLive do
                 }
               </script>
 
-              <.data_table id="tooltip-events-log" class="data-table max-w-3xl" rows={@streams.logs}>
+              <.data_table
+                id="tooltip-events-log"
+                class="data-table data-table--max-w-3xl"
+                rows={@streams.logs}
+              >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
                 <:col :let={{_dom_id, row}} label="Event">{row.event}</:col>
                 <:col :let={{_dom_id, row}} label="Value">{row.value}</:col>

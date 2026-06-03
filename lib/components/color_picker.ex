@@ -11,33 +11,28 @@ defmodule Corex.ColorPicker do
     value="rgb(25, 9, 192, 0.9)"
     label="Select Color (RGBA)"
     presets={["#ff0000", "#00ff00", "#0000ff", "rgb(25, 9, 192, 0.9)"]}
-    class="color-picker"
   />
   ```
 
-  ## Style
+  ## Styling
 
-  Target elements via data attributes:
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `semantic`, `size`, `radius`.
 
-  ```css
-  [data-scope="color-picker"][data-part="root"] {}
-  [data-scope="color-picker"][data-part="label"] {}
-  [data-scope="color-picker"][data-part="control"] {}
-  [data-scope="color-picker"][data-part="trigger"] {}
-  [data-scope="color-picker"][data-part="content"] {}
-  [data-scope="color-picker"][data-part="area"] {}
-  [data-scope="color-picker"][data-part="channel-slider"] {}
-  [data-scope="color-picker"][data-part="swatch-trigger"] {}
-  [data-scope="color-picker"][data-part="error"] {}
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.color_picker semantic="accent" size="md" class="color-picker" value="#3b82f6" label="Color" />
   ```
 
-  Import the Corex design:
+  ### With classes
 
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/color-picker.css";
+  ```heex
+  <.color_picker class="color-picker color-picker--accent color-picker--md" value="#3b82f6" label="Color" />
   ```
+
+  <!-- tabs-close -->
 
   ## API
 
@@ -82,7 +77,6 @@ defmodule Corex.ColorPicker do
 
   ```heex
   <.color_picker
-    class="color-picker"
     value="#3b82f6"
     label="Color"
     on_value_change="color_value_changed"
@@ -99,7 +93,6 @@ defmodule Corex.ColorPicker do
 
   ```heex
   <.color_picker
-    class="color-picker"
     value="#3b82f6"
     label="Color"
     on_open_change="color_open_changed"
@@ -132,7 +125,6 @@ defmodule Corex.ColorPicker do
   ```heex
   <.color_picker
     id="color-picker-events-client"
-    class="color-picker"
     value="#3b82f6"
     label="Color"
     on_value_change_client="color-value-changed"
@@ -150,7 +142,6 @@ defmodule Corex.ColorPicker do
   ```heex
   <.color_picker
     id="color-picker-open-events-client"
-    class="color-picker"
     value="#3b82f6"
     label="Color"
     on_open_change_client="color-open-changed"
@@ -178,28 +169,27 @@ defmodule Corex.ColorPicker do
   #### Heex
 
   ```heex
-      <.form
-        :let={f}
-        for={@form}
-        action="/color-picker/form"
-        method="post"
-      >
-        <.color_picker
-          field={f[:color]}
-          label="Color"
-          class="color-picker"
-          presets={["#ff0000", "#00ff00", "#0000ff"]}
-        >
-          <:error :let={msg}>
-            <.heroicon name="hero-exclamation-circle" class="icon" />
-            {msg}
-          </:error>
-        </.color_picker>
+  <.form
+    :let={f}
+    for={@form}
+    action="/color-picker/form"
+    method="post"
+  >
+    <.color_picker
+      field={f[:color]}
+      label="Color"
+      presets={["#ff0000", "#00ff00", "#0000ff"]}
+    >
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" />
+        {msg}
+      </:error>
+    </.color_picker>
 
-        <.action type="submit" class="button button--accent">
-          Submit
-        </.action>
-      </.form>
+    <.action type="submit">
+      Submit
+    </.action>
+  </.form>
   ```
 
   #### Elixir
@@ -231,28 +221,27 @@ defmodule Corex.ColorPicker do
   #### Heex
 
   ```heex
-      <.form
-        :let={f}
-        for={@form}
-        action="/color-picker/form"
-        method="post"
-      >
-        <.color_picker
-          field={f[:color]}
-          label="Color"
-          class="color-picker"
-          presets={["#ff0000", "#00ff00", "#0000ff"]}
-        >
-          <:error :let={msg}>
-            <.heroicon name="hero-exclamation-circle" class="icon" />
-            {msg}
-          </:error>
-        </.color_picker>
+  <.form
+    :let={f}
+    for={@form}
+    action="/color-picker/form"
+    method="post"
+  >
+    <.color_picker
+      field={f[:color]}
+      label="Color"
+      presets={["#ff0000", "#00ff00", "#0000ff"]}
+    >
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" />
+        {msg}
+      </:error>
+    </.color_picker>
 
-        <.action type="submit" class="button button--accent">
-          Submit
-        </.action>
-      </.form>
+    <.action type="submit">
+      Submit
+    </.action>
+  </.form>
   ```
 
   #### Elixir
@@ -335,21 +324,20 @@ defmodule Corex.ColorPicker do
   ### Native form (plain HTML)
 
   ```heex
-      <form
-        action="/color-picker/form"
-        method="post"
-      >
-        <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-        <.color_picker
-          name="color_picker_form[color]"
-          value="#3b82f6"
-          label="Color"
-          class="color-picker"
-        />
-        <.action type="submit" class="button button--accent">
-          Submit
-        </.action>
-      </form>
+  <form
+    action="/color-picker/form"
+    method="post"
+  >
+    <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+    <.color_picker
+      name="color_picker_form[color]"
+      value="#3b82f6"
+      label="Color"
+    />
+    <.action type="submit">
+      Submit
+    </.action>
+  </form>
   ```
 
   #### Elixir
@@ -363,10 +351,72 @@ defmodule Corex.ColorPicker do
   ```
 
   <!-- tabs-close -->
+
+  ## Style
+
+  Target parts with `data-scope` and `data-part`, or use [Corex Design](styled.html): `@import "./corex.tailwind.css"` in `app.css`.
+
+  ```css
+  [data-scope="color-picker"][data-part="root"] {}
+  [data-scope="color-picker"][data-part="label"] {}
+  [data-scope="color-picker"][data-part="control"] {}
+  [data-scope="color-picker"][data-part="trigger"] {}
+  [data-scope="color-picker"][data-part="content"] {}
+  [data-scope="color-picker"][data-part="area"] {}
+  [data-scope="color-picker"][data-part="channel-slider"] {}
+  [data-scope="color-picker"][data-part="swatch-trigger"] {}
+  [data-scope="color-picker"][data-part="error"] {}
+  ```
+
+  Stack modifiers on the host (`class` on `<.color_picker>`).
+
+  <!-- tabs-open -->
+
+  ### Color
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `color-picker` |
+  | Accent | `color-picker color-picker--accent` |
+  | Brand | `color-picker color-picker--brand` |
+  | Alert | `color-picker color-picker--alert` |
+  | Info | `color-picker color-picker--info` |
+  | Success | `color-picker color-picker--success` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `color-picker color-picker--sm` |
+  | MD | `color-picker color-picker--md` |
+  | LG | `color-picker color-picker--lg` |
+  | XL | `color-picker color-picker--xl` |
+
+  <!-- tabs-close -->
   '''
 
   @doc type: :component
   use Phoenix.Component
+
+  use Corex.Variants,
+    base: "color-picker",
+    class_attr: false,
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size,
+      radius: :radius
+    ],
+    defaults: [
+      width: "fit",
+      max_width: "none",
+      height: "auto",
+      max_height: "none",
+      size: "md"
+    ]
 
   import Corex.Api.Doc
 
@@ -485,7 +535,8 @@ defmodule Corex.ColorPicker do
       phx-hook="ColorPicker"
       data-loading
       phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
-      class={@class || "color-picker"}
+      class={corex_style_class(assigns)}
+     
       {@rest}
       {Connect.props(%Props{
         id: @id,

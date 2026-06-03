@@ -127,8 +127,8 @@ defmodule Corex.Accordion.Connect do
     )
   end
 
-  @spec content(Item.t(), String.t()) :: map()
-  def content(assigns, animation \\ "instant") do
+  @spec content(Item.t(), String.t(), Height.t()) :: map()
+  def content(assigns, animation \\ "instant", animation_options \\ %Height{}) do
     expanded = assigns.value in assigns.values
 
     base = %{
@@ -144,13 +144,16 @@ defmodule Corex.Accordion.Connect do
 
     base = Map.put(base, "aria-labelledby", trigger_id(assigns.id, assigns.value))
 
+    animation_options =
+      Map.get(assigns, :animation_options, animation_options) || animation_options
+
     result =
       cond do
         expanded ->
           base
 
         animation in ["js", "custom"] ->
-          base
+          Map.put(base, "style", Height.closed_style(animation_options))
 
         true ->
           Map.put(base, "hidden", true)

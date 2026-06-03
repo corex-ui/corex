@@ -97,7 +97,8 @@ defmodule E2eWeb.DialogAnimationLive do
           <:controls>
             <.select
               id="dialog-animation-easing"
-              class="select select--sm select--mini-sm lg:w-full"
+              size="sm"
+              class="select select--mini-sm lg:w-full"
               value={@easing}
               items={@easing_items}
               on_value_change="easing_changed"
@@ -117,10 +118,10 @@ defmodule E2eWeb.DialogAnimationLive do
             >
               <:label>Duration</:label>
               <:decrement_trigger>
-                <.heroicon name="hero-chevron-down" class="icon" />
+                <.heroicon name="hero-chevron-down" />
               </:decrement_trigger>
               <:increment_trigger>
-                <.heroicon name="hero-chevron-up" class="icon" />
+                <.heroicon name="hero-chevron-up" />
               </:increment_trigger>
             </.number_input>
 
@@ -135,10 +136,10 @@ defmodule E2eWeb.DialogAnimationLive do
             >
               <:label>Opacity start</:label>
               <:decrement_trigger>
-                <.heroicon name="hero-chevron-down" class="icon" />
+                <.heroicon name="hero-chevron-down" />
               </:decrement_trigger>
               <:increment_trigger>
-                <.heroicon name="hero-chevron-up" class="icon" />
+                <.heroicon name="hero-chevron-up" />
               </:increment_trigger>
             </.number_input>
 
@@ -153,10 +154,10 @@ defmodule E2eWeb.DialogAnimationLive do
             >
               <:label>Opacity end</:label>
               <:decrement_trigger>
-                <.heroicon name="hero-chevron-down" class="icon" />
+                <.heroicon name="hero-chevron-down" />
               </:decrement_trigger>
               <:increment_trigger>
-                <.heroicon name="hero-chevron-up" class="icon" />
+                <.heroicon name="hero-chevron-up" />
               </:increment_trigger>
             </.number_input>
 
@@ -171,10 +172,10 @@ defmodule E2eWeb.DialogAnimationLive do
             >
               <:label>Scale (closed)</:label>
               <:decrement_trigger>
-                <.heroicon name="hero-chevron-down" class="icon" />
+                <.heroicon name="hero-chevron-down" />
               </:decrement_trigger>
               <:increment_trigger>
-                <.heroicon name="hero-chevron-up" class="icon" />
+                <.heroicon name="hero-chevron-up" />
               </:increment_trigger>
             </.number_input>
 
@@ -189,16 +190,17 @@ defmodule E2eWeb.DialogAnimationLive do
             >
               <:label>Scale (open)</:label>
               <:decrement_trigger>
-                <.heroicon name="hero-chevron-down" class="icon" />
+                <.heroicon name="hero-chevron-down" />
               </:decrement_trigger>
               <:increment_trigger>
-                <.heroicon name="hero-chevron-up" class="icon" />
+                <.heroicon name="hero-chevron-up" />
               </:increment_trigger>
             </.number_input>
 
             <.switch
               id="dialog-animation-block-interaction"
-              class="switch switch--sm w-full"
+              size="sm"
+              class="switch w-full"
               checked={@animation_options.block_interaction}
               on_checked_change="block_interaction_changed"
             >
@@ -208,7 +210,6 @@ defmodule E2eWeb.DialogAnimationLive do
           <:canvas>
             <.dialog
               id="dialog-animation-playground"
-              class="dialog"
               modal
               animation="js"
               animation_options={@animation_options}
@@ -219,7 +220,7 @@ defmodule E2eWeb.DialogAnimationLive do
                 <p>Dialog JS animation uses only opacity and scale on the content.</p>
               </:content>
               <:close_trigger>
-                <.heroicon name="hero-x-mark" class="icon" />
+                <.heroicon name="hero-x-mark" />
               </:close_trigger>
             </.dialog>
           </:canvas>
@@ -228,13 +229,12 @@ defmodule E2eWeb.DialogAnimationLive do
         <.demo_section
           id="dialog-animation-instant"
           title="Instant"
-          trigger_class="button--sm"
+          trigger_class="button button--sm"
           code={@instant_heex}
         >
           <:preview>
             <.dialog
               id="dialog-animate-instant"
-              class="dialog"
               modal
               animation="instant"
             >
@@ -244,7 +244,7 @@ defmodule E2eWeb.DialogAnimationLive do
                 <p>Native show and hide without JS transitions.</p>
               </:content>
               <:close_trigger>
-                <.heroicon name="hero-x-mark" class="icon" />
+                <.heroicon name="hero-x-mark" />
               </:close_trigger>
             </.dialog>
           </:preview>
@@ -253,7 +253,7 @@ defmodule E2eWeb.DialogAnimationLive do
         <.demo_section
           id="dialog-animation-custom"
           title="Custom (Motion)"
-          trigger_class="button--sm"
+          trigger_class="button button--sm"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @custom_heex},
             %{value: "js", label: "Javascript", language: :js, code: @custom_js}
@@ -262,7 +262,6 @@ defmodule E2eWeb.DialogAnimationLive do
           <:preview>
             <.dialog
               id="dialog-custom-animate"
-              class="dialog"
               animation="custom"
               on_open_change_client="my-dialog-open-changed"
             >
@@ -272,7 +271,7 @@ defmodule E2eWeb.DialogAnimationLive do
                 <p>Motion animates open and close.</p>
               </:content>
               <:close_trigger>
-                <.heroicon name="hero-x-mark" class="icon" />
+                <.heroicon name="hero-x-mark" />
               </:close_trigger>
             </.dialog>
           </:preview>

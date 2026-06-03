@@ -46,7 +46,6 @@ defmodule E2eWeb.SwitchPatternsLive do
           <:preview>
             <.switch
               id="switch-patterns-controlled"
-              class="switch"
               controlled
               checked={@checked}
               on_checked_change="patterns_checked"

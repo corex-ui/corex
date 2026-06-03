@@ -1,10 +1,14 @@
 defmodule E2eWeb.Demos.ClipboardDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.Demos.StylingAxes
+
+  def styling_axis_values(axis), do: StylingAxes.styling_axis_values(axis)
+
   def trigger_only_code do
     ~S"""
     <.clipboard
-      class="clipboard"
+      
       value="https://example.com/share"
       input={false}
       trigger_aria_label="Copy link"
@@ -21,7 +25,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
 
   def minimal_code do
     ~S"""
-    <.clipboard class="clipboard" value="hello@example.com">
+    <.clipboard  value="hello@example.com">
       <:label>Email</:label>
       <:copy>
         <.heroicon name="hero-clipboard" />
@@ -35,7 +39,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
 
   def minimal_example(assigns) do
     ~H"""
-    <.clipboard id="clipboard-anatomy-min" class="clipboard" value="hello@example.com">
+    <.clipboard id="clipboard-anatomy-min" value="hello@example.com">
       <:label>Email</:label>
       <:copy>
         <.heroicon name="hero-clipboard" />
@@ -50,7 +54,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
   def input_false_code do
     ~S"""
     <.clipboard
-      class="clipboard"
+      
       value="https://example.com/share"
       input={false}
       trigger_aria_label="Copy link"
@@ -69,7 +73,6 @@ defmodule E2eWeb.Demos.ClipboardDemo do
     ~H"""
     <.clipboard
       id="clipboard-anatomy-trigger-only"
-      class="clipboard"
       value="https://example.com/share"
       input={false}
       trigger_aria_label="Copy link"
@@ -86,12 +89,12 @@ defmodule E2eWeb.Demos.ClipboardDemo do
 
   def events_server_heex do
     ~S"""
-    <.action phx-click={Corex.Clipboard.copy("clipboard-events")} class="button button--sm">
+    <.action phx-click={Corex.Clipboard.copy("clipboard-events")} size="sm">
       Copy
     </.action>
 
     <.clipboard
-      class="clipboard"
+      
       value="info@netoum.com"
       trigger_aria_label="Copy to clipboard"
       input_aria_label="Value to copy"
@@ -119,13 +122,13 @@ defmodule E2eWeb.Demos.ClipboardDemo do
   def api_client_binding_code do
     ~S"""
     <div class="layout__row">
-      <.action phx-click={Corex.Clipboard.set_value("clipboard-api", "Hello, World!")} class="button button--sm">
+      <.action phx-click={Corex.Clipboard.set_value("clipboard-api", "Hello, World!")} size="sm">
         Set to "Hello, World!"
       </.action>
-      <.action phx-click={Corex.Clipboard.set_value("clipboard-api", "info@netoum.com")} class="button button--sm">
+      <.action phx-click={Corex.Clipboard.set_value("clipboard-api", "info@netoum.com")} size="sm">
         Set to "info@netoum.com"
       </.action>
-      <.action phx-click={Corex.Clipboard.copy("clipboard-api")} class="button button--sm">
+      <.action phx-click={Corex.Clipboard.copy("clipboard-api")} size="sm">
         Copy
       </.action>
     </div>
@@ -135,7 +138,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
       value="info@netoum.com"
       trigger_aria_label="Copy to clipboard"
       input_aria_label="Value to copy"
-      class="clipboard"
+      
     >
       <:copy>
         <.heroicon name="hero-clipboard" />
@@ -152,17 +155,17 @@ defmodule E2eWeb.Demos.ClipboardDemo do
     <div class="layout__row">
       <.action
         phx-click={Corex.Clipboard.set_value("clipboard-api", "Hello, World!")}
-        class="button button--sm"
+        size="sm"
       >
         Set to "Hello, World!"
       </.action>
       <.action
         phx-click={Corex.Clipboard.set_value("clipboard-api", "info@netoum.com")}
-        class="button button--sm"
+        size="sm"
       >
         Set to "info@netoum.com"
       </.action>
-      <.action phx-click={Corex.Clipboard.copy("clipboard-api")} class="button button--sm">
+      <.action phx-click={Corex.Clipboard.copy("clipboard-api")} size="sm">
         Copy
       </.action>
     </div>
@@ -172,7 +175,6 @@ defmodule E2eWeb.Demos.ClipboardDemo do
       value="info@netoum.com"
       trigger_aria_label="Copy to clipboard"
       input_aria_label="Value to copy"
-      class="clipboard"
     >
       <:copy>
         <.heroicon name="hero-clipboard" />
@@ -215,9 +217,9 @@ defmodule E2eWeb.Demos.ClipboardDemo do
 
   def api_server_preview_heex do
     ~S"""
-    <.action phx-click="clipboard_api_server_copy" class="button button--sm">Push copy</.action>
-    <.action phx-click="clipboard_api_server_set" class="button button--sm">Push set value</.action>
-    <.clipboard id="clipboard-api-server" class="clipboard" value="server-push@example.com">
+    <.action phx-click="clipboard_api_server_copy" size="sm">Push copy</.action>
+    <.action phx-click="clipboard_api_server_set" size="sm">Push set value</.action>
+    <.clipboard id="clipboard-api-server"  value="server-push@example.com">
       <:copy><.heroicon name="hero-clipboard" /></:copy>
       <:copied><.heroicon name="hero-check" /></:copied>
     </.clipboard>
@@ -227,13 +229,13 @@ defmodule E2eWeb.Demos.ClipboardDemo do
   def api_dispatch_heex do
     ~S"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={Corex.Clipboard.copy("clipboard-api-dispatch")} class="button button--sm">
+      <.action phx-click={Corex.Clipboard.copy("clipboard-api-dispatch")} size="sm">
         Copy
       </.action>
     </div>
     <.clipboard
       id="clipboard-api-dispatch"
-      class="clipboard"
+      
       value="dispatch@example.com"
       trigger_aria_label="Copy"
       input_aria_label="Value"
@@ -261,13 +263,12 @@ defmodule E2eWeb.Demos.ClipboardDemo do
 
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={Corex.Clipboard.copy("clipboard-api-dispatch")} class="button button--sm">
+      <.action phx-click={Corex.Clipboard.copy("clipboard-api-dispatch")} size="sm">
         Copy
       </.action>
     </div>
     <.clipboard
       id="clipboard-api-dispatch"
-      class="clipboard"
       value="dispatch@example.com"
       trigger_aria_label="Copy"
       input_aria_label="Value"
@@ -288,7 +289,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
       <:copy><.heroicon name="hero-clipboard" /></:copy>
       <:copied><.heroicon name="hero-check" /></:copied>
     </.clipboard>
-    <.clipboard class="clipboard" value="default@example.com">
+    <.clipboard  value="default@example.com">
       <:copy><.heroicon name="hero-clipboard" /></:copy>
       <:copied><.heroicon name="hero-check" /></:copied>
     </.clipboard>
@@ -317,7 +318,6 @@ defmodule E2eWeb.Demos.ClipboardDemo do
       </.clipboard>
       <.clipboard
         id="clipboard-style-md"
-        class="clipboard"
         value="default@example.com"
         input_aria_label="Value to copy (md)"
       >

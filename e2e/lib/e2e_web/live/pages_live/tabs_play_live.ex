@@ -40,7 +40,7 @@ defmodule E2eWeb.TabsPlayLive do
         <:controls>
           <.playground_dir_toggle id="dir" on_value_change="control_changed" value={[@dir]} />
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="playground-tabs-vertical"
             checked={@vertical}
             on_checked_change="vertical_changed"

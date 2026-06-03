@@ -3,8 +3,8 @@ import {
   prepareJsScaleInitialState,
   readScaleAnimationOptions,
   runScaleAnimation,
-  stripHiddenFromProps
-} from "./chunks/chunk-SBA2GV3P.mjs";
+  spreadJsPanelProps
+} from "./chunks/chunk-SWUZHOZO.mjs";
 import {
   trackDismissableElement
 } from "./chunks/chunk-WJDVLJMP.mjs";
@@ -1285,8 +1285,11 @@ var Dialog = class extends Component {
       if (animation === "instant") {
         this.spreadProps(backdropEl, rawBackdrop);
       } else if (animation === "js" || animation === "custom") {
-        this.spreadProps(backdropEl, stripHiddenFromProps(rawBackdrop));
-        backdropEl.removeAttribute("hidden");
+        spreadJsPanelProps(
+          backdropEl,
+          rawBackdrop,
+          (target, next) => this.spreadProps(target, next)
+        );
       }
     }
     const positionerEl = rootEl.querySelector(
@@ -1301,8 +1304,7 @@ var Dialog = class extends Component {
       if (animation === "instant") {
         this.spreadProps(contentEl, rawContent);
       } else if (animation === "js" || animation === "custom") {
-        this.spreadProps(contentEl, stripHiddenFromProps(rawContent));
-        contentEl.removeAttribute("hidden");
+        spreadJsPanelProps(contentEl, rawContent, (target, next) => this.spreadProps(target, next));
         if (!this.api.open) {
           contentEl.style.removeProperty("pointer-events");
         }
@@ -1370,6 +1372,9 @@ var DialogHook = {
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
     self.lastOpen = readControlledOrDefaultBoolean(el, "open", "defaultOpen");
+    prepareJsScaleInitialState(el, DIALOG_SCALE_SELECTOR, (sub) => {
+      if (sub.dataset.part === "backdrop") return { scale: false };
+    });
     const dialog = new Dialog(el, {
       ...readDialogLayoutProps(el),
       ...readBooleanControlledZagProps(el, "open", "defaultOpen"),
@@ -1400,9 +1405,6 @@ var DialogHook = {
     });
     dialog.init();
     this.dialog = dialog;
-    prepareJsScaleInitialState(el, DIALOG_SCALE_SELECTOR, (sub) => {
-      if (sub.dataset.part === "backdrop") return { scale: false };
-    });
     const domRegistry = createDomEventRegistry(el);
     this.domRegistry = domRegistry;
     domRegistry.add("corex:dialog:set-open", (event) => {

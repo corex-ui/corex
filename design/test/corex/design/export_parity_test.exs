@@ -1,0 +1,67 @@
+defmodule Corex.Design.ExportParityTest do
+  @moduledoc """
+  Guards Tailwind export shape: prefixed `@utility` wildcards, explicit BEM in
+  `@layer components`, and class file size budgets.
+  """
+  use ExUnit.Case, async: true
+
+  alias Corex.Design.Recipe
+  alias Corex.Design.Recipes
+  alias Corex.Design.Selector
+
+  test "tailwind exports avoid main modifier utility wildcards" do
+    for recipe <- Recipes.all() do
+      css = Recipe.to_css(recipe, target: :tailwind)
+      name = Selector.class_name(recipe.id)
+      refute css =~ "@utility #{name}--*"
+    end
+  end
+
+  test "tailwind class exports stay within line budgets" do
+    budgets = %{
+      accordion: 2300,
+      select: 1200,
+      button: 1300,
+      tree_view: 2720
+    }
+
+    for {id, max_lines} <- budgets do
+      recipe = Enum.find(Recipes.all(), &(&1.id == id))
+      css = Recipe.to_css(recipe, target: :tailwind)
+      lines = css |> String.split("\n") |> length()
+
+      assert lines <= max_lines,
+             "expected #{id} tailwind export <= #{max_lines} lines, got #{lines}"
+    end
+  end
+
+  test "layout recipes keep bem modifiers without component utilities" do
+    for id <- [:stack, :row, :grid, :container] do
+      recipe = Enum.find(Recipes.all(), &(&1.id == id))
+      css = Recipe.to_css(recipe, target: :tailwind)
+
+      refute css =~ "@utility #{id}--*"
+      assert css =~ "@layer components"
+      assert css =~ ".#{id} {"
+    end
+  end
+
+  test "accordion tailwind export uses apply, prefixed utilities, and bem semantics" do
+    css =
+      Recipes.all()
+      |> Enum.find(&(&1.id == :accordion))
+      |> Recipe.to_css(target: :tailwind)
+
+    assert css =~ "@apply ui-trigger"
+    assert css =~ "@utility accordion--rounded-*"
+    assert css =~ "@utility accordion--text-*"
+    assert css =~ "@utility accordion--max-w-*"
+    assert css =~ ".accordion.accordion--w-fit"
+    assert css =~ ".accordion.accordion--accent"
+    assert css =~ ".accordion.accordion--subtle"
+    assert css =~ "[data-state=\"closed\"]"
+    assert css =~ "background-color: var(--color-accent)"
+    assert css =~ "color: var(--color-accent-ink)"
+    refute css =~ "@utility accordion--*"
+  end
+end

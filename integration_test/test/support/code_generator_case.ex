@@ -327,6 +327,37 @@ defmodule Corex.Integration.CodeGeneratorCase do
     Corex.Integration.HttpSmoke.request_with_retries(url, retries)
   end
 
+  def assert_corex_design_compiler_invariants!(app_root, app_name, opts \\ [])
+      when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
+    base = app_base_path(app_root, app_name, opts)
+    css_dir = Path.join([base, "assets", "css"])
+
+    assert_file(Path.join(base, "mix.exs"), fn c ->
+      assert c =~ "{:corex_design,"
+      assert c =~ ":corex_design"
+    end)
+
+    assert_file(Path.join([base, "config", "config.exs"]), fn c ->
+      assert c =~ "config :corex_design"
+      assert c =~ "output: \"assets/css/corex.tailwind.css\""
+    end)
+
+    assert_file(Path.join([css_dir, "app.css"]), fn c ->
+      assert c =~ ~s(@import "./corex.tailwind.css")
+      refute c =~ "../corex/main.css"
+      refute c =~ ~r/@plugin\s+["'][^"']*vendor\/daisyui/
+    end)
+
+    refute File.exists?(Path.join([base, "assets", "corex", "main.css"]))
+
+    assert File.exists?(Path.join([css_dir, "corex.tailwind.css"]))
+    assert File.exists?(Path.join([css_dir, "layers", "theme.css"]))
+    assert File.exists?(Path.join([css_dir, "recipes", "button.css"]))
+    assert File.exists?(Path.join([css_dir, "aggregates", "recipes.css"]))
+    refute File.exists?(Path.join([css_dir, "recipes", "class"]))
+    refute File.exists?(Path.join([css_dir, "recipes", "data"]))
+  end
+
   def assert_corex_greenfield_file_invariants!(app_root, app_name, opts \\ [])
       when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
     base = app_base_path(app_root, app_name, opts)
@@ -341,28 +372,7 @@ defmodule Corex.Integration.CodeGeneratorCase do
 
     assert_file(app_js, fn c -> assert c =~ ~r/\.\.\.corex/ end)
 
-    app_css = Path.join([base, "assets", "css", "app.css"])
-
-    assert_file(app_css, fn c ->
-      assert c =~ ~s(@import "../corex/main.css";)
-      assert c =~ ~s(@import "../corex/theme/neo.css";)
-      refute c =~ "toggle-group.css"
-      refute c =~ "tags-input.css"
-      assert c =~ ~s(@import "../corex/components/scrollbar.css";)
-      assert c =~ ~s(@import "../corex/components/data-list.css";)
-      assert c =~ ~s(@import "../corex/components/data-table.css";)
-      assert c =~ ~s(@import "../corex/components/select.css";)
-      assert c =~ ~s(@import "../corex/components/native-input.css";)
-      assert c =~ ~s(@import "../corex/components/checkbox.css";)
-    end)
-
-    assert_file(app_css, fn c ->
-      refute c =~ ~r/@plugin\s+["'][^"']*vendor\/daisyui/
-    end)
-
-    design_dir = Path.join([base, "assets", "corex"])
-    assert_dir(design_dir)
-    refute_dir(Path.join(design_dir, "design"))
+    assert_corex_design_compiler_invariants!(app_root, app_name, opts)
 
     home = Path.join([base, "lib", web, "controllers", "page_html", "home.html.heex"])
 
@@ -445,7 +455,13 @@ defmodule Corex.Integration.CodeGeneratorCase do
     assert_file(app_js, fn c -> assert c =~ ~r/\.\.\.corex/ end)
 
     app_css = Path.join([base, "assets", "css", "app.css"])
-    assert_file(app_css, fn c -> refute c =~ ~s(@import "../corex/main.css") end)
+    assert_file(app_css, fn c -> refute c =~ "corex.tailwind.css" end)
+
+    assert_file(Path.join(base, "mix.exs"), fn c -> refute c =~ "{:corex_design," end)
+
+    assert_file(Path.join([base, "config", "config.exs"]), fn c ->
+      refute c =~ "config :corex_design"
+    end)
 
     home = Path.join([base, "lib", web, "controllers", "page_html", "home.html.heex"])
 

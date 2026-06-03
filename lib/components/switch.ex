@@ -9,13 +9,37 @@ defmodule Corex.Switch do
   ### Minimal
 
   ```heex
-  <.switch class="switch" aria_label="Enable notifications" />
+  <.switch aria_label="Enable notifications" />
   ```
 
   ### With label
 
   ```heex
-  <.switch class="switch">
+  <.switch>
+    <:label>Enable</:label>
+  </.switch>
+  ```
+
+  <!-- tabs-close -->
+
+  ## Styling
+
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `semantic`, `size`, `radius`.
+
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.switch semantic="accent" size="md" class="switch" aria_label="Enable notifications">
+    <:label>Enable</:label>
+  </.switch>
+  ```
+
+  ### With classes
+
+  ```heex
+  <.switch class="switch switch--accent switch--md" aria_label="Enable notifications">
     <:label>Enable</:label>
   </.switch>
   ```
@@ -48,7 +72,7 @@ defmodule Corex.Switch do
   ### on_checked_change
 
   ```heex
-  <.switch class="switch" on_checked_change="switch_changed">
+  <.switch on_checked_change="switch_changed">
     <:label>Subscribe</:label>
   </.switch>
   ```
@@ -72,7 +96,7 @@ defmodule Corex.Switch do
   ### on_checked_change_client
 
   ```heex
-  <.switch id="switch-on-checked-change-client" class="switch" on_checked_change_client="switch-changed">
+  <.switch id="switch-on-checked-change-client" on_checked_change_client="switch-changed">
     <:label>Subscribe</:label>
   </.switch>
   ```
@@ -94,7 +118,6 @@ defmodule Corex.Switch do
 
   ```heex
   <.switch
-    class="switch"
     controlled
     checked={@checked}
     on_checked_change="patterns_checked"
@@ -123,10 +146,10 @@ defmodule Corex.Switch do
 
   ```heex
   <.form for={@form} phx-change="validate">
-    <.switch field={@form[:notifications]} class="switch">
+    <.switch field={@form[:notifications]}>
       <:label>Enable notifications</:label>
       <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
+        <.heroicon name="hero-exclamation-circle" />
         {msg}
       </:error>
     </.switch>
@@ -135,7 +158,7 @@ defmodule Corex.Switch do
 
   ## Style
 
-  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `switch.css`, then set `class="switch"` on `<.switch>`.
+  Target parts with `data-scope` and `data-part`, or use [Corex Design](styled.html): `@import "./corex.tailwind.css"` in `app.css`.
 
   ```css
   [data-scope="switch"][data-part="root"] {}
@@ -144,12 +167,6 @@ defmodule Corex.Switch do
   [data-scope="switch"][data-part="label"] {}
   [data-scope="switch"][data-part="input"] {}
   [data-scope="switch"][data-part="error"] {}
-  ```
-
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/switch.css";
   ```
 
   Stack modifiers on the host (`class` on `<.switch>`).
@@ -191,6 +208,25 @@ defmodule Corex.Switch do
   alias Phoenix.HTML.Form
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
+
+  use Corex.Variants,
+    base: "switch",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size,
+      radius: [:none]
+    ],
+    defaults: [
+      width: "full",
+      max_width: "4xl",
+      height: "auto",
+      max_height: "none",
+      size: "md"
+    ]
 
   @doc """
   Renders a switch component.
@@ -319,6 +355,8 @@ defmodule Corex.Switch do
       phx-hook="Switch"
       data-loading
       phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+      class={corex_style_class(assigns)}
+     
       {@rest}
       {Connect.props(%Props{
         id: @id,
@@ -394,7 +432,7 @@ defmodule Corex.Switch do
 
   ```heex
   <.action phx-click={Corex.Switch.set_checked("my-switch", true)}>On</.action>
-  <.switch id="my-switch" class="switch" name="s" value="on">
+  <.switch id="my-switch" name="s" value="on">
     <:label>Notify</:label>
   </.switch>
   ```
@@ -422,7 +460,7 @@ defmodule Corex.Switch do
 
   ```heex
   <.action phx-click="switch_on">On</.action>
-  <.switch id="my-switch" class="switch" name="s" value="on">
+  <.switch id="my-switch" name="s" value="on">
     <:label>Notify</:label>
   </.switch>
   ```
@@ -448,7 +486,7 @@ defmodule Corex.Switch do
 
   ```heex
   <.action phx-click={Corex.Switch.toggle_checked("my-switch")}>Toggle</.action>
-  <.switch id="my-switch" class="switch" name="s" value="on">
+  <.switch id="my-switch" name="s" value="on">
     <:label>Notify</:label>
   </.switch>
   ```
@@ -472,7 +510,7 @@ defmodule Corex.Switch do
 
   ```heex
   <.action phx-click="flip_switch">Toggle</.action>
-  <.switch id="my-switch" class="switch" name="s" value="on">
+  <.switch id="my-switch" name="s" value="on">
     <:label>Notify</:label>
   </.switch>
   ```

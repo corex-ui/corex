@@ -11,7 +11,7 @@
       <.navigate
         to={~p"/users"}
         type="navigate"
-        class="button"
+        as="button"
         aria_label={~t"Back to list"}
         title={~t"Back to list"}
       >
@@ -20,7 +20,9 @@
       <.navigate
         to={~p"/users/#{@user}/edit?return_to=show"}
         type="navigate"
-        class="button button--accent button--square"
+        as="button"
+        semantic="accent"
+        shape="square"
         aria_label={~t"Edit user"}
       >
         <.heroicon name="hero-pencil-square" />
@@ -49,7 +51,8 @@
             <.action
               id={"user-delete-#{@user.id}-cancel"}
               phx-click={Corex.Dialog.set_open("user-delete-#{@user.id}", false)}
-              class="button button--sm button--ghost"
+              size="sm"
+              variant="ghost"
             >
               Cancel
             </.action>
@@ -57,7 +60,9 @@
               id={"user-delete-#{@user.id}-confirm"}
               to={~p"/users/#{@user}"}
               method="delete"
-              class="button button--sm button--alert"
+              as="button"
+              size="sm"
+              semantic="alert"
             >
               Delete
             </.navigate>
@@ -67,7 +72,7 @@
     </:actions>
   </.layout_heading>
 
-  <.data_list class="data-list max-w-md">
+  <.data_list class="data-list data-list--max-w-md">
     <:label :for={field <- fields(@user)} value={Atom.to_string(field)}>
       {label(field)}
     </:label>

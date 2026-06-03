@@ -12,7 +12,6 @@ defmodule Corex.Combobox do
 
   ```heex
   <.combobox
-        class="combobox"
         translation={%Corex.Combobox.Translation{placeholder: "Select a country", empty: "No results"}}
         items={Corex.List.new([
           %{label: "France", value: "fra"},
@@ -33,7 +32,6 @@ defmodule Corex.Combobox do
 
   ```heex
   <.combobox
-        class="combobox"
         translation={%Corex.Combobox.Translation{placeholder: "Select a country", empty: "No results"}}
         items={Corex.List.new([
           %{label: "France", value: "fra", group: "Europe"},
@@ -63,7 +61,6 @@ defmodule Corex.Combobox do
 
   ```heex
     <.combobox
-        class="combobox"
         translation={%Corex.Combobox.Translation{placeholder: "Select a country", empty: "No results"}}
         items={Corex.List.new([
           %{label: "France", value: "fra"},
@@ -96,7 +93,6 @@ defmodule Corex.Combobox do
 
   ```heex
   <.combobox
-        class="combobox"
         translation={%Corex.Combobox.Translation{placeholder: "Select a country", empty: "No results"}}
         items={Corex.List.new([
           %{label: "France", value: "fra", group: "Europe"},
@@ -121,6 +117,38 @@ defmodule Corex.Combobox do
           <.heroicon name="hero-check" />
         </:item_indicator>
       </.combobox>
+  ```
+
+  <!-- tabs-close -->
+
+  ## Styling
+
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `semantic`, `size`, `radius`.
+
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.combobox semantic="accent" size="md" class="combobox" items={Corex.List.new([
+    %{label: "France", value: "fra"},
+    %{label: "Belgium", value: "bel"},
+    %{label: "Germany", value: "deu"}
+  ])}>
+    <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+  </.combobox>
+  ```
+
+  ### With classes
+
+  ```heex
+  <.combobox class="combobox combobox--accent combobox--md" items={Corex.List.new([
+    %{label: "France", value: "fra"},
+    %{label: "Belgium", value: "bel"},
+    %{label: "Germany", value: "deu"}
+  ])}>
+    <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+  </.combobox>
   ```
 
   <!-- tabs-close -->
@@ -207,7 +235,7 @@ defmodule Corex.Combobox do
 
   ## Style
 
-  Target parts with `data-scope` and `data-part`:
+  Target parts with `data-scope` and `data-part`, or use [Corex Design](styled.html): `@import "./corex.tailwind.css"` in `app.css`.
 
   ```css
   [data-scope="combobox"][data-part="root"] {}
@@ -224,16 +252,7 @@ defmodule Corex.Combobox do
   [data-scope="combobox"][data-part="item-indicator"] {}
   ```
 
-  If you wish to use the default Corex styling, you can use the class `combobox` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
-
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/combobox.css";
-  ```
-
-  You can then use modifiers
+  Stack modifiers on the host. See [## Styling](#module-styling).
 
   ```heex
   <.combobox class="combobox combobox--accent combobox--lg" items={Corex.List.new([])}>
@@ -268,6 +287,25 @@ defmodule Corex.Combobox do
 
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
+
+  use Corex.Variants,
+    base: "combobox",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size,
+      radius: :radius
+    ],
+    defaults: [
+      width: "full",
+      max_width: "3xs",
+      height: "auto",
+      max_height: "none",
+      size: "md"
+    ]
 
   alias Corex.Combobox.Anatomy.{
     ClearTrigger,
@@ -511,6 +549,8 @@ defmodule Corex.Combobox do
     phx-hook="Combobox" 
     data-loading
     phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+    class={corex_style_class(assigns)}
+   
     {@rest}
     {Connect.props(%Props{
       id: @id, items: @items, form_field: @form_field, placeholder: @placeholder, value: @value,

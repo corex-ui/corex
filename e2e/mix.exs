@@ -5,13 +5,13 @@ defmodule E2e.MixProject do
     [
       app: :corex_web,
       version: "0.1.0",
-      elixir: "~> 1.17",
+      elixir: "~> 1.18",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
       usage_rules: usage_rules(),
-      compilers: [:phoenix_live_view] ++ Mix.compilers(),
+      compilers: [:phoenix_live_view] ++ Mix.compilers() ++ [:corex_design],
       listeners: [Phoenix.CodeReloader],
       releases: releases(),
       default_release: :corex_web
@@ -81,10 +81,10 @@ defmodule E2e.MixProject do
       {:gettext_sigils, "~> 0.5.1"},
       {:localize_web, "~> 0.5"},
       {:jason, "~> 1.2"},
-      {:color, "~> 0.11"},
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.11"},
       {:corex, path: "../../corex"},
+      {:corex_design, path: "../../corex/design"},
       {:makeup, "~> 1.2"},
       {:makeup_elixir, "~> 1.0.1 or ~> 1.1"},
       {:makeup_html, "~> 0.2"},
@@ -100,20 +100,23 @@ defmodule E2e.MixProject do
       {:a11y_audit, "~> 0.3.1", only: :test},
       {:flagpack, "~> 0.6.0"},
       {:tidewave, "~> 0.5.5", only: :dev},
-      {:designex, "~> 1.0"},
       {:igniter, "~> 0.6", only: [:dev, :test]},
       {:usage_rules, "~> 1.1", only: :dev},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:oeditus_credo, "~> 0.6.3", only: [:dev, :test], runtime: false},
       {:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false}
-    ] ++ maybe_json_polyfill()
+    ]
   end
 
-  defp maybe_json_polyfill do
-    if Code.ensure_loaded?(:json) do
-      []
-    else
-      [{:json_polyfill, "~> 0.2 or ~> 1.0"}]
+  defp tailwind_e2e_builds(opts \\ []) do
+    minify? = Keyword.get(opts, :minify, false)
+
+    for {input, output} <- [
+          {"assets/css/site.css", "priv/static/assets/css/site.css"}
+        ] do
+      args = ["tailwind", "e2e", "--input=#{input}", "--output=#{output}"]
+      args = if minify?, do: args ++ ["--minify"], else: args
+      Enum.join(args, " ")
     end
   end
 
@@ -134,7 +137,6 @@ defmodule E2e.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      compile: ["compile"],
       setup: ["deps.get", "ecto.setup", "assets.setup", "assets.build"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
@@ -145,8 +147,8 @@ defmodule E2e.MixProject do
         "ecto.create --quiet",
         "ecto.migrate",
         "run priv/repo/seeds/user_admin_seed.exs",
-        "tailwind e2e --minify",
-        "esbuild e2e  --minify",
+        "tailwind.e2e.min",
+        "esbuild e2e --minify",
         "test"
       ],
       "assets.setup": [
@@ -156,18 +158,14 @@ defmodule E2e.MixProject do
       ],
       "assets.digest.clean": ["phx.digest.clean --no-compile"],
       "assets.digest.clean.all": ["phx.digest.clean --all --no-compile"],
-      "assets.build": [
-        "e2e.palette",
-        "designex corex",
-        "tailwind e2e",
-        "esbuild e2e"
-      ],
+      "tailwind.e2e": tailwind_e2e_builds(),
+      "tailwind.e2e.min": tailwind_e2e_builds(minify: true),
+      "assets.build": ["compile"] ++ tailwind_e2e_builds() ++ ["esbuild e2e"],
       "assets.deploy": [
         "localize.download_locales",
         "assets.digest.clean.all",
         "compile",
-        "designex corex",
-        "tailwind e2e --minify",
+        "tailwind.e2e.min",
         "esbuild e2e --minify",
         "phx.digest"
       ],

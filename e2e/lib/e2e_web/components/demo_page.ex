@@ -58,23 +58,28 @@ defmodule E2eWeb.DemoPage do
 
   use E2eWeb, :html
 
+  import E2eWeb.AuthoringToggle
+
   attr :id, :string, required: true
   attr :title, :string, required: true
   attr :subtitle, :any, default: nil
   attr :path, :string, default: nil
-  attr :heading_class, :string, default: "layout-heading max-w-none"
-  attr :class, :string, default: "w-full flex flex-col gap-size"
+  attr :heading_class, :string, default: "layout-heading"
+  attr :class, :string, default: "doc-page"
   attr :rest, :global
   slot :inner_block, required: true
 
   def demo_page(assigns) do
     ~H"""
     <article id={@id} class={@class} {@rest}>
-      <.layout_heading class={@heading_class}>
+      <.layout_heading class={@heading_class} width="full" max_width="none">
         <:title>{@title}</:title>
         <:subtitle :if={is_binary(@subtitle)}>{@subtitle}</:subtitle>
       </.layout_heading>
-      <.component_source_bar :if={@path} path={@path} />
+      <div :if={@path} id="doc-page-toolbar" class="doc-page-toolbar">
+        <.component_source_bar path={@path} />
+        <.demo_authoring_settings />
+      </div>
       {render_slot(@inner_block)}
     </article>
     """
@@ -87,16 +92,11 @@ defmodule E2eWeb.DemoPage do
     assigns = assign(assigns, :links, links || [])
 
     ~H"""
-    <div :if={@links != []} class="flex flex-wrap gap-space-sm">
-      <.navigate
-        :for={link <- @links}
-        to={link.to}
-        class="button button--sm button--ghost"
-        external
-      >
-        <img :if={link.icon} src={link.icon} alt="" class="icon object-contain shrink-0" />
+    <div :if={@links != []} class="doc-source-bar">
+      <.navigate :for={link <- @links} to={link.to} as="button" size="sm" variant="ghost" external>
+        <img :if={link.icon} src={link.icon} alt="" width="16" height="16" />
         {link.label}
-        <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
+        <.heroicon name="hero-arrow-top-right-on-square" />
       </.navigate>
     </div>
     """
@@ -119,6 +119,8 @@ defmodule E2eWeb.DemoPage do
       <.layout_heading
         :if={is_binary(@title)}
         class={@heading_class}
+        width="full"
+        max_width="none"
         title_tag={@title_tag}
         subtitle_tag={@subtitle_tag}
       >
@@ -148,7 +150,8 @@ defmodule E2eWeb.DemoPage do
   def playground_dir_toggle(assigns) do
     ~H"""
     <.toggle_group
-      class="toggle-group toggle-group--sm max-w-7xs"
+      size="sm"
+      class="max-w-7xs"
       id={@id}
       on_value_change={@on_value_change}
       multiple={false}
@@ -162,31 +165,58 @@ defmodule E2eWeb.DemoPage do
   end
 
   attr :id, :string, required: true
-  attr :title, :string, required: true
-  attr :code, :string, default: nil
+  attr :value, :list, required: true
+  attr :on_value_change, :string, required: true
+
+  def playground_orientation_toggle(assigns) do
+    ~H"""
+    <.toggle_group
+      size="sm"
+      class="max-w-7xs"
+      id={@id}
+      on_value_change={@on_value_change}
+      multiple={false}
+      deselectable={false}
+      value={@value}
+    >
+      <:item value="vertical" aria_label="Vertical orientation">
+        <.heroicon name="hero-arrows-up-down" />
+      </:item>
+      <:item value="horizontal" aria_label="Horizontal orientation">
+        <.heroicon name="hero-arrows-right-left" />
+      </:item>
+    </.toggle_group>
+    """
+  end
+
+  attr :id, :string, required: true
+  attr :code, :any, default: nil
   attr :code_tabs, :list, default: []
   attr :default_value, :string, default: "preview"
   attr :trigger_class, :string, default: nil
   attr :tabs_id, :string, default: nil
-  attr :class, :string, default: "flex flex-col gap-4 items-start"
 
-  attr :tabs_class, :string,
-    default:
-      "tabs max-w-6xl [&>[data-scope=tabs][data-part=root]>[data-scope=tabs][data-part=list]]:place-self-end"
+  attr :tabs_class, :string, default: "tabs doc-section-tabs"
 
-  attr :preview_class, :string,
-    default: "items-center shadow-sm py-space-xl p-space bg-root gap-space"
+  attr :preview_class, :string, default: "doc-section-preview"
 
-  attr :code_panel_class, :string, default: "items-center bg-root p-0 relative"
-  attr :code_class, :string, default: "code max-w-none w-full"
+  attr :code_panel_class, :string, default: "doc-section-code"
+  attr :code_class, :string, default: nil
+  attr :code_max_height, :string, default: "lg"
 
   attr :clipboard_class, :string,
     default: "clipboard w-fit clipboard--sm absolute top-2 right-2 z-10"
 
-  slot :description
+  attr :wrapper_class, :string, default: "doc-preview-tabs"
+
+  attr :authoring_scope, :string,
+    default: nil,
+    values: [nil, "styled"],
+    doc: "when styled, preview and code ignore global unstyled authoring in this block"
+
   slot :preview, required: true
 
-  def demo_section(assigns) do
+  def demo_preview_tabs(assigns) do
     assigns =
       if is_binary(assigns[:tabs_id]) and assigns[:tabs_id] != "" do
         assigns
@@ -195,24 +225,19 @@ defmodule E2eWeb.DemoPage do
       end
 
     assigns =
-      if assigns[:code_tabs] == [] and is_binary(assigns[:code]) do
-        assign(assigns, :code_tabs, [
-          %{
-            value: "heex",
-            label: ~t"Heex",
-            language: :heex,
-            code: assigns[:code]
-          }
-        ])
+      if assigns[:code_tabs] == [] and not is_nil(assigns[:code]) do
+        assign(assigns, :code_tabs, code_tabs_from_code(assigns[:code]))
       else
         assigns
       end
 
     ~H"""
-    <section id={@id} class={@class}>
-      <h2>{@title}</h2>
-      {render_slot(@description)}
-      <.tabs id={@tabs_id} class={@tabs_class} value={@default_value}>
+    <div
+      id={@id}
+      class={@wrapper_class}
+      data-authoring-scope={@authoring_scope}
+    >
+      <.tabs id={@tabs_id} class={@tabs_class} value={@default_value} width="full" max_width="none">
         <:trigger value="preview" class={@trigger_class}>Preview</:trigger>
         <:trigger
           :for={tab <- @code_tabs}
@@ -225,29 +250,312 @@ defmodule E2eWeb.DemoPage do
           {render_slot(@preview)}
         </:content>
         <:content :for={tab <- @code_tabs} value={tab.value} class={@code_panel_class}>
-          <.clipboard
-            class={@clipboard_class}
-            value={tab.code}
-            input={false}
-            trigger_aria_label="Copy code"
-          >
-            <:copy>
-              <span>Copy</span>
-              <.heroicon name="hero-clipboard" />
-            </:copy>
-            <:copied>
-              <span>Copied</span>
-              <.heroicon name="hero-check" />
-            </:copied>
-          </.clipboard>
-          <.code
-            class={@code_class}
-            language={Map.get(tab, :language, :heex)}
+          <.authoring_code_block
             code={tab.code}
+            authoring_scope={@authoring_scope}
+            language={Map.get(tab, :language, :heex)}
+            clipboard_class={@clipboard_class}
+            code_class={@code_class}
+            code_max_height={@code_max_height}
           />
         </:content>
       </.tabs>
+    </div>
+    """
+  end
+
+  def demo_authoring_settings(assigns) do
+    %{authoring: authoring} = E2eWeb.DocAuthoring.get()
+    assigns = assign(assigns, :authoring, authoring)
+
+    ~H"""
+    <div id="doc-authoring-settings" class="doc-authoring-settings">
+      <span class="doc-authoring-settings__label">Authoring</span>
+      <.authoring_toggle id="doc-authoring-mode" authoring={@authoring} />
+    </div>
+    """
+  end
+
+  slot :styled, required: true
+  slot :markup, required: true
+
+  def authoring_preview(assigns) do
+    ~H"""
+    <div data-authoring-preview="styled">
+      {render_slot(@styled)}
+    </div>
+    <div data-authoring-preview="markup">
+      {render_slot(@markup)}
+    </div>
+    """
+  end
+
+  attr :id, :string, required: true
+  attr :title, :string, required: true
+  attr :code, :any, default: nil
+  attr :code_tabs, :list, default: []
+  attr :default_value, :string, default: "preview"
+  attr :trigger_class, :string, default: nil
+  attr :tabs_id, :string, default: nil
+  attr :class, :string, default: "doc-section"
+
+  attr :tabs_class, :string, default: "tabs doc-section-tabs"
+
+  attr :preview_class, :string, default: "doc-section-preview"
+
+  attr :code_panel_class, :string, default: "doc-section-code"
+  attr :code_class, :string, default: nil
+  attr :code_max_height, :string, default: "lg"
+
+  attr :clipboard_class, :string,
+    default: "clipboard w-fit clipboard--sm absolute top-2 right-2 z-10"
+
+  attr :values, :string, default: nil
+
+  attr :authoring_scope, :string,
+    default: nil,
+    values: [nil, "styled"],
+    doc: "when styled, preview and code ignore global unstyled authoring in this block"
+
+  slot :description
+  slot :preview, required: true
+
+  def demo_section(assigns) do
+    assigns =
+      if is_binary(assigns[:tabs_id]) and assigns[:tabs_id] != "" do
+        assigns
+      else
+        assign(assigns, :tabs_id, "#{assigns.id}-tabs")
+      end
+
+    ~H"""
+    <section id={@id} class={@class}>
+      <.h2>{@title}</.h2>
+      <p :if={is_binary(@values)}>{~t"Values: #{@values}"}</p>
+      {render_slot(@description)}
+      <.demo_preview_tabs
+        id={"#{@id}-preview"}
+        tabs_id={@tabs_id}
+        code={@code}
+        code_tabs={@code_tabs}
+        default_value={@default_value}
+        trigger_class={@trigger_class}
+        tabs_class={@tabs_class}
+        preview_class={@preview_class}
+        code_panel_class={@code_panel_class}
+        code_class={@code_class}
+        code_max_height={@code_max_height}
+        clipboard_class={@clipboard_class}
+        authoring_scope={@authoring_scope}
+      >
+        <:preview>{render_slot(@preview)}</:preview>
+      </.demo_preview_tabs>
     </section>
+    """
+  end
+
+  attr :id, :string, required: true
+  attr :title, :string, default: "Style matrix"
+  attr :class, :string, default: "style-matrix"
+  slot :inner_block, required: true
+
+  def demo_style_matrix(assigns) do
+    ~H"""
+    <section :if={E2eWeb.StyleMatrix.visible?()} id={@id} class={@class}>
+      <.h2>{@title}</.h2>
+      {render_slot(@inner_block)}
+    </section>
+    """
+  end
+
+  attr :code, :any, required: true
+  attr :authoring_scope, :string, default: nil, values: [nil, "styled"]
+  attr :language, :atom, default: :heex
+  attr :clipboard_class, :string, required: true
+  attr :code_class, :string, default: nil
+  attr :code_max_height, :string, required: true
+
+  defp authoring_code_block(%{authoring_scope: "styled", code: %{attr: attr, class: class}} = assigns) do
+    authoring_code_block(%{assigns | code: %{attr: attr, class: class}})
+  end
+
+  defp authoring_code_block(%{authoring_scope: "styled", code: %{attr: attr, class: class, markup: _markup}} = assigns) do
+    authoring_code_block(%{assigns | code: %{attr: attr, class: class}})
+  end
+
+  defp authoring_code_block(%{code: %{attr: attr, class: class, markup: markup}} = assigns) do
+    %{app_name: app_name} = E2eWeb.DocAuthoring.get()
+
+    assigns =
+      assigns
+      |> assign(:attr_template, attr)
+      |> assign(:class_template, class)
+      |> assign(:markup_template, markup)
+      |> assign(:attr_code, E2eWeb.AuthoringSnippet.personalize_snippet(attr, app_name))
+      |> assign(:class_code, E2eWeb.AuthoringSnippet.personalize_snippet(class, app_name))
+      |> assign(:markup_code, E2eWeb.AuthoringSnippet.personalize_snippet(markup, app_name))
+
+    ~H"""
+    <div
+      class="relative"
+      data-authoring-code
+      data-snippet-attr-template={@attr_template}
+      data-snippet-class-template={@class_template}
+      data-snippet-markup-template={@markup_template}
+    >
+      <div data-authoring-panel="attr" class="relative">
+        <.code_block
+          code={@attr_code}
+          language={@language}
+          clipboard_class={@clipboard_class}
+          code_class={@code_class}
+          code_max_height={@code_max_height}
+        />
+      </div>
+      <div data-authoring-panel="class" class="relative">
+        <.code_block
+          code={@class_code}
+          language={@language}
+          clipboard_class={@clipboard_class}
+          code_class={@code_class}
+          code_max_height={@code_max_height}
+        />
+      </div>
+      <div data-authoring-panel="markup" class="relative">
+        <.code_block
+          code={@markup_code}
+          language={@language}
+          clipboard_class={@clipboard_class}
+          code_class={@code_class}
+          code_max_height={@code_max_height}
+        />
+      </div>
+    </div>
+    """
+  end
+
+  defp authoring_code_block(%{code: %{attr: attr, class: class}} = assigns) do
+    %{app_name: app_name} = E2eWeb.DocAuthoring.get()
+
+    assigns =
+      assigns
+      |> assign(:attr_template, attr)
+      |> assign(:class_template, class)
+      |> assign(:attr_code, E2eWeb.AuthoringSnippet.personalize_snippet(attr, app_name))
+      |> assign(:class_code, E2eWeb.AuthoringSnippet.personalize_snippet(class, app_name))
+
+    ~H"""
+    <div
+      class="relative"
+      data-authoring-code
+      data-snippet-attr-template={@attr_template}
+      data-snippet-class-template={@class_template}
+    >
+      <div data-authoring-panel="attr" class="relative">
+        <.code_block
+          code={@attr_code}
+          language={@language}
+          clipboard_class={@clipboard_class}
+          code_class={@code_class}
+          code_max_height={@code_max_height}
+        />
+      </div>
+      <div data-authoring-panel="class" class="relative">
+        <.code_block
+          code={@class_code}
+          language={@language}
+          clipboard_class={@clipboard_class}
+          code_class={@code_class}
+          code_max_height={@code_max_height}
+        />
+      </div>
+    </div>
+    """
+  end
+
+  defp authoring_code_block(assigns) do
+    template = assigns.code
+    %{app_name: app_name} = E2eWeb.DocAuthoring.get()
+    code = E2eWeb.AuthoringSnippet.personalize_snippet(template, app_name)
+    assigns = assign(assigns, :code, code) |> assign(:template, template)
+
+    ~H"""
+    <div class="relative" data-authoring-code data-snippet-attr-template={@template}>
+      <.code_block
+        code={@code}
+        language={@language}
+        clipboard_class={@clipboard_class}
+        code_class={@code_class}
+        code_max_height={@code_max_height}
+      />
+    </div>
+    """
+  end
+
+  defp code_tabs_from_code(%{attr: attr, class: class, markup: markup}) do
+    [
+      %{
+        value: "heex",
+        label: ~t"Heex",
+        language: :heex,
+        code: %{attr: attr, class: class, markup: markup}
+      }
+    ]
+  end
+
+  defp code_tabs_from_code(%{attr: attr, class: class}) do
+    [
+      %{
+        value: "heex",
+        label: ~t"Heex",
+        language: :heex,
+        code: %{attr: attr, class: class}
+      }
+    ]
+  end
+
+  defp code_tabs_from_code(code) when is_binary(code) do
+    [
+      %{
+        value: "heex",
+        label: ~t"Heex",
+        language: :heex,
+        code: code
+      }
+    ]
+  end
+
+  attr :code, :string, required: true
+  attr :language, :atom, default: :heex
+  attr :clipboard_class, :string, required: true
+  attr :code_class, :string, default: nil
+  attr :code_max_height, :string, required: true
+
+  defp code_block(assigns) do
+    ~H"""
+    <.clipboard
+      class={@clipboard_class}
+      value={@code}
+      input={false}
+      trigger_aria_label="Copy code"
+    >
+      <:copy>
+        <span>Copy</span>
+        <.heroicon name="hero-clipboard" />
+      </:copy>
+      <:copied>
+        <span>Copied</span>
+        <.heroicon name="hero-check" />
+      </:copied>
+    </.clipboard>
+    <.code
+      max_width="none"
+      max_height={@code_max_height}
+      width="full"
+      class={@code_class}
+      language={@language}
+      code={@code}
+    />
     """
   end
 
@@ -265,17 +573,17 @@ defmodule E2eWeb.DemoPage do
   def demo_event_log(assigns) do
     ~H"""
     <div id={@id} class={@class}>
-      <h4 class="text-sm font-medium text-ink-muted">Event log</h4>
+      <h4 class="text-sm font-medium text-ui-ink-muted">Event log</h4>
       <ol
         :if={@events != []}
         class="flex flex-col gap-1 max-h-64 overflow-auto rounded-md border border-border bg-ui p-2 text-sm font-mono"
       >
         <li :for={event <- @events} class="flex gap-2 items-start">
-          <span class="text-ink-muted">{event.name}</span>
-          <span class="text-ink">{inspect(event.payload)}</span>
+          <span class="text-ui-ink-muted">{event.name}</span>
+          <span class="text-ui-ink">{inspect(event.payload)}</span>
         </li>
       </ol>
-      <p :if={@events == []} class="text-sm text-ink-muted">{@empty_label}</p>
+      <p :if={@events == []} class="text-sm text-ui-ink-muted">{@empty_label}</p>
     </div>
     """
   end
@@ -294,11 +602,11 @@ defmodule E2eWeb.DemoPage do
     ~H"""
     <div id={@id} class={@class}>
       <h4 class="text-sm font-medium">{@title}</h4>
-      <p :if={@description} class="text-sm text-ink-muted">{@description}</p>
+      <p :if={@description} class="text-sm text-ui-ink-muted">{@description}</p>
       <div class="flex flex-wrap gap-2">
         {render_slot(@actions)}
       </div>
-      <div :if={@result != []} class="text-sm font-mono text-ink-muted">
+      <div :if={@result != []} class="text-sm font-mono text-ui-ink-muted">
         {render_slot(@result)}
       </div>
     </div>

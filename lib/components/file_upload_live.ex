@@ -14,7 +14,7 @@ defmodule Corex.FileUploadLive do
 
   ```heex
   <form phx-change="validate">
-    <.file_upload_live upload={@uploads.document} field={:document} class="file-upload">
+    <.file_upload_live upload={@uploads.document} field={:document}>
       <:close>
         <.heroicon name="hero-x-mark" />
       </:close>
@@ -26,7 +26,7 @@ defmodule Corex.FileUploadLive do
 
   ```heex
   <form phx-change="validate">
-    <.file_upload_live upload={@uploads.document} field={:document} class="file-upload">
+    <.file_upload_live upload={@uploads.document} field={:document}>
       <:label>Files</:label>
       <:close>
         <.heroicon name="hero-x-mark" />
@@ -39,7 +39,7 @@ defmodule Corex.FileUploadLive do
 
   ```heex
   <form phx-change="validate">
-    <.file_upload_live upload={@uploads.document} field={:document} class="file-upload">
+    <.file_upload_live upload={@uploads.document} field={:document}>
       <:dropzone>
         <span>Custom dropzone</span>
       </:dropzone>
@@ -57,13 +57,13 @@ defmodule Corex.FileUploadLive do
 
   ```heex
   <form phx-change="validate" phx-submit="save">
-    <.file_upload_live upload={@uploads.attachment} field={:attachment} class="file-upload">
+    <.file_upload_live upload={@uploads.attachment} field={:attachment}>
       <:label>Attachment</:label>
       <:close>
         <.heroicon name="hero-x-mark" />
       </:close>
     </.file_upload_live>
-    <.action type="submit" class="button button--accent">Submit</.action>
+    <.action type="submit">Submit</.action>
   </form>
   ```
 
@@ -118,6 +118,25 @@ defmodule Corex.FileUploadLive do
 
   @doc type: :component
   use Phoenix.Component
+
+  use Corex.Variants,
+    base: "file-upload",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size,
+      radius: :radius
+    ],
+    defaults: [
+      width: "full",
+      max_width: "md",
+      height: "auto",
+      max_height: "none",
+      size: "md"
+    ]
 
   alias Corex.FileUpload.Translation
   alias Phoenix.LiveView.UploadConfig
@@ -189,7 +208,7 @@ defmodule Corex.FileUploadLive do
       |> assign(:translation, translation)
 
     ~H"""
-    <div id={@id} class="file-upload" {@rest}>
+    <div id={@id} class={corex_style_class(assigns)} {@rest}>
       <div
         data-scope="file-upload"
         data-part="root"

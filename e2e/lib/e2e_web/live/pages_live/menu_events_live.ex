@@ -108,7 +108,7 @@ defmodule E2eWeb.MenuEventsLive do
               <.events_binding_example />
               <.data_table
                 id="menu-events-log-bind"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.bind_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -134,7 +134,6 @@ defmodule E2eWeb.MenuEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.menu
                 id={@id_server}
-                class="menu"
                 on_select="menu_selected"
                 on_open_change="menu_open_changed"
                 items={@menu_items}
@@ -145,7 +144,7 @@ defmodule E2eWeb.MenuEventsLive do
 
               <.data_table
                 id="menu-events-log-server"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.server_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -172,7 +171,6 @@ defmodule E2eWeb.MenuEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.menu
                 id={@id_client}
-                class="menu"
                 on_select_client="menu-item-selected"
                 on_open_change_client="menu-open-changed"
                 items={@menu_items}
@@ -214,7 +212,7 @@ defmodule E2eWeb.MenuEventsLive do
 
               <.data_table
                 id="menu-events-log-client"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.client_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>

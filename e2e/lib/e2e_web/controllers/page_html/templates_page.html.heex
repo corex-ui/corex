@@ -1,7 +1,7 @@
 <Layouts.marketing flash={@flash} mode={@mode} theme={@theme} path={@path}>
   <div class="layout__article w-full items-stretch">
     <section class="layout__section w-full min-w-0 max-w-none" aria-labelledby="templates-heading">
-      <.layout_heading class="layout-heading max-w-3xl w-full">
+      <.layout_heading class="layout-heading layout-heading--max-w-3xl w-full">
         <:title>
           <span id="templates-heading">{~t"Templates"}</span>
         </:title>
@@ -10,14 +10,14 @@
         </:subtitle>
       </.layout_heading>
 
-      <p class="m-0 max-w-prose text-ink-muted">
+      <p class="m-0 max-w-prose text-ui-ink-muted">
         {~t"Production-ready coming-soon sites: Tableau export, shared tokens, Markdown posts, and Corex components. Choose English-first Soonex or Soonex i18n with locales and RTL."}
       </p>
 
       <div class="grid w-full gap-space-xl lg:grid-cols-2">
         <article class="flex min-h-0 min-w-0 flex-col gap-space rounded-xl border border-border bg-layer p-size-lg shadow-md">
-          <div class="inline-flex items-center gap-space-sm self-start rounded-full border border-border bg-root px-space-sm py-space-sm text-xs font-medium text-ink-muted">
-            <.heroicon name="hero-bolt" class="icon" />
+          <div class="inline-flex items-center gap-space-sm self-start rounded-full border border-border bg-root px-space-sm py-space-sm text-xs font-medium text-ui-ink-muted">
+            <.heroicon name="hero-bolt" />
             <span>{~t"Starter kit"}</span>
           </div>
 
@@ -28,7 +28,7 @@
               orientation="vertical"
               loop
               items={@template_carousel_items}
-              class="carousel carousel--accent w-full max-w-none"
+              class="carousel carousel--accent w-full carousel--max-w-none"
             >
               <:prev_trigger>
                 <.heroicon name="hero-arrow-up" />
@@ -39,36 +39,40 @@
             </.carousel>
           </div>
 
-          <p class="m-0 text-lg font-semibold tracking-tight text-ink">
+          <p class="m-0 text-lg font-semibold tracking-tight text-ui-ink">
             {~t"Soonex"}
           </p>
-          <p class="m-0 max-w-prose text-base leading-snug text-ink-muted">
+          <p class="m-0 max-w-prose text-base leading-snug text-ui-ink-muted">
             {~t"Single-locale coming-soon layout with Neo through Leo themes, Markdown journal, waitlist, and static assets sized for GitHub Pages or any CDN."}
           </p>
 
           <div class="mt-auto flex flex-wrap gap-space-sm pt-space-sm">
             <.navigate
               to="https://corex-ui.github.io/soonex/"
-              class="button button--brand rounded-full"
+              as="button"
+              semantic="brand"
+              radius="full"
               external
             >
               {~t"Live demo"}
-              <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
+              <.heroicon name="hero-arrow-top-right-on-square" />
             </.navigate>
             <.navigate
               to="https://github.com/corex-ui/soonex"
-              class="button button--ghost rounded-full"
+              as="button"
+              variant="ghost"
+              radius="full"
               external
             >
               {~t"GitHub"}
-              <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
+              <.heroicon name="hero-arrow-top-right-on-square" />
             </.navigate>
           </div>
         </article>
 
         <article class="flex min-h-0 min-w-0 flex-col gap-space rounded-xl border border-border bg-layer p-size-lg shadow-md">
-          <div class="inline-flex items-center gap-space-sm self-start rounded-full border border-border bg-root px-space-sm py-space-sm text-xs font-medium text-ink-muted">
-            <.heroicon name="hero-language" class="icon" />
+          <div class="inline-flex items-center gap-space-sm self-start rounded-full border border-border bg-root px-space-sm py-space-sm text-xs font-medium text-ui-ink-muted">
+            <.heroicon name="hero-language" />
             <span>{~t"Locales & RTL"}</span>
           </div>
 
@@ -79,7 +83,7 @@
               orientation="vertical"
               loop
               items={@template_carousel_items}
-              class="carousel carousel--accent w-full max-w-none"
+              class="carousel carousel--accent w-full carousel--max-w-none"
             >
               <:prev_trigger>
                 <.heroicon name="hero-arrow-up" />
@@ -90,29 +94,33 @@
             </.carousel>
           </div>
 
-          <p class="m-0 text-lg font-semibold tracking-tight text-ink">
+          <p class="m-0 text-lg font-semibold tracking-tight text-ui-ink">
             {~t"Soonex i18n"}
           </p>
-          <p class="m-0 max-w-prose text-base leading-snug text-ink-muted">
+          <p class="m-0 max-w-prose text-base leading-snug text-ui-ink-muted">
             {~t"Same Soonex surface with Gettext and Localize: Arabic, English, and French out of the box, RTL-aware controls, and the same static build pipeline."}
           </p>
 
           <div class="mt-auto flex flex-wrap gap-space-sm pt-space-sm">
             <.navigate
               to="https://corex-ui.github.io/soonex_i18n/"
-              class="button button--brand rounded-full"
+              as="button"
+              semantic="brand"
+              radius="full"
               external
             >
               {~t"Live demo"}
-              <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
+              <.heroicon name="hero-arrow-top-right-on-square" />
             </.navigate>
             <.navigate
               to="https://github.com/corex-ui/soonex_i18n"
-              class="button button--ghost rounded-full"
+              as="button"
+              variant="ghost"
+              radius="full"
               external
             >
               {~t"GitHub"}
-              <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
+              <.heroicon name="hero-arrow-top-right-on-square" />
             </.navigate>
           </div>
         </article>

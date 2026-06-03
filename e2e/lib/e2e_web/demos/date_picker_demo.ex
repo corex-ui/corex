@@ -1,6 +1,10 @@
 defmodule E2eWeb.Demos.DatePickerDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.Demos.StylingAxes
+
+  def styling_axis_values(axis), do: StylingAxes.styling_axis_values(axis)
+
   def minimal_code do
     ~S"""
     <.date_picker>
@@ -9,10 +13,10 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         <.heroicon name="hero-calendar" />
       </:trigger>
              <:prev_trigger>
-            <.heroicon name="hero-chevron-left" class="icon" />
+            <.heroicon name="hero-chevron-left" />
           </:prev_trigger>
           <:next_trigger>
-            <.heroicon name="hero-chevron-right" class="icon" />
+            <.heroicon name="hero-chevron-right" />
           </:next_trigger>
     </.date_picker>
     """
@@ -29,12 +33,11 @@ defmodule E2eWeb.Demos.DatePickerDemo do
           input: "Select date"
         }
       }
-      class="date-picker"
     >
       <:label>Select a date</:label>
-      <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-      <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-      <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+      <:trigger><.heroicon name="hero-calendar" /></:trigger>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     </.date_picker>
     """
   end
@@ -45,12 +48,12 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       selection_mode="range"
       value="2024-06-01,2024-06-15"
       translation={%Corex.DatePicker.Translation{open_calendar: "Select date range", close_calendar: "Select date range", input: "Date range"}}
-      class="date-picker"
+      
     >
       <:label>Range</:label>
-      <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-      <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-      <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+      <:trigger><.heroicon name="hero-calendar" /></:trigger>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     </.date_picker>
     """
   end
@@ -68,12 +71,11 @@ defmodule E2eWeb.Demos.DatePickerDemo do
           input: "Date range"
         }
       }
-      class="date-picker"
     >
       <:label>Range</:label>
-      <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-      <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-      <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+      <:trigger><.heroicon name="hero-calendar" /></:trigger>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     </.date_picker>
     """
   end
@@ -85,12 +87,12 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       max_selected_dates={3}
       value="2024-06-03,2024-06-10,2024-06-17"
       translation={%Corex.DatePicker.Translation{open_calendar: "Select dates", close_calendar: "Select dates", input: "Dates"}}
-      class="date-picker"
+      
     >
       <:label>Multiple</:label>
-      <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-      <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-      <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+      <:trigger><.heroicon name="hero-calendar" /></:trigger>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     </.date_picker>
     """
   end
@@ -109,33 +111,32 @@ defmodule E2eWeb.Demos.DatePickerDemo do
           input: "Dates"
         }
       }
-      class="date-picker"
     >
       <:label>Multiple</:label>
-      <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-      <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-      <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+      <:trigger><.heroicon name="hero-calendar" /></:trigger>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     </.date_picker>
     """
   end
 
   def api_set_value_client_binding_code do
     ~S"""
-    <.action phx-click={Corex.DatePicker.set_value("date-picker-api-sv-client", "2024-01-15")} class="button button--sm">
+    <.action phx-click={Corex.DatePicker.set_value("date-picker-api-sv-client", "2024-01-15")} size="sm">
       Set to 2024-01-15
     </.action>
-    <.action phx-click={Corex.DatePicker.set_value("date-picker-api-sv-client", "2024-12-25")} class="button button--sm">
+    <.action phx-click={Corex.DatePicker.set_value("date-picker-api-sv-client", "2024-12-25")} size="sm">
       Set to 2024-12-25
     </.action>
 
     <.date_picker
       translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
-      class="date-picker"
+      
     >
       <:label>Select a date</:label>
-      <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-      <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-      <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+      <:trigger><.heroicon name="hero-calendar" /></:trigger>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     </.date_picker>
     """
   end
@@ -145,13 +146,13 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     <div class="layout__row">
       <.action
         phx-click={Corex.DatePicker.set_value("date-picker-api-sv-client", "2024-01-15")}
-        class="button button--sm"
+        size="sm"
       >
         Set to 2024-01-15
       </.action>
       <.action
         phx-click={Corex.DatePicker.set_value("date-picker-api-sv-client", "2024-12-25")}
-        class="button button--sm"
+        size="sm"
       >
         Set to 2024-12-25
       </.action>
@@ -166,12 +167,11 @@ defmodule E2eWeb.Demos.DatePickerDemo do
           input: "Select date"
         }
       }
-      class="date-picker"
     >
       <:label>Select a date</:label>
-      <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-      <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-      <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+      <:trigger><.heroicon name="hero-calendar" /></:trigger>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     </.date_picker>
     """
   end
@@ -184,7 +184,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         detail: %{value: "2024-01-15"},
         bubbles: false
       )}
-      class="button button--sm"
+      size="sm"
     >
       Set to 2024-01-15
     </.action>
@@ -225,7 +225,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        size="sm"
       >
         Set to 2024-01-15
       </.action>
@@ -237,7 +237,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        size="sm"
       >
         Set to 2024-12-25
       </.action>
@@ -251,27 +251,26 @@ defmodule E2eWeb.Demos.DatePickerDemo do
           input: "Select date"
         }
       }
-      class="date-picker"
     >
       <:label>Select a date</:label>
-      <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-      <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-      <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+      <:trigger><.heroicon name="hero-calendar" /></:trigger>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     </.date_picker>
     """
   end
 
   def api_set_value_server_heex do
     ~S"""
-    <.action phx-click="date_picker_api_set_value" phx-value-date="2024-01-15" class="button button--sm">
+    <.action phx-click="date_picker_api_set_value" phx-value-date="2024-01-15" size="sm">
       Set to 2024-01-15
     </.action>
 
-    <.date_picker translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}} class="date-picker">
+    <.date_picker translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}} >
       <:label>Select a date</:label>
-      <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-      <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-      <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+      <:trigger><.heroicon name="hero-calendar" /></:trigger>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     </.date_picker>
     """
   end
@@ -290,14 +289,14 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       <.action
         phx-click="date_picker_api_set_value"
         phx-value-date="2024-01-15"
-        class="button button--sm"
+        size="sm"
       >
         Set to 2024-01-15
       </.action>
       <.action
         phx-click="date_picker_api_set_value"
         phx-value-date="2024-12-25"
-        class="button button--sm"
+        size="sm"
       >
         Set to 2024-12-25
       </.action>
@@ -311,12 +310,11 @@ defmodule E2eWeb.Demos.DatePickerDemo do
           input: "Select date"
         }
       }
-      class="date-picker"
     >
       <:label>Select a date</:label>
-      <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-      <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-      <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+      <:trigger><.heroicon name="hero-calendar" /></:trigger>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     </.date_picker>
     """
   end
@@ -325,13 +323,13 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     ~S"""
     <.date_picker
       translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
-      class="date-picker"
+      
       on_value_change="dpe_on_value_server"
     >
       <:label>Select a date</:label>
-      <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-      <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-      <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+      <:trigger><.heroicon name="hero-calendar" /></:trigger>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     </.date_picker>
     """
   end
@@ -347,13 +345,13 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     ~S"""
     <.date_picker
       translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
-      class="date-picker"
+      
       on_open_change="dpe_on_open_server"
     >
       <:label>Select a date</:label>
-      <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-      <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-      <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+      <:trigger><.heroicon name="hero-calendar" /></:trigger>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     </.date_picker>
     """
   end
@@ -369,13 +367,13 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     ~S"""
     <.date_picker
       translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
-      class="date-picker"
+      
       on_value_change_client="date-picker-value-changed"
     >
       <:label>Select a date</:label>
-      <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-      <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-      <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+      <:trigger><.heroicon name="hero-calendar" /></:trigger>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     </.date_picker>
     """
   end
@@ -402,13 +400,13 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     ~S"""
     <.date_picker
       translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
-      class="date-picker"
+      
       on_open_change_client="date-picker-open-changed"
     >
       <:label>Select a date</:label>
-      <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-      <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-      <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+      <:trigger><.heroicon name="hero-calendar" /></:trigger>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     </.date_picker>
     """
   end
@@ -434,16 +432,16 @@ defmodule E2eWeb.Demos.DatePickerDemo do
   def patterns_controlled_code do
     ~S"""
     <.date_picker
-      class="date-picker"
+      
       controlled
       value={@selected}
       on_value_change="pattern_date_changed"
       translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
     >
       <:label>Date</:label>
-      <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-      <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-      <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+      <:trigger><.heroicon name="hero-calendar" /></:trigger>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     </.date_picker>
     """
   end
@@ -531,14 +529,13 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       value={@value}
       on_value_change={@on_value_change}
       translation={form_date_picker_translation(@selection_mode)}
-      class="date-picker"
     >
       <:label>{@label}</:label>
-      <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-      <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-      <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+      <:trigger><.heroicon name="hero-calendar" /></:trigger>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
+        <.heroicon name="hero-exclamation-circle" />
         {msg}
       </:error>
     </.date_picker>
@@ -595,24 +592,24 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       <.date_picker
         field={@form[:date]}
         translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
-        class="date-picker"
+        
       >
         <:label>Date</:label>
         <:trigger>
-          <.heroicon name="hero-calendar" class="icon" />
+          <.heroicon name="hero-calendar" />
         </:trigger>
         <:prev_trigger>
-          <.heroicon name="hero-chevron-left" class="icon" />
+          <.heroicon name="hero-chevron-left" />
         </:prev_trigger>
         <:next_trigger>
-          <.heroicon name="hero-chevron-right" class="icon" />
+          <.heroicon name="hero-chevron-right" />
         </:next_trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.date_picker>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" semantic="accent">Submit</.action>
     </.form>
     """
   end
@@ -627,24 +624,24 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       <.date_picker
         field={@form[:date]}
         translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
-        class="date-picker"
+        
       >
         <:label>Date</:label>
         <:trigger>
-          <.heroicon name="hero-calendar" class="icon" />
+          <.heroicon name="hero-calendar" />
         </:trigger>
         <:prev_trigger>
-          <.heroicon name="hero-chevron-left" class="icon" />
+          <.heroicon name="hero-chevron-left" />
         </:prev_trigger>
         <:next_trigger>
-          <.heroicon name="hero-chevron-right" class="icon" />
+          <.heroicon name="hero-chevron-right" />
         </:next_trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.date_picker>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" semantic="accent">Submit</.action>
     </.form>
     """
   end
@@ -678,18 +675,18 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         selection_mode="multiple"
         max_selected_dates={3}
         translation={%Corex.DatePicker.Translation{open_calendar: "Select dates", close_calendar: "Select dates", input: "Dates"}}
-        class="date-picker"
+        
       >
         <:label>Dates</:label>
-        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+        <:trigger><.heroicon name="hero-calendar" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.date_picker>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" semantic="accent">Submit</.action>
     </.form>
     """
   end
@@ -721,18 +718,18 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         field={@form[:date_range]}
         selection_mode="range"
         translation={%Corex.DatePicker.Translation{open_calendar: "Select date range", close_calendar: "Select date range", input: "Date range", range_start: "From", range_end: "To"}}
-        class="date-picker"
+        
       >
         <:label>Date range</:label>
-        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+        <:trigger><.heroicon name="hero-calendar" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.date_picker>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" semantic="accent">Submit</.action>
     </.form>
     """
   end
@@ -782,24 +779,24 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       <.date_picker
         field={@form[:date]}
         translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
-        class="date-picker"
+        
       >
         <:label>Date (required)</:label>
         <:trigger>
-          <.heroicon name="hero-calendar" class="icon" />
+          <.heroicon name="hero-calendar" />
         </:trigger>
         <:prev_trigger>
-          <.heroicon name="hero-chevron-left" class="icon" />
+          <.heroicon name="hero-chevron-left" />
         </:prev_trigger>
         <:next_trigger>
-          <.heroicon name="hero-chevron-right" class="icon" />
+          <.heroicon name="hero-chevron-right" />
         </:next_trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.date_picker>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" semantic="accent">Submit</.action>
     </.form>
     """
   end
@@ -924,20 +921,20 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       <.date_picker
         name="date_picker_form[date]"
         translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
-        class="date-picker"
+        
       >
         <:label>Date</:label>
         <:trigger>
-          <.heroicon name="hero-calendar" class="icon" />
+          <.heroicon name="hero-calendar" />
         </:trigger>
         <:prev_trigger>
-          <.heroicon name="hero-chevron-left" class="icon" />
+          <.heroicon name="hero-chevron-left" />
         </:prev_trigger>
         <:next_trigger>
-          <.heroicon name="hero-chevron-right" class="icon" />
+          <.heroicon name="hero-chevron-right" />
         </:next_trigger>
       </.date_picker>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" semantic="accent">Submit</.action>
     </form>
     """
   end
@@ -963,14 +960,14 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         selection_mode="multiple"
         max_selected_dates={3}
         translation={%Corex.DatePicker.Translation{open_calendar: "Select dates", close_calendar: "Select dates", input: "Dates"}}
-        class="date-picker"
+        
       >
         <:label>Dates</:label>
-        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+        <:trigger><.heroicon name="hero-calendar" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       </.date_picker>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" semantic="accent">Submit</.action>
     </form>
     """
   end
@@ -995,14 +992,14 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         name="date_picker_form_range[date_range]"
         selection_mode="range"
         translation={%Corex.DatePicker.Translation{open_calendar: "Select date range", close_calendar: "Select date range", input: "Date range", range_start: "From", range_end: "To"}}
-        class="date-picker"
+        
       >
         <:label>Date range</:label>
-        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+        <:trigger><.heroicon name="hero-calendar" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       </.date_picker>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" semantic="accent">Submit</.action>
     </form>
     """
   end
@@ -1032,18 +1029,18 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         value={@date_display}
         on_value_change="date_changed_basic"
         translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
-        class="date-picker"
+        
       >
         <:label>Date</:label>
-        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+        <:trigger><.heroicon name="hero-calendar" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.date_picker>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" semantic="accent">Submit</.action>
     </.form>
     """
   end
@@ -1054,24 +1051,24 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       <.date_picker
         field={@form[:date]}
         translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
-        class="date-picker"
+        
       >
         <:label>Date</:label>
         <:trigger>
-          <.heroicon name="hero-calendar" class="icon" />
+          <.heroicon name="hero-calendar" />
         </:trigger>
         <:prev_trigger>
-          <.heroicon name="hero-chevron-left" class="icon" />
+          <.heroicon name="hero-chevron-left" />
         </:prev_trigger>
         <:next_trigger>
-          <.heroicon name="hero-chevron-right" class="icon" />
+          <.heroicon name="hero-chevron-right" />
         </:next_trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.date_picker>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" semantic="accent">Submit</.action>
     </.form>
     """
   end
@@ -1200,18 +1197,18 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         value={@date_display}
         on_value_change="date_changed_validate"
         translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
-        class="date-picker"
+        
       >
         <:label>Date (required)</:label>
-        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+        <:trigger><.heroicon name="hero-calendar" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.date_picker>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" semantic="accent">Submit</.action>
     </.form>
     """
   end
@@ -1309,14 +1306,14 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         selection_mode="multiple"
         max_selected_dates={3}
         translation={%Corex.DatePicker.Translation{open_calendar: "Select dates", close_calendar: "Select dates", input: "Dates"}}
-        class="date-picker"
+        
       >
         <:label>Dates</:label>
-        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+        <:trigger><.heroicon name="hero-calendar" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       </.date_picker>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" semantic="accent">Submit</.action>
     </.form>
     """
   end
@@ -1360,14 +1357,14 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         field={@form[:date_range]}
         selection_mode="range"
         translation={%Corex.DatePicker.Translation{open_calendar: "Select date range", close_calendar: "Select date range", input: "Date range", range_start: "From", range_end: "To"}}
-        class="date-picker"
+        
       >
         <:label>Date range</:label>
-        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+        <:trigger><.heroicon name="hero-calendar" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       </.date_picker>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" semantic="accent">Submit</.action>
     </.form>
     """
   end
@@ -1414,18 +1411,18 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         value={@date_display}
         on_value_change="date_changed_dates"
         translation={%Corex.DatePicker.Translation{open_calendar: "Select dates", close_calendar: "Select dates", input: "Dates"}}
-        class="date-picker"
+        
       >
         <:label>Dates (required)</:label>
-        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+        <:trigger><.heroicon name="hero-calendar" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.date_picker>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" semantic="accent">Submit</.action>
     </.form>
     """
   end
@@ -1504,18 +1501,18 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         value={@date_display}
         on_value_change="date_changed_range"
         translation={%Corex.DatePicker.Translation{open_calendar: "Select date range", close_calendar: "Select date range", input: "Date range", range_start: "From", range_end: "To"}}
-        class="date-picker"
+        
       >
         <:label>Date range (required)</:label>
-        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+        <:trigger><.heroicon name="hero-calendar" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.date_picker>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" semantic="accent">Submit</.action>
     </.form>
     """
   end
@@ -1631,7 +1628,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         on_value_change={@on_value_change}
         label={@picker_label}
       />
-      <.action type="submit" id={@submit_id} class="button button--accent">Submit</.action>
+      <.action type="submit" id={@submit_id} semantic="accent">Submit</.action>
     </.form>
     """
   end
@@ -1726,7 +1723,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       <.action
         type="submit"
         id={"date-picker-form-native-#{@selection_mode}-submit"}
-        class="button button--accent"
+        semantic="accent"
       >
         Submit
       </.action>
@@ -1765,7 +1762,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         on_value_change={@on_value_change}
         label={@picker_label}
       />
-      <.action type="submit" id={@submit_id} class="button button--accent">Submit</.action>
+      <.action type="submit" id={@submit_id} semantic="accent">Submit</.action>
     </.form>
     """
   end
@@ -1862,9 +1859,9 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     }
   end
 
-  def styling_color_code do
+  def styling_semantic_code do
     ~S"""
-    <.date_picker class="date-picker" value="2024-06-15">
+    <.date_picker  value="2024-06-15">
       <:label>Default</:label>
       <:trigger><.heroicon name="hero-calendar" /></:trigger>
       <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
@@ -1903,22 +1900,21 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     """
   end
 
-  def styling_color_example(assigns) do
+  def styling_semantic_example(assigns) do
     _ = assigns
 
     ~H"""
     <div class="flex flex-wrap gap-6 items-start w-full">
       <.date_picker
         id="date-picker-style-color-default"
-        class="date-picker"
         value="2024-06-15"
         focused_value="2024-06-01"
         translation={styling_translation()}
       >
         <:label>Default</:label>
-        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+        <:trigger><.heroicon name="hero-calendar" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       </.date_picker>
       <.date_picker
         id="date-picker-style-color-accent"
@@ -1928,9 +1924,9 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         translation={styling_translation()}
       >
         <:label>Accent</:label>
-        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+        <:trigger><.heroicon name="hero-calendar" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       </.date_picker>
       <.date_picker
         id="date-picker-style-color-brand"
@@ -1940,9 +1936,9 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         translation={styling_translation()}
       >
         <:label>Brand</:label>
-        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+        <:trigger><.heroicon name="hero-calendar" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       </.date_picker>
       <.date_picker
         id="date-picker-style-color-alert"
@@ -1952,9 +1948,9 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         translation={styling_translation()}
       >
         <:label>Alert</:label>
-        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+        <:trigger><.heroicon name="hero-calendar" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       </.date_picker>
       <.date_picker
         id="date-picker-style-color-info"
@@ -1964,9 +1960,9 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         translation={styling_translation()}
       >
         <:label>Info</:label>
-        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+        <:trigger><.heroicon name="hero-calendar" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       </.date_picker>
       <.date_picker
         id="date-picker-style-color-success"
@@ -1976,9 +1972,9 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         translation={styling_translation()}
       >
         <:label>Success</:label>
-        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+        <:trigger><.heroicon name="hero-calendar" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       </.date_picker>
     </div>
     """
@@ -2026,9 +2022,9 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         translation={styling_translation()}
       >
         <:label>SM</:label>
-        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+        <:trigger><.heroicon name="hero-calendar" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       </.date_picker>
       <.date_picker
         id="date-picker-style-size-md"
@@ -2038,9 +2034,9 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         translation={styling_translation()}
       >
         <:label>MD</:label>
-        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+        <:trigger><.heroicon name="hero-calendar" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       </.date_picker>
       <.date_picker
         id="date-picker-style-size-lg"
@@ -2050,9 +2046,9 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         translation={styling_translation()}
       >
         <:label>LG</:label>
-        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+        <:trigger><.heroicon name="hero-calendar" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       </.date_picker>
       <.date_picker
         id="date-picker-style-size-xl"
@@ -2062,9 +2058,9 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         translation={styling_translation()}
       >
         <:label>XL</:label>
-        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+        <:trigger><.heroicon name="hero-calendar" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       </.date_picker>
     </div>
     """
@@ -2124,9 +2120,9 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         translation={styling_translation()}
       >
         <:label>None</:label>
-        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+        <:trigger><.heroicon name="hero-calendar" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       </.date_picker>
       <.date_picker
         id="date-picker-style-rounded-sm"
@@ -2136,9 +2132,9 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         translation={styling_translation()}
       >
         <:label>SM</:label>
-        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+        <:trigger><.heroicon name="hero-calendar" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       </.date_picker>
       <.date_picker
         id="date-picker-style-rounded-md"
@@ -2148,9 +2144,9 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         translation={styling_translation()}
       >
         <:label>MD</:label>
-        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+        <:trigger><.heroicon name="hero-calendar" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       </.date_picker>
       <.date_picker
         id="date-picker-style-rounded-lg"
@@ -2160,9 +2156,9 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         translation={styling_translation()}
       >
         <:label>LG</:label>
-        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+        <:trigger><.heroicon name="hero-calendar" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       </.date_picker>
       <.date_picker
         id="date-picker-style-rounded-xl"
@@ -2172,9 +2168,9 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         translation={styling_translation()}
       >
         <:label>XL</:label>
-        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+        <:trigger><.heroicon name="hero-calendar" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       </.date_picker>
       <.date_picker
         id="date-picker-style-rounded-full"
@@ -2184,9 +2180,9 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         translation={styling_translation()}
       >
         <:label>Full</:label>
-        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+        <:trigger><.heroicon name="hero-calendar" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       </.date_picker>
     </div>
     """

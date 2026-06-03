@@ -33,61 +33,49 @@ defmodule CorexWeb.Toast do
   defp render_buttons(assigns) do
     ~H"""
     <div class="layout__row gap-2">
-      <.action
-        phx-click={
-          Toast.create(
-            @toast_group_id,
-            "This is an info toast",
-            "This is an info toast description",
-            :info,
-            []
-          )
-        }
-        class="button"
-      >
+      <.action phx-click={
+        Toast.create(
+          @toast_group_id,
+          "This is an info toast",
+          "This is an info toast description",
+          :info,
+          []
+        )
+      }>
         Create Info Toast
       </.action>
-      <.action
-        phx-click={
-          Toast.create(
-            @toast_group_id,
-            "This is a success toast",
-            "This is a success toast description",
-            :success,
-            []
-          )
-        }
-        class="button"
-      >
+      <.action phx-click={
+        Toast.create(
+          @toast_group_id,
+          "This is a success toast",
+          "This is a success toast description",
+          :success,
+          []
+        )
+      }>
         Success Toast
       </.action>
-      <.action
-        phx-click={
-          Toast.create(
-            @toast_group_id,
-            "This is an error toast",
-            "This is an error toast description",
-            :error,
-            []
-          )
-        }
-        class="button"
-      >
+      <.action phx-click={
+        Toast.create(
+          @toast_group_id,
+          "This is an error toast",
+          "This is an error toast description",
+          :error,
+          []
+        )
+      }>
         Error Toast
       </.action>
-      <.action
-        phx-click={
-          Toast.create(
-            @toast_group_id,
-            "This is a loading toast",
-            "This is a loading toast description",
-            :info,
-            duration: :infinity,
-            loading: true
-          )
-        }
-        class="button"
-      >
+      <.action phx-click={
+        Toast.create(
+          @toast_group_id,
+          "This is a loading toast",
+          "This is a loading toast description",
+          :info,
+          duration: :infinity,
+          loading: true
+        )
+      }>
         Create Loading
       </.action>
     </div>

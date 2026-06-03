@@ -79,7 +79,6 @@ defmodule E2eWeb.FloatingPanelEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.floating_panel
                 id={@id_server}
-                class="floating-panel"
                 on_open_change="floating_panel_open_changed"
               >
                 <:trigger>
@@ -88,16 +87,16 @@ defmodule E2eWeb.FloatingPanelEventsLive do
                 </:trigger>
                 <:title>Panel</:title>
                 <:minimize_trigger>
-                  <.heroicon name="hero-arrow-down-left" class="icon" />
+                  <.heroicon name="hero-arrow-down-left" />
                 </:minimize_trigger>
                 <:maximize_trigger>
-                  <.heroicon name="hero-arrows-pointing-out" class="icon" />
+                  <.heroicon name="hero-arrows-pointing-out" />
                 </:maximize_trigger>
                 <:default_trigger>
-                  <.heroicon name="hero-rectangle-stack" class="icon" />
+                  <.heroicon name="hero-rectangle-stack" />
                 </:default_trigger>
                 <:close_trigger>
-                  <.heroicon name="hero-x-mark" class="icon" />
+                  <.heroicon name="hero-x-mark" />
                 </:close_trigger>
                 <:content>
                   <p>Lorem ipsum dolor sit amet.</p>
@@ -106,7 +105,7 @@ defmodule E2eWeb.FloatingPanelEventsLive do
 
               <.data_table
                 id="floating-panel-events-log-server"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.server_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -134,7 +133,6 @@ defmodule E2eWeb.FloatingPanelEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.floating_panel
                 id={@id_client}
-                class="floating-panel"
                 on_open_change_client="floating-panel-open-changed"
               >
                 <:trigger>
@@ -143,16 +141,16 @@ defmodule E2eWeb.FloatingPanelEventsLive do
                 </:trigger>
                 <:title>Panel</:title>
                 <:minimize_trigger>
-                  <.heroicon name="hero-arrow-down-left" class="icon" />
+                  <.heroicon name="hero-arrow-down-left" />
                 </:minimize_trigger>
                 <:maximize_trigger>
-                  <.heroicon name="hero-arrows-pointing-out" class="icon" />
+                  <.heroicon name="hero-arrows-pointing-out" />
                 </:maximize_trigger>
                 <:default_trigger>
-                  <.heroicon name="hero-rectangle-stack" class="icon" />
+                  <.heroicon name="hero-rectangle-stack" />
                 </:default_trigger>
                 <:close_trigger>
-                  <.heroicon name="hero-x-mark" class="icon" />
+                  <.heroicon name="hero-x-mark" />
                 </:close_trigger>
                 <:content>
                   <p>Lorem ipsum dolor sit amet.</p>
@@ -184,7 +182,7 @@ defmodule E2eWeb.FloatingPanelEventsLive do
 
               <.data_table
                 id="floating-panel-events-log-client"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.client_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>

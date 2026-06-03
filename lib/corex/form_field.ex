@@ -1,21 +1,21 @@
 defmodule Corex.FormField do
   @moduledoc """
-  Shared helpers for Corex components that accept `field={@form[:name]}`.
+  Helpers for Corex form field wiring.
 
-  `assign_form_field/2` wires id, name, form, errors, and `field_used`. It does **not**
-  set `invalid` from changeset errors. Pass `invalid` on the component when you want
-  alert styling (`data-invalid`):
+  Components that accept `field={@form[:name]}` wire id, name, form, errors, and
+  `field_used` internally. They do **not** set `invalid` from changeset errors
+  automatically. Pass `invalid` when you want alert styling after validation:
 
-      <.select field={@form[:country]} invalid={FormField.invalid?(@form[:country])} />
+      <.select field={@form[:country]} invalid={Corex.FormField.invalid?(@form[:country])} />
 
-  Error messages still come from the `:error` slot via `assign_errors/2`.
+  Error messages still come from each component's `:error` slot.
   """
 
   import Phoenix.Component
 
   alias Corex.Checkable.Helpers, as: CheckableHelpers
 
-  @spec assign_errors(map(), Phoenix.HTML.FormField.t()) :: map()
+  @doc false
   def assign_errors(assigns, %Phoenix.HTML.FormField{} = field) do
     errors =
       if field_errors_visible?(field) do
@@ -27,14 +27,19 @@ defmodule Corex.FormField do
     assign(assigns, :errors, errors)
   end
 
-  @spec invalid?(Phoenix.HTML.FormField.t()) :: boolean()
+  @doc """
+  Returns whether a form field should render invalid styling.
+
+  Uses `Phoenix.Component.used_input?/1`, so errors show after the user interacts
+  with the field on LiveView forms with `phx-change`, not on the initial render.
+  """
   def invalid?(%Phoenix.HTML.FormField{} = field), do: field_errors_visible?(field)
 
   defp field_errors_visible?(%Phoenix.HTML.FormField{errors: []}), do: false
 
   defp field_errors_visible?(field), do: Phoenix.Component.used_input?(field)
 
-  @spec assign_ids(map(), Phoenix.HTML.FormField.t()) :: map()
+  @doc false
   def assign_ids(assigns, %Phoenix.HTML.FormField{} = field) do
     assigns
     |> assign(:id, field.id)
@@ -42,7 +47,7 @@ defmodule Corex.FormField do
     |> assign(:form, field.form.id)
   end
 
-  @spec assign_form_field(map(), Phoenix.HTML.FormField.t()) :: map()
+  @doc false
   def assign_form_field(assigns, %Phoenix.HTML.FormField{} = field) do
     assigns =
       assigns
@@ -55,35 +60,35 @@ defmodule Corex.FormField do
     assign(assigns, :invalid, Map.get(assigns, :invalid, false))
   end
 
-  @spec dataset_default_boolean(boolean() | :indeterminate) :: String.t()
+  @doc false
   def dataset_default_boolean(checked) do
     CheckableHelpers.checked_form_field_default_attr(checked)
   end
 
-  @spec dataset_default_string(String.t() | nil) :: String.t()
+  @doc false
   def dataset_default_string(value) when is_binary(value), do: value
   def dataset_default_string(nil), do: ""
 
-  @spec dataset_default_list(list()) :: String.t()
+  @doc false
   def dataset_default_list([]), do: ""
 
   def dataset_default_list(list) when is_list(list) do
     Corex.Helpers.joined_csv_values(list) || ""
   end
 
-  @spec dataset_default_json(list()) :: String.t()
+  @doc false
   def dataset_default_json(list) when is_list(list) do
     Corex.Dataset.encode_json(list) || "[]"
   end
 
-  @spec dataset_default_paths(list()) :: String.t()
+  @doc false
   def dataset_default_paths([]), do: ""
 
   def dataset_default_paths(paths) when is_list(paths) do
     Enum.join(paths, "\n")
   end
 
-  @spec put_form_field_attrs(map(), map()) :: map()
+  @doc false
   def put_form_field_attrs(attrs, assigns) do
     attrs =
       if Map.get(assigns, :form_field, false) do
@@ -99,7 +104,7 @@ defmodule Corex.FormField do
     end
   end
 
-  @spec default_value_dataset(map(), String.t() | nil) :: String.t() | nil
+  @doc false
   def default_value_dataset(assigns, value) do
     if Map.get(assigns, :form_field, false) do
       dataset_default_string(value)
@@ -108,11 +113,11 @@ defmodule Corex.FormField do
     end
   end
 
-  @spec list_submit_name(String.t() | nil) :: String.t() | nil
+  @doc false
   def list_submit_name(nil), do: nil
   def list_submit_name(name) when is_binary(name), do: name <> "[]"
 
-  @spec unused_input_name(String.t() | nil) :: String.t() | nil
+  @doc false
   def unused_input_name(nil), do: nil
 
   def unused_input_name(name) when is_binary(name) do
@@ -122,7 +127,7 @@ defmodule Corex.FormField do
     end
   end
 
-  @spec assign_list_submit(map()) :: map()
+  @doc false
   def assign_list_submit(assigns) do
     assign(assigns, :submit_name, list_submit_name(assigns[:name]))
   end

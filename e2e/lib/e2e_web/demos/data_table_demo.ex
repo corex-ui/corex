@@ -1,6 +1,10 @@
 defmodule E2eWeb.Demos.DataTableDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.Demos.StylingAxes
+
+  def styling_axis_values(axis), do: StylingAxes.styling_axis_values(axis)
+
   @anatomy_rows [
     %{id: 1, name: "Alice", role: "Admin", email: "alice@example.com"},
     %{id: 2, name: "Bob", role: "User", email: "bob@example.com"},
@@ -10,7 +14,7 @@ defmodule E2eWeb.Demos.DataTableDemo do
   def anatomy_minimal_code do
     ~S"""
     <.data_table
-      class="data-table max-w-none"
+      class="data-table data-table--max-w-none"
       rows={@rows}
     >
       <:col :let={row} label="ID">{row.id}</:col>
@@ -27,7 +31,7 @@ defmodule E2eWeb.Demos.DataTableDemo do
     ~H"""
     <.data_table
       id="data-table-anatomy-minimal"
-      class="data-table max-w-none"
+      class="data-table data-table--max-w-none"
       rows={@rows}
     >
       <:col :let={row} label="ID">{row.id}</:col>
@@ -41,7 +45,7 @@ defmodule E2eWeb.Demos.DataTableDemo do
   def anatomy_with_action_code do
     ~S"""
     <.data_table
-      class="data-table max-w-none"
+      class="data-table data-table--max-w-none"
       rows={@rows}
     >
       <:col :let={row} label="ID">{row.id}</:col>
@@ -49,7 +53,7 @@ defmodule E2eWeb.Demos.DataTableDemo do
       <:col :let={row} label="Role">{row.role}</:col>
       <:col :let={row} label="Email">{row.email}</:col>
       <:action :let={row}>
-        <.action class="button button--sm" aria-label={"Edit #{row.name}"}>
+        <.action size="sm" aria-label={"Edit #{row.name}"}>
           <.heroicon name="hero-pencil-square" />
         </.action>
       </:action>
@@ -63,7 +67,7 @@ defmodule E2eWeb.Demos.DataTableDemo do
     ~H"""
     <.data_table
       id="data-table-anatomy-with-action"
-      class="data-table max-w-none"
+      class="data-table data-table--max-w-none"
       rows={@rows}
     >
       <:col :let={row} label="ID">{row.id}</:col>
@@ -71,7 +75,7 @@ defmodule E2eWeb.Demos.DataTableDemo do
       <:col :let={row} label="Role">{row.role}</:col>
       <:col :let={row} label="Email">{row.email}</:col>
       <:action :let={row}>
-        <.action class="button button--sm" aria-label={"Edit #{row.name}"}>
+        <.action size="sm" aria-label={"Edit #{row.name}"}>
           <.heroicon name="hero-pencil-square" />
         </.action>
       </:action>
@@ -82,7 +86,7 @@ defmodule E2eWeb.Demos.DataTableDemo do
   def anatomy_empty_code do
     ~S"""
     <.data_table
-      class="data-table max-w-none"
+      class="data-table data-table--max-w-none"
       rows={[]}
     >
       <:col :let={row} label="ID">{row.id}</:col>
@@ -98,7 +102,7 @@ defmodule E2eWeb.Demos.DataTableDemo do
     ~H"""
     <.data_table
       id="data-table-anatomy-empty"
-      class="data-table max-w-none"
+      class="data-table data-table--max-w-none"
       rows={[]}
     >
       <:col :let={row} label="ID">{row.id}</:col>
@@ -120,9 +124,9 @@ defmodule E2eWeb.Demos.DataTableDemo do
 
   def playground_rows, do: @anatomy_rows
 
-  def styling_color_code_tabs do
+  def styling_semantic_code_tabs do
     styling_code_tabs(
-      "data-table-styling-color-accent",
+      "data-table-styling-semantic-accent",
       "data-table data-table--accent max-w-none"
     )
   end
@@ -237,7 +241,7 @@ defmodule E2eWeb.Demos.DataTableDemo do
       <:col :let={u} label="Role" name={:role}>{u.role}</:col>
       <:col :let={u} label="Status" name={:status}>{u.status}</:col>
       <:action :let={u}>
-        <.action class="button button--sm" aria-label={"Edit #{u.name}"}>
+        <.action size="sm" aria-label={"Edit #{u.name}"}>
           <.heroicon name="hero-pencil-square" />
         </.action>
       </:action>
@@ -252,14 +256,14 @@ defmodule E2eWeb.Demos.DataTableDemo do
     <p :if={@pattern_row_clicked}>Row clicked: {@pattern_row_clicked}</p>
     <p :if={is_nil(@pattern_row_clicked)}>Click a row (not the action button).</p>
     <.data_table
-      class="data-table max-w-none"
+      class="data-table data-table--max-w-none"
       rows={@pattern_row_click_rows}
       row_click={fn row -> JS.push("row_click", value: %{id: row.id, name: row.name}) end}
     >
       <:col :let={row} label="ID">{row.id}</:col>
       <:col :let={row} label="Name">{row.name}</:col>
       <:action :let={row}>
-        <.action class="button button--sm" aria-label={"Edit #{row.name}"}>
+        <.action size="sm" aria-label={"Edit #{row.name}"}>
           <.heroicon name="hero-pencil-square" />
         </.action>
       </:action>
@@ -289,7 +293,7 @@ defmodule E2eWeb.Demos.DataTableDemo do
 
   def patterns_stream_heex do
     ~S"""
-    <.data_table class="data-table max-w-none" rows={@streams.pattern_stream}>
+    <.data_table class="data-table data-table--max-w-none" rows={@streams.pattern_stream}>
       <:col :let={{_id, row}} label="ID">{row.id}</:col>
       <:col :let={{_id, row}} label="Name">{row.name}</:col>
       <:col :let={{_id, row}} label="Category">{row.category}</:col>
@@ -300,7 +304,7 @@ defmodule E2eWeb.Demos.DataTableDemo do
         <.action
           phx-click="pattern_stream_delete"
           phx-value-dom_id={dom_id}
-          class="button button--sm button--alert"
+          size="sm" semantic="alert"
           aria-label={"Delete #{row.name}"}
         >
           <.heroicon name="hero-trash" />
@@ -350,7 +354,7 @@ defmodule E2eWeb.Demos.DataTableDemo do
     ~S"""
     <.data_table
       id="pattern-sort-table"
-      class="data-table max-w-none"
+      class="data-table data-table--max-w-none"
       rows={@pattern_sort_rows}
       sort_by={@sort_by}
       sort_order={@sort_order}
@@ -414,7 +418,7 @@ defmodule E2eWeb.Demos.DataTableDemo do
     ~S"""
     <.data_table
       id="pattern-select-table"
-      class="data-table max-w-none"
+      class="data-table data-table--max-w-none"
       rows={@pattern_select_rows}
       row_id={&"pselect-#{&1.id}"}
       selectable
@@ -476,7 +480,7 @@ defmodule E2eWeb.Demos.DataTableDemo do
     ~S"""
     <.data_table
       id="pattern-full-table"
-      class="data-table max-w-none"
+      class="data-table data-table--max-w-none"
       rows={@pattern_full_rows}
       row_id={&"pfull-#{&1.id}"}
       sort_by={@sort_by}
@@ -506,7 +510,7 @@ defmodule E2eWeb.Demos.DataTableDemo do
       <:col :let={row} label="Role" name={:role}>{row.role}</:col>
       <:col :let={row} label="Status" name={:status}>{row.status}</:col>
       <:action :let={row}>
-        <.action class="button button--sm" aria-label={"Edit #{row.name}"}>
+        <.action size="sm" aria-label={"Edit #{row.name}"}>
           <.heroicon name="hero-pencil-square" />
         </.action>
       </:action>
@@ -561,7 +565,7 @@ defmodule E2eWeb.Demos.DataTableDemo do
   def patterns_database_heex do
     ~S"""
     <.data_table
-      class="data-table max-w-none"
+      class="data-table data-table--max-w-none"
       rows={@pattern_db_rows}
       row_id={&"db-#{&1.id}"}
       sort_by={@pattern_db_sort_by}
@@ -577,7 +581,7 @@ defmodule E2eWeb.Demos.DataTableDemo do
     </.data_table>
 
     <.pagination
-      class="pagination max-w-none mx-auto"
+      class="pagination pagination--max-w-none mx-auto"
       count={@pattern_db_total}
       page={@pattern_db_page}
       page_size={@pattern_db_page_size}

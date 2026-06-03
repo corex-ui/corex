@@ -79,7 +79,7 @@ defmodule Corex.MCP.Tools.Installation do
         note: "Updates the corex.new archive before generating a project."
       },
       pipeline:
-        "corex.new runs mix phx.new --no-install with forwarded Phoenix flags, then renders Corex-owned files from templates directly into the generated app. No Igniter.",
+        "corex.new runs mix phx.new --no-install with forwarded Phoenix flags, then renders Corex-owned files from templates directly into the generated app.",
       mix_help: "mix help corex.new",
       task_module: "Mix.Tasks.Corex.New"
     }
@@ -95,9 +95,9 @@ defmodule Corex.MCP.Tools.Installation do
       minimal_steps: minimal_steps_existing_project(),
       mcp_mount_optional_dev: mcp_mount_snippet(),
       design_assets: %{
-        command: "mix corex.design",
+        guide: "https://hexdocs.pm/corex/styled.html",
         note:
-          "Copies priv/design into assets/corex/. Pass --designex to also copy the token source tree. Pass --force to overwrite existing files."
+          "Add {:corex_design}, register the :corex_design compiler, set config :corex_design, run mix compile, and @import ./corex.tailwind.css in app.css."
       }
     }
   end
@@ -185,6 +185,7 @@ defmodule Corex.MCP.Tools.Installation do
           quote do
             use Gettext, backend: MyAppWeb.Gettext
             import Phoenix.HTML
+            import Phoenix.Component, except: [form: 1]
             import MyAppWeb.CoreComponents
             use Corex
             alias Phoenix.LiveView.JS

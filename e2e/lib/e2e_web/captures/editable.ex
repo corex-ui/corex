@@ -11,10 +11,10 @@ defmodule CorexWeb.Editable do
               value: "Click to edit",
               label: [%{inner_block: "Name"}],
               edit_trigger: [
-                %{inner_block: ~S(<.heroicon name="hero-pencil-square" class="icon" />)}
+                %{inner_block: ~S(<.heroicon name="hero-pencil-square" />)}
               ],
-              submit_trigger: [%{inner_block: ~S(<.heroicon name="hero-check" class="icon" />)}],
-              cancel_trigger: [%{inner_block: ~S(<.heroicon name="hero-x-mark" class="icon" />)}]
+              submit_trigger: [%{inner_block: ~S(<.heroicon name="hero-check" />)}],
+              cancel_trigger: [%{inner_block: ~S(<.heroicon name="hero-x-mark" />)}]
             }
           ]
 

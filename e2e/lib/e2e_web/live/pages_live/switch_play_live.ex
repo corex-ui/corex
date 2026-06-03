@@ -60,7 +60,7 @@ defmodule E2eWeb.SwitchPlayLive do
             value={[@controls.dir]}
           />
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="switch-playground-disabled"
             checked={@controls.disabled}
             on_checked_change="control_changed"
@@ -69,7 +69,7 @@ defmodule E2eWeb.SwitchPlayLive do
           </.switch>
 
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="switch-playground-read-only"
             checked={@controls.read_only}
             on_checked_change="control_changed"
@@ -78,7 +78,7 @@ defmodule E2eWeb.SwitchPlayLive do
           </.switch>
 
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="switch-playground-invalid"
             checked={@controls.invalid}
             on_checked_change="control_changed"
@@ -89,7 +89,7 @@ defmodule E2eWeb.SwitchPlayLive do
         <:canvas>
           <.switch
             id="switch-playground"
-            class="switch switch--sm"
+            size="sm"
             checked={@checked}
             dir={@controls.dir}
             disabled={@controls.disabled}

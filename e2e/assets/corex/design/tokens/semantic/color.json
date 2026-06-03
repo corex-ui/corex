@@ -4,17 +4,25 @@
       "type": "color",
       "value": "{theme.color.selected-ink}"
     },
-    "ink-success": {
-      "type": "color",
-      "value": "{theme.color.ink-success}"
-    },
     "ui-active": {
       "type": "color",
       "value": "{theme.color.ui-active}"
     },
+    "ui-ink-info": {
+      "type": "color",
+      "value": "{theme.color.ui-ink-info}"
+    },
+    "ui-ink-accent": {
+      "type": "color",
+      "value": "{theme.color.ui-ink-accent}"
+    },
     "brand-muted": {
       "type": "color",
       "value": "{theme.color.brand-muted}"
+    },
+    "ui-ink-muted": {
+      "type": "color",
+      "value": "{theme.color.ui-ink-muted}"
     },
     "alert-muted": {
       "type": "color",
@@ -35,10 +43,6 @@
     "selected-hover": {
       "type": "color",
       "value": "{theme.color.selected-hover}"
-    },
-    "ink-accent": {
-      "type": "color",
-      "value": "{theme.color.ink-accent}"
     },
     "layer": {
       "type": "color",
@@ -68,13 +72,13 @@
       "type": "color",
       "value": "{theme.color.brand-active}"
     },
+    "ui-ink-alert": {
+      "type": "color",
+      "value": "{theme.color.ui-ink-alert}"
+    },
     "selected-active": {
       "type": "color",
       "value": "{theme.color.selected-active}"
-    },
-    "ink-alert": {
-      "type": "color",
-      "value": "{theme.color.ink-alert}"
     },
     "alert-active": {
       "type": "color",
@@ -120,13 +124,13 @@
       "type": "color",
       "value": "{theme.color.shadow}"
     },
-    "ink": {
-      "type": "color",
-      "value": "{theme.color.ink}"
-    },
     "accent": {
       "type": "color",
       "value": "{theme.color.accent}"
+    },
+    "ui-ink": {
+      "type": "color",
+      "value": "{theme.color.ui-ink}"
     },
     "alert-hover": {
       "type": "color",
@@ -135,10 +139,6 @@
     "success-ink": {
       "type": "color",
       "value": "{theme.color.success-ink}"
-    },
-    "ink-brand": {
-      "type": "color",
-      "value": "{theme.color.ink-brand}"
     },
     "info-active": {
       "type": "color",
@@ -156,17 +156,17 @@
       "type": "color",
       "value": "{theme.color.brand-hover}"
     },
-    "ink-muted": {
-      "type": "color",
-      "value": "{theme.color.ink-muted}"
-    },
     "info-hover": {
       "type": "color",
       "value": "{theme.color.info-hover}"
     },
-    "ink-info": {
+    "ui-ink-success": {
       "type": "color",
-      "value": "{theme.color.ink-info}"
+      "value": "{theme.color.ui-ink-success}"
+    },
+    "ui-ink-brand": {
+      "type": "color",
+      "value": "{theme.color.ui-ink-brand}"
     },
     "info-muted": {
       "type": "color",

@@ -105,18 +105,17 @@ defmodule E2eWeb.DatePickerEventsLive do
                     input: "Select date"
                   }
                 }
-                class="date-picker"
                 on_value_change="dpe_on_value_server"
               >
                 <:label>Select a date</:label>
-                <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-                <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-                <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+                <:trigger><.heroicon name="hero-calendar" /></:trigger>
+                <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+                <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
               </.date_picker>
 
               <.data_table
                 id="date-picker-events-log-sv"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.server_value_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -149,18 +148,17 @@ defmodule E2eWeb.DatePickerEventsLive do
                     input: "Select date"
                   }
                 }
-                class="date-picker"
                 on_open_change="dpe_on_open_server"
               >
                 <:label>Select a date</:label>
-                <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-                <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-                <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+                <:trigger><.heroicon name="hero-calendar" /></:trigger>
+                <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+                <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
               </.date_picker>
 
               <.data_table
                 id="date-picker-events-log-so"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.server_open_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -194,13 +192,12 @@ defmodule E2eWeb.DatePickerEventsLive do
                     input: "Select date"
                   }
                 }
-                class="date-picker"
                 on_value_change_client="date-picker-value-changed"
               >
                 <:label>Select a date</:label>
-                <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-                <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-                <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+                <:trigger><.heroicon name="hero-calendar" /></:trigger>
+                <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+                <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
               </.date_picker>
 
               <div
@@ -225,7 +222,7 @@ defmodule E2eWeb.DatePickerEventsLive do
 
               <.data_table
                 id="date-picker-events-log-cv"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.client_value_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -259,13 +256,12 @@ defmodule E2eWeb.DatePickerEventsLive do
                     input: "Select date"
                   }
                 }
-                class="date-picker"
                 on_open_change_client="date-picker-open-changed"
               >
                 <:label>Select a date</:label>
-                <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-                <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-                <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+                <:trigger><.heroicon name="hero-calendar" /></:trigger>
+                <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+                <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
               </.date_picker>
 
               <div
@@ -290,7 +286,7 @@ defmodule E2eWeb.DatePickerEventsLive do
 
               <.data_table
                 id="date-picker-events-log-co"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.client_open_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>

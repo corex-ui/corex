@@ -10,7 +10,6 @@ defmodule Corex.Marquee do
 
   ```heex
   <.marquee
-    class="marquee"
     items={[
       %{name: "Apple", logo: "🍎"},
       %{name: "Banana", logo: "🍌"},
@@ -31,7 +30,6 @@ defmodule Corex.Marquee do
 
   ```heex
   <.marquee
-    class="marquee"
     items={[
       %{name: "Home", icon: "hero-home"},
       %{name: "User", icon: "hero-user"},
@@ -43,6 +41,42 @@ defmodule Corex.Marquee do
   >
     <:item :let={item}>
       <.heroicon name={item.icon} />
+      <span>{item.name}</span>
+    </:item>
+  </.marquee>
+  ```
+
+  <!-- tabs-close -->
+
+  ## Styling
+
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `semantic`, `size`.
+
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.marquee semantic="accent" size="md" class="marquee" items={[
+    %{name: "Apple", logo: "🍎"},
+    %{name: "Banana", logo: "🍌"}
+  ]} duration={20} spacing="2rem" pause_on_interaction>
+    <:item :let={item}>
+      <span>{item.logo}</span>
+      <span>{item.name}</span>
+    </:item>
+  </.marquee>
+  ```
+
+  ### With classes
+
+  ```heex
+  <.marquee class="marquee marquee--accent marquee--md" items={[
+    %{name: "Apple", logo: "🍎"},
+    %{name: "Banana", logo: "🍌"}
+  ]} duration={20} spacing="2rem" pause_on_interaction>
+    <:item :let={item}>
+      <span>{item.logo}</span>
       <span>{item.name}</span>
     </:item>
   </.marquee>
@@ -85,7 +119,7 @@ defmodule Corex.Marquee do
 
   ## Style
 
-  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `marquee.css`, then set `class="marquee"` on `<.marquee>`.
+  Target parts with `data-scope` and `data-part`, or use [Corex Design](styled.html): `@import "./corex.tailwind.css"` in `app.css`.
 
   ```css
   [data-scope="marquee"][data-part="root"] {}
@@ -93,12 +127,6 @@ defmodule Corex.Marquee do
   [data-scope="marquee"][data-part="content"] {}
   [data-scope="marquee"][data-part="item"] {}
   [data-scope="marquee"][data-part="edge"] {}
-  ```
-
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/marquee.css";
   ```
 
   Stack modifiers on the host (`class` on `<.marquee>`).
@@ -131,6 +159,23 @@ defmodule Corex.Marquee do
 
   @doc type: :component
   use Phoenix.Component
+
+  use Corex.Variants,
+    base: "marquee",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size
+    ],
+    defaults: [
+      width: "full",
+      max_width: "md",
+      height: "auto",
+      max_height: "none"
+    ]
 
   import Corex.Api.Doc
 
@@ -267,6 +312,8 @@ defmodule Corex.Marquee do
     <div
       id={@id}
       phx-hook="Marquee"
+      class={corex_style_class(assigns)}
+     
       phx-mounted={Connect.ignore_hook(@id)}
       data-loading
       {@rest}

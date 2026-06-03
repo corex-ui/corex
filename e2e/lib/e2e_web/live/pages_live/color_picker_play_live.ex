@@ -65,7 +65,7 @@ defmodule E2eWeb.ColorPickerPlayLive do
             value={[@controls.dir]}
           />
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="disabled"
             checked={@controls.disabled}
             on_checked_change="control_changed"
@@ -73,7 +73,7 @@ defmodule E2eWeb.ColorPickerPlayLive do
             <:label>Disabled</:label>
           </.switch>
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="read_only"
             checked={@controls.read_only}
             on_checked_change="control_changed"
@@ -81,7 +81,7 @@ defmodule E2eWeb.ColorPickerPlayLive do
             <:label>Read only</:label>
           </.switch>
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="invalid"
             checked={@controls.invalid}
             on_checked_change="control_changed"
@@ -92,7 +92,6 @@ defmodule E2eWeb.ColorPickerPlayLive do
         <:canvas>
           <.color_picker
             id="color-picker-playground"
-            class="color-picker"
             label="Pick a color"
             presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
             value={@value}

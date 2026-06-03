@@ -6,20 +6,30 @@
         "type": "color",
         "value": "#c0d0e8"
       },
-      "ink-success": {
-        "description": "6.0:1 contrast against ui (#f3f7fc)",
-        "type": "color",
-        "value": "#006c4e"
-      },
       "ui-active": {
         "description": "Surface ui active stop (base 94% lightness, chroma #EEF2F7).",
         "type": "color",
         "value": "#d1d5d9"
       },
+      "ui-ink-info": {
+        "description": "6.01:1 contrast against ui (#f3f7fc)",
+        "type": "color",
+        "value": "#006399"
+      },
+      "ui-ink-accent": {
+        "description": "6.0:1 contrast against ui (#f3f7fc)",
+        "type": "color",
+        "value": "#515f74"
+      },
       "brand-muted": {
         "description": "Semantic brand muted fill at 95% lightness (chroma #EEF2F7).",
         "type": "color",
         "value": "#f6fbff"
+      },
+      "ui-ink-muted": {
+        "description": "5.15:1 contrast against ui (#f3f7fc)",
+        "type": "color",
+        "value": "#65696d"
       },
       "alert-muted": {
         "description": "Semantic alert muted fill at 89% lightness (chroma #EEF2F7).",
@@ -45,11 +55,6 @@
         "description": "Semantic selected hover fill at 26% lightness (chroma #EEF2F7).",
         "type": "color",
         "value": "#181b1e"
-      },
-      "ink-accent": {
-        "description": "6.0:1 contrast against ui (#f3f7fc)",
-        "type": "color",
-        "value": "#515f74"
       },
       "layer": {
         "description": "Surface layer at 97% lightness (chroma #EEF2F7).",
@@ -86,15 +91,15 @@
         "type": "color",
         "value": "#d4d8dd"
       },
+      "ui-ink-alert": {
+        "description": "6.0:1 contrast against ui (#f3f7fc)",
+        "type": "color",
+        "value": "#b91c1c"
+      },
       "selected-active": {
         "description": "Semantic selected active fill at 26% lightness (chroma #EEF2F7).",
         "type": "color",
         "value": "#111417"
-      },
-      "ink-alert": {
-        "description": "6.0:1 contrast against ui (#f3f7fc)",
-        "type": "color",
-        "value": "#b91c1c"
       },
       "alert-active": {
         "description": "Semantic alert active fill at 89% lightness (chroma #EEF2F7).",
@@ -151,15 +156,15 @@
         "type": "color",
         "value": "#e8ecf1"
       },
-      "ink": {
-        "description": "8.5:1 contrast against ui (#f3f7fc)",
-        "type": "color",
-        "value": "#45484c"
-      },
       "accent": {
         "description": "Semantic accent default fill at 89% lightness (chroma #EEF2F7).",
         "type": "color",
         "value": "#d7dbe0"
+      },
+      "ui-ink": {
+        "description": "8.5:1 contrast against ui (#f3f7fc)",
+        "type": "color",
+        "value": "#45484c"
       },
       "alert-hover": {
         "description": "Semantic alert hover fill at 89% lightness (chroma #EEF2F7).",
@@ -170,11 +175,6 @@
         "description": "5.5:1 contrast against success (#d7dbe0)",
         "type": "color",
         "value": "#006044"
-      },
-      "ink-brand": {
-        "description": "6.0:1 contrast against ui (#f3f7fc)",
-        "type": "color",
-        "value": "#006781"
       },
       "info-active": {
         "description": "Semantic info active fill at 89% lightness (chroma #EEF2F7).",
@@ -196,20 +196,20 @@
         "type": "color",
         "value": "#dee2e7"
       },
-      "ink-muted": {
-        "description": "5.15:1 contrast against ui (#f3f7fc)",
-        "type": "color",
-        "value": "#65696d"
-      },
       "info-hover": {
         "description": "Semantic info hover fill at 89% lightness (chroma #EEF2F7).",
         "type": "color",
         "value": "#caced3"
       },
-      "ink-info": {
-        "description": "6.01:1 contrast against ui (#f3f7fc)",
+      "ui-ink-success": {
+        "description": "6.0:1 contrast against ui (#f3f7fc)",
         "type": "color",
-        "value": "#006399"
+        "value": "#006c4e"
+      },
+      "ui-ink-brand": {
+        "description": "6.0:1 contrast against ui (#f3f7fc)",
+        "type": "color",
+        "value": "#006781"
       },
       "info-muted": {
         "description": "Semantic info muted fill at 89% lightness (chroma #EEF2F7).",

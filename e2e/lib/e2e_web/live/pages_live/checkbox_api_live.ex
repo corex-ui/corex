@@ -81,17 +81,17 @@ defmodule E2eWeb.CheckboxApiLive do
         >
           <:preview>
             <div class="flex flex-wrap gap-2 mb-4">
-              <.action phx-click="api_check" phx-value-id={@id_server} class="button button--sm">
+              <.action phx-click="api_check" phx-value-id={@id_server} size="sm">
                 Set checked
               </.action>
-              <.action phx-click="api_uncheck" phx-value-id={@id_server} class="button button--sm">
+              <.action phx-click="api_uncheck" phx-value-id={@id_server} size="sm">
                 Set unchecked
               </.action>
-              <.action phx-click="api_toggle" phx-value-id={@id_server} class="button button--sm">
+              <.action phx-click="api_toggle" phx-value-id={@id_server} size="sm">
                 Toggle
               </.action>
             </div>
-            <.checkbox id={@id_server} class="checkbox">
+            <.checkbox id={@id_server}>
               <:label>Terms</:label>
               <:indicator>
                 <.heroicon name="hero-check" />

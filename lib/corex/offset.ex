@@ -117,13 +117,13 @@ defmodule Corex.Offset do
       >
         <:label>Due date</:label>
         <:trigger>
-          <.heroicon name="hero-calendar" class="icon" />
+          <.heroicon name="hero-calendar" />
         </:trigger>
         <:prev_trigger>
-          <.heroicon name="hero-chevron-left" class="icon" />
+          <.heroicon name="hero-chevron-left" />
         </:prev_trigger>
         <:next_trigger>
-          <.heroicon name="hero-chevron-right" class="icon" />
+          <.heroicon name="hero-chevron-right" />
         </:next_trigger>
       </.date_picker>
 

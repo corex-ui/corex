@@ -15,15 +15,15 @@ defmodule CorexWeb.FloatingPanel do
                 }
               ],
               minimize_trigger: [
-                %{inner_block: ~S(<.heroicon name="hero-arrow-down-left" class="icon" />)}
+                %{inner_block: ~S(<.heroicon name="hero-arrow-down-left" />)}
               ],
               maximize_trigger: [
-                %{inner_block: ~S(<.heroicon name="hero-arrows-pointing-out" class="icon" />)}
+                %{inner_block: ~S(<.heroicon name="hero-arrows-pointing-out" />)}
               ],
               default_trigger: [
-                %{inner_block: ~S(<.heroicon name="hero-rectangle-stack" class="icon" />)}
+                %{inner_block: ~S(<.heroicon name="hero-rectangle-stack" />)}
               ],
-              close_trigger: [%{inner_block: ~S(<.heroicon name="hero-x-mark" class="icon" />)}],
+              close_trigger: [%{inner_block: ~S(<.heroicon name="hero-x-mark" />)}],
               content: [%{inner_block: "Panel content goes here."}]
             }
           ]

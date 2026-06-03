@@ -62,13 +62,12 @@ defmodule E2eWeb.ClipboardEventsLive do
         >
           <:preview>
             <div class="flex flex-col gap-4 items-center w-full">
-              <.action phx-click={Corex.Clipboard.copy("clipboard-events")} class="button button--sm">
+              <.action phx-click={Corex.Clipboard.copy("clipboard-events")} size="sm">
                 Copy
               </.action>
 
               <.clipboard
                 id="clipboard-events"
-                class="clipboard"
                 value="info@netoum.com"
                 trigger_aria_label="Copy to clipboard"
                 input_aria_label="Value to copy"
@@ -97,7 +96,11 @@ defmodule E2eWeb.ClipboardEventsLive do
                 }
               </script>
 
-              <.data_table id="clipboard-events-log" class="data-table max-w-3xl" rows={@streams.logs}>
+              <.data_table
+                id="clipboard-events-log"
+                class="data-table data-table--max-w-3xl"
+                rows={@streams.logs}
+              >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
                 <:col :let={{_dom_id, row}} label="Event">{row.event}</:col>
                 <:col :let={{_dom_id, row}} label="Value">{row.value}</:col>

@@ -70,7 +70,6 @@ defmodule E2eWeb.AvatarEventsLive do
 
               <.avatar
                 id="avatar-events"
-                class="avatar"
                 src={@avatar_src}
                 alt="Avatar"
                 on_status_change="avatar_status_changed"
@@ -94,7 +93,11 @@ defmodule E2eWeb.AvatarEventsLive do
                 }
               </script>
 
-              <.data_table id="avatar-events-log" class="data-table max-w-3xl" rows={@streams.logs}>
+              <.data_table
+                id="avatar-events-log"
+                class="data-table data-table--max-w-3xl"
+                rows={@streams.logs}
+              >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
                 <:col :let={{_dom_id, row}} label="Event">{row.event}</:col>
                 <:col :let={{_dom_id, row}} label="Value">{row.value}</:col>

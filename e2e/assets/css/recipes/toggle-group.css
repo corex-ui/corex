@@ -1,0 +1,1125 @@
+/* Corex generated design - do not edit */
+
+@utility toggle-group--rounded-* {
+  [data-scope="toggle-group"][data-part="root"] {
+      border-radius: --value(--radius-*, [length]);
+  }
+
+  [data-scope="toggle-group"][data-part="item"] {
+      border-radius: --value(--radius-*, [length]);
+  }
+
+}
+
+
+@utility toggle-group--max-w-* {
+  max-width: --value(--container-*, [length]);
+}
+
+
+@utility toggle-group--max-h-* {
+  max-height: --value(--container-*, [length]);
+}
+
+
+@layer components {
+  .toggle-group.toggle-group--w-auto {
+    width: auto;
+  }
+
+  .toggle-group.toggle-group--w-fit {
+    width: fit-content;
+  }
+
+  .toggle-group.toggle-group--w-full {
+    width: 100%;
+  }
+
+  .toggle-group.toggle-group--max-w-none {
+    max-width: none;
+  }
+
+  .toggle-group.toggle-group--max-w-full {
+    max-width: 100%;
+  }
+
+  .toggle-group.toggle-group--max-w-7xs {
+    max-width: var(--container-7xs);
+  }
+
+  .toggle-group.toggle-group--max-w-6xs {
+    max-width: var(--container-6xs);
+  }
+
+  .toggle-group.toggle-group--max-w-5xs {
+    max-width: var(--container-5xs);
+  }
+
+  .toggle-group.toggle-group--max-w-4xs {
+    max-width: var(--container-4xs);
+  }
+
+  .toggle-group.toggle-group--max-w-3xs {
+    max-width: var(--container-3xs);
+  }
+
+  .toggle-group.toggle-group--max-w-2xs {
+    max-width: var(--container-2xs);
+  }
+
+  .toggle-group.toggle-group--max-w-xs {
+    max-width: var(--container-xs);
+  }
+
+  .toggle-group.toggle-group--max-w-sm {
+    max-width: var(--container-sm);
+  }
+
+  .toggle-group.toggle-group--max-w-md {
+    max-width: var(--container-md);
+  }
+
+  .toggle-group.toggle-group--max-w-lg {
+    max-width: var(--container-lg);
+  }
+
+  .toggle-group.toggle-group--max-w-xl {
+    max-width: var(--container-xl);
+  }
+
+  .toggle-group.toggle-group--max-w-2xl {
+    max-width: var(--container-2xl);
+  }
+
+  .toggle-group.toggle-group--max-w-3xl {
+    max-width: var(--container-3xl);
+  }
+
+  .toggle-group.toggle-group--max-w-4xl {
+    max-width: var(--container-4xl);
+  }
+
+  .toggle-group.toggle-group--max-w-5xl {
+    max-width: var(--container-5xl);
+  }
+
+  .toggle-group.toggle-group--max-w-6xl {
+    max-width: var(--container-6xl);
+  }
+
+  .toggle-group.toggle-group--max-w-7xl {
+    max-width: var(--container-7xl);
+  }
+
+  .toggle-group.toggle-group--h-auto {
+    height: auto;
+  }
+
+  .toggle-group.toggle-group--h-fit {
+    height: fit-content;
+  }
+
+  .toggle-group.toggle-group--h-full {
+    height: 100%;
+  }
+
+  .toggle-group.toggle-group--max-h-none {
+    max-height: none;
+  }
+
+  .toggle-group.toggle-group--max-h-full {
+    max-height: 100%;
+  }
+
+  .toggle-group.toggle-group--max-h-7xs {
+    max-height: var(--container-7xs);
+  }
+
+  .toggle-group.toggle-group--max-h-6xs {
+    max-height: var(--container-6xs);
+  }
+
+  .toggle-group.toggle-group--max-h-5xs {
+    max-height: var(--container-5xs);
+  }
+
+  .toggle-group.toggle-group--max-h-4xs {
+    max-height: var(--container-4xs);
+  }
+
+  .toggle-group.toggle-group--max-h-3xs {
+    max-height: var(--container-3xs);
+  }
+
+  .toggle-group.toggle-group--max-h-2xs {
+    max-height: var(--container-2xs);
+  }
+
+  .toggle-group.toggle-group--max-h-xs {
+    max-height: var(--container-xs);
+  }
+
+  .toggle-group.toggle-group--max-h-sm {
+    max-height: var(--container-sm);
+  }
+
+  .toggle-group.toggle-group--max-h-md {
+    max-height: var(--container-md);
+  }
+
+  .toggle-group.toggle-group--max-h-lg {
+    max-height: var(--container-lg);
+  }
+
+  .toggle-group.toggle-group--max-h-xl {
+    max-height: var(--container-xl);
+  }
+
+  .toggle-group.toggle-group--max-h-2xl {
+    max-height: var(--container-2xl);
+  }
+
+  .toggle-group.toggle-group--max-h-3xl {
+    max-height: var(--container-3xl);
+  }
+
+  .toggle-group.toggle-group--max-h-4xl {
+    max-height: var(--container-4xl);
+  }
+
+  .toggle-group.toggle-group--max-h-5xl {
+    max-height: var(--container-5xl);
+  }
+
+  .toggle-group.toggle-group--max-h-6xl {
+    max-height: var(--container-6xl);
+  }
+
+  .toggle-group.toggle-group--max-h-7xl {
+    max-height: var(--container-7xl);
+  }
+
+  .toggle-group.toggle-group--accent {
+    position: relative;
+  }
+
+  .toggle-group.toggle-group--brand {
+    position: relative;
+  }
+
+  .toggle-group.toggle-group--alert {
+    position: relative;
+  }
+
+  .toggle-group.toggle-group--info {
+    position: relative;
+  }
+
+  .toggle-group.toggle-group--success {
+    position: relative;
+  }
+
+  .toggle-group.toggle-group--selected {
+    position: relative;
+  }
+
+  .toggle-group.toggle-group--sm [data-scope="toggle-group"][data-part="item"] {
+    gap: var(--space-sm);
+    padding-inline: var(--space-md);
+    min-height: var(--size-sm);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+  }
+
+  .toggle-group.toggle-group--md [data-scope="toggle-group"][data-part="item"] {
+    gap: var(--space-md);
+    padding-inline: var(--space-md);
+    min-height: var(--size-md);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+
+  .toggle-group.toggle-group--lg [data-scope="toggle-group"][data-part="item"] {
+    gap: var(--space-lg);
+    padding-inline: var(--space-lg);
+    min-height: var(--size-lg);
+    font-size: var(--text-lg);
+    line-height: var(--leading-lg);
+  }
+
+  .toggle-group.toggle-group--xl [data-scope="toggle-group"][data-part="item"] {
+    gap: var(--space-xl);
+    padding-inline: var(--space-xl);
+    min-height: var(--size-xl);
+    font-size: var(--text-xl);
+    line-height: var(--leading-xl);
+  }
+
+  .toggle-group.toggle-group--rounded-none [data-scope="toggle-group"][data-part="root"] {
+    border-radius: var(--radius-none);
+  }
+
+  .toggle-group.toggle-group--rounded-none [data-scope="toggle-group"][data-part="item"] {
+    border-radius: 0;
+  }
+
+  .toggle-group.toggle-group--rounded-xs [data-scope="toggle-group"][data-part="root"] {
+    border-radius: var(--radius-xs);
+  }
+
+  .toggle-group.toggle-group--rounded-xs [data-scope="toggle-group"][data-part="item"] {
+    border-radius: 0;
+  }
+
+  .toggle-group.toggle-group--rounded-sm [data-scope="toggle-group"][data-part="root"] {
+    border-radius: var(--radius-sm);
+  }
+
+  .toggle-group.toggle-group--rounded-sm [data-scope="toggle-group"][data-part="item"] {
+    border-radius: 0;
+  }
+
+  .toggle-group.toggle-group--rounded-md [data-scope="toggle-group"][data-part="root"] {
+    border-radius: var(--radius-md);
+  }
+
+  .toggle-group.toggle-group--rounded-md [data-scope="toggle-group"][data-part="item"] {
+    border-radius: 0;
+  }
+
+  .toggle-group.toggle-group--rounded-lg [data-scope="toggle-group"][data-part="root"] {
+    border-radius: var(--radius-lg);
+  }
+
+  .toggle-group.toggle-group--rounded-lg [data-scope="toggle-group"][data-part="item"] {
+    border-radius: 0;
+  }
+
+  .toggle-group.toggle-group--rounded-xl [data-scope="toggle-group"][data-part="root"] {
+    border-radius: var(--radius-xl);
+  }
+
+  .toggle-group.toggle-group--rounded-xl [data-scope="toggle-group"][data-part="item"] {
+    border-radius: 0;
+  }
+
+  .toggle-group.toggle-group--rounded-2xl [data-scope="toggle-group"][data-part="root"] {
+    border-radius: var(--radius-2xl);
+  }
+
+  .toggle-group.toggle-group--rounded-2xl [data-scope="toggle-group"][data-part="item"] {
+    border-radius: 0;
+  }
+
+  .toggle-group.toggle-group--rounded-3xl [data-scope="toggle-group"][data-part="root"] {
+    border-radius: var(--radius-3xl);
+  }
+
+  .toggle-group.toggle-group--rounded-3xl [data-scope="toggle-group"][data-part="item"] {
+    border-radius: 0;
+  }
+
+  .toggle-group.toggle-group--rounded-4xl [data-scope="toggle-group"][data-part="root"] {
+    border-radius: var(--radius-4xl);
+  }
+
+  .toggle-group.toggle-group--rounded-4xl [data-scope="toggle-group"][data-part="item"] {
+    border-radius: 0;
+  }
+
+  .toggle-group.toggle-group--rounded-full [data-scope="toggle-group"][data-part="root"] {
+    border-radius: var(--radius-full);
+  }
+
+  .toggle-group.toggle-group--rounded-full [data-scope="toggle-group"][data-part="item"] {
+    border-radius: 0;
+  }
+
+  .toggle-group[data-loading] .toggle-group [data-scope="toggle-group"][data-part="root"] {
+    @apply ui-loading;
+  }
+
+  .toggle-group [data-scope="toggle-group"][data-part="root"] {
+    @apply ui-root;
+    justify-content: center;
+    flex-direction: row;
+    width: fit-content;
+    gap: 1px;
+    background-color: var(--color-border);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .toggle-group [data-scope="toggle-group"][data-part="item"] {
+    @apply ui-item;
+    flex: 1 1 0;
+    min-width: 0;
+    justify-content: center;
+    padding-inline: var(--space-md);
+    gap: var(--space-sm);
+    &[data-focus]:not(:focus-visible) {
+      box-shadow: none;
+    }
+  }
+
+  .toggle-group [data-scope="toggle-group"][data-part="item"] {
+    &:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not([data-disabled]):not(:disabled):not([disabled]) {
+      color: var(--color-ui-ink);
+      &:focus-visible {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-selected);
+      }
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-selected-muted);
+      color: var(--color-selected-ink);
+      cursor: not-allowed;
+    }
+
+    &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"] {
+      background-color: var(--color-selected);
+      color: var(--color-selected-ink);
+      &:hover {
+        background-color: var(--color-selected-hover);
+      }
+
+      &:active {
+        background-color: var(--color-selected-active);
+      }
+
+      &:focus-visible {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      }
+
+      &:disabled,
+    &[data-disabled],
+    &[disabled] {
+        background-color: var(--color-selected-muted);
+        cursor: not-allowed;
+        color: var(--color-selected-ink);
+      }
+    }
+
+    @media (hover: hover) {
+      &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not(:hover) {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-selected);
+        background-color: var(--color-ui-hover);
+      }
+
+      &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):active {
+        box-shadow: none;
+      }
+
+      &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"][data-highlighted]:not(:hover) {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+        background-color: var(--color-selected-hover);
+        color: var(--color-selected-ink);
+      }
+
+      &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"][data-highlighted]:hover {
+        outline: none;
+        box-shadow: none;
+        background-color: var(--color-selected-hover);
+        color: var(--color-selected-ink);
+      }
+
+      &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"][data-highlighted]:active {
+        outline: none;
+        box-shadow: none;
+        background-color: var(--color-selected-active);
+        color: var(--color-selected-ink);
+      }
+    }
+
+    @media (hover: none) {
+      &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]) {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-selected);
+        background-color: var(--color-ui-hover);
+      }
+
+      &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"][data-highlighted] {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+        background-color: var(--color-selected-hover);
+        color: var(--color-selected-ink);
+      }
+    }
+  }
+
+  .toggle-group.toggle-group--accent [data-scope="toggle-group"][data-part="item"] {
+    &:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not([data-disabled]):not(:disabled):not([disabled]) {
+      color: var(--color-ui-ink-accent, var(--color-ui-ink));
+      &:focus-visible {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-accent);
+      }
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-accent-muted);
+      color: var(--color-accent-ink);
+      cursor: not-allowed;
+    }
+
+    &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"] {
+      background-color: var(--color-accent);
+      color: var(--color-accent-ink);
+      &:hover {
+        background-color: var(--color-accent-hover);
+      }
+
+      &:active {
+        background-color: var(--color-accent-active);
+      }
+
+      &:focus-visible {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+      }
+
+      &:disabled,
+    &[data-disabled],
+    &[disabled] {
+        background-color: var(--color-accent-muted);
+        cursor: not-allowed;
+        color: var(--color-accent-ink);
+      }
+    }
+
+    @media (hover: hover) {
+      &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not(:hover) {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-accent);
+        background-color: var(--color-ui-hover);
+      }
+
+      &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):active {
+        box-shadow: none;
+      }
+
+      &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"][data-highlighted]:not(:hover) {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+        background-color: var(--color-accent-hover);
+        color: var(--color-accent-ink);
+      }
+
+      &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"][data-highlighted]:hover {
+        outline: none;
+        box-shadow: none;
+        background-color: var(--color-accent-hover);
+        color: var(--color-accent-ink);
+      }
+
+      &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"][data-highlighted]:active {
+        outline: none;
+        box-shadow: none;
+        background-color: var(--color-accent-active);
+        color: var(--color-accent-ink);
+      }
+    }
+
+    @media (hover: none) {
+      &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]) {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-accent);
+        background-color: var(--color-ui-hover);
+      }
+
+      &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"][data-highlighted] {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+        background-color: var(--color-accent-hover);
+        color: var(--color-accent-ink);
+      }
+    }
+  }
+
+  .toggle-group.toggle-group--brand [data-scope="toggle-group"][data-part="item"] {
+    &:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not([data-disabled]):not(:disabled):not([disabled]) {
+      color: var(--color-ui-ink-brand, var(--color-ui-ink));
+      &:focus-visible {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-brand);
+      }
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-brand-muted);
+      color: var(--color-brand-ink);
+      cursor: not-allowed;
+    }
+
+    &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"] {
+      background-color: var(--color-brand);
+      color: var(--color-brand-ink);
+      &:hover {
+        background-color: var(--color-brand-hover);
+      }
+
+      &:active {
+        background-color: var(--color-brand-active);
+      }
+
+      &:focus-visible {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-brand-ink);
+      }
+
+      &:disabled,
+    &[data-disabled],
+    &[disabled] {
+        background-color: var(--color-brand-muted);
+        cursor: not-allowed;
+        color: var(--color-brand-ink);
+      }
+    }
+
+    @media (hover: hover) {
+      &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not(:hover) {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-brand);
+        background-color: var(--color-ui-hover);
+      }
+
+      &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):active {
+        box-shadow: none;
+      }
+
+      &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"][data-highlighted]:not(:hover) {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-brand-ink);
+        background-color: var(--color-brand-hover);
+        color: var(--color-brand-ink);
+      }
+
+      &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"][data-highlighted]:hover {
+        outline: none;
+        box-shadow: none;
+        background-color: var(--color-brand-hover);
+        color: var(--color-brand-ink);
+      }
+
+      &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"][data-highlighted]:active {
+        outline: none;
+        box-shadow: none;
+        background-color: var(--color-brand-active);
+        color: var(--color-brand-ink);
+      }
+    }
+
+    @media (hover: none) {
+      &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]) {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-brand);
+        background-color: var(--color-ui-hover);
+      }
+
+      &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"][data-highlighted] {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-brand-ink);
+        background-color: var(--color-brand-hover);
+        color: var(--color-brand-ink);
+      }
+    }
+  }
+
+  .toggle-group.toggle-group--alert [data-scope="toggle-group"][data-part="item"] {
+    &:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not([data-disabled]):not(:disabled):not([disabled]) {
+      color: var(--color-ui-ink-alert, var(--color-ui-ink));
+      &:focus-visible {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-alert);
+      }
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-alert-muted);
+      color: var(--color-alert-ink);
+      cursor: not-allowed;
+    }
+
+    &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"] {
+      background-color: var(--color-alert);
+      color: var(--color-alert-ink);
+      &:hover {
+        background-color: var(--color-alert-hover);
+      }
+
+      &:active {
+        background-color: var(--color-alert-active);
+      }
+
+      &:focus-visible {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+      }
+
+      &:disabled,
+    &[data-disabled],
+    &[disabled] {
+        background-color: var(--color-alert-muted);
+        cursor: not-allowed;
+        color: var(--color-alert-ink);
+      }
+    }
+
+    @media (hover: hover) {
+      &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not(:hover) {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-alert);
+        background-color: var(--color-ui-hover);
+      }
+
+      &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):active {
+        box-shadow: none;
+      }
+
+      &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"][data-highlighted]:not(:hover) {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+        background-color: var(--color-alert-hover);
+        color: var(--color-alert-ink);
+      }
+
+      &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"][data-highlighted]:hover {
+        outline: none;
+        box-shadow: none;
+        background-color: var(--color-alert-hover);
+        color: var(--color-alert-ink);
+      }
+
+      &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"][data-highlighted]:active {
+        outline: none;
+        box-shadow: none;
+        background-color: var(--color-alert-active);
+        color: var(--color-alert-ink);
+      }
+    }
+
+    @media (hover: none) {
+      &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]) {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-alert);
+        background-color: var(--color-ui-hover);
+      }
+
+      &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"][data-highlighted] {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+        background-color: var(--color-alert-hover);
+        color: var(--color-alert-ink);
+      }
+    }
+  }
+
+  .toggle-group.toggle-group--info [data-scope="toggle-group"][data-part="item"] {
+    &:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not([data-disabled]):not(:disabled):not([disabled]) {
+      color: var(--color-ui-ink-info, var(--color-ui-ink));
+      &:focus-visible {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-info);
+      }
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-info-muted);
+      color: var(--color-info-ink);
+      cursor: not-allowed;
+    }
+
+    &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"] {
+      background-color: var(--color-info);
+      color: var(--color-info-ink);
+      &:hover {
+        background-color: var(--color-info-hover);
+      }
+
+      &:active {
+        background-color: var(--color-info-active);
+      }
+
+      &:focus-visible {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-info-ink);
+      }
+
+      &:disabled,
+    &[data-disabled],
+    &[disabled] {
+        background-color: var(--color-info-muted);
+        cursor: not-allowed;
+        color: var(--color-info-ink);
+      }
+    }
+
+    @media (hover: hover) {
+      &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not(:hover) {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-info);
+        background-color: var(--color-ui-hover);
+      }
+
+      &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):active {
+        box-shadow: none;
+      }
+
+      &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"][data-highlighted]:not(:hover) {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-info-ink);
+        background-color: var(--color-info-hover);
+        color: var(--color-info-ink);
+      }
+
+      &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"][data-highlighted]:hover {
+        outline: none;
+        box-shadow: none;
+        background-color: var(--color-info-hover);
+        color: var(--color-info-ink);
+      }
+
+      &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"][data-highlighted]:active {
+        outline: none;
+        box-shadow: none;
+        background-color: var(--color-info-active);
+        color: var(--color-info-ink);
+      }
+    }
+
+    @media (hover: none) {
+      &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]) {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-info);
+        background-color: var(--color-ui-hover);
+      }
+
+      &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"][data-highlighted] {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-info-ink);
+        background-color: var(--color-info-hover);
+        color: var(--color-info-ink);
+      }
+    }
+  }
+
+  .toggle-group.toggle-group--success [data-scope="toggle-group"][data-part="item"] {
+    &:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not([data-disabled]):not(:disabled):not([disabled]) {
+      color: var(--color-ui-ink-success, var(--color-ui-ink));
+      &:focus-visible {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-success);
+      }
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-success-muted);
+      color: var(--color-success-ink);
+      cursor: not-allowed;
+    }
+
+    &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"] {
+      background-color: var(--color-success);
+      color: var(--color-success-ink);
+      &:hover {
+        background-color: var(--color-success-hover);
+      }
+
+      &:active {
+        background-color: var(--color-success-active);
+      }
+
+      &:focus-visible {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-success-ink);
+      }
+
+      &:disabled,
+    &[data-disabled],
+    &[disabled] {
+        background-color: var(--color-success-muted);
+        cursor: not-allowed;
+        color: var(--color-success-ink);
+      }
+    }
+
+    @media (hover: hover) {
+      &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not(:hover) {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-success);
+        background-color: var(--color-ui-hover);
+      }
+
+      &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):active {
+        box-shadow: none;
+      }
+
+      &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"][data-highlighted]:not(:hover) {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-success-ink);
+        background-color: var(--color-success-hover);
+        color: var(--color-success-ink);
+      }
+
+      &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"][data-highlighted]:hover {
+        outline: none;
+        box-shadow: none;
+        background-color: var(--color-success-hover);
+        color: var(--color-success-ink);
+      }
+
+      &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"][data-highlighted]:active {
+        outline: none;
+        box-shadow: none;
+        background-color: var(--color-success-active);
+        color: var(--color-success-ink);
+      }
+    }
+
+    @media (hover: none) {
+      &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]) {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-success);
+        background-color: var(--color-ui-hover);
+      }
+
+      &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"][data-highlighted] {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-success-ink);
+        background-color: var(--color-success-hover);
+        color: var(--color-success-ink);
+      }
+    }
+  }
+
+  .toggle-group.toggle-group--selected [data-scope="toggle-group"][data-part="item"] {
+    &:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not([data-disabled]):not(:disabled):not([disabled]) {
+      color: var(--color-selected-ink, var(--color-ui-ink));
+      &:focus-visible {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-selected);
+      }
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-selected-muted);
+      color: var(--color-selected-ink);
+      cursor: not-allowed;
+    }
+
+    &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"] {
+      background-color: var(--color-selected);
+      color: var(--color-selected-ink);
+      &:hover {
+        background-color: var(--color-selected-hover);
+      }
+
+      &:active {
+        background-color: var(--color-selected-active);
+      }
+
+      &:focus-visible {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      }
+
+      &:disabled,
+    &[data-disabled],
+    &[disabled] {
+        background-color: var(--color-selected-muted);
+        cursor: not-allowed;
+        color: var(--color-selected-ink);
+      }
+    }
+
+    @media (hover: hover) {
+      &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not(:hover) {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-selected);
+        background-color: var(--color-ui-hover);
+      }
+
+      &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):active {
+        box-shadow: none;
+      }
+
+      &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"][data-highlighted]:not(:hover) {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+        background-color: var(--color-selected-hover);
+        color: var(--color-selected-ink);
+      }
+
+      &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"][data-highlighted]:hover {
+        outline: none;
+        box-shadow: none;
+        background-color: var(--color-selected-hover);
+        color: var(--color-selected-ink);
+      }
+
+      &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"][data-highlighted]:active {
+        outline: none;
+        box-shadow: none;
+        background-color: var(--color-selected-active);
+        color: var(--color-selected-ink);
+      }
+    }
+
+    @media (hover: none) {
+      &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]) {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-selected);
+        background-color: var(--color-ui-hover);
+      }
+
+      &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"][data-highlighted] {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+        background-color: var(--color-selected-hover);
+        color: var(--color-selected-ink);
+      }
+    }
+  }
+
+  .toggle-group [data-scope="toggle-group"][data-part="item"][data-state="on"] .icon.state-on {
+    display: block !important;
+  }
+
+  .toggle-group [data-scope="toggle-group"][data-part="item"][data-state="off"] .icon.state-on {
+    display: none !important;
+  }
+
+  .toggle-group [data-scope="toggle-group"][data-part="item"][data-state="on"] .icon.state-off {
+    display: none !important;
+  }
+
+  .toggle-group [data-scope="toggle-group"][data-part="item"][data-state="off"] .icon.state-off {
+    display: block !important;
+  }
+
+  .toggle-group.toggle-group--sm [data-scope="toggle-group"][data-part="item"] [data-icon] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 1em !important;
+    height: 1em !important;
+  }
+
+  .toggle-group.toggle-group--md [data-scope="toggle-group"][data-part="item"] [data-icon] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 1em !important;
+    height: 1em !important;
+  }
+
+  .toggle-group.toggle-group--lg [data-scope="toggle-group"][data-part="item"] [data-icon] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 1em !important;
+    height: 1em !important;
+  }
+
+  .toggle-group.toggle-group--xl [data-scope="toggle-group"][data-part="item"] [data-icon] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 1em !important;
+    height: 1em !important;
+  }
+}
+

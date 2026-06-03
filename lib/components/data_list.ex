@@ -12,7 +12,6 @@ defmodule Corex.DataList do
 
   ```heex
   <.data_list
-    class="data-list"
     items={
       Corex.Content.new([
         %{label: "Name", content: "Marie Curie"},
@@ -28,7 +27,7 @@ defmodule Corex.DataList do
   With an empty `items` list, use `:label` and `:content` slots with a matching `value` on each pair.
 
   ```heex
-  <.data_list class="data-list">
+  <.data_list>
     <:label value="lorem">Lorem ipsum dolor sit amet</:label>
     <:content value="lorem">Consectetur adipiscing elit.</:content>
     <:label value="duis">Duis dictum gravida odio ac pharetra?</:label>
@@ -42,7 +41,6 @@ defmodule Corex.DataList do
 
   ```heex
   <.data_list
-    class="data-list"
     items={
       Corex.Content.new([
         %{value: "status", label: "Status", content: "Active", meta: %{color: "green"}},
@@ -60,9 +58,39 @@ defmodule Corex.DataList do
   Optional `<:empty>` when there are no rows. The empty block renders beside the `<dl>` (not inside it) and is hidden by CSS when items exist (stream-friendly).
 
   ```heex
-  <.data_list class="data-list" items={[]}>
+  <.data_list items={[]}>
     <:empty>No entries</:empty>
   </.data_list>
+  ```
+
+  <!-- tabs-close -->
+
+  ## Styling
+
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `size`.
+
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.data_list size="md" class="data-list" items={
+    Corex.Content.new([
+      %{label: "Name", content: "Marie Curie"},
+      %{label: "Field", content: "Physics"}
+    ])
+  } />
+  ```
+
+  ### With classes
+
+  ```heex
+  <.data_list class="data-list data-list--md" items={
+    Corex.Content.new([
+      %{label: "Name", content: "Marie Curie"},
+      %{label: "Field", content: "Physics"}
+    ])
+  } />
   ```
 
   <!-- tabs-close -->
@@ -74,6 +102,8 @@ defmodule Corex.DataList do
 
   ## Style
 
+  Target parts with `data-scope` and `data-part`, or use [Corex Design](styled.html): `@import "./corex.tailwind.css"` in `app.css`.
+
   ```css
   [data-scope="data-list"][data-part="root"] {}
   [data-scope="data-list"][data-part="item"] {}
@@ -81,11 +111,43 @@ defmodule Corex.DataList do
   [data-scope="data-list"][data-part="content"] {}
   [data-scope="data-list"][data-part="empty"] {}
   ```
+
+  Stack modifiers on the host (`class` on `<.data_list>`).
+
+  <!-- tabs-open -->
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `data-list data-list--sm` |
+  | MD | `data-list data-list--md` |
+  | LG | `data-list data-list--lg` |
+  | XL | `data-list data-list--xl` |
+
+  <!-- tabs-close -->
   '''
 
   @doc type: :component
 
   use Phoenix.Component
+
+  use Corex.Variants,
+    base: "data-list",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      size: :size
+    ],
+    defaults: [
+      width: "full",
+      max_width: "md",
+      height: "auto",
+      max_height: "none",
+      size: "md"
+    ]
 
   @doc """
   Renders a semantic data list.
@@ -98,7 +160,6 @@ defmodule Corex.DataList do
 
   ```heex
   <.data_list
-    class="data-list"
     items={
       Corex.Content.new([
         %{label: "Name", content: "Marie Curie"},
@@ -180,7 +241,7 @@ defmodule Corex.DataList do
       |> then(fn a -> assign(a, :data_list_has_items, data_list_has_items?(a)) end)
 
     ~H"""
-    <div {@rest}>
+    <div class={corex_style_class(assigns)} {@rest}>
       <div
         :if={@empty != []}
         data-scope="data-list"

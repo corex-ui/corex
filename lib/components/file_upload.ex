@@ -13,7 +13,7 @@ defmodule Corex.FileUpload do
   ### Minimal
 
   ```heex
-  <.file_upload name="document" class="file-upload">
+  <.file_upload name="document">
     <:close>
       <.heroicon name="hero-x-mark" />
     </:close>
@@ -23,7 +23,7 @@ defmodule Corex.FileUpload do
   ### With label
 
   ```heex
-  <.file_upload name="document" class="file-upload">
+  <.file_upload name="document">
     <:label>Files</:label>
     <:close>
       <.heroicon name="hero-x-mark" />
@@ -34,7 +34,7 @@ defmodule Corex.FileUpload do
   ### Custom slots
 
   ```heex
-  <.file_upload name="document" class="file-upload">
+  <.file_upload name="document">
     <:dropzone>
       <span>Custom dropzone</span>
     </:dropzone>
@@ -52,17 +52,17 @@ defmodule Corex.FileUpload do
   ```heex
   <.form for={@form} action={~p"/file-upload/form"} method="post" multipart>
     <input type="hidden" name="file_upload_changeset[_sent]" value="1" />
-    <.file_upload field={@form[:attachment]} class="file-upload">
+    <.file_upload field={@form[:attachment]}>
       <:label>Attachment</:label>
       <:close>
         <.heroicon name="hero-x-mark" />
       </:close>
       <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
+        <.heroicon name="hero-exclamation-circle" />
         {msg}
       </:error>
     </.file_upload>
-    <.action type="submit" class="button button--accent w-full">Submit</.action>
+    <.action type="submit">Submit</.action>
   </.form>
   ```
 
@@ -113,6 +113,25 @@ defmodule Corex.FileUpload do
 
   @doc type: :component
   use Phoenix.Component
+
+  use Corex.Variants,
+    base: "file-upload",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size,
+      radius: :radius
+    ],
+    defaults: [
+      width: "full",
+      max_width: "md",
+      height: "auto",
+      max_height: "none",
+      size: "md"
+    ]
 
   import Corex.Api.Doc
 
@@ -286,6 +305,8 @@ defmodule Corex.FileUpload do
     <div
       id={@id}
       phx-hook="FileUpload"
+      class={corex_style_class(assigns)}
+     
       data-loading
       phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       {@rest}

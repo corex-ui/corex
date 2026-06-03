@@ -1,0 +1,116 @@
+.doc-page {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-size);
+}
+
+.doc-page-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  width: 100%;
+}
+
+.doc-source-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.doc-authoring-settings {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-md);
+  margin-inline-start: auto;
+}
+
+.doc-authoring-settings__label {
+  font-size: var(--text-sm);
+  color: var(--color-ui-ink-muted);
+}
+
+.doc-source-bar img {
+  display: block;
+  height: 1em;
+  width: 1em;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.doc-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space);
+  align-items: flex-start;
+  width: 100%;
+}
+
+.doc-section-tabs.tabs {
+  width: 100%;
+  max-width: var(--container-6xl);
+}
+
+.doc-section-tabs [data-scope="tabs"][data-part="root"] {
+  gap: 0;
+}
+
+.doc-section-tabs [data-scope="tabs"][data-part="list"] {
+  place-self: end;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.doc-section-tabs [data-scope="tabs"][data-part="content"] {
+  border: 1px solid var(--color-border);
+  box-shadow: none;
+  background-color: var(--color-root);
+}
+
+.doc-preview-tabs {
+  align-self: stretch;
+  width: 100%;
+  max-width: var(--container-6xl);
+}
+
+.doc-section-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: var(--space-xl);
+  gap: var(--space);
+  background: var(--color-root);
+  border: none;
+  box-shadow: none;
+}
+
+.doc-section-code {
+  align-items: stretch;
+  width: 100%;
+  padding: 0;
+  position: relative;
+  background: var(--color-root);
+  border: none;
+  box-shadow: none;
+}
+
+.doc-section-code pre.code,
+.doc-section-code pre[data-code] {
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.doc-demo-img {
+  display: block;
+  height: var(--size-sm);
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  opacity: 0.9;
+}

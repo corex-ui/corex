@@ -1,0 +1,32 @@
+<Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
+  <.demo_page
+    path={@path}
+    id="floating-panel-styling-page"
+    title={~t"Floating Panel · Style"}
+    subtitle={
+      ~t"Semantic colors and corner radius via component attrs on the floating panel root."
+    }
+  >
+    <.demo_section
+      id="floating-panel-styling-semantic"
+      title={~t"Semantic"}
+      values={E2eWeb.Demos.FloatingPanelDemo.styling_axis_values(:semantic)}
+      code={E2eWeb.Demos.FloatingPanelDemo.styling_semantic_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.FloatingPanelDemo.styling_semantic_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="floating-panel-styling-radius"
+      title={~t"Radius"}
+      values={E2eWeb.Demos.FloatingPanelDemo.styling_axis_values(:radius)}
+      code={E2eWeb.Demos.FloatingPanelDemo.styling_radius_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.FloatingPanelDemo.styling_radius_example />
+      </:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>

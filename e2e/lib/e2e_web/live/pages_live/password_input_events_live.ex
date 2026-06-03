@@ -76,20 +76,19 @@ defmodule E2eWeb.PasswordInputEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.password_input
                 id="password-input-events-server"
-                class="password-input"
                 name="user[password]"
                 on_visibility_change="password_visibility_changed"
               >
                 <:label>Password</:label>
-                <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+                <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
                 <:hidden_indicator>
-                  <.heroicon name="hero-eye-slash" class="icon" />
+                  <.heroicon name="hero-eye-slash" />
                 </:hidden_indicator>
               </.password_input>
 
               <.data_table
                 id="password-input-events-log-server"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.server_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -116,14 +115,13 @@ defmodule E2eWeb.PasswordInputEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.password_input
                 id="password-input-events-client"
-                class="password-input"
                 name="user[password]"
                 on_visibility_change_client="password-visibility-changed"
               >
                 <:label>Password</:label>
-                <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+                <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
                 <:hidden_indicator>
-                  <.heroicon name="hero-eye-slash" class="icon" />
+                  <.heroicon name="hero-eye-slash" />
                 </:hidden_indicator>
               </.password_input>
 
@@ -153,7 +151,7 @@ defmodule E2eWeb.PasswordInputEventsLive do
 
               <.data_table
                 id="password-input-events-log-client"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.client_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>

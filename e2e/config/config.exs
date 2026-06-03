@@ -76,23 +76,15 @@ config :esbuild,
     }
   ]
 
-config :designex,
-  version: "1.0.2",
-  commit: "1da4b31",
-  cd: Path.expand("../assets", __DIR__),
-  dir: "corex",
-  corex: [
-    build_args: ~w(--dir=design --script=build.mjs --tokens=tokens)
-  ]
-
 config :tailwind,
   version: "4.1.12",
   e2e: [
-    args: ~w(
-      --input=assets/css/app.css
-      --output=priv/static/assets/css/app.css
-    ),
     cd: Path.expand("..", __DIR__)
+  ]
+
+config :corex_design,
+  corex_web: [
+    output: "assets/css/corex.tailwind.css"
   ]
 
 # Configure Elixir's Logger

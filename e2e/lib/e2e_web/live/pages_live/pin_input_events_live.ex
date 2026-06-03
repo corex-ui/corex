@@ -75,7 +75,6 @@ defmodule E2eWeb.PinInputEventsLive do
               <.pin_input
                 id="pin-input-events-server"
                 count={4}
-                class="pin-input"
                 on_value_change="pin_input_changed"
               >
                 <:label>Code</:label>
@@ -83,7 +82,7 @@ defmodule E2eWeb.PinInputEventsLive do
 
               <.data_table
                 id="pin-input-events-log-server"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.server_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -111,7 +110,6 @@ defmodule E2eWeb.PinInputEventsLive do
               <.pin_input
                 id="pin-input-events-client"
                 count={4}
-                class="pin-input"
                 on_value_change_client="pin-input-changed"
               >
                 <:label>Code</:label>
@@ -140,7 +138,7 @@ defmodule E2eWeb.PinInputEventsLive do
 
               <.data_table
                 id="pin-input-events-log-client"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.client_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>

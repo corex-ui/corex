@@ -7,23 +7,23 @@ defmodule Corex.FloatingPanel do
   ### Basic
 
   ```heex
-  <.floating_panel class="floating-panel">
+  <.floating_panel>
     <:trigger class="button button--ghost button--sm">
       <span data-closed>Open panel</span>
       <span data-open>Close panel</span>
     </:trigger>
     <:title>Panel</:title>
     <:minimize_trigger>
-      <.heroicon name="hero-arrow-down-left" class="icon" />
+      <.heroicon name="hero-arrow-down-left" />
     </:minimize_trigger>
     <:maximize_trigger>
-      <.heroicon name="hero-arrows-pointing-out" class="icon" />
+      <.heroicon name="hero-arrows-pointing-out" />
     </:maximize_trigger>
     <:default_trigger>
-      <.heroicon name="hero-rectangle-stack" class="icon" />
+      <.heroicon name="hero-rectangle-stack" />
     </:default_trigger>
     <:close_trigger>
-      <.heroicon name="hero-x-mark" class="icon" />
+      <.heroicon name="hero-x-mark" />
     </:close_trigger>
     <:content>
       <p>
@@ -44,9 +44,45 @@ defmodule Corex.FloatingPanel do
 
   Set **`position={%Corex.Point{}}` or `position={%{x: n, y: n}}`** for a fixed initial Zag `Point` (**`data-default-position`** / **`defaultPosition`**). If **`position`** is set, it overrides anchor placement.
 
-  Set **`size={%{width:, height:}}`** for initial dimensions (**`data-default-size`** / Zag **`defaultSize`**). Use **`value_size`** for a controlled current size (**`data-size`** / Zag **`size`**).
+  Set **`size={%{width:, height:}}`** for initial dimensions (**`data-default-size`** / Zag **`defaultSize`**).
 
   Optional **`positioning={%Corex.Positioning{}}`** sets **`data-position-*`** for the client hook. When **`position`** is omitted, the hook passes Zag **`getAnchorPosition`** from placement and boundary (e.g. **`placement: "bottom-start"`** and **`gutter: 16`** for a bottom corner). Do not rely on both **`position`** and **`positioning`** for the same panel; prefer **`position`** for explicit pixels, **`positioning`** for placement rules.
+
+  ## Styling
+
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `semantic`, `radius`.
+
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.floating_panel semantic="accent" class="floating-panel">
+    <:trigger>
+      <span data-closed>Open panel</span>
+      <span data-open>Close panel</span>
+    </:trigger>
+    <:title>Panel</:title>
+    <:close_trigger><.heroicon name="hero-x-mark" /></:close_trigger>
+    <:content>Body</:content>
+  </.floating_panel>
+  ```
+
+  ### With classes
+
+  ```heex
+  <.floating_panel class="floating-panel floating-panel--accent">
+    <:trigger>
+      <span data-closed>Open panel</span>
+      <span data-open>Close panel</span>
+    </:trigger>
+    <:title>Panel</:title>
+    <:close_trigger><.heroicon name="hero-x-mark" /></:close_trigger>
+    <:content>Body</:content>
+  </.floating_panel>
+  ```
+
+  <!-- tabs-close -->
 
   ## API
 
@@ -81,7 +117,7 @@ defmodule Corex.FloatingPanel do
 
   ## Style
 
-  Use data attributes to target elements:
+  Target parts with `data-scope` and `data-part`, or use [Corex Design](styled.html): `@import "./corex.tailwind.css"` in `app.css`.
 
   ```css
   [data-scope="floating-panel"][data-part="root"] {}
@@ -98,33 +134,44 @@ defmodule Corex.FloatingPanel do
   [data-scope="floating-panel"][data-part="stage-trigger"] {}
   ```
 
-  If you wish to use the default Corex styling, you can use the class `floating-panel` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+  Stack modifiers on the host (`class` on `<.floating_panel>`).
 
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/floating-panel.css";
-  ```
+  <!-- tabs-open -->
 
-  You can then use modifiers
+  ### Color
 
-  ```heex
-  <.floating_panel class="floating-panel floating-panel--accent floating-panel--lg">
-    <:trigger>
-      <span data-closed>Closed</span>
-      <span data-open>Open</span>
-    </:trigger>
-    <:title>Title</:title>
-    <:close_trigger>Close</:close_trigger>
-    <:content>Body</:content>
-  </.floating_panel>
-  ```
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `floating-panel` |
+  | Accent | `floating-panel floating-panel--accent` |
+  | Brand | `floating-panel floating-panel--brand` |
+  | Alert | `floating-panel floating-panel--alert` |
+  | Info | `floating-panel floating-panel--info` |
+  | Success | `floating-panel floating-panel--success` |
+
+  <!-- tabs-close -->
 
   '''
 
   @doc type: :component
   use Phoenix.Component
+
+  use Corex.Variants,
+    base: "floating-panel",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      radius: :radius
+    ],
+    defaults: [
+      width: "fit",
+      max_width: "none",
+      height: "auto",
+      max_height: "none"
+    ]
 
   import Corex.Api.Doc
 
@@ -168,8 +215,10 @@ defmodule Corex.FloatingPanel do
     doc: "Layout orientation for CSS and ignored attribute lists."
   )
 
-  attr(:size, :map, default: nil, doc: "Zag defaultSize; sets data-default-size on the hook root")
-  attr(:value_size, :map, default: nil, doc: "Zag controlled size; sets data-size when present")
+  attr(:size, :map,
+    default: nil,
+    doc: "Zag defaultSize; sets data-default-size on the hook root"
+  )
 
   attr(:position, :any,
     default: nil,
@@ -261,6 +310,8 @@ defmodule Corex.FloatingPanel do
     <div
       id={@id}
       phx-hook="FloatingPanel"
+      class={corex_style_class(assigns)}
+     
       data-loading
       phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       {@rest}
@@ -274,8 +325,7 @@ defmodule Corex.FloatingPanel do
         disabled: @disabled,
         dir: @dir,
         orientation: @orientation,
-        size: @value_size,
-        default_size: @size,
+        size: @size,
         default_position: @default_position,
         min_size: @min_size,
         max_size: @max_size,
@@ -346,7 +396,7 @@ defmodule Corex.FloatingPanel do
   <.floating_panel id="my-floating-panel" class="floating-panel">
     <:trigger class="button button--ghost button--sm"><span>Open</span></:trigger>
     <:title>Panel</:title>
-    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+    <:close_trigger><.heroicon name="hero-x-mark" /></:close_trigger>
     <:content><p>Content.</p></:content>
   </.floating_panel>
   ```
@@ -378,7 +428,7 @@ defmodule Corex.FloatingPanel do
   <.floating_panel id="my-floating-panel" class="floating-panel">
     <:trigger class="button button--ghost button--sm"><span>Open</span></:trigger>
     <:title>Panel</:title>
-    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+    <:close_trigger><.heroicon name="hero-x-mark" /></:close_trigger>
     <:content><p>Content.</p></:content>
   </.floating_panel>
   ```

@@ -8,18 +8,20 @@
     }
   >
     <.demo_section
-      id="pin-input-styling-color"
-      title={~t"Color"}
-      code={E2eWeb.Demos.PinInputDemo.styling_color_code()}
+      id="pin-input-styling-semantic"
+      title={~t"Semantic"}
+      values={E2eWeb.Demos.PinInputDemo.styling_axis_values(:semantic)}
+      code={E2eWeb.Demos.PinInputDemo.styling_semantic_code()}
     >
       <:preview>
-        <E2eWeb.Demos.PinInputDemo.styling_color_example />
+        <E2eWeb.Demos.PinInputDemo.styling_semantic_example />
       </:preview>
     </.demo_section>
 
     <.demo_section
       id="pin-input-styling-size"
       title={~t"Size"}
+      values={E2eWeb.Demos.PinInputDemo.styling_axis_values(:size)}
       code={E2eWeb.Demos.PinInputDemo.styling_size_code()}
     >
       <:preview>
@@ -30,6 +32,7 @@
     <.demo_section
       id="pin-input-styling-radius"
       title={~t"Radius"}
+      values={E2eWeb.Demos.PinInputDemo.styling_axis_values(:radius)}
       code={E2eWeb.Demos.PinInputDemo.styling_radius_code()}
     >
       <:preview>

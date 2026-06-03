@@ -1,0 +1,750 @@
+/* Corex generated design - do not edit */
+
+[data-code] {
+  width: 100%;
+  max-height: none;
+  height: auto;
+  line-height: var(--leading-sm);
+  font-size: var(--text-sm);
+  max-width: var(--container-md);
+}
+
+[data-code][data-code-width="auto"] {
+  width: auto;
+}
+
+[data-code][data-code-width="fit"] {
+  width: fit-content;
+}
+
+[data-code][data-code-width="full"] {
+  width: 100%;
+}
+
+[data-code][data-code-height="auto"] {
+  height: auto;
+}
+
+[data-code][data-code-height="fit"] {
+  height: fit-content;
+}
+
+[data-code][data-code-height="full"] {
+  height: 100%;
+}
+
+[data-code][data-code-max-height="none"] {
+  max-height: none;
+}
+
+[data-code][data-code-max-height="full"] {
+  max-height: 100%;
+}
+
+[data-code][data-code-max-height="7xs"] {
+  max-height: var(--container-7xs);
+}
+
+[data-code][data-code-max-height="6xs"] {
+  max-height: var(--container-6xs);
+}
+
+[data-code][data-code-max-height="5xs"] {
+  max-height: var(--container-5xs);
+}
+
+[data-code][data-code-max-height="4xs"] {
+  max-height: var(--container-4xs);
+}
+
+[data-code][data-code-max-height="3xs"] {
+  max-height: var(--container-3xs);
+}
+
+[data-code][data-code-max-height="2xs"] {
+  max-height: var(--container-2xs);
+}
+
+[data-code][data-code-max-height="xs"] {
+  max-height: var(--container-xs);
+}
+
+[data-code][data-code-max-height="sm"] {
+  max-height: var(--container-sm);
+}
+
+[data-code][data-code-max-height="md"] {
+  max-height: var(--container-md);
+}
+
+[data-code][data-code-max-height="lg"] {
+  max-height: var(--container-lg);
+}
+
+[data-code][data-code-max-height="xl"] {
+  max-height: var(--container-xl);
+}
+
+[data-code][data-code-max-height="2xl"] {
+  max-height: var(--container-2xl);
+}
+
+[data-code][data-code-max-height="3xl"] {
+  max-height: var(--container-3xl);
+}
+
+[data-code][data-code-max-height="4xl"] {
+  max-height: var(--container-4xl);
+}
+
+[data-code][data-code-max-height="5xl"] {
+  max-height: var(--container-5xl);
+}
+
+[data-code][data-code-max-height="6xl"] {
+  max-height: var(--container-6xl);
+}
+
+[data-code][data-code-max-height="7xl"] {
+  max-height: var(--container-7xl);
+}
+
+[data-code][data-code-size="sm"] {
+  gap: var(--space-sm);
+  line-height: var(--leading-sm);
+  font-size: var(--text-sm);
+  min-height: var(--size-sm);
+  padding-inline: var(--space-sm);
+}
+
+[data-code][data-code-size="md"] {
+  gap: var(--space-md);
+  line-height: var(--leading-base);
+  font-size: var(--text-base);
+  min-height: var(--size-md);
+  padding-inline: var(--space-md);
+}
+
+[data-code][data-code-size="lg"] {
+  gap: var(--space-lg);
+  line-height: var(--leading-lg);
+  font-size: var(--text-lg);
+  min-height: var(--size-lg);
+  padding-inline: var(--space-lg);
+}
+
+[data-code][data-code-size="xl"] {
+  gap: var(--space-xl);
+  line-height: var(--leading-xl);
+  font-size: var(--text-xl);
+  min-height: var(--size-xl);
+  padding-inline: var(--space-xl);
+}
+
+[data-code][data-code-text="xs"] {
+  line-height: var(--leading-xs);
+  font-size: var(--text-xs);
+}
+
+[data-code][data-code-text="sm"] {
+  line-height: var(--leading-sm);
+  font-size: var(--text-sm);
+}
+
+[data-code][data-code-text="base"] {
+  line-height: var(--leading-base);
+  font-size: var(--text-base);
+}
+
+[data-code][data-code-text="lg"] {
+  line-height: var(--leading-lg);
+  font-size: var(--text-lg);
+}
+
+[data-code][data-code-text="xl"] {
+  line-height: var(--leading-xl);
+  font-size: var(--text-xl);
+}
+
+[data-code][data-code-text="2xl"] {
+  line-height: var(--leading-2xl);
+  font-size: var(--text-2xl);
+}
+
+[data-code][data-code-text="3xl"] {
+  line-height: var(--leading-3xl);
+  font-size: var(--text-3xl);
+}
+
+[data-code][data-code-text="4xl"] {
+  line-height: var(--leading-4xl);
+  font-size: var(--text-4xl);
+}
+
+[data-code][data-code-max-width="none"] {
+  max-width: none;
+}
+
+[data-code][data-code-max-width="full"] {
+  max-width: 100%;
+}
+
+[data-code][data-code-max-width="7xs"] {
+  max-width: var(--container-7xs);
+}
+
+[data-code][data-code-max-width="6xs"] {
+  max-width: var(--container-6xs);
+}
+
+[data-code][data-code-max-width="5xs"] {
+  max-width: var(--container-5xs);
+}
+
+[data-code][data-code-max-width="4xs"] {
+  max-width: var(--container-4xs);
+}
+
+[data-code][data-code-max-width="3xs"] {
+  max-width: var(--container-3xs);
+}
+
+[data-code][data-code-max-width="2xs"] {
+  max-width: var(--container-2xs);
+}
+
+[data-code][data-code-max-width="xs"] {
+  max-width: var(--container-xs);
+}
+
+[data-code][data-code-max-width="sm"] {
+  max-width: var(--container-sm);
+}
+
+[data-code][data-code-max-width="md"] {
+  max-width: var(--container-md);
+}
+
+[data-code][data-code-max-width="lg"] {
+  max-width: var(--container-lg);
+}
+
+[data-code][data-code-max-width="xl"] {
+  max-width: var(--container-xl);
+}
+
+[data-code][data-code-max-width="2xl"] {
+  max-width: var(--container-2xl);
+}
+
+[data-code][data-code-max-width="3xl"] {
+  max-width: var(--container-3xl);
+}
+
+[data-code][data-code-max-width="4xl"] {
+  max-width: var(--container-4xl);
+}
+
+[data-code][data-code-max-width="5xl"] {
+  max-width: var(--container-5xl);
+}
+
+[data-code][data-code-max-width="6xl"] {
+  max-width: var(--container-6xl);
+}
+
+[data-code][data-code-max-width="7xl"] {
+  max-width: var(--container-7xl);
+}
+
+[data-code][data-code-text="xs"]:is(pre) > code[data-part="content"] {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+[data-code][data-code-text="xs"]:is(code[data-code]) > span[data-part="content"] {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+[data-code][data-code-text="sm"]:is(pre) > code[data-part="content"] {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+[data-code][data-code-text="sm"]:is(code[data-code]) > span[data-part="content"] {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+[data-code][data-code-text="base"]:is(pre) > code[data-part="content"] {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+[data-code][data-code-text="base"]:is(code[data-code]) > span[data-part="content"] {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+[data-code][data-code-text="lg"]:is(pre) > code[data-part="content"] {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+[data-code][data-code-text="lg"]:is(code[data-code]) > span[data-part="content"] {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+[data-code][data-code-text="xl"]:is(pre) > code[data-part="content"] {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+[data-code][data-code-text="xl"]:is(code[data-code]) > span[data-part="content"] {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+[data-code][data-code-text="2xl"]:is(pre) > code[data-part="content"] {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+[data-code][data-code-text="2xl"]:is(code[data-code]) > span[data-part="content"] {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+[data-code][data-code-text="3xl"]:is(pre) > code[data-part="content"] {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+[data-code][data-code-text="3xl"]:is(code[data-code]) > span[data-part="content"] {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+[data-code][data-code-text="4xl"]:is(pre) > code[data-part="content"] {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+[data-code][data-code-text="4xl"]:is(code[data-code]) > span[data-part="content"] {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+pre[data-code] code[data-part="content"] span {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+code[data-code] > span[data-part="content"] span {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+pre[data-code] {
+  background-image: linear-gradient(var(--color-root) 50%, var(--color-layer) 50%);
+  background-size: 100% 2lh;
+  background-origin: content-box;
+  background-attachment: local;
+  background-position: 0 0;
+  width: 100%;
+  font-family: var(--font-mono);
+  padding: var(--space-md);
+  background-color: var(--color-ui);
+  color: var(--color-ink);
+  border: 1px solid var(--color-border);
+  overflow: auto;
+  min-width: 0;
+  box-sizing: border-box;
+  & code[data-part="content"] {
+    padding-inline-end: var(--space-xl);
+    white-space: pre-wrap;
+  }
+}
+
+code[data-code] {
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  display: inline-block;
+  max-width: 100%;
+  overflow: visible;
+  vertical-align: baseline;
+  font-family: var(--font-mono);
+  padding-inline: var(--space-sm);
+  padding-block: 0.12em;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-layer);
+  color: var(--color-ink);
+  user-select: all;
+  & > span[data-part="content"] {
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+  }
+}
+
+pre[data-code].unselectable,
+  code[data-code].unselectable {
+  -webkit-touch-callout: none
+  -webkit-user-select: none
+  -khtml-user-select: none
+  -moz-user-select: none
+  -ms-user-select: none
+  user-select: none;
+}
+
+[data-mode="light"] [data-code] .hll {
+  background-color: #fff9c4;
+}
+
+[data-mode="light"] [data-code] .bp {
+  color: #0070c1;
+}
+
+[data-mode="light"] [data-code] .c, [data-mode="light"] [data-code] .c1, [data-mode="light"] [data-code] .ch, [data-mode="light"] [data-code] .cm, [data-mode="light"] [data-code] .cs {
+  color: #008000;
+  font-style: italic;
+}
+
+[data-mode="light"] [data-code] .cp, [data-mode="light"] [data-code] .cpf {
+  color: #0000ff;
+  font-style: normal;
+}
+
+[data-mode="light"] [data-code] .dl {
+  color: #a31515;
+}
+
+[data-mode="light"] [data-code] .err {
+  border-color: #cd3131;
+  color: #cd3131;
+}
+
+[data-mode="light"] [data-code] .fm {
+  color: #795e26;
+}
+
+[data-mode="light"] [data-code] .gd {
+  color: #a31515;
+}
+
+[data-mode="light"] [data-code] .ge {
+  font-style: italic;
+}
+
+[data-mode="light"] [data-code] .gh {
+  color: #000080;
+  font-weight: bold;
+}
+
+[data-mode="light"] [data-code] .gi {
+  color: #098658;
+}
+
+[data-mode="light"] [data-code] .go {
+  color: #6e7681;
+}
+
+[data-mode="light"] [data-code] .gp {
+  color: #000080;
+  font-weight: bold;
+}
+
+[data-mode="light"] [data-code] .gr {
+  color: #cd3131;
+}
+
+[data-mode="light"] [data-code] .gs {
+  font-weight: bold;
+}
+
+[data-mode="light"] [data-code] .gt {
+  color: #0451a5;
+}
+
+[data-mode="light"] [data-code] .gu {
+  color: #800080;
+  font-weight: bold;
+}
+
+[data-mode="light"] [data-code] .il {
+  color: #098658;
+}
+
+[data-mode="light"] [data-code] .k, [data-mode="light"] [data-code] .kd, [data-mode="light"] [data-code] .kr, [data-mode="light"] [data-code] .kc, [data-mode="light"] [data-code] .kn, [data-mode="light"] [data-code] .kp {
+  color: #0000ff;
+  font-weight: bold;
+}
+
+[data-mode="light"] [data-code] .kt {
+  color: #267f99;
+}
+
+[data-mode="light"] [data-code] .m, [data-mode="light"] [data-code] .mb, [data-mode="light"] [data-code] .mf, [data-mode="light"] [data-code] .mh, [data-mode="light"] [data-code] .mi, [data-mode="light"] [data-code] .mo {
+  color: #098658;
+}
+
+[data-mode="light"] [data-code] .na {
+  color: #e50000;
+}
+
+[data-mode="light"] [data-code] .nb {
+  color: #267f99;
+}
+
+[data-mode="light"] [data-code] .nc, [data-mode="light"] [data-code] .nn {
+  color: #267f99;
+  font-weight: bold;
+}
+
+[data-mode="light"] [data-code] .nd {
+  color: #af00db;
+}
+
+[data-mode="light"] [data-code] .ne {
+  color: #cd3131;
+  font-weight: bold;
+}
+
+[data-mode="light"] [data-code] .nf {
+  color: #795e26;
+}
+
+[data-mode="light"] [data-code] .ni {
+  color: #6e7681;
+  font-weight: bold;
+}
+
+[data-mode="light"] [data-code] .nl {
+  color: #000000;
+}
+
+[data-mode="light"] [data-code] .no {
+  color: #0070c1;
+}
+
+[data-mode="light"] [data-code] .nt {
+  color: #800000;
+  font-weight: bold;
+}
+
+[data-mode="light"] [data-code] .nv, [data-mode="light"] [data-code] .vc, [data-mode="light"] [data-code] .vg, [data-mode="light"] [data-code] .vi, [data-mode="light"] [data-code] .vm {
+  color: #001080;
+}
+
+[data-mode="light"] [data-code] .o {
+  color: #000000;
+}
+
+[data-mode="light"] [data-code] .ow {
+  color: #0000ff;
+  font-weight: bold;
+}
+
+[data-mode="light"] [data-code] .s, [data-mode="light"] [data-code] .s1, [data-mode="light"] [data-code] .s2, [data-mode="light"] [data-code] .sa, [data-mode="light"] [data-code] .sb, [data-mode="light"] [data-code] .sc, [data-mode="light"] [data-code] .sh, [data-mode="light"] [data-code] .sx {
+  color: #a31515;
+}
+
+[data-mode="light"] [data-code] .sd {
+  color: #a31515;
+  font-style: italic;
+}
+
+[data-mode="light"] [data-code] .se {
+  color: #ee0000;
+  font-weight: bold;
+}
+
+[data-mode="light"] [data-code] .si {
+  color: #811f3f;
+  font-weight: bold;
+}
+
+[data-mode="light"] [data-code] .sr {
+  color: #811f3f;
+}
+
+[data-mode="light"] [data-code] .ss {
+  color: #001080;
+}
+
+[data-mode="dark"] [data-code] .hll {
+  background-color: #264f78;
+}
+
+[data-mode="dark"] [data-code] .bp {
+  color: #4ec9b0;
+}
+
+[data-mode="dark"] [data-code] .c, [data-mode="dark"] [data-code] .c1, [data-mode="dark"] [data-code] .ch, [data-mode="dark"] [data-code] .cm, [data-mode="dark"] [data-code] .cs {
+  color: #6a9955;
+  font-style: italic;
+}
+
+[data-mode="dark"] [data-code] .cp, [data-mode="dark"] [data-code] .cpf {
+  color: #569cd6;
+  font-style: normal;
+}
+
+[data-mode="dark"] [data-code] .dl {
+  color: #ce9178;
+}
+
+[data-mode="dark"] [data-code] .err {
+  border-color: #f44747;
+  color: #f44747;
+}
+
+[data-mode="dark"] [data-code] .fm {
+  color: #dcdcaa;
+}
+
+[data-mode="dark"] [data-code] .gd {
+  color: #ce9178;
+}
+
+[data-mode="dark"] [data-code] .ge {
+  font-style: italic;
+}
+
+[data-mode="dark"] [data-code] .gh {
+  color: #569cd6;
+  font-weight: bold;
+}
+
+[data-mode="dark"] [data-code] .gi {
+  color: #b5cea8;
+}
+
+[data-mode="dark"] [data-code] .go {
+  color: #808080;
+}
+
+[data-mode="dark"] [data-code] .gp {
+  color: #569cd6;
+  font-weight: bold;
+}
+
+[data-mode="dark"] [data-code] .gr {
+  color: #f44747;
+}
+
+[data-mode="dark"] [data-code] .gs {
+  font-weight: bold;
+}
+
+[data-mode="dark"] [data-code] .gt {
+  color: #4ec9b0;
+}
+
+[data-mode="dark"] [data-code] .gu {
+  color: #c586c0;
+  font-weight: bold;
+}
+
+[data-mode="dark"] [data-code] .il {
+  color: #b5cea8;
+}
+
+[data-mode="dark"] [data-code] .k, [data-mode="dark"] [data-code] .kd, [data-mode="dark"] [data-code] .kr, [data-mode="dark"] [data-code] .kc, [data-mode="dark"] [data-code] .kn, [data-mode="dark"] [data-code] .kp {
+  color: #569cd6;
+  font-weight: bold;
+}
+
+[data-mode="dark"] [data-code] .kt {
+  color: #4ec9b0;
+}
+
+[data-mode="dark"] [data-code] .m, [data-mode="dark"] [data-code] .mb, [data-mode="dark"] [data-code] .mf, [data-mode="dark"] [data-code] .mh, [data-mode="dark"] [data-code] .mi, [data-mode="dark"] [data-code] .mo {
+  color: #b5cea8;
+}
+
+[data-mode="dark"] [data-code] .na {
+  color: #9cdcfe;
+}
+
+[data-mode="dark"] [data-code] .nb {
+  color: #4ec9b0;
+}
+
+[data-mode="dark"] [data-code] .nc, [data-mode="dark"] [data-code] .nn {
+  color: #4ec9b0;
+  font-weight: bold;
+}
+
+[data-mode="dark"] [data-code] .nd {
+  color: #c586c0;
+}
+
+[data-mode="dark"] [data-code] .ne {
+  color: #f44747;
+  font-weight: bold;
+}
+
+[data-mode="dark"] [data-code] .nf {
+  color: #dcdcaa;
+}
+
+[data-mode="dark"] [data-code] .ni {
+  color: #808080;
+  font-weight: bold;
+}
+
+[data-mode="dark"] [data-code] .nl {
+  color: #c8c8c8;
+}
+
+[data-mode="dark"] [data-code] .no {
+  color: #4fc1ff;
+}
+
+[data-mode="dark"] [data-code] .nt {
+  color: #569cd6;
+  font-weight: bold;
+}
+
+[data-mode="dark"] [data-code] .nv, [data-mode="dark"] [data-code] .vc, [data-mode="dark"] [data-code] .vg, [data-mode="dark"] [data-code] .vi, [data-mode="dark"] [data-code] .vm {
+  color: #9cdcfe;
+}
+
+[data-mode="dark"] [data-code] .o {
+  color: #d4d4d4;
+}
+
+[data-mode="dark"] [data-code] .ow {
+  color: #569cd6;
+  font-weight: bold;
+}
+
+[data-mode="dark"] [data-code] .s, [data-mode="dark"] [data-code] .s1, [data-mode="dark"] [data-code] .s2, [data-mode="dark"] [data-code] .sa, [data-mode="dark"] [data-code] .sb, [data-mode="dark"] [data-code] .sc, [data-mode="dark"] [data-code] .sh, [data-mode="dark"] [data-code] .sx {
+  color: #ce9178;
+}
+
+[data-mode="dark"] [data-code] .sd {
+  color: #ce9178;
+  font-style: italic;
+}
+
+[data-mode="dark"] [data-code] .se {
+  color: #d7ba7d;
+  font-weight: bold;
+}
+
+[data-mode="dark"] [data-code] .si {
+  color: #d7ba7d;
+  font-weight: bold;
+}
+
+[data-mode="dark"] [data-code] .sr {
+  color: #d16969;
+}
+
+[data-mode="dark"] [data-code] .ss {
+  color: #9cdcfe;
+}

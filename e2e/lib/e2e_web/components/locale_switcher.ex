@@ -19,7 +19,8 @@ defmodule E2eWeb.LocaleSwitcher do
     ~H"""
     <.select
       id="locale-select"
-      class="select select--sm w-4xs"
+      size="sm"
+      max_width="4xs"
       items={@items}
       value={@value}
       redirect
@@ -31,10 +32,10 @@ defmodule E2eWeb.LocaleSwitcher do
         {item.label}
       </:item>
       <:trigger>
-        <.heroicon name="hero-language" class="icon" />
+        <.heroicon name="hero-language" />
       </:trigger>
       <:item_indicator>
-        <.heroicon name="hero-check" class="icon" />
+        <.heroicon name="hero-check" />
       </:item_indicator>
     </.select>
     """

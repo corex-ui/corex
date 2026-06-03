@@ -1,15 +1,4 @@
 @layer components {
-  .layout__main--blog {
-    width: 100%;
-  }
-
-  .layout__content--blog {
-    max-width: none;
-    width: 100%;
-    align-items: stretch;
-    padding-block: var(--spacing-size);
-  }
-
   .layout__blog {
     width: 100%;
     max-width: var(--container-2xl);

@@ -66,11 +66,7 @@ assigns = Map.put(assigns, :mode, MyApp.Mode.current(assigns))
     {MyApp.Mode.head_script()}
 ```
 
-Import in `assets/css/site.css`:
-
-```css
-@import "../corex/components/toggle.css";
-```
+Ensure [Tableau](tableau.html) baseline imports `./corex.tailwind.css` in `assets/css/site.css` (toggle styles are included in the generated bundle).
 
 ### With Tableau Theming
 

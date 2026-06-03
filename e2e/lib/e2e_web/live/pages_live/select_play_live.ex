@@ -105,7 +105,8 @@ defmodule E2eWeb.SelectPlayLive do
           />
           <.select
             id="select-playground-disabled-items"
-            class="select select--sm w-4xs"
+            size="sm"
+            class="w-4xs"
             positioning={%Corex.Positioning{same_width: true}}
             multiple
             deselectable={true}
@@ -119,7 +120,7 @@ defmodule E2eWeb.SelectPlayLive do
             <:label>Disabled items</:label>
           </.select>
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="select-playground-disabled"
             checked={@controls.disabled}
             on_checked_change="control_changed"
@@ -127,7 +128,7 @@ defmodule E2eWeb.SelectPlayLive do
             <:label>Disabled</:label>
           </.switch>
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="select-playground-read-only"
             checked={@controls.read_only}
             on_checked_change="control_changed"
@@ -135,7 +136,7 @@ defmodule E2eWeb.SelectPlayLive do
             <:label>Read only</:label>
           </.switch>
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="select-playground-invalid"
             checked={@controls.invalid}
             on_checked_change="control_changed"
@@ -146,7 +147,7 @@ defmodule E2eWeb.SelectPlayLive do
         <:canvas>
           <.select
             id="select-playground"
-            class="select"
+            size="md"
             positioning={%Corex.Positioning{same_width: true}}
             items={@items}
             dir={@controls.dir}
@@ -155,8 +156,8 @@ defmodule E2eWeb.SelectPlayLive do
             read_only={@controls.read_only}
             invalid={@controls.invalid}
           >
-            <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-            <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+            <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+            <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
           </.select>
         </:canvas>
       </.demo_playground>

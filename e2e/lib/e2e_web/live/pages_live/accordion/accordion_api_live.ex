@@ -1,6 +1,6 @@
 defmodule E2eWeb.AccordionApiLive do
   use E2eWeb, :live_view
-  import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
+  import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1, authoring_preview: 1]
 
   @id_sv_client "api-set-value-client"
   @id_sv_js "api-set-value-client-js"
@@ -37,30 +37,31 @@ defmodule E2eWeb.AccordionApiLive do
 
   defp demo_codes do
     m = E2eWeb.Demos.AccordionDemo
+    s = &E2eWeb.AuthoringSnippet.heex_snippets/1
 
     %{
-      set_value_binding: m.api_set_value_client_binding_code(),
-      set_value_server_heex: m.api_set_value_server_heex(),
+      set_value_binding: s.(m.api_set_value_client_binding_code()),
+      set_value_server_heex: s.(m.api_set_value_server_heex()),
       set_value_server_elixir: m.api_set_value_server_elixir(),
       set_value_js: m.api_set_value_client_js_js(),
       set_value_js_ts: m.api_set_value_client_js_ts(),
-      set_value_js_heex: m.api_set_value_client_js_heex(),
-      value_client_heex: m.api_value_client_heex(),
-      value_server_heex: m.api_value_server_heex(),
+      set_value_js_heex: s.(m.api_set_value_client_js_heex()),
+      value_client_heex: s.(m.api_value_client_heex()),
+      value_server_heex: s.(m.api_value_server_heex()),
       value_elixir: m.api_value_server_elixir(),
-      value_js_heex: m.api_value_client_js_heex(),
+      value_js_heex: s.(m.api_value_client_js_heex()),
       value_js: m.api_value_client_js_js(),
       value_js_ts: m.api_value_client_js_ts(),
-      focused_client_heex: m.api_focused_client_heex(),
-      focused_server_heex: m.api_focused_server_heex(),
+      focused_client_heex: s.(m.api_focused_client_heex()),
+      focused_server_heex: s.(m.api_focused_server_heex()),
       focused_elixir: m.api_focused_server_elixir(),
-      focused_js_heex: m.api_focused_client_js_heex(),
+      focused_js_heex: s.(m.api_focused_client_js_heex()),
       focused_js: m.api_focused_client_js_js(),
       focused_js_ts: m.api_focused_client_js_ts(),
-      item_state_client_heex: m.api_item_state_client_heex(),
-      item_state_server_heex: m.api_item_state_server_heex(),
+      item_state_client_heex: s.(m.api_item_state_client_heex()),
+      item_state_server_heex: s.(m.api_item_state_server_heex()),
       item_state_elixir: m.api_item_state_server_elixir(),
-      item_state_js_heex: m.api_item_state_client_js_heex(),
+      item_state_js_heex: s.(m.api_item_state_client_js_heex()),
       item_state_js: m.api_item_state_client_js_js(),
       item_state_js_ts: m.api_item_state_client_js_ts()
     }
@@ -218,28 +219,39 @@ defmodule E2eWeb.AccordionApiLive do
             <div class="flex flex-wrap gap-2 mb-4">
               <.action
                 phx-click={Corex.Accordion.set_value(@id_sv_client, "lorem")}
-                class="button button--sm"
+                size="sm"
               >
                 Open Lorem
               </.action>
               <.action
                 phx-click={Corex.Accordion.set_value(@id_sv_client, ["lorem", "donec"])}
-                class="button button--sm"
+                size="sm"
               >
                 Lorem and Donec
               </.action>
               <.action
                 phx-click={Corex.Accordion.set_value(@id_sv_client, [])}
-                class="button button--sm"
+                size="sm"
               >
                 Close all
               </.action>
             </div>
-            <.accordion class="accordion" id={@id_sv_client} items={@demo_items}>
-              <:indicator>
-                <.heroicon name="hero-chevron-right" />
-              </:indicator>
-            </.accordion>
+            <.authoring_preview>
+              <:styled>
+                <.accordion class="accordion" id={@id_sv_client} items={@demo_items}>
+                  <:indicator>
+                    <.heroicon name="hero-chevron-right" />
+                  </:indicator>
+                </.accordion>
+              </:styled>
+              <:markup>
+                <.accordion unstyled id={@id_sv_client} items={@demo_items}>
+                  <:indicator>
+                    <.heroicon name="hero-chevron-right" />
+                  </:indicator>
+                </.accordion>
+              </:markup>
+            </.authoring_preview>
           </:preview>
         </.demo_section>
         <.demo_section
@@ -267,10 +279,21 @@ defmodule E2eWeb.AccordionApiLive do
           ]}
         >
           <:preview>
-            <E2eWeb.Demos.AccordionDemo.api_set_value_client_js_example
-              id={@id_sv_js}
-              items={@demo_items}
-            />
+            <.authoring_preview>
+              <:styled>
+                <E2eWeb.Demos.AccordionDemo.api_set_value_client_js_example
+                  id={@id_sv_js}
+                  items={@demo_items}
+                />
+              </:styled>
+              <:markup>
+                <E2eWeb.Demos.AccordionDemo.api_set_value_client_js_example
+                  id={@id_sv_js}
+                  items={@demo_items}
+                  unstyled
+                />
+              </:markup>
+            </.authoring_preview>
           </:preview>
         </.demo_section>
 
@@ -293,11 +316,23 @@ defmodule E2eWeb.AccordionApiLive do
           ]}
         >
           <:preview>
-            <E2eWeb.Demos.AccordionDemo.api_set_value_server_example
-              id={@id_sv_server}
-              items={@demo_items}
-              event="api_set_value_server"
-            />
+            <.authoring_preview>
+              <:styled>
+                <E2eWeb.Demos.AccordionDemo.api_set_value_server_example
+                  id={@id_sv_server}
+                  items={@demo_items}
+                  event="api_set_value_server"
+                />
+              </:styled>
+              <:markup>
+                <E2eWeb.Demos.AccordionDemo.api_set_value_server_example
+                  id={@id_sv_server}
+                  items={@demo_items}
+                  event="api_set_value_server"
+                  unstyled
+                />
+              </:markup>
+            </.authoring_preview>
           </:preview>
         </.demo_section>
 
@@ -307,10 +342,21 @@ defmodule E2eWeb.AccordionApiLive do
           code={@codes.value_client_heex}
         >
           <:preview>
-            <E2eWeb.Demos.AccordionDemo.api_value_client_binding_example
-              id={@id_val_client}
-              items={@demo_items}
-            />
+            <.authoring_preview>
+              <:styled>
+                <E2eWeb.Demos.AccordionDemo.api_value_client_binding_example
+                  id={@id_val_client}
+                  items={@demo_items}
+                />
+              </:styled>
+              <:markup>
+                <E2eWeb.Demos.AccordionDemo.api_value_client_binding_example
+                  id={@id_val_client}
+                  items={@demo_items}
+                  unstyled
+                />
+              </:markup>
+            </.authoring_preview>
           </:preview>
         </.demo_section>
 
@@ -339,10 +385,21 @@ defmodule E2eWeb.AccordionApiLive do
           ]}
         >
           <:preview>
-            <E2eWeb.Demos.AccordionDemo.api_value_client_js_example
-              id={@id_val_js}
-              items={@demo_items}
-            />
+            <.authoring_preview>
+              <:styled>
+                <E2eWeb.Demos.AccordionDemo.api_value_client_js_example
+                  id={@id_val_js}
+                  items={@demo_items}
+                />
+              </:styled>
+              <:markup>
+                <E2eWeb.Demos.AccordionDemo.api_value_client_js_example
+                  id={@id_val_js}
+                  items={@demo_items}
+                  unstyled
+                />
+              </:markup>
+            </.authoring_preview>
           </:preview>
         </.demo_section>
 
@@ -365,12 +422,25 @@ defmodule E2eWeb.AccordionApiLive do
           ]}
         >
           <:preview>
-            <E2eWeb.Demos.AccordionDemo.api_value_server_example
-              id={@id_val_server}
-              items={@demo_items}
-              event_value="api_value_server"
-              event_value_client_only="api_value_server_client_only"
-            />
+            <.authoring_preview>
+              <:styled>
+                <E2eWeb.Demos.AccordionDemo.api_value_server_example
+                  id={@id_val_server}
+                  items={@demo_items}
+                  event_value="api_value_server"
+                  event_value_client_only="api_value_server_client_only"
+                />
+              </:styled>
+              <:markup>
+                <E2eWeb.Demos.AccordionDemo.api_value_server_example
+                  id={@id_val_server}
+                  items={@demo_items}
+                  event_value="api_value_server"
+                  event_value_client_only="api_value_server_client_only"
+                  unstyled
+                />
+              </:markup>
+            </.authoring_preview>
           </:preview>
         </.demo_section>
 
@@ -380,13 +450,26 @@ defmodule E2eWeb.AccordionApiLive do
           code={@codes.focused_client_heex}
         >
           <:preview>
-            <E2eWeb.Demos.AccordionDemo.api_focused_client_example
-              id={@id_foc_client}
-              items={@demo_items}
-              event_focused="api_focused_client"
-              event_focused_client_only="api_focused_client_client_only"
-            />
-            <p class="text-sm text-zinc-600 mt-2">
+            <.authoring_preview>
+              <:styled>
+                <E2eWeb.Demos.AccordionDemo.api_focused_client_example
+                  id={@id_foc_client}
+                  items={@demo_items}
+                  event_focused="api_focused_client"
+                  event_focused_client_only="api_focused_client_client_only"
+                />
+              </:styled>
+              <:markup>
+                <E2eWeb.Demos.AccordionDemo.api_focused_client_example
+                  id={@id_foc_client}
+                  items={@demo_items}
+                  event_focused="api_focused_client"
+                  event_focused_client_only="api_focused_client_client_only"
+                  unstyled
+                />
+              </:markup>
+            </.authoring_preview>
+            <p class="text-sm text-ui-ink-muted mt-2">
               Each trigger waits 5 seconds, then runs the focused read.
             </p>
           </:preview>
@@ -417,13 +500,26 @@ defmodule E2eWeb.AccordionApiLive do
           ]}
         >
           <:preview>
-            <E2eWeb.Demos.AccordionDemo.api_focused_client_js_example
-              id={@id_foc_js}
-              items={@demo_items}
-              event_focused="api_focused_js"
-              event_focused_client_only="api_focused_js_client_only"
-            />
-            <p class="text-sm text-zinc-600 mt-2">
+            <.authoring_preview>
+              <:styled>
+                <E2eWeb.Demos.AccordionDemo.api_focused_client_js_example
+                  id={@id_foc_js}
+                  items={@demo_items}
+                  event_focused="api_focused_js"
+                  event_focused_client_only="api_focused_js_client_only"
+                />
+              </:styled>
+              <:markup>
+                <E2eWeb.Demos.AccordionDemo.api_focused_client_js_example
+                  id={@id_foc_js}
+                  items={@demo_items}
+                  event_focused="api_focused_js"
+                  event_focused_client_only="api_focused_js_client_only"
+                  unstyled
+                />
+              </:markup>
+            </.authoring_preview>
+            <p class="text-sm text-ui-ink-muted mt-2">
               Each trigger waits 5 seconds, then runs the focused read.
             </p>
           </:preview>
@@ -448,13 +544,26 @@ defmodule E2eWeb.AccordionApiLive do
           ]}
         >
           <:preview>
-            <E2eWeb.Demos.AccordionDemo.api_focused_server_example
-              id={@id_foc_server}
-              items={@demo_items}
-              event_focused="api_focused_server"
-              event_focused_client_only="api_focused_server_client_only"
-            />
-            <p class="text-sm text-zinc-600 mt-2">
+            <.authoring_preview>
+              <:styled>
+                <E2eWeb.Demos.AccordionDemo.api_focused_server_example
+                  id={@id_foc_server}
+                  items={@demo_items}
+                  event_focused="api_focused_server"
+                  event_focused_client_only="api_focused_server_client_only"
+                />
+              </:styled>
+              <:markup>
+                <E2eWeb.Demos.AccordionDemo.api_focused_server_example
+                  id={@id_foc_server}
+                  items={@demo_items}
+                  event_focused="api_focused_server"
+                  event_focused_client_only="api_focused_server_client_only"
+                  unstyled
+                />
+              </:markup>
+            </.authoring_preview>
+            <p class="text-sm text-ui-ink-muted mt-2">
               Each trigger waits 5 seconds, then runs the focused read.
             </p>
           </:preview>
@@ -466,13 +575,27 @@ defmodule E2eWeb.AccordionApiLive do
           code={@codes.item_state_client_heex}
         >
           <:preview>
-            <E2eWeb.Demos.AccordionDemo.api_item_state_client_example
-              id={@id_item_client}
-              items={@demo_items}
-              event_lorem={Corex.Accordion.item_state(@id_item_client, "lorem", disabled: false)}
-              event_duis={Corex.Accordion.item_state(@id_item_client, "duis", disabled: false)}
-              event_donec={Corex.Accordion.item_state(@id_item_client, "donec", disabled: true)}
-            />
+            <.authoring_preview>
+              <:styled>
+                <E2eWeb.Demos.AccordionDemo.api_item_state_client_example
+                  id={@id_item_client}
+                  items={@demo_items}
+                  event_lorem={Corex.Accordion.item_state(@id_item_client, "lorem", disabled: false)}
+                  event_duis={Corex.Accordion.item_state(@id_item_client, "duis", disabled: false)}
+                  event_donec={Corex.Accordion.item_state(@id_item_client, "donec", disabled: true)}
+                />
+              </:styled>
+              <:markup>
+                <E2eWeb.Demos.AccordionDemo.api_item_state_client_example
+                  id={@id_item_client}
+                  items={@demo_items}
+                  event_lorem={Corex.Accordion.item_state(@id_item_client, "lorem", disabled: false)}
+                  event_duis={Corex.Accordion.item_state(@id_item_client, "duis", disabled: false)}
+                  event_donec={Corex.Accordion.item_state(@id_item_client, "donec", disabled: true)}
+                  unstyled
+                />
+              </:markup>
+            </.authoring_preview>
           </:preview>
         </.demo_section>
 
@@ -501,31 +624,63 @@ defmodule E2eWeb.AccordionApiLive do
           ]}
         >
           <:preview>
-            <E2eWeb.Demos.AccordionDemo.api_item_state_client_js_example
-              id={@id_item_js}
-              items={@demo_items}
-              event_lorem={
-                JS.dispatch("corex:accordion:item-state",
-                  to: "##{@id_item_js}",
-                  detail: %{value: "lorem", disabled: false},
-                  bubbles: false
-                )
-              }
-              event_duis={
-                JS.dispatch("corex:accordion:item-state",
-                  to: "##{@id_item_js}",
-                  detail: %{value: "duis", disabled: false},
-                  bubbles: false
-                )
-              }
-              event_donec={
-                JS.dispatch("corex:accordion:item-state",
-                  to: "##{@id_item_js}",
-                  detail: %{value: "donec", disabled: true},
-                  bubbles: false
-                )
-              }
-            />
+            <.authoring_preview>
+              <:styled>
+                <E2eWeb.Demos.AccordionDemo.api_item_state_client_js_example
+                  id={@id_item_js}
+                  items={@demo_items}
+                  event_lorem={
+                    JS.dispatch("corex:accordion:item-state",
+                      to: "##{@id_item_js}",
+                      detail: %{value: "lorem", disabled: false},
+                      bubbles: false
+                    )
+                  }
+                  event_duis={
+                    JS.dispatch("corex:accordion:item-state",
+                      to: "##{@id_item_js}",
+                      detail: %{value: "duis", disabled: false},
+                      bubbles: false
+                    )
+                  }
+                  event_donec={
+                    JS.dispatch("corex:accordion:item-state",
+                      to: "##{@id_item_js}",
+                      detail: %{value: "donec", disabled: true},
+                      bubbles: false
+                    )
+                  }
+                />
+              </:styled>
+              <:markup>
+                <E2eWeb.Demos.AccordionDemo.api_item_state_client_js_example
+                  id={@id_item_js}
+                  items={@demo_items}
+                  event_lorem={
+                    JS.dispatch("corex:accordion:item-state",
+                      to: "##{@id_item_js}",
+                      detail: %{value: "lorem", disabled: false},
+                      bubbles: false
+                    )
+                  }
+                  event_duis={
+                    JS.dispatch("corex:accordion:item-state",
+                      to: "##{@id_item_js}",
+                      detail: %{value: "duis", disabled: false},
+                      bubbles: false
+                    )
+                  }
+                  event_donec={
+                    JS.dispatch("corex:accordion:item-state",
+                      to: "##{@id_item_js}",
+                      detail: %{value: "donec", disabled: true},
+                      bubbles: false
+                    )
+                  }
+                  unstyled
+                />
+              </:markup>
+            </.authoring_preview>
           </:preview>
         </.demo_section>
 
@@ -548,13 +703,27 @@ defmodule E2eWeb.AccordionApiLive do
           ]}
         >
           <:preview>
-            <E2eWeb.Demos.AccordionDemo.api_item_state_server_example
-              id={@id_item_server}
-              items={@demo_items}
-              event_lorem="api_item_state_server_lorem"
-              event_duis="api_item_state_server_duis"
-              event_donec="api_item_state_server_donec"
-            />
+            <.authoring_preview>
+              <:styled>
+                <E2eWeb.Demos.AccordionDemo.api_item_state_server_example
+                  id={@id_item_server}
+                  items={@demo_items}
+                  event_lorem="api_item_state_server_lorem"
+                  event_duis="api_item_state_server_duis"
+                  event_donec="api_item_state_server_donec"
+                />
+              </:styled>
+              <:markup>
+                <E2eWeb.Demos.AccordionDemo.api_item_state_server_example
+                  id={@id_item_server}
+                  items={@demo_items}
+                  event_lorem="api_item_state_server_lorem"
+                  event_duis="api_item_state_server_duis"
+                  event_donec="api_item_state_server_donec"
+                  unstyled
+                />
+              </:markup>
+            </.authoring_preview>
           </:preview>
         </.demo_section>
       </.demo_page>

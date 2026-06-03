@@ -103,7 +103,7 @@ config :phoenix,
   gettext_backend: MyAppWeb.Gettext
 ```
 
-Corex reads **`config :phoenix, :gettext_backend`** (the same key Phoenix uses for `gettext/1` in templates).
+Corex reads **`config :phoenix, :gettext_backend`** (the same key Phoenix uses for `gettext/1` in templates). `:corex` does not list `:gettext` as a runtime dependency; your app must include `{:gettext, "~> 1.0"}` in `mix.exs` (Phoenix generators add this by default).
 
 ### Download CLDR locale files (mix localize.download_locales)
 
@@ -432,6 +432,7 @@ This gives you URL-driven locales with a persistent user choice, RTL handling wh
 
 ## Related
 
+- [Unstyled](unstyled.html) — axis vocabulary and `config :corex`
 - [Installation](installation.html) — `mix corex.new --lang`
 - [Tableau Localize](tableau_localize.html) — static site equivalent
 - [Dark mode](dark_mode.html) and [Theming](theming.html) — Mode/Theme plugs after localize plugs when combined

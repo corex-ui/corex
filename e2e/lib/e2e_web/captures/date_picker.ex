@@ -11,10 +11,10 @@ defmodule CorexWeb.DatePicker do
               label: [%{inner_block: "Select a date"}],
               trigger: [%{inner_block: ~S(<.heroicon name="hero-calendar" />)}],
               prev_trigger: [
-                %{inner_block: ~S(<.heroicon name="hero-chevron-left" class="icon" />)}
+                %{inner_block: ~S(<.heroicon name="hero-chevron-left" />)}
               ],
               next_trigger: [
-                %{inner_block: ~S(<.heroicon name="hero-chevron-right" class="icon" />)}
+                %{inner_block: ~S(<.heroicon name="hero-chevron-right" />)}
               ]
             }
           ]

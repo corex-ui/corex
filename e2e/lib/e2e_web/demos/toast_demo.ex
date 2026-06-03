@@ -1,6 +1,10 @@
 defmodule E2eWeb.Demos.ToastDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.Demos.StylingAxes
+
+  def styling_axis_values(axis), do: StylingAxes.styling_axis_values(axis)
+
   alias Phoenix.LiveView.JS
 
   def api_client_binding_code do
@@ -8,19 +12,19 @@ defmodule E2eWeb.Demos.ToastDemo do
     <div class="layout__row">
       <.action
         phx-click={Corex.Toast.create("layout-toast", "Info", "Info description", :info, [])}
-        class="button button--sm"
+        size="sm"
       >
         Info
       </.action>
       <.action
         phx-click={Corex.Toast.create("layout-toast", "Success", "Success description", :success, [])}
-        class="button button--sm"
+        size="sm"
       >
         Success
       </.action>
       <.action
         phx-click={Corex.Toast.create("layout-toast", "Error", "Error description", :error, [])}
-        class="button button--sm"
+        size="sm"
       >
         Error
       </.action>
@@ -31,7 +35,7 @@ defmodule E2eWeb.Demos.ToastDemo do
             loading: true
           )
         }
-        class="button button--sm"
+        size="sm"
       >
         Loading
       </.action>
@@ -44,19 +48,19 @@ defmodule E2eWeb.Demos.ToastDemo do
     <div class="layout__row">
       <.action
         phx-click={Corex.Toast.create("layout-toast", "Info", "Info description", :info, [])}
-        class="button button--sm"
+        size="sm"
       >
         Info
       </.action>
       <.action
         phx-click={Corex.Toast.create("layout-toast", "Success", "Success description", :success, [])}
-        class="button button--sm"
+        size="sm"
       >
         Success
       </.action>
       <.action
         phx-click={Corex.Toast.create("layout-toast", "Error", "Error description", :error, [])}
-        class="button button--sm"
+        size="sm"
       >
         Error
       </.action>
@@ -67,7 +71,7 @@ defmodule E2eWeb.Demos.ToastDemo do
             loading: true
           )
         }
-        class="button button--sm"
+        size="sm"
       >
         Loading
       </.action>
@@ -80,28 +84,28 @@ defmodule E2eWeb.Demos.ToastDemo do
     <div class="layout__row">
       <button
         type="button"
-        class="button button--sm"
+        size="sm"
         onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('toast:create', {bubbles: false, detail: { id: 'toast-cjs-info', groupId: 'layout-toast', title: 'Info', description: 'From client JS', type: 'info', duration: '5000' } }))"
       >
         Info
       </button>
       <button
         type="button"
-        class="button button--sm"
+        size="sm"
         onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('toast:create', {bubbles: false, detail: { id: 'toast-cjs-success', groupId: 'layout-toast', title: 'Success', description: 'From client JS', type: 'success', duration: '5000' } }))"
       >
         Success
       </button>
       <button
         type="button"
-        class="button button--sm"
+        size="sm"
         onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('toast:create', {bubbles: false, detail: { id: 'toast-cjs-error', groupId: 'layout-toast', title: 'Error', description: 'From client JS', type: 'error', duration: '5000' } }))"
       >
         Error
       </button>
       <button
         type="button"
-        class="button button--sm"
+        size="sm"
         onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('toast:create', {bubbles: false, detail: { id: 'toast-cjs-loading', groupId: 'layout-toast', title: 'Loading', description: 'From client JS', type: 'info', duration: 'Infinity', loading: true } }))"
       >
         Loading
@@ -203,28 +207,28 @@ defmodule E2eWeb.Demos.ToastDemo do
     <div class="layout__row">
       <button
         type="button"
-        class="button button--sm"
+        size="sm"
         onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('toast:create', {bubbles: false, detail: { id: 'toast-cjs-info', groupId: 'layout-toast', title: 'Info', description: 'From client JS', type: 'info', duration: '5000' } }))"
       >
         Info
       </button>
       <button
         type="button"
-        class="button button--sm"
+        size="sm"
         onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('toast:create', {bubbles: false, detail: { id: 'toast-cjs-success', groupId: 'layout-toast', title: 'Success', description: 'From client JS', type: 'success', duration: '5000' } }))"
       >
         Success
       </button>
       <button
         type="button"
-        class="button button--sm"
+        size="sm"
         onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('toast:create', {bubbles: false, detail: { id: 'toast-cjs-error', groupId: 'layout-toast', title: 'Error', description: 'From client JS', type: 'error', duration: '5000' } }))"
       >
         Error
       </button>
       <button
         type="button"
-        class="button button--sm"
+        size="sm"
         onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('toast:create', {bubbles: false, detail: { id: 'toast-cjs-loading', groupId: 'layout-toast', title: 'Loading', description: 'From client JS', type: 'info', duration: 'Infinity', loading: true } }))"
       >
         Loading
@@ -236,10 +240,10 @@ defmodule E2eWeb.Demos.ToastDemo do
   def api_create_server_heex do
     ~S"""
     <div class="layout__row">
-      <.action phx-click="toast_api_push_info" class="button button--sm">Info</.action>
-      <.action phx-click="toast_api_push_success" class="button button--sm">Success</.action>
-      <.action phx-click="toast_api_push_error" class="button button--sm">Error</.action>
-      <.action phx-click="toast_api_push_loading" class="button button--sm">Loading</.action>
+      <.action phx-click="toast_api_push_info" size="sm">Info</.action>
+      <.action phx-click="toast_api_push_success" size="sm">Success</.action>
+      <.action phx-click="toast_api_push_error" size="sm">Error</.action>
+      <.action phx-click="toast_api_push_loading" size="sm">Loading</.action>
     </div>
     """
   end
@@ -275,10 +279,10 @@ defmodule E2eWeb.Demos.ToastDemo do
 
     ~H"""
     <div class="layout__row">
-      <.action phx-click="toast_api_push_info" class="button button--sm">Info</.action>
-      <.action phx-click="toast_api_push_success" class="button button--sm">Success</.action>
-      <.action phx-click="toast_api_push_error" class="button button--sm">Error</.action>
-      <.action phx-click="toast_api_push_loading" class="button button--sm">Loading</.action>
+      <.action phx-click="toast_api_push_info" size="sm">Info</.action>
+      <.action phx-click="toast_api_push_success" size="sm">Success</.action>
+      <.action phx-click="toast_api_push_error" size="sm">Error</.action>
+      <.action phx-click="toast_api_push_loading" size="sm">Loading</.action>
     </div>
     """
   end
@@ -293,7 +297,7 @@ defmodule E2eWeb.Demos.ToastDemo do
             duration: 60_000
           )
         }
-        class="button button--sm"
+        size="sm"
       >
         Create demo toast
       </.action>
@@ -306,7 +310,7 @@ defmodule E2eWeb.Demos.ToastDemo do
             duration: 5000
           })
         }
-        class="button button--sm"
+        size="sm"
       >
         Update
       </.action>
@@ -328,7 +332,7 @@ defmodule E2eWeb.Demos.ToastDemo do
             duration: 60_000
           )
         }
-        class="button button--sm"
+        size="sm"
       >
         Create demo toast
       </.action>
@@ -341,7 +345,7 @@ defmodule E2eWeb.Demos.ToastDemo do
             duration: 5000
           })
         }
-        class="button button--sm"
+        size="sm"
       >
         Update
       </.action>
@@ -354,14 +358,14 @@ defmodule E2eWeb.Demos.ToastDemo do
     <div class="layout__row">
       <button
         type="button"
-        class="button button--sm"
+        size="sm"
         onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('toast:create', {bubbles: false, detail: { id: 'toast-api-update-demo', groupId: 'layout-toast', title: 'Before update', description: 'Create once then tap Update.', type: 'info', duration: '60000' } }))"
       >
         Create demo toast
       </button>
       <button
         type="button"
-        class="button button--sm"
+        size="sm"
         onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('toast:update', {bubbles: false, detail: { id: 'toast-api-update-demo', groupId: 'layout-toast', title: 'After update', description: 'Updated via toast:update', type: 'success', duration: '5000' } }))"
       >
         Update
@@ -443,14 +447,14 @@ defmodule E2eWeb.Demos.ToastDemo do
     <div class="layout__row">
       <button
         type="button"
-        class="button button--sm"
+        size="sm"
         onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('toast:create', {bubbles: false, detail: { id: 'toast-api-update-demo', groupId: 'layout-toast', title: 'Before update', description: 'Create once then tap Update.', type: 'info', duration: '60000' } }))"
       >
         Create demo toast
       </button>
       <button
         type="button"
-        class="button button--sm"
+        size="sm"
         onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('toast:update', {bubbles: false, detail: { id: 'toast-api-update-demo', groupId: 'layout-toast', title: 'After update', description: 'Updated via toast:update', type: 'success', duration: '5000' } }))"
       >
         Update
@@ -462,8 +466,8 @@ defmodule E2eWeb.Demos.ToastDemo do
   def api_update_toast_server_heex do
     ~S"""
     <div class="layout__row">
-      <.action phx-click="toast_api_seed_update_demo" class="button button--sm">Create demo toast</.action>
-      <.action phx-click="toast_api_update_demo" class="button button--sm">Update</.action>
+      <.action phx-click="toast_api_seed_update_demo" size="sm">Create demo toast</.action>
+      <.action phx-click="toast_api_update_demo" size="sm">Update</.action>
     </div>
     """
   end
@@ -495,10 +499,10 @@ defmodule E2eWeb.Demos.ToastDemo do
 
     ~H"""
     <div class="layout__row">
-      <.action phx-click="toast_api_seed_update_demo" class="button button--sm">
+      <.action phx-click="toast_api_seed_update_demo" size="sm">
         Create demo toast
       </.action>
-      <.action phx-click="toast_api_update_demo" class="button button--sm">Update</.action>
+      <.action phx-click="toast_api_update_demo" size="sm">Update</.action>
     </div>
     """
   end
@@ -508,19 +512,19 @@ defmodule E2eWeb.Demos.ToastDemo do
     <div class="layout__row">
       <.action
         phx-click={Corex.Toast.create("layout-toast", "Info", "Client binding", :info, [])}
-        class="button button--sm"
+        size="sm"
       >
         Info
       </.action>
       <.action
         phx-click={Corex.Toast.create("layout-toast", "Success", "Client binding", :success, [])}
-        class="button button--sm"
+        size="sm"
       >
         Success
       </.action>
       <.action
         phx-click={Corex.Toast.create("layout-toast", "Error", "Client binding", :error, [])}
-        class="button button--sm"
+        size="sm"
       >
         Error
       </.action>
@@ -535,19 +539,19 @@ defmodule E2eWeb.Demos.ToastDemo do
     <div class="layout__row">
       <.action
         phx-click={Corex.Toast.create("layout-toast", "Info", "Client binding", :info, [])}
-        class="button button--sm"
+        size="sm"
       >
         Info
       </.action>
       <.action
         phx-click={Corex.Toast.create("layout-toast", "Success", "Client binding", :success, [])}
-        class="button button--sm"
+        size="sm"
       >
         Success
       </.action>
       <.action
         phx-click={Corex.Toast.create("layout-toast", "Error", "Client binding", :error, [])}
-        class="button button--sm"
+        size="sm"
       >
         Error
       </.action>
@@ -560,13 +564,13 @@ defmodule E2eWeb.Demos.ToastDemo do
     <div class="layout__row">
       <.action
         phx-click={Corex.Toast.create("layout-toast", "2 seconds", "duration: 2000", :info, duration: 2000)}
-        class="button button--sm"
+        size="sm"
       >
         2s
       </.action>
       <.action
         phx-click={Corex.Toast.create("layout-toast", "5 seconds", "duration: 5000 (default)", :info, duration: 5000)}
-        class="button button--sm"
+        size="sm"
       >
         5s
       </.action>
@@ -574,7 +578,7 @@ defmodule E2eWeb.Demos.ToastDemo do
         phx-click={
           Corex.Toast.create("layout-toast", "Persistent", "duration: :infinity", :info, duration: :infinity)
         }
-        class="button button--sm"
+        size="sm"
       >
         Infinity
       </.action>
@@ -591,7 +595,7 @@ defmodule E2eWeb.Demos.ToastDemo do
         phx-click={
           Corex.Toast.create("layout-toast", "2 seconds", "duration: 2000", :info, duration: 2000)
         }
-        class="button button--sm"
+        size="sm"
       >
         2s
       </.action>
@@ -601,7 +605,7 @@ defmodule E2eWeb.Demos.ToastDemo do
             duration: 5000
           )
         }
-        class="button button--sm"
+        size="sm"
       >
         5s
       </.action>
@@ -611,7 +615,7 @@ defmodule E2eWeb.Demos.ToastDemo do
             duration: :infinity
           )
         }
-        class="button button--sm"
+        size="sm"
       >
         Infinity
       </.action>
@@ -624,7 +628,7 @@ defmodule E2eWeb.Demos.ToastDemo do
     <div class="layout__row">
       <.action
         phx-click={Corex.Toast.create("layout-toast", "No loading", "Default slot", :info, duration: 5000)}
-        class="button button--sm"
+        size="sm"
       >
         No loading
       </.action>
@@ -635,7 +639,7 @@ defmodule E2eWeb.Demos.ToastDemo do
             loading: true
           )
         }
-        class="button button--sm"
+        size="sm"
       >
         Loading
       </.action>
@@ -652,7 +656,7 @@ defmodule E2eWeb.Demos.ToastDemo do
         phx-click={
           Corex.Toast.create("layout-toast", "No loading", "Default slot", :info, duration: 5000)
         }
-        class="button button--sm"
+        size="sm"
       >
         No loading
       </.action>
@@ -663,7 +667,7 @@ defmodule E2eWeb.Demos.ToastDemo do
             loading: true
           )
         }
-        class="button button--sm"
+        size="sm"
       >
         Loading
       </.action>
@@ -685,7 +689,7 @@ defmodule E2eWeb.Demos.ToastDemo do
           }
         )
       }
-      class="button button--sm"
+      size="sm"
     >
       Toast with redirect
     </.action>
@@ -710,7 +714,7 @@ defmodule E2eWeb.Demos.ToastDemo do
           }
         )
       }
-      class="button button--sm"
+      size="sm"
     >
       Toast with redirect
     </.action>
@@ -731,7 +735,7 @@ defmodule E2eWeb.Demos.ToastDemo do
           }
         )
       }
-      class="button button--sm"
+      size="sm"
     >
       Toast with Live View JS
     </.action>
@@ -756,7 +760,7 @@ defmodule E2eWeb.Demos.ToastDemo do
           }
         )
       }
-      class="button button--sm"
+      size="sm"
     >
       Toast with Live View JS
     </.action>
@@ -780,7 +784,7 @@ defmodule E2eWeb.Demos.ToastDemo do
           }
         )
       }
-      class="button button--sm"
+      size="sm"
     >
       Toast with custom label
     </.action>
@@ -808,10 +812,285 @@ defmodule E2eWeb.Demos.ToastDemo do
           }
         )
       }
-      class="button button--sm"
+      size="sm"
     >
       Toast with custom label
     </.action>
+    """
+  end
+
+  defp styling_toast_group_code(id, label, attrs \\ []) do
+    attrs_str =
+      attrs
+      |> Enum.map(fn {key, value} -> ~s| #{key}="#{value}"| end)
+      |> Enum.join()
+
+    """
+    <.action phx-click={Corex.Toast.create("#{id}", "#{label}", "Toast styling preview", :info, duration: 30_000)} size="sm">
+      #{label}
+    </.action>
+    <.toast_group id="#{id}" class="toast"#{attrs_str} />
+    """
+  end
+
+  def styling_semantic_code do
+    [
+      styling_toast_group_code("toast-style-semantic-default", "Default"),
+      styling_toast_group_code("toast-style-semantic-accent", "Accent", semantic: "accent"),
+      styling_toast_group_code("toast-style-semantic-brand", "Brand", semantic: "brand"),
+      styling_toast_group_code("toast-style-semantic-alert", "Alert", semantic: "alert"),
+      styling_toast_group_code("toast-style-semantic-info", "Info", semantic: "info"),
+      styling_toast_group_code("toast-style-semantic-success", "Success", semantic: "success")
+    ]
+    |> Enum.join("\n")
+  end
+
+  def styling_semantic_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-wrap gap-4 items-start">
+      <.action
+        phx-click={
+          Corex.Toast.create(
+            "toast-style-semantic-default",
+            "Default",
+            "Toast styling preview",
+            :info,
+            duration: 30_000
+          )
+        }
+        size="sm"
+      >
+        Default
+      </.action>
+      <.toast_group id="toast-style-semantic-default" class="toast" />
+      <.action
+        phx-click={
+          Corex.Toast.create(
+            "toast-style-semantic-accent",
+            "Accent",
+            "Toast styling preview",
+            :info,
+            duration: 30_000
+          )
+        }
+        size="sm"
+      >
+        Accent
+      </.action>
+      <.toast_group id="toast-style-semantic-accent" class="toast" semantic="accent" />
+      <.action
+        phx-click={
+          Corex.Toast.create(
+            "toast-style-semantic-brand",
+            "Brand",
+            "Toast styling preview",
+            :info,
+            duration: 30_000
+          )
+        }
+        size="sm"
+      >
+        Brand
+      </.action>
+      <.toast_group id="toast-style-semantic-brand" class="toast" semantic="brand" />
+      <.action
+        phx-click={
+          Corex.Toast.create(
+            "toast-style-semantic-alert",
+            "Alert",
+            "Toast styling preview",
+            :info,
+            duration: 30_000
+          )
+        }
+        size="sm"
+      >
+        Alert
+      </.action>
+      <.toast_group id="toast-style-semantic-alert" class="toast" semantic="alert" />
+      <.action
+        phx-click={
+          Corex.Toast.create(
+            "toast-style-semantic-info",
+            "Info",
+            "Toast styling preview",
+            :info,
+            duration: 30_000
+          )
+        }
+        size="sm"
+      >
+        Info
+      </.action>
+      <.toast_group id="toast-style-semantic-info" class="toast" semantic="info" />
+      <.action
+        phx-click={
+          Corex.Toast.create(
+            "toast-style-semantic-success",
+            "Success",
+            "Toast styling preview",
+            :info,
+            duration: 30_000
+          )
+        }
+        size="sm"
+      >
+        Success
+      </.action>
+      <.toast_group id="toast-style-semantic-success" class="toast" semantic="success" />
+    </div>
+    """
+  end
+
+  def styling_size_code do
+    [
+      styling_toast_group_code("toast-style-size-sm", "SM", size: "sm"),
+      styling_toast_group_code("toast-style-size-md", "MD", size: "md"),
+      styling_toast_group_code("toast-style-size-lg", "LG", size: "lg"),
+      styling_toast_group_code("toast-style-size-xl", "XL", size: "xl")
+    ]
+    |> Enum.join("\n")
+  end
+
+  def styling_size_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-wrap gap-4 items-start">
+      <.action
+        phx-click={
+          Corex.Toast.create("toast-style-size-sm", "SM", "Toast styling preview", :info,
+            duration: 30_000
+          )
+        }
+        size="sm"
+      >
+        SM
+      </.action>
+      <.toast_group id="toast-style-size-sm" class="toast" size="sm" />
+      <.action
+        phx-click={
+          Corex.Toast.create("toast-style-size-md", "MD", "Toast styling preview", :info,
+            duration: 30_000
+          )
+        }
+        size="sm"
+      >
+        MD
+      </.action>
+      <.toast_group id="toast-style-size-md" class="toast" size="md" />
+      <.action
+        phx-click={
+          Corex.Toast.create("toast-style-size-lg", "LG", "Toast styling preview", :info,
+            duration: 30_000
+          )
+        }
+        size="sm"
+      >
+        LG
+      </.action>
+      <.toast_group id="toast-style-size-lg" class="toast" size="lg" />
+      <.action
+        phx-click={
+          Corex.Toast.create("toast-style-size-xl", "XL", "Toast styling preview", :info,
+            duration: 30_000
+          )
+        }
+        size="sm"
+      >
+        XL
+      </.action>
+      <.toast_group id="toast-style-size-xl" class="toast" size="xl" />
+    </div>
+    """
+  end
+
+  def styling_radius_code do
+    [
+      styling_toast_group_code("toast-style-radius-none", "None", radius: "none"),
+      styling_toast_group_code("toast-style-radius-sm", "SM", radius: "sm"),
+      styling_toast_group_code("toast-style-radius-md", "MD", radius: "md"),
+      styling_toast_group_code("toast-style-radius-lg", "LG", radius: "lg"),
+      styling_toast_group_code("toast-style-radius-xl", "XL", radius: "xl"),
+      styling_toast_group_code("toast-style-radius-full", "Full", radius: "full")
+    ]
+    |> Enum.join("\n")
+  end
+
+  def styling_radius_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-wrap gap-4 items-start">
+      <.action
+        phx-click={
+          Corex.Toast.create("toast-style-radius-none", "None", "Toast styling preview", :info,
+            duration: 30_000
+          )
+        }
+        size="sm"
+      >
+        None
+      </.action>
+      <.toast_group id="toast-style-radius-none" class="toast" radius="none" />
+      <.action
+        phx-click={
+          Corex.Toast.create("toast-style-radius-sm", "SM", "Toast styling preview", :info,
+            duration: 30_000
+          )
+        }
+        size="sm"
+      >
+        SM
+      </.action>
+      <.toast_group id="toast-style-radius-sm" class="toast" radius="sm" />
+      <.action
+        phx-click={
+          Corex.Toast.create("toast-style-radius-md", "MD", "Toast styling preview", :info,
+            duration: 30_000
+          )
+        }
+        size="sm"
+      >
+        MD
+      </.action>
+      <.toast_group id="toast-style-radius-md" class="toast" radius="md" />
+      <.action
+        phx-click={
+          Corex.Toast.create("toast-style-radius-lg", "LG", "Toast styling preview", :info,
+            duration: 30_000
+          )
+        }
+        size="sm"
+      >
+        LG
+      </.action>
+      <.toast_group id="toast-style-radius-lg" class="toast" radius="lg" />
+      <.action
+        phx-click={
+          Corex.Toast.create("toast-style-radius-xl", "XL", "Toast styling preview", :info,
+            duration: 30_000
+          )
+        }
+        size="sm"
+      >
+        XL
+      </.action>
+      <.toast_group id="toast-style-radius-xl" class="toast" radius="xl" />
+      <.action
+        phx-click={
+          Corex.Toast.create("toast-style-radius-full", "Full", "Toast styling preview", :info,
+            duration: 30_000
+          )
+        }
+        size="sm"
+      >
+        Full
+      </.action>
+      <.toast_group id="toast-style-radius-full" class="toast" radius="full" />
+    </div>
     """
   end
 

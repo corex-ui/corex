@@ -1,21 +1,25 @@
 defmodule E2eWeb.Demos.SwitchDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.Demos.StylingAxes
+
+  def styling_axis_values(axis), do: StylingAxes.styling_axis_values(axis)
+
   def minimal_code do
     ~S"""
-    <.switch class="switch" aria_label="Enable notifications" />
+    <.switch aria_label="Enable notifications" />
     """
   end
 
   def minimal_example(assigns) do
     ~H"""
-    <.switch id="switch-anatomy-minimal" class="switch" aria_label="Enable notifications" />
+    <.switch id="switch-anatomy-minimal" aria_label="Enable notifications" />
     """
   end
 
   def with_label_code do
     ~S"""
-    <.switch class="switch">
+    <.switch>
       <:label>Enable</:label>
     </.switch>
     """
@@ -23,7 +27,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def with_label_example(assigns) do
     ~H"""
-    <.switch id="switch-anatomy-labeled" class="switch">
+    <.switch id="switch-anatomy-labeled">
       <:label>Enable</:label>
     </.switch>
     """
@@ -32,7 +36,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
   def patterns_controlled_heex do
     ~S"""
     <.switch
-      class="switch"
+       
       controlled
       checked={@checked}
       on_checked_change="patterns_checked"
@@ -56,16 +60,16 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def styling_size_code do
     ~S"""
-    <.switch class="switch switch--sm" checked>
+    <.switch size="sm"  checked>
       <:label>SM</:label>
     </.switch>
-    <.switch class="switch switch--md" checked>
+    <.switch size="md"  checked>
       <:label>MD</:label>
     </.switch>
-    <.switch class="switch switch--lg" checked>
+    <.switch size="lg"  checked>
       <:label>LG</:label>
     </.switch>
-    <.switch class="switch switch--xl" checked>
+    <.switch size="xl"  checked>
       <:label>XL</:label>
     </.switch>
     """
@@ -75,81 +79,104 @@ defmodule E2eWeb.Demos.SwitchDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-center w-full max-w-4xl">
-      <.switch id="switch-style-sm" class="switch switch--sm" checked>
+    <.row gap="lg" align="center" wrap="wrap" width="full">
+      <.switch id="switch-style-sm" size="sm" checked>
         <:label>SM</:label>
       </.switch>
-      <.switch id="switch-style-md" class="switch switch--md" checked>
+      <.switch id="switch-style-md" size="md" checked>
         <:label>MD</:label>
       </.switch>
-      <.switch id="switch-style-lg" class="switch switch--lg" checked>
+      <.switch id="switch-style-lg" size="lg" checked>
         <:label>LG</:label>
       </.switch>
-      <.switch id="switch-style-xl" class="switch switch--xl" checked>
+      <.switch id="switch-style-xl" size="xl" checked>
         <:label>XL</:label>
       </.switch>
-    </div>
+    </.row>
     """
   end
 
-  def styling_color_code do
+  def styling_semantic_code do
     ~S"""
-    <.switch class="switch" checked>
+    <.switch>
       <:label>Default</:label>
     </.switch>
-    <.switch class="switch switch--accent" checked>
+    <.switch semantic="accent">
       <:label>Accent</:label>
     </.switch>
-    <.switch class="switch switch--brand" checked>
-      <:label>Brand</:label>
+
+    <.switch checked>
+      <:label>Default</:label>
     </.switch>
-    <.switch class="switch switch--alert" checked>
-      <:label>Alert</:label>
-    </.switch>
-    <.switch class="switch switch--info" checked>
-      <:label>Info</:label>
-    </.switch>
-    <.switch class="switch switch--success" checked>
-      <:label>Success</:label>
+    <.switch semantic="accent" checked>
+      <:label>Accent</:label>
     </.switch>
     """
   end
 
-  def styling_color_example(assigns) do
+  def styling_semantic_example(assigns) do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
-      <.switch id="switch-style-c-default" class="switch" checked>
-        <:label>Default</:label>
-      </.switch>
-      <.switch id="switch-style-c-accent" class="switch switch--accent" checked>
-        <:label>Accent</:label>
-      </.switch>
-      <.switch id="switch-style-c-brand" class="switch switch--brand" checked>
-        <:label>Brand</:label>
-      </.switch>
-      <.switch id="switch-style-c-alert" class="switch switch--alert" checked>
-        <:label>Alert</:label>
-      </.switch>
-      <.switch id="switch-style-c-info" class="switch switch--info" checked>
-        <:label>Info</:label>
-      </.switch>
-      <.switch id="switch-style-c-success" class="switch switch--success" checked>
-        <:label>Success</:label>
-      </.switch>
-    </div>
+    <.stack width="full" gap="lg">
+      <.stack gap="sm">
+        <.small>Off</.small>
+        <.row gap="lg" align="start" wrap="wrap">
+          <.switch id="switch-style-c-default-off">
+            <:label>Default</:label>
+          </.switch>
+          <.switch id="switch-style-c-accent-off" semantic="accent">
+            <:label>Accent</:label>
+          </.switch>
+          <.switch id="switch-style-c-brand-off" semantic="brand">
+            <:label>Brand</:label>
+          </.switch>
+          <.switch id="switch-style-c-alert-off" semantic="alert">
+            <:label>Alert</:label>
+          </.switch>
+          <.switch id="switch-style-c-info-off" semantic="info">
+            <:label>Info</:label>
+          </.switch>
+          <.switch id="switch-style-c-success-off" semantic="success">
+            <:label>Success</:label>
+          </.switch>
+        </.row>
+      </.stack>
+      <.stack gap="sm">
+        <.small>On</.small>
+        <.row gap="lg" align="start" wrap="wrap">
+          <.switch id="switch-style-c-default-on" checked>
+            <:label>Default</:label>
+          </.switch>
+          <.switch id="switch-style-c-accent-on" semantic="accent" checked>
+            <:label>Accent</:label>
+          </.switch>
+          <.switch id="switch-style-c-brand-on" semantic="brand" checked>
+            <:label>Brand</:label>
+          </.switch>
+          <.switch id="switch-style-c-alert-on" semantic="alert" checked>
+            <:label>Alert</:label>
+          </.switch>
+          <.switch id="switch-style-c-info-on" semantic="info" checked>
+            <:label>Info</:label>
+          </.switch>
+          <.switch id="switch-style-c-success-on" semantic="success" checked>
+            <:label>Success</:label>
+          </.switch>
+        </.row>
+      </.stack>
+    </.stack>
     """
   end
 
   def api_set_checked_client_binding_heex do
     ~S"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={Corex.Switch.set_checked("switch-api-cb", true)} class="button button--sm">On</.action>
-      <.action phx-click={Corex.Switch.set_checked("switch-api-cb", false)} class="button button--sm">Off</.action>
-      <.action phx-click={Corex.Switch.toggle_checked("switch-api-cb")} class="button button--sm">Toggle</.action>
+      <.action phx-click={Corex.Switch.set_checked("switch-api-cb", true)} size="sm">On</.action>
+      <.action phx-click={Corex.Switch.set_checked("switch-api-cb", false)} size="sm">Off</.action>
+      <.action phx-click={Corex.Switch.toggle_checked("switch-api-cb")} size="sm">Toggle</.action>
     </div>
-    <.switch class="switch">
+    <.switch>
       <:label>Power</:label>
     </.switch>
     """
@@ -161,20 +188,20 @@ defmodule E2eWeb.Demos.SwitchDemo do
     ~H"""
     <div class="flex flex-col gap-4 items-center w-full">
       <div class="flex flex-wrap gap-2 items-center">
-        <.action phx-click={Corex.Switch.set_checked("switch-api-cb", true)} class="button button--sm">
+        <.action phx-click={Corex.Switch.set_checked("switch-api-cb", true)} size="sm">
           On
         </.action>
         <.action
           phx-click={Corex.Switch.set_checked("switch-api-cb", false)}
-          class="button button--sm"
+          size="sm"
         >
           Off
         </.action>
-        <.action phx-click={Corex.Switch.toggle_checked("switch-api-cb")} class="button button--sm">
+        <.action phx-click={Corex.Switch.toggle_checked("switch-api-cb")} size="sm">
           Toggle
         </.action>
       </div>
-      <.switch id="switch-api-cb" class="switch">
+      <.switch id="switch-api-cb">
         <:label>Power</:label>
       </.switch>
     </div>
@@ -186,27 +213,27 @@ defmodule E2eWeb.Demos.SwitchDemo do
     <div class="flex flex-wrap gap-2 mb-4">
       <button
         type="button"
-        class="button button--sm"
+        size="sm"
         onclick="document.getElementById('switch-api-cjs')?.dispatchEvent(new CustomEvent('corex:switch:set-checked', {bubbles: false, detail: { checked: true } }))"
       >
         On
       </button>
       <button
         type="button"
-        class="button button--sm"
+        size="sm"
         onclick="document.getElementById('switch-api-cjs')?.dispatchEvent(new CustomEvent('corex:switch:set-checked', {bubbles: false, detail: { checked: false } }))"
       >
         Off
       </button>
       <button
         type="button"
-        class="button button--sm"
+        size="sm"
         onclick="document.getElementById('switch-api-cjs')?.dispatchEvent(new CustomEvent('corex:switch:toggle-checked', { bubbles: false }))"
       >
         Toggle
       </button>
     </div>
-    <.switch class="switch">
+    <.switch>
       <:label>Power</:label>
     </.switch>
     """
@@ -252,27 +279,27 @@ defmodule E2eWeb.Demos.SwitchDemo do
       <div class="flex flex-wrap gap-2 items-center">
         <button
           type="button"
-          class="button button--sm"
+          size="sm"
           onclick="document.getElementById('switch-api-cjs')?.dispatchEvent(new CustomEvent('corex:switch:set-checked', {bubbles: false, detail: { checked: true } }))"
         >
           On
         </button>
         <button
           type="button"
-          class="button button--sm"
+          size="sm"
           onclick="document.getElementById('switch-api-cjs')?.dispatchEvent(new CustomEvent('corex:switch:set-checked', {bubbles: false, detail: { checked: false } }))"
         >
           Off
         </button>
         <button
           type="button"
-          class="button button--sm"
+          size="sm"
           onclick="document.getElementById('switch-api-cjs')?.dispatchEvent(new CustomEvent('corex:switch:toggle-checked', { bubbles: false }))"
         >
           Toggle
         </button>
       </div>
-      <.switch id="switch-api-cjs" class="switch">
+      <.switch id="switch-api-cjs">
         <:label>Power</:label>
       </.switch>
     </div>
@@ -282,11 +309,11 @@ defmodule E2eWeb.Demos.SwitchDemo do
   def api_set_checked_server_heex do
     ~S"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click="switch_api_on" class="button button--sm">On</.action>
-      <.action phx-click="switch_api_off" class="button button--sm">Off</.action>
-      <.action phx-click="switch_api_toggle" class="button button--sm">Toggle</.action>
+      <.action phx-click="switch_api_on" size="sm">On</.action>
+      <.action phx-click="switch_api_off" size="sm">Off</.action>
+      <.action phx-click="switch_api_toggle" size="sm">Toggle</.action>
     </div>
-    <.switch class="switch">
+    <.switch>
       <:label>Power</:label>
     </.switch>
     """
@@ -314,11 +341,11 @@ defmodule E2eWeb.Demos.SwitchDemo do
     ~H"""
     <div class="flex flex-col gap-4 items-center w-full">
       <div class="flex flex-wrap gap-2 items-center">
-        <.action phx-click="switch_api_on" class="button button--sm">On</.action>
-        <.action phx-click="switch_api_off" class="button button--sm">Off</.action>
-        <.action phx-click="switch_api_toggle" class="button button--sm">Toggle</.action>
+        <.action phx-click="switch_api_on" size="sm">On</.action>
+        <.action phx-click="switch_api_off" size="sm">Off</.action>
+        <.action phx-click="switch_api_toggle" size="sm">Toggle</.action>
       </div>
-      <.switch id="switch-api-srv" class="switch">
+      <.switch id="switch-api-srv">
         <:label>Power</:label>
       </.switch>
     </div>
@@ -341,15 +368,15 @@ defmodule E2eWeb.Demos.SwitchDemo do
   def api_client_binding_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={Corex.Switch.set_checked(@id, true)} class="button button--sm">On</.action>
-      <.action phx-click={Corex.Switch.set_checked(@id, false)} class="button button--sm">
+      <.action phx-click={Corex.Switch.set_checked(@id, true)} size="sm">On</.action>
+      <.action phx-click={Corex.Switch.set_checked(@id, false)} size="sm">
         Off
       </.action>
-      <.action phx-click={Corex.Switch.toggle_checked(@id)} class="button button--sm">
+      <.action phx-click={Corex.Switch.toggle_checked(@id)} size="sm">
         Toggle
       </.action>
     </div>
-    <.switch id={@id} class="switch">
+    <.switch id={@id}>
       <:label>Power</:label>
     </.switch>
     """
@@ -357,7 +384,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def events_server_heex do
     ~S"""
-    <.switch class="switch" on_checked_change="switch_changed">
+    <.switch   on_checked_change="switch_changed">
       <:label>Subscribe</:label>
     </.switch>
     """
@@ -372,7 +399,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def events_client_heex do
     ~S"""
-    <.switch class="switch" on_checked_change_client="switch-changed">
+    <.switch   on_checked_change_client="switch-changed">
       <:label>Subscribe</:label>
     </.switch>
     """
@@ -396,7 +423,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def patterns_common_code do
     ~S"""
-    <.switch class="switch">
+    <.switch>
       <:label>Option</:label>
     </.switch>
     """
@@ -404,7 +431,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def patterns_common_example(assigns) do
     ~H"""
-    <.switch id="switch-pattern" class="switch">
+    <.switch id="switch-pattern">
       <:label>Option</:label>
     </.switch>
     """
@@ -442,14 +469,14 @@ defmodule E2eWeb.Demos.SwitchDemo do
       action={~p"/switch/form"}
       method="post"
     >
-      <.switch field={@form[:notifications]} class="switch">
+      <.switch field={@form[:notifications]}  >
         <:label>Enable notifications</:label>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.switch>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -476,14 +503,14 @@ defmodule E2eWeb.Demos.SwitchDemo do
       action={~p"/switch/form"}
       method="post"
     >
-      <.switch field={@form[:notifications]} class="switch">
+      <.switch field={@form[:notifications]}  >
         <:label>Enable notifications</:label>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.switch>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -513,14 +540,14 @@ defmodule E2eWeb.Demos.SwitchDemo do
       action={~p"/switch/form"}
       method="post"
     >
-      <.switch field={f[:notifications]} class="switch">
+      <.switch field={f[:notifications]}>
         <:label>Enable notifications</:label>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.switch>
-      <.action type="submit" id="switch-changeset-submit" class="button button--accent">
+      <.action type="submit" id="switch-changeset-submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -537,14 +564,14 @@ defmodule E2eWeb.Demos.SwitchDemo do
       action={~p"/switch/form"}
       method="post"
     >
-      <.switch field={f[:notifications]} class="switch">
+      <.switch field={f[:notifications]}>
         <:label>Enable notifications</:label>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.switch>
-      <.action type="submit" id="switch-validate-submit" class="button button--accent">
+      <.action type="submit" id="switch-validate-submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -560,11 +587,11 @@ defmodule E2eWeb.Demos.SwitchDemo do
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.switch
         name="user[notifications]"
-        class="switch"
+         
       >
         <:label>Enable notifications</:label>
       </.switch>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </form>
@@ -594,15 +621,15 @@ defmodule E2eWeb.Demos.SwitchDemo do
           >
       <.switch
         field={@form[:notifications]}
-        class="switch"
+         
       >
         <:label>Enable notifications</:label>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.switch>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -670,15 +697,15 @@ defmodule E2eWeb.Demos.SwitchDemo do
           >
       <.switch
         field={@form[:notifications]}
-        class="switch"
+         
       >
         <:label>Enable notifications</:label>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.switch>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -753,16 +780,15 @@ defmodule E2eWeb.Demos.SwitchDemo do
     >
       <.switch
         field={@form[:notifications]}
-        class="switch"
         id="switch-form-live-notifications"
       >
         <:label>Enable notifications</:label>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.switch>
-      <.action type="submit" id="switch-form-live-submit" class="button button--accent">
+      <.action type="submit" id="switch-form-live-submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -778,16 +804,15 @@ defmodule E2eWeb.Demos.SwitchDemo do
     >
       <.switch
         field={@form[:notifications]}
-        class="switch"
         id="switch-form-live-strict"
       >
         <:label>Enable notifications</:label>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.switch>
-      <.action type="submit" id="switch-form-live-strict-submit" class="button button--accent">
+      <.action type="submit" id="switch-form-live-strict-submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -807,11 +832,10 @@ defmodule E2eWeb.Demos.SwitchDemo do
       <.switch
         name="user[notifications]"
         id="switch-form-native-notifications"
-        class="switch"
       >
         <:label>Enable notifications</:label>
       </.switch>
-      <.action type="submit" id="switch-form-native-submit" class="button button--accent">
+      <.action type="submit" id="switch-form-native-submit" semantic="accent">
         Submit
       </.action>
     </form>
@@ -825,14 +849,14 @@ defmodule E2eWeb.Demos.SwitchDemo do
       action={~p"/switch/form"}
       method="post"
     >
-      <.switch field={@form[:notifications]} class="switch">
+      <.switch field={@form[:notifications]}  >
         <:label>Enable notifications</:label>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.switch>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -870,14 +894,14 @@ defmodule E2eWeb.Demos.SwitchDemo do
       action={~p"/switch/form"}
       method="post"
     >
-      <.switch field={@form[:notifications]} class="switch">
+      <.switch field={@form[:notifications]}  >
         <:label>Enable notifications</:label>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.switch>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -920,14 +944,14 @@ defmodule E2eWeb.Demos.SwitchDemo do
   def form_doc_live_phoenix_heex do
     ~S"""
     <.form for={@form} phx-submit="save_phoenix">
-      <.switch field={@form[:notifications]} class="switch">
+      <.switch field={@form[:notifications]}  >
         <:label>Enable notifications</:label>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.switch>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -937,14 +961,14 @@ defmodule E2eWeb.Demos.SwitchDemo do
   def form_doc_live_ecto_heex do
     ~S"""
     <.form for={@form} phx-change="validate" phx-submit="save">
-      <.switch field={@form[:notifications]} class="switch">
+      <.switch field={@form[:notifications]}  >
         <:label>Enable notifications</:label>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.switch>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -961,10 +985,10 @@ defmodule E2eWeb.Demos.SwitchDemo do
       action={~p"/switch/form"}
       method="post"
     >
-      <.switch field={f[:notifications]} class="switch" id="switch-form-phoenix-notifications">
+      <.switch field={f[:notifications]} id="switch-form-phoenix-notifications">
         <:label>Enable notifications</:label>
       </.switch>
-      <.action type="submit" id="switch-form-phoenix-submit" class="button button--accent">
+      <.action type="submit" id="switch-form-phoenix-submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -983,16 +1007,15 @@ defmodule E2eWeb.Demos.SwitchDemo do
     >
       <.switch
         field={f[:notifications]}
-        class="switch"
         id="switch-form-ecto-notifications"
       >
         <:label>Enable notifications</:label>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.switch>
-      <.action type="submit" id="switch-form-ecto-submit" class="button button--accent">
+      <.action type="submit" id="switch-form-ecto-submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -1006,12 +1029,11 @@ defmodule E2eWeb.Demos.SwitchDemo do
     <.form for={@form} phx-submit="save_phoenix">
       <.switch
         field={@form[:notifications]}
-        class="switch"
         id="switch-live-form-phoenix-notifications"
       >
         <:label>Enable notifications</:label>
       </.switch>
-      <.action type="submit" id="switch-live-form-phoenix-submit" class="button button--accent">
+      <.action type="submit" id="switch-live-form-phoenix-submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -1025,16 +1047,15 @@ defmodule E2eWeb.Demos.SwitchDemo do
     <.form for={@form} phx-change="validate" phx-submit="save">
       <.switch
         field={@form[:notifications]}
-        class="switch"
         id="switch-live-form-ecto-notifications"
       >
         <:label>Enable notifications</:label>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.switch>
-      <.action type="submit" id="switch-live-form-ecto-submit" class="button button--accent">
+      <.action type="submit" id="switch-live-form-ecto-submit" semantic="accent">
         Submit
       </.action>
     </.form>

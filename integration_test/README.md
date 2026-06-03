@@ -26,6 +26,15 @@ To run only the dev checkout test:
 
     $ mix test test/code_generation/dev_corex_new_test.exs
 
+## Running tests locally
+
+During development, run **one file or one line at a time**. A full `mix test` can take 30+ minutes because each case scaffolds a new Phoenix app and compiles it.
+
+    $ mix test test/code_generation/corex_design_auto_enable_test.exs:5 --exclude database
+    $ mix test test/code_generation/corex_design_auto_enable_test.exs --exclude database
+
+CI runs the full matrix. Local runs should not mirror that unless you need it.
+
 ## Running tests
 
 To install dependencies, run:
@@ -63,9 +72,9 @@ dependency version needs to be updated, it can be updated with `mix.exs` or
 using `mix deps.update <dep name>`.
 
 It is also important to note that dependencies are initially compiled with
-`MIX_ENV=test` and then copied to `_build/dev_` to improve test speed.
+`MIX_ENV=test` and then copied to `_build/dev` to improve test speed.
+Generated apps receive `deps/`, `mix.lock`, and `_build/dev` via
+[`ArtifactSync`](test/support/artifact_sync.ex) so they reuse precompiled beams.
 Therefore, dependencies should not be listed in `mix.exs` with an `only: <env>`
 option.
 
-All generator scenarios use **`mix corex.new`** (Phoenix `phx.new` under the hood). There is no
-`igniter_new` archive requirement for these tests.

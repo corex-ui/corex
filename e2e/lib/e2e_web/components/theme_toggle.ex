@@ -16,7 +16,8 @@ defmodule E2eWeb.ThemeToggle do
     ~H"""
     <.select
       id={@id}
-      class="select select--sm w-4xs"
+      size="sm"
+      width="fit"
       items={[
         %{value: "neo", label: "Neo"},
         %{value: "uno", label: "Uno"},
@@ -24,7 +25,7 @@ defmodule E2eWeb.ThemeToggle do
         %{value: "leo", label: "Leo"}
       ]}
       value={[@theme]}
-      on_value_change_client="phx:set-theme"
+      on_value_change_client="corex:preview:set-theme"
     >
       <:label class="sr-only">
         Theme
@@ -33,10 +34,10 @@ defmodule E2eWeb.ThemeToggle do
         {item.label}
       </:item>
       <:trigger>
-        <.heroicon name="hero-swatch" class="icon" />
+        <.heroicon name="hero-swatch" />
       </:trigger>
       <:item_indicator>
-        <.heroicon name="hero-check" class="icon" />
+        <.heroicon name="hero-check" />
       </:item_indicator>
     </.select>
     """

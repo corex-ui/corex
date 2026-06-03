@@ -397,11 +397,13 @@ defmodule E2eWeb.AccordionTest do
 
       assert Accordion.trigger_aria_disabled?(session, "my-accordion", "lorem")
     end
+  end
 
+  describe "style" do
     feature "size  -  SM adds accordion--sm on the host", %{session: session} do
       session =
         session
-        |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :playground)
+        |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :style)
         |> Accordion.wait_root_no_loading("#my-accordion")
 
       session =
@@ -417,21 +419,72 @@ defmodule E2eWeb.AccordionTest do
       assert String.contains?(classes, "accordion--sm")
     end
 
-    feature "color  -  accent adds accordion--accent on the host", %{session: session} do
+    feature "semantic  -  accent adds accordion--accent on the host", %{session: session} do
       session =
         session
-        |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :playground)
+        |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :style)
         |> Accordion.wait_root_no_loading("#my-accordion")
 
       session =
         session
-        |> click(css("#accordion-color [data-part='trigger']"))
-        |> click(css("#accordion-color [data-part='item'][data-value='accent']"))
+        |> click(css("#accordion-semantic [data-part='trigger']"))
+        |> click(css("#accordion-semantic [data-part='item'][data-value='accent']"))
         |> Accordion.wait_root_no_loading("#my-accordion")
 
       el = find(session, css("#my-accordion"))
       classes = Wallaby.Element.attr(el, "class")
       assert String.contains?(classes, "accordion--accent")
+    end
+
+    feature "variant  -  outline adds accordion--outline on the host", %{session: session} do
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :style)
+        |> Accordion.wait_root_no_loading("#my-accordion")
+
+      session =
+        session
+        |> click(css("#accordion-variant [data-part='trigger']"))
+        |> click(css("#accordion-variant [data-part='item'][data-value='outline']"))
+        |> Accordion.wait_root_no_loading("#my-accordion")
+
+      el = find(session, css("#my-accordion"))
+      classes = Wallaby.Element.attr(el, "class")
+      assert String.contains?(classes, "accordion--outline")
+    end
+
+    feature "text  -  xl adds accordion--text-xl on the host", %{session: session} do
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :style)
+        |> Accordion.wait_root_no_loading("#my-accordion")
+
+      session =
+        session
+        |> click(css("#accordion-text [data-part='trigger']"))
+        |> click(css("#accordion-text [data-part='item'][data-value='xl']"))
+        |> Accordion.wait_root_no_loading("#my-accordion")
+
+      el = find(session, css("#my-accordion"))
+      classes = Wallaby.Element.attr(el, "class")
+      assert String.contains?(classes, "accordion--text-xl")
+    end
+
+    feature "radius  -  lg adds accordion--rounded-lg on the host", %{session: session} do
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :style)
+        |> Accordion.wait_root_no_loading("#my-accordion")
+
+      session =
+        session
+        |> click(css("#accordion-radius [data-part='trigger']"))
+        |> click(css("#accordion-radius [data-part='item'][data-value='lg']"))
+        |> Accordion.wait_root_no_loading("#my-accordion")
+
+      el = find(session, css("#my-accordion"))
+      classes = Wallaby.Element.attr(el, "class")
+      assert String.contains?(classes, "accordion--rounded-lg")
     end
   end
 

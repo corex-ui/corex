@@ -5,10 +5,6 @@ defmodule E2eWeb.PageController do
     render(conn, :accordion_page)
   end
 
-  def accordion_styling_page(conn, _params) do
-    render(conn, :accordion_styling_page)
-  end
-
   def action_page(conn, _params) do
     render(conn, :action_page)
   end
@@ -1165,6 +1161,10 @@ defmodule E2eWeb.PageController do
     render(conn, :floating_panel_page)
   end
 
+  def floating_panel_styling_page(conn, _params) do
+    render(conn, :floating_panel_styling_page)
+  end
+
   def listbox_page(conn, _params) do
     render(conn, :listbox_page)
   end
@@ -1277,6 +1277,10 @@ defmodule E2eWeb.PageController do
 
   def file_upload_page(conn, _params) do
     render(conn, :file_upload_page)
+  end
+
+  def file_upload_styling_page(conn, _params) do
+    render(conn, :file_upload_styling_page)
   end
 
   defp assign_file_upload_form_docs(conn, scroll_to) do
@@ -1458,6 +1462,10 @@ defmodule E2eWeb.PageController do
 
   def password_input_page(conn, _params) do
     render(conn, :password_input_page)
+  end
+
+  def password_input_styling_page(conn, _params) do
+    render(conn, :password_input_styling_page)
   end
 
   defp assign_password_input_form_docs(conn, scroll_to) do
@@ -1811,6 +1819,10 @@ defmodule E2eWeb.PageController do
     render(conn, :toast_anatomy_page)
   end
 
+  def toast_styling_page(conn, _params) do
+    render(conn, :toast_styling_page)
+  end
+
   def tooltip_page(conn, _params) do
     render(conn, :tooltip_page)
   end
@@ -1837,5 +1849,11 @@ defmodule E2eWeb.PageController do
     |> assign(:seo, E2eWeb.SEO.templates())
     |> assign(:template_carousel_items, template_carousel_items)
     |> render(:templates_page)
+  end
+
+  def layout_typography_page(conn, _params) do
+    conn
+    |> assign(:demo_form, Phoenix.Component.to_form(%{"name" => ""}, as: :demo))
+    |> render(:layout_typography_page)
   end
 end

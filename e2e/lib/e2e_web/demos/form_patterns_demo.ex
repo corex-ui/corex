@@ -1,6 +1,10 @@
 defmodule E2eWeb.Demos.FormPatternsDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.Demos.StylingAxes
+
+  def styling_axis_values(axis), do: StylingAxes.styling_axis_values(axis)
+
   alias E2eWeb.FormPatternsFields
 
   def form_ecto do
@@ -41,7 +45,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
     >
       <.select
         field={@form[:country]}
-        class="select max-w-none w-full relative"
+         class="select select--max-w-none w-full relative"
         id="form-patterns-custom-error-country"
         deselectable
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
@@ -58,7 +62,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
             positioning={%Corex.Positioning{placement: "top-end"}}
           >
             <:trigger>
-              <.heroicon name="hero-exclamation-circle" class="icon text-ink-alert" />
+              <.heroicon name="hero-exclamation-circle" />
             </:trigger>
             <:content>{msg}</:content>
           </.tooltip>
@@ -67,7 +71,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
 
       <.combobox
         field={@form[:currency]}
-        class="combobox max-w-none w-full relative"
+        class="combobox combobox--max-w-none w-full relative"
         id="form-patterns-custom-error-currency"
         placeholder="Search currency"
         items={currency_items()}
@@ -88,7 +92,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
             positioning={%Corex.Positioning{placement: "top-end"}}
           >
             <:trigger>
-              <.heroicon name="hero-exclamation-circle" class="icon text-ink-alert" />
+              <.heroicon name="hero-exclamation-circle" />
             </:trigger>
             <:content>{msg}</:content>
           </.tooltip>
@@ -97,7 +101,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
 
       <.tags_input
         field={@form[:tags]}
-        class="tags-input max-w-none w-full relative"
+        class="tags-input tags-input--max-w-none w-full relative"
         id="form-patterns-custom-error-tags"
       >
         <:label>Tags</:label>
@@ -111,7 +115,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
             positioning={%Corex.Positioning{placement: "top-end"}}
           >
             <:trigger>
-              <.heroicon name="hero-exclamation-circle" class="icon text-ink-alert" />
+              <.heroicon name="hero-exclamation-circle" />
             </:trigger>
             <:content>{msg}</:content>
           </.tooltip>
@@ -120,7 +124,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
 
       <.password_input
         field={@form[:password]}
-        class="password-input max-w-none w-full relative"
+        class="password-input password-input--max-w-none w-full relative"
         id="form-patterns-custom-error-password"
       >
         <:label>Password</:label>
@@ -137,7 +141,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
             positioning={%Corex.Positioning{placement: "top-end"}}
           >
             <:trigger>
-              <.heroicon name="hero-exclamation-circle" class="icon text-ink-alert" />
+              <.heroicon name="hero-exclamation-circle" />
             </:trigger>
             <:content>{msg}</:content>
           </.tooltip>
@@ -146,7 +150,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
 
       <.switch
         field={@form[:notifications]}
-        class="switch max-w-none w-full relative"
+         class="switch switch--max-w-none w-full relative"
         id="form-patterns-custom-error-notifications"
       >
         <:label>Email notifications</:label>
@@ -157,7 +161,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
             positioning={%Corex.Positioning{placement: "top-end"}}
           >
             <:trigger>
-              <.heroicon name="hero-exclamation-circle" class="icon text-ink-alert" />
+              <.heroicon name="hero-exclamation-circle" />
             </:trigger>
             <:content>{msg}</:content>
           </.tooltip>
@@ -166,7 +170,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
 
       <.checkbox
         field={@form[:terms]}
-        class="checkbox max-w-xs w-full relative"
+         class="checkbox checkbox--max-w-xs w-full relative"
         id="form-patterns-custom-error-terms"
       >
         <:label>Accept the terms</:label>
@@ -177,14 +181,14 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
             positioning={%Corex.Positioning{placement: "top-end"}}
           >
             <:trigger>
-              <.heroicon name="hero-exclamation-circle" class="icon text-ink-alert" />
+              <.heroicon name="hero-exclamation-circle" />
             </:trigger>
             <:content>{msg}</:content>
           </.tooltip>
         </:error>
       </.checkbox>
 
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -230,7 +234,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
     >
       <.select
         field={@form[:country]}
-        class="select max-w-none w-full"
+         class="select select--max-w-none w-full"
         id="form-patterns-invalid-on-error-country"
         deselectable
         invalid={Corex.FormField.invalid?(@form[:country])}
@@ -242,14 +246,14 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
           <.heroicon name="hero-chevron-down" />
         </:trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.select>
 
       <.combobox
         field={@form[:currency]}
-        class="combobox max-w-none w-full"
+        class="combobox combobox--max-w-none w-full"
         id="form-patterns-invalid-on-error-currency"
         placeholder="Search currency"
         invalid={Corex.FormField.invalid?(@form[:currency])}
@@ -265,14 +269,14 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
           <.heroicon name="hero-chevron-down" />
         </:trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.combobox>
 
       <.tags_input
         field={@form[:tags]}
-        class="tags-input max-w-none w-full"
+        class="tags-input tags-input--max-w-none w-full"
         id="form-patterns-invalid-on-error-tags"
         invalid={Corex.FormField.invalid?(@form[:tags])}
       >
@@ -281,14 +285,14 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
           <.heroicon name="hero-x-mark" />
         </:close>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.tags_input>
 
       <.password_input
         field={@form[:password]}
-        class="password-input max-w-none w-full"
+        class="password-input password-input--max-w-none w-full"
         id="form-patterns-invalid-on-error-password"
         invalid={Corex.FormField.invalid?(@form[:password])}
       >
@@ -300,27 +304,27 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
           <.heroicon name="hero-eye-slash" />
         </:hidden_indicator>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.password_input>
 
       <.switch
         field={@form[:notifications]}
-        class="switch max-w-none w-full"
+         class="switch switch--max-w-none w-full"
         id="form-patterns-invalid-on-error-notifications"
         invalid={Corex.FormField.invalid?(@form[:notifications])}
       >
         <:label>Email notifications</:label>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.switch>
 
       <.checkbox
         field={@form[:terms]}
-        class="checkbox max-w-xs w-full"
+         class="checkbox checkbox--max-w-xs w-full"
         id="form-patterns-invalid-on-error-terms"
         invalid={Corex.FormField.invalid?(@form[:terms])}
       >
@@ -329,12 +333,12 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
           <.heroicon name="hero-check" />
         </:indicator>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.checkbox>
 
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -382,7 +386,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
       class="flex flex-col gap-space-lg max-w-xs"
     >
       <FormPatternsFields.custom_fields form={@form} prefix="form-patterns-custom-error" />
-      <.action type="submit" id="form-patterns-custom-error-submit" class="button button--accent">
+      <.action type="submit" id="form-patterns-custom-error-submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -401,7 +405,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
       class="flex flex-col gap-space-lg max-w-xs"
     >
       <FormPatternsFields.invalid_fields form={@form} prefix="form-patterns-invalid-on-error" />
-      <.action type="submit" id="form-patterns-invalid-on-error-submit" class="button button--accent">
+      <.action type="submit" id="form-patterns-invalid-on-error-submit" semantic="accent">
         Submit
       </.action>
     </.form>

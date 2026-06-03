@@ -86,6 +86,8 @@ const TreeViewHook: Hook<object & TreeViewHookState, HTMLElement> = {
     self.lastExpandedAttr = readExpandedAttr(el);
     self.lastSelectedAttr = readSelectedAttr(el);
 
+    prepareJsHeightInitialState(el, BRANCH_CONTENT_SELECTOR);
+
     const treeView = new TreeView(el, {
       id: el.id,
       rootNode,
@@ -174,8 +176,6 @@ const TreeViewHook: Hook<object & TreeViewHookState, HTMLElement> = {
     });
     treeView.init();
     this.treeView = treeView;
-
-    prepareJsHeightInitialState(el, BRANCH_CONTENT_SELECTOR);
 
     const hookApi = { el, pushEvent, canPushServer: canPush };
 

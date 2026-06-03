@@ -13,18 +13,20 @@
     }
   >
     <.demo_section
-      id="tabs-styling-color"
-      title={~t"Color"}
-      code={E2eWeb.Demos.TabsDemo.styling_color_code()}
+      id="tabs-styling-semantic"
+      title={~t"Semantic"}
+      values={E2eWeb.Demos.TabsDemo.styling_axis_values(:semantic)}
+      code={E2eWeb.Demos.TabsDemo.styling_semantic_code()}
     >
       <:preview>
-        <E2eWeb.Demos.TabsDemo.styling_color_example />
+        <E2eWeb.Demos.TabsDemo.styling_semantic_example />
       </:preview>
     </.demo_section>
 
     <.demo_section
       id="tabs-styling-size"
       title={~t"Size"}
+      values={E2eWeb.Demos.TabsDemo.styling_axis_values(:size)}
       code={E2eWeb.Demos.TabsDemo.styling_size_code()}
     >
       <:preview>
@@ -35,6 +37,7 @@
     <.demo_section
       id="tabs-styling-text"
       title={~t"Text"}
+      values={E2eWeb.Demos.TabsDemo.styling_axis_values(:text)}
       code={E2eWeb.Demos.TabsDemo.styling_text_code()}
     >
       <:preview>
@@ -45,6 +48,7 @@
     <.demo_section
       id="tabs-styling-radius"
       title={~t"Radius"}
+      values={E2eWeb.Demos.TabsDemo.styling_axis_values(:radius)}
       code={E2eWeb.Demos.TabsDemo.styling_radius_code()}
     >
       <:preview>
@@ -55,6 +59,7 @@
     <.demo_section
       id="tabs-styling-max-width"
       title={~t"Max width"}
+      values={E2eWeb.Demos.TabsDemo.styling_axis_values(:max_width)}
       code={E2eWeb.Demos.TabsDemo.styling_max_width_code()}
     >
       <:preview>

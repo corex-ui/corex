@@ -9,12 +9,12 @@ defmodule E2eWeb.TreeViewPatternsLive do
   @async_heex """
   <.async_result :let={tree} assign={@tree_data}>
     <:loading>
-      <.tree_view_skeleton count={3} class="tree-view" />
+      <.tree_view_skeleton count={3}  />
     </:loading>
 
     <.tree_view
       id="patterns-tree-async"
-      class="tree-view"
+      
       items={tree.items}
       expanded_value={tree.expanded_value}
       value={tree.value}
@@ -109,7 +109,7 @@ defmodule E2eWeb.TreeViewPatternsLive do
           id="patterns-tree-async-section"
           tabs_id="tabs-tree-view-patterns-async"
           title={~t"Async"}
-          trigger_class="button--sm"
+          trigger_class="button button--sm"
           code_tabs={[
             %{value: "heex", label: ~t"Heex", language: :heex, code: @async_heex},
             %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @async_elixir}
@@ -118,12 +118,11 @@ defmodule E2eWeb.TreeViewPatternsLive do
           <:preview>
             <.async_result :let={tree} assign={@tree_data}>
               <:loading>
-                <.tree_view_skeleton count={3} class="tree-view" />
+                <.tree_view_skeleton count={3} />
               </:loading>
 
               <.tree_view
                 id={@id_async}
-                class="tree-view"
                 items={tree.items}
                 expanded_value={tree.expanded_value}
                 value={tree.value}
@@ -140,16 +139,15 @@ defmodule E2eWeb.TreeViewPatternsLive do
         <section class="flex flex-col gap-4 items-start">
           <.tabs
             id="tabs-tree-view-patterns-redirect"
-            class="tabs max-w-6xl [&>[data-scope=tabs][data-part=root]>[data-scope=tabs][data-part=list]]:place-self-end"
+            class="tabs tabs--max-w-6xl [&>[data-scope=tabs][data-part=root]>[data-scope=tabs][data-part=list]]:place-self-end"
             value="preview"
           >
-            <:trigger value="preview" class="button--sm">Preview</:trigger>
-            <:trigger value="heex" class="button--sm">Heex</:trigger>
+            <:trigger value="preview" class="button button--sm">Preview</:trigger>
+            <:trigger value="heex" class="button button--sm">Heex</:trigger>
             <:content value="preview" class="items-center shadow-sm p-ui-padding">
               <h3 class="font-medium">Redirect (navigation)</h3>
               <.tree_view
                 id={@id_redirect}
-                class="tree-view"
                 redirect
                 on_selection_change="patterns_tree_redirect_nav"
                 expanded_value={@redirect_expanded}
@@ -163,7 +161,7 @@ defmodule E2eWeb.TreeViewPatternsLive do
               </.tree_view>
             </:content>
             <:content value="heex" class="items-center bg-stone-100 p-0">
-              <.code class="code max-w-none w-full" language={:heex} code={@redirect_heex} />
+              <.code class="code code--max-w-none w-full" language={:heex} code={@redirect_heex} />
             </:content>
           </.tabs>
         </section>

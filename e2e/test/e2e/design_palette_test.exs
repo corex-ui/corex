@@ -31,8 +31,8 @@ defmodule E2e.DesignPaletteTest do
       if row["description"], do: assert(is_binary(row["description"]))
     end
 
-    ink = colors["ink"]
-    assert ink["description"] =~ ~r/\d+\.?\d*:1 contrast against ui \(#[0-9a-fA-F]{6}\)/i
+    ui_ink = colors["ui-ink"]
+    assert ui_ink["description"] =~ ~r/\d+\.?\d*:1 contrast against ui \(#[0-9a-fA-F]{6}\)/i
 
     link = colors["link"]
     assert link["description"] =~ ~r/\d+\.?\d*:1 contrast against ui \(#[0-9a-fA-F]{6}\)/i
@@ -43,10 +43,10 @@ defmodule E2e.DesignPaletteTest do
     assert colors["root"]["description"] =~ ~r/Surface root at 98% lightness/
     assert colors["ui"]["description"] =~ ~r/Surface ui default stop/
 
-    ink_muted = colors["ink-muted"]["value"]
+    ui_ink_muted = colors["ui-ink-muted"]["value"]
     ui_default = colors["ui"]["value"]
 
-    assert contrast_ratio(ink_muted, ui_default) > 4.49
+    assert contrast_ratio(ui_ink_muted, ui_default) > 4.49
   end
 
   defp contrast_ratio(fg_hex, bg_hex) do
@@ -86,10 +86,10 @@ defmodule E2e.DesignPaletteTest do
     neo =
       Path.join(design, "tokens/themes/neo/color/light.json") |> File.read!() |> Jason.decode!()
 
-    assert neo["theme"]["color"]["ink"]["type"] == "color"
+    assert neo["theme"]["color"]["ui-ink"]["type"] == "color"
 
     sem = Path.join(design, "tokens/semantic/color.json") |> File.read!() |> Jason.decode!()
-    assert sem["color"]["ink"]["value"] == "{theme.color.ink}"
+    assert sem["color"]["ui-ink"]["value"] == "{theme.color.ui-ink}"
   end
 
   test "palette round-trips through Jason" do

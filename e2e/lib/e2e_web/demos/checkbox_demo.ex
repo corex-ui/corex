@@ -1,9 +1,13 @@
 defmodule E2eWeb.Demos.CheckboxDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.Demos.StylingAxes
+
+  def styling_axis_values(axis), do: StylingAxes.styling_axis_values(axis)
+
   def minimal_code do
     ~S"""
-    <.checkbox class="checkbox">
+    <.checkbox>
       <:label>Option</:label>
     </.checkbox>
     """
@@ -11,7 +15,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def minimal_example(assigns) do
     ~H"""
-    <.checkbox id="checkbox-anatomy-minimal" class="checkbox">
+    <.checkbox id="checkbox-anatomy-minimal">
       <:label>Option</:label>
     </.checkbox>
     """
@@ -19,7 +23,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def labeled_code do
     ~S"""
-    <.checkbox class="checkbox">
+    <.checkbox>
       <:label>Accept the terms</:label>
       <:indicator>
         <.heroicon name="hero-check" />
@@ -30,7 +34,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def labeled_example(assigns) do
     ~H"""
-    <.checkbox id="checkbox-anatomy-labeled" class="checkbox">
+    <.checkbox id="checkbox-anatomy-labeled">
       <:label>Accept the terms</:label>
       <:indicator>
         <.heroicon name="hero-check" />
@@ -41,18 +45,13 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def invalid_code do
     ~S"""
-    <.checkbox
-      class="checkbox checkbox--accent"
-      invalid
-      checked
-      errors={["Required"]}
-    >
+    <.checkbox invalid checked errors={["Required"]}>
       <:label>Subscribe</:label>
       <:indicator>
         <.heroicon name="hero-check" />
       </:indicator>
       <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
+        <.heroicon name="hero-exclamation-circle" />
         {msg}
       </:error>
     </.checkbox>
@@ -63,7 +62,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     ~H"""
     <.checkbox
       id="checkbox-anatomy-invalid"
-      class="checkbox checkbox--accent"
+      semantic="accent"
       invalid
       checked
       errors={["Required"]}
@@ -73,16 +72,16 @@ defmodule E2eWeb.Demos.CheckboxDemo do
         <.heroicon name="hero-check" />
       </:indicator>
       <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
+        <.heroicon name="hero-exclamation-circle" />
         {msg}
       </:error>
     </.checkbox>
     """
   end
 
-  def styling_color_code do
+  def styling_semantic_code do
     ~S"""
-    <.checkbox class="checkbox" checked>
+    <.checkbox   checked>
       <:label>Default</:label>
       <:indicator>
         <.heroicon name="hero-check" />
@@ -91,7 +90,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
         <.heroicon name="hero-minus" />
       </:indeterminate>
     </.checkbox>
-    <.checkbox class="checkbox checkbox--accent" checked>
+    <.checkbox semantic="accent" checked>
       <:label>Accent</:label>
       <:indicator>
         <.heroicon name="hero-check" />
@@ -100,7 +99,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
         <.heroicon name="hero-minus" />
       </:indeterminate>
     </.checkbox>
-    <.checkbox class="checkbox checkbox--brand" checked>
+    <.checkbox semantic="brand"  checked>
       <:label>Brand</:label>
       <:indicator>
         <.heroicon name="hero-check" />
@@ -109,7 +108,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
         <.heroicon name="hero-minus" />
       </:indeterminate>
     </.checkbox>
-    <.checkbox class="checkbox checkbox--alert" checked>
+    <.checkbox semantic="alert"  checked>
       <:label>Alert</:label>
       <:indicator>
         <.heroicon name="hero-check" />
@@ -118,7 +117,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
         <.heroicon name="hero-minus" />
       </:indeterminate>
     </.checkbox>
-    <.checkbox class="checkbox checkbox--info" checked>
+    <.checkbox semantic="info"  checked>
       <:label>Info</:label>
       <:indicator>
         <.heroicon name="hero-check" />
@@ -127,7 +126,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
         <.heroicon name="hero-minus" />
       </:indeterminate>
     </.checkbox>
-    <.checkbox class="checkbox checkbox--success" checked>
+    <.checkbox semantic="success"  checked>
       <:label>Success</:label>
       <:indicator>
         <.heroicon name="hero-check" />
@@ -139,10 +138,10 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     """
   end
 
-  def styling_color_example(assigns) do
+  def styling_semantic_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-6 items-start">
-      <.checkbox id="checkbox-style-color-default" class="checkbox" checked>
+      <.checkbox id="checkbox-style-color-default" checked>
         <:label>Default</:label>
         <:indicator>
           <.heroicon name="hero-check" />
@@ -151,7 +150,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
           <.heroicon name="hero-minus" />
         </:indeterminate>
       </.checkbox>
-      <.checkbox id="checkbox-style-color-accent" class="checkbox" checked>
+      <.checkbox id="checkbox-style-color-accent" semantic="accent" checked>
         <:label>Accent</:label>
         <:indicator>
           <.heroicon name="hero-check" />
@@ -160,7 +159,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
           <.heroicon name="hero-minus" />
         </:indeterminate>
       </.checkbox>
-      <.checkbox id="checkbox-style-color-brand" class="checkbox checkbox--brand" checked>
+      <.checkbox id="checkbox-style-color-brand" semantic="brand" checked>
         <:label>Brand</:label>
         <:indicator>
           <.heroicon name="hero-check" />
@@ -169,7 +168,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
           <.heroicon name="hero-minus" />
         </:indeterminate>
       </.checkbox>
-      <.checkbox id="checkbox-style-color-alert" class="checkbox checkbox--alert" checked>
+      <.checkbox id="checkbox-style-color-alert" semantic="alert" checked>
         <:label>Alert</:label>
         <:indicator>
           <.heroicon name="hero-check" />
@@ -178,7 +177,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
           <.heroicon name="hero-minus" />
         </:indeterminate>
       </.checkbox>
-      <.checkbox id="checkbox-style-color-info" class="checkbox checkbox--info" checked>
+      <.checkbox id="checkbox-style-color-info" semantic="info" checked>
         <:label>Info</:label>
         <:indicator>
           <.heroicon name="hero-check" />
@@ -187,7 +186,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
           <.heroicon name="hero-minus" />
         </:indeterminate>
       </.checkbox>
-      <.checkbox id="checkbox-style-color-success" class="checkbox checkbox--success" checked>
+      <.checkbox id="checkbox-style-color-success" semantic="success" checked>
         <:label>Success</:label>
         <:indicator>
           <.heroicon name="hero-check" />
@@ -202,16 +201,16 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def styling_size_code do
     ~S"""
-    <.checkbox class="checkbox checkbox--sm">
+    <.checkbox size="sm" >
       <:label>Small</:label>
     </.checkbox>
     <.checkbox class="checkbox">
       <:label>Default</:label>
     </.checkbox>
-    <.checkbox class="checkbox checkbox--lg">
+    <.checkbox size="lg" >
       <:label>Large</:label>
     </.checkbox>
-    <.checkbox class="checkbox checkbox--xl">
+    <.checkbox size="xl" >
       <:label>XLarge</:label>
     </.checkbox>
     """
@@ -220,16 +219,16 @@ defmodule E2eWeb.Demos.CheckboxDemo do
   def styling_size_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-6 items-start">
-      <.checkbox id="checkbox-style-sm" class="checkbox checkbox--sm">
+      <.checkbox id="checkbox-style-sm" size="sm">
         <:label>Small</:label>
       </.checkbox>
-      <.checkbox id="checkbox-style-md" class="checkbox">
+      <.checkbox id="checkbox-style-md">
         <:label>Medium</:label>
       </.checkbox>
-      <.checkbox id="checkbox-style-lg" class="checkbox checkbox--lg">
+      <.checkbox id="checkbox-style-lg" size="lg">
         <:label>Large</:label>
       </.checkbox>
-      <.checkbox id="checkbox-style-xl" class="checkbox checkbox--xl">
+      <.checkbox id="checkbox-style-xl" size="xl">
         <:label>XLarge</:label>
       </.checkbox>
     </div>
@@ -239,17 +238,17 @@ defmodule E2eWeb.Demos.CheckboxDemo do
   def api_client_binding_code do
     ~S"""
     <div class="layout__row">
-      <.action phx-click={Corex.Checkbox.set_checked("checkbox-api-bind", true)} class="button button--sm">
+      <.action phx-click={Corex.Checkbox.set_checked("checkbox-api-bind", true)} size="sm">
         Set checked
       </.action>
-      <.action phx-click={Corex.Checkbox.set_checked("checkbox-api-bind", false)} class="button button--sm">
+      <.action phx-click={Corex.Checkbox.set_checked("checkbox-api-bind", false)} size="sm">
         Set unchecked
       </.action>
-      <.action phx-click={Corex.Checkbox.toggle_checked("checkbox-api-bind")} class="button button--sm">
+      <.action phx-click={Corex.Checkbox.toggle_checked("checkbox-api-bind")} size="sm">
         Toggle
       </.action>
     </div>
-    <.checkbox id="checkbox-api-bind" class="checkbox">
+    <.checkbox id="checkbox-api-bind"  >
       <:label>Terms</:label>
       <:indicator>
         <.heroicon name="hero-check" />
@@ -264,17 +263,17 @@ defmodule E2eWeb.Demos.CheckboxDemo do
   def api_client_binding_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={Corex.Checkbox.set_checked(@id, true)} class="button button--sm">
+      <.action phx-click={Corex.Checkbox.set_checked(@id, true)} size="sm">
         Set checked
       </.action>
-      <.action phx-click={Corex.Checkbox.set_checked(@id, false)} class="button button--sm">
+      <.action phx-click={Corex.Checkbox.set_checked(@id, false)} size="sm">
         Set unchecked
       </.action>
-      <.action phx-click={Corex.Checkbox.toggle_checked(@id)} class="button button--sm">
+      <.action phx-click={Corex.Checkbox.toggle_checked(@id)} size="sm">
         Toggle
       </.action>
     </div>
-    <.checkbox id={@id} class="checkbox">
+    <.checkbox id={@id}>
       <:label>Terms</:label>
       <:indicator>
         <.heroicon name="hero-check" />
@@ -286,7 +285,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
   def events_server_heex do
     ~S"""
     <.checkbox
-      class="checkbox"
+       
       on_checked_change="checkbox_changed"
     >
       <:label>Subscribe</:label>
@@ -308,7 +307,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     ~S"""
     <.checkbox
       id="checkbox-on-checked-change-client"
-      class="checkbox"
+       
       on_checked_change_client="checkbox-changed"
     >
       <:label>Subscribe</:label>
@@ -345,7 +344,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def patterns_common_example(assigns) do
     ~H"""
-    <.checkbox id="checkbox-pattern" class="checkbox">
+    <.checkbox id="checkbox-pattern">
       <:label>Option</:label>
     </.checkbox>
     """
@@ -355,11 +354,11 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     ~S"""
     <.async_result :let={checkbox} assign={@checkbox}>
       <:loading>
-        <.checkbox_skeleton class="checkbox" />
+        <.checkbox_skeleton   />
       </:loading>
 
       <.checkbox
-        class="checkbox"
+         
         checked={checkbox.checked}
       >
         <:label>Accept terms</:label>
@@ -390,7 +389,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
   def patterns_controlled_heex do
     ~S"""
     <.checkbox
-      class="checkbox"
+       
       controlled
       checked={@checked}
       on_checked_change="patterns_controlled_changed"
@@ -420,7 +419,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def indeterminate_code do
     ~S"""
-    <.checkbox class="checkbox" checked={:indeterminate}>
+    <.checkbox checked={:indeterminate}>
       <:label>Select some rows</:label>
       <:indicator>
         <.heroicon name="hero-check" />
@@ -434,7 +433,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def indeterminate_example(assigns) do
     ~H"""
-    <.checkbox id="checkbox-anatomy-indeterminate" class="checkbox" checked={:indeterminate}>
+    <.checkbox id="checkbox-anatomy-indeterminate" checked={:indeterminate}>
       <:label>Select some rows</:label>
       <:indicator>
         <.heroicon name="hero-check" />
@@ -451,27 +450,27 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     <div class="flex flex-wrap gap-2 mb-4">
       <button
         type="button"
-        class="button button--sm"
+        size="sm"
         onclick="document.getElementById('checkbox-api-dispatch')?.dispatchEvent(new CustomEvent('corex:checkbox:set-checked', { bubbles: false, detail: { checked: true } }))"
       >
         Set checked
       </button>
       <button
         type="button"
-        class="button button--sm"
+        size="sm"
         onclick="document.getElementById('checkbox-api-dispatch')?.dispatchEvent(new CustomEvent('corex:checkbox:set-checked', { bubbles: false, detail: { checked: false } }))"
       >
         Set unchecked
       </button>
       <button
         type="button"
-        class="button button--sm"
+        size="sm"
         onclick="document.getElementById('checkbox-api-dispatch')?.dispatchEvent(new CustomEvent('corex:checkbox:toggle-checked', { bubbles: false }))"
       >
         Toggle
       </button>
     </div>
-    <.checkbox id="checkbox-api-dispatch" class="checkbox">
+    <.checkbox id="checkbox-api-dispatch"  >
       <:label>Terms</:label>
       <:indicator>
         <.heroicon name="hero-check" />
@@ -522,7 +521,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     <div class="flex flex-wrap gap-2 mb-4">
       <button
         type="button"
-        class="button button--sm"
+        size="sm"
         phx-click={
           JS.dispatch("corex:checkbox:set-checked",
             to: "#checkbox-api-dispatch",
@@ -535,7 +534,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
       </button>
       <button
         type="button"
-        class="button button--sm"
+        size="sm"
         phx-click={
           JS.dispatch("corex:checkbox:set-checked",
             to: "#checkbox-api-dispatch",
@@ -548,7 +547,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
       </button>
       <button
         type="button"
-        class="button button--sm"
+        size="sm"
         phx-click={
           JS.dispatch("corex:checkbox:toggle-checked", to: "#checkbox-api-dispatch", bubbles: false)
         }
@@ -556,7 +555,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
         Toggle
       </button>
     </div>
-    <.checkbox id="checkbox-api-dispatch" class="checkbox">
+    <.checkbox id="checkbox-api-dispatch">
       <:label>Terms</:label>
       <:indicator>
         <.heroicon name="hero-check" />
@@ -619,15 +618,15 @@ defmodule E2eWeb.Demos.CheckboxDemo do
       action="/account/terms"
       method="post"
     >
-      <.checkbox field={f[:terms]} class="checkbox">
+      <.checkbox field={f[:terms]}  >
         <:label>Accept terms</:label>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.checkbox>
 
-      <.action type="submit" class="button button--accent">
+      <.action type="submit">
         Submit
       </.action>
     </.form>
@@ -679,15 +678,15 @@ defmodule E2eWeb.Demos.CheckboxDemo do
       action="/account/terms"
       method="post"
     >
-      <.checkbox field={f[:terms]} class="checkbox">
+      <.checkbox field={f[:terms]}  >
         <:label>Accept terms (strict messages)</:label>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.checkbox>
 
-      <.action type="submit" class="button button--accent">
+      <.action type="submit">
         Submit
       </.action>
     </.form>
@@ -741,11 +740,11 @@ defmodule E2eWeb.Demos.CheckboxDemo do
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.checkbox
         name="user[accept_terms]"
-        class="checkbox"
+         
       >
         <:label>Accept terms</:label>
       </.checkbox>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit">Submit</.action>
     </form>
     """
   end
@@ -765,10 +764,10 @@ defmodule E2eWeb.Demos.CheckboxDemo do
   def form_doc_live_phoenix_heex do
     ~S"""
     <.form for={@phoenix_form} phx-submit="save_phoenix">
-      <.checkbox field={@phoenix_form[:terms]} class="checkbox" id="checkbox-live-form-phoenix-terms">
+      <.checkbox field={@phoenix_form[:terms]}   id="checkbox-live-form-phoenix-terms">
         <:label>Accept terms</:label>
       </.checkbox>
-      <.action type="submit" id="checkbox-live-form-phoenix-submit" class="button button--accent">
+      <.action type="submit" id="checkbox-live-form-phoenix-submit">
         Submit
       </.action>
     </.form>
@@ -778,14 +777,14 @@ defmodule E2eWeb.Demos.CheckboxDemo do
   def form_doc_live_ecto_heex do
     ~S"""
     <.form for={@ecto_form} phx-change="validate" phx-submit="save">
-      <.checkbox field={@ecto_form[:terms]} class="checkbox" id="checkbox-live-form-ecto-terms">
+      <.checkbox field={@ecto_form[:terms]}   id="checkbox-live-form-ecto-terms">
         <:label>Accept terms</:label>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.checkbox>
-      <.action type="submit" id="checkbox-live-form-ecto-submit" class="button button--accent">
+      <.action type="submit" id="checkbox-live-form-ecto-submit">
         Submit
       </.action>
     </.form>
@@ -802,12 +801,11 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     >
       <.checkbox
         field={@form[:terms]}
-        class="checkbox"
         id="checkbox-live-form-phoenix-terms"
       >
         <:label>Accept terms</:label>
       </.checkbox>
-      <.action type="submit" id="checkbox-live-form-phoenix-submit" class="button button--accent">
+      <.action type="submit" id="checkbox-live-form-phoenix-submit">
         Submit
       </.action>
     </.form>
@@ -823,14 +821,14 @@ defmodule E2eWeb.Demos.CheckboxDemo do
       phx-change="validate"
       phx-submit="save"
     >
-      <.checkbox field={@form[:terms]} class="checkbox" id="checkbox-live-form-ecto-terms">
+      <.checkbox field={@form[:terms]} id="checkbox-live-form-ecto-terms">
         <:label>Accept terms</:label>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.checkbox>
-      <.action type="submit" id="checkbox-live-form-ecto-submit" class="button button--accent">
+      <.action type="submit" id="checkbox-live-form-ecto-submit">
         Submit
       </.action>
     </.form>
@@ -846,10 +844,10 @@ defmodule E2eWeb.Demos.CheckboxDemo do
       action={~p"/checkbox/form"}
       method="post"
     >
-      <.checkbox field={@form[:terms]} class="checkbox" id="checkbox-form-phoenix-terms">
+      <.checkbox field={@form[:terms]} id="checkbox-form-phoenix-terms">
         <:label>Accept terms</:label>
       </.checkbox>
-      <.action type="submit" id="checkbox-form-phoenix-submit" class="button button--accent">
+      <.action type="submit" id="checkbox-form-phoenix-submit">
         Submit
       </.action>
     </.form>
@@ -865,14 +863,14 @@ defmodule E2eWeb.Demos.CheckboxDemo do
       action={~p"/checkbox/form"}
       method="post"
     >
-      <.checkbox field={@form[:terms]} class="checkbox" id="checkbox-form-ecto-terms">
+      <.checkbox field={@form[:terms]} id="checkbox-form-ecto-terms">
         <:label>Accept terms</:label>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.checkbox>
-      <.action type="submit" id="checkbox-form-ecto-submit" class="button button--accent">
+      <.action type="submit" id="checkbox-form-ecto-submit">
         Submit
       </.action>
     </.form>
@@ -885,10 +883,10 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     ~H"""
     <form action={~p"/checkbox/form"} method="post" id="checkbox-form-native">
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-      <.checkbox name="user[accept_terms]" id="checkbox-form-native-terms" class="checkbox">
+      <.checkbox name="user[accept_terms]" id="checkbox-form-native-terms">
         <:label>Accept terms</:label>
       </.checkbox>
-      <.action type="submit" id="checkbox-form-native-submit" class="button button--accent">
+      <.action type="submit" id="checkbox-form-native-submit">
         Submit
       </.action>
     </form>

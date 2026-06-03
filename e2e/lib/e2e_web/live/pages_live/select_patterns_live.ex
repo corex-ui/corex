@@ -79,7 +79,6 @@ defmodule E2eWeb.SelectPatternsLive do
           <:preview>
             <.select
               id="select-patterns-controlled"
-              class="select"
               controlled
               value={@value}
               items={@items}
@@ -87,7 +86,7 @@ defmodule E2eWeb.SelectPatternsLive do
             >
               <:label>Country</:label>
               <:trigger>
-                <.heroicon name="hero-chevron-down" class="icon" />
+                <.heroicon name="hero-chevron-down" />
               </:trigger>
             </.select>
           </:preview>
@@ -109,17 +108,17 @@ defmodule E2eWeb.SelectPatternsLive do
           <:preview>
             <div class="flex flex-col gap-3 w-full max-w-xl">
               <div class="flex flex-wrap gap-2">
-                <.action phx-click="add_item" class="button button--sm button--accent">
+                <.action phx-click="add_item" size="sm" semantic="accent">
                   <.heroicon name="hero-plus" /> Add item
                 </.action>
-                <.action phx-click="reset" class="button button--sm button--alert">
+                <.action phx-click="reset" size="sm" semantic="alert">
                   Reset
                 </.action>
               </div>
-              <.select id="stream-select" class="select" items={Corex.List.new(@items_list)}>
+              <.select id="stream-select" items={Corex.List.new(@items_list)}>
                 <:label>Country</:label>
                 <:trigger>
-                  <.heroicon name="hero-chevron-down" class="icon" />
+                  <.heroicon name="hero-chevron-down" />
                 </:trigger>
               </.select>
             </div>

@@ -139,7 +139,8 @@ defmodule Corex.TreeView.Anatomy do
       expanded: false,
       selected: false,
       focused: false,
-      animation: "js"
+      animation: "js",
+      animation_options: %Corex.Animation.Height{}
     ]
 
     @type t :: %__MODULE__{
@@ -153,7 +154,8 @@ defmodule Corex.TreeView.Anatomy do
             expanded: boolean(),
             selected: boolean(),
             focused: boolean(),
-            animation: String.t()
+            animation: String.t(),
+            animation_options: Corex.Animation.Height.t()
           }
 
     @ignored_attrs [

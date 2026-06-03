@@ -63,7 +63,7 @@ defmodule E2eWeb.NumberInputPlayLive do
           />
 
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="disabled"
             checked={@controls.disabled}
             on_checked_change="control_changed"
@@ -71,7 +71,7 @@ defmodule E2eWeb.NumberInputPlayLive do
             <:label>Disabled</:label>
           </.switch>
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="read_only"
             checked={@controls.read_only}
             on_checked_change="control_changed"
@@ -79,7 +79,7 @@ defmodule E2eWeb.NumberInputPlayLive do
             <:label>Read only</:label>
           </.switch>
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="invalid"
             checked={@controls.invalid}
             on_checked_change="control_changed"
@@ -90,7 +90,7 @@ defmodule E2eWeb.NumberInputPlayLive do
         <:canvas>
           <.number_input
             id="number-input-playground"
-            class="number-input max-w-2xs"
+            class="number-input number-input--max-w-2xs"
             value="1234.5"
             step={0.1}
             dir={@controls.dir}
@@ -100,10 +100,10 @@ defmodule E2eWeb.NumberInputPlayLive do
           >
             <:label>Quantity</:label>
             <:decrement_trigger>
-              <.heroicon name="hero-chevron-down" class="icon" />
+              <.heroicon name="hero-chevron-down" />
             </:decrement_trigger>
             <:increment_trigger>
-              <.heroicon name="hero-chevron-up" class="icon" />
+              <.heroicon name="hero-chevron-up" />
             </:increment_trigger>
           </.number_input>
         </:canvas>

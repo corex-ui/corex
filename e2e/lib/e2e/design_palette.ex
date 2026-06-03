@@ -287,9 +287,10 @@ defmodule E2e.DesignPalette do
     Map.put(tok, "#{name}-ink", %{value: ihex, description: idesc})
   end
 
-  defp ink_output_key("default"), do: "ink"
+  defp ink_output_key("default"), do: "ui-ink"
+  defp ink_output_key("muted"), do: "ui-ink-muted"
   defp ink_output_key("link"), do: "link"
-  defp ink_output_key(other), do: "ink-#{other}"
+  defp ink_output_key(other), do: "ui-ink-#{other}"
 
   defp ink_reference(surface) do
     Enum.min_by(surface, fn {_k, c} ->

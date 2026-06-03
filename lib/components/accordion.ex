@@ -10,12 +10,11 @@ defmodule Corex.Accordion do
 
   ```heex
   <.accordion
-  class="accordion"
   items={
     Corex.Content.new([
-      %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
-      %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."},
-      %{label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a."}
+      %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])
   }
   />
@@ -27,12 +26,11 @@ defmodule Corex.Accordion do
 
   ```heex
   <.accordion
-  class="accordion"
   items={
     Corex.Content.new([
-      %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
-      %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."},
-      %{label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a."}
+      %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])
   }
   >
@@ -48,7 +46,6 @@ defmodule Corex.Accordion do
 
   ```heex
   <.accordion
-    class="accordion"
     value="lorem"
     items={
       Corex.Content.new([
@@ -90,7 +87,7 @@ defmodule Corex.Accordion do
   Each slot takes a `value` string that ties the three together. 
 
   ```heex
-  <.accordion class="accordion" value="lorem">
+  <.accordion value="lorem">
     <:trigger value="lorem">
       <.heroicon name="hero-chevron-right" /> Lorem ipsum dolor sit amet
     </:trigger>
@@ -116,7 +113,7 @@ defmodule Corex.Accordion do
   #### Manual items
 
   ```heex
-  <.accordion :let={ctx} compound class="accordion">
+  <.accordion :let={ctx} compound>
     <.accordion_root ctx={ctx}>
       <.accordion_item :let={item} ctx={ctx} value="lorem">
         <.accordion_trigger item={item}>
@@ -164,7 +161,7 @@ defmodule Corex.Accordion do
   #### From a list
 
   ```heex
-  <.accordion :let={ctx} compound id="faq" class="accordion">
+  <.accordion :let={ctx} compound id="faq">
     <.accordion_root ctx={ctx}>
       <.accordion_item :for={entry <- @items} :let={item} ctx={ctx} value={entry.value}>
         <.accordion_trigger item={item}>
@@ -181,6 +178,36 @@ defmodule Corex.Accordion do
       </.accordion_item>
     </.accordion_root>
   </.accordion>
+  ```
+
+  <!-- tabs-close -->
+
+  ## Styling
+
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `semantic`, `variant`, `size`, `text`, `radius`.
+
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.accordion semantic="accent" size="md" class="accordion" items={
+    Corex.Content.new([
+      %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
+      %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."}
+    ])
+  } />
+  ```
+
+  ### With classes
+
+  ```heex
+  <.accordion class="accordion accordion--accent accordion--md" items={
+    Corex.Content.new([
+      %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
+      %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."}
+    ])
+  } />
   ```
 
   <!-- tabs-close -->
@@ -218,7 +245,6 @@ defmodule Corex.Accordion do
   ```heex
   <.accordion
     id="faq"
-    class="accordion"
     on_value_change="items_changed"
     items={
       Corex.Content.new([
@@ -243,7 +269,6 @@ defmodule Corex.Accordion do
   ```heex
   <.accordion
     id="faq"
-    class="accordion"
     on_focus_change="focus_changed"
     items={
       Corex.Content.new([
@@ -279,7 +304,6 @@ defmodule Corex.Accordion do
   ```heex
   <.accordion
     id="faq"
-    class="accordion"
     on_value_change_client="items-changed"
     items={
       Corex.Content.new([
@@ -304,7 +328,6 @@ defmodule Corex.Accordion do
   ```heex
   <.accordion
     id="faq"
-    class="accordion"
     on_focus_change_client="focus-changed"
     items={
       Corex.Content.new([
@@ -372,12 +395,11 @@ defmodule Corex.Accordion do
       ~H"""
       <.async_result :let={accordion} assign={@accordion}>
         <:loading>
-          <.accordion_skeleton count={3} class="accordion" />
+          <.accordion_skeleton count={3} />
         </:loading>
         <:failed>Could not load accordion.</:failed>
         <.accordion
           id="async-accordion"
-          class="accordion"
           items={accordion.items}
           value={accordion.value}
         />
@@ -410,7 +432,6 @@ defmodule Corex.Accordion do
         controlled
         value={@accordion_value}
         on_value_change="accordion_value_changed"
-        class="accordion"
         items={
           Corex.Content.new([
             %{
@@ -467,7 +488,7 @@ defmodule Corex.Accordion do
 
     def render(assigns) do
       ~H"""
-      <.accordion id="my-accordion" class="accordion" items={Corex.Content.new(@items_list)} />
+      <.accordion id="my-accordion" items={Corex.Content.new(@items_list)} />
       """
     end
   end
@@ -624,7 +645,7 @@ defmodule Corex.Accordion do
 
   ## Style
 
-  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `accordion.css`, then set `class="accordion"` on `<.accordion>`.
+  Target parts with `data-scope` and `data-part`, or use [Corex Design](styled.html): `@import "./corex.tailwind.css"` in `app.css`.
 
   ```css
   [data-scope="accordion"][data-part="root"] {}
@@ -633,12 +654,6 @@ defmodule Corex.Accordion do
   [data-scope="accordion"][data-part="item-text"] {}
   [data-scope="accordion"][data-part="item-content"] {}
   [data-scope="accordion"][data-part="item-indicator"] {}
-  ```
-
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/accordion.css";
   ```
 
   Stack modifiers on the host (`class` on `<.accordion>`). Combine axes, for example `accordion accordion--accent accordion--lg`.
@@ -721,7 +736,7 @@ defmodule Corex.Accordion do
 
   alias Corex.Accordion.Anatomy.{Item, Props, Root}
   alias Corex.Accordion.Connect
-  alias Corex.Api.RespondTo
+  alias Corex.Api.Response
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
@@ -734,9 +749,37 @@ defmodule Corex.Accordion do
       normalize_string_list_value!: 1
     ]
 
+  use Corex.Variants,
+    base: "accordion",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      variant: :visual,
+      size: :size,
+      text: :text,
+      radius: :radius
+    ],
+    defaults: [
+      width: "full",
+      max_width: "md",
+      height: "auto",
+      max_height: "none",
+      variant: "subtle",
+      size: "md"
+    ]
+
   @doc """
   Renders an accordion. See the module documentation for list-driven `items`, With slots, Custom slots, Manual and Compound modes, patterns, API, and events.
   """
+
+  attr(:style, :map,
+    default: nil,
+    doc:
+      "Part-tree style overrides for this accordion (same shape as config :corex_design, styles)."
+  )
 
   attr(:id, :string,
     required: false,
@@ -975,13 +1018,15 @@ defmodule Corex.Accordion do
       |> then(&accordion_assert_trigger_content_pair!/1)
       |> then(&accordion_assign_manual_mode!/1)
       |> then(&accordion_assign_panels/1)
+      |> then(fn assigns -> assign(assigns, :host_style, host_style_vars(assigns)) end)
 
     ctx = %{
       id: assigns.id,
       values: assigns.value,
       orientation: assigns.orientation,
       dir: assigns.dir,
-      animation: assigns.animation
+      animation: assigns.animation,
+      animation_options: assigns.animation_options
     }
 
     assigns = assign(assigns, :ctx, ctx)
@@ -992,6 +1037,8 @@ defmodule Corex.Accordion do
       phx-hook="Accordion"
       data-loading
       phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+      class={corex_style_class(assigns)}
+      style={@host_style}
       {Connect.props(%Props{
         id: @id,
         controlled: @controlled,
@@ -1007,6 +1054,7 @@ defmodule Corex.Accordion do
         animation: @animation,
         animation_options: @animation_options
       })}
+     
       {@rest}
     >
 
@@ -1117,6 +1165,7 @@ defmodule Corex.Accordion do
       orientation: assigns.ctx.orientation,
       dir: assigns.ctx.dir,
       animation: Map.get(assigns.ctx, :animation, "instant"),
+      animation_options: Map.get(assigns.ctx, :animation_options, %Corex.Animation.Height{}),
       label: assigns[:label]
     }
 
@@ -1208,7 +1257,7 @@ defmodule Corex.Accordion do
     ~H"""
     <div
       phx-mounted={Connect.ignore_content(@item)}
-      {Connect.content(@item, @resolved_animation)}
+      {Connect.content(@item, @resolved_animation, @item.animation_options)}
       {@rest}
     >
       {render_slot(@inner_block)}
@@ -1309,7 +1358,7 @@ defmodule Corex.Accordion do
 
   def set_value(socket, accordion_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id) do
-    RespondTo.push_set_value(
+    Response.push_set_value(
       socket,
       "accordion_set_value",
       accordion_id,
@@ -1693,4 +1742,15 @@ defmodule Corex.Accordion do
   defp normalize_value(v) when is_binary(v), do: [v]
   defp normalize_value(v) when is_list(v), do: v
   defp normalize_value(_), do: []
+
+  defp host_style_vars(%{style: style}) when is_map(style) do
+    with {:module, mod} <- Code.ensure_loaded(Corex.Design.PartTree.Vars),
+         true <- function_exported?(mod, :to_host_style, 2) do
+      apply(mod, :to_host_style, [:accordion, style])
+    else
+      _ -> []
+    end
+  end
+
+  defp host_style_vars(_), do: []
 end

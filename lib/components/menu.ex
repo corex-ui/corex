@@ -16,7 +16,6 @@ defmodule Corex.Menu do
 
   ```heex
   <.menu
-    class="menu"
     items={[
       %Corex.Tree.Item{
         value: "edit",
@@ -45,7 +44,6 @@ defmodule Corex.Menu do
 
   ```heex
   <.menu
-    class="menu"
     items={[
       %Corex.Tree.Item{
         value: "new-tab",
@@ -85,7 +83,6 @@ defmodule Corex.Menu do
 
   ```heex
   <.menu
-    class="menu"
     items={[
       %Corex.Tree.Item{
         value: "share",
@@ -109,7 +106,6 @@ defmodule Corex.Menu do
 
   ```heex
   <.menu
-    class="menu"
     items={[
       %Corex.Tree.Item{
         value: "edit",
@@ -137,6 +133,38 @@ defmodule Corex.Menu do
     <:indicator>
       <.heroicon name="hero-chevron-down" />
     </:indicator>
+  </.menu>
+  ```
+
+  <!-- tabs-close -->
+
+  ## Styling
+
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `semantic`, `size`, `radius`.
+
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.menu semantic="accent" size="md" class="menu" items={[
+    %Corex.Tree.Item{value: "edit", label: "Edit"},
+    %Corex.Tree.Item{value: "duplicate", label: "Duplicate"}
+  ]}>
+    <:trigger>Actions</:trigger>
+    <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+  </.menu>
+  ```
+
+  ### With classes
+
+  ```heex
+  <.menu class="menu menu--accent menu--md" items={[
+    %Corex.Tree.Item{value: "edit", label: "Edit"},
+    %Corex.Tree.Item{value: "duplicate", label: "Duplicate"}
+  ]}>
+    <:trigger>Actions</:trigger>
+    <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
   </.menu>
   ```
 
@@ -172,7 +200,6 @@ defmodule Corex.Menu do
 
   ```heex
   <.menu
-    class="menu"
     redirect
     items={[
       %Corex.Tree.Item{value: "/", label: "Home"},
@@ -202,7 +229,6 @@ defmodule Corex.Menu do
     def render(assigns) do
       ~H"""
       <.menu
-        class="menu"
         redirect
         on_select="handle_select"
         items={[
@@ -264,7 +290,6 @@ defmodule Corex.Menu do
 
   ```heex
   <.menu
-    class="menu"
     on_select="menu_selected"
     items={[
       %Corex.Tree.Item{value: "menu", label: "Menu"},
@@ -287,7 +312,6 @@ defmodule Corex.Menu do
 
   ```heex
   <.menu
-    class="menu"
     on_open_change="menu_open_changed"
     items={[
       %Corex.Tree.Item{value: "menu", label: "Menu"},
@@ -316,6 +340,25 @@ defmodule Corex.Menu do
 
   import Corex.Api.Doc
 
+  use Corex.Variants,
+    base: "menu",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size,
+      radius: :radius
+    ],
+    defaults: [
+      width: "fit",
+      max_width: "none",
+      height: "auto",
+      max_height: "none",
+      size: "md"
+    ]
+
   alias Corex.Menu.Anatomy.{
     Content,
     Group,
@@ -328,7 +371,7 @@ defmodule Corex.Menu do
     Trigger
   }
 
-  alias Corex.Api.RespondTo
+  alias Corex.Api.Response
   alias Corex.Menu.Connect
   alias Corex.Positioning
   alias Phoenix.LiveView.JS
@@ -485,6 +528,8 @@ defmodule Corex.Menu do
       phx-hook="Menu"
       phx-mounted={Connect.ignore_hook(@id)}
       data-loading
+      class={corex_style_class(assigns)}
+     
       {@rest}
       {Connect.props(%Props{
         id: @id,
@@ -869,6 +914,6 @@ defmodule Corex.Menu do
 
   def set_open(socket, menu_id, open)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(menu_id) do
-    RespondTo.push_set_open(socket, "menu_set_open", menu_id, open)
+    Response.push_set_open(socket, "menu_set_open", menu_id, open)
   end
 end

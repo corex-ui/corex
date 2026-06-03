@@ -11,7 +11,6 @@ defmodule Corex.RadioGroup do
   ```heex
   <.radio_group
     name="rg-minimal"
-    class="radio-group"
     items={[
       %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
       %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
@@ -27,7 +26,6 @@ defmodule Corex.RadioGroup do
   ```heex
   <.radio_group
     name="rg-indicator"
-    class="radio-group"
     items={[
       %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
       %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
@@ -44,7 +42,6 @@ defmodule Corex.RadioGroup do
   ```heex
   <.radio_group
     name="rg-invalid"
-    class="radio-group"
     invalid
     errors={["Required"]}
     items={[
@@ -56,7 +53,7 @@ defmodule Corex.RadioGroup do
     <:label>Choose one</:label>
     <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
     <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
+      <.heroicon name="hero-exclamation-circle" />
       {msg}
     </:error>
   </.radio_group>
@@ -67,7 +64,6 @@ defmodule Corex.RadioGroup do
   ```heex
   <.radio_group
     name="rg-readonly"
-    class="radio-group"
     read_only
     value="lorem"
     items={[
@@ -84,6 +80,48 @@ defmodule Corex.RadioGroup do
   <!-- tabs-close -->
 
   Items can be `{value, label}` tuples or maps with `:value`, `:label`, and optional `:disabled`, `:invalid`.
+
+  ## Styling
+
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `semantic`, `size`, `radius`.
+
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.radio_group
+    name="rg-styled"
+    semantic="accent"
+    size="md"
+    class="radio-group"
+    items={[
+      %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
+      %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"}
+    ]}
+  >
+    <:label>Choose one</:label>
+    <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+  </.radio_group>
+  ```
+
+  ### With classes
+
+  ```heex
+  <.radio_group
+    name="rg-styled"
+    class="radio-group radio-group--accent radio-group--md"
+    items={[
+      %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
+      %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"}
+    ]}
+  >
+    <:label>Choose one</:label>
+    <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+  </.radio_group>
+  ```
+
+  <!-- tabs-close -->
 
   ## Events
 
@@ -102,7 +140,6 @@ defmodule Corex.RadioGroup do
   ```heex
   <.radio_group
     name="rg-events"
-    class="radio-group"
     on_value_change="radio_group_changed"
     items={[
       %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
@@ -137,7 +174,6 @@ defmodule Corex.RadioGroup do
   <.radio_group
     id="radio-group-events-client"
     name="rg-events-client"
-    class="radio-group"
     on_value_change_client="radio-group-changed"
     items={[
       %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
@@ -184,7 +220,6 @@ defmodule Corex.RadioGroup do
   <.radio_group
     id="radio-group-api-server"
     name="rg-api-server"
-    class="radio-group"
     value="lorem"
     items={[
       %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
@@ -211,7 +246,6 @@ defmodule Corex.RadioGroup do
   <.radio_group
     id="radio-group-api-controlled"
     name="rg-controlled"
-    class="radio-group"
     controlled
     value={@api_controlled_value}
     on_value_change="radio_group_api_controlled"
@@ -239,7 +273,6 @@ defmodule Corex.RadioGroup do
   ```heex
   <.radio_group
     name="stream-rg"
-    class="radio-group"
     items={@items_list}
     value={@stream_value}
     controlled
@@ -262,7 +295,6 @@ defmodule Corex.RadioGroup do
   <.form for={@form} phx-change="validate">
     <.radio_group
       field={@form[:choice]}
-      class="radio-group"
       items={[
         %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
         %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
@@ -272,7 +304,7 @@ defmodule Corex.RadioGroup do
       <:label>Choose one</:label>
       <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
       <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
+        <.heroicon name="hero-exclamation-circle" />
         {msg}
       </:error>
     </.radio_group>
@@ -281,7 +313,7 @@ defmodule Corex.RadioGroup do
 
   ## Style
 
-  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `radio-group.css`, then set `class="radio-group"` on `<.radio_group>`.
+  Target parts with `data-scope` and `data-part`, or use [Corex Design](styled.html): `@import "./corex.tailwind.css"` in `app.css`.
 
   ```css
   [data-scope="radio-group"][data-part="root"] {}
@@ -290,12 +322,6 @@ defmodule Corex.RadioGroup do
   [data-scope="radio-group"][data-part="item-text"] {}
   [data-scope="radio-group"][data-part="item-control"] {}
   [data-scope="radio-group"][data-part="item-hidden-input"] {}
-  ```
-
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/radio-group.css";
   ```
 
   Stack modifiers on the host (`class` on `<.radio_group>`).
@@ -328,6 +354,25 @@ defmodule Corex.RadioGroup do
 
   @doc type: :component
   use Phoenix.Component
+
+  use Corex.Variants,
+    base: "radio-group",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size,
+      radius: :radius
+    ],
+    defaults: [
+      width: "fit",
+      max_width: "md",
+      height: "auto",
+      max_height: "none",
+      size: "md"
+    ]
 
   import Corex.Api.Doc
 
@@ -418,6 +463,8 @@ defmodule Corex.RadioGroup do
     <div
       id={@id}
       phx-hook="RadioGroup"
+      class={corex_style_class(assigns)}
+     
       data-loading
       phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       {@rest}

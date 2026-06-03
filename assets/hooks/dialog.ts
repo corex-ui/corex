@@ -74,6 +74,10 @@ const DialogHook: Hook<object & DialogHookState, HTMLElement> = {
 
     self.lastOpen = readControlledOrDefaultBoolean(el, "open", "defaultOpen");
 
+    prepareJsScaleInitialState(el, DIALOG_SCALE_SELECTOR, (sub) => {
+      if (sub.dataset.part === "backdrop") return { scale: false };
+    });
+
     const dialog = new Dialog(el, {
       ...readDialogLayoutProps(el),
       ...readBooleanControlledZagProps(el, "open", "defaultOpen"),
@@ -112,10 +116,6 @@ const DialogHook: Hook<object & DialogHookState, HTMLElement> = {
 
     dialog.init();
     this.dialog = dialog;
-
-    prepareJsScaleInitialState(el, DIALOG_SCALE_SELECTOR, (sub) => {
-      if (sub.dataset.part === "backdrop") return { scale: false };
-    });
 
     const domRegistry = createDomEventRegistry(el);
     this.domRegistry = domRegistry;

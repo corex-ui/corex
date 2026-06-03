@@ -3,6 +3,10 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
 
   use E2eWeb, :html
 
+  alias E2eWeb.Demos.StylingAxes
+
+  def styling_axis_values(axis), do: StylingAxes.styling_axis_values(axis)
+
   @presets ["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]
 
   def presets, do: @presets
@@ -13,7 +17,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       value="rgb(25, 9, 192, 0.9)"
       label="Select Color (RGBA)"
       presets={["#ff0000", "#00ff00", "#0000ff", "rgb(25, 9, 192, 0.9)"]}
-      class="color-picker"
+      
     />
     """
   end
@@ -23,7 +27,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     <.color_picker
       id="color-picker-anatomy-minimal"
       label="Pick a color"
-      class="color-picker"
     />
     """
   end
@@ -33,7 +36,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     <.color_picker
       value="#22c55e"
       label="Initial value"
-      class="color-picker"
+      
     />
     """
   end
@@ -44,7 +47,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       id="color-picker-anatomy-with-value"
       value="#22c55e"
       label="Initial value"
-      class="color-picker"
     />
     """
   end
@@ -55,7 +57,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       value="#3b82f6"
       label="Placement and gutter"
       positioning={%Corex.Positioning{placement: "left-start", gutter: 12}}
-      class="color-picker"
+      
     />
     """
   end
@@ -69,7 +71,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       value="#3b82f6"
       label="Placement and gutter"
       positioning={%Corex.Positioning{placement: "left-start", gutter: 12}}
-      class="color-picker"
     />
     """
   end
@@ -80,7 +81,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       value="#3b82f6"
       label="Presets + picker"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
-      class="color-picker"
+      
     />
     """
   end
@@ -92,7 +93,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       value="#3b82f6"
       label="Presets + picker"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
-      class="color-picker"
     />
     """
   end
@@ -100,14 +100,14 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   def api_set_value_client_code do
     ~S"""
     <div class="layout__row">
-      <.action phx-click={Corex.ColorPicker.set_value("color-picker-api-value-c", "#ff0000")} class="button button--sm">Set red</.action>
-      <.action phx-click={Corex.ColorPicker.set_value("color-picker-api-value-c", "#3b82f6")} class="button button--sm">Set blue</.action>
+      <.action phx-click={Corex.ColorPicker.set_value("color-picker-api-value-c", "#ff0000")} size="sm">Set red</.action>
+      <.action phx-click={Corex.ColorPicker.set_value("color-picker-api-value-c", "#3b82f6")} size="sm">Set blue</.action>
     </div>
     <.color_picker
       value="#3b82f6"
       label="Set the color from actions"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
-      class="color-picker"
+      
     />
     """
   end
@@ -117,10 +117,10 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   def api_set_value_client_example(assigns) do
     ~H"""
     <div class="layout__row">
-      <.action phx-click={Corex.ColorPicker.set_value(@id, "#ff0000")} class="button button--sm">
+      <.action phx-click={Corex.ColorPicker.set_value(@id, "#ff0000")} size="sm">
         Set red
       </.action>
-      <.action phx-click={Corex.ColorPicker.set_value(@id, "#3b82f6")} class="button button--sm">
+      <.action phx-click={Corex.ColorPicker.set_value(@id, "#3b82f6")} size="sm">
         Set blue
       </.action>
     </div>
@@ -129,7 +129,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       value="#3b82f6"
       label="Set the color from actions"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
-      class="color-picker"
     />
     """
   end
@@ -137,14 +136,14 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   def api_set_value_server_heex do
     ~S"""
     <div class="layout__row">
-      <.action phx-click="cp_api_s_value" phx-value-color="#ff0000" class="button button--sm">Set red</.action>
-      <.action phx-click="cp_api_s_value" phx-value-color="#3b82f6" class="button button--sm">Set blue</.action>
+      <.action phx-click="cp_api_s_value" phx-value-semantic="#ff0000" size="sm">Set red</.action>
+      <.action phx-click="cp_api_s_value" phx-value-semantic="#3b82f6" size="sm">Set blue</.action>
     </div>
     <.color_picker
       value="#3b82f6"
       label="Set the color (Server)"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
-      class="color-picker"
+      
     />
     """
   end
@@ -163,7 +162,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       value="#3b82f6"
       label="Value (server)"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
-      class="color-picker"
+      
       on_value_change="cp_ev_server_value"
     />
     """
@@ -182,7 +181,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       value="#3b82f6"
       label="Open (server)"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
-      class="color-picker"
+      
       on_open_change="cp_ev_server_open"
     />
     """
@@ -201,7 +200,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       value="#3b82f6"
       label="Value (client only)"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
-      class="color-picker"
+      
       on_value_change_client="color-picker-cv"
     />
     """
@@ -231,7 +230,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       value="#3b82f6"
       label="Open (client only)"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
-      class="color-picker"
+      
       on_open_change_client="color-picker-co"
     />
     """
@@ -304,16 +303,15 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       <.color_picker
         field={f[:color]}
         label="Color"
-        class="color-picker"
         presets={["#ff0000", "#00ff00", "#0000ff"]}
       >
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.color_picker>
 
-      <.action type="submit" class="button button--accent">
+      <.action type="submit">
         Submit
       </.action>
     </.form>
@@ -351,9 +349,9 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
         name={@form[:color].name}
         value={@form[:color].value || "#3b82f6"}
         label="Color"
-        class="color-picker"
+        
       />
-      <.action type="submit" class="button button--accent">
+      <.action type="submit">
         Submit
       </.action>
     </.form>
@@ -371,10 +369,10 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
         name={@form[:color].name}
         value={@form[:color].value || "#3b82f6"}
         label="Color"
-        class="color-picker"
+        
       />
       <.color_form_errors form={@form} />
-      <.action type="submit" class="button button--accent">
+      <.action type="submit">
         Submit
       </.action>
     </.form>
@@ -439,16 +437,15 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       <.color_picker
         field={f[:color]}
         label="Color"
-        class="color-picker"
         presets={["#ff0000", "#00ff00", "#0000ff"]}
       >
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.color_picker>
 
-      <.action type="submit" class="button button--accent">
+      <.action type="submit">
         Submit
       </.action>
     </.form>
@@ -505,9 +502,8 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
         name="color_picker_form[color]"
         value="#3b82f6"
         label="Color"
-        class="color-picker"
       />
-      <.action type="submit" class="button button--accent">
+      <.action type="submit">
         Submit
       </.action>
     </form>
@@ -539,10 +535,10 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
         value={@color}
         label="Color"
         on_value_change="color_changed_basic"
-        class="color-picker"
+        
       />
       <.color_form_errors form={@form} />
-      <.action type="submit" class="button button--accent">
+      <.action type="submit">
         Submit
       </.action>
     </.form>
@@ -587,10 +583,10 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
         value={@color}
         label="Color"
         on_value_change="color_changed_validate"
-        class="color-picker"
+        
       />
       <.color_form_errors form={@form} />
-      <.action type="submit" class="button button--accent">
+      <.action type="submit">
         Submit
       </.action>
     </.form>
@@ -659,18 +655,17 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
         field={@form[:color]}
         id="color-picker-changeset"
         label="Color"
-        class="color-picker"
         presets={["#ff0000", "#00ff00", "#0000ff"]}
       >
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.color_picker>
       <.action
         type="submit"
         id="color-picker-changeset-submit"
-        class="button button--accent"
+        semantic="accent"
       >
         Submit
       </.action>
@@ -691,18 +686,17 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
         field={@form[:color]}
         id="color-picker-validate"
         label="Color"
-        class="color-picker"
         presets={["#ff0000", "#00ff00", "#0000ff"]}
       >
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.color_picker>
       <.action
         type="submit"
         id="color-picker-validate-submit"
-        class="button button--accent"
+        semantic="accent"
       >
         Submit
       </.action>
@@ -725,12 +719,11 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
         id="color-picker-form-native"
         value="#3b82f6"
         label="Color"
-        class="color-picker"
       />
       <.action
         type="submit"
         id="color-picker-form-submit"
-        class="button button--accent"
+        semantic="accent"
       >
         Submit
       </.action>
@@ -753,18 +746,17 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
         id="color-picker-live-basic"
         label="Color"
         on_value_change="color_changed_basic"
-        class="color-picker"
         presets={["#ff0000", "#00ff00", "#0000ff"]}
       >
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.color_picker>
       <.action
         type="submit"
         id="color-picker-basic-form-live-submit"
-        class="button button--accent"
+        semantic="accent"
       >
         Submit
       </.action>
@@ -786,18 +778,17 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
         id="color-picker-live-validate"
         label="Color"
         on_value_change="color_changed_validate"
-        class="color-picker"
         presets={["#ff0000", "#00ff00", "#0000ff"]}
       >
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.color_picker>
       <.action
         type="submit"
         id="color-picker-validate-form-live-submit"
-        class="button button--accent"
+        semantic="accent"
       >
         Submit
       </.action>
@@ -817,15 +808,14 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       <.color_picker
         field={@form[:color]}
         label="Color"
-        class="color-picker"
         presets={["#ff0000", "#00ff00", "#0000ff"]}
       >
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.color_picker>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit">
         Submit
       </.action>
     </.form>
@@ -848,15 +838,14 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       <.color_picker
         field={@form[:color]}
         label="Color"
-        class="color-picker"
         presets={["#ff0000", "#00ff00", "#0000ff"]}
       >
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.color_picker>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit">
         Submit
       </.action>
     </.form>
@@ -956,9 +945,9 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     """
   end
 
-  def styling_color_code do
+  def styling_semantic_code do
     ~S"""
-    <.color_picker class="color-picker" value="#3b82f6" label="Default" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
+    <.color_picker  value="#3b82f6" label="Default" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
     <.color_picker class="color-picker color-picker--accent" value="#3b82f6" label="Accent" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
     <.color_picker class="color-picker color-picker--brand" value="#3b82f6" label="Brand" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
     <.color_picker class="color-picker color-picker--alert" value="#3b82f6" label="Alert" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
@@ -967,14 +956,13 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     """
   end
 
-  def styling_color_example(assigns) do
+  def styling_semantic_example(assigns) do
     assigns = assign(assigns, :presets, @presets)
 
     ~H"""
     <div class="flex flex-wrap gap-6 items-start w-full">
       <.color_picker
         id="color-picker-style-color-default"
-        class="color-picker"
         value="#3b82f6"
         label="Default"
         presets={@presets}

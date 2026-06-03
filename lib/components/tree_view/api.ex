@@ -1,6 +1,6 @@
 defmodule Corex.TreeView.Api do
   @moduledoc false
-  alias Corex.Api.RespondTo
+  alias Corex.Api.Response
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
   import Corex.Helpers, only: [validate_value!: 1, respond_to_fields: 1]
@@ -23,7 +23,7 @@ defmodule Corex.TreeView.Api do
 
   def set_expanded_value(socket, tree_view_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(tree_view_id) do
-    RespondTo.push_set_value(
+    Response.push_set_value(
       socket,
       "tree_view_set_expanded_value",
       tree_view_id,
@@ -33,7 +33,7 @@ defmodule Corex.TreeView.Api do
 
   def set_selected_value(socket, tree_view_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(tree_view_id) do
-    RespondTo.push_set_value(
+    Response.push_set_value(
       socket,
       "tree_view_set_selected_value",
       tree_view_id,

@@ -1,0 +1,173 @@
+{
+  "scope": "design_tokens_only",
+  "mode": "light",
+  "target": "aa",
+  "pairs": [
+    {
+      "threshold": 4.5,
+      "references": {
+        "en301549": "9.2.1.3.2",
+        "section508": "1.4.3",
+        "wcag_sc": [
+          "1.4.3"
+        ]
+      },
+      "accessibility_level": "aa",
+      "bg_hex": "#e1e1e1",
+      "background": "accent-ink",
+      "fg_hex": "#484848",
+      "wcag_ratio": 6.99,
+      "wcag_level": "aaa_large",
+      "foreground": "accent",
+      "pair_kind": "text",
+      "passes_target": true
+    },
+    {
+      "threshold": 4.5,
+      "references": {
+        "en301549": "9.2.1.3.2",
+        "section508": "1.4.6",
+        "wcag_sc": [
+          "1.4.6",
+          "1.4.3"
+        ]
+      },
+      "accessibility_level": "aa",
+      "bg_hex": "#dddddd",
+      "background": "brand-ink",
+      "fg_hex": "#2a3e92",
+      "wcag_ratio": 7.02,
+      "wcag_level": "aaa",
+      "foreground": "brand",
+      "pair_kind": "text",
+      "passes_target": true
+    },
+    {
+      "threshold": 4.5,
+      "references": {
+        "en301549": "9.2.1.3.2",
+        "section508": "1.4.6",
+        "wcag_sc": [
+          "1.4.6",
+          "1.4.3"
+        ]
+      },
+      "accessibility_level": "aa",
+      "bg_hex": "#d9d9d9",
+      "background": "alert-ink",
+      "fg_hex": "#821b20",
+      "wcag_ratio": 7.0,
+      "wcag_level": "aaa_large",
+      "foreground": "alert",
+      "pair_kind": "text",
+      "passes_target": true
+    },
+    {
+      "threshold": 4.5,
+      "references": {
+        "en301549": "9.2.1.3.2",
+        "section508": "1.4.3",
+        "wcag_sc": [
+          "1.4.3"
+        ]
+      },
+      "accessibility_level": "aa",
+      "bg_hex": "#e0e0e0",
+      "background": "info-ink",
+      "fg_hex": "#00439c",
+      "wcag_ratio": 6.97,
+      "wcag_level": "aaa_large",
+      "foreground": "info",
+      "pair_kind": "text",
+      "passes_target": true
+    },
+    {
+      "threshold": 4.5,
+      "references": {
+        "en301549": "9.2.1.3.2",
+        "section508": "1.4.3",
+        "wcag_sc": [
+          "1.4.3"
+        ]
+      },
+      "accessibility_level": "aa",
+      "bg_hex": "#ececec",
+      "background": "success-ink",
+      "fg_hex": "#005b33",
+      "wcag_ratio": 6.99,
+      "wcag_level": "aaa_large",
+      "foreground": "success",
+      "pair_kind": "text",
+      "passes_target": true
+    },
+    {
+      "threshold": 4.5,
+      "references": {
+        "en301549": "9.2.1.3.2",
+        "section508": "1.4.6",
+        "wcag_sc": [
+          "1.4.6",
+          "1.4.3"
+        ]
+      },
+      "accessibility_level": "aa",
+      "bg_hex": "#3c3c3c",
+      "background": "selected-ink",
+      "fg_hex": "#cecece",
+      "wcag_ratio": 7.01,
+      "wcag_level": "aaa",
+      "foreground": "selected",
+      "pair_kind": "text",
+      "passes_target": true
+    },
+    {
+      "threshold": 4.5,
+      "references": {
+        "en301549": "9.2.1.3.2",
+        "section508": "1.4.3",
+        "wcag_sc": [
+          "1.4.3"
+        ]
+      },
+      "accessibility_level": "aa",
+      "bg_hex": "#f8f8f8",
+      "background": "root",
+      "fg_hex": "#005eb5",
+      "wcag_ratio": 6.05,
+      "wcag_level": "aaa_large",
+      "foreground": "link",
+      "pair_kind": "text",
+      "passes_target": true
+    },
+    {
+      "threshold": 3.0,
+      "references": {
+        "en301549": "9.2.1.3.2",
+        "section508": "1.4.3",
+        "wcag_sc": [
+          "1.4.3"
+        ]
+      },
+      "accessibility_level": "aa",
+      "bg_hex": "#ebebeb",
+      "background": "ui",
+      "fg_hex": "#868686",
+      "wcag_ratio": 3.05,
+      "wcag_level": "aa_large",
+      "foreground": "border",
+      "pair_kind": "non_text",
+      "passes_target": true
+    }
+  ],
+  "theme": "neo",
+  "accessibility_level": "aa",
+  "pairs_failing": 0,
+  "thresholds": {
+    "text": 4.5,
+    "non_text": 3.0
+  },
+  "failures": [],
+  "generated_at": "2026-06-04T05:36:26.184950Z",
+  "pairs_total": 8,
+  "pairs_passing": 8
+}

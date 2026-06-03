@@ -87,7 +87,7 @@ Corex is open source. If you rely on it in production or want to help sustain de
 ## Next steps
 
 - [MCP](https://hexdocs.pm/corex/mcp.html) Corex MCP for AI tooling in development.
-- [Design](https://hexdocs.pm/corex/design.html) optional tokens, themes, and modifier classes.
+- [Design](https://hexdocs.pm/corex/design.html) styling overview: [Unstyled](https://hexdocs.pm/corex/unstyled.html), [Styled](https://hexdocs.pm/corex/styled.html), [Design config](https://hexdocs.pm/corex/design-config.html).
 - [Dark mode](https://hexdocs.pm/corex/dark_mode.html) light/dark wiring after `--mode`.
 - [Theming](https://hexdocs.pm/corex/theming.html) theme picker after `--theme`.
 - [Localize](https://hexdocs.pm/corex/localize.html) locales and routes after `--lang`.

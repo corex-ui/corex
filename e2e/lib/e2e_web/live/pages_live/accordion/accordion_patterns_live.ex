@@ -1,7 +1,7 @@
 defmodule E2eWeb.AccordionPatternsLive do
   use E2eWeb, :live_view
 
-  import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
+  import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1, authoring_preview: 1]
 
   alias E2eWeb.Demos.AccordionDemo, as: Demo
 
@@ -31,12 +31,12 @@ defmodule E2eWeb.AccordionPatternsLive do
       |> assign(:id_stream, @id_stream)
       |> assign(:value, ["lorem"])
       |> assign(:items, items())
-      |> assign(:async_heex_full, Demo.patterns_async_heex_full())
+      |> assign(:async_heex_full, E2eWeb.AuthoringSnippet.heex_snippets(Demo.patterns_async_heex_full()))
       |> assign(:async_heex_panel, Demo.patterns_async_heex_panel())
       |> assign(:async_elixir, Demo.patterns_async_elixir())
-      |> assign(:controlled_heex, Demo.patterns_controlled_heex())
+      |> assign(:controlled_heex, E2eWeb.AuthoringSnippet.heex_snippets(Demo.patterns_controlled_heex()))
       |> assign(:controlled_elixir, Demo.patterns_controlled_elixir())
-      |> assign(:stream_heex, Demo.patterns_stream_demo_heex())
+      |> assign(:stream_heex, E2eWeb.AuthoringSnippet.heex_snippets(Demo.patterns_stream_demo_heex()))
       |> assign(:stream_elixir, Demo.patterns_stream_elixir())
       |> stream_configure(:items, dom_id: &"accordion:stream-accordion:item:#{&1.value}")
       |> stream(:items, @initial_stream_items)
@@ -140,22 +140,44 @@ defmodule E2eWeb.AccordionPatternsLive do
           ]}
         >
           <:preview>
-            <.async_result :let={accordion} assign={@accordion}>
-              <:loading>
-                <.accordion_skeleton count={3} class="accordion" />
-              </:loading>
+            <.authoring_preview>
+              <:styled>
+                <.async_result :let={accordion} assign={@accordion}>
+                  <:loading>
+                    <.accordion_skeleton count={3} class="accordion" />
+                  </:loading>
 
-              <.accordion
-                id={@id_async}
-                class="accordion"
-                items={accordion.items}
-                value={accordion.value}
-              >
-                <:indicator>
-                  <.heroicon name="hero-chevron-right" />
-                </:indicator>
-              </.accordion>
-            </.async_result>
+                  <.accordion
+                    id={@id_async}
+                    class="accordion"
+                    items={accordion.items}
+                    value={accordion.value}
+                  >
+                    <:indicator>
+                      <.heroicon name="hero-chevron-right" />
+                    </:indicator>
+                  </.accordion>
+                </.async_result>
+              </:styled>
+              <:markup>
+                <.async_result :let={accordion} assign={@accordion}>
+                  <:loading>
+                    <.accordion_skeleton count={3} />
+                  </:loading>
+
+                  <.accordion
+                    id={@id_async}
+                    unstyled
+                    items={accordion.items}
+                    value={accordion.value}
+                  >
+                    <:indicator>
+                      <.heroicon name="hero-chevron-right" />
+                    </:indicator>
+                  </.accordion>
+                </.async_result>
+              </:markup>
+            </.authoring_preview>
           </:preview>
         </.demo_section>
 
@@ -168,19 +190,38 @@ defmodule E2eWeb.AccordionPatternsLive do
           ]}
         >
           <:preview>
-            <.accordion
-              id={@id_controlled}
-              class="accordion"
-              items={@items}
-              multiple={false}
-              controlled
-              value={@value}
-              on_value_change="patterns_controlled_changed"
-            >
-              <:indicator>
-                <.heroicon name="hero-chevron-right" />
-              </:indicator>
-            </.accordion>
+            <.authoring_preview>
+              <:styled>
+                <.accordion
+                  id={@id_controlled}
+                  class="accordion"
+                  items={@items}
+                  multiple={false}
+                  controlled
+                  value={@value}
+                  on_value_change="patterns_controlled_changed"
+                >
+                  <:indicator>
+                    <.heroicon name="hero-chevron-right" />
+                  </:indicator>
+                </.accordion>
+              </:styled>
+              <:markup>
+                <.accordion
+                  id={@id_controlled}
+                  unstyled
+                  items={@items}
+                  multiple={false}
+                  controlled
+                  value={@value}
+                  on_value_change="patterns_controlled_changed"
+                >
+                  <:indicator>
+                    <.heroicon name="hero-chevron-right" />
+                  </:indicator>
+                </.accordion>
+              </:markup>
+            </.authoring_preview>
           </:preview>
         </.demo_section>
 
@@ -194,22 +235,37 @@ defmodule E2eWeb.AccordionPatternsLive do
         >
           <:preview>
             <div class="flex flex-wrap gap-2 items-center w-full justify-center">
-              <.action phx-click="add_item" class="button button--sm button--accent">
+              <.action phx-click="add_item" size="sm" semantic="accent">
                 <.heroicon name="hero-plus" /> Add item
               </.action>
-              <.action phx-click="reset" class="button button--sm button--alert">
+              <.action phx-click="reset" size="sm" semantic="alert">
                 Reset
               </.action>
             </div>
-            <.accordion
-              id={@id_stream}
-              class="accordion"
-              items={Corex.Content.new(@items_list)}
-            >
-              <:indicator>
-                <.heroicon name="hero-chevron-right" />
-              </:indicator>
-            </.accordion>
+            <.authoring_preview>
+              <:styled>
+                <.accordion
+                  id={@id_stream}
+                  class="accordion"
+                  items={Corex.Content.new(@items_list)}
+                >
+                  <:indicator>
+                    <.heroicon name="hero-chevron-right" />
+                  </:indicator>
+                </.accordion>
+              </:styled>
+              <:markup>
+                <.accordion
+                  id={@id_stream}
+                  unstyled
+                  items={Corex.Content.new(@items_list)}
+                >
+                  <:indicator>
+                    <.heroicon name="hero-chevron-right" />
+                  </:indicator>
+                </.accordion>
+              </:markup>
+            </.authoring_preview>
           </:preview>
         </.demo_section>
       </.demo_page>

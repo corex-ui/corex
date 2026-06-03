@@ -149,7 +149,7 @@ defmodule E2eWeb.ListboxPlayLive do
           />
 
           <.toggle_group
-            class="toggle-group toggle-group--sm max-w-6xs"
+            class="toggle-group toggle-group--sm toggle--max-w-6xs"
             id="selection_mode"
             on_value_change="control_changed"
             multiple={false}
@@ -161,7 +161,7 @@ defmodule E2eWeb.ListboxPlayLive do
           </.toggle_group>
 
           <.toggle_group
-            class="toggle-group toggle-group--sm max-w-7xs"
+            class="toggle-group toggle-group--sm toggle--max-w-7xs"
             id="orientation"
             on_value_change="control_changed"
             multiple={false}
@@ -169,16 +169,17 @@ defmodule E2eWeb.ListboxPlayLive do
             value={[@controls.orientation]}
           >
             <:item value="vertical" aria_label="Vertical orientation">
-              <.heroicon name="hero-arrows-up-down" class="icon icon--lg" />
+              <.heroicon name="hero-arrows-up-down" />
             </:item>
             <:item value="horizontal" aria_label="Horizontal orientation">
-              <.heroicon name="hero-arrows-right-left" class="icon icon--lg" />
+              <.heroicon name="hero-arrows-right-left" />
             </:item>
           </.toggle_group>
 
           <.select
             id="playground-disabled-items"
-            class="select select--sm w-4xs"
+            size="sm"
+            class="w-4xs"
             positioning={%Corex.Positioning{same_width: true}}
             multiple
             deselectable={true}
@@ -195,7 +196,6 @@ defmodule E2eWeb.ListboxPlayLive do
         <:canvas>
           <.listbox
             id={@playground_listbox_id}
-            class="listbox"
             items={@items}
             selection_mode={@controls.selection_mode}
             orientation={@controls.orientation}

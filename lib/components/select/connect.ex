@@ -6,6 +6,7 @@ defmodule Corex.Select.Connect do
     Content,
     Control,
     HiddenSelect,
+    Indicator,
     Item,
     ItemGroup,
     ItemGroupLabel,
@@ -178,6 +179,28 @@ defmodule Corex.Select.Connect do
   def ignore_trigger(assigns) do
     JS.ignore_attributes(Trigger.ignored_attrs(),
       to: Selectors.css_id("select:#{assigns.id}:trigger")
+    )
+  end
+
+  @spec indicator(Indicator.t()) :: map()
+  def indicator(assigns) do
+    orientation = Map.get(assigns, :orientation, "vertical")
+
+    %{
+      "data-scope" => "select",
+      "data-part" => "indicator",
+      "data-orientation" => orientation,
+      "dir" => assigns.dir,
+      "id" => "select:#{assigns.id}:indicator",
+      "aria-hidden" => "true",
+      "data-disabled" => get_boolean(assigns.disabled),
+      "data-invalid" => get_boolean(assigns.invalid)
+    }
+  end
+
+  def ignore_indicator(assigns) do
+    JS.ignore_attributes(Indicator.ignored_attrs(),
+      to: Selectors.css_id("select:#{assigns.id}:indicator")
     )
   end
 

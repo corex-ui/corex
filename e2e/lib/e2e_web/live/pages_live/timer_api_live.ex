@@ -249,8 +249,8 @@ defmodule E2eWeb.TimerApiLive do
           ]}
         >
           <:preview>
-            <p class="typo-sm text-ink-muted max-w-2xl">
-              Interactive log live on <.link navigate={~p"/timer/events"} class="link">Timer · Events</.link>.
+            <p class="typo-sm text-ui-ink-muted max-w-2xl">
+              Interactive log live on <.link navigate={~p"/timer/events"}>Timer · Events</.link>.
             </p>
           </:preview>
         </.demo_section>

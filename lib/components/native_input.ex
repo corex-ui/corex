@@ -14,7 +14,7 @@ defmodule Corex.NativeInput do
   ### Basic
 
   ```heex
-  <.native_input type="text" name="user[name]" class="native-input">
+  <.native_input type="text" name="user[name]">
     <:label>Name</:label>
   </.native_input>
   ```
@@ -22,16 +22,16 @@ defmodule Corex.NativeInput do
   ### With icon
 
   ```heex
-  <.native_input type="email" name="user[email]" class="native-input">
+  <.native_input type="email" name="user[email]">
     <:label>Email</:label>
-    <:icon><.heroicon name="hero-envelope" class="icon" /></:icon>
+    <:icon><.heroicon name="hero-envelope" /></:icon>
   </.native_input>
   ```
 
   ### Textarea (icon slot ignored)
 
   ```heex
-  <.native_input type="textarea" name="user[bio]" class="native-input">
+  <.native_input type="textarea" name="user[bio]">
     <:label>Bio</:label>
   </.native_input>
   ```
@@ -39,13 +39,13 @@ defmodule Corex.NativeInput do
   ### Checkbox, select, radio
 
   ```heex
-  <.native_input type="checkbox" name="user[agree]" class="native-input">
+  <.native_input type="checkbox" name="user[agree]">
     <:label>I agree</:label>
   </.native_input>
-  <.native_input type="select" name="user[role]" options={["Admin": "admin", "User": "user"]} prompt="Choose role" class="native-input">
+  <.native_input type="select" name="user[role]" options={["Admin": "admin", "User": "user"]} prompt="Choose role">
     <:label>Role</:label>
   </.native_input>
-  <.native_input type="radio" name="user[size]" options={["Small": "s", "Medium": "m", "Large": "l"]} value="m" class="native-input">
+  <.native_input type="radio" name="user[size]" options={["Small": "s", "Medium": "m", "Large": "l"]} value="m">
     <:label>Size</:label>
   </.native_input>
   ```
@@ -56,19 +56,43 @@ defmodule Corex.NativeInput do
 
   ```heex
   <.form :let={f} for={@form}>
-    <.native_input type="email" field={f[:email]} class="native-input">
+    <.native_input type="email" field={f[:email]}>
       <:label>Email</:label>
       <:error :let={msg}>{msg}</:error>
     </.native_input>
   </.form>
   ```
 
+  ## Styling
+
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `semantic`, `size`, `radius`.
+
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.native_input type="text" name="user[name]" semantic="accent" size="md" class="native-input">
+    <:label>Name</:label>
+  </.native_input>
+  ```
+
+  ### With classes
+
+  ```heex
+  <.native_input type="text" name="user[name]" class="native-input native-input--accent native-input--md">
+    <:label>Name</:label>
+  </.native_input>
+  ```
+
+  <!-- tabs-close -->
+
   ## Read-only
 
   Pass `read_only={true}` or `readonly` in global attributes. Both set `data-readonly` on the root for Corex CSS and the HTML `readonly` attribute on the input.
 
   ```heex
-  <.native_input type="text" name="user[code]" read_only class="native-input">
+  <.native_input type="text" name="user[code]" read_only>
     <:label>Code</:label>
   </.native_input>
   ```
@@ -83,7 +107,7 @@ defmodule Corex.NativeInput do
 
   ```heex
   <.form for={@form} phx-change="validate">
-    <.native_input type="email" field={@form[:email]} class="native-input">
+    <.native_input type="email" field={@form[:email]}>
       <:label>Email</:label>
       <:error :let={msg}>{msg}</:error>
     </.native_input>
@@ -92,7 +116,7 @@ defmodule Corex.NativeInput do
 
   ## Style
 
-  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `native-input.css`, then set `class="native-input"` on `<.native_input>`.
+  Target parts with `data-scope` and `data-part`, or use [Corex Design](styled.html): `@import "./corex.tailwind.css"` in `app.css`.
 
   ```css
   [data-scope="native-input"][data-part="root"] {}
@@ -103,20 +127,32 @@ defmodule Corex.NativeInput do
   [data-scope="native-input"][data-part="error"] {}
   ```
 
-  The root has `data-no-icon` when no icon is shown (icon slot empty or type is textarea/date/time), so the input uses full-width padding. Use the class `native-input` for default Corex styling.
-
-  If you wish to use the default Corex styling, you can use the class `native-input` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
-
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/native-input.css";
-  ```
+  The root has `data-no-icon` when no icon is shown (icon slot empty or type is textarea/date/time), so the input uses full-width padding.
   '''
 
   @doc type: :component
   use Phoenix.Component
+
+  use Corex.Variants,
+    base: "native-input",
+    class_attr: false,
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size,
+      radius: :radius
+    ],
+    defaults: [
+      width: "full",
+      max_width: "4xl",
+      height: "auto",
+      max_height: "none",
+      size: "md"
+    ]
+
   alias Phoenix.HTML.Form
 
   @types ~W(text textarea date datetime-local time month week email url tel search color number password checkbox radio select)
@@ -193,28 +229,30 @@ defmodule Corex.NativeInput do
       end)
 
     ~H"""
-    <div id={@id} class={@class} data-scope="native-input" data-part="root" data-invalid={@invalid && ""} data-readonly={@read_only && ""}>
-      <div data-scope="native-input" data-part="control">
-        <input
-          type="hidden"
-          name={@name}
-          value="false"
-          disabled={@rest[:disabled]}
-        />
-        <label data-scope="native-input" data-part="label" for={"#{@id}-input"}>
+    <div id={@id} class={corex_style_class(assigns)} data-invalid={@invalid && ""}>
+      <div data-scope="native-input" data-part="root" data-readonly={@read_only && ""}>
+        <div data-scope="native-input" data-part="control">
           <input
-            type="checkbox"
-            id={"#{@id}-input"}
+            type="hidden"
             name={@name}
-            value="true"
-            checked={@checked}
-            data-scope="native-input"
-            data-part="input"
-            data-invalid={@invalid && ""}
-            {@rest}
+            value="false"
+            disabled={@rest[:disabled]}
           />
-          <span :for={label <- @label} >{render_slot(label)}</span>
-        </label>
+          <label data-scope="native-input" data-part="label" for={"#{@id}-input"}>
+            <input
+              type="checkbox"
+              id={"#{@id}-input"}
+              name={@name}
+              value="true"
+              checked={@checked}
+              data-scope="native-input"
+              data-part="input"
+              data-invalid={@invalid && ""}
+              {@rest}
+            />
+            <span :for={label <- @label}>{render_slot(label)}</span>
+          </label>
+        </div>
       </div>
       <div :for={msg <- @errors} class={error_wrapper_class(@error)} data-scope="native-input" data-part="error">
         <%= if @error != [] do %>
@@ -235,23 +273,25 @@ defmodule Corex.NativeInput do
       |> assign_new(:value, fn -> nil end)
 
     ~H"""
-    <div id={@id} class={@class} data-scope="native-input" data-part="root" data-invalid={@invalid && ""} data-readonly={@read_only && ""}>
-      <label :for={label <- @label} data-scope="native-input" data-part="label" for={"#{@id}-input"}>
-        {render_slot(label)}
-      </label>
-      <div data-scope="native-input" data-part="control">
-        <select
-          id={"#{@id}-input"}
-          name={@name}
-          multiple={@multiple}
-          data-scope="native-input"
-          data-part="input"
-          data-invalid={@invalid && ""}
-          {@rest}
-        >
-          <option :if={@prompt} value="">{@prompt}</option>
-          {Phoenix.HTML.Form.options_for_select(@options || [], @value)}
-        </select>
+    <div id={@id} class={corex_style_class(assigns)} data-invalid={@invalid && ""}>
+      <div data-scope="native-input" data-part="root" data-readonly={@read_only && ""}>
+        <label :for={label <- @label} data-scope="native-input" data-part="label" for={"#{@id}-input"}>
+          {render_slot(label)}
+        </label>
+        <div data-scope="native-input" data-part="control">
+          <select
+            id={"#{@id}-input"}
+            name={@name}
+            multiple={@multiple}
+            data-scope="native-input"
+            data-part="input"
+            data-invalid={@invalid && ""}
+            {@rest}
+          >
+            <option :if={@prompt} value="">{@prompt}</option>
+            {Phoenix.HTML.Form.options_for_select(@options || [], @value)}
+          </select>
+        </div>
       </div>
       <div :for={msg <- @errors} class={error_wrapper_class(@error)} data-scope="native-input" data-part="error">
         <%= if @error != [] do %>
@@ -273,24 +313,26 @@ defmodule Corex.NativeInput do
       |> assign(:options, assigns[:options] || [])
 
     ~H"""
-    <div id={@id} class={@class} data-scope="native-input" data-part="root" data-invalid={@invalid && ""} data-readonly={@read_only && ""}>
-    <label :for={label <- @label} data-scope="native-input" data-part="label">
-    {render_slot(label)}
-      </label>
-      <div data-scope="native-input" data-part="control" data-has-items>
-        <div :for={{opt_label, opt_value} <- @options} data-scope="native-input" data-part="item">
-          <input
-            type="radio"
-            id={"#{@id}-input-#{opt_value}"}
-            name={@name}
-            value={opt_value}
-            checked={to_string(@value || "") == to_string(opt_value)}
-            data-scope="native-input"
-            data-part="input"
-            data-invalid={@invalid && ""}
-            {@rest}
-          />
-          <label for={"#{@id}-input-#{opt_value}"} data-invalid={@invalid && ""}>{opt_label}</label>
+    <div id={@id} class={corex_style_class(assigns)} data-invalid={@invalid && ""}>
+      <div data-scope="native-input" data-part="root" data-readonly={@read_only && ""}>
+        <label :for={label <- @label} data-scope="native-input" data-part="label">
+          {render_slot(label)}
+        </label>
+        <div data-scope="native-input" data-part="control" data-has-items>
+          <div :for={{opt_label, opt_value} <- @options} data-scope="native-input" data-part="item">
+            <input
+              type="radio"
+              id={"#{@id}-input-#{opt_value}"}
+              name={@name}
+              value={opt_value}
+              checked={to_string(@value || "") == to_string(opt_value)}
+              data-scope="native-input"
+              data-part="input"
+              data-invalid={@invalid && ""}
+              {@rest}
+            />
+            <label for={"#{@id}-input-#{opt_value}"} data-invalid={@invalid && ""}>{opt_label}</label>
+          </div>
         </div>
       </div>
       <div :for={msg <- @errors} class={error_wrapper_class(@error)} data-scope="native-input" data-part="error">
@@ -313,7 +355,7 @@ defmodule Corex.NativeInput do
       |> assign(:show_icon, show_icon?(assigns))
 
     ~H"""
-    <div id={@id} class={@class} data-no-icon={if @show_icon, do: nil, else: ""} data-invalid={@invalid && ""}>
+    <div id={@id} class={corex_style_class(assigns)} data-no-icon={if @show_icon, do: nil, else: ""} data-invalid={@invalid && ""}>
       <div data-scope="native-input" data-part="root" data-readonly={@read_only && ""}>
         <label :for={label <- @label} class={Map.get(label, :class, nil)} data-scope="native-input" data-part="label" for={"#{@id}-input"}>
           {render_slot(label)}

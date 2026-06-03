@@ -8,6 +8,8 @@ defmodule E2eWeb.SEO do
   @suffix " · Elixir Phoenix Framework UI Library"
   @og_image_path "/corex-ui-og.jpg"
 
+  @figtree_stylesheet_href "https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=optional"
+
   defstruct [
     :title,
     :description,
@@ -117,8 +119,16 @@ defmodule E2eWeb.SEO do
       |> assign(:seo, seo)
       |> assign(:suffix, @suffix)
       |> assign(:default_keywords, @default_keywords)
+      |> assign(:figtree_stylesheet_href, @figtree_stylesheet_href)
 
     ~H"""
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin" />
+    <link rel="preload" as="style" href={@figtree_stylesheet_href} />
+    <link
+      rel="stylesheet"
+      href={@figtree_stylesheet_href}
+    />
     <.live_title default="Corex" suffix={@suffix}>
       {page_title(@seo)}
     </.live_title>

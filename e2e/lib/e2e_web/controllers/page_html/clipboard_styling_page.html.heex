@@ -7,12 +7,13 @@
   <.demo_page
     path={@path}
     id="clipboard-styling-page"
-    title={~t"Clipboard · Styling"}
+    title={~t"Clipboard · Style"}
     subtitle={~t"Density and width via modifier classes on the clipboard root."}
   >
     <.demo_section
       id="clipboard-styling-size"
       title={~t"Size"}
+      values={E2eWeb.Demos.ClipboardDemo.styling_axis_values(:size)}
       code={E2eWeb.Demos.ClipboardDemo.styling_size_code()}
     >
       <:preview>

@@ -78,7 +78,6 @@ defmodule E2eWeb.ListboxEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.listbox
                 id={@id_server}
-                class="listbox"
                 items={@items}
                 on_value_change="listbox_value_changed"
               >
@@ -88,7 +87,7 @@ defmodule E2eWeb.ListboxEventsLive do
 
               <.data_table
                 id="listbox-events-log-server"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.server_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -115,7 +114,6 @@ defmodule E2eWeb.ListboxEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.listbox
                 id={@id_client}
-                class="listbox"
                 items={@items}
                 on_value_change_client="listbox-value-changed"
               >
@@ -146,7 +144,7 @@ defmodule E2eWeb.ListboxEventsLive do
 
               <.data_table
                 id="listbox-events-log-client"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.client_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>

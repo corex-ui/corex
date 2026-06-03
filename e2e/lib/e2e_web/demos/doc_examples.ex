@@ -9,6 +9,26 @@ defmodule E2eWeb.Demos.DocExamples do
     """
   end
 
+  def code_content_items_with_values do
+    ~S"""
+    Corex.Content.new([
+      %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])
+    """
+  end
+
+  def code_content_items_with_values_long do
+    ~S"""
+    Corex.Content.new([
+      %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique. Proin vel sapien at urna volutpat luctus. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Cras mattis consectetur purus sit amet fermentum. Aenean lacinia bibendum nulla sed consectetur."},
+      %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus. Maecenas faucibus mollis interdum. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh. Etiam porta sem malesuada magna mollis euismod. Praesent commodo cursus magna, vel scelerisque nisl consectetur et."},
+      %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus. Vestibulum id ligula porta felis euismod semper. Curabitur blandit tempus porttitor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus."}
+    ])
+    """
+  end
+
   def code_tabs_items do
     ~S"""
     Corex.Content.new([
@@ -141,6 +161,29 @@ defmodule E2eWeb.Demos.DocExamples do
         value: "donec",
         label: "Donec condimentum ex mi",
         content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
+      }
+    ])
+  end
+
+  def content_items_with_values_long do
+    Corex.Content.new([
+      %{
+        value: "lorem",
+        label: "Lorem ipsum dolor sit amet",
+        content:
+          "Consectetur adipiscing elit. Sed sodales ullamcorper tristique. Proin vel sapien at urna volutpat luctus. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Cras mattis consectetur purus sit amet fermentum. Aenean lacinia bibendum nulla sed consectetur."
+      },
+      %{
+        value: "duis",
+        label: "Duis dictum gravida odio ac pharetra?",
+        content:
+          "Nullam eget vestibulum ligula, at interdum tellus. Maecenas faucibus mollis interdum. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh. Etiam porta sem malesuada magna mollis euismod. Praesent commodo cursus magna, vel scelerisque nisl consectetur et."
+      },
+      %{
+        value: "donec",
+        label: "Donec condimentum ex mi",
+        content:
+          "Congue molestie ipsum gravida a. Sed ac eros luctus. Vestibulum id ligula porta felis euismod semper. Curabitur blandit tempus porttitor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus."
       }
     ])
   end

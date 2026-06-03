@@ -1,0 +1,2917 @@
+/* Corex generated design - do not edit */
+
+[data-tree-view] [data-scope="tree-view"][data-part="label"] {
+  padding-inline-start: var(--space-md);
+}
+
+[data-tree-view] {
+  width: 100%;
+  max-height: none;
+  height: auto;
+  max-width: var(--container-md);
+}
+
+[data-tree-view] [data-scope="tree-view"][data-part="item"] {
+  gap: var(--space-md);
+  line-height: var(--leading-base);
+  font-size: var(--text-base);
+  min-height: var(--size-md);
+  padding-inline: var(--space-md);
+}
+
+[data-tree-view] [data-scope="tree-view"][data-part="item-text"] {
+  gap: var(--space-md);
+}
+
+[data-tree-view] [data-scope="tree-view"][data-part="branch-text"] {
+  gap: var(--space-md);
+}
+
+[data-tree-view] [data-scope="tree-view"][data-part="branch-control"] {
+  gap: var(--space-md);
+  line-height: var(--leading-base);
+  font-size: var(--text-base);
+  min-height: var(--size-md);
+  padding-inline: var(--space-md);
+}
+
+[data-tree-view][data-tree-view-width="auto"] {
+  width: auto;
+}
+
+[data-tree-view][data-tree-view-width="fit"] {
+  width: fit-content;
+}
+
+[data-tree-view][data-tree-view-width="full"] {
+  width: 100%;
+}
+
+[data-tree-view][data-tree-view-max-width="none"] {
+  max-width: none;
+}
+
+[data-tree-view][data-tree-view-max-width="full"] {
+  max-width: 100%;
+}
+
+[data-tree-view][data-tree-view-max-width="7xs"] {
+  max-width: var(--container-7xs);
+}
+
+[data-tree-view][data-tree-view-max-width="6xs"] {
+  max-width: var(--container-6xs);
+}
+
+[data-tree-view][data-tree-view-max-width="5xs"] {
+  max-width: var(--container-5xs);
+}
+
+[data-tree-view][data-tree-view-max-width="4xs"] {
+  max-width: var(--container-4xs);
+}
+
+[data-tree-view][data-tree-view-max-width="3xs"] {
+  max-width: var(--container-3xs);
+}
+
+[data-tree-view][data-tree-view-max-width="2xs"] {
+  max-width: var(--container-2xs);
+}
+
+[data-tree-view][data-tree-view-max-width="xs"] {
+  max-width: var(--container-xs);
+}
+
+[data-tree-view][data-tree-view-max-width="sm"] {
+  max-width: var(--container-sm);
+}
+
+[data-tree-view][data-tree-view-max-width="md"] {
+  max-width: var(--container-md);
+}
+
+[data-tree-view][data-tree-view-max-width="lg"] {
+  max-width: var(--container-lg);
+}
+
+[data-tree-view][data-tree-view-max-width="xl"] {
+  max-width: var(--container-xl);
+}
+
+[data-tree-view][data-tree-view-max-width="2xl"] {
+  max-width: var(--container-2xl);
+}
+
+[data-tree-view][data-tree-view-max-width="3xl"] {
+  max-width: var(--container-3xl);
+}
+
+[data-tree-view][data-tree-view-max-width="4xl"] {
+  max-width: var(--container-4xl);
+}
+
+[data-tree-view][data-tree-view-max-width="5xl"] {
+  max-width: var(--container-5xl);
+}
+
+[data-tree-view][data-tree-view-max-width="6xl"] {
+  max-width: var(--container-6xl);
+}
+
+[data-tree-view][data-tree-view-max-width="7xl"] {
+  max-width: var(--container-7xl);
+}
+
+[data-tree-view][data-tree-view-height="auto"] {
+  height: auto;
+}
+
+[data-tree-view][data-tree-view-height="fit"] {
+  height: fit-content;
+}
+
+[data-tree-view][data-tree-view-height="full"] {
+  height: 100%;
+}
+
+[data-tree-view][data-tree-view-max-height="none"] {
+  max-height: none;
+}
+
+[data-tree-view][data-tree-view-max-height="full"] {
+  max-height: 100%;
+}
+
+[data-tree-view][data-tree-view-max-height="7xs"] {
+  max-height: var(--container-7xs);
+}
+
+[data-tree-view][data-tree-view-max-height="6xs"] {
+  max-height: var(--container-6xs);
+}
+
+[data-tree-view][data-tree-view-max-height="5xs"] {
+  max-height: var(--container-5xs);
+}
+
+[data-tree-view][data-tree-view-max-height="4xs"] {
+  max-height: var(--container-4xs);
+}
+
+[data-tree-view][data-tree-view-max-height="3xs"] {
+  max-height: var(--container-3xs);
+}
+
+[data-tree-view][data-tree-view-max-height="2xs"] {
+  max-height: var(--container-2xs);
+}
+
+[data-tree-view][data-tree-view-max-height="xs"] {
+  max-height: var(--container-xs);
+}
+
+[data-tree-view][data-tree-view-max-height="sm"] {
+  max-height: var(--container-sm);
+}
+
+[data-tree-view][data-tree-view-max-height="md"] {
+  max-height: var(--container-md);
+}
+
+[data-tree-view][data-tree-view-max-height="lg"] {
+  max-height: var(--container-lg);
+}
+
+[data-tree-view][data-tree-view-max-height="xl"] {
+  max-height: var(--container-xl);
+}
+
+[data-tree-view][data-tree-view-max-height="2xl"] {
+  max-height: var(--container-2xl);
+}
+
+[data-tree-view][data-tree-view-max-height="3xl"] {
+  max-height: var(--container-3xl);
+}
+
+[data-tree-view][data-tree-view-max-height="4xl"] {
+  max-height: var(--container-4xl);
+}
+
+[data-tree-view][data-tree-view-max-height="5xl"] {
+  max-height: var(--container-5xl);
+}
+
+[data-tree-view][data-tree-view-max-height="6xl"] {
+  max-height: var(--container-6xl);
+}
+
+[data-tree-view][data-tree-view-max-height="7xl"] {
+  max-height: var(--container-7xl);
+}
+
+[data-tree-view][data-tree-view-size="sm"] [data-scope="tree-view"][data-part="label"] {
+  padding-inline-start: var(--space-sm);
+}
+
+[data-tree-view][data-tree-view-size="sm"] [data-scope="tree-view"][data-part="item"] {
+  gap: var(--space-sm);
+  line-height: var(--leading-sm);
+  font-size: var(--text-sm);
+  min-height: var(--size-sm);
+  padding-inline: var(--space-sm);
+}
+
+[data-tree-view][data-tree-view-size="sm"] [data-scope="tree-view"][data-part="branch-control"] {
+  gap: var(--space-sm);
+  line-height: var(--leading-sm);
+  font-size: var(--text-sm);
+  min-height: var(--size-sm);
+  padding-inline: var(--space-sm);
+}
+
+[data-tree-view][data-tree-view-size="sm"] [data-scope="tree-view"][data-part="item-text"] {
+  gap: var(--space-sm);
+}
+
+[data-tree-view][data-tree-view-size="sm"] [data-scope="tree-view"][data-part="branch-text"] {
+  gap: var(--space-sm);
+}
+
+[data-tree-view][data-tree-view-size="md"] [data-scope="tree-view"][data-part="label"] {
+  padding-inline-start: var(--space-md);
+}
+
+[data-tree-view][data-tree-view-size="md"] [data-scope="tree-view"][data-part="item"] {
+  gap: var(--space-md);
+  line-height: var(--leading-base);
+  font-size: var(--text-base);
+  min-height: var(--size-md);
+  padding-inline: var(--space-md);
+}
+
+[data-tree-view][data-tree-view-size="md"] [data-scope="tree-view"][data-part="branch-control"] {
+  gap: var(--space-md);
+  line-height: var(--leading-base);
+  font-size: var(--text-base);
+  min-height: var(--size-md);
+  padding-inline: var(--space-md);
+}
+
+[data-tree-view][data-tree-view-size="md"] [data-scope="tree-view"][data-part="item-text"] {
+  gap: var(--space-md);
+}
+
+[data-tree-view][data-tree-view-size="md"] [data-scope="tree-view"][data-part="branch-text"] {
+  gap: var(--space-md);
+}
+
+[data-tree-view][data-tree-view-size="lg"] [data-scope="tree-view"][data-part="label"] {
+  padding-inline-start: var(--space-lg);
+}
+
+[data-tree-view][data-tree-view-size="lg"] [data-scope="tree-view"][data-part="item"] {
+  gap: var(--space-lg);
+  line-height: var(--leading-lg);
+  font-size: var(--text-lg);
+  min-height: var(--size-lg);
+  padding-inline: var(--space-lg);
+}
+
+[data-tree-view][data-tree-view-size="lg"] [data-scope="tree-view"][data-part="branch-control"] {
+  gap: var(--space-lg);
+  line-height: var(--leading-lg);
+  font-size: var(--text-lg);
+  min-height: var(--size-lg);
+  padding-inline: var(--space-lg);
+}
+
+[data-tree-view][data-tree-view-size="lg"] [data-scope="tree-view"][data-part="item-text"] {
+  gap: var(--space-lg);
+}
+
+[data-tree-view][data-tree-view-size="lg"] [data-scope="tree-view"][data-part="branch-text"] {
+  gap: var(--space-lg);
+}
+
+[data-tree-view][data-tree-view-size="xl"] [data-scope="tree-view"][data-part="label"] {
+  padding-inline-start: var(--space-xl);
+}
+
+[data-tree-view][data-tree-view-size="xl"] [data-scope="tree-view"][data-part="item"] {
+  gap: var(--space-xl);
+  line-height: var(--leading-xl);
+  font-size: var(--text-xl);
+  min-height: var(--size-xl);
+  padding-inline: var(--space-xl);
+}
+
+[data-tree-view][data-tree-view-size="xl"] [data-scope="tree-view"][data-part="branch-control"] {
+  gap: var(--space-xl);
+  line-height: var(--leading-xl);
+  font-size: var(--text-xl);
+  min-height: var(--size-xl);
+  padding-inline: var(--space-xl);
+}
+
+[data-tree-view][data-tree-view-size="xl"] [data-scope="tree-view"][data-part="item-text"] {
+  gap: var(--space-xl);
+}
+
+[data-tree-view][data-tree-view-size="xl"] [data-scope="tree-view"][data-part="branch-text"] {
+  gap: var(--space-xl);
+}
+
+[data-tree-view][data-tree-view-text="xs"] [data-scope="tree-view"][data-part="item"] {
+  line-height: var(--leading-xs);
+  font-size: var(--text-xs);
+}
+
+[data-tree-view][data-tree-view-text="xs"] [data-scope="tree-view"][data-part="branch-control"] {
+  line-height: var(--leading-xs);
+  font-size: var(--text-xs);
+}
+
+[data-tree-view][data-tree-view-text="xs"] [data-scope="tree-view"][data-part="item-text"] {
+  line-height: var(--leading-xs);
+  font-size: var(--text-xs);
+}
+
+[data-tree-view][data-tree-view-text="xs"] [data-scope="tree-view"][data-part="branch-text"] {
+  line-height: var(--leading-xs);
+  font-size: var(--text-xs);
+}
+
+[data-tree-view][data-tree-view-text="sm"] [data-scope="tree-view"][data-part="item"] {
+  line-height: var(--leading-sm);
+  font-size: var(--text-sm);
+}
+
+[data-tree-view][data-tree-view-text="sm"] [data-scope="tree-view"][data-part="branch-control"] {
+  line-height: var(--leading-sm);
+  font-size: var(--text-sm);
+}
+
+[data-tree-view][data-tree-view-text="sm"] [data-scope="tree-view"][data-part="item-text"] {
+  line-height: var(--leading-sm);
+  font-size: var(--text-sm);
+}
+
+[data-tree-view][data-tree-view-text="sm"] [data-scope="tree-view"][data-part="branch-text"] {
+  line-height: var(--leading-sm);
+  font-size: var(--text-sm);
+}
+
+[data-tree-view][data-tree-view-text="base"] [data-scope="tree-view"][data-part="item"] {
+  line-height: var(--leading-base);
+  font-size: var(--text-base);
+}
+
+[data-tree-view][data-tree-view-text="base"] [data-scope="tree-view"][data-part="branch-control"] {
+  line-height: var(--leading-base);
+  font-size: var(--text-base);
+}
+
+[data-tree-view][data-tree-view-text="base"] [data-scope="tree-view"][data-part="item-text"] {
+  line-height: var(--leading-base);
+  font-size: var(--text-base);
+}
+
+[data-tree-view][data-tree-view-text="base"] [data-scope="tree-view"][data-part="branch-text"] {
+  line-height: var(--leading-base);
+  font-size: var(--text-base);
+}
+
+[data-tree-view][data-tree-view-text="lg"] [data-scope="tree-view"][data-part="item"] {
+  line-height: var(--leading-lg);
+  font-size: var(--text-lg);
+}
+
+[data-tree-view][data-tree-view-text="lg"] [data-scope="tree-view"][data-part="branch-control"] {
+  line-height: var(--leading-lg);
+  font-size: var(--text-lg);
+}
+
+[data-tree-view][data-tree-view-text="lg"] [data-scope="tree-view"][data-part="item-text"] {
+  line-height: var(--leading-lg);
+  font-size: var(--text-lg);
+}
+
+[data-tree-view][data-tree-view-text="lg"] [data-scope="tree-view"][data-part="branch-text"] {
+  line-height: var(--leading-lg);
+  font-size: var(--text-lg);
+}
+
+[data-tree-view][data-tree-view-text="xl"] [data-scope="tree-view"][data-part="item"] {
+  line-height: var(--leading-xl);
+  font-size: var(--text-xl);
+}
+
+[data-tree-view][data-tree-view-text="xl"] [data-scope="tree-view"][data-part="branch-control"] {
+  line-height: var(--leading-xl);
+  font-size: var(--text-xl);
+}
+
+[data-tree-view][data-tree-view-text="xl"] [data-scope="tree-view"][data-part="item-text"] {
+  line-height: var(--leading-xl);
+  font-size: var(--text-xl);
+}
+
+[data-tree-view][data-tree-view-text="xl"] [data-scope="tree-view"][data-part="branch-text"] {
+  line-height: var(--leading-xl);
+  font-size: var(--text-xl);
+}
+
+[data-tree-view][data-tree-view-text="2xl"] [data-scope="tree-view"][data-part="item"] {
+  line-height: var(--leading-2xl);
+  font-size: var(--text-2xl);
+}
+
+[data-tree-view][data-tree-view-text="2xl"] [data-scope="tree-view"][data-part="branch-control"] {
+  line-height: var(--leading-2xl);
+  font-size: var(--text-2xl);
+}
+
+[data-tree-view][data-tree-view-text="2xl"] [data-scope="tree-view"][data-part="item-text"] {
+  line-height: var(--leading-2xl);
+  font-size: var(--text-2xl);
+}
+
+[data-tree-view][data-tree-view-text="2xl"] [data-scope="tree-view"][data-part="branch-text"] {
+  line-height: var(--leading-2xl);
+  font-size: var(--text-2xl);
+}
+
+[data-tree-view][data-tree-view-text="3xl"] [data-scope="tree-view"][data-part="item"] {
+  line-height: var(--leading-3xl);
+  font-size: var(--text-3xl);
+}
+
+[data-tree-view][data-tree-view-text="3xl"] [data-scope="tree-view"][data-part="branch-control"] {
+  line-height: var(--leading-3xl);
+  font-size: var(--text-3xl);
+}
+
+[data-tree-view][data-tree-view-text="3xl"] [data-scope="tree-view"][data-part="item-text"] {
+  line-height: var(--leading-3xl);
+  font-size: var(--text-3xl);
+}
+
+[data-tree-view][data-tree-view-text="3xl"] [data-scope="tree-view"][data-part="branch-text"] {
+  line-height: var(--leading-3xl);
+  font-size: var(--text-3xl);
+}
+
+[data-tree-view][data-tree-view-text="4xl"] [data-scope="tree-view"][data-part="item"] {
+  line-height: var(--leading-4xl);
+  font-size: var(--text-4xl);
+}
+
+[data-tree-view][data-tree-view-text="4xl"] [data-scope="tree-view"][data-part="branch-control"] {
+  line-height: var(--leading-4xl);
+  font-size: var(--text-4xl);
+}
+
+[data-tree-view][data-tree-view-text="4xl"] [data-scope="tree-view"][data-part="item-text"] {
+  line-height: var(--leading-4xl);
+  font-size: var(--text-4xl);
+}
+
+[data-tree-view][data-tree-view-text="4xl"] [data-scope="tree-view"][data-part="branch-text"] {
+  line-height: var(--leading-4xl);
+  font-size: var(--text-4xl);
+}
+
+[data-tree-view][data-tree-view-radius="none"] [data-scope="tree-view"][data-part="item"] {
+  border-radius: var(--radius-none);
+}
+
+[data-tree-view][data-tree-view-radius="none"] [data-scope="tree-view"][data-part="branch-control"] {
+  border-radius: var(--radius-none);
+}
+
+[data-tree-view][data-tree-view-radius="xs"] [data-scope="tree-view"][data-part="item"] {
+  border-radius: var(--radius-xs);
+}
+
+[data-tree-view][data-tree-view-radius="xs"] [data-scope="tree-view"][data-part="branch-control"] {
+  border-radius: var(--radius-xs);
+}
+
+[data-tree-view][data-tree-view-radius="sm"] [data-scope="tree-view"][data-part="item"] {
+  border-radius: var(--radius-sm);
+}
+
+[data-tree-view][data-tree-view-radius="sm"] [data-scope="tree-view"][data-part="branch-control"] {
+  border-radius: var(--radius-sm);
+}
+
+[data-tree-view][data-tree-view-radius="md"] [data-scope="tree-view"][data-part="item"] {
+  border-radius: var(--radius-md);
+}
+
+[data-tree-view][data-tree-view-radius="md"] [data-scope="tree-view"][data-part="branch-control"] {
+  border-radius: var(--radius-md);
+}
+
+[data-tree-view][data-tree-view-radius="lg"] [data-scope="tree-view"][data-part="item"] {
+  border-radius: var(--radius-lg);
+}
+
+[data-tree-view][data-tree-view-radius="lg"] [data-scope="tree-view"][data-part="branch-control"] {
+  border-radius: var(--radius-lg);
+}
+
+[data-tree-view][data-tree-view-radius="xl"] [data-scope="tree-view"][data-part="item"] {
+  border-radius: var(--radius-xl);
+}
+
+[data-tree-view][data-tree-view-radius="xl"] [data-scope="tree-view"][data-part="branch-control"] {
+  border-radius: var(--radius-xl);
+}
+
+[data-tree-view][data-tree-view-radius="2xl"] [data-scope="tree-view"][data-part="item"] {
+  border-radius: var(--radius-2xl);
+}
+
+[data-tree-view][data-tree-view-radius="2xl"] [data-scope="tree-view"][data-part="branch-control"] {
+  border-radius: var(--radius-2xl);
+}
+
+[data-tree-view][data-tree-view-radius="3xl"] [data-scope="tree-view"][data-part="item"] {
+  border-radius: var(--radius-3xl);
+}
+
+[data-tree-view][data-tree-view-radius="3xl"] [data-scope="tree-view"][data-part="branch-control"] {
+  border-radius: var(--radius-3xl);
+}
+
+[data-tree-view][data-tree-view-radius="4xl"] [data-scope="tree-view"][data-part="item"] {
+  border-radius: var(--radius-4xl);
+}
+
+[data-tree-view][data-tree-view-radius="4xl"] [data-scope="tree-view"][data-part="branch-control"] {
+  border-radius: var(--radius-4xl);
+}
+
+[data-tree-view][data-tree-view-radius="full"] [data-scope="tree-view"][data-part="item"] {
+  border-radius: var(--radius-full);
+}
+
+[data-tree-view][data-tree-view-radius="full"] [data-scope="tree-view"][data-part="branch-control"] {
+  border-radius: var(--radius-full);
+}
+
+[data-tree-view] [data-scope="tree-view"][data-part="root"][data-loading] {
+  pointer-events: none !important;
+  cursor: wait;
+  user-select: none;
+}
+
+[data-tree-view] {
+  width: 100%;
+  max-width: var(--container-md);
+  min-width: 0;
+}
+
+[data-tree-view] [data-scope="tree-view"][data-part="root"] {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: var(--space);
+  &[data-orientation="vertical"] {
+    flex-direction: column;
+  }
+
+  &[data-orientation="horizontal"] {
+    flex-flow: row wrap;
+  }
+}
+
+[data-tree-view] [data-scope="tree-view"][data-part="tree"] {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+[data-tree-view] [data-scope="tree-view"][data-part="label"] {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  text-align: start;
+  width: auto;
+  font-size: var(--text-base);
+  line-height: var(--leading-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-ink);
+  padding-inline-start: var(--space-md);
+}
+
+[data-tree-view] [data-scope="tree-view"][data-part="branch"] {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+[data-tree-view] [data-scope="tree-view"][data-part="item"] {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  text-align: start;
+  cursor: pointer;
+  font-size: var(--text-base);
+  line-height: var(--leading-base);
+  font-weight: var(--font-weight-normal);
+  min-height: var(--size);
+  padding-inline: var(--space);
+  gap: var(--space);
+  background-color: var(--color-ui);
+  color: var(--color-ink);
+  border-radius: var(--radius-none);
+  outline: none;
+  transition: background-color 120ms ease, color 120ms ease, box-shadow 120ms ease;
+  &:hover {
+    background-color: var(--color-ui-hover);
+  }
+
+  &:active {
+    background-color: var(--color-ui-active);
+    box-shadow: none;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--color-ink);
+    background-color: var(--color-ui-hover);
+  }
+
+  @media (hover: hover) {
+    &[data-highlighted]:not(:hover) {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-ink);
+      background-color: var(--color-ui-hover);
+    }
+
+    &[data-highlighted]:active {
+      background-color: var(--color-ui-active);
+      box-shadow: none;
+    }
+  }
+
+  @media (hover: none) {
+    &[data-highlighted] {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-ink);
+      background-color: var(--color-ui-hover);
+    }
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    color: var(--color-ink-muted);
+    background-color: var(--color-ui-muted);
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  &[data-selected],
+  &[data-state="checked"],
+  &[data-state="on"],
+  &[data-in-range],
+  &[data-checked],
+  &[data-indeterminate] {
+    background-color: var(--color-selected);
+    color: var(--color-selected-ink);
+    &:hover {
+      background-color: var(--color-selected-hover);
+    }
+
+    &:active {
+      background-color: var(--color-selected-active);
+      box-shadow: none;
+    }
+
+    &:focus-visible {
+      background-color: var(--color-selected-hover);
+      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      outline: none;
+    }
+
+    @media (hover: hover) {
+      &[data-highlighted]:not(:hover) {
+        background-color: var(--color-selected-hover);
+        box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      }
+
+      &[data-highlighted]:active {
+        background-color: var(--color-selected-active);
+        box-shadow: none;
+      }
+    }
+
+    @media (hover: none) {
+      &[data-highlighted] {
+        background-color: var(--color-selected-hover);
+        box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      }
+    }
+  }
+
+  &[data-disabled][data-selected],
+  &[data-disabled][data-state="checked"],
+  &[data-disabled][data-state="on"],
+  &[data-disabled][data-in-range],
+  &[data-disabled][data-checked],
+  &[data-disabled][data-indeterminate] {
+    background-color: var(--color-selected-muted);
+    color: var(--color-selected-ink);
+  }
+
+  & [data-part="branch-indicator"],
+  & [data-part="item-indicator"] {
+    transition: transform 0.2s ease;
+  }
+
+  & [data-part="branch-indicator"][data-state="open"],
+  & [data-part="item-indicator"][data-state="open"] {
+    transform: rotate(90deg) !important;
+  }
+
+  & svg,
+  & .icon,
+  & img,
+  & [class^="hero-"],
+  & [data-part="item-indicator"] svg,
+  & [data-part="branch-indicator"] svg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 1em !important;
+    width: 1em !important;
+    color: currentcolor;
+    flex-shrink: 0;
+    [dir="rtl"] & {
+      transform: scaleX(-1);
+    }
+  }
+
+  & [data-part="item-text"],
+  & [data-part="branch-text"] {
+    display: flex;
+    gap: var(--space);
+    width: 100%;
+    text-align: start;
+    align-items: center;
+    flex: 1;
+  }
+}
+
+[data-tree-view] [data-scope="tree-view"][data-part="branch-control"] {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  text-align: start;
+  cursor: pointer;
+  font-size: var(--text-base);
+  line-height: var(--leading-base);
+  font-weight: var(--font-weight-normal);
+  min-height: var(--size);
+  padding-inline: var(--space);
+  gap: var(--space);
+  background-color: var(--color-ui);
+  color: var(--color-ink);
+  border-radius: var(--radius-none);
+  outline: none;
+  transition: background-color 120ms ease, color 120ms ease, box-shadow 120ms ease;
+  flex-wrap: nowrap;
+  min-width: 0;
+  &:hover {
+    background-color: var(--color-ui-hover);
+  }
+
+  &:active {
+    background-color: var(--color-ui-active);
+    box-shadow: none;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--color-ink);
+    background-color: var(--color-ui-hover);
+  }
+
+  @media (hover: hover) {
+    &[data-highlighted]:not(:hover) {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-ink);
+      background-color: var(--color-ui-hover);
+    }
+
+    &[data-highlighted]:active {
+      background-color: var(--color-ui-active);
+      box-shadow: none;
+    }
+  }
+
+  @media (hover: none) {
+    &[data-highlighted] {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-ink);
+      background-color: var(--color-ui-hover);
+    }
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    color: var(--color-ink-muted);
+    background-color: var(--color-ui-muted);
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  &[data-selected],
+  &[data-state="checked"],
+  &[data-state="on"],
+  &[data-in-range],
+  &[data-checked],
+  &[data-indeterminate] {
+    background-color: var(--color-selected);
+    color: var(--color-selected-ink);
+    &:hover {
+      background-color: var(--color-selected-hover);
+    }
+
+    &:active {
+      background-color: var(--color-selected-active);
+      box-shadow: none;
+    }
+
+    &:focus-visible {
+      background-color: var(--color-selected-hover);
+      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      outline: none;
+    }
+
+    @media (hover: hover) {
+      &[data-highlighted]:not(:hover) {
+        background-color: var(--color-selected-hover);
+        box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      }
+
+      &[data-highlighted]:active {
+        background-color: var(--color-selected-active);
+        box-shadow: none;
+      }
+    }
+
+    @media (hover: none) {
+      &[data-highlighted] {
+        background-color: var(--color-selected-hover);
+        box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      }
+    }
+  }
+
+  &[data-disabled][data-selected],
+  &[data-disabled][data-state="checked"],
+  &[data-disabled][data-state="on"],
+  &[data-disabled][data-in-range],
+  &[data-disabled][data-checked],
+  &[data-disabled][data-indeterminate] {
+    background-color: var(--color-selected-muted);
+    color: var(--color-selected-ink);
+  }
+
+  & [data-part="branch-indicator"],
+  & [data-part="item-indicator"] {
+    transition: transform 0.2s ease;
+  }
+
+  & [data-part="branch-indicator"][data-state="open"],
+  & [data-part="item-indicator"][data-state="open"] {
+    transform: rotate(90deg) !important;
+  }
+
+  & svg,
+  & .icon,
+  & img,
+  & [class^="hero-"],
+  & [data-part="item-indicator"] svg,
+  & [data-part="branch-indicator"] svg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 1em !important;
+    width: 1em !important;
+    color: currentcolor;
+    flex-shrink: 0;
+    [dir="rtl"] & {
+      transform: scaleX(-1);
+    }
+  }
+
+  & [data-part="item-text"],
+  & [data-part="branch-text"] {
+    display: flex;
+    gap: var(--space);
+    width: 100%;
+    text-align: start;
+    align-items: center;
+    flex: 1;
+  }
+}
+
+[data-tree-view] [data-scope="tree-view"][data-part="branch-text"] {
+  flex: 1 1 0%;
+  min-width: 0;
+  width: auto;
+  max-width: 100%;
+}
+
+[data-tree-view] [data-scope="tree-view"][data-part="branch-indicator"] {
+  flex: 0 0 auto;
+}
+
+[data-tree-view] [data-scope="tree-view"][data-part="branch-control"][data-state='open']:not([data-selected]):not([data-checked]):not([data-indeterminate]):not([data-loading]) {
+  background-color: var(--color-ui-active);
+}
+
+[data-tree-view] [data-scope="tree-view"][data-part="branch-indicator"][dir='rtl'][data-state='open'],
+  [data-tree-view] [data-scope="tree-view"][data-part="item-indicator"][dir='rtl'][data-state='open'] {
+  transform: rotate(-90deg) !important;
+}
+
+[data-tree-view] [data-scope="tree-view"][data-part="branch-content"] {
+  margin-inline-start: var(--space-md);
+  min-width: 0;
+  align-self: stretch;
+  position: relative;
+  isolation: isolate;
+}
+
+[data-tree-view] [data-scope="tree-view"][data-part="branch-content"] > [data-scope="tree-view"][data-part="item"],
+  [data-tree-view] [data-scope="tree-view"][data-part="branch-content"] > [data-scope="tree-view"][data-part="branch"] {
+  flex: 0 0 auto;
+  align-self: stretch;
+  width: 100%;
+  max-width: 100%;
+}
+
+[data-tree-view] [data-scope="tree-view"][data-part="branch-content"][data-state='open'] {
+  visibility: visible;
+  display: flex;
+  flex-direction: column;
+}
+
+[data-tree-view][data-animation='js'] [data-scope="tree-view"][data-part="branch-content"][data-state='closed'],
+  [data-tree-view][data-animation='custom'] [data-scope="tree-view"][data-part="branch-content"][data-state='closed'] {
+  display: flex;
+  flex-direction: column;
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+
+[data-tree-view] [data-scope="tree-view"][data-part="branch-label"] {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  text-align: start;
+  width: auto;
+  font-size: var(--text-base);
+  line-height: var(--leading-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-ink);
+}
+
+[data-tree-view] [data-scope="tree-view"][data-part="branch-content"] [data-scope="tree-view"][data-part="branch-indent-guide"] {
+  border-inline-start: 1px solid var(--color-ink-muted);
+  top: 0;
+  bottom: 0;
+  right: 0;
+  pointer-events: none;
+  opacity: 0.65;
+}
+
+[data-tree-view] [data-scope="tree-view"][data-part="root"][data-loading] [data-scope="tree-view"][data-part="branch-text"] {
+  display: inline-block;
+  min-height: var(--size);
+  background-color: var(--color-ui-active);
+  border-radius: var(--radius-md);
+  animation: corex-skeleton 1.4s ease-in-out infinite;
+}
+
+[data-tree-view] [data-scope="tree-view"][data-part="root"][data-loading] [data-scope="tree-view"][data-part="branch-indicator"] {
+  display: inline-block;
+  min-height: var(--size);
+  background-color: var(--color-ui-active);
+  border-radius: var(--radius-md);
+  animation: corex-skeleton 1.4s ease-in-out infinite;
+}
+
+[data-tree-view] [data-scope="tree-view"][data-part="root"][data-loading] [data-scope="tree-view"][data-part="item-text"] {
+  display: inline-block;
+  min-height: var(--size);
+  background-color: var(--color-ui-active);
+  border-radius: var(--radius-md);
+  animation: corex-skeleton 1.4s ease-in-out infinite;
+}
+
+[data-tree-view][data-tree-view-semantic="accent"] [data-scope="tree-view"][data-part="item"][data-selected] {
+  background-color: var(--color-accent);
+  color: var(--color-accent-ink);
+  &:hover {
+    background-color: var(--color-accent-hover);
+  }
+
+  &:active {
+    background-color: var(--color-accent-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-accent-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="accent"] [data-scope="tree-view"][data-part="item"][data-state='checked'] {
+  background-color: var(--color-accent);
+  color: var(--color-accent-ink);
+  &:hover {
+    background-color: var(--color-accent-hover);
+  }
+
+  &:active {
+    background-color: var(--color-accent-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-accent-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="accent"] [data-scope="tree-view"][data-part="item"][data-state='on'] {
+  background-color: var(--color-accent);
+  color: var(--color-accent-ink);
+  &:hover {
+    background-color: var(--color-accent-hover);
+  }
+
+  &:active {
+    background-color: var(--color-accent-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-accent-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="accent"] [data-scope="tree-view"][data-part="item"][data-in-range] {
+  background-color: var(--color-accent);
+  color: var(--color-accent-ink);
+  &:hover {
+    background-color: var(--color-accent-hover);
+  }
+
+  &:active {
+    background-color: var(--color-accent-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-accent-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="accent"] [data-scope="tree-view"][data-part="item"][data-checked] {
+  background-color: var(--color-accent);
+  color: var(--color-accent-ink);
+  &:hover {
+    background-color: var(--color-accent-hover);
+  }
+
+  &:active {
+    background-color: var(--color-accent-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-accent-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="accent"] [data-scope="tree-view"][data-part="item"][data-indeterminate] {
+  background-color: var(--color-accent);
+  color: var(--color-accent-ink);
+  &:hover {
+    background-color: var(--color-accent-hover);
+  }
+
+  &:active {
+    background-color: var(--color-accent-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-accent-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="accent"] [data-scope="tree-view"][data-part="branch-control"][data-selected] {
+  background-color: var(--color-accent);
+  color: var(--color-accent-ink);
+  &:hover {
+    background-color: var(--color-accent-hover);
+  }
+
+  &:active {
+    background-color: var(--color-accent-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-accent-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="accent"] [data-scope="tree-view"][data-part="branch-control"][data-state='checked'] {
+  background-color: var(--color-accent);
+  color: var(--color-accent-ink);
+  &:hover {
+    background-color: var(--color-accent-hover);
+  }
+
+  &:active {
+    background-color: var(--color-accent-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-accent-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="accent"] [data-scope="tree-view"][data-part="branch-control"][data-state='on'] {
+  background-color: var(--color-accent);
+  color: var(--color-accent-ink);
+  &:hover {
+    background-color: var(--color-accent-hover);
+  }
+
+  &:active {
+    background-color: var(--color-accent-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-accent-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="accent"] [data-scope="tree-view"][data-part="branch-control"][data-in-range] {
+  background-color: var(--color-accent);
+  color: var(--color-accent-ink);
+  &:hover {
+    background-color: var(--color-accent-hover);
+  }
+
+  &:active {
+    background-color: var(--color-accent-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-accent-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="accent"] [data-scope="tree-view"][data-part="branch-control"][data-checked] {
+  background-color: var(--color-accent);
+  color: var(--color-accent-ink);
+  &:hover {
+    background-color: var(--color-accent-hover);
+  }
+
+  &:active {
+    background-color: var(--color-accent-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-accent-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="accent"] [data-scope="tree-view"][data-part="branch-control"][data-indeterminate] {
+  background-color: var(--color-accent);
+  color: var(--color-accent-ink);
+  &:hover {
+    background-color: var(--color-accent-hover);
+  }
+
+  &:active {
+    background-color: var(--color-accent-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-accent-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="accent"] [data-scope="tree-view"][data-part="label"] {
+  padding-inline-start: var(--space-md);
+}
+
+[data-tree-view][data-tree-view-semantic="accent"] [data-scope="tree-view"][data-part="item"] {
+  padding-inline: var(--space-md);
+  gap: var(--space-md);
+}
+
+[data-tree-view][data-tree-view-semantic="accent"] [data-scope="tree-view"][data-part="branch-control"] {
+  padding-inline: var(--space-md);
+  gap: var(--space-md);
+}
+
+[data-tree-view][data-tree-view-semantic="accent"] [data-scope="tree-view"][data-part="item-text"], [data-tree-view][data-tree-view-semantic="accent"] [data-scope="tree-view"][data-part="branch-text"] {
+  gap: var(--space-md);
+}
+
+[data-tree-view][data-tree-view-semantic="accent"] [data-scope="tree-view"][data-part="branch-content"] [data-scope="tree-view"][data-part="branch-indent-guide"] {
+  border-inline-start: 1px solid var(--color-accent-ink);
+}
+
+[data-tree-view][data-tree-view-semantic="brand"] [data-scope="tree-view"][data-part="item"][data-selected] {
+  background-color: var(--color-brand);
+  color: var(--color-brand-ink);
+  &:hover {
+    background-color: var(--color-brand-hover);
+  }
+
+  &:active {
+    background-color: var(--color-brand-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-brand-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-brand-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="brand"] [data-scope="tree-view"][data-part="item"][data-state='checked'] {
+  background-color: var(--color-brand);
+  color: var(--color-brand-ink);
+  &:hover {
+    background-color: var(--color-brand-hover);
+  }
+
+  &:active {
+    background-color: var(--color-brand-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-brand-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-brand-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="brand"] [data-scope="tree-view"][data-part="item"][data-state='on'] {
+  background-color: var(--color-brand);
+  color: var(--color-brand-ink);
+  &:hover {
+    background-color: var(--color-brand-hover);
+  }
+
+  &:active {
+    background-color: var(--color-brand-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-brand-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-brand-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="brand"] [data-scope="tree-view"][data-part="item"][data-in-range] {
+  background-color: var(--color-brand);
+  color: var(--color-brand-ink);
+  &:hover {
+    background-color: var(--color-brand-hover);
+  }
+
+  &:active {
+    background-color: var(--color-brand-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-brand-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-brand-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="brand"] [data-scope="tree-view"][data-part="item"][data-checked] {
+  background-color: var(--color-brand);
+  color: var(--color-brand-ink);
+  &:hover {
+    background-color: var(--color-brand-hover);
+  }
+
+  &:active {
+    background-color: var(--color-brand-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-brand-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-brand-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="brand"] [data-scope="tree-view"][data-part="item"][data-indeterminate] {
+  background-color: var(--color-brand);
+  color: var(--color-brand-ink);
+  &:hover {
+    background-color: var(--color-brand-hover);
+  }
+
+  &:active {
+    background-color: var(--color-brand-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-brand-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-brand-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="brand"] [data-scope="tree-view"][data-part="branch-control"][data-selected] {
+  background-color: var(--color-brand);
+  color: var(--color-brand-ink);
+  &:hover {
+    background-color: var(--color-brand-hover);
+  }
+
+  &:active {
+    background-color: var(--color-brand-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-brand-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-brand-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="brand"] [data-scope="tree-view"][data-part="branch-control"][data-state='checked'] {
+  background-color: var(--color-brand);
+  color: var(--color-brand-ink);
+  &:hover {
+    background-color: var(--color-brand-hover);
+  }
+
+  &:active {
+    background-color: var(--color-brand-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-brand-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-brand-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="brand"] [data-scope="tree-view"][data-part="branch-control"][data-state='on'] {
+  background-color: var(--color-brand);
+  color: var(--color-brand-ink);
+  &:hover {
+    background-color: var(--color-brand-hover);
+  }
+
+  &:active {
+    background-color: var(--color-brand-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-brand-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-brand-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="brand"] [data-scope="tree-view"][data-part="branch-control"][data-in-range] {
+  background-color: var(--color-brand);
+  color: var(--color-brand-ink);
+  &:hover {
+    background-color: var(--color-brand-hover);
+  }
+
+  &:active {
+    background-color: var(--color-brand-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-brand-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-brand-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="brand"] [data-scope="tree-view"][data-part="branch-control"][data-checked] {
+  background-color: var(--color-brand);
+  color: var(--color-brand-ink);
+  &:hover {
+    background-color: var(--color-brand-hover);
+  }
+
+  &:active {
+    background-color: var(--color-brand-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-brand-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-brand-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="brand"] [data-scope="tree-view"][data-part="branch-control"][data-indeterminate] {
+  background-color: var(--color-brand);
+  color: var(--color-brand-ink);
+  &:hover {
+    background-color: var(--color-brand-hover);
+  }
+
+  &:active {
+    background-color: var(--color-brand-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-brand-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-brand-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="brand"] [data-scope="tree-view"][data-part="label"] {
+  padding-inline-start: var(--space-md);
+}
+
+[data-tree-view][data-tree-view-semantic="brand"] [data-scope="tree-view"][data-part="item"] {
+  padding-inline: var(--space-md);
+  gap: var(--space-md);
+}
+
+[data-tree-view][data-tree-view-semantic="brand"] [data-scope="tree-view"][data-part="branch-control"] {
+  padding-inline: var(--space-md);
+  gap: var(--space-md);
+}
+
+[data-tree-view][data-tree-view-semantic="brand"] [data-scope="tree-view"][data-part="item-text"], [data-tree-view][data-tree-view-semantic="brand"] [data-scope="tree-view"][data-part="branch-text"] {
+  gap: var(--space-md);
+}
+
+[data-tree-view][data-tree-view-semantic="brand"] [data-scope="tree-view"][data-part="branch-content"] [data-scope="tree-view"][data-part="branch-indent-guide"] {
+  border-inline-start: 1px solid var(--color-brand-ink);
+}
+
+[data-tree-view][data-tree-view-semantic="alert"] [data-scope="tree-view"][data-part="item"][data-selected] {
+  background-color: var(--color-alert);
+  color: var(--color-alert-ink);
+  &:hover {
+    background-color: var(--color-alert-hover);
+  }
+
+  &:active {
+    background-color: var(--color-alert-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-alert-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="alert"] [data-scope="tree-view"][data-part="item"][data-state='checked'] {
+  background-color: var(--color-alert);
+  color: var(--color-alert-ink);
+  &:hover {
+    background-color: var(--color-alert-hover);
+  }
+
+  &:active {
+    background-color: var(--color-alert-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-alert-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="alert"] [data-scope="tree-view"][data-part="item"][data-state='on'] {
+  background-color: var(--color-alert);
+  color: var(--color-alert-ink);
+  &:hover {
+    background-color: var(--color-alert-hover);
+  }
+
+  &:active {
+    background-color: var(--color-alert-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-alert-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="alert"] [data-scope="tree-view"][data-part="item"][data-in-range] {
+  background-color: var(--color-alert);
+  color: var(--color-alert-ink);
+  &:hover {
+    background-color: var(--color-alert-hover);
+  }
+
+  &:active {
+    background-color: var(--color-alert-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-alert-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="alert"] [data-scope="tree-view"][data-part="item"][data-checked] {
+  background-color: var(--color-alert);
+  color: var(--color-alert-ink);
+  &:hover {
+    background-color: var(--color-alert-hover);
+  }
+
+  &:active {
+    background-color: var(--color-alert-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-alert-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="alert"] [data-scope="tree-view"][data-part="item"][data-indeterminate] {
+  background-color: var(--color-alert);
+  color: var(--color-alert-ink);
+  &:hover {
+    background-color: var(--color-alert-hover);
+  }
+
+  &:active {
+    background-color: var(--color-alert-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-alert-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="alert"] [data-scope="tree-view"][data-part="branch-control"][data-selected] {
+  background-color: var(--color-alert);
+  color: var(--color-alert-ink);
+  &:hover {
+    background-color: var(--color-alert-hover);
+  }
+
+  &:active {
+    background-color: var(--color-alert-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-alert-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="alert"] [data-scope="tree-view"][data-part="branch-control"][data-state='checked'] {
+  background-color: var(--color-alert);
+  color: var(--color-alert-ink);
+  &:hover {
+    background-color: var(--color-alert-hover);
+  }
+
+  &:active {
+    background-color: var(--color-alert-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-alert-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="alert"] [data-scope="tree-view"][data-part="branch-control"][data-state='on'] {
+  background-color: var(--color-alert);
+  color: var(--color-alert-ink);
+  &:hover {
+    background-color: var(--color-alert-hover);
+  }
+
+  &:active {
+    background-color: var(--color-alert-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-alert-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="alert"] [data-scope="tree-view"][data-part="branch-control"][data-in-range] {
+  background-color: var(--color-alert);
+  color: var(--color-alert-ink);
+  &:hover {
+    background-color: var(--color-alert-hover);
+  }
+
+  &:active {
+    background-color: var(--color-alert-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-alert-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="alert"] [data-scope="tree-view"][data-part="branch-control"][data-checked] {
+  background-color: var(--color-alert);
+  color: var(--color-alert-ink);
+  &:hover {
+    background-color: var(--color-alert-hover);
+  }
+
+  &:active {
+    background-color: var(--color-alert-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-alert-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="alert"] [data-scope="tree-view"][data-part="branch-control"][data-indeterminate] {
+  background-color: var(--color-alert);
+  color: var(--color-alert-ink);
+  &:hover {
+    background-color: var(--color-alert-hover);
+  }
+
+  &:active {
+    background-color: var(--color-alert-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-alert-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="alert"] [data-scope="tree-view"][data-part="label"] {
+  padding-inline-start: var(--space-md);
+}
+
+[data-tree-view][data-tree-view-semantic="alert"] [data-scope="tree-view"][data-part="item"] {
+  padding-inline: var(--space-md);
+  gap: var(--space-md);
+}
+
+[data-tree-view][data-tree-view-semantic="alert"] [data-scope="tree-view"][data-part="branch-control"] {
+  padding-inline: var(--space-md);
+  gap: var(--space-md);
+}
+
+[data-tree-view][data-tree-view-semantic="alert"] [data-scope="tree-view"][data-part="item-text"], [data-tree-view][data-tree-view-semantic="alert"] [data-scope="tree-view"][data-part="branch-text"] {
+  gap: var(--space-md);
+}
+
+[data-tree-view][data-tree-view-semantic="alert"] [data-scope="tree-view"][data-part="branch-content"] [data-scope="tree-view"][data-part="branch-indent-guide"] {
+  border-inline-start: 1px solid var(--color-alert-ink);
+}
+
+[data-tree-view][data-tree-view-semantic="info"] [data-scope="tree-view"][data-part="item"][data-selected] {
+  background-color: var(--color-info);
+  color: var(--color-info-ink);
+  &:hover {
+    background-color: var(--color-info-hover);
+  }
+
+  &:active {
+    background-color: var(--color-info-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-info-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-info-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="info"] [data-scope="tree-view"][data-part="item"][data-state='checked'] {
+  background-color: var(--color-info);
+  color: var(--color-info-ink);
+  &:hover {
+    background-color: var(--color-info-hover);
+  }
+
+  &:active {
+    background-color: var(--color-info-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-info-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-info-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="info"] [data-scope="tree-view"][data-part="item"][data-state='on'] {
+  background-color: var(--color-info);
+  color: var(--color-info-ink);
+  &:hover {
+    background-color: var(--color-info-hover);
+  }
+
+  &:active {
+    background-color: var(--color-info-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-info-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-info-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="info"] [data-scope="tree-view"][data-part="item"][data-in-range] {
+  background-color: var(--color-info);
+  color: var(--color-info-ink);
+  &:hover {
+    background-color: var(--color-info-hover);
+  }
+
+  &:active {
+    background-color: var(--color-info-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-info-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-info-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="info"] [data-scope="tree-view"][data-part="item"][data-checked] {
+  background-color: var(--color-info);
+  color: var(--color-info-ink);
+  &:hover {
+    background-color: var(--color-info-hover);
+  }
+
+  &:active {
+    background-color: var(--color-info-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-info-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-info-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="info"] [data-scope="tree-view"][data-part="item"][data-indeterminate] {
+  background-color: var(--color-info);
+  color: var(--color-info-ink);
+  &:hover {
+    background-color: var(--color-info-hover);
+  }
+
+  &:active {
+    background-color: var(--color-info-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-info-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-info-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="info"] [data-scope="tree-view"][data-part="branch-control"][data-selected] {
+  background-color: var(--color-info);
+  color: var(--color-info-ink);
+  &:hover {
+    background-color: var(--color-info-hover);
+  }
+
+  &:active {
+    background-color: var(--color-info-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-info-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-info-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="info"] [data-scope="tree-view"][data-part="branch-control"][data-state='checked'] {
+  background-color: var(--color-info);
+  color: var(--color-info-ink);
+  &:hover {
+    background-color: var(--color-info-hover);
+  }
+
+  &:active {
+    background-color: var(--color-info-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-info-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-info-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="info"] [data-scope="tree-view"][data-part="branch-control"][data-state='on'] {
+  background-color: var(--color-info);
+  color: var(--color-info-ink);
+  &:hover {
+    background-color: var(--color-info-hover);
+  }
+
+  &:active {
+    background-color: var(--color-info-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-info-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-info-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="info"] [data-scope="tree-view"][data-part="branch-control"][data-in-range] {
+  background-color: var(--color-info);
+  color: var(--color-info-ink);
+  &:hover {
+    background-color: var(--color-info-hover);
+  }
+
+  &:active {
+    background-color: var(--color-info-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-info-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-info-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="info"] [data-scope="tree-view"][data-part="branch-control"][data-checked] {
+  background-color: var(--color-info);
+  color: var(--color-info-ink);
+  &:hover {
+    background-color: var(--color-info-hover);
+  }
+
+  &:active {
+    background-color: var(--color-info-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-info-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-info-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="info"] [data-scope="tree-view"][data-part="branch-control"][data-indeterminate] {
+  background-color: var(--color-info);
+  color: var(--color-info-ink);
+  &:hover {
+    background-color: var(--color-info-hover);
+  }
+
+  &:active {
+    background-color: var(--color-info-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-info-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-info-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="info"] [data-scope="tree-view"][data-part="label"] {
+  padding-inline-start: var(--space-md);
+}
+
+[data-tree-view][data-tree-view-semantic="info"] [data-scope="tree-view"][data-part="item"] {
+  padding-inline: var(--space-md);
+  gap: var(--space-md);
+}
+
+[data-tree-view][data-tree-view-semantic="info"] [data-scope="tree-view"][data-part="branch-control"] {
+  padding-inline: var(--space-md);
+  gap: var(--space-md);
+}
+
+[data-tree-view][data-tree-view-semantic="info"] [data-scope="tree-view"][data-part="item-text"], [data-tree-view][data-tree-view-semantic="info"] [data-scope="tree-view"][data-part="branch-text"] {
+  gap: var(--space-md);
+}
+
+[data-tree-view][data-tree-view-semantic="info"] [data-scope="tree-view"][data-part="branch-content"] [data-scope="tree-view"][data-part="branch-indent-guide"] {
+  border-inline-start: 1px solid var(--color-info-ink);
+}
+
+[data-tree-view][data-tree-view-semantic="success"] [data-scope="tree-view"][data-part="item"][data-selected] {
+  background-color: var(--color-success);
+  color: var(--color-success-ink);
+  &:hover {
+    background-color: var(--color-success-hover);
+  }
+
+  &:active {
+    background-color: var(--color-success-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-success-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-success-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="success"] [data-scope="tree-view"][data-part="item"][data-state='checked'] {
+  background-color: var(--color-success);
+  color: var(--color-success-ink);
+  &:hover {
+    background-color: var(--color-success-hover);
+  }
+
+  &:active {
+    background-color: var(--color-success-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-success-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-success-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="success"] [data-scope="tree-view"][data-part="item"][data-state='on'] {
+  background-color: var(--color-success);
+  color: var(--color-success-ink);
+  &:hover {
+    background-color: var(--color-success-hover);
+  }
+
+  &:active {
+    background-color: var(--color-success-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-success-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-success-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="success"] [data-scope="tree-view"][data-part="item"][data-in-range] {
+  background-color: var(--color-success);
+  color: var(--color-success-ink);
+  &:hover {
+    background-color: var(--color-success-hover);
+  }
+
+  &:active {
+    background-color: var(--color-success-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-success-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-success-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="success"] [data-scope="tree-view"][data-part="item"][data-checked] {
+  background-color: var(--color-success);
+  color: var(--color-success-ink);
+  &:hover {
+    background-color: var(--color-success-hover);
+  }
+
+  &:active {
+    background-color: var(--color-success-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-success-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-success-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="success"] [data-scope="tree-view"][data-part="item"][data-indeterminate] {
+  background-color: var(--color-success);
+  color: var(--color-success-ink);
+  &:hover {
+    background-color: var(--color-success-hover);
+  }
+
+  &:active {
+    background-color: var(--color-success-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-success-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-success-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="success"] [data-scope="tree-view"][data-part="branch-control"][data-selected] {
+  background-color: var(--color-success);
+  color: var(--color-success-ink);
+  &:hover {
+    background-color: var(--color-success-hover);
+  }
+
+  &:active {
+    background-color: var(--color-success-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-success-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-success-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="success"] [data-scope="tree-view"][data-part="branch-control"][data-state='checked'] {
+  background-color: var(--color-success);
+  color: var(--color-success-ink);
+  &:hover {
+    background-color: var(--color-success-hover);
+  }
+
+  &:active {
+    background-color: var(--color-success-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-success-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-success-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="success"] [data-scope="tree-view"][data-part="branch-control"][data-state='on'] {
+  background-color: var(--color-success);
+  color: var(--color-success-ink);
+  &:hover {
+    background-color: var(--color-success-hover);
+  }
+
+  &:active {
+    background-color: var(--color-success-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-success-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-success-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="success"] [data-scope="tree-view"][data-part="branch-control"][data-in-range] {
+  background-color: var(--color-success);
+  color: var(--color-success-ink);
+  &:hover {
+    background-color: var(--color-success-hover);
+  }
+
+  &:active {
+    background-color: var(--color-success-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-success-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-success-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="success"] [data-scope="tree-view"][data-part="branch-control"][data-checked] {
+  background-color: var(--color-success);
+  color: var(--color-success-ink);
+  &:hover {
+    background-color: var(--color-success-hover);
+  }
+
+  &:active {
+    background-color: var(--color-success-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-success-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-success-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="success"] [data-scope="tree-view"][data-part="branch-control"][data-indeterminate] {
+  background-color: var(--color-success);
+  color: var(--color-success-ink);
+  &:hover {
+    background-color: var(--color-success-hover);
+  }
+
+  &:active {
+    background-color: var(--color-success-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-success-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-success-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="success"] [data-scope="tree-view"][data-part="label"] {
+  padding-inline-start: var(--space-md);
+}
+
+[data-tree-view][data-tree-view-semantic="success"] [data-scope="tree-view"][data-part="item"] {
+  padding-inline: var(--space-md);
+  gap: var(--space-md);
+}
+
+[data-tree-view][data-tree-view-semantic="success"] [data-scope="tree-view"][data-part="branch-control"] {
+  padding-inline: var(--space-md);
+  gap: var(--space-md);
+}
+
+[data-tree-view][data-tree-view-semantic="success"] [data-scope="tree-view"][data-part="item-text"], [data-tree-view][data-tree-view-semantic="success"] [data-scope="tree-view"][data-part="branch-text"] {
+  gap: var(--space-md);
+}
+
+[data-tree-view][data-tree-view-semantic="success"] [data-scope="tree-view"][data-part="branch-content"] [data-scope="tree-view"][data-part="branch-indent-guide"] {
+  border-inline-start: 1px solid var(--color-success-ink);
+}
+
+[data-tree-view][data-tree-view-semantic="selected"] [data-scope="tree-view"][data-part="item"][data-selected] {
+  background-color: var(--color-selected);
+  color: var(--color-selected-ink);
+  &:hover {
+    background-color: var(--color-selected-hover);
+  }
+
+  &:active {
+    background-color: var(--color-selected-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-selected-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="selected"] [data-scope="tree-view"][data-part="item"][data-state='checked'] {
+  background-color: var(--color-selected);
+  color: var(--color-selected-ink);
+  &:hover {
+    background-color: var(--color-selected-hover);
+  }
+
+  &:active {
+    background-color: var(--color-selected-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-selected-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="selected"] [data-scope="tree-view"][data-part="item"][data-state='on'] {
+  background-color: var(--color-selected);
+  color: var(--color-selected-ink);
+  &:hover {
+    background-color: var(--color-selected-hover);
+  }
+
+  &:active {
+    background-color: var(--color-selected-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-selected-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="selected"] [data-scope="tree-view"][data-part="item"][data-in-range] {
+  background-color: var(--color-selected);
+  color: var(--color-selected-ink);
+  &:hover {
+    background-color: var(--color-selected-hover);
+  }
+
+  &:active {
+    background-color: var(--color-selected-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-selected-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="selected"] [data-scope="tree-view"][data-part="item"][data-checked] {
+  background-color: var(--color-selected);
+  color: var(--color-selected-ink);
+  &:hover {
+    background-color: var(--color-selected-hover);
+  }
+
+  &:active {
+    background-color: var(--color-selected-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-selected-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="selected"] [data-scope="tree-view"][data-part="item"][data-indeterminate] {
+  background-color: var(--color-selected);
+  color: var(--color-selected-ink);
+  &:hover {
+    background-color: var(--color-selected-hover);
+  }
+
+  &:active {
+    background-color: var(--color-selected-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-selected-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="selected"] [data-scope="tree-view"][data-part="branch-control"][data-selected] {
+  background-color: var(--color-selected);
+  color: var(--color-selected-ink);
+  &:hover {
+    background-color: var(--color-selected-hover);
+  }
+
+  &:active {
+    background-color: var(--color-selected-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-selected-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="selected"] [data-scope="tree-view"][data-part="branch-control"][data-state='checked'] {
+  background-color: var(--color-selected);
+  color: var(--color-selected-ink);
+  &:hover {
+    background-color: var(--color-selected-hover);
+  }
+
+  &:active {
+    background-color: var(--color-selected-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-selected-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="selected"] [data-scope="tree-view"][data-part="branch-control"][data-state='on'] {
+  background-color: var(--color-selected);
+  color: var(--color-selected-ink);
+  &:hover {
+    background-color: var(--color-selected-hover);
+  }
+
+  &:active {
+    background-color: var(--color-selected-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-selected-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="selected"] [data-scope="tree-view"][data-part="branch-control"][data-in-range] {
+  background-color: var(--color-selected);
+  color: var(--color-selected-ink);
+  &:hover {
+    background-color: var(--color-selected-hover);
+  }
+
+  &:active {
+    background-color: var(--color-selected-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-selected-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="selected"] [data-scope="tree-view"][data-part="branch-control"][data-checked] {
+  background-color: var(--color-selected);
+  color: var(--color-selected-ink);
+  &:hover {
+    background-color: var(--color-selected-hover);
+  }
+
+  &:active {
+    background-color: var(--color-selected-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-selected-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="selected"] [data-scope="tree-view"][data-part="branch-control"][data-indeterminate] {
+  background-color: var(--color-selected);
+  color: var(--color-selected-ink);
+  &:hover {
+    background-color: var(--color-selected-hover);
+  }
+
+  &:active {
+    background-color: var(--color-selected-active);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+    outline: none;
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled],
+  &[data-loading] {
+    background-color: var(--color-selected-muted);
+    cursor: not-allowed;
+  }
+}
+
+[data-tree-view][data-tree-view-semantic="selected"] [data-scope="tree-view"][data-part="label"] {
+  padding-inline-start: var(--space-md);
+}
+
+[data-tree-view][data-tree-view-semantic="selected"] [data-scope="tree-view"][data-part="item"] {
+  padding-inline: var(--space-md);
+  gap: var(--space-md);
+}
+
+[data-tree-view][data-tree-view-semantic="selected"] [data-scope="tree-view"][data-part="branch-control"] {
+  padding-inline: var(--space-md);
+  gap: var(--space-md);
+}
+
+[data-tree-view][data-tree-view-semantic="selected"] [data-scope="tree-view"][data-part="item-text"], [data-tree-view][data-tree-view-semantic="selected"] [data-scope="tree-view"][data-part="branch-text"] {
+  gap: var(--space-md);
+}
+
+[data-tree-view][data-tree-view-semantic="selected"] [data-scope="tree-view"][data-part="branch-content"] [data-scope="tree-view"][data-part="branch-indent-guide"] {
+  border-inline-start: 1px solid var(--color-selected-ink);
+}

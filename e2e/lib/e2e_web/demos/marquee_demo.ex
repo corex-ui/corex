@@ -1,6 +1,10 @@
 defmodule E2eWeb.Demos.MarqueeDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.Demos.StylingAxes
+
+  def styling_axis_values(axis), do: StylingAxes.styling_axis_values(axis)
+
   def api_demo_items do
     [
       %{name: "Apple", logo: "🍎"},
@@ -14,7 +18,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
   def anatomy_minimal_code do
     ~S"""
     <.marquee
-      class="marquee"
+      
       items={[
         %{name: "Apple", logo: "🍎"},
         %{name: "Banana", logo: "🍌"},
@@ -36,7 +40,6 @@ defmodule E2eWeb.Demos.MarqueeDemo do
     ~H"""
     <.marquee
       id="marquee-anatomy-minimal"
-      class="marquee"
       items={[
         %{name: "Apple", logo: "🍎"},
         %{name: "Banana", logo: "🍌"},
@@ -57,7 +60,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
   def anatomy_custom_slots_code do
     ~S"""
     <.marquee
-      class="marquee"
+      
       items={[
         %{name: "Home", icon: "hero-home"},
         %{name: "User", icon: "hero-user"},
@@ -79,7 +82,6 @@ defmodule E2eWeb.Demos.MarqueeDemo do
     ~H"""
     <.marquee
       id="marquee-anatomy-custom-slots"
-      class="marquee"
       items={[
         %{name: "Home", icon: "hero-home"},
         %{name: "User", icon: "hero-user"},
@@ -102,7 +104,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
   def anatomy_with_images_code do
     ~S"""
     <.marquee
-      class="marquee"
+      
       items={[
         %{name: "Elixir", img: "/images/tech/elixir.svg"},
         %{name: "Phoenix", img: "/images/tech/phoenix.svg"},
@@ -113,7 +115,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
       pause_on_interaction
     >
       <:item :let={item}>
-        <img src={item.img} alt={item.name} class="h-8 w-auto opacity-90" />
+        <img src={item.img} alt={item.name} class="doc-demo-img" />
       </:item>
     </.marquee>
     """
@@ -123,7 +125,6 @@ defmodule E2eWeb.Demos.MarqueeDemo do
     ~H"""
     <.marquee
       id="marquee-anatomy-with-images"
-      class="marquee"
       items={[
         %{name: "Elixir", img: "/images/tech/elixir.svg"},
         %{name: "Phoenix", img: "/images/tech/phoenix.svg"},
@@ -134,7 +135,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
       pause_on_interaction
     >
       <:item :let={item}>
-        <img src={item.img} alt={item.name} class="h-8 w-auto opacity-90" />
+        <img src={item.img} alt={item.name} class="doc-demo-img" />
       </:item>
     </.marquee>
     """
@@ -143,7 +144,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
   def api_pause_client_binding_code do
     """
     <div class="layout__row">
-      <.action phx-click={Corex.Marquee.pause("api-pause-client")} class="button button--sm">
+      <.action phx-click={Corex.Marquee.pause("api-pause-client")} size="sm">
         Pause
       </.action>
     </div>
@@ -155,7 +156,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
   def api_pause_client_binding_example(assigns) do
     ~H"""
     <div class="layout__row">
-      <.action phx-click={Corex.Marquee.pause("api-pause-client")} class="button button--sm">
+      <.action phx-click={Corex.Marquee.pause("api-pause-client")} size="sm">
         Pause
       </.action>
     </div>
@@ -167,7 +168,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
   def api_pause_client_js_heex do
     """
     <div class="layout__row">
-      <button type="button" id="api-pause-js-btn" class="button button--sm">Pause</button>
+      <button type="button" id="api-pause-js-btn" size="sm">Pause</button>
     </div>
 
     <script :type={Phoenix.LiveView.ColocatedHook} name=".MarqueeApiPauseJs">
@@ -202,7 +203,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
   def api_pause_client_js_example(assigns) do
     ~H"""
     <div class="layout__row">
-      <button type="button" id="api-pause-js-btn" class="button button--sm">Pause</button>
+      <button type="button" id="api-pause-js-btn" size="sm">Pause</button>
     </div>
 
     <script :type={Phoenix.LiveView.ColocatedHook} name=".MarqueeApiPauseJs">
@@ -223,7 +224,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
   def api_pause_server_heex do
     """
     <div class="layout__row">
-      <.action phx-click="marquee_api_server_pause" class="button button--sm">Pause</.action>
+      <.action phx-click="marquee_api_server_pause" size="sm">Pause</.action>
     </div>
 
     #{api_marquee_snippet("api-pause-server")}
@@ -241,7 +242,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
   def api_pause_server_example(assigns) do
     ~H"""
     <div class="layout__row">
-      <.action phx-click="marquee_api_server_pause" class="button button--sm">Pause</.action>
+      <.action phx-click="marquee_api_server_pause" size="sm">Pause</.action>
     </div>
 
     <.marquee_api_fixture id="api-pause-server" items={api_demo_items()} />
@@ -251,7 +252,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
   def api_resume_client_binding_code do
     """
     <div class="layout__row">
-      <.action phx-click={Corex.Marquee.resume("api-resume-client")} class="button button--sm">
+      <.action phx-click={Corex.Marquee.resume("api-resume-client")} size="sm">
         Resume
       </.action>
     </div>
@@ -263,7 +264,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
   def api_resume_client_binding_example(assigns) do
     ~H"""
     <div class="layout__row">
-      <.action phx-click={Corex.Marquee.resume("api-resume-client")} class="button button--sm">
+      <.action phx-click={Corex.Marquee.resume("api-resume-client")} size="sm">
         Resume
       </.action>
     </div>
@@ -275,7 +276,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
   def api_resume_client_js_heex do
     """
     <div class="layout__row">
-      <button type="button" id="api-resume-js-btn" class="button button--sm">Resume</button>
+      <button type="button" id="api-resume-js-btn" size="sm">Resume</button>
     </div>
 
     <script :type={Phoenix.LiveView.ColocatedHook} name=".MarqueeApiResumeJs">
@@ -310,7 +311,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
   def api_resume_client_js_example(assigns) do
     ~H"""
     <div class="layout__row">
-      <button type="button" id="api-resume-js-btn" class="button button--sm">Resume</button>
+      <button type="button" id="api-resume-js-btn" size="sm">Resume</button>
     </div>
 
     <script :type={Phoenix.LiveView.ColocatedHook} name=".MarqueeApiResumeJs">
@@ -331,7 +332,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
   def api_resume_server_heex do
     """
     <div class="layout__row">
-      <.action phx-click="marquee_api_server_resume" class="button button--sm">Resume</.action>
+      <.action phx-click="marquee_api_server_resume" size="sm">Resume</.action>
     </div>
 
     #{api_marquee_snippet("api-resume-server")}
@@ -349,7 +350,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
   def api_resume_server_example(assigns) do
     ~H"""
     <div class="layout__row">
-      <.action phx-click="marquee_api_server_resume" class="button button--sm">Resume</.action>
+      <.action phx-click="marquee_api_server_resume" size="sm">Resume</.action>
     </div>
 
     <.marquee_api_fixture id="api-resume-server" items={api_demo_items()} />
@@ -359,7 +360,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
   def api_toggle_client_binding_code do
     """
     <div class="layout__row">
-      <.action phx-click={Corex.Marquee.toggle_pause("api-toggle-client")} class="button button--sm">
+      <.action phx-click={Corex.Marquee.toggle_pause("api-toggle-client")} size="sm">
         Toggle pause
       </.action>
     </div>
@@ -371,7 +372,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
   def api_toggle_client_binding_example(assigns) do
     ~H"""
     <div class="layout__row">
-      <.action phx-click={Corex.Marquee.toggle_pause("api-toggle-client")} class="button button--sm">
+      <.action phx-click={Corex.Marquee.toggle_pause("api-toggle-client")} size="sm">
         Toggle pause
       </.action>
     </div>
@@ -383,7 +384,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
   def api_toggle_client_js_heex do
     """
     <div class="layout__row">
-      <button type="button" id="api-toggle-js-btn" class="button button--sm">Toggle pause</button>
+      <button type="button" id="api-toggle-js-btn" size="sm">Toggle pause</button>
     </div>
 
     <script :type={Phoenix.LiveView.ColocatedHook} name=".MarqueeApiToggleJs">
@@ -418,7 +419,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
   def api_toggle_client_js_example(assigns) do
     ~H"""
     <div class="layout__row">
-      <button type="button" id="api-toggle-js-btn" class="button button--sm">Toggle pause</button>
+      <button type="button" id="api-toggle-js-btn" size="sm">Toggle pause</button>
     </div>
 
     <script :type={Phoenix.LiveView.ColocatedHook} name=".MarqueeApiToggleJs">
@@ -439,7 +440,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
   def api_toggle_server_heex do
     """
     <div class="layout__row">
-      <.action phx-click="marquee_api_server_toggle_pause" class="button button--sm">
+      <.action phx-click="marquee_api_server_toggle_pause" size="sm">
         Toggle pause
       </.action>
     </div>
@@ -459,7 +460,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
   def api_toggle_server_example(assigns) do
     ~H"""
     <div class="layout__row">
-      <.action phx-click="marquee_api_server_toggle_pause" class="button button--sm">
+      <.action phx-click="marquee_api_server_toggle_pause" size="sm">
         Toggle pause
       </.action>
     </div>
@@ -471,7 +472,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
   def events_server_heex do
     ~S"""
     <.marquee
-      class="marquee"
+      
       on_pause_change="pause_changed"
       on_loop_complete="loop_complete"
       on_complete="complete"
@@ -507,7 +508,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
     ~S"""
     <.marquee
       id="marquee-events-client"
-      class="marquee"
+      
       on_pause_change_client="marquee-pause-changed-client"
       on_loop_complete_client="marquee-loop-complete-client"
       on_complete_client="marquee-complete-client"
@@ -571,7 +572,6 @@ defmodule E2eWeb.Demos.MarqueeDemo do
     ~H"""
     <.marquee
       id={@id}
-      class="marquee"
       items={@items}
       duration={20}
       spacing="2rem"
@@ -694,16 +694,16 @@ defmodule E2eWeb.Demos.MarqueeDemo do
     slot = styling_marquee_slot()
 
     """
-    <.marquee class="marquee max-w-2xs" #{items} duration={20} spacing="2rem" pause_on_interaction>
+    <.marquee class="marquee marquee--max-w-2xs" #{items} duration={20} spacing="2rem" pause_on_interaction>
     #{slot}
     </.marquee>
-    <.marquee class="marquee max-w-md" #{items} duration={20} spacing="2rem" pause_on_interaction>
+    <.marquee class="marquee marquee--max-w-md" #{items} duration={20} spacing="2rem" pause_on_interaction>
     #{slot}
     </.marquee>
-    <.marquee class="marquee max-w-xl" #{items} duration={20} spacing="2rem" pause_on_interaction>
+    <.marquee class="marquee marquee--max-w-xl" #{items} duration={20} spacing="2rem" pause_on_interaction>
     #{slot}
     </.marquee>
-    <.marquee class="marquee max-w-2xl" #{items} duration={20} spacing="2rem" pause_on_interaction>
+    <.marquee class="marquee marquee--max-w-2xl" #{items} duration={20} spacing="2rem" pause_on_interaction>
     #{slot}
     </.marquee>
     """
@@ -716,7 +716,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
     <div class="flex flex-col gap-6 items-start w-full">
       <.marquee
         id="marquee-style-max-2xs"
-        class="marquee max-w-2xs"
+        class="marquee marquee--max-w-2xs"
         items={@items}
         duration={20}
         spacing="2rem"
@@ -729,7 +729,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
       </.marquee>
       <.marquee
         id="marquee-style-max-md"
-        class="marquee max-w-md"
+        class="marquee marquee--max-w-md"
         items={@items}
         duration={20}
         spacing="2rem"
@@ -742,7 +742,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
       </.marquee>
       <.marquee
         id="marquee-style-max-xl"
-        class="marquee max-w-xl"
+        class="marquee marquee--max-w-xl"
         items={@items}
         duration={20}
         spacing="2rem"
@@ -755,7 +755,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
       </.marquee>
       <.marquee
         id="marquee-style-max-2xl"
-        class="marquee max-w-2xl"
+        class="marquee marquee--max-w-2xl"
         items={@items}
         duration={20}
         spacing="2rem"
@@ -774,7 +774,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
     """
     <.marquee
       id="#{id}"
-      class="marquee"
+      
       items={[
         %{name: "Apple", logo: "🍎"},
         %{name: "Banana", logo: "🍌"},

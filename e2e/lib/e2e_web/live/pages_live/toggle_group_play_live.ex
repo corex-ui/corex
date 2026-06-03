@@ -69,7 +69,7 @@ defmodule E2eWeb.ToggleGroupPlayLive do
           />
 
           <.toggle_group
-            class="toggle-group toggle-group--sm max-w-7xs"
+            class="toggle-group toggle-group--sm toggle--max-w-7xs"
             id="orientation"
             on_value_change="control_changed"
             multiple={false}
@@ -77,15 +77,15 @@ defmodule E2eWeb.ToggleGroupPlayLive do
             value={[@controls.orientation]}
           >
             <:item value="vertical" aria_label="Vertical orientation">
-              <.heroicon name="hero-arrows-up-down" class="icon icon--lg" />
+              <.heroicon name="hero-arrows-up-down" />
             </:item>
             <:item value="horizontal" aria_label="Horizontal orientation">
-              <.heroicon name="hero-arrows-right-left" class="icon icon--lg" />
+              <.heroicon name="hero-arrows-right-left" />
             </:item>
           </.toggle_group>
 
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="multiple"
             checked={@controls.multiple}
             on_checked_change="control_changed"
@@ -94,7 +94,7 @@ defmodule E2eWeb.ToggleGroupPlayLive do
           </.switch>
 
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="deselectable"
             checked={@controls.deselectable}
             on_checked_change="control_changed"
@@ -105,7 +105,6 @@ defmodule E2eWeb.ToggleGroupPlayLive do
         <:canvas>
           <.toggle_group
             id="toggle-group-play"
-            class="toggle-group"
             multiple={@controls.multiple}
             deselectable={@controls.deselectable}
             dir={@controls.dir}

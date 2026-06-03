@@ -1,7 +1,7 @@
 defmodule E2eWeb.AccordionEventsLive do
   use E2eWeb, :live_view
 
-  import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
+  import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1, authoring_preview: 1]
 
   @id_server "events-on-value-change-server"
   @id_client "events-on-value-change-client"
@@ -25,9 +25,9 @@ defmodule E2eWeb.AccordionEventsLive do
       |> assign(:id_server, @id_server)
       |> assign(:id_client, @id_client)
       |> assign(:client_event, @client_event)
-      |> assign(:server_heex, @server_heex)
+      |> assign(:server_heex, E2eWeb.AuthoringSnippet.heex_snippets(@server_heex))
       |> assign(:server_elixir, @server_elixir)
-      |> assign(:client_heex, @client_heex)
+      |> assign(:client_heex, E2eWeb.AuthoringSnippet.heex_snippets(@client_heex))
       |> assign(:client_js, @client_js)
       |> assign(:client_ts, @client_ts)
       |> assign(:demo_items, demo_items)
@@ -94,20 +94,36 @@ defmodule E2eWeb.AccordionEventsLive do
         >
           <:preview>
             <div class="flex flex-col gap-4 items-center w-full">
-              <.accordion
-                id={@id_server}
-                class="accordion"
-                items={@demo_items}
-                on_value_change="accordion_value_changed"
-              >
-                <:indicator>
-                  <.heroicon name="hero-chevron-right" />
-                </:indicator>
-              </.accordion>
+              <.authoring_preview>
+                <:styled>
+                  <.accordion
+                    id={@id_server}
+                    class="accordion"
+                    items={@demo_items}
+                    on_value_change="accordion_value_changed"
+                  >
+                    <:indicator>
+                      <.heroicon name="hero-chevron-right" />
+                    </:indicator>
+                  </.accordion>
+                </:styled>
+                <:markup>
+                  <.accordion
+                    id={@id_server}
+                    unstyled
+                    items={@demo_items}
+                    on_value_change="accordion_value_changed"
+                  >
+                    <:indicator>
+                      <.heroicon name="hero-chevron-right" />
+                    </:indicator>
+                  </.accordion>
+                </:markup>
+              </.authoring_preview>
 
               <.data_table
                 id="accordion-events-log-server"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.server_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -132,16 +148,32 @@ defmodule E2eWeb.AccordionEventsLive do
         >
           <:preview>
             <div class="flex flex-col gap-4 items-center w-full">
-              <.accordion
-                id={@id_client}
-                class="accordion"
-                items={@demo_items}
-                on_value_change_client={@client_event}
-              >
-                <:indicator>
-                  <.heroicon name="hero-chevron-right" />
-                </:indicator>
-              </.accordion>
+              <.authoring_preview>
+                <:styled>
+                  <.accordion
+                    id={@id_client}
+                    class="accordion"
+                    items={@demo_items}
+                    on_value_change_client={@client_event}
+                  >
+                    <:indicator>
+                      <.heroicon name="hero-chevron-right" />
+                    </:indicator>
+                  </.accordion>
+                </:styled>
+                <:markup>
+                  <.accordion
+                    id={@id_client}
+                    unstyled
+                    items={@demo_items}
+                    on_value_change_client={@client_event}
+                  >
+                    <:indicator>
+                      <.heroicon name="hero-chevron-right" />
+                    </:indicator>
+                  </.accordion>
+                </:markup>
+              </.authoring_preview>
 
               <div
                 id="accordion-events-client-listener"
@@ -165,7 +197,7 @@ defmodule E2eWeb.AccordionEventsLive do
 
               <.data_table
                 id="accordion-events-log-client"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.client_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>

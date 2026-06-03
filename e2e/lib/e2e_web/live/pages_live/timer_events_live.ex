@@ -100,19 +100,18 @@ defmodule E2eWeb.TimerEventsLive do
                 countdown
                 start_ms={3_600_000}
                 target_ms={0}
-                class="timer"
                 on_tick="timer_tick"
                 on_complete="timer_complete"
               >
-                <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-                <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-                <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-                <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+                <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+                <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+                <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+                <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
               </.timer>
 
               <.data_table
                 id="timer-events-log-server"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.server_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -143,14 +142,13 @@ defmodule E2eWeb.TimerEventsLive do
                 countdown
                 start_ms={3_600_000}
                 target_ms={0}
-                class="timer"
                 on_tick_client="timer-tick"
                 on_complete_client="timer-complete"
               >
-                <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-                <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-                <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-                <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+                <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+                <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+                <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+                <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
               </.timer>
 
               <div
@@ -182,7 +180,7 @@ defmodule E2eWeb.TimerEventsLive do
 
               <.data_table
                 id="timer-events-log-client"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.client_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>

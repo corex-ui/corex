@@ -86,7 +86,6 @@ defmodule E2eWeb.AvatarPlayLive do
         <:canvas>
           <.avatar
             id="avatar-playground"
-            class="avatar"
             src={@avatar_src}
             alt={@avatar_alt}
           >

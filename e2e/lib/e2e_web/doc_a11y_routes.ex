@@ -12,7 +12,7 @@ defmodule E2eWeb.DocA11yRoutes do
     {"/en/accordion/events", "#accordion-events-page"},
     {"/en/accordion/patterns", "#accordion-patterns-page"},
     {"/en/accordion/animation", "#accordion-animation-page"},
-    {"/en/accordion/style", "#accordion-styling-page"},
+    {"/en/accordion/style", "#accordion-style-page"},
     {"/en/action/anatomy", "#action-anatomy-page"},
     {"/en/action/patterns", "#action-patterns-page"},
     {"/en/action/style", "#action-style-page"},
@@ -244,7 +244,28 @@ defmodule E2eWeb.DocA11yRoutes do
   def all, do: @routes
 
   def for_slug(slug) when is_binary(slug) do
-    needle = "/#{slug}/"
+    needle = "/en/#{slug}/"
     Enum.filter(@routes, fn {path, _} -> String.contains?(path, needle) end)
+  end
+
+  def for_component(component) when is_atom(component) do
+    slug = component |> Atom.to_string() |> String.replace("_", "-")
+    for_slug(slug)
+  end
+
+  def component_slug(path) when is_binary(path) do
+    path
+    |> String.replace_prefix("/en/", "")
+    |> String.split("/", parts: 2)
+    |> hd()
+    |> String.replace("-", "_")
+    |> String.to_atom()
+  end
+
+  def page_key(path) when is_binary(path) do
+    case String.replace_prefix(path, "/en/", "") |> String.split("/", parts: 2) do
+      [_slug, page] -> page |> String.replace("-", "_") |> String.to_atom()
+      _ -> :root
+    end
   end
 end

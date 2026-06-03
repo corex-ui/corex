@@ -3,7 +3,8 @@
   lang={E2eWeb.Locale.current()}
   dir={E2eWeb.Locale.dir(E2eWeb.Locale.current())}
   data-theme={assigns[:theme]}
-  data-mode={assigns[:mode]}
+  data-mode={assigns[:mode] || "light"}
+  data-authoring={assigns[:authoring] || "attr"}
 >
   <head>
     <meta charset="utf-8" />
@@ -17,59 +18,18 @@
     <link rel="icon" type="image/png" sizes="512x512" href={~p"/images/pwa-512x512.png"} />
     <link rel="mask-icon" href={~p"/images/maskable-icon-512x512.png"} color="#F5F7FA" />
     <link rel="icon" type="image/png" sizes="64x64" href={~p"/images/pwa-64x64.png"} />
-    <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />
+    <link
+      phx-track-static
+      rel="stylesheet"
+      href={E2eWeb.Endpoint.static_path("/assets/css/site.css")}
+    />
 
     <script defer phx-track-static type="module" src={~p"/assets/js/app.js"}>
     </script>
 
-    <script>
-      (() => {
-        const getSystemMode = () =>
-          window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-
-        const setMode = (mode) => {
-          const resolved = mode === "dark" || mode === "light" ? mode : getSystemMode();
-          localStorage.setItem("phx:mode", resolved);
-          document.cookie = "phx_mode=" + resolved + "; path=/; max-age=31536000";
-          document.documentElement.setAttribute("data-mode", resolved);
-        };
-
-        setMode(localStorage.getItem("phx:mode") || document.documentElement.getAttribute("data-mode") || getSystemMode());
-
-        window.addEventListener("storage", (e) => e.key === "phx:mode" && e.newValue && setMode(e.newValue));
-
-        window.addEventListener("phx:set-mode", (e) => {
-          const detail = e.detail;
-          if (typeof detail?.pressed === "boolean") {
-            setMode(detail.pressed ? "dark" : "light");
-            return;
-          }
-          const value = detail?.value;
-          const mode = Array.isArray(value) && value[0] ? value[0] : "light";
-          setMode(mode);
-        });
-
-        const validThemes = ["neo", "uno", "duo", "leo"];
-        const setTheme = (theme) => {
-          const resolved = validThemes.includes(theme) ? theme : "neo";
-          localStorage.setItem("phx:theme", resolved);
-          document.cookie = "phx_theme=" + resolved + "; path=/; max-age=31536000";
-          document.documentElement.setAttribute("data-theme", resolved);
-        };
-
-        setTheme(localStorage.getItem("phx:theme") || document.documentElement.getAttribute("data-theme") || "neo");
-
-        window.addEventListener("storage", (e) => e.key === "phx:theme" && e.newValue && setTheme(e.newValue));
-
-        window.addEventListener("phx:set-theme", (e) => {
-          const value = e.detail?.value;
-          const theme = Array.isArray(value) && value[0] ? value[0] : "neo";
-          setTheme(theme);
-        });
-      })();
-    </script>
+    {Phoenix.HTML.raw("<script>\n" <> E2eWeb.PreviewSettings.full_script() <> "\n</script>")}
   </head>
-  <body class="typo layout antialiased">
+  <body class="antialiased min-h-dvh bg-root text-ui-ink overflow-x-hidden">
     <.navigate to="#main-content" class="link link--skip">{~t"Skip to content"}</.navigate>
     {@inner_content}
   </body>

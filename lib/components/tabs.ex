@@ -16,7 +16,6 @@ defmodule Corex.Tabs do
 
   ```heex
   <.tabs
-    class="tabs"
     items={Corex.Content.new([
       [label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
       [label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."],
@@ -31,7 +30,6 @@ defmodule Corex.Tabs do
 
   ```heex
   <.tabs
-    class="tabs"
     indicator
     items={Corex.Content.new([
       [value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
@@ -48,7 +46,6 @@ defmodule Corex.Tabs do
 
   ```heex
   <.tabs
-    class="tabs"
     value="lorem"
     items={Corex.Content.new([
       [value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.", meta: %{indicator: "hero-chevron-right"}],
@@ -63,6 +60,32 @@ defmodule Corex.Tabs do
       {item.content}
     </:content>
   </.tabs>
+  ```
+
+  <!-- tabs-close -->
+
+  ## Styling
+
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `semantic`, `size`, `text`, `radius`.
+
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.tabs semantic="accent" size="md" class="tabs" items={Corex.Content.new([
+    [label: "Lorem", content: "Consectetur adipiscing elit."],
+    [label: "Duis", content: "Nullam eget vestibulum ligula."]
+  ])} />
+  ```
+
+  ### With classes
+
+  ```heex
+  <.tabs class="tabs tabs--accent tabs--md" items={Corex.Content.new([
+    [label: "Lorem", content: "Consectetur adipiscing elit."],
+    [label: "Duis", content: "Nullam eget vestibulum ligula."]
+  ])} />
   ```
 
   <!-- tabs-close -->
@@ -105,7 +128,6 @@ defmodule Corex.Tabs do
     controlled
     value={@value}
     on_value_change="tabs_value_changed"
-    class="tabs"
     items={
       Corex.Content.new([
         %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit."},
@@ -125,9 +147,9 @@ defmodule Corex.Tabs do
 
   ```heex
   <.async_result :let={tabs} assign={@tabs}>
-    <:loading><.tabs_skeleton count={3} class="tabs" /></:loading>
+    <:loading><.tabs_skeleton count={3} /></:loading>
     <:failed>Could not load tabs.</:failed>
-    <.tabs class="tabs" items={tabs.items} value={tabs.value} />
+    <.tabs items={tabs.items} value={tabs.value} />
   </.async_result>
   ```
 
@@ -152,7 +174,7 @@ defmodule Corex.Tabs do
 
   ## Style
 
-  Use data attributes to target elements:
+  Use data attributes to target elements, or use [Corex Design](styled.html): `@import "./corex.tailwind.css"` in `app.css`.
 
   ```css
   [data-scope="tabs"][data-part="root"] {}
@@ -160,12 +182,6 @@ defmodule Corex.Tabs do
   [data-scope="tabs"][data-part="item-trigger"] {}
   [data-scope="tabs"][data-part="item-content"] {}
   [data-scope="tabs"][data-part="item-indicator"] {}
-  ```
-
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/tabs.css";
   ```
 
   Stack modifiers on the host (`class` on `<.tabs>`).
@@ -209,6 +225,26 @@ defmodule Corex.Tabs do
   import Corex.Helpers,
     only: [
       validate_tabs_value!: 1
+    ]
+
+  use Corex.Variants,
+    base: "tabs",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size,
+      text: :text,
+      radius: :radius
+    ],
+    defaults: [
+      width: "full",
+      max_width: "md",
+      height: "auto",
+      max_height: "none",
+      size: "md"
     ]
 
   @doc """
@@ -342,7 +378,7 @@ defmodule Corex.Tabs do
     assigns = assign(assigns, :ctx, ctx)
 
     ~H"""
-    <div id={@id} phx-hook="Tabs" data-loading phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}  {@rest}
+    <div id={@id} phx-hook="Tabs" data-loading phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])} class={corex_style_class(assigns)} {@rest}
     {Connect.props(%Props{
       id: @id,
       controlled: @controlled,

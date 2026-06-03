@@ -1,0 +1,677 @@
+/* Corex generated design - do not edit */
+
+@utility signature-pad--rounded-* {
+  [data-scope="signature-pad"][data-part="control"] {
+      border-radius: --value(--radius-*, [length]);
+  }
+
+  [data-scope="signature-pad"][data-part="segment"] {
+      border-radius: --value(--radius-*, [length]);
+  }
+
+  [data-scope="signature-pad"][data-part="clear-trigger"] {
+      border-radius: --value(--radius-*, [length]);
+  }
+
+}
+
+
+@utility signature-pad--max-w-* {
+  max-width: --value(--container-*, [length]);
+}
+
+
+@utility signature-pad--max-h-* {
+  max-height: --value(--container-*, [length]);
+}
+
+
+@layer components {
+  .signature-pad.signature-pad--w-auto {
+    width: auto;
+  }
+
+  .signature-pad.signature-pad--w-fit {
+    width: fit-content;
+  }
+
+  .signature-pad.signature-pad--w-full {
+    width: 100%;
+  }
+
+  .signature-pad.signature-pad--max-w-none {
+    max-width: none;
+  }
+
+  .signature-pad.signature-pad--max-w-full {
+    max-width: 100%;
+  }
+
+  .signature-pad.signature-pad--max-w-7xs {
+    max-width: var(--container-7xs);
+  }
+
+  .signature-pad.signature-pad--max-w-6xs {
+    max-width: var(--container-6xs);
+  }
+
+  .signature-pad.signature-pad--max-w-5xs {
+    max-width: var(--container-5xs);
+  }
+
+  .signature-pad.signature-pad--max-w-4xs {
+    max-width: var(--container-4xs);
+  }
+
+  .signature-pad.signature-pad--max-w-3xs {
+    max-width: var(--container-3xs);
+  }
+
+  .signature-pad.signature-pad--max-w-2xs {
+    max-width: var(--container-2xs);
+  }
+
+  .signature-pad.signature-pad--max-w-xs {
+    max-width: var(--container-xs);
+  }
+
+  .signature-pad.signature-pad--max-w-sm {
+    max-width: var(--container-sm);
+  }
+
+  .signature-pad.signature-pad--max-w-md {
+    max-width: var(--container-md);
+  }
+
+  .signature-pad.signature-pad--max-w-lg {
+    max-width: var(--container-lg);
+  }
+
+  .signature-pad.signature-pad--max-w-xl {
+    max-width: var(--container-xl);
+  }
+
+  .signature-pad.signature-pad--max-w-2xl {
+    max-width: var(--container-2xl);
+  }
+
+  .signature-pad.signature-pad--max-w-3xl {
+    max-width: var(--container-3xl);
+  }
+
+  .signature-pad.signature-pad--max-w-4xl {
+    max-width: var(--container-4xl);
+  }
+
+  .signature-pad.signature-pad--max-w-5xl {
+    max-width: var(--container-5xl);
+  }
+
+  .signature-pad.signature-pad--max-w-6xl {
+    max-width: var(--container-6xl);
+  }
+
+  .signature-pad.signature-pad--max-w-7xl {
+    max-width: var(--container-7xl);
+  }
+
+  .signature-pad.signature-pad--h-auto {
+    height: auto;
+  }
+
+  .signature-pad.signature-pad--h-fit {
+    height: fit-content;
+  }
+
+  .signature-pad.signature-pad--h-full {
+    height: 100%;
+  }
+
+  .signature-pad.signature-pad--max-h-none {
+    max-height: none;
+  }
+
+  .signature-pad.signature-pad--max-h-full {
+    max-height: 100%;
+  }
+
+  .signature-pad.signature-pad--max-h-7xs {
+    max-height: var(--container-7xs);
+  }
+
+  .signature-pad.signature-pad--max-h-6xs {
+    max-height: var(--container-6xs);
+  }
+
+  .signature-pad.signature-pad--max-h-5xs {
+    max-height: var(--container-5xs);
+  }
+
+  .signature-pad.signature-pad--max-h-4xs {
+    max-height: var(--container-4xs);
+  }
+
+  .signature-pad.signature-pad--max-h-3xs {
+    max-height: var(--container-3xs);
+  }
+
+  .signature-pad.signature-pad--max-h-2xs {
+    max-height: var(--container-2xs);
+  }
+
+  .signature-pad.signature-pad--max-h-xs {
+    max-height: var(--container-xs);
+  }
+
+  .signature-pad.signature-pad--max-h-sm {
+    max-height: var(--container-sm);
+  }
+
+  .signature-pad.signature-pad--max-h-md {
+    max-height: var(--container-md);
+  }
+
+  .signature-pad.signature-pad--max-h-lg {
+    max-height: var(--container-lg);
+  }
+
+  .signature-pad.signature-pad--max-h-xl {
+    max-height: var(--container-xl);
+  }
+
+  .signature-pad.signature-pad--max-h-2xl {
+    max-height: var(--container-2xl);
+  }
+
+  .signature-pad.signature-pad--max-h-3xl {
+    max-height: var(--container-3xl);
+  }
+
+  .signature-pad.signature-pad--max-h-4xl {
+    max-height: var(--container-4xl);
+  }
+
+  .signature-pad.signature-pad--max-h-5xl {
+    max-height: var(--container-5xl);
+  }
+
+  .signature-pad.signature-pad--max-h-6xl {
+    max-height: var(--container-6xl);
+  }
+
+  .signature-pad.signature-pad--max-h-7xl {
+    max-height: var(--container-7xl);
+  }
+
+  .signature-pad.signature-pad--accent {
+    position: relative;
+  }
+
+  .signature-pad.signature-pad--brand {
+    position: relative;
+  }
+
+  .signature-pad.signature-pad--alert {
+    position: relative;
+  }
+
+  .signature-pad.signature-pad--info {
+    position: relative;
+  }
+
+  .signature-pad.signature-pad--success {
+    position: relative;
+  }
+
+  .signature-pad.signature-pad--selected {
+    position: relative;
+  }
+
+  .signature-pad.signature-pad--sm [data-scope="signature-pad"][data-part="root"] {
+    gap: var(--space-sm);
+  }
+
+  .signature-pad.signature-pad--sm [data-scope="signature-pad"][data-part="label"] {
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+  }
+
+  .signature-pad.signature-pad--sm [data-scope="signature-pad"][data-part="control"] {
+    height: calc(var(--size-sm) * 4);
+  }
+
+  .signature-pad.signature-pad--sm [data-scope="signature-pad"][data-part="clear-trigger"] {
+    color: var(--color-accent-ink);
+    min-height: var(--size-sm);
+    min-width: var(--size-sm);
+    background-color: var(--color-accent);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+  }
+
+  .signature-pad.signature-pad--md [data-scope="signature-pad"][data-part="root"] {
+    gap: var(--space-md);
+  }
+
+  .signature-pad.signature-pad--md [data-scope="signature-pad"][data-part="label"] {
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+
+  .signature-pad.signature-pad--md [data-scope="signature-pad"][data-part="control"] {
+    height: calc(var(--size-md) * 4);
+  }
+
+  .signature-pad.signature-pad--md [data-scope="signature-pad"][data-part="clear-trigger"] {
+    color: var(--color-accent-ink);
+    min-height: var(--size-md);
+    min-width: var(--size-md);
+    background-color: var(--color-accent);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+
+  .signature-pad.signature-pad--lg [data-scope="signature-pad"][data-part="root"] {
+    gap: var(--space-lg);
+  }
+
+  .signature-pad.signature-pad--lg [data-scope="signature-pad"][data-part="label"] {
+    font-size: var(--text-lg);
+    line-height: var(--leading-lg);
+  }
+
+  .signature-pad.signature-pad--lg [data-scope="signature-pad"][data-part="control"] {
+    height: calc(var(--size-lg) * 4);
+  }
+
+  .signature-pad.signature-pad--lg [data-scope="signature-pad"][data-part="clear-trigger"] {
+    color: var(--color-accent-ink);
+    min-height: var(--size-lg);
+    min-width: var(--size-lg);
+    background-color: var(--color-accent);
+    font-size: var(--text-lg);
+    line-height: var(--leading-lg);
+  }
+
+  .signature-pad.signature-pad--xl [data-scope="signature-pad"][data-part="root"] {
+    gap: var(--space-xl);
+  }
+
+  .signature-pad.signature-pad--xl [data-scope="signature-pad"][data-part="label"] {
+    font-size: var(--text-xl);
+    line-height: var(--leading-xl);
+  }
+
+  .signature-pad.signature-pad--xl [data-scope="signature-pad"][data-part="control"] {
+    height: calc(var(--size-xl) * 4);
+  }
+
+  .signature-pad.signature-pad--xl [data-scope="signature-pad"][data-part="clear-trigger"] {
+    color: var(--color-accent-ink);
+    min-height: var(--size-xl);
+    min-width: var(--size-xl);
+    background-color: var(--color-accent);
+    font-size: var(--text-xl);
+    line-height: var(--leading-xl);
+  }
+
+  .signature-pad.signature-pad--rounded-none [data-scope="signature-pad"][data-part="control"] {
+    border-radius: var(--radius-none);
+  }
+
+  .signature-pad.signature-pad--rounded-none [data-scope="signature-pad"][data-part="segment"] {
+    border-radius: var(--radius-none);
+  }
+
+  .signature-pad.signature-pad--rounded-none [data-scope="signature-pad"][data-part="clear-trigger"] {
+    border-radius: var(--radius-none);
+  }
+
+  .signature-pad.signature-pad--rounded-xs [data-scope="signature-pad"][data-part="control"] {
+    border-radius: var(--radius-xs);
+  }
+
+  .signature-pad.signature-pad--rounded-xs [data-scope="signature-pad"][data-part="segment"] {
+    border-radius: var(--radius-xs);
+  }
+
+  .signature-pad.signature-pad--rounded-xs [data-scope="signature-pad"][data-part="clear-trigger"] {
+    border-radius: var(--radius-xs);
+  }
+
+  .signature-pad.signature-pad--rounded-sm [data-scope="signature-pad"][data-part="control"] {
+    border-radius: var(--radius-sm);
+  }
+
+  .signature-pad.signature-pad--rounded-sm [data-scope="signature-pad"][data-part="segment"] {
+    border-radius: var(--radius-sm);
+  }
+
+  .signature-pad.signature-pad--rounded-sm [data-scope="signature-pad"][data-part="clear-trigger"] {
+    border-radius: var(--radius-sm);
+  }
+
+  .signature-pad.signature-pad--rounded-md [data-scope="signature-pad"][data-part="control"] {
+    border-radius: var(--radius-md);
+  }
+
+  .signature-pad.signature-pad--rounded-md [data-scope="signature-pad"][data-part="segment"] {
+    border-radius: var(--radius-md);
+  }
+
+  .signature-pad.signature-pad--rounded-md [data-scope="signature-pad"][data-part="clear-trigger"] {
+    border-radius: var(--radius-md);
+  }
+
+  .signature-pad.signature-pad--rounded-lg [data-scope="signature-pad"][data-part="control"] {
+    border-radius: var(--radius-lg);
+  }
+
+  .signature-pad.signature-pad--rounded-lg [data-scope="signature-pad"][data-part="segment"] {
+    border-radius: var(--radius-lg);
+  }
+
+  .signature-pad.signature-pad--rounded-lg [data-scope="signature-pad"][data-part="clear-trigger"] {
+    border-radius: var(--radius-lg);
+  }
+
+  .signature-pad.signature-pad--rounded-xl [data-scope="signature-pad"][data-part="control"] {
+    border-radius: var(--radius-xl);
+  }
+
+  .signature-pad.signature-pad--rounded-xl [data-scope="signature-pad"][data-part="segment"] {
+    border-radius: var(--radius-xl);
+  }
+
+  .signature-pad.signature-pad--rounded-xl [data-scope="signature-pad"][data-part="clear-trigger"] {
+    border-radius: var(--radius-xl);
+  }
+
+  .signature-pad.signature-pad--rounded-2xl [data-scope="signature-pad"][data-part="control"] {
+    border-radius: var(--radius-2xl);
+  }
+
+  .signature-pad.signature-pad--rounded-2xl [data-scope="signature-pad"][data-part="segment"] {
+    border-radius: var(--radius-2xl);
+  }
+
+  .signature-pad.signature-pad--rounded-2xl [data-scope="signature-pad"][data-part="clear-trigger"] {
+    border-radius: var(--radius-2xl);
+  }
+
+  .signature-pad.signature-pad--rounded-3xl [data-scope="signature-pad"][data-part="control"] {
+    border-radius: var(--radius-3xl);
+  }
+
+  .signature-pad.signature-pad--rounded-3xl [data-scope="signature-pad"][data-part="segment"] {
+    border-radius: var(--radius-3xl);
+  }
+
+  .signature-pad.signature-pad--rounded-3xl [data-scope="signature-pad"][data-part="clear-trigger"] {
+    border-radius: var(--radius-3xl);
+  }
+
+  .signature-pad.signature-pad--rounded-4xl [data-scope="signature-pad"][data-part="control"] {
+    border-radius: var(--radius-4xl);
+  }
+
+  .signature-pad.signature-pad--rounded-4xl [data-scope="signature-pad"][data-part="segment"] {
+    border-radius: var(--radius-4xl);
+  }
+
+  .signature-pad.signature-pad--rounded-4xl [data-scope="signature-pad"][data-part="clear-trigger"] {
+    border-radius: var(--radius-4xl);
+  }
+
+  .signature-pad.signature-pad--rounded-full [data-scope="signature-pad"][data-part="control"] {
+    border-radius: var(--radius-full);
+  }
+
+  .signature-pad.signature-pad--rounded-full [data-scope="signature-pad"][data-part="segment"] {
+    border-radius: var(--radius-full);
+  }
+
+  .signature-pad.signature-pad--rounded-full [data-scope="signature-pad"][data-part="clear-trigger"] {
+    border-radius: var(--radius-full);
+  }
+
+  .signature-pad {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space);
+  }
+
+  .signature-pad[data-loading] [data-scope="signature-pad"][data-part="root"] {
+    @apply ui-loading;
+  }
+
+  .signature-pad [data-scope="signature-pad"][data-part="root"] {
+    @apply ui-root;
+  }
+
+  .signature-pad [data-scope="signature-pad"][data-part="root"][data-readonly] {
+    @apply ui-readonly;
+  }
+
+  .signature-pad [data-scope="signature-pad"][data-part="label"] {
+    @apply ui-label;
+  }
+
+  .signature-pad [data-scope="signature-pad"][data-part="error"] {
+    @apply ui-error;
+  }
+
+  .signature-pad {
+    width: 100%;
+    max-width: var(--container-xs);
+    gap: var(--space-md);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .signature-pad [data-scope="signature-pad"][data-part="control"] {
+    position: relative;
+    width: 100%;
+    height: calc(var(--container-4xs) * 0.7);
+    background-color: var(--color-ui);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+  }
+
+  .signature-pad [data-scope="signature-pad"][data-part="guide"] {
+    position: absolute;
+    bottom: var(--space-md);
+    inset-inline-start: var(--space-md);
+    inset-inline-end: var(--space-md);
+    border-bottom: 2px dashed var(--color-border);
+  }
+
+  .signature-pad [data-scope="signature-pad"][data-part="segment"] {
+    position: absolute;
+    top: 0;
+    inset-inline-start: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background-color: var(--color-ui-muted);
+    border-radius: var(--radius-md);
+  }
+
+  .signature-pad [data-scope="signature-pad"][data-part="clear-trigger"] {
+    @apply ui-trigger;
+    @apply ui-trigger--square;
+    position: absolute;
+    z-index: 1;
+    top: var(--space-sm);
+    inset-inline-end: var(--space-sm);
+    min-height: calc(var(--size-md) * 0.6);
+    min-width: calc(var(--size-md) * 0.6);
+  }
+
+  .signature-pad [data-part="preview"] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: var(--container-4xs);
+    padding: var(--space-md);
+    gap: var(--space-md);
+    background-color: var(--color-layer);
+    & img {
+      width: 100%;
+      height: var(--container-6xs);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      padding: var(--space-md);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background-color: var(--color-root);
+    }
+  }
+
+  .signature-pad.signature-pad--accent [data-scope="signature-pad"][data-part="clear-trigger"] {
+    background-color: var(--color-accent);
+    color: var(--color-accent-ink);
+    &:hover {
+      background-color: var(--color-accent-hover);
+    }
+
+    &:active {
+      background-color: var(--color-accent-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-ui-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .signature-pad.signature-pad--brand [data-scope="signature-pad"][data-part="clear-trigger"] {
+    background-color: var(--color-brand);
+    color: var(--color-brand-ink);
+    &:hover {
+      background-color: var(--color-brand-hover);
+    }
+
+    &:active {
+      background-color: var(--color-brand-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-brand-ink);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-ui-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .signature-pad.signature-pad--alert [data-scope="signature-pad"][data-part="clear-trigger"] {
+    background-color: var(--color-alert);
+    color: var(--color-alert-ink);
+    &:hover {
+      background-color: var(--color-alert-hover);
+    }
+
+    &:active {
+      background-color: var(--color-alert-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-ui-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .signature-pad.signature-pad--info [data-scope="signature-pad"][data-part="clear-trigger"] {
+    background-color: var(--color-info);
+    color: var(--color-info-ink);
+    &:hover {
+      background-color: var(--color-info-hover);
+    }
+
+    &:active {
+      background-color: var(--color-info-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-info-ink);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-ui-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .signature-pad.signature-pad--success [data-scope="signature-pad"][data-part="clear-trigger"] {
+    background-color: var(--color-success);
+    color: var(--color-success-ink);
+    &:hover {
+      background-color: var(--color-success-hover);
+    }
+
+    &:active {
+      background-color: var(--color-success-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-success-ink);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-ui-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .signature-pad.signature-pad--selected [data-scope="signature-pad"][data-part="clear-trigger"] {
+    background-color: var(--color-selected);
+    color: var(--color-selected-ink);
+    &:hover {
+      background-color: var(--color-selected-hover);
+    }
+
+    &:active {
+      background-color: var(--color-selected-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-ui-muted);
+      cursor: not-allowed;
+    }
+  }
+}
+

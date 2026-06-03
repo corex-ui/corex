@@ -51,7 +51,7 @@ defmodule E2eWeb.TreeViewPlayLive do
           />
 
           <.toggle_group
-            class="toggle-group toggle-group--sm max-w-6xs"
+            class="toggle-group toggle-group--sm toggle--max-w-6xs"
             id="selection_mode"
             on_value_change="control_changed"
             multiple={false}
@@ -65,7 +65,7 @@ defmodule E2eWeb.TreeViewPlayLive do
         <:canvas>
           <.tree_view
             id="playground-tree"
-            class="tree-view w-full max-w-md"
+            class="tree-view w-full tree-view--max-w-md"
             expanded_value={E2e.TreeViewDemo.repo_expanded_default()}
             value={E2e.TreeViewDemo.repo_selected_default()}
             selection_mode={@controls.selection_mode}

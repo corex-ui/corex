@@ -56,7 +56,7 @@ defmodule Corex.MixProject do
       {:jason, "~> 1.0"},
       {:phoenix, "~> 1.8.1"},
       {:phoenix_live_view, "~> 1.1.0"},
-      {:gettext, "~> 1.0"},
+      {:gettext, "~> 1.0", only: :test},
       {:esbuild, "~> 0.8", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.40", only: [:dev, :docs], runtime: false},
       {:makeup, "~> 1.2", only: [:dev, :test, :docs], optional: true, override: true},
@@ -71,7 +71,8 @@ defmodule Corex.MixProject do
       {:excoveralls, "~> 0.18", only: :test},
       {:bandit, "~> 1.0", only: :dev},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
-      {:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false}
+      {:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false},
+      {:tidewave, "~> 0.5", only: :dev}
     ]
   end
 
@@ -79,7 +80,6 @@ defmodule Corex.MixProject do
     [
       docs: ["docs"],
       "assets.build": [
-        &copy_design_to_installer/1,
         "esbuild module",
         "esbuild corex_hooks",
         &clean_priv_static_chunks/1,
@@ -103,24 +103,6 @@ defmodule Corex.MixProject do
       tidewave:
         "run --no-halt -e 'Agent.start(fn -> Bandit.start_link(plug: Tidewave, port: 4004) end)'"
     ]
-  end
-
-  defp copy_design_to_installer(_) do
-    source = Path.join(__DIR__, "priv/design")
-    priv_dest = Path.join(__DIR__, "installer/priv/corex_design")
-
-    unless File.dir?(source) do
-      Mix.raise("Expected Corex design tree at #{source}")
-    end
-
-    File.mkdir_p!(Path.dirname(priv_dest))
-
-    if File.exists?(priv_dest) do
-      File.rm_rf!(priv_dest)
-    end
-
-    File.cp_r!(source, priv_dest)
-    :ok
   end
 
   defp clean_priv_static_chunks(_) do
@@ -165,6 +147,9 @@ defmodule Corex.MixProject do
         "guides/installation.md",
         "guides/manual_installation.md",
         "guides/design.md",
+        "guides/unstyled.md",
+        "guides/styled.md",
+        "guides/design-config.md",
         "guides/forms.md",
         "guides/tableau.md",
         "guides/tableau_theming.md",
@@ -176,7 +161,6 @@ defmodule Corex.MixProject do
         "guides/MCP.md",
         "guides/usage_rules.md",
         "guides/production.md",
-        "guides/configuration.md",
         "guides/update.md"
       ],
       formatters: ["html", "epub"],
@@ -191,19 +175,24 @@ defmodule Corex.MixProject do
         {:Introduction,
          [
            "guides/installation.md",
-           "guides/manual_installation.md",
-           "guides/design.md"
+           "guides/manual_installation.md"
+         ]},
+        {"Design Guides",
+         [
+           "guides/design.md",
+           "guides/unstyled.md",
+           "guides/styled.md",
+           "guides/design-config.md",
+           "guides/theming.md",
+           "guides/dark_mode.md"
          ]},
         {:Guides,
          [
            "guides/forms.md",
            "guides/MCP.md",
            "guides/usage_rules.md",
-           "guides/dark_mode.md",
-           "guides/theming.md",
            "guides/localize.md",
            "guides/production.md",
-           "guides/configuration.md",
            "guides/update.md"
          ]},
         {"Tableau Guides",
@@ -241,7 +230,6 @@ defmodule Corex.MixProject do
         Corex.FloatingPanel,
         Corex.Heroicon,
         Corex.HiddenInput,
-        Corex.Layout.Heading,
         Corex.Listbox,
         Corex.Marquee,
         Corex.Menu,
@@ -263,6 +251,29 @@ defmodule Corex.MixProject do
         Corex.ToggleGroup,
         Corex.Tooltip,
         Corex.TreeView
+      ],
+      Layout: [
+        Corex.Layout.Box,
+        Corex.Layout.Container,
+        Corex.Layout.Divider,
+        Corex.Layout.Grid,
+        Corex.Layout.Heading,
+        Corex.Layout.Row,
+        Corex.Layout.Spacer,
+        Corex.Layout.Stack
+      ],
+      Typography: [
+        Corex.Typography.Blockquote,
+        Corex.Typography.Form,
+        Corex.Typography.H1,
+        Corex.Typography.H2,
+        Corex.Typography.H3,
+        Corex.Typography.H4,
+        Corex.Typography.Kbd,
+        Corex.Typography.Lead,
+        Corex.Typography.ListBox,
+        Corex.Typography.P,
+        Corex.Typography.Small
       ],
       Form: [
         Corex.FormField

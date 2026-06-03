@@ -4,6 +4,8 @@ End-to-end Phoenix + LiveView application used to develop, exercise, and validat
 
 This application acts as examples and tests for different rendering and interaction modes, as well as for end-to-end and accessibility testing.
 
+The e2e doc site imports app-specific CSS (`shell.css`, `doc.css`, `home.css`, `blog.css`, `card.css`, `tetrex.css`) for documentation chrome only. Consumer apps should use Corex layout and typography components with `corex.tailwind.css` instead of copying these files.
+
 ## Getting started
 
 Clone the Corex repository and move into the E2E application:
@@ -122,3 +124,11 @@ This includes:
 - LiveView tests
 - Wallaby browser-based E2E tests
 - Accessibility audits
+
+Doc-route accessibility scans are tagged for selective runs (the full file is slow):
+
+```bash
+mix test test/e2e_web/doc_routes_a11y_test.exs --only doc_a11y_component:accordion
+mix test test/e2e_web/doc_routes_a11y_test.exs --only doc_a11y_page:style
+mix test test/e2e_web/doc_routes_a11y_test.exs -n "accordion/style"
+```

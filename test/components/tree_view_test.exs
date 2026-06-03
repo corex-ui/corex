@@ -546,7 +546,37 @@ defmodule Corex.TreeViewTest do
         assigns = %{instant | animation: animation}
         result = Connect.branch_content(assigns)
         refute Map.has_key?(result, "hidden")
+        assert result["style"] == "height:0;overflow:hidden;opacity:0.0"
       end
+    end
+
+    test "collapsed js branch content uses animation_options for closed style" do
+      assigns = %{
+        id: "test-tree",
+        value: "node-1",
+        index_path: [],
+        expanded: false,
+        dir: "ltr",
+        animation: "js",
+        animation_options: %Corex.Animation.Height{opacity_start: 0.25}
+      }
+
+      result = Connect.branch_content(assigns)
+      assert result["style"] == "height:0;overflow:hidden;opacity:0.25"
+    end
+
+    test "expanded js branch content omits closed style" do
+      assigns = %{
+        id: "test-tree",
+        value: "node-1",
+        index_path: [],
+        expanded: true,
+        dir: "ltr",
+        animation: "js"
+      }
+
+      result = Connect.branch_content(assigns)
+      refute Map.has_key?(result, "style")
     end
 
     test "adds hidden when collapsed with default animation" do

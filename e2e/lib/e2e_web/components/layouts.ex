@@ -34,42 +34,43 @@ defmodule E2eWeb.Layouts do
   slot(:inner_block, required: true)
 
   def app(assigns) do
-    path = path_resolved(assigns)
-    assigns = assign(assigns, :path, path)
+    assigns = assign(assigns, :path, path_resolved(assigns))
 
     ~H"""
-    <.header path={@path} theme={@theme} mode={@mode} />
-    <div class="layout__wrapper">
-      <.aside path={@path} theme={@theme} mode={@mode} />
-      <main id="main-content" class="layout__main">
-        <.docs_pagination path={@path} />
-        <div class="layout__content">
-          <div class="layout__article">
-            {render_slot(@inner_block)}
-          </div>
-        </div>
-        <.docs_pagination_bottom path={@path} />
+    <.stack width="full" min_height="dvh" class="shell-app">
+      <.header path={@path} theme={@theme} mode={@mode} />
+      <.row grow="fill" width="full" wrap="nowrap" align="stretch">
+        <.aside path={@path} theme={@theme} mode={@mode} />
+        <.stack tag="main" id="main-content" grow="fill" width="full" padding_inline="xl">
+          <.docs_pagination path={@path} />
+          <.stack width="full" align="stretch" gap="xl" padding_block="xl">
+            <.container size="6xl">
+              {render_slot(@inner_block)}
+            </.container>
+          </.stack>
+          <.docs_pagination_bottom path={@path} />
 
-        <.toast_group
-          id="layout-toast"
-          class="toast"
-          phx-update="ignore"
-          flash={@flash}
-        >
-          <:loading>
-            <.heroicon name="hero-arrow-path" class="icon" />
-          </:loading>
-        </.toast_group>
-        <.toast_client_error
-          toast_group_id="layout-toast"
-          title={~t"We lost the connection"}
-          description={~t"We're trying to reconnect you..."}
-          type={:error}
-          duration={:infinity}
-        />
-      </main>
-    </div>
-    <.footer path={@path} />
+          <.toast_group
+            id="layout-toast"
+            class="toast"
+            phx-update="ignore"
+            flash={@flash}
+          >
+            <:loading>
+              <.heroicon name="hero-arrow-path" />
+            </:loading>
+          </.toast_group>
+          <.toast_client_error
+            toast_group_id="layout-toast"
+            title={~t"We lost the connection"}
+            description={~t"We're trying to reconnect you..."}
+            toast_type={:error}
+            visible_duration={:infinity}
+          />
+        </.stack>
+      </.row>
+      <.footer path={@path} />
+    </.stack>
     """
   end
 
@@ -84,70 +85,72 @@ defmodule E2eWeb.Layouts do
   slot(:inner_block, required: true)
 
   def blog(assigns) do
-    path = path_resolved(assigns)
-    assigns = assign(assigns, :path, path)
+    assigns = assign(assigns, :path, path_resolved(assigns))
 
     ~H"""
-    <.header path={@path} theme={@theme} mode={@mode} />
-    <div class="layout__wrapper">
-      <main id="main-content" class="layout__main layout__main--blog">
-        <div class="layout__content--blog">
-          {render_slot(@inner_block)}
-        </div>
-        <.toast_group
-          id="layout-toast"
-          class="toast"
-          phx-update="ignore"
-          flash={@flash}
-        >
-          <:loading>
-            <.heroicon name="hero-arrow-path" class="icon" />
-          </:loading>
-        </.toast_group>
-        <.toast_client_error
-          toast_group_id="layout-toast"
-          title={~t"We lost the connection"}
-          description={~t"We're trying to reconnect you..."}
-          type={:error}
-          duration={:infinity}
-        />
-      </main>
-    </div>
-    <.footer path={@path} />
+    <.stack width="full" min_height="dvh">
+      <.header path={@path} theme={@theme} mode={@mode} />
+      <.row grow="fill" width="full">
+        <.stack tag="main" id="main-content" grow="fill" width="full">
+          <.stack width="full" align="stretch" class="shell-content--blog">
+            {render_slot(@inner_block)}
+          </.stack>
+          <.toast_group
+            id="layout-toast"
+            class="toast"
+            phx-update="ignore"
+            flash={@flash}
+          >
+            <:loading>
+              <.heroicon name="hero-arrow-path" />
+            </:loading>
+          </.toast_group>
+          <.toast_client_error
+            toast_group_id="layout-toast"
+            title={~t"We lost the connection"}
+            description={~t"We're trying to reconnect you..."}
+            toast_type={:error}
+            visible_duration={:infinity}
+          />
+        </.stack>
+      </.row>
+      <.footer path={@path} />
+    </.stack>
     """
   end
 
   def marketing(assigns) do
-    path = path_resolved(assigns)
-    assigns = assign(assigns, :path, path)
+    assigns = assign(assigns, :path, path_resolved(assigns))
 
     ~H"""
-    <.header path={@path} theme={@theme} mode={@mode} />
-    <div class="layout__wrapper">
-      <main id="main-content" class="layout__main layout__main--marketing">
-        <div class="layout__content--marketing">
-          {render_slot(@inner_block)}
-        </div>
-        <.toast_group
-          id="layout-toast"
-          class="toast"
-          phx-update="ignore"
-          flash={@flash}
-        >
-          <:loading>
-            <.heroicon name="hero-arrow-path" class="icon" />
-          </:loading>
-        </.toast_group>
-        <.toast_client_error
-          toast_group_id="layout-toast"
-          title={~t"We lost the connection"}
-          description={~t"We're trying to reconnect you..."}
-          type={:error}
-          duration={:infinity}
-        />
-      </main>
-    </div>
-    <.footer path={@path} />
+    <.stack width="full" min_height="dvh">
+      <.header path={@path} theme={@theme} mode={@mode} />
+      <.row grow="fill" width="full">
+        <.stack tag="main" id="main-content" grow="fill" width="full">
+          <.stack width="full" align="stretch" class="shell-content--marketing">
+            {render_slot(@inner_block)}
+          </.stack>
+          <.toast_group
+            id="layout-toast"
+            class="toast"
+            phx-update="ignore"
+            flash={@flash}
+          >
+            <:loading>
+              <.heroicon name="hero-arrow-path" />
+            </:loading>
+          </.toast_group>
+          <.toast_client_error
+            toast_group_id="layout-toast"
+            title={~t"We lost the connection"}
+            description={~t"We're trying to reconnect you..."}
+            toast_type={:error}
+            visible_duration={:infinity}
+          />
+        </.stack>
+      </.row>
+      <.footer path={@path} />
+    </.stack>
     """
   end
 

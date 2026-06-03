@@ -104,7 +104,6 @@ defmodule E2eWeb.MarqueeEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.marquee
                 id={@id_server}
-                class="marquee"
                 on_pause_change="pause_changed"
                 on_loop_complete="loop_complete"
                 on_complete="complete"
@@ -128,7 +127,7 @@ defmodule E2eWeb.MarqueeEventsLive do
 
               <.data_table
                 id="marquee-events-log-server"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.server_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -155,7 +154,6 @@ defmodule E2eWeb.MarqueeEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.marquee
                 id={@id_client}
-                class="marquee"
                 on_pause_change_client="marquee-pause-changed-client"
                 on_loop_complete_client="marquee-loop-complete-client"
                 on_complete_client="marquee-complete-client"
@@ -210,7 +208,7 @@ defmodule E2eWeb.MarqueeEventsLive do
 
               <.data_table
                 id="marquee-events-log-client"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.client_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>

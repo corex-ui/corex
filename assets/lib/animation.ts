@@ -146,6 +146,20 @@ export function stripHiddenFromProps(props: Record<string, unknown>): Record<str
   return next;
 }
 
+export function spreadJsPanelProps(
+  el: HTMLElement,
+  props: Record<string, unknown>,
+  spread: (target: HTMLElement, next: Record<string, unknown>) => void
+): void {
+  const closed = el.dataset.state === "closed";
+  const savedStyle = closed ? el.getAttribute("style") : null;
+  const cleaned = stripHiddenFromProps(props);
+  if (closed) delete cleaned.style;
+  spread(el, cleaned);
+  el.removeAttribute("hidden");
+  if (closed && savedStyle) el.setAttribute("style", savedStyle);
+}
+
 export function clearOpenStyles(el: HTMLElement): void {
   el.style.opacity = "";
   el.style.height = "";

@@ -83,26 +83,6 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
     end
   end
 
-  describe "app with --designex" do
-    test "keeps design folder, compiles, format check passes, and tests pass" do
-      with_installer_tmp("corex_designex", fn tmp_dir ->
-        {app_root_path, _} =
-          generate_corex_app(tmp_dir, "my_app", ["--designex"])
-
-        assert_no_compilation_warnings(app_root_path)
-        assert_passes_formatter_check(app_root_path)
-        assert_dir(Path.join(app_root_path, "assets/corex/design"))
-        assert_file(Path.join([app_root_path, "assets", "corex", "design", "build.mjs"]))
-        mix_exs = File.read!(Path.join(app_root_path, "mix.exs"))
-        assert mix_exs =~ ~r/\{:designex,/
-        assert mix_exs =~ "designex corex"
-        cfg = File.read!(Path.join(app_root_path, "config/config.exs"))
-        assert cfg =~ "config :designex"
-        assert_assets_build_pass(app_root_path)
-      end)
-    end
-  end
-
   describe "app with --mode, --theme, and --lang (combined)" do
     test "compiles, format check passes, and tests pass" do
       with_installer_tmp("corex_mode_theme_lang", fn tmp_dir ->
@@ -207,22 +187,10 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
 
         assert_no_compilation_warnings(app_root_path)
         assert_assets_build_pass(app_root_path)
+        assert_corex_design_compiler_invariants!(app_root_path, "my_app")
 
         assert_file(Path.join(app_root_path, "assets/css/app.css"), fn content ->
-          assert content =~ ~s(@import "../corex/main.css";)
-          assert content =~ ~s(@import "../corex/theme/neo.css";)
-          assert content =~ ~s(@import "../corex/theme/uno.css";)
-          assert content =~ ~s(@import "../corex/theme/duo.css";)
-          assert content =~ ~s(@import "../corex/theme/leo.css";)
-          assert content =~ ~s(@import "../corex/components/toggle.css";)
-          refute content =~ "toggle-group.css"
-          assert content =~ ~s(@import "../corex/components/select.css";)
-          assert content =~ ~s(@import "../corex/components/dialog.css";)
-          assert content =~ ~s(@import "../corex/components/password-input.css";)
-          assert content =~ ~s(@import "../corex/components/data-table.css";)
-          assert content =~ ~s(@import "../corex/components/data-list.css";)
-          assert content =~ ~s(@import "../corex/components/scrollbar.css";)
-          assert content =~ ~s(@import "../corex/components/typo.css";)
+          refute content =~ "../corex/main.css"
           refute content =~ "../vendor/daisyui"
           refute content =~ "daisyui-theme"
         end)

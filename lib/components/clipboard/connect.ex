@@ -73,6 +73,8 @@ defmodule Corex.Clipboard.Connect do
 
   @spec input(Input.t()) :: map()
   def input(assigns) do
+    value = assigns.value || ""
+
     %{
       "data-scope" => "clipboard",
       "data-part" => "input",
@@ -81,8 +83,13 @@ defmodule Corex.Clipboard.Connect do
       "dir" => assigns.dir,
       "data-orientation" => Map.get(assigns, :orientation, "horizontal"),
       "id" => "clipboard:#{assigns.id}:input",
-      "value" => assigns.value || ""
+      "value" => value,
+      "size" => input_size(value)
     }
+  end
+
+  defp input_size(value) when is_binary(value) do
+    value |> String.length() |> max(20) |> min(52)
   end
 
   def ignore_input(assigns) do

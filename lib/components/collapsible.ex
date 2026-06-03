@@ -9,7 +9,7 @@ defmodule Corex.Collapsible do
   ### Minimal
 
   ```heex
-  <.collapsible class="collapsible">
+  <.collapsible>
     <:trigger>Toggle</:trigger>
     <:content>
       Lorem ipsum dolor sit amet, consectetur adipiscing elit.
@@ -22,7 +22,7 @@ defmodule Corex.Collapsible do
   Optional **`:closed`** and **`:opened`** slots render after the trigger label. Use one chevron in **`:closed`** and default CSS rotates it when open.
 
   ```heex
-  <.collapsible class="collapsible">
+  <.collapsible>
     <:trigger>Toggle</:trigger>
     <:closed>
       <.heroicon name="hero-chevron-right" />
@@ -38,7 +38,7 @@ defmodule Corex.Collapsible do
   Use `:let={collapsible}` on slots to read `collapsible.open` and `collapsible.disabled`.
 
   ```heex
-  <.collapsible class="collapsible">
+  <.collapsible>
     <:trigger :let={c}>
       {if c.open, do: "Collapse", else: "Expand"}
     </:trigger>
@@ -51,6 +51,32 @@ defmodule Corex.Collapsible do
     <:content :let={_c}>
       Panel body with custom opened/closed adornments.
     </:content>
+  </.collapsible>
+  ```
+
+  <!-- tabs-close -->
+
+  ## Styling
+
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `semantic`, `size`, `radius`.
+
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.collapsible semantic="accent" size="md" class="collapsible">
+    <:trigger>Toggle</:trigger>
+    <:content>Lorem ipsum dolor sit amet.</:content>
+  </.collapsible>
+  ```
+
+  ### With classes
+
+  ```heex
+  <.collapsible class="collapsible collapsible--accent collapsible--md">
+    <:trigger>Toggle</:trigger>
+    <:content>Lorem ipsum dolor sit amet.</:content>
   </.collapsible>
   ```
 
@@ -104,7 +130,6 @@ defmodule Corex.Collapsible do
 
   ```heex
   <.collapsible
-    class="collapsible"
     on_open_change="collapsible_open_changed"
   >
     <:trigger>Toggle</:trigger>
@@ -136,7 +161,6 @@ defmodule Corex.Collapsible do
   ```heex
   <.collapsible
     id="collapsible-events-client"
-    class="collapsible"
     on_open_change_client="collapsible-open-changed"
   >
     <:trigger>Toggle</:trigger>
@@ -164,9 +188,9 @@ defmodule Corex.Collapsible do
   ```heex
   <.async_result :let={panel} assign={@collapsible}>
     <:loading>
-      <.collapsible_skeleton class="collapsible" />
+      <.collapsible_skeleton />
     </:loading>
-    <.collapsible class="collapsible" open={panel.open}>
+    <.collapsible open={panel.open}>
       <:trigger>Details</:trigger>
       <:closed>
         <.heroicon name="hero-chevron-right" />
@@ -187,7 +211,6 @@ defmodule Corex.Collapsible do
 
   ```heex
   <.collapsible
-    class="collapsible"
     controlled
     open={@open}
     on_open_change="patterns_collapsible_changed"
@@ -210,7 +233,7 @@ defmodule Corex.Collapsible do
 
   ## Style
 
-  Target parts with `data-scope` and `data-part`. Content exposes `--height`, `--collapsed-height`, and related CSS variables for height animations.
+  Target parts with `data-scope` and `data-part`, or use [Corex Design](styled.html): `@import "./corex.tailwind.css"` in `app.css`. Content exposes `--height`, `--collapsed-height`, and related CSS variables for height animations.
 
   ```css
   [data-scope="collapsible"][data-part="root"] {}
@@ -218,12 +241,6 @@ defmodule Corex.Collapsible do
   [data-scope="collapsible"][data-part="content"] {}
   [data-scope="collapsible"][data-part="closed"] {}
   [data-scope="collapsible"][data-part="opened"] {}
-  ```
-
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/collapsible.css";
   ```
 
   <!-- tabs-open -->
@@ -252,9 +269,28 @@ defmodule Corex.Collapsible do
 
   import Corex.Api.Doc
 
-  alias Corex.Api.RespondTo
+  alias Corex.Api.Response
   alias Corex.Collapsible.Anatomy.{Closed, Content, Opened, Props, Root, Trigger}
   alias Corex.Collapsible.Connect
+
+  use Corex.Variants,
+    base: "collapsible",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size,
+      radius: :radius
+    ],
+    defaults: [
+      width: "full",
+      max_width: "md",
+      height: "auto",
+      max_height: "none",
+      size: "md"
+    ]
 
   @doc """
   Renders a collapsible component.
@@ -365,6 +401,8 @@ defmodule Corex.Collapsible do
       phx-hook="Collapsible"
       data-loading 
       phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}     
+      class={corex_style_class(assigns)}
+     
       {@rest}
       {Connect.props(%Props{
         id: @id,
@@ -469,7 +507,7 @@ defmodule Corex.Collapsible do
   """)
 
   def set_open(collapsible_id, open) when is_binary(collapsible_id) and is_boolean(open) do
-    RespondTo.dispatch_set_open(collapsible_id, open, "corex:collapsible:set-open")
+    Response.dispatch_set_open(collapsible_id, open, "corex:collapsible:set-open")
   end
 
   api_doc(~S"""
@@ -493,6 +531,6 @@ defmodule Corex.Collapsible do
   def set_open(socket, collapsible_id, open)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(collapsible_id) and
              is_boolean(open) do
-    RespondTo.push_set_open(socket, "collapsible_set_open", collapsible_id, open)
+    Response.push_set_open(socket, "collapsible_set_open", collapsible_id, open)
   end
 end

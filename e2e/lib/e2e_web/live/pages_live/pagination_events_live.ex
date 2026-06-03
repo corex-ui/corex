@@ -63,7 +63,6 @@ defmodule E2eWeb.PaginationEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.pagination
                 id={@id_server}
-                class="pagination"
                 count={95}
                 page_size={10}
                 on_page_change="pagination_page_changed"
@@ -75,7 +74,7 @@ defmodule E2eWeb.PaginationEventsLive do
 
               <.data_table
                 id="pagination-events-log-server"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.server_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -101,7 +100,6 @@ defmodule E2eWeb.PaginationEventsLive do
           <:preview>
             <.pagination
               id={@id_client}
-              class="pagination"
               count={95}
               page_size={10}
               on_page_change_client="pagination-page-changed"

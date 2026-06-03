@@ -13,11 +13,11 @@ defmodule E2eWeb.Markdown.BlockRenderer do
     ~H"""
     <div class="relative">
       <%= if @inner_html do %>
-        <pre data-scope="code" data-part="root" tabindex="0" class="code max-w-none">
+        <pre data-scope="code" data-part="root" tabindex="0" class="code code--max-w-none">
           <code data-scope="code" data-part="content">{Phoenix.HTML.raw(@inner_html)}</code>
         </pre>
       <% else %>
-        <.code class="code max-w-none" language={@language} code={@code} />
+        <.code class="code code--max-w-none" language={@language} code={@code} />
       <% end %>
       <.clipboard
         id={@clipboard_id}

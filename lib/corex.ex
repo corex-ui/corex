@@ -31,6 +31,7 @@ defmodule Corex do
          angle_slider_skeleton: 1
        ]},
     avatar: {Corex.Avatar, [avatar: 1, avatar_skeleton: 1]},
+    badge: {Corex.Badge, [badge: 1]},
     carousel:
       {Corex.Carousel,
        [
@@ -63,7 +64,25 @@ defmodule Corex do
     native_input: {Corex.NativeInput, [native_input: 1]},
     hidden_input: {Corex.HiddenInput, [hidden_input: 1]},
     listbox: {Corex.Listbox, [listbox: 1]},
+    h1: {Corex.Typography.H1, [h1: 1]},
+    h2: {Corex.Typography.H2, [h2: 1]},
+    h3: {Corex.Typography.H3, [h3: 1]},
+    h4: {Corex.Typography.H4, [h4: 1]},
+    p: {Corex.Typography.P, [p: 1]},
+    lead: {Corex.Typography.Lead, [lead: 1]},
+    small: {Corex.Typography.Small, [small: 1]},
+    kbd: {Corex.Typography.Kbd, [kbd: 1]},
+    blockquote: {Corex.Typography.Blockquote, [blockquote: 1]},
+    list: {Corex.Typography.ListBox, [list: 1]},
+    form: {Corex.Typography.Form, [form: 1]},
     layout_heading: {Corex.Layout.Heading, [layout_heading: 1]},
+    box: {Corex.Layout.Box, [box: 1]},
+    stack: {Corex.Layout.Stack, [stack: 1]},
+    row: {Corex.Layout.Row, [row: 1]},
+    grid: {Corex.Layout.Grid, [grid: 1]},
+    container: {Corex.Layout.Container, [container: 1]},
+    spacer: {Corex.Layout.Spacer, [spacer: 1]},
+    divider: {Corex.Layout.Divider, [divider: 1]},
     marquee: {Corex.Marquee, [marquee: 1]},
     menu: {Corex.Menu, [menu: 1]},
     navigate: {Corex.Navigate, [navigate: 1]},
@@ -209,6 +228,42 @@ defmodule Corex do
       :error ->
         :error
     end
+  end
+
+  @doc """
+  Mix compiler (from the optional `:corex_design` package) that regenerates the
+  Tailwind CSS bundle. Append to a host app's `compilers/0`:
+
+      compilers: [:phoenix_live_view] ++ Mix.compilers() ++ Corex.compilers()
+
+  Or without LiveView:
+
+      compilers: Mix.compilers() ++ Corex.compilers()
+
+  `:corex_design` requires OTP 27+.
+
+  Icons are handled by the Heroicons Tailwind plugin (`mix corex.heroicon`), not
+  a Corex compiler.
+  """
+  def compilers, do: [:corex_design]
+
+  @doc """
+  Phoenix endpoint watcher that rebuilds design CSS when host config changes:
+
+      watchers: Corex.watchers(:my_app) ++ [esbuild: {...}]
+
+  The watcher reloads `config/*.exs` and recompiles the design bundle. Tailwind
+  `--watch` and LiveReloader handle CSS output refresh in the browser.
+
+  Add `:corex_design` to `reloadable_compilers` so recipe edits rebuild on the
+  next request during code reload:
+
+      reloadable_compilers: [:gettext] ++ Mix.compilers() ++ [:corex_design]
+  """
+  def watchers(profile) when is_atom(profile) do
+    [
+      corex_design: {Corex.Design, :install_and_run, [profile, ~W(--watch)]}
+    ]
   end
 
   @doc "Maps a string MCP component id to its implementing module when registered."

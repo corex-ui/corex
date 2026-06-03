@@ -47,13 +47,12 @@ defmodule E2eWeb.TimerPlayLive do
             countdown
             start_ms={60_000}
             target_ms={0}
-            class="timer"
             dir={@dir}
           >
-            <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-            <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-            <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-            <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+            <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+            <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+            <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+            <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
           </.timer>
         </:canvas>
       </.demo_playground>

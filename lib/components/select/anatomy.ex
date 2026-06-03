@@ -154,6 +154,34 @@ defmodule Corex.Select.Anatomy do
     def ignored_attrs, do: @ignored_attrs
   end
 
+  defmodule Indicator do
+    @moduledoc false
+    defstruct [:id, :dir, :disabled, :invalid, orientation: "vertical"]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            disabled: boolean(),
+            invalid: boolean(),
+            orientation: String.t()
+          }
+
+    @ignored_attrs [
+      "data-orientation",
+      "dir",
+      "id",
+      "data-state",
+      "data-disabled",
+      "data-invalid",
+      "data-readonly",
+      "aria-hidden",
+      "data-focus",
+      "data-focus-visible"
+    ]
+
+    def ignored_attrs, do: @ignored_attrs
+  end
+
   defmodule Trigger do
     @moduledoc false
     defstruct [:id, :dir, :disabled, :invalid, orientation: "vertical"]

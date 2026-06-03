@@ -20,7 +20,7 @@ defmodule E2eWeb.TogglePlayLive do
       <.demo_playground path={@path} title="Toggle · Playground" heading_class="layout-heading">
         <:controls>
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="disabled"
             checked={@disabled}
             on_checked_change="control_changed"
@@ -29,7 +29,7 @@ defmodule E2eWeb.TogglePlayLive do
           </.switch>
         </:controls>
         <:canvas>
-          <.toggle id="toggle-playground" class="toggle" disabled={@disabled}>
+          <.toggle id="toggle-playground" disabled={@disabled}>
             lorem
           </.toggle>
         </:canvas>

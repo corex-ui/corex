@@ -123,7 +123,6 @@ defmodule E2eWeb.TagsInputEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.tags_input
                 id={@id_server}
-                class="tags-input"
                 value={["lorem", "duis", "donec"]}
                 on_value_change="tags_value_changed"
               >
@@ -133,7 +132,7 @@ defmodule E2eWeb.TagsInputEventsLive do
 
               <.data_table
                 id="tags-input-events-log-server"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.server_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -159,7 +158,6 @@ defmodule E2eWeb.TagsInputEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.tags_input
                 id={@id_client}
-                class="tags-input"
                 value={["lorem", "duis", "donec"]}
                 on_value_change_client={@client_event}
               >
@@ -193,7 +191,7 @@ defmodule E2eWeb.TagsInputEventsLive do
 
               <.data_table
                 id="tags-input-events-log-client"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.client_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -218,7 +216,6 @@ defmodule E2eWeb.TagsInputEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.tags_input
                 id={@id_invalid_server}
-                class="tags-input"
                 value={["lorem", "duis"]}
                 max={2}
                 allow_overflow={true}
@@ -230,7 +227,7 @@ defmodule E2eWeb.TagsInputEventsLive do
 
               <.data_table
                 id="tags-input-events-log-invalid-server"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.server_invalid_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -257,7 +254,6 @@ defmodule E2eWeb.TagsInputEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.tags_input
                 id={@id_invalid_client}
-                class="tags-input"
                 value={["lorem", "duis"]}
                 max={2}
                 allow_overflow={true}
@@ -269,7 +265,7 @@ defmodule E2eWeb.TagsInputEventsLive do
 
               <.data_table
                 id="tags-input-events-log-invalid-client"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.client_invalid_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>

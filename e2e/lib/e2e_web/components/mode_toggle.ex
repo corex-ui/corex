@@ -16,10 +16,10 @@ defmodule E2eWeb.ModeToggle do
     ~H"""
     <.toggle
       id={@id}
-      class="toggle toggle--sm"
+      size="sm"
       data-toggle-dual-label
       pressed={@mode == "dark"}
-      on_pressed_change_client="phx:set-mode"
+      on_pressed_change_client="corex:preview:set-mode"
     >
       <span>
         <.heroicon name="hero-moon" />

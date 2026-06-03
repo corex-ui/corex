@@ -74,8 +74,28 @@ defmodule Corex.Layout.Heading do
   - `[data-scope="layout-heading"][data-part="subtitle"]` – subtitle
   - `[data-scope="layout-heading"][data-part="actions"]` – actions wrapper
   '''
-  @doc type: :component
   use Phoenix.Component
+
+  use Corex.Variants,
+    base: "layout-heading",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size,
+      text: :text,
+      gap: :space
+    ],
+    defaults: [
+      width: "fit",
+      max_width: "none",
+      height: "auto",
+      max_height: "none",
+      text: "2xl",
+      gap: "md"
+    ]
 
   attr(:rest, :global, doc: "Additional HTML attributes on the outer wrapper.")
 
@@ -105,9 +125,10 @@ defmodule Corex.Layout.Heading do
 
   See module doc for anatomy, styling, and `title_tag` / `subtitle_tag` examples.
   """
+  @doc type: :component
   def layout_heading(assigns) do
     ~H"""
-    <div {@rest}>
+    <div class={corex_style_class(assigns)} {@rest}>
     {render_slot(@inner_pre)}
     <div data-scope="layout-heading" data-part="root">
       <div :if={@title != [] or @subtitle != []} data-scope="layout-heading" data-part="content">

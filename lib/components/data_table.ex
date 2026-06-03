@@ -10,6 +10,24 @@ defmodule Corex.DataTable do
   @doc type: :component
   use Phoenix.Component
 
+  use Corex.Variants,
+    base: "data-table",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      size: :size,
+      semantic: :semantic,
+      radius: :radius
+    ],
+    defaults: [
+      width: "full",
+      max_width: "md",
+      height: "auto",
+      max_height: "md"
+    ]
+
   require Logger
 
   alias Corex.DataTable.Translation
@@ -292,18 +310,13 @@ defmodule Corex.DataTable do
   Modifier classes on the root:
 
   - `data-table--sm|md|lg|xl` — font size on header and body cells; cell padding
-  - `data-table--accent|brand|alert|success|info` — header ink (`--color-ink-*`) on column titles only
+  - `data-table--accent|brand|alert|success|info` — header ink (`--color-ui-ink-*`) on column titles only
 
   Default host caps use `max-width` and `max-height` at `--container-md`. Override on the host with the same container scale as width, e.g. `max-w-none`, `max-h-none`, `max-h-2xs`, `min-h-md`, or `h-full` in a sized parent.
 
   Optional `dir="ltr"` or `dir="rtl"` on the component root for text direction.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
 
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/data-table.css";
-  ```
+  Use [Corex Design](styled.html): `@import "./corex.tailwind.css"` in `app.css`.
   '''
 
   attr(:id, :string, required: true, doc: "The id of the table, used for LiveStream updates")
@@ -397,7 +410,7 @@ defmodule Corex.DataTable do
     assigns = assign(assigns, :empty_col_count, col_count)
 
     ~H"""
-    <div tabindex="0" dir={@dir} {@rest}>
+    <div tabindex="0" dir={@dir} class={corex_style_class(assigns)} {@rest}>
       <table data-scope="data-table" data-part="root">
         <colgroup>
           <col :if={@selectable} data-part="col-selection" />

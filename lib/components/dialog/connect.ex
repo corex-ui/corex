@@ -75,8 +75,8 @@ defmodule Corex.Dialog.Connect do
     )
   end
 
-  @spec backdrop(Backdrop.t(), String.t()) :: map()
-  def backdrop(assigns, animation \\ "instant") do
+  @spec backdrop(Backdrop.t(), String.t(), Scale.t()) :: map()
+  def backdrop(assigns, animation \\ "instant", animation_options \\ %Scale{}) do
     base = %{
       "data-scope" => "dialog",
       "data-part" => "backdrop",
@@ -85,10 +85,18 @@ defmodule Corex.Dialog.Connect do
       "id" => "dialog:#{assigns.id}:backdrop"
     }
 
+    animation_options =
+      Map.get(assigns, :animation_options, animation_options) || animation_options
+
     cond do
-      assigns.open -> base
-      animation in ["js", "custom"] -> base
-      true -> Map.put(base, "hidden", "")
+      assigns.open ->
+        base
+
+      animation in ["js", "custom"] ->
+        Map.put(base, "style", Scale.closed_style(animation_options, scale: false))
+
+      true ->
+        Map.put(base, "hidden", "")
     end
   end
 
@@ -103,7 +111,6 @@ defmodule Corex.Dialog.Connect do
     %{
       "data-scope" => "dialog",
       "data-part" => "positioner",
-      "data-state" => data_state(Map.get(assigns, :open, false), "open", "closed"),
       "dir" => Map.get(assigns, :dir),
       "id" => "dialog:#{assigns.id}:positioner"
     }
@@ -115,8 +122,8 @@ defmodule Corex.Dialog.Connect do
     )
   end
 
-  @spec content(Content.t(), String.t()) :: map()
-  def content(assigns, animation \\ "instant") do
+  @spec content(Content.t(), String.t(), Scale.t()) :: map()
+  def content(assigns, animation \\ "instant", animation_options \\ %Scale{}) do
     base = %{
       "data-scope" => "dialog",
       "data-part" => "content",
@@ -140,10 +147,18 @@ defmodule Corex.Dialog.Connect do
         base
       end
 
+    animation_options =
+      Map.get(assigns, :animation_options, animation_options) || animation_options
+
     cond do
-      assigns.open -> base
-      animation in ["js", "custom"] -> base
-      true -> Map.put(base, "hidden", "")
+      assigns.open ->
+        base
+
+      animation in ["js", "custom"] ->
+        Map.put(base, "style", Scale.closed_style(animation_options, scale: true))
+
+      true ->
+        Map.put(base, "hidden", "")
     end
   end
 

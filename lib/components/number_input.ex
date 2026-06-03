@@ -9,10 +9,10 @@ defmodule Corex.NumberInput do
   ### Minimal
 
   ```heex
-  <.number_input class="number-input">
+  <.number_input>
     <:label>Quantity</:label>
-    <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-    <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+    <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
   </.number_input>
   ```
 
@@ -20,15 +20,14 @@ defmodule Corex.NumberInput do
 
   ```heex
   <.number_input
-    class="number-input"
     min={0.0}
     max={100.0}
     step={5.0}
     value="10"
   >
     <:label>Amount</:label>
-    <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-    <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+    <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
   </.number_input>
   ```
 
@@ -37,6 +36,34 @@ defmodule Corex.NumberInput do
   <!-- tabs-close -->
 
   Slots `:decrement_trigger` and `:increment_trigger` are required.
+
+  ## Styling
+
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `semantic`, `size`, `radius`.
+
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.number_input semantic="accent" size="md" class="number-input">
+    <:label>Quantity</:label>
+    <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+    <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
+  </.number_input>
+  ```
+
+  ### With classes
+
+  ```heex
+  <.number_input class="number-input number-input--accent number-input--md">
+    <:label>Quantity</:label>
+    <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+    <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
+  </.number_input>
+  ```
+
+  <!-- tabs-close -->
 
   ## API
 
@@ -90,12 +117,11 @@ defmodule Corex.NumberInput do
 
   ```heex
   <.number_input
-    class="number-input"
     on_value_change="number_input_changed"
   >
     <:label>Quantity</:label>
-    <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-    <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+    <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
   </.number_input>
   ```
 
@@ -125,12 +151,12 @@ defmodule Corex.NumberInput do
 
   ```heex
   <.form for={@form} phx-change="validate">
-    <.number_input field={@form[:value]} class="number-input">
+    <.number_input field={@form[:value]}>
       <:label>Quantity</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
       <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
+        <.heroicon name="hero-exclamation-circle" />
         {msg}
       </:error>
     </.number_input>
@@ -139,7 +165,7 @@ defmodule Corex.NumberInput do
 
   ## Style
 
-  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `number-input.css`, then set `class="number-input"` on `<.number_input>`.
+  Target parts with `data-scope` and `data-part`, or use [Corex Design](styled.html): `@import "./corex.tailwind.css"` in `app.css`.
 
   ```css
   [data-scope="number-input"][data-part="root"] {}
@@ -148,12 +174,6 @@ defmodule Corex.NumberInput do
   [data-scope="number-input"][data-part="trigger-group"] {}
   [data-scope="number-input"][data-part="decrement-trigger"] {}
   [data-scope="number-input"][data-part="increment-trigger"] {}
-  ```
-
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/number-input.css";
   ```
 
   Stack modifiers on the host (`class` on `<.number_input>`).
@@ -186,6 +206,25 @@ defmodule Corex.NumberInput do
 
   @doc type: :component
   use Phoenix.Component
+
+  use Corex.Variants,
+    base: "number-input",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size,
+      radius: :radius
+    ],
+    defaults: [
+      width: "full",
+      max_width: "none",
+      height: "auto",
+      max_height: "none",
+      size: "md"
+    ]
 
   import Corex.Api.Doc
 
@@ -283,6 +322,8 @@ defmodule Corex.NumberInput do
     <div
       id={@id}
       phx-hook="NumberInput"
+      class={corex_style_class(assigns)}
+     
       data-loading
       phx-mounted={JS.ignore_attributes(["data-loading"])}
       {Connect.props(%Props{

@@ -14,16 +14,18 @@
     heading_class="layout-heading"
   >
     <.demo_section
-      id="data-list-styling-color"
-      title={~t"Color"}
-      code={E2eWeb.Demos.DataListDemo.styling_color_code()}
+      id="data-list-styling-semantic"
+      title={~t"Semantic"}
+      values={E2eWeb.Demos.DataListDemo.styling_axis_values(:semantic)}
+      code={E2eWeb.Demos.DataListDemo.styling_semantic_code()}
     >
-      <:preview><E2eWeb.Demos.DataListDemo.styling_color_example /></:preview>
+      <:preview><E2eWeb.Demos.DataListDemo.styling_semantic_example /></:preview>
     </.demo_section>
 
     <.demo_section
       id="data-list-styling-size"
       title={~t"Size"}
+      values={E2eWeb.Demos.DataListDemo.styling_axis_values(:size)}
       code={E2eWeb.Demos.DataListDemo.styling_text_code()}
     >
       <:preview><E2eWeb.Demos.DataListDemo.styling_text_example /></:preview>
@@ -32,6 +34,7 @@
     <.demo_section
       id="data-list-styling-max-width"
       title={~t"Max width"}
+      values={E2eWeb.Demos.DataListDemo.styling_axis_values(:max_width)}
       code={E2eWeb.Demos.DataListDemo.styling_max_width_code()}
     >
       <:preview><E2eWeb.Demos.DataListDemo.styling_max_width_example /></:preview>

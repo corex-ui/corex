@@ -91,7 +91,7 @@ defmodule E2eWeb.TetrexIndexLive do
                   {~t"Play on the board, watch live games, or replay top scores from the leaderboard."}
                 </p>
               </div>
-              <.navigate to={~p"/showcases/tetrex/new"} class="button button--accent shrink-0">
+              <.navigate to={~p"/showcases/tetrex/new"} as="button" semantic="accent" class="shrink-0">
                 {~t"New game"}
               </.navigate>
             </div>
@@ -106,7 +106,7 @@ defmodule E2eWeb.TetrexIndexLive do
             />
             <.data_table
               id="tetrex-leaderboard"
-              class="data-table max-w-none"
+              class="data-table data-table--max-w-none"
               rows={@leaderboard_rows}
             >
               <:col :let={row} label={~t"Rank"}>{row.rank}</:col>
@@ -114,16 +114,16 @@ defmodule E2eWeb.TetrexIndexLive do
                 <.player_name_cell row={row} />
               </:col>
               <:col :let={row} label={~t"Score"}>
-                <span class="font-display tabular-nums text-ink-accent">{row.score_label}</span>
+                <span class="font-display tabular-nums text-ui-ink-accent">{row.score_label}</span>
               </:col>
               <:col :let={row} label={~t"Ended"}>{row.ended_label}</:col>
               <:action :let={row}>
-                <.navigate to={~p"/showcases/tetrex/#{row.id}/replay"} class="button">
+                <.navigate to={~p"/showcases/tetrex/#{row.id}/replay"} as="button">
                   {~t"Replay"}
                 </.navigate>
               </:action>
               <:empty>
-                <p class="text-ink-muted m-0">{~t"No finished games yet — start a new game."}</p>
+                <p class="text-ui-ink-muted m-0">{~t"No finished games yet — start a new game."}</p>
               </:empty>
             </.data_table>
 
@@ -133,7 +133,7 @@ defmodule E2eWeb.TetrexIndexLive do
             />
             <.data_table
               id="tetrex-live"
-              class="data-table max-w-none"
+              class="data-table data-table--max-w-none"
               rows={@live_rows}
               row_click={fn row -> JS.navigate(~p"/showcases/tetrex/#{row.id}/watch") end}
             >
@@ -148,12 +148,12 @@ defmodule E2eWeb.TetrexIndexLive do
                 <span class="font-display tabular-nums">{row.watchers_count}</span>
               </:col>
               <:action :let={row}>
-                <.navigate to={~p"/showcases/tetrex/#{row.id}/watch"} class="button">
+                <.navigate to={~p"/showcases/tetrex/#{row.id}/watch"} as="button">
                   {~t"Watch"}
                 </.navigate>
               </:action>
               <:empty>
-                <p class="text-ink-muted m-0">{~t"No live games — start Tetrex."}</p>
+                <p class="text-ui-ink-muted m-0">{~t"No live games — start Tetrex."}</p>
               </:empty>
             </.data_table>
           </div>
@@ -200,16 +200,16 @@ defmodule E2eWeb.TetrexIndexLive do
       on_value_change="tetrex_player_name_changed"
     >
       <:label class="sr-only">{~t"Name"}</:label>
-      <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
-      <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
-      <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      <:edit_trigger><.heroicon name="hero-pencil-square" /></:edit_trigger>
+      <:submit_trigger><.heroicon name="hero-check" /></:submit_trigger>
+      <:cancel_trigger><.heroicon name="hero-x-mark" /></:cancel_trigger>
     </.editable>
     """
   end
 
   defp player_name_cell(assigns) do
     ~H"""
-    <span class="font-medium text-ink">{@row.player_name}</span>
+    <span class="font-medium text-ui-ink">{@row.player_name}</span>
     """
   end
 

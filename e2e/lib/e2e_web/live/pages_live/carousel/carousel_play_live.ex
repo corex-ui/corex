@@ -128,7 +128,7 @@ defmodule E2eWeb.CarouselPlayLive do
           />
 
           <.toggle_group
-            class="toggle-group toggle-group--sm max-w-7xs"
+            class="toggle-group toggle-group--sm toggle--max-w-7xs"
             id="orientation"
             on_value_change="control_changed"
             multiple={false}
@@ -136,15 +136,15 @@ defmodule E2eWeb.CarouselPlayLive do
             value={[@controls.orientation]}
           >
             <:item value="vertical" aria_label={~t"Vertical orientation"}>
-              <.heroicon name="hero-arrows-up-down" class="icon icon--lg" />
+              <.heroicon name="hero-arrows-up-down" />
             </:item>
             <:item value="horizontal" aria_label={~t"Horizontal orientation"}>
-              <.heroicon name="hero-arrows-right-left" class="icon icon--lg" />
+              <.heroicon name="hero-arrows-right-left" />
             </:item>
           </.toggle_group>
 
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="loop"
             checked={@loop}
             on_checked_change="loop_changed"
@@ -152,7 +152,7 @@ defmodule E2eWeb.CarouselPlayLive do
             <:label>Loop</:label>
           </.switch>
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="autoplay"
             checked={@autoplay}
             on_checked_change="autoplay_changed"
@@ -171,10 +171,10 @@ defmodule E2eWeb.CarouselPlayLive do
           >
             <:label>Slides per page (1–{@slides_per_page_max})</:label>
             <:decrement_trigger>
-              <.heroicon name="hero-chevron-down" class="icon" />
+              <.heroicon name="hero-chevron-down" />
             </:decrement_trigger>
             <:increment_trigger>
-              <.heroicon name="hero-chevron-up" class="icon" />
+              <.heroicon name="hero-chevron-up" />
             </:increment_trigger>
           </.number_input>
 
@@ -189,10 +189,10 @@ defmodule E2eWeb.CarouselPlayLive do
           >
             <:label>Spacing (px)</:label>
             <:decrement_trigger>
-              <.heroicon name="hero-chevron-down" class="icon" />
+              <.heroicon name="hero-chevron-down" />
             </:decrement_trigger>
             <:increment_trigger>
-              <.heroicon name="hero-chevron-up" class="icon" />
+              <.heroicon name="hero-chevron-up" />
             </:increment_trigger>
           </.number_input>
 
@@ -207,10 +207,10 @@ defmodule E2eWeb.CarouselPlayLive do
           >
             <:label>Padding (px, optional)</:label>
             <:decrement_trigger>
-              <.heroicon name="hero-chevron-down" class="icon" />
+              <.heroicon name="hero-chevron-down" />
             </:decrement_trigger>
             <:increment_trigger>
-              <.heroicon name="hero-chevron-up" class="icon" />
+              <.heroicon name="hero-chevron-up" />
             </:increment_trigger>
           </.number_input>
         </:controls>

@@ -11,7 +11,7 @@ defmodule Corex.Clipboard do
   ### Minimal
 
   ```heex
-  <.clipboard class="clipboard" value="hello@example.com">
+  <.clipboard value="hello@example.com">
     <:label>Email</:label>
     <:copy>
       <.heroicon name="hero-clipboard" />
@@ -26,7 +26,6 @@ defmodule Corex.Clipboard do
 
   ```heex
   <.clipboard
-    class="clipboard"
     value="https://example.com/share"
     input={false}
     trigger_aria_label="Copy link"
@@ -37,6 +36,34 @@ defmodule Corex.Clipboard do
     <:copied>
       <.heroicon name="hero-check" />
     </:copied>
+  </.clipboard>
+  ```
+
+  <!-- tabs-close -->
+
+  ## Styling
+
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `size`.
+
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.clipboard size="md" class="clipboard" value="hello@example.com">
+    <:label>Email</:label>
+    <:copy><.heroicon name="hero-clipboard" /></:copy>
+    <:copied><.heroicon name="hero-check" /></:copied>
+  </.clipboard>
+  ```
+
+  ### With classes
+
+  ```heex
+  <.clipboard class="clipboard clipboard--md" value="hello@example.com">
+    <:label>Email</:label>
+    <:copy><.heroicon name="hero-clipboard" /></:copy>
+    <:copied><.heroicon name="hero-check" /></:copied>
   </.clipboard>
   ```
 
@@ -69,7 +96,6 @@ defmodule Corex.Clipboard do
 
   ```heex
   <.clipboard
-    class="clipboard"
     value="info@netoum.com"
     on_copy="clipboard_copied"
   >
@@ -99,7 +125,7 @@ defmodule Corex.Clipboard do
 
   ## Style
 
-  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `clipboard.css`, then set `class="clipboard"` on `<.clipboard>`.
+  Target parts with `data-scope` and `data-part`, or use [Corex Design](styled.html): `@import "./corex.tailwind.css"` in `app.css`.
 
   ```css
   [data-scope="clipboard"][data-part="root"] {}
@@ -108,12 +134,6 @@ defmodule Corex.Clipboard do
   [data-scope="clipboard"][data-part="input"] {}
   [data-scope="clipboard"][data-part="copy"] {}
   [data-scope="clipboard"][data-part="copied"] {}
-  ```
-
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/clipboard.css";
   ```
 
   Stack modifiers on the host (`class` on `<.clipboard>`).
@@ -146,6 +166,23 @@ defmodule Corex.Clipboard do
 
   @doc type: :component
   use Phoenix.Component
+
+  use Corex.Variants,
+    base: "clipboard",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      size: :size
+    ],
+    defaults: [
+      width: "fit",
+      max_width: "none",
+      height: "auto",
+      max_height: "none",
+      size: "md"
+    ]
 
   import Corex.Api.Doc
 
@@ -257,6 +294,8 @@ defmodule Corex.Clipboard do
     <div
       id={@id}
       phx-hook="Clipboard"
+      class={corex_style_class(assigns)}
+     
       data-loading  
       phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}    
       {@rest}

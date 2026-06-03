@@ -30,7 +30,7 @@ defmodule E2eWeb.NavigatePlayLive do
       >
         <:controls>
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="external"
             checked={@external}
             on_checked_change="external_changed"
@@ -42,19 +42,18 @@ defmodule E2eWeb.NavigatePlayLive do
           <div class="layout__row gap-2 items-center">
             <.navigate
               to={if(@external, do: "https://example.com", else: "#")}
-              class="link"
               external={@external}
             >
               Link
               <span :if={@external} aria-hidden="true">
-                <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
+                <.heroicon name="hero-arrow-top-right-on-square" />
               </span>
             </.navigate>
 
-            <.navigate to="#" class="link" download="report.pdf">
+            <.navigate to="#" download="report.pdf">
               Download
               <span aria-hidden="true">
-                <.heroicon name="hero-arrow-down-tray" class="icon" />
+                <.heroicon name="hero-arrow-down-tray" />
               </span>
             </.navigate>
           </div>

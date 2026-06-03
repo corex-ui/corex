@@ -92,7 +92,7 @@ defmodule E2eWeb.DatePickerPlayLive do
           />
 
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="disabled"
             checked={@controls.disabled}
             on_checked_change="control_changed"
@@ -100,7 +100,7 @@ defmodule E2eWeb.DatePickerPlayLive do
             <:label>Disabled</:label>
           </.switch>
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="read_only"
             checked={@controls.read_only}
             on_checked_change="control_changed"
@@ -108,7 +108,7 @@ defmodule E2eWeb.DatePickerPlayLive do
             <:label>Read only</:label>
           </.switch>
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="invalid"
             checked={@controls.invalid}
             on_checked_change="control_changed"
@@ -117,7 +117,8 @@ defmodule E2eWeb.DatePickerPlayLive do
           </.switch>
 
           <.select
-            class="select select--sm w-4xs"
+            size="sm"
+            class="w-4xs"
             id="locale"
             value={[@controls.locale]}
             deselectable={false}
@@ -125,12 +126,13 @@ defmodule E2eWeb.DatePickerPlayLive do
             on_value_change="control_changed"
             translation={%Corex.Select.Translation{placeholder: "Locale"}}
           >
-            <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+            <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
             <:label>Locale</:label>
           </.select>
 
           <.select
-            class="select select--sm w-4xs"
+            size="sm"
+            class="w-4xs"
             id="selection_mode"
             value={[@controls.selection_mode]}
             deselectable={false}
@@ -142,13 +144,14 @@ defmodule E2eWeb.DatePickerPlayLive do
             on_value_change="control_changed"
             translation={%Corex.Select.Translation{placeholder: "Selection"}}
           >
-            <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+            <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
             <:label>Selection mode</:label>
           </.select>
 
           <.select
             :if={@controls.selection_mode == "multiple"}
-            class="select select--sm w-4xs"
+            size="sm"
+            class="w-4xs"
             id="max_selected_dates"
             value={[
               if @controls.max_selected_dates == nil do
@@ -168,7 +171,7 @@ defmodule E2eWeb.DatePickerPlayLive do
             on_value_change="control_changed"
             translation={%Corex.Select.Translation{placeholder: "Max selected"}}
           >
-            <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+            <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
             <:label>Multiple cap</:label>
           </.select>
         </:controls>
@@ -182,7 +185,6 @@ defmodule E2eWeb.DatePickerPlayLive do
                 input: "Select date"
               }
             }
-            class="date-picker"
             dir={@controls.dir}
             locale={@controls.locale}
             selection_mode={@controls.selection_mode}
@@ -194,9 +196,9 @@ defmodule E2eWeb.DatePickerPlayLive do
             on_value_change="play_value"
           >
             <:label>Select a date</:label>
-            <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-            <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-            <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+            <:trigger><.heroicon name="hero-calendar" /></:trigger>
+            <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+            <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
           </.date_picker>
         </:canvas>
       </.demo_playground>

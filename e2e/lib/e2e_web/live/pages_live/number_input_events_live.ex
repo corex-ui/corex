@@ -72,21 +72,20 @@ defmodule E2eWeb.NumberInputEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.number_input
                 id="number-input-events-server"
-                class="number-input"
                 on_value_change="number_input_changed"
               >
                 <:label>Quantity</:label>
                 <:decrement_trigger>
-                  <.heroicon name="hero-chevron-down" class="icon" />
+                  <.heroicon name="hero-chevron-down" />
                 </:decrement_trigger>
                 <:increment_trigger>
-                  <.heroicon name="hero-chevron-up" class="icon" />
+                  <.heroicon name="hero-chevron-up" />
                 </:increment_trigger>
               </.number_input>
 
               <.data_table
                 id="number-input-events-log-server"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.server_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -113,15 +112,14 @@ defmodule E2eWeb.NumberInputEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.number_input
                 id="number-input-events-client"
-                class="number-input"
                 on_value_change_client="number-input-changed"
               >
                 <:label>Quantity</:label>
                 <:decrement_trigger>
-                  <.heroicon name="hero-chevron-down" class="icon" />
+                  <.heroicon name="hero-chevron-down" />
                 </:decrement_trigger>
                 <:increment_trigger>
-                  <.heroicon name="hero-chevron-up" class="icon" />
+                  <.heroicon name="hero-chevron-up" />
                 </:increment_trigger>
               </.number_input>
 
@@ -148,7 +146,7 @@ defmodule E2eWeb.NumberInputEventsLive do
 
               <.data_table
                 id="number-input-events-log-client"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.client_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>

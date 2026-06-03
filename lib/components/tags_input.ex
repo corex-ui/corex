@@ -9,7 +9,7 @@ defmodule Corex.TagsInput do
   ### Minimal
 
   ```heex
-  <.tags_input class="tags-input" value={["alpha", "beta"]}>
+  <.tags_input value={["alpha", "beta"]}>
     <:close><.heroicon name="hero-x-mark" /></:close>
   </.tags_input>
   ```
@@ -17,7 +17,7 @@ defmodule Corex.TagsInput do
   ### With label
 
   ```heex
-  <.tags_input class="tags-input" value={["alpha", "beta"]}>
+  <.tags_input value={["alpha", "beta"]}>
     <:label>Tags</:label>
     <:close><.heroicon name="hero-x-mark" /></:close>
   </.tags_input>
@@ -27,7 +27,6 @@ defmodule Corex.TagsInput do
 
   ```heex
   <.tags_input
-    class="tags-input"
     value={["lorem", "duis"]}
     translation={%Corex.TagsInput.Translation{
       placeholder: "Add lorem or duis",
@@ -36,6 +35,30 @@ defmodule Corex.TagsInput do
     }}
   >
     <:label>Keywords</:label>
+    <:close><.heroicon name="hero-x-mark" /></:close>
+  </.tags_input>
+  ```
+
+  <!-- tabs-close -->
+
+  ## Styling
+
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `semantic`, `size`, `text`, `radius`.
+
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.tags_input semantic="accent" size="md" class="tags-input" value={["alpha", "beta"]}>
+    <:close><.heroicon name="hero-x-mark" /></:close>
+  </.tags_input>
+  ```
+
+  ### With classes
+
+  ```heex
+  <.tags_input class="tags-input tags-input--accent tags-input--md" value={["alpha", "beta"]}>
     <:close><.heroicon name="hero-x-mark" /></:close>
   </.tags_input>
   ```
@@ -74,7 +97,6 @@ defmodule Corex.TagsInput do
 
   ```heex
   <.tags_input
-    class="tags-input"
     value={["lorem", "duis", "donec"]}
     on_value_change="tags_value_changed"
   >
@@ -106,7 +128,6 @@ defmodule Corex.TagsInput do
 
   ```heex
   <.tags_input
-    class="tags-input"
     controlled
     value={@tags}
     on_value_change="tags_changed"
@@ -159,7 +180,7 @@ defmodule Corex.TagsInput do
 
   ```heex
   <.form for={@form} phx-change="validate" phx-submit="save">
-    <.tags_input field={@form[:tags]} class="tags-input">
+    <.tags_input field={@form[:tags]}>
       <:label>Keywords</:label>
       <:close><.heroicon name="hero-x-mark" /></:close>
       <:error :let={msg}>
@@ -167,24 +188,18 @@ defmodule Corex.TagsInput do
         {msg}
       </:error>
     </.tags_input>
-    <.action type="submit" class="button button--accent">Save</.action>
+    <.action type="submit">Save</.action>
   </.form>
   ```
 
   ## Style
 
-  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `tags-input.css`, then set `class="tags-input"` on `<.tags_input>`.
+  Target parts with `data-scope` and `data-part`, or use [Corex Design](styled.html): `@import "./corex.tailwind.css"` in `app.css`.
 
   ```css
   [data-scope="tags-input"][data-part="root"] {}
   [data-scope="tags-input"][data-part="control"] {}
   [data-scope="tags-input"][data-part="input"] {}
-  ```
-
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/tags-input.css";
   ```
 
   Stack modifiers on the host (`class` on `<.tags_input>`).
@@ -217,6 +232,26 @@ defmodule Corex.TagsInput do
 
   @doc type: :component
   use Phoenix.Component
+
+  use Corex.Variants,
+    base: "tags-input",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size,
+      text: :text,
+      radius: :radius
+    ],
+    defaults: [
+      width: "full",
+      max_width: "md",
+      height: "auto",
+      max_height: "none",
+      size: "md"
+    ]
 
   import Corex.Api.Doc
 
@@ -395,6 +430,8 @@ defmodule Corex.TagsInput do
     <div
       id={@id}
       phx-hook="TagsInput"
+      class={corex_style_class(assigns)}
+     
       data-loading
       phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       {@rest}

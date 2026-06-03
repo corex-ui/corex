@@ -15,54 +15,70 @@ defmodule E2eWeb.App.MainNav do
   )
 
   def header_main_nav(assigns) do
-    nav_class =
-      case assigns.orientation do
-        :vertical -> "flex flex-col gap-space-sm w-full"
-        :horizontal -> "hidden md:flex items-center gap-4 lg:gap-6 min-w-0"
-      end
-
-    link_class = "ui-link ui-link--md font-medium text-ink hover:text-link no-underline"
-    aria_label = nav_aria_label(assigns.placement)
-
-    assigns =
-      assigns
-      |> assign(:nav_class, nav_class)
-      |> assign(:link_class, link_class)
-      |> assign(:aria_label, aria_label)
+    assigns = assign(assigns, :aria_label, nav_aria_label(assigns.placement))
 
     ~H"""
-    <nav class={@nav_class} aria-label={@aria_label}>
-      <.navigate
-        to={~p"/accordion/anatomy"}
-        class={@link_class}
-        aria-current={nav_components_aria_current(@path)}
-      >
-        {~t"Components"}
-      </.navigate>
-      <.navigate
-        to={~p"/showcases"}
-        class={@link_class}
-        aria-current={nav_showcases_aria_current(@path)}
-      >
-        {~t"Showcase"}
-      </.navigate>
-      <.navigate
-        to={~p"/blog"}
-        class={@link_class}
-        aria-current={nav_blog_aria_current(@path)}
-      >
-        {~t"Blog"}
-      </.navigate>
-      <.navigate
-        :if={@placement == :header}
-        to={hexdocs_url()}
-        class={[@link_class, "inline-flex items-center gap-1"]}
-        external
-      >
-        {~t"Hex Doc"}
-        <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
-      </.navigate>
-    </nav>
+    <.row
+      :if={@orientation == :horizontal}
+      tag="nav"
+      hide_below="md"
+      align="center"
+      gap="lg"
+      aria-label={@aria_label}
+    >
+      <.nav_links path={@path} placement={@placement} />
+    </.row>
+    <.stack
+      :if={@orientation == :vertical}
+      tag="nav"
+      gap="sm"
+      width="full"
+      aria-label={@aria_label}
+    >
+      <.nav_links path={@path} placement={@placement} />
+    </.stack>
+    """
+  end
+
+  attr(:path, :string, required: true)
+  attr(:placement, :atom, required: true)
+
+  defp nav_links(assigns) do
+    ~H"""
+    <.navigate
+      to={~p"/accordion/anatomy"}
+      size="md"
+      class="font-medium no-underline"
+      aria-current={nav_components_aria_current(@path)}
+    >
+      {~t"Components"}
+    </.navigate>
+    <.navigate
+      to={~p"/showcases"}
+      size="md"
+      class="font-medium no-underline"
+      aria-current={nav_showcases_aria_current(@path)}
+    >
+      {~t"Showcase"}
+    </.navigate>
+    <.navigate
+      to={~p"/blog"}
+      size="md"
+      class="font-medium no-underline"
+      aria-current={nav_blog_aria_current(@path)}
+    >
+      {~t"Blog"}
+    </.navigate>
+    <.navigate
+      :if={@placement == :header}
+      to={hexdocs_url()}
+      size="md"
+      class="font-medium no-underline inline-flex items-center gap-1"
+      external
+    >
+      {~t"Hex Doc"}
+      <.heroicon name="hero-arrow-top-right-on-square" />
+    </.navigate>
     """
   end
 

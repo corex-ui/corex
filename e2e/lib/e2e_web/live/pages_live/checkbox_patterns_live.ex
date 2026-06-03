@@ -64,12 +64,11 @@ defmodule E2eWeb.CheckboxPatternsLive do
           <:preview>
             <.async_result :let={checkbox} assign={@checkbox}>
               <:loading>
-                <.checkbox_skeleton class="checkbox" />
+                <.checkbox_skeleton />
               </:loading>
 
               <.checkbox
                 id={@id_async}
-                class="checkbox"
                 checked={checkbox.checked}
               >
                 <:label>Accept terms</:label>
@@ -95,7 +94,6 @@ defmodule E2eWeb.CheckboxPatternsLive do
           <:preview>
             <.checkbox
               id={@id_controlled}
-              class="checkbox"
               controlled
               checked={@checked}
               on_checked_change="patterns_controlled_changed"

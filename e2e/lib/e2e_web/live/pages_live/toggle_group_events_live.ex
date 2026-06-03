@@ -77,7 +77,6 @@ defmodule E2eWeb.ToggleGroupEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.toggle_group
                 id={@id_server}
-                class="toggle-group"
                 multiple
                 on_value_change="toggle_group_changed"
               >
@@ -88,7 +87,7 @@ defmodule E2eWeb.ToggleGroupEventsLive do
 
               <.data_table
                 id="toggle-group-events-log-server"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.server_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -115,7 +114,6 @@ defmodule E2eWeb.ToggleGroupEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.toggle_group
                 id={@id_client}
-                class="toggle-group"
                 multiple
                 on_value_change_client="toggle-group-changed"
               >
@@ -149,7 +147,7 @@ defmodule E2eWeb.ToggleGroupEventsLive do
 
               <.data_table
                 id="toggle-group-events-log-client"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.client_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>

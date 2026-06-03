@@ -12,7 +12,6 @@ defmodule Corex.Select do
 
   ```heex
   <.select
-    class="select"
     items={Corex.List.new([
       %{label: "France", value: "fra", disabled: true},
       %{label: "Belgium", value: "bel"},
@@ -32,7 +31,6 @@ defmodule Corex.Select do
 
   ```heex
   <.select
-    class="select"
     items={Corex.List.new([
       %{label: "France", value: "fra", group: "Europe"},
       %{label: "Belgium", value: "bel", group: "Europe"},
@@ -60,7 +58,6 @@ defmodule Corex.Select do
   This example requires the installation of [Flagpack](https://hex.pm/packages/flagpack) to display the use of custom item rendering.
   ```heex
   <.select
-    class="select"
     items={Corex.List.new([
       %{label: "France", value: "fra"},
       %{label: "Belgium", value: "bel"},
@@ -91,7 +88,6 @@ defmodule Corex.Select do
   This example requires the installation of [Flagpack](https://hex.pm/packages/flagpack) to display the use of custom item rendering.
   ```heex
   <.select
-    class="select"
     items={Corex.List.new([
       %{label: "France", value: "fra", group: "Europe"},
       %{label: "Belgium", value: "bel", group: "Europe"},
@@ -111,6 +107,38 @@ defmodule Corex.Select do
     <:item_indicator>
       <.heroicon name="hero-check" />
     </:item_indicator>
+  </.select>
+  ```
+
+  <!-- tabs-close -->
+
+  ## Styling
+
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `semantic`, `variant`, `size`, `text`, `radius`.
+
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.select semantic="accent" size="md" class="select" items={Corex.List.new([
+    %{label: "France", value: "fra"},
+    %{label: "Belgium", value: "bel"},
+    %{label: "Germany", value: "deu"}
+  ])}>
+    <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+  </.select>
+  ```
+
+  ### With classes
+
+  ```heex
+  <.select class="select select--accent select--md" items={Corex.List.new([
+    %{label: "France", value: "fra"},
+    %{label: "Belgium", value: "bel"},
+    %{label: "Germany", value: "deu"}
+  ])}>
+    <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
   </.select>
   ```
 
@@ -141,7 +169,6 @@ defmodule Corex.Select do
 
   ```heex
   <.select
-    class="select"
     redirect
     translation={%Corex.Select.Translation{placeholder: "Go to"}}
     items={Corex.List.new([
@@ -172,7 +199,6 @@ defmodule Corex.Select do
       ~H"""
       <.select
         id="nav-select"
-        class="select"
         redirect
         on_value_change="nav_change"
         translation={%Corex.Select.Translation{placeholder: "Go to"}}
@@ -195,10 +221,10 @@ defmodule Corex.Select do
   Use `Phoenix.LiveView.stream/3` to add or remove options at runtime. Keep `@items_list` in sync and pass `Corex.List.new(@items_list)` as `items`. Configure `dom_id` as `select:stream-select:item:#{value}`.
 
   ```heex
-  <.select class="select" items={Corex.List.new(@items_list)}>
+  <.select items={Corex.List.new(@items_list)}>
     <:label>Country</:label>
     <:trigger>
-      <.heroicon name="hero-chevron-down" class="icon" />
+      <.heroicon name="hero-chevron-down" />
     </:trigger>
   </.select>
   ```
@@ -224,7 +250,6 @@ defmodule Corex.Select do
   ```heex
   <.select
     field={@form[:tags]}
-    class="select"
     multiple
     controlled
     items={Corex.List.new([
@@ -236,7 +261,7 @@ defmodule Corex.Select do
     <:label>Tags</:label>
     <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
+      <.heroicon name="hero-exclamation-circle" />
       {msg}
     </:error>
   </.select>
@@ -262,7 +287,6 @@ defmodule Corex.Select do
   <.form :let={f} for={@form} action={@action} method="post">
     <.select
       field={f[:country]}
-      class="select"
       translation={%Corex.Select.Translation{placeholder: "Select a country"}}
       items={Corex.List.new([
         %{label: "France", value: "fra", disabled: true},
@@ -278,7 +302,7 @@ defmodule Corex.Select do
         <.heroicon name="hero-chevron-down" />
       </:trigger>
       <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
+        <.heroicon name="hero-exclamation-circle" />
         {msg}
       </:error>
     </.select>
@@ -336,7 +360,6 @@ defmodule Corex.Select do
       <.form for={@form} phx-change="validate">
         <.select
           field={@form[:country]}
-          class="select"
           controlled
           translation={%Corex.Select.Translation{placeholder: "Select a country"}}
           items={Corex.List.new([
@@ -350,7 +373,7 @@ defmodule Corex.Select do
             <.heroicon name="hero-chevron-down" />
           </:trigger>
           <:error :let={msg}>
-            <.heroicon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" />
             {msg}
           </:error>
         </.select>
@@ -410,7 +433,6 @@ defmodule Corex.Select do
 
   ```heex
   <.select
-    class="select"
     items={Corex.List.new([
       %{label: "France", value: "fra"},
       %{label: "Belgium", value: "bel"},
@@ -443,7 +465,6 @@ defmodule Corex.Select do
   ```heex
   <.select
     id="select-events-client"
-    class="select"
     items={Corex.List.new([
       %{label: "France", value: "fra"},
       %{label: "Belgium", value: "bel"},
@@ -465,7 +486,7 @@ defmodule Corex.Select do
 
   ## Style
 
-  Target parts with `data-scope` and `data-part`:
+  Target parts with `data-scope` and `data-part`, or use [Corex Design](styled.html): `@import "./corex.tailwind.css"` in `app.css`.
 
   ```css
   [data-scope="select"][data-part="root"] {}
@@ -474,17 +495,12 @@ defmodule Corex.Select do
   [data-scope="select"][data-part="input"] {}
   [data-scope="select"][data-part="error"] {}
   [data-scope="select"][data-part="trigger"] {}
+  [data-scope="select"][data-part="indicator"] {}
   [data-scope="select"][data-part="item-group"] {}
   [data-scope="select"][data-part="item-group-label"] {}
   [data-scope="select"][data-part="item"] {}
   [data-scope="select"][data-part="item-text"] {}
   [data-scope="select"][data-part="item-indicator"] {}
-  ```
-
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/select.css";
   ```
 
   Stack modifiers on `<.select class="select ...">`.
@@ -556,6 +572,7 @@ defmodule Corex.Select do
     Content,
     Control,
     HiddenSelect,
+    Indicator,
     Item,
     ItemGroup,
     ItemGroupLabel,
@@ -569,12 +586,33 @@ defmodule Corex.Select do
     ValueInput
   }
 
-  alias Corex.Api.RespondTo
+  alias Corex.Api.Response
   alias Corex.Select.Connect
   alias Corex.Select.Translation
 
   import Corex.Helpers,
     only: [normalize_items: 1, has_groups?: 1, group_by_group: 1, validate_value!: 1]
+
+  use Corex.Variants,
+    base: "select",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      variant: [:ghost],
+      size: :size,
+      text: :text,
+      radius: :radius
+    ],
+    defaults: [
+      width: "full",
+      max_width: "4xs",
+      height: "auto",
+      max_height: "none",
+      size: "md"
+    ]
 
   attr(:id, :string, required: false, doc: "The id of the select component")
 
@@ -666,7 +704,13 @@ defmodule Corex.Select do
     attr(:class, :string, required: false)
   end
 
-  slot :trigger, required: true, doc: "The trigger button content" do
+  slot :indicator, required: false, doc: "Chevron or adornment (Zag `indicator` part)" do
+    attr(:class, :string, required: false)
+  end
+
+  slot :trigger,
+    required: false,
+    doc: "Deprecated: use `:indicator`. Content is rendered on the Zag `indicator` part." do
     attr(:class, :string, required: false)
   end
 
@@ -768,6 +812,8 @@ defmodule Corex.Select do
     phx-hook="Select"
     data-loading
     phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])} 
+    class={corex_style_class(assigns)}
+   
     {@rest}
     {Connect.props(%Props{
       id: @id, items: @items, controlled: @controlled, form_field: @form_field, placeholder: @translation.placeholder, value: @value,
@@ -802,11 +848,19 @@ defmodule Corex.Select do
           {render_slot(@label)}
         </div>
         <div phx-mounted={Connect.ignore_control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})} {Connect.control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})}>
-          <button phx-mounted={Connect.ignore_trigger(%Trigger{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})} {Connect.trigger(%Trigger{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})} :if={!Enum.empty?(@trigger)} aria-label={get_selected_label(@items, @value) || @translation.placeholder}>
+          <button phx-mounted={Connect.ignore_trigger(%Trigger{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})} {Connect.trigger(%Trigger{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})} aria-label={get_selected_label(@items, @value) || @translation.placeholder}>
             <span phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: "value-label", orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: "value-label", orientation: @orientation})}>
               {get_selected_label(@items, @value) || @translation.placeholder}
             </span>
-            {render_slot(@trigger)}
+            <span
+              :if={@indicator != [] or @trigger != []}
+              class={indicator_slot_class(@indicator, @trigger)}
+              phx-mounted={Connect.ignore_indicator(%Indicator{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})}
+              {Connect.indicator(%Indicator{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})}
+            >
+              <span :if={@indicator != []}>{render_slot(@indicator)}</span>
+              <span :if={@indicator == [] and @trigger != []}>{render_slot(@trigger)}</span>
+            </span>
           </button>
         </div>
         <div
@@ -917,7 +971,7 @@ defmodule Corex.Select do
 
   def set_value(socket, select_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(select_id) do
-    RespondTo.push_set_value(
+    Response.push_set_value(
       socket,
       "select_set_value",
       select_id,
@@ -981,7 +1035,7 @@ defmodule Corex.Select do
   def set_open(socket, select_id, open)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(select_id) and
              is_boolean(open) do
-    RespondTo.push_set_open(socket, "select_set_open", select_id, open)
+    Response.push_set_open(socket, "select_set_open", select_id, open)
   end
 
   defp get_disabled_values(collection) do
@@ -1033,5 +1087,16 @@ defmodule Corex.Select do
           labels -> Enum.join(labels, ", ")
         end
     end
+  end
+
+  defp indicator_slot_class(indicator, trigger) do
+    entry =
+      cond do
+        indicator != [] -> Enum.at(indicator, 0)
+        trigger != [] -> Enum.at(trigger, 0)
+        true -> nil
+      end
+
+    entry && Map.get(entry, :class)
   end
 end

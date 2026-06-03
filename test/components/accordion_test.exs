@@ -17,6 +17,24 @@ defmodule Corex.AccordionTest do
       assert html =~ ~r/data-part="item-content"/
       assert html =~ ~r/T1/
       assert html =~ ~r/C1/
+      refute html =~ "<style"
+    end
+
+    @tag integration: true
+    test "style map sets host css variables without style tag" do
+      items = Corex.Content.new([%{label: "T1", content: "C1"}])
+
+      html =
+        render_component(&Accordion.accordion/1,
+          id: "faq",
+          items: items,
+          class: "accordion",
+          style: %{item: %{trigger: %{focus: [text_decoration: :underline]}}}
+        )
+
+      refute html =~ "<style"
+      assert html =~ ~s(--corex-accordion-item-trigger-focus-text-decoration)
+      assert html =~ "underline"
     end
 
     test "renders with horizontal orientation" do
@@ -658,7 +676,44 @@ defmodule Corex.AccordionTest do
 
       assert content_attrs["data-state"] == "closed"
       refute Map.has_key?(content_attrs, "hidden")
+      assert content_attrs["style"] == "height:0;overflow:hidden;opacity:0.0"
       assert content_attrs["aria-labelledby"] == "accordion:test-accordion:trigger:item-1"
+    end
+
+    test "content closed custom includes closed style" do
+      assigns = %{
+        id: "test-accordion",
+        value: "item-1",
+        values: [],
+        disabled: false,
+        dir: "ltr",
+        orientation: "vertical",
+        changed: nil,
+        animation_options: %Corex.Animation.Height{opacity_start: 0.2}
+      }
+
+      content_attrs = Connect.content(assigns, "custom")
+
+      assert content_attrs["data-state"] == "closed"
+      refute Map.has_key?(content_attrs, "hidden")
+      assert content_attrs["style"] == "height:0;overflow:hidden;opacity:0.2"
+    end
+
+    test "content open js omits closed style" do
+      assigns = %{
+        id: "test-accordion",
+        value: "item-1",
+        values: ["item-1"],
+        disabled: false,
+        dir: "ltr",
+        orientation: "vertical",
+        changed: nil
+      }
+
+      content_attrs = Connect.content(assigns, "js")
+
+      assert content_attrs["data-state"] == "open"
+      refute Map.has_key?(content_attrs, "style")
     end
 
     test "content closed custom omits hidden" do

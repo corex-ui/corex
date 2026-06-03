@@ -1,7 +1,15 @@
 defmodule E2eWeb.AccordionPlayLive do
   use E2eWeb, :live_view
 
-  import E2eWeb.DemoPage, only: [demo_page: 1, demo_playground: 1, playground_dir_toggle: 1]
+  import E2eWeb.DemoPage,
+    only: [
+      demo_page: 1,
+      demo_playground: 1,
+      demo_preview_tabs: 1,
+      authoring_preview: 1,
+      playground_dir_toggle: 1,
+      playground_orientation_toggle: 1
+    ]
 
   alias Corex.Accordion
 
@@ -11,35 +19,23 @@ defmodule E2eWeb.AccordionPlayLive do
 
   defp accordion_items(controls) do
     disabled = Map.get(controls, :disabled_items, [])
-    horizontal? = Map.get(controls, :orientation) == "horizontal"
-
-    {t1, t2, t3} =
-      if horizontal? do
-        {"Lorem", "Duis", "Donec"}
-      else
-        {
-          "Lorem duis donec sit amet",
-          "Duis dictum gravida odio ac pharetra?",
-          "Donec condimentum ex mi"
-        }
-      end
 
     Corex.Content.new([
       %{
         value: "lorem",
-        label: t1,
+        label: "Lorem ipsum dolor sit amet",
         content: ~t"Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
         disabled: "lorem" in disabled
       },
       %{
         value: "duis",
-        label: t2,
+        label: "Duis dictum gravida odio ac pharetra?",
         content: ~t"Nullam eget vestibulum ligula, at interdum tellus.",
         disabled: "duis" in disabled
       },
       %{
         value: "donec",
-        label: t3,
+        label: "Donec condimentum ex mi",
         content: ~t"Congue molestie ipsum gravida a. Sed ac eros luctus.",
         disabled: "donec" in disabled
       }
@@ -53,18 +49,15 @@ defmodule E2eWeb.AccordionPlayLive do
       orientation: "vertical",
       collapsible: true,
       multiple: true,
-      dir: "ltr",
-      color: "default",
-      size: "md"
+      dir: "ltr"
     }
 
     socket =
       socket
       |> assign(:controls, controls)
       |> assign(:disabled_select_items, disabled_select_items())
-      |> assign(:accordion_color_items, accordion_color_items())
-      |> assign(:accordion_size_items, accordion_size_items())
       |> assign(:items, accordion_items(controls))
+      |> assign_play_snippet()
 
     {:ok, socket}
   end
@@ -96,49 +89,77 @@ defmodule E2eWeb.AccordionPlayLive do
   defp update_control(socket, "orientation", value) do
     socket
     |> update(:controls, &%{&1 | orientation: value})
-    |> sync_items()
-  end
-
-  defp update_control(socket, "color", value) do
-    update(socket, :controls, &%{&1 | color: value})
-  end
-
-  defp update_control(socket, "size", value) do
-    update(socket, :controls, &%{&1 | size: value})
+    |> assign_play_snippet()
   end
 
   defp update_control(socket, "dir", value) do
-    update(socket, :controls, &%{&1 | dir: value})
+    socket
+    |> update(:controls, &%{&1 | dir: value})
+    |> assign_play_snippet()
   end
 
   defp update_control(socket, "collapsible", true) do
     socket
     |> update(:controls, &%{&1 | collapsible: true})
+    |> assign_play_snippet()
     |> push_playground_accordion_value()
   end
 
   defp update_control(socket, "collapsible", false) do
     socket
     |> update(:controls, &%{&1 | collapsible: false, multiple: false})
+    |> assign_play_snippet()
     |> push_playground_accordion_value()
   end
 
   defp update_control(socket, "multiple", true) do
     socket
     |> update(:controls, &%{&1 | multiple: true, collapsible: true})
+    |> assign_play_snippet()
     |> push_playground_accordion_value()
   end
 
   defp update_control(socket, "multiple", false) do
     socket
     |> update(:controls, &%{&1 | multiple: false})
+    |> assign_play_snippet()
     |> push_playground_accordion_value()
   end
 
-  defp update_control(socket, _unknown, _checked), do: socket
+  defp update_control(socket, _unknown, _checked), do: assign_play_snippet(socket)
 
   defp sync_items(socket) do
-    assign(socket, :items, accordion_items(socket.assigns.controls))
+    socket
+    |> assign(:items, accordion_items(socket.assigns.controls))
+    |> assign_play_snippet()
+  end
+
+  defp assign_play_snippet(socket) do
+    assign(socket, :play_snippet, play_snippet(socket.assigns.controls))
+  end
+
+  defp play_snippet(controls) do
+    collapsible = controls.multiple or controls.collapsible
+
+    collapsible_attr =
+      if collapsible, do: "\n  collapsible", else: ""
+
+    multiple_attr =
+      if controls.multiple, do: "\n  multiple", else: ""
+
+    code = """
+    <.accordion
+      variant="subtle"
+      items={@items}
+      orientation="#{controls.orientation}"
+      dir="#{controls.dir}"#{collapsible_attr}#{multiple_attr}
+    >
+      <:content :let={item}><p>{item.content}</p></:content>
+      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+    </.accordion>
+    """
+
+    E2eWeb.AuthoringSnippet.playground_heex_snippets(String.trim(code))
   end
 
   defp push_playground_accordion_value(socket) do
@@ -162,8 +183,6 @@ defmodule E2eWeb.AccordionPlayLive do
   defp control_bool(v), do: !!v
 
   defp control_id("playground-collapsible-" <> _), do: "collapsible"
-  defp control_id("accordion-color"), do: "color"
-  defp control_id("accordion-size"), do: "size"
   defp control_id(id), do: id
 
   defp disabled_select_items do
@@ -174,28 +193,7 @@ defmodule E2eWeb.AccordionPlayLive do
     ]
   end
 
-  defp accordion_color_items do
-    [
-      %{label: ~t"Default", value: "default"},
-      %{label: ~t"Accent", value: "accent"},
-      %{label: ~t"Brand", value: "brand"},
-      %{label: ~t"Alert", value: "alert"},
-      %{label: ~t"Info", value: "info"},
-      %{label: ~t"Success", value: "success"}
-    ]
-  end
-
-  defp accordion_size_items do
-    [
-      %{label: ~t"SM", value: "sm"},
-      %{label: ~t"MD", value: "md"},
-      %{label: ~t"LG", value: "lg"},
-      %{label: ~t"XL", value: "xl"}
-    ]
-  end
-
   @impl true
-
   def render(assigns) do
     ~H"""
     <Layouts.app
@@ -217,25 +215,16 @@ defmodule E2eWeb.AccordionPlayLive do
               value={[@controls.dir]}
             />
 
-            <.toggle_group
-              class="toggle-group toggle-group--sm max-w-7xs"
+            <.playground_orientation_toggle
               id="orientation"
               on_value_change="control_changed"
-              multiple={false}
-              deselectable={false}
               value={[@controls.orientation]}
-            >
-              <:item value="vertical" aria_label="Vertical orientation">
-                <.heroicon name="hero-arrows-up-down" class="icon icon--lg" />
-              </:item>
-              <:item value="horizontal" aria_label="Horizontal orientation">
-                <.heroicon name="hero-arrows-right-left" class="icon icon--lg" />
-              </:item>
-            </.toggle_group>
+            />
 
             <.select
               id="playground-disabled-items"
-              class="select select--sm w-4xs"
+              size="sm"
+              class="w-4xs"
               multiple
               deselectable={true}
               close_on_select={false}
@@ -250,7 +239,7 @@ defmodule E2eWeb.AccordionPlayLive do
             </.select>
 
             <.switch
-              class="switch switch--sm"
+              size="sm"
               id={"playground-collapsible-#{@controls.multiple}"}
               checked={@controls.collapsible}
               on_checked_change="control_changed"
@@ -259,64 +248,63 @@ defmodule E2eWeb.AccordionPlayLive do
             </.switch>
 
             <.switch
-              class="switch switch--sm"
+              size="sm"
               id="multiple"
               checked={@controls.multiple}
               on_checked_change="control_changed"
             >
               <:label>Multiple</:label>
             </.switch>
-
-            <.select
-              id="accordion-color"
-              class="select select--sm w-4xs"
-              value={[@controls.color]}
-              deselectable={false}
-              items={@accordion_color_items}
-              on_value_change="control_changed"
-              translation={%Corex.Select.Translation{placeholder: "Color"}}
-              positioning={%Corex.Positioning{same_width: true}}
-            >
-              <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
-              <:label>Color</:label>
-            </.select>
-
-            <.select
-              id="accordion-size"
-              class="select select--sm w-4xs"
-              value={[@controls.size]}
-              deselectable={false}
-              items={@accordion_size_items}
-              on_value_change="control_changed"
-              translation={%Corex.Select.Translation{placeholder: "Size"}}
-              positioning={%Corex.Positioning{same_width: true}}
-            >
-              <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
-              <:label>Size</:label>
-            </.select>
           </:controls>
           <:canvas>
-            <.accordion
-              id="my-accordion"
-              class={[
-                "accordion",
-                @controls.color != "default" && "accordion--#{@controls.color}",
-                "accordion--#{@controls.size}"
-              ]}
-              value={~W(lorem duis donec)}
-              items={@items}
-              collapsible={@controls.multiple or @controls.collapsible}
-              multiple={@controls.multiple}
-              orientation={@controls.orientation}
-              dir={@controls.dir}
+            <.demo_preview_tabs
+              id="accordion-play-preview"
+              code={@play_snippet}
+              trigger_class="button button--sm"
             >
-              <:content :let={item}>
-                <p class="break-words">{item.content}</p>
-              </:content>
-              <:indicator>
-                <.heroicon name="hero-chevron-right" />
-              </:indicator>
-            </.accordion>
+              <:preview>
+                <.authoring_preview>
+                  <:styled>
+                    <.accordion
+                      id="my-accordion"
+                      variant="subtle"
+                      value={~W(lorem duis donec)}
+                      items={@items}
+                      collapsible={@controls.multiple or @controls.collapsible}
+                      multiple={@controls.multiple}
+                      orientation={@controls.orientation}
+                      dir={@controls.dir}
+                    >
+                      <:content :let={item}>
+                        <p>{item.content}</p>
+                      </:content>
+                      <:indicator>
+                        <.heroicon name="hero-chevron-right" />
+                      </:indicator>
+                    </.accordion>
+                  </:styled>
+                  <:markup>
+                    <.accordion
+                      id="my-accordion"
+                      unstyled
+                      value={~W(lorem duis donec)}
+                      items={@items}
+                      collapsible={@controls.multiple or @controls.collapsible}
+                      multiple={@controls.multiple}
+                      orientation={@controls.orientation}
+                      dir={@controls.dir}
+                    >
+                      <:content :let={item}>
+                        <p>{item.content}</p>
+                      </:content>
+                      <:indicator>
+                        <.heroicon name="hero-chevron-right" />
+                      </:indicator>
+                    </.accordion>
+                  </:markup>
+                </.authoring_preview>
+              </:preview>
+            </.demo_preview_tabs>
           </:canvas>
         </.demo_playground>
       </.demo_page>

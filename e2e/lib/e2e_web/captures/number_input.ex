@@ -11,10 +11,10 @@ defmodule CorexWeb.NumberInput do
               class: "number-input",
               label: [%{inner_block: "Quantity"}],
               decrement_trigger: [
-                %{inner_block: ~S(<.heroicon name="hero-chevron-down" class="icon" />)}
+                %{inner_block: ~S(<.heroicon name="hero-chevron-down" />)}
               ],
               increment_trigger: [
-                %{inner_block: ~S(<.heroicon name="hero-chevron-up" class="icon" />)}
+                %{inner_block: ~S(<.heroicon name="hero-chevron-up" />)}
               ]
             }
           ]

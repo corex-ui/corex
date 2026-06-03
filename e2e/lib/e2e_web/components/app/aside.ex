@@ -18,7 +18,7 @@ defmodule E2eWeb.App.Aside do
       |> assign(:zag_img?, assigns.kind == :zagjs)
 
     ~H"""
-    <div class="flex shrink-0 items-center">
+    <div class="layout__aside-badge">
       <.tooltip
         id={@tip_id}
         trigger_tag={:span}
@@ -27,18 +27,19 @@ defmodule E2eWeb.App.Aside do
         close_on_click={false}
       >
         <:trigger>
-          <span class="flex items-center cursor-default">
+          <.badge size="sm" shape="square">
             <%= if @zag_img? do %>
               <img
                 src={~p"/images/tech/zag.webp"}
                 alt=""
-                class="max-h-8 w-auto object-contain"
+                width="16"
+                height="16"
                 decoding="async"
               />
             <% else %>
-              <.heroicon name={aside_menu_hero(@kind)} class="icon h-8" />
+              <.heroicon name={aside_menu_hero(@kind)} />
             <% end %>
-          </span>
+          </.badge>
         </:trigger>
         <:content>{@tip}</:content>
       </.tooltip>
@@ -73,7 +74,7 @@ defmodule E2eWeb.App.Aside do
     assigns = assign(assigns, :badges, badges) |> assign(:id_base, id_base)
 
     ~H"""
-    <div :if={@badges != []} class="flex shrink-0 items-center gap-1">
+    <div :if={@badges != []} class="layout__aside-badges">
       <.aside_menu_tree_badge
         :for={kind <- @badges}
         kind={kind}
@@ -89,8 +90,8 @@ defmodule E2eWeb.App.Aside do
 
   def aside_menu_tree_label_row(assigns) do
     ~H"""
-    <span class="flex w-full min-w-0 items-center gap-2">
-      <span class="min-w-0 flex-1 truncate">{@node.label}</span>
+    <span class="layout__aside-tree-label">
+      <span class="layout__aside-tree-label-text">{@node.label}</span>
       <.aside_menu_tree_meta node={@node} tip_scope={@tip_scope} />
     </span>
     """
@@ -98,7 +99,7 @@ defmodule E2eWeb.App.Aside do
 
   attr(:path, :string, required: true)
   attr(:site_nav_tree_id, :string, default: "site-nav-menu")
-  attr(:tree_class, :string, default: "tree-view navigation max-w-3xs")
+  attr(:tree_class, :string, default: "tree-navigation max-w-3xs")
 
   def drawer_site_nav_tree(assigns) do
     assigns =
@@ -109,6 +110,9 @@ defmodule E2eWeb.App.Aside do
     ~H"""
     <.tree_view
       id={@site_nav_tree_id}
+      as="navigation"
+      animation="instant"
+      loading={false}
       class={@tree_class}
       redirect
       value={[@full_path]}
@@ -134,7 +138,7 @@ defmodule E2eWeb.App.Aside do
   attr(:components_menu, :list, required: true)
   attr(:form_tree_id, :string, required: true)
   attr(:components_tree_id, :string, required: true)
-  attr(:tree_class, :string, default: "tree-view navigation max-w-xs layout__aside-tree")
+  attr(:tree_class, :string, default: "tree-navigation max-w-xs layout__aside-tree")
 
   def aside_nav_tree_views(assigns) do
     assigns =
@@ -147,6 +151,9 @@ defmodule E2eWeb.App.Aside do
     <.tree_view
       :if={@has_components_menu}
       id={@components_tree_id}
+      as="navigation"
+      animation="instant"
+      loading={false}
       class={@tree_class}
       redirect
       value={[@full_path]}
@@ -161,12 +168,15 @@ defmodule E2eWeb.App.Aside do
         <span class="min-w-0 truncate">{item.label}</span>
       </:item>
       <:branch_indicator>
-        <.heroicon name="hero-chevron-right" class="icon" />
+        <.heroicon name="hero-chevron-right" />
       </:branch_indicator>
     </.tree_view>
     <.tree_view
       :if={@has_form_menu}
       id={@form_tree_id}
+      as="navigation"
+      animation="instant"
+      loading={false}
       class={@tree_class}
       redirect
       value={[@full_path]}
@@ -181,7 +191,7 @@ defmodule E2eWeb.App.Aside do
         <span class="min-w-0 truncate">{item.label}</span>
       </:item>
       <:branch_indicator>
-        <.heroicon name="hero-chevron-right" class="icon" />
+        <.heroicon name="hero-chevron-right" />
       </:branch_indicator>
     </.tree_view>
     """
@@ -203,9 +213,8 @@ defmodule E2eWeb.App.Aside do
     ~H"""
     <aside
       id="layout-aside-nav"
-      class="layout__side hidden lg:flex scrollbar scrollbar--sm w-full max-w-2xs overflow-y-auto py-size gap-size"
+      class="shell-aside py-size gap-size"
       aria-label="Documentation navigation"
-      phx-hook="AsideNavScroll"
     >
       <.aside_nav_tree_views
         path={@path}

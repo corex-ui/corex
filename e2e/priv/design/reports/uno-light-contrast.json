@@ -1,0 +1,174 @@
+{
+  "scope": "design_tokens_only",
+  "mode": "light",
+  "target": "aa",
+  "pairs": [
+    {
+      "threshold": 4.5,
+      "references": {
+        "en301549": "9.2.1.3.2",
+        "section508": "1.4.3",
+        "wcag_sc": [
+          "1.4.3"
+        ]
+      },
+      "accessibility_level": "aa",
+      "bg_hex": "#dde1e6",
+      "background": "accent-ink",
+      "fg_hex": "#3b495c",
+      "wcag_ratio": 6.97,
+      "wcag_level": "aaa_large",
+      "foreground": "accent",
+      "pair_kind": "text",
+      "passes_target": true
+    },
+    {
+      "threshold": 4.5,
+      "references": {
+        "en301549": "9.2.1.3.2",
+        "section508": "1.4.6",
+        "wcag_sc": [
+          "1.4.6",
+          "1.4.3"
+        ]
+      },
+      "accessibility_level": "aa",
+      "bg_hex": "#e2e6eb",
+      "background": "brand-ink",
+      "fg_hex": "#00516c",
+      "wcag_ratio": 7.0,
+      "wcag_level": "aaa_large",
+      "foreground": "brand",
+      "pair_kind": "text",
+      "passes_target": true
+    },
+    {
+      "threshold": 4.5,
+      "references": {
+        "en301549": "9.2.1.3.2",
+        "section508": "1.4.6",
+        "wcag_sc": [
+          "1.4.6",
+          "1.4.3"
+        ]
+      },
+      "accessibility_level": "aa",
+      "bg_hex": "#dce0e5",
+      "background": "alert-ink",
+      "fg_hex": "#940000",
+      "wcag_ratio": 7.01,
+      "wcag_level": "aaa",
+      "foreground": "alert",
+      "pair_kind": "text",
+      "passes_target": true
+    },
+    {
+      "threshold": 4.5,
+      "references": {
+        "en301549": "9.2.1.3.2",
+        "section508": "1.4.3",
+        "wcag_sc": [
+          "1.4.3"
+        ]
+      },
+      "accessibility_level": "aa",
+      "bg_hex": "#e0e4e9",
+      "background": "info-ink",
+      "fg_hex": "#004c82",
+      "wcag_ratio": 6.98,
+      "wcag_level": "aaa_large",
+      "foreground": "info",
+      "pair_kind": "text",
+      "passes_target": true
+    },
+    {
+      "threshold": 4.5,
+      "references": {
+        "en301549": "9.2.1.3.2",
+        "section508": "1.4.6",
+        "wcag_sc": [
+          "1.4.6",
+          "1.4.3"
+        ]
+      },
+      "accessibility_level": "aa",
+      "bg_hex": "#e5e9ee",
+      "background": "success-ink",
+      "fg_hex": "#00583a",
+      "wcag_ratio": 7.01,
+      "wcag_level": "aaa",
+      "foreground": "success",
+      "pair_kind": "text",
+      "passes_target": true
+    },
+    {
+      "threshold": 4.5,
+      "references": {
+        "en301549": "9.2.1.3.2",
+        "section508": "1.4.6",
+        "wcag_sc": [
+          "1.4.6",
+          "1.4.3"
+        ]
+      },
+      "accessibility_level": "aa",
+      "bg_hex": "#393c40",
+      "background": "selected-ink",
+      "fg_hex": "#caced3",
+      "wcag_ratio": 7.01,
+      "wcag_level": "aaa",
+      "foreground": "selected",
+      "pair_kind": "text",
+      "passes_target": true
+    },
+    {
+      "threshold": 4.5,
+      "references": {
+        "en301549": "9.2.1.3.2",
+        "section508": "1.4.3",
+        "wcag_sc": [
+          "1.4.3"
+        ]
+      },
+      "accessibility_level": "aa",
+      "bg_hex": "#fcffff",
+      "background": "root",
+      "fg_hex": "#006399",
+      "wcag_ratio": 6.44,
+      "wcag_level": "aaa_large",
+      "foreground": "link",
+      "pair_kind": "text",
+      "passes_target": true
+    },
+    {
+      "threshold": 3.0,
+      "references": {
+        "en301549": "9.2.1.3.2",
+        "section508": "1.4.3",
+        "wcag_sc": [
+          "1.4.3"
+        ]
+      },
+      "accessibility_level": "aa",
+      "bg_hex": "#e8ecf0",
+      "background": "ui",
+      "fg_hex": "#83878b",
+      "wcag_ratio": 3.05,
+      "wcag_level": "aa_large",
+      "foreground": "border",
+      "pair_kind": "non_text",
+      "passes_target": true
+    }
+  ],
+  "theme": "uno",
+  "accessibility_level": "aa",
+  "pairs_failing": 0,
+  "thresholds": {
+    "text": 4.5,
+    "non_text": 3.0
+  },
+  "failures": [],
+  "generated_at": "2026-06-04T05:36:26.185323Z",
+  "pairs_total": 8,
+  "pairs_passing": 8
+}

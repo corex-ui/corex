@@ -40,7 +40,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
               <:title>Delete <%= schema.singular %>?</:title>
               <:description>This action cannot be undone.</:description>
               <:content>
-                <div class="flex flex-wrap justify-end gap-2 mt-4">
+                <.row wrap="wrap" justify="end" gap="sm" padding_block="md">
                   <.action
                     id={"<%= schema.singular %>-delete-#{@<%= schema.singular %>.<%= primary_key %>}-cancel"}
                     phx-click={Corex.Dialog.set_open("<%= schema.singular %>-delete-#{@<%= schema.singular %>.<%= primary_key %>}", false)}
@@ -58,7 +58,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
                   >
                     Delete
                   </.action>
-                </div>
+                </.row>
               </:content>
             </.dialog>
           </:actions>

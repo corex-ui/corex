@@ -7,15 +7,45 @@ defmodule Corex.Editable do
   ### Basic
 
   ```heex
-  <.editable value="Click to edit" class="editable">
+  <.editable value="Click to edit">
     <:label>Name</:label>
-    <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
-    <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
-    <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+    <:edit_trigger><.heroicon name="hero-pencil-square" /></:edit_trigger>
+    <:submit_trigger><.heroicon name="hero-check" /></:submit_trigger>
+    <:cancel_trigger><.heroicon name="hero-x-mark" /></:cancel_trigger>
   </.editable>
   ```
 
   Required slots: `:label`, `:edit_trigger`, `:submit_trigger`, `:cancel_trigger`. Preview value is managed by the component and the Editable TS hook.
+
+  ## Styling
+
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `semantic`, `size`, `radius`.
+
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.editable semantic="accent" size="md" class="editable" value="Click to edit">
+    <:label>Name</:label>
+    <:edit_trigger><.heroicon name="hero-pencil-square" /></:edit_trigger>
+    <:submit_trigger><.heroicon name="hero-check" /></:submit_trigger>
+    <:cancel_trigger><.heroicon name="hero-x-mark" /></:cancel_trigger>
+  </.editable>
+  ```
+
+  ### With classes
+
+  ```heex
+  <.editable class="editable editable--accent editable--md" value="Click to edit">
+    <:label>Name</:label>
+    <:edit_trigger><.heroicon name="hero-pencil-square" /></:edit_trigger>
+    <:submit_trigger><.heroicon name="hero-check" /></:submit_trigger>
+    <:cancel_trigger><.heroicon name="hero-x-mark" /></:cancel_trigger>
+  </.editable>
+  ```
+
+  <!-- tabs-close -->
 
   ## API
 
@@ -43,13 +73,12 @@ defmodule Corex.Editable do
   ```heex
   <.editable
     value="Click to edit"
-    class="editable"
     on_value_change="editable_changed"
   >
     <:label>Name</:label>
-    <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
-    <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
-    <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+    <:edit_trigger><.heroicon name="hero-pencil-square" /></:edit_trigger>
+    <:submit_trigger><.heroicon name="hero-check" /></:submit_trigger>
+    <:cancel_trigger><.heroicon name="hero-x-mark" /></:cancel_trigger>
   </.editable>
   ```
 
@@ -75,22 +104,22 @@ defmodule Corex.Editable do
 
   ```heex
   <.form for={@form} phx-change="validate">
-    <.editable field={@form[:name]} class="editable">
+    <.editable field={@form[:name]}>
       <:label>Name</:label>
       <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
+        <.heroicon name="hero-exclamation-circle" />
         {msg}
       </:error>
-      <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
-      <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
-      <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      <:edit_trigger><.heroicon name="hero-pencil-square" /></:edit_trigger>
+      <:submit_trigger><.heroicon name="hero-check" /></:submit_trigger>
+      <:cancel_trigger><.heroicon name="hero-x-mark" /></:cancel_trigger>
     </.editable>
   </.form>
   ```
 
   ## Style
 
-  Use data attributes to target elements:
+  Target parts with `data-scope` and `data-part`, or use [Corex Design](styled.html): `@import "./corex.tailwind.css"` in `app.css`.
 
   ```css
   [data-scope="editable"][data-part="root"] {}
@@ -105,30 +134,55 @@ defmodule Corex.Editable do
   [data-scope="editable"][data-part="error"] {}
   ```
 
-  If you wish to use the default Corex styling, you can use the class `editable` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+  Stack modifiers on the host (`class` on `<.editable>`).
 
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/editable.css";
-  ```
+  <!-- tabs-open -->
 
-  You can then use modifiers
+  ### Color
 
-  ```heex
-  <.editable class="editable editable--accent editable--lg" value="">
-    <:label>Label</:label>
-    <:edit_trigger>Edit</:edit_trigger>
-    <:submit_trigger>Save</:submit_trigger>
-    <:cancel_trigger>Cancel</:cancel_trigger>
-  </.editable>
-  ```
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `editable` |
+  | Accent | `editable editable--accent` |
+  | Brand | `editable editable--brand` |
+  | Alert | `editable editable--alert` |
+  | Info | `editable editable--info` |
+  | Success | `editable editable--success` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `editable editable--sm` |
+  | MD | `editable editable--md` |
+  | LG | `editable editable--lg` |
+  | XL | `editable editable--xl` |
+
+  <!-- tabs-close -->
 
   '''
 
   @doc type: :component
   use Phoenix.Component
+
+  use Corex.Variants,
+    base: "editable",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size,
+      radius: :radius
+    ],
+    defaults: [
+      width: "fit",
+      max_width: "none",
+      height: "auto",
+      max_height: "none",
+      size: "md"
+    ]
 
   import Corex.Api.Doc
 
@@ -251,6 +305,8 @@ defmodule Corex.Editable do
     <div
       id={@id}
       phx-hook="Editable"
+      class={corex_style_class(assigns)}
+     
       data-loading
       phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       {@rest}

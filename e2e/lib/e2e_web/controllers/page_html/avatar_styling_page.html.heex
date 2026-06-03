@@ -11,18 +11,20 @@
     subtitle={~t"Modifiers for color, size, and corner radius on the fallback and frame."}
   >
     <.demo_section
-      id="avatar-styling-color"
-      title={~t"Color"}
-      code={E2eWeb.Demos.AvatarDemo.styling_color_code()}
+      id="avatar-styling-semantic"
+      title={~t"Semantic"}
+      values={E2eWeb.Demos.AvatarDemo.styling_axis_values(:semantic)}
+      code={E2eWeb.Demos.AvatarDemo.styling_semantic_code()}
     >
       <:preview>
-        <E2eWeb.Demos.AvatarDemo.styling_color_example />
+        <E2eWeb.Demos.AvatarDemo.styling_semantic_example />
       </:preview>
     </.demo_section>
 
     <.demo_section
       id="avatar-styling-size"
       title={~t"Size"}
+      values={E2eWeb.Demos.AvatarDemo.styling_axis_values(:size)}
       code={E2eWeb.Demos.AvatarDemo.styling_size_code()}
     >
       <:preview>
@@ -33,10 +35,11 @@
     <.demo_section
       id="avatar-styling-rounded"
       title={~t"Rounded"}
-      code={E2eWeb.Demos.AvatarDemo.styling_rounded_code()}
+      values={E2eWeb.Demos.AvatarDemo.styling_axis_values(:radius)}
+      code={E2eWeb.Demos.AvatarDemo.styling_radius_code()}
     >
       <:preview>
-        <E2eWeb.Demos.AvatarDemo.styling_rounded_example />
+        <E2eWeb.Demos.AvatarDemo.styling_radius_example />
       </:preview>
     </.demo_section>
   </.demo_page>

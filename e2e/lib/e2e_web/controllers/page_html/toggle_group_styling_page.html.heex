@@ -8,18 +8,20 @@
     }
   >
     <.demo_section
-      id="toggle-group-styling-color"
-      title={~t"Color"}
-      code={E2eWeb.Demos.ToggleGroupDemo.styling_color_code()}
+      id="toggle-group-styling-semantic"
+      title={~t"Semantic"}
+      values={E2eWeb.Demos.ToggleGroupDemo.styling_axis_values(:semantic)}
+      code={E2eWeb.Demos.ToggleGroupDemo.styling_semantic_code()}
     >
       <:preview>
-        <E2eWeb.Demos.ToggleGroupDemo.styling_color_example />
+        <E2eWeb.Demos.ToggleGroupDemo.styling_semantic_example />
       </:preview>
     </.demo_section>
 
     <.demo_section
       id="toggle-group-styling-size"
       title={~t"Size"}
+      values={E2eWeb.Demos.ToggleGroupDemo.styling_axis_values(:size)}
       code={E2eWeb.Demos.ToggleGroupDemo.styling_size_code()}
     >
       <:preview>
@@ -30,6 +32,7 @@
     <.demo_section
       id="toggle-group-styling-radius"
       title={~t"Radius"}
+      values={E2eWeb.Demos.ToggleGroupDemo.styling_axis_values(:radius)}
       code={E2eWeb.Demos.ToggleGroupDemo.styling_radius_code()}
     >
       <:preview>

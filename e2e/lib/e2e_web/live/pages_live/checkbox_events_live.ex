@@ -83,7 +83,6 @@ defmodule E2eWeb.CheckboxEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.checkbox
                 id={@id_server}
-                class="checkbox"
                 on_checked_change="checkbox_changed"
               >
                 <:label>Subscribe</:label>
@@ -97,7 +96,7 @@ defmodule E2eWeb.CheckboxEventsLive do
 
               <.data_table
                 id="checkbox-events-log-server"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.server_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -124,7 +123,6 @@ defmodule E2eWeb.CheckboxEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.checkbox
                 id={@id_client}
-                class="checkbox"
                 on_checked_change_client={@client_event}
               >
                 <:label>Subscribe</:label>
@@ -158,7 +156,7 @@ defmodule E2eWeb.CheckboxEventsLive do
 
               <.data_table
                 id="checkbox-events-log-client"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.client_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>

@@ -37,10 +37,6 @@ defmodule Corex.New.Generate do
     Patches.patch_gettext_backend(install_dir, opts[:web_module], opts)
     Patches.patch_page_controller_test(install_dir, opts[:web_module])
 
-    if opts[:design] do
-      copy_design_tree(install_dir, opts)
-    end
-
     if opts[:lang] do
       Patches.patch_verified_routes_path_prefixes!(install_dir, opts[:web_module], opts)
       copy_gettext_catalog(install_dir)
@@ -164,150 +160,6 @@ defmodule Corex.New.Generate do
     write!(target, Templates.app_css(template_assigns(install_dir, opts)))
   end
 
-  def bundled_design_root do
-    case archive_priv_design_root() do
-      nil -> Path.expand("../../priv/corex_design", __DIR__)
-      path -> path
-    end
-  end
-
-  defp archive_priv_design_root do
-    case :code.which(Corex.New.Generate) do
-      :non_existing ->
-        nil
-
-      :cover_compiled ->
-        nil
-
-      beam ->
-        beam = beam_path_to_string(beam)
-
-        root =
-          beam
-          |> Path.dirname()
-          |> Path.join("../priv/corex_design")
-          |> Path.expand()
-
-        if File.dir?(Path.join(root, "corex")), do: root, else: nil
-    end
-  end
-
-  defp beam_path_to_string(beam) when is_list(beam), do: List.to_string(beam)
-  defp beam_path_to_string(beam) when is_binary(beam), do: beam
-
-  defp copy_design_tree(install_dir, opts) do
-    case resolve_design_source(opts, install_dir) do
-      {:checkout_priv, priv_root} ->
-        Mix.shell().info([:green, "* copying ", :reset, "Corex design → assets/corex/"])
-
-        copy_priv_design_siblings!(
-          install_dir,
-          priv_root,
-          ["design", "corex"],
-          ["design", "design"],
-          opts
-        )
-
-      {:bundled, bundled_root} ->
-        Mix.shell().info([:green, "* copying ", :reset, "Corex design → assets/corex/"])
-
-        copy_priv_design_siblings!(install_dir, bundled_root, ["corex"], ["design"], opts)
-
-      :missing ->
-        Mix.raise("""
-        Corex design snapshot is missing (expected #{bundled_design_root()}/corex mirroring priv/design/corex).
-
-        From the corex repository run:
-
-            mix assets.build
-
-        That copies priv/design into installer/priv/corex_design for the archive and local dev.
-        Rebuild or reinstall the archive after that step.
-        """)
-    end
-  end
-
-  defp copy_priv_design_siblings!(install_dir, source_root, consumer_rel, designex_rel, opts) do
-    dest = Path.join([install_dir, "assets", "corex"])
-    copy_design_subtree!(source_root, consumer_rel, dest)
-    write_design_version!(dest)
-
-    rm_assets_corex_design_if_present!(install_dir)
-
-    if opts[:designex] do
-      copy_design_subtree!(
-        source_root,
-        designex_rel,
-        Path.join([install_dir, "assets", "corex", "design"])
-      )
-    end
-  end
-
-  defp resolve_design_source(opts, install_dir) do
-    checkout =
-      case Keyword.get(opts, :dev) do
-        path when is_binary(path) ->
-          trimmed = String.trim(path)
-
-          if trimmed != "" do
-            abs = Path.expand(trimmed, install_dir)
-            priv_root = Path.join(abs, "priv")
-            corex_src = Path.join([priv_root, "design", "corex"])
-
-            if File.dir?(corex_src) do
-              {:checkout_priv, priv_root}
-            else
-              nil
-            end
-          else
-            nil
-          end
-
-        _ ->
-          nil
-      end
-
-    cond do
-      match?({:checkout_priv, _}, checkout) ->
-        checkout
-
-      File.dir?(Path.join(bundled_design_root(), "corex")) ->
-        {:bundled, bundled_design_root()}
-
-      true ->
-        :missing
-    end
-  end
-
-  defp rm_assets_corex_design_if_present!(install_dir) do
-    nested = Path.join([install_dir, "assets", "corex", "design"])
-
-    if File.exists?(nested) do
-      File.rm_rf!(nested)
-    end
-  end
-
-  defp copy_design_subtree!(base, rel_segments, dest) do
-    src = Path.join([base | rel_segments])
-
-    unless File.dir?(src) do
-      Mix.raise("Expected Corex design tree at #{src}")
-    end
-
-    File.mkdir_p!(Path.dirname(dest))
-    File.cp_r!(src, dest)
-  end
-
-  defp write_design_version!(dest) do
-    version =
-      case Mix.Project.config()[:version] do
-        nil -> "0.1.0"
-        v -> to_string(v)
-      end
-
-    File.write!(Path.join(dest, "VERSION"), version <> "\n")
-  end
-
   defp template_assigns(install_dir, opts) do
     [
       web_module: inspect(opts[:web_module]),
@@ -417,6 +269,9 @@ defmodule Corex.New.Generate do
         if File.exists?(Path.join(root, "default.pot")), do: root, else: nil
     end
   end
+
+  defp beam_path_to_string(beam) when is_list(beam), do: List.to_string(beam)
+  defp beam_path_to_string(beam) when is_binary(beam), do: beam
 
   defp copy_gettext_catalog(install_dir) do
     src = bundled_gettext_catalog_root()

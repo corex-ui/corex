@@ -52,24 +52,24 @@ defmodule E2eWeb.SelectApiLive do
             <div class="flex flex-wrap gap-2 items-center w-full justify-center">
               <.action
                 phx-click={Corex.Select.set_value("select-api-cb", ["fra"])}
-                class="button button--sm"
+                size="sm"
               >
                 France
               </.action>
               <.action
                 phx-click={Corex.Select.set_value("select-api-cb", [])}
-                class="button button--sm"
+                size="sm"
               >
                 Clear
               </.action>
             </div>
             <.select
               id="select-api-cb"
-              class="select select--accent"
+              semantic="accent"
               items={Corex.List.new(Demo.items_minimal())}
               translation={%Corex.Select.Translation{placeholder: ~t"Select"}}
             >
-              <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+              <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
             </.select>
           </:preview>
         </.demo_section>
@@ -89,20 +89,20 @@ defmodule E2eWeb.SelectApiLive do
         >
           <:preview>
             <div class="flex flex-wrap gap-2 items-center w-full justify-center">
-              <.action phx-click="select_api_set_value" class="button button--sm">
+              <.action phx-click="select_api_set_value" size="sm">
                 France
               </.action>
-              <.action phx-click="select_api_clear" class="button button--sm">
+              <.action phx-click="select_api_clear" size="sm">
                 Clear
               </.action>
             </div>
             <.select
               id="select-api-srv"
-              class="select select--accent"
+              semantic="accent"
               items={Corex.List.new(Demo.items_minimal())}
               translation={%Corex.Select.Translation{placeholder: ~t"Select"}}
             >
-              <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+              <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
             </.select>
           </:preview>
         </.demo_section>
@@ -118,7 +118,7 @@ defmodule E2eWeb.SelectApiLive do
             <div class="flex flex-wrap gap-2 items-center w-full justify-center">
               <.action
                 type="button"
-                class="button button--sm"
+                size="sm"
                 phx-click={
                   JS.dispatch("corex:select:set-value",
                     to: "#select-api-cjs",
@@ -131,7 +131,7 @@ defmodule E2eWeb.SelectApiLive do
               </.action>
               <.action
                 type="button"
-                class="button button--sm"
+                size="sm"
                 phx-click={
                   JS.dispatch("corex:select:set-value",
                     to: "#select-api-cjs",
@@ -145,11 +145,11 @@ defmodule E2eWeb.SelectApiLive do
             </div>
             <.select
               id="select-api-cjs"
-              class="select select--accent"
+              semantic="accent"
               items={Corex.List.new(Demo.items_minimal())}
               translation={%Corex.Select.Translation{placeholder: ~t"Select"}}
             >
-              <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+              <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
             </.select>
           </:preview>
         </.demo_section>

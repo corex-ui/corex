@@ -44,7 +44,7 @@ defmodule E2eWeb.FloatingPanelPlayLive do
       >
         <:controls>
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="fp-draggable"
             checked={@draggable}
             on_checked_change="draggable_changed"
@@ -52,7 +52,7 @@ defmodule E2eWeb.FloatingPanelPlayLive do
             <:label>Draggable</:label>
           </.switch>
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="fp-resizable"
             checked={@resizable}
             on_checked_change="resizable_changed"
@@ -66,7 +66,6 @@ defmodule E2eWeb.FloatingPanelPlayLive do
               id={"floating-panel-play-#{@remount}"}
               draggable={@draggable}
               resizable={@resizable}
-              class="floating-panel"
             >
               <:trigger>
                 <span data-closed>Open panel</span>
@@ -74,16 +73,16 @@ defmodule E2eWeb.FloatingPanelPlayLive do
               </:trigger>
               <:title>Panel</:title>
               <:minimize_trigger>
-                <.heroicon name="hero-arrow-down-left" class="icon" />
+                <.heroicon name="hero-arrow-down-left" />
               </:minimize_trigger>
               <:maximize_trigger>
-                <.heroicon name="hero-arrows-pointing-out" class="icon" />
+                <.heroicon name="hero-arrows-pointing-out" />
               </:maximize_trigger>
               <:default_trigger>
-                <.heroicon name="hero-rectangle-stack" class="icon" />
+                <.heroicon name="hero-rectangle-stack" />
               </:default_trigger>
               <:close_trigger>
-                <.heroicon name="hero-x-mark" class="icon" />
+                <.heroicon name="hero-x-mark" />
               </:close_trigger>
               <:content>
                 <p>Lorem ipsum dolor sit amet.</p>

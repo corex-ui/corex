@@ -15,7 +15,7 @@ defmodule CorexWeb.Action do
               inner_block: [
                 %{
                   inner_block:
-                    ~S(Text and SVG <span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>)
+                    ~S(Text and SVG <span aria-hidden="true"><.heroicon name="hero-arrow-right" /></span>)
                 }
               ]
             },
@@ -25,7 +25,7 @@ defmodule CorexWeb.Action do
               inner_block: [
                 %{
                   inner_block:
-                    ~S(<span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>)
+                    ~S(<span aria-hidden="true"><.heroicon name="hero-arrow-right" /></span>)
                 }
               ]
             },
@@ -72,7 +72,7 @@ defmodule CorexWeb.Action do
               inner_block: [
                 %{
                   inner_block:
-                    ~S(<span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>)
+                    ~S(<span aria-hidden="true"><.heroicon name="hero-arrow-right" /></span>)
                 }
               ]
             },
@@ -82,17 +82,17 @@ defmodule CorexWeb.Action do
               inner_block: [%{inner_block: "B"}]
             },
             shape_circle_icon: %{
-              class: "button button--circle",
+              class: "button button--square button--rounded-full",
               aria_label: "Circle button",
               inner_block: [
                 %{
                   inner_block:
-                    ~S(<span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>)
+                    ~S(<span aria-hidden="true"><.heroicon name="hero-arrow-right" /></span>)
                 }
               ]
             },
             shape_circle_letter: %{
-              class: "button button--circle",
+              class: "button button--square button--rounded-full",
               aria_label: "Circle button",
               inner_block: [%{inner_block: "B"}]
             },

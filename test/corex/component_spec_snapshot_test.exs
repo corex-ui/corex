@@ -1,7 +1,7 @@
 defmodule Corex.ComponentSpecSnapshotTest do
   use ExUnit.Case, async: true
 
-  @snapshot Application.app_dir(:corex, "priv/test/component_spec_snapshot.txt")
+  @snapshot Path.expand("../support/fixtures/component_spec_snapshot.txt", __DIR__)
 
   test "component_spec function names match frozen snapshot" do
     lines =

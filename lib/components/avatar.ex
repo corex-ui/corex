@@ -9,7 +9,7 @@ defmodule Corex.Avatar do
   ### Fallback
 
   ```heex
-  <.avatar src="" class="avatar">
+  <.avatar src="">
     <:fallback>
       <span class="font-semibold">AB</span>
     </:fallback>
@@ -21,7 +21,7 @@ defmodule Corex.Avatar do
   Override fallback body and receive the current `src` as `value`. When `:value` is omitted, `<:fallback>` is used.
 
   ```heex
-  <.avatar src="https://corex-ui.com/images/avatar.png" alt="" class="avatar">
+  <.avatar src="https://corex-ui.com/images/avatar.png" alt="">
     <:value :let={src}>
       {if src, do: "IMG", else: " - "}
     </:value>
@@ -33,8 +33,32 @@ defmodule Corex.Avatar do
   With `pending={true}`, the hook and `<img>` are not mounted until `pending={false}`. Use `:loading` or `avatar_skeleton/1`.
 
   ```heex
-  <.avatar pending class="avatar">
+  <.avatar pending>
     <:loading><span class="text-sm">Loading</span></:loading>
+  </.avatar>
+  ```
+
+  <!-- tabs-close -->
+
+  ## Styling
+
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `size`, `radius`.
+
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.avatar size="md" class="avatar" src="">
+    <:fallback>AB</:fallback>
+  </.avatar>
+  ```
+
+  ### With classes
+
+  ```heex
+  <.avatar class="avatar avatar--md" src="">
+    <:fallback>AB</:fallback>
   </.avatar>
   ```
 
@@ -70,7 +94,6 @@ defmodule Corex.Avatar do
 
   ```heex
   <.avatar
-    class="avatar"
     src="https://corex-ui.com/images/avatar.png"
     alt="Avatar"
     on_status_change="avatar_status_changed"
@@ -100,7 +123,6 @@ defmodule Corex.Avatar do
   ```heex
   <.avatar
     id="avatar-events-client"
-    class="avatar"
     src="https://corex-ui.com/images/avatar.png"
     on_status_change_client="avatar-status-changed"
   >
@@ -117,19 +139,13 @@ defmodule Corex.Avatar do
 
   ## Style
 
-  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `avatar.css`, then set `class="avatar"` on `<.avatar>`.
+  Target parts with `data-scope` and `data-part`, or use [Corex Design](styled.html): `@import "./corex.tailwind.css"` in `app.css`.
 
   ```css
   [data-scope="avatar"][data-part="root"] {}
   [data-scope="avatar"][data-part="image"] {}
   [data-scope="avatar"][data-part="fallback"] {}
   [data-scope="avatar"][data-part="skeleton"] {}
-  ```
-
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/avatar.css";
   ```
 
   Stack modifiers on the host (`class` on `<.avatar>`).
@@ -162,6 +178,24 @@ defmodule Corex.Avatar do
 
   @doc type: :component
   use Phoenix.Component
+
+  use Corex.Variants,
+    base: "avatar",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      size: :size,
+      radius: :radius
+    ],
+    defaults: [
+      width: "auto",
+      max_width: "none",
+      height: "auto",
+      max_height: "none",
+      size: "md"
+    ]
 
   import Corex.Api.Doc
 
@@ -232,6 +266,8 @@ defmodule Corex.Avatar do
       :if={not @pending}
       id={@id}
       phx-hook="Avatar"
+      class={corex_style_class(assigns)}
+     
       dir={@dir}
       data-src={@src}
       data-loading

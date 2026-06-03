@@ -2,11 +2,26 @@ defmodule E2eWeb.HomeController do
   use E2eWeb, :controller
 
   @hero_code_snippet ~S"""
-  <.accordion class="accordion">
-    <:trigger value="anatomy">Anatomy</:trigger>
-    <:trigger value="machine">State machines</:trigger>
-    <:content value="anatomy">Structure & slots</:content>
-    <:content value="machine">Zag.js on the client</:content>
+  <.accordion
+    id="hero-accordion"
+    value="machine"
+    on_value_change_client="hero-accordion-changed"
+  >
+    <:trigger value="anatomy">
+      Anatomy & slots
+    </:trigger>
+    <:content value="anatomy"><p>Structure, custom slots, compound mode.</p></:content>
+    <:indicator value="anatomy">
+      <.heroicon name="hero-chevron-right" />
+    </:indicator>
+
+    <:trigger value="machine">
+      State machines
+    </:trigger>
+    <:content value="machine"><p>Zag.js powers accessibility, keyboard, and focus.</p></:content>
+    <:indicator value="machine">
+      <.heroicon name="hero-chevron-right" />
+    </:indicator>
   </.accordion>
   """
 
@@ -20,24 +35,8 @@ defmodule E2eWeb.HomeController do
     |> assign(:install_command, @install_command)
     |> assign(:hero_marquee_items, hero_marquee_items())
     |> assign(:hero_bullets, hero_bullets())
-    |> assign(:hero_accordion_items, hero_accordion_items())
     |> assign(:component_count, length(Corex.component_ids()))
     |> render(:index)
-  end
-
-  defp hero_accordion_items do
-    [
-      %{
-        value: "anatomy",
-        label: ~t"Anatomy & slots",
-        content: ~t"Structure, custom slots, compound mode."
-      },
-      %{
-        value: "machine",
-        label: ~t"State machines",
-        content: ~t"Zag.js powers accessibility, keyboard, and focus."
-      }
-    ]
   end
 
   defp hero_marquee_items do

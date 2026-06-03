@@ -15,6 +15,7 @@
     <.demo_section
       id="signature-styling-drawing-color"
       title={~t"Drawing color"}
+      values={E2eWeb.Demos.SignatureDemo.styling_axis_values(:semantic)}
       code={E2eWeb.Demos.SignatureDemo.styling_drawing_color_code()}
     >
       <:preview>
@@ -25,6 +26,7 @@
     <.demo_section
       id="signature-styling-trigger-color"
       title={~t"Trigger color"}
+      values={E2eWeb.Demos.SignatureDemo.styling_axis_values(:semantic)}
       code={E2eWeb.Demos.SignatureDemo.styling_trigger_color_code()}
     >
       <:preview>
@@ -35,6 +37,7 @@
     <.demo_section
       id="signature-styling-size"
       title={~t"Size"}
+      values={E2eWeb.Demos.SignatureDemo.styling_axis_values(:size)}
       code={E2eWeb.Demos.SignatureDemo.styling_size_code()}
     >
       <:preview>
@@ -45,6 +48,7 @@
     <.demo_section
       id="signature-styling-max-width"
       title={~t"Max Width"}
+      values={E2eWeb.Demos.SignatureDemo.styling_axis_values(:max_width)}
       code={E2eWeb.Demos.SignatureDemo.styling_max_width_code()}
     >
       <:preview>
@@ -55,10 +59,11 @@
     <.demo_section
       id="signature-styling-rounded"
       title={~t"Rounded"}
-      code={E2eWeb.Demos.SignatureDemo.styling_rounded_code()}
+      values={E2eWeb.Demos.SignatureDemo.styling_axis_values(:radius)}
+      code={E2eWeb.Demos.SignatureDemo.styling_radius_code()}
     >
       <:preview>
-        <E2eWeb.Demos.SignatureDemo.styling_rounded_example />
+        <E2eWeb.Demos.SignatureDemo.styling_radius_example />
       </:preview>
     </.demo_section>
   </.demo_page>

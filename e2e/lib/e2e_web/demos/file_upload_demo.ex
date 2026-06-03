@@ -1,11 +1,15 @@
 defmodule E2eWeb.Demos.FileUploadDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.Demos.StylingAxes
+
+  def styling_axis_values(axis), do: StylingAxes.styling_axis_values(axis)
+
   alias Phoenix.LiveView.JS
 
   def anatomy_minimal_code do
     ~S"""
-    <.file_upload name="document" class="file-upload">
+    <.file_upload name="document" >
       <:close>
         <.heroicon name="hero-x-mark" />
       </:close>
@@ -17,7 +21,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     _ = assigns
 
     ~H"""
-    <.file_upload id="file-upload-anatomy-minimal" name="document" class="file-upload">
+    <.file_upload id="file-upload-anatomy-minimal" name="document">
       <:close>
         <.heroicon name="hero-x-mark" />
       </:close>
@@ -27,7 +31,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def anatomy_with_label_code do
     ~S"""
-    <.file_upload name="document" class="file-upload">
+    <.file_upload name="document" >
       <:label>Files</:label>
       <:close>
         <.heroicon name="hero-x-mark" />
@@ -40,7 +44,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     _ = assigns
 
     ~H"""
-    <.file_upload id="file-upload-anatomy-label" name="document" class="file-upload">
+    <.file_upload id="file-upload-anatomy-label" name="document">
       <:label>Files</:label>
       <:close>
         <.heroicon name="hero-x-mark" />
@@ -52,7 +56,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
   def live_anatomy_minimal_code do
     ~S"""
     <form phx-change="validate">
-      <.file_upload_live upload={@uploads.document} field={:document} class="file-upload">
+      <.file_upload_live upload={@uploads.document} field={:document} >
         <:close>
           <.heroicon name="hero-x-mark" />
         </:close>
@@ -64,7 +68,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
   def live_anatomy_with_label_code do
     ~S"""
     <form phx-change="validate">
-      <.file_upload_live upload={@uploads.document} field={:document} class="file-upload">
+      <.file_upload_live upload={@uploads.document} field={:document} >
         <:label>Files</:label>
         <:close>
           <.heroicon name="hero-x-mark" />
@@ -76,7 +80,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def anatomy_custom_slots_code do
     ~S"""
-    <.file_upload name="document" class="file-upload">
+    <.file_upload name="document" >
       <:dropzone>
         <span>Custom dropzone</span>
       </:dropzone>
@@ -94,7 +98,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     _ = assigns
 
     ~H"""
-    <.file_upload id="file-upload-anatomy-custom" name="document" class="file-upload">
+    <.file_upload id="file-upload-anatomy-custom" name="document">
       <:dropzone>
         <span>Custom dropzone</span>
       </:dropzone>
@@ -111,7 +115,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
   def live_anatomy_custom_slots_code do
     ~S"""
     <form phx-change="validate">
-      <.file_upload_live upload={@uploads.document} field={:document} class="file-upload">
+      <.file_upload_live upload={@uploads.document} field={:document} >
         <:dropzone>
           <span>Custom dropzone</span>
         </:dropzone>
@@ -165,17 +169,17 @@ defmodule E2eWeb.Demos.FileUploadDemo do
   def form_doc_controller_phoenix_heex do
     ~S"""
     <.form for={@form} action={~p"/file-upload/form"} method="post" multipart>
-      <.file_upload field={@form[:attachment]} class="file-upload">
+      <.file_upload field={@form[:attachment]} >
         <:label>Attachment</:label>
         <:close>
           <.heroicon name="hero-x-mark" />
         </:close>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.file_upload>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" semantic="accent">Submit</.action>
     </.form>
     """
   end
@@ -200,17 +204,17 @@ defmodule E2eWeb.Demos.FileUploadDemo do
   def form_doc_live_phoenix_heex do
     ~S"""
     <.form for={@form} phx-submit="save_phoenix" multipart>
-      <.file_upload field={@form[:attachment]} class="file-upload">
+      <.file_upload field={@form[:attachment]} >
         <:label>Attachment</:label>
         <:close>
           <.heroicon name="hero-x-mark" />
         </:close>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.file_upload>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -221,17 +225,17 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     ~S"""
     <.form for={@form} action={~p"/file-upload/form"} method="post" multipart>
       <input type="hidden" name="file_upload_changeset[_sent]" value="1" />
-      <.file_upload field={@form[:attachment]} class="file-upload">
+      <.file_upload field={@form[:attachment]} >
         <:label>Attachment</:label>
         <:close>
           <.heroicon name="hero-x-mark" />
         </:close>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.file_upload>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" semantic="accent">Submit</.action>
     </.form>
     """
   end
@@ -247,17 +251,17 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     ~S"""
     <.form for={@form} action={~p"/file-upload/form"} method="post" multipart>
       <input type="hidden" name="file_upload_validate[_sent]" value="1" />
-      <.file_upload field={@form[:attachment]} class="file-upload">
+      <.file_upload field={@form[:attachment]} >
         <:label>Attachment</:label>
         <:close>
           <.heroicon name="hero-x-mark" />
         </:close>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.file_upload>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" semantic="accent">Submit</.action>
     </.form>
     """
   end
@@ -274,13 +278,13 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     <form action={~p"/file-upload/form"} method="post" enctype="multipart/form-data" class="w-full max-w-2xs flex flex-col gap-space">
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <input type="hidden" name="_file_upload_form" value="native" />
-      <.file_upload name="user[avatar]" class="file-upload">
+      <.file_upload name="user[avatar]" >
         <:label>Avatar</:label>
         <:close>
           <.heroicon name="hero-x-mark" />
         </:close>
       </.file_upload>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" semantic="accent">Submit</.action>
     </form>
     """
   end
@@ -311,17 +315,17 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       multipart
     >
       <input type="hidden" name="file_upload_changeset[_sent]" value="1" />
-      <.file_upload id="file-upload-cs-field" field={@form[:attachment]} class="file-upload">
+      <.file_upload id="file-upload-cs-field" field={@form[:attachment]}>
         <:label>Attachment</:label>
         <:close>
           <.heroicon name="hero-x-mark" />
         </:close>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.file_upload>
-      <.action type="submit" id="file-upload-cs-submit" class="button button--accent">
+      <.action type="submit" id="file-upload-cs-submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -340,17 +344,17 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     >
       <input type="hidden" name="_file_upload_form" value="ecto" />
       <input type="hidden" name="file_upload_ecto[_sent]" value="1" />
-      <.file_upload id="file-upload-val-field" field={@form[:attachment]} class="file-upload">
+      <.file_upload id="file-upload-val-field" field={@form[:attachment]}>
         <:label>Attachment</:label>
         <:close>
           <.heroicon name="hero-x-mark" />
         </:close>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.file_upload>
-      <.action type="submit" id="file-upload-val-submit" class="button button--accent">
+      <.action type="submit" id="file-upload-val-submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -369,13 +373,13 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <input type="hidden" name="_file_upload_form" value="native" />
-      <.file_upload id="file-upload-native" name="user[avatar]" class="file-upload">
+      <.file_upload id="file-upload-native" name="user[avatar]">
         <:label>Avatar</:label>
         <:close>
           <.heroicon name="hero-x-mark" />
         </:close>
       </.file_upload>
-      <.action type="submit" id="file-upload-native-submit" class="button button--accent">
+      <.action type="submit" id="file-upload-native-submit" semantic="accent">
         Submit
       </.action>
     </form>
@@ -384,10 +388,10 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def api_open_phoenix_binding_heex do
     ~S"""
-    <.action phx-click={Corex.FileUpload.open_file_picker("file-upload-api-phx")} class="button button--sm">
+    <.action phx-click={Corex.FileUpload.open_file_picker("file-upload-api-phx")} size="sm">
       Open picker
     </.action>
-    <.file_upload name="demo[]" class="file-upload" max_files={3}>
+    <.file_upload name="demo[]"  max_files={3}>
       <:label>Upload</:label>
       <:close>
         <.heroicon name="hero-x-mark" />
@@ -398,10 +402,10 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def api_open_server_heex do
     ~S"""
-    <.action phx-click="api_fu_open_server" phx-value-id="file-upload-api-server" class="button button--sm">
+    <.action phx-click="api_fu_open_server" phx-value-id="file-upload-api-server" size="sm">
       Open picker
     </.action>
-    <.file_upload name="demo[]" class="file-upload" max_files={3}>
+    <.file_upload name="demo[]"  max_files={3}>
       <:label>Upload</:label>
       <:close>
         <.heroicon name="hero-x-mark" />
@@ -436,12 +440,12 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     <div class="flex flex-wrap gap-2 mb-4 items-center w-full justify-center">
       <.action
         phx-click={Corex.FileUpload.open_file_picker("file-upload-api-phx")}
-        class="button button--sm"
+        size="sm"
       >
         Open picker
       </.action>
     </div>
-    <.file_upload id="file-upload-api-phx" name="demo[]" class="file-upload" max_files={3}>
+    <.file_upload id="file-upload-api-phx" name="demo[]" max_files={3}>
       <:label>Upload</:label>
       <:close>
         <.heroicon name="hero-x-mark" />
@@ -458,12 +462,12 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       <.action
         phx-click="api_fu_open_server"
         phx-value-id="file-upload-api-server"
-        class="button button--sm"
+        size="sm"
       >
         Open picker
       </.action>
     </div>
-    <.file_upload id="file-upload-api-server" name="demo[]" class="file-upload" max_files={3}>
+    <.file_upload id="file-upload-api-server" name="demo[]" max_files={3}>
       <:label>Upload</:label>
       <:close>
         <.heroicon name="hero-x-mark" />
@@ -479,13 +483,13 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     <div class="flex flex-wrap gap-2 mb-4 items-center w-full justify-center">
       <.action
         type="button"
-        class="button button--sm"
+        size="sm"
         phx-click={JS.dispatch("corex:file-upload:open", to: "#file-upload-api-js", bubbles: false)}
       >
         Open picker (JS)
       </.action>
     </div>
-    <.file_upload id="file-upload-api-js" name="demo[]" class="file-upload" max_files={3}>
+    <.file_upload id="file-upload-api-js" name="demo[]" max_files={3}>
       <:label>Upload</:label>
       <:close>
         <.heroicon name="hero-x-mark" />
@@ -497,7 +501,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
   def events_server_heex do
     ~S"""
     <.file_upload
-      class="file-upload"
+      
       name="ev-server[]"
       on_file_change="fu_ev_server"
     >
@@ -519,7 +523,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
   def events_client_heex do
     ~S"""
     <.file_upload
-      class="file-upload"
+      
       name="ev-client[]"
       on_file_change_client="file-upload-file-change"
     >
@@ -554,7 +558,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           <.heroicon name="hero-x-mark" />
         </:close>
       </.file_upload_live>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" semantic="accent">Submit</.action>
     </form>
     """
   end
@@ -638,13 +642,13 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     <.form for={@form} action={~p"/file-upload/form"} method="post" multipart>
       <input type="hidden" name="_file_upload_form" value="phoenix" />
       <input type="hidden" name="file_upload_phoenix[_sent]" value="1" />
-      <.file_upload field={@form[:attachment]} class="file-upload">
+      <.file_upload field={@form[:attachment]}>
         <:label>Attachment</:label>
         <:close>
           <.heroicon name="hero-x-mark" />
         </:close>
       </.file_upload>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" semantic="accent">Submit</.action>
     </.form>
     """
   end
@@ -664,7 +668,6 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       <.file_upload
         id="file-upload-live-phoenix-field"
         field={@form[:attachment]}
-        class="file-upload"
         on_file_change="file_upload_changed"
       >
         <:label>Attachment</:label>
@@ -672,7 +675,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           <.heroicon name="hero-x-mark" />
         </:close>
       </.file_upload>
-      <.action type="submit" id="file-upload-live-phoenix-submit" class="button button--accent">
+      <.action type="submit" id="file-upload-live-phoenix-submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -688,7 +691,6 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       <.file_upload
         id="file-upload-live-ecto-field"
         field={@form[:attachment]}
-        class="file-upload"
         on_file_change="file_upload_changed"
       >
         <:label>Attachment</:label>
@@ -696,11 +698,11 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           <.heroicon name="hero-x-mark" />
         </:close>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.file_upload>
-      <.action type="submit" id="file-upload-live-ecto-submit" class="button button--accent">
+      <.action type="submit" id="file-upload-live-ecto-submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -788,6 +790,222 @@ defmodule E2eWeb.Demos.FileUploadDemo do
         end
       end
     end
+    """
+  end
+
+  defp styling_close_slot_code do
+    ~S"""
+      <:close>
+        <.heroicon name="hero-x-mark" />
+      </:close>
+    """
+  end
+
+  def styling_semantic_code do
+    close = styling_close_slot_code()
+
+    """
+    <.file_upload name="document">
+      <:label>Default</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" semantic="accent">
+      <:label>Accent</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" semantic="brand">
+      <:label>Brand</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" semantic="alert">
+      <:label>Alert</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" semantic="info">
+      <:label>Info</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" semantic="success">
+      <:label>Success</:label>
+    #{close}
+    </.file_upload>
+    """
+  end
+
+  def styling_semantic_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-wrap gap-6 items-start">
+      <.file_upload id="file-upload-style-color-default" name="document">
+        <:label>Default</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+      </.file_upload>
+      <.file_upload id="file-upload-style-color-accent" name="document" semantic="accent">
+        <:label>Accent</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+      </.file_upload>
+      <.file_upload id="file-upload-style-color-brand" name="document" semantic="brand">
+        <:label>Brand</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+      </.file_upload>
+      <.file_upload id="file-upload-style-color-alert" name="document" semantic="alert">
+        <:label>Alert</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+      </.file_upload>
+      <.file_upload id="file-upload-style-color-info" name="document" semantic="info">
+        <:label>Info</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+      </.file_upload>
+      <.file_upload id="file-upload-style-color-success" name="document" semantic="success">
+        <:label>Success</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+      </.file_upload>
+    </div>
+    """
+  end
+
+  def styling_size_code do
+    close = styling_close_slot_code()
+
+    """
+    <.file_upload name="document" size="sm">
+      <:label>SM</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" size="md">
+      <:label>MD</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" size="lg">
+      <:label>LG</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" size="xl">
+      <:label>XL</:label>
+    #{close}
+    </.file_upload>
+    """
+  end
+
+  def styling_size_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-4 items-start w-full max-w-md">
+      <.file_upload id="file-upload-style-size-sm" name="document" size="sm">
+        <:label>SM</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+      </.file_upload>
+      <.file_upload id="file-upload-style-size-md" name="document" size="md">
+        <:label>MD</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+      </.file_upload>
+      <.file_upload id="file-upload-style-size-lg" name="document" size="lg">
+        <:label>LG</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+      </.file_upload>
+      <.file_upload id="file-upload-style-size-xl" name="document" size="xl">
+        <:label>XL</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+      </.file_upload>
+    </div>
+    """
+  end
+
+  def styling_radius_code do
+    close = styling_close_slot_code()
+
+    """
+    <.file_upload name="document" radius="none">
+      <:label>None</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" radius="sm">
+      <:label>SM</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" radius="md">
+      <:label>MD</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" radius="lg">
+      <:label>LG</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" radius="xl">
+      <:label>XL</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" radius="full">
+      <:label>Full</:label>
+    #{close}
+    </.file_upload>
+    """
+  end
+
+  def styling_radius_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-4 items-start w-full max-w-md">
+      <.file_upload id="file-upload-style-radius-none" name="document" radius="none">
+        <:label>None</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+      </.file_upload>
+      <.file_upload id="file-upload-style-radius-sm" name="document" radius="sm">
+        <:label>SM</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+      </.file_upload>
+      <.file_upload id="file-upload-style-radius-md" name="document" radius="md">
+        <:label>MD</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+      </.file_upload>
+      <.file_upload id="file-upload-style-radius-lg" name="document" radius="lg">
+        <:label>LG</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+      </.file_upload>
+      <.file_upload id="file-upload-style-radius-xl" name="document" radius="xl">
+        <:label>XL</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+      </.file_upload>
+      <.file_upload id="file-upload-style-radius-full" name="document" radius="full">
+        <:label>Full</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+      </.file_upload>
+    </div>
     """
   end
 end

@@ -2,6 +2,8 @@
 
 This guide describes how to add Corex to an existing Phoenix application without using `mix corex.new`. It covers the minimum needed to render Corex components in your templates: the dependency, an ESM Esbuild build, the Corex JS hooks, the root layout `<script type="module">`, and `use Corex` in your web layer. Later sections cover optional features (design, toasts, dark mode, theming, localization).
 
+Corex ships **no CSS** by default. Style attributes on components (`semantic`, `size`, …) declare the look you want; Corex turns them into BEM classes such as `accordion--accent` that **you** style. Optionally, [Corex Design](styled.html) provides ready-made CSS for those classes. See [How styling works](installation.html#how-styling-works) in the installation guide for the full picture.
+
 If you are creating a new project instead, see the [Installation guide](installation.html).
 
 For light/dark mode, theming, and localization, follow the dedicated guides after this minimal install:
@@ -168,29 +170,45 @@ mix assets.build
 
 ## 6. Optional: Corex Design
 
-See the [Design guide](design.html) for commands, modifiers, shared utilities, and themes. Short version: install assets with:
+See the [Styled guide](styled.html) for the full setup, modifiers, shared utilities, and themes.
+
+Corex Design CSS is **generated at compile time** by the `:corex_design` compiler. The default Phoenix path writes into `assets/css/`. Requires **OTP 27+**. Add the dependency, register the compiler, and configure output:
+
+```elixir
+# mix.exs deps
+{:corex_design, "~> 0.2"}
+
+# mix.exs project/0 (Phoenix)
+compilers: [:phoenix_live_view] ++ Mix.compilers() ++ [:corex_design]
+```
+
+```elixir
+# config/config.exs
+config :corex_design,
+  default_theme: :neo,
+  default_mode: :light,
+  my_app: [
+    output: "assets/css/corex.tailwind.css"
+  ]
+```
+
+Replace `:my_app` with your OTP app name. Omit `:themes` to use built-in presets. Then:
 
 ```bash
-mix corex.design
+mix deps.get
+mix compile
+mix assets.build
 ```
 
-Pass `--designex` to also copy the design token sources (`assets/corex/design/`). By default `mix corex.design` **skips** any tree that already exists. Pass `--force` to overwrite  -  useful when refreshing design assets to a newer Corex version.
-
-Then import the design layers from `assets/css/app.css`. The minimum is `main.css`, a theme, and the components you use:
+Import the generated bundle from `assets/css/app.css`:
 
 ```css
-@import "../corex/main.css";
-@import "../corex/theme/neo.css";
-@import "../corex/components/typo.css";
-@import "../corex/components/layout.css";
-@import "../corex/components/accordion.css";
+@import "./corex.tailwind.css";
 ```
-
-Add `@import "../corex/components/toggle.css"` when you use `toggle` (for example a mode switcher), and `@import "../corex/components/select.css"` when you use `select` (for example theme or language pickers).
 
 If your `app.css` still imports the stock **daisyUI** plugin from `phx.new`, remove or isolate it. Mixing daisyUI tokens with Corex Design tokens leads to duplicated reset rules and conflicting CSS variables.
 
-Finally, set **`data-theme`** and **`data-mode`** on **`<html>`** so token files such as `theme/neo.css` and light/dark palettes apply. Use values that match your imports and toggles (for example `data-theme="neo"` when you import `../corex/theme/neo.css`, and `data-mode="light"` or `data-mode="dark"`). [Dark mode](dark_mode.html) and [Theming](theming.html) show how to wire these from plugs or client scripts after you add mode and theme pickers.
+Set **`data-theme`** and **`data-mode`** on **`<html>`** so theme and light/dark palettes apply. [Dark mode](dark_mode.html) and [Theming](theming.html) show how to wire these from plugs or client scripts after you add mode and theme pickers.
 
 Give **`<body>`** the **`typo`** and **`layout`** classes so base typography and the layout shell apply:
 
@@ -224,15 +242,15 @@ Optionally, add the connection-state toasts so users see feedback when the socke
   toast_group_id="layout-toast"
   title={gettext("We can't find the internet")}
   description={gettext("Attempting to reconnect")}
-  type={:error}
-  duration={:infinity}
+  toast_type={:error}
+  visible_duration={:infinity}
 />
 <.toast_server_error
   toast_group_id="layout-toast"
   title={gettext("Something went wrong!")}
   description={gettext("Attempting to reconnect")}
-  type={:error}
-  duration={:infinity}
+  toast_type={:error}
+  visible_duration={:infinity}
 />
 ```
 
@@ -423,6 +441,14 @@ end
 ## What's next
 
 To upgrade an existing app, see [Updating Corex](update.html).
+
+### Configuration
+
+- [Unstyled](unstyled.html) — modifier classes, axis vocabulary, `config :corex`
+- [Styled](styled.html) — Corex Design CSS setup
+- [Design config](design-config.html) — themes, validation, part-tree overrides
+- [Installation](installation.html) — generator options (`config :corex, :generators`)
+- [Localize](localize.html) — Gettext backend for translated component labels
 
 This is the minimum required to use Corex. From here, layer on the optional features one at a time:
 

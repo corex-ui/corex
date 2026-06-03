@@ -6,8 +6,8 @@ import {
   isJsAnimation,
   prepareJsHeightInitialState,
   runHeightOpenTransition,
-  stripHiddenFromProps
-} from "./chunks/chunk-SBA2GV3P.mjs";
+  spreadJsPanelProps
+} from "./chunks/chunk-SWUZHOZO.mjs";
 import {
   TreeCollection
 } from "./chunks/chunk-FVGYE2AE.mjs";
@@ -1390,11 +1390,11 @@ var TreeView = class extends Component {
         if (animation === "instant") {
           this.spreadProps(contentEl, contentPropsRaw);
         } else if (animation === "js" || animation === "custom") {
-          this.spreadProps(
+          spreadJsPanelProps(
             contentEl,
-            stripHiddenFromProps(contentPropsRaw)
+            contentPropsRaw,
+            (target, next) => this.spreadProps(target, next)
           );
-          contentEl.removeAttribute("hidden");
         }
       }
       const indentGuideEl = branchEl.querySelector(
@@ -1476,6 +1476,7 @@ var TreeViewHook = {
     self.lastSelected = controlled ? getStringList(el, "selectedValue") ?? [] : getStringList(el, "defaultSelectedValue") ?? [];
     self.lastExpandedAttr = readExpandedAttr(el);
     self.lastSelectedAttr = readSelectedAttr(el);
+    prepareJsHeightInitialState(el, BRANCH_CONTENT_SELECTOR);
     const treeView = new TreeView(el, {
       id: el.id,
       rootNode,
@@ -1553,7 +1554,6 @@ var TreeViewHook = {
     });
     treeView.init();
     this.treeView = treeView;
-    prepareJsHeightInitialState(el, BRANCH_CONTENT_SELECTOR);
     const hookApi = { el, pushEvent, canPushServer: canPush };
     const emitSelectedValue = createValueEmitter(hookApi, {
       getValue: () => treeView.api.selectedValue,

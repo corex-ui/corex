@@ -19,7 +19,7 @@ defmodule E2eWeb.BlogPage do
                   {post.description}
                 </span>
               </span>
-              <.heroicon name="hero-arrow-right" class="blog__read-next__icon" />
+              <.heroicon name="hero-arrow-right" />
             </.navigate>
           </li>
         </ul>
@@ -41,8 +41,8 @@ defmodule E2eWeb.BlogPage do
     <header class="blog__post-hero" aria-labelledby="blog-post-heading">
       <div class="blog__inner blog__post-hero__inner">
         <div class="blog__post-toolbar">
-          <.navigate to={~p"/blog"} class="blog__back link link--accent">
-            <.heroicon name="hero-arrow-left" class="blog__back__icon" />
+          <.navigate to={~p"/blog"} semantic="accent" class="blog__back link">
+            <.heroicon name="hero-arrow-left" />
             {~t"All articles"}
           </.navigate>
 
@@ -56,14 +56,14 @@ defmodule E2eWeb.BlogPage do
               to={~p"/blog/#{@prev.slug}"}
               class="button button--sm flex items-center gap-2 rounded-e-none"
             >
-              <.heroicon name="hero-chevron-left" class="shrink-0" title={@prev.label} />
+              <.heroicon name="hero-chevron-left" title={@prev.label} />
             </.navigate>
             <.navigate
               :if={@next}
               to={~p"/blog/#{@next.slug}"}
               class="button button--sm flex items-center gap-2 not-only:border-s-0 rounded-s-none"
             >
-              <.heroicon name="hero-chevron-right" class="shrink-0" title={@next.label} />
+              <.heroicon name="hero-chevron-right" title={@next.label} />
             </.navigate>
           </nav>
         </div>
@@ -106,7 +106,10 @@ defmodule E2eWeb.BlogPage do
             {@post_count} {ngettext("article", "articles", @post_count)}
           </span>
           <.navigate
-            class="button button--sm button--circle"
+            as="button"
+            size="sm"
+            shape="square"
+            radius="full"
             to="/feed.xml"
             external
             aria_label={~t"RSS feed"}
@@ -139,7 +142,7 @@ defmodule E2eWeb.BlogPage do
         <% else %>
           <span></span>
         <% end %>
-        <.heroicon name="hero-arrow-right" class="blog__card__arrow" />
+        <.heroicon name="hero-arrow-right" />
       </div>
       <h2 class="blog__card__title">
         <.navigate to={~p"/blog/#{@post.slug}"} class="blog__card__link">
@@ -162,7 +165,7 @@ defmodule E2eWeb.BlogPage do
     <%= if @tags != [] do %>
       <ul class={["m-0 flex list-none flex-wrap gap-space-sm p-0", @class]}>
         <li :for={tag <- @tags}>
-          <span class="badge badge--muted badge--sm">{tag}</span>
+          <.badge size="sm">{tag}</.badge>
         </li>
       </ul>
     <% end %>

@@ -20,6 +20,39 @@ defmodule Corex.TimerTest do
       refute html =~ "data-auto-start"
     end
 
+    test "style attrs compile to data attributes on the root element" do
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <.timer id="styled" start_ms={60_000} semantic="accent" size="lg" radius="xl" />
+            """
+          end,
+          %{}
+        )
+
+      assert [root] = Floki.find(Floki.parse_fragment!(html), "#styled")
+      assert Floki.attribute([root], "data-timer") != []
+      assert Enum.any?(Floki.attribute([root], "data-timer-semantic"), &(&1 == "accent"))
+      assert Enum.any?(Floki.attribute([root], "data-timer-size"), &(&1 == "lg"))
+      assert Enum.any?(Floki.attribute([root], "data-timer-radius"), &(&1 == "xl"))
+    end
+
+    test "plain class string still passes through without semantic attrs" do
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <.timer id="classy" start_ms={60_000} class="timer timer--brand" />
+            """
+          end,
+          %{}
+        )
+
+      assert [root] = Floki.find(Floki.parse_fragment!(html), "#classy")
+      assert root |> Floki.attribute("class") |> List.first() == "timer timer--brand"
+    end
+
     test "omits separator markup when separator slot is absent" do
       html =
         render_component(

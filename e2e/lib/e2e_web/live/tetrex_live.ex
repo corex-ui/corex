@@ -636,20 +636,20 @@ defmodule E2eWeb.TetrexLive do
           >
             <header class="flex items-center justify-between gap-space-sm shrink-0">
               <div class="flex items-center gap-space-sm min-w-0">
-                <h1 class="font-display text-lg uppercase tracking-widest text-ink m-0">Tetrex</h1>
-                <span :if={@live_action == :watch && @source == :session} class="badge badge--alert">
+                <h1 class="font-display text-lg uppercase tracking-widest text-ui-ink m-0">Tetrex</h1>
+                <.badge :if={@live_action == :watch && @source == :session} semantic="alert" size="sm">
                   {~t"LIVE"}
-                </span>
-                <span
+                </.badge>
+                <.badge
                   :if={@source == :session && is_binary(@game_id)}
-                  class="badge badge--ghost"
+                  size="sm"
                   aria-live="polite"
                 >
                   {watchers_label(@watchers_count)}
-                </span>
-                <span :if={@live_action == :replay} class="badge badge--ghost">{~t"Replay"}</span>
+                </.badge>
+                <.badge :if={@live_action == :replay} size="sm">{~t"Replay"}</.badge>
               </div>
-              <.navigate to={~p"/showcases/tetrex"} class="link link--accent text-sm shrink-0">
+              <.navigate to={~p"/showcases/tetrex"} semantic="accent" class="link text-sm shrink-0">
                 {~t"Home"}
               </.navigate>
             </header>
@@ -747,7 +747,7 @@ defmodule E2eWeb.TetrexLive do
       aria-busy="true"
     >
       <span class="ui-loading size-8" aria-hidden="true" />
-      <p class="text-ink-muted text-xs m-0">{~t"Loading game…"}</p>
+      <p class="text-ui-ink-muted text-xs m-0">{~t"Loading game…"}</p>
     </div>
     """
   end
@@ -761,7 +761,7 @@ defmodule E2eWeb.TetrexLive do
       aria-busy="true"
     >
       <span class="ui-loading size-8" aria-hidden="true" />
-      <p class="text-ink-muted text-xs m-0">{~t"Loading results…"}</p>
+      <p class="text-ui-ink-muted text-xs m-0">{~t"Loading results…"}</p>
     </div>
     """
   end
@@ -773,9 +773,9 @@ defmodule E2eWeb.TetrexLive do
       class="absolute inset-0 z-[1] flex flex-col items-center justify-center gap-space rounded-md bg-root/92 p-space text-center"
       aria-live="polite"
     >
-      <p class="font-display text-lg uppercase tracking-widest text-ink m-0">Tetrex</p>
-      <p class="text-ink-muted text-xs m-0">{~t"Clear rows. Beat your score."}</p>
-      <.action phx-click="start_game" class="button button--accent">
+      <p class="font-display text-lg uppercase tracking-widest text-ui-ink m-0">Tetrex</p>
+      <p class="text-ui-ink-muted text-xs m-0">{~t"Clear rows. Beat your score."}</p>
+      <.action phx-click="start_game" semantic="accent">
         {~t"Start"}
       </.action>
     </div>
@@ -790,33 +790,33 @@ defmodule E2eWeb.TetrexLive do
       aria-live="polite"
     >
       <p class="font-display text-lg uppercase tracking-widest text-alert m-0">{~t"Game over"}</p>
-      <p class="font-display text-2xl tabular-nums text-ink-accent m-0 leading-tight">
+      <p class="font-display text-2xl tabular-nums text-ui-ink-accent m-0 leading-tight">
         {String.pad_leading(Integer.to_string(@score), 6, "0")}
       </p>
-      <p :if={@show_replay_link} class="text-ink-muted text-sm m-0 max-w-xs">
+      <p :if={@show_replay_link} class="text-ui-ink-muted text-sm m-0 max-w-xs">
         {~t"Congratulations! You are on the leaderboard."}
       </p>
       <.editable
         :if={@show_replay_link && @can_edit_name}
         id="tetrex-overlay-player-name"
-        class="editable editable--sm w-full max-w-xs"
+        class="editable editable--sm w-full editable--max-w-xs"
         value={@player_name}
         placeholder={~t"Name"}
         on_value_change="tetrex_player_name_changed"
       >
         <:label class="sr-only">{~t"Name"}</:label>
-        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
-        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
-        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+        <:edit_trigger><.heroicon name="hero-pencil-square" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" /></:cancel_trigger>
       </.editable>
       <.navigate
         :if={@show_replay_link}
         to={~p"/showcases/tetrex/#{@game_id}/replay"}
-        class="button"
+        as="button"
       >
         {~t"Watch replay"}
       </.navigate>
-      <.navigate to={~p"/showcases/tetrex/new"} class="button button--accent w-full max-w-xs">
+      <.navigate to={~p"/showcases/tetrex/new"} as="button" semantic="accent" class="w-full max-w-xs">
         {~t"New game"}
       </.navigate>
     </div>
@@ -830,13 +830,13 @@ defmodule E2eWeb.TetrexLive do
       class="absolute inset-0 z-[1] flex flex-col items-center justify-center gap-space rounded-md bg-root/92 p-space text-center"
       aria-live="polite"
     >
-      <p class="font-display text-lg uppercase tracking-widest text-ink m-0">
+      <p class="font-display text-lg uppercase tracking-widest text-ui-ink m-0">
         {~t"Game unavailable"}
       </p>
-      <p class="text-ink-muted text-xs m-0">
+      <p class="text-ui-ink-muted text-xs m-0">
         {~t"This game ended or was removed from the leaderboard."}
       </p>
-      <.navigate to={~p"/showcases/tetrex"} class="button">
+      <.navigate to={~p"/showcases/tetrex"} as="button">
         {~t"Home"}
       </.navigate>
     </div>
@@ -852,7 +852,7 @@ defmodule E2eWeb.TetrexLive do
       aria-hidden="true"
     >
       <div class="flex h-full flex-col items-center justify-center gap-space rounded-md bg-root/92 p-space text-center">
-        <.action data-replay-action="watch-again" class="button w-full max-w-xs">
+        <.action data-replay-action="watch-again" class="w-full max-w-xs">
           {~t"Watch again"}
         </.action>
       </div>
@@ -890,35 +890,37 @@ defmodule E2eWeb.TetrexLive do
       id="tetrex-replay-controls"
       class="flex flex-col gap-space-sm border-t border-border pt-space-sm"
     >
-      <p class="text-ink-muted text-xs uppercase tracking-wider m-0">{~t"Replay"}</p>
+      <p class="text-ui-ink-muted text-xs uppercase tracking-wider m-0">{~t"Replay"}</p>
       <div class="flex flex-wrap items-center gap-1">
         <.toggle
           id="tetrex-replay-play"
-          class="toggle toggle--sm"
+          size="sm"
           pressed
           data-toggle-dual-label
           on_pressed_change_client="tetrex-replay-play-changed"
         >
           <span>
-            <.heroicon name="hero-play" class="icon" />
+            <.heroicon name="hero-play" />
             <span class="sr-only">{~t"Play"}</span>
           </span>
           <span data-pressed>
-            <.heroicon name="hero-pause" class="icon" />
+            <.heroicon name="hero-pause" />
             <span class="sr-only">{~t"Pause"}</span>
           </span>
         </.toggle>
         <.action
           data-replay-action="restart"
-          class="button button--square button--sm"
+          shape="square"
+          radius="full"
+          size="sm"
           aria_label={~t"Restart replay"}
         >
-          <.heroicon name="hero-arrow-path" class="icon" />
+          <.heroicon name="hero-arrow-path" />
         </.action>
         <.action
           id="tetrex-replay-speed"
           data-replay-action="speed"
-          class="button button--sm"
+          size="sm"
           aria_label={~t"Replay speed"}
         >
           ×2
@@ -938,34 +940,34 @@ defmodule E2eWeb.TetrexLive do
     <div class="flex flex-row md:flex-col items-center md:items-stretch justify-between gap-2 md:gap-space-sm w-full min-w-0 shrink-0">
       <div class="grid grid-cols-3 gap-x-2 gap-y-0 flex-1 min-w-0 md:grid-cols-2 md:gap-space-sm">
         <div>
-          <p class="text-ink-muted text-[0.65rem] md:text-xs uppercase tracking-wider m-0">
+          <p class="text-ui-ink-muted text-[0.65rem] md:text-xs uppercase tracking-wider m-0">
             {~t"Score"}
           </p>
           <p
             id="tetrex-score"
-            class="font-display text-base md:text-xl tabular-nums text-ink-accent m-0 leading-none md:leading-tight"
+            class="font-display text-base md:text-xl tabular-nums text-ui-ink-accent m-0 leading-none md:leading-tight"
           >
             {String.pad_leading(Integer.to_string(@score), 6, "0")}
           </p>
         </div>
         <div>
-          <p class="text-ink-muted text-[0.65rem] md:text-xs uppercase tracking-wider m-0">
+          <p class="text-ui-ink-muted text-[0.65rem] md:text-xs uppercase tracking-wider m-0">
             {~t"Level"}
           </p>
           <p
             id="tetrex-level"
-            class="font-display text-base md:text-xl tabular-nums text-ink m-0 leading-none md:leading-tight"
+            class="font-display text-base md:text-xl tabular-nums text-ui-ink m-0 leading-none md:leading-tight"
           >
             {@level}
           </p>
         </div>
         <div class="md:col-span-2">
-          <p class="text-ink-muted text-[0.65rem] md:text-xs uppercase tracking-wider m-0">
+          <p class="text-ui-ink-muted text-[0.65rem] md:text-xs uppercase tracking-wider m-0">
             {~t"Lines"}
           </p>
           <p
             id="tetrex-lines"
-            class="font-display text-sm md:text-lg tabular-nums text-ink m-0 leading-none md:leading-tight"
+            class="font-display text-sm md:text-lg tabular-nums text-ui-ink m-0 leading-none md:leading-tight"
           >
             {@lines}
           </p>
@@ -973,7 +975,7 @@ defmodule E2eWeb.TetrexLive do
       </div>
 
       <div class="shrink-0">
-        <p class="text-ink-muted text-[0.65rem] md:text-xs uppercase tracking-wider m-0 text-end md:text-start">
+        <p class="text-ui-ink-muted text-[0.65rem] md:text-xs uppercase tracking-wider m-0 text-end md:text-start">
           {~t"Next"}
         </p>
         <div
@@ -1001,7 +1003,10 @@ defmodule E2eWeb.TetrexLive do
         <.action
           type="button"
           data-tetrex-cmd="rotate"
-          class="button button--square button--md col-start-2"
+          shape="square"
+          radius="full"
+          size="md"
+          class="col-start-2"
           aria_label={~t"Rotate"}
         >
           <.heroicon name="hero-arrow-path" />
@@ -1009,7 +1014,10 @@ defmodule E2eWeb.TetrexLive do
         <.action
           type="button"
           data-tetrex-cmd="left"
-          class="button button--square button--md col-start-1 row-start-2"
+          shape="square"
+          radius="full"
+          size="md"
+          class="col-start-1 row-start-2"
           aria_label={~t"Move left"}
         >
           <.heroicon name="hero-arrow-left" />
@@ -1017,7 +1025,10 @@ defmodule E2eWeb.TetrexLive do
         <.action
           type="button"
           data-tetrex-cmd="down"
-          class="button button--square button--md col-start-2 row-start-2"
+          shape="square"
+          radius="full"
+          size="md"
+          class="col-start-2 row-start-2"
           aria_label={~t"Soft drop"}
         >
           <.heroicon name="hero-arrow-down" />
@@ -1025,7 +1036,10 @@ defmodule E2eWeb.TetrexLive do
         <.action
           type="button"
           data-tetrex-cmd="right"
-          class="button button--square button--md col-start-3 row-start-2"
+          shape="square"
+          radius="full"
+          size="md"
+          class="col-start-3 row-start-2"
           aria_label={~t"Move right"}
         >
           <.heroicon name="hero-arrow-right" />
@@ -1038,13 +1052,13 @@ defmodule E2eWeb.TetrexLive do
   defp keyboard_controls(assigns) do
     ~H"""
     <div class="hidden md:flex flex-col gap-space-sm border-t border-border pt-space-sm">
-      <p class="text-ink-muted text-xs uppercase tracking-wider m-0">{~t"Keyboard"}</p>
+      <p class="text-ui-ink-muted text-xs uppercase tracking-wider m-0">{~t"Keyboard"}</p>
       <ul class="flex flex-col gap-1 m-0 p-0 list-none">
         <.keyboard_row keys={["←", "→"]} label={~t"Move"} />
         <.keyboard_row keys={["↓"]} label={~t"Soft drop"} />
         <.keyboard_row keys={["Space"]} label={~t"Rotate"} />
       </ul>
-      <p class="text-xs text-ink-muted m-0">{~t"Focus the game area, then play."}</p>
+      <p class="text-xs text-ui-ink-muted m-0">{~t"Focus the game area, then play."}</p>
     </div>
     """
   end
@@ -1056,9 +1070,9 @@ defmodule E2eWeb.TetrexLive do
     ~H"""
     <li class="flex items-center justify-between gap-space-sm min-w-0">
       <span class="inline-flex flex-wrap items-center gap-1 shrink-0">
-        <span :for={key <- @keys} class="badge font-mono">{key}</span>
+        <.badge :for={key <- @keys} size="sm" class="font-mono">{key}</.badge>
       </span>
-      <span class="text-sm text-ink-muted text-end">{@label}</span>
+      <span class="text-sm text-ui-ink-muted text-end">{@label}</span>
     </li>
     """
   end

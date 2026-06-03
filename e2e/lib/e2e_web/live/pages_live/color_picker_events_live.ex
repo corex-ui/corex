@@ -103,13 +103,12 @@ defmodule E2eWeb.ColorPickerEventsLive do
                 value="#3b82f6"
                 label="Value (server)"
                 presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
-                class="color-picker"
                 on_value_change="cp_ev_server_value"
               />
 
               <.data_table
                 id="color-picker-events-sv-table"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.server_v_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -138,13 +137,12 @@ defmodule E2eWeb.ColorPickerEventsLive do
                 value="#3b82f6"
                 label="Open (server)"
                 presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
-                class="color-picker"
                 on_open_change="cp_ev_server_open"
               />
 
               <.data_table
                 id="color-picker-events-so-table"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.server_o_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -174,7 +172,6 @@ defmodule E2eWeb.ColorPickerEventsLive do
                 value="#3b82f6"
                 label="Value (client only)"
                 presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
-                class="color-picker"
                 on_value_change_client="color-picker-cv"
               />
 
@@ -202,7 +199,7 @@ defmodule E2eWeb.ColorPickerEventsLive do
 
               <.data_table
                 id="color-picker-events-cv-table"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.client_v_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -232,7 +229,6 @@ defmodule E2eWeb.ColorPickerEventsLive do
                 value="#3b82f6"
                 label="Open (client only)"
                 presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
-                class="color-picker"
                 on_open_change_client="color-picker-co"
               />
 
@@ -258,7 +254,7 @@ defmodule E2eWeb.ColorPickerEventsLive do
 
               <.data_table
                 id="color-picker-events-co-table"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.client_o_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>

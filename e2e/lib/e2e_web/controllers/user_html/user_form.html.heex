@@ -4,15 +4,15 @@
   action={@action}
 >
   <input :if={@return_context} type="hidden" name="return_to" value={@return_context} />
-  <.native_input field={f[:name]} type="text" class="native-input max-w-none">
+  <.native_input field={f[:name]} type="text" class="native-input native-input--max-w-none">
     <:label>Name</:label>
     <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
+      <.heroicon name="hero-exclamation-circle" />
       {msg}
     </:error>
   </.native_input>
   <.select
-    class="select  max-w-none"
+    class="max-w-none"
     field={f[:country]}
     placeholder={~t"Select a country"}
     items={[
@@ -31,13 +31,13 @@
       <.heroicon name="hero-chevron-down" />
     </:trigger>
     <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
+      <.heroicon name="hero-exclamation-circle" />
       {msg}
     </:error>
   </.select>
   <.combobox
     field={f[:currency]}
-    class="combobox  max-w-none"
+    class="combobox  combobox--max-w-none"
     placeholder={~t"Search currency"}
     items={currency_items()}
   >
@@ -51,43 +51,43 @@
       <.heroicon name="hero-chevron-down" />
     </:trigger>
     <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
+      <.heroicon name="hero-exclamation-circle" />
       {msg}
     </:error>
   </.combobox>
-  <.tags_input field={f[:tags]} class="tags-input max-w-none">
+  <.tags_input field={f[:tags]} class="tags-input tags-input--max-w-none">
     <:label>Tags</:label>
     <:close>
       <.heroicon name="hero-x-mark" />
     </:close>
     <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
+      <.heroicon name="hero-exclamation-circle" />
       {msg}
     </:error>
   </.tags_input>
-  <.date_picker field={f[:birth_date]} class="date-picker  max-w-none">
+  <.date_picker field={f[:birth_date]} class="date-picker  date-picker--max-w-none">
     <:label>Select a date</:label>
     <:trigger>
-      <.heroicon name="hero-calendar" class="icon" />
+      <.heroicon name="hero-calendar" />
     </:trigger>
     <:prev_trigger>
-      <.heroicon name="hero-chevron-left" class="icon" />
+      <.heroicon name="hero-chevron-left" />
     </:prev_trigger>
     <:next_trigger>
-      <.heroicon name="hero-chevron-right" class="icon" />
+      <.heroicon name="hero-chevron-right" />
     </:next_trigger>
     <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
+      <.heroicon name="hero-exclamation-circle" />
       {msg}
     </:error>
   </.date_picker>
-  <.signature_pad field={f[:signature]} class="signature-pad  max-w-none">
+  <.signature_pad field={f[:signature]} class="signature-pad  signature-pad--max-w-none">
     <:label>Sign here</:label>
     <:clear_trigger>
       <.heroicon name="hero-x-mark" />
     </:clear_trigger>
     <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
+      <.heroicon name="hero-exclamation-circle" />
       {msg}
     </:error>
   </.signature_pad>
@@ -96,21 +96,21 @@
     min={1.0}
     max={5.0}
     step={1.0}
-    class="number-input  max-w-none"
+    class="number-input  number-input--max-w-none"
   >
     <:label>Level</:label>
     <:decrement_trigger>
-      <.heroicon name="hero-chevron-down" class="icon" />
+      <.heroicon name="hero-chevron-down" />
     </:decrement_trigger>
     <:increment_trigger>
-      <.heroicon name="hero-chevron-up" class="icon" />
+      <.heroicon name="hero-chevron-up" />
     </:increment_trigger>
     <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
+      <.heroicon name="hero-exclamation-circle" />
       {msg}
     </:error>
   </.number_input>
-  <.checkbox field={f[:terms]} class="checkbox  max-w-none">
+  <.checkbox field={f[:terms]} class="checkbox checkbox--max-w-none">
     <:label>
       Accept the terms
     </:label>
@@ -118,14 +118,14 @@
       <.heroicon name="hero-check" />
     </:indicator>
     <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
+      <.heroicon name="hero-exclamation-circle" />
       {msg}
     </:error>
   </.checkbox>
   <footer class="flex w-full justify-between gap-2">
-    <.navigate :if={@return_to} to={@return_to} type="navigate" class="button button--sm">
+    <.navigate :if={@return_to} to={@return_to} type="navigate" as="button" size="sm">
       Cancel
     </.navigate>
-    <.action type="submit" class="button button--accent">Save User</.action>
+    <.action type="submit" semantic="accent">Save User</.action>
   </footer>
 </.form>

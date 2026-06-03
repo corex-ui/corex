@@ -94,7 +94,6 @@ defmodule E2eWeb.TreeViewEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.tree_view
                 id={@id_server}
-                class="tree-view"
                 items={@demo_items}
                 on_expanded_change="tree_server_expanded"
                 on_selection_change="tree_server_selection"
@@ -105,7 +104,7 @@ defmodule E2eWeb.TreeViewEventsLive do
 
               <.data_table
                 id="tree-events-log-server"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.server_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -134,7 +133,6 @@ defmodule E2eWeb.TreeViewEventsLive do
               <div class="w-full flex flex-col items-center">
                 <.tree_view
                   id={@id_client}
-                  class="tree-view"
                   expanded_value={["repo-lib"]}
                   items={@demo_items}
                   on_expanded_change_client={@client_expanded_event}
@@ -181,7 +179,7 @@ defmodule E2eWeb.TreeViewEventsLive do
 
               <.data_table
                 id="tree-events-log-client"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.client_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>

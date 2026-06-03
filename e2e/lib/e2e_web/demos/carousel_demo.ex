@@ -1,6 +1,10 @@
 defmodule E2eWeb.Demos.CarouselDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.Demos.StylingAxes
+
+  def styling_axis_values(axis), do: StylingAxes.styling_axis_values(axis)
+
   alias Corex.Image
 
   alias E2eWeb.Demos.DocExamples
@@ -55,7 +59,7 @@ defmodule E2eWeb.Demos.CarouselDemo do
       #{@gallery_items_attr}
       autoplay
       loop
-      class="carousel"
+      
     >
       <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
       <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -136,7 +140,7 @@ defmodule E2eWeb.Demos.CarouselDemo do
       #{@gallery_items_attr}
       autoplay
       loop
-      class="carousel"
+      
     >
       <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
       <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -187,7 +191,7 @@ defmodule E2eWeb.Demos.CarouselDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        size="sm"
       >
         Play
       </.action>
@@ -199,7 +203,7 @@ defmodule E2eWeb.Demos.CarouselDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        size="sm"
       >
         Pause
       </.action>
@@ -211,7 +215,7 @@ defmodule E2eWeb.Demos.CarouselDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        size="sm"
       >
         Next
       </.action>
@@ -223,7 +227,7 @@ defmodule E2eWeb.Demos.CarouselDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        size="sm"
       >
         Prev
       </.action>
@@ -235,7 +239,7 @@ defmodule E2eWeb.Demos.CarouselDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        size="sm"
       >
         Next (instant)
       </.action>
@@ -247,7 +251,7 @@ defmodule E2eWeb.Demos.CarouselDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        size="sm"
       >
         Prev (instant)
       </.action>
@@ -257,7 +261,6 @@ defmodule E2eWeb.Demos.CarouselDemo do
       items={gallery_images()}
       autoplay
       loop
-      class="carousel"
     >
       <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
       <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -267,14 +270,14 @@ defmodule E2eWeb.Demos.CarouselDemo do
 
   def api_controls_server_heex do
     """
-    <.action phx-click="api_carousel_server_play" class="button button--sm">Play</.action>
-    <.action phx-click="api_carousel_server_pause" class="button button--sm">Pause</.action>
-    <.action phx-click="api_carousel_server_scroll_next" class="button button--sm">Next</.action>
-    <.action phx-click="api_carousel_server_scroll_prev" class="button button--sm">Prev</.action>
-    <.action phx-click="api_carousel_server_scroll_next_instant" class="button button--sm">
+    <.action phx-click="api_carousel_server_play" size="sm">Play</.action>
+    <.action phx-click="api_carousel_server_pause" size="sm">Pause</.action>
+    <.action phx-click="api_carousel_server_scroll_next" size="sm">Next</.action>
+    <.action phx-click="api_carousel_server_scroll_prev" size="sm">Prev</.action>
+    <.action phx-click="api_carousel_server_scroll_next_instant" size="sm">
       Next (instant)
     </.action>
-    <.action phx-click="api_carousel_server_scroll_prev_instant" class="button button--sm">
+    <.action phx-click="api_carousel_server_scroll_prev_instant" size="sm">
       Prev (instant)
     </.action>
     <.carousel
@@ -282,7 +285,7 @@ defmodule E2eWeb.Demos.CarouselDemo do
       #{@gallery_items_attr}
       autoplay
       loop
-      class="carousel"
+      
     >
       <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
       <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -321,14 +324,14 @@ defmodule E2eWeb.Demos.CarouselDemo do
   def api_controls_server_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click="api_carousel_server_play" class="button button--sm">Play</.action>
-      <.action phx-click="api_carousel_server_pause" class="button button--sm">Pause</.action>
-      <.action phx-click="api_carousel_server_scroll_next" class="button button--sm">Next</.action>
-      <.action phx-click="api_carousel_server_scroll_prev" class="button button--sm">Prev</.action>
-      <.action phx-click="api_carousel_server_scroll_next_instant" class="button button--sm">
+      <.action phx-click="api_carousel_server_play" size="sm">Play</.action>
+      <.action phx-click="api_carousel_server_pause" size="sm">Pause</.action>
+      <.action phx-click="api_carousel_server_scroll_next" size="sm">Next</.action>
+      <.action phx-click="api_carousel_server_scroll_prev" size="sm">Prev</.action>
+      <.action phx-click="api_carousel_server_scroll_next_instant" size="sm">
         Next (instant)
       </.action>
-      <.action phx-click="api_carousel_server_scroll_prev_instant" class="button button--sm">
+      <.action phx-click="api_carousel_server_scroll_prev_instant" size="sm">
         Prev (instant)
       </.action>
     </div>
@@ -337,7 +340,6 @@ defmodule E2eWeb.Demos.CarouselDemo do
       items={gallery_images()}
       autoplay
       loop
-      class="carousel"
     >
       <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
       <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -345,42 +347,47 @@ defmodule E2eWeb.Demos.CarouselDemo do
     """
   end
 
-  def styling_color_code do
+  def styling_semantic_code do
     """
-    <.carousel id="carousel-style-default" #{@gallery_items_attr} class="carousel w-full max-w-xs">
+    <.carousel id="carousel-style-default" #{@gallery_items_attr} class="carousel w-full carousel--max-w-xs">
     #{@styling_carousel_triggers}
     </.carousel>
-    <.carousel id="carousel-style-accent" #{@gallery_items_attr} class="carousel carousel--accent w-full max-w-xs">
+    <.carousel id="carousel-style-accent" #{@gallery_items_attr} semantic="accent" class="carousel w-full carousel--max-w-xs">
     #{@styling_carousel_triggers}
     </.carousel>
-    <.carousel id="carousel-style-brand" #{@gallery_items_attr} class="carousel carousel--brand w-full max-w-xs">
+    <.carousel id="carousel-style-brand" #{@gallery_items_attr} semantic="brand" class="carousel w-full carousel--max-w-xs">
     #{@styling_carousel_triggers}
     </.carousel>
-    <.carousel id="carousel-style-alert" #{@gallery_items_attr} class="carousel carousel--alert w-full max-w-xs">
+    <.carousel id="carousel-style-alert" #{@gallery_items_attr} semantic="alert" class="carousel w-full carousel--max-w-xs">
     #{@styling_carousel_triggers}
     </.carousel>
-    <.carousel id="carousel-style-info" #{@gallery_items_attr} class="carousel carousel--info w-full max-w-xs">
+    <.carousel id="carousel-style-info" #{@gallery_items_attr} semantic="info" class="carousel w-full carousel--max-w-xs">
     #{@styling_carousel_triggers}
     </.carousel>
-    <.carousel id="carousel-style-success" #{@gallery_items_attr} class="carousel carousel--success w-full max-w-xs">
+    <.carousel id="carousel-style-success" #{@gallery_items_attr} semantic="success" class="carousel w-full carousel--max-w-xs">
     #{@styling_carousel_triggers}
     </.carousel>
     """
   end
 
-  def styling_color_example(assigns) do
+  def styling_semantic_example(assigns) do
     _ = assigns
 
     ~H"""
     <div class="flex flex-wrap gap-4 items-end justify-center">
-      <.carousel id="carousel-style-default" items={gallery_images()} class="carousel w-full max-w-xs">
+      <.carousel
+        id="carousel-style-default"
+        items={gallery_images()}
+        class="carousel w-full carousel--max-w-xs"
+      >
         <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
         <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
       </.carousel>
       <.carousel
         id="carousel-style-accent"
         items={gallery_images()}
-        class="carousel carousel--accent w-full max-w-xs"
+        semantic="accent"
+        class="carousel w-full carousel--max-w-xs"
       >
         <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
         <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -388,7 +395,8 @@ defmodule E2eWeb.Demos.CarouselDemo do
       <.carousel
         id="carousel-style-brand"
         items={gallery_images()}
-        class="carousel carousel--brand w-full max-w-xs"
+        semantic="brand"
+        class="carousel w-full carousel--max-w-xs"
       >
         <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
         <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -396,7 +404,8 @@ defmodule E2eWeb.Demos.CarouselDemo do
       <.carousel
         id="carousel-style-alert"
         items={gallery_images()}
-        class="carousel carousel--alert w-full max-w-xs"
+        semantic="alert"
+        class="carousel w-full carousel--max-w-xs"
       >
         <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
         <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -404,7 +413,8 @@ defmodule E2eWeb.Demos.CarouselDemo do
       <.carousel
         id="carousel-style-info"
         items={gallery_images()}
-        class="carousel carousel--info w-full max-w-xs"
+        semantic="info"
+        class="carousel w-full carousel--max-w-xs"
       >
         <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
         <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -412,7 +422,8 @@ defmodule E2eWeb.Demos.CarouselDemo do
       <.carousel
         id="carousel-style-success"
         items={gallery_images()}
-        class="carousel carousel--success w-full max-w-xs"
+        semantic="success"
+        class="carousel w-full carousel--max-w-xs"
       >
         <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
         <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -423,16 +434,16 @@ defmodule E2eWeb.Demos.CarouselDemo do
 
   def styling_size_code do
     """
-    <.carousel id="carousel-style-sm" #{@gallery_items_attr} class="carousel carousel--sm w-full max-w-3xs">
+    <.carousel id="carousel-style-sm" #{@gallery_items_attr} size="sm" class="carousel w-full carousel--max-w-3xs">
     #{@styling_carousel_triggers}
     </.carousel>
-    <.carousel id="carousel-style-md" #{@gallery_items_attr} class="carousel carousel--md w-full max-w-xs">
+    <.carousel id="carousel-style-md" #{@gallery_items_attr} size="md" class="carousel w-full carousel--max-w-xs">
     #{@styling_carousel_triggers}
     </.carousel>
-    <.carousel id="carousel-style-lg" #{@gallery_items_attr} class="carousel carousel--lg w-full max-w-md">
+    <.carousel id="carousel-style-lg" #{@gallery_items_attr} size="lg" class="carousel w-full carousel--max-w-md">
     #{@styling_carousel_triggers}
     </.carousel>
-    <.carousel id="carousel-style-xl" #{@gallery_items_attr} class="carousel carousel--xl w-full max-w-lg">
+    <.carousel id="carousel-style-xl" #{@gallery_items_attr} size="xl" class="carousel w-full carousel--max-w-lg">
     #{@styling_carousel_triggers}
     </.carousel>
     """
@@ -446,7 +457,8 @@ defmodule E2eWeb.Demos.CarouselDemo do
       <.carousel
         id="carousel-style-sm"
         items={gallery_images()}
-        class="carousel carousel--sm w-full max-w-3xs"
+        size="sm"
+        class="carousel w-full carousel--max-w-3xs"
       >
         <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
         <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -454,7 +466,8 @@ defmodule E2eWeb.Demos.CarouselDemo do
       <.carousel
         id="carousel-style-md"
         items={gallery_images()}
-        class="carousel carousel--md w-full max-w-xs"
+        size="md"
+        class="carousel w-full carousel--max-w-xs"
       >
         <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
         <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -462,7 +475,8 @@ defmodule E2eWeb.Demos.CarouselDemo do
       <.carousel
         id="carousel-style-lg"
         items={gallery_images()}
-        class="carousel carousel--lg w-full max-w-md"
+        size="lg"
+        class="carousel w-full carousel--max-w-md"
       >
         <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
         <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -470,7 +484,8 @@ defmodule E2eWeb.Demos.CarouselDemo do
       <.carousel
         id="carousel-style-xl"
         items={gallery_images()}
-        class="carousel carousel--xl w-full max-w-lg"
+        size="xl"
+        class="carousel w-full carousel--max-w-lg"
       >
         <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
         <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -481,25 +496,25 @@ defmodule E2eWeb.Demos.CarouselDemo do
 
   def styling_radius_code do
     """
-    <.carousel id="carousel-style-rounded-default" #{@gallery_items_attr} class="carousel w-full max-w-xs">
+    <.carousel id="carousel-style-rounded-default" #{@gallery_items_attr} class="carousel w-full carousel--max-w-xs">
     #{@styling_carousel_triggers}
     </.carousel>
-    <.carousel id="carousel-style-rounded-none" #{@gallery_items_attr} class="carousel carousel--rounded-none w-full max-w-xs">
+    <.carousel id="carousel-style-rounded-none" #{@gallery_items_attr} radius="none" class="carousel w-full carousel--max-w-xs">
     #{@styling_carousel_triggers}
     </.carousel>
-    <.carousel id="carousel-style-rounded-sm" #{@gallery_items_attr} class="carousel carousel--rounded-sm w-full max-w-xs">
+    <.carousel id="carousel-style-rounded-sm" #{@gallery_items_attr} radius="sm" class="carousel w-full carousel--max-w-xs">
     #{@styling_carousel_triggers}
     </.carousel>
-    <.carousel id="carousel-style-rounded-md" #{@gallery_items_attr} class="carousel carousel--rounded-md w-full max-w-xs">
+    <.carousel id="carousel-style-rounded-md" #{@gallery_items_attr} radius="md" class="carousel w-full carousel--max-w-xs">
     #{@styling_carousel_triggers}
     </.carousel>
-    <.carousel id="carousel-style-rounded-lg" #{@gallery_items_attr} class="carousel carousel--rounded-lg w-full max-w-xs">
+    <.carousel id="carousel-style-rounded-lg" #{@gallery_items_attr} radius="lg" class="carousel w-full carousel--max-w-xs">
     #{@styling_carousel_triggers}
     </.carousel>
-    <.carousel id="carousel-style-rounded-xl" #{@gallery_items_attr} class="carousel carousel--rounded-xl w-full max-w-xs">
+    <.carousel id="carousel-style-rounded-xl" #{@gallery_items_attr} radius="xl" class="carousel w-full carousel--max-w-xs">
     #{@styling_carousel_triggers}
     </.carousel>
-    <.carousel id="carousel-style-rounded-full" #{@gallery_items_attr} class="carousel carousel--rounded-full w-full max-w-xs">
+    <.carousel id="carousel-style-rounded-full" #{@gallery_items_attr} radius="full" class="carousel w-full carousel--max-w-xs">
     #{@styling_carousel_triggers}
     </.carousel>
     """
@@ -513,7 +528,7 @@ defmodule E2eWeb.Demos.CarouselDemo do
       <.carousel
         id="carousel-style-rounded-default"
         items={gallery_images()}
-        class="carousel w-full max-w-xs"
+        class="carousel w-full carousel--max-w-xs"
       >
         <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
         <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -521,7 +536,8 @@ defmodule E2eWeb.Demos.CarouselDemo do
       <.carousel
         id="carousel-style-rounded-none"
         items={gallery_images()}
-        class="carousel carousel--rounded-none w-full max-w-xs"
+        radius="none"
+        class="carousel w-full carousel--max-w-xs"
       >
         <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
         <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -529,7 +545,8 @@ defmodule E2eWeb.Demos.CarouselDemo do
       <.carousel
         id="carousel-style-rounded-sm"
         items={gallery_images()}
-        class="carousel carousel--rounded-sm w-full max-w-xs"
+        radius="sm"
+        class="carousel w-full carousel--max-w-xs"
       >
         <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
         <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -537,7 +554,8 @@ defmodule E2eWeb.Demos.CarouselDemo do
       <.carousel
         id="carousel-style-rounded-md"
         items={gallery_images()}
-        class="carousel carousel--rounded-md w-full max-w-xs"
+        radius="md"
+        class="carousel w-full carousel--max-w-xs"
       >
         <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
         <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -545,7 +563,8 @@ defmodule E2eWeb.Demos.CarouselDemo do
       <.carousel
         id="carousel-style-rounded-lg"
         items={gallery_images()}
-        class="carousel carousel--rounded-lg w-full max-w-xs"
+        radius="lg"
+        class="carousel w-full carousel--max-w-xs"
       >
         <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
         <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -553,7 +572,8 @@ defmodule E2eWeb.Demos.CarouselDemo do
       <.carousel
         id="carousel-style-rounded-xl"
         items={gallery_images()}
-        class="carousel carousel--rounded-xl w-full max-w-xs"
+        radius="xl"
+        class="carousel w-full carousel--max-w-xs"
       >
         <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
         <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -561,7 +581,8 @@ defmodule E2eWeb.Demos.CarouselDemo do
       <.carousel
         id="carousel-style-rounded-full"
         items={gallery_images()}
-        class="carousel carousel--rounded-full w-full max-w-xs"
+        radius="full"
+        class="carousel w-full carousel--max-w-xs"
       >
         <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
         <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -574,7 +595,7 @@ defmodule E2eWeb.Demos.CarouselDemo do
     """
     <.carousel
       #{@gallery_items_attr}
-      class="carousel"
+      
       on_page_change="carousel_page_changed"
     >
       <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
@@ -597,7 +618,7 @@ defmodule E2eWeb.Demos.CarouselDemo do
     <.carousel
       id="carousel-events-client"
       #{@gallery_items_attr}
-      class="carousel"
+      
       on_page_change_client="carousel-page-changed"
     >
       <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
@@ -635,7 +656,7 @@ defmodule E2eWeb.Demos.CarouselDemo do
     """
     <.carousel
       #{@gallery_items_attr}
-      class="carousel"
+      
     >
       <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
       <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -648,7 +669,6 @@ defmodule E2eWeb.Demos.CarouselDemo do
     <.carousel
       id="carousel-basic"
       items={gallery_images()}
-      class="carousel"
     >
       <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
       <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -661,7 +681,7 @@ defmodule E2eWeb.Demos.CarouselDemo do
     <.carousel
       #{@gallery_items_attr}
       loop
-      class="carousel"
+      
     >
       <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
       <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -675,7 +695,6 @@ defmodule E2eWeb.Demos.CarouselDemo do
       id="carousel-loop"
       items={gallery_images()}
       loop
-      class="carousel"
     >
       <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
       <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -688,7 +707,7 @@ defmodule E2eWeb.Demos.CarouselDemo do
     <.carousel
       #{@gallery_items_attr}
       orientation="vertical"
-      class="carousel"
+      
     >
       <:prev_trigger><.heroicon name="hero-arrow-up" /></:prev_trigger>
       <:next_trigger><.heroicon name="hero-arrow-down" /></:next_trigger>
@@ -702,7 +721,6 @@ defmodule E2eWeb.Demos.CarouselDemo do
       id="carousel-vertical"
       items={gallery_images()}
       orientation="vertical"
-      class="carousel"
     >
       <:prev_trigger><.heroicon name="hero-arrow-up" /></:prev_trigger>
       <:next_trigger><.heroicon name="hero-arrow-down" /></:next_trigger>
@@ -712,7 +730,7 @@ defmodule E2eWeb.Demos.CarouselDemo do
 
   def images_code do
     """
-    <.carousel #{@gallery_items_attr} class="carousel">
+    <.carousel #{@gallery_items_attr} >
       <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
       <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
     </.carousel>
@@ -723,7 +741,7 @@ defmodule E2eWeb.Demos.CarouselDemo do
     _ = assigns
 
     ~H"""
-    <.carousel id="carousel-images" items={gallery_images()} class="carousel">
+    <.carousel id="carousel-images" items={gallery_images()}>
       <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
       <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
     </.carousel>
@@ -732,12 +750,12 @@ defmodule E2eWeb.Demos.CarouselDemo do
 
   def custom_content_code do
     """
-    <.carousel #{@posts_items_attr} class="carousel">
+    <.carousel #{@posts_items_attr} >
       <:item :let={post}>
         <article>
           <h3>{post.title}</h3>
           <p>{post.description}</p>
-          <.navigate to="#" class="link">Read more</.navigate>
+          <.navigate to="#"  >Read more</.navigate>
         </article>
       </:item>
       <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
@@ -750,12 +768,12 @@ defmodule E2eWeb.Demos.CarouselDemo do
     assigns = assign(assigns, :posts, blog_posts())
 
     ~H"""
-    <.carousel id="carousel-blog" items={@posts} class="carousel">
+    <.carousel id="carousel-blog" items={@posts}>
       <:item :let={post}>
         <article class="flex flex-col gap-2 p-4">
           <h3>{post.title}</h3>
           <p>{post.description}</p>
-          <.navigate to="#" class="link">Read more</.navigate>
+          <.navigate to="#">Read more</.navigate>
         </article>
       </:item>
       <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
@@ -766,7 +784,7 @@ defmodule E2eWeb.Demos.CarouselDemo do
 
   def compound_code do
     """
-    <.carousel compound :let={ctx} item_count={3} class="carousel">
+    <.carousel compound :let={ctx} item_count={3} >
       <.carousel_root ctx={ctx}>
         <.carousel_item_group ctx={ctx}>
           <%= for {post, index} <- Enum.with_index(#{@posts_list_attr}) do %>
@@ -774,7 +792,7 @@ defmodule E2eWeb.Demos.CarouselDemo do
               <article>
                 <h3>{post.title}</h3>
                 <p>{post.description}</p>
-                <.navigate to="#" class="link">Read more</.navigate>
+                <.navigate to="#"  >Read more</.navigate>
               </article>
             </.carousel_item>
           <% end %>
@@ -797,7 +815,7 @@ defmodule E2eWeb.Demos.CarouselDemo do
     assigns = assign(assigns, :posts, blog_posts())
 
     ~H"""
-    <.carousel :let={ctx} id="carousel-compound" compound item_count={3} class="carousel">
+    <.carousel :let={ctx} id="carousel-compound" compound item_count={3}>
       <.carousel_root ctx={ctx}>
         <.carousel_item_group ctx={ctx}>
           <%= for {post, index} <- Enum.with_index(@posts) do %>
@@ -805,7 +823,7 @@ defmodule E2eWeb.Demos.CarouselDemo do
               <article class="flex flex-col gap-2 p-4">
                 <h3>{post.title}</h3>
                 <p>{post.description}</p>
-                <.navigate to="#" class="link">Read more</.navigate>
+                <.navigate to="#">Read more</.navigate>
               </article>
             </.carousel_item>
           <% end %>

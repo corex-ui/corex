@@ -81,13 +81,13 @@ defmodule E2eWeb.SwitchEventsLive do
         >
           <:preview>
             <div class="flex flex-col gap-4 items-center w-full">
-              <.switch id={@id_server} class="switch" on_checked_change="switch_changed">
+              <.switch id={@id_server} on_checked_change="switch_changed">
                 <:label>Subscribe</:label>
               </.switch>
 
               <.data_table
                 id="switch-events-log-server"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.server_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -112,7 +112,7 @@ defmodule E2eWeb.SwitchEventsLive do
         >
           <:preview>
             <div class="flex flex-col gap-4 items-center w-full">
-              <.switch id={@id_client} class="switch" on_checked_change_client={@client_event}>
+              <.switch id={@id_client} on_checked_change_client={@client_event}>
                 <:label>Subscribe</:label>
               </.switch>
 
@@ -138,7 +138,7 @@ defmodule E2eWeb.SwitchEventsLive do
 
               <.data_table
                 id="switch-events-log-client"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.client_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>

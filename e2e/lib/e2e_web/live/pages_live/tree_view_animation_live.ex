@@ -87,7 +87,8 @@ defmodule E2eWeb.TreeViewAnimationLive do
           <:controls>
             <.select
               id="tree-view-animation-easing"
-              class="select select--sm select--mini-sm lg:w-full"
+              size="sm"
+              class="select select--mini-sm lg:w-full"
               value={@easing}
               items={@easing_items}
               on_value_change="easing_changed"
@@ -107,10 +108,10 @@ defmodule E2eWeb.TreeViewAnimationLive do
             >
               <:label>Duration</:label>
               <:decrement_trigger>
-                <.heroicon name="hero-chevron-down" class="icon" />
+                <.heroicon name="hero-chevron-down" />
               </:decrement_trigger>
               <:increment_trigger>
-                <.heroicon name="hero-chevron-up" class="icon" />
+                <.heroicon name="hero-chevron-up" />
               </:increment_trigger>
             </.number_input>
 
@@ -125,10 +126,10 @@ defmodule E2eWeb.TreeViewAnimationLive do
             >
               <:label>Opacity start</:label>
               <:decrement_trigger>
-                <.heroicon name="hero-chevron-down" class="icon" />
+                <.heroicon name="hero-chevron-down" />
               </:decrement_trigger>
               <:increment_trigger>
-                <.heroicon name="hero-chevron-up" class="icon" />
+                <.heroicon name="hero-chevron-up" />
               </:increment_trigger>
             </.number_input>
 
@@ -143,16 +144,17 @@ defmodule E2eWeb.TreeViewAnimationLive do
             >
               <:label>Opacity end</:label>
               <:decrement_trigger>
-                <.heroicon name="hero-chevron-down" class="icon" />
+                <.heroicon name="hero-chevron-down" />
               </:decrement_trigger>
               <:increment_trigger>
-                <.heroicon name="hero-chevron-up" class="icon" />
+                <.heroicon name="hero-chevron-up" />
               </:increment_trigger>
             </.number_input>
 
             <.switch
               id="tree-view-animation-block-interaction"
-              class="switch switch--sm w-full"
+              size="sm"
+              class="switch w-full"
               checked={@animation_options.block_interaction}
               on_checked_change="block_interaction_changed"
             >
@@ -162,7 +164,7 @@ defmodule E2eWeb.TreeViewAnimationLive do
           <:canvas>
             <.tree_view
               id="tree-animation-playground"
-              class="tree-view w-full max-w-md h-full overflow-hidden"
+              class="tree-view w-full tree-view--max-w-md h-full overflow-hidden"
               animation="js"
               animation_options={@animation_options}
               expanded_value={@expanded_value}
@@ -177,13 +179,12 @@ defmodule E2eWeb.TreeViewAnimationLive do
         <.demo_section
           id="tree-view-animation-instant"
           title="Instant"
-          trigger_class="button--sm"
+          trigger_class="button button--sm"
           code={@instant_heex}
         >
           <:preview>
             <.tree_view
               id="tree-animate-instant"
-              class="tree-view"
               animation="instant"
               expanded_value={@expanded_value}
               items={@items}
@@ -197,7 +198,7 @@ defmodule E2eWeb.TreeViewAnimationLive do
         <.demo_section
           id="tree-view-animation-custom"
           title="Custom (Motion)"
-          trigger_class="button--sm"
+          trigger_class="button button--sm"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @custom_heex},
             %{value: "js", label: "Javascript", language: :js, code: @custom_js}
@@ -206,7 +207,6 @@ defmodule E2eWeb.TreeViewAnimationLive do
           <:preview>
             <.tree_view
               id="tree-custom-animate"
-              class="tree-view"
               animation="custom"
               expanded_value={@expanded_value}
               on_expanded_change_client="my-tree-view-changed"

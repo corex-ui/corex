@@ -1,9 +1,13 @@
 defmodule E2eWeb.Demos.TooltipDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.Demos.StylingAxes
+
+  def styling_axis_values(axis), do: StylingAxes.styling_axis_values(axis)
+
   def anatomy_minimal_code do
     ~S"""
-    <.tooltip class="tooltip" show_arrow={false}>
+    <.tooltip  show_arrow={false}>
       <:trigger>Hover me</:trigger>
       <:content>Tooltip content</:content>
     </.tooltip>
@@ -14,7 +18,7 @@ defmodule E2eWeb.Demos.TooltipDemo do
     _ = assigns
 
     ~H"""
-    <.tooltip class="tooltip" show_arrow={false}>
+    <.tooltip show_arrow={false}>
       <:trigger>Hover me</:trigger>
       <:content>Tooltip content</:content>
     </.tooltip>
@@ -23,7 +27,7 @@ defmodule E2eWeb.Demos.TooltipDemo do
 
   def anatomy_with_arrow_code do
     ~S"""
-    <.tooltip class="tooltip">
+    <.tooltip >
       <:trigger>Hover me</:trigger>
       <:content>Tooltip content</:content>
     </.tooltip>
@@ -34,7 +38,7 @@ defmodule E2eWeb.Demos.TooltipDemo do
     _ = assigns
 
     ~H"""
-    <.tooltip class="tooltip">
+    <.tooltip>
       <:trigger>Hover me</:trigger>
       <:content>Tooltip content</:content>
     </.tooltip>
@@ -43,7 +47,7 @@ defmodule E2eWeb.Demos.TooltipDemo do
 
   def anatomy_placement_code do
     ~S"""
-    <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "bottom"}}>
+    <.tooltip  positioning={%Corex.Positioning{placement: "bottom"}}>
       <:trigger>Bottom</:trigger>
       <:content>Tooltip below</:content>
     </.tooltip>
@@ -53,19 +57,19 @@ defmodule E2eWeb.Demos.TooltipDemo do
   def anatomy_placement_example(assigns) do
     ~H"""
     <div class="layout__row gap-2">
-      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "bottom"}}>
+      <.tooltip positioning={%Corex.Positioning{placement: "bottom"}}>
         <:trigger>Bottom</:trigger>
         <:content>Tooltip below</:content>
       </.tooltip>
-      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "top"}}>
+      <.tooltip positioning={%Corex.Positioning{placement: "top"}}>
         <:trigger>Top</:trigger>
         <:content>Tooltip above</:content>
       </.tooltip>
-      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "left"}}>
+      <.tooltip positioning={%Corex.Positioning{placement: "left"}}>
         <:trigger>Left</:trigger>
         <:content>Tooltip on the left</:content>
       </.tooltip>
-      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "right"}}>
+      <.tooltip positioning={%Corex.Positioning{placement: "right"}}>
         <:trigger>Right</:trigger>
         <:content>Tooltip on the right</:content>
       </.tooltip>
@@ -76,19 +80,19 @@ defmodule E2eWeb.Demos.TooltipDemo do
   def anatomy_positioning_code do
     ~S"""
     <div class="layout__row flex-wrap gap-2">
-      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "top", gutter: 4}}>
+      <.tooltip  positioning={%Corex.Positioning{placement: "top", gutter: 4}}>
         <:trigger>Gutter 4</:trigger>
         <:content>Tight gap between trigger and tooltip</:content>
       </.tooltip>
-      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "top", gutter: 32}}>
+      <.tooltip  positioning={%Corex.Positioning{placement: "top", gutter: 32}}>
         <:trigger>Gutter 32</:trigger>
         <:content>Wide gap between trigger and tooltip</:content>
       </.tooltip>
-      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "top", shift: 0}}>
+      <.tooltip  positioning={%Corex.Positioning{placement: "top", shift: 0}}>
         <:trigger>Shift 0</:trigger>
         <:content>Centered along the placement edge</:content>
       </.tooltip>
-      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "top", shift: 32}}>
+      <.tooltip  positioning={%Corex.Positioning{placement: "top", shift: 32}}>
         <:trigger>Shift 32</:trigger>
         <:content>Tooltip slid along the edge</:content>
       </.tooltip>
@@ -101,19 +105,19 @@ defmodule E2eWeb.Demos.TooltipDemo do
 
     ~H"""
     <div class="layout__row flex-wrap gap-2">
-      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "top", gutter: 4}}>
+      <.tooltip positioning={%Corex.Positioning{placement: "top", gutter: 4}}>
         <:trigger>Gutter 4</:trigger>
         <:content>Tight gap between trigger and tooltip</:content>
       </.tooltip>
-      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "top", gutter: 32}}>
+      <.tooltip positioning={%Corex.Positioning{placement: "top", gutter: 32}}>
         <:trigger>Gutter 32</:trigger>
         <:content>Wide gap between trigger and tooltip</:content>
       </.tooltip>
-      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "top", shift: 0}}>
+      <.tooltip positioning={%Corex.Positioning{placement: "top", shift: 0}}>
         <:trigger>Shift 0</:trigger>
         <:content>Centered along the placement edge</:content>
       </.tooltip>
-      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "top", shift: 32}}>
+      <.tooltip positioning={%Corex.Positioning{placement: "top", shift: 32}}>
         <:trigger>Shift 32</:trigger>
         <:content>Tooltip slid along the edge</:content>
       </.tooltip>
@@ -124,7 +128,7 @@ defmodule E2eWeb.Demos.TooltipDemo do
   def patterns_multi_trigger_heex do
     ~S"""
     <.tooltip
-      class="tooltip"
+      
       show_arrow={false}
       on_trigger_value_change="tooltip_pattern_trigger_value"
     >
@@ -177,12 +181,12 @@ defmodule E2eWeb.Demos.TooltipDemo do
       <li :for={user <- @users}>
         <.tooltip
           id={"tooltip-profile-" <> user.id}
-          class="tooltip"
+          
           show_arrow={false}
           trigger_tag={:span}
         >
           <:trigger>
-            <.navigate to={~p"/admins"} type="navigate" class="link">
+            <.navigate to={~p"/admins"} type="navigate"  >
               {user.first_name}
             </.navigate>
           </:trigger>
@@ -219,13 +223,13 @@ defmodule E2eWeb.Demos.TooltipDemo do
     ~S"""
     <div class="flex flex-col gap-2 items-start w-full max-w-xl">
       <.tooltip
-        class="tooltip"
+        
         show_arrow={false}
         trigger_tag={:span}
         on_trigger_value_change="tooltip_pattern_link_multi_value"
       >
         <:trigger :for={user <- @users} value={user.id}>
-          <.navigate to={~p"/admins"} type="navigate" class="link">
+          <.navigate to={~p"/admins"} type="navigate"  >
             {user.first_name}
           </.navigate>
         </:trigger>
@@ -276,10 +280,10 @@ defmodule E2eWeb.Demos.TooltipDemo do
   def api_set_open_client_binding_heex do
     ~S"""
     <div class="layout__row">
-      <.action phx-click={Corex.Tooltip.set_open("tooltip-api-cb", true)} class="button button--sm">Open</.action>
-      <.action phx-click={Corex.Tooltip.set_open("tooltip-api-cb", false)} class="button button--sm">Close</.action>
+      <.action phx-click={Corex.Tooltip.set_open("tooltip-api-cb", true)} size="sm">Open</.action>
+      <.action phx-click={Corex.Tooltip.set_open("tooltip-api-cb", false)} size="sm">Close</.action>
     </div>
-    <.tooltip id="tooltip-api-cb" class="tooltip">
+    <.tooltip id="tooltip-api-cb" >
       <:trigger>Hover or focus</:trigger>
       <:content>Tooltip content</:content>
     </.tooltip>
@@ -292,14 +296,14 @@ defmodule E2eWeb.Demos.TooltipDemo do
     ~H"""
     <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
       <div class="layout__row">
-        <.action phx-click={Corex.Tooltip.set_open("tooltip-api-cb", true)} class="button button--sm">
+        <.action phx-click={Corex.Tooltip.set_open("tooltip-api-cb", true)} size="sm">
           Open
         </.action>
-        <.action phx-click={Corex.Tooltip.set_open("tooltip-api-cb", false)} class="button button--sm">
+        <.action phx-click={Corex.Tooltip.set_open("tooltip-api-cb", false)} size="sm">
           Close
         </.action>
       </div>
-      <.tooltip id="tooltip-api-cb" class="tooltip">
+      <.tooltip id="tooltip-api-cb">
         <:trigger>Hover or focus</:trigger>
         <:content>Tooltip content</:content>
       </.tooltip>
@@ -312,20 +316,20 @@ defmodule E2eWeb.Demos.TooltipDemo do
     <div class="layout__row">
       <button
         type="button"
-        class="button button--sm"
+        size="sm"
         onclick="document.getElementById('tooltip-api-cjs')?.dispatchEvent(new CustomEvent('corex:tooltip:set-open', {bubbles: false, detail: { open: true } }))"
       >
         Open
       </button>
       <button
         type="button"
-        class="button button--sm"
+        size="sm"
         onclick="document.getElementById('tooltip-api-cjs')?.dispatchEvent(new CustomEvent('corex:tooltip:set-open', {bubbles: false, detail: { open: false } }))"
       >
         Close
       </button>
     </div>
-    <.tooltip id="tooltip-api-cjs" class="tooltip">
+    <.tooltip id="tooltip-api-cjs" >
       <:trigger>Target</:trigger>
       <:content>Tooltip</:content>
     </.tooltip>
@@ -358,20 +362,20 @@ defmodule E2eWeb.Demos.TooltipDemo do
       <div class="layout__row">
         <button
           type="button"
-          class="button button--sm"
+          size="sm"
           onclick="document.getElementById('tooltip-api-cjs')?.dispatchEvent(new CustomEvent('corex:tooltip:set-open', {bubbles: false, detail: { open: true } }))"
         >
           Open
         </button>
         <button
           type="button"
-          class="button button--sm"
+          size="sm"
           onclick="document.getElementById('tooltip-api-cjs')?.dispatchEvent(new CustomEvent('corex:tooltip:set-open', {bubbles: false, detail: { open: false } }))"
         >
           Close
         </button>
       </div>
-      <.tooltip id="tooltip-api-cjs" class="tooltip">
+      <.tooltip id="tooltip-api-cjs">
         <:trigger>Target</:trigger>
         <:content>Tooltip</:content>
       </.tooltip>
@@ -382,10 +386,10 @@ defmodule E2eWeb.Demos.TooltipDemo do
   def api_set_open_server_heex do
     ~S"""
     <div class="layout__row">
-      <.action phx-click="tooltip_api_open" class="button button--sm">Open</.action>
-      <.action phx-click="tooltip_api_close" class="button button--sm">Close</.action>
+      <.action phx-click="tooltip_api_open" size="sm">Open</.action>
+      <.action phx-click="tooltip_api_close" size="sm">Close</.action>
     </div>
-    <.tooltip id="tooltip-api-srv" class="tooltip">
+    <.tooltip id="tooltip-api-srv" >
       <:trigger>Hover or focus</:trigger>
       <:content>Tooltip content</:content>
     </.tooltip>
@@ -410,10 +414,10 @@ defmodule E2eWeb.Demos.TooltipDemo do
     ~H"""
     <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
       <div class="layout__row">
-        <.action phx-click="tooltip_api_open" class="button button--sm">Open</.action>
-        <.action phx-click="tooltip_api_close" class="button button--sm">Close</.action>
+        <.action phx-click="tooltip_api_open" size="sm">Open</.action>
+        <.action phx-click="tooltip_api_close" size="sm">Close</.action>
       </div>
-      <.tooltip id="tooltip-api-srv" class="tooltip">
+      <.tooltip id="tooltip-api-srv">
         <:trigger>Hover or focus</:trigger>
         <:content>Tooltip content</:content>
       </.tooltip>
@@ -439,10 +443,10 @@ defmodule E2eWeb.Demos.TooltipDemo do
   def patterns_set_open_heex do
     ~S"""
     <div class="layout__row">
-      <.action phx-click={Corex.Tooltip.set_open("tooltip-patterns-set-open", true)} class="button button--sm">Open</.action>
-      <.action phx-click={Corex.Tooltip.set_open("tooltip-patterns-set-open", false)} class="button button--sm">Close</.action>
+      <.action phx-click={Corex.Tooltip.set_open("tooltip-patterns-set-open", true)} size="sm">Open</.action>
+      <.action phx-click={Corex.Tooltip.set_open("tooltip-patterns-set-open", false)} size="sm">Close</.action>
     </div>
-    <.tooltip class="tooltip">
+    <.tooltip >
       <:trigger>Hover or buttons</:trigger>
       <:content>Open state from Corex.Tooltip.set_open/2</:content>
     </.tooltip>
@@ -469,18 +473,18 @@ defmodule E2eWeb.Demos.TooltipDemo do
       <div class="layout__row">
         <.action
           phx-click={Corex.Tooltip.set_open("tooltip-patterns-set-open", true)}
-          class="button button--sm"
+          size="sm"
         >
           Open
         </.action>
         <.action
           phx-click={Corex.Tooltip.set_open("tooltip-patterns-set-open", false)}
-          class="button button--sm"
+          size="sm"
         >
           Close
         </.action>
       </div>
-      <.tooltip id="tooltip-patterns-set-open" class="tooltip">
+      <.tooltip id="tooltip-patterns-set-open">
         <:trigger>Hover or buttons</:trigger>
         <:content>Open state from Corex.Tooltip.set_open/2</:content>
       </.tooltip>
@@ -491,7 +495,7 @@ defmodule E2eWeb.Demos.TooltipDemo do
   def events_server_heex do
     ~S"""
     <.tooltip
-      class="tooltip"
+      
       on_open_change="tooltip_open_changed"
       on_open_change_client="tooltip-open-changed"
     >
@@ -517,10 +521,10 @@ defmodule E2eWeb.Demos.TooltipDemo do
     """
   end
 
-  def styling_color_code do
+  def styling_semantic_code do
     ~S"""
     <div class="layout__row flex-wrap gap-2">
-      <.tooltip class="tooltip">
+      <.tooltip >
         <:trigger>Default</:trigger>
         <:content>Neutral surface</:content>
       </.tooltip>
@@ -552,12 +556,12 @@ defmodule E2eWeb.Demos.TooltipDemo do
     """
   end
 
-  def styling_color_example(assigns) do
+  def styling_semantic_example(assigns) do
     _ = assigns
 
     ~H"""
     <div class="layout__row flex-wrap gap-2">
-      <.tooltip class="tooltip">
+      <.tooltip>
         <:trigger>Default</:trigger>
         <:content>Neutral surface</:content>
       </.tooltip>

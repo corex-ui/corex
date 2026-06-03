@@ -1,6 +1,8 @@
 defmodule Corex.Gettext do
   @moduledoc false
 
+  @compile {:no_warn_undefined, [Gettext]}
+
   def backend do
     Application.get_env(:phoenix, :gettext_backend)
   end

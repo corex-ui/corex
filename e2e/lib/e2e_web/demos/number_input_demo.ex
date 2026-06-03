@@ -1,38 +1,42 @@
 defmodule E2eWeb.Demos.NumberInputDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.Demos.StylingAxes
+
+  def styling_axis_values(axis), do: StylingAxes.styling_axis_values(axis)
+
   def minimal_code do
     ~S"""
     <.number_input
-      class="number-input"
+      
       min={0.0}
       max={100.0}
       step={5.0}
       value="10"
     >
       <:label>Amount</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
     </.number_input>
     """
   end
 
   def anatomy_minimal_quantity_code do
     ~S"""
-    <.number_input class="number-input">
+    <.number_input >
       <:label>Quantity</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
     </.number_input>
     """
   end
 
   def minimal_example(assigns) do
     ~H"""
-    <.number_input id="number-input-anatomy-minimal" class="number-input">
+    <.number_input id="number-input-anatomy-minimal">
       <:label>Quantity</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
     </.number_input>
     """
   end
@@ -40,15 +44,15 @@ defmodule E2eWeb.Demos.NumberInputDemo do
   def min_max_default_code do
     ~S"""
     <.number_input
-      class="number-input"
+      
       min={0.0}
       max={100.0}
       step={5.0}
       value="10"
     >
       <:label>Amount</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
     </.number_input>
     """
   end
@@ -57,15 +61,14 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     ~H"""
     <.number_input
       id="number-input-anatomy-bounds"
-      class="number-input"
       min={0.0}
       max={100.0}
       step={5.0}
       value="10"
     >
       <:label>Amount</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
     </.number_input>
     """
   end
@@ -80,11 +83,11 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     """
   end
 
-  def styling_color_code do
+  def styling_semantic_code do
     triggers = styling_triggers_code()
 
     """
-    <.number_input class="number-input" value="1">
+    <.number_input  value="1">
       <:label>Default</:label>
     #{triggers}
     </.number_input>
@@ -111,15 +114,15 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     """
   end
 
-  def styling_color_example(assigns) do
+  def styling_semantic_example(assigns) do
     _ = assigns
 
     ~H"""
     <div class="flex flex-wrap gap-6 items-start">
-      <.number_input id="number-input-style-color-default" class="number-input" value="1">
+      <.number_input id="number-input-style-color-default" value="1">
         <:label>Default</:label>
-        <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-        <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+        <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+        <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
       </.number_input>
       <.number_input
         id="number-input-style-color-accent"
@@ -127,8 +130,8 @@ defmodule E2eWeb.Demos.NumberInputDemo do
         value="1"
       >
         <:label>Accent</:label>
-        <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-        <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+        <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+        <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
       </.number_input>
       <.number_input
         id="number-input-style-color-brand"
@@ -136,8 +139,8 @@ defmodule E2eWeb.Demos.NumberInputDemo do
         value="1"
       >
         <:label>Brand</:label>
-        <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-        <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+        <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+        <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
       </.number_input>
       <.number_input
         id="number-input-style-color-alert"
@@ -145,8 +148,8 @@ defmodule E2eWeb.Demos.NumberInputDemo do
         value="1"
       >
         <:label>Alert</:label>
-        <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-        <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+        <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+        <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
       </.number_input>
       <.number_input
         id="number-input-style-color-info"
@@ -154,8 +157,8 @@ defmodule E2eWeb.Demos.NumberInputDemo do
         value="1"
       >
         <:label>Info</:label>
-        <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-        <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+        <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+        <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
       </.number_input>
       <.number_input
         id="number-input-style-color-success"
@@ -163,8 +166,8 @@ defmodule E2eWeb.Demos.NumberInputDemo do
         value="1"
       >
         <:label>Success</:label>
-        <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-        <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+        <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+        <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
       </.number_input>
     </div>
     """
@@ -200,23 +203,23 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     <div class="flex flex-col gap-4 max-w-md">
       <.number_input id="number-input-style-sm" class="number-input number-input--sm w-full" value="1">
         <:label>SM</:label>
-        <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-        <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+        <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+        <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
       </.number_input>
       <.number_input id="number-input-style-md" class="number-input number-input--md w-full" value="1">
         <:label>MD</:label>
-        <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-        <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+        <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+        <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
       </.number_input>
       <.number_input id="number-input-style-lg" class="number-input number-input--lg w-full" value="1">
         <:label>LG</:label>
-        <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-        <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+        <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+        <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
       </.number_input>
       <.number_input id="number-input-style-xl" class="number-input number-input--xl w-full" value="1">
         <:label>XL</:label>
-        <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-        <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+        <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+        <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
       </.number_input>
     </div>
     """
@@ -226,19 +229,19 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     triggers = styling_triggers_code()
 
     """
-    <.number_input class="number-input max-w-2xs" value="1">
+    <.number_input class="number-input number-input--max-w-2xs" value="1">
       <:label>2xs</:label>
     #{triggers}
     </.number_input>
-    <.number_input class="number-input max-w-md" value="1">
+    <.number_input class="number-input number-input--max-w-md" value="1">
       <:label>MD</:label>
     #{triggers}
     </.number_input>
-    <.number_input class="number-input max-w-xl" value="1">
+    <.number_input class="number-input number-input--max-w-xl" value="1">
       <:label>XL</:label>
     #{triggers}
     </.number_input>
-    <.number_input class="number-input max-w-2xl" value="1">
+    <.number_input class="number-input number-input--max-w-2xl" value="1">
       <:label>2XL</:label>
     #{triggers}
     </.number_input>
@@ -250,25 +253,41 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
     ~H"""
     <div class="flex flex-col gap-4 items-stretch w-full">
-      <.number_input id="number-input-style-max-2xs" class="number-input max-w-2xs w-full" value="1">
+      <.number_input
+        id="number-input-style-max-2xs"
+        class="number-input number-input--max-w-2xs w-full"
+        value="1"
+      >
         <:label>2xs</:label>
-        <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-        <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+        <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+        <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
       </.number_input>
-      <.number_input id="number-input-style-max-md" class="number-input max-w-md w-full" value="1">
+      <.number_input
+        id="number-input-style-max-md"
+        class="number-input number-input--max-w-md w-full"
+        value="1"
+      >
         <:label>MD</:label>
-        <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-        <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+        <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+        <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
       </.number_input>
-      <.number_input id="number-input-style-max-xl" class="number-input max-w-xl w-full" value="1">
+      <.number_input
+        id="number-input-style-max-xl"
+        class="number-input number-input--max-w-xl w-full"
+        value="1"
+      >
         <:label>XL</:label>
-        <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-        <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+        <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+        <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
       </.number_input>
-      <.number_input id="number-input-style-max-2xl" class="number-input max-w-2xl w-full" value="1">
+      <.number_input
+        id="number-input-style-max-2xl"
+        class="number-input number-input--max-w-2xl w-full"
+        value="1"
+      >
         <:label>2XL</:label>
-        <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-        <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+        <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+        <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
       </.number_input>
     </div>
     """
@@ -277,12 +296,12 @@ defmodule E2eWeb.Demos.NumberInputDemo do
   def api_binding_heex do
     ~S"""
     <.number_input
-      class="number-input"
+      
       on_value_change="number_input_api_binding"
     >
       <:label>Quantity</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
     </.number_input>
     """
   end
@@ -300,12 +319,11 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     ~H"""
     <.number_input
       id="number-input-api-binding"
-      class="number-input"
       on_value_change="number_input_api_binding"
     >
       <:label>Quantity</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
     </.number_input>
     """
   end
@@ -313,12 +331,12 @@ defmodule E2eWeb.Demos.NumberInputDemo do
   def api_client_heex do
     ~S"""
     <.number_input
-      class="number-input"
+      
       on_value_change_client="number-input-api-client-changed"
     >
       <:label>Quantity</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
     </.number_input>
     """
   end
@@ -345,22 +363,21 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     ~H"""
     <.number_input
       id="number-input-api-client"
-      class="number-input"
       on_value_change_client="number-input-api-client-changed"
     >
       <:label>Quantity</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
     </.number_input>
     """
   end
 
   def api_server_note_heex do
     ~S"""
-    <.number_input class="number-input" value="1">
+    <.number_input  value="1">
       <:label>Quantity</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
     </.number_input>
     """
   end
@@ -373,10 +390,10 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def api_server_note_example(assigns) do
     ~H"""
-    <.number_input id="number-input-api-server-note" class="number-input" value="1">
+    <.number_input id="number-input-api-server-note" value="1">
       <:label>Quantity</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
     </.number_input>
     """
   end
@@ -386,26 +403,26 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def api_set_value_client_binding_code do
     ~S"""
-    <.action phx-click={Corex.NumberInput.set_value("number-input-api-set-client", 42)} class="button button--sm">
+    <.action phx-click={Corex.NumberInput.set_value("number-input-api-set-client", 42)} size="sm">
       Set 42
     </.action>
-    <.number_input class="number-input" value="1">
+    <.number_input  value="1">
       <:label>Quantity</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
     </.number_input>
     """
   end
 
   def api_set_value_server_heex do
     ~S"""
-    <.action phx-click="api_number_set_value_server" class="button button--sm">
+    <.action phx-click="api_number_set_value_server" size="sm">
       Set 99
     </.action>
-    <.number_input class="number-input" value="1">
+    <.number_input  value="1">
       <:label>Quantity</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
     </.number_input>
     """
   end
@@ -426,14 +443,14 @@ defmodule E2eWeb.Demos.NumberInputDemo do
         detail: %{value: 7},
         bubbles: false
       )}
-      class="button button--sm"
+      size="sm"
     >
       Set 7
     </.action>
-    <.number_input class="number-input" value="1">
+    <.number_input  value="1">
       <:label>Quantity</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
     </.number_input>
     """
   end
@@ -465,14 +482,14 @@ defmodule E2eWeb.Demos.NumberInputDemo do
   def api_set_value_client_binding_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={Corex.NumberInput.set_value(@id, 42)} class="button button--sm">
+      <.action phx-click={Corex.NumberInput.set_value(@id, 42)} size="sm">
         Set 42
       </.action>
     </div>
-    <.number_input id={@id} class="number-input" value="1">
+    <.number_input id={@id} value="1">
       <:label>Quantity</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
     </.number_input>
     """
   end
@@ -480,14 +497,14 @@ defmodule E2eWeb.Demos.NumberInputDemo do
   def api_set_value_server_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click="api_number_set_value_server" class="button button--sm">
+      <.action phx-click="api_number_set_value_server" size="sm">
         Set 99
       </.action>
     </div>
-    <.number_input id={@id} class="number-input" value="1">
+    <.number_input id={@id} value="1">
       <:label>Quantity</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
     </.number_input>
     """
   end
@@ -503,41 +520,41 @@ defmodule E2eWeb.Demos.NumberInputDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        size="sm"
       >
         Set 7
       </.action>
     </div>
-    <.number_input id={@id} class="number-input" value="1">
+    <.number_input id={@id} value="1">
       <:label>Quantity</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
     </.number_input>
     """
   end
 
   def api_clear_client_binding_code do
     ~S"""
-    <.action phx-click={Corex.NumberInput.clear_value("number-input-api-clear-client")} class="button button--sm">
+    <.action phx-click={Corex.NumberInput.clear_value("number-input-api-clear-client")} size="sm">
       Clear
     </.action>
-    <.number_input class="number-input" value="10">
+    <.number_input  value="10">
       <:label>Quantity</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
     </.number_input>
     """
   end
 
   def api_clear_server_heex do
     ~S"""
-    <.action phx-click="api_number_clear_server" class="button button--sm">
+    <.action phx-click="api_number_clear_server" size="sm">
       Clear
     </.action>
-    <.number_input class="number-input" value="10">
+    <.number_input  value="10">
       <:label>Quantity</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
     </.number_input>
     """
   end
@@ -553,14 +570,14 @@ defmodule E2eWeb.Demos.NumberInputDemo do
   def api_clear_client_binding_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={Corex.NumberInput.clear_value(@id)} class="button button--sm">
+      <.action phx-click={Corex.NumberInput.clear_value(@id)} size="sm">
         Clear
       </.action>
     </div>
-    <.number_input id={@id} class="number-input" value="10">
+    <.number_input id={@id} value="10">
       <:label>Quantity</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
     </.number_input>
     """
   end
@@ -568,29 +585,29 @@ defmodule E2eWeb.Demos.NumberInputDemo do
   def api_clear_server_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click="api_number_clear_server" class="button button--sm">
+      <.action phx-click="api_number_clear_server" size="sm">
         Clear
       </.action>
     </div>
-    <.number_input id={@id} class="number-input" value="10">
+    <.number_input id={@id} value="10">
       <:label>Quantity</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
     </.number_input>
     """
   end
 
   def api_commands_client_binding_code do
     ~S"""
-    <.action phx-click={Corex.NumberInput.increment("number-input-api-cmd-client")} class="button button--sm">+</.action>
-    <.action phx-click={Corex.NumberInput.decrement("number-input-api-cmd-client")} class="button button--sm">−</.action>
-    <.action phx-click={Corex.NumberInput.set_to_min("number-input-api-cmd-client")} class="button button--sm">Min</.action>
-    <.action phx-click={Corex.NumberInput.set_to_max("number-input-api-cmd-client")} class="button button--sm">Max</.action>
-    <.action phx-click={Corex.NumberInput.focus("number-input-api-cmd-client")} class="button button--sm">Focus</.action>
-    <.number_input class="number-input" min={0.0} max={10.0} step={1.0} value="5">
+    <.action phx-click={Corex.NumberInput.increment("number-input-api-cmd-client")} size="sm">+</.action>
+    <.action phx-click={Corex.NumberInput.decrement("number-input-api-cmd-client")} size="sm">−</.action>
+    <.action phx-click={Corex.NumberInput.set_to_min("number-input-api-cmd-client")} size="sm">Min</.action>
+    <.action phx-click={Corex.NumberInput.set_to_max("number-input-api-cmd-client")} size="sm">Max</.action>
+    <.action phx-click={Corex.NumberInput.focus("number-input-api-cmd-client")} size="sm">Focus</.action>
+    <.number_input  min={0.0} max={10.0} step={1.0} value="5">
       <:label>Quantity</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
     </.number_input>
     """
   end
@@ -598,49 +615,48 @@ defmodule E2eWeb.Demos.NumberInputDemo do
   def api_commands_client_binding_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={Corex.NumberInput.increment(@id)} class="button button--sm">+</.action>
-      <.action phx-click={Corex.NumberInput.decrement(@id)} class="button button--sm">−</.action>
-      <.action phx-click={Corex.NumberInput.set_to_min(@id)} class="button button--sm">Min</.action>
-      <.action phx-click={Corex.NumberInput.set_to_max(@id)} class="button button--sm">Max</.action>
-      <.action phx-click={Corex.NumberInput.focus(@id)} class="button button--sm">Focus</.action>
+      <.action phx-click={Corex.NumberInput.increment(@id)} size="sm">+</.action>
+      <.action phx-click={Corex.NumberInput.decrement(@id)} size="sm">−</.action>
+      <.action phx-click={Corex.NumberInput.set_to_min(@id)} size="sm">Min</.action>
+      <.action phx-click={Corex.NumberInput.set_to_max(@id)} size="sm">Max</.action>
+      <.action phx-click={Corex.NumberInput.focus(@id)} size="sm">Focus</.action>
     </div>
     <.number_input
       id={@id}
-      class="number-input"
       min={0.0}
       max={10.0}
       step={1.0}
       value="5"
     >
       <:label>Quantity</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
     </.number_input>
     """
   end
 
   def api_state_client_binding_code do
     ~S"""
-    <.action phx-click={Corex.NumberInput.state("number-input-api-state-client")} class="button button--sm">
+    <.action phx-click={Corex.NumberInput.state("number-input-api-state-client")} size="sm">
       Read state
     </.action>
-    <.number_input class="number-input" value="3">
+    <.number_input  value="3">
       <:label>Quantity</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
     </.number_input>
     """
   end
 
   def api_state_server_heex do
     ~S"""
-    <.action phx-click="api_number_state_server" class="button button--sm">
+    <.action phx-click="api_number_state_server" size="sm">
       Read state
     </.action>
-    <.number_input class="number-input" value="8">
+    <.number_input  value="8">
       <:label>Quantity</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
     </.number_input>
     """
   end
@@ -657,14 +673,14 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     ~S"""
     <.action
       phx-click={JS.dispatch("corex:number-input:state", to: "#number-input-api-state-js", detail: %{}, bubbles: false)}
-      class="button button--sm"
+      size="sm"
     >
       Read state
     </.action>
-    <.number_input class="number-input" value="4">
+    <.number_input  value="4">
       <:label>Quantity</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
     </.number_input>
     """
   end
@@ -696,14 +712,14 @@ defmodule E2eWeb.Demos.NumberInputDemo do
   def api_state_client_binding_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={Corex.NumberInput.state(@id)} class="button button--sm">
+      <.action phx-click={Corex.NumberInput.state(@id)} size="sm">
         Read state
       </.action>
     </div>
-    <.number_input id={@id} class="number-input" value="3">
+    <.number_input id={@id} value="3">
       <:label>Quantity</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
     </.number_input>
     """
   end
@@ -711,14 +727,14 @@ defmodule E2eWeb.Demos.NumberInputDemo do
   def api_state_server_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click="api_number_state_server" class="button button--sm">
+      <.action phx-click="api_number_state_server" size="sm">
         Read state
       </.action>
     </div>
-    <.number_input id={@id} class="number-input" value="8">
+    <.number_input id={@id} value="8">
       <:label>Quantity</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
     </.number_input>
     """
   end
@@ -730,15 +746,15 @@ defmodule E2eWeb.Demos.NumberInputDemo do
         phx-click={
           JS.dispatch("corex:number-input:state", to: "##{@id}", detail: %{}, bubbles: false)
         }
-        class="button button--sm"
+        size="sm"
       >
         Read state
       </.action>
     </div>
-    <.number_input id={@id} class="number-input" value="4">
+    <.number_input id={@id} value="4">
       <:label>Quantity</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
     </.number_input>
     """
   end
@@ -746,12 +762,12 @@ defmodule E2eWeb.Demos.NumberInputDemo do
   def events_server_heex do
     ~S"""
     <.number_input
-      class="number-input"
+      
       on_value_change="number_input_changed"
     >
       <:label>Quantity</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
     </.number_input>
     """
   end
@@ -766,12 +782,12 @@ defmodule E2eWeb.Demos.NumberInputDemo do
   def events_client_heex do
     ~S"""
     <.number_input
-      class="number-input"
+      
       on_value_change_client="number-input-changed"
     >
       <:label>Quantity</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
     </.number_input>
     """
   end
@@ -833,20 +849,20 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       action={~p"/number-input/form"}
       method="post"
     >
-      <.number_input field={@form[:value]} class="number-input">
+      <.number_input field={@form[:value]} >
         <:label>Value</:label>
         <:decrement_trigger>
-          <.heroicon name="hero-chevron-down" class="icon" />
+          <.heroicon name="hero-chevron-down" />
         </:decrement_trigger>
         <:increment_trigger>
-          <.heroicon name="hero-chevron-up" class="icon" />
+          <.heroicon name="hero-chevron-up" />
         </:increment_trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.number_input>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -877,20 +893,20 @@ defmodule E2eWeb.Demos.NumberInputDemo do
   def form_doc_live_phoenix_heex do
     ~S"""
     <.form for={@form} phx-submit="save_phoenix">
-      <.number_input field={@form[:value]} class="number-input">
+      <.number_input field={@form[:value]} >
         <:label>Value</:label>
         <:decrement_trigger>
-          <.heroicon name="hero-chevron-down" class="icon" />
+          <.heroicon name="hero-chevron-down" />
         </:decrement_trigger>
         <:increment_trigger>
-          <.heroicon name="hero-chevron-up" class="icon" />
+          <.heroicon name="hero-chevron-up" />
         </:increment_trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.number_input>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -905,20 +921,20 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       method="post"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-      <.number_input field={@form[:value]} class="number-input">
+      <.number_input field={@form[:value]} >
         <:label>Value</:label>
         <:decrement_trigger>
-          <.heroicon name="hero-chevron-down" class="icon" />
+          <.heroicon name="hero-chevron-down" />
         </:decrement_trigger>
         <:increment_trigger>
-          <.heroicon name="hero-chevron-up" class="icon" />
+          <.heroicon name="hero-chevron-up" />
         </:increment_trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.number_input>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -1007,16 +1023,16 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       method="post"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-      <.number_input name="value" value="1234" class="number-input">
+      <.number_input name="value" value="1234" >
         <:label>Value</:label>
         <:decrement_trigger>
-          <.heroicon name="hero-chevron-down" class="icon" />
+          <.heroicon name="hero-chevron-down" />
         </:decrement_trigger>
         <:increment_trigger>
-          <.heroicon name="hero-chevron-up" class="icon" />
+          <.heroicon name="hero-chevron-up" />
         </:increment_trigger>
       </.number_input>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </form>
@@ -1046,21 +1062,20 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       <.number_input
         field={f[:value]}
         id="number-input-changeset-field"
-        class="number-input"
       >
         <:label>Value</:label>
         <:decrement_trigger>
-          <.heroicon name="hero-chevron-down" class="icon" />
+          <.heroicon name="hero-chevron-down" />
         </:decrement_trigger>
         <:increment_trigger>
-          <.heroicon name="hero-chevron-up" class="icon" />
+          <.heroicon name="hero-chevron-up" />
         </:increment_trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.number_input>
-      <.action type="submit" id="number-input-changeset-submit" class="button button--accent">
+      <.action type="submit" id="number-input-changeset-submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -1078,21 +1093,20 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       <.number_input
         field={f[:value]}
         id="number-input-validate-field"
-        class="number-input"
       >
         <:label>Value (1–9999)</:label>
         <:decrement_trigger>
-          <.heroicon name="hero-chevron-down" class="icon" />
+          <.heroicon name="hero-chevron-down" />
         </:decrement_trigger>
         <:increment_trigger>
-          <.heroicon name="hero-chevron-up" class="icon" />
+          <.heroicon name="hero-chevron-up" />
         </:increment_trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.number_input>
-      <.action type="submit" id="number-input-validate-submit" class="button button--accent">
+      <.action type="submit" id="number-input-validate-submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -1113,17 +1127,16 @@ defmodule E2eWeb.Demos.NumberInputDemo do
         name="value"
         value="1234"
         id="number-input-plain-value"
-        class="number-input"
       >
         <:label>Value</:label>
         <:decrement_trigger>
-          <.heroicon name="hero-chevron-down" class="icon" />
+          <.heroicon name="hero-chevron-down" />
         </:decrement_trigger>
         <:increment_trigger>
-          <.heroicon name="hero-chevron-up" class="icon" />
+          <.heroicon name="hero-chevron-up" />
         </:increment_trigger>
       </.number_input>
-      <.action type="submit" id="number-input-plain-submit" class="button button--accent">
+      <.action type="submit" id="number-input-plain-submit" semantic="accent">
         Submit
       </.action>
     </form>
@@ -1133,20 +1146,20 @@ defmodule E2eWeb.Demos.NumberInputDemo do
   def form_doc_live_changeset_heex do
     ~S"""
     <.form for={@form} phx-change="validate" phx-submit="save">
-      <.number_input field={@form[:value]} class="number-input">
+      <.number_input field={@form[:value]} >
         <:label>Value</:label>
         <:decrement_trigger>
-          <.heroicon name="hero-chevron-down" class="icon" />
+          <.heroicon name="hero-chevron-down" />
         </:decrement_trigger>
         <:increment_trigger>
-          <.heroicon name="hero-chevron-up" class="icon" />
+          <.heroicon name="hero-chevron-up" />
         </:increment_trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.number_input>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -1195,20 +1208,20 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       phx-change="validate_strict"
       phx-submit="save_strict"
     >
-      <.number_input field={@form[:value]} class="number-input">
+      <.number_input field={@form[:value]} >
         <:label>Value (1–9999)</:label>
         <:decrement_trigger>
-          <.heroicon name="hero-chevron-down" class="icon" />
+          <.heroicon name="hero-chevron-down" />
         </:decrement_trigger>
         <:increment_trigger>
-          <.heroicon name="hero-chevron-up" class="icon" />
+          <.heroicon name="hero-chevron-up" />
         </:increment_trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.number_input>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -1259,24 +1272,23 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       <.number_input
         field={@form[:value]}
         id="number-input-live-changeset-field"
-        class="number-input"
       >
         <:label>Value</:label>
         <:decrement_trigger>
-          <.heroicon name="hero-chevron-down" class="icon" />
+          <.heroicon name="hero-chevron-down" />
         </:decrement_trigger>
         <:increment_trigger>
-          <.heroicon name="hero-chevron-up" class="icon" />
+          <.heroicon name="hero-chevron-up" />
         </:increment_trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.number_input>
       <.action
         type="submit"
         id="number-input-form-live-changeset-submit"
-        class="button button--accent"
+        semantic="accent"
       >
         Submit
       </.action>
@@ -1294,21 +1306,20 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       <.number_input
         field={@form[:value]}
         id="number-input-live-validate-field"
-        class="number-input"
       >
         <:label>Value (1–9999)</:label>
         <:decrement_trigger>
-          <.heroicon name="hero-chevron-down" class="icon" />
+          <.heroicon name="hero-chevron-down" />
         </:decrement_trigger>
         <:increment_trigger>
-          <.heroicon name="hero-chevron-up" class="icon" />
+          <.heroicon name="hero-chevron-up" />
         </:increment_trigger>
         <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" />
           {msg}
         </:error>
       </.number_input>
-      <.action type="submit" id="number-input-form-live-validate-submit" class="button button--accent">
+      <.action type="submit" id="number-input-form-live-validate-submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -1325,16 +1336,16 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       action={~p"/number-input/form"}
       method="post"
     >
-      <.number_input field={f[:value]} class="number-input">
+      <.number_input field={f[:value]}>
         <:label>Value</:label>
         <:decrement_trigger>
-          <.heroicon name="hero-chevron-down" class="icon" />
+          <.heroicon name="hero-chevron-down" />
         </:decrement_trigger>
         <:increment_trigger>
-          <.heroicon name="hero-chevron-up" class="icon" />
+          <.heroicon name="hero-chevron-up" />
         </:increment_trigger>
       </.number_input>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" semantic="accent">
         Submit
       </.action>
     </.form>
@@ -1355,18 +1366,17 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     <.form for={@form} phx-change="change_phoenix" phx-submit="save_phoenix">
       <.number_input
         field={@form[:value]}
-        class="number-input"
         id="number-input-live-form-phoenix-field"
       >
         <:label>Value</:label>
         <:decrement_trigger>
-          <.heroicon name="hero-chevron-down" class="icon" />
+          <.heroicon name="hero-chevron-down" />
         </:decrement_trigger>
         <:increment_trigger>
-          <.heroicon name="hero-chevron-up" class="icon" />
+          <.heroicon name="hero-chevron-up" />
         </:increment_trigger>
       </.number_input>
-      <.action type="submit" id="number-input-live-form-phoenix-submit" class="button button--accent">
+      <.action type="submit" id="number-input-live-form-phoenix-submit" semantic="accent">
         Submit
       </.action>
     </.form>

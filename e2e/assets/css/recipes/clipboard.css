@@ -1,0 +1,412 @@
+/* Corex generated design - do not edit */
+
+@utility clipboard--max-w-* {
+  max-width: --value(--container-*, [length]);
+}
+
+
+@utility clipboard--max-h-* {
+  max-height: --value(--container-*, [length]);
+}
+
+
+@layer components {
+  .clipboard.clipboard--w-auto {
+    width: auto;
+  }
+
+  .clipboard.clipboard--w-fit {
+    width: fit-content;
+  }
+
+  .clipboard.clipboard--w-full {
+    width: 100%;
+  }
+
+  .clipboard.clipboard--max-w-none {
+    max-width: none;
+  }
+
+  .clipboard.clipboard--max-w-full {
+    max-width: 100%;
+  }
+
+  .clipboard.clipboard--max-w-7xs {
+    max-width: var(--container-7xs);
+  }
+
+  .clipboard.clipboard--max-w-6xs {
+    max-width: var(--container-6xs);
+  }
+
+  .clipboard.clipboard--max-w-5xs {
+    max-width: var(--container-5xs);
+  }
+
+  .clipboard.clipboard--max-w-4xs {
+    max-width: var(--container-4xs);
+  }
+
+  .clipboard.clipboard--max-w-3xs {
+    max-width: var(--container-3xs);
+  }
+
+  .clipboard.clipboard--max-w-2xs {
+    max-width: var(--container-2xs);
+  }
+
+  .clipboard.clipboard--max-w-xs {
+    max-width: var(--container-xs);
+  }
+
+  .clipboard.clipboard--max-w-sm {
+    max-width: var(--container-sm);
+  }
+
+  .clipboard.clipboard--max-w-md {
+    max-width: var(--container-md);
+  }
+
+  .clipboard.clipboard--max-w-lg {
+    max-width: var(--container-lg);
+  }
+
+  .clipboard.clipboard--max-w-xl {
+    max-width: var(--container-xl);
+  }
+
+  .clipboard.clipboard--max-w-2xl {
+    max-width: var(--container-2xl);
+  }
+
+  .clipboard.clipboard--max-w-3xl {
+    max-width: var(--container-3xl);
+  }
+
+  .clipboard.clipboard--max-w-4xl {
+    max-width: var(--container-4xl);
+  }
+
+  .clipboard.clipboard--max-w-5xl {
+    max-width: var(--container-5xl);
+  }
+
+  .clipboard.clipboard--max-w-6xl {
+    max-width: var(--container-6xl);
+  }
+
+  .clipboard.clipboard--max-w-7xl {
+    max-width: var(--container-7xl);
+  }
+
+  .clipboard.clipboard--h-auto {
+    height: auto;
+  }
+
+  .clipboard.clipboard--h-fit {
+    height: fit-content;
+  }
+
+  .clipboard.clipboard--h-full {
+    height: 100%;
+  }
+
+  .clipboard.clipboard--max-h-none {
+    max-height: none;
+  }
+
+  .clipboard.clipboard--max-h-full {
+    max-height: 100%;
+  }
+
+  .clipboard.clipboard--max-h-7xs {
+    max-height: var(--container-7xs);
+  }
+
+  .clipboard.clipboard--max-h-6xs {
+    max-height: var(--container-6xs);
+  }
+
+  .clipboard.clipboard--max-h-5xs {
+    max-height: var(--container-5xs);
+  }
+
+  .clipboard.clipboard--max-h-4xs {
+    max-height: var(--container-4xs);
+  }
+
+  .clipboard.clipboard--max-h-3xs {
+    max-height: var(--container-3xs);
+  }
+
+  .clipboard.clipboard--max-h-2xs {
+    max-height: var(--container-2xs);
+  }
+
+  .clipboard.clipboard--max-h-xs {
+    max-height: var(--container-xs);
+  }
+
+  .clipboard.clipboard--max-h-sm {
+    max-height: var(--container-sm);
+  }
+
+  .clipboard.clipboard--max-h-md {
+    max-height: var(--container-md);
+  }
+
+  .clipboard.clipboard--max-h-lg {
+    max-height: var(--container-lg);
+  }
+
+  .clipboard.clipboard--max-h-xl {
+    max-height: var(--container-xl);
+  }
+
+  .clipboard.clipboard--max-h-2xl {
+    max-height: var(--container-2xl);
+  }
+
+  .clipboard.clipboard--max-h-3xl {
+    max-height: var(--container-3xl);
+  }
+
+  .clipboard.clipboard--max-h-4xl {
+    max-height: var(--container-4xl);
+  }
+
+  .clipboard.clipboard--max-h-5xl {
+    max-height: var(--container-5xl);
+  }
+
+  .clipboard.clipboard--max-h-6xl {
+    max-height: var(--container-6xl);
+  }
+
+  .clipboard.clipboard--max-h-7xl {
+    max-height: var(--container-7xl);
+  }
+
+  .clipboard.clipboard--sm [data-scope="clipboard"][data-part="root"] {
+    gap: var(--space-sm);
+  }
+
+  .clipboard.clipboard--sm [data-scope="clipboard"][data-part="control"] {
+    gap: var(--space-sm);
+  }
+
+  .clipboard.clipboard--sm [data-scope="clipboard"][data-part="label"] {
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+  }
+
+  .clipboard.clipboard--sm [data-scope="clipboard"][data-part="trigger"] {
+    gap: var(--space-sm);
+    padding-inline: var(--space-sm);
+    min-height: var(--size-sm);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+  }
+
+  .clipboard.clipboard--sm [data-scope="clipboard"][data-part="input"] {
+    min-height: var(--size-sm);
+  }
+
+  .clipboard.clipboard--md [data-scope="clipboard"][data-part="root"] {
+    gap: var(--space-md);
+  }
+
+  .clipboard.clipboard--md [data-scope="clipboard"][data-part="control"] {
+    gap: var(--space-md);
+  }
+
+  .clipboard.clipboard--md [data-scope="clipboard"][data-part="label"] {
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+
+  .clipboard.clipboard--md [data-scope="clipboard"][data-part="trigger"] {
+    gap: var(--space-md);
+    padding-inline: var(--space-md);
+    min-height: var(--size-md);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+
+  .clipboard.clipboard--md [data-scope="clipboard"][data-part="input"] {
+    min-height: var(--size-md);
+  }
+
+  .clipboard.clipboard--lg [data-scope="clipboard"][data-part="root"] {
+    gap: var(--space-lg);
+  }
+
+  .clipboard.clipboard--lg [data-scope="clipboard"][data-part="control"] {
+    gap: var(--space-lg);
+  }
+
+  .clipboard.clipboard--lg [data-scope="clipboard"][data-part="label"] {
+    font-size: var(--text-lg);
+    line-height: var(--leading-lg);
+  }
+
+  .clipboard.clipboard--lg [data-scope="clipboard"][data-part="trigger"] {
+    gap: var(--space-lg);
+    padding-inline: var(--space-lg);
+    min-height: var(--size-lg);
+    font-size: var(--text-lg);
+    line-height: var(--leading-lg);
+  }
+
+  .clipboard.clipboard--lg [data-scope="clipboard"][data-part="input"] {
+    min-height: var(--size-lg);
+  }
+
+  .clipboard.clipboard--xl [data-scope="clipboard"][data-part="root"] {
+    gap: var(--space-xl);
+  }
+
+  .clipboard.clipboard--xl [data-scope="clipboard"][data-part="control"] {
+    gap: var(--space-xl);
+  }
+
+  .clipboard.clipboard--xl [data-scope="clipboard"][data-part="label"] {
+    font-size: var(--text-xl);
+    line-height: var(--leading-xl);
+  }
+
+  .clipboard.clipboard--xl [data-scope="clipboard"][data-part="trigger"] {
+    gap: var(--space-xl);
+    padding-inline: var(--space-xl);
+    min-height: var(--size-xl);
+    font-size: var(--text-xl);
+    line-height: var(--leading-xl);
+  }
+
+  .clipboard.clipboard--xl [data-scope="clipboard"][data-part="input"] {
+    min-height: var(--size-xl);
+  }
+
+  .clipboard[data-loading] [data-scope="clipboard"][data-part="root"] {
+    @apply ui-loading;
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="root"] {
+    @apply ui-root;
+    gap: var(--space);
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="root"][data-orientation="horizontal"] {
+    align-items: center;
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="root"][data-orientation="vertical"] {
+    align-items: start;
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="label"] {
+    @apply ui-label;
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="control"] {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: start;
+    gap: var(--space-sm);
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="control"][data-orientation="horizontal"] {
+    flex-flow: row nowrap;
+    align-items: center;
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="input"] {
+    @apply ui-input;
+    width: auto;
+    flex: 0 1 auto;
+    max-width: var(--container-md);
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="input"][data-copied] {
+    background-color: var(--color-success);
+    color: var(--color-success-ink);
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="trigger"] {
+    @apply ui-trigger;
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copy"] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space);
+    pointer-events: none;
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copied"] {
+    display: none;
+    align-items: center;
+    gap: var(--space);
+    pointer-events: none;
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="trigger"][data-copied] {
+    background-color: var(--color-success);
+    color: var(--color-success-ink);
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--color-success-ink);
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="trigger"][data-copied] [data-scope="clipboard"][data-part="copy"] {
+    display: none;
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="trigger"][data-copied] [data-scope="clipboard"][data-part="copied"] {
+    display: inline-flex;
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copy"] [data-icon],
+    .clipboard [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copied"] [data-icon] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 0.875em !important;
+    height: 0.875em !important;
+  }
+
+  .clipboard.clipboard--sm [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copy"],
+    .clipboard.clipboard--sm [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copied"] {
+    gap: var(--space-sm);
+  }
+
+  .clipboard.clipboard--md [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copy"],
+    .clipboard.clipboard--md [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copied"] {
+    gap: var(--space-md);
+  }
+
+  .clipboard.clipboard--lg [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copy"],
+    .clipboard.clipboard--lg [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copied"] {
+    gap: var(--space-lg);
+  }
+
+  .clipboard.clipboard--xl [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copy"],
+    .clipboard.clipboard--xl [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copied"] {
+    gap: var(--space-xl);
+  }
+
+  .clipboard.clipboard--w-full [data-scope="clipboard"][data-part="root"] {
+    width: 100%;
+  }
+
+  .clipboard.clipboard--w-full [data-scope="clipboard"][data-part="control"] {
+    width: 100%;
+  }
+
+  .clipboard.clipboard--w-full [data-scope="clipboard"][data-part="input"] {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: none;
+  }
+}
+

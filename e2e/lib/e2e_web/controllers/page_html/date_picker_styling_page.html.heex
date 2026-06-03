@@ -13,18 +13,20 @@
     }
   >
     <.demo_section
-      id="date-picker-styling-color"
-      title={~t"Color"}
-      code={E2eWeb.Demos.DatePickerDemo.styling_color_code()}
+      id="date-picker-styling-semantic"
+      title={~t"Semantic"}
+      values={E2eWeb.Demos.DatePickerDemo.styling_axis_values(:semantic)}
+      code={E2eWeb.Demos.DatePickerDemo.styling_semantic_code()}
     >
       <:preview>
-        <E2eWeb.Demos.DatePickerDemo.styling_color_example />
+        <E2eWeb.Demos.DatePickerDemo.styling_semantic_example />
       </:preview>
     </.demo_section>
 
     <.demo_section
       id="date-picker-styling-size"
       title={~t"Size"}
+      values={E2eWeb.Demos.DatePickerDemo.styling_axis_values(:size)}
       code={E2eWeb.Demos.DatePickerDemo.styling_size_code()}
     >
       <:preview>
@@ -35,6 +37,7 @@
     <.demo_section
       id="date-picker-styling-radius"
       title={~t"Radius"}
+      values={E2eWeb.Demos.DatePickerDemo.styling_axis_values(:radius)}
       code={E2eWeb.Demos.DatePickerDemo.styling_radius_code()}
     >
       <:preview>

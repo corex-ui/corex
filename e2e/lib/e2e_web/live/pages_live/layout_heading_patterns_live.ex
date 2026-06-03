@@ -34,8 +34,8 @@ defmodule E2eWeb.LayoutHeadingPatternsLive do
         <:title>Page Title</:title>
         <:subtitle>Live View</:subtitle>
         <:actions>
-          <.navigate to={~p"/"} type="navigate" class="button">
-            <.heroicon name="hero-arrow-left" class="icon" /> Back
+          <.navigate to={~p"/"} type="navigate" as="button">
+            <.heroicon name="hero-arrow-left" /> Back
           </.navigate>
         </:actions>
       </.layout_heading>

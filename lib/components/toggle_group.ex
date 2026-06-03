@@ -9,7 +9,7 @@ defmodule Corex.ToggleGroup do
   ### Minimal
 
   ```heex
-  <.toggle_group class="toggle-group">
+  <.toggle_group>
     <:item value="lorem">Lorem</:item>
     <:item value="duis">Duis</:item>
     <:item value="donec">Donec</:item>
@@ -19,14 +19,14 @@ defmodule Corex.ToggleGroup do
   ### With indicator
 
   ```heex
-  <.toggle_group class="toggle-group">
+  <.toggle_group>
     <:item value="bold">
       <.heroicon name="hero-bold" />
       Bold
     </:item>
   </.toggle_group>
 
-  <.toggle_group class="toggle-group">
+  <.toggle_group>
     <:item value="bold" aria_label="Bold">
       <.heroicon name="hero-bold" />
       <span class="sr-only">Bold</span>
@@ -40,13 +40,38 @@ defmodule Corex.ToggleGroup do
 
   ```heex
   <.toggle_group
-    class="toggle-group"
     multiple={false}
     value={["duis"]}
   >
     <:item value="lorem">Lorem</:item>
     <:item value="duis">Duis</:item>
     <:item value="donec">Donec</:item>
+  </.toggle_group>
+  ```
+
+  <!-- tabs-close -->
+
+  ## Styling
+
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `semantic`, `size`, `radius`.
+
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.toggle_group semantic="accent" size="md" class="toggle-group">
+    <:item value="lorem">Lorem</:item>
+    <:item value="duis">Duis</:item>
+  </.toggle_group>
+  ```
+
+  ### With classes
+
+  ```heex
+  <.toggle_group class="toggle-group toggle-group--accent toggle-group--md">
+    <:item value="lorem">Lorem</:item>
+    <:item value="duis">Duis</:item>
   </.toggle_group>
   ```
 
@@ -77,7 +102,6 @@ defmodule Corex.ToggleGroup do
 
   ```heex
   <.toggle_group
-    class="toggle-group"
     on_value_change="toggle_group_changed"
     multiple
   >
@@ -108,7 +132,6 @@ defmodule Corex.ToggleGroup do
   ```heex
   <.toggle_group
     id="toggle-group-events-client"
-    class="toggle-group"
     on_value_change_client="toggle-group-changed"
     multiple
   >
@@ -135,7 +158,6 @@ defmodule Corex.ToggleGroup do
 
   ```heex
   <.toggle_group
-    class="toggle-group"
     value={@value}
     multiple
     controlled
@@ -161,17 +183,11 @@ defmodule Corex.ToggleGroup do
 
   ## Style
 
-  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `toggle-group.css`, then set `class="toggle-group"` on `<.toggle_group>`.
+  Target parts with `data-scope` and `data-part`, or use [Corex Design](styled.html): `@import "./corex.tailwind.css"` in `app.css`.
 
   ```css
   [data-scope="toggle-group"][data-part="root"] {}
   [data-scope="toggle-group"][data-part="item"] {}
-  ```
-
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/toggle-group.css";
   ```
 
   Stack modifiers on the host (`class` on `<.toggle_group>`).
@@ -222,6 +238,25 @@ defmodule Corex.ToggleGroup do
   alias Corex.ToggleGroup.Connect
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
+
+  use Corex.Variants,
+    base: "toggle-group",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size,
+      radius: :radius
+    ],
+    defaults: [
+      width: "full",
+      max_width: "4xs",
+      height: "auto",
+      max_height: "none",
+      size: "md"
+    ]
 
   @doc """
   Renders a toggle group component.
@@ -307,7 +342,7 @@ defmodule Corex.ToggleGroup do
     assigns = assign(assigns, :label_id, label_id)
 
     ~H"""
-    <div id={@id} phx-hook="ToggleGroup" data-loading phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])} {@rest}
+    <div id={@id} phx-hook="ToggleGroup" data-loading phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])} class={corex_style_class(assigns)} {@rest}
     {Connect.props(%Props{
       id: @id,
       controlled: @controlled,

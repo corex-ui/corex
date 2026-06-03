@@ -2764,7 +2764,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-SBA2GV3P.mjs
+  // ../priv/static/chunks/chunk-SWUZHOZO.mjs
   function readRequiredAttrString(el, dataAttr2, label) {
     const raw = el.getAttribute(dataAttr2);
     if (raw === null) {
@@ -2862,6 +2862,15 @@ var Corex = (() => {
     const next2 = __spreadValues({}, props);
     delete next2.hidden;
     return next2;
+  }
+  function spreadJsPanelProps(el, props, spread) {
+    const closed = el.dataset.state === "closed";
+    const savedStyle = closed ? el.getAttribute("style") : null;
+    const cleaned = stripHiddenFromProps(props);
+    if (closed) delete cleaned.style;
+    spread(el, cleaned);
+    el.removeAttribute("hidden");
+    if (closed && savedStyle) el.setAttribute("style", savedStyle);
   }
   function clearOpenStyles(el) {
     el.style.opacity = "";
@@ -3044,8 +3053,8 @@ var Corex = (() => {
     return anim;
   }
   var rootPointerBlockCount;
-  var init_chunk_SBA2GV3P = __esm({
-    "../priv/static/chunks/chunk-SBA2GV3P.mjs"() {
+  var init_chunk_SWUZHOZO = __esm({
+    "../priv/static/chunks/chunk-SWUZHOZO.mjs"() {
       "use strict";
       init_chunk_2GQRP3FN();
       rootPointerBlockCount = /* @__PURE__ */ new WeakMap();
@@ -3634,7 +3643,7 @@ var Corex = (() => {
     "../priv/static/accordion.mjs"() {
       "use strict";
       init_chunk_JDGMEOQK();
-      init_chunk_SBA2GV3P();
+      init_chunk_SWUZHOZO();
       init_chunk_I2HPUDHJ();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
@@ -3843,13 +3852,11 @@ var Corex = (() => {
               if (animation === "instant") {
                 this.spreadProps(contentEl, this.api.getItemContentProps({ value, disabled }));
               } else if (animation === "js" || animation === "custom") {
-                this.spreadProps(
+                spreadJsPanelProps(
                   contentEl,
-                  stripHiddenFromProps(
-                    this.api.getItemContentProps({ value, disabled })
-                  )
+                  this.api.getItemContentProps({ value, disabled }),
+                  (target, next2) => this.spreadProps(target, next2)
                 );
-                contentEl.removeAttribute("hidden");
               }
             }
           }
@@ -3865,6 +3872,7 @@ var Corex = (() => {
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
           self2.lastValue = readControlledOrDefaultStringList(el, "value", "defaultValue");
+          prepareJsHeightInitialState(el, ITEM_CONTENT_SELECTOR);
           const accordion = new Accordion(el, __spreadProps(__spreadValues({
             id: el.id
           }, readStringListControlledZagProps(el, "value", "defaultValue")), {
@@ -3916,7 +3924,6 @@ var Corex = (() => {
           }));
           accordion.init();
           this.accordion = accordion;
-          prepareJsHeightInitialState(el, ITEM_CONTENT_SELECTOR);
           const hookApi = { el, pushEvent, canPushServer: canPush };
           const emitValue = createValueEmitter(hookApi, {
             getValue: () => accordion.api.value,
@@ -22596,7 +22603,7 @@ var Corex = (() => {
   var init_dialog = __esm({
     "../priv/static/dialog.mjs"() {
       "use strict";
-      init_chunk_SBA2GV3P();
+      init_chunk_SWUZHOZO();
       init_chunk_WJDVLJMP();
       init_chunk_B5L2AGOH();
       init_chunk_I2HPUDHJ();
@@ -23602,8 +23609,11 @@ var Corex = (() => {
             if (animation === "instant") {
               this.spreadProps(backdropEl, rawBackdrop);
             } else if (animation === "js" || animation === "custom") {
-              this.spreadProps(backdropEl, stripHiddenFromProps(rawBackdrop));
-              backdropEl.removeAttribute("hidden");
+              spreadJsPanelProps(
+                backdropEl,
+                rawBackdrop,
+                (target, next2) => this.spreadProps(target, next2)
+              );
             }
           }
           const positionerEl = rootEl.querySelector(
@@ -23618,8 +23628,7 @@ var Corex = (() => {
             if (animation === "instant") {
               this.spreadProps(contentEl, rawContent);
             } else if (animation === "js" || animation === "custom") {
-              this.spreadProps(contentEl, stripHiddenFromProps(rawContent));
-              contentEl.removeAttribute("hidden");
+              spreadJsPanelProps(contentEl, rawContent, (target, next2) => this.spreadProps(target, next2));
               if (!this.api.open) {
                 contentEl.style.removeProperty("pointer-events");
               }
@@ -23646,6 +23655,9 @@ var Corex = (() => {
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
           self2.lastOpen = readControlledOrDefaultBoolean(el, "open", "defaultOpen");
+          prepareJsScaleInitialState(el, DIALOG_SCALE_SELECTOR, (sub) => {
+            if (sub.dataset.part === "backdrop") return { scale: false };
+          });
           const dialog = new Dialog(el, __spreadProps(__spreadValues(__spreadValues({}, readDialogLayoutProps(el)), readBooleanControlledZagProps(el, "open", "defaultOpen")), {
             "aria-label": dialogInitialAriaLabel(el),
             onOpenChange: (details) => {
@@ -23675,9 +23687,6 @@ var Corex = (() => {
           }));
           dialog.init();
           this.dialog = dialog;
-          prepareJsScaleInitialState(el, DIALOG_SCALE_SELECTOR, (sub) => {
-            if (sub.dataset.part === "backdrop") return { scale: false };
-          });
           const domRegistry = createDomEventRegistry(el);
           this.domRegistry = domRegistry;
           domRegistry.add("corex:dialog:set-open", (event) => {
@@ -43655,7 +43664,7 @@ ${err}`);
     "../priv/static/tree-view.mjs"() {
       "use strict";
       init_chunk_JDGMEOQK();
-      init_chunk_SBA2GV3P();
+      init_chunk_SWUZHOZO();
       init_chunk_FVGYE2AE();
       init_chunk_HZLPIQBD();
       init_chunk_77HPO22C();
@@ -44403,11 +44412,11 @@ ${err}`);
               if (animation === "instant") {
                 this.spreadProps(contentEl, contentPropsRaw);
               } else if (animation === "js" || animation === "custom") {
-                this.spreadProps(
+                spreadJsPanelProps(
                   contentEl,
-                  stripHiddenFromProps(contentPropsRaw)
+                  contentPropsRaw,
+                  (target, next2) => this.spreadProps(target, next2)
                 );
-                contentEl.removeAttribute("hidden");
               }
             }
             const indentGuideEl = branchEl.querySelector(
@@ -44463,6 +44472,7 @@ ${err}`);
           self2.lastSelected = controlled ? (_c = getStringList(el, "selectedValue")) != null ? _c : [] : (_d = getStringList(el, "defaultSelectedValue")) != null ? _d : [];
           self2.lastExpandedAttr = readExpandedAttr(el);
           self2.lastSelectedAttr = readSelectedAttr(el);
+          prepareJsHeightInitialState(el, BRANCH_CONTENT_SELECTOR);
           const treeView = new TreeView(el, __spreadProps(__spreadValues({
             id: el.id,
             rootNode
@@ -44542,7 +44552,6 @@ ${err}`);
           }));
           treeView.init();
           this.treeView = treeView;
-          prepareJsHeightInitialState(el, BRANCH_CONTENT_SELECTOR);
           const hookApi = { el, pushEvent, canPushServer: canPush };
           const emitSelectedValue = createValueEmitter(hookApi, {
             getValue: () => treeView.api.selectedValue,

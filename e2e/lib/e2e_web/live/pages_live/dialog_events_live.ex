@@ -79,7 +79,6 @@ defmodule E2eWeb.DialogEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.dialog
                 id={@id_server}
-                class="dialog"
                 on_open_change="dialog_open_changed"
               >
                 <:trigger>Open Dialog</:trigger>
@@ -88,13 +87,13 @@ defmodule E2eWeb.DialogEventsLive do
                   <p>Dialog content</p>
                 </:content>
                 <:close_trigger>
-                  <.heroicon name="hero-x-mark" class="icon" />
+                  <.heroicon name="hero-x-mark" />
                 </:close_trigger>
               </.dialog>
 
               <.data_table
                 id="dialog-events-log-server"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.server_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -122,7 +121,6 @@ defmodule E2eWeb.DialogEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.dialog
                 id={@id_client}
-                class="dialog"
                 on_open_change_client="dialog-open-changed"
               >
                 <:trigger>Open Dialog</:trigger>
@@ -131,7 +129,7 @@ defmodule E2eWeb.DialogEventsLive do
                   <p>Dialog content</p>
                 </:content>
                 <:close_trigger>
-                  <.heroicon name="hero-x-mark" class="icon" />
+                  <.heroicon name="hero-x-mark" />
                 </:close_trigger>
               </.dialog>
 
@@ -160,7 +158,7 @@ defmodule E2eWeb.DialogEventsLive do
 
               <.data_table
                 id="dialog-events-log-client"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.client_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>

@@ -1,7 +1,7 @@
 import { collection, connect, machine, type Props, type Api } from "@zag-js/tree-view";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
-import { stripHiddenFromProps } from "../lib/animation";
+import { spreadJsPanelProps } from "../lib/animation";
 
 export interface TreeNode {
   value: string;
@@ -101,11 +101,11 @@ export class TreeView extends Component<Props, Api> {
         if (animation === "instant") {
           this.spreadProps(contentEl, contentPropsRaw);
         } else if (animation === "js" || animation === "custom") {
-          this.spreadProps(
+          spreadJsPanelProps(
             contentEl,
-            stripHiddenFromProps(contentPropsRaw as Record<string, unknown>)
+            contentPropsRaw as Record<string, unknown>,
+            (target, next) => this.spreadProps(target, next)
           );
-          contentEl.removeAttribute("hidden");
         }
       }
 

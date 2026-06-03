@@ -188,11 +188,7 @@ defmodule E2eWeb.ToastPlayLive do
               >
                 <:label>Message</:label>
               </.native_input>
-              <.select
-                class="select select--sm w-full"
-                field={@form[:type]}
-                items={@type_items}
-              >
+              <.select size="sm" class="w-full" field={@form[:type]} items={@type_items}>
                 <:label>Type</:label>
                 <:trigger>
                   <.heroicon name="hero-chevron-down" />
@@ -208,17 +204,17 @@ defmodule E2eWeb.ToastPlayLive do
               >
                 <:label>Duration</:label>
                 <:decrement_trigger>
-                  <.heroicon name="hero-chevron-down" class="icon" />
+                  <.heroicon name="hero-chevron-down" />
                 </:decrement_trigger>
                 <:increment_trigger>
-                  <.heroicon name="hero-chevron-up" class="icon" />
+                  <.heroicon name="hero-chevron-up" />
                 </:increment_trigger>
               </.number_input>
-              <.switch field={@form[:loading]} class="switch switch--sm">
+              <.switch field={@form[:loading]} size="sm">
                 <:label>Loading</:label>
               </.switch>
               <footer class="flex w-full justify-end">
-                <.action type="submit" class="button button--sm button--accent">Create toast</.action>
+                <.action type="submit" size="sm" semantic="accent">Create toast</.action>
               </footer>
             </.form>
           </div>

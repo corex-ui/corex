@@ -1,7 +1,7 @@
 import { connect, machine, type Props, type Api } from "@zag-js/dialog";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
-import { stripHiddenFromProps } from "../lib/animation";
+import { spreadJsPanelProps } from "../lib/animation";
 import { getString } from "../lib/util";
 
 export function dialogInitialAriaLabel(rootEl: HTMLElement): string | undefined {
@@ -61,8 +61,9 @@ export class Dialog extends Component<Props, Api> {
       if (animation === "instant") {
         this.spreadProps(backdropEl, rawBackdrop);
       } else if (animation === "js" || animation === "custom") {
-        this.spreadProps(backdropEl, stripHiddenFromProps(rawBackdrop));
-        backdropEl.removeAttribute("hidden");
+        spreadJsPanelProps(backdropEl, rawBackdrop, (target, next) =>
+          this.spreadProps(target, next)
+        );
       }
     }
 
@@ -79,8 +80,7 @@ export class Dialog extends Component<Props, Api> {
       if (animation === "instant") {
         this.spreadProps(contentEl, rawContent);
       } else if (animation === "js" || animation === "custom") {
-        this.spreadProps(contentEl, stripHiddenFromProps(rawContent));
-        contentEl.removeAttribute("hidden");
+        spreadJsPanelProps(contentEl, rawContent, (target, next) => this.spreadProps(target, next));
         if (!this.api.open) {
           contentEl.style.removeProperty("pointer-events");
         }

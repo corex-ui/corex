@@ -20,7 +20,9 @@ defmodule E2eWeb.AdminLive.Index do
           <.navigate
             to={~p"/admins/new"}
             type="navigate"
-            class="button button--accent button--square"
+            as="button"
+            semantic="accent"
+            shape="square"
             aria_label="New admin"
             title="New admin"
           >
@@ -31,7 +33,7 @@ defmodule E2eWeb.AdminLive.Index do
       </.layout_heading>
       <.data_table
         id="admins"
-        class="data-table max-w-none"
+        class="data-table data-table--max-w-none"
         rows={@streams.admins}
         row_click={fn {_id, admin} -> JS.navigate(~p"/admins/#{admin}") end}
       >
@@ -45,12 +47,14 @@ defmodule E2eWeb.AdminLive.Index do
         </:col>
         <:action :let={{_id, admin}}>
           <div class="sr-only">
-            <.navigate to={~p"/admins/#{admin}"} type="navigate" class="link">Show</.navigate>
+            <.navigate to={~p"/admins/#{admin}"} type="navigate">Show</.navigate>
           </div>
           <.navigate
             to={~p"/admins/#{admin}/edit"}
             type="navigate"
-            class="button button--sm button--square"
+            as="button"
+            size="sm"
+            shape="square"
             aria_label={"Edit #{admin.name}"}
           >
             <.heroicon name="hero-pencil-square" />
@@ -59,7 +63,6 @@ defmodule E2eWeb.AdminLive.Index do
         <:action :let={{_id, admin}}>
           <.dialog
             id={"admin-delete-#{admin.id}"}
-            class="dialog"
             role="alertdialog"
             modal
             close_on_interact_outside={false}
@@ -79,7 +82,8 @@ defmodule E2eWeb.AdminLive.Index do
                 <.action
                   id={"admin-delete-#{admin.id}-cancel"}
                   phx-click={Corex.Dialog.set_open("admin-delete-#{admin.id}", false)}
-                  class="button button--sm button--ghost"
+                  size="sm"
+                  variant="ghost"
                 >
                   Cancel
                 </.action>
@@ -89,7 +93,8 @@ defmodule E2eWeb.AdminLive.Index do
                     Corex.Dialog.set_open("admin-delete-#{admin.id}", false)
                     |> JS.push("delete", value: %{id: admin.id})
                   }
-                  class="button button--sm button--alert"
+                  size="sm"
+                  semantic="alert"
                 >
                   Delete
                 </.action>

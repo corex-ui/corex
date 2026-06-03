@@ -29,5 +29,19 @@ defmodule Corex.CodeTest do
 
       assert result =~ "&lt;script&gt;"
     end
+
+    test "applies host sizing data attributes" do
+      result =
+        render_component(&Corex.Code.code/1,
+          code: "def hello, do: :world",
+          max_width: "none",
+          max_height: "lg",
+          width: "full"
+        )
+
+      assert result =~ ~S(data-code-max-width="none")
+      assert result =~ ~S(data-code-max-height="lg")
+      assert result =~ ~S(data-code-width="full")
+    end
   end
 end

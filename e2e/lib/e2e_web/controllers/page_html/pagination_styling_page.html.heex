@@ -8,18 +8,20 @@
     }
   >
     <.demo_section
-      id="pagination-styling-color"
-      title={~t"Color"}
-      code={E2eWeb.Demos.PaginationDemo.styling_color_heex()}
+      id="pagination-styling-semantic"
+      title={~t"Semantic"}
+      values={E2eWeb.Demos.PaginationDemo.styling_axis_values(:semantic)}
+      code={E2eWeb.Demos.PaginationDemo.styling_semantic_heex()}
     >
       <:preview>
-        <E2eWeb.Demos.PaginationDemo.styling_color_example />
+        <E2eWeb.Demos.PaginationDemo.styling_semantic_example />
       </:preview>
     </.demo_section>
 
     <.demo_section
       id="pagination-styling-size"
       title={~t"Size"}
+      values={E2eWeb.Demos.PaginationDemo.styling_axis_values(:size)}
       code={E2eWeb.Demos.PaginationDemo.styling_size_heex()}
     >
       <:preview>
@@ -30,6 +32,7 @@
     <.demo_section
       id="pagination-styling-text"
       title={~t"Text"}
+      values={E2eWeb.Demos.PaginationDemo.styling_axis_values(:text)}
       code={E2eWeb.Demos.PaginationDemo.styling_text_heex()}
     >
       <:preview>
@@ -40,6 +43,7 @@
     <.demo_section
       id="pagination-styling-radius"
       title={~t"Radius"}
+      values={E2eWeb.Demos.PaginationDemo.styling_axis_values(:radius)}
       code={E2eWeb.Demos.PaginationDemo.styling_radius_heex()}
     >
       <:preview>
@@ -50,6 +54,7 @@
     <.demo_section
       id="pagination-styling-max-width"
       title={~t"Max width"}
+      values={E2eWeb.Demos.PaginationDemo.styling_axis_values(:max_width)}
       code={E2eWeb.Demos.PaginationDemo.styling_max_width_heex()}
     >
       <:preview>

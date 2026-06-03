@@ -1,6 +1,10 @@
 defmodule E2eWeb.Demos.CodeDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.Demos.StylingAxes
+
+  def styling_axis_values(axis), do: StylingAxes.styling_axis_values(axis)
+
   def examples do
     %{
       elixir: ~S"""
@@ -33,14 +37,14 @@ defmodule E2eWeb.Demos.CodeDemo do
     ~S"""
     <p class="text-sm">
       Path:
-      <.code inline class="code" language={:elixir} code={~S|conn.request_path|} />
+      <.code inline  language={:elixir} code={~S|conn.request_path|} />
     </p>
     """
   end
 
   def anatomy_block_code do
     """
-    <.code class="code" language={:elixir} code={\"\"\"
+    <.code  language={:elixir} code={\"\"\"
     defmodule Greeter do
       def hi, do: :ok
     end
@@ -64,7 +68,7 @@ defmodule E2eWeb.Demos.CodeDemo do
         <:copy><.heroicon name="hero-clipboard" /></:copy>
         <:copied><.heroicon name="hero-check" /></:copied>
       </.clipboard>
-      <.code class="code" language={:elixir} code={\"\"\"
+      <.code  language={:elixir} code={\"\"\"
     def hello(name) do
       "Hello, #{name}!"
     end
@@ -75,7 +79,7 @@ defmodule E2eWeb.Demos.CodeDemo do
 
   def anatomy_javascript_code do
     """
-    <.code class="code" language={:js} code={\"\"\"
+    <.code  language={:js} code={\"\"\"
     export function greet(name) {
       return `Hello, ${name}!`;
     }
@@ -85,7 +89,7 @@ defmodule E2eWeb.Demos.CodeDemo do
 
   def anatomy_from_file_code do
     """
-    <.code class="code" language={:elixir} code={\"\"\"
+    <.code  language={:elixir} code={\"\"\"
     defmodule Hello do
       def world do
         "Hello, World!"
@@ -100,7 +104,7 @@ defmodule E2eWeb.Demos.CodeDemo do
 
     """
     <.code class="code code--text-xs" language={:elixir} code={#{c}} />
-    <.code class="code" language={:elixir} code={#{c}} />
+    <.code  language={:elixir} code={#{c}} />
     <.code class="code code--text-lg" language={:elixir} code={#{c}} />
     """
   end
@@ -111,7 +115,7 @@ defmodule E2eWeb.Demos.CodeDemo do
     ~H"""
     <div class="flex flex-wrap gap-6 items-start justify-center w-full">
       <.code class="code code--text-xs" language={:elixir} code={@styling_snippet} />
-      <.code class="code" language={:elixir} code={@styling_snippet} />
+      <.code language={:elixir} code={@styling_snippet} />
       <.code class="code code--text-lg" language={:elixir} code={@styling_snippet} />
     </div>
     """
@@ -123,7 +127,7 @@ defmodule E2eWeb.Demos.CodeDemo do
     """
     <.code class="code code--max-w-none w-full" language={:elixir} code={#{c}} />
     <.code class="code code--max-w-sm" language={:elixir} code={#{c}} />
-    <.code class="code" language={:elixir} code={#{c}} />
+    <.code  language={:elixir} code={#{c}} />
     """
   end
 
@@ -134,7 +138,7 @@ defmodule E2eWeb.Demos.CodeDemo do
     <div class="flex flex-col gap-4 items-stretch w-full max-w-4xl mx-auto">
       <.code class="code code--max-w-none w-full" language={:elixir} code={@styling_snippet} />
       <.code class="code code--max-w-sm" language={:elixir} code={@styling_snippet} />
-      <.code class="code" language={:elixir} code={@styling_snippet} />
+      <.code language={:elixir} code={@styling_snippet} />
     </div>
     """
   end

@@ -134,7 +134,7 @@ defmodule E2eWeb.ComboboxPlayLive do
           />
 
           <.toggle_group
-            class="toggle-group toggle-group--sm max-w-7xs"
+            class="toggle-group toggle-group--sm toggle--max-w-7xs"
             id="orientation"
             on_value_change="control_changed"
             multiple={false}
@@ -142,16 +142,17 @@ defmodule E2eWeb.ComboboxPlayLive do
             value={[@controls.orientation]}
           >
             <:item value="vertical" aria_label={~t"Vertical orientation"}>
-              <.heroicon name="hero-arrows-up-down" class="icon icon--lg" />
+              <.heroicon name="hero-arrows-up-down" />
             </:item>
             <:item value="horizontal" aria_label={~t"Horizontal orientation"}>
-              <.heroicon name="hero-arrows-right-left" class="icon icon--lg" />
+              <.heroicon name="hero-arrows-right-left" />
             </:item>
           </.toggle_group>
 
           <.select
             id="combobox-playground-disabled-items"
-            class="select select--sm w-4xs"
+            size="sm"
+            class="w-4xs"
             positioning={%Corex.Positioning{same_width: true}}
             multiple
             deselectable={true}
@@ -166,7 +167,7 @@ defmodule E2eWeb.ComboboxPlayLive do
           </.select>
 
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="disabled"
             checked={@controls.disabled}
             on_checked_change="control_changed"
@@ -174,7 +175,7 @@ defmodule E2eWeb.ComboboxPlayLive do
             <:label>Disabled</:label>
           </.switch>
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="read_only"
             checked={@controls.read_only}
             on_checked_change="control_changed"
@@ -182,7 +183,7 @@ defmodule E2eWeb.ComboboxPlayLive do
             <:label>Read only</:label>
           </.switch>
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="invalid"
             checked={@controls.invalid}
             on_checked_change="control_changed"
@@ -193,7 +194,6 @@ defmodule E2eWeb.ComboboxPlayLive do
         <:canvas>
           <.combobox
             id={@combobox_id}
-            class="combobox"
             translation={%Corex.Combobox.Translation{placeholder: "Select", empty: "No results"}}
             items={@items}
             value={@play_value}
@@ -205,9 +205,9 @@ defmodule E2eWeb.ComboboxPlayLive do
           >
             <:label>Playground</:label>
             <:empty>No results</:empty>
-            <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-            <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
-            <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+            <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+            <:clear_trigger><.heroicon name="hero-backspace" /></:clear_trigger>
+            <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
           </.combobox>
         </:canvas>
       </.demo_playground>

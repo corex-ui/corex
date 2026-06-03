@@ -115,15 +115,14 @@ defmodule E2eWeb.ComboboxPatternsLive do
           <:preview>
             <.combobox
               id="combobox-patterns-server-filter-field"
-              class="combobox"
               placeholder={~t"Search…"}
               items={Corex.List.new(@airports)}
               filter={false}
               on_input_value_change="search_airports"
             >
               <:empty>No results</:empty>
-              <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-              <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
+              <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+              <:clear_trigger><.heroicon name="hero-backspace" /></:clear_trigger>
             </.combobox>
           </:preview>
         </.demo_section>
@@ -149,15 +148,14 @@ defmodule E2eWeb.ComboboxPatternsLive do
           <:preview>
             <.combobox
               id="combobox-patterns-server-filter-grouped-field"
-              class="combobox"
               placeholder={~t"Search…"}
               items={Corex.List.new(@airports_grouped)}
               filter={false}
               on_input_value_change="search_airports_grouped"
             >
               <:empty>No results</:empty>
-              <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-              <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
+              <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+              <:clear_trigger><.heroicon name="hero-backspace" /></:clear_trigger>
             </.combobox>
           </:preview>
         </.demo_section>
@@ -170,7 +168,7 @@ defmodule E2eWeb.ComboboxPatternsLive do
     ~S"""
     <.combobox
       id="airport-combobox"
-      class="combobox"
+      
       placeholder={~t"Search…"}
       items={@items}
       filter={false}
@@ -225,7 +223,7 @@ defmodule E2eWeb.ComboboxPatternsLive do
         ~H|
         <.combobox
           id="airport-combobox"
-          class="combobox"
+          
           placeholder={~t"Search…"}
           items={@items}
           filter={false}
@@ -245,7 +243,7 @@ defmodule E2eWeb.ComboboxPatternsLive do
     ~S"""
     <.combobox
       id="airport-combobox-grouped"
-      class="combobox"
+      
       placeholder={~t"Search…"}
       items={@items}
       filter={false}
@@ -307,7 +305,7 @@ defmodule E2eWeb.ComboboxPatternsLive do
         ~H|
         <.combobox
           id="airport-combobox-grouped"
-          class="combobox"
+          
           placeholder={~t"Search…"}
           items={@items}
           filter={false}

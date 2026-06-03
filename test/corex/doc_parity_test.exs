@@ -13,6 +13,26 @@ defmodule Corex.DocParityTest do
     dialog
     action
     navigate
+    layout_heading
+    box
+    stack
+    form
+    h1
+    badge
+  )
+
+  @layout_typography_components ~W(
+    layout_heading
+    box
+    stack
+    row
+    grid
+    container
+    form
+    h1
+    h2
+    p
+    badge
   )
 
   test "anatomy minimal snippets match e2e demo code for core components" do
@@ -26,6 +46,17 @@ defmodule Corex.DocParityTest do
 
     assert failures == [],
            DocParity.report(results)
+  end
+
+  test "layout and typography anatomy sections resolve component sources" do
+    results =
+      DocParity.run(sections: [:anatomy], components: @layout_typography_components)
+
+    missing_moduledoc =
+      Enum.filter(results, &(&1.status == :missing_moduledoc))
+
+    assert missing_moduledoc == [],
+           "layout/typography moduledoc paths:\n#{DocParity.report(missing_moduledoc)}"
   end
 
   test "registered snippets contain no ellipsis placeholders" do

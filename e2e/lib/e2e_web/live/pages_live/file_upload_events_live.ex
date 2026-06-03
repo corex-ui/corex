@@ -82,7 +82,6 @@ defmodule E2eWeb.FileUploadEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.file_upload
                 id="file-upload-events-server"
-                class="file-upload"
                 name="ev-server[]"
                 on_file_change="fu_ev_server"
               >
@@ -93,7 +92,7 @@ defmodule E2eWeb.FileUploadEventsLive do
               </.file_upload>
               <.data_table
                 id="file-upload-events-log-server"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.server_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -120,7 +119,6 @@ defmodule E2eWeb.FileUploadEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.file_upload
                 id="file-upload-events-client"
-                class="file-upload"
                 name="ev-client[]"
                 on_file_change_client="file-upload-file-change"
               >
@@ -157,7 +155,7 @@ defmodule E2eWeb.FileUploadEventsLive do
 
               <.data_table
                 id="file-upload-events-log-client"
-                class="data-table max-w-3xl"
+                class="data-table data-table--max-w-3xl"
                 rows={@streams.client_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>

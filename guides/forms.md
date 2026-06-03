@@ -294,7 +294,7 @@ Keep `invalid` off the control if you only want a custom affordance (for example
   <:error :let={msg} class="absolute top-0 end-0">
     <.tooltip class="tooltip tooltip--sm" positioning={%Corex.Positioning{placement: "top-end"}}>
       <:trigger>
-        <.heroicon name="hero-exclamation-circle" class="icon text-ink-alert" />
+        <.heroicon name="hero-exclamation-circle" class="icon text-ui-ink-alert" />
       </:trigger>
       <:content>{msg}</:content>
     </.tooltip>

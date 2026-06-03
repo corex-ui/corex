@@ -8,6 +8,8 @@ defmodule E2eWeb.Router do
     plug(:fetch_live_flash)
     plug(E2eWeb.Plugs.Mode)
     plug(E2eWeb.Plugs.Theme)
+    plug(E2eWeb.Plugs.DocAuthoring)
+    plug(E2eWeb.Plugs.PreviewContext)
 
     plug(Localize.Plug.PutLocale,
       from: [:path, :session, :query],
@@ -45,6 +47,7 @@ defmodule E2eWeb.Router do
       on_mount: [
         E2eWeb.ModeLive,
         E2eWeb.ThemeLive,
+        E2eWeb.DocAuthoringLive,
         E2eWeb.PathLive,
         E2eWeb.MountTelemetry,
         E2eWeb.SEO.Live
@@ -65,6 +68,7 @@ defmodule E2eWeb.Router do
       live("/action/patterns", ActionPatternsLive)
 
       live("/accordion/playground", AccordionPlayLive)
+      live("/accordion/style", AccordionStyleLive)
       live("/accordion/api", AccordionApiLive)
       live("/accordion/events", AccordionEventsLive)
       live("/accordion/patterns", AccordionPatternsLive)
@@ -253,7 +257,6 @@ defmodule E2eWeb.Router do
     get("/showcases/soonex-i18n", ShowcaseRedirectController, :to_showcases)
 
     get("/accordion/anatomy", PageController, :accordion_page)
-    get("/accordion/style", PageController, :accordion_styling_page)
     get("/action/anatomy", PageController, :action_page)
     get("/action/style", PageController, :action_styling_page)
     get("/checkbox/anatomy", PageController, :checkbox_page)
@@ -274,6 +277,7 @@ defmodule E2eWeb.Router do
     get("/navigate/style", PageController, :navigate_styling_page)
     get("/layout-heading/anatomy", PageController, :layout_heading_page)
     get("/layout-heading/style", PageController, :layout_heading_styling_page)
+    get("/layout-typography", PageController, :layout_typography_page)
 
     get("/collapsible/anatomy", PageController, :collapsible_page)
     get("/collapsible/style", PageController, :collapsible_styling_page)
@@ -342,9 +346,11 @@ defmodule E2eWeb.Router do
     get("/editable/form", PageController, :editable_form_page)
     post("/editable/form", PageController, :editable_form_submit)
     get("/file-upload/anatomy", PageController, :file_upload_page)
+    get("/file-upload/style", PageController, :file_upload_styling_page)
     get("/file-upload/form", PageController, :file_upload_form_page)
     post("/file-upload/form", PageController, :file_upload_form_submit)
     get("/floating-panel/anatomy", PageController, :floating_panel_page)
+    get("/floating-panel/style", PageController, :floating_panel_styling_page)
     get("/listbox/anatomy", PageController, :listbox_page)
     get("/listbox/style", PageController, :listbox_styling_page)
     get("/marquee/anatomy", PageController, :marquee_page)
@@ -354,6 +360,7 @@ defmodule E2eWeb.Router do
     get("/number-input/form", PageController, :number_input_form_page)
     post("/number-input/form", PageController, :number_input_form_submit)
     get("/password-input/anatomy", PageController, :password_input_page)
+    get("/password-input/style", PageController, :password_input_styling_page)
     get("/password-input/form", PageController, :password_input_form_page)
     post("/password-input/form", PageController, :password_input_form_submit)
     get("/pin-input/anatomy", PageController, :pin_input_page)
@@ -371,6 +378,7 @@ defmodule E2eWeb.Router do
     get("/timer/anatomy", PageController, :timer_page)
     get("/timer/style", PageController, :timer_styling_page)
     get("/toast/anatomy", PageController, :toast_anatomy_page)
+    get("/toast/style", PageController, :toast_styling_page)
     get("/tooltip/anatomy", PageController, :tooltip_page)
     get("/tooltip/style", PageController, :tooltip_styling_page)
     resources("/users", UserController)

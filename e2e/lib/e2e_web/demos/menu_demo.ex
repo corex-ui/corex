@@ -1,6 +1,10 @@
 defmodule E2eWeb.Demos.MenuDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.Demos.StylingAxes
+
+  def styling_axis_values(axis), do: StylingAxes.styling_axis_values(axis)
+
   def demo_leaf_items do
     [
       %Corex.Tree.Item{value: "menu", label: "Menu"},
@@ -14,7 +18,7 @@ defmodule E2eWeb.Demos.MenuDemo do
   def anatomy_minimal_code do
     ~S"""
     <.menu
-      class="menu"
+      
       items={[
         %Corex.Tree.Item{
           value: "edit",
@@ -42,7 +46,6 @@ defmodule E2eWeb.Demos.MenuDemo do
     ~H"""
     <.menu
       id="menu-anatomy-minimal"
-      class="menu"
       items={demo_leaf_items()}
     >
       <:trigger>Corex</:trigger>
@@ -66,7 +69,7 @@ defmodule E2eWeb.Demos.MenuDemo do
   def anatomy_grouped_code do
     ~S"""
     <.menu
-      class="menu"
+      
       items={[
         %Corex.Tree.Item{
           value: "edit",
@@ -102,7 +105,6 @@ defmodule E2eWeb.Demos.MenuDemo do
     ~H"""
     <.menu
       id="menu-anatomy-grouped"
-      class="menu"
       items={demo_grouped_items()}
     >
       <:trigger>Corex</:trigger>
@@ -117,7 +119,7 @@ defmodule E2eWeb.Demos.MenuDemo do
   def anatomy_nested_code do
     ~S"""
     <.menu
-      class="menu"
+      
       items={[
         %Corex.Tree.Item{
           value: "new-tab",
@@ -155,7 +157,7 @@ defmodule E2eWeb.Demos.MenuDemo do
   def nested_menu_code do
     ~S"""
     <.menu
-      class="menu"
+      
       items={[
         %Corex.Tree.Item{
           value: "share",
@@ -178,7 +180,6 @@ defmodule E2eWeb.Demos.MenuDemo do
     ~H"""
     <.menu
       id="menu-anatomy-nested"
-      class="menu"
       items={[
         %Corex.Tree.Item{value: "listbox", label: "Listbox"},
         %Corex.Tree.Item{
@@ -220,7 +221,7 @@ defmodule E2eWeb.Demos.MenuDemo do
   def anatomy_nested_grouped_code do
     ~S"""
     <.menu
-      class="menu"
+      
       items={[
         %Corex.Tree.Item{value: "tabs", label: "Tabs"},
         %Corex.Tree.Item{
@@ -246,7 +247,6 @@ defmodule E2eWeb.Demos.MenuDemo do
     ~H"""
     <.menu
       id="menu-anatomy-nested-grouped"
-      class="menu"
       items={[
         %Corex.Tree.Item{value: "tabs", label: "Tabs"},
         %Corex.Tree.Item{
@@ -266,13 +266,13 @@ defmodule E2eWeb.Demos.MenuDemo do
   def api_client_binding_code do
     ~S"""
     <div class="layout__row">
-      <.action phx-click={Corex.Menu.set_open("menu-api", true)} class="button button--sm">Open</.action>
-      <.action phx-click={Corex.Menu.set_open("menu-api", false)} class="button button--sm">Close</.action>
+      <.action phx-click={Corex.Menu.set_open("menu-api", true)} size="sm">Open</.action>
+      <.action phx-click={Corex.Menu.set_open("menu-api", false)} size="sm">Close</.action>
     </div>
 
     <.menu
       id="menu-api"
-      class="menu"
+      
       items={[
         %Corex.Tree.Item{value: "menu", label: "Menu"},
         %Corex.Tree.Item{value: "combobox", label: "Combobox"},
@@ -288,17 +288,16 @@ defmodule E2eWeb.Demos.MenuDemo do
   def api_client_binding_example(assigns) do
     ~H"""
     <div class="layout__row">
-      <.action phx-click={Corex.Menu.set_open("menu-api", true)} class="button button--sm">
+      <.action phx-click={Corex.Menu.set_open("menu-api", true)} size="sm">
         Open
       </.action>
-      <.action phx-click={Corex.Menu.set_open("menu-api", false)} class="button button--sm">
+      <.action phx-click={Corex.Menu.set_open("menu-api", false)} size="sm">
         Close
       </.action>
     </div>
 
     <.menu
       id="menu-api"
-      class="menu"
       items={demo_leaf_items()}
     >
       <:trigger>Corex</:trigger>
@@ -310,13 +309,13 @@ defmodule E2eWeb.Demos.MenuDemo do
   def api_client_js_heex do
     ~S"""
     <div class="layout__row">
-      <button type="button" data-menu-api-open class="button button--sm">Open</button>
-      <button type="button" data-menu-api-close class="button button--sm">Close</button>
+      <button type="button" data-menu-api-open size="sm">Open</button>
+      <button type="button" data-menu-api-close size="sm">Close</button>
     </div>
 
     <.menu
       id="menu-api-js"
-      class="menu"
+      
       items={[
         %Corex.Tree.Item{value: "menu", label: "Menu"},
         %Corex.Tree.Item{value: "combobox", label: "Combobox"},
@@ -361,13 +360,12 @@ defmodule E2eWeb.Demos.MenuDemo do
     ~H"""
     <div id="menu-api-js-demo" phx-update="ignore" phx-hook=".MenuApiJsDemo">
       <div class="layout__row">
-        <button type="button" data-menu-api-open class="button button--sm">Open</button>
-        <button type="button" data-menu-api-close class="button button--sm">Close</button>
+        <button type="button" data-menu-api-open size="sm">Open</button>
+        <button type="button" data-menu-api-close size="sm">Close</button>
       </div>
 
       <.menu
         id="menu-api-js"
-        class="menu"
         items={demo_leaf_items()}
       >
         <:trigger>Corex</:trigger>
@@ -397,13 +395,13 @@ defmodule E2eWeb.Demos.MenuDemo do
   def api_server_heex do
     ~S"""
     <div class="layout__row">
-      <.action phx-click="menu_api_server_open" class="button button--sm">Open</.action>
-      <.action phx-click="menu_api_server_close" class="button button--sm">Close</.action>
+      <.action phx-click="menu_api_server_open" size="sm">Open</.action>
+      <.action phx-click="menu_api_server_close" size="sm">Close</.action>
     </div>
 
     <.menu
       id="menu-api-server"
-      class="menu"
+      
       items={[
         %Corex.Tree.Item{value: "menu", label: "Menu"},
         %Corex.Tree.Item{value: "combobox", label: "Combobox"},
@@ -431,13 +429,12 @@ defmodule E2eWeb.Demos.MenuDemo do
   def api_server_example(assigns) do
     ~H"""
     <div class="layout__row">
-      <.action phx-click="menu_api_server_open" class="button button--sm">Open</.action>
-      <.action phx-click="menu_api_server_close" class="button button--sm">Close</.action>
+      <.action phx-click="menu_api_server_open" size="sm">Open</.action>
+      <.action phx-click="menu_api_server_close" size="sm">Close</.action>
     </div>
 
     <.menu
       id="menu-api-server"
-      class="menu"
       items={demo_leaf_items()}
     >
       <:trigger>Corex</:trigger>
@@ -449,7 +446,7 @@ defmodule E2eWeb.Demos.MenuDemo do
   def events_binding_code do
     ~S"""
     <.menu
-      class="menu"
+      
       on_select="menu_bind_selected"
       on_open_change="menu_bind_open"
       items={[
@@ -468,7 +465,6 @@ defmodule E2eWeb.Demos.MenuDemo do
     ~H"""
     <.menu
       id="menu-events-bind"
-      class="menu"
       on_select="menu_bind_selected"
       on_open_change="menu_bind_open"
       items={demo_leaf_items()}
@@ -489,7 +485,7 @@ defmodule E2eWeb.Demos.MenuDemo do
   def events_server_heex do
     ~S"""
     <.menu
-      class="menu"
+      
       on_select="menu_selected"
       on_open_change="menu_open_changed"
       items={[
@@ -515,7 +511,7 @@ defmodule E2eWeb.Demos.MenuDemo do
     ~S"""
     <.menu
       id="menu-events-client"
-      class="menu"
+      
       on_select_client="menu-item-selected"
       on_open_change_client="menu-open-changed"
       items={[
@@ -559,7 +555,7 @@ defmodule E2eWeb.Demos.MenuDemo do
       end)
 
     """
-    <.menu class="menu" redirect items={[
+    <.menu  redirect items={[
       #{item_lines}
     ]}>
       <:trigger>Navigate</:trigger>
@@ -577,7 +573,7 @@ defmodule E2eWeb.Demos.MenuDemo do
 
   def patterns_redirect_example(assigns) do
     ~H"""
-    <.menu id="menu-pattern-redirect" class="menu" redirect items={patterns_redirect_items()}>
+    <.menu id="menu-pattern-redirect" redirect items={patterns_redirect_items()}>
       <:trigger>Navigate</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
@@ -587,7 +583,7 @@ defmodule E2eWeb.Demos.MenuDemo do
   def patterns_redirect_external_code do
     ~S"""
     <.menu
-      class="menu"
+      
       redirect
       items={[
         %Corex.Tree.Item{value: "https://zagjs.com/components/react/menu", label: "Zag menu", new_tab: true},
@@ -604,7 +600,6 @@ defmodule E2eWeb.Demos.MenuDemo do
     ~H"""
     <.menu
       id="menu-pattern-external"
-      class="menu"
       redirect
       items={[
         %Corex.Tree.Item{
@@ -635,7 +630,7 @@ defmodule E2eWeb.Demos.MenuDemo do
 
     """
     <.menu
-      class="menu"
+      
       redirect
       items={[
         #{item_lines}
@@ -658,7 +653,6 @@ defmodule E2eWeb.Demos.MenuDemo do
     ~H"""
     <.menu
       id="menu-pattern-types"
-      class="menu"
       redirect
       items={patterns_redirect_types_items()}
     >
@@ -676,11 +670,11 @@ defmodule E2eWeb.Demos.MenuDemo do
     ]}|
   end
 
-  def styling_color_code do
+  def styling_semantic_code do
     items = styling_items_attr()
 
     """
-    <.menu class="menu" value="menu" #{items}>
+    <.menu  value="menu" #{items}>
       <:trigger>Default</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
@@ -707,7 +701,7 @@ defmodule E2eWeb.Demos.MenuDemo do
     """
   end
 
-  def styling_color_example(assigns) do
+  def styling_semantic_example(assigns) do
     assigns = assign(assigns, :items, demo_leaf_items())
 
     ~H"""

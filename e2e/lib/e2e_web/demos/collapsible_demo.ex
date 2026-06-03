@@ -1,9 +1,13 @@
 defmodule E2eWeb.Demos.CollapsibleDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.Demos.StylingAxes
+
+  def styling_axis_values(axis), do: StylingAxes.styling_axis_values(axis)
+
   def anatomy_basic_code do
     ~S"""
-    <.collapsible class="collapsible">
+    <.collapsible >
       <:trigger>Toggle</:trigger>
       <:content>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit.
@@ -14,7 +18,7 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
 
   def anatomy_basic_example(assigns) do
     ~H"""
-    <.collapsible id="collapsible-anatomy" class="collapsible">
+    <.collapsible id="collapsible-anatomy">
       <:trigger>Toggle</:trigger>
       <:content>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit.
@@ -25,7 +29,7 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
 
   def with_indicator_code do
     ~S"""
-    <.collapsible class="collapsible">
+    <.collapsible >
       <:trigger>Toggle</:trigger>
       <:closed>
         <.heroicon name="hero-chevron-right" />
@@ -39,7 +43,7 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
 
   def with_indicator_example(assigns) do
     ~H"""
-    <.collapsible id="collapsible-anatomy-indicator" class="collapsible">
+    <.collapsible id="collapsible-anatomy-indicator">
       <:trigger>Toggle</:trigger>
       <:closed>
         <.heroicon name="hero-chevron-right" />
@@ -53,7 +57,7 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
 
   def custom_slots_code do
     ~S"""
-    <.collapsible class="collapsible">
+    <.collapsible >
       <:trigger :let={c}>
         {if c.open, do: "Collapse", else: "Expand"}
       </:trigger>
@@ -72,7 +76,7 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
 
   def custom_slots_example(assigns) do
     ~H"""
-    <.collapsible id="collapsible-anatomy-custom" class="collapsible">
+    <.collapsible id="collapsible-anatomy-custom">
       <:trigger :let={c}>
         {if c.open, do: "Collapse", else: "Expand"}
       </:trigger>
@@ -92,15 +96,15 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
   def api_client_binding_code do
     ~S"""
     <div class="layout__row">
-      <.action phx-click={Corex.Collapsible.set_open("collapsible-api", true)} class="button button--sm">
+      <.action phx-click={Corex.Collapsible.set_open("collapsible-api", true)} size="sm">
         Open
       </.action>
-      <.action phx-click={Corex.Collapsible.set_open("collapsible-api", false)} class="button button--sm">
+      <.action phx-click={Corex.Collapsible.set_open("collapsible-api", false)} size="sm">
         Close
       </.action>
     </div>
 
-    <.collapsible id="collapsible-api" class="collapsible">
+    <.collapsible id="collapsible-api" >
       <:trigger>Toggle</:trigger>
       <:closed>
         <.heroicon name="hero-chevron-right" />
@@ -117,19 +121,19 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
     <div class="layout__row">
       <.action
         phx-click={Corex.Collapsible.set_open("collapsible-api", true)}
-        class="button button--sm"
+        size="sm"
       >
         Open
       </.action>
       <.action
         phx-click={Corex.Collapsible.set_open("collapsible-api", false)}
-        class="button button--sm"
+        size="sm"
       >
         Close
       </.action>
     </div>
 
-    <.collapsible id="collapsible-api" class="collapsible">
+    <.collapsible id="collapsible-api">
       <:trigger>Toggle</:trigger>
       <:closed>
         <.heroicon name="hero-chevron-right" />
@@ -152,7 +156,7 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        size="sm"
       >
         Open
       </.action>
@@ -164,13 +168,13 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        size="sm"
       >
         Close
       </.action>
     </div>
 
-    <.collapsible id="collapsible-api-js" class="collapsible">
+    <.collapsible id="collapsible-api-js" >
       <:trigger>Toggle</:trigger>
       <:closed>
         <.heroicon name="hero-chevron-right" />
@@ -217,7 +221,7 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        size="sm"
       >
         Open
       </.action>
@@ -229,13 +233,13 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        size="sm"
       >
         Close
       </.action>
     </div>
 
-    <.collapsible id="collapsible-api-js" class="collapsible">
+    <.collapsible id="collapsible-api-js">
       <:trigger>Toggle</:trigger>
       <:closed>
         <.heroicon name="hero-chevron-right" />
@@ -250,11 +254,11 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
   def api_server_heex do
     ~S"""
     <div class="layout__row">
-      <.action phx-click="collapsible_api_open" class="button button--sm">Open</.action>
-      <.action phx-click="collapsible_api_close" class="button button--sm">Close</.action>
+      <.action phx-click="collapsible_api_open" size="sm">Open</.action>
+      <.action phx-click="collapsible_api_close" size="sm">Close</.action>
     </div>
 
-    <.collapsible id="collapsible-api-server" class="collapsible">
+    <.collapsible id="collapsible-api-server" >
       <:trigger>Toggle</:trigger>
       <:closed>
         <.heroicon name="hero-chevron-right" />
@@ -281,11 +285,11 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
   def api_server_example(assigns) do
     ~H"""
     <div class="layout__row">
-      <.action phx-click="collapsible_api_open" class="button button--sm">Open</.action>
-      <.action phx-click="collapsible_api_close" class="button button--sm">Close</.action>
+      <.action phx-click="collapsible_api_open" size="sm">Open</.action>
+      <.action phx-click="collapsible_api_close" size="sm">Close</.action>
     </div>
 
-    <.collapsible id="collapsible-api-server" class="collapsible">
+    <.collapsible id="collapsible-api-server">
       <:trigger>Toggle</:trigger>
       <:closed>
         <.heroicon name="hero-chevron-right" />
@@ -300,7 +304,7 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
   def events_server_heex do
     ~S"""
     <.collapsible
-      class="collapsible"
+      
       on_open_change="collapsible_open_changed"
     >
       <:trigger>Toggle</:trigger>
@@ -323,7 +327,7 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
     ~S"""
     <.collapsible
       id="collapsible-events-client"
-      class="collapsible"
+      
       on_open_change_client="collapsible-open-changed"
     >
       <:trigger>Toggle</:trigger>
@@ -351,7 +355,7 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
     """
   end
 
-  def styling_color_code do
+  def styling_semantic_code do
     ~S"""
     <.collapsible class="collapsible collapsible--md">
       <:trigger>Default width</:trigger>
@@ -368,7 +372,7 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
     """
   end
 
-  def styling_color_example(assigns) do
+  def styling_semantic_example(assigns) do
     ~H"""
     <div class="flex flex-col gap-4 items-start w-full max-w-xl">
       <.collapsible id="collapsible-style-default" class="collapsible collapsible--md">
@@ -425,11 +429,11 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
     ~S"""
     <.async_result :let={panel} assign={@collapsible}>
       <:loading>
-        <.collapsible_skeleton class="collapsible" />
+        <.collapsible_skeleton  />
       </:loading>
 
       <.collapsible
-        class="collapsible"
+        
         open={panel.open}
       >
         <:trigger>Details</:trigger>
@@ -460,7 +464,7 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
   def patterns_controlled_heex do
     ~S"""
     <.collapsible
-      class="collapsible"
+      
       controlled
       open={@open}
       on_open_change="patterns_collapsible_changed"

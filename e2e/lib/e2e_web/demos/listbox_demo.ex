@@ -1,6 +1,10 @@
 defmodule E2eWeb.Demos.ListboxDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.Demos.StylingAxes
+
+  def styling_axis_values(axis), do: StylingAxes.styling_axis_values(axis)
+
   def items_minimal do
     Corex.List.new([
       %{label: "France", value: "fra"},
@@ -40,7 +44,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
 
   def anatomy_minimal_code do
     ~S"""
-    <.listbox class="listbox" items={
+    <.listbox  items={
       Corex.List.new([
         %{label: "France", value: "fra"},
         %{label: "Belgium", value: "bel"},
@@ -59,7 +63,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
     assigns = assign(assigns, :items, items_minimal())
 
     ~H"""
-    <.listbox id="listbox-anatomy-minimal" class="listbox" items={@items}>
+    <.listbox id="listbox-anatomy-minimal" items={@items}>
       <:label>Choose a country</:label>
     </.listbox>
     """
@@ -67,7 +71,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
 
   def anatomy_with_indicator_code do
     ~S"""
-    <.listbox class="listbox" items={
+    <.listbox  items={
       Corex.List.new([
         %{label: "France", value: "fra"},
         %{label: "Belgium", value: "bel"},
@@ -87,7 +91,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
     assigns = assign(assigns, :items, items_minimal())
 
     ~H"""
-    <.listbox id="listbox-anatomy-indicator" class="listbox" items={@items}>
+    <.listbox id="listbox-anatomy-indicator" items={@items}>
       <:label>Choose a country</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
@@ -96,7 +100,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
 
   def anatomy_grouped_code do
     ~S"""
-    <.listbox class="listbox" items={
+    <.listbox  items={
       Corex.List.new([
         %{label: "France", value: "fra", group: "Europe"},
         %{label: "Belgium", value: "bel", group: "Europe"},
@@ -116,7 +120,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
     assigns = assign(assigns, :items, items_grouped())
 
     ~H"""
-    <.listbox id="listbox-anatomy-grouped" class="listbox" items={@items}>
+    <.listbox id="listbox-anatomy-grouped" items={@items}>
       <:label>Choose a country</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
@@ -125,7 +129,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
 
   def anatomy_extended_code do
     ~S"""
-    <.listbox class="listbox" items={
+    <.listbox  items={
       Corex.List.new([
         %{label: "France", value: "fra"},
         %{label: "Belgium", value: "bel"},
@@ -137,7 +141,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
     }>
       <:label>Country of residence</:label>
       <:item :let={%{item: entry}}>
-        <Flagpack.flag name={String.to_atom(entry.value)} />
+        <Flagpack.flag name={String.to_existing_atom(to_string(entry.value))} />
         {entry.label}
       </:item>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
@@ -149,10 +153,10 @@ defmodule E2eWeb.Demos.ListboxDemo do
     assigns = assign(assigns, :items, items_extended())
 
     ~H"""
-    <.listbox id="listbox-anatomy-extended" class="listbox" items={@items}>
+    <.listbox id="listbox-anatomy-extended" items={@items}>
       <:label>Country of residence</:label>
       <:item :let={%{item: entry}}>
-        <Flagpack.flag name={String.to_atom(entry.value)} />
+        <Flagpack.flag name={String.to_existing_atom(to_string(entry.value))} />
         {entry.label}
       </:item>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
@@ -163,7 +167,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
   def anatomy_extended_grouped_code do
     ~S"""
     <.listbox
-      class="listbox"
+      
       aria_label="Extended grouped countries"
       items={
         Corex.List.new([
@@ -177,7 +181,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       }
     >
       <:item :let={%{item: entry}}>
-        <Flagpack.flag name={String.to_atom(entry.value)} />
+        <Flagpack.flag name={String.to_existing_atom(to_string(entry.value))} />
         {entry.label}
       </:item>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
@@ -191,12 +195,11 @@ defmodule E2eWeb.Demos.ListboxDemo do
     ~H"""
     <.listbox
       id="listbox-anatomy-extended-grouped"
-      class="listbox"
       aria_label="Extended grouped countries"
       items={@items}
     >
       <:item :let={%{item: entry}}>
-        <Flagpack.flag name={String.to_atom(entry.value)} />
+        <Flagpack.flag name={String.to_existing_atom(to_string(entry.value))} />
         {entry.label}
       </:item>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
@@ -208,14 +211,14 @@ defmodule E2eWeb.Demos.ListboxDemo do
     ~S"""
     <div class="flex flex-col gap-3 w-full max-w-xl">
       <div class="flex flex-wrap gap-2">
-        <.action phx-click="add_item" class="button button--sm button--accent">
+        <.action phx-click="add_item" size="sm" semantic="accent">
           <.heroicon name="hero-plus" /> Add item
         </.action>
-        <.action phx-click="reset" class="button button--sm button--alert">
+        <.action phx-click="reset" size="sm" semantic="alert">
           Reset
         </.action>
       </div>
-      <.listbox class="listbox" items={Corex.List.new(@items_list)}>
+      <.listbox  items={Corex.List.new(@items_list)}>
         <:label>Choose an item</:label>
         <:empty>No items</:empty>
         <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
@@ -303,14 +306,14 @@ defmodule E2eWeb.Demos.ListboxDemo do
         ~H"""
         <div class="flex flex-col gap-3 w-full max-w-xl">
             <div class="flex flex-wrap gap-2">
-              <.action phx-click="add_item" class="button button--sm button--accent">
+              <.action phx-click="add_item" size="sm" semantic="accent">
                 <.heroicon name="hero-plus" /> Add item
               </.action>
-              <.action phx-click="reset" class="button button--sm button--alert">
+              <.action phx-click="reset" size="sm" semantic="alert">
                 Reset
               </.action>
             </div>
-            <.listbox id="stream-listbox" class="listbox" items={Corex.List.new(@items_list)}>
+            <.listbox id="stream-listbox"  items={Corex.List.new(@items_list)}>
               <:label>Choose an item</:label>
               <:empty>No items</:empty>
               <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
@@ -329,23 +332,23 @@ defmodule E2eWeb.Demos.ListboxDemo do
         <.action
           phx-click="add_to_group"
           phx-value-group="Europe"
-          class="button button--sm button--accent"
+          size="sm" semantic="accent"
         >
           <.heroicon name="hero-plus" /> Add to Europe
         </.action>
         <.action
           phx-click="add_to_group"
           phx-value-group="Asia"
-          class="button button--sm button--accent"
+          size="sm" semantic="accent"
         >
           <.heroicon name="hero-plus" /> Add to Asia
         </.action>
-        <.action phx-click="reset_grouped" class="button button--sm button--alert">
+        <.action phx-click="reset_grouped" size="sm" semantic="alert">
           Reset
         </.action>
       </div>
       <.listbox
-        class="listbox"
+        
         items={Corex.List.new(@grouped_items_list)}
       >
         <:label>Choose a country</:label>
@@ -415,24 +418,24 @@ defmodule E2eWeb.Demos.ListboxDemo do
               <.action
                 phx-click="add_to_group"
                 phx-value-group="Europe"
-                class="button button--sm button--accent"
+                size="sm" semantic="accent"
               >
                 <.heroicon name="hero-plus" /> Add to Europe
               </.action>
               <.action
                 phx-click="add_to_group"
                 phx-value-group="Asia"
-                class="button button--sm button--accent"
+                size="sm" semantic="accent"
               >
                 <.heroicon name="hero-plus" /> Add to Asia
               </.action>
-              <.action phx-click="reset_grouped" class="button button--sm button--alert">
+              <.action phx-click="reset_grouped" size="sm" semantic="alert">
                 Reset
               </.action>
             </div>
             <.listbox
               id="stream-grouped-listbox"
-              class="listbox"
+              
               items={Corex.List.new(@grouped_items_list)}
             >
               <:label>Choose a country</:label>
@@ -449,7 +452,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
   def patterns_controlled_heex do
     ~S"""
     <.listbox
-      class="listbox"
+      
       items={
         Corex.List.new([
           %{label: "France", value: "fra"},
@@ -469,7 +472,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
     <div class="w-full min-w-0">
-      <p class="text-sm text-ink-muted font-mono break-all text-center">
+      <p class="text-sm text-ui-ink-muted font-mono break-all text-center">
         value: {inspect(@listbox_controlled_value)}
       </p>
     </div>
@@ -499,7 +502,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
           <div class="w-full max-w-md">
             <.listbox
               id="listbox-patterns-controlled-field"
-              class="listbox"
+              
               items={
                 Corex.List.new([
                   %{label: "France", value: "fra"},
@@ -520,7 +523,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
             </.listbox>
           </div>
           <div class="w-full min-w-0" id="listbox-patterns-controlled-state">
-            <p class="text-sm text-ink-muted font-mono break-all text-center">
+            <p class="text-sm text-ui-ink-muted font-mono break-all text-center">
               value: {inspect(@listbox_controlled_value)}
             </p>
           </div>
@@ -535,7 +538,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
     ~S"""
     <.action phx-click={Corex.Listbox.set_value("listbox-api-sv-client", ["bel"])}>Belgium</.action>
     <.action phx-click={Corex.Listbox.set_value("listbox-api-sv-client", [])}>Clear</.action>
-    <.listbox id="listbox-api-sv-client" class="listbox" items={
+    <.listbox id="listbox-api-sv-client"  items={
       Corex.List.new([
         %{label: "France", value: "fra"},
         %{label: "Belgium", value: "bel"},
@@ -554,7 +557,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
   def api_set_value_server_heex do
     ~S"""
     <.action phx-click="listbox_api_set_value">Belgium</.action>
-    <.listbox id="listbox-api-sv-server" class="listbox" items={
+    <.listbox id="listbox-api-sv-server"  items={
       Corex.List.new([
         %{label: "France", value: "fra"},
         %{label: "Belgium", value: "bel"},
@@ -593,7 +596,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
   def api_value_client_binding_code do
     ~S"""
     <.action phx-click={Corex.Listbox.value("listbox-api-val-client")}>Read selection</.action>
-    <.listbox id="listbox-api-val-client" class="listbox" items={
+    <.listbox id="listbox-api-val-client"  items={
       Corex.List.new([
         %{label: "France", value: "fra"},
         %{label: "Belgium", value: "bel"},
@@ -612,7 +615,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
   def api_value_server_heex do
     ~S"""
     <.action phx-click="listbox_api_value_server">Read selection</.action>
-    <.listbox id="listbox-api-val-server" class="listbox" items={
+    <.listbox id="listbox-api-val-server"  items={
       Corex.List.new([
         %{label: "France", value: "fra"},
         %{label: "Belgium", value: "bel"},
@@ -643,7 +646,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
   def events_server_heex do
     ~S"""
     <.listbox
-      class="listbox"
+      
       items={
         Corex.List.new([
           %{label: "France", value: "fra"},
@@ -673,7 +676,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
     ~S"""
     <.listbox
       id="listbox-events-client"
-      class="listbox"
+      
       items={
         Corex.List.new([
           %{label: "France", value: "fra"},
@@ -721,12 +724,12 @@ defmodule E2eWeb.Demos.ListboxDemo do
     ~S|value={["fra"]}|
   end
 
-  def styling_color_code do
+  def styling_semantic_code do
     items = styling_items_attr()
     value = styling_value_attr()
 
     """
-    <.listbox class="listbox" #{items} #{value}>
+    <.listbox  #{items} #{value}>
       <:label>Default</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
@@ -753,7 +756,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
     """
   end
 
-  def styling_color_example(assigns) do
+  def styling_semantic_example(assigns) do
     assigns =
       assigns
       |> assign(:items, items_minimal())
@@ -761,9 +764,9 @@ defmodule E2eWeb.Demos.ListboxDemo do
 
     ~H"""
     <div class="flex flex-col gap-4 w-full max-w-md">
-      <.listbox id="listbox-style-color-default" class="listbox" items={@items} value={@value}>
+      <.listbox id="listbox-style-color-default" items={@items} value={@value}>
         <:label>Default</:label>
-        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+        <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
       </.listbox>
       <.listbox
         id="listbox-style-color-accent"
@@ -772,7 +775,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
         value={@value}
       >
         <:label>Accent</:label>
-        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+        <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
       </.listbox>
       <.listbox
         id="listbox-style-color-brand"
@@ -781,7 +784,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
         value={@value}
       >
         <:label>Brand</:label>
-        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+        <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
       </.listbox>
       <.listbox
         id="listbox-style-color-alert"
@@ -790,7 +793,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
         value={@value}
       >
         <:label>Alert</:label>
-        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+        <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
       </.listbox>
       <.listbox
         id="listbox-style-color-info"
@@ -799,7 +802,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
         value={@value}
       >
         <:label>Info</:label>
-        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+        <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
       </.listbox>
       <.listbox
         id="listbox-style-color-success"
@@ -808,7 +811,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
         value={@value}
       >
         <:label>Success</:label>
-        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+        <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
       </.listbox>
     </div>
     """
@@ -844,19 +847,19 @@ defmodule E2eWeb.Demos.ListboxDemo do
     <div class="flex flex-col gap-4 w-full max-w-md">
       <.listbox id="listbox-style-size-sm" class="listbox listbox--sm" items={@items}>
         <:label>SM</:label>
-        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+        <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
       </.listbox>
       <.listbox id="listbox-style-size-md" class="listbox listbox--md" items={@items}>
         <:label>MD</:label>
-        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+        <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
       </.listbox>
       <.listbox id="listbox-style-size-lg" class="listbox listbox--lg" items={@items}>
         <:label>LG</:label>
-        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+        <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
       </.listbox>
       <.listbox id="listbox-style-size-xl" class="listbox listbox--xl" items={@items}>
         <:label>XL</:label>
-        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+        <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
       </.listbox>
     </div>
     """
@@ -872,16 +875,16 @@ defmodule E2eWeb.Demos.ListboxDemo do
     """
 
     """
-    <.listbox class="listbox max-w-2xs" #{items} #{value}>
+    <.listbox class="listbox listbox--max-w-2xs" #{items} #{value}>
     #{slots}
     </.listbox>
-    <.listbox class="listbox max-w-md" #{items} #{value}>
+    <.listbox class="listbox listbox--max-w-md" #{items} #{value}>
     #{slots}
     </.listbox>
-    <.listbox class="listbox max-w-xl" #{items} #{value}>
+    <.listbox class="listbox listbox--max-w-xl" #{items} #{value}>
     #{slots}
     </.listbox>
-    <.listbox class="listbox max-w-2xl" #{items} #{value}>
+    <.listbox class="listbox listbox--max-w-2xl" #{items} #{value}>
     #{slots}
     </.listbox>
     """
@@ -897,39 +900,39 @@ defmodule E2eWeb.Demos.ListboxDemo do
     <div class="flex flex-col gap-4 w-full items-start">
       <.listbox
         id="listbox-style-max-2xs"
-        class="listbox max-w-2xs"
+        class="listbox listbox--max-w-2xs"
         items={@items}
         value={@value}
       >
         <:label>2xs</:label>
-        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+        <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
       </.listbox>
       <.listbox
         id="listbox-style-max-md"
-        class="listbox max-w-md"
+        class="listbox listbox--max-w-md"
         items={@items}
         value={@value}
       >
         <:label>MD</:label>
-        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+        <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
       </.listbox>
       <.listbox
         id="listbox-style-max-xl"
-        class="listbox max-w-xl"
+        class="listbox listbox--max-w-xl"
         items={@items}
         value={@value}
       >
         <:label>XL</:label>
-        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+        <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
       </.listbox>
       <.listbox
         id="listbox-style-max-2xl"
-        class="listbox max-w-2xl"
+        class="listbox listbox--max-w-2xl"
         items={@items}
         value={@value}
       >
         <:label>2XL</:label>
-        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+        <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
       </.listbox>
     </div>
     """

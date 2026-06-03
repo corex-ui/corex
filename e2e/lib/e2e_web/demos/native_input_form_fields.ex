@@ -19,7 +19,7 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
           class={@input_class}
         >
           <:label>Text</:label>
-          <:icon><.heroicon name="hero-pencil-square" class="icon" /></:icon>
+          <:icon><.heroicon name="hero-pencil-square" /></:icon>
         </.native_input>
         <.native_input
           type="text"
@@ -44,7 +44,7 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
           class={@input_class}
         >
           <:label>Email</:label>
-          <:icon><.heroicon name="hero-envelope" class="icon" /></:icon>
+          <:icon><.heroicon name="hero-envelope" /></:icon>
         </.native_input>
         <.native_input
           type="email"
@@ -61,7 +61,7 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
           class={@input_class}
         >
           <:label>Website</:label>
-          <:icon><.heroicon name="hero-link" class="icon" /></:icon>
+          <:icon><.heroicon name="hero-link" /></:icon>
         </.native_input>
         <.native_input
           type="url"
@@ -78,7 +78,7 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
           class={@input_class}
         >
           <:label>Phone</:label>
-          <:icon><.heroicon name="hero-phone" class="icon" /></:icon>
+          <:icon><.heroicon name="hero-phone" /></:icon>
         </.native_input>
         <.native_input
           type="tel"
@@ -96,7 +96,7 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
           placeholder="Search"
         >
           <:label>Search</:label>
-          <:icon><.heroicon name="hero-magnifying-glass" class="icon" /></:icon>
+          <:icon><.heroicon name="hero-magnifying-glass" /></:icon>
         </.native_input>
         <.native_input
           type="search"
@@ -114,7 +114,7 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
           class={@input_class}
         >
           <:label>Password</:label>
-          <:icon><.heroicon name="hero-lock-closed" class="icon" /></:icon>
+          <:icon><.heroicon name="hero-lock-closed" /></:icon>
         </.native_input>
         <.native_input
           type="password"
@@ -254,7 +254,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         type="text"
         id={"#{@id_prefix}-name"}
         placeholder="Your name"
-        class="native-input"
       >
         <:label>Name</:label>
         <:error :let={msg}>{msg}</:error>
@@ -264,7 +263,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         type="email"
         id={"#{@id_prefix}-email"}
         placeholder="you@example.com"
-        class="native-input"
       >
         <:label>Email</:label>
         <:error :let={msg}>{msg}</:error>
@@ -274,7 +272,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         type="textarea"
         id={"#{@id_prefix}-bio"}
         placeholder="Short bio"
-        class="native-input"
       >
         <:label>Bio</:label>
         <:error :let={msg}>{msg}</:error>
@@ -284,7 +281,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         type="url"
         id={"#{@id_prefix}-website"}
         placeholder="https://example.com"
-        class="native-input"
       >
         <:label>Website</:label>
         <:error :let={msg}>{msg}</:error>
@@ -294,7 +290,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         type="tel"
         id={"#{@id_prefix}-phone"}
         placeholder="+1 234 567 8900"
-        class="native-input"
       >
         <:label>Phone</:label>
         <:error :let={msg}>{msg}</:error>
@@ -304,7 +299,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         type="search"
         id={"#{@id_prefix}-q"}
         placeholder="Search"
-        class="native-input"
       >
         <:label>Search</:label>
         <:error :let={msg}>{msg}</:error>
@@ -316,7 +310,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         min={0}
         max={100}
         step={1}
-        class="native-input"
       >
         <:label>Count</:label>
         <:error :let={msg}>{msg}</:error>
@@ -325,7 +318,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         field={@f[:password]}
         type="password"
         id={"#{@id_prefix}-password"}
-        class="native-input"
       >
         <:label>Password</:label>
         <:error :let={msg}>{msg}</:error>
@@ -337,7 +329,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         field={@f[:birth_date]}
         type="date"
         id={"#{@id_prefix}-birth-date"}
-        class="native-input"
       >
         <:label>Birth date</:label>
         <:error :let={msg}>{msg}</:error>
@@ -346,7 +337,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         field={@f[:datetime]}
         type="datetime-local"
         id={"#{@id_prefix}-datetime"}
-        class="native-input"
       >
         <:label>Date and time</:label>
         <:error :let={msg}>{msg}</:error>
@@ -355,16 +345,15 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         field={@f[:reminder_time]}
         type="time"
         id={"#{@id_prefix}-reminder-time"}
-        class="native-input"
       >
         <:label>Reminder time</:label>
         <:error :let={msg}>{msg}</:error>
       </.native_input>
-      <.native_input field={@f[:month]} type="month" id={"#{@id_prefix}-month"} class="native-input">
+      <.native_input field={@f[:month]} type="month" id={"#{@id_prefix}-month"}>
         <:label>Month</:label>
         <:error :let={msg}>{msg}</:error>
       </.native_input>
-      <.native_input field={@f[:week]} type="week" id={"#{@id_prefix}-week"} class="native-input">
+      <.native_input field={@f[:week]} type="week" id={"#{@id_prefix}-week"}>
         <:label>Week</:label>
         <:error :let={msg}>{msg}</:error>
       </.native_input>
@@ -378,7 +367,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         id={"#{@id_prefix}-tags"}
         options={E2eWeb.Demos.NativeInputDemo.tag_options()}
         prompt="Choose tags..."
-        class="native-input"
       >
         <:label>Tags</:label>
         <:error :let={msg}>{msg}</:error>
@@ -391,7 +379,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         type="color"
         id={"#{@id_prefix}-color"}
         value="#3b82f6"
-        class="native-input"
       >
         <:label>Color</:label>
         <:error :let={msg}>{msg}</:error>
@@ -402,7 +389,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         id={"#{@id_prefix}-role"}
         options={[Admin: "admin", User: "user"]}
         prompt="Choose role..."
-        class="native-input"
       >
         <:label>Role</:label>
         <:error :let={msg}>{msg}</:error>
@@ -412,7 +398,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         type="radio"
         id={"#{@id_prefix}-size"}
         options={[Small: "s", Medium: "m", Large: "l"]}
-        class="native-input"
       >
         <:label>Size</:label>
         <:error :let={msg}>{msg}</:error>
@@ -421,7 +406,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         field={@f[:agree]}
         type="checkbox"
         id={"#{@id_prefix}-agree"}
-        class="native-input"
       >
         <:label>I agree</:label>
         <:error :let={msg}>{msg}</:error>
@@ -439,7 +423,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         name={"#{@name_prefix}[name]"}
         id={"#{@id_prefix}-name"}
         placeholder="Your name"
-        class="native-input"
       >
         <:label>Name</:label>
       </.native_input>
@@ -448,7 +431,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         name={"#{@name_prefix}[email]"}
         id={"#{@id_prefix}-email"}
         placeholder="you@example.com"
-        class="native-input"
       >
         <:label>Email</:label>
       </.native_input>
@@ -457,7 +439,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         name={"#{@name_prefix}[bio]"}
         id={"#{@id_prefix}-bio"}
         placeholder="Short bio"
-        class="native-input"
       >
         <:label>Bio</:label>
       </.native_input>
@@ -466,7 +447,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         name={"#{@name_prefix}[website]"}
         id={"#{@id_prefix}-website"}
         placeholder="https://example.com"
-        class="native-input"
       >
         <:label>Website</:label>
       </.native_input>
@@ -475,7 +455,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         name={"#{@name_prefix}[phone]"}
         id={"#{@id_prefix}-phone"}
         placeholder="+1 234 567 8900"
-        class="native-input"
       >
         <:label>Phone</:label>
       </.native_input>
@@ -484,7 +463,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         name={"#{@name_prefix}[q]"}
         id={"#{@id_prefix}-q"}
         placeholder="Search"
-        class="native-input"
       >
         <:label>Search</:label>
       </.native_input>
@@ -495,7 +473,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         min={0}
         max={100}
         step={1}
-        class="native-input"
       >
         <:label>Count</:label>
       </.native_input>
@@ -503,7 +480,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         type="password"
         name={"#{@name_prefix}[password]"}
         id={"#{@id_prefix}-password"}
-        class="native-input"
       >
         <:label>Password</:label>
       </.native_input>
@@ -514,7 +490,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         type="date"
         name={"#{@name_prefix}[birth_date]"}
         id={"#{@id_prefix}-birth-date"}
-        class="native-input"
       >
         <:label>Birth date</:label>
       </.native_input>
@@ -522,7 +497,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         type="datetime-local"
         name={"#{@name_prefix}[datetime]"}
         id={"#{@id_prefix}-datetime"}
-        class="native-input"
       >
         <:label>Date and time</:label>
       </.native_input>
@@ -530,7 +504,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         type="time"
         name={"#{@name_prefix}[reminder_time]"}
         id={"#{@id_prefix}-reminder-time"}
-        class="native-input"
       >
         <:label>Reminder time</:label>
       </.native_input>
@@ -538,7 +511,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         type="month"
         name={"#{@name_prefix}[month]"}
         id={"#{@id_prefix}-month"}
-        class="native-input"
       >
         <:label>Month</:label>
       </.native_input>
@@ -546,7 +518,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         type="week"
         name={"#{@name_prefix}[week]"}
         id={"#{@id_prefix}-week"}
-        class="native-input"
       >
         <:label>Week</:label>
       </.native_input>
@@ -560,7 +531,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         id={"#{@id_prefix}-tags"}
         options={E2eWeb.Demos.NativeInputDemo.tag_options()}
         prompt="Choose tags..."
-        class="native-input"
       >
         <:label>Tags</:label>
       </.native_input>
@@ -572,7 +542,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         name={"#{@name_prefix}[color]"}
         id={"#{@id_prefix}-color"}
         value="#3b82f6"
-        class="native-input"
       >
         <:label>Color</:label>
       </.native_input>
@@ -582,7 +551,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         id={"#{@id_prefix}-role"}
         options={[Admin: "admin", User: "user"]}
         prompt="Choose role..."
-        class="native-input"
       >
         <:label>Role</:label>
       </.native_input>
@@ -591,7 +559,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         name={"#{@name_prefix}[size]"}
         id={"#{@id_prefix}-size"}
         options={[Small: "s", Medium: "m", Large: "l"]}
-        class="native-input"
       >
         <:label>Size</:label>
       </.native_input>
@@ -599,7 +566,6 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         type="checkbox"
         name={"#{@name_prefix}[agree]"}
         id={"#{@id_prefix}-agree"}
-        class="native-input"
       >
         <:label>I agree</:label>
       </.native_input>

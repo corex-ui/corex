@@ -70,18 +70,18 @@ defmodule E2eWeb.ListboxApiLive do
             <div class="flex flex-wrap gap-2 items-center w-full justify-center">
               <.action
                 phx-click={Corex.Listbox.set_value("listbox-api-sv-client", ["bel"])}
-                class="button button--sm"
+                size="sm"
               >
                 Belgium
               </.action>
               <.action
                 phx-click={Corex.Listbox.set_value("listbox-api-sv-client", [])}
-                class="button button--sm"
+                size="sm"
               >
                 Clear
               </.action>
             </div>
-            <.listbox id="listbox-api-sv-client" class="listbox" items={Demo.items_minimal()}>
+            <.listbox id="listbox-api-sv-client" items={Demo.items_minimal()}>
               <:label>Choose a country</:label>
               <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
             </.listbox>
@@ -103,9 +103,9 @@ defmodule E2eWeb.ListboxApiLive do
         >
           <:preview>
             <div class="flex flex-wrap gap-2 items-center w-full justify-center">
-              <.action phx-click="listbox_api_set_value" class="button button--sm">Belgium</.action>
+              <.action phx-click="listbox_api_set_value" size="sm">Belgium</.action>
             </div>
-            <.listbox id="listbox-api-sv-server" class="listbox" items={Demo.items_minimal()}>
+            <.listbox id="listbox-api-sv-server" items={Demo.items_minimal()}>
               <:label>Choose a country</:label>
               <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
             </.listbox>
@@ -122,7 +122,7 @@ defmodule E2eWeb.ListboxApiLive do
           <:preview>
             <.action
               type="button"
-              class="button button--sm"
+              size="sm"
               phx-click={
                 JS.dispatch("corex:listbox:set-value",
                   to: "#listbox-api-sv-js",
@@ -133,7 +133,7 @@ defmodule E2eWeb.ListboxApiLive do
             >
               Germany
             </.action>
-            <.listbox id="listbox-api-sv-js" class="listbox" items={Demo.items_minimal()}>
+            <.listbox id="listbox-api-sv-js" items={Demo.items_minimal()}>
               <:label>Choose a country</:label>
               <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
             </.listbox>
@@ -151,12 +151,12 @@ defmodule E2eWeb.ListboxApiLive do
             <div class="flex flex-wrap gap-2 items-center w-full justify-center">
               <.action
                 phx-click={Corex.Listbox.value("listbox-api-val-client")}
-                class="button button--sm"
+                size="sm"
               >
                 Read selection
               </.action>
             </div>
-            <.listbox id="listbox-api-val-client" class="listbox" items={Demo.items_minimal()}>
+            <.listbox id="listbox-api-val-client" items={Demo.items_minimal()}>
               <:label>Choose a country</:label>
               <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
             </.listbox>
@@ -178,11 +178,11 @@ defmodule E2eWeb.ListboxApiLive do
         >
           <:preview>
             <div class="flex flex-wrap gap-2 items-center w-full justify-center">
-              <.action phx-click="listbox_api_value_server" class="button button--sm">
+              <.action phx-click="listbox_api_value_server" size="sm">
                 Read selection
               </.action>
             </div>
-            <.listbox id="listbox-api-val-server" class="listbox" items={Demo.items_minimal()}>
+            <.listbox id="listbox-api-val-server" items={Demo.items_minimal()}>
               <:label>Choose a country</:label>
               <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
             </.listbox>

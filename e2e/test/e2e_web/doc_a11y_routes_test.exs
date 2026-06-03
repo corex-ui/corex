@@ -13,6 +13,18 @@ defmodule E2eWeb.DocA11yRoutesTest do
     assert Enum.any?(tabs, fn {path, _} -> String.ends_with?(path, "/anatomy") end)
   end
 
+  test "for_component matches for_slug" do
+    assert E2eWeb.DocA11yRoutes.for_component(:accordion) ==
+             E2eWeb.DocA11yRoutes.for_slug("accordion")
+  end
+
+  test "component_slug and page_key parse doc paths" do
+    assert E2eWeb.DocA11yRoutes.component_slug("/en/accordion/style") == :accordion
+    assert E2eWeb.DocA11yRoutes.page_key("/en/accordion/style") == :style
+    assert E2eWeb.DocA11yRoutes.component_slug("/en/angle-slider/playground") == :angle_slider
+    assert E2eWeb.DocA11yRoutes.page_key("/en/angle-slider/live-form") == :live_form
+  end
+
   test "ready selectors are non-empty strings" do
     assert Enum.all?(E2eWeb.DocA11yRoutes.all(), fn {_, ready} ->
              is_binary(ready) and ready != ""

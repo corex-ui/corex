@@ -12,8 +12,40 @@
 
 - **Server & client API.** Drive every component from LiveView or JavaScript and listen back from either side.
 - **LiveView-native.** Update props at runtime without resetting component state.
-- **Truly unstyled.** Bring your own CSS or opt into Corex Design tokens, themes and modes.
+- **Unstyled by default.** Corex ships behavior and markup, not opinionated CSS. You choose how things look.
 - **Accessible by default.** Keyboard, focus and ARIA wired in by Zag.js state machines.
+
+## How styling works
+
+Corex does not bundle visual styles. That does **not** mean components render as plain, unmarked HTML.
+
+Each component exposes **style attributes** (`semantic`, `size`, `radius`, and others depending on the component). These attrs do not apply CSS themselves. They declare the look you want: accent color, large size, rounded corners, and so on.
+
+At render time, Corex turns those declarations into **BEM modifier classes** on the host element:
+
+```heex
+<.accordion semantic="accent" size="lg" class="accordion" … />
+```
+
+becomes something like:
+
+```html
+<div class="accordion accordion--accent accordion--lg" data-scope="accordion" …>
+```
+
+You write CSS against those classes (or against `data-part` selectors inside the component) and control every visual detail. The attrs are a stable vocabulary; your stylesheet is where the pixels live.
+
+You can skip the attrs and set the same modifiers directly on `class`:
+
+```heex
+<.accordion class="accordion accordion--accent accordion--lg" … />
+```
+
+Both forms produce the same class list. Use whichever reads better in your templates.
+
+**Corex Design** is an optional layer on top: token-based themes and ready-made Tailwind CSS for every modifier, so you import component styles instead of authoring them from scratch. `mix corex.new` installs it by default; use `--no-design` to stay fully custom. See [Unstyled](unstyled.html) for the styling model and [Styled](styled.html) for setup.
+
+Pass `unstyled` on a component to skip class generation entirely and keep only what you put in `class`.
 
 ## New Corex application
 
@@ -37,7 +69,7 @@ By default the installer adds **`plug Corex.MCP`** in `:dev` and `:test` only (s
 If you want the full feature set:
 
 ```bash
-mix corex.new my_app --mode --theme --lang --designex
+mix corex.new my_app --mode --theme --lang
 ```
 
 Run **`mix help corex.new`** or see **`Mix.Tasks.Corex.New`** in Hexdocs for every Corex-only flag.
@@ -45,6 +77,20 @@ Run **`mix help corex.new`** or see **`Mix.Tasks.Corex.New`** in Hexdocs for eve
 ## Existing Phoenix application
 
 Add Corex to a Phoenix app you already have in the [manual installation guide](manual_installation.html).
+
+## Generator and app config
+
+`mix corex.gen.live` and `mix corex.gen.html` read optional keys under `config :corex, :generators`:
+
+| Key | Values | Purpose |
+| --- | ------ | ------- |
+| `:gettext` | `true`, `:sigils`, or omit | When `true`, generated copy uses `gettext/1`. When `:sigils`, uses `~t` (needs `gettext_sigils` in `html_helpers`). |
+| `:gettext_sigils` | boolean | Alias for `gettext: :sigils` |
+| `:layout` | keyword | `mode: true`, `theme: true`, `locale: true` wire `Layouts.app` assigns in generated LiveViews / HTML |
+
+Set `:debug` to `true` for verbose MCP request logging in development (default `false`).
+
+Axis vocabulary (`:scales`, `:semantics`, `:recipe_looks`) is covered in [Unstyled](unstyled.html). Theme authoring is in [Design config](design-config.html).
 
 ## Try your first component
 
@@ -62,10 +108,10 @@ Add Corex to a Phoenix app you already have in the [manual installation guide](m
 />
 ```
 
-If you are using Corex Design import the accordion css
+If you are using Corex Design, import the generated bundle (see [Styled](styled.html)):
 
 ```css
-@import "../corex/components/accordion.css";
+@import "./corex.tailwind.css";
 ```
 
 ### API
@@ -89,6 +135,6 @@ Corex is open source. If you rely on it in production or want to help sustain de
 - [Theming](theming.html) theme picker after `--theme`.
 - [Localize](localize.html) locales and routes after `--lang`.
 - [Production](production.html) prod build and run.
-- [Design](design.html) optional Corex Design System (tokens, themes, modifiers).
+- [Design](design.html) — styling overview (Unstyled, Styled, Config)
 - [Manual installation](manual_installation.html) add Corex to an existing Phoenix app.
 - [Tableau](tableau.html) Corex on static Tableau sites; optional [Tableau Theming](tableau_theming.html), [Tableau Mode](tableau_mode.html), [Tableau Localize](tableau_localize.html).

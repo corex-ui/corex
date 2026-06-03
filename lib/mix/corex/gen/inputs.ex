@@ -104,10 +104,10 @@ defmodule Mix.Corex.Gen.Inputs do
     ~s"""
     <.number_input field={#{field_prefix}[#{inspect(key)}]} class="number-input"#{step_attr}>
       <:label>#{label(key)}</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
       <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
+        <.heroicon name="hero-exclamation-circle" />
         {msg}
       </:error>
     </.number_input>
@@ -122,7 +122,7 @@ defmodule Mix.Corex.Gen.Inputs do
         <.heroicon name="hero-check" />
       </:indicator>
       <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
+        <.heroicon name="hero-exclamation-circle" />
         {msg}
       </:error>
     </.checkbox>
@@ -134,16 +134,16 @@ defmodule Mix.Corex.Gen.Inputs do
     <.date_picker field={#{field_prefix}[#{inspect(key)}]} class="date-picker">
       <:label>#{label(key)}</:label>
       <:trigger>
-        <.heroicon name="hero-calendar" class="icon" />
+        <.heroicon name="hero-calendar" />
       </:trigger>
       <:prev_trigger>
-        <.heroicon name="hero-chevron-left" class="icon" />
+        <.heroicon name="hero-chevron-left" />
       </:prev_trigger>
       <:next_trigger>
-        <.heroicon name="hero-chevron-right" class="icon" />
+        <.heroicon name="hero-chevron-right" />
       </:next_trigger>
       <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
+        <.heroicon name="hero-exclamation-circle" />
         {msg}
       </:error>
     </.date_picker>
@@ -168,7 +168,7 @@ defmodule Mix.Corex.Gen.Inputs do
         <.heroicon name="hero-chevron-down" />
       </:trigger>
       <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
+        <.heroicon name="hero-exclamation-circle" />
         {msg}
       </:error>
     </.select>
@@ -192,7 +192,7 @@ defmodule Mix.Corex.Gen.Inputs do
         <.heroicon name="hero-chevron-down" />
       </:trigger>
       <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
+        <.heroicon name="hero-exclamation-circle" />
         {msg}
       </:error>
     </.select>
@@ -204,7 +204,7 @@ defmodule Mix.Corex.Gen.Inputs do
     <.password_input field={#{field_prefix}[#{inspect(key)}]} class="password-input">
       <:label>#{label(key)}</:label>
       <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
+        <.heroicon name="hero-exclamation-circle" />
         {msg}
       </:error>
       <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
@@ -230,7 +230,7 @@ defmodule Mix.Corex.Gen.Inputs do
   defp error_slot do
     ~S"""
     <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
+        <.heroicon name="hero-exclamation-circle" />
         {msg}
       </:error>
     """

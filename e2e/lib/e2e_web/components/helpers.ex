@@ -169,6 +169,15 @@ defmodule E2eWeb.Helpers do
     components =
       [
         %{
+          label: ~t"Layout & typography",
+          id: "layout-typography",
+          anatomy_to: ~p"/layout-typography",
+          playground: false,
+          api: false,
+          event: false,
+          pattern: false
+        },
+        %{
           label: ~t"Accordion",
           id: "accordion",
           anatomy_to: ~p"/accordion/anatomy",
@@ -383,6 +392,8 @@ defmodule E2eWeb.Helpers do
           api_to: ~p"/file-upload/api",
           events_to: ~p"/file-upload/events",
           pattern: false,
+          style: true,
+          style_to: ~p"/file-upload/style",
           forms: [
             doc_form_menu_item(~t"Controller Form", ~p"/file-upload/form")
           ]
@@ -406,7 +417,9 @@ defmodule E2eWeb.Helpers do
           playground_to: ~p"/floating-panel/playground",
           api_to: ~p"/floating-panel/api",
           events_to: ~p"/floating-panel/events",
-          pattern: false
+          pattern: false,
+          style: true,
+          style_to: ~p"/floating-panel/style"
         },
         %{
           label: ~t"Layout heading",
@@ -500,6 +513,8 @@ defmodule E2eWeb.Helpers do
           api_to: ~p"/password-input/api",
           events_to: ~p"/password-input/events",
           pattern: false,
+          style: true,
+          style_to: ~p"/password-input/style",
           forms: [
             doc_form_menu_item(~t"Controller Form", ~p"/password-input/form"),
             doc_form_menu_item(~t"Live Form", ~p"/password-input/live-form")
@@ -622,7 +637,9 @@ defmodule E2eWeb.Helpers do
           event: false,
           anatomy_to: ~p"/toast/anatomy",
           playground_to: ~p"/toast/playground",
-          api_to: ~p"/toast/api"
+          api_to: ~p"/toast/api",
+          style: true,
+          style_to: ~p"/toast/style"
         },
         %{
           label: ~t"Pagination",

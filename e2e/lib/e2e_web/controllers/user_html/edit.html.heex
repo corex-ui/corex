@@ -11,7 +11,7 @@
       <.navigate
         to={if(@return_to == "show", do: ~p"/users/#{@user}", else: ~p"/users")}
         type="navigate"
-        class="button"
+        as="button"
         aria_label={~t"Cancel"}
         title={~t"Cancel"}
       >
@@ -41,7 +41,8 @@
             <.action
               id={"user-delete-#{@user.id}-cancel"}
               phx-click={Corex.Dialog.set_open("user-delete-#{@user.id}", false)}
-              class="button button--sm button--ghost"
+              size="sm"
+              variant="ghost"
             >
               Cancel
             </.action>
@@ -49,7 +50,9 @@
               id={"user-delete-#{@user.id}-confirm"}
               to={~p"/users/#{@user}"}
               method="delete"
-              class="button button--sm button--alert"
+              as="button"
+              size="sm"
+              semantic="alert"
             >
               Delete
             </.navigate>

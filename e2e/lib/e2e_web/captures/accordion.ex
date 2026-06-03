@@ -108,7 +108,7 @@ defmodule CorexWeb.Accordion do
               indicator: [
                 %{
                   inner_block:
-                    ~S(<.heroicon name="hero-plus" class="state-closed" /><.heroicon name="hero-minus" class="state-open" />)
+                    ~S(<.heroicon name="hero-plus" data-icon-state="closed" /><.heroicon name="hero-minus" data-icon-state="open" />)
                 }
               ]
             },

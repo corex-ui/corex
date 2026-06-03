@@ -106,30 +106,30 @@
 }
 
 @media (max-width: 767px) {
-  body.layout:has(#tetrex-page) {
+  body:has(#tetrex-page) {
     overflow: hidden;
     height: 100dvh;
     max-height: 100dvh;
   }
 
-  body:has(#tetrex-page) .layout__content--blog {
+  body:has(#tetrex-page) .shell-content--blog {
     padding-block: var(--spacing-space-sm);
   }
 
-  body:has(#tetrex-page) .layout__footer {
+  body:has(#tetrex-page) footer {
     display: none;
   }
 
-  body:has(#tetrex-page) .layout__wrapper {
+  body:has(#tetrex-page) [data-row][data-row-grow="fill"] {
     min-height: 0;
   }
 
-  body:has(#tetrex-page) .layout__main--blog {
+  body:has(#tetrex-page) .shell-main--blog {
     min-height: 0;
-    max-height: calc(100dvh - var(--spacing-size-lg));
+    max-height: calc(100dvh - var(--size-lg));
   }
 
-  body:has(#tetrex-page) .layout__content--blog {
+  body:has(#tetrex-page) .shell-content--blog {
     flex: 1 1 auto;
     min-height: 0;
     max-height: calc(100dvh - var(--spacing-size-lg));

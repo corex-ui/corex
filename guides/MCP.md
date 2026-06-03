@@ -121,7 +121,7 @@ config :corex, debug: true
 | Loopback-only access | on | Non-loopback clients receive 403 unless you opt in |
 | `allow_remote_access: true` | off | Allows non-loopback IPs; logs a warning at plug init. Restrict with a firewall or VPN. Never use in production. |
 | `config :corex, mcp_verbose_errors: false` | off | Tool failures return a generic message to MCP clients; full exceptions stay in server logs |
-| `config :corex, debug: true` | off | Enables verbose MCP JSON-RPC debug logging on `Corex.MCP.Server` |
+| `config :corex, debug: true` | off | Enables verbose MCP JSON-RPC debug logging on the MCP server |
 
 Example for local debugging only:
 

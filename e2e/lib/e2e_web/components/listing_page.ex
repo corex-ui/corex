@@ -53,29 +53,29 @@ defmodule E2eWeb.ListingPage do
       <p :if={@description} class="blog__card__excerpt">{@description}</p>
       <ul :if={@tags != []} class="m-0 flex list-none flex-wrap gap-space-sm p-0 blog__card__tags">
         <li :for={tag <- @tags}>
-          <span class="badge badge--muted badge--sm">{tag}</span>
+          <.badge size="sm">{tag}</.badge>
         </li>
       </ul>
       <div :if={@template_card?} class="mt-auto flex flex-wrap gap-space-sm pt-space-sm">
-        <.navigate to={@demo_to} class="button button--sm button--brand" external>
+        <.navigate to={@demo_to} as="button" size="sm" semantic="brand" external>
           {~t"Live demo"}
-          <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
+          <.heroicon name="hero-arrow-top-right-on-square" />
         </.navigate>
-        <.navigate to={@github_to} class="button button--sm button--ghost" external>
+        <.navigate to={@github_to} as="button" size="sm" variant="ghost" external>
           {~t"GitHub"}
-          <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
+          <.heroicon name="hero-arrow-top-right-on-square" />
         </.navigate>
       </div>
       <div :if={@play_card?} class="mt-auto flex flex-wrap gap-space-sm pt-space-sm">
-        <.navigate to={@play_to} class="button button--sm button--brand">
+        <.navigate to={@play_to} as="button" size="sm" semantic="brand">
           {@play_label || ~t"Play"}
-          <.heroicon name="hero-arrow-right" class="icon" />
+          <.heroicon name="hero-arrow-right" />
         </.navigate>
       </div>
       <div :if={@site_card?} class="mt-auto flex flex-wrap gap-space-sm pt-space-sm">
-        <.navigate to={@site_to} class="button button--sm button--brand" external>
+        <.navigate to={@site_to} as="button" size="sm" semantic="brand" external>
           {@site_label || ~t"View Site"}
-          <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
+          <.heroicon name="hero-arrow-top-right-on-square" />
         </.navigate>
       </div>
     </article>

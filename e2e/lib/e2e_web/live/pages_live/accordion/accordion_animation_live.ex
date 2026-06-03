@@ -1,7 +1,8 @@
 defmodule E2eWeb.AccordionAnimationLive do
   use E2eWeb, :live_view
 
-  import E2eWeb.DemoPage, only: [demo_page: 1, demo_playground: 1, demo_section: 1]
+  import E2eWeb.DemoPage,
+    only: [demo_page: 1, demo_playground: 1, demo_section: 1, demo_preview_tabs: 1, authoring_preview: 1]
 
   @easing_items [
     %{label: "ease", value: "ease"},
@@ -24,8 +25,18 @@ defmodule E2eWeb.AccordionAnimationLive do
       |> assign(:opacity_end, to_string(animation_options.opacity_end))
       |> assign(:easing_items, @easing_items)
       |> assign(:easing, [animation_options.easing])
-      |> assign(:instant_heex, E2eWeb.Demos.AccordionDemo.animation_instant_heex())
-      |> assign(:custom_heex, E2eWeb.Demos.AccordionDemo.animation_custom_heex())
+      |> assign(
+        :playground_snippet,
+        E2eWeb.AuthoringSnippet.heex_snippets(E2eWeb.Demos.AccordionDemo.animation_playground_heex())
+      )
+      |> assign(
+        :instant_heex,
+        E2eWeb.AuthoringSnippet.heex_snippets(E2eWeb.Demos.AccordionDemo.animation_instant_heex())
+      )
+      |> assign(
+        :custom_heex,
+        E2eWeb.AuthoringSnippet.heex_snippets(E2eWeb.Demos.AccordionDemo.animation_custom_heex())
+      )
       |> assign(:custom_js, E2eWeb.Demos.AccordionDemo.animation_custom_js())
 
     {:ok, socket}
@@ -83,7 +94,8 @@ defmodule E2eWeb.AccordionAnimationLive do
           <:controls>
             <.select
               id="accordion-animation-easing"
-              class="select select--sm select--mini-sm lg:w-full"
+              size="sm"
+              class="select select--mini-sm lg:w-full"
               value={@easing}
               items={@easing_items}
               on_value_change="easing_changed"
@@ -103,10 +115,10 @@ defmodule E2eWeb.AccordionAnimationLive do
             >
               <:label>Duration</:label>
               <:decrement_trigger>
-                <.heroicon name="hero-chevron-down" class="icon" />
+                <.heroicon name="hero-chevron-down" />
               </:decrement_trigger>
               <:increment_trigger>
-                <.heroicon name="hero-chevron-up" class="icon" />
+                <.heroicon name="hero-chevron-up" />
               </:increment_trigger>
             </.number_input>
 
@@ -121,10 +133,10 @@ defmodule E2eWeb.AccordionAnimationLive do
             >
               <:label>Opacity start</:label>
               <:decrement_trigger>
-                <.heroicon name="hero-chevron-down" class="icon" />
+                <.heroicon name="hero-chevron-down" />
               </:decrement_trigger>
               <:increment_trigger>
-                <.heroicon name="hero-chevron-up" class="icon" />
+                <.heroicon name="hero-chevron-up" />
               </:increment_trigger>
             </.number_input>
 
@@ -139,16 +151,17 @@ defmodule E2eWeb.AccordionAnimationLive do
             >
               <:label>Opacity end</:label>
               <:decrement_trigger>
-                <.heroicon name="hero-chevron-down" class="icon" />
+                <.heroicon name="hero-chevron-down" />
               </:decrement_trigger>
               <:increment_trigger>
-                <.heroicon name="hero-chevron-up" class="icon" />
+                <.heroicon name="hero-chevron-up" />
               </:increment_trigger>
             </.number_input>
 
             <.switch
               id="accordion-animation-block-interaction"
-              class="switch switch--sm w-full"
+              size="sm"
+              class="switch w-full"
               checked={@animation_options.block_interaction}
               on_checked_change="block_interaction_changed"
             >
@@ -156,58 +169,114 @@ defmodule E2eWeb.AccordionAnimationLive do
             </.switch>
           </:controls>
           <:canvas>
-            <.accordion
-              id="accordion-animation-playground-accordion"
-              class="accordion w-full h-full overflow-hidden"
-              animation="js"
-              animation_options={@animation_options}
-              items={@items}
-              value={@value}
+            <.demo_preview_tabs
+              id="accordion-animation-preview"
+              code={@playground_snippet}
+              trigger_class="button button--sm"
             >
-              <:indicator>
-                <.heroicon name="hero-chevron-right" />
-              </:indicator>
-            </.accordion>
+              <:preview>
+                <.authoring_preview>
+                  <:styled>
+                    <.accordion
+                      id="accordion-animation-playground-accordion"
+                      class="accordion w-full h-full overflow-hidden"
+                      animation="js"
+                      animation_options={@animation_options}
+                      items={@items}
+                      value={@value}
+                    >
+                      <:indicator>
+                        <.heroicon name="hero-chevron-right" />
+                      </:indicator>
+                    </.accordion>
+                  </:styled>
+                  <:markup>
+                    <.accordion
+                      id="accordion-animation-playground-accordion"
+                      unstyled
+                      class="w-full h-full overflow-hidden"
+                      animation="js"
+                      animation_options={@animation_options}
+                      items={@items}
+                      value={@value}
+                    >
+                      <:indicator>
+                        <.heroicon name="hero-chevron-right" />
+                      </:indicator>
+                    </.accordion>
+                  </:markup>
+                </.authoring_preview>
+              </:preview>
+            </.demo_preview_tabs>
           </:canvas>
         </.demo_playground>
 
         <.demo_section
           id="accordion-animation-instant"
           title={~t"Instant"}
-          trigger_class="button--sm"
+          trigger_class="button button--sm"
           code={@instant_heex}
         >
           <:preview>
-            <.accordion id="accordion-animate" class="accordion" animation="instant" items={@items}>
-              <:indicator>
-                <.heroicon name="hero-chevron-right" />
-              </:indicator>
-            </.accordion>
+            <.authoring_preview>
+              <:styled>
+                <.accordion id="accordion-animate" class="accordion" animation="instant" items={@items}>
+                  <:indicator>
+                    <.heroicon name="hero-chevron-right" />
+                  </:indicator>
+                </.accordion>
+              </:styled>
+              <:markup>
+                <.accordion id="accordion-animate" unstyled animation="instant" items={@items}>
+                  <:indicator>
+                    <.heroicon name="hero-chevron-right" />
+                  </:indicator>
+                </.accordion>
+              </:markup>
+            </.authoring_preview>
           </:preview>
         </.demo_section>
 
         <.demo_section
           id="accordion-animation-custom"
           title={~t"Custom (Motion)"}
-          trigger_class="button--sm"
+          trigger_class="button button--sm"
           code_tabs={[
             %{value: "heex", label: ~t"Heex", language: :heex, code: @custom_heex},
             %{value: "js", label: ~t"Javascript", language: :js, code: @custom_js}
           ]}
         >
           <:preview>
-            <.accordion
-              id="accordion-custom-animate"
-              class="accordion"
-              animation="custom"
-              value={["lorem"]}
-              on_value_change_client="my-accordion-changed"
-              items={@items}
-            >
-              <:indicator>
-                <.heroicon name="hero-chevron-right" />
-              </:indicator>
-            </.accordion>
+            <.authoring_preview>
+              <:styled>
+                <.accordion
+                  id="accordion-custom-animate"
+                  class="accordion"
+                  animation="custom"
+                  value={["lorem"]}
+                  on_value_change_client="my-accordion-changed"
+                  items={@items}
+                >
+                  <:indicator>
+                    <.heroicon name="hero-chevron-right" />
+                  </:indicator>
+                </.accordion>
+              </:styled>
+              <:markup>
+                <.accordion
+                  id="accordion-custom-animate"
+                  unstyled
+                  animation="custom"
+                  value={["lorem"]}
+                  on_value_change_client="my-accordion-changed"
+                  items={@items}
+                >
+                  <:indicator>
+                    <.heroicon name="hero-chevron-right" />
+                  </:indicator>
+                </.accordion>
+              </:markup>
+            </.authoring_preview>
           </:preview>
         </.demo_section>
       </.demo_page>

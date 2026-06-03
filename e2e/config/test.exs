@@ -20,7 +20,7 @@ config :corex_web, E2eWeb.Endpoint,
   server: true,
   code_reloader: false
 
-config :corex_web, sql_sandbox: true
+config :corex_web, sql_sandbox: true, dev_routes: true
 
 # In test we don't send emails
 config :corex_web, E2e.Mailer, adapter: Swoosh.Adapters.Test

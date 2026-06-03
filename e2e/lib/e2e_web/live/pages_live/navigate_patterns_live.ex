@@ -50,7 +50,7 @@ defmodule E2eWeb.NavigatePatternsLive do
             <div class="flex flex-col gap-space">
               <E2eWeb.Demos.NavigateDemo.patterns_patch_example />
               <%= if @tab do %>
-                <p class="text-sm text-ink-muted">Patched query: tab={@tab}</p>
+                <p class="text-sm text-ui-ink-muted">Patched query: tab={@tab}</p>
               <% end %>
             </div>
           </:preview>

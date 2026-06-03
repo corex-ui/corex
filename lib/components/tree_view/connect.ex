@@ -239,12 +239,17 @@ defmodule Corex.TreeView.Connect do
       "id" => tree_branch_part_id(assigns.id, "branch-content", pk)
     }
 
+    animation_options = Map.get(assigns, :animation_options, %Height{})
+
     cond do
       assigns.expanded ->
         base
 
       animation == "instant" ->
         Map.put(base, "hidden", "")
+
+      animation in ["js", "custom"] ->
+        Map.put(base, "style", Height.closed_style(animation_options))
 
       true ->
         base

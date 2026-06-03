@@ -66,7 +66,7 @@ defmodule E2eWeb.EditablePlayLive do
           />
 
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="disabled"
             checked={@controls.disabled}
             on_checked_change="control_changed"
@@ -74,7 +74,7 @@ defmodule E2eWeb.EditablePlayLive do
             <:label>Disabled</:label>
           </.switch>
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="read_only"
             checked={@controls.read_only}
             on_checked_change="control_changed"
@@ -82,7 +82,7 @@ defmodule E2eWeb.EditablePlayLive do
             <:label>Read only</:label>
           </.switch>
           <.switch
-            class="switch switch--sm"
+            size="sm"
             id="invalid"
             checked={@controls.invalid}
             on_checked_change="control_changed"
@@ -93,7 +93,6 @@ defmodule E2eWeb.EditablePlayLive do
         <:canvas>
           <.editable
             id="editable-playground"
-            class="editable"
             value={@play_value}
             on_value_change="editable_play_value_changed"
             disabled={@controls.disabled}
@@ -102,9 +101,9 @@ defmodule E2eWeb.EditablePlayLive do
             dir={@controls.dir}
           >
             <:label>Name</:label>
-            <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
-            <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
-            <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+            <:edit_trigger><.heroicon name="hero-pencil-square" /></:edit_trigger>
+            <:submit_trigger><.heroicon name="hero-check" /></:submit_trigger>
+            <:cancel_trigger><.heroicon name="hero-x-mark" /></:cancel_trigger>
           </.editable>
         </:canvas>
       </.demo_playground>

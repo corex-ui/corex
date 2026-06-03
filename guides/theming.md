@@ -11,15 +11,16 @@ Static Tableau sites use the same `data-theme` pattern without plugs—see [Tabl
 | Requirement | Notes |
 | ----------- | ----- |
 | Corex installed | [Manual installation](manual_installation.html) or `mix corex.new --theme` |
-| Theme CSS imported | One `@import` per theme you expose in the picker |
+| Design CSS | `@import "./corex.tailwind.css"` in `app.css`. See [Styled](styled.html). |
 | `select` hook | Registered in `assets/js/app.js` |
 
 ## How it works
 
-1. **`config :my_app, :themes`** is the single source of truth; the first entry is the default.
-2. **`Plugs.Theme`** reads `phx_theme`, validates against config, assigns `:theme`.
-3. **Bridge script** reconciles `localStorage`, `data-theme`, and the default.
-4. **`<.select on_value_change_client="phx:set-theme">`** updates theme without a server round-trip.
+1. **`config :corex_design, themes: %{...}`** defines colors, radii, spacing, and type per theme (see [Design config](design-config.html)). Use built-in presets or custom specs; run `mix compile` after edits.
+2. **`config :my_app, :themes`** lists theme ids for the picker plug (must match the design config keys).
+3. **`Plugs.Theme`** reads `phx_theme`, validates against config, assigns `:theme`.
+4. **Bridge script** reconciles `localStorage`, `data-theme`, and the default.
+5. **`<.select on_value_change_client="phx:set-theme">`** updates theme without a server round-trip.
 
 <!-- tabs-open -->
 
@@ -163,14 +164,13 @@ end
 
 ## CSS
 
+Phoenix apps using the design compiler import one generated stylesheet (all `[data-theme]` scopes included):
+
 ```css
-@import "../corex/main.css";
-@import "../corex/theme/neo.css";
-@import "../corex/theme/uno.css";
-@import "../corex/theme/duo.css";
-@import "../corex/theme/leo.css";
-@import "../corex/components/select.css";
+@import "./corex.tailwind.css";
 ```
+
+Tableau static sites use the same compiler output; see [Tableau Theming](tableau_theming.html).
 
 ## Related
 

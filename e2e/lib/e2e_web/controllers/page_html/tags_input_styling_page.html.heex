@@ -8,12 +8,13 @@
     }
   >
     <.demo_section
-      id="tags-input-styling-color"
-      title={~t"Color"}
-      code={E2eWeb.Demos.TagsInputDemo.styling_color_heex()}
+      id="tags-input-styling-semantic"
+      title={~t"Semantic"}
+      values={E2eWeb.Demos.TagsInputDemo.styling_axis_values(:semantic)}
+      code={E2eWeb.Demos.TagsInputDemo.styling_semantic_heex()}
     >
       <:preview>
-        <E2eWeb.Demos.TagsInputDemo.styling_color_example />
+        <E2eWeb.Demos.TagsInputDemo.styling_semantic_example />
       </:preview>
     </.demo_section>
 
@@ -30,6 +31,7 @@
     <.demo_section
       id="tags-input-styling-size"
       title={~t"Size"}
+      values={E2eWeb.Demos.TagsInputDemo.styling_axis_values(:size)}
       code={E2eWeb.Demos.TagsInputDemo.styling_size_heex()}
     >
       <:preview>
@@ -40,6 +42,7 @@
     <.demo_section
       id="tags-input-styling-text"
       title={~t"Text"}
+      values={E2eWeb.Demos.TagsInputDemo.styling_axis_values(:text)}
       code={E2eWeb.Demos.TagsInputDemo.styling_text_heex()}
     >
       <:preview>
@@ -50,6 +53,7 @@
     <.demo_section
       id="tags-input-styling-radius"
       title={~t"Radius"}
+      values={E2eWeb.Demos.TagsInputDemo.styling_axis_values(:radius)}
       code={E2eWeb.Demos.TagsInputDemo.styling_radius_heex()}
     >
       <:preview>
@@ -60,6 +64,7 @@
     <.demo_section
       id="tags-input-styling-max-width"
       title={~t"Max width"}
+      values={E2eWeb.Demos.TagsInputDemo.styling_axis_values(:max_width)}
       code={E2eWeb.Demos.TagsInputDemo.styling_max_width_heex()}
     >
       <:preview>

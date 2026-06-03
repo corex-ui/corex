@@ -9,7 +9,7 @@ defmodule Corex.Checkbox do
   ### Minimal
 
   ```heex
-  <.checkbox class="checkbox">
+  <.checkbox>
     <:label>Option</:label>
   </.checkbox>
   ```
@@ -17,7 +17,7 @@ defmodule Corex.Checkbox do
   ### Label and indicator
 
   ```heex
-  <.checkbox class="checkbox">
+  <.checkbox>
     <:label>Accept the terms</:label>
     <:indicator>
       <.heroicon name="hero-check" />
@@ -28,18 +28,13 @@ defmodule Corex.Checkbox do
   ### Invalid
 
   ```heex
-  <.checkbox
-    class="checkbox checkbox--accent"
-    invalid
-    checked
-    errors={["Required"]}
-  >
+  <.checkbox invalid checked errors={["Required"]}>
     <:label>Subscribe</:label>
     <:indicator>
       <.heroicon name="hero-check" />
     </:indicator>
     <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
+      <.heroicon name="hero-exclamation-circle" />
       {msg}
     </:error>
   </.checkbox>
@@ -48,7 +43,7 @@ defmodule Corex.Checkbox do
   ### Indeterminate
 
   ```heex
-  <.checkbox class="checkbox" checked={:indeterminate}>
+  <.checkbox checked={:indeterminate}>
     <:label>Select some rows</:label>
     <:indicator>
       <.heroicon name="hero-check" />
@@ -56,6 +51,36 @@ defmodule Corex.Checkbox do
     <:indeterminate>
       <.heroicon name="hero-minus" />
     </:indeterminate>
+  </.checkbox>
+  ```
+
+  <!-- tabs-close -->
+
+  ## Styling
+
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `semantic`, `size`, `radius`.
+
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.checkbox semantic="accent" size="md" class="checkbox">
+    <:label>Option</:label>
+    <:indicator>
+      <.heroicon name="hero-check" />
+    </:indicator>
+  </.checkbox>
+  ```
+
+  ### With classes
+
+  ```heex
+  <.checkbox class="checkbox checkbox--accent checkbox--md">
+    <:label>Option</:label>
+    <:indicator>
+      <.heroicon name="hero-check" />
+    </:indicator>
   </.checkbox>
   ```
 
@@ -86,7 +111,7 @@ defmodule Corex.Checkbox do
   <.action phx-click={Corex.Checkbox.toggle_checked("checkbox-api-bind")} class="button button--sm">
     Toggle
   </.action>
-  <.checkbox id="checkbox-api-bind" class="checkbox">
+  <.checkbox id="checkbox-api-bind">
     <:label>Terms</:label>
     <:indicator>
       <.heroicon name="hero-check" />
@@ -144,10 +169,7 @@ defmodule Corex.Checkbox do
   ### on_checked_change
 
   ```heex
-  <.checkbox
-    class="checkbox"
-    on_checked_change="checkbox_changed"
-  >
+  <.checkbox on_checked_change="checkbox_changed">
     <:label>Subscribe</:label>
     <:indicator>
       <.heroicon name="hero-check" />
@@ -176,7 +198,6 @@ defmodule Corex.Checkbox do
   ```heex
   <.checkbox
     id="checkbox-on-checked-change-client"
-    class="checkbox"
     on_checked_change_client="checkbox-changed"
   >
     <:label>Subscribe</:label>
@@ -205,8 +226,8 @@ defmodule Corex.Checkbox do
 
   ```heex
   <.async_result :let={checkbox} assign={@checkbox}>
-    <:loading><.checkbox_skeleton class="checkbox" /></:loading>
-    <.checkbox class="checkbox" checked={checkbox.checked}>
+    <:loading><.checkbox_skeleton /></:loading>
+    <.checkbox checked={checkbox.checked}>
       <:label>Accept terms</:label>
       <:indicator><.heroicon name="hero-check" /></:indicator>
       <:indeterminate><.heroicon name="hero-minus" /></:indeterminate>
@@ -230,7 +251,6 @@ defmodule Corex.Checkbox do
 
   ```heex
   <.checkbox
-    class="checkbox"
     controlled
     checked={@checked}
     on_checked_change="patterns_controlled_changed"
@@ -256,7 +276,7 @@ defmodule Corex.Checkbox do
   <!-- tabs-close -->
   ## Style
 
-  Target parts with `data-scope` and `data-part`, or import `checkbox.css` and stack modifiers on the host.
+  Target parts with `data-scope` and `data-part`, or use [Corex Design](styled.html): `@import "./corex.tailwind.css"` in `app.css`.
 
   ```css
   [data-scope="checkbox"][data-part="root"] {}
@@ -264,12 +284,6 @@ defmodule Corex.Checkbox do
   [data-scope="checkbox"][data-part="label"] {}
   [data-scope="checkbox"][data-part="hidden-input"] {}
   [data-scope="checkbox"][data-part="error"] {}
-  ```
-
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/checkbox.css";
   ```
 
   <!-- tabs-open -->
@@ -377,7 +391,7 @@ defmodule Corex.Checkbox do
       <.heroicon name="hero-check" />
     </:indicator>
     <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
+      <.heroicon name="hero-exclamation-circle" />
       {msg}
     </:error>
   </.checkbox>
@@ -404,15 +418,15 @@ defmodule Corex.Checkbox do
         action="/account/terms"
         method="post"
       >
-        <.checkbox field={f[:terms]} class="checkbox">
+        <.checkbox field={f[:terms]}>
           <:label>Accept terms</:label>
           <:error :let={msg}>
-            <.heroicon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" />
             {msg}
           </:error>
         </.checkbox>
 
-        <.action type="submit" class="button button--accent">
+        <.action type="submit">
           Submit
         </.action>
       </.form>
@@ -493,15 +507,15 @@ defmodule Corex.Checkbox do
         action="/account/terms"
         method="post"
       >
-        <.checkbox field={f[:terms]} class="checkbox">
+        <.checkbox field={f[:terms]}>
           <:label>Accept terms (strict messages)</:label>
           <:error :let={msg}>
-            <.heroicon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" />
             {msg}
           </:error>
         </.checkbox>
 
-        <.action type="submit" class="button button--accent">
+        <.action type="submit">
           Submit
         </.action>
       </.form>
@@ -580,13 +594,10 @@ defmodule Corex.Checkbox do
         method="post"
       >
         <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-        <.checkbox
-          name="user[accept_terms]"
-          class="checkbox"
-        >
+        <.checkbox name="user[accept_terms]">
           <:label>Accept terms</:label>
         </.checkbox>
-        <.action type="submit" class="button button--accent">Submit</.action>
+        <.action type="submit">Submit</.action>
       </form>
   ```
 
@@ -601,15 +612,15 @@ defmodule Corex.Checkbox do
         phx-change="validate"
         phx-submit="save"
       >
-        <.checkbox field={@form[:terms]} class="checkbox">
+        <.checkbox field={@form[:terms]}>
           <:label>Accept terms</:label>
           <:error :let={msg}>
-            <.heroicon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" />
             {msg}
           </:error>
         </.checkbox>
 
-        <.action type="submit" class="button button--accent">
+        <.action type="submit">
           Submit
         </.action>
       </.form>
@@ -685,15 +696,15 @@ defmodule Corex.Checkbox do
         phx-change="validate_strict"
         phx-submit="save_strict"
       >
-        <.checkbox field={@form[:terms]} class="checkbox">
+        <.checkbox field={@form[:terms]}>
           <:label>Accept terms</:label>
           <:error :let={msg}>
-            <.heroicon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" />
             {msg}
           </:error>
         </.checkbox>
 
-        <.action type="submit" class="button button--accent">
+        <.action type="submit">
           Submit
         </.action>
       </.form>
@@ -786,6 +797,25 @@ defmodule Corex.Checkbox do
 
   alias Corex.Checkbox.Connect
   alias Phoenix.HTML.Form
+
+  use Corex.Variants,
+    base: "checkbox",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size,
+      radius: :radius
+    ],
+    defaults: [
+      width: "full",
+      max_width: "4xl",
+      height: "auto",
+      max_height: "none",
+      size: "md"
+    ]
 
   @doc """
   Renders a checkbox component.
@@ -918,6 +948,8 @@ defmodule Corex.Checkbox do
       phx-hook="Checkbox"
       data-loading 
       phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}     
+      class={corex_style_class(assigns)}
+     
       {@rest}
       {Connect.props(%Props{
         id: @id,

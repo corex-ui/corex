@@ -97,17 +97,7 @@ end
 
 ### CSS
 
-Add `select.css` and each theme file to `assets/css/site.css` (after the [Tableau](tableau.html) baseline imports):
-
-```css
-@import "../corex/components/select.css";
-
-@import "../corex/theme/uno.css";
-@import "../corex/theme/duo.css";
-@import "../corex/theme/leo.css";
-```
-
-Skip extra `@import`s if you only ship `neo`.
+Ensure [Tableau](tableau.html) baseline imports `./corex.tailwind.css` in `assets/css/site.css`. Built-in themes (neo, uno, duo, leo) ship in the generated `layers/theme.css`; switch with `data-theme` on `<html>`.
 
 ### Layout
 

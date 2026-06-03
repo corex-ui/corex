@@ -11,7 +11,7 @@ defmodule Corex.Listbox do
   ### Minimal
 
   ```heex
-  <.listbox class="listbox" items={
+  <.listbox items={
     Corex.List.new([
       %{label: "France", value: "fra"},
       %{label: "Belgium", value: "bel"},
@@ -28,7 +28,7 @@ defmodule Corex.Listbox do
   ### With indicator
 
   ```heex
-  <.listbox class="listbox" items={
+  <.listbox items={
     Corex.List.new([
       %{label: "France", value: "fra"},
       %{label: "Belgium", value: "bel"},
@@ -46,7 +46,7 @@ defmodule Corex.Listbox do
   ### Grouped
 
   ```heex
-  <.listbox class="listbox" items={
+  <.listbox items={
     Corex.List.new([
       %{label: "France", value: "fra", group: "Europe"},
       %{label: "Belgium", value: "bel", group: "Europe"},
@@ -66,7 +66,7 @@ defmodule Corex.Listbox do
   Requires [Flagpack](https://hex.pm/packages/flagpack). Use `:item` with `:let={%{item: entry}}`.
 
   ```heex
-  <.listbox class="listbox" items={
+  <.listbox items={
     Corex.List.new([
       %{label: "France", value: "fra"},
       %{label: "Belgium", value: "bel"},
@@ -81,6 +81,44 @@ defmodule Corex.Listbox do
       <Flagpack.flag name={String.to_existing_atom(to_string(entry.value))} />
       {entry.label}
     </:item>
+    <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+  </.listbox>
+  ```
+
+  <!-- tabs-close -->
+
+  ## Styling
+
+  Style attrs and BEM classes are equivalent. See [Unstyled](unstyled.html). Axes: `semantic`, `size`, `radius`.
+
+  <!-- tabs-open -->
+
+  ### With attributes
+
+  ```heex
+  <.listbox semantic="accent" size="md" class="listbox" items={
+    Corex.List.new([
+      %{label: "France", value: "fra"},
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"}
+    ])
+  }>
+    <:label>Choose a country</:label>
+    <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+  </.listbox>
+  ```
+
+  ### With classes
+
+  ```heex
+  <.listbox class="listbox listbox--accent listbox--md" items={
+    Corex.List.new([
+      %{label: "France", value: "fra"},
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"}
+    ])
+  }>
+    <:label>Choose a country</:label>
     <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
   </.listbox>
   ```
@@ -156,7 +194,6 @@ defmodule Corex.Listbox do
 
   ```heex
   <.listbox
-    class="listbox"
     items={
       Corex.List.new([
         %{label: "France", value: "fra"},
@@ -192,7 +229,6 @@ defmodule Corex.Listbox do
   ```heex
   <.listbox
     id="listbox-events-client"
-    class="listbox"
     items={
       Corex.List.new([
         %{label: "France", value: "fra"},
@@ -255,7 +291,7 @@ defmodule Corex.Listbox do
 
     def render(assigns) do
       ~H"""
-      <.listbox id="stream-listbox" class="listbox" items={Corex.List.new(@items_list)}>
+      <.listbox id="stream-listbox" items={Corex.List.new(@items_list)}>
         <:label>Choose an item</:label>
         <:empty>No items</:empty>
         <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
@@ -269,7 +305,6 @@ defmodule Corex.Listbox do
 
   ```heex
   <.listbox
-    class="listbox"
     controlled
     value={@value}
     on_value_change="listbox_controlled_changed"
@@ -297,6 +332,25 @@ defmodule Corex.Listbox do
 
   @doc type: :component
   use Phoenix.Component
+
+  use Corex.Variants,
+    base: "listbox",
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size,
+      radius: :radius
+    ],
+    defaults: [
+      width: "full",
+      max_width: "3xs",
+      height: "auto",
+      max_height: "none",
+      size: "md"
+    ]
 
   import Corex.Api.Doc
 
@@ -413,6 +467,8 @@ defmodule Corex.Listbox do
       phx-hook="Listbox"
       data-loading
       phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+      class={corex_style_class(assigns)}
+     
       {@rest}
       {Connect.props(%Props{
         id: @id,
