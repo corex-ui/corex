@@ -2,17 +2,24 @@
 
 ## 0.1.1
 
-### Fixed
+### Bug fixes
 
-- **Toast**: Sanitize action URLs; dispose toast group on hook destroy.
-- **Menu**: Fix submenu subscription accumulation; align SSR element ids with Zag so LiveView patches keep an open menu anchored and interactive (closes [#58](https://github.com/corex-ui/corex/issues/58)). Thanks to [@jessejanderson](https://github.com/jessejanderson) for reporting.
-- **Combobox**: Align SSR element ids with Zag; preserve custom `:item` and `:item_indicator` slot content after select/clear LiveView updates; default `close_on_select` to `true`.
-- **DataTable**: Harden sort and selection against forged client params.
-- **Pagination**: Validate page URLs; omit unsafe `data-to`.
-- **Redirect**: Validate redirect destination schemes.
-- **Date Picker**: Reduce unnecessary re-renders.
-- **MCP**: Security hardening.
-- **Docs**: Restore `mix corex.new` on Hexdocs.
+- [menu] Fix submenu leaks and LiveView drift on open menus ([#58](https://github.com/corex-ui/corex/issues/58))
+- [combobox] Preserve custom item slots after LiveView updates
+- [toast] Sanitize action URLs
+- [data-table] Harden sort and selection params
+- [pagination] Validate page URLs
+- [redirect] Validate redirect schemes
+- [date-picker] Reduce unnecessary re-renders
+
+### Enhancements
+
+- [menu] Item and trigger layout aligned with select, combobox, and listbox
+- [combobox] Default `close_on_select` to `true`
+- [docs] Restore `mix corex.new` on Hexdocs
+- [mcp] Security hardening
+
+Run `mix corex.design --force` in your app to refresh `assets/corex/` (CSS and tokens).
 
 ## 0.1.0
 
