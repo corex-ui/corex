@@ -5,6 +5,7 @@
 ### Bug fixes
 
 - [menu] Fix submenu leaks and LiveView drift on open menus ([#58](https://github.com/corex-ui/corex/issues/58))
+- [menu] Scope server `set_open/3` to the targeted menu
 - [combobox] Preserve custom item slots after LiveView updates
 - [toast] Sanitize action URLs
 - [data-table] Harden sort and selection params

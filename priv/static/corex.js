@@ -28128,7 +28128,8 @@ ${err}`);
   var menu_exports = {};
   __export(menu_exports, {
     Menu: () => MenuHook,
-    findImmediateParentMenuHookEl: () => findImmediateParentMenuHookEl
+    findImmediateParentMenuHookEl: () => findImmediateParentMenuHookEl,
+    menuSetOpenMatches: () => menuSetOpenMatches
   });
   function mergeProps(...args) {
     let result = {};
@@ -28722,6 +28723,11 @@ ${err}`);
       destroyDescendantMenus(child);
       child.destroy();
     }
+  }
+  function menuSetOpenMatches(elId, payload) {
+    const targetId = readPayloadId(payload);
+    if (!targetId) return false;
+    return elId === targetId || elId === `menu:${targetId}`;
   }
   var anatomy17, parts17, clsx, CSS_REGEX, serialize, css, getTriggerId8, getContextTriggerId, getContentId8, getArrowId, getPositionerId6, getGroupId, getItemId6, getItemValue, getGroupLabelId, getContentEl8, getPositionerEl6, getTriggerEl5, getItemEl3, getContextTriggerEl, getTriggerEls3, getContextTriggerEls, getActiveTriggerEl2, getElements, getFirstEl, getLastEl, isMatch, getNextEl, getPrevEl, getElemByKey, isTargetDisabled, isTriggerItem, itemSelectEvent, not5, and6, or2, machine17, Menu, MenuHook;
   var init_menu = __esm({
@@ -29990,9 +29996,7 @@ ${err}`);
           this.handlers = [];
           this.handlers.push(
             this.handleEvent("menu_set_open", (payload) => {
-              const targetId = payload.menu_id;
-              const matches = !targetId || el.id === targetId || el.id === `menu:${targetId}`;
-              if (!matches) return;
+              if (!menuSetOpenMatches(el.id, payload)) return;
               menu.api.setOpen(payload.open);
             })
           );
