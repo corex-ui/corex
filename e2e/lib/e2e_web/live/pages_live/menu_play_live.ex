@@ -7,11 +7,16 @@ defmodule E2eWeb.MenuPlayLive do
   def mount(_params, _session, socket) do
     controls = %{
       dir: "ltr",
-      close_on_select: true,
+      close_on_select: false,
       loop_focus: false
     }
 
-    {:ok, assign(socket, :controls, controls)}
+    {:ok, assign(socket, controls: controls, selected: nil)}
+  end
+
+  @impl true
+  def handle_event("menu_play_selected", %{"value" => value}, socket) do
+    {:noreply, assign(socket, :selected, value)}
   end
 
   @impl true
@@ -85,6 +90,7 @@ defmodule E2eWeb.MenuPlayLive do
             dir={@controls.dir}
             close_on_select={@controls.close_on_select}
             loop_focus={@controls.loop_focus}
+            on_select="menu_play_selected"
             items={[
               %Corex.Tree.Item{value: "listbox", label: "Listbox"},
               %Corex.Tree.Item{
@@ -98,7 +104,14 @@ defmodule E2eWeb.MenuPlayLive do
             <:trigger>Corex</:trigger>
             <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
             <:nested_indicator><.heroicon name="hero-chevron-right" /></:nested_indicator>
+            <:item :let={item}>
+              <span data-menu-play-selected={@selected == item.value}>
+                {item.label}
+                <.heroicon :if={@selected == item.value} name="hero-check" class="icon" />
+              </span>
+            </:item>
           </.menu>
+          <p id="menu-playground-selected" data-value={@selected} hidden aria-hidden="true"></p>
         </:canvas>
       </.demo_playground>
     </Layouts.app>

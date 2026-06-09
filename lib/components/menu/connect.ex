@@ -110,14 +110,14 @@ defmodule Corex.Menu.Connect do
       "data-part" => "positioner",
       "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
-      "id" => "menu:#{assigns.id}:positioner",
+      "id" => "menu:#{assigns.id}:popper",
       "hidden" => "true"
     }
   end
 
   def ignore_positioner(assigns) do
     JS.ignore_attributes(Positioner.ignored_attrs(),
-      to: Selectors.css_id("menu:#{assigns.id}:positioner")
+      to: Selectors.css_id("menu:#{assigns.id}:popper")
     )
   end
 
@@ -150,7 +150,7 @@ defmodule Corex.Menu.Connect do
       "role" => "menuitem",
       "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
-      "id" => "menu:#{assigns.id}:item:#{assigns.value}",
+      "id" => "#{assigns.id}/#{assigns.value}",
       "data-nested-menu" => assigns.nested_menu_id,
       "data-has-nested" => get_boolean(assigns.has_nested)
     }
@@ -172,7 +172,7 @@ defmodule Corex.Menu.Connect do
 
   def ignore_item(assigns) do
     JS.ignore_attributes(Item.ignored_attrs(),
-      to: Selectors.css_id("menu:#{assigns.id}:item:#{assigns.value}")
+      to: Selectors.css_id("#{assigns.id}/#{assigns.value}")
     )
   end
 
