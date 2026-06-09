@@ -105,10 +105,8 @@ defmodule E2eWeb.MenuPlayLive do
             <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
             <:nested_indicator><.heroicon name="hero-chevron-right" /></:nested_indicator>
             <:item :let={item}>
-              <span data-menu-play-selected={@selected == item.value}>
-                {item.label}
-                <.heroicon :if={@selected == item.value} name="hero-check" class="icon" />
-              </span>
+              {item.label}
+              <.heroicon :if={@selected == item.value} name="hero-check" class="icon" />
             </:item>
           </.menu>
           <p id="menu-playground-selected" data-value={@selected} hidden aria-hidden="true"></p>
