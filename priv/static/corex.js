@@ -15117,7 +15117,7 @@ var Corex = (() => {
           });
         },
         updated() {
-          var _a4;
+          var _a4, _b;
           if (!this.combobox) return;
           const valuePatch = readUpdatedServerStringList(this.el);
           const newItemsJson = (_a4 = this.el.getAttribute("data-items")) != null ? _a4 : "[]";
@@ -15143,11 +15143,21 @@ var Corex = (() => {
           if (this.combobox.api.open) {
             this.combobox.api.reposition();
           }
+          this.combobox.renderItems();
+          this.combobox.applyItemProps();
           if ("value" in valuePatch) {
             syncComboboxHiddenInputForPhoenix(this.el, valuePatch.value, void 0);
             reapplyComboboxHiddenInputUsage(this.el);
-            const label = selectedItemLabel(valuePatch.value.map((v2) => ({ value: v2, label: v2 })));
-            syncVisibleInputAttribute(this.el, label);
+            const items = JSON.parse((_b = this.el.getAttribute("data-items")) != null ? _b : "[]");
+            const labels = valuePatch.value.map((value) => {
+              var _a5;
+              const item = items.find((entry) => {
+                var _a6;
+                return String((_a6 = entry.value) != null ? _a6 : "") === String(value);
+              });
+              return { value, label: (_a5 = item == null ? void 0 : item.label) != null ? _a5 : value };
+            });
+            syncVisibleInputAttribute(this.el, selectedItemLabel(labels));
           }
         },
         destroyed() {

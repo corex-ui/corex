@@ -578,7 +578,7 @@ defmodule Corex.Combobox do
 
         <div phx-mounted={Connect.ignore_positioner(%Positioner{id: @id, dir: @dir, orientation: @orientation})} {Connect.positioner(%Positioner{id: @id, dir: @dir, orientation: @orientation})}>
           <div phx-mounted={Connect.ignore_content(%Content{id: @id, dir: @dir, orientation: @orientation})} {Connect.content(%Content{id: @id, dir: @dir, orientation: @orientation})}>
-            <ul phx-mounted={Connect.ignore_list(%List{id: @id, dir: @dir, orientation: @orientation})} {Connect.list(%List{id: @id, dir: @dir, orientation: @orientation})}>
+            <ul phx-update="ignore" phx-mounted={Connect.ignore_list(%List{id: @id, dir: @dir, orientation: @orientation})} {Connect.list(%List{id: @id, dir: @dir, orientation: @orientation})}>
               <li :if={@items == []} phx-mounted={Connect.ignore_empty(%Empty{id: @id, dir: @dir, orientation: @orientation})} {Connect.empty(%Empty{id: @id, dir: @dir, orientation: @orientation})}>
                 {if Enum.empty?(@empty), do: @empty_text, else: render_slot(@empty)}
               </li>

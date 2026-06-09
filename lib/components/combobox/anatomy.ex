@@ -14,7 +14,7 @@ defmodule Corex.Combobox.Anatomy do
       form_field: false,
       always_submit_on_enter: false,
       auto_focus: false,
-      close_on_select: false,
+      close_on_select: true,
       dir: "ltr",
       orientation: "vertical",
       input_behavior: "autohighlight",
