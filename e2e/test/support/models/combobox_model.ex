@@ -276,7 +276,7 @@ defmodule E2eWeb.ComboboxModel do
   def disable_playground_close_on_select(session) do
     q =
       css(
-        ~s|#close_on_select [data-scope="switch"][data-part="control"][data-state="checked"]|,
+        ~S|#close_on_select [data-scope="switch"][data-part="control"][data-state="checked"]|,
         visible: :any
       )
 
