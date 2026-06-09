@@ -387,7 +387,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def api_set_value_client_binding_example(assigns) do
     ~H"""
     <.stack gap="lg" width="full">
-      <.row wrap="wrap" gap="sm">
+      <.row wrap="wrap" gap="sm" justify="center">
       <.action phx-click={Corex.Accordion.set_value(@id, "lorem")} size="sm">
         Open Lorem
       </.action>
@@ -418,7 +418,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def api_set_value_client_js_example(assigns) do
     ~H"""
     <.stack gap="lg" width="full">
-      <.row wrap="wrap" gap="sm">
+      <.row wrap="wrap" gap="sm" justify="center">
       <.action
         phx-click={
           JS.dispatch("corex:accordion:set-value",
@@ -473,7 +473,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def api_set_value_server_example(assigns) do
     ~H"""
     <.stack gap="lg" width="full">
-      <.row wrap="wrap" gap="sm">
+      <.row wrap="wrap" gap="sm" justify="center">
       <.action phx-click={@event} value="lorem" size="sm">Open Lorem</.action>
       <.action phx-click={@event} value="lorem,donec" size="sm">
         Lorem and Donec
@@ -497,7 +497,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def api_value_client_binding_example(assigns) do
     ~H"""
     <.stack gap="lg" width="full">
-      <.row wrap="wrap" gap="sm">
+      <.row wrap="wrap" gap="sm" justify="center">
       <.action phx-click={Corex.Accordion.value(@id)} size="sm">Value</.action>
       <.action
         phx-click={Corex.Accordion.value(@id, respond_to: :client)}
@@ -523,7 +523,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def api_value_client_js_example(assigns) do
     ~H"""
     <.stack gap="lg" width="full">
-      <.row wrap="wrap" gap="sm">
+      <.row wrap="wrap" gap="sm" justify="center">
       <.action
         phx-click={JS.dispatch("corex:accordion:value", to: "##{@id}", detail: %{}, bubbles: false)}
         size="sm"
@@ -560,7 +560,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def api_value_server_example(assigns) do
     ~H"""
     <.stack gap="lg" width="full">
-      <.row wrap="wrap" gap="sm">
+      <.row wrap="wrap" gap="sm" justify="center">
       <.action phx-click={@event_value} size="sm">Value</.action>
       <.action phx-click={@event_value_client_only} size="sm">
         Value (client only)
@@ -583,7 +583,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def api_focused_client_example(assigns) do
     ~H"""
     <.stack gap="lg" width="full">
-      <.row wrap="wrap" gap="sm">
+      <.row wrap="wrap" gap="sm" justify="center">
       <.action phx-click={@event_focused} size="sm">Focused</.action>
       <.action phx-click={@event_focused_client_only} size="sm">
         Focused (client only)
@@ -606,7 +606,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def api_focused_client_js_example(assigns) do
     ~H"""
     <.stack gap="lg" width="full">
-      <.row wrap="wrap" gap="sm">
+      <.row wrap="wrap" gap="sm" justify="center">
       <.action phx-click={@event_focused} size="sm">Focused</.action>
       <.action phx-click={@event_focused_client_only} size="sm">
         Focused (client only)
@@ -629,7 +629,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def api_focused_server_example(assigns) do
     ~H"""
     <.stack gap="lg" width="full">
-      <.row wrap="wrap" gap="sm">
+      <.row wrap="wrap" gap="sm" justify="center">
       <.action phx-click={@event_focused} size="sm">Focused</.action>
       <.action phx-click={@event_focused_client_only} size="sm">
         Focused (client only)
@@ -652,7 +652,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def api_item_state_client_example(assigns) do
     ~H"""
     <.stack gap="lg" width="full">
-      <.row wrap="wrap" gap="sm">
+      <.row wrap="wrap" gap="sm" justify="center">
       <.action phx-click={@event_lorem} size="sm">lorem</.action>
       <.action phx-click={@event_duis} size="sm">duis</.action>
       <.action phx-click={@event_donec} size="sm">donec</.action>
@@ -674,7 +674,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def api_item_state_client_js_example(assigns) do
     ~H"""
     <.stack gap="lg" width="full">
-      <.row wrap="wrap" gap="sm">
+      <.row wrap="wrap" gap="sm" justify="center">
       <.action phx-click={@event_lorem} size="sm">lorem</.action>
       <.action phx-click={@event_duis} size="sm">duis</.action>
       <.action phx-click={@event_donec} size="sm">donec</.action>
@@ -696,7 +696,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def api_item_state_server_example(assigns) do
     ~H"""
     <.stack gap="lg" width="full">
-      <.row wrap="wrap" gap="sm">
+      <.row wrap="wrap" gap="sm" justify="center">
       <.action phx-click={@event_lorem} size="sm">lorem</.action>
       <.action phx-click={@event_duis} size="sm">duis</.action>
       <.action phx-click={@event_donec} size="sm">donec</.action>
@@ -1418,7 +1418,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def patterns_stream_demo_heex do
     """
     <.stack gap="md" width="full">
-      <.row wrap="wrap" gap="sm">
+      <.row wrap="wrap" gap="sm" justify="center">
         <.action phx-click="add_item" size="sm" semantic="accent">
           <.heroicon name="hero-plus" /> Add item
         </.action>
