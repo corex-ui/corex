@@ -15,6 +15,14 @@ defmodule E2eWeb.AccordionPlayLive do
 
   @accordion_id "my-accordion"
 
+  @snippet_item_entries [
+    {"lorem", "Lorem ipsum dolor sit amet",
+     "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+    {"duis", "Duis dictum gravida odio ac pharetra?",
+     "Nullam eget vestibulum ligula, at interdum tellus."},
+    {"donec", "Donec condimentum ex mi", "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+  ]
+
   defp item_values, do: ~W(lorem duis donec)
 
   defp accordion_items(controls) do
@@ -150,7 +158,7 @@ defmodule E2eWeb.AccordionPlayLive do
     code = """
     <.accordion
       variant="subtle"
-      items={@items}
+      #{E2eWeb.AuthoringSnippet.items_attr(snippet_items_code(controls))}
       orientation="#{controls.orientation}"
       dir="#{controls.dir}"#{collapsible_attr}#{multiple_attr}
     >
@@ -160,6 +168,26 @@ defmodule E2eWeb.AccordionPlayLive do
     """
 
     E2eWeb.AuthoringSnippet.playground_heex_snippets(String.trim(code))
+  end
+
+  defp snippet_items_code(%{disabled_items: []}) do
+    E2eWeb.AuthoringSnippet.items_code()
+  end
+
+  defp snippet_items_code(controls) do
+    disabled = MapSet.new(controls.disabled_items)
+
+    lines =
+      @snippet_item_entries
+      |> Enum.map(&snippet_item_entry(&1, disabled))
+
+    "Corex.Content.new([\n#{Enum.join(lines, ",\n")}\n])"
+  end
+
+  defp snippet_item_entry({value, label, content}, disabled) do
+    disabled_attr = if MapSet.member?(disabled, value), do: ", disabled: true", else: ""
+
+    ~s(  %{value: "#{value}", label: "#{label}", content: "#{content}"#{disabled_attr}})
   end
 
   defp push_playground_accordion_value(socket) do

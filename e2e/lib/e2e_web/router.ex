@@ -66,6 +66,7 @@ defmodule E2eWeb.Router do
       live("/forms/patterns", FormPatternsLive)
 
       live("/action/patterns", ActionPatternsLive)
+      live("/action/style", ActionStyleLive)
 
       live("/accordion/playground", AccordionPlayLive)
       live("/accordion/style", AccordionStyleLive)
@@ -258,7 +259,6 @@ defmodule E2eWeb.Router do
 
     get("/accordion/anatomy", PageController, :accordion_page)
     get("/action/anatomy", PageController, :action_page)
-    get("/action/style", PageController, :action_styling_page)
     get("/checkbox/anatomy", PageController, :checkbox_page)
     get("/checkbox/style", PageController, :checkbox_styling_page)
     get("/checkbox/form", PageController, :checkbox_form_page)

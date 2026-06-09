@@ -3,8 +3,8 @@
 @layer components {
   .row {
     display: flex;
-    flex-flow: row wrap;
     align-items: center;
+    flex-flow: row wrap;
   }
 
   .row.row--padding-none {

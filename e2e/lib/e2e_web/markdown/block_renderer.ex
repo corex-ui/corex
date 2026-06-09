@@ -13,9 +13,7 @@ defmodule E2eWeb.Markdown.BlockRenderer do
     ~H"""
     <div class="relative">
       <%= if @inner_html do %>
-        <pre data-scope="code" data-part="root" tabindex="0" class="code code--max-w-none">
-          <code data-scope="code" data-part="content">{Phoenix.HTML.raw(@inner_html)}</code>
-        </pre>
+        <pre data-scope="code" data-part="root" tabindex="0" class="code code--max-w-none"><code data-scope="code" data-part="content">{Phoenix.HTML.raw(@inner_html)}</code></pre>
       <% else %>
         <.code class="code code--max-w-none" language={@language} code={@code} />
       <% end %>
@@ -68,27 +66,12 @@ defmodule E2eWeb.Markdown.BlockRenderer do
     %{__changed__: %{}, code: code, language: language}
     |> inline()
     |> rendered_to_string()
-    |> preserve_makeup_whitespace()
-  end
-
-  def preserve_makeup_whitespace(html) when is_binary(html) do
-    String.replace(html, ~r/<span class="w">\s*<\/span>/, "<span class=\"w\">&nbsp;</span>")
   end
 
   defp highlight_fence_lines(code, language) do
-    lexer = to_string(language)
-
-    code
-    |> String.split("\n", trim: false)
-    |> Enum.map(&highlight_line(&1, lexer))
-    |> Enum.intersperse("<br />")
-    |> IO.iodata_to_binary()
-  end
-
-  defp highlight_line(line, lexer) do
-    case Makeup.highlight_inner_html(line, lexer: lexer) do
-      html when is_binary(html) -> html
-      _ -> escape_html(line)
+    case Makeup.highlight_inner_html(code, lexer: to_string(language)) do
+      html when is_binary(html) -> Corex.Code.preserve_makeup_whitespace(html)
+      _ -> escape_html(code)
     end
   end
 

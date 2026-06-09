@@ -24,10 +24,10 @@
 @layer components {
   .h2 {
     color: var(--color-ui-ink);
-    font-family: var(--font-display);
     font-size: var(--text-xl);
-    font-weight: var(--font-weight-bold);
     line-height: var(--leading-xl);
+    font-family: var(--font-display);
+    font-weight: var(--font-weight-bold);
     @media (min-width: 48rem) {
       font-size: var(--text-2xl);
       line-height: var(--leading-2xl);

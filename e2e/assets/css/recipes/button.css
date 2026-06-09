@@ -25,15 +25,15 @@
   .button {
     display: inline-flex;
     cursor: pointer;
-    transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
-    appearance: none;
-    align-items: center;
-    justify-content: center;
     border: 1px solid transparent;
-    border-radius: var(--radius-md);
     font-weight: var(--font-weight-normal);
-    text-align: center;
+    border-radius: var(--radius-md);
     text-decoration-line: none;
+    text-align: center;
+    align-items: center;
+    appearance: none;
+    transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+    justify-content: center;
     &:focus-visible {
       outline: none;
       box-shadow: inset 0 0 0 2px var(--color-ui-ink);
@@ -242,8 +242,8 @@
 
   .button.button--solid {
     color: var(--color-ui-ink);
-    border-color: transparent;
     background-color: var(--color-ui);
+    border-color: transparent;
     &:active {
       background-color: var(--color-ui-active);
     }
@@ -252,12 +252,12 @@
       &[disabled] {
       cursor: not-allowed;
       color: var(--color-ui-ink-muted);
-      box-shadow: none;
       background-color: var(--color-ui-muted);
+      box-shadow: none;
       &:active {
         color: var(--color-ui-ink-muted);
-        box-shadow: none;
         background-color: var(--color-ui-muted);
+        box-shadow: none;
       }
       &[data-state="open"] {
         color: var(--color-ui-ink-muted);
@@ -270,8 +270,8 @@
       &:focus-visible {
         color: var(--color-ui-ink-muted);
         outline: none;
-        box-shadow: none;
         background-color: var(--color-ui-muted);
+        box-shadow: none;
       }
     }
     &:hover {
@@ -285,8 +285,8 @@
 
   .button.button--ghost {
     color: var(--color-ui-ink);
-    border-color: transparent;
     background-color: transparent;
+    border-color: transparent;
     &:active {
       background-color: var(--color-ui-active);
     }
@@ -295,12 +295,12 @@
       &[disabled] {
       cursor: not-allowed;
       color: var(--color-ui-ink-muted);
-      box-shadow: none;
       background-color: transparent;
+      box-shadow: none;
       &:active {
         color: var(--color-ui-ink-muted);
-        box-shadow: none;
         background-color: transparent;
+        box-shadow: none;
       }
       &[data-state="open"] {
         color: var(--color-ui-ink-muted);
@@ -313,8 +313,8 @@
       &:focus-visible {
         color: var(--color-ui-ink-muted);
         outline: none;
-        box-shadow: none;
         background-color: transparent;
+        box-shadow: none;
       }
     }
     &:hover {
@@ -328,8 +328,8 @@
 
   .button.button--outline {
     color: var(--color-ui-ink);
-    border-color: var(--color-outline);
     background-color: transparent;
+    border-color: var(--color-outline);
     &:active {
       background-color: var(--color-ui-active);
     }
@@ -338,9 +338,9 @@
       &[disabled] {
       cursor: not-allowed;
       color: var(--color-ui-ink-muted);
-      border-color: var(--color-ui-muted);
-      box-shadow: none;
       background-color: transparent;
+      box-shadow: none;
+      border-color: var(--color-ui-muted);
     }
     &:hover {
       background-color: var(--color-ui-hover);
@@ -353,8 +353,8 @@
 
   .button.button--subtle {
     color: var(--color-ui-ink);
-    border-color: transparent;
     background-color: var(--color-ui-hover);
+    border-color: transparent;
     &:active {
       background-color: var(--color-ui-active);
     }
@@ -363,12 +363,12 @@
       &[disabled] {
       cursor: not-allowed;
       color: var(--color-ui-ink-muted);
-      box-shadow: none;
       background-color: var(--color-ui-muted);
+      box-shadow: none;
       &:active {
         color: var(--color-ui-ink-muted);
-        box-shadow: none;
         background-color: var(--color-ui-muted);
+        box-shadow: none;
       }
       &[data-state="open"] {
         color: var(--color-ui-ink-muted);
@@ -381,8 +381,8 @@
       &:focus-visible {
         color: var(--color-ui-ink-muted);
         outline: none;
-        box-shadow: none;
         background-color: var(--color-ui-muted);
+        box-shadow: none;
       }
     }
     &:hover {
@@ -1230,8 +1230,8 @@
     width: 1em;
     color: currentcolor;
     height: 1em;
-    flex-shrink: 0;
     align-items: center;
+    flex-shrink: 0;
     justify-content: center;
   }
 

@@ -6,8 +6,8 @@ defmodule E2eWeb.App.Aside do
   attr(:node_id_base, :string, required: true)
   attr(:tip_scope, :string, required: true)
 
-  def aside_menu_tree_badge(assigns) do
-    tip = aside_badge_tip(assigns.kind)
+  def aside_menu_tree_icon(assigns) do
+    tip = aside_icon_tip(assigns.kind)
     scope = String.replace(assigns.tip_scope, ~r/[^a-zA-Z0-9_-]+/u, "-")
     tip_id = "aside-tip-#{scope}-#{assigns.node_id_base}-#{assigns.kind}"
 
@@ -18,7 +18,7 @@ defmodule E2eWeb.App.Aside do
       |> assign(:zag_img?, assigns.kind == :zagjs)
 
     ~H"""
-    <div class="layout__aside-badge">
+    <div class="layout__aside-icon">
       <.tooltip
         id={@tip_id}
         trigger_tag={:span}
@@ -27,19 +27,15 @@ defmodule E2eWeb.App.Aside do
         close_on_click={false}
       >
         <:trigger>
-          <.badge size="sm" shape="square">
-            <%= if @zag_img? do %>
-              <img
-                src={~p"/images/tech/zag.webp"}
-                alt=""
-                width="16"
-                height="16"
-                decoding="async"
-              />
-            <% else %>
-              <.heroicon name={aside_menu_hero(@kind)} />
-            <% end %>
-          </.badge>
+          <.icon text="xs">
+            <img
+              :if={@zag_img?}
+              src={~p"/images/tech/zag.webp"}
+              alt=""
+              decoding="async"
+            />
+            <.heroicon :if={not @zag_img?} name={aside_menu_hero(@kind)} />
+          </.icon>
         </:trigger>
         <:content>{@tip}</:content>
       </.tooltip>
@@ -74,8 +70,8 @@ defmodule E2eWeb.App.Aside do
     assigns = assign(assigns, :badges, badges) |> assign(:id_base, id_base)
 
     ~H"""
-    <div :if={@badges != []} class="layout__aside-badges">
-      <.aside_menu_tree_badge
+    <div :if={@badges != []} class="layout__aside-icons">
+      <.aside_menu_tree_icon
         :for={kind <- @badges}
         kind={kind}
         node_id_base={@id_base}
@@ -227,9 +223,9 @@ defmodule E2eWeb.App.Aside do
     """
   end
 
-  defp aside_badge_tip(:zagjs), do: "Zag.js"
-  defp aside_badge_tip(:form), do: "Form"
-  defp aside_badge_tip(:navigation), do: "Navigation"
+  defp aside_icon_tip(:zagjs), do: "Zag.js"
+  defp aside_icon_tip(:form), do: "Form"
+  defp aside_icon_tip(:navigation), do: "Navigation"
 
   defp aside_menu_hero(:navigation), do: "hero-link"
   defp aside_menu_hero(:form), do: "hero-queue-list"

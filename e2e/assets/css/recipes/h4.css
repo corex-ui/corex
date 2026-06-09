@@ -24,10 +24,10 @@
 @layer components {
   .h4 {
     color: var(--color-ui-ink);
-    font-family: var(--font-display);
     font-size: var(--text-base);
-    font-weight: var(--font-weight-normal);
     line-height: var(--leading-base);
+    font-family: var(--font-display);
+    font-weight: var(--font-weight-normal);
     @media (min-width: 48rem) {
       font-size: var(--text-lg);
       line-height: var(--leading-lg);

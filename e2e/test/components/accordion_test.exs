@@ -400,6 +400,21 @@ defmodule E2eWeb.AccordionTest do
   end
 
   describe "style" do
+    feature "initial  -  recipe defaults stamp subtle md sizing modifiers", %{session: session} do
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :style)
+        |> Accordion.wait_root_no_loading("#my-accordion")
+
+      el = find(session, css("#my-accordion"))
+      classes = Wallaby.Element.attr(el, "class")
+      assert String.contains?(classes, "accordion")
+      assert String.contains?(classes, "accordion--subtle")
+      assert String.contains?(classes, "accordion--md")
+      assert String.contains?(classes, "accordion--w-full")
+      assert String.contains?(classes, "accordion--max-w-md")
+    end
+
     feature "size  -  SM adds accordion--sm on the host", %{session: session} do
       session =
         session

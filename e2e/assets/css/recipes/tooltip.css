@@ -206,8 +206,8 @@
 
   .tooltip.tooltip--accent [data-scope="tooltip"][data-part="content"] {
     color: var(--color-accent-ink);
-    border-color: var(--color-border-accent, var(--color-border));
     background-color: var(--color-accent);
+    border-color: var(--color-border-accent, var(--color-border));
   }
 
   .tooltip.tooltip--accent [data-scope="tooltip"][data-part="arrow"] {
@@ -220,8 +220,8 @@
 
   .tooltip.tooltip--brand [data-scope="tooltip"][data-part="content"] {
     color: var(--color-brand-ink);
-    border-color: var(--color-border-brand, var(--color-border));
     background-color: var(--color-brand);
+    border-color: var(--color-border-brand, var(--color-border));
   }
 
   .tooltip.tooltip--brand [data-scope="tooltip"][data-part="arrow"] {
@@ -234,8 +234,8 @@
 
   .tooltip.tooltip--alert [data-scope="tooltip"][data-part="content"] {
     color: var(--color-alert-ink);
-    border-color: var(--color-border-alert, var(--color-border));
     background-color: var(--color-alert);
+    border-color: var(--color-border-alert, var(--color-border));
   }
 
   .tooltip.tooltip--alert [data-scope="tooltip"][data-part="arrow"] {
@@ -248,8 +248,8 @@
 
   .tooltip.tooltip--info [data-scope="tooltip"][data-part="content"] {
     color: var(--color-info-ink);
-    border-color: var(--color-border-info, var(--color-border));
     background-color: var(--color-info);
+    border-color: var(--color-border-info, var(--color-border));
   }
 
   .tooltip.tooltip--info [data-scope="tooltip"][data-part="arrow"] {
@@ -262,8 +262,8 @@
 
   .tooltip.tooltip--success [data-scope="tooltip"][data-part="content"] {
     color: var(--color-success-ink);
-    border-color: var(--color-border-success, var(--color-border));
     background-color: var(--color-success);
+    border-color: var(--color-border-success, var(--color-border));
   }
 
   .tooltip.tooltip--success [data-scope="tooltip"][data-part="arrow"] {
@@ -276,8 +276,8 @@
 
   .tooltip.tooltip--selected [data-scope="tooltip"][data-part="content"] {
     color: var(--color-selected-ink);
-    border-color: var(--color-border-selected, var(--color-border));
     background-color: var(--color-selected);
+    border-color: var(--color-border-selected, var(--color-border));
   }
 
   .tooltip.tooltip--selected [data-scope="tooltip"][data-part="arrow"] {

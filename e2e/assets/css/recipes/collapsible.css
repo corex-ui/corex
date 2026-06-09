@@ -220,23 +220,23 @@
   }
 
   .collapsible.collapsible--sm [data-scope="collapsible"][data-part="root"] {
-    max-width: var(--container-sm);
     gap: var(--space-sm);
+    max-width: var(--container-sm);
   }
 
   .collapsible.collapsible--md [data-scope="collapsible"][data-part="root"] {
-    max-width: var(--container-md);
     gap: var(--space-md);
+    max-width: var(--container-md);
   }
 
   .collapsible.collapsible--lg [data-scope="collapsible"][data-part="root"] {
-    max-width: var(--container-lg);
     gap: var(--space-lg);
+    max-width: var(--container-lg);
   }
 
   .collapsible.collapsible--xl [data-scope="collapsible"][data-part="root"] {
-    max-width: var(--container-xl);
     gap: var(--space-xl);
+    max-width: var(--container-xl);
   }
 
   .collapsible.collapsible--rounded-none [data-scope="collapsible"][data-part="content"] {

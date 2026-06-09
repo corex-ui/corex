@@ -231,10 +231,10 @@
 
   .angle-slider.angle-slider--sm [data-scope="angle-slider"][data-part="control"] {
     color: var(--color-ui-ink);
-    border-color: var(--color-border);
-    background-color: var(--color-ui);
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
+    background-color: var(--color-ui);
+    border-color: var(--color-border);
     --size: var(--size-sm);
     --thumb-size: calc(var(--size-sm) * 0.5);
   }
@@ -251,10 +251,10 @@
 
   .angle-slider.angle-slider--md [data-scope="angle-slider"][data-part="control"] {
     color: var(--color-ui-ink);
-    border-color: var(--color-border);
-    background-color: var(--color-ui);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    background-color: var(--color-ui);
+    border-color: var(--color-border);
     --size: var(--size-md);
     --thumb-size: calc(var(--size-md) * 0.5);
   }
@@ -271,10 +271,10 @@
 
   .angle-slider.angle-slider--lg [data-scope="angle-slider"][data-part="control"] {
     color: var(--color-ui-ink);
-    border-color: var(--color-border);
-    background-color: var(--color-ui);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
+    background-color: var(--color-ui);
+    border-color: var(--color-border);
     --size: var(--size-lg);
     --thumb-size: calc(var(--size-lg) * 0.5);
   }
@@ -291,10 +291,10 @@
 
   .angle-slider.angle-slider--xl [data-scope="angle-slider"][data-part="control"] {
     color: var(--color-ui-ink);
-    border-color: var(--color-border);
-    background-color: var(--color-ui);
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
+    background-color: var(--color-ui);
+    border-color: var(--color-border);
     --size: var(--size-xl);
     --thumb-size: calc(var(--size-xl) * 0.5);
   }

@@ -8,6 +8,10 @@ defmodule E2eWeb.AuthoringToggle do
 
   attr :id, :string, default: "doc-authoring-mode"
 
+  attr :disable_markup, :boolean,
+    default: false,
+    doc: "disable Unstyled on style pages; cookie may still be markup"
+
   def authoring_toggle(assigns) do
     ~H"""
     <.toggle_group
@@ -22,7 +26,8 @@ defmodule E2eWeb.AuthoringToggle do
     >
       <:item value="attr">Attrs</:item>
       <:item value="class">Class</:item>
-      <:item value="markup">Unstyled</:item>
+      <:item :if={@disable_markup} value="markup" disabled>Unstyled</:item>
+      <:item :if={!@disable_markup} value="markup">Unstyled</:item>
     </.toggle_group>
     """
   end

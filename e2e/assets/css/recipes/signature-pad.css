@@ -243,10 +243,10 @@
   .signature-pad.signature-pad--sm [data-scope="signature-pad"][data-part="clear-trigger"] {
     color: var(--color-accent-ink);
     min-height: var(--size-sm);
-    min-width: var(--size-sm);
-    background-color: var(--color-accent);
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
+    background-color: var(--color-accent);
+    min-width: var(--size-sm);
   }
 
   .signature-pad.signature-pad--md [data-scope="signature-pad"][data-part="root"] {
@@ -265,10 +265,10 @@
   .signature-pad.signature-pad--md [data-scope="signature-pad"][data-part="clear-trigger"] {
     color: var(--color-accent-ink);
     min-height: var(--size-md);
-    min-width: var(--size-md);
-    background-color: var(--color-accent);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    background-color: var(--color-accent);
+    min-width: var(--size-md);
   }
 
   .signature-pad.signature-pad--lg [data-scope="signature-pad"][data-part="root"] {
@@ -287,10 +287,10 @@
   .signature-pad.signature-pad--lg [data-scope="signature-pad"][data-part="clear-trigger"] {
     color: var(--color-accent-ink);
     min-height: var(--size-lg);
-    min-width: var(--size-lg);
-    background-color: var(--color-accent);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
+    background-color: var(--color-accent);
+    min-width: var(--size-lg);
   }
 
   .signature-pad.signature-pad--xl [data-scope="signature-pad"][data-part="root"] {
@@ -309,10 +309,10 @@
   .signature-pad.signature-pad--xl [data-scope="signature-pad"][data-part="clear-trigger"] {
     color: var(--color-accent-ink);
     min-height: var(--size-xl);
-    min-width: var(--size-xl);
-    background-color: var(--color-accent);
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
+    background-color: var(--color-accent);
+    min-width: var(--size-xl);
   }
 
   .signature-pad.signature-pad--rounded-none [data-scope="signature-pad"][data-part="control"] {

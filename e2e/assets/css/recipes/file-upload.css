@@ -224,8 +224,8 @@
   }
 
   .file-upload.file-upload--sm [data-scope="file-upload"][data-part="root"] {
-    max-width: var(--container-sm);
     gap: var(--space-sm);
+    max-width: var(--container-sm);
   }
 
   .file-upload.file-upload--sm [data-scope="file-upload"][data-part="label"] {
@@ -243,14 +243,14 @@
     gap: var(--space-sm);
     padding-inline: var(--space-sm);
     min-height: var(--size-sm);
-    background-color: var(--color-accent);
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
+    background-color: var(--color-accent);
   }
 
   .file-upload.file-upload--md [data-scope="file-upload"][data-part="root"] {
-    max-width: var(--container-md);
     gap: var(--space-md);
+    max-width: var(--container-md);
   }
 
   .file-upload.file-upload--md [data-scope="file-upload"][data-part="label"] {
@@ -268,14 +268,14 @@
     gap: var(--space-md);
     padding-inline: var(--space-md);
     min-height: var(--size-md);
-    background-color: var(--color-accent);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    background-color: var(--color-accent);
   }
 
   .file-upload.file-upload--lg [data-scope="file-upload"][data-part="root"] {
-    max-width: var(--container-lg);
     gap: var(--space-lg);
+    max-width: var(--container-lg);
   }
 
   .file-upload.file-upload--lg [data-scope="file-upload"][data-part="label"] {
@@ -293,14 +293,14 @@
     gap: var(--space-lg);
     padding-inline: var(--space-lg);
     min-height: var(--size-lg);
-    background-color: var(--color-accent);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
+    background-color: var(--color-accent);
   }
 
   .file-upload.file-upload--xl [data-scope="file-upload"][data-part="root"] {
-    max-width: var(--container-xl);
     gap: var(--space-xl);
+    max-width: var(--container-xl);
   }
 
   .file-upload.file-upload--xl [data-scope="file-upload"][data-part="label"] {
@@ -318,9 +318,9 @@
     gap: var(--space-xl);
     padding-inline: var(--space-xl);
     min-height: var(--size-xl);
-    background-color: var(--color-accent);
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
+    background-color: var(--color-accent);
   }
 
   .file-upload.file-upload--rounded-none [data-scope="file-upload"][data-part="dropzone"] {

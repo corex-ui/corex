@@ -154,9 +154,7 @@ defmodule Corex.Code do
         class={corex_style_class(assigns)}
        
         {@rest}
-      >
-        <code data-scope="code" data-part="content">{Phoenix.HTML.raw(@highlighted_html)}</code>
-      </pre>
+      ><code data-scope="code" data-part="content">{Phoenix.HTML.raw(@highlighted_html)}</code></pre>
       <code :if={@inline} data-scope="code" data-part="root" class={corex_style_class(assigns)} {@rest}>
         <span data-scope="code" data-part="content">{Phoenix.HTML.raw(@highlighted_html)}</span>
       </code>
@@ -170,12 +168,21 @@ defmodule Corex.Code do
 
     case registry.fetch_lexer_by_name(name) do
       {:ok, _} ->
-        makeup.highlight_inner_html(assigns.code, lexer: name)
+        assigns.code
+        |> makeup.highlight_inner_html(lexer: name)
+        |> preserve_makeup_whitespace()
 
       :error ->
         assigns.code
         |> Phoenix.HTML.html_escape()
         |> Phoenix.HTML.safe_to_string()
     end
+  end
+
+  @doc false
+  def preserve_makeup_whitespace(html) when is_binary(html) do
+    Regex.replace(~r/<span class="w">([\s]*)<\/span>/, html, fn _, whitespace ->
+      "<span class=\"w\">#{String.replace(whitespace, " ", "&nbsp;")}</span>"
+    end)
   end
 end

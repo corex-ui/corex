@@ -9,7 +9,7 @@
       border-radius: --value(--radius-*, [length]);
   }
 
-  [data-scope="tags-input"][data-part="item-preview"] {
+  [data-scope="tags-input"][data-part="item-input"] {
       border-radius: --value(--radius-*, [length]);
   }
 
@@ -17,7 +17,7 @@
       border-radius: --value(--radius-*, [length]);
   }
 
-  [data-scope="tags-input"][data-part="item-input"] {
+  [data-scope="tags-input"][data-part="item-preview"] {
       border-radius: --value(--radius-*, [length]);
   }
 

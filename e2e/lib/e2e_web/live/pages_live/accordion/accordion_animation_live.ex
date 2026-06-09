@@ -25,10 +25,7 @@ defmodule E2eWeb.AccordionAnimationLive do
       |> assign(:opacity_end, to_string(animation_options.opacity_end))
       |> assign(:easing_items, @easing_items)
       |> assign(:easing, [animation_options.easing])
-      |> assign(
-        :playground_snippet,
-        E2eWeb.AuthoringSnippet.heex_snippets(E2eWeb.Demos.AccordionDemo.animation_playground_heex())
-      )
+      |> assign_playground_snippet()
       |> assign(
         :instant_heex,
         E2eWeb.AuthoringSnippet.heex_snippets(E2eWeb.Demos.AccordionDemo.animation_instant_heex())
@@ -64,7 +61,10 @@ defmodule E2eWeb.AccordionAnimationLive do
   def handle_event("block_interaction_changed", %{"checked" => checked, "id" => _}, socket) do
     b = checked == true or checked == "true"
 
-    {:noreply, update(socket, :animation_options, fn o -> Map.put(o, :block_interaction, b) end)}
+    {:noreply,
+     socket
+     |> update(:animation_options, fn o -> Map.put(o, :block_interaction, b) end)
+     |> assign_playground_snippet()}
   end
 
   def handle_event(_event, _params, socket) do
@@ -95,7 +95,8 @@ defmodule E2eWeb.AccordionAnimationLive do
             <.select
               id="accordion-animation-easing"
               size="sm"
-              class="select select--mini-sm lg:w-full"
+              class="select select--mini-sm"
+              width="full"
               value={@easing}
               items={@easing_items}
               on_value_change="easing_changed"
@@ -107,7 +108,8 @@ defmodule E2eWeb.AccordionAnimationLive do
 
             <.number_input
               id="accordion-animation-duration"
-              class="number-input number-input--sm lg:w-full"
+              class="number-input number-input--sm"
+              width="full"
               value={@duration}
               step={0.1}
               min={0.0}
@@ -124,7 +126,8 @@ defmodule E2eWeb.AccordionAnimationLive do
 
             <.number_input
               id="accordion-animation-opacity-start"
-              class="number-input number-input--sm lg:w-full"
+              class="number-input number-input--sm"
+              width="full"
               step={0.1}
               min={0.0}
               max={1.0}
@@ -142,7 +145,8 @@ defmodule E2eWeb.AccordionAnimationLive do
 
             <.number_input
               id="accordion-animation-opacity-end"
-              class="number-input number-input--sm lg:w-full"
+              class="number-input number-input--sm"
+              width="full"
               step={0.1}
               min={0.0}
               max={1.0}
@@ -161,7 +165,8 @@ defmodule E2eWeb.AccordionAnimationLive do
             <.switch
               id="accordion-animation-block-interaction"
               size="sm"
-              class="switch w-full"
+              class="switch"
+              width="full"
               checked={@animation_options.block_interaction}
               on_checked_change="block_interaction_changed"
             >
@@ -179,7 +184,9 @@ defmodule E2eWeb.AccordionAnimationLive do
                   <:styled>
                     <.accordion
                       id="accordion-animation-playground-accordion"
-                      class="accordion w-full h-full overflow-hidden"
+                      class="accordion"
+                      width="full"
+                      height="full"
                       animation="js"
                       animation_options={@animation_options}
                       items={@items}
@@ -194,7 +201,8 @@ defmodule E2eWeb.AccordionAnimationLive do
                     <.accordion
                       id="accordion-animation-playground-accordion"
                       unstyled
-                      class="w-full h-full overflow-hidden"
+                      width="full"
+                      height="full"
                       animation="js"
                       animation_options={@animation_options}
                       items={@items}
@@ -284,17 +292,53 @@ defmodule E2eWeb.AccordionAnimationLive do
     """
   end
 
+  defp assign_playground_snippet(socket) do
+    assign(socket, :playground_snippet, playground_snippet(socket.assigns.animation_options))
+  end
+
+  defp playground_snippet(%Corex.Animation.Height{} = animation_options) do
+    block_interaction_attr =
+      if animation_options.block_interaction do
+        ",\n    block_interaction: true"
+      else
+        ""
+      end
+
+    code = """
+    <.accordion
+      animation="js"
+      animation_options={
+        %Corex.Animation.Height{
+          duration: #{animation_options.duration},
+          easing: #{inspect(animation_options.easing)},
+          opacity_start: #{animation_options.opacity_start},
+          opacity_end: #{animation_options.opacity_end}#{block_interaction_attr}
+        }
+      }
+      #{E2eWeb.AuthoringSnippet.items_attr()}
+    >
+      <:indicator>
+        <.heroicon name="hero-chevron-right" />
+      </:indicator>
+    </.accordion>
+    """
+
+    E2eWeb.AuthoringSnippet.playground_heex_snippets(String.trim(code))
+  end
+
   defp update_animation(socket, key, value, raw_value)
        when key in [:duration, :opacity_start, :opacity_end] do
     socket
     |> update(:animation_options, fn opts -> Map.put(opts, key, value) end)
     |> assign(key, raw_value)
+    |> assign_playground_snippet()
   end
 
   defp update_animation(socket, key, value, raw_value) when key in [:easing] do
     socket
     |> update(:animation_options, fn opts -> Map.put(opts, key, value) end)
     |> assign(key, raw_value)
+    |> assign_playground_snippet()
   end
 
   defp parse_float(nil, fallback), do: fallback

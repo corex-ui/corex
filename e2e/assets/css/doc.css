@@ -70,6 +70,14 @@
   background-color: var(--color-root);
 }
 
+.doc-section-tabs [data-scope="tabs"][data-part="content"].doc-section-preview {
+  padding: var(--space-xl);
+}
+
+.doc-section-tabs [data-scope="tabs"][data-part="content"].doc-section-code {
+  padding: 0;
+}
+
 .doc-preview-tabs {
   align-self: stretch;
   width: 100%;
@@ -104,6 +112,7 @@
   border: none;
   border-radius: 0;
   box-shadow: none;
+  padding-block: var(--space-sm);
 }
 
 .doc-demo-img {

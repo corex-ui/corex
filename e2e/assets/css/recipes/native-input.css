@@ -220,8 +220,8 @@
   }
 
   .native-input.native-input--sm [data-scope="native-input"][data-part="root"] {
-    max-width: var(--container-sm);
     gap: var(--space-sm);
+    max-width: var(--container-sm);
   }
 
   .native-input.native-input--sm [data-scope="native-input"][data-part="label"] {
@@ -233,15 +233,15 @@
     color: var(--color-ui-ink);
     padding-inline: var(--space-sm);
     min-height: var(--size-sm);
-    border-color: var(--color-border);
-    background-color: var(--color-ui);
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
+    background-color: var(--color-ui);
+    border-color: var(--color-border);
   }
 
   .native-input.native-input--md [data-scope="native-input"][data-part="root"] {
-    max-width: var(--container-md);
     gap: var(--space-md);
+    max-width: var(--container-md);
   }
 
   .native-input.native-input--md [data-scope="native-input"][data-part="label"] {
@@ -253,15 +253,15 @@
     color: var(--color-ui-ink);
     padding-inline: var(--space-md);
     min-height: var(--size-md);
-    border-color: var(--color-border);
-    background-color: var(--color-ui);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    background-color: var(--color-ui);
+    border-color: var(--color-border);
   }
 
   .native-input.native-input--lg [data-scope="native-input"][data-part="root"] {
-    max-width: var(--container-lg);
     gap: var(--space-lg);
+    max-width: var(--container-lg);
   }
 
   .native-input.native-input--lg [data-scope="native-input"][data-part="label"] {
@@ -273,15 +273,15 @@
     color: var(--color-ui-ink);
     padding-inline: var(--space-lg);
     min-height: var(--size-lg);
-    border-color: var(--color-border);
-    background-color: var(--color-ui);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
+    background-color: var(--color-ui);
+    border-color: var(--color-border);
   }
 
   .native-input.native-input--xl [data-scope="native-input"][data-part="root"] {
-    max-width: var(--container-xl);
     gap: var(--space-xl);
+    max-width: var(--container-xl);
   }
 
   .native-input.native-input--xl [data-scope="native-input"][data-part="label"] {
@@ -293,10 +293,10 @@
     color: var(--color-ui-ink);
     padding-inline: var(--space-xl);
     min-height: var(--size-xl);
-    border-color: var(--color-border);
-    background-color: var(--color-ui);
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
+    background-color: var(--color-ui);
+    border-color: var(--color-border);
   }
 
   .native-input.native-input--rounded-none [data-scope="native-input"][data-part="input"] {

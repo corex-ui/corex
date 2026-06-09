@@ -230,121 +230,121 @@
   .pagination.pagination--sm [data-scope="pagination"][data-part="item"] {
     padding-inline: var(--space-sm);
     min-height: var(--size-sm);
-    min-width: var(--size-sm);
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
+    min-width: var(--size-sm);
   }
 
   .pagination.pagination--sm [data-scope="pagination"][data-part="ellipsis"] {
     color: var(--color-ui-ink);
     min-height: var(--size-sm);
-    min-width: var(--size-sm);
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
+    min-width: var(--size-sm);
   }
 
   .pagination.pagination--sm [data-scope="pagination"][data-part="prev-trigger"] {
     min-height: calc(var(--size-sm) * 0.8);
-    min-width: calc(var(--size-sm) * 0.8);
     font-size: calc(var(--text-sm) * 0.8);
     line-height: calc(var(--text-sm--line-height) * 0.8);
+    min-width: calc(var(--size-sm) * 0.8);
   }
 
   .pagination.pagination--sm [data-scope="pagination"][data-part="next-trigger"] {
     min-height: calc(var(--size-sm) * 0.8);
-    min-width: calc(var(--size-sm) * 0.8);
     font-size: calc(var(--text-sm) * 0.8);
     line-height: calc(var(--text-sm--line-height) * 0.8);
+    min-width: calc(var(--size-sm) * 0.8);
   }
 
   .pagination.pagination--md [data-scope="pagination"][data-part="item"] {
     padding-inline: var(--space-md);
     min-height: var(--size-md);
-    min-width: var(--size-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-width: var(--size-md);
   }
 
   .pagination.pagination--md [data-scope="pagination"][data-part="ellipsis"] {
     color: var(--color-ui-ink);
     min-height: var(--size-md);
-    min-width: var(--size-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-width: var(--size-md);
   }
 
   .pagination.pagination--md [data-scope="pagination"][data-part="prev-trigger"] {
     min-height: calc(var(--size-md) * 0.8);
-    min-width: calc(var(--size-md) * 0.8);
     font-size: calc(var(--text-base) * 0.8);
     line-height: calc(var(--text-base--line-height) * 0.8);
+    min-width: calc(var(--size-md) * 0.8);
   }
 
   .pagination.pagination--md [data-scope="pagination"][data-part="next-trigger"] {
     min-height: calc(var(--size-md) * 0.8);
-    min-width: calc(var(--size-md) * 0.8);
     font-size: calc(var(--text-base) * 0.8);
     line-height: calc(var(--text-base--line-height) * 0.8);
+    min-width: calc(var(--size-md) * 0.8);
   }
 
   .pagination.pagination--lg [data-scope="pagination"][data-part="item"] {
     padding-inline: var(--space-lg);
     min-height: var(--size-lg);
-    min-width: var(--size-lg);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
+    min-width: var(--size-lg);
   }
 
   .pagination.pagination--lg [data-scope="pagination"][data-part="ellipsis"] {
     color: var(--color-ui-ink);
     min-height: var(--size-lg);
-    min-width: var(--size-lg);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
+    min-width: var(--size-lg);
   }
 
   .pagination.pagination--lg [data-scope="pagination"][data-part="prev-trigger"] {
     min-height: calc(var(--size-lg) * 0.8);
-    min-width: calc(var(--size-lg) * 0.8);
     font-size: calc(var(--text-lg) * 0.8);
     line-height: calc(var(--text-lg--line-height) * 0.8);
+    min-width: calc(var(--size-lg) * 0.8);
   }
 
   .pagination.pagination--lg [data-scope="pagination"][data-part="next-trigger"] {
     min-height: calc(var(--size-lg) * 0.8);
-    min-width: calc(var(--size-lg) * 0.8);
     font-size: calc(var(--text-lg) * 0.8);
     line-height: calc(var(--text-lg--line-height) * 0.8);
+    min-width: calc(var(--size-lg) * 0.8);
   }
 
   .pagination.pagination--xl [data-scope="pagination"][data-part="item"] {
     padding-inline: var(--space-xl);
     min-height: var(--size-xl);
-    min-width: var(--size-xl);
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
+    min-width: var(--size-xl);
   }
 
   .pagination.pagination--xl [data-scope="pagination"][data-part="ellipsis"] {
     color: var(--color-ui-ink);
     min-height: var(--size-xl);
-    min-width: var(--size-xl);
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
+    min-width: var(--size-xl);
   }
 
   .pagination.pagination--xl [data-scope="pagination"][data-part="prev-trigger"] {
     min-height: calc(var(--size-xl) * 0.8);
-    min-width: calc(var(--size-xl) * 0.8);
     font-size: calc(var(--text-xl) * 0.8);
     line-height: calc(var(--text-xl--line-height) * 0.8);
+    min-width: calc(var(--size-xl) * 0.8);
   }
 
   .pagination.pagination--xl [data-scope="pagination"][data-part="next-trigger"] {
     min-height: calc(var(--size-xl) * 0.8);
-    min-width: calc(var(--size-xl) * 0.8);
     font-size: calc(var(--text-xl) * 0.8);
     line-height: calc(var(--text-xl--line-height) * 0.8);
+    min-width: calc(var(--size-xl) * 0.8);
   }
 
   .pagination.pagination--rounded-none [data-scope="pagination"][data-part="prev-trigger"] {

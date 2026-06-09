@@ -49,6 +49,17 @@ defmodule E2eWeb.AuthoringSnippetTest do
     assert markup =~ ~s(items={@items})
   end
 
+  test "accordion items attr stays on the opening tag" do
+    %{attr: attr} =
+      AuthoringSnippet.accordion_anatomy_snippets([],
+        inner: ~s(<:indicator><.heroicon name="hero-chevron-right" /></:indicator>),
+        slots: AuthoringSnippet.items_attr()
+      )
+
+    assert attr =~ ~r/<\.accordion\n  items=\{Corex\.Content\.new\(\[/
+    refute attr =~ ~r/<:indicator>[\s\S]*items=\{Corex\.Content/
+  end
+
   test "substitute_app_name replaces my_app placeholders" do
     code = ~s(defmodule MyAppWeb.AccordionLive do\n  otp_app: :my_app\nend)
 
@@ -60,6 +71,17 @@ defmodule E2eWeb.AuthoringSnippetTest do
   test "substitute_app_name leaves default app unchanged" do
     code = "MyAppWeb.my_app"
     assert AuthoringSnippet.substitute_app_name(code, "my_app") == code
+  end
+
+  test "action playground snippets at defaults emit class=\"button\" only" do
+    %{attr: attr, class: class} =
+      AuthoringSnippet.playground_snippets(:action, [], inner: "Preview")
+
+    refute attr =~ ~s(as=)
+    refute attr =~ ~s(variant=)
+    refute attr =~ ~s(size=)
+    assert class =~ ~s(class="button")
+    refute class =~ "button--"
   end
 
   test "playground snippets omit id and value" do
@@ -94,6 +116,18 @@ defmodule E2eWeb.AuthoringSnippetTest do
     assert attr =~ ~s(variant="subtle")
     refute markup =~ ~s(id=)
     refute markup =~ ~s(value=)
+  end
+
+  test "items_attr formats multiline items without orphan closing brace" do
+    attr =
+      AuthoringSnippet.accordion_anatomy_snippets([],
+        slots: AuthoringSnippet.items_attr()
+      )
+      |> Map.fetch!(:attr)
+
+    assert attr =~ ~r/<\.accordion\n  items=\{Corex\.Content\.new\(\[\n    %\{/
+    assert attr =~ ~r/\n  \]\)\}\n\/>/
+    refute attr =~ ~r/\n\]\)\n\}\n\} \/>/
   end
 
   test "heex_snippets adds accordion class and unstyled markup variants" do

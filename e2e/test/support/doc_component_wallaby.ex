@@ -12,7 +12,8 @@ defmodule E2eWeb.DocComponentWallaby do
                 :playground,
                 :controlled,
                 :animation,
-                :live_form
+                :live_form,
+                :style
               ])
 
   @layout_hook_components [:toast]

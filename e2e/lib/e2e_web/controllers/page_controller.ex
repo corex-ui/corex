@@ -9,10 +9,6 @@ defmodule E2eWeb.PageController do
     render(conn, :action_page)
   end
 
-  def action_styling_page(conn, _params) do
-    render(conn, :action_styling_page)
-  end
-
   def navigate_page(conn, _params) do
     render(conn, :navigate_page)
   end

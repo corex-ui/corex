@@ -15,13 +15,13 @@
     white-space: nowrap;
   }
 
-  .layout__aside-badge {
+  .layout__aside-icon {
     display: flex;
     flex-shrink: 0;
     align-items: center;
   }
 
-  .layout__aside-badges {
+  .layout__aside-icons {
     display: flex;
     flex-shrink: 0;
     align-items: center;

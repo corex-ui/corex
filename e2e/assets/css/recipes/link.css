@@ -28,15 +28,15 @@
     padding: 0;
     color: var(--color-link);
     gap: var(--space-md);
-    transition: color 120ms ease, box-shadow 120ms ease;
-    appearance: none;
-    align-items: center;
     border: none;
     background-color: transparent;
     text-decoration-line: underline;
+    overflow: visible;
+    align-items: center;
+    appearance: none;
     text-decoration-thickness: from-font;
     text-underline-offset: 0.15em;
-    overflow: visible;
+    transition: color 120ms ease, box-shadow 120ms ease;
     &:active {
       color: var(--color-ui-ink-muted);
     }
@@ -441,8 +441,8 @@
     width: 1em;
     color: currentcolor;
     height: 1em;
-    flex-shrink: 0;
     align-items: center;
+    flex-shrink: 0;
     justify-content: center;
   }
 

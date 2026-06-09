@@ -230,9 +230,9 @@
 
   .number-input.number-input--sm [data-scope="number-input"][data-part="trigger-group"] {
     width: var(--size-sm);
-    height: var(--size-sm);
     max-height: var(--size-sm);
     min-height: var(--size-sm);
+    height: var(--size-sm);
   }
 
   .number-input.number-input--sm [data-scope="number-input"][data-part="input"] {
@@ -240,25 +240,25 @@
     max-height: var(--size-sm);
     padding-inline: var(--space-sm);
     min-height: var(--size-sm);
-    background-color: var(--color-ui);
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
+    background-color: var(--color-ui);
   }
 
   .number-input.number-input--sm [data-scope="number-input"][data-part="increment-trigger"] {
     color: var(--color-ui-ink);
     min-height: calc(var(--size-sm) / 2);
-    background-color: var(--color-ui);
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
+    background-color: var(--color-ui);
   }
 
   .number-input.number-input--sm [data-scope="number-input"][data-part="decrement-trigger"] {
     color: var(--color-ui-ink);
     min-height: calc(var(--size-sm) / 2);
-    background-color: var(--color-ui);
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
+    background-color: var(--color-ui);
   }
 
   .number-input.number-input--md [data-scope="number-input"][data-part="root"] {
@@ -272,9 +272,9 @@
 
   .number-input.number-input--md [data-scope="number-input"][data-part="trigger-group"] {
     width: var(--size-md);
-    height: var(--size-md);
     max-height: var(--size-md);
     min-height: var(--size-md);
+    height: var(--size-md);
   }
 
   .number-input.number-input--md [data-scope="number-input"][data-part="input"] {
@@ -282,25 +282,25 @@
     max-height: var(--size-md);
     padding-inline: var(--space-md);
     min-height: var(--size-md);
-    background-color: var(--color-ui);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    background-color: var(--color-ui);
   }
 
   .number-input.number-input--md [data-scope="number-input"][data-part="increment-trigger"] {
     color: var(--color-ui-ink);
     min-height: calc(var(--size-md) / 2);
-    background-color: var(--color-ui);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    background-color: var(--color-ui);
   }
 
   .number-input.number-input--md [data-scope="number-input"][data-part="decrement-trigger"] {
     color: var(--color-ui-ink);
     min-height: calc(var(--size-md) / 2);
-    background-color: var(--color-ui);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    background-color: var(--color-ui);
   }
 
   .number-input.number-input--lg [data-scope="number-input"][data-part="root"] {
@@ -314,9 +314,9 @@
 
   .number-input.number-input--lg [data-scope="number-input"][data-part="trigger-group"] {
     width: var(--size-lg);
-    height: var(--size-lg);
     max-height: var(--size-lg);
     min-height: var(--size-lg);
+    height: var(--size-lg);
   }
 
   .number-input.number-input--lg [data-scope="number-input"][data-part="input"] {
@@ -324,25 +324,25 @@
     max-height: var(--size-lg);
     padding-inline: var(--space-lg);
     min-height: var(--size-lg);
-    background-color: var(--color-ui);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
+    background-color: var(--color-ui);
   }
 
   .number-input.number-input--lg [data-scope="number-input"][data-part="increment-trigger"] {
     color: var(--color-ui-ink);
     min-height: calc(var(--size-lg) / 2);
-    background-color: var(--color-ui);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
+    background-color: var(--color-ui);
   }
 
   .number-input.number-input--lg [data-scope="number-input"][data-part="decrement-trigger"] {
     color: var(--color-ui-ink);
     min-height: calc(var(--size-lg) / 2);
-    background-color: var(--color-ui);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
+    background-color: var(--color-ui);
   }
 
   .number-input.number-input--xl [data-scope="number-input"][data-part="root"] {
@@ -356,9 +356,9 @@
 
   .number-input.number-input--xl [data-scope="number-input"][data-part="trigger-group"] {
     width: var(--size-xl);
-    height: var(--size-xl);
     max-height: var(--size-xl);
     min-height: var(--size-xl);
+    height: var(--size-xl);
   }
 
   .number-input.number-input--xl [data-scope="number-input"][data-part="input"] {
@@ -366,25 +366,25 @@
     max-height: var(--size-xl);
     padding-inline: var(--space-xl);
     min-height: var(--size-xl);
-    background-color: var(--color-ui);
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
+    background-color: var(--color-ui);
   }
 
   .number-input.number-input--xl [data-scope="number-input"][data-part="increment-trigger"] {
     color: var(--color-ui-ink);
     min-height: calc(var(--size-xl) / 2);
-    background-color: var(--color-ui);
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
+    background-color: var(--color-ui);
   }
 
   .number-input.number-input--xl [data-scope="number-input"][data-part="decrement-trigger"] {
     color: var(--color-ui-ink);
     min-height: calc(var(--size-xl) / 2);
-    background-color: var(--color-ui);
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
+    background-color: var(--color-ui);
   }
 
   .number-input.number-input--rounded-none [data-scope="number-input"][data-part="input"] {

@@ -37,6 +37,16 @@ defmodule Corex.DesignTest do
       assert row_css =~ ".row.row--gap-lg {"
     end
 
+    test "icon layout recipe sizes children with ui_icon" do
+      css = Recipe.to_css(Layout.get(:icon))
+
+      assert css =~ ".icon {"
+      assert css =~ ".icon.icon--text-xs {"
+      assert css =~ ".icon [data-icon]"
+      assert css =~ ".icon img"
+      assert css =~ "object-fit: contain"
+    end
+
     test "component recipes emit bem selectors by default" do
       css = Recipe.to_css(Button.recipe())
 

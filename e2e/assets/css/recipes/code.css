@@ -363,6 +363,11 @@
   pre.code code[data-part="content"] span {
     font-size: inherit;
     line-height: inherit;
+    white-space: pre;
+  }
+
+  pre.code code[data-part="content"] span.w {
+    white-space: pre;
   }
 
   code.code > span[data-part="content"] span {
@@ -385,9 +390,11 @@
     overflow: auto;
     min-width: 0;
     box-sizing: border-box;
+    white-space: pre;
     & code[data-part="content"] {
+      display: block;
       padding-inline-end: var(--space-xl);
-      white-space: pre-wrap;
+      white-space: pre;
     }
   }
 

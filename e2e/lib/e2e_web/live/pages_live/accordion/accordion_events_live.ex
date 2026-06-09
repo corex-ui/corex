@@ -93,7 +93,7 @@ defmodule E2eWeb.AccordionEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <.stack gap="lg" align="center" width="full">
               <.authoring_preview>
                 <:styled>
                   <.accordion
@@ -123,7 +123,8 @@ defmodule E2eWeb.AccordionEventsLive do
 
               <.data_table
                 id="accordion-events-log-server"
-                class="data-table data-table--max-w-3xl"
+                class="data-table"
+                max_width="3xl"
                 rows={@streams.server_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -133,7 +134,7 @@ defmodule E2eWeb.AccordionEventsLive do
                   <p>No event yet. Interact with the components to receive new events</p>
                 </:empty>
               </.data_table>
-            </div>
+            </.stack>
           </:preview>
         </.demo_section>
 
@@ -147,7 +148,7 @@ defmodule E2eWeb.AccordionEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <.stack gap="lg" align="center" width="full">
               <.authoring_preview>
                 <:styled>
                   <.accordion
@@ -177,7 +178,6 @@ defmodule E2eWeb.AccordionEventsLive do
 
               <div
                 id="accordion-events-client-listener"
-                class="w-full"
                 phx-hook=".AccordionEventsClient"
                 phx-update="ignore"
               >
@@ -197,7 +197,8 @@ defmodule E2eWeb.AccordionEventsLive do
 
               <.data_table
                 id="accordion-events-log-client"
-                class="data-table data-table--max-w-3xl"
+                class="data-table"
+                max_width="3xl"
                 rows={@streams.client_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
@@ -207,7 +208,7 @@ defmodule E2eWeb.AccordionEventsLive do
                   <p>No event yet. Interact with the components to receive new events</p>
                 </:empty>
               </.data_table>
-            </div>
+            </.stack>
           </:preview>
         </.demo_section>
       </.demo_page>

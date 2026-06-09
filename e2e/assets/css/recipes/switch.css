@@ -201,48 +201,48 @@
 
   .switch.switch--accent {
     --color-selected: var(--color-accent);
-    --color-selected-hover: var(--color-accent-hover);
     --color-selected-active: var(--color-accent-active);
+    --color-selected-hover: var(--color-accent-hover);
     --color-selected-ink: var(--color-accent-ink);
     --color-selected-muted: var(--color-accent-muted);
   }
 
   .switch.switch--brand {
     --color-selected: var(--color-brand);
-    --color-selected-hover: var(--color-brand-hover);
     --color-selected-active: var(--color-brand-active);
+    --color-selected-hover: var(--color-brand-hover);
     --color-selected-ink: var(--color-brand-ink);
     --color-selected-muted: var(--color-brand-muted);
   }
 
   .switch.switch--alert {
     --color-selected: var(--color-alert);
-    --color-selected-hover: var(--color-alert-hover);
     --color-selected-active: var(--color-alert-active);
+    --color-selected-hover: var(--color-alert-hover);
     --color-selected-ink: var(--color-alert-ink);
     --color-selected-muted: var(--color-alert-muted);
   }
 
   .switch.switch--info {
     --color-selected: var(--color-info);
-    --color-selected-hover: var(--color-info-hover);
     --color-selected-active: var(--color-info-active);
+    --color-selected-hover: var(--color-info-hover);
     --color-selected-ink: var(--color-info-ink);
     --color-selected-muted: var(--color-info-muted);
   }
 
   .switch.switch--success {
     --color-selected: var(--color-success);
-    --color-selected-hover: var(--color-success-hover);
     --color-selected-active: var(--color-success-active);
+    --color-selected-hover: var(--color-success-hover);
     --color-selected-ink: var(--color-success-ink);
     --color-selected-muted: var(--color-success-muted);
   }
 
   .switch.switch--selected {
     --color-selected: var(--color-selected);
-    --color-selected-hover: var(--color-selected-hover);
     --color-selected-active: var(--color-selected-active);
+    --color-selected-hover: var(--color-selected-hover);
     --color-selected-ink: var(--color-selected-ink);
     --color-selected-muted: var(--color-selected-muted);
   }
@@ -250,10 +250,10 @@
   .switch.switch--sm [data-scope="switch"][data-part="root"] {
     gap: var(--space-sm);
     padding-inline-end: var(--space-sm);
-    --switch-track-width: calc(var(--size-sm) * 0.8);
-    --switch-track-height: calc(var(--size-sm) * 0.5 * 0.8);
-    --switch-track-diff: calc(var(--switch-track-width) - var(--switch-track-height));
     --switch-thumb-x: var(--switch-track-diff);
+    --switch-track-diff: calc(var(--switch-track-width) - var(--switch-track-height));
+    --switch-track-height: calc(var(--size-sm) * 0.5 * 0.8);
+    --switch-track-width: calc(var(--size-sm) * 0.8);
   }
 
   .switch.switch--sm [data-scope="switch"][data-part="control"] {
@@ -268,10 +268,10 @@
   .switch.switch--md [data-scope="switch"][data-part="root"] {
     gap: var(--space-md);
     padding-inline-end: var(--space-md);
-    --switch-track-width: calc(var(--size-md) * 0.8);
-    --switch-track-height: calc(var(--size-md) * 0.5 * 0.8);
-    --switch-track-diff: calc(var(--switch-track-width) - var(--switch-track-height));
     --switch-thumb-x: var(--switch-track-diff);
+    --switch-track-diff: calc(var(--switch-track-width) - var(--switch-track-height));
+    --switch-track-height: calc(var(--size-md) * 0.5 * 0.8);
+    --switch-track-width: calc(var(--size-md) * 0.8);
   }
 
   .switch.switch--md [data-scope="switch"][data-part="control"] {
@@ -286,10 +286,10 @@
   .switch.switch--lg [data-scope="switch"][data-part="root"] {
     gap: var(--space-lg);
     padding-inline-end: var(--space-lg);
-    --switch-track-width: calc(var(--size-lg) * 0.8);
-    --switch-track-height: calc(var(--size-lg) * 0.5 * 0.8);
-    --switch-track-diff: calc(var(--switch-track-width) - var(--switch-track-height));
     --switch-thumb-x: var(--switch-track-diff);
+    --switch-track-diff: calc(var(--switch-track-width) - var(--switch-track-height));
+    --switch-track-height: calc(var(--size-lg) * 0.5 * 0.8);
+    --switch-track-width: calc(var(--size-lg) * 0.8);
   }
 
   .switch.switch--lg [data-scope="switch"][data-part="control"] {
@@ -304,10 +304,10 @@
   .switch.switch--xl [data-scope="switch"][data-part="root"] {
     gap: var(--space-xl);
     padding-inline-end: var(--space-xl);
-    --switch-track-width: calc(var(--size-xl) * 0.8);
-    --switch-track-height: calc(var(--size-xl) * 0.5 * 0.8);
-    --switch-track-diff: calc(var(--switch-track-width) - var(--switch-track-height));
     --switch-thumb-x: var(--switch-track-diff);
+    --switch-track-diff: calc(var(--switch-track-width) - var(--switch-track-height));
+    --switch-track-height: calc(var(--size-xl) * 0.5 * 0.8);
+    --switch-track-width: calc(var(--size-xl) * 0.8);
   }
 
   .switch.switch--xl [data-scope="switch"][data-part="control"] {

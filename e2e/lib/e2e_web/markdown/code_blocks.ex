@@ -78,9 +78,7 @@ defmodule E2eWeb.Markdown.CodeBlocks do
 
   defp restore_newlines_after_floki(html), do: String.replace(html, @newline_marker, "\n")
 
-  defp makeup_html_before_floki(html) do
-    BlockRenderer.preserve_makeup_whitespace(html)
-  end
+  defp makeup_html_before_floki(html), do: html
 
   defp fence_replacement({"pre", _p_attrs, children}) do
     case normalize_pre_children(children) do

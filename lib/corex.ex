@@ -83,6 +83,7 @@ defmodule Corex do
     container: {Corex.Layout.Container, [container: 1]},
     spacer: {Corex.Layout.Spacer, [spacer: 1]},
     divider: {Corex.Layout.Divider, [divider: 1]},
+    icon: {Corex.Icon, [icon: 1]},
     marquee: {Corex.Marquee, [marquee: 1]},
     menu: {Corex.Menu, [menu: 1]},
     navigate: {Corex.Navigate, [navigate: 1]},

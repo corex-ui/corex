@@ -1,11 +1,11 @@
 /* Corex generated design - do not edit */
 
 @utility combobox--rounded-* {
-  [data-scope="combobox"][data-part="trigger"] {
+  [data-scope="combobox"][data-part="content"] {
       border-radius: --value(--radius-*, [length]);
   }
 
-  [data-scope="combobox"][data-part="content"] {
+  [data-scope="combobox"][data-part="trigger"] {
       border-radius: --value(--radius-*, [length]);
   }
 
@@ -234,9 +234,9 @@
 
   .combobox.combobox--sm [data-scope="combobox"][data-part="input"] {
     color: var(--color-ui-ink);
-    border-color: var(--color-border);
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
+    border-color: var(--color-border);
   }
 
   .combobox.combobox--sm [data-scope="combobox"][data-part="trigger"] {
@@ -276,9 +276,9 @@
 
   .combobox.combobox--md [data-scope="combobox"][data-part="input"] {
     color: var(--color-ui-ink);
-    border-color: var(--color-border);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    border-color: var(--color-border);
   }
 
   .combobox.combobox--md [data-scope="combobox"][data-part="trigger"] {
@@ -318,9 +318,9 @@
 
   .combobox.combobox--lg [data-scope="combobox"][data-part="input"] {
     color: var(--color-ui-ink);
-    border-color: var(--color-border);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
+    border-color: var(--color-border);
   }
 
   .combobox.combobox--lg [data-scope="combobox"][data-part="trigger"] {
@@ -360,9 +360,9 @@
 
   .combobox.combobox--xl [data-scope="combobox"][data-part="input"] {
     color: var(--color-ui-ink);
-    border-color: var(--color-border);
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
+    border-color: var(--color-border);
   }
 
   .combobox.combobox--xl [data-scope="combobox"][data-part="trigger"] {

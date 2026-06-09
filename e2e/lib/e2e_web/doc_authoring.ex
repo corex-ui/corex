@@ -49,4 +49,13 @@ defmodule E2eWeb.DocAuthoring do
   end
 
   def web_module_name(app_name), do: module_name(app_name) <> "Web"
+
+  def disable_markup_on_page?(opts) when is_list(opts) do
+    path = Keyword.get(opts, :path)
+    id = Keyword.get(opts, :id)
+
+    path_style = is_binary(path) and String.ends_with?(path, "/style")
+    id_style = is_binary(id) and String.ends_with?(id, "-style-page")
+    path_style or id_style
+  end
 end

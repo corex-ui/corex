@@ -9,17 +9,6 @@ defmodule E2eWeb.AuthoringSnippet do
     wrap shrink grow direction orientation side modal
   )a
 
-  @component_defaults %{
-    accordion: %{
-      variant: "subtle",
-      size: "md",
-      width: "full",
-      max_width: "md",
-      height: "auto",
-      max_height: "none"
-    }
-  }
-
   @recipe_looks %{
     dialog: %{"modal" => "dialog-modal", "side" => "dialog-side"},
     tree_view: %{"treeview" => "tree-view", "navigation" => "tree-navigation"},
@@ -165,7 +154,7 @@ defmodule E2eWeb.AuthoringSnippet do
   def accordion_styling_snippets(variants, opts \\ []) do
     items = Keyword.get(opts, :items_code, styling_items_code())
     slot = Keyword.get(opts, :slot, indicator_slot())
-    slots = ~s( items={#{items}})
+    slots = items_attr(items)
 
     Enum.reduce(variants, %{attr: "", class: "", markup: ""}, fn attrs, acc ->
       %{attr: attr, class: class, markup: markup} =
@@ -216,6 +205,29 @@ defmodule E2eWeb.AuthoringSnippet do
     )
   end
 
+  def items_code, do: styling_items_code()
+
+  def items_attr(code \\ nil, base_indent \\ "")
+
+  def items_attr(code, base_indent) when is_binary(code) do
+    expr = String.trim(code)
+    attr_indent = base_indent <> "  "
+    body_indent = base_indent <> "    "
+
+    [head | tail] = String.split(expr, "\n", trim: true)
+
+    lines =
+      [attr_indent <> "items={" <> head] ++
+        Enum.map(tail, fn
+          "])" -> attr_indent <> "])}"
+          line -> body_indent <> String.trim(line)
+        end)
+
+    Enum.join(lines, "\n")
+  end
+
+  def items_attr(nil, base_indent), do: items_attr(styling_items_code(), base_indent)
+
   defp styling_items_code,
     do: String.trim(E2eWeb.Demos.DocExamples.code_content_items_with_values())
 
@@ -243,7 +255,7 @@ defmodule E2eWeb.AuthoringSnippet do
   end
 
   defp drop_component_defaults(style_attrs, component) do
-    defaults = Map.get(@component_defaults, component, %{})
+    defaults = E2eWeb.ComponentStyleDefaults.snippet_defaults(component)
 
     Enum.reject(style_attrs, fn {axis, value} ->
       Map.get(defaults, axis) == to_string(value)
@@ -270,6 +282,7 @@ defmodule E2eWeb.AuthoringSnippet do
 
   defp tag(component, attrs, inner, slots, class) do
     name = component_name(component)
+    {host_suffix, body_slots} = split_host_attrs(slots)
 
     attr_str =
       attrs
@@ -281,18 +294,71 @@ defmodule E2eWeb.AuthoringSnippet do
       |> Enum.reject(&is_nil/1)
       |> Enum.join(" ")
 
-    body = String.trim("#{inner}#{slots}")
+    host_attrs = build_host_attrs(attr_str, host_suffix)
+    body = String.trim("#{inner}#{body_slots}")
 
     if body == "" do
-      "<.#{name} #{attr_str} />"
+      format_opening_tag(name, host_attrs, true)
     else
       """
-      <.#{name} #{attr_str}>
+      #{format_opening_tag(name, host_attrs, false)}
       #{body}
       </.#{name}>
       """
       |> String.trim()
     end
+  end
+
+  defp build_host_attrs("", host_suffix), do: String.trim_trailing(host_suffix)
+
+  defp build_host_attrs(attr_str, "") do
+    String.trim(attr_str)
+  end
+
+  defp build_host_attrs(attr_str, host_suffix) do
+    host_suffix = String.trim_trailing(host_suffix)
+
+    if String.contains?(host_suffix, "\n") do
+      attr_str
+      |> String.split(" ", trim: true)
+      |> Enum.map(&("  " <> &1))
+      |> Kernel.++([host_suffix])
+      |> Enum.join("\n")
+    else
+      String.trim(attr_str <> " " <> host_suffix)
+    end
+  end
+
+  defp format_opening_tag(name, "", self_closing?) do
+    if self_closing?, do: "<.#{name} />", else: "<.#{name}>"
+  end
+
+  defp format_opening_tag(name, host_attrs, self_closing?) do
+    if String.contains?(host_attrs, "\n") do
+      suffix = if self_closing?, do: "\n/>", else: "\n>"
+
+      "<.#{name}\n#{host_attrs}#{suffix}"
+    else
+      if self_closing?, do: "<.#{name} #{host_attrs} />", else: "<.#{name} #{host_attrs}>"
+    end
+  end
+
+  defp split_host_attrs(""), do: {"", ""}
+
+  defp split_host_attrs(slots) do
+    if host_attr_suffix?(slots) do
+      {slots, ""}
+    else
+      {"", slots}
+    end
+  end
+
+  defp host_attr_suffix?(slots) do
+    slots
+    |> String.trim_leading()
+    |> then(fn trimmed ->
+      Regex.match?(~r/^\w[\w-]*=\{/, trimmed) or Regex.match?(~r/^\w[\w-]*="/, trimmed)
+    end)
   end
 
   defp attr_pair({key, value}) when is_boolean(value) do

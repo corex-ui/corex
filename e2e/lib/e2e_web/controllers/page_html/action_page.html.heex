@@ -13,25 +13,52 @@
     <.demo_section
       id="action-anatomy-minimal"
       title={~t"Minimal"}
-      code={E2eWeb.Demos.ActionDemo.anatomy_minimal_code()}
+      code={E2eWeb.Demos.ActionDemo.anatomy_minimal_snippets()}
     >
-      <:preview><E2eWeb.Demos.ActionDemo.anatomy_minimal_example /></:preview>
+      <:preview>
+        <.authoring_preview>
+          <:styled>
+            <E2eWeb.Demos.ActionDemo.anatomy_minimal_example />
+          </:styled>
+          <:markup>
+            <E2eWeb.Demos.ActionDemo.anatomy_minimal_markup_example />
+          </:markup>
+        </.authoring_preview>
+      </:preview>
     </.demo_section>
 
     <.demo_section
       id="action-anatomy-with-icon"
       title={~t"With icon"}
-      code={E2eWeb.Demos.ActionDemo.anatomy_with_icon_code()}
+      code={E2eWeb.Demos.ActionDemo.anatomy_with_icon_snippets()}
     >
-      <:preview><E2eWeb.Demos.ActionDemo.anatomy_with_icon_example /></:preview>
+      <:preview>
+        <.authoring_preview>
+          <:styled>
+            <E2eWeb.Demos.ActionDemo.anatomy_with_icon_example />
+          </:styled>
+          <:markup>
+            <E2eWeb.Demos.ActionDemo.anatomy_with_icon_markup_example />
+          </:markup>
+        </.authoring_preview>
+      </:preview>
     </.demo_section>
 
     <.demo_section
       id="action-anatomy-icon-only"
       title={~t"Icon only"}
-      code={E2eWeb.Demos.ActionDemo.anatomy_icon_only_code()}
+      code={E2eWeb.Demos.ActionDemo.anatomy_icon_only_snippets()}
     >
-      <:preview><E2eWeb.Demos.ActionDemo.anatomy_icon_only_example /></:preview>
+      <:preview>
+        <.authoring_preview>
+          <:styled>
+            <E2eWeb.Demos.ActionDemo.anatomy_icon_only_example />
+          </:styled>
+          <:markup>
+            <E2eWeb.Demos.ActionDemo.anatomy_icon_only_markup_example />
+          </:markup>
+        </.authoring_preview>
+      </:preview>
     </.demo_section>
   </.demo_page>
 </Layouts.app>

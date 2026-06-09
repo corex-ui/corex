@@ -5,10 +5,8 @@ defmodule E2eWeb.Demos.ActionDemo do
 
   def styling_axis_values(axis), do: StylingAxes.styling_axis_values(axis)
 
-  def anatomy_minimal_code do
-    ~S"""
-    <.action >Text</.action>
-    """
+  def anatomy_minimal_snippets do
+    E2eWeb.AuthoringSnippet.snippets(:action, [], inner: "Text")
   end
 
   def anatomy_minimal_example(assigns) do
@@ -17,12 +15,16 @@ defmodule E2eWeb.Demos.ActionDemo do
     """
   end
 
-  def anatomy_with_icon_code do
-    ~S"""
-    <.action >
-      Text and icon <.heroicon name="hero-arrow-right" />
-    </.action>
+  def anatomy_minimal_markup_example(assigns) do
+    ~H"""
+    <.action>Text</.action>
     """
+  end
+
+  def anatomy_with_icon_snippets do
+    E2eWeb.AuthoringSnippet.snippets(:action, [],
+      inner: "Text and icon <.heroicon name=\"hero-arrow-right\" />"
+    )
   end
 
   def anatomy_with_icon_example(assigns) do
@@ -33,15 +35,19 @@ defmodule E2eWeb.Demos.ActionDemo do
     """
   end
 
-  def anatomy_icon_only_code do
-    ~S"""
-    <.action shape="square" aria_label="Square icon button">
-      <.heroicon name="hero-arrow-right" />
-    </.action>
-    <.action shape="square" radius="full" aria_label="Circle icon button">
-      <.heroicon name="hero-arrow-right" />
+  def anatomy_with_icon_markup_example(assigns) do
+    ~H"""
+    <.action>
+      Text and icon <.heroicon name="hero-arrow-right" />
     </.action>
     """
+  end
+
+  def anatomy_icon_only_snippets do
+    E2eWeb.AuthoringSnippet.snippets(:action,
+      [shape: "square", aria_label: "Square icon button"],
+      inner: ~s(<.heroicon name="hero-arrow-right" />)
+    )
   end
 
   def anatomy_icon_only_example(assigns) do
@@ -51,6 +57,19 @@ defmodule E2eWeb.Demos.ActionDemo do
         <.heroicon name="hero-arrow-right" />
       </.action>
       <.action shape="square" radius="full" aria_label="Circle icon button">
+        <.heroicon name="hero-arrow-right" />
+      </.action>
+    </.row>
+    """
+  end
+
+  def anatomy_icon_only_markup_example(assigns) do
+    ~H"""
+    <.row gap="sm">
+      <.action aria_label="Square icon button">
+        <.heroicon name="hero-arrow-right" />
+      </.action>
+      <.action aria_label="Circle icon button">
         <.heroicon name="hero-arrow-right" />
       </.action>
     </.row>
@@ -315,5 +334,68 @@ defmodule E2eWeb.Demos.ActionDemo do
       </.action>
     </.row>
     """
+  end
+
+  @link_styling_variants ~w(solid ghost subtle)
+
+  def styling_link_code do
+    ~S"""
+    <.action as="link" variant="solid">Default</.action>
+    <.action as="link" variant="solid" semantic="accent">Accent</.action>
+    <.action as="link" variant="solid" semantic="brand">Brand</.action>
+    <.action as="link" variant="solid" semantic="alert">Alert</.action>
+
+    <.action as="link" variant="ghost">Default</.action>
+    <.action as="link" variant="ghost" semantic="accent">Accent</.action>
+    <.action as="link" variant="ghost" semantic="brand">Brand</.action>
+    <.action as="link" variant="ghost" semantic="alert">Alert</.action>
+
+    <.action as="link" variant="subtle">Default</.action>
+    <.action as="link" variant="subtle" semantic="accent">Accent</.action>
+    <.action as="link" variant="subtle" semantic="brand">Brand</.action>
+    <.action as="link" variant="subtle" semantic="alert">Alert</.action>
+
+    <.action as="link" size="sm">Small</.action>
+    <.action as="link">Medium</.action>
+    <.action as="link" size="lg">Large</.action>
+    """
+  end
+
+  def styling_link_example(assigns) do
+    assigns =
+      assign(assigns,
+        variants: @link_styling_variants,
+        semantics: Enum.take(@styling_matrix_semantics, 5)
+      )
+
+    ~H"""
+    <.stack gap="lg">
+      <.stack :for={variant <- @variants} gap="sm">
+        <.small>{variant}</.small>
+        <.row gap="sm" wrap="wrap">
+          <.action
+            :for={{label, semantic} <- @semantics}
+            as="link"
+            variant={variant}
+            semantic={semantic}
+          >
+            {label}
+          </.action>
+        </.row>
+      </.stack>
+      <.stack gap="sm">
+        <.small>Size</.small>
+        <.row gap="sm" align="center">
+          <.action as="link" size="sm">Small</.action>
+          <.action as="link">Medium</.action>
+          <.action as="link" size="lg">Large</.action>
+        </.row>
+      </.stack>
+    </.stack>
+    """
+  end
+
+  def styling_link_values do
+    "as=\"link\" · Variants: #{Enum.join(@link_styling_variants, ", ")} · Semantics: default, accent, brand, alert · Sizes: sm, md, lg"
   end
 end

@@ -262,43 +262,43 @@
     width: calc(var(--size-sm) * 3);
     color: var(--color-ui-ink);
     flex: 0 0 auto;
-    max-width: calc(var(--size-sm) * 3);
     max-height: var(--size-sm);
+    max-width: calc(var(--size-sm) * 3);
     padding-inline: var(--space-sm);
     min-height: var(--size-sm);
-    border-color: var(--color-border);
-    background-color: var(--color-ui);
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
+    background-color: var(--color-ui);
+    border-color: var(--color-border);
   }
 
   .date-picker.date-picker--sm [data-scope="date-picker"][data-part="trigger"] {
     max-height: var(--size-sm);
     min-height: var(--size-sm);
-    border-color: var(--color-border);
-    background-color: var(--color-ui);
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
+    background-color: var(--color-ui);
+    border-color: var(--color-border);
   }
 
   .date-picker.date-picker--sm [data-scope="date-picker"][data-part="prev-trigger"] {
     width: calc(var(--size-sm) * 0.8);
-    max-width: calc(var(--size-sm) * 0.8);
     max-height: calc(var(--size-sm) * 0.8);
+    max-width: calc(var(--size-sm) * 0.8);
     min-height: calc(var(--size-sm) * 0.8);
-    min-width: calc(var(--size-sm) * 0.8);
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
+    min-width: calc(var(--size-sm) * 0.8);
   }
 
   .date-picker.date-picker--sm [data-scope="date-picker"][data-part="next-trigger"] {
     width: calc(var(--size-sm) * 0.8);
-    max-width: calc(var(--size-sm) * 0.8);
     max-height: calc(var(--size-sm) * 0.8);
+    max-width: calc(var(--size-sm) * 0.8);
     min-height: calc(var(--size-sm) * 0.8);
-    min-width: calc(var(--size-sm) * 0.8);
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
+    min-width: calc(var(--size-sm) * 0.8);
   }
 
   .date-picker.date-picker--sm [data-scope="date-picker"][data-part="view-trigger"] {
@@ -325,13 +325,13 @@
 
   .date-picker.date-picker--sm [data-scope="date-picker"][data-part="table-cell-trigger"] {
     width: calc(var(--size-sm) * 0.95);
-    max-width: calc(var(--size-sm) * 0.95);
-    height: calc(var(--size-sm) * 0.95);
     max-height: calc(var(--size-sm) * 0.95);
+    max-width: calc(var(--size-sm) * 0.95);
     min-height: calc(var(--size-sm) * 0.95);
-    min-width: calc(var(--size-sm) * 0.95);
+    height: calc(var(--size-sm) * 0.95);
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
+    min-width: calc(var(--size-sm) * 0.95);
   }
 
   .date-picker.date-picker--md [data-scope="date-picker"][data-part="root"] {
@@ -361,43 +361,43 @@
     width: calc(var(--size-md) * 3);
     color: var(--color-ui-ink);
     flex: 0 0 auto;
-    max-width: calc(var(--size-md) * 3);
     max-height: var(--size-md);
+    max-width: calc(var(--size-md) * 3);
     padding-inline: var(--space-md);
     min-height: var(--size-md);
-    border-color: var(--color-border);
-    background-color: var(--color-ui);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    background-color: var(--color-ui);
+    border-color: var(--color-border);
   }
 
   .date-picker.date-picker--md [data-scope="date-picker"][data-part="trigger"] {
     max-height: var(--size-md);
     min-height: var(--size-md);
-    border-color: var(--color-border);
-    background-color: var(--color-ui);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    background-color: var(--color-ui);
+    border-color: var(--color-border);
   }
 
   .date-picker.date-picker--md [data-scope="date-picker"][data-part="prev-trigger"] {
     width: calc(var(--size-md) * 0.8);
-    max-width: calc(var(--size-md) * 0.8);
     max-height: calc(var(--size-md) * 0.8);
+    max-width: calc(var(--size-md) * 0.8);
     min-height: calc(var(--size-md) * 0.8);
-    min-width: calc(var(--size-md) * 0.8);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-width: calc(var(--size-md) * 0.8);
   }
 
   .date-picker.date-picker--md [data-scope="date-picker"][data-part="next-trigger"] {
     width: calc(var(--size-md) * 0.8);
-    max-width: calc(var(--size-md) * 0.8);
     max-height: calc(var(--size-md) * 0.8);
+    max-width: calc(var(--size-md) * 0.8);
     min-height: calc(var(--size-md) * 0.8);
-    min-width: calc(var(--size-md) * 0.8);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-width: calc(var(--size-md) * 0.8);
   }
 
   .date-picker.date-picker--md [data-scope="date-picker"][data-part="view-trigger"] {
@@ -424,13 +424,13 @@
 
   .date-picker.date-picker--md [data-scope="date-picker"][data-part="table-cell-trigger"] {
     width: calc(var(--size-md) * 0.95);
-    max-width: calc(var(--size-md) * 0.95);
-    height: calc(var(--size-md) * 0.95);
     max-height: calc(var(--size-md) * 0.95);
+    max-width: calc(var(--size-md) * 0.95);
     min-height: calc(var(--size-md) * 0.95);
-    min-width: calc(var(--size-md) * 0.95);
+    height: calc(var(--size-md) * 0.95);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-width: calc(var(--size-md) * 0.95);
   }
 
   .date-picker.date-picker--lg [data-scope="date-picker"][data-part="root"] {
@@ -460,43 +460,43 @@
     width: calc(var(--size-lg) * 3);
     color: var(--color-ui-ink);
     flex: 0 0 auto;
-    max-width: calc(var(--size-lg) * 3);
     max-height: var(--size-lg);
+    max-width: calc(var(--size-lg) * 3);
     padding-inline: var(--space-lg);
     min-height: var(--size-lg);
-    border-color: var(--color-border);
-    background-color: var(--color-ui);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
+    background-color: var(--color-ui);
+    border-color: var(--color-border);
   }
 
   .date-picker.date-picker--lg [data-scope="date-picker"][data-part="trigger"] {
     max-height: var(--size-lg);
     min-height: var(--size-lg);
-    border-color: var(--color-border);
-    background-color: var(--color-ui);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
+    background-color: var(--color-ui);
+    border-color: var(--color-border);
   }
 
   .date-picker.date-picker--lg [data-scope="date-picker"][data-part="prev-trigger"] {
     width: calc(var(--size-lg) * 0.8);
-    max-width: calc(var(--size-lg) * 0.8);
     max-height: calc(var(--size-lg) * 0.8);
+    max-width: calc(var(--size-lg) * 0.8);
     min-height: calc(var(--size-lg) * 0.8);
-    min-width: calc(var(--size-lg) * 0.8);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
+    min-width: calc(var(--size-lg) * 0.8);
   }
 
   .date-picker.date-picker--lg [data-scope="date-picker"][data-part="next-trigger"] {
     width: calc(var(--size-lg) * 0.8);
-    max-width: calc(var(--size-lg) * 0.8);
     max-height: calc(var(--size-lg) * 0.8);
+    max-width: calc(var(--size-lg) * 0.8);
     min-height: calc(var(--size-lg) * 0.8);
-    min-width: calc(var(--size-lg) * 0.8);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
+    min-width: calc(var(--size-lg) * 0.8);
   }
 
   .date-picker.date-picker--lg [data-scope="date-picker"][data-part="view-trigger"] {
@@ -523,13 +523,13 @@
 
   .date-picker.date-picker--lg [data-scope="date-picker"][data-part="table-cell-trigger"] {
     width: calc(var(--size-lg) * 0.95);
-    max-width: calc(var(--size-lg) * 0.95);
-    height: calc(var(--size-lg) * 0.95);
     max-height: calc(var(--size-lg) * 0.95);
+    max-width: calc(var(--size-lg) * 0.95);
     min-height: calc(var(--size-lg) * 0.95);
-    min-width: calc(var(--size-lg) * 0.95);
+    height: calc(var(--size-lg) * 0.95);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
+    min-width: calc(var(--size-lg) * 0.95);
   }
 
   .date-picker.date-picker--xl [data-scope="date-picker"][data-part="root"] {
@@ -559,43 +559,43 @@
     width: calc(var(--size-xl) * 3);
     color: var(--color-ui-ink);
     flex: 0 0 auto;
-    max-width: calc(var(--size-xl) * 3);
     max-height: var(--size-xl);
+    max-width: calc(var(--size-xl) * 3);
     padding-inline: var(--space-xl);
     min-height: var(--size-xl);
-    border-color: var(--color-border);
-    background-color: var(--color-ui);
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
+    background-color: var(--color-ui);
+    border-color: var(--color-border);
   }
 
   .date-picker.date-picker--xl [data-scope="date-picker"][data-part="trigger"] {
     max-height: var(--size-xl);
     min-height: var(--size-xl);
-    border-color: var(--color-border);
-    background-color: var(--color-ui);
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
+    background-color: var(--color-ui);
+    border-color: var(--color-border);
   }
 
   .date-picker.date-picker--xl [data-scope="date-picker"][data-part="prev-trigger"] {
     width: calc(var(--size-xl) * 0.8);
-    max-width: calc(var(--size-xl) * 0.8);
     max-height: calc(var(--size-xl) * 0.8);
+    max-width: calc(var(--size-xl) * 0.8);
     min-height: calc(var(--size-xl) * 0.8);
-    min-width: calc(var(--size-xl) * 0.8);
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
+    min-width: calc(var(--size-xl) * 0.8);
   }
 
   .date-picker.date-picker--xl [data-scope="date-picker"][data-part="next-trigger"] {
     width: calc(var(--size-xl) * 0.8);
-    max-width: calc(var(--size-xl) * 0.8);
     max-height: calc(var(--size-xl) * 0.8);
+    max-width: calc(var(--size-xl) * 0.8);
     min-height: calc(var(--size-xl) * 0.8);
-    min-width: calc(var(--size-xl) * 0.8);
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
+    min-width: calc(var(--size-xl) * 0.8);
   }
 
   .date-picker.date-picker--xl [data-scope="date-picker"][data-part="view-trigger"] {
@@ -622,13 +622,13 @@
 
   .date-picker.date-picker--xl [data-scope="date-picker"][data-part="table-cell-trigger"] {
     width: calc(var(--size-xl) * 0.95);
-    max-width: calc(var(--size-xl) * 0.95);
-    height: calc(var(--size-xl) * 0.95);
     max-height: calc(var(--size-xl) * 0.95);
+    max-width: calc(var(--size-xl) * 0.95);
     min-height: calc(var(--size-xl) * 0.95);
-    min-width: calc(var(--size-xl) * 0.95);
+    height: calc(var(--size-xl) * 0.95);
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
+    min-width: calc(var(--size-xl) * 0.95);
   }
 
   .date-picker.date-picker--rounded-none [data-scope="date-picker"][data-part="input"] {

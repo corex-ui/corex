@@ -1,11 +1,11 @@
 /* Corex generated design - do not edit */
 
 @utility floating-panel--rounded-* {
-  [data-scope="floating-panel"][data-part="trigger"] {
+  [data-scope="floating-panel"][data-part="content"] {
       border-radius: --value(--radius-*, [length]);
   }
 
-  [data-scope="floating-panel"][data-part="content"] {
+  [data-scope="floating-panel"][data-part="trigger"] {
       border-radius: --value(--radius-*, [length]);
   }
 

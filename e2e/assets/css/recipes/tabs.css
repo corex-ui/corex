@@ -13,12 +13,12 @@
 
 
 @utility tabs--text-* {
-  [data-scope="tabs"][data-part="trigger"] {
+  [data-scope="tabs"][data-part="content"] {
       font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
 
-  [data-scope="tabs"][data-part="content"] {
+  [data-scope="tabs"][data-part="trigger"] {
       font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }

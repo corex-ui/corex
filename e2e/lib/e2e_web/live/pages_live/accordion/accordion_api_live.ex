@@ -216,40 +216,19 @@ defmodule E2eWeb.AccordionApiLive do
           code={@codes.set_value_binding}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 mb-4">
-              <.action
-                phx-click={Corex.Accordion.set_value(@id_sv_client, "lorem")}
-                size="sm"
-              >
-                Open Lorem
-              </.action>
-              <.action
-                phx-click={Corex.Accordion.set_value(@id_sv_client, ["lorem", "donec"])}
-                size="sm"
-              >
-                Lorem and Donec
-              </.action>
-              <.action
-                phx-click={Corex.Accordion.set_value(@id_sv_client, [])}
-                size="sm"
-              >
-                Close all
-              </.action>
-            </div>
             <.authoring_preview>
               <:styled>
-                <.accordion class="accordion" id={@id_sv_client} items={@demo_items}>
-                  <:indicator>
-                    <.heroicon name="hero-chevron-right" />
-                  </:indicator>
-                </.accordion>
+                <E2eWeb.Demos.AccordionDemo.api_set_value_client_binding_example
+                  id={@id_sv_client}
+                  items={@demo_items}
+                />
               </:styled>
               <:markup>
-                <.accordion unstyled id={@id_sv_client} items={@demo_items}>
-                  <:indicator>
-                    <.heroicon name="hero-chevron-right" />
-                  </:indicator>
-                </.accordion>
+                <E2eWeb.Demos.AccordionDemo.api_set_value_client_binding_example
+                  id={@id_sv_client}
+                  items={@demo_items}
+                  unstyled
+                />
               </:markup>
             </.authoring_preview>
           </:preview>

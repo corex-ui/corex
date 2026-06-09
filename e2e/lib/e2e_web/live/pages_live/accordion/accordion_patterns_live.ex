@@ -234,38 +234,44 @@ defmodule E2eWeb.AccordionPatternsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
-              <.action phx-click="add_item" size="sm" semantic="accent">
-                <.heroicon name="hero-plus" /> Add item
-              </.action>
-              <.action phx-click="reset" size="sm" semantic="alert">
-                Reset
-              </.action>
-            </div>
-            <.authoring_preview>
-              <:styled>
-                <.accordion
-                  id={@id_stream}
-                  class="accordion"
-                  items={Corex.Content.new(@items_list)}
-                >
-                  <:indicator>
-                    <.heroicon name="hero-chevron-right" />
-                  </:indicator>
-                </.accordion>
-              </:styled>
-              <:markup>
-                <.accordion
-                  id={@id_stream}
-                  unstyled
-                  items={Corex.Content.new(@items_list)}
-                >
-                  <:indicator>
-                    <.heroicon name="hero-chevron-right" />
-                  </:indicator>
-                </.accordion>
-              </:markup>
-            </.authoring_preview>
+            <.stack gap="md" align="center" width="full">
+              <.row wrap="wrap" gap="sm" align="center" justify="center" width="full">
+                <.action phx-click="add_item" size="sm" semantic="accent">
+                  <.heroicon name="hero-plus" /> Add item
+                </.action>
+                <.action phx-click="reset" size="sm" semantic="alert">
+                  Reset
+                </.action>
+              </.row>
+              <.authoring_preview>
+                <:styled>
+                  <.accordion
+                    id={@id_stream}
+                    class="accordion"
+                    width="full"
+                    max_width="xl"
+                    items={Corex.Content.new(@items_list)}
+                  >
+                    <:indicator>
+                      <.heroicon name="hero-chevron-right" />
+                    </:indicator>
+                  </.accordion>
+                </:styled>
+                <:markup>
+                  <.accordion
+                    id={@id_stream}
+                    unstyled
+                    width="full"
+                    max_width="xl"
+                    items={Corex.Content.new(@items_list)}
+                  >
+                    <:indicator>
+                      <.heroicon name="hero-chevron-right" />
+                    </:indicator>
+                  </.accordion>
+                </:markup>
+              </.authoring_preview>
+            </.stack>
           </:preview>
         </.demo_section>
       </.demo_page>

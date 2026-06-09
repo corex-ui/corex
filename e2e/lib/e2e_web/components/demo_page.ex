@@ -64,12 +64,23 @@ defmodule E2eWeb.DemoPage do
   attr :title, :string, required: true
   attr :subtitle, :any, default: nil
   attr :path, :string, default: nil
+  attr :disable_markup, :boolean, default: false
   attr :heading_class, :string, default: "layout-heading"
   attr :class, :string, default: "doc-page"
   attr :rest, :global
   slot :inner_block, required: true
 
   def demo_page(assigns) do
+    assigns =
+      assign(
+        assigns,
+        :disable_markup,
+        E2eWeb.DocAuthoring.disable_markup_on_page?(
+          id: Map.get(assigns, :id),
+          path: Map.get(assigns, :path)
+        )
+      )
+
     ~H"""
     <article id={@id} class={@class} {@rest}>
       <.layout_heading class={@heading_class} width="full" max_width="none">
@@ -78,7 +89,7 @@ defmodule E2eWeb.DemoPage do
       </.layout_heading>
       <div :if={@path} id="doc-page-toolbar" class="doc-page-toolbar">
         <.component_source_bar path={@path} />
-        <.demo_authoring_settings />
+        <.demo_authoring_settings disable_markup={@disable_markup} />
       </div>
       {render_slot(@inner_block)}
     </article>
@@ -264,14 +275,24 @@ defmodule E2eWeb.DemoPage do
     """
   end
 
+  attr :disable_markup, :boolean, default: false
+
   def demo_authoring_settings(assigns) do
     %{authoring: authoring} = E2eWeb.DocAuthoring.get()
     assigns = assign(assigns, :authoring, authoring)
 
     ~H"""
-    <div id="doc-authoring-settings" class="doc-authoring-settings">
+    <div
+      id="doc-authoring-settings"
+      class="doc-authoring-settings"
+      data-disable-markup={@disable_markup}
+    >
       <span class="doc-authoring-settings__label">Authoring</span>
-      <.authoring_toggle id="doc-authoring-mode" authoring={@authoring} />
+      <.authoring_toggle
+        id="doc-authoring-mode"
+        authoring={@authoring}
+        disable_markup={@disable_markup}
+      />
     </div>
     """
   end
@@ -376,11 +397,7 @@ defmodule E2eWeb.DemoPage do
   attr :code_max_height, :string, required: true
 
   defp authoring_code_block(%{authoring_scope: "styled", code: %{attr: attr, class: class}} = assigns) do
-    authoring_code_block(%{assigns | code: %{attr: attr, class: class}})
-  end
-
-  defp authoring_code_block(%{authoring_scope: "styled", code: %{attr: attr, class: class, markup: _markup}} = assigns) do
-    authoring_code_block(%{assigns | code: %{attr: attr, class: class}})
+    authoring_code_block(%{assigns | authoring_scope: nil, code: %{attr: attr, class: class}})
   end
 
   defp authoring_code_block(%{code: %{attr: attr, class: class, markup: markup}} = assigns) do

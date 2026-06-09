@@ -63,7 +63,7 @@ defmodule Corex.Design.Recipes do
     Enum.map(@component_recipe_modules, & &1.recipe())
   end
 
-  @doc "All layout recipes (box/stack/row/grid/container/spacer/divider)."
+  @doc "All layout recipes (box/stack/row/grid/container/spacer/divider/icon)."
   def layout, do: Layout.all()
 
   @doc "Typography element recipes (h1, p, form, list, …)."
@@ -720,14 +720,18 @@ defmodule Corex.Design.Recipes do
   defmodule Layout do
     @moduledoc false
 
+    alias Corex.Design.Axes
+    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.Rule
+    alias Corex.Design.Selector
 
     @gaps ~W(none sm md lg xl)a
     @aligns ~W(start center end stretch baseline)a
     @justifies ~W(start center end between around evenly)a
 
     def all do
-      [box(), stack(), row(), grid(), container(), spacer(), divider()]
+      [box(), stack(), row(), grid(), container(), spacer(), divider(), icon()]
     end
 
     def get(id), do: Enum.find(all(), &(&1.id == id))
@@ -902,6 +906,29 @@ defmodule Corex.Design.Recipes do
           ]
         ],
         default_variants: [orientation: :horizontal]
+      )
+    end
+
+    defp icon do
+      host = Selector.host(:icon)
+
+      Recipe.new(:icon,
+        base: [
+          display: "inline-flex",
+          align_items: "center",
+          flex_shrink: "0",
+          color: "currentcolor"
+        ],
+        variants: [
+          text: Enum.map(Axes.text_atoms(), fn step -> {step, Presets.text_block(step)} end)
+        ],
+        default_variants: [text: :sm],
+        extra_rules: [
+          Rule.new(~s(#{host} [data-icon],\n  #{host} svg,\n  #{host} img),
+            decls: [include: :ui_icon]
+          ),
+          Rule.new("#{host} img", decls: [{:raw, "object-fit: contain"}])
+        ]
       )
     end
 
@@ -2883,11 +2910,16 @@ defmodule Corex.Design.Recipes do
               border: {:raw, "1px solid var(--color-border)"},
               overflow: :auto,
               min_width: 0,
-              box_sizing: :border_box
+              box_sizing: :border_box,
+              white_space: :pre
             ],
             children: [
               Rule.new("& code[data-part=\"content\"]",
-                decls: [padding_inline_end: {:space, :xl}, white_space: :pre_wrap]
+                decls: [
+                  display: :block,
+                  padding_inline_end: {:space, :xl},
+                  white_space: :pre
+                ]
               )
             ]
           ),
@@ -2948,7 +2980,10 @@ defmodule Corex.Design.Recipes do
 
       highlight_inherit = [
         Rule.new("pre#{host} code[data-part=\"content\"] span",
-          decls: [font_size: :inherit, line_height: :inherit]
+          decls: [font_size: :inherit, line_height: :inherit, white_space: :pre]
+        ),
+        Rule.new("pre#{host} code[data-part=\"content\"] span.w",
+          decls: [white_space: :pre]
         ),
         Rule.new("code#{host} > span[data-part=\"content\"] span",
           decls: [font_size: :inherit, line_height: :inherit]

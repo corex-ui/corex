@@ -155,9 +155,9 @@
     gap: var(--space-sm);
     padding-inline: var(--space-sm);
     min-height: var(--size-sm);
-    margin-bottom: var(--space-sm);
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
+    margin-bottom: var(--space-sm);
   }
 
   .accordion.accordion--sm [data-scope="accordion"][data-part="item-text"] {
@@ -168,9 +168,9 @@
     gap: var(--space-md);
     padding-inline: var(--space-md);
     min-height: var(--size-md);
-    margin-bottom: var(--space-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    margin-bottom: var(--space-md);
   }
 
   .accordion.accordion--md [data-scope="accordion"][data-part="item-text"] {
@@ -181,9 +181,9 @@
     gap: var(--space-lg);
     padding-inline: var(--space-lg);
     min-height: var(--size-lg);
-    margin-bottom: var(--space-lg);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
+    margin-bottom: var(--space-lg);
   }
 
   .accordion.accordion--lg [data-scope="accordion"][data-part="item-text"] {
@@ -194,9 +194,9 @@
     gap: var(--space-xl);
     padding-inline: var(--space-xl);
     min-height: var(--size-xl);
-    margin-bottom: var(--space-xl);
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
+    margin-bottom: var(--space-xl);
   }
 
   .accordion.accordion--xl [data-scope="accordion"][data-part="item-text"] {
