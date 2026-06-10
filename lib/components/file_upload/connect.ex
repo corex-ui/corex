@@ -19,6 +19,8 @@ defmodule Corex.FileUpload.Connect do
 
   alias Phoenix.LiveView.JS
 
+  @visually_hidden_style "border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap;word-wrap:normal;"
+
   defp zid(id), do: "file:#{id}"
 
   defp maybe_put_int(map, _key, nil), do: map
@@ -136,6 +138,9 @@ defmodule Corex.FileUpload.Connect do
       "data-part" => "hidden-input",
       "type" => "file",
       "id" => "#{zid(assigns.id)}:input",
+      "tabindex" => -1,
+      "aria-hidden" => true,
+      "style" => @visually_hidden_style,
       "disabled" => get_boolean(assigns.disabled),
       "name" => assigns.name,
       "form" => assigns.form
