@@ -320,13 +320,6 @@ defmodule Corex.Carousel do
       semantic: :semantic,
       size: :size,
       radius: :radius
-    ],
-    defaults: [
-      width: "full",
-      max_width: "md",
-      height: "auto",
-      max_height: "md",
-      size: "md"
     ]
 
   import Corex.Api.Doc

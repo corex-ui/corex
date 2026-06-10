@@ -4,41 +4,34 @@ defmodule Corex.Variants do
   @breakpoints [nil, "sm", "md", "lg", "xl", "2xl"]
 
   defmacro __using__(opts) do
+    env = __CALLER__
+
     case Keyword.get(opts, :kind, :component) do
-      :component -> component_using(opts)
-      :layout -> layout_using(opts)
-      :recipe -> recipe_using(opts)
-      :appearance -> recipe_using(opts)
+      :component -> component_using(opts, env)
+      :layout -> layout_using(opts, env)
+      :polymorphic -> polymorphic_using(opts, env)
     end
   end
 
-  defp component_using(opts) do
+  defp component_using(opts, env) do
     base = Keyword.fetch!(opts, :base)
     axes = Keyword.fetch!(opts, :axes)
-    defaults = Keyword.get(opts, :defaults, [])
     declare_class? = Keyword.get(opts, :class_attr, true)
 
     axis_names = Keyword.keys(axes)
-    defaults_map = Map.new(defaults, fn {k, v} -> {k, to_string(v)} end)
 
     axis_decls =
-      for {axis, scale} <- axes, do: axis_attr(base, axis, [nil | axis_values(scale)], nil)
+      for {axis, scale} <- axes, do: axis_attr(axis, axis_attr_values(scale, env))
 
     class_decl = if declare_class?, do: class_attr()
 
     quote do
       @corex_base unquote(base)
       @corex_axis_names unquote(axis_names)
-      @corex_defaults unquote(Macro.escape(defaults_map))
 
       @doc "Returns the BEM class string for this component's configured style axes."
       def corex_style_class(assigns) do
-        Corex.Variants.component_style_class(
-          @corex_base,
-          @corex_axis_names,
-          @corex_defaults,
-          assigns
-        )
+        Corex.Variants.component_style_class(@corex_base, @corex_axis_names, assigns)
       end
 
       @doc "Returns `{base, axis_names}` for style introspection and tooling."
@@ -58,21 +51,14 @@ defmodule Corex.Variants do
     end
   end
 
-  defp layout_using(opts) do
+  defp layout_using(opts, env) do
     base = Keyword.fetch!(opts, :base)
     axes = Keyword.fetch!(opts, :axes)
-    defaults = Keyword.get(opts, :defaults, [])
-
     axis_names = Keyword.keys(axes)
 
     axis_decls =
       for {axis, scale} <- axes do
-        values = axis_values(scale)
-
-        case Keyword.fetch(defaults, axis) do
-          {:ok, default} -> axis_attr(base, axis, values, to_string(default))
-          :error -> axis_attr(base, axis, [nil | values], nil)
-        end
+        axis_attr(axis, axis_attr_values(scale, env))
       end
 
     quote do
@@ -105,62 +91,58 @@ defmodule Corex.Variants do
     end
   end
 
-  defp recipe_using(opts) do
-    recipes = Keyword.get(opts, :recipes) || Keyword.fetch!(opts, :appearances)
-    default = Keyword.fetch!(opts, :default)
+  defp polymorphic_using(opts, env) do
+    looks = Keyword.fetch!(opts, :looks)
+    default_as = Keyword.fetch!(opts, :default_as)
+    axes = Keyword.fetch!(opts, :axes)
     declare_class? = Keyword.get(opts, :class_attr, true)
-    defaults = Keyword.get(opts, :defaults, [])
-    defaults_map = Map.new(defaults, fn {k, v} -> {k, to_string(v)} end)
 
-    unless default in recipes do
+    unless default_as in Keyword.keys(looks) do
       raise ArgumentError,
-            "Corex.Variants recipe default #{inspect(default)} must be one of #{inspect(recipes)}"
+            "Corex.Variants default_as #{inspect(default_as)} must be one of #{inspect(Keyword.keys(looks))}"
     end
 
-    looks = Map.new(recipes, fn name -> {to_string(name), Corex.Appearances.fetch!(name)} end)
+    looks_map =
+      looks
+      |> Map.new(fn {name, base} -> {to_string(name), base} end)
 
     meta =
-      Map.new(looks, fn {name, look} ->
-        {name, %{base: look.base, axes: Keyword.keys(look.axes)}}
-      end)
+      Map.new(looks_map, fn {name, base} -> {name, %{base: base, axes: Keyword.keys(axes)}} end)
 
-    axes_union =
-      recipes
-      |> Enum.flat_map(fn name -> Corex.Appearances.fetch!(name).axes end)
-      |> Enum.uniq_by(fn {axis, _scale} -> axis end)
-
-    names = Enum.map(recipes, &to_string/1)
-    default_str = to_string(default)
+    names = Map.keys(looks_map)
+    default_str = to_string(default_as)
+    axis_names = Keyword.keys(axes)
 
     axis_decls =
-      for {axis, scale} <- axes_union do
-        recipe_axis_attr(axis, [nil | axis_values(scale)])
+      for {axis, scale} <- axes do
+        axis_attr(axis, axis_attr_values(scale, env))
       end
 
     class_decl = if declare_class?, do: class_attr()
 
     quote do
+      @corex_looks unquote(Macro.escape(looks_map))
+      @corex_default_as unquote(default_str)
+      @corex_axis_names unquote(axis_names)
       @corex_recipes unquote(Macro.escape(meta))
-      @corex_default_recipe unquote(default_str)
-      @corex_recipe_defaults unquote(Macro.escape(defaults_map))
 
-      @doc "Returns the BEM class string for the active polymorphic recipe look."
+      @doc "Returns the BEM class string for the active polymorphic look."
       def corex_style_class(assigns) do
-        Corex.Variants.recipe_class(
-          @corex_recipes,
-          @corex_default_recipe,
-          assigns,
-          @corex_recipe_defaults
+        Corex.Variants.polymorphic_class(
+          @corex_looks,
+          @corex_default_as,
+          @corex_axis_names,
+          assigns
         )
       end
 
       @doc "Returns recipe metadata for style introspection and tooling."
-      def __corex_style__, do: {:recipes, @corex_default_recipe, @corex_recipes}
+      def __corex_style__, do: {:recipes, @corex_default_as, @corex_recipes}
 
       attr(:as, :string,
         values: unquote([nil | names]),
         default: unquote(default_str),
-        doc: "Recipe look to wear (one of #{unquote(Enum.join(names, ", "))})."
+        doc: "Look to wear (one of #{unquote(Enum.join(names, ", "))})."
       )
 
       unquote(class_decl)
@@ -169,43 +151,17 @@ defmodule Corex.Variants do
     end
   end
 
-  defp recipe_axis_attr(axis, values) do
-    doc =
-      "Style axis `#{axis}` for the active polymorphic look. Allowed values are set at compile time from your app config. Override with `config :corex, scales`, `:semantics`, or `:recipe_looks`, then recompile. See the Unstyled guide."
+  defp axis_attr(axis, values) do
+    doc = "Style axis `#{axis}`."
 
     quote do
-      attr(unquote(axis), :string,
-        values: unquote(values),
-        default: nil,
-        doc: unquote(doc)
-      )
+      attr(unquote(axis), :string, values: unquote(values), default: nil, doc: unquote(doc))
     end
   end
 
-  defp axis_attr(_base, axis, values, default) do
-    default_part =
-      case default do
-        nil -> ""
-        value -> " Default `#{value}`."
-      end
-
-    override_hint =
-      if axis == :semantic do
-        " Override with `config :corex, semantics`."
-      else
-        " Override with `config :corex, scales`."
-      end
-
-    doc =
-      "Style axis `#{axis}`.#{default_part} Allowed values are set at compile time from your app config.#{override_hint} Recompile after config changes. See the Unstyled guide."
-
-    quote do
-      attr(unquote(axis), :string,
-        values: unquote(values),
-        default: unquote(default),
-        doc: unquote(doc)
-      )
-    end
+  defp axis_attr_values(scale, env) do
+    scale = Macro.expand(scale, env)
+    [nil | axis_values(scale)]
   end
 
   @doc "Resolves compile-time axis value lists from a scale atom or explicit list."
@@ -215,45 +171,54 @@ defmodule Corex.Variants do
   @bem_skip_axes ~W(hide_from hide_below as modal unstyled)a
 
   @doc "Builds the host BEM class for a styled component, honoring `unstyled` and `class`."
-  def component_style_class(base, axis_names, defaults, assigns) do
+  def component_style_class(base, axis_names, assigns) do
     if Map.get(assigns, :unstyled, false) do
       assigns
       |> Map.get(:class)
       |> List.wrap()
       |> Corex.Style.merge_class()
     else
-      host_class(base, axis_names, defaults, assigns)
+      host_class(base, axis_names, assigns)
     end
   end
 
   @doc "Builds the merged host class from base, axis modifiers, and optional `class`."
-  def host_class(base, axis_names, defaults, assigns) do
+  def host_class(base, axis_names, assigns) do
     base
     |> List.wrap()
-    |> Kernel.++(bem_modifiers(base, axis_names, defaults, assigns))
+    |> Kernel.++(bem_modifiers(base, axis_names, assigns))
     |> Kernel.++(List.wrap(Map.get(assigns, :class)))
     |> Corex.Style.merge_class()
   end
 
   @doc "Builds a host class from base and `class` only, without axis modifiers."
-  def component_class(base, assigns), do: host_class(base, [], %{}, assigns)
+  def component_class(base, assigns), do: host_class(base, [], assigns)
 
-  @doc "Builds the host BEM class for the selected polymorphic recipe look."
-  def recipe_class(recipes, default, assigns, defaults \\ %{}) do
-    name = recipe_name(assigns, default)
-    %{base: base, axes: axes} = Map.fetch!(recipes, name)
+  @doc "Builds the host BEM class for the selected polymorphic look."
+  def polymorphic_class(looks, default_as, axis_names, assigns) do
+    name = look_name(assigns, default_as)
+
+    base =
+      case Map.fetch(looks, name) do
+        {:ok, block} ->
+          block
+
+        :error ->
+          raise ArgumentError,
+                "invalid look #{inspect(name)}; expected one of #{inspect(Map.keys(looks))}"
+      end
 
     base
     |> List.wrap()
-    |> Kernel.++(bem_modifiers(base, axes, defaults, assigns))
+    |> Kernel.++(bem_modifiers(base, axis_names, assigns))
     |> Kernel.++(List.wrap(Map.get(assigns, :class)))
     |> Corex.Style.merge_class()
   end
 
-  defp bem_modifiers(base, axis_names, defaults, assigns) do
+  defp bem_modifiers(base, axis_names, assigns) do
     for axis <- axis_names,
         axis not in @bem_skip_axes,
-        value = resolve(axis, defaults, assigns),
+        value = Map.get(assigns, axis),
         not is_nil(value) do
       "#{base}--#{bem_step(axis, value)}"
     end
@@ -261,7 +226,7 @@ defmodule Corex.Variants do
 
   defp bem_step(axis, value), do: Corex.Bem.step(axis, value)
 
-  defp recipe_name(assigns, default) do
+  defp look_name(assigns, default) do
     case Map.get(assigns, :as) do
       nil -> default
       name when is_atom(name) -> Atom.to_string(name)
@@ -299,11 +264,4 @@ defmodule Corex.Variants do
   end
 
   defp layout_bem_step(axis, value), do: Corex.Bem.step(axis, value)
-
-  defp resolve(axis, defaults, assigns) do
-    case Map.get(assigns, axis) do
-      nil -> Map.get(defaults, axis)
-      value -> value
-    end
-  end
 end

@@ -90,7 +90,7 @@ Add Corex to a Phoenix app you already have in the [manual installation guide](m
 
 Set `:debug` to `true` for verbose MCP request logging in development (default `false`).
 
-Axis vocabulary (`:scales`, `:semantics`, `:recipe_looks`) is covered in [Unstyled](unstyled.html). Theme authoring is in [Design config](design-config.html).
+Axis vocabulary and theme roles are configured under flat `config :corex_design` keys (`default_theme`, `themes`, `scales`, `recipes`, `aliases`). See [Design config](design-config.html) and [Unstyled](unstyled.html).
 
 ## Try your first component
 

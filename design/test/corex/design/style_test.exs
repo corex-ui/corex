@@ -13,7 +13,7 @@ defmodule Corex.Design.StyleTest do
 
     assert css =~ ".host {"
     assert css =~ "display: flex;"
-    assert css =~ "gap: var(--space-md);"
+    assert css =~ "gap: var(--spacing-md);"
     assert css =~ "&:hover {"
     assert css =~ "opacity: 0.5;"
   end

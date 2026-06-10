@@ -26,12 +26,6 @@ defmodule Corex.Typography.Form do
       max_height: :max_height,
       semantic: :semantic,
       gap: :space
-    ],
-    defaults: [
-      width: "full",
-      max_width: "md",
-      height: "auto",
-      max_height: "none"
     ]
 
   attr(:for, :any, required: true, doc: "An existing form or the form source data.")

@@ -24,17 +24,17 @@
 
 @utility toast--size-* {
   [data-scope="toast"][data-part="header"] {
-      gap: --value(--spacing-space-*, [length]);
-    padding-inline: --value(--spacing-space-*, [length]);
+      gap: --value(--spacing-*, [length]);
+    padding-inline: --value(--spacing-*, [length]);
   }
 
   [data-scope="toast"][data-part="description"] {
-      padding: --value(--spacing-space-*, [length]);
-    min-height: --value(--spacing-size-*, [length]);
+      padding: --value(--spacing-*, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
   [data-scope="toast"][data-part="group"] {
-      gap: --value(--spacing-space-*, [length]);
+      gap: --value(--spacing-*, [length]);
   }
 
   [data-scope="toast"][data-part="title"] {
@@ -46,6 +46,33 @@
 
 
 @layer components {
+  .toast [data-scope="toast"][data-part="header"] {
+    gap: var(--spacing-md);
+    padding-inline: var(--spacing-md);
+    padding-block: calc(var(--spacing-md) * 0.5);
+  }
+
+  .toast {
+    width: fit-content;
+    max-width: none;
+    height: auto;
+    max-height: none;
+  }
+
+  .toast [data-scope="toast"][data-part="description"] {
+    padding: var(--spacing-md);
+    min-height: calc(var(--spacing-md) * 14);
+  }
+
+  .toast [data-scope="toast"][data-part="group"] {
+    gap: var(--spacing-md);
+  }
+
+  .toast [data-scope="toast"][data-part="title"] {
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+
   .toast.toast--w-auto {
     width: auto;
   }
@@ -90,11 +117,11 @@
     position: relative;
   }
 
-  .toast.toast--semantic-brand {
+  .toast.toast--semantic-alert {
     position: relative;
   }
 
-  .toast.toast--semantic-alert {
+  .toast.toast--semantic-brand {
     position: relative;
   }
 
@@ -102,11 +129,15 @@
     position: relative;
   }
 
-  .toast.toast--semantic-success {
+  .toast.toast--semantic-neutral {
     position: relative;
   }
 
   .toast.toast--semantic-selected {
+    position: relative;
+  }
+
+  .toast.toast--semantic-success {
     position: relative;
   }
 
@@ -139,7 +170,7 @@
   }
 
   .toast [data-scope="toast"][data-part="root"] {
-    @apply ui-root;
+    @apply part-root;
     max-width: var(--container-xs);
     z-index: var(--z-index);
     height: var(--height);
@@ -155,7 +186,7 @@
   }
 
   .toast [data-scope="toast"][data-part="content"] {
-    @apply ui-content;
+    @apply part-content;
     display: flex;
     flex-direction: column;
     padding: 0;
@@ -165,16 +196,16 @@
   .toast [data-scope="toast"][data-part="header"] {
     display: flex;
     align-items: center;
-    gap: var(--space-md);
-    padding-inline: var(--space-md);
-    padding-block: calc(var(--space) * 0.5);
+    gap: var(--spacing-md);
+    padding-inline: var(--spacing-md);
+    padding-block: calc(var(--spacing-md) * 0.5);
     & {
       border-block-end: 1px solid var(--color-border)
     }
   }
 
   .toast [data-scope="toast"][data-part="title"] {
-    @apply ui-label;
+    @apply part-label;
     flex: 1;
     min-width: 0;
     font-weight: var(--font-weight-medium);
@@ -184,8 +215,8 @@
     font-size: var(--text-base);
     line-height: var(--leading-base);
     font-weight: var(--font-weight-medium);
-    padding: var(--space-lg);
-    min-height: var(--size-lg);
+    padding: var(--spacing-lg);
+    min-height: var(--spacing-control-lg);
     white-space: pre-line;
   }
 
@@ -194,16 +225,16 @@
     flex-direction: row;
     justify-content: flex-end;
     align-items: center;
-    gap: var(--space-md);
-    padding-inline: var(--space-lg);
+    gap: var(--spacing-md);
+    padding-inline: var(--spacing-lg);
     & {
-      padding-block-end: var(--space-md)
+      padding-block-end: var(--spacing-md)
     }
   }
 
   .toast [data-scope="toast"][data-part="action-trigger"] {
-    @apply ui-trigger;
-    min-height: var(--size-sm);
+    @apply part-trigger;
+    min-height: var(--spacing-control-sm);
   }
 
   .toast [data-scope="toast"][data-part="action-trigger"][hidden] {
@@ -211,9 +242,9 @@
   }
 
   .toast [data-scope="toast"][data-part="close-trigger"] {
-    @apply ui-trigger;
+    @apply part-trigger;
     flex-shrink: 0;
-    min-height: var(--size-sm);
+    min-height: var(--spacing-control-sm);
     padding: 0;
     background-color: transparent;
     border-color: transparent;
@@ -223,7 +254,7 @@
   }
 
   .toast [data-scope="toast"][data-part="root"][data-type='error'] .toast [data-scope="toast"][data-part="title"] {
-    color: var(--color-ui-ink-alert);
+    color: var(--color-alert);
   }
 
   .toast [data-scope="toast"][data-part="root"][data-type='error'] .toast [data-scope="toast"][data-part="progressbar"] {
@@ -231,7 +262,7 @@
   }
 
   .toast [data-scope="toast"][data-part="root"][data-type='info'] .toast [data-scope="toast"][data-part="title"] {
-    color: var(--color-ui-ink-info);
+    color: var(--color-on-page-info);
   }
 
   .toast [data-scope="toast"][data-part="root"][data-type='info'] .toast [data-scope="toast"][data-part="progressbar"] {
@@ -239,7 +270,7 @@
   }
 
   .toast [data-scope="toast"][data-part="root"][data-type='success'] .toast [data-scope="toast"][data-part="title"] {
-    color: var(--color-ui-ink-success);
+    color: var(--color-on-page-success);
   }
 
   .toast [data-scope="toast"][data-part="root"][data-type='success'] .toast [data-scope="toast"][data-part="progressbar"] {
@@ -247,8 +278,8 @@
   }
 
   .toast [data-scope="toast"][data-part="progressbar"] {
-    height: calc(var(--space) * 0.5);
-    background: linear-gradient(to left, var(--color-ui-ink-muted), var(--color-ui-ink));
+    height: calc(var(--spacing-md) * 0.5);
+    background: linear-gradient(to left, var(--color-on-muted), var(--color-on-page));
     width: 100%;
     position: absolute;
     bottom: 0;
@@ -267,9 +298,9 @@
   }
 
   .toast [data-scope="toast"][data-part="loading-spinner"] {
-    @apply ui-icon;
+    @apply part-icon;
     display: none;
-    min-height: var(--size-sm);
+    min-height: var(--spacing-control-sm);
     animation: spin 1s linear infinite;
   }
 
@@ -303,7 +334,7 @@
 
   .toast.toast--semantic-accent [data-scope="toast"][data-part="action-trigger"] {
     background-color: var(--color-accent);
-    color: var(--color-accent-ink);
+    color: var(--color-on-accent);
     &:hover {
       background-color: var(--color-accent-hover);
     }
@@ -314,44 +345,20 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toast.toast--semantic-brand [data-scope="toast"][data-part="action-trigger"] {
-    background-color: var(--color-brand);
-    color: var(--color-brand-ink);
-    &:hover {
-      background-color: var(--color-brand-hover);
-    }
-
-    &:active {
-      background-color: var(--color-brand-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-brand-ink);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
   }
 
   .toast.toast--semantic-alert [data-scope="toast"][data-part="action-trigger"] {
     background-color: var(--color-alert);
-    color: var(--color-alert-ink);
+    color: var(--color-on-alert);
     &:hover {
       background-color: var(--color-alert-hover);
     }
@@ -362,20 +369,44 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .toast.toast--semantic-brand [data-scope="toast"][data-part="action-trigger"] {
+    background-color: var(--color-brand);
+    color: var(--color-on-brand);
+    &:hover {
+      background-color: var(--color-brand-hover);
+    }
+
+    &:active {
+      background-color: var(--color-brand-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
   }
 
   .toast.toast--semantic-info [data-scope="toast"][data-part="action-trigger"] {
     background-color: var(--color-info);
-    color: var(--color-info-ink);
+    color: var(--color-on-info);
     &:hover {
       background-color: var(--color-info-hover);
     }
@@ -386,44 +417,44 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-info-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
   }
 
-  .toast.toast--semantic-success [data-scope="toast"][data-part="action-trigger"] {
-    background-color: var(--color-success);
-    color: var(--color-success-ink);
+  .toast.toast--semantic-neutral [data-scope="toast"][data-part="action-trigger"] {
+    background-color: var(--color-neutral);
+    color: var(--color-on-neutral);
     &:hover {
-      background-color: var(--color-success-hover);
+      background-color: var(--color-neutral-hover);
     }
 
     &:active {
-      background-color: var(--color-success-active);
+      background-color: var(--color-neutral-active);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-success-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
   }
 
   .toast.toast--semantic-selected [data-scope="toast"][data-part="action-trigger"] {
     background-color: var(--color-selected);
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
     &:hover {
       background-color: var(--color-selected-hover);
     }
@@ -434,127 +465,170 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .toast.toast--semantic-success [data-scope="toast"][data-part="action-trigger"] {
+    background-color: var(--color-success);
+    color: var(--color-on-success);
+    &:hover {
+      background-color: var(--color-success-hover);
+    }
+
+    &:active {
+      background-color: var(--color-success-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
   }
 
   .toast.toast--semantic-accent [data-scope="toast"][data-part="close-trigger"] {
-    color: var(--color-ui-ink-accent);
+    color: var(--color-on-accent);
     &:hover {
-      background-color: var(--color-ui-hover);
+      background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink-accent);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      color: var(--color-ui-ink-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toast.toast--semantic-brand [data-scope="toast"][data-part="close-trigger"] {
-    color: var(--color-ui-ink-brand);
-    &:hover {
-      background-color: var(--color-ui-hover);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink-brand);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      color: var(--color-ui-ink-muted);
+      color: var(--color-on-muted);
       cursor: not-allowed;
     }
   }
 
   .toast.toast--semantic-alert [data-scope="toast"][data-part="close-trigger"] {
-    color: var(--color-ui-ink-alert);
+    color: var(--color-on-alert);
     &:hover {
-      background-color: var(--color-ui-hover);
+      background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink-alert);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      color: var(--color-ui-ink-muted);
+      color: var(--color-on-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .toast.toast--semantic-brand [data-scope="toast"][data-part="close-trigger"] {
+    color: var(--color-on-brand);
+    &:hover {
+      background-color: var(--color-surface-control-hover);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      color: var(--color-on-muted);
       cursor: not-allowed;
     }
   }
 
   .toast.toast--semantic-info [data-scope="toast"][data-part="close-trigger"] {
-    color: var(--color-ui-ink-info);
+    color: var(--color-on-info);
     &:hover {
-      background-color: var(--color-ui-hover);
+      background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink-info);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      color: var(--color-ui-ink-muted);
+      color: var(--color-on-muted);
       cursor: not-allowed;
     }
   }
 
-  .toast.toast--semantic-success [data-scope="toast"][data-part="close-trigger"] {
-    color: var(--color-ui-ink-success);
+  .toast.toast--semantic-neutral [data-scope="toast"][data-part="close-trigger"] {
+    color: var(--color-on-control);
     &:hover {
-      background-color: var(--color-ui-hover);
+      background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink-success);
+      box-shadow: inset 0 0 0 2px var(--color-focus);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      color: var(--color-ui-ink-muted);
+      color: var(--color-on-muted);
       cursor: not-allowed;
     }
   }
 
   .toast.toast--semantic-selected [data-scope="toast"][data-part="close-trigger"] {
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
     &:hover {
-      background-color: var(--color-ui-hover);
+      background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      color: var(--color-ui-ink-muted);
+      color: var(--color-on-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .toast.toast--semantic-success [data-scope="toast"][data-part="close-trigger"] {
+    color: var(--color-on-success);
+    &:hover {
+      background-color: var(--color-surface-control-hover);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      color: var(--color-on-muted);
       cursor: not-allowed;
     }
   }

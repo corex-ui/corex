@@ -20,12 +20,6 @@ defmodule Corex.Typography.ListBox do
       max_height: :max_height,
       text: :text,
       semantic: :semantic
-    ],
-    defaults: [
-      width: "fit",
-      max_width: "none",
-      height: "auto",
-      max_height: "none"
     ]
 
   attr(:rest, :global)

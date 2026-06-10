@@ -36,6 +36,24 @@
 
 
 @layer components {
+  .avatar [data-scope="avatar"][data-part="root"] {
+    width: var(--spacing-control-md);
+    max-width: var(--container-md);
+    height: var(--spacing-control-md);
+  }
+
+  .avatar {
+    width: auto;
+    max-width: none;
+    height: auto;
+    max-height: none;
+  }
+
+  .avatar [data-scope="avatar"][data-part="fallback"] {
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+
   .avatar.avatar--w-auto {
     width: auto;
   }
@@ -103,7 +121,7 @@
   }
 
   .avatar[data-loading] .avatar [data-scope="avatar"][data-part="root"] {
-    @apply ui-loading;
+    @apply part-loading;
   }
 
   .avatar[dir="rtl"] .avatar [data-scope="avatar"][data-part="fallback"] {
@@ -111,13 +129,13 @@
   }
 
   .avatar [data-scope="avatar"][data-part="root"] {
-    @apply ui-root;
+    @apply part-root;
     position: relative;
     display: inline-grid;
     align-items: center;
     justify-items: center;
-    width: var(--size-md);
-    height: var(--size-md);
+    width: var(--spacing-control-md);
+    height: var(--spacing-control-md);
     max-width: 100%;
     border-radius: var(--radius-md);
     overflow: hidden;
@@ -138,9 +156,9 @@
     font-weight: var(--font-weight-normal);
     border-radius: inherit;
     border: 1px solid var(--color-border);
-    gap: var(--space-md);
-    color: var(--color-ui-ink);
-    background-color: var(--color-ui);
+    gap: var(--spacing-md);
+    color: var(--color-on-page);
+    background-color: var(--color-surface-control);
   }
 
   .avatar [data-scope="avatar"][data-part="image"] {
@@ -167,7 +185,7 @@
     height: 100%;
     box-sizing: border-box;
     border-radius: var(--radius-md);
-    background: linear-gradient(90deg, var(--color-ui-muted) 0%, var(--color-border) 50%, var(--color-ui-muted) 100%);
+    background: linear-gradient(90deg, var(--color-surface-control-muted) 0%, var(--color-border) 50%, var(--color-surface-control-muted) 100%);
     animation: avatar-skeleton-loading 1.2s ease-in-out infinite;
     & {
       background-size: 200% 100%

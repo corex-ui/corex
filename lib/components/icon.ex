@@ -20,8 +20,7 @@ defmodule Corex.Icon do
   use Corex.Variants,
     kind: :layout,
     base: "icon",
-    axes: [text: :text],
-    defaults: [text: "sm"]
+    axes: [text: :text]
 
   slot(:inner_block, required: true)
 

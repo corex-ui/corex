@@ -4,7 +4,7 @@ defmodule Corex.Design.CssTest do
   alias Corex.Design.Css
 
   test "resolve/3 maps space steps to vars" do
-    assert Css.resolve(:gap, :md) == "var(--space-md)"
+    assert Css.resolve(:gap, :md) == "var(--spacing-md)"
   end
 
   test "resolve/3 passes CSS keywords for color properties" do

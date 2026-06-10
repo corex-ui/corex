@@ -90,13 +90,13 @@ defmodule Corex.Design.Recipes do
 
   @doc """
   Recipes the compiler emits as CSS: `all/0` filtered by the optional allowlist
-  `config :corex_design, include_recipes: [:button, :select, ...]` (recipe ids).
+  `config :corex_design, recipes: [include: [:button, :select, ...]]` (recipe ids).
   When unset, every recipe is emitted. Filtering shrinks the Tailwind recipe
   exports for apps that use a known subset; the full vocabulary
   still flows to the component contract via `all/0`.
   """
   def emitted do
-    case Application.get_env(:corex_design, :include_recipes) do
+    case Corex.Design.Config.resolved_options() |> Keyword.get(:include_recipes) do
       nil ->
         all()
 
@@ -108,8 +108,8 @@ defmodule Corex.Design.Recipes do
 
   @doc false
   def host_recipes do
-    :corex_design
-    |> Application.get_env(:recipes, [])
+    Corex.Design.Config.resolved_options()
+    |> Keyword.get(:recipes, [])
     |> List.wrap()
     |> Enum.flat_map(&source_recipes/1)
   end
@@ -158,23 +158,23 @@ defmodule Corex.Design.Recipes do
             decls: [
               display: "flex",
               flex_direction: "column",
-              gap: "var(--space)"
+              gap: "var(--spacing-md)"
             ]
           ),
           Rule.new("#{host}[data-loading] #{Selector.slot(scope, "root")}",
-            decls: [include: :ui_loading]
+            decls: [include: :part_loading]
           ),
           Rule.new(Selector.part(id, scope, "root"),
-            decls: [include: :ui_root]
+            decls: [include: :part_root]
           ),
           Rule.new("#{Selector.part(id, scope, "root")}[data-readonly]",
-            decls: [include: :ui_readonly]
+            decls: [include: :part_readonly]
           ),
           Rule.new(Selector.part(id, scope, "label"),
-            decls: [include: :ui_label]
+            decls: [include: :part_label]
           ),
           Rule.new(Selector.part(id, scope, "error"),
-            decls: [include: :ui_error]
+            decls: [include: :part_error]
           )
         ]
 
@@ -205,14 +205,14 @@ defmodule Corex.Design.Recipes do
             cursor: "pointer",
             flex_shrink: "0",
             border: "1px solid var(--color-border)",
-            background: "var(--color-ui)",
-            color: "var(--color-ui-ink)"
+            background: "var(--color-surface-control)",
+            color: "var(--color-on-page)"
           ],
           children: [
-            Rule.new("&:hover", decls: [background_color: "var(--color-ui-hover)"]),
-            Rule.new("&:active", decls: [background_color: "var(--color-ui-active)"]),
+            Rule.new("&:hover", decls: [background_color: "var(--color-surface-control-hover)"]),
+            Rule.new("&:active", decls: [background_color: "var(--color-surface-control-active)"]),
             Rule.new("&:focus-visible,\n  &[data-focus]",
-              decls: [outline: "none", box_shadow: "inset 0 0 0 2px var(--color-ui-ink)"]
+              decls: [outline: "none", box_shadow: "inset 0 0 0 2px var(--color-on-page)"]
             ),
             Rule.new(checked_selector,
               decls: [
@@ -228,12 +228,12 @@ defmodule Corex.Design.Recipes do
               ]
             ),
             Rule.new("&[data-state=\"unchecked\"]",
-              decls: [background: "var(--color-ui)", color: "var(--color-ui-ink)"]
+              decls: [background: "var(--color-surface-control)", color: "var(--color-on-page)"]
             ),
             Rule.new("&:disabled,\n  &[data-disabled],\n  &[disabled]",
               decls: [
-                color: "var(--color-ui-ink-muted)",
-                background_color: "var(--color-ui-muted)",
+                color: "var(--color-on-muted)",
+                background_color: "var(--color-surface-control-muted)",
                 cursor: "not-allowed"
               ]
             ),
@@ -248,7 +248,7 @@ defmodule Corex.Design.Recipes do
         Rule.new(Selector.part(id, scope, "label"),
           decls: [cursor: "pointer"],
           children: [
-            Rule.new("&[data-invalid]", decls: [color: "var(--color-ui-ink)"])
+            Rule.new("&[data-invalid]", decls: [color: "var(--color-on-page)"])
           ]
         ),
         Rule.new(
@@ -277,7 +277,7 @@ defmodule Corex.Design.Recipes do
 
         closed =
           Rule.new("#{host} #{slot_selector(id, part_selector)}[data-state=\"closed\"]",
-            decls: [color: "var(#{Palette.fg_var(role)}, var(--color-ui-ink))"]
+            decls: [color: "var(#{Palette.fg_var(role)}, var(--color-on-page))"]
           )
 
         open_children =
@@ -387,7 +387,7 @@ defmodule Corex.Design.Recipes do
           children:
             [
               Rule.new(inactive,
-                decls: [color: "var(#{Palette.fg_var(role)}, var(--color-ui-ink))"],
+                decls: [color: "var(#{Palette.fg_var(role)}, var(--color-on-page))"],
                 children: [
                   Rule.new("&:focus-visible",
                     decls: [outline: "none", box_shadow: "inset 0 0 0 2px #{focus_ring}"]
@@ -441,7 +441,7 @@ defmodule Corex.Design.Recipes do
           children:
             [
               Rule.new(inactive,
-                decls: [color: "var(--color-ui-ink)"],
+                decls: [color: "var(--color-on-page)"],
                 children: [
                   Rule.new("&:focus-visible",
                     decls: [outline: "none", box_shadow: "inset 0 0 0 2px #{focus_ring}"]
@@ -587,7 +587,7 @@ defmodule Corex.Design.Recipes do
       host = Selector.host(id)
 
       [
-        Rule.new(~s(#{host} [data-icon]), decls: [include: :ui_icon])
+        Rule.new(~s(#{host} [data-icon]), decls: [include: :part_icon])
       ]
     end
 
@@ -722,7 +722,7 @@ defmodule Corex.Design.Recipes do
                 {:none, []},
                 {:layer,
                  [
-                   background_color: {:color, :layer},
+                   background_color: {:color, :surface_raised},
                    border: {:raw, "1px solid var(--color-border)"},
                    box_shadow: {:raw, "var(--shadow-md)"}
                  ]}
@@ -906,7 +906,7 @@ defmodule Corex.Design.Recipes do
         default_variants: [text: :sm],
         extra_rules: [
           Rule.new(~s(#{host} [data-icon],\n  #{host} svg,\n  #{host} img),
-            decls: [include: :ui_icon]
+            decls: [include: :part_icon]
           ),
           Rule.new("#{host} img", decls: [{:raw, "object-fit: contain"}])
         ]
@@ -1107,11 +1107,11 @@ defmodule Corex.Design.Recipes do
       description = part(id, "description")
 
       [
-        Rule.new("#{host}[data-loading] > *", decls: [include: :ui_loading]),
-        Rule.new(trigger, decls: [include: :ui_trigger]),
+        Rule.new("#{host}[data-loading] > *", decls: [include: :part_loading]),
+        Rule.new(trigger, decls: [include: :part_trigger]),
         Rule.new(close_trigger,
           decls: [
-            include: :ui_trigger,
+            include: :part_trigger,
             flex_shrink: "0",
             height: "fit-content",
             margin_inline_start: "auto",
@@ -1126,7 +1126,7 @@ defmodule Corex.Design.Recipes do
             inset: "0",
             width: "100vw",
             height: "100vh",
-            background: {:raw, "color-mix(in srgb, var(--color-ui) 95%, transparent)"},
+            background: {:raw, "color-mix(in srgb, var(--color-surface-control) 95%, transparent)"},
             z_index: "10"
           ]
         ),
@@ -1144,7 +1144,7 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(content,
           decls: [
-            include: :ui_content,
+            include: :part_content,
             max_width: {:container, :md},
             padding: {:space, :md},
             text_align: "start"
@@ -1282,7 +1282,7 @@ defmodule Corex.Design.Recipes do
     @id :accordion
     @scope "accordion"
     @anatomy [
-      trigger: [include: :ui_trigger, width: "100%", margin_bottom: "var(--space)"],
+      trigger: [include: :part_trigger, width: "100%", margin_bottom: "var(--spacing-md)"],
       indicator: [
         flex_shrink: "0",
         transform: "rotate(0deg)",
@@ -1334,8 +1334,8 @@ defmodule Corex.Design.Recipes do
       item_content = part("item-content")
 
       [
-        Rule.new(~s(#{host}[data-loading] #{slot("root")}), decls: [include: :ui_loading]),
-        Rule.new(root, decls: [include: :ui_root]),
+        Rule.new(~s(#{host}[data-loading] #{slot("root")}), decls: [include: :part_loading]),
+        Rule.new(root, decls: [include: :part_root]),
         Rule.new(~s(#{root}[data-orientation="horizontal"]),
           decls: [
             display: "grid",
@@ -1381,7 +1381,7 @@ defmodule Corex.Design.Recipes do
             width: "100%",
             display: "flex",
             align_items: "center",
-            gap: "var(--space)"
+            gap: "var(--spacing-md)"
           ]
         ),
         Rule.new(~s(#{item_trigger}[data-orientation="horizontal"] #{slot("item-text")}),
@@ -1414,7 +1414,7 @@ defmodule Corex.Design.Recipes do
           decls: [{:raw, "overflow-wrap: break-word"}]
         ),
         Rule.new(~s(#{item_content} > p),
-          decls: [include: :ui_content, margin: "0", margin_bottom: "var(--space)"]
+          decls: [include: :part_content, margin: "0", margin_bottom: "var(--spacing-md)"]
         ),
         Rule.new(
           ~s(#{root}[data-async] #{slot("item-text")} > *,\n  #{root}[data-async] #{slot("item-indicator")} > *),
@@ -1425,13 +1425,13 @@ defmodule Corex.Design.Recipes do
           decls: [
             content: ~S(""),
             display: "block",
-            height: "var(--space)",
-            background_color: "var(--color-ui-active)",
+            height: "var(--spacing-md)",
+            background_color: "var(--color-surface-control-active)",
             border_radius: "var(--radius-md)"
           ]
         ),
         Rule.new(~s(#{root}[data-async] #{slot("item-text")}::before),
-          decls: [width: "var(--container-2xs)", margin_block: "var(--space)"]
+          decls: [width: "var(--container-2xs)", margin_block: "var(--spacing-md)"]
         )
       ]
     end
@@ -1579,17 +1579,17 @@ defmodule Corex.Design.Recipes do
       [
         Rule.new("&::-webkit-scrollbar",
           decls: [
-            {:raw, "width: calc(var(--space-sm) * 0.6); height: calc(var(--space-sm) * 0.6)"}
+            {:raw, "width: calc(var(--spacing-sm) * 0.6); height: calc(var(--spacing-sm) * 0.6)"}
           ]
         ),
         Rule.new("&::-webkit-scrollbar-track",
-          decls: [background: {:color, :root}]
+          decls: [background: {:color, :surface_page}]
         ),
         Rule.new("&::-webkit-scrollbar-thumb",
           decls: [background: {:color, :border}]
         ),
         Rule.new("&::-webkit-scrollbar-corner",
-          decls: [background: {:color, :root}]
+          decls: [background: {:color, :surface_page}]
         )
       ]
     end
@@ -1636,14 +1636,14 @@ defmodule Corex.Design.Recipes do
       indicator = slot("item-indicator")
 
       [
-        Rule.new(~s(#{indicator} [data-icon]), decls: [include: :ui_icon]),
+        Rule.new(~s(#{indicator} [data-icon]), decls: [include: :part_icon]),
         Rule.new(
           ~s(#{item}[data-state="closed"] #{indicator} [data-icon-state="open"],\n  #{item}[data-state="open"] #{indicator} [data-icon-state="closed"]),
-          decls: [include: :ui_icon, display: "none"]
+          decls: [include: :part_icon, display: "none"]
         ),
         Rule.new(
           ~s(#{item}[data-state="open"] #{indicator} [data-icon-state="open"],\n  #{item}[data-state="closed"] #{indicator} [data-icon-state="closed"]),
-          decls: [include: :ui_icon, display: "inline-block"]
+          decls: [include: :part_icon, display: "inline-block"]
         )
       ]
     end
@@ -1743,7 +1743,7 @@ defmodule Corex.Design.Recipes do
                 ]
               ),
               Rule.new("&[data-disabled]",
-                decls: [color: {:color, :ui_ink_muted}, cursor: "not-allowed"]
+                decls: [color: {:color, :on_muted}, cursor: "not-allowed"]
               ),
               Rule.new("&[data-invalid] #{control}", decls: [border_color: {:color, :alert}]),
               Rule.new("&[data-invalid] #{text_part},\n  &[data-invalid] #{value_part}",
@@ -1776,19 +1776,19 @@ defmodule Corex.Design.Recipes do
           ),
           Rule.new(label,
             children: [
-              Rule.new("#{root}[data-disabled] &", decls: [color: {:color, :ui_ink_muted}])
+              Rule.new("#{root}[data-disabled] &", decls: [color: {:color, :on_muted}])
             ]
           ),
           Rule.new(control,
             decls: [
               "--size": {:size, :lg},
-              "--thumb-size": {:raw, "calc(var(--size-lg) * 0.5)"},
-              "--thumb-indicator-size": {:raw, "min(var(--thumb-size), calc(var(--size) / 2))"},
-              width: "var(--size)",
-              height: "var(--size)",
+              "--thumb-size": {:raw, "calc(var(--spacing-control-lg) * 0.5)"},
+              "--thumb-indicator-size": {:raw, "min(var(--thumb-size), calc(var(--spacing-control-md) / 2))"},
+              width: "var(--spacing-control-md)",
+              height: "var(--spacing-control-md)",
               border_radius: {:radius, :full},
               border: {:raw, "1px solid var(--color-border)"},
-              background_color: {:color, :ui},
+              background_color: {:color, :surface_control},
               margin_inline: "auto",
               display: "flex",
               align_items: "center",
@@ -1806,7 +1806,7 @@ defmodule Corex.Design.Recipes do
               left: "50%",
               pointer_events: "none",
               width: "0",
-              color: {:color, :ui_ink}
+              color: {:color, :on_page}
             ],
             children: [
               Rule.new("&",
@@ -1822,15 +1822,15 @@ defmodule Corex.Design.Recipes do
                   transform: "translate(-50%, 0)",
                   height: "var(--thumb-indicator-size)",
                   width: "max(3px, calc(var(--thumb-size) * 0.12))",
-                  background_color: {:color, :ui_ink},
+                  background_color: {:color, :on_page},
                   border_radius: {:radius, :md}
                 ],
                 children: [
                   Rule.new("#{root}[data-disabled] &",
-                    decls: [background_color: {:color, :ui_ink_muted}]
+                    decls: [background_color: {:color, :on_muted}]
                   ),
                   Rule.new("&:focus-visible",
-                    decls: [outline: "none", box_shadow: "0 0 0 1px var(--color-ui-ink)"]
+                    decls: [outline: "none", box_shadow: "0 0 0 1px var(--color-on-page)"]
                   )
                 ]
               )
@@ -1856,7 +1856,7 @@ defmodule Corex.Design.Recipes do
               Rule.new("&",
                 decls: [
                   {:raw,
-                   "--marker-color: var(--color-ui-ink-muted); transform: translate(-50%, 0); transform-origin: center"}
+                   "--marker-color: var(--color-on-muted); transform: translate(-50%, 0); transform-origin: center"}
                 ]
               ),
               Rule.new("&::before",
@@ -1873,14 +1873,14 @@ defmodule Corex.Design.Recipes do
                 ]
               ),
               Rule.new("&[data-state=\"under-value\"]",
-                decls: [{:"--marker-color", "var(--color-ui-ink)"}],
+                decls: [{:"--marker-color", "var(--color-on-page)"}],
                 children: [
                   Rule.new("&::before", decls: [width: "3px"])
                 ]
               ),
               Rule.new("&[data-state=\"at-value\"]", decls: [display: "none"]),
               Rule.new("&[data-state=\"over-value\"]",
-                decls: [{:"--marker-color", "var(--color-ui-ink-muted)"}]
+                decls: [{:"--marker-color", "var(--color-on-muted)"}]
               )
             ]
           ),
@@ -1905,7 +1905,7 @@ defmodule Corex.Design.Recipes do
               font_size: {:text, :base},
               line_height: {:leading, :base},
               font_weight: {:weight, :normal},
-              color: {:color, :ui_ink}
+              color: {:color, :on_page}
             ],
             children: [
               Rule.new("&", decls: [{:raw, "font-variant-numeric: tabular-nums"}])
@@ -1918,7 +1918,7 @@ defmodule Corex.Design.Recipes do
               text_align: "center"
             ],
             children: [
-              Rule.new("#{root}[data-disabled] &", decls: [color: {:color, :ui_ink_muted}])
+              Rule.new("#{root}[data-disabled] &", decls: [color: {:color, :on_muted}])
             ]
           ),
           Rule.new(hidden, decls: [display: "none"]),
@@ -1972,11 +1972,11 @@ defmodule Corex.Design.Recipes do
            control: %{
              font_size: {:text, text},
              line_height: {:leading, text},
-             background_color: {:color, :ui},
-             color: {:color, :ui_ink},
+             background_color: {:color, :surface_control},
+             color: {:color, :on_page},
              border_color: {:color, :border},
              "--size": {:size, size},
-             "--thumb-size": {:raw, "calc(var(--size-#{size}) * 0.5)"}
+             "--thumb-size": {:raw, "calc(var(--spacing-control-#{size}) * 0.5)"}
            }
          ]}
       end
@@ -2030,11 +2030,11 @@ defmodule Corex.Design.Recipes do
             Rule.new("100%", decls: [{:raw, "background-position: -200% 0"}])
           ]
         ),
-        Rule.new("#{host}[data-loading] #{root}", decls: [include: :ui_loading]),
+        Rule.new("#{host}[data-loading] #{root}", decls: [include: :part_loading]),
         Rule.new("#{host}[dir=\"rtl\"] #{fallback}", decls: [text_align: "end"]),
         Rule.new(root,
           decls: [
-            include: :ui_root,
+            include: :part_root,
             position: "relative",
             display: "inline-grid",
             align_items: "center",
@@ -2063,8 +2063,8 @@ defmodule Corex.Design.Recipes do
             border_radius: "inherit",
             border: {:raw, "1px solid var(--color-border)"},
             gap: {:space, :md},
-            color: {:color, :ui_ink},
-            background_color: {:color, :ui}
+            color: {:color, :on_page},
+            background_color: {:color, :surface_control}
           ]
         ),
         Rule.new(image,
@@ -2095,7 +2095,7 @@ defmodule Corex.Design.Recipes do
             border_radius: {:radius, :md},
             background:
               {:raw,
-               "linear-gradient(90deg, var(--color-ui-muted) 0%, var(--color-border) 50%, var(--color-ui-muted) 100%)"},
+               "linear-gradient(90deg, var(--color-surface-control-muted) 0%, var(--color-border) 50%, var(--color-surface-control-muted) 100%)"},
             animation: "avatar-skeleton-loading 1.2s ease-in-out infinite"
           ],
           children: [
@@ -2171,7 +2171,7 @@ defmodule Corex.Design.Recipes do
       %{
         font_size: {:raw, "calc(var(--text-#{text}) * 0.8)"},
         line_height: {:raw, "var(--text-#{text}--line-height)"},
-        height: {:raw, "calc(var(--spacing-size) * 0.8)"},
+        height: {:raw, "calc(var(--spacing-control-md) * 0.8)"},
         padding_inline: {:space, :sm},
         gap: {:space, :sm}
       }
@@ -2201,19 +2201,19 @@ defmodule Corex.Design.Recipes do
             border: {:raw, "1px solid var(--color-border)"},
             padding: {:space, :sm},
             gap: {:space, :sm},
-            height: {:raw, "calc(var(--spacing-size) * 0.8)"},
+            height: {:raw, "calc(var(--spacing-control-md) * 0.8)"},
             overflow: "hidden",
             text_overflow: "ellipsis",
             white_space: "normal",
-            color: {:color, :ui_ink},
-            background_color: {:color, :ui}
+            color: {:color, :on_page},
+            background_color: {:color, :surface_control}
           ],
           children: [
             Rule.new(
               ~S(&:disabled,\n  &[data-disabled],\n  &[disabled]),
               decls: [
-                color: {:color, :ui_ink_muted},
-                background_color: {:color, :ui_muted},
+                color: {:color, :on_muted},
+                background_color: {:color, :surface_control_muted},
                 cursor: "not-allowed"
               ]
             )
@@ -2338,13 +2338,13 @@ defmodule Corex.Design.Recipes do
       indicator = part("indicator")
 
       [
-        Rule.new("#{host}[data-loading] #{root}", decls: [include: :ui_loading]),
+        Rule.new("#{host}[data-loading] #{root}", decls: [include: :part_loading]),
         Rule.new(host,
           decls: [width: "100%", max_width: {:container, :md}, max_height: {:container, :md}]
         ),
         Rule.new(root,
           decls: [
-            include: :ui_root,
+            include: :part_root,
             width: "100%",
             aspect_ratio: "4/3",
             overflow: "hidden",
@@ -2378,33 +2378,33 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(prev,
           decls: [
-            include: :ui_trigger,
+            include: :part_trigger,
             aspect_ratio: {:raw, "1 / 1"},
             padding: 0,
             justify_content: :center,
             width: :auto,
-            min_height: {:raw, "calc(var(--size-md) * 0.8)"},
-            min_width: {:raw, "calc(var(--size-md) * 0.8)"},
+            min_height: {:raw, "calc(var(--spacing-control-md) * 0.8)"},
+            min_width: {:raw, "calc(var(--spacing-control-md) * 0.8)"},
             padding: "0"
           ],
           children: disabled_hidden_rules()
         ),
         Rule.new(next,
           decls: [
-            include: :ui_trigger,
+            include: :part_trigger,
             aspect_ratio: {:raw, "1 / 1"},
             padding: 0,
             justify_content: :center,
             width: :auto,
-            min_height: {:raw, "calc(var(--size-md) * 0.8)"},
-            min_width: {:raw, "calc(var(--size-md) * 0.8)"},
+            min_height: {:raw, "calc(var(--spacing-control-md) * 0.8)"},
+            min_width: {:raw, "calc(var(--spacing-control-md) * 0.8)"},
             padding: "0"
           ],
           children: disabled_hidden_rules()
         ),
         Rule.new(autoplay,
           decls: [
-            include: :ui_trigger,
+            include: :part_trigger,
             aspect_ratio: {:raw, "1 / 1"},
             padding: 0,
             justify_content: :center,
@@ -2480,7 +2480,7 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(indicator,
           decls: [
-            include: :ui_trigger,
+            include: :part_trigger,
             aspect_ratio: {:raw, "1 / 1"},
             padding: 0,
             justify_content: :center,
@@ -2533,8 +2533,8 @@ defmodule Corex.Design.Recipes do
            next_trigger: trigger_size_block(size, text, 0.8),
            autoplay_trigger: trigger_size_block(size, text, 0.8),
            indicator: %{
-             min_height: {:raw, "calc(var(--size-#{size}) * 0.25)"},
-             min_width: {:raw, "calc(var(--size-#{size}) * 0.25)"}
+             min_height: {:raw, "calc(var(--spacing-control-#{size}) * 0.25)"},
+             min_width: {:raw, "calc(var(--spacing-control-#{size}) * 0.25)"}
            }
          ]}
       end
@@ -2544,8 +2544,8 @@ defmodule Corex.Design.Recipes do
       %{
         font_size: {:raw, "calc(var(--text-#{text}) * #{scale})"},
         line_height: {:raw, "calc(var(--text-#{text}--line-height) * #{scale})"},
-        min_height: {:raw, "calc(var(--size-#{size}) * #{scale})"},
-        min_width: {:raw, "calc(var(--size-#{size}) * #{scale})"}
+        min_height: {:raw, "calc(var(--spacing-control-#{size}) * #{scale})"},
+        min_width: {:raw, "calc(var(--spacing-control-#{size}) * #{scale})"}
       }
     end
 
@@ -2615,8 +2615,8 @@ defmodule Corex.Design.Recipes do
       for size <- Axes.size_atoms() do
         block = %{
           "--size": {:size, size},
-          height: {:raw, "calc(var(--size-#{size}) * 0.6)"},
-          width: {:raw, "calc(var(--size-#{size}) * 0.6)"},
+          height: {:raw, "calc(var(--spacing-control-#{size}) * 0.6)"},
+          width: {:raw, "calc(var(--spacing-control-#{size}) * 0.6)"},
           font_size: {:text, size_text(size)},
           line_height: {:leading, size_text(size)}
         }
@@ -2683,8 +2683,8 @@ defmodule Corex.Design.Recipes do
         [
           Rule.new(control,
             decls: [
-              height: "calc(var(--size-md) * 0.6)",
-              width: "calc(var(--size-md) * 0.6)",
+              height: "calc(var(--spacing-control-md) * 0.6)",
+              width: "calc(var(--spacing-control-md) * 0.6)",
               border_radius: "var(--radius-md)",
               font_size: "var(--text-base)",
               line_height: "var(--leading-base)"
@@ -2701,7 +2701,7 @@ defmodule Corex.Design.Recipes do
             ],
             children: [
               Rule.new("& [data-icon],\n  & svg,\n  & img",
-                decls: [include: :ui_icon]
+                decls: [include: :part_icon]
               )
             ]
           ),
@@ -2759,18 +2759,18 @@ defmodule Corex.Design.Recipes do
 
       [
         Rule.new(~s(#{host}[data-loading] #{Selector.slot(@scope, "root")}),
-          decls: [include: :ui_loading]
+          decls: [include: :part_loading]
         ),
-        Rule.new(root, decls: [include: :ui_root, gap: "var(--space)"]),
+        Rule.new(root, decls: [include: :part_root, gap: "var(--spacing-md)"]),
         Rule.new(~s(#{root}[data-orientation="horizontal"]), decls: [align_items: "center"]),
         Rule.new(~s(#{root}[data-orientation="vertical"]), decls: [align_items: "start"]),
-        Rule.new(label, decls: [include: :ui_label]),
+        Rule.new(label, decls: [include: :part_label]),
         Rule.new(control,
           decls: [
             display: "flex",
             flex_flow: "row wrap",
             justify_content: "start",
-            gap: "var(--space-sm)"
+            gap: "var(--spacing-sm)"
           ]
         ),
         Rule.new(~s(#{control}[data-orientation="horizontal"]),
@@ -2778,7 +2778,7 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(input,
           decls: [
-            include: :ui_input,
+            include: :part_input,
             width: :auto,
             flex: "0 1 auto",
             max_width: {:container, :md}
@@ -2790,12 +2790,12 @@ defmodule Corex.Design.Recipes do
             color: "var(--color-success-ink)"
           ]
         ),
-        Rule.new(trigger, decls: [include: :ui_trigger]),
+        Rule.new(trigger, decls: [include: :part_trigger]),
         Rule.new(copy,
           decls: [
             display: "inline-flex",
             align_items: "center",
-            gap: "var(--space)",
+            gap: "var(--spacing-md)",
             pointer_events: "none"
           ]
         ),
@@ -2803,7 +2803,7 @@ defmodule Corex.Design.Recipes do
           decls: [
             display: "none",
             align_items: "center",
-            gap: "var(--space)",
+            gap: "var(--spacing-md)",
             pointer_events: "none"
           ]
         ),
@@ -2931,7 +2931,7 @@ defmodule Corex.Design.Recipes do
           Rule.new("pre#{host}",
             decls: [
               {:raw,
-               "background-image: linear-gradient(var(--color-root) 50%, var(--color-layer) 50%);"},
+               "background-image: linear-gradient(var(--color-surface-page) 50%, var(--color-surface-raised) 50%);"},
               {:raw, "background-size: 100% 2lh;"},
               {:raw, "background-origin: content-box;"},
               {:raw, "background-attachment: local;"},
@@ -2939,8 +2939,8 @@ defmodule Corex.Design.Recipes do
               width: "100%",
               font_family: {:font, :mono},
               padding: {:space, :md},
-              background_color: {:color, :ui},
-              color: {:color, :ui_ink},
+              background_color: {:color, :surface_control},
+              color: {:color, :on_page},
               border: {:raw, "1px solid var(--color-border)"},
               overflow: :auto,
               min_width: 0,
@@ -2970,8 +2970,8 @@ defmodule Corex.Design.Recipes do
               padding_block: {:raw, "0.12em"},
               border: {:raw, "1px solid var(--color-border)"},
               border_radius: {:radius, :md},
-              background_color: {:color, :layer},
-              color: {:color, :ui_ink},
+              background_color: {:color, :surface_raised},
+              color: {:color, :on_page},
               user_select: :all
             ],
             children: [
@@ -3172,9 +3172,9 @@ defmodule Corex.Design.Recipes do
       opened = part("opened")
 
       [
-        Rule.new("#{host}[data-loading] #{root}", decls: [include: :ui_loading]),
+        Rule.new("#{host}[data-loading] #{root}", decls: [include: :part_loading]),
         Rule.new(host, decls: [width: "100%", max_width: {:container, :md}]),
-        Rule.new(root, decls: [include: :ui_root]),
+        Rule.new(root, decls: [include: :part_root]),
         Rule.new("#{root}[data-orientation=\"vertical\"]",
           decls: [flex_direction: "column", align_items: "stretch"]
         ),
@@ -3183,7 +3183,7 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(trigger,
           decls: [
-            include: :ui_trigger,
+            include: :part_trigger,
             justify_content: "space-between",
             max_width: {:raw, "var(--container-5xs)"},
             align_self: "flex-start",
@@ -3191,7 +3191,7 @@ defmodule Corex.Design.Recipes do
             box_shadow: {:raw, "var(--shadow-ui)"}
           ],
           children: [
-            Rule.new("& svg", decls: [include: :ui_icon]),
+            Rule.new("& svg", decls: [include: :part_icon]),
             Rule.new("&[data-state=\"closed\"]:has(#{opened}) #{opened}",
               decls: [display: "none"]
             ),
@@ -3235,13 +3235,13 @@ defmodule Corex.Design.Recipes do
         Rule.new(~s(#{content}[data-orientation="horizontal"][data-state="closed"]),
           decls: [animation: "collapsible-slide-left 200ms ease"]
         ),
-        Rule.new(content, decls: [include: :ui_content]),
+        Rule.new(content, decls: [include: :part_content]),
         Rule.new("#{root}[data-orientation=\"horizontal\"] #{content}",
           decls: [flex: "1 1 auto", min_width: "0", width: "auto"]
         ),
         Rule.new("#{root}[data-loading],\n  #{root}[data-loading]",
           decls: [
-            include: :ui_loading,
+            include: :part_loading,
             min_height: {:size, :md},
             min_width: {:raw, "var(--container-7xs)"}
           ]
@@ -3250,7 +3250,7 @@ defmodule Corex.Design.Recipes do
           "#{root}[data-loading] #{trigger},\n  #{root}[data-loading] #{trigger}",
           decls: [
             border_color: {:color, :border},
-            background_color: {:color, :ui_active},
+            background_color: {:color, :surface_control_active},
             animation: "corex-skeleton 1.4s ease-in-out infinite",
             width: "100%"
           ]
@@ -3424,7 +3424,7 @@ defmodule Corex.Design.Recipes do
           ),
           Rule.new(trigger,
             decls: [
-              include: :ui_trigger,
+              include: :part_trigger,
               aspect_ratio: {:raw, "1 / 1"},
               padding: 0,
               justify_content: :center,
@@ -3449,7 +3449,7 @@ defmodule Corex.Design.Recipes do
           ),
           Rule.new(channel_input,
             decls: [
-              include: :ui_input,
+              include: :part_input,
               text_align: "center",
               justify_content: "center"
             ],
@@ -3463,14 +3463,14 @@ defmodule Corex.Design.Recipes do
             ]
           ),
           Rule.new("#{control} #{channel_input}[data-channel=\"hex\"]",
-            decls: [width: {:raw, "calc(var(--size-md) * 2.5)"}, flex: "0 0 auto"]
+            decls: [width: {:raw, "calc(var(--spacing-control-md) * 2.5)"}, flex: "0 0 auto"]
           ),
           Rule.new("#{control} #{channel_input}[data-channel=\"alpha\"]",
             decls: [
-              width: {:raw, "calc(var(--size-md) * 1.35)"},
+              width: {:raw, "calc(var(--spacing-control-md) * 1.35)"},
               flex: "0 0 auto",
               padding: "0",
-              padding_inline: {:raw, "calc(var(--space-md) * 0.5)"}
+              padding_inline: {:raw, "calc(var(--spacing-md) * 0.5)"}
             ]
           ),
           Rule.new(positioner,
@@ -3481,14 +3481,14 @@ defmodule Corex.Design.Recipes do
           ),
           Rule.new(content,
             decls: [
-              include: :ui_content,
+              include: :part_content,
               flex_direction: "column",
               z_index: "30",
               padding: "0",
               width: "max-content",
               min_width: {:container, :"4xs"},
               max_width: {:container, :"4xs"},
-              gap: {:raw, "calc(var(--space-sm) * 0.5)"},
+              gap: {:raw, "calc(var(--spacing-sm) * 0.5)"},
               box_sizing: "border-box",
               overflow_x: "hidden",
               overflow_y: "auto"
@@ -3496,7 +3496,7 @@ defmodule Corex.Design.Recipes do
           ),
           Rule.new(area,
             decls: [
-              include: :ui_trigger,
+              include: :part_trigger,
               position: "relative",
               padding: "0",
               min_height: "0",
@@ -3512,19 +3512,19 @@ defmodule Corex.Design.Recipes do
           ),
           Rule.new(area_thumb,
             decls: [
-              border: {:raw, "calc(var(--space-md) / 8) solid var(--color-ui-ink)"},
+              border: {:raw, "calc(var(--spacing-md) / 8) solid var(--color-on-page)"},
               border_radius: {:radius, :full},
               box_sizing: "border-box",
               transform: "translate(-50%, -50%)",
               outline: "none",
-              box_shadow: {:raw, "inset 0 0 0 var(--space-md) var(--color-root)"},
-              width: {:raw, "calc(var(--size-md) * 0.4)"},
-              height: {:raw, "calc(var(--size-md) * 0.4)"}
+              box_shadow: {:raw, "inset 0 0 0 var(--spacing-md) var(--color-surface-page)"},
+              width: {:raw, "calc(var(--spacing-control-md) * 0.4)"},
+              height: {:raw, "calc(var(--spacing-control-md) * 0.4)"}
             ]
           ),
           Rule.new(slider,
             decls: [
-              height: {:raw, "calc(var(--size-md) * 0.375)"},
+              height: {:raw, "calc(var(--spacing-control-md) * 0.375)"},
               width: "100%",
               min_width: "0",
               border_radius: {:radius, :md},
@@ -3536,23 +3536,23 @@ defmodule Corex.Design.Recipes do
           ),
           Rule.new(slider_thumb,
             decls: [
-              border: {:raw, "calc(var(--space-md) / 8) solid var(--color-ui-ink)"},
+              border: {:raw, "calc(var(--spacing-md) / 8) solid var(--color-on-page)"},
               border_radius: {:radius, :full},
               box_sizing: "border-box",
               transform: "translate(-50%, -50%)",
               outline: "none",
-              box_shadow: {:raw, "inset 0 0 0 var(--space-md) var(--color-root)"},
-              width: {:raw, "calc(var(--size-md) * 0.4)"},
-              height: {:raw, "calc(var(--size-md) * 0.4)"}
+              box_shadow: {:raw, "inset 0 0 0 var(--spacing-md) var(--color-surface-page)"},
+              width: {:raw, "calc(var(--spacing-control-md) * 0.4)"},
+              height: {:raw, "calc(var(--spacing-control-md) * 0.4)"}
             ]
           ),
           Rule.new(eye_dropper,
-            decls: [include: :ui_trigger] ++ RecipePresets.trigger_part_square()
+            decls: [include: :part_trigger] ++ RecipePresets.trigger_part_square()
           ),
           Rule.new(swatch_trigger,
             decls: [
-              include: :ui_trigger,
-              min_height: {:raw, "calc(var(--size-md) * 0.4)"},
+              include: :part_trigger,
+              min_height: {:raw, "calc(var(--spacing-control-md) * 0.4)"},
               padding: "0",
               aspect_ratio: "1 / 1",
               width: "auto",
@@ -3601,21 +3601,21 @@ defmodule Corex.Design.Recipes do
              line_height: {:leading, text},
              min_height: {:size, size},
              max_height: {:size, size},
-             color: {:color, :ui_ink},
+             color: {:color, :on_page},
              border_color: {:raw, "var(--color-border)"}
            },
            content: %{
              min_width:
-               {:raw, "calc(var(--container-4xs) * var(--size-#{size}) / var(--size-md))"},
+               {:raw, "calc(var(--container-4xs) * var(--spacing-control-#{size}) / var(--spacing-control-md))"},
              max_width:
-               {:raw, "calc(var(--container-4xs) * var(--size-#{size}) / var(--size-md))"},
+               {:raw, "calc(var(--container-4xs) * var(--spacing-control-#{size}) / var(--spacing-control-md))"},
              gap: {:space, size}
            },
            area_thumb: %{
-             width: {:raw, "calc(var(--size-#{size}) * 0.4)"},
-             height: {:raw, "calc(var(--size-#{size}) * 0.4)"},
-             border: {:raw, "calc(var(--space-#{size}) / 8) solid var(--color-ui-ink)"},
-             box_shadow: {:raw, "inset 0 0 0 var(--space-#{size}) var(--color-root)"}
+             width: {:raw, "calc(var(--spacing-control-#{size}) * 0.4)"},
+             height: {:raw, "calc(var(--spacing-control-#{size}) * 0.4)"},
+             border: {:raw, "calc(var(--spacing-#{size}) / 8) solid var(--color-on-page)"},
+             box_shadow: {:raw, "inset 0 0 0 var(--spacing-#{size}) var(--color-surface-page)"}
            }
          ]}
       end
@@ -3700,20 +3700,20 @@ defmodule Corex.Design.Recipes do
             )
           ]
         ),
-        Rule.new("#{host}[data-loading] #{root}", decls: [include: :ui_loading]),
+        Rule.new("#{host}[data-loading] #{root}", decls: [include: :part_loading]),
         Rule.new(root,
           decls: [
-            include: :ui_root,
+            include: :part_root,
             gap: {:space, :md},
             width: "100%",
             position: "relative",
             padding_inline_end: {:space, :md}
           ]
         ),
-        Rule.new(label, decls: [include: :ui_label]),
+        Rule.new(label, decls: [include: :part_label]),
         Rule.new(empty,
           decls: [
-            include: :ui_label,
+            include: :part_label,
             list_style: "none",
             padding_inline: {:space, :md},
             padding_block: {:space, :md}
@@ -3722,7 +3722,7 @@ defmodule Corex.Design.Recipes do
         Rule.new(control, decls: [display: "flex", position: "relative"]),
         Rule.new(input,
           decls: [
-            include: :ui_input,
+            include: :part_input,
             flex: "1",
             padding_inline: {:space, :md}
           ],
@@ -3733,7 +3733,7 @@ defmodule Corex.Design.Recipes do
                  "border-inline-end: none; border-end-end-radius: 0; border-start-end-radius: 0"}
               ]
             ),
-            Rule.new("&::placeholder", decls: [color: {:color, :ui_ink}])
+            Rule.new("&::placeholder", decls: [color: {:color, :on_page}])
           ]
         ),
         Rule.new("#{input}[data-invalid]",
@@ -3747,7 +3747,7 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(trigger,
           decls: [
-            include: :ui_trigger,
+            include: :part_trigger,
             flex_shrink: "0",
             padding: "0"
           ],
@@ -3762,7 +3762,7 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(clear_trigger,
           decls: [
-            include: :ui_trigger,
+            include: :part_trigger,
             border_radius: "0",
             flex_shrink: "0",
             padding: "0"
@@ -3776,7 +3776,7 @@ defmodule Corex.Design.Recipes do
         Rule.new(positioner, decls: [position: "relative", z_index: "50"]),
         Rule.new(content,
           decls: [
-            include: :ui_content,
+            include: :part_content,
             z_index: "50",
             max_height: {:raw, "calc(var(--spacing) * 96)"},
             overflow: "auto",
@@ -3800,24 +3800,24 @@ defmodule Corex.Design.Recipes do
             text_align: "start",
             padding_inline: {:space, :md},
             min_height: {:size, :md},
-            background_color: {:color, :root},
-            color: {:color, :ui_ink},
+            background_color: {:color, :surface_page},
+            color: {:color, :on_page},
             border_bottom: {:raw, "1px solid var(--color-border)"}
           ]
         ),
-        Rule.new(item, decls: [include: :ui_item]),
+        Rule.new(item, decls: [include: :part_item]),
         Rule.new("#{content} #{slot("item-text")}",
           decls: Map.to_list(RecipePresets.item_row_text())
         ),
         Rule.new("#{content} #{slot("item-indicator")}",
-          decls: Map.to_list(RecipePresets.item_row_indicator()) ++ [include: :ui_icon]
+          decls: Map.to_list(RecipePresets.item_row_indicator()) ++ [include: :part_icon]
         ),
         Rule.new("#{content} #{slot("item-indicator")}[hidden]",
           decls: Map.to_list(RecipePresets.item_row_indicator_hidden())
         ),
-        Rule.new(error, decls: [include: :ui_error]),
+        Rule.new(error, decls: [include: :part_error]),
         Rule.new("#{error}.absolute", decls: [padding_block: "0", display: "block"]),
-        Rule.new("#{root}[data-readonly]", decls: [include: :ui_readonly])
+        Rule.new("#{root}[data-readonly]", decls: [include: :part_readonly])
       ]
     end
 
@@ -3828,9 +3828,9 @@ defmodule Corex.Design.Recipes do
         Rule.new("#{item}[data-highlighted]:not(:hover)",
           decls: [
             outline: "none",
-            box_shadow: {:raw, "inset 0 0 0 2px var(--color-ui-ink)"},
-            background_color: {:color, :ui_hover},
-            color: {:color, :ui_ink}
+            box_shadow: {:raw, "inset 0 0 0 2px var(--color-on-page)"},
+            background_color: {:color, :surface_control_hover},
+            color: {:color, :on_page}
           ]
         )
       ]
@@ -3847,22 +3847,22 @@ defmodule Corex.Design.Recipes do
            label: block,
            input:
              Map.merge(block, %{
-               color: {:color, :ui_ink},
+               color: {:color, :on_page},
                border_color: {:color, :border}
              }),
            trigger:
              Map.merge(block, %{
-               color: {:color, :ui_ink},
+               color: {:color, :on_page},
                padding_inline: {:space, size},
                gap: {:space, size}
              }),
            clear_trigger:
              Map.merge(block, %{
-               color: {:color, :ui_ink},
+               color: {:color, :on_page},
                padding_inline: {:space, size},
                gap: {:space, size}
              }),
-           item_group_label: %{min_height: {:size, size}, color: {:color, :ui_ink}},
+           item_group_label: %{min_height: {:size, size}, color: {:color, :on_page}},
            item: block
          ]}
       end
@@ -3916,14 +3916,14 @@ defmodule Corex.Design.Recipes do
       [
         Rule.new(host,
           decls: [
-            include: :ui_root,
+            include: :part_root,
             width: "100%",
             max_width: {:container, :md},
             overflow: "hidden",
             border: {:raw, "1px solid var(--color-border)"},
             border_radius: {:radius, :md},
             background_color: {:color, :border},
-            color: {:color, :ui_ink}
+            color: {:color, :on_page}
           ]
         ),
         Rule.new(root,
@@ -3934,7 +3934,7 @@ defmodule Corex.Design.Recipes do
             font_size: {:text, :base},
             line_height: {:leading, :base},
             background_color: {:color, :border},
-            color: {:color, :ui_ink},
+            color: {:color, :on_page},
             border_radius: {:radius, :md},
             overflow: "auto",
             gap: "1px"
@@ -3945,8 +3945,8 @@ defmodule Corex.Design.Recipes do
         Rule.new(empty,
           decls: [
             padding: {:space, :md},
-            background_color: {:color, :layer},
-            color: {:color, :ui_ink_muted}
+            background_color: {:color, :surface_raised},
+            color: {:color, :on_muted}
           ]
         ),
         Rule.new(item,
@@ -3958,8 +3958,8 @@ defmodule Corex.Design.Recipes do
             justify_content: "flex-start",
             transition: "background-color 0.2s ease-in-out",
             gap: {:space, :md},
-            background_color: {:color, :layer},
-            color: {:color, :ui_ink}
+            background_color: {:color, :surface_raised},
+            color: {:color, :on_page}
           ]
         ),
         Rule.new("#{root}[data-orientation=\"horizontal\"] #{item}",
@@ -3971,13 +3971,13 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(label,
           decls: [
-            include: :ui_label,
+            include: :part_label,
             flex_shrink: "0",
             gap: {:space, :md},
             width: "100%"
           ],
           children: [
-            Rule.new("& [data-icon]", decls: [include: :ui_icon])
+            Rule.new("& [data-icon]", decls: [include: :part_icon])
           ]
         ),
         Rule.new("#{root}[data-orientation=\"horizontal\"] #{label}",
@@ -4051,7 +4051,7 @@ defmodule Corex.Design.Recipes do
         {size,
          [
            item: %{padding: {:space, size}},
-           label: Map.merge(RecipePresets.text_block(text), %{color: {:color, :ui_ink}}),
+           label: Map.merge(RecipePresets.text_block(text), %{color: {:color, :on_page}}),
            content: RecipePresets.text_block(text)
          ]}
       end
@@ -4175,7 +4175,7 @@ defmodule Corex.Design.Recipes do
           ),
           Rule.new(sort_trigger,
             decls: [
-              include: :ui_trigger,
+              include: :part_trigger,
               aspect_ratio: {:raw, "1 / 1"},
               padding: 0,
               justify_content: :center,
@@ -4212,11 +4212,11 @@ defmodule Corex.Design.Recipes do
           ),
           Rule.new(
             ~s|#{tbody} tr[data-part="row"]:hover #{part("cell")},\n  #{tbody} tr[data-part="row"]:hover #{part("grow-cell")},\n  #{tbody} tr[data-part="row"]:hover #{part("selection-cell")}|,
-            decls: [background_color: {:color, :ui_hover}]
+            decls: [background_color: {:color, :surface_control_hover}]
           ),
           Rule.new(
             "#{tbody} tr[data-part=\"row\"]:hover #{part("action-cell")}",
-            decls: [background_color: {:color, :layer}]
+            decls: [background_color: {:color, :surface_raised}]
           ),
           Rule.new(part("actions"),
             decls: [
@@ -4241,7 +4241,7 @@ defmodule Corex.Design.Recipes do
         text_align: :start,
         padding_inline: {:space, :md},
         white_space: :nowrap,
-        background_color: {:color, :layer},
+        background_color: {:color, :surface_raised},
         border_bottom: {:raw, "1px solid var(--color-border)"},
         font_weight: {:weight, :medium},
         font_size: {:text, :base},
@@ -4261,7 +4261,7 @@ defmodule Corex.Design.Recipes do
         width: 0,
         min_width: {:raw, "max-content"},
         max_width: {:raw, "max-content"},
-        background_color: {:color, :layer},
+        background_color: {:color, :surface_raised},
         border_bottom: {:raw, "1px solid var(--color-border)"},
         border_inline_start: {:raw, "1px solid var(--color-border)"},
         font_weight: {:weight, :medium},
@@ -4289,7 +4289,7 @@ defmodule Corex.Design.Recipes do
         padding: {:space, :md},
         vertical_align: :middle,
         white_space: :nowrap,
-        background_color: {:color, :layer},
+        background_color: {:color, :surface_raised},
         transition: {:raw, "background-color 0.2s ease-in-out"},
         font_size: {:text, :base},
         line_height: {:leading, :base}
@@ -4297,11 +4297,11 @@ defmodule Corex.Design.Recipes do
     end
 
     defp action_shadow(:ltr) do
-      {:raw, "-4px 0 8px -6px color-mix(in srgb, var(--color-ui-ink) 12%, transparent)"}
+      {:raw, "-4px 0 8px -6px color-mix(in srgb, var(--color-on-page) 12%, transparent)"}
     end
 
     defp action_shadow(:rtl) do
-      {:raw, "4px 0 8px -6px color-mix(in srgb, var(--color-ui-ink) 12%, transparent)"}
+      {:raw, "4px 0 8px -6px color-mix(in srgb, var(--color-on-page) 12%, transparent)"}
     end
 
     defp size_rules do
@@ -4425,19 +4425,19 @@ defmodule Corex.Design.Recipes do
       [
         Rule.new(host, decls: [width: "fit-content"]),
         Rule.new("#{content}[hidden]", decls: [display: "none !important"]),
-        Rule.new("#{host}[data-loading] #{root}", decls: [include: :ui_loading]),
+        Rule.new("#{host}[data-loading] #{root}", decls: [include: :part_loading]),
         Rule.new(root,
           decls: [
-            include: :ui_root,
+            include: :part_root,
             width: "fit-content",
             gap: {:space, :md},
             position: "relative",
             padding_inline_end: {:space, :md}
           ]
         ),
-        Rule.new("#{root}[data-readonly]", decls: [include: :ui_readonly]),
+        Rule.new("#{root}[data-readonly]", decls: [include: :part_readonly]),
         Rule.new(label,
-          decls: [include: :ui_label],
+          decls: [include: :part_label],
           children: [
             Rule.new("&[data-invalid]", decls: [color: {:color, :alert}])
           ]
@@ -4459,7 +4459,7 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(trigger,
           decls: [
-            include: :ui_trigger,
+            include: :part_trigger,
             padding: "0",
             width: "auto",
             min_height: {:size, :md},
@@ -4472,9 +4472,9 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(input,
           decls: [
-            include: :ui_input,
-            width: {:raw, "calc(var(--size) * 3)"},
-            max_width: {:raw, "calc(var(--size) * 3)"},
+            include: :part_input,
+            width: {:raw, "calc(var(--spacing-control-md) * 3)"},
+            max_width: {:raw, "calc(var(--spacing-control-md) * 3)"},
             min_width: "0",
             flex: "0 0 auto"
           ]
@@ -4497,8 +4497,8 @@ defmodule Corex.Design.Recipes do
             padding: "0",
             border_radius: {:radius, :md},
             border: {:raw, "1px solid var(--color-border)"},
-            background_color: {:color, :root},
-            color: {:color, :ui_ink},
+            background_color: {:color, :surface_page},
+            color: {:color, :on_page},
             box_shadow: {:raw, "var(--shadow-ui)"},
             z_index: "30",
             box_sizing: "border-box",
@@ -4539,12 +4539,12 @@ defmodule Corex.Design.Recipes do
           decls: [
             border: "0",
             font_weight: {:raw, "var(--font-weight-normal)"},
-            padding_block: {:raw, "calc(var(--space) * 0.35)"},
+            padding_block: {:raw, "calc(var(--spacing-md) * 0.35)"},
             padding_inline: "0",
             text_align: "center",
             font_size: {:text, :sm},
             line_height: {:leading, :sm},
-            color: {:color, :ui_ink},
+            color: {:color, :on_page},
             overflow: "hidden",
             text_overflow: "ellipsis",
             white_space: "nowrap"
@@ -4561,24 +4561,24 @@ defmodule Corex.Design.Recipes do
             min_width: "0",
             justify_content: "space-between",
             align_items: "center",
-            gap: {:raw, "calc(var(--space) * 0.5)"},
+            gap: {:raw, "calc(var(--spacing-md) * 0.5)"},
             padding_inline: {:space, :md},
-            padding_block: {:raw, "calc(var(--space) * 0.5)"}
+            padding_block: {:raw, "calc(var(--spacing-md) * 0.5)"}
           ]
         ),
         Rule.new(table_cell_trigger,
           decls: [
-            include: :ui_item,
+            include: :part_item,
             display: "flex",
             align_items: "center",
             justify_content: "center",
             box_sizing: "border-box",
-            width: {:raw, "calc(var(--size) * 0.95)"},
-            min_width: {:raw, "calc(var(--size) * 0.95)"},
-            max_width: {:raw, "calc(var(--size) * 0.95)"},
-            height: {:raw, "calc(var(--size) * 0.95)"},
-            min_height: {:raw, "calc(var(--size) * 0.95)"},
-            max_height: {:raw, "calc(var(--size) * 0.95)"},
+            width: {:raw, "calc(var(--spacing-control-md) * 0.95)"},
+            min_width: {:raw, "calc(var(--spacing-control-md) * 0.95)"},
+            max_width: {:raw, "calc(var(--spacing-control-md) * 0.95)"},
+            height: {:raw, "calc(var(--spacing-control-md) * 0.95)"},
+            min_height: {:raw, "calc(var(--spacing-control-md) * 0.95)"},
+            max_height: {:raw, "calc(var(--spacing-control-md) * 0.95)"},
             margin: "0",
             padding: "0",
             gap: "0",
@@ -4593,44 +4593,44 @@ defmodule Corex.Design.Recipes do
         Rule.new(
           "#{table_cell_trigger}[data-view='month'],\n  #{table_cell_trigger}[data-view='year']",
           decls: [
-            width: {:raw, "calc(var(--size) * 1.15)"},
-            min_width: {:raw, "calc(var(--size) * 1.15)"},
-            max_width: {:raw, "calc(var(--size) * 1.15)"},
-            min_height: {:raw, "calc(var(--size) * 1.15)"},
+            width: {:raw, "calc(var(--spacing-control-md) * 1.15)"},
+            min_width: {:raw, "calc(var(--spacing-control-md) * 1.15)"},
+            max_width: {:raw, "calc(var(--spacing-control-md) * 1.15)"},
+            min_height: {:raw, "calc(var(--spacing-control-md) * 1.15)"},
             height: "auto",
             max_height: "none",
-            padding: {:raw, "calc(var(--space) * 0.35)"}
+            padding: {:raw, "calc(var(--spacing-md) * 0.35)"}
           ]
         ),
         Rule.new("#{table_cell_trigger}[data-today]:not([data-selected])",
           decls: [
             font_weight: {:raw, "var(--font-weight-semibold)"},
             text_decoration_line: "underline",
-            text_underline_offset: {:raw, "calc(var(--space) * 0.85)"},
+            text_underline_offset: {:raw, "calc(var(--spacing-md) * 0.85)"},
             position: "relative"
           ]
         ),
         Rule.new("#{table_cell_trigger}[data-outside-month]",
-          decls: [color: {:color, :ui_ink_muted}, opacity: "0.5"]
+          decls: [color: {:color, :on_muted}, opacity: "0.5"]
         ),
         Rule.new("#{table_cell_trigger}[data-disabled]",
-          decls: [color: {:color, :ui_ink_muted}, cursor: "not-allowed"]
+          decls: [color: {:color, :on_muted}, cursor: "not-allowed"]
         ),
         Rule.new("#{table_cell_trigger}[data-unavailable]",
           decls: [
             text_decoration_line: "line-through",
             cursor: "not-allowed",
-            color: {:color, :ui_ink_muted}
+            color: {:color, :on_muted}
           ]
         ),
         Rule.new(prev_trigger,
           decls: [
-            include: :ui_trigger,
-            width: {:raw, "calc(var(--size) * 0.8)"},
-            min_width: {:raw, "calc(var(--size) * 0.8)"},
-            max_width: {:raw, "calc(var(--size) * 0.8)"},
-            min_height: {:raw, "calc(var(--size) * 0.8)"},
-            max_height: {:raw, "calc(var(--size) * 0.8)"},
+            include: :part_trigger,
+            width: {:raw, "calc(var(--spacing-control-md) * 0.8)"},
+            min_width: {:raw, "calc(var(--spacing-control-md) * 0.8)"},
+            max_width: {:raw, "calc(var(--spacing-control-md) * 0.8)"},
+            min_height: {:raw, "calc(var(--spacing-control-md) * 0.8)"},
+            max_height: {:raw, "calc(var(--spacing-control-md) * 0.8)"},
             padding: "0",
             font_size: {:text, :sm},
             line_height: {:leading, :sm}
@@ -4641,12 +4641,12 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(next_trigger,
           decls: [
-            include: :ui_trigger,
-            width: {:raw, "calc(var(--size) * 0.8)"},
-            min_width: {:raw, "calc(var(--size) * 0.8)"},
-            max_width: {:raw, "calc(var(--size) * 0.8)"},
-            min_height: {:raw, "calc(var(--size) * 0.8)"},
-            max_height: {:raw, "calc(var(--size) * 0.8)"},
+            include: :part_trigger,
+            width: {:raw, "calc(var(--spacing-control-md) * 0.8)"},
+            min_width: {:raw, "calc(var(--spacing-control-md) * 0.8)"},
+            max_width: {:raw, "calc(var(--spacing-control-md) * 0.8)"},
+            min_height: {:raw, "calc(var(--spacing-control-md) * 0.8)"},
+            max_height: {:raw, "calc(var(--spacing-control-md) * 0.8)"},
             padding: "0",
             font_size: {:text, :sm},
             line_height: {:leading, :sm}
@@ -4657,13 +4657,13 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(view_trigger,
           decls: [
-            include: :ui_trigger,
+            include: :part_trigger,
             min_height: {:size, :md},
             font_size: {:text, :sm},
             line_height: {:leading, :sm}
           ]
         ),
-        Rule.new(error, decls: [include: :ui_error])
+        Rule.new(error, decls: [include: :part_error])
       ]
     end
 
@@ -4698,7 +4698,7 @@ defmodule Corex.Design.Recipes do
           ),
           Rule.new("#{host_mod} #{part("trigger")}",
             decls: [
-              background_color: {:color, :ui},
+              background_color: {:color, :surface_control},
               color: {:raw, bg},
               border_color: {:color, :border}
             ]
@@ -4722,8 +4722,8 @@ defmodule Corex.Design.Recipes do
             border_color: {:color, :border}
           ],
           children: [
-            Rule.new("&:hover", decls: [background_color: {:color, :ui_hover}]),
-            Rule.new("&:active", decls: [background_color: {:color, :ui_active}])
+            Rule.new("&:hover", decls: [background_color: {:color, :surface_control_hover}]),
+            Rule.new("&:active", decls: [background_color: {:color, :surface_control_active}])
           ]
         )
       end
@@ -4745,19 +4745,19 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new("#{host} .date-picker__range-label",
           decls: [
-            include: :ui_label,
+            include: :part_label,
             flex: "0 0 auto",
             font_size: {:text, :sm},
             line_height: {:leading, :sm},
-            color: {:color, :ui_ink}
+            color: {:color, :on_page}
           ]
         ),
         Rule.new(
           "#{host} .date-picker__control-inputs--range #{slot("input")}",
           decls: [
             flex: "0 0 auto",
-            width: {:raw, "calc(var(--size) * 3)"},
-            max_width: {:raw, "calc(var(--size) * 3)"},
+            width: {:raw, "calc(var(--spacing-control-md) * 3)"},
+            max_width: {:raw, "calc(var(--spacing-control-md) * 3)"},
             min_width: "0"
           ]
         )
@@ -4768,8 +4768,8 @@ defmodule Corex.Design.Recipes do
       for size <- Axes.size_atoms() do
         text = if(size == :md, do: :base, else: size)
         block = RecipePresets.text_block(text)
-        size_raw = "var(--size-#{size})"
-        space_raw = "var(--space-#{size})"
+        size_raw = "var(--spacing-control-#{size})"
+        space_raw = "var(--spacing-#{size})"
 
         {size,
          [
@@ -4787,8 +4787,8 @@ defmodule Corex.Design.Recipes do
              min_height: {:size, size},
              max_height: {:size, size},
              padding_inline: {:space, size},
-             background_color: {:color, :ui},
-             color: {:color, :ui_ink},
+             background_color: {:color, :surface_control},
+             color: {:color, :on_page},
              border_color: {:color, :border}
            },
            trigger: %{
@@ -4796,7 +4796,7 @@ defmodule Corex.Design.Recipes do
              line_height: {:leading, text},
              min_height: {:size, size},
              max_height: {:size, size},
-             background_color: {:color, :ui},
+             background_color: {:color, :surface_control},
              border_color: {:color, :border}
            },
            prev_trigger: nav_size_block(size, text),
@@ -4819,7 +4819,7 @@ defmodule Corex.Design.Recipes do
     end
 
     defp nav_size_block(size, text) do
-      size_raw = "var(--size-#{size})"
+      size_raw = "var(--spacing-control-#{size})"
 
       %{
         width: {:raw, "calc(#{size_raw} * 0.8)"},
@@ -4833,7 +4833,7 @@ defmodule Corex.Design.Recipes do
     end
 
     defp cell_size_block(size, text) do
-      size_raw = "var(--size-#{size})"
+      size_raw = "var(--spacing-control-#{size})"
 
       %{
         width: {:raw, "calc(#{size_raw} * 0.95)"},
@@ -4923,32 +4923,32 @@ defmodule Corex.Design.Recipes do
       triggers = ~s(#{host} [data-part="triggers"])
 
       square_trigger =
-        [include: :ui_trigger] ++
+        [include: :part_trigger] ++
           RecipePresets.trigger_part_square() ++
           [
             flex: "0 0 auto",
-            width: {:raw, "calc(var(--size-md) * 0.6)"},
-            min_width: {:raw, "calc(var(--size-md) * 0.6)"},
-            max_width: {:raw, "calc(var(--size-md) * 0.6)"},
-            min_height: {:raw, "calc(var(--size-md) * 0.6)"},
-            max_height: {:raw, "calc(var(--size-md) * 0.6)"}
+            width: {:raw, "calc(var(--spacing-control-md) * 0.6)"},
+            min_width: {:raw, "calc(var(--spacing-control-md) * 0.6)"},
+            max_width: {:raw, "calc(var(--spacing-control-md) * 0.6)"},
+            min_height: {:raw, "calc(var(--spacing-control-md) * 0.6)"},
+            max_height: {:raw, "calc(var(--spacing-control-md) * 0.6)"}
           ]
 
       [
         Rule.new(host, decls: [width: "fit-content"]),
-        Rule.new("#{host}[data-loading] #{root}", decls: [include: :ui_loading]),
+        Rule.new("#{host}[data-loading] #{root}", decls: [include: :part_loading]),
         Rule.new(root,
           decls: [
-            include: :ui_root,
+            include: :part_root,
             width: "100%",
             position: "relative",
             padding_inline_end: {:space, :md}
           ],
           children: [
-            Rule.new("&[data-readonly]", decls: [include: :ui_readonly])
+            Rule.new("&[data-readonly]", decls: [include: :part_readonly])
           ]
         ),
-        Rule.new(label, decls: [include: :ui_label]),
+        Rule.new(label, decls: [include: :part_label]),
         Rule.new(control,
           decls: [
             display: "flex",
@@ -4970,19 +4970,19 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(input,
           decls: [
-            include: :ui_input,
+            include: :part_input,
             flex: "0 0 auto",
-            width: {:raw, "calc(var(--size-md) * 3)"},
-            max_width: {:raw, "calc(var(--size-md) * 3)"},
+            width: {:raw, "calc(var(--spacing-control-md) * 3)"},
+            max_width: {:raw, "calc(var(--spacing-control-md) * 3)"},
             min_width: "0"
           ]
         ),
         Rule.new(preview,
           decls: [
-            include: :ui_input,
+            include: :part_input,
             flex: "0 0 auto",
-            width: {:raw, "calc(var(--size-md) * 3)"},
-            max_width: {:raw, "calc(var(--size-md) * 3)"},
+            width: {:raw, "calc(var(--spacing-control-md) * 3)"},
+            max_width: {:raw, "calc(var(--spacing-control-md) * 3)"},
             min_width: "0",
             white_space: "nowrap"
           ]
@@ -5020,7 +5020,7 @@ defmodule Corex.Design.Recipes do
                 border_color: {:color, :success}
               ]
         ),
-        Rule.new(error, decls: [include: :ui_error])
+        Rule.new(error, decls: [include: :part_error])
       ]
     end
 
@@ -5036,8 +5036,8 @@ defmodule Corex.Design.Recipes do
     defp size_variants do
       for size <- Axes.size_atoms() do
         text = size_text(size)
-        dim = {:raw, "calc(var(--size-#{size}) * 0.6)"}
-        field = {:raw, "calc(var(--size-#{size}) * 3)"}
+        dim = {:raw, "calc(var(--spacing-control-#{size}) * 0.6)"}
+        field = {:raw, "calc(var(--spacing-control-#{size}) * 3)"}
 
         {size,
          [
@@ -5078,7 +5078,7 @@ defmodule Corex.Design.Recipes do
                width: field,
                max_width: field,
                min_height: {:size, size},
-               color: {:color, :ui_ink},
+               color: {:color, :on_page},
                border_color: {:color, :border}
              }),
            input:
@@ -5086,7 +5086,7 @@ defmodule Corex.Design.Recipes do
                width: field,
                max_width: field,
                min_height: {:size, size},
-               color: {:color, :ui_ink},
+               color: {:color, :on_page},
                border_color: {:color, :border}
              })
          ]}
@@ -5177,7 +5177,7 @@ defmodule Corex.Design.Recipes do
         Rule.new(host,
           decls: [width: "100%", max_width: {:container, :md}, margin_inline: "auto"]
         ),
-        Rule.new("#{host}[data-loading] #{root}", decls: [include: :ui_loading]),
+        Rule.new("#{host}[data-loading] #{root}", decls: [include: :part_loading]),
         Rule.new("#{host}[data-loading] #{hidden},\n  #{host}[data-loading] #{hidden_sentinel}",
           decls: hidden_decls ++ [pointer_events: "none"]
         ),
@@ -5185,7 +5185,7 @@ defmodule Corex.Design.Recipes do
         Rule.new(hidden_sentinel, decls: hidden_decls, children: hidden_clip),
         Rule.new(root,
           decls: [
-            include: :ui_root,
+            include: :part_root,
             display: "flex",
             flex_direction: "column",
             align_items: "center",
@@ -5193,11 +5193,11 @@ defmodule Corex.Design.Recipes do
             width: "100%"
           ],
           children: [
-            Rule.new("&[data-readonly]", decls: [include: :ui_readonly])
+            Rule.new("&[data-readonly]", decls: [include: :part_readonly])
           ]
         ),
         Rule.new(label,
-          decls: [include: :ui_label, align_self: "stretch", text_align: "center"]
+          decls: [include: :part_label, align_self: "stretch", text_align: "center"]
         ),
         Rule.new(region,
           decls: [
@@ -5235,7 +5235,7 @@ defmodule Corex.Design.Recipes do
             text_align: "center"
           ]
         ),
-        Rule.new(trigger, decls: [include: :ui_trigger]),
+        Rule.new(trigger, decls: [include: :part_trigger]),
         Rule.new(item_group,
           decls: [
             list_style: "none",
@@ -5244,7 +5244,7 @@ defmodule Corex.Design.Recipes do
             min_width: "0",
             border: {:raw, "1px solid var(--color-border)"},
             border_radius: {:radius, :md},
-            background_color: {:color, :ui},
+            background_color: {:color, :surface_control},
             overflow: "hidden",
             display: "flex",
             flex_direction: "column",
@@ -5304,7 +5304,7 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(item_name,
           decls: [
-            include: :ui_label,
+            include: :part_label,
             flex: "1 1 0",
             min_width: "0",
             overflow: "hidden",
@@ -5312,11 +5312,11 @@ defmodule Corex.Design.Recipes do
           ]
         ),
         Rule.new(item_size_text,
-          decls: [include: :ui_label, font_weight: {:weight, :medium}]
+          decls: [include: :part_label, font_weight: {:weight, :medium}]
         ),
         Rule.new(item_delete,
           decls: [
-            include: :ui_trigger,
+            include: :part_trigger,
             aspect_ratio: {:raw, "1 / 1"},
             padding: 0,
             justify_content: :center,
@@ -5332,7 +5332,7 @@ defmodule Corex.Design.Recipes do
             Rule.new("&", decls: [{:raw, "margin-inline-end: #{Var.ref([:space, :md])}"}])
           ]
         ),
-        Rule.new(error, decls: [include: :ui_error])
+        Rule.new(error, decls: [include: :part_error])
       ]
     end
 
@@ -5413,18 +5413,18 @@ defmodule Corex.Design.Recipes do
       resize = part("resize-trigger")
 
       [
-        Rule.new("#{host}[data-loading] #{part("root")}", decls: [include: :ui_loading]),
+        Rule.new("#{host}[data-loading] #{part("root")}", decls: [include: :part_loading]),
         Rule.new(trigger,
           decls: [
-            include: :ui_trigger,
-            min_height: {:raw, "calc(var(--size-md) * 0.8)"}
+            include: :part_trigger,
+            min_height: {:raw, "calc(var(--spacing-control-md) * 0.8)"}
           ],
           children: [
             Rule.new("&[data-state=\"open\"] [data-closed]", decls: [display: "none"]),
             Rule.new("&[data-state=\"closed\"] [data-open]", decls: [display: "none"])
           ]
         ),
-        Rule.new(title, decls: [include: :ui_label]),
+        Rule.new(title, decls: [include: :part_label]),
         Rule.new(positioner, decls: [z_index: "50"]),
         Rule.new("#{positioner}:has(#{content}[data-state=\"closed\"])",
           decls: [display: "none"]
@@ -5444,7 +5444,7 @@ defmodule Corex.Design.Recipes do
             Rule.new("&:focus-visible",
               decls: [
                 outline: "none",
-                box_shadow: "inset 0 0 0 2px var(--color-ui-ink)",
+                box_shadow: "inset 0 0 0 2px var(--color-on-page)",
                 border_radius: {:radius, :md}
               ]
             ),
@@ -5456,16 +5456,16 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(stage,
           decls: [
-            include: :ui_trigger,
+            include: :part_trigger,
             aspect_ratio: {:raw, "1 / 1"},
             padding: 0,
             justify_content: :center,
             width: :auto,
-            width: {:raw, "calc(var(--size-sm) * 0.8)"},
-            min_width: {:raw, "calc(var(--size-sm) * 0.8)"},
-            max_width: {:raw, "calc(var(--size-sm) * 0.8)"},
-            min_height: {:raw, "calc(var(--size-sm) * 0.8)"},
-            max_height: {:raw, "calc(var(--size-sm) * 0.8)"},
+            width: {:raw, "calc(var(--spacing-control-sm) * 0.8)"},
+            min_width: {:raw, "calc(var(--spacing-control-sm) * 0.8)"},
+            max_width: {:raw, "calc(var(--spacing-control-sm) * 0.8)"},
+            min_height: {:raw, "calc(var(--spacing-control-sm) * 0.8)"},
+            max_height: {:raw, "calc(var(--spacing-control-sm) * 0.8)"},
             padding: "0",
             font_size: {:text, :xs},
             line_height: {:leading, :xs}
@@ -5473,16 +5473,16 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(close,
           decls: [
-            include: :ui_trigger,
+            include: :part_trigger,
             aspect_ratio: {:raw, "1 / 1"},
             padding: 0,
             justify_content: :center,
             width: :auto,
-            width: {:raw, "calc(var(--size-sm) * 0.8)"},
-            min_width: {:raw, "calc(var(--size-sm) * 0.8)"},
-            max_width: {:raw, "calc(var(--size-sm) * 0.8)"},
-            min_height: {:raw, "calc(var(--size-sm) * 0.8)"},
-            max_height: {:raw, "calc(var(--size-sm) * 0.8)"},
+            width: {:raw, "calc(var(--spacing-control-sm) * 0.8)"},
+            min_width: {:raw, "calc(var(--spacing-control-sm) * 0.8)"},
+            max_width: {:raw, "calc(var(--spacing-control-sm) * 0.8)"},
+            min_height: {:raw, "calc(var(--spacing-control-sm) * 0.8)"},
+            max_height: {:raw, "calc(var(--spacing-control-sm) * 0.8)"},
             padding: "0",
             font_size: {:text, :xs},
             line_height: {:leading, :xs}
@@ -5496,7 +5496,7 @@ defmodule Corex.Design.Recipes do
             min_height: "fit-content",
             height: "var(--height)",
             padding: {:space, :md},
-            background_color: {:color, :root},
+            background_color: {:color, :surface_page},
             border_radius: {:raw, "0 0 var(--radius-md) var(--radius-md)"},
             border: {:raw, "1px solid var(--color-border)"}
           ],
@@ -5520,7 +5520,7 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(drag,
           decls: [
-            background_color: {:color, :layer},
+            background_color: {:color, :surface_raised},
             border: {:raw, "1px solid var(--color-border)"},
             border_radius: {:raw, "var(--radius-md) var(--radius-md) 0 0"}
           ],
@@ -5652,8 +5652,8 @@ defmodule Corex.Design.Recipes do
   #{subtitle}),
           decls: [margin: 0]
         ),
-        Rule.new(title, decls: [color: {:color, :ui_ink}]),
-        Rule.new(subtitle, decls: [color: {:color, :ui_ink_muted}]),
+        Rule.new(title, decls: [color: {:color, :on_page}]),
+        Rule.new(subtitle, decls: [color: {:color, :on_muted}]),
         Rule.new(actions,
           decls: [
             display: "flex",
@@ -5676,7 +5676,7 @@ defmodule Corex.Design.Recipes do
             {role,
              [
                title: %{color: {:color, Palette.ink_color_atom(role)}},
-               subtitle: %{color: {:color, :ui_ink_muted}}
+               subtitle: %{color: {:color, :on_muted}}
              ]}
     end
 
@@ -5752,13 +5752,13 @@ defmodule Corex.Design.Recipes do
             inset_inline_start: {:space, :lg},
             inset_block_start: {:raw, "-9999px"},
             z_index: 10_000,
-            max_width: {:raw, "min(100vw - calc(var(--space) * 2), 20rem)"},
+            max_width: {:raw, "min(100vw - calc(var(--spacing-md) * 2), 20rem)"},
             padding_block: {:space, :md},
             padding_inline: {:space, :lg},
             margin: 0,
             overflow: :visible,
-            background: {:color, :layer},
-            color: {:color, :ui_ink},
+            background: {:color, :surface_raised},
+            color: {:color, :on_page},
             border: {:raw, "1px solid var(--color-border)"},
             box_shadow: {:raw, "0 4px 24px rgb(0 0 0 / 0.12)"},
             transition: {:raw, "inset-block-start 0.15s ease"}
@@ -5842,7 +5842,7 @@ defmodule Corex.Design.Recipes do
       item_indicator = "#{content} #{slot("item-indicator")}"
 
       [
-        Rule.new("#{host}[data-loading] #{root}", decls: [include: :ui_loading]),
+        Rule.new("#{host}[data-loading] #{root}", decls: [include: :part_loading]),
         Rule.new(host,
           decls: [
             width: "100%",
@@ -5859,7 +5859,7 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(root,
           decls: [
-            include: :ui_root,
+            include: :part_root,
             flex_direction: "column",
             flex_wrap: "nowrap",
             align_items: "stretch",
@@ -5873,8 +5873,8 @@ defmodule Corex.Design.Recipes do
         Rule.new("#{root}[data-orientation='horizontal']",
           decls: [flex_direction: "column", flex_wrap: "nowrap"]
         ),
-        Rule.new(label, decls: [include: :ui_label]),
-        Rule.new("#{label}[data-disabled]", decls: [color: {:color, :ui_ink_muted}]),
+        Rule.new(label, decls: [include: :part_label]),
+        Rule.new("#{label}[data-disabled]", decls: [color: {:color, :on_muted}]),
         Rule.new(item_group_label,
           decls: [
             display: "flex",
@@ -5884,8 +5884,8 @@ defmodule Corex.Design.Recipes do
             text_align: "start",
             min_height: {:size, :md},
             padding_inline: {:space, :md},
-            background_color: {:color, :root},
-            color: {:color, :ui_ink},
+            background_color: {:color, :surface_page},
+            color: {:color, :on_page},
             border_bottom: {:raw, "1px solid var(--color-border)"},
             width: "100%",
             box_sizing: "border-box"
@@ -5955,7 +5955,7 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(item,
           decls: [
-            include: :ui_item,
+            include: :part_item,
             display: "flex",
             width: "100%",
             align_self: "stretch",
@@ -6070,7 +6070,7 @@ defmodule Corex.Design.Recipes do
         base: [
           root: %{width: "100%"},
           content: %{},
-          edge: %{:"--edge-background" => {:color, :root}},
+          edge: %{:"--edge-background" => {:color, :surface_page}},
           item: %{}
         ],
         variants: [
@@ -6126,12 +6126,12 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new("#{host}[data-loading]", decls: [opacity: 0]),
         Rule.new("#{host}[data-loading] #{Selector.slot(@scope, "root")}",
-          decls: [include: :ui_loading]
+          decls: [include: :part_loading]
         ),
         Rule.new(root,
           children: [
             Rule.new("&[data-orientation=\"vertical\"]",
-              decls: [height: {:raw, "calc(var(--size) * 6)"}]
+              decls: [height: {:raw, "calc(var(--spacing-control-md) * 6)"}]
             ),
             Rule.new("&[data-orientation=\"horizontal\"]",
               decls: [width: "100%", height: {:raw, "fit-content"}]
@@ -6173,7 +6173,7 @@ defmodule Corex.Design.Recipes do
 
       for size <- Axes.size_atoms() do
         Rule.new("#{Palette.host_size_mod(@id, size)} #{root}[data-orientation=\"vertical\"]",
-          decls: [height: {:raw, "calc(var(--size-#{size}) * 6)"}]
+          decls: [height: {:raw, "calc(var(--spacing-control-#{size}) * 6)"}]
         )
       end
     end
@@ -6299,10 +6299,10 @@ defmodule Corex.Design.Recipes do
       item_indicator = "#{content} #{slot("item-indicator")}"
 
       [
-        Rule.new("#{host}[data-loading] #{root}", decls: [include: :ui_loading]),
+        Rule.new("#{host}[data-loading] #{root}", decls: [include: :part_loading]),
         Rule.new(content,
           decls: [
-            include: :ui_content,
+            include: :part_content,
             border: {:raw, "1px solid var(--color-border)"},
             z_index: "50",
             padding: "0",
@@ -6316,7 +6316,7 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(trigger,
           decls: [
-            include: :ui_trigger,
+            include: :part_trigger,
             justify_content: "space-between",
             width: "100%",
             border: "none",
@@ -6339,7 +6339,7 @@ defmodule Corex.Design.Recipes do
         Rule.new("#{trigger} > #{slot("indicator")}", decls: [flex_shrink: "0"]),
         Rule.new(context_trigger,
           decls: [
-            include: :ui_trigger,
+            include: :part_trigger,
             border: {:raw, "1px dashed var(--color-border)"},
             cursor: "context-menu"
           ]
@@ -6359,8 +6359,8 @@ defmodule Corex.Design.Recipes do
             text_align: "start",
             min_height: {:size, :md},
             padding_inline: {:space, :md},
-            background_color: {:color, :root},
-            color: {:color, :ui_ink},
+            background_color: {:color, :surface_page},
+            color: {:color, :on_page},
             border_bottom: {:raw, "1px solid var(--color-border)"},
             cursor: "default",
             pointer_events: "none"
@@ -6373,8 +6373,8 @@ defmodule Corex.Design.Recipes do
             box_shadow: {:raw, "var(--shadow-ui)"}
           ]
         ),
-        Rule.new(item, decls: [include: :ui_item, min_width: "0"]),
-        Rule.new(trigger_item, decls: [include: :ui_item, min_width: "0"]),
+        Rule.new(item, decls: [include: :part_item, min_width: "0"]),
+        Rule.new(trigger_item, decls: [include: :part_item, min_width: "0"]),
         Rule.new(
           "#{item} > #{slot("item-indicator")}, #{trigger_item} > #{slot("item-indicator")}",
           decls:
@@ -6385,7 +6385,7 @@ defmodule Corex.Design.Recipes do
           decls: [margin_inline_start: "auto", flex_shrink: "0"]
         ),
         Rule.new(item_indicator,
-          decls: Map.to_list(RecipePresets.item_row_indicator()) ++ [include: :ui_icon]
+          decls: Map.to_list(RecipePresets.item_row_indicator()) ++ [include: :part_icon]
         ),
         Rule.new("#{content} #{slot("trigger-item")}",
           decls: [justify_content: "flex-start", width: "100%", min_width: "0"]
@@ -6527,8 +6527,8 @@ defmodule Corex.Design.Recipes do
              Map.merge(RecipePresets.text_block(text), %{
                padding_inline: {:space, size},
                min_height: {:size, size},
-               background_color: {:color, :ui},
-               color: {:color, :ui_ink},
+               background_color: {:color, :surface_control},
+               color: {:color, :on_page},
                border_color: {:color, :border}
              })
          ]}
@@ -6563,29 +6563,29 @@ defmodule Corex.Design.Recipes do
               min_width: "0"
             ]
           ),
-          Rule.new(input, decls: [include: :ui_input, flex: "1 1 auto", min_width: "0"]),
+          Rule.new(input, decls: [include: :part_input, flex: "1 1 auto", min_width: "0"]),
           Rule.new(icon,
             decls: [
               position: "absolute",
               top: "0",
               bottom: "0",
               left: "0",
-              width: "var(--size)",
+              width: "var(--spacing-control-md)",
               display: "flex",
               align_items: "center",
               justify_content: "center",
-              padding_inline: "var(--space)",
+              padding_inline: "var(--spacing-md)",
               pointer_events: "none"
             ],
             children: [
-              Rule.new(~S(& [data-icon],\n  & svg), decls: [include: :ui_icon])
+              Rule.new(~S(& [data-icon],\n  & svg), decls: [include: :part_icon])
             ]
           ),
           Rule.new("#{host}[data-no-icon] #{input}",
-            decls: [padding_inline_start: "var(--space)"]
+            decls: [padding_inline_start: "var(--spacing-md)"]
           ),
           Rule.new("#{host}:not([data-no-icon]) #{input}",
-            decls: [padding_inline_start: "var(--size)"]
+            decls: [padding_inline_start: "var(--spacing-control-md)"]
           )
         ]
     end
@@ -6666,7 +6666,7 @@ defmodule Corex.Design.Recipes do
           ),
           Rule.new(input,
             decls: [
-              include: :ui_input,
+              include: :part_input,
               flex: "1",
               min_width: "0",
               min_height: {:size, :md},
@@ -6697,7 +6697,7 @@ defmodule Corex.Design.Recipes do
           ),
           Rule.new(increment,
             decls: [
-              include: :ui_trigger,
+              include: :part_trigger,
               aspect_ratio: {:raw, "1 / 1"},
               padding: 0,
               justify_content: :center,
@@ -6720,7 +6720,7 @@ defmodule Corex.Design.Recipes do
           ),
           Rule.new(decrement,
             decls: [
-              include: :ui_trigger,
+              include: :part_trigger,
               aspect_ratio: {:raw, "1 / 1"},
               padding: 0,
               justify_content: :center,
@@ -6771,20 +6771,20 @@ defmodule Corex.Design.Recipes do
                min_height: {:size, size},
                max_height: {:size, size},
                padding_inline: {:space, size},
-               background_color: {:color, :ui},
-               color: {:color, :ui_ink}
+               background_color: {:color, :surface_control},
+               color: {:color, :on_page}
              }),
            increment_trigger:
              Map.merge(RecipePresets.text_block(text), %{
-               background_color: {:color, :ui},
-               color: {:color, :ui_ink},
-               min_height: {:raw, "calc(var(--size-#{size}) / 2)"}
+               background_color: {:color, :surface_control},
+               color: {:color, :on_page},
+               min_height: {:raw, "calc(var(--spacing-control-#{size}) / 2)"}
              }),
            decrement_trigger:
              Map.merge(RecipePresets.text_block(text), %{
-               background_color: {:color, :ui},
-               color: {:color, :ui_ink},
-               min_height: {:raw, "calc(var(--size-#{size}) / 2)"}
+               background_color: {:color, :surface_control},
+               color: {:color, :on_page},
+               min_height: {:raw, "calc(var(--spacing-control-#{size}) / 2)"}
              })
          ]}
       end
@@ -6838,9 +6838,9 @@ defmodule Corex.Design.Recipes do
 
       [
         Rule.new(host, decls: [width: "fit-content", max_width: {:container, :md}]),
-        Rule.new("#{host}[data-loading] #{root}", decls: [include: :ui_loading]),
+        Rule.new("#{host}[data-loading] #{root}", decls: [include: :part_loading]),
         Rule.new(root,
-          decls: [include: :ui_root, width: "fit-content", max_width: "100%"]
+          decls: [include: :part_root, width: "fit-content", max_width: "100%"]
         ),
         Rule.new(list,
           decls: [
@@ -6860,13 +6860,13 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(prev,
           decls: [
-            include: :ui_trigger,
+            include: :part_trigger,
             aspect_ratio: {:raw, "1 / 1"},
             padding: 0,
             justify_content: :center,
             width: :auto,
-            min_width: {:raw, "calc(var(--size-md) * 0.8)"},
-            min_height: {:raw, "calc(var(--size-md) * 0.8)"},
+            min_width: {:raw, "calc(var(--spacing-control-md) * 0.8)"},
+            min_height: {:raw, "calc(var(--spacing-control-md) * 0.8)"},
             font_size: {:raw, "calc(var(--text-base) * 0.8)"},
             line_height: {:raw, "calc(var(--text-base--line-height) * 0.8)"},
             padding: "0"
@@ -6874,13 +6874,13 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(next,
           decls: [
-            include: :ui_trigger,
+            include: :part_trigger,
             aspect_ratio: {:raw, "1 / 1"},
             padding: 0,
             justify_content: :center,
             width: :auto,
-            min_width: {:raw, "calc(var(--size-md) * 0.8)"},
-            min_height: {:raw, "calc(var(--size-md) * 0.8)"},
+            min_width: {:raw, "calc(var(--spacing-control-md) * 0.8)"},
+            min_height: {:raw, "calc(var(--spacing-control-md) * 0.8)"},
             font_size: {:raw, "calc(var(--text-base) * 0.8)"},
             line_height: {:raw, "calc(var(--text-base--line-height) * 0.8)"},
             padding: "0"
@@ -6888,7 +6888,7 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(item,
           decls: [
-            include: :ui_item,
+            include: :part_item,
             width: "auto",
             max_width: "none",
             min_width: {:size, :md},
@@ -6905,7 +6905,7 @@ defmodule Corex.Design.Recipes do
             justify_content: "center",
             min_width: {:size, :md},
             min_height: {:size, :md},
-            color: {:color, :ui_ink_muted},
+            color: {:color, :on_muted},
             pointer_events: "none",
             cursor: "default"
           ]
@@ -6939,7 +6939,7 @@ defmodule Corex.Design.Recipes do
              Map.merge(RecipePresets.text_block(text), %{
                min_height: {:size, size},
                min_width: {:size, size},
-               color: {:color, :ui_ink}
+               color: {:color, :on_page}
              }),
            prev_trigger: nav_trigger_size(size, text),
            next_trigger: nav_trigger_size(size, text)
@@ -6951,8 +6951,8 @@ defmodule Corex.Design.Recipes do
       %{
         font_size: {:raw, "calc(var(--text-#{text}) * 0.8)"},
         line_height: {:raw, "calc(var(--text-#{text}--line-height) * 0.8)"},
-        min_height: {:raw, "calc(var(--size-#{size}) * 0.8)"},
-        min_width: {:raw, "calc(var(--size-#{size}) * 0.8)"}
+        min_height: {:raw, "calc(var(--spacing-control-#{size}) * 0.8)"},
+        min_width: {:raw, "calc(var(--spacing-control-#{size}) * 0.8)"}
       }
     end
 
@@ -7034,7 +7034,7 @@ defmodule Corex.Design.Recipes do
           ),
           Rule.new(input,
             decls: [
-              include: :ui_input,
+              include: :part_input,
               flex: "1"
             ],
             children: [
@@ -7071,7 +7071,7 @@ defmodule Corex.Design.Recipes do
           ),
           Rule.new(visibility,
             decls: [
-              include: :ui_trigger,
+              include: :part_trigger,
               aspect_ratio: {:raw, "1 / 1"},
               padding: 0,
               justify_content: :center,
@@ -7117,16 +7117,16 @@ defmodule Corex.Design.Recipes do
                min_height: {:size, size},
                max_height: {:size, size},
                padding_inline: {:space, size},
-               background_color: {:color, :ui},
-               color: {:color, :ui_ink}
+               background_color: {:color, :surface_control},
+               color: {:color, :on_page}
              }),
            visibility_trigger:
              Map.merge(RecipePresets.text_block(text), %{
                min_width: {:size, size},
                min_height: {:size, size},
                max_height: {:size, size},
-               background_color: {:color, :ui},
-               color: {:color, :ui_ink}
+               background_color: {:color, :surface_control},
+               color: {:color, :on_page}
              })
          ]}
       end
@@ -7197,10 +7197,10 @@ defmodule Corex.Design.Recipes do
           ),
           Rule.new(label,
             children: [
-              Rule.new("&[data-invalid]", decls: [color: {:color, :ui_ink_alert}]),
-              Rule.new("&[data-disabled]", decls: [color: {:color, :ui_ink_muted}]),
-              Rule.new("&[data-complete]", decls: [color: {:color, :ui_ink_success}]),
-              Rule.new("&[data-readonly]", decls: [color: {:color, :ui_ink_muted}])
+              Rule.new("&[data-invalid]", decls: [color: {:color, :alert}]),
+              Rule.new("&[data-disabled]", decls: [color: {:color, :on_muted}]),
+              Rule.new("&[data-complete]", decls: [color: {:color, :on_page_success}]),
+              Rule.new("&[data-readonly]", decls: [color: {:color, :on_muted}])
             ]
           ),
           Rule.new(control,
@@ -7214,7 +7214,7 @@ defmodule Corex.Design.Recipes do
           ),
           Rule.new(input,
             decls: [
-              include: :ui_input,
+              include: :part_input,
               height: {:size, :md},
               width: {:size, :md},
               flex_shrink: "0",
@@ -7224,18 +7224,18 @@ defmodule Corex.Design.Recipes do
             children: [
               Rule.new("&:focus",
                 decls: [
-                  background_color: {:color, :root},
+                  background_color: {:color, :surface_page},
                   outline: "none",
-                  box_shadow: "inset 0 0 0 2px var(--color-ui-ink)"
+                  box_shadow: "inset 0 0 0 2px var(--color-on-page)"
                 ]
               ),
               Rule.new("&[data-filled]:not([data-complete])",
-                decls: [background_color: {:color, :ui_hover}]
+                decls: [background_color: {:color, :surface_control_hover}]
               ),
               Rule.new("&[data-complete]",
                 decls: [
-                  color: {:color, :ui_ink},
-                  background_color: {:color, :ui},
+                  color: {:color, :on_page},
+                  background_color: {:color, :surface_control},
                   border_color: {:color, :success},
                   box_shadow: "none"
                 ],
@@ -7247,8 +7247,8 @@ defmodule Corex.Design.Recipes do
               ),
               Rule.new("&[data-invalid]",
                 decls: [
-                  color: {:color, :ui_ink},
-                  background_color: {:color, :ui},
+                  color: {:color, :on_page},
+                  background_color: {:color, :surface_control},
                   border_color: {:color, :alert},
                   box_shadow: "none"
                 ],
@@ -7260,8 +7260,8 @@ defmodule Corex.Design.Recipes do
               ),
               Rule.new("&[data-disabled]",
                 decls: [
-                  color: {:color, :ui_ink_muted},
-                  background_color: {:color, :ui_muted},
+                  color: {:color, :on_muted},
+                  background_color: {:color, :surface_control_muted},
                   cursor: "not-allowed"
                 ]
               )
@@ -7339,15 +7339,16 @@ defmodule Corex.Design.Recipes do
     end
 
     defp semantic_variants do
-      for color <- Axes.semantic_atoms(), do: {color, [host: Palette.selected_host_sx(color)]}
+      for color <- Axes.semantic_atoms(),
+          do: {color, [host: Map.merge(Palette.semantic_host_marker(), Palette.selected_host_sx(color))]}
     end
 
     defp size_variants do
       for size <- Axes.size_atoms() do
         block = %{
-          height: {:raw, "calc(var(--size) * 0.6)"},
-          width: {:raw, "calc(var(--size) * 0.6)"},
-          padding: {:raw, "calc(var(--space) * 0.25)"},
+          height: {:raw, "calc(var(--spacing-control-md) * 0.6)"},
+          width: {:raw, "calc(var(--spacing-control-md) * 0.6)"},
+          padding: {:raw, "calc(var(--spacing-md) * 0.25)"},
           font_size: {:text, size_text(size)},
           line_height: {:leading, size_text(size)}
         }
@@ -7380,7 +7381,7 @@ defmodule Corex.Design.Recipes do
               align_items: "center",
               position: "relative",
               width: "100%",
-              gap: "var(--space)",
+              gap: "var(--spacing-md)",
               cursor: "pointer"
             ],
             children: [
@@ -7394,10 +7395,10 @@ defmodule Corex.Design.Recipes do
             decls: [
               flex_shrink: "0",
               margin_inline_start: "auto",
-              height: "calc(var(--size) * 0.6)",
-              width: "calc(var(--size) * 0.6)",
-              background: "var(--color-ui)",
-              color: "var(--color-ui-ink)",
+              height: "calc(var(--spacing-control-md) * 0.6)",
+              width: "calc(var(--spacing-control-md) * 0.6)",
+              background: "var(--color-surface-control)",
+              color: "var(--color-on-page)",
               font_weight: "var(--font-weight-normal)",
               border_radius: "var(--radius-full)",
               border: "1px solid var(--color-border)",
@@ -7405,7 +7406,7 @@ defmodule Corex.Design.Recipes do
               align_items: "center",
               justify_content: "center",
               cursor: "pointer",
-              padding: "calc(var(--space) * 0.25)"
+              padding: "calc(var(--spacing-md) * 0.25)"
             ],
             children: [
               Rule.new("&[data-state=\"checked\"]",
@@ -7421,17 +7422,17 @@ defmodule Corex.Design.Recipes do
               ),
               Rule.new("&[data-state=\"unchecked\"]",
                 decls: [
-                  background: "var(--color-ui)",
-                  color: "var(--color-ui-ink)",
+                  background: "var(--color-surface-control)",
+                  color: "var(--color-on-page)",
                   border_color: "var(--color-border)"
                 ],
                 children: [
-                  Rule.new("&:hover", decls: [background_color: "var(--color-ui-hover)"]),
-                  Rule.new("&:active", decls: [background_color: "var(--color-ui-active)"])
+                  Rule.new("&:hover", decls: [background_color: "var(--color-surface-control-hover)"]),
+                  Rule.new("&:active", decls: [background_color: "var(--color-surface-control-active)"])
                 ]
               ),
               Rule.new("&:focus-visible,\n  &[data-focus]",
-                decls: [outline: "none", box_shadow: "inset 0 0 0 2px var(--color-ui-ink)"]
+                decls: [outline: "none", box_shadow: "inset 0 0 0 2px var(--color-on-page)"]
               ),
               Rule.new(
                 ~S(&[data-state="checked"]:focus-visible,\n  &[data-state="checked"][data-focus]),
@@ -7512,7 +7513,7 @@ defmodule Corex.Design.Recipes do
           font_size: {:text, :base},
           line_height: {:leading, :base},
           font_weight: :medium,
-          color: {:color, :ui_ink}
+          color: {:color, :on_page}
         },
         control: %{
           display: :flex,
@@ -7533,15 +7534,15 @@ defmodule Corex.Design.Recipes do
               min_width: 0,
               max_width: "100%",
               border: {:raw, "1px solid var(--color-border)"},
-              background_color: {:color, :ui},
-              color: {:color, :ui_ink},
+              background_color: {:color, :surface_control},
+              color: {:color, :on_page},
               border_radius: {:radius, :md},
               min_height: {:size, :md},
               padding_inline: {:space, :md},
               font_size: {:text, :base},
               line_height: {:leading, :base},
-              hover: %{background_color: {:color, :ui_hover}},
-              active: %{background_color: {:color, :ui_active}},
+              hover: %{background_color: {:color, :surface_control_hover}},
+              active: %{background_color: {:color, :surface_control_active}},
               focus_visible: %{
                 outline: :none,
                 box_shadow: RecipePresets.inset_ring(:focus_ring)
@@ -7549,8 +7550,8 @@ defmodule Corex.Design.Recipes do
               open: trigger_open_sx(),
               disabled:
                 RecipePresets.lock_disabled_interaction(%{
-                  color: {:color, :ui_ink_muted},
-                  background_color: {:color, :ui_muted},
+                  color: {:color, :on_muted},
+                  background_color: {:color, :surface_control_muted},
                   cursor: :not_allowed,
                   box_shadow: :none
                 }),
@@ -7569,8 +7570,8 @@ defmodule Corex.Design.Recipes do
           font_size: {:text, :base},
           line_height: {:leading, :base},
           font_weight: :medium,
-          color: {:color, :ui_ink},
-          background_color: {:color, :root},
+          color: {:color, :on_page},
+          background_color: {:color, :surface_page},
           border_bottom: {:raw, "1px solid var(--color-border)"},
           border_top: {:raw, "1px solid var(--color-border)"},
           box_shadow: {:shadow, :md},
@@ -7588,7 +7589,7 @@ defmodule Corex.Design.Recipes do
           line_height: {:leading, :sm},
           font_weight: :normal,
           gap: {:raw, "0.25rem"},
-          color: {:color, :ui_ink_alert},
+          color: {:color, :alert},
           padding_block: {:space, :md}
         }
       ]
@@ -7607,18 +7608,18 @@ defmodule Corex.Design.Recipes do
         min_height: {:size, :md},
         padding_inline: {:space, :md},
         gap: {:space, :md},
-        background_color: {:color, :ui},
-        color: {:color, :ui_ink},
+        background_color: {:color, :surface_control},
+        color: {:color, :on_page},
         border_radius: {:radius, :none},
         outline: :none,
         transition:
           {:raw, "background-color 120ms ease, color 120ms ease, box-shadow 120ms ease"},
-        hover: %{background_color: {:color, :ui_hover}},
-        active: %{background_color: {:color, :ui_active}, box_shadow: :none},
+        hover: %{background_color: {:color, :surface_control_hover}},
+        active: %{background_color: {:color, :surface_control_active}, box_shadow: :none},
         focus_visible: %{
           outline: :none,
-          box_shadow: {:raw, "inset 0 0 0 2px var(--color-ui-ink)"},
-          background_color: {:color, :ui_hover}
+          box_shadow: {:raw, "inset 0 0 0 2px var(--color-on-page)"},
+          background_color: {:color, :surface_control_hover}
         },
         selected: %{
           background_color: {:color, :selected},
@@ -7645,8 +7646,8 @@ defmodule Corex.Design.Recipes do
         },
         disabled:
           RecipePresets.lock_disabled_interaction(%{
-            color: {:color, :ui_ink_muted},
-            background_color: {:color, :ui_muted},
+            color: {:color, :on_muted},
+            background_color: {:color, :surface_control_muted},
             cursor: :not_allowed,
             box_shadow: :none
           })
@@ -7662,8 +7663,8 @@ defmodule Corex.Design.Recipes do
         list_style: :none,
         border_radius: {:radius, :md},
         border: {:raw, "1px solid var(--color-border)"},
-        background_color: {:color, :root},
-        color: {:color, :ui_ink},
+        background_color: {:color, :surface_page},
+        color: {:color, :on_page},
         box_shadow: {:shadow, :md},
         z_index: 50,
         overflow: :hidden,
@@ -7676,7 +7677,7 @@ defmodule Corex.Design.Recipes do
       %{
         background_color: :transparent,
         border_color: :transparent,
-        hover: %{background_color: {:color, :ui_hover}},
+        hover: %{background_color: {:color, :surface_control_hover}},
         open: trigger_open_sx(),
         focus_visible: %{
           outline: :none,
@@ -7686,7 +7687,8 @@ defmodule Corex.Design.Recipes do
     end
 
     defp semantic_variants do
-      for color <- Axes.semantic_atoms(), do: {color, [host: Palette.selected_host_sx(color)]}
+      for color <- Axes.semantic_atoms(),
+          do: {color, [host: Map.merge(Palette.semantic_host_marker(), Palette.selected_host_sx(color))]}
     end
 
     defp select_extra_rules do
@@ -7699,13 +7701,13 @@ defmodule Corex.Design.Recipes do
       item_text = RecipePresets.item_text()
 
       [
-        Rule.new("#{host}[data-loading] #{root}", decls: [include: :ui_loading]),
-        Rule.new("#{root}[data-readonly]", decls: [include: :ui_readonly]),
+        Rule.new("#{host}[data-loading] #{root}", decls: [include: :part_loading]),
+        Rule.new("#{root}[data-readonly]", decls: [include: :part_readonly]),
         Rule.new(
           control,
           children: [
             Rule.new("&[data-focus]:focus-visible",
-              decls: [outline: :none, box_shadow: {:raw, "inset 0 0 0 2px var(--color-ui-ink)"}]
+              decls: [outline: :none, box_shadow: {:raw, "inset 0 0 0 2px var(--color-on-page)"}]
             ),
             Rule.new("&[data-invalid][data-focus],\n  &[data-invalid][data-focus]:focus-visible",
               decls: [box_shadow: :none]
@@ -7755,7 +7757,7 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(
           ~s(#{trigger} > [data-icon]),
-          decls: [include: :ui_icon]
+          decls: [include: :part_icon]
         ),
         Rule.new(
           ~s(#{trigger} svg),
@@ -7763,7 +7765,7 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(
           ~s(#{trigger} > [data-part="indicator"] [data-icon]),
-          decls: [include: :ui_icon]
+          decls: [include: :part_icon]
         ),
         Rule.new(
           ~S(.select [data-scope="select"][data-part="item"] [data-part="item-text"]),
@@ -7779,11 +7781,11 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(
           ~S(.select [data-scope="select"][data-part="indicator"] [data-icon]),
-          decls: [include: :ui_icon]
+          decls: [include: :part_icon]
         ),
         Rule.new(
           ~S(.select [data-scope="select"][data-part="item-indicator"] [data-icon]),
-          decls: [include: :ui_icon]
+          decls: [include: :part_icon]
         )
       ] ++ item_highlight_rules()
     end
@@ -7798,12 +7800,12 @@ defmodule Corex.Design.Recipes do
             Rule.new("#{item}[data-highlighted]:not(:hover)",
               decls: [
                 outline: :none,
-                box_shadow: {:raw, "inset 0 0 0 2px var(--color-ui-ink)"},
-                background_color: {:color, :ui_hover}
+                box_shadow: {:raw, "inset 0 0 0 2px var(--color-on-page)"},
+                background_color: {:color, :surface_control_hover}
               ]
             ),
             Rule.new("#{item}[data-highlighted]:active",
-              decls: [background_color: {:color, :ui_active}, box_shadow: :none]
+              decls: [background_color: {:color, :surface_control_active}, box_shadow: :none]
             ),
             Rule.new(selected.("[data-highlighted]:not(:hover)"),
               decls: [
@@ -7835,8 +7837,8 @@ defmodule Corex.Design.Recipes do
             Rule.new("#{item}[data-highlighted]",
               decls: [
                 outline: :none,
-                box_shadow: {:raw, "inset 0 0 0 2px var(--color-ui-ink)"},
-                background_color: {:color, :ui_hover}
+                box_shadow: {:raw, "inset 0 0 0 2px var(--color-on-page)"},
+                background_color: {:color, :surface_control_hover}
               ]
             ),
             Rule.new(selected.("[data-highlighted]"),
@@ -7987,7 +7989,7 @@ defmodule Corex.Design.Recipes do
               position: "relative",
               width: "100%",
               height: {:raw, "calc(var(--container-4xs) * 0.7)"},
-              background_color: {:color, :ui},
+              background_color: {:color, :surface_control},
               border_radius: {:radius, :md},
               border: {:raw, "1px solid var(--color-border)"}
             ]
@@ -8009,13 +8011,13 @@ defmodule Corex.Design.Recipes do
               width: "100%",
               height: "100%",
               pointer_events: "none",
-              background_color: {:color, :ui_muted},
+              background_color: {:color, :surface_control_muted},
               border_radius: {:radius, :md}
             ]
           ),
           Rule.new(clear,
             decls: [
-              include: :ui_trigger,
+              include: :part_trigger,
               aspect_ratio: {:raw, "1 / 1"},
               padding: 0,
               justify_content: :center,
@@ -8024,8 +8026,8 @@ defmodule Corex.Design.Recipes do
               z_index: "1",
               top: {:space, :sm},
               inset_inline_end: {:space, :sm},
-              min_height: {:raw, "calc(var(--size-md) * 0.6)"},
-              min_width: {:raw, "calc(var(--size-md) * 0.6)"}
+              min_height: {:raw, "calc(var(--spacing-control-md) * 0.6)"},
+              min_width: {:raw, "calc(var(--spacing-control-md) * 0.6)"}
             ]
           ),
           Rule.new(preview,
@@ -8036,7 +8038,7 @@ defmodule Corex.Design.Recipes do
               width: {:container, :"4xs"},
               padding: {:space, :md},
               gap: {:space, :md},
-              background_color: {:color, :layer}
+              background_color: {:color, :surface_raised}
             ],
             children: [
               Rule.new("& img",
@@ -8050,7 +8052,7 @@ defmodule Corex.Design.Recipes do
                   padding: {:space, :md},
                   border: {:raw, "1px solid var(--color-border)"},
                   border_radius: {:radius, :md},
-                  background_color: {:color, :root}
+                  background_color: {:color, :surface_page}
                 ]
               )
             ]
@@ -8070,7 +8072,7 @@ defmodule Corex.Design.Recipes do
          [
            root: %{gap: {:space, size}},
            label: RecipePresets.text_block(text),
-           control: %{height: {:raw, "calc(var(--size-#{size}) * 4)"}},
+           control: %{height: {:raw, "calc(var(--spacing-control-#{size}) * 4)"}},
            clear_trigger:
              Map.merge(RecipePresets.text_block(text), %{
                min_height: {:size, size},
@@ -8136,7 +8138,7 @@ defmodule Corex.Design.Recipes do
                %{gap: {:space, size}, padding_inline_end: {:space, size}},
                track_var_block(size)
              ),
-           control: %{padding: {:raw, "calc(var(--space-#{size}) * 0.3)"}},
+           control: %{padding: {:raw, "calc(var(--spacing-#{size}) * 0.3)"}},
            label: RecipePresets.text_block(size_text(size))
          ]}
       end
@@ -8144,8 +8146,8 @@ defmodule Corex.Design.Recipes do
 
     defp track_var_block(size) do
       %{
-        "--switch-track-width": {:raw, "calc(var(--size-#{size}) * 0.8)"},
-        "--switch-track-height": {:raw, "calc(var(--size-#{size}) * 0.5 * 0.8)"},
+        "--switch-track-width": {:raw, "calc(var(--spacing-control-#{size}) * 0.8)"},
+        "--switch-track-height": {:raw, "calc(var(--spacing-control-#{size}) * 0.5 * 0.8)"},
         "--switch-track-diff":
           {:raw, "calc(var(--switch-track-width) - var(--switch-track-height))"},
         "--switch-thumb-x": {:raw, "var(--switch-track-diff)"}
@@ -8179,8 +8181,8 @@ defmodule Corex.Design.Recipes do
                 align_items: "center",
                 position: "relative",
                 width: "fit-content",
-                gap: "var(--space-md)",
-                padding_inline_end: "var(--space-md)"
+                gap: "var(--spacing-md)",
+                padding_inline_end: "var(--spacing-md)"
               ] ++ track_var_decls(:md)
           ),
           Rule.new(control,
@@ -8194,10 +8196,10 @@ defmodule Corex.Design.Recipes do
               overflow: "hidden",
               border_radius: "var(--radius-4xl)",
               border: "1px solid var(--color-border)",
-              padding: "calc(var(--space-md) * 0.3)",
+              padding: "calc(var(--spacing-md) * 0.3)",
               width: "var(--switch-track-width)",
               height: "var(--switch-track-height)",
-              background: "var(--color-ui)",
+              background: "var(--color-surface-control)",
               transition:
                 "background 150ms ease, border-color 150ms ease, color 150ms ease, transform 150ms ease"
             ],
@@ -8210,22 +8212,22 @@ defmodule Corex.Design.Recipes do
               ),
               Rule.new("&[data-disabled]",
                 decls: [
-                  color: "var(--color-ui-ink-muted)",
-                  background: "var(--color-ui-muted)",
+                  color: "var(--color-on-muted)",
+                  background: "var(--color-surface-control-muted)",
                   cursor: "not-allowed",
                   box_shadow: "none"
                 ]
               ),
               Rule.new("&[data-invalid]", decls: [border_color: "var(--color-alert)"]),
               Rule.new("&:focus-visible",
-                decls: [outline: "none", box_shadow: "inset 0 0 0 2px var(--color-ui-ink)"]
+                decls: [outline: "none", box_shadow: "inset 0 0 0 2px var(--color-on-page)"]
               ),
               Rule.new("&[data-focus]:not(:focus-visible)", decls: [box_shadow: "none"])
             ]
           ),
           Rule.new(thumb,
             decls: [
-              background: "var(--color-ui-ink)",
+              background: "var(--color-on-page)",
               transition: "transform 200ms ease, background-color 200ms ease",
               border_radius: "inherit",
               width: "var(--switch-track-height)",
@@ -8265,8 +8267,8 @@ defmodule Corex.Design.Recipes do
       size = Atom.to_string(size)
 
       [
-        "--switch-track-width": "calc(var(--size-#{size}) * 0.8)",
-        "--switch-track-height": "calc(var(--size-#{size}) * 0.5 * 0.8)",
+        "--switch-track-width": "calc(var(--spacing-control-#{size}) * 0.8)",
+        "--switch-track-height": "calc(var(--spacing-control-#{size}) * 0.5 * 0.8)",
         "--switch-track-diff": "calc(var(--switch-track-width) - var(--switch-track-height))",
         "--switch-thumb-x": "var(--switch-track-diff)"
       ]
@@ -8311,9 +8313,9 @@ defmodule Corex.Design.Recipes do
       item_indicator = part("item-indicator")
 
       [
-        Rule.new("#{host}[data-loading] #{root}", decls: [include: :ui_loading]),
+        Rule.new("#{host}[data-loading] #{root}", decls: [include: :part_loading]),
         Rule.new(host, decls: [width: "100%", max_width: {:container, :md}]),
-        Rule.new(root, decls: [include: :ui_root, gap: {:space, :md}]),
+        Rule.new(root, decls: [include: :part_root, gap: {:space, :md}]),
         Rule.new("#{root}[data-orientation='vertical']",
           decls: [
             flex_direction: "row",
@@ -8353,12 +8355,12 @@ defmodule Corex.Design.Recipes do
         Rule.new("#{list}[data-orientation='horizontal']",
           decls: [flex_direction: "row"]
         ),
-        Rule.new(content, decls: [include: :ui_content, width: "100%"]),
+        Rule.new(content, decls: [include: :part_content, width: "100%"]),
         Rule.new("#{content}[data-orientation='vertical']",
           decls: [flex: "1 1 0%", min_width: "0", width: "auto"]
         ),
         Rule.new(trigger,
-          decls: [include: :ui_item, width: "fit-content", max_width: "none"]
+          decls: [include: :part_item, width: "fit-content", max_width: "none"]
         ),
         Rule.new("#{trigger}[data-focus]:not(:focus-visible)",
           decls: [box_shadow: "none"]
@@ -8376,7 +8378,7 @@ defmodule Corex.Design.Recipes do
             display: "none",
             "--transition-duration": "0.2s",
             "--transition-timing-function": "ease-in-out",
-            background_color: {:color, :ui_ink},
+            background_color: {:color, :on_page},
             z_index: "10"
           ],
           children: [
@@ -8478,19 +8480,19 @@ defmodule Corex.Design.Recipes do
       [
         Rule.new(host,
           decls: [
-            include: :ui_root,
+            include: :part_root,
             width: "100%",
             max_width: {:container, :md}
           ]
         ),
-        Rule.new("#{host}[data-loading] #{root}", decls: [include: :ui_loading]),
-        Rule.new(root, decls: [include: :ui_root, position: "relative"]),
+        Rule.new("#{host}[data-loading] #{root}", decls: [include: :part_loading]),
+        Rule.new(root, decls: [include: :part_root, position: "relative"]),
         Rule.new("#{root}[data-focus]", decls: [outline: "none"]),
         Rule.new("#{root}[data-invalid]",
-          decls: [color: {:raw, "var(--color-alert, var(--color-ui-ink))"}]
+          decls: [color: {:raw, "var(--color-alert, var(--color-on-page))"}]
         ),
-        Rule.new("#{root}[data-readonly]", decls: [include: :ui_readonly]),
-        Rule.new(label, decls: [include: :ui_label]),
+        Rule.new("#{root}[data-readonly]", decls: [include: :part_readonly]),
+        Rule.new(label, decls: [include: :part_label]),
         Rule.new(control,
           decls: [
             display: "flex",
@@ -8501,7 +8503,7 @@ defmodule Corex.Design.Recipes do
             padding: {:space, :md},
             border: {:raw, "1px solid var(--color-border)"},
             border_radius: {:radius, :md},
-            background: {:color, :layer}
+            background: {:color, :surface_raised}
           ]
         ),
         Rule.new("#{control}[data-invalid]",
@@ -8522,7 +8524,7 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(input,
           decls: [
-            include: :ui_input,
+            include: :part_input,
             flex: "1 1 8rem",
             min_width: "6rem",
             max_width: {:raw, "var(--container-7xs)"}
@@ -8539,7 +8541,7 @@ defmodule Corex.Design.Recipes do
           ]
         ),
         Rule.new("#{item_preview}[hidden]", decls: [display: "none !important"]),
-        Rule.new(item_preview, decls: [include: :ui_trigger]),
+        Rule.new(item_preview, decls: [include: :part_trigger]),
         Rule.new(item_text,
           decls: [
             min_width: "0",
@@ -8551,18 +8553,18 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(item_delete_trigger,
           decls: [
-            include: :ui_trigger,
-            min_height: {:raw, "calc(var(--size) * 0.6)"},
-            min_width: {:raw, "calc(var(--size) * 0.6)"},
+            include: :part_trigger,
+            min_height: {:raw, "calc(var(--spacing-control-md) * 0.6)"},
+            min_width: {:raw, "calc(var(--spacing-control-md) * 0.6)"},
             aspect_ratio: "1 / 1",
             padding: "0"
           ]
         ),
         Rule.new("#{item_input}[hidden]", decls: [display: "none !important"]),
         Rule.new(item_input,
-          decls: [include: :ui_input, max_width: {:raw, "var(--container-7xs)"}]
+          decls: [include: :part_input, max_width: {:raw, "var(--container-7xs)"}]
         ),
-        Rule.new(error, decls: [include: :ui_error]),
+        Rule.new(error, decls: [include: :part_error]),
         Rule.new("#{error}.absolute", decls: [padding_block: "0", display: "block"])
       ]
     end
@@ -8573,7 +8575,7 @@ defmodule Corex.Design.Recipes do
 
     defp size_variants do
       for size <- Axes.size_atoms() do
-        size_raw = "var(--size-#{size})"
+        size_raw = "var(--spacing-control-#{size})"
 
         {size,
          [
@@ -8598,7 +8600,7 @@ defmodule Corex.Design.Recipes do
              line_height: {:leading, if(size == :md, do: :base, else: size)},
              min_height: {:size, size}
            },
-           item_text: %{color: {:color, :ui_ink}}
+           item_text: %{color: {:color, :on_page}}
          ]}
       end
     end
@@ -8678,7 +8680,7 @@ defmodule Corex.Design.Recipes do
 
       [
         Rule.new(host, decls: [width: "100%", max_width: "fit-content"]),
-        Rule.new(root, decls: [include: :ui_root]),
+        Rule.new(root, decls: [include: :part_root]),
         Rule.new(area,
           decls: [
             display: "flex",
@@ -8701,13 +8703,13 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(item,
           decls: [
-            include: :ui_label,
+            include: :part_label,
             justify_content: "center",
             font_size: {:text, :"4xl"},
             line_height: {:leading, :"4xl"},
             font_weight: {:weight, :semibold},
             text_align: "center",
-            color: {:color, :ui_ink},
+            color: {:color, :on_page},
             min_width: "2ch",
             height: "2em",
             overflow: "hidden",
@@ -8729,13 +8731,13 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(item_label,
           decls: [
-            include: :ui_label,
+            include: :part_label,
             justify_content: "center",
             font_size: {:text, :xs},
             line_height: {:leading, :xs},
             font_weight: {:weight, :medium},
             letter_spacing: "0.08em",
-            color: {:color, :ui_ink_muted},
+            color: {:color, :on_muted},
             text_align: "center",
             white_space: "nowrap",
             max_width: "100%"
@@ -8746,13 +8748,13 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(separator,
           decls: [
-            include: :ui_label,
+            include: :part_label,
             justify_content: "center",
             align_self: "flex-start",
             font_size: {:text, :"4xl"},
             line_height: {:leading, :"4xl"},
             font_weight: {:weight, :semibold},
-            color: {:color, :ui_ink},
+            color: {:color, :on_page},
             padding_inline: {:space, :sm},
             height: "2em",
             flex_shrink: "0"
@@ -8769,7 +8771,7 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(action,
           decls: [
-            include: :ui_trigger,
+            include: :part_trigger,
             font_size: {:text, :base},
             line_height: {:leading, :base},
             padding: "0 !important",
@@ -8978,7 +8980,7 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(root,
           decls: [
-            include: :ui_root,
+            include: :part_root,
             max_width: {:container, :xs},
             z_index: "var(--z-index)",
             height: "var(--height)",
@@ -9005,7 +9007,7 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(content,
           decls: [
-            include: :ui_content,
+            include: :part_content,
             display: "flex",
             flex_direction: "column",
             padding: "0",
@@ -9018,7 +9020,7 @@ defmodule Corex.Design.Recipes do
             align_items: "center",
             gap: {:space, :md},
             padding_inline: {:space, :md},
-            padding_block: {:raw, "calc(var(--space) * 0.5)"}
+            padding_block: {:raw, "calc(var(--spacing-md) * 0.5)"}
           ],
           children: [
             Rule.new("&", decls: [{:raw, "border-block-end: 1px solid var(--color-border)"}])
@@ -9026,7 +9028,7 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(title,
           decls: [
-            include: :ui_label,
+            include: :part_label,
             flex: "1",
             min_width: "0",
             font_weight: {:raw, "var(--font-weight-medium)"}
@@ -9055,11 +9057,11 @@ defmodule Corex.Design.Recipes do
             Rule.new("&", decls: [{:raw, "padding-block-end: #{Var.ref([:space, :md])}"}])
           ]
         ),
-        Rule.new(action_trigger, decls: [include: :ui_trigger, min_height: {:size, :sm}]),
+        Rule.new(action_trigger, decls: [include: :part_trigger, min_height: {:size, :sm}]),
         Rule.new("#{action_trigger}[hidden]", decls: [display: "none"]),
         Rule.new(close_trigger,
           decls: [
-            include: :ui_trigger,
+            include: :part_trigger,
             flex_shrink: "0",
             min_height: {:size, :sm},
             padding: "0",
@@ -9070,14 +9072,14 @@ defmodule Corex.Design.Recipes do
             Rule.new("&", decls: [{:raw, "aspect-ratio: 1 / 1"}])
           ]
         ),
-        Rule.new("#{root}[data-type='error'] #{title}", decls: [color: {:color, :ui_ink_alert}]),
+        Rule.new("#{root}[data-type='error'] #{title}", decls: [color: {:color, :alert}]),
         Rule.new("#{root}[data-type='error'] #{progressbar}",
           decls: [
             background:
               {:raw, "linear-gradient(to left, var(--color-alert-hover), var(--color-alert))"}
           ]
         ),
-        Rule.new("#{root}[data-type='info'] #{title}", decls: [color: {:color, :ui_ink_info}]),
+        Rule.new("#{root}[data-type='info'] #{title}", decls: [color: {:color, :on_page_info}]),
         Rule.new("#{root}[data-type='info'] #{progressbar}",
           decls: [
             background:
@@ -9085,7 +9087,7 @@ defmodule Corex.Design.Recipes do
           ]
         ),
         Rule.new("#{root}[data-type='success'] #{title}",
-          decls: [color: {:color, :ui_ink_success}]
+          decls: [color: {:color, :on_page_success}]
         ),
         Rule.new("#{root}[data-type='success'] #{progressbar}",
           decls: [
@@ -9095,9 +9097,9 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(progressbar,
           decls: [
-            height: {:raw, "calc(var(--space) * 0.5)"},
+            height: {:raw, "calc(var(--spacing-md) * 0.5)"},
             background:
-              {:raw, "linear-gradient(to left, var(--color-ui-ink-muted), var(--color-ui-ink))"},
+              {:raw, "linear-gradient(to left, var(--color-on-muted), var(--color-on-page))"},
             width: "100%",
             position: "absolute",
             bottom: "0",
@@ -9116,7 +9118,7 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(loading_spinner,
           decls: [
-            include: :ui_icon,
+            include: :part_icon,
             display: "none",
             min_height: {:size, :sm},
             animation: "spin 1s linear infinite"
@@ -9158,12 +9160,12 @@ defmodule Corex.Design.Recipes do
            group: %{gap: {:space, size}},
            description: %{
              padding: {:space, size},
-             min_height: {:raw, "calc(var(--space-#{size}) * 14)"}
+             min_height: {:raw, "calc(var(--spacing-#{size}) * 14)"}
            },
            header: %{
              gap: {:space, size},
              padding_inline: {:space, size},
-             padding_block: {:raw, "calc(var(--space-#{size}) * 0.5)"}
+             padding_block: {:raw, "calc(var(--spacing-#{size}) * 0.5)"}
            },
            title: block
          ]}
@@ -9265,7 +9267,7 @@ defmodule Corex.Design.Recipes do
 
       [
         Rule.new(~s(#{host}[data-loading] [data-scope="toggle"][data-part="root"]),
-          decls: [include: :ui_loading]
+          decls: [include: :part_loading]
         ),
         Rule.new(
           ~s(#{host}[data-toggle-dual-label] [data-scope="toggle"][data-part="root"][data-state="off"] > span[data-pressed]),
@@ -9320,10 +9322,10 @@ defmodule Corex.Design.Recipes do
       item = Selector.part(@id, @scope, "item")
 
       [
-        Rule.new(~s(#{host}[data-loading] #{root}), decls: [include: :ui_loading]),
+        Rule.new(~s(#{host}[data-loading] #{root}), decls: [include: :part_loading]),
         Rule.new(root,
           decls: [
-            include: :ui_root,
+            include: :part_root,
             justify_content: "center",
             flex_direction: "row",
             width: "fit-content",
@@ -9336,12 +9338,12 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(item,
           decls: [
-            include: :ui_item,
+            include: :part_item,
             flex: "1 1 0",
             min_width: "0",
             justify_content: "center",
-            padding_inline: "var(--space-md)",
-            gap: "var(--space-sm)"
+            padding_inline: "var(--spacing-md)",
+            gap: "var(--spacing-sm)"
           ],
           children: [
             Rule.new("&[data-focus]:not(:focus-visible)", decls: [box_shadow: "none"])
@@ -9454,7 +9456,7 @@ defmodule Corex.Design.Recipes do
       [
         Rule.new(host, decls: [position: "relative", z_index: "20"]),
         Rule.new("#{host}:has(#{content_open})", decls: [z_index: "50"]),
-        Rule.new("#{host}[data-loading] > *", decls: [include: :ui_loading]),
+        Rule.new("#{host}[data-loading] > *", decls: [include: :part_loading]),
         Rule.new(positioner,
           decls: [
             z_index: "50",
@@ -9470,12 +9472,12 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(content,
           decls: [
-            include: :ui_content,
+            include: :part_content,
             padding: {:space, :md},
             max_width: {:raw, "var(--container-5xs)"},
             position: "relative",
             z_index: "1",
-            background_color: {:color, :ui},
+            background_color: {:color, :surface_control},
             border: {:raw, "1px solid var(--color-border)"},
             box_shadow: {:raw, "var(--shadow-ui)"}
           ]
@@ -9497,7 +9499,7 @@ defmodule Corex.Design.Recipes do
         Rule.new(arrow,
           decls: [
             "--arrow-size": {:space, :md},
-            "--arrow-background": {:raw, "var(--color-ui)"},
+            "--arrow-background": {:raw, "var(--color-surface-control)"},
             z_index: "0"
           ]
         ),
@@ -9537,7 +9539,7 @@ defmodule Corex.Design.Recipes do
              max_width: {:container, size},
              padding: {:space, size}
            },
-           arrow: %{"--arrow-size": {:raw, "calc(var(--space-#{size}) * 0.25)"}}
+           arrow: %{"--arrow-size": {:raw, "calc(var(--spacing-#{size}) * 0.25)"}}
          ]}
       end
     end
@@ -9624,23 +9626,23 @@ defmodule Corex.Design.Recipes do
       item = part(id, "item")
 
       [
-        Rule.new(~s(#{host} #{slot("root")}[data-loading]), decls: [include: :ui_loading]),
+        Rule.new(~s(#{host} #{slot("root")}[data-loading]), decls: [include: :part_loading]),
         Rule.new(host,
           decls: [width: "100%", max_width: {:container, :md}, min_width: "0"]
         ),
-        Rule.new(root, decls: [include: :ui_root]),
+        Rule.new(root, decls: [include: :part_root]),
         Rule.new(tree,
           decls: [display: "flex", flex_direction: "column", width: "100%"]
         ),
         Rule.new(label,
-          decls: [include: :ui_label, padding_inline_start: {:space, :md}]
+          decls: [include: :part_label, padding_inline_start: {:space, :md}]
         ),
         Rule.new(branch,
           decls: [display: "flex", flex_direction: "column", width: "100%"]
         ),
-        Rule.new(item, decls: [include: :ui_item]),
+        Rule.new(item, decls: [include: :part_item]),
         Rule.new(branch_control,
-          decls: [include: :ui_item, flex_wrap: "nowrap", min_width: "0"]
+          decls: [include: :part_item, flex_wrap: "nowrap", min_width: "0"]
         ),
         Rule.new(branch_text,
           decls: [flex: "1 1 0%", min_width: "0", width: "auto", max_width: "100%"]
@@ -9649,11 +9651,11 @@ defmodule Corex.Design.Recipes do
           decls: [flex: "0 0 auto", margin_inline_start: "auto"]
         ),
         Rule.new("#{branch_control} [data-icon]",
-          decls: [include: :ui_icon]
+          decls: [include: :part_icon]
         ),
         Rule.new(
           "#{branch_control}[data-state='open']:not([data-selected]):not([data-checked]):not([data-indeterminate]):not([data-loading])",
-          decls: [background_color: {:color, :ui_active}]
+          decls: [background_color: {:color, :surface_control_active}]
         ),
         Rule.new(
           "#{branch_indicator}[dir='rtl'][data-state='open'],\n  #{host} #{slot("item-indicator")}[dir='rtl'][data-state='open']",
@@ -9690,11 +9692,11 @@ defmodule Corex.Design.Recipes do
             overflow: "hidden"
           ]
         ),
-        Rule.new(part(id, "branch-label"), decls: [include: :ui_label]),
+        Rule.new(part(id, "branch-label"), decls: [include: :part_label]),
         Rule.new(
           ~s(#{host} #{slot("branch-content")} #{slot("branch-indent-guide")}),
           decls: [
-            border_inline_start: {:raw, "1px solid var(--color-ui-ink-muted)"},
+            border_inline_start: {:raw, "1px solid var(--color-on-muted)"},
             top: "0",
             bottom: "0",
             right: "0",
@@ -9788,7 +9790,7 @@ defmodule Corex.Design.Recipes do
       [
         display: "inline-block",
         min_height: {:raw, Var.ref([:size])},
-        background_color: {:color, :ui_active},
+        background_color: {:color, :surface_control_active},
         border_radius: {:radius, :md},
         animation: "corex-skeleton 1.4s ease-in-out infinite"
       ]
@@ -9854,12 +9856,12 @@ defmodule Corex.Design.Recipes do
           decls: [
             {:raw, "text-transform: uppercase;"},
             padding_inline: "0",
-            padding_block: {:raw, "var(--space) var(--space-sm)"},
+            padding_block: {:raw, "var(--spacing-md) var(--spacing-sm)"},
             font_size: {:text, :xs},
             line_height: {:leading, :xs},
             font_weight: {:weight, :semibold},
             letter_spacing: {:raw, "0.05em"},
-            color: {:color, :ui_ink_muted},
+            color: {:color, :on_muted},
             background: "transparent"
           ]
         ),
@@ -9886,7 +9888,7 @@ defmodule Corex.Design.Recipes do
           decls: [width: "100%", max_width: {:container, :xs}]
         ),
         Rule.new("#{branch_control}[data-disabled]",
-          decls: [color: {:color, :ui_ink_muted}, background_color: "transparent"]
+          decls: [color: {:color, :on_muted}, background_color: "transparent"]
         ),
         Rule.new(item,
           decls: [border_inline_start: {:raw, "3px solid var(--color-border)"}]
@@ -9894,10 +9896,10 @@ defmodule Corex.Design.Recipes do
         Rule.new(
           "#{item}:hover,\n  #{branch_control}:hover,\n  #{item}:active,\n  #{branch_control}:active",
           decls: [
-            {:raw, "border-inline-start-color: var(--color-link);"},
+            {:raw, "border-inline-start-color: var(--color-on-link);"},
             background_color: "transparent",
             box_shadow: "none",
-            color: {:color, :ui_ink}
+            color: {:color, :on_page}
           ]
         ),
         Rule.new(
@@ -9905,30 +9907,30 @@ defmodule Corex.Design.Recipes do
           decls: [
             background_color: "transparent",
             box_shadow: "none",
-            color: {:color, :link},
+            color: {:color, :on_link},
             font_weight: {:weight, :medium},
             outline: "none"
           ]
         ),
         Rule.new(
           "#{item}[data-focus],\n  #{item}[data-highlighted]",
-          decls: [{:raw, "border-inline-start-color: var(--color-link);"}]
+          decls: [{:raw, "border-inline-start-color: var(--color-on-link);"}]
         ),
         Rule.new(
           "#{branch_control}[data-focus] #{branch_text},\n  #{branch_control}[data-highlighted] #{branch_text},\n  #{branch_text}[data-focus],\n  #{branch_text}[data-highlighted],\n  #{item_text}[data-focus],\n  #{item_text}[data-highlighted]",
-          decls: [color: {:color, :link}, font_weight: {:weight, :medium}]
+          decls: [color: {:color, :on_link}, font_weight: {:weight, :medium}]
         ),
         Rule.new(
           "#{branch_control}[data-focus] #{branch_indicator},\n  #{branch_control}[data-highlighted] #{branch_indicator}",
-          decls: [color: {:color, :link}]
+          decls: [color: {:color, :on_link}]
         ),
         Rule.new(
           "#{item}[data-selected],\n  #{branch_control}[data-selected]",
           decls: [
-            {:raw, "border-inline-start-color: var(--color-link);"},
+            {:raw, "border-inline-start-color: var(--color-on-link);"},
             background_color: "transparent",
             box_shadow: "none",
-            color: {:color, :link},
+            color: {:color, :on_link},
             font_weight: {:weight, :medium}
           ]
         ),
@@ -9937,7 +9939,7 @@ defmodule Corex.Design.Recipes do
           decls: [
             background_color: "transparent",
             box_shadow: "none",
-            color: {:color, :link}
+            color: {:color, :on_link}
           ]
         ),
         Rule.new(
@@ -9945,7 +9947,7 @@ defmodule Corex.Design.Recipes do
           decls: [
             background_color: "transparent",
             box_shadow: "none",
-            color: {:color, :ui_ink},
+            color: {:color, :on_page},
             font_weight: {:weight, :medium}
           ]
         ),
@@ -9954,25 +9956,25 @@ defmodule Corex.Design.Recipes do
           decls: [
             background_color: "transparent",
             box_shadow: "none",
-            color: {:color, :ui_ink},
+            color: {:color, :on_page},
             font_weight: {:weight, :medium}
           ]
         ),
         Rule.new(
           "#{branch_control}[data-state='open']:not([data-focus]):not([data-highlighted]) #{branch_text}",
-          decls: [color: {:color, :ui_ink}]
+          decls: [color: {:color, :on_page}]
         ),
         Rule.new(
           "#{branch_control}[data-state='open']:not([data-focus]):not([data-highlighted]) #{branch_indicator}",
-          decls: [color: {:color, :link}]
+          decls: [color: {:color, :on_link}]
         ),
         Rule.new(
           "#{branch}:has(#{item}[data-selected]) > #{branch_control}[data-state='open']:not([data-focus]):not([data-highlighted])",
-          decls: [color: {:color, :link}]
+          decls: [color: {:color, :on_link}]
         ),
         Rule.new(
           "#{branch}:has(#{item}[data-selected]) > #{branch_control}[data-state='open']:not([data-focus]):not([data-highlighted]) #{branch_text}",
-          decls: [color: {:color, :link}]
+          decls: [color: {:color, :on_link}]
         ),
         Rule.new(branch_content,
           decls: [
@@ -9989,7 +9991,7 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(
           "#{branch_control}[data-focus] > #{branch_text},\n  #{branch_control}[data-highlighted] > #{branch_text},\n  #{branch_control}[data-focus] > #{branch_text} :is(span, a),\n  #{branch_control}[data-highlighted] > #{branch_text} :is(span, a)",
-          decls: [color: {:color, :link}, font_weight: {:weight, :medium}]
+          decls: [color: {:color, :on_link}, font_weight: {:weight, :medium}]
         ),
         Rule.new(branch_control,
           decls: [

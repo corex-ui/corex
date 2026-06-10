@@ -19,12 +19,6 @@ defmodule Corex.Typography.H1 do
       text: :text,
       semantic: :semantic,
       weight: :weight
-    ],
-    defaults: [
-      width: "fit",
-      max_width: "none",
-      height: "auto",
-      max_height: "none"
     ]
 
   attr(:rest, :global)

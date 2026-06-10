@@ -24,54 +24,62 @@
 @layer components {
   .link {
     display: inline-flex;
+    width: auto;
     cursor: pointer;
     padding: 0;
-    color: var(--color-link);
-    appearance: none;
-    gap: var(--space-md);
-    align-items: center;
-    background-color: transparent;
-    border: none;
-    overflow: visible;
+    color: var(--color-on-link);
+    gap: var(--spacing-md);
+    max-width: none;
+    height: auto;
+    max-height: none;
+    padding-inline: var(--spacing-md);
+    min-height: var(--spacing-control-md);
     transition: color 120ms ease, box-shadow 120ms ease;
+    align-items: center;
+    border: none;
+    background-color: transparent;
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+    overflow: visible;
     text-decoration-line: underline;
-    text-decoration-thickness: from-font;
     text-underline-offset: 0.15em;
+    appearance: none;
+    text-decoration-thickness: from-font;
     &:active {
-      color: var(--color-ui-ink-muted);
+      color: var(--color-on-muted);
     }
     &:disabled,
       &[data-disabled],
       &[disabled] {
       cursor: not-allowed;
-      color: var(--color-ui-ink-muted);
+      color: var(--color-on-muted);
       box-shadow: none;
       text-decoration-line: none;
       &:active {
-        color: var(--color-ui-ink-muted);
+        color: var(--color-on-muted);
         box-shadow: none;
       }
       &[data-state="open"] {
-        color: var(--color-ui-ink-muted);
+        color: var(--color-on-muted);
       }
       &:hover {
-        color: var(--color-ui-ink-muted);
+        color: var(--color-on-muted);
       }
       &:focus-visible {
-        color: var(--color-ui-ink-muted);
+        color: var(--color-on-muted);
         outline: none;
         box-shadow: none;
       }
     }
     &:visited {
-      color: var(--color-ui-ink-muted);
+      color: var(--color-on-muted);
     }
     &:hover {
-      color: var(--color-ui-ink);
+      color: var(--color-on-page);
     }
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-page);
     }
   }
 
@@ -119,11 +127,11 @@
     position: relative;
   }
 
-  .link.link--semantic-brand {
+  .link.link--semantic-alert {
     position: relative;
   }
 
-  .link.link--semantic-alert {
+  .link.link--semantic-brand {
     position: relative;
   }
 
@@ -131,7 +139,7 @@
     position: relative;
   }
 
-  .link.link--semantic-success {
+  .link.link--semantic-neutral {
     position: relative;
   }
 
@@ -139,34 +147,38 @@
     position: relative;
   }
 
+  .link.link--semantic-success {
+    position: relative;
+  }
+
   .link.link--size-sm {
-    min-height: var(--size-sm);
-    gap: var(--space-sm);
-    padding-inline: var(--space-sm);
+    gap: var(--spacing-sm);
+    padding-inline: var(--spacing-sm);
+    min-height: var(--spacing-control-sm);
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
   }
 
   .link.link--size-md {
-    min-height: var(--size-md);
-    gap: var(--space-md);
-    padding-inline: var(--space-md);
+    gap: var(--spacing-md);
+    padding-inline: var(--spacing-md);
+    min-height: var(--spacing-control-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
   }
 
   .link.link--size-lg {
-    min-height: var(--size-lg);
-    gap: var(--space-lg);
-    padding-inline: var(--space-lg);
+    gap: var(--spacing-lg);
+    padding-inline: var(--spacing-lg);
+    min-height: var(--spacing-control-lg);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
   }
 
   .link.link--size-xl {
-    min-height: var(--size-xl);
-    gap: var(--space-xl);
-    padding-inline: var(--space-xl);
+    gap: var(--spacing-xl);
+    padding-inline: var(--spacing-xl);
+    min-height: var(--spacing-control-xl);
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
   }
@@ -187,44 +199,51 @@
   }
 
   .link.link--semantic-accent {
-    color: var(--color-ui-ink-accent);
+    color: var(--color-on-accent);
     &:hover {
       color: var(--color-accent-hover);
     }
   }
 
-  .link.link--semantic-brand {
-    color: var(--color-ui-ink-brand);
-    &:hover {
-      color: var(--color-brand-hover);
-    }
-  }
-
   .link.link--semantic-alert {
-    color: var(--color-ui-ink-alert);
+    color: var(--color-on-alert);
     &:hover {
       color: var(--color-alert-hover);
     }
   }
 
+  .link.link--semantic-brand {
+    color: var(--color-on-brand);
+    &:hover {
+      color: var(--color-brand-hover);
+    }
+  }
+
   .link.link--semantic-info {
-    color: var(--color-ui-ink-info);
+    color: var(--color-on-info);
     &:hover {
       color: var(--color-info-hover);
     }
   }
 
-  .link.link--semantic-success {
-    color: var(--color-ui-ink-success);
+  .link.link--semantic-neutral {
+    color: var(--color-on-neutral);
     &:hover {
-      color: var(--color-success-hover);
+      color: var(--color-neutral-hover);
     }
   }
 
   .link.link--semantic-selected {
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
     &:hover {
       color: var(--color-selected-hover);
+    }
+  }
+
+  .link.link--semantic-success {
+    color: var(--color-on-success);
+    &:hover {
+      color: var(--color-success-hover);
     }
   }
 
@@ -246,7 +265,7 @@
   }
 
   .link [data-icon] {
-    @apply ui-icon;
+    @apply part-icon;
   }
 
   .link.link--shape-square > [data-icon],
@@ -259,22 +278,22 @@
 
   .link.link--skip {
     position: fixed;
-    inset-inline-start: var(--space-lg);
+    inset-inline-start: var(--spacing-lg);
     inset-block-start: -9999px;
     z-index: 10000;
-    max-width: min(100vw - calc(var(--space) * 2), 20rem);
-    padding-block: var(--space-md);
-    padding-inline: var(--space-lg);
+    max-width: min(100vw - calc(var(--spacing-md) * 2), 20rem);
+    padding-block: var(--spacing-md);
+    padding-inline: var(--spacing-lg);
     margin: 0;
     overflow: visible;
-    background: var(--color-layer);
-    color: var(--color-ui-ink);
+    background: var(--color-surface-raised);
+    color: var(--color-on-page);
     border: 1px solid var(--color-border);
     box-shadow: 0 4px 24px rgb(0 0 0 / 0.12);
     transition: inset-block-start 0.15s ease;
     &:focus,
     &:focus-visible {
-      inset-block-start: var(--space-lg);
+      inset-block-start: var(--spacing-lg);
     }
 
     @media (prefers-reduced-motion: reduce) {

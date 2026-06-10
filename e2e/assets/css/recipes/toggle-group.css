@@ -24,9 +24,9 @@
 
 @utility toggle-group--size-* {
   [data-scope="toggle-group"][data-part="item"] {
-      min-height: --value(--spacing-size-*, [length]);
-    gap: --value(--spacing-space-*, [length]);
-    padding-inline: --value(--spacing-space-*, [length]);
+      gap: --value(--spacing-*, [length]);
+    padding-inline: --value(--spacing-*, [length]);
+    min-height: --value(--spacing-control-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
@@ -35,6 +35,21 @@
 
 
 @layer components {
+  .toggle-group {
+    width: 100%;
+    max-width: var(--container-4xs);
+    height: auto;
+    max-height: none;
+  }
+
+  .toggle-group [data-scope="toggle-group"][data-part="item"] {
+    gap: var(--spacing-md);
+    padding-inline: var(--spacing-md);
+    min-height: var(--spacing-control-md);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+
   .toggle-group.toggle-group--w-auto {
     width: auto;
   }
@@ -79,11 +94,11 @@
     position: relative;
   }
 
-  .toggle-group.toggle-group--semantic-brand {
+  .toggle-group.toggle-group--semantic-alert {
     position: relative;
   }
 
-  .toggle-group.toggle-group--semantic-alert {
+  .toggle-group.toggle-group--semantic-brand {
     position: relative;
   }
 
@@ -91,11 +106,15 @@
     position: relative;
   }
 
-  .toggle-group.toggle-group--semantic-success {
+  .toggle-group.toggle-group--semantic-neutral {
     position: relative;
   }
 
   .toggle-group.toggle-group--semantic-selected {
+    position: relative;
+  }
+
+  .toggle-group.toggle-group--semantic-success {
     position: relative;
   }
 
@@ -116,11 +135,11 @@
   }
 
   .toggle-group[data-loading] .toggle-group [data-scope="toggle-group"][data-part="root"] {
-    @apply ui-loading;
+    @apply part-loading;
   }
 
   .toggle-group [data-scope="toggle-group"][data-part="root"] {
-    @apply ui-root;
+    @apply part-root;
     justify-content: center;
     flex-direction: row;
     width: fit-content;
@@ -132,12 +151,12 @@
   }
 
   .toggle-group [data-scope="toggle-group"][data-part="item"] {
-    @apply ui-item;
+    @apply part-item;
     flex: 1 1 0;
     min-width: 0;
     justify-content: center;
-    padding-inline: var(--space-md);
-    gap: var(--space-sm);
+    padding-inline: var(--spacing-md);
+    gap: var(--spacing-sm);
     &[data-focus]:not(:focus-visible) {
       box-shadow: none;
     }
@@ -145,7 +164,7 @@
 
   .toggle-group [data-scope="toggle-group"][data-part="item"] {
     &:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not([data-disabled]):not(:disabled):not([disabled]) {
-      color: var(--color-ui-ink);
+      color: var(--color-on-page);
       &:focus-visible {
         outline: none;
         box-shadow: inset 0 0 0 2px var(--color-selected);
@@ -156,13 +175,13 @@
     &[data-disabled],
     &[disabled] {
       background-color: var(--color-selected-muted);
-      color: var(--color-selected-ink);
+      color: var(--color-on-selected);
       cursor: not-allowed;
     }
 
     &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"] {
       background-color: var(--color-selected);
-      color: var(--color-selected-ink);
+      color: var(--color-on-selected);
       &:hover {
         background-color: var(--color-selected-hover);
       }
@@ -173,7 +192,7 @@
 
       &:focus-visible {
         outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+        box-shadow: inset 0 0 0 2px var(--color-on-selected);
       }
 
       &:disabled,
@@ -181,7 +200,7 @@
     &[disabled] {
         background-color: var(--color-selected-muted);
         cursor: not-allowed;
-        color: var(--color-selected-ink);
+        color: var(--color-on-selected);
       }
     }
 
@@ -189,7 +208,7 @@
       &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not(:hover) {
         outline: none;
         box-shadow: inset 0 0 0 2px var(--color-selected);
-        background-color: var(--color-ui-hover);
+        background-color: var(--color-surface-control-hover);
       }
 
       &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):active {
@@ -198,23 +217,23 @@
 
       &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted]:not(:hover) {
         outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+        box-shadow: inset 0 0 0 2px var(--color-on-selected);
         background-color: var(--color-selected-hover);
-        color: var(--color-selected-ink);
+        color: var(--color-on-selected);
       }
 
       &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted]:hover {
         outline: none;
         box-shadow: none;
         background-color: var(--color-selected-hover);
-        color: var(--color-selected-ink);
+        color: var(--color-on-selected);
       }
 
       &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted]:active {
         outline: none;
         box-shadow: none;
         background-color: var(--color-selected-active);
-        color: var(--color-selected-ink);
+        color: var(--color-on-selected);
       }
     }
 
@@ -222,21 +241,21 @@
       &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]) {
         outline: none;
         box-shadow: inset 0 0 0 2px var(--color-selected);
-        background-color: var(--color-ui-hover);
+        background-color: var(--color-surface-control-hover);
       }
 
       &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted] {
         outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+        box-shadow: inset 0 0 0 2px var(--color-on-selected);
         background-color: var(--color-selected-hover);
-        color: var(--color-selected-ink);
+        color: var(--color-on-selected);
       }
     }
   }
 
   .toggle-group.toggle-group--semantic-accent [data-scope="toggle-group"][data-part="item"] {
     &:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not([data-disabled]):not(:disabled):not([disabled]) {
-      color: var(--color-ui-ink-accent, var(--color-ui-ink));
+      color: var(--color-on-accent, var(--color-on-page));
       &:focus-visible {
         outline: none;
         box-shadow: inset 0 0 0 2px var(--color-accent);
@@ -247,13 +266,13 @@
     &[data-disabled],
     &[disabled] {
       background-color: var(--color-accent-muted);
-      color: var(--color-accent-ink);
+      color: var(--color-on-accent);
       cursor: not-allowed;
     }
 
     &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"] {
       background-color: var(--color-accent);
-      color: var(--color-accent-ink);
+      color: var(--color-on-accent);
       &:hover {
         background-color: var(--color-accent-hover);
       }
@@ -264,7 +283,7 @@
 
       &:focus-visible {
         outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+        box-shadow: inset 0 0 0 2px var(--color-on-accent);
       }
 
       &:disabled,
@@ -272,7 +291,7 @@
     &[disabled] {
         background-color: var(--color-accent-muted);
         cursor: not-allowed;
-        color: var(--color-accent-ink);
+        color: var(--color-on-accent);
       }
     }
 
@@ -280,7 +299,7 @@
       &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not(:hover) {
         outline: none;
         box-shadow: inset 0 0 0 2px var(--color-accent);
-        background-color: var(--color-ui-hover);
+        background-color: var(--color-surface-control-hover);
       }
 
       &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):active {
@@ -289,23 +308,23 @@
 
       &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted]:not(:hover) {
         outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+        box-shadow: inset 0 0 0 2px var(--color-on-accent);
         background-color: var(--color-accent-hover);
-        color: var(--color-accent-ink);
+        color: var(--color-on-accent);
       }
 
       &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted]:hover {
         outline: none;
         box-shadow: none;
         background-color: var(--color-accent-hover);
-        color: var(--color-accent-ink);
+        color: var(--color-on-accent);
       }
 
       &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted]:active {
         outline: none;
         box-shadow: none;
         background-color: var(--color-accent-active);
-        color: var(--color-accent-ink);
+        color: var(--color-on-accent);
       }
     }
 
@@ -313,112 +332,21 @@
       &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]) {
         outline: none;
         box-shadow: inset 0 0 0 2px var(--color-accent);
-        background-color: var(--color-ui-hover);
+        background-color: var(--color-surface-control-hover);
       }
 
       &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted] {
         outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+        box-shadow: inset 0 0 0 2px var(--color-on-accent);
         background-color: var(--color-accent-hover);
-        color: var(--color-accent-ink);
-      }
-    }
-  }
-
-  .toggle-group.toggle-group--semantic-brand [data-scope="toggle-group"][data-part="item"] {
-    &:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not([data-disabled]):not(:disabled):not([disabled]) {
-      color: var(--color-ui-ink-brand, var(--color-ui-ink));
-      &:focus-visible {
-        outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-brand);
-      }
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-brand-muted);
-      color: var(--color-brand-ink);
-      cursor: not-allowed;
-    }
-
-    &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"] {
-      background-color: var(--color-brand);
-      color: var(--color-brand-ink);
-      &:hover {
-        background-color: var(--color-brand-hover);
-      }
-
-      &:active {
-        background-color: var(--color-brand-active);
-      }
-
-      &:focus-visible {
-        outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-brand-ink);
-      }
-
-      &:disabled,
-    &[data-disabled],
-    &[disabled] {
-        background-color: var(--color-brand-muted);
-        cursor: not-allowed;
-        color: var(--color-brand-ink);
-      }
-    }
-
-    @media (hover: hover) {
-      &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not(:hover) {
-        outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-brand);
-        background-color: var(--color-ui-hover);
-      }
-
-      &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):active {
-        box-shadow: none;
-      }
-
-      &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted]:not(:hover) {
-        outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-brand-ink);
-        background-color: var(--color-brand-hover);
-        color: var(--color-brand-ink);
-      }
-
-      &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted]:hover {
-        outline: none;
-        box-shadow: none;
-        background-color: var(--color-brand-hover);
-        color: var(--color-brand-ink);
-      }
-
-      &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted]:active {
-        outline: none;
-        box-shadow: none;
-        background-color: var(--color-brand-active);
-        color: var(--color-brand-ink);
-      }
-    }
-
-    @media (hover: none) {
-      &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]) {
-        outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-brand);
-        background-color: var(--color-ui-hover);
-      }
-
-      &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted] {
-        outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-brand-ink);
-        background-color: var(--color-brand-hover);
-        color: var(--color-brand-ink);
+        color: var(--color-on-accent);
       }
     }
   }
 
   .toggle-group.toggle-group--semantic-alert [data-scope="toggle-group"][data-part="item"] {
     &:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not([data-disabled]):not(:disabled):not([disabled]) {
-      color: var(--color-ui-ink-alert, var(--color-ui-ink));
+      color: var(--color-on-alert, var(--color-on-page));
       &:focus-visible {
         outline: none;
         box-shadow: inset 0 0 0 2px var(--color-alert);
@@ -429,13 +357,13 @@
     &[data-disabled],
     &[disabled] {
       background-color: var(--color-alert-muted);
-      color: var(--color-alert-ink);
+      color: var(--color-on-alert);
       cursor: not-allowed;
     }
 
     &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"] {
       background-color: var(--color-alert);
-      color: var(--color-alert-ink);
+      color: var(--color-on-alert);
       &:hover {
         background-color: var(--color-alert-hover);
       }
@@ -446,7 +374,7 @@
 
       &:focus-visible {
         outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+        box-shadow: inset 0 0 0 2px var(--color-on-alert);
       }
 
       &:disabled,
@@ -454,7 +382,7 @@
     &[disabled] {
         background-color: var(--color-alert-muted);
         cursor: not-allowed;
-        color: var(--color-alert-ink);
+        color: var(--color-on-alert);
       }
     }
 
@@ -462,7 +390,7 @@
       &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not(:hover) {
         outline: none;
         box-shadow: inset 0 0 0 2px var(--color-alert);
-        background-color: var(--color-ui-hover);
+        background-color: var(--color-surface-control-hover);
       }
 
       &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):active {
@@ -471,23 +399,23 @@
 
       &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted]:not(:hover) {
         outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+        box-shadow: inset 0 0 0 2px var(--color-on-alert);
         background-color: var(--color-alert-hover);
-        color: var(--color-alert-ink);
+        color: var(--color-on-alert);
       }
 
       &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted]:hover {
         outline: none;
         box-shadow: none;
         background-color: var(--color-alert-hover);
-        color: var(--color-alert-ink);
+        color: var(--color-on-alert);
       }
 
       &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted]:active {
         outline: none;
         box-shadow: none;
         background-color: var(--color-alert-active);
-        color: var(--color-alert-ink);
+        color: var(--color-on-alert);
       }
     }
 
@@ -495,21 +423,112 @@
       &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]) {
         outline: none;
         box-shadow: inset 0 0 0 2px var(--color-alert);
-        background-color: var(--color-ui-hover);
+        background-color: var(--color-surface-control-hover);
       }
 
       &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted] {
         outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+        box-shadow: inset 0 0 0 2px var(--color-on-alert);
         background-color: var(--color-alert-hover);
-        color: var(--color-alert-ink);
+        color: var(--color-on-alert);
+      }
+    }
+  }
+
+  .toggle-group.toggle-group--semantic-brand [data-scope="toggle-group"][data-part="item"] {
+    &:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not([data-disabled]):not(:disabled):not([disabled]) {
+      color: var(--color-on-brand, var(--color-on-page));
+      &:focus-visible {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-brand);
+      }
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-brand-muted);
+      color: var(--color-on-brand);
+      cursor: not-allowed;
+    }
+
+    &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"] {
+      background-color: var(--color-brand);
+      color: var(--color-on-brand);
+      &:hover {
+        background-color: var(--color-brand-hover);
+      }
+
+      &:active {
+        background-color: var(--color-brand-active);
+      }
+
+      &:focus-visible {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-on-brand);
+      }
+
+      &:disabled,
+    &[data-disabled],
+    &[disabled] {
+        background-color: var(--color-brand-muted);
+        cursor: not-allowed;
+        color: var(--color-on-brand);
+      }
+    }
+
+    @media (hover: hover) {
+      &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not(:hover) {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-brand);
+        background-color: var(--color-surface-control-hover);
+      }
+
+      &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):active {
+        box-shadow: none;
+      }
+
+      &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted]:not(:hover) {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-on-brand);
+        background-color: var(--color-brand-hover);
+        color: var(--color-on-brand);
+      }
+
+      &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted]:hover {
+        outline: none;
+        box-shadow: none;
+        background-color: var(--color-brand-hover);
+        color: var(--color-on-brand);
+      }
+
+      &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted]:active {
+        outline: none;
+        box-shadow: none;
+        background-color: var(--color-brand-active);
+        color: var(--color-on-brand);
+      }
+    }
+
+    @media (hover: none) {
+      &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]) {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-brand);
+        background-color: var(--color-surface-control-hover);
+      }
+
+      &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted] {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-on-brand);
+        background-color: var(--color-brand-hover);
+        color: var(--color-on-brand);
       }
     }
   }
 
   .toggle-group.toggle-group--semantic-info [data-scope="toggle-group"][data-part="item"] {
     &:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not([data-disabled]):not(:disabled):not([disabled]) {
-      color: var(--color-ui-ink-info, var(--color-ui-ink));
+      color: var(--color-on-info, var(--color-on-page));
       &:focus-visible {
         outline: none;
         box-shadow: inset 0 0 0 2px var(--color-info);
@@ -520,13 +539,13 @@
     &[data-disabled],
     &[disabled] {
       background-color: var(--color-info-muted);
-      color: var(--color-info-ink);
+      color: var(--color-on-info);
       cursor: not-allowed;
     }
 
     &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"] {
       background-color: var(--color-info);
-      color: var(--color-info-ink);
+      color: var(--color-on-info);
       &:hover {
         background-color: var(--color-info-hover);
       }
@@ -537,7 +556,7 @@
 
       &:focus-visible {
         outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-info-ink);
+        box-shadow: inset 0 0 0 2px var(--color-on-info);
       }
 
       &:disabled,
@@ -545,7 +564,7 @@
     &[disabled] {
         background-color: var(--color-info-muted);
         cursor: not-allowed;
-        color: var(--color-info-ink);
+        color: var(--color-on-info);
       }
     }
 
@@ -553,7 +572,7 @@
       &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not(:hover) {
         outline: none;
         box-shadow: inset 0 0 0 2px var(--color-info);
-        background-color: var(--color-ui-hover);
+        background-color: var(--color-surface-control-hover);
       }
 
       &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):active {
@@ -562,23 +581,23 @@
 
       &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted]:not(:hover) {
         outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-info-ink);
+        box-shadow: inset 0 0 0 2px var(--color-on-info);
         background-color: var(--color-info-hover);
-        color: var(--color-info-ink);
+        color: var(--color-on-info);
       }
 
       &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted]:hover {
         outline: none;
         box-shadow: none;
         background-color: var(--color-info-hover);
-        color: var(--color-info-ink);
+        color: var(--color-on-info);
       }
 
       &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted]:active {
         outline: none;
         box-shadow: none;
         background-color: var(--color-info-active);
-        color: var(--color-info-ink);
+        color: var(--color-on-info);
       }
     }
 
@@ -586,65 +605,65 @@
       &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]) {
         outline: none;
         box-shadow: inset 0 0 0 2px var(--color-info);
-        background-color: var(--color-ui-hover);
+        background-color: var(--color-surface-control-hover);
       }
 
       &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted] {
         outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-info-ink);
+        box-shadow: inset 0 0 0 2px var(--color-on-info);
         background-color: var(--color-info-hover);
-        color: var(--color-info-ink);
+        color: var(--color-on-info);
       }
     }
   }
 
-  .toggle-group.toggle-group--semantic-success [data-scope="toggle-group"][data-part="item"] {
+  .toggle-group.toggle-group--semantic-neutral [data-scope="toggle-group"][data-part="item"] {
     &:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not([data-disabled]):not(:disabled):not([disabled]) {
-      color: var(--color-ui-ink-success, var(--color-ui-ink));
+      color: var(--color-on-control, var(--color-on-page));
       &:focus-visible {
         outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-success);
+        box-shadow: inset 0 0 0 2px var(--color-neutral);
       }
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-success-muted);
-      color: var(--color-success-ink);
+      background-color: var(--color-neutral-muted);
+      color: var(--color-on-neutral);
       cursor: not-allowed;
     }
 
     &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"] {
-      background-color: var(--color-success);
-      color: var(--color-success-ink);
+      background-color: var(--color-neutral);
+      color: var(--color-on-neutral);
       &:hover {
-        background-color: var(--color-success-hover);
+        background-color: var(--color-neutral-hover);
       }
 
       &:active {
-        background-color: var(--color-success-active);
+        background-color: var(--color-neutral-active);
       }
 
       &:focus-visible {
         outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-success-ink);
+        box-shadow: inset 0 0 0 2px var(--color-on-neutral);
       }
 
       &:disabled,
     &[data-disabled],
     &[disabled] {
-        background-color: var(--color-success-muted);
+        background-color: var(--color-neutral-muted);
         cursor: not-allowed;
-        color: var(--color-success-ink);
+        color: var(--color-on-neutral);
       }
     }
 
     @media (hover: hover) {
       &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not(:hover) {
         outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-success);
-        background-color: var(--color-ui-hover);
+        box-shadow: inset 0 0 0 2px var(--color-neutral);
+        background-color: var(--color-surface-control-hover);
       }
 
       &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):active {
@@ -653,45 +672,45 @@
 
       &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted]:not(:hover) {
         outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-success-ink);
-        background-color: var(--color-success-hover);
-        color: var(--color-success-ink);
+        box-shadow: inset 0 0 0 2px var(--color-on-neutral);
+        background-color: var(--color-neutral-hover);
+        color: var(--color-on-neutral);
       }
 
       &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted]:hover {
         outline: none;
         box-shadow: none;
-        background-color: var(--color-success-hover);
-        color: var(--color-success-ink);
+        background-color: var(--color-neutral-hover);
+        color: var(--color-on-neutral);
       }
 
       &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted]:active {
         outline: none;
         box-shadow: none;
-        background-color: var(--color-success-active);
-        color: var(--color-success-ink);
+        background-color: var(--color-neutral-active);
+        color: var(--color-on-neutral);
       }
     }
 
     @media (hover: none) {
       &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]) {
         outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-success);
-        background-color: var(--color-ui-hover);
+        box-shadow: inset 0 0 0 2px var(--color-neutral);
+        background-color: var(--color-surface-control-hover);
       }
 
       &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted] {
         outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-success-ink);
-        background-color: var(--color-success-hover);
-        color: var(--color-success-ink);
+        box-shadow: inset 0 0 0 2px var(--color-on-neutral);
+        background-color: var(--color-neutral-hover);
+        color: var(--color-on-neutral);
       }
     }
   }
 
   .toggle-group.toggle-group--semantic-selected [data-scope="toggle-group"][data-part="item"] {
     &:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not([data-disabled]):not(:disabled):not([disabled]) {
-      color: var(--color-selected-ink, var(--color-ui-ink));
+      color: var(--color-on-selected, var(--color-on-page));
       &:focus-visible {
         outline: none;
         box-shadow: inset 0 0 0 2px var(--color-selected);
@@ -702,13 +721,13 @@
     &[data-disabled],
     &[disabled] {
       background-color: var(--color-selected-muted);
-      color: var(--color-selected-ink);
+      color: var(--color-on-selected);
       cursor: not-allowed;
     }
 
     &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"] {
       background-color: var(--color-selected);
-      color: var(--color-selected-ink);
+      color: var(--color-on-selected);
       &:hover {
         background-color: var(--color-selected-hover);
       }
@@ -719,7 +738,7 @@
 
       &:focus-visible {
         outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+        box-shadow: inset 0 0 0 2px var(--color-on-selected);
       }
 
       &:disabled,
@@ -727,7 +746,7 @@
     &[disabled] {
         background-color: var(--color-selected-muted);
         cursor: not-allowed;
-        color: var(--color-selected-ink);
+        color: var(--color-on-selected);
       }
     }
 
@@ -735,7 +754,7 @@
       &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not(:hover) {
         outline: none;
         box-shadow: inset 0 0 0 2px var(--color-selected);
-        background-color: var(--color-ui-hover);
+        background-color: var(--color-surface-control-hover);
       }
 
       &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):active {
@@ -744,23 +763,23 @@
 
       &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted]:not(:hover) {
         outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+        box-shadow: inset 0 0 0 2px var(--color-on-selected);
         background-color: var(--color-selected-hover);
-        color: var(--color-selected-ink);
+        color: var(--color-on-selected);
       }
 
       &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted]:hover {
         outline: none;
         box-shadow: none;
         background-color: var(--color-selected-hover);
-        color: var(--color-selected-ink);
+        color: var(--color-on-selected);
       }
 
       &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted]:active {
         outline: none;
         box-shadow: none;
         background-color: var(--color-selected-active);
-        color: var(--color-selected-ink);
+        color: var(--color-on-selected);
       }
     }
 
@@ -768,14 +787,105 @@
       &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]) {
         outline: none;
         box-shadow: inset 0 0 0 2px var(--color-selected);
-        background-color: var(--color-ui-hover);
+        background-color: var(--color-surface-control-hover);
       }
 
       &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted] {
         outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+        box-shadow: inset 0 0 0 2px var(--color-on-selected);
         background-color: var(--color-selected-hover);
-        color: var(--color-selected-ink);
+        color: var(--color-on-selected);
+      }
+    }
+  }
+
+  .toggle-group.toggle-group--semantic-success [data-scope="toggle-group"][data-part="item"] {
+    &:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not([data-disabled]):not(:disabled):not([disabled]) {
+      color: var(--color-on-success, var(--color-on-page));
+      &:focus-visible {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-success);
+      }
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-success-muted);
+      color: var(--color-on-success);
+      cursor: not-allowed;
+    }
+
+    &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"] {
+      background-color: var(--color-success);
+      color: var(--color-on-success);
+      &:hover {
+        background-color: var(--color-success-hover);
+      }
+
+      &:active {
+        background-color: var(--color-success-active);
+      }
+
+      &:focus-visible {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-on-success);
+      }
+
+      &:disabled,
+    &[data-disabled],
+    &[disabled] {
+        background-color: var(--color-success-muted);
+        cursor: not-allowed;
+        color: var(--color-on-success);
+      }
+    }
+
+    @media (hover: hover) {
+      &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not(:hover) {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-success);
+        background-color: var(--color-surface-control-hover);
+      }
+
+      &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):active {
+        box-shadow: none;
+      }
+
+      &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted]:not(:hover) {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-on-success);
+        background-color: var(--color-success-hover);
+        color: var(--color-on-success);
+      }
+
+      &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted]:hover {
+        outline: none;
+        box-shadow: none;
+        background-color: var(--color-success-hover);
+        color: var(--color-on-success);
+      }
+
+      &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted]:active {
+        outline: none;
+        box-shadow: none;
+        background-color: var(--color-success-active);
+        color: var(--color-on-success);
+      }
+    }
+
+    @media (hover: none) {
+      &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]) {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-success);
+        background-color: var(--color-surface-control-hover);
+      }
+
+      &[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"][data-highlighted] {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-on-success);
+        background-color: var(--color-success-hover);
+        color: var(--color-on-success);
       }
     }
   }

@@ -23,10 +23,14 @@
 
 @layer components {
   .small {
+    width: fit-content;
+    max-width: none;
+    height: auto;
+    max-height: none;
     font-size: var(--text-xs);
     line-height: var(--leading-xs);
-    margin-block: var(--space-md);
     font-weight: var(--font-weight-normal);
+    margin-block: var(--spacing-md);
     @media (min-width: 48rem) {
       font-size: var(--text-sm);
       line-height: var(--leading-sm);
@@ -74,27 +78,31 @@
   }
 
   .small.small--semantic-accent {
-    color: var(--color-ui-ink-accent);
-  }
-
-  .small.small--semantic-brand {
-    color: var(--color-ui-ink-brand);
+    color: var(--color-on-accent);
   }
 
   .small.small--semantic-alert {
-    color: var(--color-ui-ink-alert);
+    color: var(--color-on-alert);
+  }
+
+  .small.small--semantic-brand {
+    color: var(--color-on-brand);
   }
 
   .small.small--semantic-info {
-    color: var(--color-ui-ink-info);
+    color: var(--color-on-info);
   }
 
-  .small.small--semantic-success {
-    color: var(--color-ui-ink-success);
+  .small.small--semantic-neutral {
+    color: var(--color-on-neutral);
   }
 
   .small.small--semantic-selected {
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
+  }
+
+  .small.small--semantic-success {
+    color: var(--color-on-success);
   }
 
   .small.small--weight-thin {

@@ -350,13 +350,6 @@ defmodule Corex.Menu do
       semantic: :semantic,
       size: :size,
       radius: :radius
-    ],
-    defaults: [
-      width: "fit",
-      max_width: "none",
-      height: "auto",
-      max_height: "none",
-      size: "md"
     ]
 
   alias Corex.Menu.Anatomy.{

@@ -23,7 +23,11 @@
 
 @layer components {
   .h4 {
-    color: var(--color-ui-ink);
+    width: fit-content;
+    color: var(--color-on-page);
+    max-width: none;
+    height: auto;
+    max-height: none;
     font-size: var(--text-base);
     line-height: var(--leading-base);
     font-weight: var(--font-weight-normal);
@@ -75,27 +79,31 @@
   }
 
   .h4.h4--semantic-accent {
-    color: var(--color-ui-ink-accent);
-  }
-
-  .h4.h4--semantic-brand {
-    color: var(--color-ui-ink-brand);
+    color: var(--color-on-accent);
   }
 
   .h4.h4--semantic-alert {
-    color: var(--color-ui-ink-alert);
+    color: var(--color-on-alert);
+  }
+
+  .h4.h4--semantic-brand {
+    color: var(--color-on-brand);
   }
 
   .h4.h4--semantic-info {
-    color: var(--color-ui-ink-info);
+    color: var(--color-on-info);
   }
 
-  .h4.h4--semantic-success {
-    color: var(--color-ui-ink-success);
+  .h4.h4--semantic-neutral {
+    color: var(--color-on-neutral);
   }
 
   .h4.h4--semantic-selected {
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
+  }
+
+  .h4.h4--semantic-success {
+    color: var(--color-on-success);
   }
 
   .h4.h4--weight-thin {

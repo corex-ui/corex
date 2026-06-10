@@ -29,7 +29,7 @@
 
 @utility tooltip--size-* {
   [data-scope="tooltip"][data-part="content"] {
-      padding: --value(--spacing-space-*, [length]);
+      padding: --value(--spacing-*, [length]);
     max-width: --value(--container-*, [length]);
   }
 
@@ -37,6 +37,22 @@
 
 
 @layer components {
+  .tooltip {
+    width: fit-content;
+    max-width: none;
+    height: auto;
+    max-height: none;
+  }
+
+  .tooltip [data-scope="tooltip"][data-part="content"] {
+    padding: var(--spacing-md);
+    max-width: var(--container-md);
+  }
+
+  .tooltip [data-scope="tooltip"][data-part="arrow"] {
+    --arrow-size: calc(var(--spacing-md) * 0.25);
+  }
+
   .tooltip.tooltip--w-auto {
     width: auto;
   }
@@ -79,8 +95,8 @@
 
   .tooltip.tooltip--semantic-accent [data-scope="tooltip"][data-part="content"] {
     color: var(--color-accent-ink);
-    border-color: var(--color-border-accent, var(--color-border));
     background-color: var(--color-accent);
+    border-color: var(--color-border-accent, var(--color-border));
   }
 
   .tooltip.tooltip--semantic-accent [data-scope="tooltip"][data-part="arrow"] {
@@ -91,24 +107,10 @@
     border-color: var(--color-border-accent, var(--color-border));
   }
 
-  .tooltip.tooltip--semantic-brand [data-scope="tooltip"][data-part="content"] {
-    color: var(--color-brand-ink);
-    border-color: var(--color-border-brand, var(--color-border));
-    background-color: var(--color-brand);
-  }
-
-  .tooltip.tooltip--semantic-brand [data-scope="tooltip"][data-part="arrow"] {
-    --arrow-background: var(--color-brand);
-  }
-
-  .tooltip.tooltip--semantic-brand [data-scope="tooltip"][data-part="arrow-tip"] {
-    border-color: var(--color-border-brand, var(--color-border));
-  }
-
   .tooltip.tooltip--semantic-alert [data-scope="tooltip"][data-part="content"] {
     color: var(--color-alert-ink);
-    border-color: var(--color-border-alert, var(--color-border));
     background-color: var(--color-alert);
+    border-color: var(--color-border-alert, var(--color-border));
   }
 
   .tooltip.tooltip--semantic-alert [data-scope="tooltip"][data-part="arrow"] {
@@ -119,10 +121,24 @@
     border-color: var(--color-border-alert, var(--color-border));
   }
 
+  .tooltip.tooltip--semantic-brand [data-scope="tooltip"][data-part="content"] {
+    color: var(--color-brand-ink);
+    background-color: var(--color-brand);
+    border-color: var(--color-border-brand, var(--color-border));
+  }
+
+  .tooltip.tooltip--semantic-brand [data-scope="tooltip"][data-part="arrow"] {
+    --arrow-background: var(--color-brand);
+  }
+
+  .tooltip.tooltip--semantic-brand [data-scope="tooltip"][data-part="arrow-tip"] {
+    border-color: var(--color-border-brand, var(--color-border));
+  }
+
   .tooltip.tooltip--semantic-info [data-scope="tooltip"][data-part="content"] {
     color: var(--color-info-ink);
-    border-color: var(--color-border-info, var(--color-border));
     background-color: var(--color-info);
+    border-color: var(--color-border-info, var(--color-border));
   }
 
   .tooltip.tooltip--semantic-info [data-scope="tooltip"][data-part="arrow"] {
@@ -133,24 +149,24 @@
     border-color: var(--color-border-info, var(--color-border));
   }
 
-  .tooltip.tooltip--semantic-success [data-scope="tooltip"][data-part="content"] {
-    color: var(--color-success-ink);
-    border-color: var(--color-border-success, var(--color-border));
-    background-color: var(--color-success);
+  .tooltip.tooltip--semantic-neutral [data-scope="tooltip"][data-part="content"] {
+    color: var(--color-neutral-ink);
+    background-color: var(--color-neutral);
+    border-color: var(--color-border-neutral, var(--color-border));
   }
 
-  .tooltip.tooltip--semantic-success [data-scope="tooltip"][data-part="arrow"] {
-    --arrow-background: var(--color-success);
+  .tooltip.tooltip--semantic-neutral [data-scope="tooltip"][data-part="arrow"] {
+    --arrow-background: var(--color-neutral);
   }
 
-  .tooltip.tooltip--semantic-success [data-scope="tooltip"][data-part="arrow-tip"] {
-    border-color: var(--color-border-success, var(--color-border));
+  .tooltip.tooltip--semantic-neutral [data-scope="tooltip"][data-part="arrow-tip"] {
+    border-color: var(--color-border-neutral, var(--color-border));
   }
 
   .tooltip.tooltip--semantic-selected [data-scope="tooltip"][data-part="content"] {
     color: var(--color-selected-ink);
-    border-color: var(--color-border-selected, var(--color-border));
     background-color: var(--color-selected);
+    border-color: var(--color-border-selected, var(--color-border));
   }
 
   .tooltip.tooltip--semantic-selected [data-scope="tooltip"][data-part="arrow"] {
@@ -159,6 +175,20 @@
 
   .tooltip.tooltip--semantic-selected [data-scope="tooltip"][data-part="arrow-tip"] {
     border-color: var(--color-border-selected, var(--color-border));
+  }
+
+  .tooltip.tooltip--semantic-success [data-scope="tooltip"][data-part="content"] {
+    color: var(--color-success-ink);
+    background-color: var(--color-success);
+    border-color: var(--color-border-success, var(--color-border));
+  }
+
+  .tooltip.tooltip--semantic-success [data-scope="tooltip"][data-part="arrow"] {
+    --arrow-background: var(--color-success);
+  }
+
+  .tooltip.tooltip--semantic-success [data-scope="tooltip"][data-part="arrow-tip"] {
+    border-color: var(--color-border-success, var(--color-border));
   }
 
   .tooltip.tooltip--rounded-none [data-scope="tooltip"][data-part="content"] {
@@ -179,7 +209,7 @@
   }
 
   .tooltip[data-loading] > * {
-    @apply ui-loading;
+    @apply part-loading;
   }
 
   .tooltip [data-scope="tooltip"][data-part="positioner"] {
@@ -197,12 +227,12 @@
   }
 
   .tooltip [data-scope="tooltip"][data-part="content"] {
-    @apply ui-content;
-    padding: var(--space-md);
+    @apply part-content;
+    padding: var(--spacing-md);
     max-width: var(--container-5xs);
     position: relative;
     z-index: 1;
-    background-color: var(--color-ui);
+    background-color: var(--color-surface-control);
     border: 1px solid var(--color-border);
     box-shadow: var(--shadow-ui);
   }
@@ -220,8 +250,8 @@
   }
 
   .tooltip [data-scope="tooltip"][data-part="arrow"] {
-    --arrow-size: var(--space-md);
-    --arrow-background: var(--color-ui);
+    --arrow-size: var(--spacing-md);
+    --arrow-background: var(--color-surface-control);
     z-index: 0;
   }
 

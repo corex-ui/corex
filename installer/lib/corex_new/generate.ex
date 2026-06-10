@@ -3,8 +3,6 @@ defmodule Corex.New.Generate do
 
   alias Corex.New.{Patches, Templates}
 
-  @default_themes ["neo", "uno", "duo", "leo"]
-
   @doc """
   Runs all Corex post-generation work on a freshly-scaffolded Phoenix app at
   `install_dir`, driven by the normalized `opts` keyword list:
@@ -51,25 +49,34 @@ defmodule Corex.New.Generate do
     app_module = Keyword.fetch!(opts, :app_module)
 
     themes =
-      cond do
-        Keyword.get(opts, :theme, false) -> Keyword.get(opts, :themes, @default_themes)
-        true -> ["neo"]
+      if Keyword.get(opts, :theme, false) do
+        Keyword.get(opts, :themes)
       end
 
-    default_theme = List.first(themes) || "neo"
+    default_theme =
+      case themes do
+        [first | _] -> first
+        _ -> "neo"
+      end
 
-    opts
-    |> Keyword.put(:otp_app, otp_app)
-    |> Keyword.put(:web_module, web_module)
-    |> Keyword.put(:app_module, app_module)
-    |> Keyword.put(:themes, themes)
-    |> Keyword.put(:default_theme, default_theme)
-    |> Keyword.put_new(:mode, false)
-    |> Keyword.put_new(:theme, false)
-    |> Keyword.put_new(:lang, false)
-    |> Keyword.put_new(:mcp, true)
-    |> Keyword.put_new(:design, true)
-    |> Keyword.put_new(:tailwind, true)
+    opts =
+      opts
+      |> Keyword.put(:otp_app, otp_app)
+      |> Keyword.put(:web_module, web_module)
+      |> Keyword.put(:app_module, app_module)
+      |> Keyword.put(:default_theme, default_theme)
+      |> Keyword.put_new(:mode, false)
+      |> Keyword.put_new(:theme, false)
+      |> Keyword.put_new(:lang, false)
+      |> Keyword.put_new(:mcp, true)
+      |> Keyword.put_new(:design, true)
+      |> Keyword.put_new(:tailwind, true)
+
+    if themes do
+      Keyword.put(opts, :themes, themes)
+    else
+      opts
+    end
   end
 
   defp write_layouts_ex(install_dir, opts) do

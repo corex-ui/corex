@@ -5,9 +5,21 @@ defmodule Corex.Design.Emit.Tokens do
   alias Corex.Design.Tokens.Colors
   alias Corex.Design.Tokens.Scales
 
-  @doc "Builds a CSS custom property name from parts, e.g. `[:space, :sm]` -> `--space-sm`."
+  @doc "Builds a CSS custom property name from parts, e.g. `[:space, :sm]` -> `--spacing-sm`."
   def name(parts) do
-    "--" <> (parts |> List.wrap() |> Enum.map_join("-", &dash/1))
+    parts = List.wrap(parts)
+
+    case parts do
+      [:spacing] -> "--spacing"
+      [:space] -> "--spacing-md"
+      [:space, step] -> "--spacing-#{dash(step)}"
+      [:size] -> "--spacing-control-md"
+      [:size, step] -> "--spacing-control-#{dash(step)}"
+      [:color, role] -> "--color-#{dash(role)}"
+      [single] -> "--#{dash(single)}"
+      [ns, step] -> "--#{dash(ns)}-#{dash(step)}"
+      _ -> "--" <> Enum.map_join(parts, "-", &dash/1)
+    end
   end
 
   @doc "Builds a `var(--name)` reference from parts."
@@ -105,12 +117,9 @@ defmodule Corex.Design.Emit.Tokens do
 
     space =
       [{name([:spacing]), Theme.spacing(theme)}] ++
-        [{name([:space]), Theme.space_default(theme)}] ++
         for {step, v} <- Theme.space(theme), do: {name([:space, step]), v}
 
-    size =
-      [{name([:size]), Theme.size_default(theme)}] ++
-        for {step, v} <- Theme.size(theme), do: {name([:size, step]), v}
+    size = for {step, v} <- Theme.size(theme), do: {name([:size, step]), v}
 
     text = for {step, v} <- Theme.text(theme), do: {name([:text, step]), v}
 
@@ -170,23 +179,15 @@ defmodule Corex.Design.Emit.Theme do
   @doc """
   Emits the Tailwind v4 token bundle, derived from the pure-Elixir model.
 
-  Three layers:
+  Two layers:
 
     * the Corex runtime token layer (`Corex.Design.Emit.Tokens`): `--color-*`,
-      `--space-*`, `--font-weight-*`, … with real values on `:root` and overridden on
+      `--spacing-*`, `--font-weight-*`, … with real values on `:root` and overridden on
       `[data-theme][data-mode]`, so recipe and component CSS resolve against the
       live theme;
-    * a `--theme-<tailwind-key>` source layer on `:root` that aliases each Corex
-      runtime variable. Tailwind's `@theme inline` utilities reference
-      `var(--theme-<key>)`, so these names match what Tailwind emits and resolve
-      through the Corex variables (and therefore stay themeable);
     * a `@theme inline` block mapping Tailwind namespaces (`--color-*`,
       `--spacing-*`, `--font-weight-*`, `--radius-*`, …) so Tailwind generates
-      utilities (`bg-accent`, `p-space-lg`, `font-bold`).
-
-  Runtime tokens use short Corex names (`--space-md`, `--font-sans`). The bridge
-  maps Tailwind utility namespaces (`--spacing-space-md`, `--font-display`) onto
-  those same runtime variables.
+      utilities (`bg-accent`, `p-md`, `font-bold`).
   """
   def css do
     Enum.join([Tokens.css(), bridge_css()], "\n\n") <> "\n"
@@ -197,18 +198,13 @@ defmodule Corex.Design.Emit.Theme do
     pairs = bridge_pairs()
 
     Enum.join(
-      [source_block(pairs), bridge_block(pairs), container_sizing_utilities()],
+      [bridge_block(pairs), container_sizing_utilities()],
       "\n\n"
     ) <> "\n"
   end
 
-  defp source_block(pairs) do
-    decls = for {key, corex} <- pairs, do: {"--theme-#{key}", "var(#{corex})"}
-    block(":root", decls)
-  end
-
   defp bridge_block(pairs) do
-    decls = for {key, _corex} <- pairs, do: {"--#{key}", "var(--theme-#{key})"}
+    decls = for {key, corex} <- pairs, do: {"--#{key}", "var(#{corex})"}
     block("@theme inline", decls)
   end
 
@@ -250,12 +246,10 @@ defmodule Corex.Design.Emit.Theme do
   defp spacing_pairs(dt) do
     space =
       [{"spacing", "--spacing"}] ++
-        [{"spacing-space", "--space"}] ++
-        for {step, _} <- Theme.space(dt), do: {"spacing-space-#{step}", "--space-#{step}"}
+        for {step, _} <- Theme.space(dt), do: {"spacing-#{step}", "--spacing-#{step}"}
 
     size =
-      [{"spacing-size", "--size"}] ++
-        for {step, _} <- Theme.size(dt), do: {"spacing-size-#{step}", "--size-#{step}"}
+      for {step, _} <- Theme.size(dt), do: {"spacing-control-#{step}", "--spacing-control-#{step}"}
 
     space ++ size
   end
@@ -420,7 +414,7 @@ defmodule Corex.Design.Emit.StyleRecipe do
 
   defp compile_layout(recipe, ctx) do
     id = recipe.id
-    base_block = Style.to_css(layout_host(id), sx_map(recipe.base), ctx)
+    base_block = Style.to_css(layout_host(id), Corex.Design.Recipe.resolved_base(recipe), ctx)
 
     variant_blocks =
       for {axis, values} <- recipe.variants,
@@ -454,10 +448,11 @@ defmodule Corex.Design.Emit.StyleRecipe do
     end
   end
 
-  defp recipe_base(recipe, _ctx), do: sx_map(recipe.base)
+  defp recipe_base(recipe, _ctx), do: Corex.Design.Recipe.resolved_base(recipe)
 
   defp slot_base_map(recipe, _ctx) do
-    recipe.base
+    recipe
+    |> Corex.Design.Recipe.resolved_base()
     |> slot_blocks_map()
   end
 
@@ -627,8 +622,8 @@ defmodule Corex.Design.Emit.Layers do
       font-size: var(--text-base);
       line-height: var(--leading-base);
       font-weight: var(--font-weight-normal);
-      color: var(--color-ui-ink);
-      background-color: var(--color-root);
+      color: var(--color-on-page);
+      background-color: var(--color-surface-page);
       text-wrap: wrap;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
@@ -643,7 +638,7 @@ defmodule Corex.Design.Emit.Layers do
       font-size: var(--text-base);
       line-height: var(--leading-base);
       font-weight: var(--font-weight-normal);
-      color: var(--color-ui-ink);
+      color: var(--color-on-page);
       text-wrap: wrap;
     }
 
@@ -694,7 +689,7 @@ defmodule Corex.Design.Emit.Layers do
     }
 
     :focus-visible {
-      outline: 2px solid var(--color-accent);
+      outline: 2px solid var(--color-focus);
       outline-offset: 2px;
     }
 
@@ -831,14 +826,14 @@ defmodule Corex.Design.Emit.TailwindUtilities do
   alias Corex.Design.Emit.TailwindCss
   alias Corex.Design.Fragment
 
-  @base ~W(ui_root ui_trigger ui_icon ui_content ui_label ui_input ui_item ui_link ui_error ui_readonly ui_loading)a
+  @base ~W(part_root part_trigger part_icon part_content part_label part_input part_item part_link part_error part_readonly part_loading)a
 
   def css do
     wildcards = %{
-      ui_trigger: trigger_wildcard_lines(),
-      ui_icon: icon_wildcard_lines(),
-      ui_item: item_wildcard_lines(),
-      ui_link: link_wildcard_lines()
+      part_trigger: trigger_wildcard_lines(),
+      part_icon: icon_wildcard_lines(),
+      part_item: item_wildcard_lines(),
+      part_link: link_wildcard_lines()
     }
 
     @base
@@ -954,7 +949,7 @@ defmodule Corex.Design.Emit.TailwindUtilities do
         "  &[data-disabled],",
         "  &[disabled] {",
         "    background-color: --value(--color-*-muted, [color]);",
-        "    color: var(--color-ui-ink-muted);",
+        "    color: var(--color-on-muted);",
         "    cursor: not-allowed;",
         "  }",
         "",
@@ -994,7 +989,7 @@ defmodule Corex.Design.Emit.TailwindUtilities do
     [
       "  font-size: --value(--text-*, [length]);",
       "  line-height: --value(--text-*--line-height, [length]);",
-      "  color: --value(--color-ui-ink-*, [color]);",
+      "  color: --value(--color-on-*, [color]);",
       "  gap: calc(--value(--spacing-*, [length]) * 0.5);"
     ]
   end
@@ -1003,9 +998,9 @@ defmodule Corex.Design.Emit.TailwindUtilities do
     [
       "  font-size: --value(--text-*, [length]);",
       "  line-height: --value(--text-*--line-height, [length]);",
-      "  padding-inline: --value(--spacing-space-*, [length]);",
-      "  gap: --value(--spacing-space-*, [length]);",
-      "  min-height: --value(--spacing-size-*, [length]);"
+      "  padding-inline: --value(--spacing-*, [length]);",
+      "  gap: --value(--spacing-*, [length]);",
+      "  min-height: --value(--spacing-control-*, [length]);"
     ]
   end
 end
@@ -1095,15 +1090,15 @@ defmodule Corex.Design.Emit.TailwindUtilitiesRecipe do
   defp layout_utility_suffix(:radius), do: Map.fetch!(@prefixed_axes, :radius)
   defp layout_utility_suffix(axis), do: Axis.name(axis)
 
-  defp layout_axis_line(:padding), do: "padding: --value(--spacing-space-*, [length]);"
+  defp layout_axis_line(:padding), do: "padding: --value(--spacing-*, [length]);"
 
   defp layout_axis_line(:padding_inline),
-    do: "padding-inline: --value(--spacing-space-*, [length]);"
+    do: "padding-inline: --value(--spacing-*, [length]);"
 
   defp layout_axis_line(:padding_block),
-    do: "padding-block: --value(--spacing-space-*, [length]);"
+    do: "padding-block: --value(--spacing-*, [length]);"
 
-  defp layout_axis_line(:gap), do: "gap: --value(--spacing-space-*, [length]);"
+  defp layout_axis_line(:gap), do: "gap: --value(--spacing-*, [length]);"
   defp layout_axis_line(:radius), do: "border-radius: --value(--radius-*, [length]);"
   defp layout_axis_line(:text), do: axis_utility_lines(:text) |> Enum.join("\n  ")
 
@@ -1369,17 +1364,17 @@ defmodule Corex.Design.Emit.TailwindUtilitiesRecipe do
     do: ["line-height: --value(--text-*--line-height, [length]);"]
 
   defp sx_property_lines(:padding_inline),
-    do: ["padding-inline: --value(--spacing-space-*, [length]);"]
+    do: ["padding-inline: --value(--spacing-*, [length]);"]
 
-  defp sx_property_lines(:padding), do: ["padding: --value(--spacing-space-*, [length]);"]
-  defp sx_property_lines(:gap), do: ["gap: --value(--spacing-space-*, [length]);"]
-  defp sx_property_lines(:min_height), do: ["min-height: --value(--spacing-size-*, [length]);"]
+  defp sx_property_lines(:padding), do: ["padding: --value(--spacing-*, [length]);"]
+  defp sx_property_lines(:gap), do: ["gap: --value(--spacing-*, [length]);"]
+  defp sx_property_lines(:min_height), do: ["min-height: --value(--spacing-control-*, [length]);"]
 
   defp sx_property_lines(:margin_bottom),
-    do: ["margin-bottom: --value(--spacing-space-*, [length]);"]
+    do: ["margin-bottom: --value(--spacing-*, [length]);"]
 
   defp sx_property_lines(:border_radius), do: ["border-radius: --value(--radius-*, [length]);"]
-  defp sx_property_lines(:color), do: ["color: --value(--color-ui-ink-*, [color]);"]
+  defp sx_property_lines(:color), do: ["color: --value(--color-on-*, [color]);"]
 
   defp sx_property_lines(:background_color),
     do: ["background-color: --value(--color-*, [color]);"]
@@ -1387,7 +1382,7 @@ defmodule Corex.Design.Emit.TailwindUtilitiesRecipe do
   defp sx_property_lines(:max_width), do: ["max-width: --value(--container-*, [length]);"]
 
   defp sx_property_lines(:padding_inline_start),
-    do: ["padding-inline-start: --value(--spacing-space-*, [length]);"]
+    do: ["padding-inline-start: --value(--spacing-*, [length]);"]
 
   defp sx_property_lines(:border_inline_start),
     do: ["border-inline-start: 1px solid --value(--color-*-ink, [color]);"]

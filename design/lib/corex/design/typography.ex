@@ -72,8 +72,8 @@ defmodule Corex.Design.Typography do
       },
       "kbd" => %{
         font_family: {:font, :mono},
-        background_color: {:color, :layer},
-        color: {:color, :ui_ink},
+        background_color: {:color, :surface_raised},
+        color: {:color, :on_page},
         border_radius: {:radius, :md},
         border: {:raw, "1px solid var(--color-border)"},
         padding: {:space, :sm},
@@ -98,7 +98,7 @@ defmodule Corex.Design.Typography do
       ".list" => list_table(),
       ".list li" => list_item(),
       ".list li:last-child" => %{border_bottom: {:raw, "none"}},
-      ".list li:hover" => %{background_color: {:color, :layer}}
+      ".list li:hover" => %{background_color: {:color, :surface_raised}}
     }
   end
 
@@ -117,7 +117,7 @@ defmodule Corex.Design.Typography do
       font_size: {:text, base_step},
       line_height: {:leading, base_step},
       font_weight: {:weight, weight},
-      color: {:color, :ui_ink},
+      color: {:color, :on_page},
       md: %{
         font_size: {:text, md_step},
         line_height: {:leading, md_step}
@@ -130,7 +130,7 @@ defmodule Corex.Design.Typography do
       font_size: {:text, :base},
       line_height: {:leading, :base},
       font_weight: {:weight, :normal},
-      color: {:color, :ui_ink},
+      color: {:color, :on_page},
       margin_block: {:space, :md}
     }
   end
@@ -167,8 +167,8 @@ defmodule Corex.Design.Typography do
 
   defp blockquote do
     %{
-      background_color: {:color, :layer},
-      color: {:color, :ui_ink},
+      background_color: {:color, :surface_raised},
+      color: {:color, :on_page},
       box_shadow: {:shadow, :md},
       font_style: :italic,
       border: {:raw, "1px solid var(--color-border)"},
@@ -187,7 +187,7 @@ defmodule Corex.Design.Typography do
       padding: {:space, :md},
       border_bottom: {:raw, "1px solid var(--color-border)"},
       white_space: :normal,
-      color: {:color, :ui_ink}
+      color: {:color, :on_page}
     }
   end
 
@@ -195,7 +195,7 @@ defmodule Corex.Design.Typography do
     %{
       font_size: {:text, :xs},
       line_height: {:leading, :xs},
-      color: {:color, :ui_ink_muted},
+      color: {:color, :on_muted},
       margin_top: {:raw, "1em"},
       md: %{
         font_size: {:text, :sm},
@@ -226,9 +226,9 @@ defmodule Corex.Design.Typography do
       flex_direction: :column,
       gap: {:space, :md},
       padding: {:space, :lg},
-      background_color: {:color, :layer},
+      background_color: {:color, :surface_raised},
       border: {:raw, "1px solid var(--color-border)"},
-      color: {:color, :ui_ink},
+      color: {:color, :on_page},
       border_radius: {:radius, :md}
     }
   end

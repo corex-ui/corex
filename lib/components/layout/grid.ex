@@ -18,8 +18,7 @@ defmodule Corex.Layout.Grid do
   use Corex.Variants,
     kind: :layout,
     base: "grid",
-    axes: [gap: :space, columns: :columns],
-    defaults: [gap: "none"]
+    axes: [gap: :space, columns: :columns]
 
   attr(:tag, :string, default: "div", doc: "The host HTML element.")
   slot(:inner_block, required: true)

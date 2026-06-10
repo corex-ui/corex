@@ -1,34 +1,51 @@
 defmodule Corex.Design.Axes do
   @moduledoc """
-  Design-side facade over the axis vocabulary. The step names come from
-  `Corex.Scales` (the single source of truth in `:corex`); this module exposes
-  them in the shapes the recipes/emitters expect. Step VALUES (multipliers,
-  tokens) remain in `Corex.Design.Tokens.Scales`.
+  Design-side axis vocabulary: `Corex.Scales` defaults merged with optional
+  `:corex_design` `:scales` overrides, plus semantic roles from themes.
   """
 
-  alias Corex.Scales
+  alias Corex.Design.Tokens.Scales, as: TokenScales
+  alias Corex.Design.Vocabulary
+  alias Corex.Scales, as: CoreScales
 
-  def colors, do: Enum.map(Scales.semantic_atoms(), &Atom.to_string/1)
-  def semantic_atoms, do: Scales.semantic_atoms()
-  def color_atoms, do: Scales.semantic_atoms()
+  def colors, do: semantic_strings()
+  def color_atoms, do: semantic_atoms()
+  def semantic_strings, do: Enum.map(semantic_atoms(), &Atom.to_string/1)
 
-  def sizes, do: Scales.sizes()
-  def size_atoms, do: Scales.size_atoms()
+  def semantic_atoms do
+    case Vocabulary.semantic_roles() do
+      [] -> CoreScales.semantic_atoms()
+      roles -> roles
+    end
+  end
 
-  def texts, do: Scales.texts()
-  def text_atoms, do: Scales.text_atoms()
+  def sizes, do: Enum.map(size_atoms(), &Atom.to_string/1)
+  def size_atoms, do: axis_atoms(:size, &CoreScales.size_atoms/0)
 
-  def visuals, do: Scales.visuals()
-  def visual_atoms, do: Scales.visual_atoms()
+  def texts, do: Enum.map(text_atoms(), &Atom.to_string/1)
+  def text_atoms, do: axis_atoms(:text, &CoreScales.text_atoms/0)
 
-  def radii, do: Scales.radii()
-  def radius_atoms, do: Scales.radius_atoms()
+  def visuals, do: Enum.map(visual_atoms(), &Atom.to_string/1)
+  def visual_atoms, do: axis_atoms(:visual, &CoreScales.visual_atoms/0)
 
-  def weights, do: Scales.weights()
-  def weight_atoms, do: Scales.weight_atoms()
+  def radii, do: Enum.map(radius_atoms(), &Atom.to_string/1)
+  def radius_atoms, do: axis_atoms(:radius, &CoreScales.radius_atoms/0)
 
-  def shapes, do: Scales.shapes()
-  def shape_atoms, do: Scales.shape_atoms()
+  def weights, do: Enum.map(weight_atoms(), &Atom.to_string/1)
+  def weight_atoms, do: axis_atoms(:weight, &CoreScales.weight_atoms/0)
+
+  def shapes, do: Enum.map(shape_atoms(), &Atom.to_string/1)
+  def shape_atoms, do: axis_atoms(:shape, &CoreScales.shape_atoms/0)
+
+  defp axis_atoms(axis, default_fun) do
+    case TokenScales.overrides() |> Keyword.get(axis) do
+      nil -> default_fun.()
+      steps -> Enum.map(steps, &normalize_step/1)
+    end
+  end
+
+  defp normalize_step(step) when is_atom(step), do: step
+  defp normalize_step(step) when is_binary(step), do: String.to_atom(step)
 end
 
 defmodule Corex.Design.Axis do

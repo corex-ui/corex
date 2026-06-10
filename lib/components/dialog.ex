@@ -420,10 +420,20 @@ defmodule Corex.Dialog do
   alias Corex.Dialog.Translation
 
   use Corex.Variants,
-    kind: :recipe,
-    recipes: [:modal, :side],
-    default: :modal,
-    defaults: [width: "fit", max_width: "none", height: "auto", max_height: "none", size: "md"]
+    kind: :polymorphic,
+    looks: [modal: "dialog-modal", side: "dialog-side"],
+    default_as: :modal,
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size,
+      text: :text,
+      radius: :radius,
+      side: ~w(start end top bottom)
+    ]
 
   @doc """
   Renders a dialog component.

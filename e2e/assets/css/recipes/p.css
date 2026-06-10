@@ -23,11 +23,15 @@
 
 @layer components {
   .p {
-    color: var(--color-ui-ink);
+    width: fit-content;
+    color: var(--color-on-page);
+    max-width: none;
+    height: auto;
+    max-height: none;
     font-size: var(--text-base);
     line-height: var(--leading-base);
-    margin-block: var(--space-md);
     font-weight: var(--font-weight-normal);
+    margin-block: var(--spacing-md);
   }
 
   .p.p--w-auto {
@@ -71,27 +75,31 @@
   }
 
   .p.p--semantic-accent {
-    color: var(--color-ui-ink-accent);
-  }
-
-  .p.p--semantic-brand {
-    color: var(--color-ui-ink-brand);
+    color: var(--color-on-accent);
   }
 
   .p.p--semantic-alert {
-    color: var(--color-ui-ink-alert);
+    color: var(--color-on-alert);
+  }
+
+  .p.p--semantic-brand {
+    color: var(--color-on-brand);
   }
 
   .p.p--semantic-info {
-    color: var(--color-ui-ink-info);
+    color: var(--color-on-info);
   }
 
-  .p.p--semantic-success {
-    color: var(--color-ui-ink-success);
+  .p.p--semantic-neutral {
+    color: var(--color-on-neutral);
   }
 
   .p.p--semantic-selected {
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
+  }
+
+  .p.p--semantic-success {
+    color: var(--color-on-success);
   }
 
   .p.p--weight-thin {

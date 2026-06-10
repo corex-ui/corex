@@ -66,6 +66,33 @@ defmodule Corex.DesignTest do
       assert css =~ ".button.button--semantic-accent"
     end
 
+    test "button base merges default variant styles for bare block class" do
+      css = Recipe.to_css(Button.recipe())
+
+      assert Regex.match?(
+               ~r/\.button \{[^}]+\}/s,
+               css
+             )
+
+      assert Regex.match?(
+               ~r/\.button \{[^}]*background-color: var\(--color-surface-control\)/s,
+               css
+             )
+
+      assert Regex.match?(
+               ~r/\.button \{[^}]*padding-inline:/s,
+               css
+             )
+    end
+
+    test "layout box base merges default padding none" do
+      css = Recipe.to_css(Layout.get(:box))
+
+      assert css =~ ".box {"
+      assert Regex.match?(~r/\.box \{[^}]*padding: 0;/s, css)
+      assert css =~ ".box.box--padding-md {"
+    end
+
     test "accordion export keeps slot semantic colors in components layer" do
       css = Recipe.to_css(Accordion.recipe())
 
@@ -75,7 +102,7 @@ defmodule Corex.DesignTest do
                ".accordion.accordion--variant-solid.accordion--semantic-accent [data-scope=\"accordion\"][data-part=\"item-trigger\"]"
 
       assert css =~ "background-color: var(--color-accent)"
-      assert css =~ "color: var(--color-accent-ink)"
+      assert css =~ "color: var(--color-on-accent)"
 
       refute css =~ "[data-part=\"item-trigger\"][data-state=\"open\"]"
     end
@@ -149,7 +176,7 @@ defmodule Corex.DesignTest do
       assert css =~ "::-webkit-scrollbar"
       assert css =~ "::-webkit-scrollbar-track"
       assert css =~ "::-webkit-scrollbar-thumb"
-      assert css =~ "var(--color-ui)"
+      assert css =~ "var(--color-surface-control)"
       assert css =~ "var(--color-border)"
     end
 
@@ -175,14 +202,14 @@ defmodule Corex.DesignTest do
       refute hero_selector?
     end
 
-    test "toggle recipe sizes icons with data-icon and ui-icon" do
+    test "toggle recipe sizes icons with data-icon and part-icon" do
       css =
         Recipes.components()
         |> Enum.find(&(&1.id == :toggle))
         |> Recipe.to_css()
 
       assert css =~ ".toggle [data-icon]"
-      assert css =~ "ui-icon"
+      assert css =~ "part-icon"
     end
 
     test "badge recipe sizes icons with data-icon at 1em" do
@@ -256,10 +283,10 @@ defmodule Corex.DesignTest do
         assert aggregate =~ ~S(@import "../recipes/button.css";)
 
         utilities = File.read!(Path.join(tmp, "layers/utilities.css"))
-        assert utilities =~ "@utility ui-trigger"
-        refute utilities =~ "@utility ui-trigger--square"
-        refute utilities =~ "@utility ui-trigger--circle"
-        refute utilities =~ "@utility ui-trigger--ghost"
+        assert utilities =~ "@utility part-trigger"
+        refute utilities =~ "@utility part-trigger--square"
+        refute utilities =~ "@utility part-trigger--circle"
+        refute utilities =~ "@utility part-trigger--ghost"
 
         row = File.read!(Path.join(tmp, "recipes/row.css"))
         assert row =~ ".row"
@@ -403,7 +430,7 @@ defmodule Corex.DesignTest do
       assert css =~ "flex: 1 1 auto"
       assert css =~ "box-sizing: border-box"
       assert css =~ "&::-webkit-scrollbar"
-      assert css =~ "background: var(--color-root)"
+      assert css =~ "background: var(--color-surface-page)"
 
       refute css =~
                ".accordion.accordion--max-h-md [data-scope=\"accordion\"][data-part=\"item-content\"][data-state=\"open\"] {\n    overflow-y: auto"

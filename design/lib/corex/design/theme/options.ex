@@ -3,17 +3,16 @@ defmodule Corex.Design.Theme.Options do
   NimbleOptions schemas and validation for `config :corex_design, themes: %{...}`.
   """
 
-  alias Corex.Design.Semantics
   alias Corex.Design.Theme
   alias Corex.Design.Tokens.PaletteGen
 
   @hex_regex ~r/^#[0-9A-Fa-f]{6}$/
 
   @theme_spec_schema NimbleOptions.new!(
-                       seeds: [
+                       palette: [
                          type: {:map, :string, :string},
                          required: true,
-                         doc: "Hex seed colors keyed by name"
+                         doc: "Hex palette anchors keyed by name"
                        ],
                        colors: [
                          type: :map,
@@ -103,7 +102,7 @@ defmodule Corex.Design.Theme.Options do
     atom_spec = Enum.reject(atom_spec, fn {_k, v} -> is_nil(v) end) |> Map.new()
 
     with {:ok, parsed} <- NimbleOptions.validate(atom_spec, @theme_spec_schema),
-         :ok <- validate_seeds_hex(parsed.seeds),
+         :ok <- validate_palette_hex(parsed.palette),
          :ok <- validate_colors_shape(parsed.colors),
          :ok <- validate_color_lightness(parsed.colors) do
       {:ok, Theme.normalize_input_spec(parsed)}
@@ -124,8 +123,8 @@ defmodule Corex.Design.Theme.Options do
   end
 
   defp normalized_mode?(mode) do
-    Enum.any?([:semantic, :surface, :ink, :utility], &Map.has_key?(mode, &1)) or
-      Enum.any?(["semantic", "surface", "ink", "utility"], &Map.has_key?(mode, &1))
+    Enum.any?([:surface, :roles, :on], &Map.has_key?(mode, &1)) or
+      Enum.any?(["surface", "roles", "on"], &Map.has_key?(mode, &1))
   end
 
   defp drop_nil_typography(spec) do
@@ -139,12 +138,12 @@ defmodule Corex.Design.Theme.Options do
     Map.get(map, key) || Map.get(map, Atom.to_string(key))
   end
 
-  defp validate_seeds_hex(seeds) when is_map(seeds) do
-    Enum.reduce_while(seeds, :ok, fn {_k, hex}, :ok ->
+  defp validate_palette_hex(palette) when is_map(palette) do
+    Enum.reduce_while(palette, :ok, fn {_k, hex}, :ok ->
       if is_binary(hex) and Regex.match?(@hex_regex, hex) do
         {:cont, :ok}
       else
-        {:halt, {:error, "invalid seed hex #{inspect(hex)} (expected #RRGGBB)"}}
+        {:halt, {:error, "invalid palette hex #{inspect(hex)} (expected #RRGGBB)"}}
       end
     end)
   end
@@ -165,7 +164,7 @@ defmodule Corex.Design.Theme.Options do
       mode_map = Map.get(colors, mode, %{})
 
       with :ok <- validate_role_lightness(Map.get(mode_map, :surface, %{}), "surface"),
-           :ok <- validate_semantic_lightness(Map.get(mode_map, :semantic, %{})) do
+           :ok <- validate_role_lightness(Map.get(mode_map, :roles, %{}), "roles") do
         {:cont, :ok}
       else
         {:error, _} = err -> {:halt, err}
@@ -176,15 +175,6 @@ defmodule Corex.Design.Theme.Options do
   defp validate_role_lightness(roles, label) do
     Enum.reduce_while(roles, :ok, fn {role, cfg}, :ok ->
       case validate_fill_cfg(role, cfg, label) do
-        :ok -> {:cont, :ok}
-        {:error, _} = err -> {:halt, err}
-      end
-    end)
-  end
-
-  defp validate_semantic_lightness(semantic) do
-    Enum.reduce_while(semantic, :ok, fn {role, cfg}, :ok ->
-      case validate_fill_cfg(role, cfg, "semantic") do
         :ok -> {:cont, :ok}
         {:error, _} = err -> {:halt, err}
       end
@@ -245,64 +235,80 @@ defmodule Corex.Design.Theme.Options do
     end
   end
 
-  defp validate_semantic_roles(themes) do
-    allowed = MapSet.new(Semantics.atoms())
+  defp validate_role_palette_refs(resolved) do
+    Enum.reduce_while(resolved, :ok, fn {id, spec}, :ok ->
+      palette = Map.get(spec, :palette, %{})
+      colors = Map.get(spec, :colors, %{})
 
-    Enum.reduce_while(themes, :ok, fn {id, spec}, :ok ->
-      case validate_theme_semantic_roles(id, spec, allowed) do
+      case validate_theme_palette_refs(id, palette, colors) do
         :ok -> {:cont, :ok}
         {:error, _} = err -> {:halt, err}
       end
     end)
   end
 
-  defp validate_theme_semantic_roles(id, spec, allowed) do
-    seeds = Map.get(spec, :seeds, %{})
-    colors = Map.get(spec, :colors, %{light: %{}, dark: %{}})
+  defp validate_theme_palette_refs(id, palette, colors) do
+    palette_keys =
+      palette
+      |> Map.keys()
+      |> Enum.map(fn key -> if is_atom(key), do: Atom.to_string(key), else: to_string(key) end)
+      |> MapSet.new()
 
     Enum.reduce_while([:light, :dark], :ok, fn mode, :ok ->
-      semantic = colors |> Map.get(mode, %{}) |> Map.get(:semantic, %{})
+      mode_map = Map.get(colors, mode, %{})
 
-      case validate_semantic_entries(id, mode, semantic, seeds, allowed) do
-        :ok -> {:cont, :ok}
-        {:error, _} = err -> {:halt, err}
+      refs =
+        collect_palette_refs(mode_map)
+        |> Enum.reject(&is_nil/1)
+
+      invalid =
+        Enum.reject(refs, fn ref ->
+          ref_str = if is_atom(ref), do: Atom.to_string(ref), else: to_string(ref)
+          MapSet.member?(palette_keys, ref_str)
+        end)
+        |> Enum.uniq()
+
+      if invalid == [] do
+        {:cont, :ok}
+      else
+        {:halt,
+         {:error,
+          "themes.#{id}.colors.#{mode}: palette refs #{inspect(invalid)} missing from palette #{inspect(Map.keys(palette))}"}}
       end
     end)
   end
 
-  defp validate_semantic_entries(id, mode, semantic, seeds, allowed) do
-    Enum.reduce_while(semantic, :ok, fn {role, cfg}, :ok ->
-      validate_semantic_entry(id, mode, role, cfg, seeds, allowed)
-    end)
+  defp collect_palette_refs(mode_map) do
+    surface_refs =
+      mode_map
+      |> Map.get(:surface, %{})
+      |> Enum.flat_map(fn {_k, cfg} -> palette_ref(cfg) end)
+
+    role_refs =
+      mode_map
+      |> Map.get(:roles, %{})
+      |> Enum.flat_map(fn {_k, cfg} -> palette_ref(cfg) end)
+
+    on_refs =
+      mode_map
+      |> Map.get(:on, %{})
+      |> Enum.flat_map(fn {_k, cfg} -> palette_ref(cfg) end)
+
+    flat_refs =
+      [:border, :focus, :shadow]
+      |> Enum.flat_map(fn key ->
+        case Map.get(mode_map, key) do
+          %{} = cfg -> palette_ref(cfg)
+          _ -> []
+        end
+      end)
+
+    surface_refs ++ role_refs ++ on_refs ++ flat_refs
   end
 
-  defp validate_semantic_entry(id, mode, role, cfg, seeds, allowed) do
-    if MapSet.member?(allowed, role) do
-      validate_semantic_seed(id, role, cfg, seeds)
-    else
-      {:halt,
-       {:error,
-        "themes.#{id}.colors.#{mode}.semantic: role #{inspect(role)} not in config :corex semantics #{inspect(Semantics.atoms())}"}}
-    end
-  end
-
-  defp validate_semantic_seed(id, role, cfg, seeds) do
-    bg =
-      case cfg do
-        %{bg: bg} -> bg
-        %{"bg" => bg} -> bg
-        _ -> role
-      end
-
-    bg_str = if is_atom(bg), do: Atom.to_string(bg), else: to_string(bg)
-
-    if Map.has_key?(seeds, bg_str) do
-      {:cont, :ok}
-    else
-      {:halt,
-       {:error,
-        "themes.#{id}: semantic #{inspect(role)} references seed #{inspect(bg_str)} missing from seeds"}}
-    end
+  defp palette_ref(cfg) when is_map(cfg) do
+    [Map.get(cfg, :palette), Map.get(cfg, :color), Map.get(cfg, :bg)]
+    |> Enum.reject(&is_nil/1)
   end
 
   defp validate_theme_id(id) when is_atom(id), do: :ok
@@ -335,7 +341,7 @@ defmodule Corex.Design.Theme.Options do
 
   @doc false
   def validate_resolved!(resolved) when is_map(resolved) do
-    with :ok <- validate_semantic_roles(resolved),
+    with :ok <- validate_role_palette_refs(resolved),
          :ok <- validate_resolved_stops(resolved) do
       :ok
     else

@@ -40,8 +40,7 @@ defmodule Corex.Design.SemanticCoverageTest do
 
     has_token =
       String.contains?(css, "--color-accent") or
-        String.contains?(css, "--color-ui-ink-accent") or
-        String.contains?(css, "--color-accent-ink")
+        String.contains?(css, "--color-on-accent")
 
     has_host and has_token
   end

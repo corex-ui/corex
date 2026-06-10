@@ -20,9 +20,9 @@
 
 @utility number-input--size-* {
   [data-scope="number-input"][data-part="input"] {
-      color: --value(--color-ui-ink-*, [color]);
-    min-height: --value(--spacing-size-*, [length]);
-    padding-inline: --value(--spacing-space-*, [length]);
+      color: --value(--color-on-*, [color]);
+    padding-inline: --value(--spacing-*, [length]);
+    min-height: --value(--spacing-control-*, [length]);
     background-color: --value(--color-*, [color]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
@@ -34,33 +34,82 @@
   }
 
   [data-scope="number-input"][data-part="root"] {
-      gap: --value(--spacing-space-*, [length]);
+      gap: --value(--spacing-*, [length]);
   }
 
   [data-scope="number-input"][data-part="decrement-trigger"] {
-      color: --value(--color-ui-ink-*, [color]);
-    min-height: --value(--spacing-size-*, [length]);
+      color: --value(--color-on-*, [color]);
+    min-height: --value(--spacing-control-*, [length]);
     background-color: --value(--color-*, [color]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
 
   [data-scope="number-input"][data-part="increment-trigger"] {
-      color: --value(--color-ui-ink-*, [color]);
-    min-height: --value(--spacing-size-*, [length]);
+      color: --value(--color-on-*, [color]);
+    min-height: --value(--spacing-control-*, [length]);
     background-color: --value(--color-*, [color]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
 
   [data-scope="number-input"][data-part="trigger-group"] {
-      min-height: --value(--spacing-size-*, [length]);
+      min-height: --value(--spacing-control-*, [length]);
   }
 
 }
 
 
 @layer components {
+  .number-input [data-scope="number-input"][data-part="input"] {
+    color: var(--color-on-page);
+    max-height: var(--spacing-control-md);
+    padding-inline: var(--spacing-md);
+    min-height: var(--spacing-control-md);
+    background-color: var(--color-surface-control);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+
+  .number-input [data-scope="number-input"][data-part="label"] {
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+
+  .number-input [data-scope="number-input"][data-part="root"] {
+    gap: var(--spacing-md);
+  }
+
+  .number-input {
+    width: 100%;
+    max-width: none;
+    height: auto;
+    max-height: none;
+  }
+
+  .number-input [data-scope="number-input"][data-part="decrement-trigger"] {
+    color: var(--color-on-page);
+    min-height: calc(var(--spacing-control-md) / 2);
+    background-color: var(--color-surface-control);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+
+  .number-input [data-scope="number-input"][data-part="increment-trigger"] {
+    color: var(--color-on-page);
+    min-height: calc(var(--spacing-control-md) / 2);
+    background-color: var(--color-surface-control);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+
+  .number-input [data-scope="number-input"][data-part="trigger-group"] {
+    width: var(--spacing-control-md);
+    height: var(--spacing-control-md);
+    max-height: var(--spacing-control-md);
+    min-height: var(--spacing-control-md);
+  }
+
   .number-input.number-input--w-auto {
     width: auto;
   }
@@ -105,11 +154,11 @@
     position: relative;
   }
 
-  .number-input.number-input--semantic-brand {
+  .number-input.number-input--semantic-alert {
     position: relative;
   }
 
-  .number-input.number-input--semantic-alert {
+  .number-input.number-input--semantic-brand {
     position: relative;
   }
 
@@ -117,11 +166,15 @@
     position: relative;
   }
 
-  .number-input.number-input--semantic-success {
+  .number-input.number-input--semantic-neutral {
     position: relative;
   }
 
   .number-input.number-input--semantic-selected {
+    position: relative;
+  }
+
+  .number-input.number-input--semantic-success {
     position: relative;
   }
 
@@ -136,27 +189,27 @@
   .number-input {
     display: flex;
     flex-direction: column;
-    gap: var(--space);
+    gap: var(--spacing-md);
   }
 
   .number-input[data-loading] [data-scope="number-input"][data-part="root"] {
-    @apply ui-loading;
+    @apply part-loading;
   }
 
   .number-input [data-scope="number-input"][data-part="root"] {
-    @apply ui-root;
+    @apply part-root;
   }
 
   .number-input [data-scope="number-input"][data-part="root"][data-readonly] {
-    @apply ui-readonly;
+    @apply part-readonly;
   }
 
   .number-input [data-scope="number-input"][data-part="label"] {
-    @apply ui-label;
+    @apply part-label;
   }
 
   .number-input [data-scope="number-input"][data-part="error"] {
-    @apply ui-error;
+    @apply part-error;
   }
 
   .number-input {
@@ -175,11 +228,11 @@
   }
 
   .number-input [data-scope="number-input"][data-part="input"] {
-    @apply ui-input;
+    @apply part-input;
     flex: 1;
     min-width: 0;
-    min-height: var(--size-md);
-    max-height: var(--size-md);
+    min-height: var(--spacing-control-md);
+    max-height: var(--spacing-control-md);
     box-sizing: border-box;
     & {
       border-inline-end: 0; border-end-end-radius: 0; border-start-end-radius: 0
@@ -191,15 +244,15 @@
     flex-direction: column;
     flex-shrink: 0;
     gap: 0;
-    width: var(--size-md);
-    min-height: var(--size-md);
-    height: var(--size-md);
-    max-height: var(--size-md);
+    width: var(--spacing-control-md);
+    min-height: var(--spacing-control-md);
+    height: var(--spacing-control-md);
+    max-height: var(--spacing-control-md);
     box-sizing: border-box;
   }
 
   .number-input [data-scope="number-input"][data-part="increment-trigger"] {
-    @apply ui-trigger;
+    @apply part-trigger;
     aspect-ratio: 1 / 1;
     padding: 0;
     justify-content: center;
@@ -209,14 +262,14 @@
     margin: 0;
     padding: 0;
     width: fit-content;
-    padding-inline: var(--space-md);
+    padding-inline: var(--spacing-md);
     & {
       border-start-start-radius: 0; border-end-start-radius: 0; border-end-end-radius: 0; border-block-end: 0
     }
   }
 
   .number-input [data-scope="number-input"][data-part="decrement-trigger"] {
-    @apply ui-trigger;
+    @apply part-trigger;
     aspect-ratio: 1 / 1;
     padding: 0;
     justify-content: center;
@@ -226,7 +279,7 @@
     margin: 0;
     padding: 0;
     width: fit-content;
-    padding-inline: var(--space-md);
+    padding-inline: var(--spacing-md);
     & {
       border-start-start-radius: 0; border-end-start-radius: 0; border-start-end-radius: 0; border-block-start: 0
     }
@@ -235,269 +288,314 @@
   .number-input.number-input--semantic-accent [data-scope="number-input"][data-part="input"] {
     &:focus, &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink-accent);
-    }
-  }
-
-  .number-input.number-input--semantic-brand [data-scope="number-input"][data-part="input"] {
-    &:focus, &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink-brand);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
     }
   }
 
   .number-input.number-input--semantic-alert [data-scope="number-input"][data-part="input"] {
     &:focus, &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink-alert);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
+    }
+  }
+
+  .number-input.number-input--semantic-brand [data-scope="number-input"][data-part="input"] {
+    &:focus, &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
     }
   }
 
   .number-input.number-input--semantic-info [data-scope="number-input"][data-part="input"] {
     &:focus, &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink-info);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
     }
   }
 
-  .number-input.number-input--semantic-success [data-scope="number-input"][data-part="input"] {
+  .number-input.number-input--semantic-neutral [data-scope="number-input"][data-part="input"] {
     &:focus, &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink-success);
+      box-shadow: inset 0 0 0 2px var(--color-on-control);
     }
   }
 
   .number-input.number-input--semantic-selected [data-scope="number-input"][data-part="input"] {
     &:focus, &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
+    }
+  }
+
+  .number-input.number-input--semantic-success [data-scope="number-input"][data-part="input"] {
+    &:focus, &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
     }
   }
 
   .number-input.number-input--semantic-accent [data-scope="number-input"][data-part="increment-trigger"] {
-    color: var(--color-ui-ink-accent);
+    color: var(--color-on-accent);
     &:hover {
-      background-color: var(--color-ui-hover);
+      background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink-accent);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      color: var(--color-ui-ink-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .number-input.number-input--semantic-brand [data-scope="number-input"][data-part="increment-trigger"] {
-    color: var(--color-ui-ink-brand);
-    &:hover {
-      background-color: var(--color-ui-hover);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink-brand);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      color: var(--color-ui-ink-muted);
+      color: var(--color-on-muted);
       cursor: not-allowed;
     }
   }
 
   .number-input.number-input--semantic-alert [data-scope="number-input"][data-part="increment-trigger"] {
-    color: var(--color-ui-ink-alert);
+    color: var(--color-on-alert);
     &:hover {
-      background-color: var(--color-ui-hover);
+      background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink-alert);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      color: var(--color-ui-ink-muted);
+      color: var(--color-on-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .number-input.number-input--semantic-brand [data-scope="number-input"][data-part="increment-trigger"] {
+    color: var(--color-on-brand);
+    &:hover {
+      background-color: var(--color-surface-control-hover);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      color: var(--color-on-muted);
       cursor: not-allowed;
     }
   }
 
   .number-input.number-input--semantic-info [data-scope="number-input"][data-part="increment-trigger"] {
-    color: var(--color-ui-ink-info);
+    color: var(--color-on-info);
     &:hover {
-      background-color: var(--color-ui-hover);
+      background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink-info);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      color: var(--color-ui-ink-muted);
+      color: var(--color-on-muted);
       cursor: not-allowed;
     }
   }
 
-  .number-input.number-input--semantic-success [data-scope="number-input"][data-part="increment-trigger"] {
-    color: var(--color-ui-ink-success);
+  .number-input.number-input--semantic-neutral [data-scope="number-input"][data-part="increment-trigger"] {
+    color: var(--color-on-control);
     &:hover {
-      background-color: var(--color-ui-hover);
+      background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink-success);
+      box-shadow: inset 0 0 0 2px var(--color-focus);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      color: var(--color-ui-ink-muted);
+      color: var(--color-on-muted);
       cursor: not-allowed;
     }
   }
 
   .number-input.number-input--semantic-selected [data-scope="number-input"][data-part="increment-trigger"] {
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
     &:hover {
-      background-color: var(--color-ui-hover);
+      background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      color: var(--color-ui-ink-muted);
+      color: var(--color-on-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .number-input.number-input--semantic-success [data-scope="number-input"][data-part="increment-trigger"] {
+    color: var(--color-on-success);
+    &:hover {
+      background-color: var(--color-surface-control-hover);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      color: var(--color-on-muted);
       cursor: not-allowed;
     }
   }
 
   .number-input.number-input--semantic-accent [data-scope="number-input"][data-part="decrement-trigger"] {
-    color: var(--color-ui-ink-accent);
+    color: var(--color-on-accent);
     &:hover {
-      background-color: var(--color-ui-hover);
+      background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink-accent);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      color: var(--color-ui-ink-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .number-input.number-input--semantic-brand [data-scope="number-input"][data-part="decrement-trigger"] {
-    color: var(--color-ui-ink-brand);
-    &:hover {
-      background-color: var(--color-ui-hover);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink-brand);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      color: var(--color-ui-ink-muted);
+      color: var(--color-on-muted);
       cursor: not-allowed;
     }
   }
 
   .number-input.number-input--semantic-alert [data-scope="number-input"][data-part="decrement-trigger"] {
-    color: var(--color-ui-ink-alert);
+    color: var(--color-on-alert);
     &:hover {
-      background-color: var(--color-ui-hover);
+      background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink-alert);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      color: var(--color-ui-ink-muted);
+      color: var(--color-on-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .number-input.number-input--semantic-brand [data-scope="number-input"][data-part="decrement-trigger"] {
+    color: var(--color-on-brand);
+    &:hover {
+      background-color: var(--color-surface-control-hover);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      color: var(--color-on-muted);
       cursor: not-allowed;
     }
   }
 
   .number-input.number-input--semantic-info [data-scope="number-input"][data-part="decrement-trigger"] {
-    color: var(--color-ui-ink-info);
+    color: var(--color-on-info);
     &:hover {
-      background-color: var(--color-ui-hover);
+      background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink-info);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      color: var(--color-ui-ink-muted);
+      color: var(--color-on-muted);
       cursor: not-allowed;
     }
   }
 
-  .number-input.number-input--semantic-success [data-scope="number-input"][data-part="decrement-trigger"] {
-    color: var(--color-ui-ink-success);
+  .number-input.number-input--semantic-neutral [data-scope="number-input"][data-part="decrement-trigger"] {
+    color: var(--color-on-control);
     &:hover {
-      background-color: var(--color-ui-hover);
+      background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink-success);
+      box-shadow: inset 0 0 0 2px var(--color-focus);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      color: var(--color-ui-ink-muted);
+      color: var(--color-on-muted);
       cursor: not-allowed;
     }
   }
 
   .number-input.number-input--semantic-selected [data-scope="number-input"][data-part="decrement-trigger"] {
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
     &:hover {
-      background-color: var(--color-ui-hover);
+      background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      color: var(--color-ui-ink-muted);
+      color: var(--color-on-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .number-input.number-input--semantic-success [data-scope="number-input"][data-part="decrement-trigger"] {
+    color: var(--color-on-success);
+    &:hover {
+      background-color: var(--color-surface-control-hover);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      color: var(--color-on-muted);
       cursor: not-allowed;
     }
   }

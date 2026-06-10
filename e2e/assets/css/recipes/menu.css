@@ -20,15 +20,15 @@
 
 @utility menu--size-* {
   [data-scope="menu"][data-part="item"] {
-      padding-inline: --value(--spacing-space-*, [length]);
+      padding-inline: --value(--spacing-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
 
   [data-scope="menu"][data-part="trigger"] {
-      min-height: --value(--spacing-size-*, [length]);
-    gap: --value(--spacing-space-*, [length]);
-    padding-inline: --value(--spacing-space-*, [length]);
+      gap: --value(--spacing-*, [length]);
+    padding-inline: --value(--spacing-*, [length]);
+    min-height: --value(--spacing-control-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
@@ -39,7 +39,7 @@
   }
 
   [data-scope="menu"][data-part="trigger-item"] {
-      padding-inline: --value(--spacing-space-*, [length]);
+      padding-inline: --value(--spacing-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
@@ -48,6 +48,42 @@
 
 
 @layer components {
+  .menu {
+    width: fit-content;
+    max-width: none;
+    height: auto;
+    max-height: none;
+  }
+
+  .menu [data-scope="menu"][data-part="item"] {
+    padding-inline: var(--spacing-md);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+
+  .menu [data-scope="menu"][data-part="trigger"] {
+    gap: var(--spacing-md);
+    padding-inline: var(--spacing-md);
+    min-height: var(--spacing-control-md);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+
+  .menu [data-scope="menu"][data-part="content"] {
+    border-color: var(--color-border);
+  }
+
+  .menu [data-scope="menu"][data-part="item-group-label"] {
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+
+  .menu [data-scope="menu"][data-part="trigger-item"] {
+    padding-inline: var(--spacing-md);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+
   .menu.menu--w-auto {
     width: auto;
   }
@@ -92,11 +128,11 @@
     position: relative;
   }
 
-  .menu.menu--semantic-brand {
+  .menu.menu--semantic-alert {
     position: relative;
   }
 
-  .menu.menu--semantic-alert {
+  .menu.menu--semantic-brand {
     position: relative;
   }
 
@@ -104,11 +140,15 @@
     position: relative;
   }
 
-  .menu.menu--semantic-success {
+  .menu.menu--semantic-neutral {
     position: relative;
   }
 
   .menu.menu--semantic-selected {
+    position: relative;
+  }
+
+  .menu.menu--semantic-success {
     position: relative;
   }
 
@@ -121,11 +161,11 @@
   }
 
   .menu[data-loading] .menu [data-scope="menu"][data-part="root"] {
-    @apply ui-loading;
+    @apply part-loading;
   }
 
   .menu [data-scope="menu"][data-part="content"] {
-    @apply ui-content;
+    @apply part-content;
     border: 1px solid var(--color-border);
     z-index: 50;
     padding: 0;
@@ -138,13 +178,13 @@
   }
 
   .menu [data-scope="menu"][data-part="trigger"] {
-    @apply ui-trigger;
+    @apply part-trigger;
     justify-content: space-between;
     width: 100%;
     border: none;
     min-width: var(--container-7xs);
     & {
-      margin-inline-end: var(--space-md)
+      margin-inline-end: var(--spacing-md)
     }
   }
 
@@ -162,7 +202,7 @@
   }
 
   .menu [data-scope="menu"][data-part="context-trigger"] {
-    @apply ui-trigger;
+    @apply part-trigger;
     border: 1px dashed var(--color-border);
     cursor: context-menu;
   }
@@ -185,10 +225,10 @@
     font-size: var(--text-base);
     line-height: var(--leading-base);
     text-align: start;
-    min-height: var(--size-md);
-    padding-inline: var(--space-md);
-    background-color: var(--color-root);
-    color: var(--color-ui-ink);
+    min-height: var(--spacing-control-md);
+    padding-inline: var(--spacing-md);
+    background-color: var(--color-surface-page);
+    color: var(--color-on-page);
     border-bottom: 1px solid var(--color-border);
     cursor: default;
     pointer-events: none;
@@ -200,12 +240,12 @@
   }
 
   .menu [data-scope="menu"][data-part="item"] {
-    @apply ui-item;
+    @apply part-item;
     min-width: 0;
   }
 
   .menu [data-scope="menu"][data-part="trigger-item"] {
-    @apply ui-item;
+    @apply part-item;
     min-width: 0;
   }
 
@@ -213,10 +253,10 @@
     display: flex;
     flex: 0 0 auto;
     min-height: 1em;
-    min-width: 1em;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    min-width: 1em;
     margin-inline-start: auto;
     transition: none !important;
   }
@@ -226,14 +266,14 @@
     width: auto;
     white-space: nowrap;
     flex: 1 1 0%;
+    gap: var(--spacing-md);
     max-width: 100%;
-    gap: var(--space-md);
-    min-width: 0;
     flex-direction: row;
     align-items: center;
+    min-width: 0;
+    text-align: start;
     overflow: hidden;
     text-overflow: ellipsis;
-    text-align: start;
   }
 
   .menu [data-scope="menu"][data-part="content"] [data-scope="menu"][data-part="item-text"] > [data-icon] {
@@ -245,12 +285,12 @@
     display: flex;
     flex: 0 0 auto;
     min-height: 1em;
-    min-width: 1em;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    min-width: 1em;
     margin-inline-start: auto;
-    @apply ui-icon;
+    @apply part-icon;
   }
 
   .menu [data-scope="menu"][data-part="content"] [data-scope="menu"][data-part="trigger-item"] {
@@ -297,7 +337,7 @@
 
   .menu.menu--semantic-accent [data-scope="menu"][data-part="item"][data-selected] {
     background-color: var(--color-accent);
-    color: var(--color-accent-ink);
+    color: var(--color-on-accent);
     &:hover {
       background-color: var(--color-accent-hover);
     }
@@ -308,27 +348,27 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
 
     &[data-highlighted] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
       background-color: var(--color-accent-hover);
-      color: var(--color-accent-ink);
+      color: var(--color-on-accent);
     }
   }
 
   .menu.menu--semantic-accent [data-scope="menu"][data-part="item"][data-state='checked'] {
     background-color: var(--color-accent);
-    color: var(--color-accent-ink);
+    color: var(--color-on-accent);
     &:hover {
       background-color: var(--color-accent-hover);
     }
@@ -339,89 +379,27 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
 
     &[data-highlighted] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
       background-color: var(--color-accent-hover);
-      color: var(--color-accent-ink);
-    }
-  }
-
-  .menu.menu--semantic-brand [data-scope="menu"][data-part="item"][data-selected] {
-    background-color: var(--color-brand);
-    color: var(--color-brand-ink);
-    &:hover {
-      background-color: var(--color-brand-hover);
-    }
-
-    &:active {
-      background-color: var(--color-brand-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-brand-ink);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-ui-muted);
-      cursor: not-allowed;
-    }
-
-    &[data-highlighted] {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-brand-ink);
-      background-color: var(--color-brand-hover);
-      color: var(--color-brand-ink);
-    }
-  }
-
-  .menu.menu--semantic-brand [data-scope="menu"][data-part="item"][data-state='checked'] {
-    background-color: var(--color-brand);
-    color: var(--color-brand-ink);
-    &:hover {
-      background-color: var(--color-brand-hover);
-    }
-
-    &:active {
-      background-color: var(--color-brand-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-brand-ink);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-ui-muted);
-      cursor: not-allowed;
-    }
-
-    &[data-highlighted] {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-brand-ink);
-      background-color: var(--color-brand-hover);
-      color: var(--color-brand-ink);
+      color: var(--color-on-accent);
     }
   }
 
   .menu.menu--semantic-alert [data-scope="menu"][data-part="item"][data-selected] {
     background-color: var(--color-alert);
-    color: var(--color-alert-ink);
+    color: var(--color-on-alert);
     &:hover {
       background-color: var(--color-alert-hover);
     }
@@ -432,27 +410,27 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
 
     &[data-highlighted] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
       background-color: var(--color-alert-hover);
-      color: var(--color-alert-ink);
+      color: var(--color-on-alert);
     }
   }
 
   .menu.menu--semantic-alert [data-scope="menu"][data-part="item"][data-state='checked'] {
     background-color: var(--color-alert);
-    color: var(--color-alert-ink);
+    color: var(--color-on-alert);
     &:hover {
       background-color: var(--color-alert-hover);
     }
@@ -463,27 +441,89 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
 
     &[data-highlighted] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
       background-color: var(--color-alert-hover);
-      color: var(--color-alert-ink);
+      color: var(--color-on-alert);
+    }
+  }
+
+  .menu.menu--semantic-brand [data-scope="menu"][data-part="item"][data-selected] {
+    background-color: var(--color-brand);
+    color: var(--color-on-brand);
+    &:hover {
+      background-color: var(--color-brand-hover);
+    }
+
+    &:active {
+      background-color: var(--color-brand-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-surface-control-muted);
+      cursor: not-allowed;
+    }
+
+    &[data-highlighted] {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+      background-color: var(--color-brand-hover);
+      color: var(--color-on-brand);
+    }
+  }
+
+  .menu.menu--semantic-brand [data-scope="menu"][data-part="item"][data-state='checked'] {
+    background-color: var(--color-brand);
+    color: var(--color-on-brand);
+    &:hover {
+      background-color: var(--color-brand-hover);
+    }
+
+    &:active {
+      background-color: var(--color-brand-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-surface-control-muted);
+      cursor: not-allowed;
+    }
+
+    &[data-highlighted] {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+      background-color: var(--color-brand-hover);
+      color: var(--color-on-brand);
     }
   }
 
   .menu.menu--semantic-info [data-scope="menu"][data-part="item"][data-selected] {
     background-color: var(--color-info);
-    color: var(--color-info-ink);
+    color: var(--color-on-info);
     &:hover {
       background-color: var(--color-info-hover);
     }
@@ -494,27 +534,27 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-info-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
 
     &[data-highlighted] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-info-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
       background-color: var(--color-info-hover);
-      color: var(--color-info-ink);
+      color: var(--color-on-info);
     }
   }
 
   .menu.menu--semantic-info [data-scope="menu"][data-part="item"][data-state='checked'] {
     background-color: var(--color-info);
-    color: var(--color-info-ink);
+    color: var(--color-on-info);
     &:hover {
       background-color: var(--color-info-hover);
     }
@@ -525,89 +565,89 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-info-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
 
     &[data-highlighted] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-info-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
       background-color: var(--color-info-hover);
-      color: var(--color-info-ink);
+      color: var(--color-on-info);
     }
   }
 
-  .menu.menu--semantic-success [data-scope="menu"][data-part="item"][data-selected] {
-    background-color: var(--color-success);
-    color: var(--color-success-ink);
+  .menu.menu--semantic-neutral [data-scope="menu"][data-part="item"][data-selected] {
+    background-color: var(--color-neutral);
+    color: var(--color-on-neutral);
     &:hover {
-      background-color: var(--color-success-hover);
+      background-color: var(--color-neutral-hover);
     }
 
     &:active {
-      background-color: var(--color-success-active);
+      background-color: var(--color-neutral-active);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-success-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
 
     &[data-highlighted] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-success-ink);
-      background-color: var(--color-success-hover);
-      color: var(--color-success-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
+      background-color: var(--color-neutral-hover);
+      color: var(--color-on-neutral);
     }
   }
 
-  .menu.menu--semantic-success [data-scope="menu"][data-part="item"][data-state='checked'] {
-    background-color: var(--color-success);
-    color: var(--color-success-ink);
+  .menu.menu--semantic-neutral [data-scope="menu"][data-part="item"][data-state='checked'] {
+    background-color: var(--color-neutral);
+    color: var(--color-on-neutral);
     &:hover {
-      background-color: var(--color-success-hover);
+      background-color: var(--color-neutral-hover);
     }
 
     &:active {
-      background-color: var(--color-success-active);
+      background-color: var(--color-neutral-active);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-success-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
 
     &[data-highlighted] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-success-ink);
-      background-color: var(--color-success-hover);
-      color: var(--color-success-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
+      background-color: var(--color-neutral-hover);
+      color: var(--color-on-neutral);
     }
   }
 
   .menu.menu--semantic-selected [data-scope="menu"][data-part="item"][data-selected] {
     background-color: var(--color-selected);
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
     &:hover {
       background-color: var(--color-selected-hover);
     }
@@ -618,27 +658,27 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
 
     &[data-highlighted] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
       background-color: var(--color-selected-hover);
-      color: var(--color-selected-ink);
+      color: var(--color-on-selected);
     }
   }
 
   .menu.menu--semantic-selected [data-scope="menu"][data-part="item"][data-state='checked'] {
     background-color: var(--color-selected);
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
     &:hover {
       background-color: var(--color-selected-hover);
     }
@@ -649,27 +689,89 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
 
     &[data-highlighted] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
       background-color: var(--color-selected-hover);
-      color: var(--color-selected-ink);
+      color: var(--color-on-selected);
+    }
+  }
+
+  .menu.menu--semantic-success [data-scope="menu"][data-part="item"][data-selected] {
+    background-color: var(--color-success);
+    color: var(--color-on-success);
+    &:hover {
+      background-color: var(--color-success-hover);
+    }
+
+    &:active {
+      background-color: var(--color-success-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-surface-control-muted);
+      cursor: not-allowed;
+    }
+
+    &[data-highlighted] {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
+      background-color: var(--color-success-hover);
+      color: var(--color-on-success);
+    }
+  }
+
+  .menu.menu--semantic-success [data-scope="menu"][data-part="item"][data-state='checked'] {
+    background-color: var(--color-success);
+    color: var(--color-on-success);
+    &:hover {
+      background-color: var(--color-success-hover);
+    }
+
+    &:active {
+      background-color: var(--color-success-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-surface-control-muted);
+      cursor: not-allowed;
+    }
+
+    &[data-highlighted] {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
+      background-color: var(--color-success-hover);
+      color: var(--color-on-success);
     }
   }
 
   .menu.menu--semantic-accent [data-scope="menu"][data-part="trigger-item"][data-selected] {
     background-color: var(--color-accent);
-    color: var(--color-accent-ink);
+    color: var(--color-on-accent);
     &:hover {
       background-color: var(--color-accent-hover);
     }
@@ -680,27 +782,27 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
 
     &[data-highlighted] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
       background-color: var(--color-accent-hover);
-      color: var(--color-accent-ink);
+      color: var(--color-on-accent);
     }
   }
 
   .menu.menu--semantic-accent [data-scope="menu"][data-part="trigger-item"][data-state='checked'] {
     background-color: var(--color-accent);
-    color: var(--color-accent-ink);
+    color: var(--color-on-accent);
     &:hover {
       background-color: var(--color-accent-hover);
     }
@@ -711,89 +813,27 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
 
     &[data-highlighted] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
       background-color: var(--color-accent-hover);
-      color: var(--color-accent-ink);
-    }
-  }
-
-  .menu.menu--semantic-brand [data-scope="menu"][data-part="trigger-item"][data-selected] {
-    background-color: var(--color-brand);
-    color: var(--color-brand-ink);
-    &:hover {
-      background-color: var(--color-brand-hover);
-    }
-
-    &:active {
-      background-color: var(--color-brand-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-brand-ink);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-ui-muted);
-      cursor: not-allowed;
-    }
-
-    &[data-highlighted] {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-brand-ink);
-      background-color: var(--color-brand-hover);
-      color: var(--color-brand-ink);
-    }
-  }
-
-  .menu.menu--semantic-brand [data-scope="menu"][data-part="trigger-item"][data-state='checked'] {
-    background-color: var(--color-brand);
-    color: var(--color-brand-ink);
-    &:hover {
-      background-color: var(--color-brand-hover);
-    }
-
-    &:active {
-      background-color: var(--color-brand-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-brand-ink);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-ui-muted);
-      cursor: not-allowed;
-    }
-
-    &[data-highlighted] {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-brand-ink);
-      background-color: var(--color-brand-hover);
-      color: var(--color-brand-ink);
+      color: var(--color-on-accent);
     }
   }
 
   .menu.menu--semantic-alert [data-scope="menu"][data-part="trigger-item"][data-selected] {
     background-color: var(--color-alert);
-    color: var(--color-alert-ink);
+    color: var(--color-on-alert);
     &:hover {
       background-color: var(--color-alert-hover);
     }
@@ -804,27 +844,27 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
 
     &[data-highlighted] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
       background-color: var(--color-alert-hover);
-      color: var(--color-alert-ink);
+      color: var(--color-on-alert);
     }
   }
 
   .menu.menu--semantic-alert [data-scope="menu"][data-part="trigger-item"][data-state='checked'] {
     background-color: var(--color-alert);
-    color: var(--color-alert-ink);
+    color: var(--color-on-alert);
     &:hover {
       background-color: var(--color-alert-hover);
     }
@@ -835,27 +875,89 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
 
     &[data-highlighted] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
       background-color: var(--color-alert-hover);
-      color: var(--color-alert-ink);
+      color: var(--color-on-alert);
+    }
+  }
+
+  .menu.menu--semantic-brand [data-scope="menu"][data-part="trigger-item"][data-selected] {
+    background-color: var(--color-brand);
+    color: var(--color-on-brand);
+    &:hover {
+      background-color: var(--color-brand-hover);
+    }
+
+    &:active {
+      background-color: var(--color-brand-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-surface-control-muted);
+      cursor: not-allowed;
+    }
+
+    &[data-highlighted] {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+      background-color: var(--color-brand-hover);
+      color: var(--color-on-brand);
+    }
+  }
+
+  .menu.menu--semantic-brand [data-scope="menu"][data-part="trigger-item"][data-state='checked'] {
+    background-color: var(--color-brand);
+    color: var(--color-on-brand);
+    &:hover {
+      background-color: var(--color-brand-hover);
+    }
+
+    &:active {
+      background-color: var(--color-brand-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-surface-control-muted);
+      cursor: not-allowed;
+    }
+
+    &[data-highlighted] {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+      background-color: var(--color-brand-hover);
+      color: var(--color-on-brand);
     }
   }
 
   .menu.menu--semantic-info [data-scope="menu"][data-part="trigger-item"][data-selected] {
     background-color: var(--color-info);
-    color: var(--color-info-ink);
+    color: var(--color-on-info);
     &:hover {
       background-color: var(--color-info-hover);
     }
@@ -866,27 +968,27 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-info-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
 
     &[data-highlighted] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-info-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
       background-color: var(--color-info-hover);
-      color: var(--color-info-ink);
+      color: var(--color-on-info);
     }
   }
 
   .menu.menu--semantic-info [data-scope="menu"][data-part="trigger-item"][data-state='checked'] {
     background-color: var(--color-info);
-    color: var(--color-info-ink);
+    color: var(--color-on-info);
     &:hover {
       background-color: var(--color-info-hover);
     }
@@ -897,89 +999,89 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-info-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
 
     &[data-highlighted] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-info-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
       background-color: var(--color-info-hover);
-      color: var(--color-info-ink);
+      color: var(--color-on-info);
     }
   }
 
-  .menu.menu--semantic-success [data-scope="menu"][data-part="trigger-item"][data-selected] {
-    background-color: var(--color-success);
-    color: var(--color-success-ink);
+  .menu.menu--semantic-neutral [data-scope="menu"][data-part="trigger-item"][data-selected] {
+    background-color: var(--color-neutral);
+    color: var(--color-on-neutral);
     &:hover {
-      background-color: var(--color-success-hover);
+      background-color: var(--color-neutral-hover);
     }
 
     &:active {
-      background-color: var(--color-success-active);
+      background-color: var(--color-neutral-active);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-success-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
 
     &[data-highlighted] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-success-ink);
-      background-color: var(--color-success-hover);
-      color: var(--color-success-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
+      background-color: var(--color-neutral-hover);
+      color: var(--color-on-neutral);
     }
   }
 
-  .menu.menu--semantic-success [data-scope="menu"][data-part="trigger-item"][data-state='checked'] {
-    background-color: var(--color-success);
-    color: var(--color-success-ink);
+  .menu.menu--semantic-neutral [data-scope="menu"][data-part="trigger-item"][data-state='checked'] {
+    background-color: var(--color-neutral);
+    color: var(--color-on-neutral);
     &:hover {
-      background-color: var(--color-success-hover);
+      background-color: var(--color-neutral-hover);
     }
 
     &:active {
-      background-color: var(--color-success-active);
+      background-color: var(--color-neutral-active);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-success-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
 
     &[data-highlighted] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-success-ink);
-      background-color: var(--color-success-hover);
-      color: var(--color-success-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
+      background-color: var(--color-neutral-hover);
+      color: var(--color-on-neutral);
     }
   }
 
   .menu.menu--semantic-selected [data-scope="menu"][data-part="trigger-item"][data-selected] {
     background-color: var(--color-selected);
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
     &:hover {
       background-color: var(--color-selected-hover);
     }
@@ -990,27 +1092,27 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
 
     &[data-highlighted] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
       background-color: var(--color-selected-hover);
-      color: var(--color-selected-ink);
+      color: var(--color-on-selected);
     }
   }
 
   .menu.menu--semantic-selected [data-scope="menu"][data-part="trigger-item"][data-state='checked'] {
     background-color: var(--color-selected);
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
     &:hover {
       background-color: var(--color-selected-hover);
     }
@@ -1021,21 +1123,83 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
 
     &[data-highlighted] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
       background-color: var(--color-selected-hover);
-      color: var(--color-selected-ink);
+      color: var(--color-on-selected);
+    }
+  }
+
+  .menu.menu--semantic-success [data-scope="menu"][data-part="trigger-item"][data-selected] {
+    background-color: var(--color-success);
+    color: var(--color-on-success);
+    &:hover {
+      background-color: var(--color-success-hover);
+    }
+
+    &:active {
+      background-color: var(--color-success-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-surface-control-muted);
+      cursor: not-allowed;
+    }
+
+    &[data-highlighted] {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
+      background-color: var(--color-success-hover);
+      color: var(--color-on-success);
+    }
+  }
+
+  .menu.menu--semantic-success [data-scope="menu"][data-part="trigger-item"][data-state='checked'] {
+    background-color: var(--color-success);
+    color: var(--color-on-success);
+    &:hover {
+      background-color: var(--color-success-hover);
+    }
+
+    &:active {
+      background-color: var(--color-success-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-surface-control-muted);
+      cursor: not-allowed;
+    }
+
+    &[data-highlighted] {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
+      background-color: var(--color-success-hover);
+      color: var(--color-on-success);
     }
   }
 
@@ -1047,19 +1211,19 @@
     color: inherit;
   }
 
-  .menu.menu--semantic-brand [data-scope="menu"][data-part="item"][data-state='checked'] [data-scope="menu"][data-part="item-text"] {
-    color: inherit;
-  }
-
-  .menu.menu--semantic-brand [data-scope="menu"][data-part="trigger-item"][data-state='checked'] [data-scope="menu"][data-part="item-text"] {
-    color: inherit;
-  }
-
   .menu.menu--semantic-alert [data-scope="menu"][data-part="item"][data-state='checked'] [data-scope="menu"][data-part="item-text"] {
     color: inherit;
   }
 
   .menu.menu--semantic-alert [data-scope="menu"][data-part="trigger-item"][data-state='checked'] [data-scope="menu"][data-part="item-text"] {
+    color: inherit;
+  }
+
+  .menu.menu--semantic-brand [data-scope="menu"][data-part="item"][data-state='checked'] [data-scope="menu"][data-part="item-text"] {
+    color: inherit;
+  }
+
+  .menu.menu--semantic-brand [data-scope="menu"][data-part="trigger-item"][data-state='checked'] [data-scope="menu"][data-part="item-text"] {
     color: inherit;
   }
 
@@ -1071,11 +1235,11 @@
     color: inherit;
   }
 
-  .menu.menu--semantic-success [data-scope="menu"][data-part="item"][data-state='checked'] [data-scope="menu"][data-part="item-text"] {
+  .menu.menu--semantic-neutral [data-scope="menu"][data-part="item"][data-state='checked'] [data-scope="menu"][data-part="item-text"] {
     color: inherit;
   }
 
-  .menu.menu--semantic-success [data-scope="menu"][data-part="trigger-item"][data-state='checked'] [data-scope="menu"][data-part="item-text"] {
+  .menu.menu--semantic-neutral [data-scope="menu"][data-part="trigger-item"][data-state='checked'] [data-scope="menu"][data-part="item-text"] {
     color: inherit;
   }
 
@@ -1084,6 +1248,14 @@
   }
 
   .menu.menu--semantic-selected [data-scope="menu"][data-part="trigger-item"][data-state='checked'] [data-scope="menu"][data-part="item-text"] {
+    color: inherit;
+  }
+
+  .menu.menu--semantic-success [data-scope="menu"][data-part="item"][data-state='checked'] [data-scope="menu"][data-part="item-text"] {
+    color: inherit;
+  }
+
+  .menu.menu--semantic-success [data-scope="menu"][data-part="trigger-item"][data-state='checked'] [data-scope="menu"][data-part="item-text"] {
     color: inherit;
   }
 

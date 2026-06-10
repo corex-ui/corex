@@ -7,8 +7,8 @@ Corex ships **no CSS**. Accessibility, state machines, and component anatomy com
 ## The styling contract
 
 1. **Style attributes** (`semantic`, `size`, `radius`, …) express design intent. They are not inline styles and they do not load CSS.
-2. Corex **translates** those attrs into BEM classes on the host: `accordion`, `accordion--semantic-accent`, `accordion--size-lg`.
-3. **Your stylesheet** defines what those classes look like.
+2. Corex **translates non-nil attrs** into BEM modifiers on the host. Omitted attrs emit **no modifier** (block class only).
+3. **Your stylesheet** (or [Corex Design](styled.html) base CSS) defines what the block and modifiers look like.
 
 ```heex
 <.accordion semantic="accent" size="lg" class="accordion" … />
@@ -18,7 +18,7 @@ Corex ships **no CSS**. Accessibility, state machines, and component anatomy com
 <div class="accordion accordion--semantic-accent accordion--size-lg" data-scope="accordion" …>
 ```
 
-Write rules for `.accordion--semantic-accent` in your CSS. The attrs and classes are hooks; your stylesheet is the paint.
+Bare `class="accordion"` with no attrs emits only `accordion`. With Corex Design, recipe defaults are merged into the `.accordion` base rule in generated CSS.
 
 Want ready-made rules instead? Skip authoring CSS and use [Corex Design](styled.html).
 
@@ -66,36 +66,9 @@ Layout attr values are design shorthand (`gap="md"`, `justify="between"`), not T
 
 ## Allowed values
 
-Hexdocs lists allowed steps for each attr (for example `padding="sm"` on [`Corex.Layout.Box`](Corex.Layout.Box.html)). Those lists come from your app config when Corex compiles:
+Step names are fixed in `Corex.Scales` (`sm`, `md`, `accent`, …). Hexdocs lists allowed steps for each attr (for example `padding="sm"` on [`Corex.Layout.Box`](Corex.Layout.Box.html)).
 
-1. **`config :corex, scales:`** defines step names per axis (`size`, `radius`, `gap`, `space`, …).
-2. **`config :corex, semantics:`** defines role names for `semantic=` attrs.
-3. At compile time, each component bakes the lists into `attr(..., values: [...])`.
-4. Phoenix validates attrs when you render. An unknown step fails validation.
-
-Published Hexdocs show Corex built-in defaults. After you change config, **recompile** your app. New steps also need matching token values if you use [Corex Design](styled.html) ([Design config](design-config.html)).
-
-### Vocabulary config
-
-| Concern | Config | Key | Affects |
-| --- | --- | --- | --- |
-| Axis step names | `:corex` | `:scales` | `size=`, `radius=`, `gap=`, layout padding, etc. |
-| Semantic roles | `:corex` | `:semantics` | `semantic=` on components |
-| Polymorphic looks | `:corex` | `:recipe_looks` | `action` / `navigate` (`as="button"` / `"link"`), `tree_view`, `dialog` |
-
-Example:
-
-```elixir
-config :corex,
-  semantics: ~w(accent brand alert info success selected promo)a,
-  scales: [radius: ~w(none sm md lg xl full)a],
-  recipe_looks: [
-    button: %{
-      base: "button",
-      axes: [semantic: :semantic, variant: :visual, size: :size, shape: :shape, radius: :radius]
-    }
-  ]
-```
+With [Corex Design](styled.html), optional `scales:` may **subset** those steps for smaller CSS. Theme `dimensions` tune how large `md` looks without renaming steps. Run `mix corex.design.lint` after subsetting ([Design config](design-config.html)).
 
 Polymorphic components pick a look with `as`:
 

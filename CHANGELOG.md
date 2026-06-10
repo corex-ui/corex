@@ -45,8 +45,8 @@ and forward caller classes. Styling lives in optional `:corex_design` stylesheet
   tree from the `:corex` package. Per-component vendoring into `assets/corex/` is
   no longer supported.
 - **Migration:** add `{:corex_design, "~> 0.2"}`, register the `:corex_design`
-  compiler, set `config :corex_design` with `output: "assets/css/corex.tailwind.css"`
-  on your app profile, run `mix compile`, and replace per-component
+  compiler, set `config :corex_design, output: "assets/css/corex.tailwind.css", ...`,
+  run `mix compile`, and replace per-component
   `@import "../corex/components/..."` lines with `@import "./corex.tailwind.css";`
   in `app.css`.
 - New apps with `--theme` wire `:corex_design`, the compiler, and CSS imports via

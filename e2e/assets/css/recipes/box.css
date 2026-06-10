@@ -1,7 +1,7 @@
 /* Corex generated design - do not edit */
 
 @utility box--padding-* {
-  padding: --value(--spacing-space-*, [length]);
+  padding: --value(--spacing-*, [length]);
 }
 
 
@@ -13,6 +13,7 @@
 @layer components {
   .box {
     display: block;
+    padding: 0;
   }
 
   .box.box--padding-none {
@@ -20,19 +21,19 @@
   }
 
   .box.box--padding-sm {
-    padding: var(--space-sm);
+    padding: var(--spacing-sm);
   }
 
   .box.box--padding-md {
-    padding: var(--space-md);
+    padding: var(--spacing-md);
   }
 
   .box.box--padding-lg {
-    padding: var(--space-lg);
+    padding: var(--spacing-lg);
   }
 
   .box.box--padding-xl {
-    padding: var(--space-xl);
+    padding: var(--spacing-xl);
   }
 
   .box.box--rounded-none {

@@ -133,9 +133,9 @@ defmodule Corex.New.Patches do
 
   @doc """
   Ensures `config/config.exs` has:
-    * `config :<otp_app>, themes: [...]` when `--theme`
-    * `config :localize, default_locale: :en, supported_locales: [...]` when `--lang`
-    * `config :corex_design, ...` when `--design`
+    * `config :corex_design, output: ...` when `--design`
+    * optional `themes:` on `:corex_design` when `--themes` is passed
+    * `config :localize, ...` when `--lang`
     * esbuild args contain `--format=esm --splitting --target=es2022`
       and `--outdir=../priv/static/assets/js`.
   Idempotent.
@@ -146,7 +146,6 @@ defmodule Corex.New.Patches do
 
     updated =
       content
-      |> maybe_add_themes_to_app_config(opts)
       |> maybe_add_corex_design_themes_config(opts)
       |> maybe_add_localize_config(opts)
       |> maybe_add_corex_generators_config(opts)
@@ -566,51 +565,26 @@ defmodule Corex.New.Patches do
 
       true ->
         marker = "import_config \"#{"#"}{config_env()}.exs\""
-        otp_app = Keyword.fetch!(opts, :otp_app)
-        default_theme = Keyword.get(opts, :default_theme, "neo")
+
+        themes_line =
+          case Keyword.get(opts, :themes) do
+            nil ->
+              ""
+
+            themes ->
+              "  themes: ~w(#{Enum.join(themes, " ")})a,\n"
+          end
+
         block = """
         config :corex_design,
-          default_theme: :#{default_theme},
-          default_mode: :light,
-          #{otp_app}: [
-            output: "assets/css/corex.tailwind.css"
-          ]
-
+          output: "assets/css/corex.tailwind.css",
+        #{themes_line}
         """
 
         if String.contains?(content, marker) do
           String.replace(content, marker, block <> marker, global: false)
         else
           content <> "\n" <> block
-        end
-    end
-  end
-
-  defp maybe_add_themes_to_app_config(content, opts) do
-    otp_app = Keyword.fetch!(opts, :otp_app)
-
-    cond do
-      not Keyword.get(opts, :theme, false) ->
-        content
-
-      String.contains?(content, "themes:") ->
-        content
-
-      true ->
-        themes = Keyword.get(opts, :themes, ["neo"])
-        themes_inline = "[" <> Enum.map_join(themes, ", ", &inspect/1) <> "]"
-
-        app_config_regex =
-          ~r/config :#{Regex.escape(to_string(otp_app))}\s*,[^\n]*\n(?:\s*[a-z_]+:[^\n]*\n)+/u
-
-        case Regex.run(app_config_regex, content) do
-          [block] ->
-            replacement = String.trim_trailing(block, "\n") <> ",\n  themes: #{themes_inline}\n"
-
-            String.replace(content, block, replacement, global: false)
-
-          _ ->
-            content
         end
     end
   end

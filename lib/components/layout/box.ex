@@ -15,8 +15,7 @@ defmodule Corex.Layout.Box do
   use Corex.Variants,
     kind: :layout,
     base: "box",
-    axes: [padding: :space, radius: [:none, :sm, :md, :lg, :xl, :"2xl", :full]],
-    defaults: [padding: "none"]
+    axes: [padding: :space, radius: [:none, :sm, :md, :lg, :xl, :"2xl", :full]]
 
   attr(:tag, :string, default: "div", doc: "The host HTML element.")
   slot(:inner_block, required: true)

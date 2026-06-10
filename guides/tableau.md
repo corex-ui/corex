@@ -57,11 +57,7 @@ In `config/config.exs`:
 
 ```elixir
 config :corex_design,
-  default_theme: :neo,
-  default_mode: :light,
-  my_site: [
-    output: "assets/css/corex.tailwind.css"
-  ]
+  output: "assets/css/corex.tailwind.css"
 ```
 
 ```bash

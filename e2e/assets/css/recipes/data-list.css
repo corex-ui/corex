@@ -12,13 +12,13 @@
 
 @utility data-list--size-* {
   [data-scope="data-list"][data-part="label"] {
-      color: --value(--color-ui-ink-*, [color]);
+      color: --value(--color-on-*, [color]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
 
   [data-scope="data-list"][data-part="item"] {
-      padding: --value(--spacing-space-*, [length]);
+      padding: --value(--spacing-*, [length]);
   }
 
   [data-scope="data-list"][data-part="content"] {
@@ -30,6 +30,28 @@
 
 
 @layer components {
+  .data-list [data-scope="data-list"][data-part="label"] {
+    color: var(--color-on-page);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+
+  .data-list {
+    width: 100%;
+    max-width: var(--container-md);
+    height: auto;
+    max-height: none;
+  }
+
+  .data-list [data-scope="data-list"][data-part="item"] {
+    padding: var(--spacing-md);
+  }
+
+  .data-list [data-scope="data-list"][data-part="content"] {
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+
   .data-list.data-list--w-auto {
     width: auto;
   }
@@ -71,14 +93,14 @@
   }
 
   .data-list {
-    @apply ui-root;
+    @apply part-root;
     width: 100%;
     max-width: var(--container-md);
     overflow: hidden;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     background-color: var(--color-border);
-    color: var(--color-ui-ink);
+    color: var(--color-on-page);
   }
 
   .data-list [data-scope="data-list"][data-part="root"] {
@@ -88,16 +110,16 @@
     font-size: var(--text-base);
     line-height: var(--leading-base);
     background-color: var(--color-border);
-    color: var(--color-ui-ink);
+    color: var(--color-on-page);
     border-radius: var(--radius-md);
     overflow: auto;
     gap: 1px;
     &::-webkit-scrollbar {
-      width: calc(var(--space-sm) * 0.6); height: calc(var(--space-sm) * 0.6)
+      width: calc(var(--spacing-sm) * 0.6); height: calc(var(--spacing-sm) * 0.6)
     }
 
     &::-webkit-scrollbar-track {
-      background: var(--color-ui);
+      background: var(--color-surface-control);
     }
 
     &::-webkit-scrollbar-thumb {
@@ -114,36 +136,36 @@
   }
 
   .data-list [data-scope="data-list"][data-part="empty"] {
-    padding: var(--space-md);
-    background-color: var(--color-layer);
-    color: var(--color-ui-ink-muted);
+    padding: var(--spacing-md);
+    background-color: var(--color-surface-raised);
+    color: var(--color-on-muted);
   }
 
   .data-list [data-scope="data-list"][data-part="item"] {
-    padding: var(--space-md);
+    padding: var(--spacing-md);
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
     transition: background-color 0.2s ease-in-out;
-    gap: var(--space-md);
-    background-color: var(--color-layer);
-    color: var(--color-ui-ink);
+    gap: var(--spacing-md);
+    background-color: var(--color-surface-raised);
+    color: var(--color-on-page);
   }
 
   .data-list [data-scope="data-list"][data-part="root"][data-orientation="horizontal"] .data-list [data-scope="data-list"][data-part="item"] {
     flex-direction: row;
     align-items: baseline;
-    gap: var(--space-lg);
+    gap: var(--spacing-lg);
   }
 
   .data-list [data-scope="data-list"][data-part="label"] {
-    @apply ui-label;
+    @apply part-label;
     flex-shrink: 0;
-    gap: var(--space-md);
+    gap: var(--spacing-md);
     width: 100%;
     & [data-icon] {
-      @apply ui-icon;
+      @apply part-icon;
     }
   }
 
@@ -172,7 +194,7 @@
   .data-list [data-scope="data-list"][data-part="root"][dir="rtl"][data-orientation="horizontal"] .data-list [data-scope="data-list"][data-part="item"] {
     align-items: baseline;
     justify-content: flex-start;
-    gap: var(--space-lg);
+    gap: var(--spacing-lg);
   }
 
   .data-list [data-scope="data-list"][data-part="root"][dir="rtl"] .data-list [data-scope="data-list"][data-part="label"] {

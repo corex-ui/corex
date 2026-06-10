@@ -1,12 +1,12 @@
 defmodule Mix.Tasks.Corex.Design.List do
   use Mix.Task
 
-  @shortdoc "Lists Corex design recipe ids for include_recipes"
+  @shortdoc "Lists Corex design recipe ids for recipes include allowlists"
 
   @moduledoc """
   Prints every recipe id the design compiler knows about, grouped by kind.
 
-  Use these atoms in `config :corex_design, include_recipes: [...]`.
+  Use these atoms in `config :corex_design, recipes: [include: [...]]`.
 
   ## Examples
 
@@ -59,7 +59,7 @@ defmodule Mix.Tasks.Corex.Design.List do
     Mix.shell().info("\nExample allowlist:")
 
     Mix.shell().info(
-      "  config :corex_design, include_recipes: #{inspect(Enum.take(component_ids ++ layout_ids, 5))}"
+      "  config :corex_design, recipes: [include: #{inspect(Enum.take(component_ids ++ layout_ids, 5))}]"
     )
   end
 end

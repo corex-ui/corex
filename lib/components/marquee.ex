@@ -169,12 +169,6 @@ defmodule Corex.Marquee do
       max_height: :max_height,
       semantic: :semantic,
       size: :size
-    ],
-    defaults: [
-      width: "full",
-      max_width: "md",
-      height: "auto",
-      max_height: "none"
     ]
 
   import Corex.Api.Doc

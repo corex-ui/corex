@@ -217,13 +217,6 @@ defmodule Corex.NumberInput do
       semantic: :semantic,
       size: :size,
       radius: :radius
-    ],
-    defaults: [
-      width: "full",
-      max_width: "none",
-      height: "auto",
-      max_height: "none",
-      size: "md"
     ]
 
   import Corex.Api.Doc

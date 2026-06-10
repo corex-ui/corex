@@ -761,14 +761,6 @@ defmodule Corex.Accordion do
       size: :size,
       text: :text,
       radius: :radius
-    ],
-    defaults: [
-      width: "full",
-      max_width: "md",
-      height: "auto",
-      max_height: "none",
-      variant: "subtle",
-      size: "md"
     ]
 
   @doc """

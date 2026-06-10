@@ -251,7 +251,7 @@ defmodule Corex do
   @doc """
   Phoenix endpoint watcher that rebuilds design CSS when host config changes:
 
-      watchers: Corex.watchers(:my_app) ++ [esbuild: {...}]
+      watchers: Corex.watchers() ++ [esbuild: {...}]
 
   The watcher reloads `config/*.exs` and recompiles the design bundle. Tailwind
   `--watch` and LiveReloader handle CSS output refresh in the browser.
@@ -261,9 +261,9 @@ defmodule Corex do
 
       reloadable_compilers: [:gettext] ++ Mix.compilers() ++ [:corex_design]
   """
-  def watchers(profile) when is_atom(profile) do
+  def watchers do
     [
-      corex_design: {Corex.Design, :install_and_run, [profile, ~W(--watch)]}
+      corex_design: {Corex.Design, :install_and_run, [~w(--watch)]}
     ]
   end
 

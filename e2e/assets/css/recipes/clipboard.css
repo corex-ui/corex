@@ -12,11 +12,11 @@
 
 @utility clipboard--size-* {
   [data-scope="clipboard"][data-part="control"] {
-      gap: --value(--spacing-space-*, [length]);
+      gap: --value(--spacing-*, [length]);
   }
 
   [data-scope="clipboard"][data-part="input"] {
-      min-height: --value(--spacing-size-*, [length]);
+      min-height: --value(--spacing-control-*, [length]);
   }
 
   [data-scope="clipboard"][data-part="label"] {
@@ -25,13 +25,13 @@
   }
 
   [data-scope="clipboard"][data-part="root"] {
-      gap: --value(--spacing-space-*, [length]);
+      gap: --value(--spacing-*, [length]);
   }
 
   [data-scope="clipboard"][data-part="trigger"] {
-      min-height: --value(--spacing-size-*, [length]);
-    gap: --value(--spacing-space-*, [length]);
-    padding-inline: --value(--spacing-space-*, [length]);
+      gap: --value(--spacing-*, [length]);
+    padding-inline: --value(--spacing-*, [length]);
+    min-height: --value(--spacing-control-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
@@ -40,6 +40,38 @@
 
 
 @layer components {
+  .clipboard [data-scope="clipboard"][data-part="control"] {
+    gap: var(--spacing-md);
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="input"] {
+    min-height: var(--spacing-control-md);
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="label"] {
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="root"] {
+    gap: var(--spacing-md);
+  }
+
+  .clipboard {
+    width: fit-content;
+    max-width: none;
+    height: auto;
+    max-height: none;
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="trigger"] {
+    gap: var(--spacing-md);
+    padding-inline: var(--spacing-md);
+    min-height: var(--spacing-control-md);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+
   .clipboard.clipboard--w-auto {
     width: auto;
   }
@@ -81,12 +113,12 @@
   }
 
   .clipboard[data-loading] [data-scope="clipboard"][data-part="root"] {
-    @apply ui-loading;
+    @apply part-loading;
   }
 
   .clipboard [data-scope="clipboard"][data-part="root"] {
-    @apply ui-root;
-    gap: var(--space);
+    @apply part-root;
+    gap: var(--spacing-md);
   }
 
   .clipboard [data-scope="clipboard"][data-part="root"][data-orientation="horizontal"] {
@@ -98,14 +130,14 @@
   }
 
   .clipboard [data-scope="clipboard"][data-part="label"] {
-    @apply ui-label;
+    @apply part-label;
   }
 
   .clipboard [data-scope="clipboard"][data-part="control"] {
     display: flex;
     flex-flow: row wrap;
     justify-content: start;
-    gap: var(--space-sm);
+    gap: var(--spacing-sm);
   }
 
   .clipboard [data-scope="clipboard"][data-part="control"][data-orientation="horizontal"] {
@@ -114,7 +146,7 @@
   }
 
   .clipboard [data-scope="clipboard"][data-part="input"] {
-    @apply ui-input;
+    @apply part-input;
     width: auto;
     flex: 0 1 auto;
     max-width: var(--container-md);
@@ -126,20 +158,20 @@
   }
 
   .clipboard [data-scope="clipboard"][data-part="trigger"] {
-    @apply ui-trigger;
+    @apply part-trigger;
   }
 
   .clipboard [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copy"] {
     display: inline-flex;
     align-items: center;
-    gap: var(--space);
+    gap: var(--spacing-md);
     pointer-events: none;
   }
 
   .clipboard [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copied"] {
     display: none;
     align-items: center;
-    gap: var(--space);
+    gap: var(--spacing-md);
     pointer-events: none;
   }
 
@@ -170,22 +202,22 @@
 
   .clipboard.clipboard--size-sm [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copy"],
     .clipboard.clipboard--size-sm [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copied"] {
-    gap: var(--space-sm);
+    gap: var(--spacing-sm);
   }
 
   .clipboard.clipboard--size-md [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copy"],
     .clipboard.clipboard--size-md [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copied"] {
-    gap: var(--space-md);
+    gap: var(--spacing-md);
   }
 
   .clipboard.clipboard--size-lg [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copy"],
     .clipboard.clipboard--size-lg [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copied"] {
-    gap: var(--space-lg);
+    gap: var(--spacing-lg);
   }
 
   .clipboard.clipboard--size-xl [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copy"],
     .clipboard.clipboard--size-xl [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copied"] {
-    gap: var(--space-xl);
+    gap: var(--spacing-xl);
   }
 
   .clipboard.clipboard--w-full [data-scope="clipboard"][data-part="root"] {

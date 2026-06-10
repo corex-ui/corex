@@ -30,18 +30,6 @@ defmodule Corex.Layout.Row do
       grow: :grow,
       shrink: :shrink,
       wrap: :wrap
-    ],
-    defaults: [
-      padding: "none",
-      padding_inline: "none",
-      padding_block: "none",
-      gap: "none",
-      align: "center",
-      justify: "start",
-      width: "none",
-      grow: "none",
-      shrink: "none",
-      wrap: "wrap"
     ]
 
   attr(:tag, :string, default: "div", doc: "The host HTML element.")

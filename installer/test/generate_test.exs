@@ -64,7 +64,8 @@ defmodule Corex.New.GenerateTest do
       assert File.exists?(Path.join(["priv", "gettext", "ar", "LC_MESSAGES", "default.po"]))
 
       config = File.read!("config/config.exs")
-      assert config =~ ~s(themes: ["neo", "uno", "duo", "leo"])
+      assert config =~ "config :corex_design"
+      refute config =~ "config :my_app, themes:"
     end)
   end
 
@@ -179,8 +180,8 @@ defmodule Corex.New.GenerateTest do
                )
 
       config = File.read!("config/config.exs")
-      assert config =~ ~s(themes: ["neo", "duo"])
-      refute config =~ ~s("leo")
+      assert config =~ "themes: ~w(neo duo)a"
+      refute config =~ "leo"
     end)
   end
 
@@ -198,7 +199,7 @@ defmodule Corex.New.GenerateTest do
     end)
   end
 
-  test "normalize_opts uses default theme list when theme is enabled" do
+  test "normalize_opts omits themes key when theme is enabled without custom list" do
     Corex.New.MixHelper.in_tmp("generate themes", fn ->
       ScaffoldHelper.write_phoenix_scaffold!(File.cwd!())
 
@@ -209,7 +210,8 @@ defmodule Corex.New.GenerateTest do
                )
 
       config = File.read!("config/config.exs")
-      assert config =~ ~s(themes: ["neo", "uno", "duo", "leo"])
+      assert config =~ "output: \"assets/css/corex.tailwind.css\""
+      refute config =~ "themes:"
     end)
   end
 end

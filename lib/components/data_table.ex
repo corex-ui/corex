@@ -20,12 +20,6 @@ defmodule Corex.DataTable do
       size: :size,
       semantic: :semantic,
       radius: :radius
-    ],
-    defaults: [
-      width: "full",
-      max_width: "md",
-      height: "auto",
-      max_height: "md"
     ]
 
   require Logger

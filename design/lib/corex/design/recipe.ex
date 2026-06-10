@@ -14,6 +14,7 @@ defmodule Corex.Design.Recipe do
   """
 
   alias Corex.Design.RecipePresets
+  alias Corex.Design.Style
 
   @enforce_keys [:id]
   defstruct id: nil,
@@ -115,6 +116,84 @@ defmodule Corex.Design.Recipe do
   def variant_map(%__MODULE__{variants: variants}) do
     for {axis, values} <- variants, do: {axis, Enum.map(values, fn {v, _} -> to_string(v) end)}
   end
+
+  @doc """
+  Returns the recipe host base sx map (or slot base map) with `default_variants`
+  merged in so bare block-class hosts render default styling without modifiers.
+  """
+  def resolved_base(%__MODULE__{} = recipe) do
+    case recipe.kind do
+      kind when kind in [:style_part_recipe, :slot_recipe, :style_slot_recipe] ->
+        resolve_part_base(recipe)
+
+      _ ->
+        resolve_host_base(recipe)
+    end
+  end
+
+  defp resolve_host_base(recipe) do
+    recipe.base
+    |> sx_map()
+    |> merge_default_variants(recipe.variants, recipe.default_variants)
+  end
+
+  defp resolve_part_base(recipe) do
+    base_slots = slot_base_entries(recipe.base)
+
+    Enum.reduce(recipe.default_variants, base_slots, fn {axis, value}, slots ->
+      case lookup_variant_block(recipe.variants, axis, value) do
+        nil -> slots
+        block -> merge_slot_variant(slots, block)
+      end
+    end)
+  end
+
+  defp merge_default_variants(base, variants, default_variants) do
+    Enum.reduce(default_variants, base, fn {axis, value}, acc ->
+      case lookup_variant_block(variants, axis, value) do
+        nil -> acc
+        block -> Style.merge(acc, sx_map(block))
+      end
+    end)
+  end
+
+  defp merge_slot_variant(slots, variant_block) when is_list(variant_block) do
+    Enum.reduce(variant_block, slots, fn {slot, block}, acc ->
+      current = Map.get(acc, slot, %{})
+      Map.put(acc, slot, Style.merge(current, sx_map(block)))
+    end)
+  end
+
+  defp merge_slot_variant(slots, variant_block) when is_map(variant_block) do
+    if Map.has_key?(variant_block, :host) or Map.has_key?(variant_block, "host") do
+      merge_slot_variant(slots, Map.to_list(variant_block))
+    else
+      Map.update(slots, :host, sx_map(variant_block), &Style.merge(&1, sx_map(variant_block)))
+    end
+  end
+
+  defp merge_slot_variant(slots, _variant_block), do: slots
+
+  defp lookup_variant_block(variants, axis, value) do
+    case Keyword.get(variants, axis) do
+      nil ->
+        nil
+
+      pairs ->
+        Enum.find_value(pairs, fn {candidate, block} ->
+          if variant_value?(candidate, value), do: block
+        end)
+    end
+  end
+
+  defp variant_value?(left, right), do: to_string(left) == to_string(right)
+
+  defp slot_base_entries(base) when is_list(base), do: Map.new(base, fn {slot, sx} -> {slot, sx_map(sx)} end)
+  defp slot_base_entries(base) when is_map(base), do: Map.new(base, fn {slot, sx} -> {slot, sx_map(sx)} end)
+
+  defp sx_map(%{} = map), do: map
+  defp sx_map([]), do: %{}
+  defp sx_map(list) when is_list(list), do: Map.new(list)
 
   @doc """
   Renders the recipe to Tailwind component-layer CSS.

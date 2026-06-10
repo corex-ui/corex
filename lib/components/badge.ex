@@ -18,12 +18,6 @@ defmodule Corex.Badge do
       semantic: :semantic,
       size: :size,
       shape: :shape
-    ],
-    defaults: [
-      width: "fit",
-      max_width: "none",
-      height: "auto",
-      max_height: "none"
     ]
 
   attr(:rest, :global)

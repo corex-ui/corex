@@ -28,9 +28,7 @@ Configure output and themes:
 
 ```elixir
 config :corex_design,
-  output: "assets/css/corex.tailwind.css",
-  default_theme: :neo,
-  default_mode: :light
+  output: "assets/css/corex.tailwind.css"
 ```
 
 Import the bundle from your app CSS:

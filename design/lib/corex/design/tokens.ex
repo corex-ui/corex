@@ -284,6 +284,47 @@ defmodule Corex.Design.Tokens.Scales do
   def breakpoint, do: @breakpoint
   def keyframes, do: @keyframes
 
+  @visual ~W(solid ghost outline subtle)a
+  @shape ~W(auto square circle)a
+
+  def space_steps, do: Enum.map(Keyword.keys(@space_mult), &Atom.to_string/1)
+  def size_steps, do: Enum.map(Keyword.keys(@size_mult), &Atom.to_string/1)
+  def text_steps, do: Enum.map(Keyword.keys(@text), &Atom.to_string/1)
+  def radius_steps, do: Enum.map(Keyword.keys(@radius), &Atom.to_string/1)
+  def weight_steps, do: Enum.map(Keyword.keys(@weight), &Atom.to_string/1)
+  def visual_steps, do: Enum.map(@visual, &Atom.to_string/1)
+  def shape_steps, do: Enum.map(@shape, &Atom.to_string/1)
+
+  def overrides do
+    Corex.Design.Config.resolved_options()
+    |> Keyword.get(:scales, [])
+    |> normalize_overrides()
+  end
+
+  defp normalize_overrides(list) when is_list(list), do: list
+  defp normalize_overrides(map) when is_map(map), do: Map.to_list(map)
+  defp normalize_overrides(_), do: []
+
+  def axis_steps(axis) when is_atom(axis) do
+    overrides()
+    |> Keyword.get(axis)
+    |> case do
+      nil -> default_steps(axis)
+      steps -> Enum.map(steps, &normalize_step/1)
+    end
+  end
+
+  defp default_steps(:space), do: space_steps()
+  defp default_steps(:size), do: size_steps()
+  defp default_steps(:text), do: text_steps()
+  defp default_steps(:radius), do: radius_steps()
+  defp default_steps(:weight), do: weight_steps()
+  defp default_steps(:visual), do: visual_steps()
+  defp default_steps(:shape), do: shape_steps()
+
+  defp normalize_step(step) when is_atom(step), do: Atom.to_string(step)
+  defp normalize_step(step) when is_binary(step), do: step
+
   @doc "Formats a number as a `rem` length with trailing zeros trimmed."
   def rem_value(value) when is_number(value), do: trim(value) <> "rem"
 

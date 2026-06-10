@@ -16,11 +16,10 @@ Static Tableau sites use the same `data-theme` pattern without plugs—see [Tabl
 
 ## How it works
 
-1. **`config :corex_design, themes: %{...}`** defines colors, radii, spacing, and type per theme (see [Design config](design-config.html)). Use built-in presets or custom specs; run `mix compile` after edits.
-2. **`config :my_app, :themes`** lists theme ids for the picker plug (must match the design config keys).
-3. **`Plugs.Theme`** reads `phx_theme`, validates against config, assigns `:theme`.
-4. **Bridge script** reconciles `localStorage`, `data-theme`, and the default.
-5. **`<.select on_value_change_client="phx:set-theme">`** updates theme without a server round-trip.
+1. **`config :corex_design`** defines output path, optional theme catalog, and compile options (see [Design config](design-config.html)). Built-in presets are neo, uno, duo, leo.
+2. **`Plugs.Theme`** reads `Corex.Design.Theme.picker_ids/0` and `default_theme/0` for the allowlist and default.
+3. **Bridge script** reconciles `localStorage`, `data-theme`, and the default.
+4. **`<.select on_value_change_client="phx:set-theme">`** updates theme without a server round-trip.
 
 <!-- tabs-open -->
 
@@ -29,8 +28,11 @@ Static Tableau sites use the same `data-theme` pattern without plugs—see [Tabl
 `config/config.exs`:
 
 ```elixir
-config :my_app, :themes, ~w(neo uno duo leo)
+config :corex_design,
+  output: "assets/css/corex.tailwind.css"
 ```
+
+Optional subset: `themes: ~w(neo leo)a`. Omit `themes` for all four presets.
 
 `lib/my_app_web/plugs/theme.ex`:
 
@@ -41,8 +43,8 @@ defmodule MyAppWeb.Plugs.Theme do
   def init(opts), do: opts
 
   def call(conn, _opts) do
-    themes = Application.get_env(:my_app, :themes, ["neo"])
-    default_theme = List.first(themes) || "neo"
+    themes = Corex.Design.Theme.picker_ids()
+    default_theme = Corex.Design.Theme.default_theme() |> Atom.to_string()
 
     theme =
       conn.cookies["phx_theme"]

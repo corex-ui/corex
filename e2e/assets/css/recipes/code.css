@@ -32,6 +32,15 @@
 
 
 @layer components {
+  .code {
+    width: 100%;
+    max-width: var(--container-md);
+    height: auto;
+    max-height: none;
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+  }
+
   .code.code--w-auto {
     width: auto;
   }
@@ -65,33 +74,33 @@
   }
 
   .code.code--size-sm {
-    min-height: var(--size-sm);
-    gap: var(--space-sm);
-    padding-inline: var(--space-sm);
+    gap: var(--spacing-sm);
+    padding-inline: var(--spacing-sm);
+    min-height: var(--spacing-control-sm);
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
   }
 
   .code.code--size-md {
-    min-height: var(--size-md);
-    gap: var(--space-md);
-    padding-inline: var(--space-md);
+    gap: var(--spacing-md);
+    padding-inline: var(--spacing-md);
+    min-height: var(--spacing-control-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
   }
 
   .code.code--size-lg {
-    min-height: var(--size-lg);
-    gap: var(--space-lg);
-    padding-inline: var(--space-lg);
+    gap: var(--spacing-lg);
+    padding-inline: var(--spacing-lg);
+    min-height: var(--spacing-control-lg);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
   }
 
   .code.code--size-xl {
-    min-height: var(--size-xl);
-    gap: var(--space-xl);
-    padding-inline: var(--space-xl);
+    gap: var(--spacing-xl);
+    padding-inline: var(--spacing-xl);
+    min-height: var(--spacing-control-xl);
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
   }
@@ -200,16 +209,16 @@
   }
 
   pre.code {
-    background-image: linear-gradient(var(--color-root) 50%, var(--color-layer) 50%);
+    background-image: linear-gradient(var(--color-surface-page) 50%, var(--color-surface-raised) 50%);
     background-size: 100% 2lh;
     background-origin: content-box;
     background-attachment: local;
     background-position: 0 0;
     width: 100%;
     font-family: var(--font-mono);
-    padding: var(--space-md);
-    background-color: var(--color-ui);
-    color: var(--color-ui-ink);
+    padding: var(--spacing-md);
+    background-color: var(--color-surface-control);
+    color: var(--color-on-page);
     border: 1px solid var(--color-border);
     overflow: auto;
     min-width: 0;
@@ -217,7 +226,7 @@
     white-space: pre;
     & code[data-part="content"] {
       display: block;
-      padding-inline-end: var(--space-xl);
+      padding-inline-end: var(--spacing-xl);
       white-space: pre;
     }
   }
@@ -230,12 +239,12 @@
     overflow: visible;
     vertical-align: baseline;
     font-family: var(--font-mono);
-    padding-inline: var(--space-sm);
+    padding-inline: var(--spacing-sm);
     padding-block: 0.12em;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
-    background-color: var(--color-layer);
-    color: var(--color-ui-ink);
+    background-color: var(--color-surface-raised);
+    color: var(--color-on-page);
     user-select: all;
     & > span[data-part="content"] {
       overflow-wrap: break-word;

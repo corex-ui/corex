@@ -165,12 +165,6 @@ defmodule Corex.FloatingPanel do
       max_height: :max_height,
       semantic: :semantic,
       radius: :radius
-    ],
-    defaults: [
-      width: "fit",
-      max_width: "none",
-      height: "auto",
-      max_height: "none"
     ]
 
   import Corex.Api.Doc

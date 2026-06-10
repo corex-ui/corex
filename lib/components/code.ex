@@ -105,13 +105,6 @@ defmodule Corex.Code do
       size: :size,
       text: :text,
       max_width: :max_width
-    ],
-    defaults: [
-      width: "full",
-      max_width: "md",
-      height: "auto",
-      max_height: "none",
-      text: "sm"
     ]
 
   attr(:code, :string, required: true, doc: "The raw source code to display")

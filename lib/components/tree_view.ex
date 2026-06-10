@@ -418,10 +418,19 @@ defmodule Corex.TreeView do
   alias Corex.TreeView.Connect
 
   use Corex.Variants,
-    kind: :recipe,
-    recipes: [:treeview, :navigation],
-    default: :treeview,
-    defaults: [width: "full", max_width: "md", height: "auto", max_height: "none", size: "md"]
+    kind: :polymorphic,
+    looks: [treeview: "tree-view", navigation: "tree-navigation"],
+    default_as: :treeview,
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size,
+      text: :text,
+      radius: :radius
+    ]
 
   @doc """
   Renders a tree view. Pass `items` as `Corex.Tree.new/1`. Component id = tree root id; names capitalized from labels.

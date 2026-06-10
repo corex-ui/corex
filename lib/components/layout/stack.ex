@@ -32,20 +32,6 @@ defmodule Corex.Layout.Stack do
       direction: :direction,
       variant: [:none, :layer],
       radius: [:none, :sm, :md, :lg, :xl, :"2xl", :full]
-    ],
-    defaults: [
-      padding: "none",
-      padding_inline: "none",
-      padding_block: "none",
-      gap: "none",
-      align: "stretch",
-      justify: "start",
-      width: "none",
-      grow: "none",
-      shrink: "none",
-      direction: "column",
-      variant: "none",
-      radius: "none"
     ]
 
   attr(:tag, :string, default: "div", doc: "The host HTML element.")

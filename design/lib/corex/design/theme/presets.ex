@@ -4,7 +4,7 @@ defmodule Corex.Design.Theme.Presets do
   directly:
 
       config :corex_design,
-        themes: Corex.Design.Theme.Presets.all()
+        output: "assets/css/corex.tailwind.css"
   """
 
   alias Corex.Design.Theme
@@ -23,7 +23,7 @@ defmodule Corex.Design.Theme.Presets do
 
   defp neo_raw do
     %{
-      seeds: neo_seeds(),
+      palette: neo_palette(),
       colors: %{light: neo_light_colors(), dark: neo_dark_colors()},
       dimensions: neo_dimensions()
     }
@@ -31,39 +31,35 @@ defmodule Corex.Design.Theme.Presets do
 
   defp uno_overrides do
     %{
-      seeds: uno_seeds(),
+      palette: uno_palette(),
       colors: %{
         light: %{
           surface: %{
-            layer: %{lightness: 97},
-            root: %{lightness: 100},
-            ui: %{
+            raised: %{lightness: 97},
+            page: %{lightness: 100},
+            control: %{
               lightness: 94,
               states: %{muted: 97, default: 94, hover: 90, active: 87}
             }
           },
-          utility: %{
-            border: %{ratio: 1.12},
-            outline: %{ratio: 2.2},
-            shadow: %{ratio: 1.1}
-          },
-          ink: %{default: %{ratio: 8.5}}
+          border: %{ratio: 1.12},
+          focus: %{ratio: 2.2},
+          shadow: %{ratio: 1.1},
+          on: %{page: %{ratio: 8.5}}
         },
         dark: %{
           surface: %{
-            layer: %{lightness: 14},
-            root: %{lightness: 7},
-            ui: %{
+            raised: %{lightness: 14},
+            page: %{lightness: 7},
+            control: %{
               lightness: 24,
               states: %{muted: 27, default: 24, hover: 20, active: 17}
             }
           },
-          utility: %{
-            border: %{ratio: 1.18},
-            outline: %{ratio: 2.4},
-            shadow: %{ratio: 1.22}
-          },
-          ink: %{default: %{ratio: 12.25}}
+          border: %{ratio: 1.18},
+          focus: %{ratio: 2.4},
+          shadow: %{ratio: 1.22},
+          on: %{page: %{ratio: 12.25}}
         }
       },
       dimensions: %{
@@ -79,24 +75,22 @@ defmodule Corex.Design.Theme.Presets do
 
   defp duo_overrides do
     %{
-      seeds: duo_seeds(),
+      palette: duo_palette(),
       colors: %{
         light: %{
           surface: %{
-            layer: %{lightness: 97},
-            root: %{lightness: 99},
-            ui: %{
+            raised: %{lightness: 97},
+            page: %{lightness: 99},
+            control: %{
               lightness: 92,
               states: %{muted: 95, default: 92, hover: 88, active: 85}
             }
           },
-          utility: %{
-            border: %{ratio: 1.14},
-            outline: %{ratio: 2.2},
-            shadow: %{ratio: 1.07}
-          },
-          ink: %{default: %{ratio: 8.25}},
-          semantic: %{
+          border: %{ratio: 1.14},
+          focus: %{ratio: 2.2},
+          shadow: %{ratio: 1.07},
+          on: %{page: %{ratio: 8.25}},
+          roles: %{
             accent: %{
               lightness: 42,
               states: %{muted: 45, default: 42, hover: 38, active: 35}
@@ -104,25 +98,22 @@ defmodule Corex.Design.Theme.Presets do
             brand: %{
               lightness: 38,
               states: %{muted: 41, default: 38, hover: 34, active: 31}
-            },
-            selected: %{ink: %{color: "brand", ratio: 7}}
+            }
           }
         },
         dark: %{
           surface: %{
-            layer: %{lightness: 16},
-            root: %{lightness: 10},
-            ui: %{
+            raised: %{lightness: 16},
+            page: %{lightness: 10},
+            control: %{
               lightness: 24,
               states: %{muted: 27, default: 24, hover: 20, active: 17}
             }
           },
-          utility: %{
-            border: %{ratio: 1.2},
-            outline: %{ratio: 2.4},
-            shadow: %{ratio: 1.23}
-          },
-          ink: %{default: %{ratio: 12.1}}
+          border: %{ratio: 1.2},
+          focus: %{ratio: 2.4},
+          shadow: %{ratio: 1.23},
+          on: %{page: %{ratio: 12.1}}
         }
       },
       dimensions: %{
@@ -138,24 +129,22 @@ defmodule Corex.Design.Theme.Presets do
 
   defp leo_overrides do
     %{
-      seeds: leo_seeds(),
+      palette: leo_palette(),
       colors: %{
         light: %{
           surface: %{
-            layer: %{lightness: 96},
-            root: %{lightness: 98},
-            ui: %{
+            raised: %{lightness: 96},
+            page: %{lightness: 98},
+            control: %{
               lightness: 92,
               states: %{muted: 95, default: 92, hover: 88, active: 85}
             }
           },
-          utility: %{
-            border: %{ratio: 1.14},
-            outline: %{ratio: 2.2},
-            shadow: %{ratio: 1.07}
-          },
-          ink: %{default: %{ratio: 8.25}},
-          semantic: %{
+          border: %{ratio: 1.14},
+          focus: %{ratio: 2.2},
+          shadow: %{ratio: 1.07},
+          on: %{page: %{ratio: 8.25}},
+          roles: %{
             accent: %{
               lightness: 36,
               states: %{muted: 39, default: 36, hover: 32, active: 29}
@@ -172,19 +161,17 @@ defmodule Corex.Design.Theme.Presets do
         },
         dark: %{
           surface: %{
-            layer: %{lightness: 16},
-            root: %{lightness: 9},
-            ui: %{
+            raised: %{lightness: 16},
+            page: %{lightness: 9},
+            control: %{
               lightness: 24,
               states: %{muted: 27, default: 24, hover: 20, active: 17}
             }
           },
-          utility: %{
-            border: %{ratio: 1.2},
-            outline: %{ratio: 2.4},
-            shadow: %{ratio: 1.23}
-          },
-          ink: %{default: %{ratio: 12.1}}
+          border: %{ratio: 1.2},
+          focus: %{ratio: 2.4},
+          shadow: %{ratio: 1.23},
+          on: %{page: %{ratio: 12.1}}
         }
       },
       dimensions: %{
@@ -265,100 +252,78 @@ defmodule Corex.Design.Theme.Presets do
     }
   end
 
-  defp neo_seeds do
+  defp neo_palette do
     %{
-      "accent" => "#4B4B4B",
-      "alert" => "#A43C3C",
-      "base" => "#F0F0F0",
-      "brand" => "#32479C",
-      "info" => "#1F77D4",
-      "success" => "#059669"
+      neutral: "#F0F0F0",
+      accent: "#4B4B4B",
+      alert: "#A43C3C",
+      brand: "#32479C",
+      info: "#1F77D4",
+      success: "#059669"
     }
   end
 
-  defp uno_seeds do
+  defp uno_palette do
     %{
-      "accent" => "#475569",
-      "alert" => "#B91C1C",
-      "base" => "#EEF2F7",
-      "brand" => "#0E7490",
-      "info" => "#0369A1",
-      "success" => "#047857"
+      neutral: "#EEF2F7",
+      accent: "#475569",
+      alert: "#B91C1C",
+      brand: "#0E7490",
+      info: "#0369A1",
+      success: "#047857"
     }
   end
 
-  defp duo_seeds do
+  defp duo_palette do
     %{
-      "accent" => "#57534E",
-      "alert" => "#9F1239",
-      "base" => "#FAF7F2",
-      "brand" => "#5B21B6",
-      "info" => "#1D4ED8",
-      "success" => "#15803D"
+      neutral: "#FAF7F2",
+      accent: "#57534E",
+      alert: "#9F1239",
+      brand: "#5B21B6",
+      info: "#1D4ED8",
+      success: "#15803D"
     }
   end
 
-  defp leo_seeds do
+  defp leo_palette do
     %{
-      "accent" => "#3F3F46",
-      "alert" => "#991B1B",
-      "base" => "#F4F4F5",
-      "brand" => "#B45309",
-      "info" => "#1E40AF",
-      "success" => "#166534"
+      neutral: "#F4F4F5",
+      accent: "#3F3F46",
+      alert: "#991B1B",
+      brand: "#B45309",
+      info: "#1E40AF",
+      success: "#166534"
     }
   end
 
   defp neo_light_colors do
     %{
-      ink: %{
-        accent: %{color: "accent", ratio: 6},
-        alert: %{color: "alert", ratio: 6},
-        brand: %{color: "brand", ratio: 6},
-        default: %{color: "base", ratio: 8},
-        info: %{color: "info", ratio: 6},
-        link: %{color: "info", ratio: 6},
-        muted: %{color: "base", ratio: 5.15},
-        success: %{color: "success", ratio: 6}
-      },
-      semantic: neo_light_semantic(),
       surface: neo_light_surface(),
-      utility: %{
-        border: %{color: "base", ratio: 1.12},
-        outline: %{color: "base", ratio: 2.2},
-        shadow: %{color: "base", ratio: 1.05}
-      }
+      roles: neo_light_roles(),
+      on: neo_light_on(),
+      border: %{palette: :neutral, against: :control, ratio: 1.12},
+      focus: %{palette: :neutral, against: :control, ratio: 2.2},
+      shadow: %{palette: :neutral, against: :page, ratio: 1.05}
     }
   end
 
   defp neo_dark_colors do
     %{
-      ink: %{
-        accent: %{color: "accent", ratio: 7.5},
-        alert: %{color: "alert", ratio: 7.5},
-        brand: %{color: "brand", ratio: 7.5},
-        default: %{color: "base", ratio: 12},
-        info: %{color: "info", ratio: 7.5},
-        link: %{color: "info", ratio: 7.5},
-        muted: %{color: "base", ratio: 6},
-        success: %{color: "success", ratio: 7.5}
-      },
-      semantic: neo_dark_semantic(),
       surface: neo_dark_surface(),
-      utility: %{
-        border: %{color: "base", ratio: 1.18},
-        outline: %{color: "base", ratio: 2.4},
-        shadow: %{color: "base", ratio: 1.2}
-      }
+      roles: neo_dark_roles(),
+      on: neo_dark_on(),
+      border: %{palette: :neutral, against: :control, ratio: 1.18},
+      focus: %{palette: :neutral, against: :control, ratio: 2.4},
+      shadow: %{palette: :neutral, against: :page, ratio: 1.2}
     }
   end
 
   defp neo_light_surface do
     %{
-      layer: %{color: "base", lightness: 97},
-      root: %{color: "base", lightness: 98},
-      ui: %{
-        color: "base",
+      page: %{palette: :neutral, lightness: 98},
+      raised: %{palette: :neutral, lightness: 97},
+      control: %{
+        palette: :neutral,
         lightness: 94,
         states: %{muted: 97, default: 94, hover: 90, active: 87}
       }
@@ -367,78 +332,86 @@ defmodule Corex.Design.Theme.Presets do
 
   defp neo_dark_surface do
     %{
-      layer: %{color: "base", lightness: 15},
-      root: %{color: "base", lightness: 8},
-      ui: %{
-        color: "base",
+      page: %{palette: :neutral, lightness: 8},
+      raised: %{palette: :neutral, lightness: 15},
+      control: %{
+        palette: :neutral,
         lightness: 24,
         states: %{muted: 27, default: 24, hover: 20, active: 17}
       }
     }
   end
 
-  defp neo_light_semantic do
-    fill = %{
-      lightness: 40,
-      states: %{muted: 43, default: 40, hover: 36, active: 33}
-    }
-
-    ink = %{color: "base", ratio: 7}
-
+  defp neo_light_on do
     %{
-      accent: Map.merge(fill, %{bg: "accent", ink: ink}),
-      alert: Map.merge(fill, %{bg: "alert", ink: ink}),
-      brand: Map.merge(fill, %{bg: "brand", ink: ink}),
-      info: Map.merge(fill, %{bg: "info", ink: ink}),
-      selected: %{
-        bg: "base",
-        lightness: 85,
-        states: %{muted: 88, default: 85, hover: 81, active: 78},
-        ink: ink
-      },
-      success: Map.merge(fill, %{bg: "success", ink: ink})
+      page: %{palette: :neutral, against: :page, ratio: 8},
+      muted: %{palette: :neutral, against: :page, ratio: 5.15},
+      link: %{palette: :info, against: :page, ratio: 6},
+      control: %{palette: :neutral, against: :control, ratio: 8}
     }
   end
 
-  defp neo_dark_semantic do
-    ink = %{color: "base", ratio: 7}
+  defp neo_dark_on do
+    %{
+      page: %{palette: :neutral, against: :page, ratio: 12},
+      muted: %{palette: :neutral, against: :page, ratio: 6},
+      link: %{palette: :info, against: :page, ratio: 7.5},
+      control: %{palette: :neutral, against: :control, ratio: 12}
+    }
+  end
+
+  defp neo_light_roles do
+    fill = %{
+      lightness: 40,
+      states: %{muted: 43, default: 40, hover: 36, active: 33},
+      component: true
+    }
 
     %{
-      accent: %{
-        bg: "accent",
-        lightness: 52,
-        states: %{muted: 55, default: 52, hover: 48, active: 45},
-        ink: ink
-      },
-      alert: %{
-        bg: "alert",
-        lightness: 48,
-        states: %{muted: 51, default: 48, hover: 44, active: 41},
-        ink: ink
-      },
-      brand: %{
-        bg: "brand",
-        lightness: 48,
-        states: %{muted: 51, default: 48, hover: 44, active: 41},
-        ink: ink
-      },
-      info: %{
-        bg: "info",
-        lightness: 48,
-        states: %{muted: 51, default: 48, hover: 44, active: 41},
-        ink: ink
+      accent: Map.merge(fill, %{palette: :accent}),
+      alert: Map.merge(fill, %{palette: :alert}),
+      brand: Map.merge(fill, %{palette: :brand}),
+      info: Map.merge(fill, %{palette: :info}),
+      success: Map.merge(fill, %{palette: :success}),
+      neutral: %{
+        palette: :neutral,
+        lightness: 94,
+        states: %{muted: 97, default: 94, hover: 90, active: 87},
+        component: true
       },
       selected: %{
-        bg: "base",
+        palette: :neutral,
+        lightness: 85,
+        states: %{muted: 88, default: 85, hover: 81, active: 78},
+        component: true
+      }
+    }
+  end
+
+  defp neo_dark_roles do
+    fill = %{
+      lightness: 48,
+      states: %{muted: 51, default: 48, hover: 44, active: 41},
+      component: true
+    }
+
+    %{
+      accent: Map.merge(fill, %{palette: :accent}),
+      alert: Map.merge(fill, %{palette: :alert}),
+      brand: Map.merge(fill, %{palette: :brand}),
+      info: Map.merge(fill, %{palette: :info}),
+      success: Map.merge(fill, %{palette: :success}),
+      neutral: %{
+        palette: :neutral,
+        lightness: 24,
+        states: %{muted: 27, default: 24, hover: 20, active: 17},
+        component: true
+      },
+      selected: %{
+        palette: :neutral,
         lightness: 34,
         states: %{muted: 37, default: 34, hover: 30, active: 27},
-        ink: ink
-      },
-      success: %{
-        bg: "success",
-        lightness: 48,
-        states: %{muted: 51, default: 48, hover: 44, active: 41},
-        ink: ink
+        component: true
       }
     }
   end

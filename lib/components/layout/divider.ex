@@ -16,8 +16,7 @@ defmodule Corex.Layout.Divider do
   use Corex.Variants,
     kind: :layout,
     base: "divider",
-    axes: [orientation: :orientation],
-    defaults: [orientation: "horizontal"]
+    axes: [orientation: :orientation]
 
   attr(:tag, :string, default: "hr", doc: "The host HTML element.")
 

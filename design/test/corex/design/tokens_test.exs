@@ -38,7 +38,8 @@ defmodule Corex.Design.TokensTest do
 
   describe "Var" do
     test "name and ref build dashed custom properties" do
-      assert Var.name([:space, :sm]) == "--space-sm"
+      assert Var.name([:space, :sm]) == "--spacing-sm"
+      assert Var.name([:size, :md]) == "--spacing-control-md"
       assert Var.name([:leading, :"2xl"]) == "--leading-2xl"
       assert Var.ref([:"font-weight", :normal]) == "var(--font-weight-normal)"
     end
@@ -60,7 +61,11 @@ defmodule Corex.Design.TokensTest do
       assert Theme.default_theme() == :neo
       assert Theme.default_mode() == :light
 
-      CorexDesign.TestConfig.put(default_theme: :uno, default_mode: :dark)
+      CorexDesign.TestConfig.put(
+        output: "assets/css/corex.tailwind.css",
+        default_theme: :uno,
+        default_mode: :dark
+      )
       assert Theme.default_theme() == :uno
       assert Theme.default_mode() == :dark
     end
@@ -91,13 +96,13 @@ defmodule Corex.Design.TokensTest do
       assert root["--leading-base"] == "1.5"
       assert root["--font-weight-normal"] == "400"
       assert root["--spacing"] == "0.25rem"
-      assert root["--space-lg"] == "calc(var(--spacing) * 4)"
-      assert root["--space"] == "calc(var(--spacing) * 3)"
-      assert root["--size"] == "calc(var(--spacing) * 10)"
+      assert root["--spacing-lg"] == "calc(var(--spacing) * 4)"
+      assert root["--spacing-md"] == "calc(var(--spacing) * 3)"
+      assert root["--spacing-control-md"] == "calc(var(--spacing) * 10)"
       assert root["--radius"] == "0.375rem"
       assert root["--radius-md"] == "0.375rem"
       assert root["--radius-full"] == "9999px"
-      assert Map.has_key?(root, "--color-ui-ink")
+      assert Map.has_key?(root, "--color-on-page")
       assert Map.has_key?(root, "--color-accent")
       assert Map.has_key?(root, "--font-sans")
       assert Map.has_key?(root, "--font-display")
@@ -131,36 +136,22 @@ defmodule Corex.Design.TokensTest do
       css = Emit.Theme.css()
       root = parse_block(css, ":root")
 
-      assert root["--space-lg"] == "calc(var(--spacing) * 4)"
-      assert root["--color-ui-ink"]
+      assert root["--spacing-lg"] == "calc(var(--spacing) * 4)"
+      assert root["--color-on-page"]
     end
 
-    test "source layer aliases tailwind keys to the corex runtime variables" do
-      CorexDesign.TestConfig.put([])
-      css = Emit.Theme.css()
-
-      assert css =~ "--theme-spacing-space-lg: var(--space-lg);"
-      assert css =~ "--theme-spacing: var(--spacing);"
-      assert css =~ "--theme-spacing-size-md: var(--size-md);"
-      assert css =~ "--theme-font-weight-bold: var(--font-weight-bold);"
-      assert css =~ "--theme-color-ui-ink: var(--color-ui-ink);"
-      assert css =~ "--theme-font-display: var(--font-display);"
-      assert css =~ "--theme-font-mono: var(--font-mono);"
-      assert css =~ "--theme-font-code: var(--font-code);"
-      assert css =~ "--theme-radius-lg: var(--radius-lg);"
-    end
-
-    test "@theme inline bridges tailwind namespaces to the source layer" do
+    test "@theme inline aliases tailwind namespaces to runtime variables" do
       CorexDesign.TestConfig.put([])
       css = Emit.Theme.css()
       theme = parse_block(css, "@theme inline")
 
-      assert theme["--spacing-space-lg"] == "var(--theme-spacing-space-lg)"
-      assert theme["--spacing"] == "var(--theme-spacing)"
-      assert theme["--font-weight-bold"] == "var(--theme-font-weight-bold)"
-      assert theme["--color-ui-ink"] == "var(--theme-color-ui-ink)"
-      assert theme["--font-display"] == "var(--theme-font-display)"
-      assert theme["--font-mono"] == "var(--theme-font-mono)"
+      assert theme["--spacing-lg"] == "var(--spacing-lg)"
+      assert theme["--spacing"] == "var(--spacing)"
+      assert theme["--spacing-control-md"] == "var(--spacing-control-md)"
+      assert theme["--font-weight-bold"] == "var(--font-weight-bold)"
+      assert theme["--color-on-page"] == "var(--color-on-page)"
+      assert theme["--font-display"] == "var(--font-display)"
+      assert theme["--font-mono"] == "var(--font-mono)"
     end
   end
 end

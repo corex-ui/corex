@@ -201,13 +201,6 @@ defmodule Corex.Tooltip do
       size: :size,
       text: :text,
       radius: :radius
-    ],
-    defaults: [
-      width: "fit",
-      max_width: "none",
-      height: "auto",
-      max_height: "none",
-      size: "md"
     ]
 
   attr(:id, :string,

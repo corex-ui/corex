@@ -259,13 +259,6 @@ defmodule Corex.PasswordInput do
       semantic: :semantic,
       size: :size,
       radius: :radius
-    ],
-    defaults: [
-      width: "full",
-      max_width: "xs",
-      height: "auto",
-      max_height: "none",
-      size: "md"
     ]
 
   import Corex.Api.Doc

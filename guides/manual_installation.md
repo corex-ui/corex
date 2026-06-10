@@ -185,14 +185,10 @@ compilers: [:phoenix_live_view] ++ Mix.compilers() ++ [:corex_design]
 ```elixir
 # config/config.exs
 config :corex_design,
-  default_theme: :neo,
-  default_mode: :light,
-  my_app: [
-    output: "assets/css/corex.tailwind.css"
-  ]
+  output: "assets/css/corex.tailwind.css"
 ```
 
-Replace `:my_app` with your OTP app name. Omit `:themes` to use built-in presets. Then:
+Omit optional keys to use built-in presets. Then:
 
 ```bash
 mix deps.get
@@ -444,7 +440,7 @@ To upgrade an existing app, see [Updating Corex](update.html).
 
 ### Configuration
 
-- [Unstyled](unstyled.html) — modifier classes, axis vocabulary, `config :corex`
+- [Unstyled](unstyled.html) — modifier classes, axis vocabulary, `config :corex_design`
 - [Styled](styled.html) — Corex Design CSS setup
 - [Design config](design-config.html) — themes, validation, recipe overrides
 - [Installation](installation.html) — generator options (`config :corex, :generators`)

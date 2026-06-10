@@ -1,7 +1,17 @@
 defmodule Corex.Design.Semantics do
   @moduledoc false
 
-  def atoms, do: Corex.Scales.semantic_atoms()
+  alias Corex.Design.Vocabulary
+
+  @fallback ~W(accent brand alert info success selected neutral)a
+
+  def atoms do
+    if Corex.Design.configured?() do
+      Vocabulary.semantic_roles()
+    else
+      @fallback
+    end
+  end
 
   def strings, do: Enum.map(atoms(), &Atom.to_string/1)
 

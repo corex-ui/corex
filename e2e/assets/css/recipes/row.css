@@ -1,29 +1,34 @@
 /* Corex generated design - do not edit */
 
 @utility row--padding-* {
-  padding: --value(--spacing-space-*, [length]);
+  padding: --value(--spacing-*, [length]);
 }
 
 
 @utility row--padding-inline-* {
-  padding-inline: --value(--spacing-space-*, [length]);
+  padding-inline: --value(--spacing-*, [length]);
 }
 
 
 @utility row--padding-block-* {
-  padding-block: --value(--spacing-space-*, [length]);
+  padding-block: --value(--spacing-*, [length]);
 }
 
 
 @utility row--gap-* {
-  gap: --value(--spacing-space-*, [length]);
+  gap: --value(--spacing-*, [length]);
 }
 
 
 @layer components {
   .row {
     display: flex;
+    padding: 0;
+    gap: 0;
+    padding-inline: 0;
+    padding-block: 0;
     align-items: center;
+    justify-content: flex-start;
     flex-flow: row wrap;
   }
 
@@ -32,19 +37,19 @@
   }
 
   .row.row--padding-sm {
-    padding: var(--space-sm);
+    padding: var(--spacing-sm);
   }
 
   .row.row--padding-md {
-    padding: var(--space-md);
+    padding: var(--spacing-md);
   }
 
   .row.row--padding-lg {
-    padding: var(--space-lg);
+    padding: var(--spacing-lg);
   }
 
   .row.row--padding-xl {
-    padding: var(--space-xl);
+    padding: var(--spacing-xl);
   }
 
   .row.row--padding-inline-none {
@@ -52,19 +57,19 @@
   }
 
   .row.row--padding-inline-sm {
-    padding-inline: var(--space-sm);
+    padding-inline: var(--spacing-sm);
   }
 
   .row.row--padding-inline-md {
-    padding-inline: var(--space-md);
+    padding-inline: var(--spacing-md);
   }
 
   .row.row--padding-inline-lg {
-    padding-inline: var(--space-lg);
+    padding-inline: var(--spacing-lg);
   }
 
   .row.row--padding-inline-xl {
-    padding-inline: var(--space-xl);
+    padding-inline: var(--spacing-xl);
   }
 
   .row.row--padding-block-none {
@@ -72,19 +77,19 @@
   }
 
   .row.row--padding-block-sm {
-    padding-block: var(--space-sm);
+    padding-block: var(--spacing-sm);
   }
 
   .row.row--padding-block-md {
-    padding-block: var(--space-md);
+    padding-block: var(--spacing-md);
   }
 
   .row.row--padding-block-lg {
-    padding-block: var(--space-lg);
+    padding-block: var(--spacing-lg);
   }
 
   .row.row--padding-block-xl {
-    padding-block: var(--space-xl);
+    padding-block: var(--spacing-xl);
   }
 
   .row.row--gap-none {
@@ -92,19 +97,19 @@
   }
 
   .row.row--gap-sm {
-    gap: var(--space-sm);
+    gap: var(--spacing-sm);
   }
 
   .row.row--gap-md {
-    gap: var(--space-md);
+    gap: var(--spacing-md);
   }
 
   .row.row--gap-lg {
-    gap: var(--space-lg);
+    gap: var(--spacing-lg);
   }
 
   .row.row--gap-xl {
-    gap: var(--space-xl);
+    gap: var(--spacing-xl);
   }
 
   .row.row--align-start {

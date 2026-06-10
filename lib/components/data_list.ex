@@ -140,13 +140,6 @@ defmodule Corex.DataList do
       height: :height,
       max_height: :max_height,
       size: :size
-    ],
-    defaults: [
-      width: "full",
-      max_width: "md",
-      height: "auto",
-      max_height: "none",
-      size: "md"
     ]
 
   @doc """

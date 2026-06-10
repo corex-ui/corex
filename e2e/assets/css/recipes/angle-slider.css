@@ -20,7 +20,7 @@
 
 @utility angle-slider--size-* {
   [data-scope="angle-slider"][data-part="control"] {
-      color: --value(--color-ui-ink-*, [color]);
+      color: --value(--color-on-*, [color]);
     background-color: --value(--color-*, [color]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
@@ -32,14 +32,41 @@
   }
 
   [data-scope="angle-slider"][data-part="root"] {
-      padding: --value(--spacing-space-*, [length]);
-    gap: --value(--spacing-space-*, [length]);
+      padding: --value(--spacing-*, [length]);
+    gap: --value(--spacing-*, [length]);
   }
 
 }
 
 
 @layer components {
+  .angle-slider [data-scope="angle-slider"][data-part="control"] {
+    color: var(--color-on-page);
+    background-color: var(--color-surface-control);
+    border-color: var(--color-border);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+    --size: var(--spacing-control-md);
+    --thumb-size: calc(var(--spacing-control-md) * 0.5);
+  }
+
+  .angle-slider [data-scope="angle-slider"][data-part="label"] {
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+
+  .angle-slider [data-scope="angle-slider"][data-part="root"] {
+    padding: var(--spacing-md);
+    gap: var(--spacing-md);
+  }
+
+  .angle-slider {
+    width: 100%;
+    max-width: none;
+    height: auto;
+    max-height: none;
+  }
+
   .angle-slider.angle-slider--w-auto {
     width: auto;
   }
@@ -84,11 +111,11 @@
     position: relative;
   }
 
-  .angle-slider.angle-slider--semantic-brand {
+  .angle-slider.angle-slider--semantic-alert {
     position: relative;
   }
 
-  .angle-slider.angle-slider--semantic-alert {
+  .angle-slider.angle-slider--semantic-brand {
     position: relative;
   }
 
@@ -96,11 +123,15 @@
     position: relative;
   }
 
-  .angle-slider.angle-slider--semantic-success {
+  .angle-slider.angle-slider--semantic-neutral {
     position: relative;
   }
 
   .angle-slider.angle-slider--semantic-selected {
+    position: relative;
+  }
+
+  .angle-slider.angle-slider--semantic-success {
     position: relative;
   }
 
@@ -115,27 +146,27 @@
   .angle-slider {
     display: flex;
     flex-direction: column;
-    gap: var(--space);
+    gap: var(--spacing-md);
   }
 
   .angle-slider[data-loading] [data-scope="angle-slider"][data-part="root"] {
-    @apply ui-loading;
+    @apply part-loading;
   }
 
   .angle-slider [data-scope="angle-slider"][data-part="root"] {
-    @apply ui-root;
+    @apply part-root;
   }
 
   .angle-slider [data-scope="angle-slider"][data-part="root"][data-readonly] {
-    @apply ui-readonly;
+    @apply part-readonly;
   }
 
   .angle-slider [data-scope="angle-slider"][data-part="label"] {
-    @apply ui-label;
+    @apply part-label;
   }
 
   .angle-slider [data-scope="angle-slider"][data-part="error"] {
-    @apply ui-error;
+    @apply part-error;
   }
 
   .angle-slider {
@@ -143,7 +174,7 @@
     display: flex;
     flex-direction: column;
     max-width: var(--container-6xs);
-    gap: var(--space-md);
+    gap: var(--spacing-md);
     &[data-orientation="horizontal"] {
       max-width: var(--container-3xs);
     }
@@ -151,9 +182,9 @@
 
   .angle-slider [data-scope="angle-slider"][data-part="root"] {
     width: 100%;
-    gap: var(--space-md);
+    gap: var(--spacing-md);
     position: relative;
-    padding: var(--space-md);
+    padding: var(--spacing-md);
     &[data-orientation="horizontal"] {
       flex-direction: row;
       flex-wrap: nowrap;
@@ -162,7 +193,7 @@
     }
 
     &[data-disabled] {
-      color: var(--color-ui-ink-muted);
+      color: var(--color-on-muted);
       cursor: not-allowed;
     }
 
@@ -207,19 +238,19 @@
 
   .angle-slider [data-scope="angle-slider"][data-part="label"] {
     .angle-slider [data-scope="angle-slider"][data-part="root"][data-disabled] & {
-      color: var(--color-ui-ink-muted);
+      color: var(--color-on-muted);
     }
   }
 
   .angle-slider [data-scope="angle-slider"][data-part="control"] {
-    --size: var(--size-lg);
-    --thumb-size: calc(var(--size-lg) * 0.5);
-    --thumb-indicator-size: min(var(--thumb-size), calc(var(--size) / 2));
-    width: var(--size);
-    height: var(--size);
+    --size: var(--spacing-control-lg);
+    --thumb-size: calc(var(--spacing-control-lg) * 0.5);
+    --thumb-indicator-size: min(var(--thumb-size), calc(var(--spacing-control-md) / 2));
+    width: var(--spacing-control-md);
+    height: var(--spacing-control-md);
     border-radius: var(--radius-full);
     border: 1px solid var(--color-border);
-    background-color: var(--color-ui);
+    background-color: var(--color-surface-control);
     margin-inline: auto;
     display: flex;
     align-items: center;
@@ -236,7 +267,7 @@
     left: 50%;
     pointer-events: none;
     width: 0;
-    color: var(--color-ui-ink);
+    color: var(--color-on-page);
     & {
       transform: translate(-50%, 0); transform-origin: center
     }
@@ -253,15 +284,15 @@
       transform: translate(-50%, 0);
       height: var(--thumb-indicator-size);
       width: max(3px, calc(var(--thumb-size) * 0.12));
-      background-color: var(--color-ui-ink);
+      background-color: var(--color-on-page);
       border-radius: var(--radius-md);
       .angle-slider [data-scope="angle-slider"][data-part="root"][data-disabled] & {
-        background-color: var(--color-ui-ink-muted);
+        background-color: var(--color-on-muted);
       }
 
       &:focus-visible {
         outline: none;
-        box-shadow: 0 0 0 1px var(--color-ui-ink);
+        box-shadow: 0 0 0 1px var(--color-on-page);
       }
     }
   }
@@ -280,7 +311,7 @@
     left: 50%;
     width: 0;
     & {
-      --marker-color: var(--color-ui-ink-muted); transform: translate(-50%, 0); transform-origin: center
+      --marker-color: var(--color-on-muted); transform: translate(-50%, 0); transform-origin: center
     }
 
     &::before {
@@ -296,7 +327,7 @@
     }
 
     &[data-state="under-value"] {
-      --marker-color: var(--color-ui-ink);
+      --marker-color: var(--color-on-page);
       &::before {
         width: 3px;
       }
@@ -307,7 +338,7 @@
     }
 
     &[data-state="over-value"] {
-      --marker-color: var(--color-ui-ink-muted);
+      --marker-color: var(--color-on-muted);
     }
   }
 
@@ -317,7 +348,7 @@
     flex-wrap: nowrap;
     align-items: center;
     justify-content: center;
-    gap: var(--space-md);
+    gap: var(--spacing-md);
     width: 100%;
     flex: 1;
     text-align: center;
@@ -331,7 +362,7 @@
     font-size: var(--text-base);
     line-height: var(--leading-base);
     font-weight: var(--font-weight-normal);
-    color: var(--color-ui-ink);
+    color: var(--color-on-page);
     & {
       font-variant-numeric: tabular-nums
     }
@@ -342,7 +373,7 @@
     min-width: calc(var(--angle-slider-value-ch, 6) * 1ch);
     text-align: center;
     .angle-slider [data-scope="angle-slider"][data-part="root"][data-disabled] & {
-      color: var(--color-ui-ink-muted);
+      color: var(--color-on-muted);
     }
   }
 
@@ -363,7 +394,7 @@
     background-color: var(--color-accent);
     &:focus-visible {
       outline: none;
-      box-shadow: 0 0 0 1px var(--color-ui-ink-accent);
+      box-shadow: 0 0 0 1px var(--color-on-accent);
     }
   }
 
@@ -371,23 +402,11 @@
     --marker-color: var(--color-accent);
   }
 
-  .angle-slider.angle-slider--semantic-brand [data-scope="angle-slider"][data-part="thumb"]::before {
-    background-color: var(--color-brand);
-    &:focus-visible {
-      outline: none;
-      box-shadow: 0 0 0 1px var(--color-ui-ink-brand);
-    }
-  }
-
-  .angle-slider.angle-slider--semantic-brand [data-scope="angle-slider"][data-part="marker"][data-state="under-value"] {
-    --marker-color: var(--color-brand);
-  }
-
   .angle-slider.angle-slider--semantic-alert [data-scope="angle-slider"][data-part="thumb"]::before {
     background-color: var(--color-alert);
     &:focus-visible {
       outline: none;
-      box-shadow: 0 0 0 1px var(--color-ui-ink-alert);
+      box-shadow: 0 0 0 1px var(--color-on-alert);
     }
   }
 
@@ -395,11 +414,23 @@
     --marker-color: var(--color-alert);
   }
 
+  .angle-slider.angle-slider--semantic-brand [data-scope="angle-slider"][data-part="thumb"]::before {
+    background-color: var(--color-brand);
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 1px var(--color-on-brand);
+    }
+  }
+
+  .angle-slider.angle-slider--semantic-brand [data-scope="angle-slider"][data-part="marker"][data-state="under-value"] {
+    --marker-color: var(--color-brand);
+  }
+
   .angle-slider.angle-slider--semantic-info [data-scope="angle-slider"][data-part="thumb"]::before {
     background-color: var(--color-info);
     &:focus-visible {
       outline: none;
-      box-shadow: 0 0 0 1px var(--color-ui-ink-info);
+      box-shadow: 0 0 0 1px var(--color-on-info);
     }
   }
 
@@ -407,28 +438,40 @@
     --marker-color: var(--color-info);
   }
 
-  .angle-slider.angle-slider--semantic-success [data-scope="angle-slider"][data-part="thumb"]::before {
-    background-color: var(--color-success);
+  .angle-slider.angle-slider--semantic-neutral [data-scope="angle-slider"][data-part="thumb"]::before {
+    background-color: var(--color-neutral);
     &:focus-visible {
       outline: none;
-      box-shadow: 0 0 0 1px var(--color-ui-ink-success);
+      box-shadow: 0 0 0 1px var(--color-on-control);
     }
   }
 
-  .angle-slider.angle-slider--semantic-success [data-scope="angle-slider"][data-part="marker"][data-state="under-value"] {
-    --marker-color: var(--color-success);
+  .angle-slider.angle-slider--semantic-neutral [data-scope="angle-slider"][data-part="marker"][data-state="under-value"] {
+    --marker-color: var(--color-neutral);
   }
 
   .angle-slider.angle-slider--semantic-selected [data-scope="angle-slider"][data-part="thumb"]::before {
     background-color: var(--color-selected);
     &:focus-visible {
       outline: none;
-      box-shadow: 0 0 0 1px var(--color-selected-ink);
+      box-shadow: 0 0 0 1px var(--color-on-selected);
     }
   }
 
   .angle-slider.angle-slider--semantic-selected [data-scope="angle-slider"][data-part="marker"][data-state="under-value"] {
     --marker-color: var(--color-selected);
+  }
+
+  .angle-slider.angle-slider--semantic-success [data-scope="angle-slider"][data-part="thumb"]::before {
+    background-color: var(--color-success);
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 1px var(--color-on-success);
+    }
+  }
+
+  .angle-slider.angle-slider--semantic-success [data-scope="angle-slider"][data-part="marker"][data-state="under-value"] {
+    --marker-color: var(--color-success);
   }
 }
 

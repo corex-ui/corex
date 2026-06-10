@@ -18,11 +18,9 @@ defmodule Corex.Design.RecipesOverrideTest do
 
   setup do
     original = Application.get_env(:corex_design, :recipes)
-    original_include = Application.get_env(:corex_design, :include_recipes)
 
     on_exit(fn ->
       restore(:recipes, original)
-      restore(:include_recipes, original_include)
     end)
 
     :ok
@@ -32,7 +30,7 @@ defmodule Corex.Design.RecipesOverrideTest do
   defp restore(key, value), do: Application.put_env(:corex_design, key, value)
 
   test "merges host recipes by id: replaces built-in in place and appends new" do
-    Application.put_env(:corex_design, :recipes, [Source])
+    Application.put_env(:corex_design, :recipes, sources: [Source])
 
     all = Recipes.all()
     button = Enum.find(all, &(&1.id == :button))
@@ -49,7 +47,7 @@ defmodule Corex.Design.RecipesOverrideTest do
   end
 
   test "raises for a module that does not implement RecipeSource" do
-    Application.put_env(:corex_design, :recipes, [Enum])
+    Application.put_env(:corex_design, :recipes, sources: [Enum])
 
     assert_raise ArgumentError, ~r/recipes\/0/, fn -> Recipes.all() end
   end
@@ -59,19 +57,19 @@ defmodule Corex.Design.RecipesOverrideTest do
       def recipes, do: [:not_a_recipe]
     end
 
-    Application.put_env(:corex_design, :recipes, [BadSource])
+    Application.put_env(:corex_design, :recipes, sources: [BadSource])
 
     assert_raise ArgumentError, ~r/%Corex.Design.Recipe\{\}/, fn -> Recipes.all() end
   end
 
   test "emitted/0 defaults to the full recipe set" do
-    Application.delete_env(:corex_design, :include_recipes)
+    Application.delete_env(:corex_design, :recipes)
 
     assert length(Recipes.emitted()) == length(Recipes.all())
   end
 
   test "include_recipes filters emitted/0 without shrinking all/0" do
-    Application.put_env(:corex_design, :include_recipes, [:button, :link])
+    Application.put_env(:corex_design, :recipes, include: [:button, :link])
 
     emitted_ids = Enum.map(Recipes.emitted(), & &1.id)
 
@@ -80,7 +78,7 @@ defmodule Corex.Design.RecipesOverrideTest do
   end
 
   test "host recipe override changes compiled button CSS" do
-    Application.put_env(:corex_design, :recipes, [Source])
+    Application.put_env(:corex_design, :recipes, sources: [Source])
 
     css = Corex.Design.Compiler.compile_recipe(Recipes.all() |> Enum.find(&(&1.id == :button)))
 

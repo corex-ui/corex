@@ -19,9 +19,9 @@ defmodule Corex.Design.ExportParityTest do
 
   test "tailwind class exports stay within line budgets" do
     budgets = %{
-      accordion: 2100,
+      accordion: 2150,
       select: 1200,
-      button: 1100,
+      button: 1200,
       tree_view: 2720
     }
 
@@ -59,7 +59,7 @@ defmodule Corex.Design.ExportParityTest do
       |> Enum.find(&(&1.id == :accordion))
       |> Recipe.to_css()
 
-    assert css =~ "@apply ui-trigger"
+    assert css =~ "@apply part-trigger"
     assert css =~ "@utility accordion--rounded-*"
     assert css =~ "@utility accordion--text-*"
     assert css =~ "@utility accordion--max-w-*"
@@ -69,7 +69,7 @@ defmodule Corex.Design.ExportParityTest do
     assert css =~ ".accordion.accordion--variant-subtle"
     assert css =~ "[data-state=\"closed\"]"
     assert css =~ "background-color: var(--color-accent)"
-    assert css =~ "color: var(--color-accent-ink)"
+    assert css =~ "color: var(--color-on-accent)"
     refute css =~ "@utility accordion--*"
     refute css =~ ".accordion.accordion--max-w-7xs"
     refute css =~ ".accordion.accordion--size-md [data-part"

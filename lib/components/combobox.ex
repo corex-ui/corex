@@ -298,13 +298,6 @@ defmodule Corex.Combobox do
       semantic: :semantic,
       size: :size,
       radius: :radius
-    ],
-    defaults: [
-      width: "full",
-      max_width: "3xs",
-      height: "auto",
-      max_height: "none",
-      size: "md"
     ]
 
   alias Corex.Combobox.Anatomy.{

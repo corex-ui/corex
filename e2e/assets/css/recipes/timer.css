@@ -38,6 +38,13 @@
 
 
 @layer components {
+  .timer {
+    width: 100%;
+    max-width: none;
+    height: auto;
+    max-height: none;
+  }
+
   .timer.timer--w-auto {
     width: auto;
   }
@@ -82,11 +89,11 @@
     position: relative;
   }
 
-  .timer.timer--semantic-brand {
+  .timer.timer--semantic-alert {
     position: relative;
   }
 
-  .timer.timer--semantic-alert {
+  .timer.timer--semantic-brand {
     position: relative;
   }
 
@@ -94,11 +101,15 @@
     position: relative;
   }
 
-  .timer.timer--semantic-success {
+  .timer.timer--semantic-neutral {
     position: relative;
   }
 
   .timer.timer--semantic-selected {
+    position: relative;
+  }
+
+  .timer.timer--semantic-success {
     position: relative;
   }
 
@@ -116,7 +127,7 @@
   }
 
   .timer [data-scope="timer"][data-part="root"] {
-    @apply ui-root;
+    @apply part-root;
   }
 
   .timer [data-scope="timer"][data-part="area"] {
@@ -128,7 +139,7 @@
   }
 
   .timer [data-scope="timer"][data-part="area"]:not(:has(.timer [data-scope="timer"][data-part="separator"])) {
-    gap: var(--space-md);
+    gap: var(--spacing-md);
   }
 
   .timer [data-timer-segment] {
@@ -137,17 +148,17 @@
     align-items: center;
     justify-content: flex-start;
     min-width: 0;
-    gap: var(--space-sm);
+    gap: var(--spacing-sm);
   }
 
   .timer [data-scope="timer"][data-part="item"] {
-    @apply ui-label;
+    @apply part-label;
     justify-content: center;
     font-size: var(--text-4xl);
     line-height: var(--leading-4xl);
     font-weight: var(--font-weight-semibold);
     text-align: center;
-    color: var(--color-ui-ink);
+    color: var(--color-on-page);
     min-width: 2ch;
     height: 2em;
     overflow: hidden;
@@ -178,13 +189,13 @@
   }
 
   .timer [data-scope="timer"][data-part="item-label"] {
-    @apply ui-label;
+    @apply part-label;
     justify-content: center;
     font-size: var(--text-xs);
     line-height: var(--leading-xs);
     font-weight: var(--font-weight-medium);
     letter-spacing: 0.08em;
-    color: var(--color-ui-ink-muted);
+    color: var(--color-on-muted);
     text-align: center;
     white-space: nowrap;
     max-width: 100%;
@@ -194,14 +205,14 @@
   }
 
   .timer [data-scope="timer"][data-part="separator"] {
-    @apply ui-label;
+    @apply part-label;
     justify-content: center;
     align-self: flex-start;
     font-size: var(--text-4xl);
     line-height: var(--leading-4xl);
     font-weight: var(--font-weight-semibold);
-    color: var(--color-ui-ink);
-    padding-inline: var(--space-sm);
+    color: var(--color-on-page);
+    padding-inline: var(--spacing-sm);
     height: 2em;
     flex-shrink: 0;
   }
@@ -210,12 +221,12 @@
     display: inline-flex;
     width: 100%;
     justify-content: center;
-    gap: var(--space-sm);
-    margin-top: var(--space-sm);
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-sm);
   }
 
   .timer [data-scope="timer"][data-part="action-trigger"] {
-    @apply ui-trigger;
+    @apply part-trigger;
     font-size: var(--text-base);
     line-height: var(--leading-base);
     padding: 0 !important;
@@ -234,7 +245,7 @@
 
   .timer.timer--semantic-accent [data-scope="timer"][data-part="action-trigger"] {
     background-color: var(--color-accent);
-    color: var(--color-accent-ink);
+    color: var(--color-on-accent);
     &:hover {
       background-color: var(--color-accent-hover);
     }
@@ -245,44 +256,20 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .timer.timer--semantic-brand [data-scope="timer"][data-part="action-trigger"] {
-    background-color: var(--color-brand);
-    color: var(--color-brand-ink);
-    &:hover {
-      background-color: var(--color-brand-hover);
-    }
-
-    &:active {
-      background-color: var(--color-brand-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-brand-ink);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
   }
 
   .timer.timer--semantic-alert [data-scope="timer"][data-part="action-trigger"] {
     background-color: var(--color-alert);
-    color: var(--color-alert-ink);
+    color: var(--color-on-alert);
     &:hover {
       background-color: var(--color-alert-hover);
     }
@@ -293,20 +280,44 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .timer.timer--semantic-brand [data-scope="timer"][data-part="action-trigger"] {
+    background-color: var(--color-brand);
+    color: var(--color-on-brand);
+    &:hover {
+      background-color: var(--color-brand-hover);
+    }
+
+    &:active {
+      background-color: var(--color-brand-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
   }
 
   .timer.timer--semantic-info [data-scope="timer"][data-part="action-trigger"] {
     background-color: var(--color-info);
-    color: var(--color-info-ink);
+    color: var(--color-on-info);
     &:hover {
       background-color: var(--color-info-hover);
     }
@@ -317,44 +328,44 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-info-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
   }
 
-  .timer.timer--semantic-success [data-scope="timer"][data-part="action-trigger"] {
-    background-color: var(--color-success);
-    color: var(--color-success-ink);
+  .timer.timer--semantic-neutral [data-scope="timer"][data-part="action-trigger"] {
+    background-color: var(--color-neutral);
+    color: var(--color-on-neutral);
     &:hover {
-      background-color: var(--color-success-hover);
+      background-color: var(--color-neutral-hover);
     }
 
     &:active {
-      background-color: var(--color-success-active);
+      background-color: var(--color-neutral-active);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-success-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
   }
 
   .timer.timer--semantic-selected [data-scope="timer"][data-part="action-trigger"] {
     background-color: var(--color-selected);
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
     &:hover {
       background-color: var(--color-selected-hover);
     }
@@ -365,13 +376,37 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .timer.timer--semantic-success [data-scope="timer"][data-part="action-trigger"] {
+    background-color: var(--color-success);
+    color: var(--color-on-success);
+    &:hover {
+      background-color: var(--color-success-hover);
+    }
+
+    &:active {
+      background-color: var(--color-success-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
   }

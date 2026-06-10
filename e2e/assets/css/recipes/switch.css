@@ -24,7 +24,7 @@
 
 @utility switch--size-* {
   [data-scope="switch"][data-part="control"] {
-      padding: --value(--spacing-space-*, [length]);
+      padding: --value(--spacing-*, [length]);
   }
 
   [data-scope="switch"][data-part="label"] {
@@ -33,13 +33,38 @@
   }
 
   [data-scope="switch"][data-part="root"] {
-      gap: --value(--spacing-space-*, [length]);
+      gap: --value(--spacing-*, [length]);
   }
 
 }
 
 
 @layer components {
+  .switch [data-scope="switch"][data-part="control"] {
+    padding: calc(var(--spacing-md) * 0.3);
+  }
+
+  .switch [data-scope="switch"][data-part="label"] {
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+
+  .switch [data-scope="switch"][data-part="root"] {
+    gap: var(--spacing-md);
+    padding-inline-end: var(--spacing-md);
+    --switch-track-width: calc(var(--spacing-control-md) * 0.8);
+    --switch-track-height: calc(var(--spacing-control-md) * 0.5 * 0.8);
+    --switch-track-diff: calc(var(--switch-track-width) - var(--switch-track-height));
+    --switch-thumb-x: var(--switch-track-diff);
+  }
+
+  .switch {
+    width: 100%;
+    max-width: var(--container-4xl);
+    height: auto;
+    max-height: none;
+  }
+
   .switch.switch--w-auto {
     width: auto;
   }
@@ -82,50 +107,58 @@
 
   .switch.switch--semantic-accent {
     --color-selected: var(--color-accent);
-    --color-selected-active: var(--color-accent-active);
     --color-selected-hover: var(--color-accent-hover);
-    --color-selected-ink: var(--color-accent-ink);
+    --color-selected-active: var(--color-accent-active);
     --color-selected-muted: var(--color-accent-muted);
-  }
-
-  .switch.switch--semantic-brand {
-    --color-selected: var(--color-brand);
-    --color-selected-active: var(--color-brand-active);
-    --color-selected-hover: var(--color-brand-hover);
-    --color-selected-ink: var(--color-brand-ink);
-    --color-selected-muted: var(--color-brand-muted);
+    --color-on-selected: var(--color-on-accent);
   }
 
   .switch.switch--semantic-alert {
     --color-selected: var(--color-alert);
-    --color-selected-active: var(--color-alert-active);
     --color-selected-hover: var(--color-alert-hover);
-    --color-selected-ink: var(--color-alert-ink);
+    --color-selected-active: var(--color-alert-active);
     --color-selected-muted: var(--color-alert-muted);
+    --color-on-selected: var(--color-on-alert);
+  }
+
+  .switch.switch--semantic-brand {
+    --color-selected: var(--color-brand);
+    --color-selected-hover: var(--color-brand-hover);
+    --color-selected-active: var(--color-brand-active);
+    --color-selected-muted: var(--color-brand-muted);
+    --color-on-selected: var(--color-on-brand);
   }
 
   .switch.switch--semantic-info {
     --color-selected: var(--color-info);
-    --color-selected-active: var(--color-info-active);
     --color-selected-hover: var(--color-info-hover);
-    --color-selected-ink: var(--color-info-ink);
+    --color-selected-active: var(--color-info-active);
     --color-selected-muted: var(--color-info-muted);
+    --color-on-selected: var(--color-on-info);
   }
 
-  .switch.switch--semantic-success {
-    --color-selected: var(--color-success);
-    --color-selected-active: var(--color-success-active);
-    --color-selected-hover: var(--color-success-hover);
-    --color-selected-ink: var(--color-success-ink);
-    --color-selected-muted: var(--color-success-muted);
+  .switch.switch--semantic-neutral {
+    --color-selected: var(--color-neutral);
+    --color-selected-hover: var(--color-neutral-hover);
+    --color-selected-active: var(--color-neutral-active);
+    --color-selected-muted: var(--color-neutral-muted);
+    --color-on-selected: var(--color-on-neutral);
   }
 
   .switch.switch--semantic-selected {
     --color-selected: var(--color-selected);
-    --color-selected-active: var(--color-selected-active);
     --color-selected-hover: var(--color-selected-hover);
-    --color-selected-ink: var(--color-selected-ink);
+    --color-selected-active: var(--color-selected-active);
     --color-selected-muted: var(--color-selected-muted);
+    --color-on-selected: var(--color-on-selected);
+  }
+
+  .switch.switch--semantic-success {
+    --color-selected: var(--color-success);
+    --color-selected-hover: var(--color-success-hover);
+    --color-selected-active: var(--color-success-active);
+    --color-selected-muted: var(--color-success-muted);
+    --color-on-selected: var(--color-on-success);
   }
 
   .switch.switch--rounded-none [data-scope="switch"][data-part="control"] {
@@ -147,51 +180,55 @@
   .switch {
     display: flex;
     flex-direction: column;
-    gap: var(--space);
+    gap: var(--spacing-md);
   }
 
   .switch[data-loading] [data-scope="switch"][data-part="root"] {
-    @apply ui-loading;
+    @apply part-loading;
   }
 
   .switch [data-scope="switch"][data-part="root"] {
-    @apply ui-root;
+    @apply part-root;
   }
 
   .switch [data-scope="switch"][data-part="root"][data-readonly] {
-    @apply ui-readonly;
+    @apply part-readonly;
   }
 
   .switch [data-scope="switch"][data-part="label"] {
-    @apply ui-label;
+    @apply part-label;
   }
 
   .switch [data-scope="switch"][data-part="error"] {
-    @apply ui-error;
+    @apply part-error;
   }
 
   .switch.switch--semantic-accent [data-scope="switch"][data-part="thumb"]:not([data-state="checked"]) {
     background-color: var(--color-accent);
   }
 
-  .switch.switch--semantic-brand [data-scope="switch"][data-part="thumb"]:not([data-state="checked"]) {
-    background-color: var(--color-brand);
-  }
-
   .switch.switch--semantic-alert [data-scope="switch"][data-part="thumb"]:not([data-state="checked"]) {
     background-color: var(--color-alert);
+  }
+
+  .switch.switch--semantic-brand [data-scope="switch"][data-part="thumb"]:not([data-state="checked"]) {
+    background-color: var(--color-brand);
   }
 
   .switch.switch--semantic-info [data-scope="switch"][data-part="thumb"]:not([data-state="checked"]) {
     background-color: var(--color-info);
   }
 
-  .switch.switch--semantic-success [data-scope="switch"][data-part="thumb"]:not([data-state="checked"]) {
-    background-color: var(--color-success);
+  .switch.switch--semantic-neutral [data-scope="switch"][data-part="thumb"]:not([data-state="checked"]) {
+    background-color: var(--color-neutral);
   }
 
   .switch.switch--semantic-selected [data-scope="switch"][data-part="thumb"]:not([data-state="checked"]) {
     background-color: var(--color-selected);
+  }
+
+  .switch.switch--semantic-success [data-scope="switch"][data-part="thumb"]:not([data-state="checked"]) {
+    background-color: var(--color-success);
   }
 
   .switch [data-scope="switch"][data-part="root"] {
@@ -199,10 +236,10 @@
     align-items: center;
     position: relative;
     width: fit-content;
-    gap: var(--space-md);
-    padding-inline-end: var(--space-md);
-    --switch-track-width: calc(var(--size-md) * 0.8);
-    --switch-track-height: calc(var(--size-md) * 0.5 * 0.8);
+    gap: var(--spacing-md);
+    padding-inline-end: var(--spacing-md);
+    --switch-track-width: calc(var(--spacing-control-md) * 0.8);
+    --switch-track-height: calc(var(--spacing-control-md) * 0.5 * 0.8);
     --switch-track-diff: calc(var(--switch-track-width) - var(--switch-track-height));
     --switch-thumb-x: var(--switch-track-diff);
   }
@@ -217,10 +254,10 @@
     overflow: hidden;
     border-radius: var(--radius-4xl);
     border: 1px solid var(--color-border);
-    padding: calc(var(--space-md) * 0.3);
+    padding: calc(var(--spacing-md) * 0.3);
     width: var(--switch-track-width);
     height: var(--switch-track-height);
-    background: var(--color-ui);
+    background: var(--color-surface-control);
     transition: background 150ms ease, border-color 150ms ease, color 150ms ease, transform 150ms ease;
     &[data-state="checked"] {
       background-color: var(--color-selected);
@@ -230,8 +267,8 @@
     }
 
     &[data-disabled] {
-      color: var(--color-ui-ink-muted);
-      background: var(--color-ui-muted);
+      color: var(--color-on-muted);
+      background: var(--color-surface-control-muted);
       cursor: not-allowed;
       box-shadow: none;
     }
@@ -242,7 +279,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-page);
     }
 
     &[data-focus]:not(:focus-visible) {
@@ -251,7 +288,7 @@
   }
 
   .switch [data-scope="switch"][data-part="thumb"] {
-    background: var(--color-ui-ink);
+    background: var(--color-on-page);
     transition: transform 200ms ease, background-color 200ms ease;
     border-radius: inherit;
     width: var(--switch-track-height);

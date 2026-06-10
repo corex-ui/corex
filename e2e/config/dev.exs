@@ -33,7 +33,7 @@ config :corex_web, E2eWeb.Endpoint,
          :e2e,
          ~w(--watch --input=assets/css/site.css --output=priv/static/assets/css/site.css)
        ]},
-    corex_design: {Corex.Design, :install_and_run, [:corex_web, ~w(--watch)]}
+    corex_design: {Corex.Design, :install_and_run, [~w(--watch)]}
   ]
 
 # ## SSL Support

@@ -57,15 +57,11 @@ compilers: Mix.compilers() ++ [:corex_design]
 
 ### 3. Config
 
-In `config/config.exs` (replace `:my_app` with your OTP app name):
+In `config/config.exs`:
 
 ```elixir
 config :corex_design,
-  default_theme: :neo,
-  default_mode: :light,
-  my_app: [
-    output: "assets/css/corex.tailwind.css"
-  ]
+  output: "assets/css/corex.tailwind.css"
 ```
 
 Omit `:themes` to use built-in presets (neo, uno, duo, leo). Full key reference: [Design config](design-config.html).
@@ -119,7 +115,7 @@ Mirror e2e in `config/dev.exs` for live CSS rebuilds:
 ```elixir
 reloadable_compilers: [:gettext] ++ Mix.compilers() ++ [:corex_design],
 watchers: [
-  corex_design: {Corex.Design, :install_and_run, [:my_app, ~w(--watch)]}
+  corex_design: {Corex.Design, :install_and_run, [~w(--watch)]}
 ]
 ```
 
@@ -166,7 +162,7 @@ Common modifier axes (not every component has every axis; check that component's
 
 Stack modifiers on the root `class` attribute. Do not invent new class names; use only modifiers defined for that component in generated `assets/css/recipes/<name>.css`.
 
-If you add steps to `config :corex, scales` or roles to `:semantics`, add matching theme tokens and run `mix corex.design.validate`. Otherwise classes may exist with no CSS rule yet ([Design config](design-config.html)).
+Omitted style attrs emit block class only; recipe `default_variants` merge into base CSS. If you subset `config :corex_design, scales:`, run `mix corex.design.lint` so templates do not use dropped steps ([Design config](design-config.html)).
 
 ## Shared utilities
 

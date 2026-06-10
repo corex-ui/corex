@@ -1,9 +1,9 @@
-@utility ui-root {
+@utility part-root {
 & {
   display: flex;
   flex-direction: column;
   width: 100%;
-  gap: var(--space);
+  gap: var(--spacing-md);
   &[data-orientation="vertical"] {
     flex-direction: column;
   }
@@ -15,7 +15,7 @@
 }
 
 
-@utility ui-trigger {
+@utility part-trigger {
 & {
   display: inline-flex;
   align-items: center;
@@ -23,36 +23,36 @@
   text-align: center;
   cursor: pointer;
   width: auto;
-  min-height: var(--size);
+  min-height: var(--spacing-control-md);
   font-size: var(--text-base);
   line-height: var(--leading-base);
   font-weight: var(--font-weight-normal);
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
-  padding-inline: var(--space);
-  gap: var(--space);
-  color: var(--color-ui-ink);
-  background-color: var(--color-ui);
+  padding-inline: var(--spacing-md);
+  gap: var(--spacing-md);
+  color: var(--color-on-page);
+  background-color: var(--color-surface-control);
   appearance: none;
   transition: background-color 120ms ease, color 120ms ease;
   &:hover {
-    background-color: var(--color-ui-hover);
+    background-color: var(--color-surface-control-hover);
   }
 
   &:active {
-    background-color: var(--color-ui-active);
+    background-color: var(--color-surface-control-active);
   }
 
   &:focus-visible {
     outline: none;
-    box-shadow: inset 0 0 0 2px var(--color-ui-ink);
+    box-shadow: inset 0 0 0 2px var(--color-on-page);
   }
 
   &:disabled,
   &[data-disabled],
   &[disabled] {
-    color: var(--color-ui-ink-muted);
-    background-color: var(--color-ui-muted);
+    color: var(--color-on-muted);
+    background-color: var(--color-surface-control-muted);
     cursor: not-allowed;
   }
 
@@ -66,12 +66,12 @@
   }
 
   & [data-icon] {
-    @apply ui-icon;
+    @apply part-icon;
   }
 
   & [data-part="item-text"] {
     display: flex;
-    gap: var(--space);
+    gap: var(--spacing-md);
     width: 100%;
     text-align: start;
     align-items: center;
@@ -80,7 +80,7 @@
 }
 
 
-@utility ui-icon {
+@utility part-icon {
 & {
   display: flex;
   align-items: center;
@@ -96,22 +96,22 @@
 }
 
 
-@utility ui-content {
+@utility part-content {
 & {
   display: flex;
   flex-direction: column;
   width: 100%;
-  padding: var(--space);
+  padding: var(--spacing-md);
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
-  background-color: var(--color-root);
-  color: var(--color-ui-ink);
+  background-color: var(--color-surface-page);
+  color: var(--color-on-page);
   box-shadow: var(--shadow-md);
 }
 }
 
 
-@utility ui-label {
+@utility part-label {
 & {
   display: flex;
   align-items: center;
@@ -121,12 +121,12 @@
   font-size: var(--text-base);
   line-height: var(--leading-base);
   font-weight: var(--font-weight-medium);
-  color: var(--color-ui-ink);
+  color: var(--color-on-page);
 }
 }
 
 
-@utility ui-input {
+@utility part-input {
 & {
   display: flex;
   align-items: center;
@@ -138,34 +138,34 @@
   font-weight: var(--font-weight-normal);
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
-  padding-inline: var(--space);
-  gap: var(--space);
-  min-height: var(--size);
+  padding-inline: var(--spacing-md);
+  gap: var(--spacing-md);
+  min-height: var(--spacing-control-md);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: var(--color-ui-ink);
-  background-color: var(--color-ui);
+  color: var(--color-on-page);
+  background-color: var(--color-surface-control);
   transition: background-color 120ms ease, box-shadow 120ms ease;
   &::placeholder {
-    color: var(--color-ui-ink-muted);
+    color: var(--color-on-muted);
   }
 
   &:hover {
-    background-color: var(--color-ui-hover);
+    background-color: var(--color-surface-control-hover);
   }
 
   &:focus,
   &:focus-within {
-    background-color: var(--color-root);
+    background-color: var(--color-surface-page);
     outline: none;
   }
 
   &:disabled,
   &[data-disabled],
   &[disabled] {
-    color: var(--color-ui-ink-muted);
-    background-color: var(--color-ui-muted);
+    color: var(--color-on-muted);
+    background-color: var(--color-surface-control-muted);
     opacity: 0.7;
     cursor: not-allowed;
   }
@@ -183,13 +183,13 @@
   }
 
   & [data-icon],\n  & svg,\n  & img {
-    @apply ui-icon;
+    @apply part-icon;
   }
 }
 }
 
 
-@utility ui-item {
+@utility part-item {
 & {
   width: 100%;
   display: inline-flex;
@@ -199,38 +199,38 @@
   font-size: var(--text-base);
   line-height: var(--leading-base);
   font-weight: var(--font-weight-normal);
-  min-height: var(--size);
-  padding-inline: var(--space);
-  gap: var(--space);
-  background-color: var(--color-ui);
-  color: var(--color-ui-ink);
+  min-height: var(--spacing-control-md);
+  padding-inline: var(--spacing-md);
+  gap: var(--spacing-md);
+  background-color: var(--color-surface-control);
+  color: var(--color-on-page);
   border-radius: var(--radius-none);
   outline: none;
   transition: background-color 120ms ease, color 120ms ease, box-shadow 120ms ease;
   &:hover {
-    background-color: var(--color-ui-hover);
+    background-color: var(--color-surface-control-hover);
   }
 
   &:active {
-    background-color: var(--color-ui-active);
+    background-color: var(--color-surface-control-active);
     box-shadow: none;
   }
 
   &:focus-visible {
     outline: none;
-    box-shadow: inset 0 0 0 2px var(--color-ui-ink);
-    background-color: var(--color-ui-hover);
+    box-shadow: inset 0 0 0 2px var(--color-on-page);
+    background-color: var(--color-surface-control-hover);
   }
 
   @media (hover: hover) {
     &[data-highlighted]:not(:hover) {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink);
-      background-color: var(--color-ui-hover);
+      box-shadow: inset 0 0 0 2px var(--color-on-page);
+      background-color: var(--color-surface-control-hover);
     }
 
     &[data-highlighted]:active {
-      background-color: var(--color-ui-active);
+      background-color: var(--color-surface-control-active);
       box-shadow: none;
     }
   }
@@ -238,16 +238,16 @@
   @media (hover: none) {
     &[data-highlighted] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink);
-      background-color: var(--color-ui-hover);
+      box-shadow: inset 0 0 0 2px var(--color-on-page);
+      background-color: var(--color-surface-control-hover);
     }
   }
 
   &:disabled,
   &[data-disabled],
   &[disabled] {
-    color: var(--color-ui-ink-muted);
-    background-color: var(--color-ui-muted);
+    color: var(--color-on-muted);
+    background-color: var(--color-surface-control-muted);
     cursor: not-allowed;
     box-shadow: none;
   }
@@ -261,12 +261,12 @@
   }
 
   & [data-icon],\n  & svg,\n  & img,\n  & [data-part="item-indicator"] svg,\n  & [data-part="branch-indicator"] svg {
-    @apply ui-icon;
+    @apply part-icon;
   }
 
   & [data-part="item-text"],\n  & [data-part="branch-text"] {
     display: flex;
-    gap: var(--space);
+    gap: var(--spacing-md);
     flex: 1 1 0%;
     min-width: 0;
     max-width: 100%;
@@ -287,19 +287,19 @@
 }
 
 
-@utility ui-link {
+@utility part-link {
 & {
   display: inline-flex;
   justify-content: start;
   align-items: center;
   cursor: pointer;
   position: relative;
-  color: var(--color-link);
+  color: var(--color-on-link);
   height: auto;
   font-size: inherit;
   line-height: inherit;
-  gap: var(--space);
-  padding-inline: var(--space);
+  gap: var(--spacing-md);
+  padding-inline: var(--spacing-md);
   border-radius: var(--radius-md);
   text-decoration-line: underline;
   text-underline-offset: 0.15em;
@@ -317,7 +317,7 @@
 
   &:disabled,
   &[data-disabled] {
-    color: var(--color-ui-ink-muted);
+    color: var(--color-on-muted);
     opacity: 0.7;
     cursor: not-allowed;
     pointer-events: none;
@@ -329,13 +329,13 @@
   }
 
   & [data-icon] {
-    @apply ui-icon;
+    @apply part-icon;
   }
 }
 }
 
 
-@utility ui-error {
+@utility part-error {
 & {
   display: inline-flex;
   align-items: center;
@@ -346,13 +346,13 @@
   line-height: var(--leading-sm);
   font-weight: var(--font-weight-normal);
   gap: 0.25rem;
-  color: var(--color-ui-ink-alert);
-  padding-block: var(--space);
+  color: var(--color-on-page-alert);
+  padding-block: var(--spacing-md);
 }
 }
 
 
-@utility ui-readonly {
+@utility part-readonly {
 & {
   &::after {
     content: "";
@@ -361,7 +361,7 @@
     inset-inline-end: 0.25rem;
     width: 1em;
     height: 1em;
-    background-color: var(--color-ui-ink-muted);
+    background-color: var(--color-on-muted);
     mask-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2020%2020'%20fill='currentColor'%3E%3Cpath%20fill-rule='evenodd'%20d='M10%201a4.5%204.5%200%200%200-4.5%204.5V9H5a2%202%200%200%200-2%202v6a2%202%200%200%200%202%202h10a2%202%200%200%200%202-2v-6a2%202%200%200%200-2-2h-.5V5.5A4.5%204.5%200%200%200%2010%201ZM8.5%205.5V9H14V5.5a3.5%203.5%200%201%200-7%200Z'%20clip-rule='evenodd'/%3E%3C/svg%3E");
     mask-size: contain;
     mask-repeat: no-repeat;
@@ -371,7 +371,7 @@
 }
 
 
-@utility ui-loading {
+@utility part-loading {
 & {
   pointer-events: none !important;
   cursor: wait;
@@ -380,12 +380,12 @@
 }
 
 
-@utility ui-trigger--* {
+@utility part-trigger--* {
   font-size: --value(--text-*, [length]);
   line-height: --value(--text-*--line-height, [length]);
-  padding-inline: --value(--spacing-space-*, [length]);
-  gap: --value(--spacing-space-*, [length]);
-  min-height: --value(--spacing-size-*, [length]);
+  padding-inline: --value(--spacing-*, [length]);
+  gap: --value(--spacing-*, [length]);
+  min-height: --value(--spacing-control-*, [length]);
   background-color: --value(--color-*, [color]);
   color: --value(--color-*-ink, [color]);
 
@@ -438,18 +438,18 @@
 }
 
 
-@utility ui-icon--* {
+@utility part-icon--* {
   font-size: --value(--text-*, [length]);
   line-height: --value(--text-*--line-height, [length]);
 }
 
 
-@utility ui-item--* {
+@utility part-item--* {
   font-size: --value(--text-*, [length]);
   line-height: --value(--text-*--line-height, [length]);
-  padding-inline: --value(--spacing-space-*, [length]);
-  gap: --value(--spacing-space-*, [length]);
-  min-height: --value(--spacing-size-*, [length]);
+  padding-inline: --value(--spacing-*, [length]);
+  gap: --value(--spacing-*, [length]);
+  min-height: --value(--spacing-control-*, [length]);
   background-color: --value(--color-*, [color]);
   color: --value(--color-*-ink, [color]);
 
@@ -470,7 +470,7 @@
   &[data-disabled],
   &[disabled] {
     background-color: --value(--color-*-muted, [color]);
-    color: var(--color-ui-ink-muted);
+    color: var(--color-on-muted);
     cursor: not-allowed;
   }
 
@@ -506,9 +506,9 @@
 }
 
 
-@utility ui-link--* {
+@utility part-link--* {
   font-size: --value(--text-*, [length]);
   line-height: --value(--text-*--line-height, [length]);
-  color: --value(--color-ui-ink-*, [color]);
+  color: --value(--color-on-*, [color]);
   gap: calc(--value(--spacing-*, [length]) * 0.5);
 }

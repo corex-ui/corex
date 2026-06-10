@@ -5,45 +5,37 @@ defmodule Corex.Design.Palette do
   alias Corex.Design.Bem
   alias Corex.Design.Rule
   alias Corex.Design.Selector
+  alias Corex.Design.Vocabulary
 
   @disabled "&:disabled,\n  &[data-disabled],\n  &[disabled]"
 
-  def semantic_atoms, do: Corex.Scales.semantic_atoms()
-  def color_atoms, do: Corex.Scales.semantic_atoms()
+  def semantic_atoms, do: Vocabulary.semantic_roles()
+  def color_atoms, do: semantic_atoms()
 
-  def solid_var(:neutral), do: "--color-ui"
+  def solid_var(:neutral), do: "--color-neutral"
   def solid_var(role), do: "--color-#{role}"
 
-  def solid_hover_var(:neutral), do: "--color-ui-hover"
-  def solid_hover_var(:selected), do: "--color-selected-hover"
   def solid_hover_var(role), do: "--color-#{role}-hover"
-
-  def solid_active_var(:neutral), do: "--color-ui-active"
-  def solid_active_var(:selected), do: "--color-selected-active"
   def solid_active_var(role), do: "--color-#{role}-active"
-
   def muted_var(role), do: "--color-#{role}-muted"
 
-  def fg_var(:neutral), do: "--color-ui-ink"
-  def fg_var(:selected), do: "--color-selected-ink"
-  def fg_var(role), do: ink_color_var(role)
+  def fg_var(:neutral), do: "--color-on-control"
+  def fg_var(role), do: "--color-on-#{role}"
 
-  def on_solid_var(:neutral), do: "--color-ui-ink"
-  def on_solid_var(role), do: on_solid_color_var(role)
+  def on_solid_var(role), do: "--color-on-#{role}"
 
-  def outline_var(:neutral), do: "--color-outline"
-  def outline_var(_role), do: "--color-outline"
+  def outline_var(_role), do: "--color-focus"
 
-  def disabled_bg_var, do: "--color-ui-muted"
-  def disabled_fg_var, do: "--color-ui-ink-muted"
-  def surface_var, do: "--color-ui-hover"
-  def surface_active_var, do: "--color-ui-active"
+  def disabled_bg_var, do: "--color-surface-control-muted"
+  def disabled_fg_var, do: "--color-on-muted"
+  def surface_var, do: "--color-surface-control-hover"
+  def surface_active_var, do: "--color-surface-control-active"
 
-  def inset_ring(role, kind) do
+  def inset_ring(role, _kind) do
     var =
-      case kind do
-        :on_solid -> on_solid_var(role)
-        :focus_ring -> fg_var(role)
+      case role do
+        :neutral -> "--color-focus"
+        _ -> on_solid_var(role)
       end
 
     "inset 0 0 0 2px var(#{var})"
@@ -56,27 +48,21 @@ defmodule Corex.Design.Palette do
       "--color-selected": {:raw, "var(--color-#{c})"},
       "--color-selected-hover": {:raw, "var(--color-#{c}-hover)"},
       "--color-selected-active": {:raw, "var(--color-#{c}-active)"},
-      "--color-selected-ink": {:raw, "var(--color-#{c}-ink)"},
-      "--color-selected-muted": {:raw, "var(--color-#{c}-muted)"}
+      "--color-selected-muted": {:raw, "var(--color-#{c}-muted)"},
+      "--color-on-selected": {:raw, "var(--color-on-#{c})"}
     }
   end
 
-  def ink_color_atom(:selected), do: :selected_ink
-
-  def ink_color_atom(color) when is_atom(color) do
-    :"ui_ink_#{color}"
-  end
+  def ink_color_atom(role) when is_atom(role), do: :"on_#{role}"
 
   def ink_color_var(role) when is_atom(role) do
-    "--color-" <> (role |> ink_color_atom() |> Atom.to_string() |> String.replace("_", "-"))
+    "--color-on-" <> Atom.to_string(role)
   end
 
-  def on_solid_color_atom(color) when is_atom(color) do
-    String.to_atom("#{color}_ink")
-  end
+  def on_solid_color_atom(role) when is_atom(role), do: :"on_#{role}"
 
   def on_solid_color_var(role) when is_atom(role) do
-    "--color-" <> (role |> on_solid_color_atom() |> Atom.to_string() |> String.replace("_", "-"))
+    "--color-on-" <> Atom.to_string(role)
   end
 
   def compound_visual_rules(id), do: modifier_paint_rules(id)
@@ -142,7 +128,7 @@ defmodule Corex.Design.Palette do
 
     closed =
       Rule.new("#{host} #{slot_selector(id, part_selector)}[data-state=\"closed\"]",
-        decls: [color: "var(--color-ui-ink)"]
+        decls: [color: "var(--color-on-page)"]
       )
 
     open_children =
@@ -216,55 +202,57 @@ defmodule Corex.Design.Palette do
     ]
   end
 
-  def visual_children(role, :ghost) do
-    [
-      Rule.new("&:hover", decls: [background_color: "var(#{surface_var()})"]),
-      Rule.new("&:active", decls: [background_color: "var(#{surface_active_var()})"]),
-      Rule.new("&:focus-visible",
-        decls: [outline: "none", box_shadow: inset_ring(role, :focus_ring)]
-      ),
-      Rule.new(@disabled,
-        decls: [
-          background_color: "transparent",
-          color: "var(#{disabled_fg_var()})",
-          cursor: "not-allowed"
-        ]
-      )
-    ]
-  end
+  def visual_children(role, visual) when visual in [:ghost, :outline, :subtle] do
+    hover_active =
+      case visual do
+        :subtle ->
+          [Rule.new("&:hover", decls: [background_color: "var(#{surface_active_var()})"])]
 
-  def visual_children(role, :outline) do
-    [
-      Rule.new("&:hover", decls: [background_color: "var(#{surface_var()})"]),
-      Rule.new("&:active", decls: [background_color: "var(#{surface_active_var()})"]),
-      Rule.new("&:focus-visible",
-        decls: [outline: "none", box_shadow: inset_ring(role, :focus_ring)]
-      ),
-      Rule.new(@disabled,
-        decls: [
-          background_color: "transparent",
-          color: "var(#{disabled_fg_var()})",
-          border_color: "var(#{disabled_bg_var()})",
-          cursor: "not-allowed"
-        ]
-      )
-    ]
-  end
+        _ ->
+          [
+            Rule.new("&:hover", decls: [background_color: "var(#{surface_var()})"]),
+            Rule.new("&:active", decls: [background_color: "var(#{surface_active_var()})"])
+          ]
+      end
 
-  def visual_children(role, :subtle) do
-    [
-      Rule.new("&:hover", decls: [background_color: "var(#{surface_active_var()})"]),
-      Rule.new("&:focus-visible",
-        decls: [outline: "none", box_shadow: inset_ring(role, :focus_ring)]
-      ),
-      Rule.new(@disabled,
-        decls: [
-          background_color: "var(#{disabled_bg_var()})",
-          color: "var(#{disabled_fg_var()})",
-          cursor: "not-allowed"
-        ]
-      )
-    ]
+    disabled =
+      case visual do
+        :outline ->
+          Rule.new(@disabled,
+            decls: [
+              background_color: "transparent",
+              color: "var(#{disabled_fg_var()})",
+              border_color: "var(#{disabled_bg_var()})",
+              cursor: "not-allowed"
+            ]
+          )
+
+        :ghost ->
+          Rule.new(@disabled,
+            decls: [
+              background_color: "transparent",
+              color: "var(#{disabled_fg_var()})",
+              cursor: "not-allowed"
+            ]
+          )
+
+        :subtle ->
+          Rule.new(@disabled,
+            decls: [
+              background_color: "var(#{disabled_bg_var()})",
+              color: "var(#{disabled_fg_var()})",
+              cursor: "not-allowed"
+            ]
+          )
+      end
+
+    hover_active ++
+      [
+        Rule.new("&:focus-visible",
+          decls: [outline: "none", box_shadow: inset_ring(role, :focus_ring)]
+        ),
+        disabled
+      ]
   end
 
   def active_decls(role) do

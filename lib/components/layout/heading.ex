@@ -87,14 +87,6 @@ defmodule Corex.Layout.Heading do
       size: :size,
       text: :text,
       gap: :space
-    ],
-    defaults: [
-      width: "fit",
-      max_width: "none",
-      height: "auto",
-      max_height: "none",
-      text: "2xl",
-      gap: "md"
     ]
 
   attr(:rest, :global, doc: "Additional HTML attributes on the outer wrapper.")

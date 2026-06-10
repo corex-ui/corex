@@ -16,8 +16,7 @@ defmodule Corex.Layout.Container do
   use Corex.Variants,
     kind: :layout,
     base: "container",
-    axes: [size: :container],
-    defaults: [size: "lg"]
+    axes: [size: :container]
 
   attr(:tag, :string, default: "div", doc: "The host HTML element.")
   slot(:inner_block, required: true)

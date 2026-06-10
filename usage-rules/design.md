@@ -28,13 +28,7 @@ Requires OTP 27+ (Elixir 1.18+ recommended).
 
 ```elixir
 config :corex_design,
-  default_theme: :neo,
-  default_mode: :light
-```
-
-```elixir
-config :corex_design,
-  my_app: [output: "assets/css/corex.tailwind.css"]
+  output: "assets/css/corex.tailwind.css"
 ```
 
 Run `mix compile` (or `mix compile.corex_design`) to write the bundle.

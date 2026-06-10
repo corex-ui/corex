@@ -20,14 +20,26 @@
 
 @utility collapsible--size-* {
   [data-scope="collapsible"][data-part="root"] {
-      max-width: --value(--container-*, [length]);
-    gap: --value(--spacing-space-*, [length]);
+      gap: --value(--spacing-*, [length]);
+    max-width: --value(--container-*, [length]);
   }
 
 }
 
 
 @layer components {
+  .collapsible [data-scope="collapsible"][data-part="root"] {
+    gap: var(--spacing-md);
+    max-width: var(--container-md);
+  }
+
+  .collapsible {
+    width: 100%;
+    max-width: var(--container-md);
+    height: auto;
+    max-height: none;
+  }
+
   .collapsible.collapsible--w-auto {
     width: auto;
   }
@@ -72,11 +84,11 @@
     position: relative;
   }
 
-  .collapsible.collapsible--semantic-brand {
+  .collapsible.collapsible--semantic-alert {
     position: relative;
   }
 
-  .collapsible.collapsible--semantic-alert {
+  .collapsible.collapsible--semantic-brand {
     position: relative;
   }
 
@@ -84,11 +96,15 @@
     position: relative;
   }
 
-  .collapsible.collapsible--semantic-success {
+  .collapsible.collapsible--semantic-neutral {
     position: relative;
   }
 
   .collapsible.collapsible--semantic-selected {
+    position: relative;
+  }
+
+  .collapsible.collapsible--semantic-success {
     position: relative;
   }
 
@@ -101,7 +117,7 @@
   }
 
   .collapsible[data-loading] .collapsible [data-scope="collapsible"][data-part="root"] {
-    @apply ui-loading;
+    @apply part-loading;
   }
 
   .collapsible {
@@ -110,7 +126,7 @@
   }
 
   .collapsible [data-scope="collapsible"][data-part="root"] {
-    @apply ui-root;
+    @apply part-root;
   }
 
   .collapsible [data-scope="collapsible"][data-part="root"][data-orientation="vertical"] {
@@ -124,14 +140,14 @@
   }
 
   .collapsible [data-scope="collapsible"][data-part="trigger"] {
-    @apply ui-trigger;
+    @apply part-trigger;
     justify-content: space-between;
     max-width: var(--container-5xs);
     align-self: flex-start;
     width: auto;
     box-shadow: var(--shadow-ui);
     & svg {
-      @apply ui-icon;
+      @apply part-icon;
     }
 
     &[data-state="closed"]:has(.collapsible [data-scope="collapsible"][data-part="opened"]) .collapsible [data-scope="collapsible"][data-part="opened"] {
@@ -186,7 +202,7 @@
   }
 
   .collapsible [data-scope="collapsible"][data-part="content"] {
-    @apply ui-content;
+    @apply part-content;
   }
 
   .collapsible [data-scope="collapsible"][data-part="root"][data-orientation="horizontal"] .collapsible [data-scope="collapsible"][data-part="content"] {
@@ -197,15 +213,15 @@
 
   .collapsible [data-scope="collapsible"][data-part="root"][data-loading],
     .collapsible [data-scope="collapsible"][data-part="root"][data-loading] {
-    @apply ui-loading;
-    min-height: var(--size-md);
+    @apply part-loading;
+    min-height: var(--spacing-control-md);
     min-width: var(--container-7xs);
   }
 
   .collapsible [data-scope="collapsible"][data-part="root"][data-loading] .collapsible [data-scope="collapsible"][data-part="trigger"],
     .collapsible [data-scope="collapsible"][data-part="root"][data-loading] .collapsible [data-scope="collapsible"][data-part="trigger"] {
     border-color: var(--color-border);
-    background-color: var(--color-ui-active);
+    background-color: var(--color-surface-control-active);
     animation: corex-skeleton 1.4s ease-in-out infinite;
     width: 100%;
   }
@@ -279,12 +295,12 @@
   }
 
   .collapsible [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
-    color: var(--color-ui-ink);
+    color: var(--color-on-page);
   }
 
   .collapsible [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
     background-color: var(--color-selected);
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
     &:hover {
       background-color: var(--color-selected-hover);
     }
@@ -295,7 +311,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
     }
 
     &:disabled,
@@ -311,12 +327,12 @@
   }
 
   .collapsible.collapsible--semantic-accent [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
-    color: var(--color-ui-ink-accent, var(--color-ui-ink));
+    color: var(--color-on-accent, var(--color-on-page));
   }
 
   .collapsible.collapsible--semantic-accent [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
     background-color: var(--color-accent);
-    color: var(--color-accent-ink);
+    color: var(--color-on-accent);
     &:hover {
       background-color: var(--color-accent-hover);
     }
@@ -327,7 +343,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
     }
 
     &:disabled,
@@ -342,45 +358,13 @@
     }
   }
 
-  .collapsible.collapsible--semantic-brand [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
-    color: var(--color-ui-ink-brand, var(--color-ui-ink));
-  }
-
-  .collapsible.collapsible--semantic-brand [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
-    background-color: var(--color-brand);
-    color: var(--color-brand-ink);
-    &:hover {
-      background-color: var(--color-brand-hover);
-    }
-
-    &:active {
-      background-color: var(--color-brand-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-brand-ink);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-brand-muted);
-      cursor: not-allowed;
-    }
-
-    & [data-icon] {
-      color: currentcolor;
-    }
-  }
-
   .collapsible.collapsible--semantic-alert [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
-    color: var(--color-ui-ink-alert, var(--color-ui-ink));
+    color: var(--color-on-alert, var(--color-on-page));
   }
 
   .collapsible.collapsible--semantic-alert [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
     background-color: var(--color-alert);
-    color: var(--color-alert-ink);
+    color: var(--color-on-alert);
     &:hover {
       background-color: var(--color-alert-hover);
     }
@@ -391,7 +375,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
     }
 
     &:disabled,
@@ -406,13 +390,45 @@
     }
   }
 
+  .collapsible.collapsible--semantic-brand [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
+    color: var(--color-on-brand, var(--color-on-page));
+  }
+
+  .collapsible.collapsible--semantic-brand [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
+    background-color: var(--color-brand);
+    color: var(--color-on-brand);
+    &:hover {
+      background-color: var(--color-brand-hover);
+    }
+
+    &:active {
+      background-color: var(--color-brand-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-brand-muted);
+      cursor: not-allowed;
+    }
+
+    & [data-icon] {
+      color: currentcolor;
+    }
+  }
+
   .collapsible.collapsible--semantic-info [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
-    color: var(--color-ui-ink-info, var(--color-ui-ink));
+    color: var(--color-on-info, var(--color-on-page));
   }
 
   .collapsible.collapsible--semantic-info [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
     background-color: var(--color-info);
-    color: var(--color-info-ink);
+    color: var(--color-on-info);
     &:hover {
       background-color: var(--color-info-hover);
     }
@@ -423,7 +439,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-info-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
     }
 
     &:disabled,
@@ -438,30 +454,30 @@
     }
   }
 
-  .collapsible.collapsible--semantic-success [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
-    color: var(--color-ui-ink-success, var(--color-ui-ink));
+  .collapsible.collapsible--semantic-neutral [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
+    color: var(--color-on-control, var(--color-on-page));
   }
 
-  .collapsible.collapsible--semantic-success [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
-    background-color: var(--color-success);
-    color: var(--color-success-ink);
+  .collapsible.collapsible--semantic-neutral [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
+    background-color: var(--color-neutral);
+    color: var(--color-on-neutral);
     &:hover {
-      background-color: var(--color-success-hover);
+      background-color: var(--color-neutral-hover);
     }
 
     &:active {
-      background-color: var(--color-success-active);
+      background-color: var(--color-neutral-active);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-success-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-success-muted);
+      background-color: var(--color-neutral-muted);
       cursor: not-allowed;
     }
 
@@ -471,12 +487,12 @@
   }
 
   .collapsible.collapsible--semantic-selected [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
-    color: var(--color-selected-ink, var(--color-ui-ink));
+    color: var(--color-on-selected, var(--color-on-page));
   }
 
   .collapsible.collapsible--semantic-selected [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
     background-color: var(--color-selected);
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
     &:hover {
       background-color: var(--color-selected-hover);
     }
@@ -487,13 +503,45 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
       background-color: var(--color-selected-muted);
+      cursor: not-allowed;
+    }
+
+    & [data-icon] {
+      color: currentcolor;
+    }
+  }
+
+  .collapsible.collapsible--semantic-success [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
+    color: var(--color-on-success, var(--color-on-page));
+  }
+
+  .collapsible.collapsible--semantic-success [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
+    background-color: var(--color-success);
+    color: var(--color-on-success);
+    &:hover {
+      background-color: var(--color-success-hover);
+    }
+
+    &:active {
+      background-color: var(--color-success-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-success-muted);
       cursor: not-allowed;
     }
 

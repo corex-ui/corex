@@ -219,13 +219,6 @@ defmodule Corex.Switch do
       semantic: :semantic,
       size: :size,
       radius: [:none]
-    ],
-    defaults: [
-      width: "full",
-      max_width: "4xl",
-      height: "auto",
-      max_height: "none",
-      size: "md"
     ]
 
   @doc """

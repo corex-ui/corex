@@ -63,7 +63,7 @@ defmodule Corex.Design.Css do
 
   defp resolve_semantic(:ring, value, _ctx) when is_integer(value) do
     width = Integer.to_string(value)
-    "inset 0 0 0 #{width}px var(--color-ui-ink)"
+    "inset 0 0 0 #{width}px var(--color-focus)"
   end
 
   defp resolve_semantic(:ring, value, ctx) when is_binary(value) do

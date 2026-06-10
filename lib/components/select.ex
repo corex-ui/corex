@@ -605,13 +605,6 @@ defmodule Corex.Select do
       size: :size,
       text: :text,
       radius: :radius
-    ],
-    defaults: [
-      width: "full",
-      max_width: "4xs",
-      height: "auto",
-      max_height: "none",
-      size: "md"
     ]
 
   attr(:id, :string, required: false, doc: "The id of the select component")

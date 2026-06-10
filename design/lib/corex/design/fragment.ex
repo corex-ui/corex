@@ -8,7 +8,7 @@ defmodule Corex.Design.Fragment do
   Tailwind-free replacement for the old `@utility ui-*` mixins). The emitter
   splices these inline wherever a rule declares `decls: [include: <id>]`.
   """
-  @utility_ids ~W(ui_root ui_trigger ui_icon ui_content ui_label ui_input ui_item ui_link ui_error ui_readonly ui_loading)a
+  @utility_ids ~W(part_root part_trigger part_icon part_content part_label part_input part_item part_link part_error part_readonly part_loading)a
 
   def utility_ids, do: @utility_ids
 
@@ -25,7 +25,7 @@ defmodule Corex.Design.Fragment do
 
   defp frag(decls, children \\ []), do: %{decls: decls, children: children}
 
-  defp ui_readonly_lock_mask do
+  defp part_readonly_lock_mask do
     xmlns = Enum.join(["http", "://", "www.", "w3.org", "/2000", "/svg"])
 
     svg =
@@ -36,13 +36,13 @@ defmodule Corex.Design.Fragment do
     "url(\"data:image/svg+xml," <> URI.encode(svg) <> "\")"
   end
 
-  defp fetch(:ui_root) do
+  defp fetch(:part_root) do
     frag(
       [
         display: "flex",
         flex_direction: "column",
         width: "100%",
-        gap: "var(--space)"
+        gap: "var(--spacing-md)"
       ],
       [
         Rule.new(~S(&[data-orientation="vertical"]), decls: [flex_direction: "column"]),
@@ -51,7 +51,7 @@ defmodule Corex.Design.Fragment do
     )
   end
 
-  defp fetch(:ui_trigger) do
+  defp fetch(:part_trigger) do
     frag(
       [
         display: "inline-flex",
@@ -60,29 +60,29 @@ defmodule Corex.Design.Fragment do
         text_align: "center",
         cursor: "pointer",
         width: "auto",
-        min_height: "var(--size)",
+        min_height: "var(--spacing-control-md)",
         font_size: "var(--text-base)",
         line_height: "var(--leading-base)",
         font_weight: "var(--font-weight-normal)",
         border_radius: "var(--radius-md)",
         border: "1px solid var(--color-border)",
-        padding_inline: "var(--space)",
-        gap: "var(--space)",
-        color: "var(--color-ui-ink)",
-        background_color: "var(--color-ui)",
+        padding_inline: "var(--spacing-md)",
+        gap: "var(--spacing-md)",
+        color: "var(--color-on-page)",
+        background_color: "var(--color-surface-control)",
         appearance: "none",
         transition: "background-color 120ms ease, color 120ms ease"
       ],
       [
-        Rule.new("&:hover", decls: [background_color: "var(--color-ui-hover)"]),
-        Rule.new("&:active", decls: [background_color: "var(--color-ui-active)"]),
+        Rule.new("&:hover", decls: [background_color: "var(--color-surface-control-hover)"]),
+        Rule.new("&:active", decls: [background_color: "var(--color-surface-control-active)"]),
         Rule.new("&:focus-visible",
-          decls: [outline: "none", box_shadow: "inset 0 0 0 2px var(--color-ui-ink)"]
+          decls: [outline: "none", box_shadow: "inset 0 0 0 2px var(--color-on-page)"]
         ),
         Rule.new("&:disabled,\n  &[data-disabled],\n  &[disabled]",
           decls: [
-            color: "var(--color-ui-ink-muted)",
-            background_color: "var(--color-ui-muted)",
+            color: "var(--color-on-muted)",
+            background_color: "var(--color-surface-control-muted)",
             cursor: "not-allowed"
           ]
         ),
@@ -90,11 +90,11 @@ defmodule Corex.Design.Fragment do
           decls: [border_color: "var(--color-alert)", box_shadow: "none"]
         ),
         Rule.new("&[data-invalid]:focus-visible", decls: [box_shadow: "none"]),
-        Rule.new(~S(& [data-icon]), decls: [include: :ui_icon]),
+        Rule.new(~S(& [data-icon]), decls: [include: :part_icon]),
         Rule.new(~S(& [data-part="item-text"]),
           decls: [
             display: "flex",
-            gap: "var(--space)",
+            gap: "var(--spacing-md)",
             width: "100%",
             text_align: "start",
             align_items: "center"
@@ -104,7 +104,7 @@ defmodule Corex.Design.Fragment do
     )
   end
 
-  defp fetch(:ui_icon) do
+  defp fetch(:part_icon) do
     frag(
       [
         display: "flex",
@@ -121,21 +121,21 @@ defmodule Corex.Design.Fragment do
     )
   end
 
-  defp fetch(:ui_content) do
+  defp fetch(:part_content) do
     frag(
       display: "flex",
       flex_direction: "column",
       width: "100%",
-      padding: "var(--space)",
+      padding: "var(--spacing-md)",
       border_radius: "var(--radius-md)",
       border: "1px solid var(--color-border)",
-      background_color: "var(--color-root)",
-      color: "var(--color-ui-ink)",
+      background_color: "var(--color-surface-page)",
+      color: "var(--color-on-page)",
       box_shadow: "var(--shadow-md)"
     )
   end
 
-  defp fetch(:ui_label) do
+  defp fetch(:part_label) do
     frag(
       display: "flex",
       align_items: "center",
@@ -145,11 +145,11 @@ defmodule Corex.Design.Fragment do
       font_size: "var(--text-base)",
       line_height: "var(--leading-base)",
       font_weight: "var(--font-weight-medium)",
-      color: "var(--color-ui-ink)"
+      color: "var(--color-on-page)"
     )
   end
 
-  defp fetch(:ui_input) do
+  defp fetch(:part_input) do
     frag(
       [
         display: "flex",
@@ -162,26 +162,26 @@ defmodule Corex.Design.Fragment do
         font_weight: "var(--font-weight-normal)",
         border_radius: "var(--radius-md)",
         border: "1px solid var(--color-border)",
-        padding_inline: "var(--space)",
-        gap: "var(--space)",
-        min_height: "var(--size)",
+        padding_inline: "var(--spacing-md)",
+        gap: "var(--spacing-md)",
+        min_height: "var(--spacing-control-md)",
         overflow: "hidden",
         text_overflow: "ellipsis",
         white_space: "nowrap",
-        color: "var(--color-ui-ink)",
-        background_color: "var(--color-ui)",
+        color: "var(--color-on-page)",
+        background_color: "var(--color-surface-control)",
         transition: "background-color 120ms ease, box-shadow 120ms ease"
       ],
       [
-        Rule.new("&::placeholder", decls: [color: "var(--color-ui-ink-muted)"]),
-        Rule.new("&:hover", decls: [background_color: "var(--color-ui-hover)"]),
+        Rule.new("&::placeholder", decls: [color: "var(--color-on-muted)"]),
+        Rule.new("&:hover", decls: [background_color: "var(--color-surface-control-hover)"]),
         Rule.new("&:focus,\n  &:focus-within",
-          decls: [background_color: "var(--color-root)", outline: "none"]
+          decls: [background_color: "var(--color-surface-page)", outline: "none"]
         ),
         Rule.new("&:disabled,\n  &[data-disabled],\n  &[disabled]",
           decls: [
-            color: "var(--color-ui-ink-muted)",
-            background_color: "var(--color-ui-muted)",
+            color: "var(--color-on-muted)",
+            background_color: "var(--color-surface-control-muted)",
             opacity: "0.7",
             cursor: "not-allowed"
           ]
@@ -193,12 +193,12 @@ defmodule Corex.Design.Fragment do
           "&[data-invalid]:focus,\n  &[data-invalid]:focus-within,\n  &[data-invalid]:focus-visible",
           decls: [box_shadow: "none", outline: "none"]
         ),
-        Rule.new(~S(& [data-icon],\n  & svg,\n  & img), decls: [include: :ui_icon])
+        Rule.new(~S(& [data-icon],\n  & svg,\n  & img), decls: [include: :part_icon])
       ]
     )
   end
 
-  defp fetch(:ui_item) do
+  defp fetch(:part_item) do
     frag(
       [
         width: "100%",
@@ -209,25 +209,25 @@ defmodule Corex.Design.Fragment do
         font_size: "var(--text-base)",
         line_height: "var(--leading-base)",
         font_weight: "var(--font-weight-normal)",
-        min_height: "var(--size)",
-        padding_inline: "var(--space)",
-        gap: "var(--space)",
-        background_color: "var(--color-ui)",
-        color: "var(--color-ui-ink)",
+        min_height: "var(--spacing-control-md)",
+        padding_inline: "var(--spacing-md)",
+        gap: "var(--spacing-md)",
+        background_color: "var(--color-surface-control)",
+        color: "var(--color-on-page)",
         border_radius: "var(--radius-none)",
         outline: "none",
         transition: "background-color 120ms ease, color 120ms ease, box-shadow 120ms ease"
       ],
       [
-        Rule.new("&:hover", decls: [background_color: "var(--color-ui-hover)"]),
+        Rule.new("&:hover", decls: [background_color: "var(--color-surface-control-hover)"]),
         Rule.new("&:active",
-          decls: [background_color: "var(--color-ui-active)", box_shadow: "none"]
+          decls: [background_color: "var(--color-surface-control-active)", box_shadow: "none"]
         ),
         Rule.new("&:focus-visible",
           decls: [
             outline: "none",
-            box_shadow: "inset 0 0 0 2px var(--color-ui-ink)",
-            background_color: "var(--color-ui-hover)"
+            box_shadow: "inset 0 0 0 2px var(--color-on-page)",
+            background_color: "var(--color-surface-control-hover)"
           ]
         ),
         Rule.new("@media (hover: hover)",
@@ -235,12 +235,12 @@ defmodule Corex.Design.Fragment do
             Rule.new("&[data-highlighted]:not(:hover)",
               decls: [
                 outline: "none",
-                box_shadow: "inset 0 0 0 2px var(--color-ui-ink)",
-                background_color: "var(--color-ui-hover)"
+                box_shadow: "inset 0 0 0 2px var(--color-on-page)",
+                background_color: "var(--color-surface-control-hover)"
               ]
             ),
             Rule.new("&[data-highlighted]:active",
-              decls: [background_color: "var(--color-ui-active)", box_shadow: "none"]
+              decls: [background_color: "var(--color-surface-control-active)", box_shadow: "none"]
             )
           ]
         ),
@@ -249,16 +249,16 @@ defmodule Corex.Design.Fragment do
             Rule.new("&[data-highlighted]",
               decls: [
                 outline: "none",
-                box_shadow: "inset 0 0 0 2px var(--color-ui-ink)",
-                background_color: "var(--color-ui-hover)"
+                box_shadow: "inset 0 0 0 2px var(--color-on-page)",
+                background_color: "var(--color-surface-control-hover)"
               ]
             )
           ]
         ),
         Rule.new("&:disabled,\n  &[data-disabled],\n  &[disabled]",
           decls: [
-            color: "var(--color-ui-ink-muted)",
-            background_color: "var(--color-ui-muted)",
+            color: "var(--color-on-muted)",
+            background_color: "var(--color-surface-control-muted)",
             cursor: "not-allowed",
             box_shadow: "none"
           ]
@@ -273,13 +273,13 @@ defmodule Corex.Design.Fragment do
         ),
         Rule.new(
           ~S(& [data-icon],\n  & svg,\n  & img,\n  & [data-part="item-indicator"] svg,\n  & [data-part="branch-indicator"] svg),
-          decls: [include: :ui_icon]
+          decls: [include: :part_icon]
         ),
         Rule.new(
           ~S(& [data-part="item-text"],\n  & [data-part="branch-text"]),
           decls: [
             display: "flex",
-            gap: "var(--space)",
+            gap: "var(--spacing-md)",
             flex: "1 1 0%",
             min_width: "0",
             max_width: "100%",
@@ -299,7 +299,7 @@ defmodule Corex.Design.Fragment do
     )
   end
 
-  defp fetch(:ui_link) do
+  defp fetch(:part_link) do
     frag(
       [
         display: "inline-flex",
@@ -307,12 +307,12 @@ defmodule Corex.Design.Fragment do
         align_items: "center",
         cursor: "pointer",
         position: "relative",
-        color: "var(--color-link)",
+        color: "var(--color-on-link)",
         height: "auto",
         font_size: "inherit",
         line_height: "inherit",
-        gap: "var(--space)",
-        padding_inline: "var(--space)",
+        gap: "var(--spacing-md)",
+        padding_inline: "var(--spacing-md)",
         border_radius: "var(--radius-md)",
         text_decoration_line: "underline",
         text_underline_offset: "0.15em",
@@ -327,7 +327,7 @@ defmodule Corex.Design.Fragment do
         ),
         Rule.new("&:disabled,\n  &[data-disabled]",
           decls: [
-            color: "var(--color-ui-ink-muted)",
+            color: "var(--color-on-muted)",
             opacity: "0.7",
             cursor: "not-allowed",
             pointer_events: "none"
@@ -336,12 +336,12 @@ defmodule Corex.Design.Fragment do
         Rule.new(~S(&[aria-current="page"],\n  &[aria-current="location"]),
           decls: [font_weight: "var(--font-weight-semibold)", pointer_events: "none"]
         ),
-        Rule.new(~S(& [data-icon]), decls: [include: :ui_icon])
+        Rule.new(~S(& [data-icon]), decls: [include: :part_icon])
       ]
     )
   end
 
-  defp fetch(:ui_error) do
+  defp fetch(:part_error) do
     frag(
       display: "inline-flex",
       align_items: "center",
@@ -352,12 +352,12 @@ defmodule Corex.Design.Fragment do
       line_height: "var(--leading-sm)",
       font_weight: "var(--font-weight-normal)",
       gap: "0.25rem",
-      color: "var(--color-ui-ink-alert)",
-      padding_block: "var(--space)"
+      color: "var(--color-on-page-alert)",
+      padding_block: "var(--spacing-md)"
     )
   end
 
-  defp fetch(:ui_readonly) do
+  defp fetch(:part_readonly) do
     frag([], [
       Rule.new("&::after",
         decls: [
@@ -367,8 +367,8 @@ defmodule Corex.Design.Fragment do
           inset_inline_end: "0.25rem",
           width: "1em",
           height: "1em",
-          background_color: "var(--color-ui-ink-muted)",
-          mask_image: ui_readonly_lock_mask(),
+          background_color: "var(--color-on-muted)",
+          mask_image: part_readonly_lock_mask(),
           mask_size: "contain",
           mask_repeat: "no-repeat",
           mask_position: "center"
@@ -377,7 +377,7 @@ defmodule Corex.Design.Fragment do
     ])
   end
 
-  defp fetch(:ui_loading) do
+  defp fetch(:part_loading) do
     frag(
       pointer_events: "none !important",
       cursor: "wait",

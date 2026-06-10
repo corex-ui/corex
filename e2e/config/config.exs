@@ -83,9 +83,7 @@ config :tailwind,
   ]
 
 config :corex_design,
-  corex_web: [
-    output: "assets/css/corex.tailwind.css"
-  ]
+  output: "assets/css/corex.tailwind.css"
 
 # Configure Elixir's Logger
 config :logger, :default_formatter,

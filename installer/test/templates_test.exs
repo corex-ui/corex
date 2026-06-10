@@ -117,10 +117,11 @@ defmodule Corex.New.TemplatesTest do
       assert out =~ "phx_mode"
     end
 
-    test "plug_theme renders the theme plug module using the otp_app" do
+    test "plug_theme renders the theme plug module using Corex.Design.Theme" do
       out = Templates.plug_theme(Keyword.put(@base_assigns, :theme, true))
       assert out =~ "defmodule MyAppWeb.Plugs.Theme do"
-      assert out =~ ":my_app"
+      assert out =~ "Corex.Design.Theme.picker_ids()"
+      assert out =~ "Corex.Design.Theme.default_theme()"
     end
 
     test "hooks_layout renders LiveView on_mount hook for locale and layout assigns" do

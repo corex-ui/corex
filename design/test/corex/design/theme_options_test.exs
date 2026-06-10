@@ -8,15 +8,15 @@ defmodule Corex.Design.ThemeOptionsTest do
     assert {:ok, _} = Options.validate(Presets.all())
   end
 
-  test "rejects invalid seed hex" do
+  test "rejects invalid palette hex" do
     assert {:error, msg} =
              Options.validate(%{
                bad: %{
-                 seeds: %{"accent" => "not-a-color"},
+                 palette: %{"accent" => "not-a-color"},
                  colors: %{light: %{}, dark: %{}}
                }
              })
 
-    assert msg =~ "invalid seed hex"
+    assert msg =~ "invalid palette hex"
   end
 end

@@ -40,7 +40,7 @@ defmodule E2eWeb.Demos.StylePreview do
 
     case Map.get(@previews, component) do
       {module, fun} ->
-        apply(module, fun, [%{}])
+        apply(module, fun, [assigns])
 
       nil ->
         apply(__MODULE__, String.to_atom("preview_#{component}"), [assigns])

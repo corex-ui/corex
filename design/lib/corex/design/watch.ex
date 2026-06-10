@@ -7,7 +7,7 @@ defmodule Corex.Design.Watch do
 
   @debounce_ms 200
 
-  def start(profile) do
+  def start do
     unless Code.ensure_loaded?(FileSystem) do
       Logger.error(
         "Corex design watch requires the :file_system dependency (included with phoenix_live_reload)"
@@ -25,7 +25,7 @@ defmodule Corex.Design.Watch do
     case FileSystem.start_link(dirs: dirs, name: __MODULE__) do
       {:ok, _pid} ->
         FileSystem.subscribe(__MODULE__)
-        loop(%{timer: nil, profile: profile})
+        loop(%{timer: nil})
 
       {:error, reason} ->
         Logger.error("Corex design watch failed to start FileSystem: #{inspect(reason)}")
@@ -51,7 +51,7 @@ defmodule Corex.Design.Watch do
 
       :run_compile ->
         Mix.Task.run("app.config")
-        Corex.Design.compile(profile: state.profile, log: :watch_rebuild)
+        Corex.Design.compile(log: :watch_rebuild)
         loop(%{state | timer: nil})
     end
   end

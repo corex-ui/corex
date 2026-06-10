@@ -5,8 +5,8 @@ defmodule <%= @web_module %>.Plugs.Theme do
   def init(opts), do: opts
 
   def call(conn, _opts) do
-    themes = Application.get_env(<%= inspect(@otp_app) %>, :themes, ["<%= @default_theme %>"])
-    default_theme = List.first(themes) || "<%= @default_theme %>"
+    themes = Corex.Design.Theme.picker_ids()
+    default_theme = Corex.Design.Theme.default_theme() |> Atom.to_string()
 
     theme =
       conn.cookies["phx_theme"]

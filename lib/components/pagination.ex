@@ -347,13 +347,6 @@ defmodule Corex.Pagination do
       semantic: :semantic,
       size: :size,
       radius: :radius
-    ],
-    defaults: [
-      width: "fit",
-      max_width: "md",
-      height: "auto",
-      max_height: "none",
-      size: "md"
     ]
 
   import Corex.Api.Doc

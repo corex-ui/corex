@@ -144,13 +144,6 @@ defmodule Corex.NativeInput do
       semantic: :semantic,
       size: :size,
       radius: :radius
-    ],
-    defaults: [
-      width: "full",
-      max_width: "4xl",
-      height: "auto",
-      max_height: "none",
-      size: "md"
     ]
 
   alias Phoenix.HTML.Form

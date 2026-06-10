@@ -12,6 +12,8 @@
     color: currentcolor;
     align-items: center;
     flex-shrink: 0;
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
   }
 
   .icon.icon--text-xs {
@@ -57,7 +59,7 @@
   .icon [data-icon],
     .icon svg,
     .icon img {
-    @apply ui-icon;
+    @apply part-icon;
   }
 
   .icon img {

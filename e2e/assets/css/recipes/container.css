@@ -3,6 +3,7 @@
 @layer components {
   .container {
     width: 100%;
+    max-width: var(--container-lg);
     margin-inline: auto;
   }
 

@@ -1,23 +1,10 @@
 defmodule Corex.Design.Theme do
   @moduledoc """
-  Resolves host `config :corex_design, themes: %{...}` into color and
-  dimension inputs for the compiler.
+  Resolves `config :corex_design` theme keys into color and dimension inputs for the compiler.
 
-  Each theme spec may include:
-
-    * `:seeds` — hex anchors for OKLCH generation
-    * `:colors` — `%{light: %{semantic, surface, ink, utility}, dark: ...}`
-    * `:dimensions` — `space_scale`, `size_scale`, `text_scale`, `radius_scale`,
-      `container_scale`, optional per-step `:radius`, optional `:font`
-    * `:typography` — optional element style map (see `Corex.Design.Typography`)
-
-  Surface and semantic fills use `lightness` (0–100, OKLCH L% target) resolved
-  via a dense `Color.Palette.tonal/2` ramp from seed hexes.
-  Ink and semantic foreground contrast uses each role's `ratio` field with
-  `Color.Palette.contrast/2` (Leonardo-style WCAG targeting).
-
-  When `:themes` is omitted, `Corex.Design.Theme.Presets.all/0` is used.
-  Customize a preset with `merge_specs/2` instead of inheritance keys.
+  Configure with flat keys: `default_theme`, `default_mode`, and `themes` (preset id list or catalog map).
+  When `themes` is omitted, `Corex.Design.Theme.Presets.all/0` is used.
+  Customize a preset with `merge_specs/2`.
   """
 
   alias Corex.Design.Theme.Options, as: ThemeOptions
@@ -33,8 +20,8 @@ defmodule Corex.Design.Theme do
 
   def themes, do: theme_ids()
 
-  def default_theme, do: Keyword.get(config(), :default_theme, :neo)
-  def default_mode, do: Keyword.get(config(), :default_mode, :light)
+  def default_theme, do: Keyword.get(resolved(), :default_theme, :neo)
+  def default_mode, do: Keyword.get(resolved(), :default_mode, :light)
 
   def scaling(theme), do: dimension_scale(theme, :space_scale)
 
@@ -94,14 +81,20 @@ defmodule Corex.Design.Theme do
     |> Enum.sort()
   end
 
+  def picker_ids, do: Enum.map(theme_ids(), &Atom.to_string/1)
+
   def resolved_themes do
     resolved =
       case themes_input() do
-        %{} = themes when map_size(themes) > 0 ->
-          ThemeOptions.validate!(themes)
-
-        _ ->
+        nil ->
           Presets.all()
+
+        themes when is_list(themes) ->
+          ids = if Keyword.keyword?(themes), do: Keyword.keys(themes), else: themes
+          Presets.all() |> Map.take(ids)
+
+        %{} = themes ->
+          ThemeOptions.validate!(themes)
       end
 
     ThemeOptions.validate_resolved!(resolved)
@@ -156,39 +149,17 @@ defmodule Corex.Design.Theme do
   end
 
   @doc false
-  def color_config do
-    themes =
-      resolved_themes()
-      |> Enum.flat_map(fn {id, spec} ->
-        seeds = stringify_map(spec.seeds)
-
-        for mode <- @modes do
-          mode_key = mode
-          mode_body = Map.fetch!(spec.colors, mode_key) |> stringify_map()
-
-          body =
-            mode_body
-            |> Map.put("seeds", seeds)
-            |> Map.put("output", "tokens/themes/#{id}/color/#{mode}.json")
-
-          {"#{id}-#{mode}", body}
-        end
-      end)
-      |> Map.new()
-
-    %{"themes" => themes}
-  end
-
   def validate!(themes) when is_map(themes), do: ThemeOptions.validate!(themes)
 
   defp themes_input do
-    Corex.Design.design_config()
-    |> Keyword.get(:themes)
+    resolved() |> Keyword.get(:themes)
   end
+
+  defp resolved, do: Corex.Design.Config.resolved_options()
 
   defp normalize_spec(spec) when is_map(spec) do
     base = %{
-      seeds: normalize_seeds(map_get(spec, :seeds, %{})),
+      palette: normalize_palette(map_get(spec, :palette, %{})),
       colors: normalize_colors(map_get(spec, :colors, %{})),
       dimensions: normalize_dimensions(map_get(spec, :dimensions, %{}))
     }
@@ -199,9 +170,14 @@ defmodule Corex.Design.Theme do
     end
   end
 
-  defp normalize_seeds(seeds) when is_map(seeds) do
-    Map.new(seeds, fn {k, v} -> {to_string(k), to_string(v)} end)
+  defp normalize_palette(palette) when is_map(palette) do
+    Map.new(palette, fn {k, v} -> {normalize_palette_key(k), to_string(v)} end)
   end
+
+  defp normalize_palette_key(:base), do: "neutral"
+  defp normalize_palette_key("base"), do: "neutral"
+  defp normalize_palette_key(k) when is_atom(k), do: Atom.to_string(k)
+  defp normalize_palette_key(k) when is_binary(k), do: k
 
   defp normalize_colors(colors) when is_map(colors) do
     %{
@@ -212,12 +188,17 @@ defmodule Corex.Design.Theme do
 
   defp normalize_mode_colors(mode) when is_map(mode) do
     %{
-      semantic: normalize_key_map(map_get(mode, :semantic, %{})),
       surface: normalize_key_map(map_get(mode, :surface, %{})),
-      ink: normalize_key_map(map_get(mode, :ink, %{})),
-      utility: normalize_key_map(map_get(mode, :utility, %{}))
+      roles: normalize_key_map(map_get(mode, :roles, %{})),
+      on: normalize_key_map(map_get(mode, :on, %{})),
+      border: normalize_flat_token(map_get(mode, :border)),
+      focus: normalize_flat_token(map_get(mode, :focus)),
+      shadow: normalize_flat_token(map_get(mode, :shadow))
     }
   end
+
+  defp normalize_flat_token(nil), do: nil
+  defp normalize_flat_token(token) when is_map(token), do: normalize_key_map(token)
 
   defp normalize_dimensions(dims) when is_map(dims) do
     scale = fetch_float(dims, :scale)
@@ -295,11 +276,11 @@ defmodule Corex.Design.Theme do
     end
   end
 
-  defp empty_mode, do: %{semantic: %{}, surface: %{}, ink: %{}, utility: %{}}
+  defp empty_mode, do: %{surface: %{}, roles: %{}, on: %{}}
 
   defp deep_merge(%{colors: bc} = base, %{colors: oc} = over) do
     merged = %{
-      seeds: Map.merge(base.seeds, over.seeds),
+      palette: Map.merge(base.palette, over.palette),
       colors: %{
         light:
           deep_merge_mode(Map.get(bc, :light, empty_mode()), Map.get(oc, :light, empty_mode())),
@@ -325,12 +306,17 @@ defmodule Corex.Design.Theme do
 
   defp deep_merge_mode(base, over) do
     %{
-      semantic: deep_merge_maps(Map.get(base, :semantic, %{}), Map.get(over, :semantic, %{})),
       surface: deep_merge_maps(Map.get(base, :surface, %{}), Map.get(over, :surface, %{})),
-      ink: deep_merge_maps(Map.get(base, :ink, %{}), Map.get(over, :ink, %{})),
-      utility: deep_merge_maps(Map.get(base, :utility, %{}), Map.get(over, :utility, %{}))
+      roles: deep_merge_maps(Map.get(base, :roles, %{}), Map.get(over, :roles, %{})),
+      on: deep_merge_maps(Map.get(base, :on, %{}), Map.get(over, :on, %{})),
+      border: pick_flat(Map.get(base, :border), Map.get(over, :border)),
+      focus: pick_flat(Map.get(base, :focus), Map.get(over, :focus)),
+      shadow: pick_flat(Map.get(base, :shadow), Map.get(over, :shadow))
     }
   end
+
+  defp pick_flat(_base, over) when is_map(over), do: over
+  defp pick_flat(base, _over), do: base
 
   defp deep_merge_dims(base, over) do
     font =
@@ -375,14 +361,6 @@ defmodule Corex.Design.Theme do
     end)
   end
 
-  defp stringify_map(map) when is_map(map) do
-    Map.new(map, fn {k, v} ->
-      key = if is_atom(k), do: Atom.to_string(k), else: to_string(k)
-      val = if is_map(v), do: stringify_map(v), else: v
-      {key, val}
-    end)
-  end
-
   defp radius_value(_step, :zero, _s, _override), do: "0"
   defp radius_value(_step, :full, _s, _override), do: "9999px"
 
@@ -399,6 +377,4 @@ defmodule Corex.Design.Theme do
   defp calc_spacing(mult) when is_number(mult) do
     "calc(var(--spacing) * #{Scales.num(mult)})"
   end
-
-  defp config, do: Corex.Design.design_config()
 end

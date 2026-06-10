@@ -23,6 +23,10 @@
 
 @layer components {
   .lead {
+    width: fit-content;
+    max-width: none;
+    height: auto;
+    max-height: none;
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
     font-weight: var(--font-weight-normal);
@@ -78,27 +82,31 @@
   }
 
   .lead.lead--semantic-accent {
-    color: var(--color-ui-ink-accent);
-  }
-
-  .lead.lead--semantic-brand {
-    color: var(--color-ui-ink-brand);
+    color: var(--color-on-accent);
   }
 
   .lead.lead--semantic-alert {
-    color: var(--color-ui-ink-alert);
+    color: var(--color-on-alert);
+  }
+
+  .lead.lead--semantic-brand {
+    color: var(--color-on-brand);
   }
 
   .lead.lead--semantic-info {
-    color: var(--color-ui-ink-info);
+    color: var(--color-on-info);
   }
 
-  .lead.lead--semantic-success {
-    color: var(--color-ui-ink-success);
+  .lead.lead--semantic-neutral {
+    color: var(--color-on-neutral);
   }
 
   .lead.lead--semantic-selected {
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
+  }
+
+  .lead.lead--semantic-success {
+    color: var(--color-on-success);
   }
 
   .lead.lead--weight-thin {

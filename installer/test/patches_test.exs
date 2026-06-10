@@ -621,23 +621,26 @@ defmodule Corex.New.PatchesTest do
       end)
     end
 
-    test "skips themes config when themes key already exists" do
-      in_tmp(:patch_config_themes_present, fn ->
+    test "adds corex_design themes subset when themes opt is set" do
+      in_tmp(:patch_config_corex_design_themes, fn ->
         File.mkdir_p!("config")
+        File.write!("config/config.exs", @stock_config_exs)
 
-        File.write!(
-          "config/config.exs",
-          @stock_config_exs <> "\nconfig :my_app, themes: [\"neo\"]\n"
+        Patches.patch_config_exs(
+          File.cwd!(),
+          otp_app: :my_app,
+          design: true,
+          themes: ["neo", "uno"]
         )
 
-        Patches.patch_config_exs(File.cwd!(), otp_app: :my_app, theme: true, themes: ["uno"])
         body = File.read!("config/config.exs")
-        refute body =~ "uno"
-        assert body =~ "themes: [\"neo\"]"
+        assert body =~ "config :corex_design"
+        assert body =~ "themes: ~w(neo uno)a"
+        refute body =~ "config :my_app, themes:"
       end)
     end
 
-    test "adds themes and localize config when flags enabled" do
+    test "adds localize config when lang enabled" do
       in_tmp(:patch_config_themes_lang, fn ->
         File.mkdir_p!("config")
         File.write!("config/config.exs", @stock_config_exs)
@@ -646,12 +649,10 @@ defmodule Corex.New.PatchesTest do
           File.cwd!(),
           otp_app: :my_app,
           theme: true,
-          themes: ["neo", "uno"],
           lang: true
         )
 
         body = File.read!("config/config.exs")
-        assert body =~ ~s(themes: ["neo", "uno"])
         assert body =~ "config :localize"
         assert body =~ "default_locale: :en"
         assert body =~ "supported_locales: [:en, :fr, :ar]"

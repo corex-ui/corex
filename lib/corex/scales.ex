@@ -22,13 +22,10 @@ defmodule Corex.Scales do
     min_height: ~W(none full screen dvh)a
   ]
 
-  @default_semantics ~W(accent brand alert info success selected)a
+  @default_semantics ~W(accent brand alert info success selected neutral)a
 
   @doc false
-  def all do
-    overrides = Application.get_env(:corex, :scales, [])
-    Keyword.merge(@defaults, overrides)
-  end
+  def all, do: @defaults
 
   @doc false
   def steps(axis) when is_atom(axis) do
@@ -70,10 +67,7 @@ defmodule Corex.Scales do
   def constraints, do: Enum.map(constraint_atoms(), &Atom.to_string/1)
 
   @doc false
-  def semantic_atoms do
-    Application.get_env(:corex, :semantics, @default_semantics)
-    |> Enum.map(&normalize_atom/1)
-  end
+  def semantic_atoms, do: @default_semantics
 
   def semantics, do: Enum.map(semantic_atoms(), &Atom.to_string/1)
 
@@ -85,13 +79,5 @@ defmodule Corex.Scales do
 
   defp derived_steps(axis) do
     raise ArgumentError, "unknown Corex.Scales axis #{inspect(axis)}"
-  end
-
-  defp normalize_atom(value) when is_atom(value), do: value
-
-  defp normalize_atom(value) when is_binary(value) do
-    String.to_existing_atom(value)
-  rescue
-    ArgumentError -> String.to_atom(value)
   end
 end

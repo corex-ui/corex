@@ -1,17 +1,26 @@
 defmodule E2eWeb.Plugs.Theme do
-  @moduledoc """
-  Reads the theme from the phx_theme cookie and puts it in assigns and session.
-  Allows the server to render the correct theme in the initial HTML (no flash).
-  """
+  @moduledoc false
   import Plug.Conn
 
   def init(opts), do: opts
 
   def call(conn, _opts) do
-    theme = conn.cookies["phx_theme"] || "neo"
+    themes = Corex.Design.Theme.picker_ids()
+    default_theme = Corex.Design.Theme.default_theme() |> Atom.to_string()
+
+    theme =
+      conn.cookies["phx_theme"]
+      |> parse_theme(themes, default_theme)
 
     conn
     |> assign(:theme, theme)
+    |> assign(:themes, themes)
     |> put_session(:theme, theme)
+  end
+
+  defp parse_theme(nil, _themes, default), do: default
+
+  defp parse_theme(theme, themes, default) do
+    if theme in themes, do: theme, else: default
   end
 end

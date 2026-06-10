@@ -23,13 +23,17 @@
 
 @layer components {
   .list {
+    width: fit-content;
     padding: 0;
+    max-width: none;
+    height: auto;
+    max-height: none;
     border: 1px solid var(--color-border);
     font-size: var(--text-base);
     line-height: var(--leading-base);
     border-radius: var(--radius-md);
-    overflow: hidden;
     margin-block: 2em;
+    overflow: hidden;
     list-style: none;
   }
 
@@ -74,33 +78,37 @@
   }
 
   .list.list--semantic-accent {
-    color: var(--color-ui-ink-accent);
-  }
-
-  .list.list--semantic-brand {
-    color: var(--color-ui-ink-brand);
+    color: var(--color-on-accent);
   }
 
   .list.list--semantic-alert {
-    color: var(--color-ui-ink-alert);
+    color: var(--color-on-alert);
+  }
+
+  .list.list--semantic-brand {
+    color: var(--color-on-brand);
   }
 
   .list.list--semantic-info {
-    color: var(--color-ui-ink-info);
+    color: var(--color-on-info);
   }
 
-  .list.list--semantic-success {
-    color: var(--color-ui-ink-success);
+  .list.list--semantic-neutral {
+    color: var(--color-on-neutral);
   }
 
   .list.list--semantic-selected {
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
+  }
+
+  .list.list--semantic-success {
+    color: var(--color-on-success);
   }
 
   .list li {
     white-space: normal;
-    padding: var(--space-md);
-    color: var(--color-ui-ink);
+    padding: var(--spacing-md);
+    color: var(--color-on-page);
     text-align: start;
     border-bottom: 1px solid var(--color-border);
   }
@@ -110,7 +118,7 @@
   }
 
   .list li:hover {
-    background-color: var(--color-layer);
+    background-color: var(--color-surface-raised);
   }
 }
 

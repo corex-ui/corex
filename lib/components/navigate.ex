@@ -76,7 +76,22 @@ defmodule Corex.Navigate do
 
   @doc type: :component
   use Phoenix.Component
-  use Corex.Variants, kind: :recipe, recipes: [:button, :link], default: :link
+  use Corex.Variants,
+    kind: :polymorphic,
+    looks: [button: "button", link: "link"],
+    default_as: :link,
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size,
+      text: :text,
+      radius: :radius,
+      variant: :visual,
+      shape: :shape
+    ]
 
   attr(:disabled, :boolean,
     default: false,

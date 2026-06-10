@@ -13,7 +13,7 @@ defmodule Corex.Design.PaletteGenTest do
     assert_in_delta okl.l, 0.94, 0.04
   end
 
-  test "tonal scale is in sRGB gamut for preset seeds" do
+  test "tonal scale is in sRGB gamut for preset palette anchors" do
     for seed <- ["#F0F0F0", "#32479C", "#4B4B4B", "#059669"] do
       assert PaletteGen.in_gamut?(seed)
     end
@@ -31,35 +31,36 @@ defmodule Corex.Design.PaletteGenTest do
     assert achieved >= 6.9
   end
 
-  test "semantic ink meets configured contrast against its fill" do
+  test "on tokens meet configured contrast against their fill" do
     colors = Colors.generate()
     brand = colors[{:neo, :light}]["brand"]
-    ink = colors[{:neo, :light}]["brand-ink"]
+    on_brand = colors[{:neo, :light}]["on-brand"]
 
     {:ok, a} = Color.new(brand)
-    {:ok, b} = Color.new(ink)
+    {:ok, b} = Color.new(on_brand)
     ratio = Color.Contrast.wcag_ratio(a, b)
     assert ratio >= 6.9
   end
 
-  test "default ui ink meets configured contrast against ink reference surface" do
+  test "default on-page meets configured contrast against page surface" do
     colors = Colors.generate()
-    ink = colors[{:neo, :light}]["ui-ink"]
+    on_page = colors[{:neo, :light}]["on-page"]
+    page = colors[{:neo, :light}]["surface-page"]
 
-    {:ok, ink_c} = Color.new(ink)
-    {:ok, ui_muted} = Color.new(colors[{:neo, :light}]["ui-muted"])
-    ratio = Color.Contrast.wcag_ratio(ink_c, ui_muted)
+    {:ok, ink_c} = Color.new(on_page)
+    {:ok, surface_c} = Color.new(page)
+    ratio = Color.Contrast.wcag_ratio(ink_c, surface_c)
     assert ratio >= 7.9
   end
 
-  test "neo light border is subtler than a 1.3 ratio target against ui" do
+  test "neo light border is subtler than a 1.3 ratio target against control surface" do
     colors = Colors.generate()
     border = colors[{:neo, :light}]["border"]
-    ui = colors[{:neo, :light}]["ui"]
+    control = colors[{:neo, :light}]["surface-control"]
 
     {:ok, border_c} = Color.new(border)
-    {:ok, ui_c} = Color.new(ui)
-    ratio = Color.Contrast.wcag_ratio(border_c, ui_c)
+    {:ok, control_c} = Color.new(control)
+    ratio = Color.Contrast.wcag_ratio(border_c, control_c)
 
     assert ratio >= 1.1
     assert ratio < 1.25

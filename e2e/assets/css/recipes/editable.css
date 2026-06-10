@@ -5,7 +5,7 @@
       border-radius: --value(--radius-*, [length]);
   }
 
-  [data-scope="editable"][data-part="preview"] {
+  [data-scope="editable"][data-part="edit-trigger"] {
       border-radius: --value(--radius-*, [length]);
   }
 
@@ -17,7 +17,7 @@
       border-radius: --value(--radius-*, [length]);
   }
 
-  [data-scope="editable"][data-part="edit-trigger"] {
+  [data-scope="editable"][data-part="preview"] {
       border-radius: --value(--radius-*, [length]);
   }
 
@@ -36,9 +36,9 @@
 
 @utility editable--size-* {
   [data-scope="editable"][data-part="input"] {
-      color: --value(--color-ui-ink-*, [color]);
+      color: --value(--color-on-*, [color]);
     max-width: --value(--container-*, [length]);
-    min-height: --value(--spacing-size-*, [length]);
+    min-height: --value(--spacing-control-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
@@ -49,40 +49,40 @@
   }
 
   [data-scope="editable"][data-part="root"] {
-      gap: --value(--spacing-space-*, [length]);
+      gap: --value(--spacing-*, [length]);
   }
 
-  [data-scope="editable"][data-part="preview"] {
-      color: --value(--color-ui-ink-*, [color]);
+  [data-scope="editable"][data-part="edit-trigger"] {
+      gap: --value(--spacing-*, [length]);
     max-width: --value(--container-*, [length]);
-    min-height: --value(--spacing-size-*, [length]);
+    padding-inline: --value(--spacing-*, [length]);
+    min-height: --value(--spacing-control-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
 
   [data-scope="editable"][data-part="submit-trigger"] {
-      max-width: --value(--container-*, [length]);
-    min-height: --value(--spacing-size-*, [length]);
-    gap: --value(--spacing-space-*, [length]);
-    padding-inline: --value(--spacing-space-*, [length]);
+      gap: --value(--spacing-*, [length]);
+    max-width: --value(--container-*, [length]);
+    padding-inline: --value(--spacing-*, [length]);
+    min-height: --value(--spacing-control-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
 
   [data-scope="editable"][data-part="cancel-trigger"] {
-      max-width: --value(--container-*, [length]);
-    min-height: --value(--spacing-size-*, [length]);
-    gap: --value(--spacing-space-*, [length]);
-    padding-inline: --value(--spacing-space-*, [length]);
+      gap: --value(--spacing-*, [length]);
+    max-width: --value(--container-*, [length]);
+    padding-inline: --value(--spacing-*, [length]);
+    min-height: --value(--spacing-control-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
 
-  [data-scope="editable"][data-part="edit-trigger"] {
-      max-width: --value(--container-*, [length]);
-    min-height: --value(--spacing-size-*, [length]);
-    gap: --value(--spacing-space-*, [length]);
-    padding-inline: --value(--spacing-space-*, [length]);
+  [data-scope="editable"][data-part="preview"] {
+      color: --value(--color-on-*, [color]);
+    max-width: --value(--container-*, [length]);
+    min-height: --value(--spacing-control-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
@@ -91,6 +91,78 @@
 
 
 @layer components {
+  .editable [data-scope="editable"][data-part="input"] {
+    width: calc(var(--spacing-control-md) * 3);
+    color: var(--color-on-page);
+    max-width: calc(var(--spacing-control-md) * 3);
+    min-height: var(--spacing-control-md);
+    border-color: var(--color-border);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+
+  .editable [data-scope="editable"][data-part="label"] {
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+
+  .editable [data-scope="editable"][data-part="root"] {
+    gap: var(--spacing-md);
+  }
+
+  .editable {
+    width: fit-content;
+    max-width: none;
+    height: auto;
+    max-height: none;
+  }
+
+  .editable [data-scope="editable"][data-part="edit-trigger"] {
+    width: calc(var(--spacing-control-md) * 0.6);
+    gap: var(--spacing-md);
+    max-width: calc(var(--spacing-control-md) * 0.6);
+    max-height: calc(var(--spacing-control-md) * 0.6);
+    padding-inline: var(--spacing-md);
+    min-height: calc(var(--spacing-control-md) * 0.6);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+    min-width: calc(var(--spacing-control-md) * 0.6);
+  }
+
+  .editable [data-scope="editable"][data-part="submit-trigger"] {
+    width: calc(var(--spacing-control-md) * 0.6);
+    gap: var(--spacing-md);
+    max-width: calc(var(--spacing-control-md) * 0.6);
+    max-height: calc(var(--spacing-control-md) * 0.6);
+    padding-inline: var(--spacing-md);
+    min-height: calc(var(--spacing-control-md) * 0.6);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+    min-width: calc(var(--spacing-control-md) * 0.6);
+  }
+
+  .editable [data-scope="editable"][data-part="cancel-trigger"] {
+    width: calc(var(--spacing-control-md) * 0.6);
+    gap: var(--spacing-md);
+    max-width: calc(var(--spacing-control-md) * 0.6);
+    max-height: calc(var(--spacing-control-md) * 0.6);
+    padding-inline: var(--spacing-md);
+    min-height: calc(var(--spacing-control-md) * 0.6);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+    min-width: calc(var(--spacing-control-md) * 0.6);
+  }
+
+  .editable [data-scope="editable"][data-part="preview"] {
+    width: calc(var(--spacing-control-md) * 3);
+    color: var(--color-on-page);
+    max-width: calc(var(--spacing-control-md) * 3);
+    min-height: var(--spacing-control-md);
+    border-color: var(--color-border);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+
   .editable.editable--w-auto {
     width: auto;
   }
@@ -135,11 +207,11 @@
     position: relative;
   }
 
-  .editable.editable--semantic-brand {
+  .editable.editable--semantic-alert {
     position: relative;
   }
 
-  .editable.editable--semantic-alert {
+  .editable.editable--semantic-brand {
     position: relative;
   }
 
@@ -147,11 +219,15 @@
     position: relative;
   }
 
-  .editable.editable--semantic-success {
+  .editable.editable--semantic-neutral {
     position: relative;
   }
 
   .editable.editable--semantic-selected {
+    position: relative;
+  }
+
+  .editable.editable--semantic-success {
     position: relative;
   }
 
@@ -200,27 +276,27 @@
   }
 
   .editable[data-loading] .editable [data-scope="editable"][data-part="root"] {
-    @apply ui-loading;
+    @apply part-loading;
   }
 
   .editable [data-scope="editable"][data-part="root"] {
-    @apply ui-root;
+    @apply part-root;
     width: 100%;
     position: relative;
-    padding-inline-end: var(--space-md);
+    padding-inline-end: var(--spacing-md);
     &[data-readonly] {
-      @apply ui-readonly;
+      @apply part-readonly;
     }
   }
 
   .editable [data-scope="editable"][data-part="label"] {
-    @apply ui-label;
+    @apply part-label;
   }
 
   .editable [data-scope="editable"][data-part="control"] {
     display: flex;
     flex-direction: row;
-    gap: var(--space-md);
+    gap: var(--spacing-md);
     width: 100%;
     align-items: center;
     justify-content: start;
@@ -231,22 +307,22 @@
     flex: 1 1 auto;
     align-items: center;
     justify-content: start;
-    gap: var(--space-md);
+    gap: var(--spacing-md);
   }
 
   .editable [data-scope="editable"][data-part="input"] {
-    @apply ui-input;
+    @apply part-input;
     flex: 0 0 auto;
-    width: calc(var(--size-md) * 3);
-    max-width: calc(var(--size-md) * 3);
+    width: calc(var(--spacing-control-md) * 3);
+    max-width: calc(var(--spacing-control-md) * 3);
     min-width: 0;
   }
 
   .editable [data-scope="editable"][data-part="preview"] {
-    @apply ui-input;
+    @apply part-input;
     flex: 0 0 auto;
-    width: calc(var(--size-md) * 3);
-    max-width: calc(var(--size-md) * 3);
+    width: calc(var(--spacing-control-md) * 3);
+    max-width: calc(var(--spacing-control-md) * 3);
     min-width: 0;
     white-space: nowrap;
   }
@@ -256,157 +332,172 @@
     align-items: center;
     justify-content: center;
     flex: 0 0 auto;
-    gap: var(--space-sm);
+    gap: var(--spacing-sm);
   }
 
   .editable [data-scope="editable"][data-part="edit-trigger"] {
-    @apply ui-trigger;
+    @apply part-trigger;
     aspect-ratio: 1 / 1;
     padding: 0;
     justify-content: center;
     width: auto;
     flex: 0 0 auto;
-    width: calc(var(--size-md) * 0.6);
-    min-width: calc(var(--size-md) * 0.6);
-    max-width: calc(var(--size-md) * 0.6);
-    min-height: calc(var(--size-md) * 0.6);
-    max-height: calc(var(--size-md) * 0.6);
+    width: calc(var(--spacing-control-md) * 0.6);
+    min-width: calc(var(--spacing-control-md) * 0.6);
+    max-width: calc(var(--spacing-control-md) * 0.6);
+    min-height: calc(var(--spacing-control-md) * 0.6);
+    max-height: calc(var(--spacing-control-md) * 0.6);
     &:not([hidden]) {
       margin-inline: auto;
     }
   }
 
   .editable [data-scope="editable"][data-part="cancel-trigger"] {
-    @apply ui-trigger;
+    @apply part-trigger;
     aspect-ratio: 1 / 1;
     padding: 0;
     justify-content: center;
     width: auto;
     flex: 0 0 auto;
-    width: calc(var(--size-md) * 0.6);
-    min-width: calc(var(--size-md) * 0.6);
-    max-width: calc(var(--size-md) * 0.6);
-    min-height: calc(var(--size-md) * 0.6);
-    max-height: calc(var(--size-md) * 0.6);
+    width: calc(var(--spacing-control-md) * 0.6);
+    min-width: calc(var(--spacing-control-md) * 0.6);
+    max-width: calc(var(--spacing-control-md) * 0.6);
+    min-height: calc(var(--spacing-control-md) * 0.6);
+    max-height: calc(var(--spacing-control-md) * 0.6);
     background-color: var(--color-alert);
     color: var(--color-alert-ink);
     border-color: var(--color-alert);
   }
 
   .editable [data-scope="editable"][data-part="submit-trigger"] {
-    @apply ui-trigger;
+    @apply part-trigger;
     aspect-ratio: 1 / 1;
     padding: 0;
     justify-content: center;
     width: auto;
     flex: 0 0 auto;
-    width: calc(var(--size-md) * 0.6);
-    min-width: calc(var(--size-md) * 0.6);
-    max-width: calc(var(--size-md) * 0.6);
-    min-height: calc(var(--size-md) * 0.6);
-    max-height: calc(var(--size-md) * 0.6);
+    width: calc(var(--spacing-control-md) * 0.6);
+    min-width: calc(var(--spacing-control-md) * 0.6);
+    max-width: calc(var(--spacing-control-md) * 0.6);
+    min-height: calc(var(--spacing-control-md) * 0.6);
+    max-height: calc(var(--spacing-control-md) * 0.6);
     background-color: var(--color-success);
     color: var(--color-success-ink);
     border-color: var(--color-success);
   }
 
   .editable [data-scope="editable"][data-part="error"] {
-    @apply ui-error;
+    @apply part-error;
   }
 
   .editable.editable--semantic-accent [data-scope="editable"][data-part="edit-trigger"] {
-    color: var(--color-ui-ink-accent);
+    color: var(--color-on-accent);
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink-accent);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      color: var(--color-ui-ink-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .editable.editable--semantic-brand [data-scope="editable"][data-part="edit-trigger"] {
-    color: var(--color-ui-ink-brand);
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink-brand);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      color: var(--color-ui-ink-muted);
+      color: var(--color-on-muted);
       cursor: not-allowed;
     }
   }
 
   .editable.editable--semantic-alert [data-scope="editable"][data-part="edit-trigger"] {
-    color: var(--color-ui-ink-alert);
+    color: var(--color-on-alert);
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink-alert);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      color: var(--color-ui-ink-muted);
+      color: var(--color-on-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .editable.editable--semantic-brand [data-scope="editable"][data-part="edit-trigger"] {
+    color: var(--color-on-brand);
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      color: var(--color-on-muted);
       cursor: not-allowed;
     }
   }
 
   .editable.editable--semantic-info [data-scope="editable"][data-part="edit-trigger"] {
-    color: var(--color-ui-ink-info);
+    color: var(--color-on-info);
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink-info);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      color: var(--color-ui-ink-muted);
+      color: var(--color-on-muted);
       cursor: not-allowed;
     }
   }
 
-  .editable.editable--semantic-success [data-scope="editable"][data-part="edit-trigger"] {
-    color: var(--color-ui-ink-success);
+  .editable.editable--semantic-neutral [data-scope="editable"][data-part="edit-trigger"] {
+    color: var(--color-on-control);
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink-success);
+      box-shadow: inset 0 0 0 2px var(--color-focus);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      color: var(--color-ui-ink-muted);
+      color: var(--color-on-muted);
       cursor: not-allowed;
     }
   }
 
   .editable.editable--semantic-selected [data-scope="editable"][data-part="edit-trigger"] {
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      color: var(--color-ui-ink-muted);
+      color: var(--color-on-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .editable.editable--semantic-success [data-scope="editable"][data-part="edit-trigger"] {
+    color: var(--color-on-success);
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      color: var(--color-on-muted);
       cursor: not-allowed;
     }
   }
 
   .editable.editable--semantic-accent [data-scope="editable"][data-part="submit-trigger"] {
     background-color: var(--color-accent);
-    color: var(--color-accent-ink);
+    color: var(--color-on-accent);
     &:hover {
       background-color: var(--color-accent-hover);
     }
@@ -417,44 +508,20 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .editable.editable--semantic-brand [data-scope="editable"][data-part="submit-trigger"] {
-    background-color: var(--color-brand);
-    color: var(--color-brand-ink);
-    &:hover {
-      background-color: var(--color-brand-hover);
-    }
-
-    &:active {
-      background-color: var(--color-brand-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-brand-ink);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
   }
 
   .editable.editable--semantic-alert [data-scope="editable"][data-part="submit-trigger"] {
     background-color: var(--color-alert);
-    color: var(--color-alert-ink);
+    color: var(--color-on-alert);
     &:hover {
       background-color: var(--color-alert-hover);
     }
@@ -465,20 +532,44 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .editable.editable--semantic-brand [data-scope="editable"][data-part="submit-trigger"] {
+    background-color: var(--color-brand);
+    color: var(--color-on-brand);
+    &:hover {
+      background-color: var(--color-brand-hover);
+    }
+
+    &:active {
+      background-color: var(--color-brand-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
   }
 
   .editable.editable--semantic-info [data-scope="editable"][data-part="submit-trigger"] {
     background-color: var(--color-info);
-    color: var(--color-info-ink);
+    color: var(--color-on-info);
     &:hover {
       background-color: var(--color-info-hover);
     }
@@ -489,44 +580,44 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-info-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
   }
 
-  .editable.editable--semantic-success [data-scope="editable"][data-part="submit-trigger"] {
-    background-color: var(--color-success);
-    color: var(--color-success-ink);
+  .editable.editable--semantic-neutral [data-scope="editable"][data-part="submit-trigger"] {
+    background-color: var(--color-neutral);
+    color: var(--color-on-neutral);
     &:hover {
-      background-color: var(--color-success-hover);
+      background-color: var(--color-neutral-hover);
     }
 
     &:active {
-      background-color: var(--color-success-active);
+      background-color: var(--color-neutral-active);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-success-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
   }
 
   .editable.editable--semantic-selected [data-scope="editable"][data-part="submit-trigger"] {
     background-color: var(--color-selected);
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
     &:hover {
       background-color: var(--color-selected-hover);
     }
@@ -537,127 +628,170 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .editable.editable--semantic-success [data-scope="editable"][data-part="submit-trigger"] {
+    background-color: var(--color-success);
+    color: var(--color-on-success);
+    &:hover {
+      background-color: var(--color-success-hover);
+    }
+
+    &:active {
+      background-color: var(--color-success-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
   }
 
   .editable.editable--semantic-accent [data-scope="editable"][data-part="cancel-trigger"] {
-    color: var(--color-ui-ink-accent);
+    color: var(--color-on-accent);
     &:hover {
-      background-color: var(--color-ui-hover);
+      background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink-accent);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      color: var(--color-ui-ink-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .editable.editable--semantic-brand [data-scope="editable"][data-part="cancel-trigger"] {
-    color: var(--color-ui-ink-brand);
-    &:hover {
-      background-color: var(--color-ui-hover);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink-brand);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      color: var(--color-ui-ink-muted);
+      color: var(--color-on-muted);
       cursor: not-allowed;
     }
   }
 
   .editable.editable--semantic-alert [data-scope="editable"][data-part="cancel-trigger"] {
-    color: var(--color-ui-ink-alert);
+    color: var(--color-on-alert);
     &:hover {
-      background-color: var(--color-ui-hover);
+      background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink-alert);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      color: var(--color-ui-ink-muted);
+      color: var(--color-on-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .editable.editable--semantic-brand [data-scope="editable"][data-part="cancel-trigger"] {
+    color: var(--color-on-brand);
+    &:hover {
+      background-color: var(--color-surface-control-hover);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      color: var(--color-on-muted);
       cursor: not-allowed;
     }
   }
 
   .editable.editable--semantic-info [data-scope="editable"][data-part="cancel-trigger"] {
-    color: var(--color-ui-ink-info);
+    color: var(--color-on-info);
     &:hover {
-      background-color: var(--color-ui-hover);
+      background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink-info);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      color: var(--color-ui-ink-muted);
+      color: var(--color-on-muted);
       cursor: not-allowed;
     }
   }
 
-  .editable.editable--semantic-success [data-scope="editable"][data-part="cancel-trigger"] {
-    color: var(--color-ui-ink-success);
+  .editable.editable--semantic-neutral [data-scope="editable"][data-part="cancel-trigger"] {
+    color: var(--color-on-control);
     &:hover {
-      background-color: var(--color-ui-hover);
+      background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui-ink-success);
+      box-shadow: inset 0 0 0 2px var(--color-focus);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      color: var(--color-ui-ink-muted);
+      color: var(--color-on-muted);
       cursor: not-allowed;
     }
   }
 
   .editable.editable--semantic-selected [data-scope="editable"][data-part="cancel-trigger"] {
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
     &:hover {
-      background-color: var(--color-ui-hover);
+      background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      color: var(--color-ui-ink-muted);
+      color: var(--color-on-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .editable.editable--semantic-success [data-scope="editable"][data-part="cancel-trigger"] {
+    color: var(--color-on-success);
+    &:hover {
+      background-color: var(--color-surface-control-hover);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      color: var(--color-on-muted);
       cursor: not-allowed;
     }
   }

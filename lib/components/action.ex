@@ -92,10 +92,21 @@ defmodule Corex.Action do
   use Phoenix.Component
 
   use Corex.Variants,
-    kind: :recipe,
-    recipes: [:button, :link],
-    default: :button,
-    defaults: [variant: :solid, size: :md]
+    kind: :polymorphic,
+    looks: [button: "button", link: "link"],
+    default_as: :button,
+    axes: [
+      width: :width,
+      max_width: :max_width,
+      height: :height,
+      max_height: :max_height,
+      semantic: :semantic,
+      size: :size,
+      text: :text,
+      radius: :radius,
+      variant: :visual,
+      shape: :shape
+    ]
 
   attr(:type, :string,
     default: "button",

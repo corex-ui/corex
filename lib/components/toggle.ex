@@ -236,14 +236,6 @@ defmodule Corex.Toggle do
       text: :text,
       radius: :radius,
       shape: :shape
-    ],
-    defaults: [
-      width: "fit",
-      max_width: "none",
-      height: "auto",
-      max_height: "none",
-      variant: "solid",
-      size: "md"
     ]
 
   attr(:id, :string, required: false)

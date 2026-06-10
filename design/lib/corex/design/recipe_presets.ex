@@ -191,7 +191,7 @@ defmodule Corex.Design.RecipePresets do
       width: :auto,
       cursor: :pointer,
       background_color: :transparent,
-      color: {:color, :link},
+      color: {:color, :on_link},
       text_decoration_line: :underline,
       text_underline_offset: {:raw, "0.15em"},
       text_decoration_thickness: {:raw, "from-font"},
@@ -200,16 +200,16 @@ defmodule Corex.Design.RecipePresets do
       padding: 0,
       appearance: :none,
       transition: {:raw, "color 120ms ease, box-shadow 120ms ease"},
-      hover: %{color: {:color, :ui_ink}},
-      active: %{color: {:color, :ui_ink_muted}},
-      visited: %{color: {:color, :ui_ink_muted}},
+      hover: %{color: {:color, :on_page}},
+      active: %{color: {:color, :on_muted}},
+      visited: %{color: {:color, :on_muted}},
       focus_visible: %{
         outline: :none,
         box_shadow: inset_ring(:focus_ring)
       },
       disabled:
         lock_disabled_interaction(%{
-          color: {:color, :ui_ink_muted},
+          color: {:color, :on_muted},
           cursor: :not_allowed,
           text_decoration_line: :none,
           box_shadow: :none
@@ -253,8 +253,8 @@ defmodule Corex.Design.RecipePresets do
   def trigger_interaction(ring_role) do
     ring =
       case ring_role do
-        :on_solid -> "inset 0 0 0 2px var(--color-ui-ink)"
-        :focus_ring -> "inset 0 0 0 2px var(--color-ui-ink)"
+        :on_solid -> "inset 0 0 0 2px var(--color-on-page)"
+        :focus_ring -> "inset 0 0 0 2px var(--color-on-page)"
       end
 
     %{
@@ -262,8 +262,8 @@ defmodule Corex.Design.RecipePresets do
     }
   end
 
-  def inset_ring(:on_solid), do: {:raw, "inset 0 0 0 2px var(--color-ui-ink)"}
-  def inset_ring(:focus_ring), do: {:raw, "inset 0 0 0 2px var(--color-ui-ink)"}
+  def inset_ring(:on_solid), do: {:raw, "inset 0 0 0 2px var(--color-on-page)"}
+  def inset_ring(:focus_ring), do: {:raw, "inset 0 0 0 2px var(--color-on-page)"}
 
   def lock_disabled_interaction(decls) when is_map(decls) do
     frozen =
@@ -283,16 +283,16 @@ defmodule Corex.Design.RecipePresets do
 
   def visual_solid do
     %{
-      background_color: {:color, :ui},
-      color: {:color, :ui_ink},
+      background_color: {:color, :surface_control},
+      color: {:color, :on_page},
       border_color: :transparent,
-      hover: %{background_color: {:color, :ui_hover}},
-      active: %{background_color: {:color, :ui_active}},
+      hover: %{background_color: {:color, :surface_control_hover}},
+      active: %{background_color: {:color, :surface_control_active}},
       focus_visible: %{outline: :none, box_shadow: inset_ring(:on_solid)},
       disabled:
         lock_disabled_interaction(%{
-          background_color: {:color, :ui_muted},
-          color: {:color, :ui_ink_muted},
+          background_color: {:color, :surface_control_muted},
+          color: {:color, :on_muted},
           cursor: :not_allowed,
           box_shadow: :none
         })
@@ -302,15 +302,15 @@ defmodule Corex.Design.RecipePresets do
   def visual_ghost do
     %{
       background_color: :transparent,
-      color: {:color, :ui_ink},
+      color: {:color, :on_page},
       border_color: :transparent,
-      hover: %{background_color: {:color, :ui_hover}},
-      active: %{background_color: {:color, :ui_active}},
+      hover: %{background_color: {:color, :surface_control_hover}},
+      active: %{background_color: {:color, :surface_control_active}},
       focus_visible: %{outline: :none, box_shadow: inset_ring(:focus_ring)},
       disabled:
         lock_disabled_interaction(%{
           background_color: :transparent,
-          color: {:color, :ui_ink_muted},
+          color: {:color, :on_muted},
           cursor: :not_allowed,
           box_shadow: :none
         })
@@ -320,15 +320,15 @@ defmodule Corex.Design.RecipePresets do
   def visual_outline do
     %{
       background_color: :transparent,
-      color: {:color, :ui_ink},
-      border_color: {:color, :outline},
-      hover: %{background_color: {:color, :ui_hover}},
-      active: %{background_color: {:color, :ui_active}},
+      color: {:color, :on_page},
+      border_color: {:color, :focus},
+      hover: %{background_color: {:color, :surface_control_hover}},
+      active: %{background_color: {:color, :surface_control_active}},
       focus_visible: %{outline: :none, box_shadow: inset_ring(:focus_ring)},
       disabled: %{
         background_color: :transparent,
-        color: {:color, :ui_ink_muted},
-        border_color: {:color, :ui_muted},
+        color: {:color, :on_muted},
+        border_color: {:color, :surface_control_muted},
         cursor: :not_allowed,
         box_shadow: :none
       }
@@ -337,16 +337,16 @@ defmodule Corex.Design.RecipePresets do
 
   def visual_trigger do
     %{
-      background_color: {:color, :ui},
-      color: {:color, :ui_ink},
+      background_color: {:color, :surface_control},
+      color: {:color, :on_page},
       border_color: {:color, :border},
-      hover: %{background_color: {:color, :ui_hover}},
-      active: %{background_color: {:color, :ui_active}},
+      hover: %{background_color: {:color, :surface_control_hover}},
+      active: %{background_color: {:color, :surface_control_active}},
       focus_visible: %{outline: :none, box_shadow: inset_ring(:focus_ring)},
       disabled:
         lock_disabled_interaction(%{
-          background_color: {:color, :ui_muted},
-          color: {:color, :ui_ink_muted},
+          background_color: {:color, :surface_control_muted},
+          color: {:color, :on_muted},
           border_color: {:color, :border},
           cursor: :not_allowed,
           box_shadow: :none
@@ -356,16 +356,16 @@ defmodule Corex.Design.RecipePresets do
 
   def visual_subtle do
     %{
-      background_color: {:color, :ui_hover},
-      color: {:color, :ui_ink},
+      background_color: {:color, :surface_control_hover},
+      color: {:color, :on_page},
       border_color: :transparent,
-      hover: %{background_color: {:color, :ui_active}},
-      active: %{background_color: {:color, :ui_active}},
+      hover: %{background_color: {:color, :surface_control_active}},
+      active: %{background_color: {:color, :surface_control_active}},
       focus_visible: %{outline: :none, box_shadow: inset_ring(:focus_ring)},
       disabled:
         lock_disabled_interaction(%{
-          background_color: {:color, :ui_muted},
-          color: {:color, :ui_ink_muted},
+          background_color: {:color, :surface_control_muted},
+          color: {:color, :on_muted},
           cursor: :not_allowed,
           box_shadow: :none
         })
@@ -401,7 +401,7 @@ defmodule Corex.Design.RecipePresets do
         ]
       ),
       Rule.new("&::-webkit-scrollbar-track",
-        decls: [background: {:color, :ui}]
+        decls: [background: {:color, :surface_control}]
       ),
       Rule.new("&::-webkit-scrollbar-thumb",
         decls: [background: {:color, :border}]

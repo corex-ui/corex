@@ -9,7 +9,7 @@
       border-radius: --value(--radius-*, [length]);
   }
 
-  [data-scope="tags-input"][data-part="item-input"] {
+  [data-scope="tags-input"][data-part="item-preview"] {
       border-radius: --value(--radius-*, [length]);
   }
 
@@ -17,7 +17,7 @@
       border-radius: --value(--radius-*, [length]);
   }
 
-  [data-scope="tags-input"][data-part="item-preview"] {
+  [data-scope="tags-input"][data-part="item-input"] {
       border-radius: --value(--radius-*, [length]);
   }
 
@@ -55,43 +55,85 @@
 
 @utility tags-input--size-* {
   [data-scope="tags-input"][data-part="control"] {
-      padding: --value(--spacing-space-*, [length]);
-    min-height: --value(--spacing-size-*, [length]);
-    gap: --value(--spacing-space-*, [length]);
+      padding: --value(--spacing-*, [length]);
+    gap: --value(--spacing-*, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
   [data-scope="tags-input"][data-part="input"] {
-      min-height: --value(--spacing-size-*, [length]);
+      min-height: --value(--spacing-control-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
 
   [data-scope="tags-input"][data-part="root"] {
-      gap: --value(--spacing-space-*, [length]);
+      gap: --value(--spacing-*, [length]);
   }
 
   [data-scope="tags-input"][data-part="item-text"] {
-      color: --value(--color-ui-ink-*, [color]);
-  }
-
-  [data-scope="tags-input"][data-part="item-input"] {
-      padding: --value(--spacing-space-*, [length]);
-  }
-
-  [data-scope="tags-input"][data-part="item-delete-trigger"] {
-      min-height: --value(--spacing-size-*, [length]);
+      color: --value(--color-on-*, [color]);
   }
 
   [data-scope="tags-input"][data-part="item-preview"] {
-      min-height: --value(--spacing-size-*, [length]);
-    gap: --value(--spacing-space-*, [length]);
-    padding-inline: --value(--spacing-space-*, [length]);
+      gap: --value(--spacing-*, [length]);
+    padding-inline: --value(--spacing-*, [length]);
+    min-height: --value(--spacing-control-*, [length]);
+  }
+
+  [data-scope="tags-input"][data-part="item-delete-trigger"] {
+      min-height: --value(--spacing-control-*, [length]);
+  }
+
+  [data-scope="tags-input"][data-part="item-input"] {
+      padding: --value(--spacing-*, [length]);
   }
 
 }
 
 
 @layer components {
+  .tags-input [data-scope="tags-input"][data-part="control"] {
+    padding: var(--spacing-md);
+    gap: var(--spacing-md);
+    min-height: var(--spacing-control-md);
+  }
+
+  .tags-input [data-scope="tags-input"][data-part="input"] {
+    min-height: var(--spacing-control-md);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+
+  .tags-input [data-scope="tags-input"][data-part="root"] {
+    gap: var(--spacing-md);
+  }
+
+  .tags-input {
+    width: 100%;
+    max-width: var(--container-md);
+    height: auto;
+    max-height: none;
+  }
+
+  .tags-input [data-scope="tags-input"][data-part="item-text"] {
+    color: var(--color-on-page);
+  }
+
+  .tags-input [data-scope="tags-input"][data-part="item-preview"] {
+    gap: var(--spacing-md);
+    padding-inline: var(--spacing-md);
+    min-height: var(--spacing-control-md);
+  }
+
+  .tags-input [data-scope="tags-input"][data-part="item-delete-trigger"] {
+    min-height: calc(var(--spacing-control-md) * 0.6);
+    min-width: calc(var(--spacing-control-md) * 0.6);
+  }
+
+  .tags-input [data-scope="tags-input"][data-part="item-input"] {
+    padding: var(--spacing-md);
+  }
+
   .tags-input.tags-input--w-auto {
     width: auto;
   }
@@ -136,11 +178,11 @@
     position: relative;
   }
 
-  .tags-input.tags-input--semantic-brand {
+  .tags-input.tags-input--semantic-alert {
     position: relative;
   }
 
-  .tags-input.tags-input--semantic-alert {
+  .tags-input.tags-input--semantic-brand {
     position: relative;
   }
 
@@ -148,11 +190,15 @@
     position: relative;
   }
 
-  .tags-input.tags-input--semantic-success {
+  .tags-input.tags-input--semantic-neutral {
     position: relative;
   }
 
   .tags-input.tags-input--semantic-selected {
+    position: relative;
+  }
+
+  .tags-input.tags-input--semantic-success {
     position: relative;
   }
 
@@ -197,17 +243,17 @@
   }
 
   .tags-input {
-    @apply ui-root;
+    @apply part-root;
     width: 100%;
     max-width: var(--container-md);
   }
 
   .tags-input[data-loading] .tags-input [data-scope="tags-input"][data-part="root"] {
-    @apply ui-loading;
+    @apply part-loading;
   }
 
   .tags-input [data-scope="tags-input"][data-part="root"] {
-    @apply ui-root;
+    @apply part-root;
     position: relative;
   }
 
@@ -216,27 +262,27 @@
   }
 
   .tags-input [data-scope="tags-input"][data-part="root"][data-invalid] {
-    color: var(--color-alert, var(--color-ui-ink));
+    color: var(--color-alert, var(--color-on-page));
   }
 
   .tags-input [data-scope="tags-input"][data-part="root"][data-readonly] {
-    @apply ui-readonly;
+    @apply part-readonly;
   }
 
   .tags-input [data-scope="tags-input"][data-part="label"] {
-    @apply ui-label;
+    @apply part-label;
   }
 
   .tags-input [data-scope="tags-input"][data-part="control"] {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-md);
-    min-height: var(--size-md);
-    padding: var(--space-md);
+    gap: var(--spacing-md);
+    min-height: var(--spacing-control-md);
+    padding: var(--spacing-md);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
-    background: var(--color-layer);
+    background: var(--color-surface-raised);
   }
 
   .tags-input [data-scope="tags-input"][data-part="control"][data-invalid] {
@@ -261,7 +307,7 @@
   }
 
   .tags-input [data-scope="tags-input"][data-part="input"] {
-    @apply ui-input;
+    @apply part-input;
     flex: 1 1 8rem;
     min-width: 6rem;
     max-width: var(--container-7xs);
@@ -275,7 +321,7 @@
     display: inline-flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-md);
+    gap: var(--spacing-md);
     max-width: 100%;
   }
 
@@ -284,7 +330,7 @@
   }
 
   .tags-input [data-scope="tags-input"][data-part="item-preview"] {
-    @apply ui-trigger;
+    @apply part-trigger;
   }
 
   .tags-input [data-scope="tags-input"][data-part="item-text"] {
@@ -296,9 +342,9 @@
   }
 
   .tags-input [data-scope="tags-input"][data-part="item-delete-trigger"] {
-    @apply ui-trigger;
-    min-height: calc(var(--size) * 0.6);
-    min-width: calc(var(--size) * 0.6);
+    @apply part-trigger;
+    min-height: calc(var(--spacing-control-md) * 0.6);
+    min-width: calc(var(--spacing-control-md) * 0.6);
     aspect-ratio: 1 / 1;
     padding: 0;
   }
@@ -308,12 +354,12 @@
   }
 
   .tags-input [data-scope="tags-input"][data-part="item-input"] {
-    @apply ui-input;
+    @apply part-input;
     max-width: var(--container-7xs);
   }
 
   .tags-input [data-scope="tags-input"][data-part="error"] {
-    @apply ui-error;
+    @apply part-error;
   }
 
   .tags-input [data-scope="tags-input"][data-part="error"].absolute {
@@ -323,7 +369,7 @@
 
   .tags-input.tags-input--semantic-accent [data-scope="tags-input"][data-part="item-delete-trigger"] {
     background-color: var(--color-accent);
-    color: var(--color-accent-ink);
+    color: var(--color-on-accent);
     &:hover {
       background-color: var(--color-accent-hover);
     }
@@ -334,44 +380,20 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .tags-input.tags-input--semantic-brand [data-scope="tags-input"][data-part="item-delete-trigger"] {
-    background-color: var(--color-brand);
-    color: var(--color-brand-ink);
-    &:hover {
-      background-color: var(--color-brand-hover);
-    }
-
-    &:active {
-      background-color: var(--color-brand-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-brand-ink);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
   }
 
   .tags-input.tags-input--semantic-alert [data-scope="tags-input"][data-part="item-delete-trigger"] {
     background-color: var(--color-alert);
-    color: var(--color-alert-ink);
+    color: var(--color-on-alert);
     &:hover {
       background-color: var(--color-alert-hover);
     }
@@ -382,20 +404,44 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .tags-input.tags-input--semantic-brand [data-scope="tags-input"][data-part="item-delete-trigger"] {
+    background-color: var(--color-brand);
+    color: var(--color-on-brand);
+    &:hover {
+      background-color: var(--color-brand-hover);
+    }
+
+    &:active {
+      background-color: var(--color-brand-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
   }
 
   .tags-input.tags-input--semantic-info [data-scope="tags-input"][data-part="item-delete-trigger"] {
     background-color: var(--color-info);
-    color: var(--color-info-ink);
+    color: var(--color-on-info);
     &:hover {
       background-color: var(--color-info-hover);
     }
@@ -406,44 +452,44 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-info-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
   }
 
-  .tags-input.tags-input--semantic-success [data-scope="tags-input"][data-part="item-delete-trigger"] {
-    background-color: var(--color-success);
-    color: var(--color-success-ink);
+  .tags-input.tags-input--semantic-neutral [data-scope="tags-input"][data-part="item-delete-trigger"] {
+    background-color: var(--color-neutral);
+    color: var(--color-on-neutral);
     &:hover {
-      background-color: var(--color-success-hover);
+      background-color: var(--color-neutral-hover);
     }
 
     &:active {
-      background-color: var(--color-success-active);
+      background-color: var(--color-neutral-active);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-success-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
   }
 
   .tags-input.tags-input--semantic-selected [data-scope="tags-input"][data-part="item-delete-trigger"] {
     background-color: var(--color-selected);
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
     &:hover {
       background-color: var(--color-selected-hover);
     }
@@ -454,13 +500,37 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: var(--color-ui-muted);
+      background-color: var(--color-surface-control-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .tags-input.tags-input--semantic-success [data-scope="tags-input"][data-part="item-delete-trigger"] {
+    background-color: var(--color-success);
+    color: var(--color-on-success);
+    &:hover {
+      background-color: var(--color-success-hover);
+    }
+
+    &:active {
+      background-color: var(--color-success-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-surface-control-muted);
       cursor: not-allowed;
     }
   }

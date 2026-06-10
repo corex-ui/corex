@@ -6,34 +6,30 @@ defmodule Corex.Design.ThemeTest do
   alias Corex.Design.Theme
   alias Corex.Design.Theme.Presets
   alias Corex.Design.Tokens.Colors
+  alias Corex.Design.Vocabulary
 
   setup do
     original = CorexDesign.TestConfig.snapshot()
-    semantics = Application.get_env(:corex, :semantics)
 
     on_exit(fn ->
       CorexDesign.TestConfig.restore(original)
-      restore_semantics(semantics)
     end)
 
     :ok
   end
-
-  defp restore_semantics(nil), do: Application.delete_env(:corex, :semantics)
-  defp restore_semantics(value), do: Application.put_env(:corex, :semantics, value)
 
   test "defaults use presets when themes config is absent" do
     CorexDesign.TestConfig.put([])
     assert Theme.theme_ids() == [:duo, :leo, :neo, :uno]
   end
 
-  test "dark mode ink-brand is lighter than brand fill for ghost contrast" do
+  test "dark mode on-brand is lighter than brand fill for ghost contrast" do
     colors = Colors.generate()
     brand = colors[{:neo, :dark}]["brand"]
-    ink_brand = colors[{:neo, :dark}]["ui-ink-brand"]
+    on_brand = colors[{:neo, :dark}]["on-brand"]
 
     {:ok, fill} = Color.new(brand)
-    {:ok, ink} = Color.new(ink_brand)
+    {:ok, ink} = Color.new(on_brand)
     {:ok, fill_okl} = Color.convert(fill, Color.Oklch)
     {:ok, ink_okl} = Color.convert(ink, Color.Oklch)
 
@@ -85,86 +81,92 @@ defmodule Corex.Design.ThemeTest do
         put_in(spec, [:dimensions, :radius_scale], 1.5)
       end)
 
-    CorexDesign.TestConfig.put(themes: themes)
+    CorexDesign.TestConfig.put(themes: themes, output: "assets/css/corex.tailwind.css")
 
     duo_md = Theme.radius(:duo) |> Keyword.fetch!(:md)
     assert duo_md == "0.675rem"
   end
 
-  test "rejects semantic role not in config semantics" do
-    Application.put_env(:corex, :semantics, ~W(accent brand)a)
-
+  test "rejects palette ref missing from palette map" do
     CorexDesign.TestConfig.put(
+      output: "assets/css/corex.tailwind.css",
       themes: %{
         bad: %{
-          seeds: %{"accent" => "#111111", "base" => "#FFFFFF", "info" => "#0000FF"},
+          palette: %{"accent" => "#111111", "neutral" => "#FFFFFF"},
           colors: %{
             light: %{
-              semantic: %{info: %{bg: "info", lightness: 40, ink: %{color: "base", ratio: 7}}}
+              roles: %{info: %{palette: :info, lightness: 40}}
             },
-            dark: %{semantic: %{}, surface: %{}, ink: %{}, utility: %{}}
+            dark: %{roles: %{}, surface: %{}, on: %{}}
           },
           dimensions: %{}
         }
       }
     )
 
-    assert_raise ArgumentError, ~r/not in config :corex semantics/, fn ->
+    assert_raise ArgumentError, ~r/missing from palette/, fn ->
       Theme.resolved_themes()
     end
   end
 
-  test "custom semantics list drives palette variants" do
-    Application.put_env(:corex, :semantics, ~W(accent marketing)a)
-
+  test "custom roles drive vocabulary and palette variants" do
     CorexDesign.TestConfig.put(
+      output: "assets/css/corex.tailwind.css",
       themes: %{
         slim: %{
-          seeds: %{"accent" => "#111111", "base" => "#FFFFFF", "marketing" => "#7C3AED"},
+          palette: %{
+            neutral: "#FFFFFF",
+            accent: "#111111",
+            marketing: "#7C3AED"
+          },
           colors: %{
             light: %{
-              semantic: %{
+              roles: %{
                 accent: %{
-                  bg: "accent",
+                  palette: :accent,
                   lightness: 40,
                   states: %{muted: 43, default: 40, hover: 36, active: 33},
-                  ink: %{color: "base", ratio: 7}
+                  component: true
                 },
                 marketing: %{
-                  bg: "marketing",
+                  palette: :marketing,
                   lightness: 40,
                   states: %{muted: 43, default: 40, hover: 36, active: 33},
-                  ink: %{color: "base", ratio: 7}
+                  component: true
                 }
               },
               surface: %{
-                root: %{color: "base", lightness: 98},
-                ui: %{color: "base", lightness: 94}
+                page: %{palette: :neutral, lightness: 98},
+                control: %{palette: :neutral, lightness: 94}
               },
-              ink: %{default: %{color: "base", ratio: 8}},
-              utility: %{border: %{color: "base", ratio: 1.12}}
+              on: %{page: %{palette: :neutral, against: :page, ratio: 8}},
+              border: %{palette: :neutral, against: :control, ratio: 1.12},
+              focus: %{palette: :neutral, against: :control, ratio: 2.2},
+              shadow: %{palette: :neutral, against: :page, ratio: 1.05}
             },
             dark: %{
-              semantic: %{
+              roles: %{
                 accent: %{
-                  bg: "accent",
+                  palette: :accent,
                   lightness: 48,
                   states: %{muted: 51, default: 48, hover: 44, active: 41},
-                  ink: %{color: "base", ratio: 7}
+                  component: true
                 },
                 marketing: %{
-                  bg: "marketing",
+                  palette: :marketing,
                   lightness: 48,
                   states: %{muted: 51, default: 48, hover: 44, active: 41},
-                  ink: %{color: "base", ratio: 7}
+                  component: true
                 }
               },
               surface: %{
-                root: %{color: "base", lightness: 8},
-                ui: %{color: "base", lightness: 24}
+                page: %{palette: :neutral, lightness: 8},
+                control: %{palette: :neutral, lightness: 24}
               },
-              ink: %{default: %{color: "base", ratio: 12}},
-              utility: %{border: %{color: "base", ratio: 1.18}}
+              on: %{page: %{palette: :neutral, against: :page, ratio: 12}},
+              border: %{palette: :neutral, against: :control, ratio: 1.18},
+              focus: %{palette: :neutral, against: :control, ratio: 2.4},
+              shadow: %{palette: :neutral, against: :page, ratio: 1.2}
             }
           },
           dimensions: %{}
@@ -173,30 +175,42 @@ defmodule Corex.Design.ThemeTest do
     )
 
     assert :marketing in Palette.color_atoms()
+    assert :marketing in Vocabulary.semantic_roles()
     assert Theme.theme_ids() == [:slim]
   end
 
   test "merge_specs merges color overrides onto parent preset" do
-    acme =
+    custom =
       Theme.merge_specs(Presets.neo(), %{
-        seeds: %{"brand" => "#FF0000"},
+        palette: %{brand: "#FF0000"},
         colors: %{
-          light: %{semantic: %{brand: %{lightness: 50}}},
+          light: %{roles: %{brand: %{lightness: 50}}},
           dark: Presets.neo().colors.dark
         },
         dimensions: %{radius_scale: 1.25}
       })
 
     CorexDesign.TestConfig.put(
+      output: "assets/css/corex.tailwind.css",
       themes: %{
         neo: Presets.neo(),
-        acme: acme
+        custom: custom
       }
     )
 
-    assert :acme in Theme.theme_ids()
+    assert :custom in Theme.theme_ids()
     colors = Colors.generate()
-    assert colors[{:acme, :light}]["brand"] != colors[{:neo, :light}]["brand"]
+    assert colors[{:custom, :light}]["brand"] != colors[{:neo, :light}]["brand"]
+  end
+
+  test "themes list selects preset subset" do
+    CorexDesign.TestConfig.put(
+      output: "assets/css/corex.tailwind.css",
+      themes: ~w(neo leo)a
+    )
+
+    assert Theme.theme_ids() == [:leo, :neo]
+    assert Theme.picker_ids() == ["leo", "neo"]
   end
 
   test "emitted CSS uses system font stacks for all themes" do

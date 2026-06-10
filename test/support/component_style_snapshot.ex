@@ -21,31 +21,31 @@ defmodule CorexTest.ComponentStyleSnapshot do
            "button" => %{
              base: "button",
              axes: [
+               :width,
+               :max_width,
+               :height,
+               :max_height,
                :semantic,
                :size,
                :text,
                :radius,
                :variant,
-               :shape,
-               :width,
-               :max_width,
-               :height,
-               :max_height
+               :shape
              ]
            },
            "link" => %{
              base: "link",
              axes: [
+               :width,
+               :max_width,
+               :height,
+               :max_height,
                :semantic,
                :size,
                :text,
                :radius,
                :variant,
-               :shape,
-               :width,
-               :max_width,
-               :height,
-               :max_height
+               :shape
              ]
            }
          }},
@@ -55,31 +55,31 @@ defmodule CorexTest.ComponentStyleSnapshot do
            "button" => %{
              base: "button",
              axes: [
+               :width,
+               :max_width,
+               :height,
+               :max_height,
                :semantic,
                :size,
                :text,
                :radius,
                :variant,
-               :shape,
-               :width,
-               :max_width,
-               :height,
-               :max_height
+               :shape
              ]
            },
            "link" => %{
              base: "link",
              axes: [
+               :width,
+               :max_width,
+               :height,
+               :max_height,
                :semantic,
                :size,
                :text,
                :radius,
                :variant,
-               :shape,
-               :width,
-               :max_width,
-               :height,
-               :max_height
+               :shape
              ]
            }
          }},
@@ -112,19 +112,29 @@ defmodule CorexTest.ComponentStyleSnapshot do
          %{
            "modal" => %{
              base: "dialog-modal",
-             axes: [:semantic, :size, :text, :radius, :width, :max_width, :height, :max_height]
-           },
-           "side" => %{
-             base: "dialog-side",
              axes: [
-               :semantic,
-               :size,
-               :text,
-               :radius,
                :width,
                :max_width,
                :height,
                :max_height,
+               :semantic,
+               :size,
+               :text,
+               :radius,
+               :side
+             ]
+           },
+           "side" => %{
+             base: "dialog-side",
+             axes: [
+               :width,
+               :max_width,
+               :height,
+               :max_height,
+               :semantic,
+               :size,
+               :text,
+               :radius,
                :side
              ]
            }
@@ -139,11 +149,29 @@ defmodule CorexTest.ComponentStyleSnapshot do
          %{
            "navigation" => %{
              base: "tree-navigation",
-             axes: [:semantic, :size, :text, :radius, :width, :max_width, :height, :max_height]
+             axes: [
+               :width,
+               :max_width,
+               :height,
+               :max_height,
+               :semantic,
+               :size,
+               :text,
+               :radius
+             ]
            },
            "treeview" => %{
              base: "tree-view",
-             axes: [:semantic, :size, :text, :radius, :width, :max_width, :height, :max_height]
+             axes: [
+               :width,
+               :max_width,
+               :height,
+               :max_height,
+               :semantic,
+               :size,
+               :text,
+               :radius
+             ]
            }
          }},
       toast: {"toast", [:width, :max_width, :height, :max_height, :semantic, :size, :radius]},

@@ -5,10 +5,10 @@ defmodule Corex.Design.CompilerIntegrationTest do
   alias Corex.Design.Recipes
 
   setup do
-    original = Application.get_env(:corex_design, :include_recipes)
+    original = Application.get_env(:corex_design, :recipes)
 
     on_exit(fn ->
-      restore(:include_recipes, original)
+      restore(:recipes, original)
     end)
 
     :ok
@@ -19,9 +19,10 @@ defmodule Corex.Design.CompilerIntegrationTest do
 
   test "include_recipes shrinks recipe aggregate output" do
     Application.delete_env(:corex_design, :include_recipes)
+    Application.delete_env(:corex_design, :recipes)
     full = Compiler.tailwind_recipes_css()
 
-    Application.put_env(:corex_design, :include_recipes, [:button])
+    Application.put_env(:corex_design, :recipes, include: [:button])
     filtered = Compiler.tailwind_recipes_css()
 
     assert byte_size(filtered) < byte_size(full)
@@ -42,11 +43,9 @@ defmodule Corex.Design.CompilerIntegrationTest do
 
     on_exit(fn -> File.rm_rf(tmp) end)
 
-    Application.put_env(:corex_design, :compile_test,
-      output: Path.join(tmp, "corex.tailwind.css")
-    )
+    Application.put_env(:corex_design, :output, Path.join(tmp, "corex.tailwind.css"))
 
-    Corex.Design.compile(profile: :compile_test)
+    Corex.Design.compile()
 
     for name <- [
           "corex.tailwind.css",

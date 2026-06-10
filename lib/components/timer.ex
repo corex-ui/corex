@@ -217,13 +217,6 @@ defmodule Corex.Timer do
       size: :size,
       text: :text,
       radius: :radius
-    ],
-    defaults: [
-      width: "full",
-      max_width: "none",
-      height: "auto",
-      max_height: "none",
-      size: "md"
     ]
 
   attr(:id, :string,

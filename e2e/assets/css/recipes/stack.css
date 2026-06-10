@@ -1,22 +1,22 @@
 /* Corex generated design - do not edit */
 
 @utility stack--padding-* {
-  padding: --value(--spacing-space-*, [length]);
+  padding: --value(--spacing-*, [length]);
 }
 
 
 @utility stack--padding-inline-* {
-  padding-inline: --value(--spacing-space-*, [length]);
+  padding-inline: --value(--spacing-*, [length]);
 }
 
 
 @utility stack--padding-block-* {
-  padding-block: --value(--spacing-space-*, [length]);
+  padding-block: --value(--spacing-*, [length]);
 }
 
 
 @utility stack--gap-* {
-  gap: --value(--spacing-space-*, [length]);
+  gap: --value(--spacing-*, [length]);
 }
 
 
@@ -28,6 +28,13 @@
 @layer components {
   .stack {
     display: flex;
+    padding: 0;
+    gap: 0;
+    padding-inline: 0;
+    padding-block: 0;
+    align-items: stretch;
+    justify-content: flex-start;
+    border-radius: var(--radius-none);
     flex-flow: column nowrap;
   }
 
@@ -36,19 +43,19 @@
   }
 
   .stack.stack--padding-sm {
-    padding: var(--space-sm);
+    padding: var(--spacing-sm);
   }
 
   .stack.stack--padding-md {
-    padding: var(--space-md);
+    padding: var(--spacing-md);
   }
 
   .stack.stack--padding-lg {
-    padding: var(--space-lg);
+    padding: var(--spacing-lg);
   }
 
   .stack.stack--padding-xl {
-    padding: var(--space-xl);
+    padding: var(--spacing-xl);
   }
 
   .stack.stack--padding-inline-none {
@@ -56,19 +63,19 @@
   }
 
   .stack.stack--padding-inline-sm {
-    padding-inline: var(--space-sm);
+    padding-inline: var(--spacing-sm);
   }
 
   .stack.stack--padding-inline-md {
-    padding-inline: var(--space-md);
+    padding-inline: var(--spacing-md);
   }
 
   .stack.stack--padding-inline-lg {
-    padding-inline: var(--space-lg);
+    padding-inline: var(--spacing-lg);
   }
 
   .stack.stack--padding-inline-xl {
-    padding-inline: var(--space-xl);
+    padding-inline: var(--spacing-xl);
   }
 
   .stack.stack--padding-block-none {
@@ -76,19 +83,19 @@
   }
 
   .stack.stack--padding-block-sm {
-    padding-block: var(--space-sm);
+    padding-block: var(--spacing-sm);
   }
 
   .stack.stack--padding-block-md {
-    padding-block: var(--space-md);
+    padding-block: var(--spacing-md);
   }
 
   .stack.stack--padding-block-lg {
-    padding-block: var(--space-lg);
+    padding-block: var(--spacing-lg);
   }
 
   .stack.stack--padding-block-xl {
-    padding-block: var(--space-xl);
+    padding-block: var(--spacing-xl);
   }
 
   .stack.stack--gap-none {
@@ -96,19 +103,19 @@
   }
 
   .stack.stack--gap-sm {
-    gap: var(--space-sm);
+    gap: var(--spacing-sm);
   }
 
   .stack.stack--gap-md {
-    gap: var(--space-md);
+    gap: var(--spacing-md);
   }
 
   .stack.stack--gap-lg {
-    gap: var(--space-lg);
+    gap: var(--spacing-lg);
   }
 
   .stack.stack--gap-xl {
-    gap: var(--space-xl);
+    gap: var(--spacing-xl);
   }
 
   .stack.stack--align-start {
@@ -190,8 +197,8 @@
   }
 
   .stack.stack--variant-layer {
-    background-color: var(--color-layer);
     border: 1px solid var(--color-border);
+    background-color: var(--color-surface-raised);
     box-shadow: var(--shadow-md);
   }
 
