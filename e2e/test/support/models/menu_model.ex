@@ -149,4 +149,53 @@ defmodule E2eWeb.MenuModel do
   def menu_events_client_log_has_row?(session) do
     has?(session, css("#menu-events-log-client tr[data-part='row']", visible: :any))
   end
+
+  def click_item_by_host_id(session, host_dom_id, value, opts \\ []) when is_binary(value) do
+    if not (String.match?(host_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and String.length(host_dom_id) > 0) do
+      raise ArgumentError, "invalid menu host dom id"
+    end
+
+    if String.contains?(value, "'") or String.contains?(value, "\"") do
+      raise ArgumentError, "value must not contain quotes"
+    end
+
+    timeout = Keyword.get(opts, :timeout, 8_000)
+
+    wait_for_has(
+      session,
+      css(
+        ~s|[id="menu:#{host_dom_id}"] [data-scope="menu"][data-part="item"][data-value="#{value}"]|,
+        visible: :any
+      ),
+      timeout: timeout
+    )
+
+    click(
+      session,
+      css(
+        ~s|[id="menu:#{host_dom_id}"] [data-scope="menu"][data-part="item"][data-value="#{value}"]|,
+        visible: :any
+      )
+    )
+
+    session
+  end
+
+  def wait_playground_selected(session, value, opts \\ []) when is_binary(value) do
+    wait_for_has(
+      session,
+      css(~s|#menu-playground-selected[data-value="#{value}"]|, visible: :any),
+      opts
+    )
+
+    session
+  end
+
+  def assert_positioner_anchored(session, host_dom_id, _opts \\ []) when is_binary(host_dom_id) do
+    if not (String.match?(host_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and host_dom_id != "") do
+      raise ArgumentError, "invalid menu host dom id"
+    end
+
+    wait_menu_content_open(session, host_dom_id)
+  end
 end

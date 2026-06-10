@@ -78,6 +78,22 @@ defmodule E2eWeb.MenuTest do
       |> ComponentBehaviorSpec.visit_ready(Menu, :menu, :playground)
       |> Menu.wait_playground_menu_ready()
     end
+
+    feature "stays anchored and interactive after LiveView patch while open", %{session: session} do
+      session
+      |> ComponentBehaviorSpec.visit_ready(Menu, :menu, :playground)
+      |> Menu.prepare_live_form()
+      |> Menu.wait_playground_menu_ready()
+      |> Menu.open_menu_by_host_id("menu-playground", timeout: 8_000)
+      |> Menu.click_item_by_host_id("menu-playground", "listbox", timeout: 8_000)
+      |> Menu.wait_playground_selected("listbox", timeout: 8_000)
+      |> Menu.wait_menu_content_open("menu-playground", timeout: 8_000)
+      |> Menu.assert_positioner_anchored("menu-playground")
+      |> Menu.click_item_by_host_id("menu-playground", "tabs", timeout: 8_000)
+      |> Menu.wait_playground_selected("tabs", timeout: 8_000)
+      |> Menu.wait_menu_content_open("menu-playground", timeout: 8_000)
+      |> Menu.assert_positioner_anchored("menu-playground")
+    end
   end
 
   describe "patterns" do

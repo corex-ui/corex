@@ -15117,7 +15117,7 @@ var Corex = (() => {
           });
         },
         updated() {
-          var _a4;
+          var _a4, _b;
           if (!this.combobox) return;
           const valuePatch = readUpdatedServerStringList(this.el);
           const newItemsJson = (_a4 = this.el.getAttribute("data-items")) != null ? _a4 : "[]";
@@ -15143,11 +15143,21 @@ var Corex = (() => {
           if (this.combobox.api.open) {
             this.combobox.api.reposition();
           }
+          this.combobox.renderItems();
+          this.combobox.applyItemProps();
           if ("value" in valuePatch) {
             syncComboboxHiddenInputForPhoenix(this.el, valuePatch.value, void 0);
             reapplyComboboxHiddenInputUsage(this.el);
-            const label = selectedItemLabel(valuePatch.value.map((v2) => ({ value: v2, label: v2 })));
-            syncVisibleInputAttribute(this.el, label);
+            const items = JSON.parse((_b = this.el.getAttribute("data-items")) != null ? _b : "[]");
+            const labels = valuePatch.value.map((value) => {
+              var _a5;
+              const item = items.find((entry) => {
+                var _a6;
+                return String((_a6 = entry.value) != null ? _a6 : "") === String(value);
+              });
+              return { value, label: (_a5 = item == null ? void 0 : item.label) != null ? _a5 : value };
+            });
+            syncVisibleInputAttribute(this.el, selectedItemLabel(labels));
           }
         },
         destroyed() {
@@ -28118,7 +28128,8 @@ ${err}`);
   var menu_exports = {};
   __export(menu_exports, {
     Menu: () => MenuHook,
-    findImmediateParentMenuHookEl: () => findImmediateParentMenuHookEl
+    findImmediateParentMenuHookEl: () => findImmediateParentMenuHookEl,
+    menuSetOpenMatches: () => menuSetOpenMatches
   });
   function mergeProps(...args) {
     let result = {};
@@ -28712,6 +28723,11 @@ ${err}`);
       destroyDescendantMenus(child);
       child.destroy();
     }
+  }
+  function menuSetOpenMatches(elId, payload) {
+    const targetId = readPayloadId(payload);
+    if (!targetId) return false;
+    return elId === targetId || elId === `menu:${targetId}`;
   }
   var anatomy17, parts17, clsx, CSS_REGEX, serialize, css, getTriggerId8, getContextTriggerId, getContentId8, getArrowId, getPositionerId6, getGroupId, getItemId6, getItemValue, getGroupLabelId, getContentEl8, getPositionerEl6, getTriggerEl5, getItemEl3, getContextTriggerEl, getTriggerEls3, getContextTriggerEls, getActiveTriggerEl2, getElements, getFirstEl, getLastEl, isMatch, getNextEl, getPrevEl, getElemByKey, isTargetDisabled, isTriggerItem, itemSelectEvent, not5, and6, or2, machine17, Menu, MenuHook;
   var init_menu = __esm({
@@ -29980,9 +29996,7 @@ ${err}`);
           this.handlers = [];
           this.handlers.push(
             this.handleEvent("menu_set_open", (payload) => {
-              const targetId = payload.menu_id;
-              const matches = !targetId || el.id === targetId || el.id === `menu:${targetId}`;
-              if (!matches) return;
+              if (!menuSetOpenMatches(el.id, payload)) return;
               menu.api.setOpen(payload.open);
             })
           );

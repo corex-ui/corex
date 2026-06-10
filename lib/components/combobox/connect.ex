@@ -189,7 +189,7 @@ defmodule Corex.Combobox.Connect do
       "type" => "button",
       "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
-      "id" => "combobox:#{assigns.id}:trigger",
+      "id" => "combobox:#{assigns.id}:toggle-btn",
       "data-disabled" => get_boolean(assigns.disabled),
       "data-invalid" => get_boolean(assigns.invalid)
     }
@@ -197,7 +197,7 @@ defmodule Corex.Combobox.Connect do
 
   def ignore_trigger(assigns) do
     JS.ignore_attributes(Trigger.ignored_attrs(),
-      to: Selectors.css_id("combobox:#{assigns.id}:trigger")
+      to: Selectors.css_id("combobox:#{assigns.id}:toggle-btn")
     )
   end
 
@@ -209,7 +209,7 @@ defmodule Corex.Combobox.Connect do
       "type" => "button",
       "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
-      "id" => "combobox:#{assigns.id}:clear-trigger",
+      "id" => "combobox:#{assigns.id}:clear-btn",
       "data-disabled" => get_boolean(assigns.disabled),
       "data-invalid" => get_boolean(assigns.invalid)
     }
@@ -217,7 +217,7 @@ defmodule Corex.Combobox.Connect do
 
   def ignore_clear_trigger(assigns) do
     JS.ignore_attributes(ClearTrigger.ignored_attrs(),
-      to: Selectors.css_id("combobox:#{assigns.id}:clear-trigger")
+      to: Selectors.css_id("combobox:#{assigns.id}:clear-btn")
     )
   end
 
@@ -229,13 +229,13 @@ defmodule Corex.Combobox.Connect do
       "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "style" => "display: none;",
-      "id" => "combobox:#{assigns.id}:positioner"
+      "id" => "combobox:#{assigns.id}:popper"
     }
   end
 
   def ignore_positioner(assigns) do
     JS.ignore_attributes(Positioner.ignored_attrs(),
-      to: Selectors.css_id("combobox:#{assigns.id}:positioner")
+      to: Selectors.css_id("combobox:#{assigns.id}:popper")
     )
   end
 
@@ -285,7 +285,7 @@ defmodule Corex.Combobox.Connect do
       "data-id" => assigns.group_id,
       "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
-      "id" => "combobox:#{assigns.id}:item-group:#{assigns.group_id}"
+      "id" => "combobox:#{assigns.id}:optgroup:#{assigns.group_id}"
     }
   end
 
@@ -293,7 +293,7 @@ defmodule Corex.Combobox.Connect do
 
   def ignore_item_group(assigns) do
     JS.ignore_attributes(ItemGroup.ignored_attrs(),
-      to: Selectors.css_id("combobox:#{assigns.id}:item-group:#{assigns.group_id}")
+      to: Selectors.css_id("combobox:#{assigns.id}:optgroup:#{assigns.group_id}")
     )
   end
 
@@ -304,7 +304,7 @@ defmodule Corex.Combobox.Connect do
       "data-part" => "item-group-label",
       "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
-      "id" => "combobox:#{assigns.id}:item-group-label:#{assigns.html_for}"
+      "id" => "combobox:#{assigns.id}:optgroup-label:#{assigns.html_for}"
     }
   end
 
@@ -312,7 +312,7 @@ defmodule Corex.Combobox.Connect do
 
   def ignore_item_group_label(assigns) do
     JS.ignore_attributes(ItemGroupLabel.ignored_attrs(),
-      to: Selectors.css_id("combobox:#{assigns.id}:item-group-label:#{assigns.html_for}")
+      to: Selectors.css_id("combobox:#{assigns.id}:optgroup-label:#{assigns.html_for}")
     )
   end
 
@@ -324,7 +324,7 @@ defmodule Corex.Combobox.Connect do
       "data-value" => assigns.value,
       "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
-      "id" => "combobox:#{assigns.id}:item:#{assigns.value}"
+      "id" => "combobox:#{assigns.id}:option:#{assigns.value}"
     }
 
     base = if Map.get(assigns, :to), do: Map.put(base, "data-to", assigns.to), else: base
@@ -348,7 +348,7 @@ defmodule Corex.Combobox.Connect do
 
   def ignore_item(assigns) do
     JS.ignore_attributes(Item.ignored_attrs(),
-      to: Selectors.css_id("combobox:#{assigns.id}:item:#{assigns.value}")
+      to: Selectors.css_id("combobox:#{assigns.id}:option:#{assigns.value}")
     )
   end
 

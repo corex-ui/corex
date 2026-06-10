@@ -130,6 +130,44 @@
     @apply ui-item;
   }
 
+  .combobox [data-scope="combobox"][data-part="content"] [data-part="item-text"] {
+    flex: 1 1 0%;
+    min-width: 0;
+    max-width: 100%;
+    width: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--spacing-space);
+    text-align: start;
+  }
+
+  .combobox [data-scope="combobox"][data-part="item-indicator"] {
+    @apply ui-icon;
+  }
+
+  .combobox [data-scope="combobox"][data-part="content"] [data-part="item-indicator"] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    flex-shrink: 0;
+    min-width: 1em;
+    min-height: 1em;
+    margin-inline-start: auto;
+    padding-inline-end: var(--spacing-space);
+  }
+
+  .combobox
+    [data-scope="combobox"][data-part="content"]
+    [data-scope="combobox"][data-part="item-indicator"][hidden] {
+    display: flex !important;
+    visibility: hidden;
+  }
+
   .combobox [data-scope="combobox"][data-part="error"] {
     @apply ui-error;
   }

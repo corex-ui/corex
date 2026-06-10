@@ -66,18 +66,42 @@ defmodule E2eWeb.ComboboxModel do
     )
   end
 
-  def open_combobox_by_host_id(session, host_dom_id) when is_binary(host_dom_id) do
+  def wait_combobox_content_open(session, host_dom_id, opts \\ []) when is_binary(host_dom_id) do
+    if not (String.match?(host_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and host_dom_id != "") do
+      raise ArgumentError, "invalid combobox host dom id"
+    end
+
+    wait_for_has(
+      session,
+      css(
+        ~s|##{host_dom_id} [data-scope="combobox"][data-part="content"][data-state="open"]|,
+        visible: :any
+      ),
+      opts
+    )
+
+    session
+  end
+
+  def open_combobox_by_host_id(session, host_dom_id, opts \\ []) when is_binary(host_dom_id) do
     if not (String.match?(host_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and String.length(host_dom_id) > 0) do
       raise ArgumentError, "invalid combobox host dom id"
     end
 
-    click(
-      session,
-      css(
-        ~s|##{host_dom_id}[phx-hook="Combobox"] [data-scope="combobox"][data-part="trigger"]|,
-        visible: :any
+    session =
+      click(
+        session,
+        css(
+          ~s|##{host_dom_id}[phx-hook="Combobox"] [data-scope="combobox"][data-part="trigger"]|,
+          visible: :any
+        )
       )
-    )
+
+    if Keyword.get(opts, :wait_open, true) do
+      wait_combobox_content_open(session, host_dom_id, opts)
+    else
+      session
+    end
   end
 
   def click_item_in_anatomy_section(session, section_dom_id, value, opts \\ [])
@@ -237,5 +261,37 @@ defmodule E2eWeb.ComboboxModel do
     )
 
     session
+  end
+
+  def wait_playground_patch_rev(session, rev, opts \\ []) when is_integer(rev) do
+    wait_for_has(
+      session,
+      css(~s|#combobox-playground-patch-rev[data-rev="#{rev}"]|, visible: :any),
+      opts
+    )
+
+    session
+  end
+
+  def disable_playground_close_on_select(session) do
+    q =
+      css(
+        ~S|#close_on_select [data-scope="switch"][data-part="control"][data-state="checked"]|,
+        visible: :any
+      )
+
+    if has?(session, q) do
+      click(session, q)
+    end
+
+    session
+  end
+
+  def assert_positioner_anchored(session, host_dom_id, _opts \\ []) when is_binary(host_dom_id) do
+    if not (String.match?(host_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and host_dom_id != "") do
+      raise ArgumentError, "invalid combobox host dom id"
+    end
+
+    wait_combobox_content_open(session, host_dom_id)
   end
 end

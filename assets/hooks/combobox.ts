@@ -267,11 +267,21 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
       this.combobox.api.reposition();
     }
 
+    this.combobox.renderItems();
+    this.combobox.applyItemProps();
+
     if ("value" in valuePatch) {
       syncComboboxHiddenInputForPhoenix(this.el, valuePatch.value, undefined);
       reapplyComboboxHiddenInputUsage(this.el);
-      const label = selectedItemLabel(valuePatch.value.map((v) => ({ value: v, label: v })));
-      syncVisibleInputAttribute(this.el, label);
+      const items = JSON.parse(this.el.getAttribute("data-items") ?? "[]") as Array<{
+        value?: string;
+        label?: string;
+      }>;
+      const labels = valuePatch.value.map((value) => {
+        const item = items.find((entry) => String(entry.value ?? "") === String(value));
+        return { value, label: item?.label ?? value };
+      });
+      syncVisibleInputAttribute(this.el, selectedItemLabel(labels));
     }
   },
 

@@ -511,7 +511,9 @@ defmodule Corex.Menu do
           dir: @dir,
           orientation: @orientation
         })}>
-          {render_slot(@trigger)}
+          <span data-scope="menu" data-part="item-text">
+            {render_slot(@trigger)}
+          </span>
           <span
             :if={@indicator != []}
             phx-mounted={Connect.ignore_indicator(%Indicator{id: @id, dir: @dir, orientation: @orientation})}

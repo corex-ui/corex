@@ -38,6 +38,7 @@ defmodule E2eWeb.ComboboxPlayLive do
       read_only: false,
       dir: "ltr",
       orientation: "vertical",
+      close_on_select: true,
       disabled_item_ids: []
     }
 
@@ -47,7 +48,8 @@ defmodule E2eWeb.ComboboxPlayLive do
      |> assign(:controls, controls)
      |> assign(:disabled_select_items, @disabled_select_items)
      |> assign(:items, playground_items(controls))
-     |> assign(:play_value, [])}
+     |> assign(:play_value, [])
+     |> assign(:play_patch_rev, 0)}
   end
 
   def handle_event("control_changed", %{"checked" => checked, "id" => id}, socket) do
@@ -64,6 +66,21 @@ defmodule E2eWeb.ComboboxPlayLive do
 
   def handle_event("disabled_items_changed", _params, socket) do
     {:noreply, apply_disabled_items(socket, [])}
+  end
+
+  def handle_event("combobox_play_value_changed", %{"value" => value}, socket)
+      when is_list(value) do
+    {:noreply,
+     socket
+     |> assign(:play_value, value)
+     |> assign(:play_patch_rev, socket.assigns.play_patch_rev + 1)}
+  end
+
+  def handle_event("combobox_play_value_changed", %{"value" => value}, socket) do
+    {:noreply,
+     socket
+     |> assign(:play_value, List.wrap(value))
+     |> assign(:play_patch_rev, socket.assigns.play_patch_rev + 1)}
   end
 
   defp apply_disabled_items(socket, value) do
@@ -110,6 +127,9 @@ defmodule E2eWeb.ComboboxPlayLive do
 
   defp update_control(socket, "orientation", v),
     do: update(socket, :controls, &Map.put(&1, :orientation, v))
+
+  defp update_control(socket, "close_on_select", v),
+    do: update(socket, :controls, &Map.put(&1, :close_on_select, v))
 
   defp update_control(socket, _, _), do: socket
 
@@ -189,6 +209,14 @@ defmodule E2eWeb.ComboboxPlayLive do
           >
             <:label>Invalid</:label>
           </.switch>
+          <.switch
+            class="switch switch--sm"
+            id="close_on_select"
+            checked={@controls.close_on_select}
+            on_checked_change="control_changed"
+          >
+            <:label>Close on select</:label>
+          </.switch>
         </:controls>
         <:canvas>
           <.combobox
@@ -197,6 +225,8 @@ defmodule E2eWeb.ComboboxPlayLive do
             translation={%Corex.Combobox.Translation{placeholder: "Select", empty: "No results"}}
             items={@items}
             value={@play_value}
+            close_on_select={@controls.close_on_select}
+            on_value_change="combobox_play_value_changed"
             disabled={@controls.disabled}
             read_only={@controls.read_only}
             invalid={@controls.invalid}
@@ -207,8 +237,14 @@ defmodule E2eWeb.ComboboxPlayLive do
             <:empty>No results</:empty>
             <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
             <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
+            <:item :let={item}>
+              <Flagpack.flag name={String.to_atom(item.value)} />
+              {item.label}
+            </:item>
             <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
           </.combobox>
+          <p id="combobox-playground-patch-rev" data-rev={@play_patch_rev} hidden aria-hidden="true">
+          </p>
         </:canvas>
       </.demo_playground>
     </Layouts.app>

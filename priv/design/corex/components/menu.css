@@ -30,13 +30,16 @@
     min-width: var(--container-7xs);
   }
 
-  .menu [data-scope="menu"][data-part="trigger"] > :not([data-part="indicator"]) {
+  .menu [data-scope="menu"][data-part="trigger"] > [data-part="item-text"] {
     flex: 1 1 0%;
     min-width: 0;
-    text-align: start;
+    max-width: 100%;
+    width: auto;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    display: block;
+    text-align: start;
   }
 
   .menu [data-scope="menu"][data-part="trigger"] > [data-part="indicator"] {
@@ -86,7 +89,9 @@
   .menu [data-scope="menu"][data-part="trigger-item"] {
     @apply ui-item;
 
+    width: 100%;
     min-width: 0;
+    box-sizing: border-box;
   }
 
   .menu [data-scope="menu"][data-part="item"] [data-part="item-indicator"],
@@ -102,14 +107,30 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    display: block;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--spacing-space);
     text-align: start;
+  }
+
+  .menu [data-scope="menu"][data-part="content"] [data-part="item-text"] > .icon,
+  .menu [data-scope="menu"][data-part="content"] [data-part="item-text"] > [class^="hero-"] {
+    margin-inline-start: auto;
+    flex-shrink: 0;
   }
 
   .menu [data-scope="menu"][data-part="content"] [data-part="item-indicator"] {
     @apply ui-icon;
 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
     flex-shrink: 0;
+    min-width: 1em;
+    min-height: 1em;
+    margin-inline-start: auto;
   }
 
   .menu [data-scope="menu"][data-part="indicator"] [class^="hero-"],
@@ -157,12 +178,6 @@
     [data-part="item-indicator"][dir="rtl"]
     [class^="hero-"] {
     transform: scaleX(-1) !important;
-  }
-
-  .menu [data-scope="menu"][data-part="content"] [data-part="trigger-item"] {
-    justify-content: flex-start;
-    width: 100%;
-    min-width: 0;
   }
 
   .menu [data-scope="menu"][data-part="content"] [data-part="item"]:has(> div:has([data-nested="menu"])),
@@ -234,6 +249,7 @@
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
     padding-inline: --value(--spacing-space-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
   }
 
   [data-scope="menu"][data-part="item-group-label"] {

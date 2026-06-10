@@ -1,4 +1,0 @@
-{
-  "elixir.credo.strictMode": true,
-  "elixir.credo.lintEverything": false
-}

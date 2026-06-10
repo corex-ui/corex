@@ -24,7 +24,8 @@ import {
   trackFocusVisible
 } from "./chunks/chunk-VDUSDBJS.mjs";
 import {
-  notifyChange
+  notifyChange,
+  readPayloadId
 } from "./chunks/chunk-2WCNJX5P.mjs";
 import {
   Component,
@@ -1788,6 +1789,11 @@ function destroyDescendantMenus(menu) {
     child.destroy();
   }
 }
+function menuSetOpenMatches(elId, payload) {
+  const targetId = readPayloadId(payload);
+  if (!targetId) return false;
+  return elId === targetId || elId === `menu:${targetId}`;
+}
 var MenuHook = {
   mounted() {
     const el = this.el;
@@ -1888,9 +1894,7 @@ var MenuHook = {
     this.handlers = [];
     this.handlers.push(
       this.handleEvent("menu_set_open", (payload) => {
-        const targetId = payload.menu_id;
-        const matches = !targetId || el.id === targetId || el.id === `menu:${targetId}`;
-        if (!matches) return;
+        if (!menuSetOpenMatches(el.id, payload)) return;
         menu.api.setOpen(payload.open);
       })
     );
@@ -1933,5 +1937,6 @@ var MenuHook = {
 };
 export {
   MenuHook as Menu,
-  findImmediateParentMenuHookEl
+  findImmediateParentMenuHookEl,
+  menuSetOpenMatches
 };

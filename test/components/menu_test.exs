@@ -12,6 +12,12 @@ defmodule Corex.MenuTest do
       assert html =~ ~r/menu:/
     end
 
+    test "renders zag-aligned positioner and item ids" do
+      html = render_component(&CorexTest.ComponentHelpers.render_menu/1, [])
+      assert html =~ ~S(id="menu:test-menu:popper")
+      assert html =~ ~S(id="test-menu/1")
+    end
+
     test "renders with grouped items" do
       html = render_component(&CorexTest.ComponentHelpers.render_menu_grouped/1, [])
       assert html =~ ~r/data-part="item-group"/
@@ -323,7 +329,7 @@ defmodule Corex.MenuTest do
     test "returns positioner attributes with hidden until client opens" do
       assigns = %{id: "test-menu", dir: "ltr"}
       result = Connect.positioner(assigns)
-      assert result["id"] == "menu:test-menu:positioner"
+      assert result["id"] == "menu:test-menu:popper"
       assert result["hidden"] == "true"
     end
   end
@@ -352,7 +358,7 @@ defmodule Corex.MenuTest do
       }
 
       result = Connect.item(assigns)
-      assert result["id"] == "menu:test-menu:item:item-1"
+      assert result["id"] == "test-menu/item-1"
       assert result["data-value"] == "item-1"
       assert result["role"] == "menuitem"
     end

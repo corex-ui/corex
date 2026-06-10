@@ -82,6 +82,20 @@ defmodule E2eWeb.ComboboxTest do
       |> ComponentBehaviorSpec.visit_ready(Combobox, :combobox, :playground)
       |> Combobox.wait_playground_combobox_ready()
     end
+
+    feature "stays anchored after LiveView patch while open", %{session: session} do
+      session
+      |> ComponentBehaviorSpec.visit_ready(Combobox, :combobox, :playground)
+      |> Combobox.prepare_live_form()
+      |> Combobox.wait_playground_combobox_ready()
+      |> Combobox.disable_playground_close_on_select()
+      |> Combobox.open_combobox_by_host_id("combobox-playground", timeout: 8_000)
+      |> Combobox.click_item_by_host_id("combobox-playground", "bel", timeout: 8_000)
+      |> Combobox.wait_hidden_value_by_host_id("combobox-playground", "bel", timeout: 8_000)
+      |> Combobox.wait_playground_patch_rev(1, timeout: 8_000)
+      |> Combobox.wait_combobox_content_open("combobox-playground", timeout: 8_000)
+      |> Combobox.assert_positioner_anchored("combobox-playground")
+    end
   end
 
   describe "patterns" do
