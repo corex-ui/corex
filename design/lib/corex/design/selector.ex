@@ -116,9 +116,9 @@ defmodule Corex.Design.Condition do
                    do: {step, "@media (min-width: #{width})"}
 
   @registry Map.merge(@pseudo, @zag_state)
-               |> Map.merge(@zag_flags)
-               |> Map.merge(@structural)
-               |> Map.merge(@breakpoints)
+            |> Map.merge(@zag_flags)
+            |> Map.merge(@structural)
+            |> Map.merge(@breakpoints)
 
   def registry, do: @registry
 

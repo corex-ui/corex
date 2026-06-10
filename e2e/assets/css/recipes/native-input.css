@@ -21,11 +21,11 @@
 @utility native-input--size-* {
   [data-scope="native-input"][data-part="input"] {
       color: --value(--color-ui-ink-*, [color]);
-    min-height: --value(--spacing-size-*, [length]);
     padding-inline: --value(--spacing-space-*, [length]);
-    background-color: --value(--color-*, [color]);
+    min-height: --value(--spacing-size-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    background-color: --value(--color-*, [color]);
   }
 
   [data-scope="native-input"][data-part="label"] {
@@ -34,8 +34,8 @@
   }
 
   [data-scope="native-input"][data-part="root"] {
-      max-width: --value(--container-*, [length]);
-    gap: --value(--spacing-space-*, [length]);
+      gap: --value(--spacing-space-*, [length]);
+    max-width: --value(--container-*, [length]);
   }
 
 }

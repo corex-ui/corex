@@ -3,66 +3,62 @@ defmodule Corex.LayoutTest do
 
   alias CorexTest.LayoutHelpers
 
+  defp assert_has_classes(element, expected) do
+    classes = element |> Floki.attribute("class") |> List.first() |> String.split(" ", trim: true)
+    assert Enum.all?(expected, &(&1 in classes))
+  end
+
   test "box renders padding attribute and content" do
     result = render_component(&LayoutHelpers.render_box/1, %{})
-    assert [_] = find_in_html(result, ~S([data-box][data-box-padding="lg"]))
+    assert [box] = find_in_html(result, "div")
+    assert_has_classes(box, ~w(box box--padding-lg))
     assert text_in_html(result) =~ "boxed"
   end
 
   test "row renders gap and justify attributes" do
     result = render_component(&LayoutHelpers.render_row/1, %{})
 
-    assert [_] =
-             find_in_html(
-               result,
-               ~S([data-row][data-row-gap="lg"][data-row-justify="between"])
-             )
+    assert [row] = find_in_html(result, "div")
+    assert_has_classes(row, ~w(row row--gap-lg row--justify-between))
   end
 
   test "row derives the padding family from its recipe and emits no margin" do
     result = render_component(&LayoutHelpers.render_row_padding/1, %{})
 
-    assert [_] =
-             find_in_html(
-               result,
-               ~S([data-row][data-row-padding-inline="xl"][data-row-padding-block="md"])
-             )
-
+    assert [row] = find_in_html(result, "div")
+    assert_has_classes(row, ~w(row row--padding-inline-xl row--padding-block-md))
     refute result =~ "data-row-margin"
   end
 
   test "stack renders default column direction with gap" do
     result = render_component(&LayoutHelpers.render_stack/1, %{})
 
-    assert [_] =
-             find_in_html(
-               result,
-               ~S([data-stack][data-stack-direction="column"][data-stack-gap="md"])
-             )
+    assert [stack] = find_in_html(result, "div")
+    assert_has_classes(stack, ~w(stack stack--gap-md stack--direction-column))
   end
 
   test "grid renders column count" do
     result = render_component(&LayoutHelpers.render_grid/1, %{})
-    assert [_] = find_in_html(result, ~S([data-grid][data-grid-columns="3"]))
+    assert [grid] = find_in_html(result, "div")
+    assert_has_classes(grid, ~w(grid grid--columns-3 grid--gap-lg))
   end
 
   test "container renders size and is a div by default" do
     result = render_component(&LayoutHelpers.render_container/1, %{})
-    assert [_] = find_in_html(result, ~S(div[data-container][data-container-size="lg"]))
+    assert [container] = find_in_html(result, "div")
+    assert_has_classes(container, ~w(container container--size-lg))
   end
 
   test "spacer renders a bare design attribute" do
     result = render_component(&LayoutHelpers.render_spacer/1, %{})
-    assert [_] = find_in_html(result, "[data-spacer]")
+    assert [spacer] = find_in_html(result, "div")
+    assert_has_classes(spacer, ~w(spacer))
   end
 
   test "divider renders an hr with orientation" do
     result = render_component(&LayoutHelpers.render_divider/1, %{})
 
-    assert [_] =
-             find_in_html(
-               result,
-               ~S(hr[data-divider][data-divider-orientation="horizontal"])
-             )
+    assert [divider] = find_in_html(result, "hr")
+    assert_has_classes(divider, ~w(divider divider--orientation-horizontal))
   end
 end

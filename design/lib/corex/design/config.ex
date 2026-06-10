@@ -66,6 +66,7 @@ defmodule Corex.Design.Config do
     end
   end
 end
+
 defmodule Corex.Design.Config.Options do
   @moduledoc """
   NimbleOptions schema for top-level `config :corex_design` keys.
@@ -75,39 +76,39 @@ defmodule Corex.Design.Config.Options do
   alias Corex.Design.Theme.Options, as: ThemeOptions
 
   @schema NimbleOptions.new!(
-    default_theme: [
-      type: :atom,
-      default: :neo,
-      doc: "Default data-theme id"
-    ],
-    default_mode: [
-      type: {:in, [:light, :dark]},
-      default: :light,
-      doc: "Default data-mode"
-    ],
-    accessibility_level: [
-      type: {:in, ~w(a aa aaa)a},
-      default: :aa,
-      doc: "Default text contrast floor"
-    ],
-    themes: [
-      type: :map,
-      doc: "Theme id → spec map"
-    ],
-    include_recipes: [
-      type: {:list, :atom},
-      doc: "Allowlist of recipe ids to emit"
-    ],
-    recipes: [
-      type: {:list, :atom},
-      default: [],
-      doc: "Host RecipeSource modules"
-    ],
-    role_aliases: [
-      type: :map,
-      doc: "Semantic role aliases (template name -> token role)"
-    ]
-  )
+            default_theme: [
+              type: :atom,
+              default: :neo,
+              doc: "Default data-theme id"
+            ],
+            default_mode: [
+              type: {:in, [:light, :dark]},
+              default: :light,
+              doc: "Default data-mode"
+            ],
+            accessibility_level: [
+              type: {:in, ~w(a aa aaa)a},
+              default: :aa,
+              doc: "Default text contrast floor"
+            ],
+            themes: [
+              type: :map,
+              doc: "Theme id → spec map"
+            ],
+            include_recipes: [
+              type: {:list, :atom},
+              doc: "Allowlist of recipe ids to emit"
+            ],
+            recipes: [
+              type: {:list, :atom},
+              default: [],
+              doc: "Host RecipeSource modules"
+            ],
+            role_aliases: [
+              type: :map,
+              doc: "Semantic role aliases (template name -> token role)"
+            ]
+          )
 
   @known_keys ~w(default_theme default_mode accessibility_level themes include_recipes recipes role_aliases)a
 

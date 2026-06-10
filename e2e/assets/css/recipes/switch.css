@@ -82,48 +82,48 @@
 
   .switch.switch--semantic-accent {
     --color-selected: var(--color-accent);
-    --color-selected-hover: var(--color-accent-hover);
     --color-selected-active: var(--color-accent-active);
+    --color-selected-hover: var(--color-accent-hover);
     --color-selected-ink: var(--color-accent-ink);
     --color-selected-muted: var(--color-accent-muted);
   }
 
   .switch.switch--semantic-brand {
     --color-selected: var(--color-brand);
-    --color-selected-hover: var(--color-brand-hover);
     --color-selected-active: var(--color-brand-active);
+    --color-selected-hover: var(--color-brand-hover);
     --color-selected-ink: var(--color-brand-ink);
     --color-selected-muted: var(--color-brand-muted);
   }
 
   .switch.switch--semantic-alert {
     --color-selected: var(--color-alert);
-    --color-selected-hover: var(--color-alert-hover);
     --color-selected-active: var(--color-alert-active);
+    --color-selected-hover: var(--color-alert-hover);
     --color-selected-ink: var(--color-alert-ink);
     --color-selected-muted: var(--color-alert-muted);
   }
 
   .switch.switch--semantic-info {
     --color-selected: var(--color-info);
-    --color-selected-hover: var(--color-info-hover);
     --color-selected-active: var(--color-info-active);
+    --color-selected-hover: var(--color-info-hover);
     --color-selected-ink: var(--color-info-ink);
     --color-selected-muted: var(--color-info-muted);
   }
 
   .switch.switch--semantic-success {
     --color-selected: var(--color-success);
-    --color-selected-hover: var(--color-success-hover);
     --color-selected-active: var(--color-success-active);
+    --color-selected-hover: var(--color-success-hover);
     --color-selected-ink: var(--color-success-ink);
     --color-selected-muted: var(--color-success-muted);
   }
 
   .switch.switch--semantic-selected {
     --color-selected: var(--color-selected);
-    --color-selected-hover: var(--color-selected-hover);
     --color-selected-active: var(--color-selected-active);
+    --color-selected-hover: var(--color-selected-hover);
     --color-selected-ink: var(--color-selected-ink);
     --color-selected-muted: var(--color-selected-muted);
   }

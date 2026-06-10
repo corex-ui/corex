@@ -31,7 +31,7 @@ defmodule Corex.Variants do
       @corex_axis_names unquote(axis_names)
       @corex_defaults unquote(Macro.escape(defaults_map))
 
-      @doc false
+      @doc "Returns the BEM class string for this component's configured style axes."
       def corex_style_class(assigns) do
         Corex.Variants.component_style_class(
           @corex_base,
@@ -41,7 +41,7 @@ defmodule Corex.Variants do
         )
       end
 
-      @doc false
+      @doc "Returns `{base, axis_names}` for style introspection and tooling."
       def __corex_style__, do: {@corex_base, @corex_axis_names}
 
       attr(:unstyled, :boolean, default: false, doc: "Skip design output, keep only `class`.")
@@ -79,7 +79,7 @@ defmodule Corex.Variants do
       @corex_base unquote(base)
       @corex_axis_names unquote(axis_names)
 
-      @doc false
+      @doc "Returns layout design output (`%{class: ...}`) for this layout primitive."
       def corex_layout_design(assigns) do
         Corex.Variants.layout_design(@corex_base, @corex_axis_names, assigns)
       end
@@ -144,7 +144,7 @@ defmodule Corex.Variants do
       @corex_default_recipe unquote(default_str)
       @corex_recipe_defaults unquote(Macro.escape(defaults_map))
 
-      @doc false
+      @doc "Returns the BEM class string for the active polymorphic recipe look."
       def corex_style_class(assigns) do
         Corex.Variants.recipe_class(
           @corex_recipes,
@@ -154,7 +154,7 @@ defmodule Corex.Variants do
         )
       end
 
-      @doc false
+      @doc "Returns recipe metadata for style introspection and tooling."
       def __corex_style__, do: {:recipes, @corex_default_recipe, @corex_recipes}
 
       attr(:as, :string,
@@ -208,13 +208,13 @@ defmodule Corex.Variants do
     end
   end
 
-  @doc false
+  @doc "Resolves compile-time axis value lists from a scale atom or explicit list."
   def axis_values(scale) when is_atom(scale), do: Corex.Scales.strings(scale)
   def axis_values(values) when is_list(values), do: Enum.map(values, &to_string/1)
 
-  @bem_skip_axes ~w(hide_from hide_below as modal unstyled)a
+  @bem_skip_axes ~W(hide_from hide_below as modal unstyled)a
 
-  @doc false
+  @doc "Builds the host BEM class for a styled component, honoring `unstyled` and `class`."
   def component_style_class(base, axis_names, defaults, assigns) do
     if Map.get(assigns, :unstyled, false) do
       assigns
@@ -226,7 +226,7 @@ defmodule Corex.Variants do
     end
   end
 
-  @doc false
+  @doc "Builds the merged host class from base, axis modifiers, and optional `class`."
   def host_class(base, axis_names, defaults, assigns) do
     base
     |> List.wrap()
@@ -235,10 +235,10 @@ defmodule Corex.Variants do
     |> Corex.Style.merge_class()
   end
 
-  @doc false
+  @doc "Builds a host class from base and `class` only, without axis modifiers."
   def component_class(base, assigns), do: host_class(base, [], %{}, assigns)
 
-  @doc false
+  @doc "Builds the host BEM class for the selected polymorphic recipe look."
   def recipe_class(recipes, default, assigns, defaults \\ %{}) do
     name = recipe_name(assigns, default)
     %{base: base, axes: axes} = Map.fetch!(recipes, name)
@@ -269,7 +269,7 @@ defmodule Corex.Variants do
     end
   end
 
-  @doc false
+  @doc "Builds layout design output (`%{class: ...}`) from layout axis assigns."
   def layout_design(base, axis_names, assigns) do
     class =
       if Map.get(assigns, :unstyled, false) do
@@ -298,7 +298,7 @@ defmodule Corex.Variants do
     end
   end
 
-  defp layout_bem_step(axis, value), do: "#{dash(axis)}-#{value}"
+  defp layout_bem_step(axis, value), do: Corex.Bem.step(axis, value)
 
   defp resolve(axis, defaults, assigns) do
     case Map.get(assigns, axis) do
@@ -306,6 +306,4 @@ defmodule Corex.Variants do
       value -> value
     end
   end
-
-  defp dash(axis), do: axis |> Atom.to_string() |> String.replace("_", "-")
 end

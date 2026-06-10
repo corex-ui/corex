@@ -37,10 +37,14 @@ defmodule Corex.Design.CompilerIntegrationTest do
   end
 
   test "bundle writes modular folders when output is configured" do
-    tmp = System.tmp_dir!() |> Path.join("corex_design_test_#{System.unique_integer([:positive])}")
+    tmp =
+      System.tmp_dir!() |> Path.join("corex_design_test_#{System.unique_integer([:positive])}")
+
     on_exit(fn -> File.rm_rf(tmp) end)
 
-    Application.put_env(:corex_design, :compile_test, output: Path.join(tmp, "corex.tailwind.css"))
+    Application.put_env(:corex_design, :compile_test,
+      output: Path.join(tmp, "corex.tailwind.css")
+    )
 
     Corex.Design.compile(profile: :compile_test)
 

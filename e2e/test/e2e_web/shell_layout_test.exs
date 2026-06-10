@@ -43,6 +43,12 @@ defmodule E2eWeb.ShellLayoutTest do
       assert html =~ ~s(data-mode="#{mode}")
       assert html =~ "shell-content--marketing"
       assert html =~ "shell-header"
+      assert html =~ "row--justify-between"
+      assert html =~ "row--w-full"
+      assert html =~ "h1--semantic-brand"
+      assert html =~ ~s(id="mode-switcher")
+      assert html =~ "toggle--shape-square"
+      refute html =~ "toggle--rounded-full toggle--shape-square"
       assert html =~ "home__hero"
       assert html =~ ~s(class="icon")
       assert html =~ ~s(id="hero-accordion")

@@ -69,7 +69,11 @@ defmodule Corex.ActionTest do
         )
 
       assert [button] = find_in_html(result, "button")
-      assert_has_classes(button, ~w(button button--variant-solid button--semantic-accent button--size-lg))
+
+      assert_has_classes(
+        button,
+        ~w(button button--variant-solid button--semantic-accent button--size-lg)
+      )
     end
 
     test "variant and radius stamp BEM modifiers" do
@@ -80,7 +84,11 @@ defmodule Corex.ActionTest do
         )
 
       assert [button] = find_in_html(result, "button")
-      assert_has_classes(button, ~w(button button--variant-ghost button--rounded-xl button--size-md))
+
+      assert_has_classes(
+        button,
+        ~w(button button--variant-ghost button--rounded-xl button--size-md)
+      )
     end
 
     test "as link stamps link BEM modifiers" do
@@ -103,7 +111,11 @@ defmodule Corex.ActionTest do
         )
 
       assert [button] = find_in_html(result, "button")
-      assert_has_classes(button, ~w(button button--variant-solid button--semantic-brand button--size-md w-full))
+
+      assert_has_classes(
+        button,
+        ~w(button button--variant-solid button--semantic-brand button--size-md w-full)
+      )
     end
 
     test "explicit class modifiers merge with defaults" do
@@ -113,7 +125,11 @@ defmodule Corex.ActionTest do
         )
 
       assert [button] = find_in_html(result, "button")
-      assert_has_classes(button, ~w(button button--variant-solid button--size-md button--semantic-accent))
+
+      assert_has_classes(
+        button,
+        ~w(button button--variant-solid button--size-md button--semantic-accent)
+      )
     end
 
     test "with neither attrs nor class stamps default solid md button" do
@@ -142,7 +158,11 @@ defmodule Corex.ActionTest do
         )
 
       assert [button] = find_in_html(result, "button")
-      assert_has_classes(button, ~w(button button--variant-solid button--semantic-accent button--size-lg))
+
+      assert_has_classes(
+        button,
+        ~w(button button--variant-solid button--semantic-accent button--size-lg)
+      )
     end
   end
 end

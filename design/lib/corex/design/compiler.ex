@@ -66,8 +66,16 @@ defmodule Corex.Design.Compiler do
 
     Write.atomic!(Path.join(aggregates_dir, "recipes.css"), recipes_aggregate(recipes))
 
-    Write.atomic!(Path.join(output_dir, "corex.tailwind.theme.css"), ~s(@import "./layers/theme.css";\n))
-    Write.atomic!(Path.join(output_dir, "corex.tailwind.base.css"), ~s(@import "./layers/base.css";\n))
+    Write.atomic!(
+      Path.join(output_dir, "corex.tailwind.theme.css"),
+      ~s(@import "./layers/theme.css";\n)
+    )
+
+    Write.atomic!(
+      Path.join(output_dir, "corex.tailwind.base.css"),
+      ~s(@import "./layers/base.css";\n)
+    )
+
     Write.atomic!(Path.join(output_dir, "corex.tokens.css"), ~s(@import "./layers/tokens.css";\n))
 
     Write.atomic!(
@@ -125,11 +133,9 @@ defmodule Corex.Design.Compiler do
   end
 
   defp recipe_imports(recipes) do
-    recipes
-    |> Enum.map(fn recipe ->
+    Enum.map_join(recipes, "\n", fn recipe ->
       ~s(@import "../recipes/#{recipe_file_id(recipe)}.css";)
     end)
-    |> Enum.join("\n")
   end
 
   defp recipe_file_id(%Recipe{id: id}) do

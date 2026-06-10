@@ -42,11 +42,11 @@
   [data-scope="date-picker"][data-part="input"] {
       color: --value(--color-ui-ink-*, [color]);
     max-width: --value(--container-*, [length]);
-    min-height: --value(--spacing-size-*, [length]);
     padding-inline: --value(--spacing-space-*, [length]);
-    background-color: --value(--color-*, [color]);
+    min-height: --value(--spacing-size-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    background-color: --value(--color-*, [color]);
   }
 
   [data-scope="date-picker"][data-part="label"] {
@@ -60,16 +60,12 @@
 
   [data-scope="date-picker"][data-part="trigger"] {
       min-height: --value(--spacing-size-*, [length]);
-    background-color: --value(--color-*, [color]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    background-color: --value(--color-*, [color]);
   }
 
   [data-scope="date-picker"][data-part="content"] {
-      max-width: --value(--container-*, [length]);
-  }
-
-  [data-scope="date-picker"][data-part="positioner"] {
       max-width: --value(--container-*, [length]);
   }
 
@@ -94,15 +90,9 @@
     line-height: --value(--text-*--line-height, [length]);
   }
 
-  [data-scope="date-picker"][data-part="view-trigger"] {
-      min-height: --value(--spacing-size-*, [length]);
-    font-size: --value(--text-*, [length]);
+  [data-scope="date-picker"][data-part="day-table-header"] {
+      font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-  }
-
-  [data-scope="date-picker"][data-part="view-control"] {
-      padding-inline: --value(--spacing-space-*, [length]);
-    gap: --value(--spacing-space-*, [length]);
   }
 
   [data-scope="date-picker"][data-part="table-header"] {
@@ -110,9 +100,19 @@
     line-height: --value(--text-*--line-height, [length]);
   }
 
-  [data-scope="date-picker"][data-part="day-table-header"] {
-      font-size: --value(--text-*, [length]);
+  [data-scope="date-picker"][data-part="view-control"] {
+      gap: --value(--spacing-space-*, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
+  }
+
+  [data-scope="date-picker"][data-part="view-trigger"] {
+      min-height: --value(--spacing-size-*, [length]);
+    font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+  }
+
+  [data-scope="date-picker"][data-part="positioner"] {
+      max-width: --value(--container-*, [length]);
   }
 
 }

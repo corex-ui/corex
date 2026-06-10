@@ -137,16 +137,17 @@ defmodule Corex.NavigateTest do
       assert [_] = find_in_html(result, "[data-phx-link]")
     end
 
-    test "default appearance stamps data-link" do
+    test "default appearance stamps link BEM classes" do
       result =
         render_component(&CorexTest.ComponentHelpers.render_navigate_styled/1, %{})
 
       assert [link] = find_in_html(result, "a")
-      assert Floki.attribute([link], "data-link") != []
-      refute Floki.attribute([link], "data-button") != []
+      classes = Floki.attribute([link], "class") |> List.first()
+      assert classes =~ "link"
+      refute classes =~ "button--"
     end
 
-    test "as button stamps data-button modifiers" do
+    test "as button stamps button BEM modifiers" do
       result =
         render_component(&CorexTest.ComponentHelpers.render_navigate_styled/1,
           as: "button",
@@ -156,9 +157,11 @@ defmodule Corex.NavigateTest do
         )
 
       assert [link] = find_in_html(result, "a")
-      assert Floki.attribute([link], "data-button") != []
-      assert Enum.any?(Floki.attribute([link], "data-button-semantic"), &(&1 == "accent"))
-      assert Enum.any?(Floki.attribute([link], "data-button-variant"), &(&1 == "solid"))
+      classes = Floki.attribute([link], "class") |> List.first()
+      assert classes =~ "button"
+      assert classes =~ "button--semantic-accent"
+      assert classes =~ "button--variant-solid"
+      assert classes =~ "button--size-lg"
     end
 
     test "disabled navigate omits href and sets aria-disabled" do

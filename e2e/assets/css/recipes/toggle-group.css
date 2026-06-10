@@ -24,9 +24,9 @@
 
 @utility toggle-group--size-* {
   [data-scope="toggle-group"][data-part="item"] {
-      min-height: --value(--spacing-size-*, [length]);
+      gap: --value(--spacing-space-*, [length]);
     padding-inline: --value(--spacing-space-*, [length]);
-    gap: --value(--spacing-space-*, [length]);
+    min-height: --value(--spacing-size-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }

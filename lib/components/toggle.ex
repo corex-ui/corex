@@ -234,7 +234,8 @@ defmodule Corex.Toggle do
       variant: :visual,
       size: :size,
       text: :text,
-      radius: :radius
+      radius: :radius,
+      shape: :shape
     ],
     defaults: [
       width: "fit",

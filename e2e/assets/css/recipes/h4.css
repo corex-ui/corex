@@ -26,8 +26,8 @@
     color: var(--color-ui-ink);
     font-size: var(--text-base);
     line-height: var(--leading-base);
-    font-weight: var(--font-weight-normal);
     font-family: var(--font-display);
+    font-weight: var(--font-weight-normal);
     @media (min-width: 48rem) {
       font-size: var(--text-lg);
       line-height: var(--leading-lg);

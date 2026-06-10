@@ -25,8 +25,8 @@
   .lead {
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
-    font-weight: var(--font-weight-extralight);
     font-family: var(--font-display);
+    font-weight: var(--font-weight-extralight);
     @media (min-width: 48rem) {
       font-size: var(--text-2xl);
       line-height: var(--leading-2xl);

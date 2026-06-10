@@ -38,6 +38,13 @@ defmodule CorexDesign.MixProject do
   end
 
   defp aliases do
-    []
+    [
+      lint: [
+        "format --check-formatted",
+        "compile --force --warnings-as-errors",
+        "compile --force --warnings-as-errors --env test",
+        "credo"
+      ]
+    ]
   end
 end

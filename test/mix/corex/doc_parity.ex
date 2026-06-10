@@ -276,6 +276,7 @@ defmodule Corex.DocParity do
   defp component_source_file("list"), do: "typography/list_box.ex"
   defp component_source_file("form"), do: "typography/form.ex"
   defp component_source_file("badge"), do: "badge.ex"
+
   defp component_source_file(slug) when slug in ~w(box stack row grid container spacer divider),
     do: "layout/#{slug}.ex"
 
@@ -306,7 +307,9 @@ defmodule Corex.DocParity do
   end
 
   defp valid_component_path?(name),
-    do: name =~ ~r/^[a-z][a-z0-9_.\/-]*\.ex$/ and name not in ["..", "."] and not String.contains?(name, "..")
+    do:
+      name =~ ~r/^[a-z][a-z0-9_.\/-]*\.ex$/ and name not in ["..", "."] and
+        not String.contains?(name, "..")
 
   defp safe_read(path, base) do
     expanded_base = Path.expand(base) <> "/"

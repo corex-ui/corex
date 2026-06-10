@@ -19,14 +19,14 @@
 
 
 @utility radio-group--size-* {
-  [data-scope="radio-group"][data-part="item-text"] {
-      font-size: --value(--text-*, [length]);
-    line-height: --value(--text-*--line-height, [length]);
-  }
-
   [data-scope="radio-group"][data-part="item-control"] {
       padding: --value(--spacing-space-*, [length]);
     font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+  }
+
+  [data-scope="radio-group"][data-part="item-text"] {
+      font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
 
@@ -76,48 +76,48 @@
 
   .radio-group.radio-group--semantic-accent {
     --color-selected: var(--color-accent);
-    --color-selected-hover: var(--color-accent-hover);
     --color-selected-active: var(--color-accent-active);
+    --color-selected-hover: var(--color-accent-hover);
     --color-selected-ink: var(--color-accent-ink);
     --color-selected-muted: var(--color-accent-muted);
   }
 
   .radio-group.radio-group--semantic-brand {
     --color-selected: var(--color-brand);
-    --color-selected-hover: var(--color-brand-hover);
     --color-selected-active: var(--color-brand-active);
+    --color-selected-hover: var(--color-brand-hover);
     --color-selected-ink: var(--color-brand-ink);
     --color-selected-muted: var(--color-brand-muted);
   }
 
   .radio-group.radio-group--semantic-alert {
     --color-selected: var(--color-alert);
-    --color-selected-hover: var(--color-alert-hover);
     --color-selected-active: var(--color-alert-active);
+    --color-selected-hover: var(--color-alert-hover);
     --color-selected-ink: var(--color-alert-ink);
     --color-selected-muted: var(--color-alert-muted);
   }
 
   .radio-group.radio-group--semantic-info {
     --color-selected: var(--color-info);
-    --color-selected-hover: var(--color-info-hover);
     --color-selected-active: var(--color-info-active);
+    --color-selected-hover: var(--color-info-hover);
     --color-selected-ink: var(--color-info-ink);
     --color-selected-muted: var(--color-info-muted);
   }
 
   .radio-group.radio-group--semantic-success {
     --color-selected: var(--color-success);
-    --color-selected-hover: var(--color-success-hover);
     --color-selected-active: var(--color-success-active);
+    --color-selected-hover: var(--color-success-hover);
     --color-selected-ink: var(--color-success-ink);
     --color-selected-muted: var(--color-success-muted);
   }
 
   .radio-group.radio-group--semantic-selected {
     --color-selected: var(--color-selected);
-    --color-selected-hover: var(--color-selected-hover);
     --color-selected-active: var(--color-selected-active);
+    --color-selected-hover: var(--color-selected-hover);
     --color-selected-ink: var(--color-selected-ink);
     --color-selected-muted: var(--color-selected-muted);
   }

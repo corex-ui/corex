@@ -43,6 +43,7 @@ defmodule Corex.Design.AxisCssCoverageTest do
   defp axis_patterns(name, :semantic), do: [".#{name}.#{name}--semantic-accent"]
   defp axis_patterns(name, :size), do: [".#{name}.#{name}--size-sm"]
   defp axis_patterns(name, :text), do: [".#{name}.#{name}--text-base"]
+
   defp axis_patterns(name, :radius),
     do: [".#{name}.#{name}--rounded-md", ".#{name}.#{name}--rounded-none"]
 
@@ -57,6 +58,7 @@ defmodule Corex.Design.AxisCssCoverageTest do
       ".#{name}.#{name}--variant-ghost",
       ".#{name}.#{name}--variant-outline"
     ]
+
   defp axis_patterns(name, :shape), do: [".#{name}.#{name}--shape-square"]
   defp axis_patterns(_name, _axis), do: []
 end

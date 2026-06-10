@@ -813,7 +813,7 @@ defmodule Corex.Select do
     data-loading
     phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])} 
     class={corex_style_class(assigns)}
-   
+
     {@rest}
     {Connect.props(%Props{
       id: @id, items: @items, controlled: @controlled, form_field: @form_field, placeholder: @translation.placeholder, value: @value,

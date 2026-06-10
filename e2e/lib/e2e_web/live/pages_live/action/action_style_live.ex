@@ -53,9 +53,9 @@ defmodule E2eWeb.ActionStyleLive do
         <.live_component
           module={@config.playground_module}
           id={"#{@config.slug}-style-playground"}
-          component={@component}
+          component={@config.component}
         />
-        <ComponentStyleMatrix.style_matrix component={@component} />
+        <ComponentStyleMatrix.style_matrix component={@config.component} />
       </.demo_page>
     </Layouts.app>
     """

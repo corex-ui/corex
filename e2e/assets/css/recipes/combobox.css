@@ -45,16 +45,16 @@
 
   [data-scope="combobox"][data-part="trigger"] {
       color: --value(--color-ui-ink-*, [color]);
-    padding-inline: --value(--spacing-space-*, [length]);
     gap: --value(--spacing-space-*, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
 
   [data-scope="combobox"][data-part="clear-trigger"] {
       color: --value(--color-ui-ink-*, [color]);
-    padding-inline: --value(--spacing-space-*, [length]);
     gap: --value(--spacing-space-*, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
@@ -291,13 +291,13 @@
     width: auto;
     white-space: nowrap;
     flex: 1 1 0%;
-    max-width: 100%;
     gap: var(--space-md);
+    max-width: 100%;
     flex-direction: row;
-    align-items: center;
-    min-width: 0;
     text-align: start;
     overflow: hidden;
+    align-items: center;
+    min-width: 0;
     text-overflow: ellipsis;
   }
 
@@ -306,10 +306,10 @@
     flex: 0 0 auto;
     min-height: 1em;
     align-items: center;
-    justify-content: center;
     flex-shrink: 0;
-    min-width: 1em;
+    justify-content: center;
     margin-inline-start: auto;
+    min-width: 1em;
     @apply ui-icon;
   }
 

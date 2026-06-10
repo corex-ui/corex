@@ -29,12 +29,12 @@ defmodule Corex.VariantsLayoutBemTest do
     assert html =~ "stack--gap-lg"
     assert html =~ "stack--align-stretch"
     assert html =~ "stack--justify-start"
-    assert html =~ "stack--width-full"
+    assert html =~ "stack--w-full"
     assert html =~ "stack--min-height-dvh"
     assert html =~ "stack--grow-fill"
     assert html =~ "stack--direction-column"
     refute html =~ "stack--stretch"
-    refute html =~ "stack--w-full"
+    refute html =~ "stack--width-full"
     refute html =~ "stack--column"
   end
 

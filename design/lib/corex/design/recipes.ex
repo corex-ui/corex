@@ -47,7 +47,7 @@ defmodule Corex.Design.Recipes do
     Corex.Design.Recipes.ToggleGroup,
     Corex.Design.Recipes.Tooltip,
     Corex.Design.Recipes.TreeNavigation,
-    Corex.Design.Recipes.TreeView,
+    Corex.Design.Recipes.TreeView
   ]
 
   @doc "Semantic axis host markers that stamp BEM role modifiers on the host."
@@ -260,6 +260,7 @@ defmodule Corex.Design.Recipes do
 
     defp host(id), do: Selector.host(id)
   end
+
   defmodule SemanticStates do
     @moduledoc false
 
@@ -383,24 +384,28 @@ defmodule Corex.Design.Recipes do
 
         Rule.new("#{host} #{slot_selector(id, part_selector)}",
           decls: [],
-          children: [
-            Rule.new(inactive,
-              decls: [color: "var(#{Palette.fg_var(role)}, var(--color-ui-ink))"],
-              children: [
-                Rule.new("&:focus-visible",
-                  decls: [outline: "none", box_shadow: "inset 0 0 0 2px #{focus_ring}"]
-                )
-              ]
-            ),
-            Rule.new("&:disabled,\n  &[data-disabled],\n  &[disabled]",
-              decls: [background_color: muted, color: ink_on_disabled, cursor: "not-allowed"]
-            ),
-            Rule.new(active_sel,
-              decls: Palette.active_decls(role),
-              children:
-                Palette.active_state_children(role, muted: muted, disabled_color: ink_on_disabled)
-            )
-          ] ++ toggle_group_highlight_rules(active_sel, focus_ring, role)
+          children:
+            [
+              Rule.new(inactive,
+                decls: [color: "var(#{Palette.fg_var(role)}, var(--color-ui-ink))"],
+                children: [
+                  Rule.new("&:focus-visible",
+                    decls: [outline: "none", box_shadow: "inset 0 0 0 2px #{focus_ring}"]
+                  )
+                ]
+              ),
+              Rule.new("&:disabled,\n  &[data-disabled],\n  &[disabled]",
+                decls: [background_color: muted, color: ink_on_disabled, cursor: "not-allowed"]
+              ),
+              Rule.new(active_sel,
+                decls: Palette.active_decls(role),
+                children:
+                  Palette.active_state_children(role,
+                    muted: muted,
+                    disabled_color: ink_on_disabled
+                  )
+              )
+            ] ++ toggle_group_highlight_rules(active_sel, focus_ring, role)
         )
       end
     end
@@ -433,24 +438,28 @@ defmodule Corex.Design.Recipes do
       [
         Rule.new("#{host} #{slot_selector(id, part_selector)}",
           decls: [],
-          children: [
-            Rule.new(inactive,
-              decls: [color: "var(--color-ui-ink)"],
-              children: [
-                Rule.new("&:focus-visible",
-                  decls: [outline: "none", box_shadow: "inset 0 0 0 2px #{focus_ring}"]
-                )
-              ]
-            ),
-            Rule.new("&:disabled,\n  &[data-disabled],\n  &[disabled]",
-              decls: [background_color: muted, color: ink_on_disabled, cursor: "not-allowed"]
-            ),
-            Rule.new(active_sel,
-              decls: Palette.active_decls(role),
-              children:
-                Palette.active_state_children(role, muted: muted, disabled_color: ink_on_disabled)
-            )
-          ] ++ toggle_group_highlight_rules(active_sel, focus_ring, role)
+          children:
+            [
+              Rule.new(inactive,
+                decls: [color: "var(--color-ui-ink)"],
+                children: [
+                  Rule.new("&:focus-visible",
+                    decls: [outline: "none", box_shadow: "inset 0 0 0 2px #{focus_ring}"]
+                  )
+                ]
+              ),
+              Rule.new("&:disabled,\n  &[data-disabled],\n  &[disabled]",
+                decls: [background_color: muted, color: ink_on_disabled, cursor: "not-allowed"]
+              ),
+              Rule.new(active_sel,
+                decls: Palette.active_decls(role),
+                children:
+                  Palette.active_state_children(role,
+                    muted: muted,
+                    disabled_color: ink_on_disabled
+                  )
+              )
+            ] ++ toggle_group_highlight_rules(active_sel, focus_ring, role)
         )
       ]
     end
@@ -544,6 +553,7 @@ defmodule Corex.Design.Recipes do
       ]
     end
   end
+
   defmodule HostIcon do
     @moduledoc false
 
@@ -639,6 +649,7 @@ defmodule Corex.Design.Recipes do
       ]
     end
   end
+
   defmodule Layout do
     @moduledoc false
 
@@ -900,6 +911,7 @@ defmodule Corex.Design.Recipes do
     defp css_justify(:evenly), do: "space-evenly"
     defp css_justify(value), do: to_string(value)
   end
+
   defmodule Typo do
     @moduledoc false
 
@@ -962,7 +974,8 @@ defmodule Corex.Design.Recipes do
     end
 
     defp semantic_variants do
-      for role <- Palette.color_atoms(), do: {role, %{color: {:color, Palette.ink_color_atom(role)}}}
+      for role <- Palette.color_atoms(),
+          do: {role, %{color: {:color, Palette.ink_color_atom(role)}}}
     end
 
     defp weight_variants do
@@ -979,6 +992,7 @@ defmodule Corex.Design.Recipes do
       [{:none, none} | spacing]
     end
   end
+
   defmodule Dialog do
     @moduledoc false
 
@@ -1026,7 +1040,9 @@ defmodule Corex.Design.Recipes do
           side: side_variants()
         ],
         default_variants: [size: :md, side: :start],
-        extra_rules: base_rules(id) ++ semantic_dialog_rules(id) ++ side_layout_rules(id) ++ text_content_p_rules(id)
+        extra_rules:
+          base_rules(id) ++
+            semantic_dialog_rules(id) ++ side_layout_rules(id) ++ text_content_p_rules(id)
       )
     end
 
@@ -1213,6 +1229,7 @@ defmodule Corex.Design.Recipes do
 
     defp slot(name), do: Selector.slot(@scope, name)
   end
+
   defmodule Accordion do
     @moduledoc false
 
@@ -1488,7 +1505,12 @@ defmodule Corex.Design.Recipes do
 
         [
           Rule.new(open,
-            decls: [display: "flex", flex_direction: "column", min_height: "0", overflow: "hidden"]
+            decls: [
+              display: "flex",
+              flex_direction: "column",
+              min_height: "0",
+              overflow: "hidden"
+            ]
           ),
           Rule.new("#{open} > p",
             decls: [
@@ -1516,8 +1538,7 @@ defmodule Corex.Design.Recipes do
       [
         Rule.new("&::-webkit-scrollbar",
           decls: [
-            {:raw,
-             "width: calc(var(--space-sm) * 0.6); height: calc(var(--space-sm) * 0.6)"}
+            {:raw, "width: calc(var(--space-sm) * 0.6); height: calc(var(--space-sm) * 0.6)"}
           ]
         ),
         Rule.new("&::-webkit-scrollbar-track",
@@ -1549,13 +1570,20 @@ defmodule Corex.Design.Recipes do
 
       rotate_rules =
         case rotate do
-          nil -> []
+          nil ->
+            []
+
           rotate ->
             deg = Keyword.fetch!(rotate, :deg)
             state = Keyword.get(rotate, :state, :open)
+
             [
-              Rule.new(~s(#{indicator}[data-state="#{state}"]), decls: [transform: "rotate(#{deg}deg)"]),
-              Rule.new(~s(#{indicator}[dir="rtl"][data-state="#{state}"]), decls: [transform: "rotate(-#{deg}deg)"])
+              Rule.new(~s(#{indicator}[data-state="#{state}"]),
+                decls: [transform: "rotate(#{deg}deg)"]
+              ),
+              Rule.new(~s(#{indicator}[dir="rtl"][data-state="#{state}"]),
+                decls: [transform: "rotate(-#{deg}deg)"]
+              )
             ]
         end
 
@@ -1581,10 +1609,10 @@ defmodule Corex.Design.Recipes do
 
     defp expand_anatomy_part(_entry), do: []
 
-
     defp size_text(:md), do: :base
     defp size_text(step), do: step
   end
+
   defmodule AngleSlider do
     @moduledoc false
 
@@ -1691,7 +1719,9 @@ defmodule Corex.Design.Recipes do
               )
             ]
           ),
-          Rule.new("#{root}[data-orientation=\"horizontal\"] #{label}", decls: [flex_shrink: "0"]),
+          Rule.new("#{root}[data-orientation=\"horizontal\"] #{label}",
+            decls: [flex_shrink: "0"]
+          ),
           Rule.new("#{root}[data-orientation=\"horizontal\"] #{value_text}",
             decls: [
               width: "auto",
@@ -1755,7 +1785,9 @@ defmodule Corex.Design.Recipes do
                   border_radius: {:radius, :md}
                 ],
                 children: [
-                  Rule.new("#{root}[data-disabled] &", decls: [background_color: {:color, :ui_ink_muted}]),
+                  Rule.new("#{root}[data-disabled] &",
+                    decls: [background_color: {:color, :ui_ink_muted}]
+                  ),
                   Rule.new("&:focus-visible",
                     decls: [outline: "none", box_shadow: "0 0 0 1px var(--color-ui-ink)"]
                   )
@@ -1916,6 +1948,7 @@ defmodule Corex.Design.Recipes do
       for r <- Axes.radius_atoms(), do: {r, [control: Presets.rounded_block(r)]}
     end
   end
+
   defmodule Avatar do
     @moduledoc false
 
@@ -2058,14 +2091,15 @@ defmodule Corex.Design.Recipes do
     defp size_text(:md), do: :base
     defp size_text(step), do: step
   end
+
   defmodule Badge do
     @moduledoc false
 
     alias Corex.Design.Axes
     alias Corex.Design.Presets
     alias Corex.Design.Recipe
-    alias Corex.Design.Rule
     alias Corex.Design.Recipes.HostIcon
+    alias Corex.Design.Rule
     alias Corex.Design.Selector
 
     @id :badge
@@ -2156,6 +2190,7 @@ defmodule Corex.Design.Recipes do
       ] ++ HostIcon.sized_host_icon_rules(@id)
     end
   end
+
   defmodule Button do
     @moduledoc false
     @behaviour Corex.Design.RecipeBehaviour
@@ -2181,7 +2216,10 @@ defmodule Corex.Design.Recipes do
         ],
         default_variants: [variant: :solid, size: :md],
         axis_overrides: [
-          %{match: [variant: :ghost, size: :sm], style: %{padding: {:space, :sm}, gap: {:space, :sm}}}
+          %{
+            match: [variant: :ghost, size: :sm],
+            style: %{padding: {:space, :sm}, gap: {:space, :sm}}
+          }
         ],
         extra_rules:
           Palette.modifier_paint_rules(:button) ++
@@ -2216,6 +2254,7 @@ defmodule Corex.Design.Recipes do
       for r <- Axes.radius_atoms(), do: {r, Presets.rounded_block(r)}
     end
   end
+
   defmodule Carousel do
     @moduledoc false
 
@@ -2496,6 +2535,7 @@ defmodule Corex.Design.Recipes do
     defp size_text(:md), do: :base
     defp size_text(step), do: step
   end
+
   defmodule Checkbox do
     @moduledoc false
 
@@ -2557,7 +2597,9 @@ defmodule Corex.Design.Recipes do
       for color <- Axes.semantic_atoms() do
         c = Atom.to_string(color)
         host_mod = Palette.host_mod(id, color)
-        checked = "#{host_mod} #{control}[data-state='checked'], #{host_mod} #{control}[data-state='indeterminate']"
+
+        checked =
+          "#{host_mod} #{control}[data-state='checked'], #{host_mod} #{control}[data-state='indeterminate']"
 
         Rule.new(checked,
           decls: [
@@ -2636,6 +2678,7 @@ defmodule Corex.Design.Recipes do
         ]
     end
   end
+
   defmodule Clipboard do
     @moduledoc false
 
@@ -2673,7 +2716,9 @@ defmodule Corex.Design.Recipes do
       copied = ~s(#{trigger} #{Selector.slot(@scope, "copied")})
 
       [
-        Rule.new(~s(#{host}[data-loading] #{Selector.slot(@scope, "root")}), decls: [include: :ui_loading]),
+        Rule.new(~s(#{host}[data-loading] #{Selector.slot(@scope, "root")}),
+          decls: [include: :ui_loading]
+        ),
         Rule.new(root, decls: [include: :ui_root, gap: "var(--space)"]),
         Rule.new(~s(#{root}[data-orientation="horizontal"]), decls: [align_items: "center"]),
         Rule.new(~s(#{root}[data-orientation="vertical"]), decls: [align_items: "start"]),
@@ -2728,7 +2773,9 @@ defmodule Corex.Design.Recipes do
             box_shadow: "inset 0 0 0 2px var(--color-success-ink)"
           ]
         ),
-        Rule.new(~s(#{trigger}[data-copied] #{Selector.slot(@scope, "copy")}), decls: [display: "none"]),
+        Rule.new(~s(#{trigger}[data-copied] #{Selector.slot(@scope, "copy")}),
+          decls: [display: "none"]
+        ),
         Rule.new(~s(#{trigger}[data-copied] #{Selector.slot(@scope, "copied")}),
           decls: [display: "inline-flex"]
         ),
@@ -2798,6 +2845,7 @@ defmodule Corex.Design.Recipes do
     defp size_text(:md), do: :base
     defp size_text(step), do: step
   end
+
   defmodule Code do
     @moduledoc false
 
@@ -2840,7 +2888,8 @@ defmodule Corex.Design.Recipes do
         [
           Rule.new("pre#{host}",
             decls: [
-              {:raw, "background-image: linear-gradient(var(--color-root) 50%, var(--color-layer) 50%);"},
+              {:raw,
+               "background-image: linear-gradient(var(--color-root) 50%, var(--color-layer) 50%);"},
               {:raw, "background-size: 100% 2lh;"},
               {:raw, "background-origin: content-box;"},
               {:raw, "background-attachment: local;"},
@@ -2942,7 +2991,9 @@ defmodule Corex.Design.Recipes do
           selector =
             classes
             |> List.wrap()
-            |> Enum.map_join(", ", fn class -> ~s([data-mode="#{mode}"] #{Selector.host(@id)} .#{class}) end)
+            |> Enum.map_join(", ", fn class ->
+              ~s([data-mode="#{mode}"] #{Selector.host(@id)} .#{class})
+            end)
 
           Rule.new(selector, decls: decls)
         end)
@@ -3040,6 +3091,7 @@ defmodule Corex.Design.Recipes do
       ]
     end
   end
+
   defmodule Collapsible do
     @moduledoc false
 
@@ -3098,7 +3150,9 @@ defmodule Corex.Design.Recipes do
           ],
           children: [
             Rule.new("& svg", decls: [include: :ui_icon]),
-            Rule.new("&[data-state=\"closed\"]:has(#{opened}) #{opened}", decls: [display: "none"]),
+            Rule.new("&[data-state=\"closed\"]:has(#{opened}) #{opened}",
+              decls: [display: "none"]
+            ),
             Rule.new("&[data-state=\"open\"]:has(#{opened}) #{closed}", decls: [display: "none"])
           ]
         ),
@@ -3236,6 +3290,7 @@ defmodule Corex.Design.Recipes do
     defp size_text(:md), do: :base
     defp size_text(step), do: step
   end
+
   defmodule ColorPicker do
     @moduledoc false
 
@@ -3376,8 +3431,10 @@ defmodule Corex.Design.Recipes do
               padding_inline: {:raw, "calc(var(--space-md) * 0.5)"}
             ]
           ),
-          Rule.new(positioner, decls: [display: "none", width: "max-content", max_width: "max-content"]),
-          Rule.new("#{positioner}:has([data-part=\"content\"][data-state=\"open\"])",
+          Rule.new(positioner,
+            decls: [display: "none", width: "max-content", max_width: "max-content"]
+          ),
+          Rule.new(~s|#{positioner}:has([data-part="content"][data-state="open"])|,
             decls: [display: "block"]
           ),
           Rule.new(content,
@@ -3408,7 +3465,9 @@ defmodule Corex.Design.Recipes do
               align_self: "center"
             ]
           ),
-          Rule.new(area_bg, decls: [position: "absolute", inset: "0", width: "100%", height: "100%"]),
+          Rule.new(area_bg,
+            decls: [position: "absolute", inset: "0", width: "100%", height: "100%"]
+          ),
           Rule.new(area_thumb,
             decls: [
               border: {:raw, "calc(var(--space-md) / 8) solid var(--color-ui-ink)"},
@@ -3465,7 +3524,11 @@ defmodule Corex.Design.Recipes do
 
     defp semantic_color_picker_rules do
       Palette.semantic_focus_rules(@id, Selector.slot(@scope, "trigger")) ++
-        SemanticStates.active_part_rules(@id, Selector.slot(@scope, "swatch-trigger"), "[data-selected]")
+        SemanticStates.active_part_rules(
+          @id,
+          Selector.slot(@scope, "swatch-trigger"),
+          "[data-selected]"
+        )
     end
 
     defp size_variants do
@@ -3499,11 +3562,9 @@ defmodule Corex.Design.Recipes do
            },
            content: %{
              min_width:
-               {:raw,
-                "calc(var(--container-4xs) * var(--size-#{size}) / var(--size-md))"},
+               {:raw, "calc(var(--container-4xs) * var(--size-#{size}) / var(--size-md))"},
              max_width:
-               {:raw,
-                "calc(var(--container-4xs) * var(--size-#{size}) / var(--size-md))"},
+               {:raw, "calc(var(--container-4xs) * var(--size-#{size}) / var(--size-md))"},
              gap: {:space, size}
            },
            area_thumb: %{
@@ -3521,9 +3582,12 @@ defmodule Corex.Design.Recipes do
 
     defp radius_variants do
       for radius <- Axes.radius_atoms(),
-          do: {radius, [trigger: Presets.rounded_block(radius), control: Presets.rounded_block(radius)]}
+          do:
+            {radius,
+             [trigger: Presets.rounded_block(radius), control: Presets.rounded_block(radius)]}
     end
   end
+
   defmodule Combobox do
     @moduledoc false
 
@@ -3555,7 +3619,10 @@ defmodule Corex.Design.Recipes do
     defp semantic_variants, do: Corex.Design.Recipes.semantic_part_host_variants()
 
     defp semantic_item_rules do
-      SemanticStates.active_part_rules(@id, slot("item"), ["[data-selected]", "[data-state='checked']"],
+      SemanticStates.active_part_rules(
+        @id,
+        slot("item"),
+        ["[data-selected]", "[data-state='checked']"],
         highlighted: true
       )
     end
@@ -3755,13 +3822,15 @@ defmodule Corex.Design.Recipes do
     end
 
     defp radius_variants do
-      for r <- Axes.radius_atoms(), do: {r, [content: Presets.rounded_block(r), trigger: Presets.rounded_block(r)]}
+      for r <- Axes.radius_atoms(),
+          do: {r, [content: Presets.rounded_block(r), trigger: Presets.rounded_block(r)]}
     end
 
     defp part(name), do: Selector.part(@id, @scope, name)
 
     defp slot(name), do: Selector.slot(@scope, name)
   end
+
   defmodule DataList do
     @moduledoc false
 
@@ -3944,6 +4013,7 @@ defmodule Corex.Design.Recipes do
     defp size_text(:md), do: :base
     defp size_text(step), do: step
   end
+
   defmodule DataTable do
     @moduledoc false
 
@@ -3998,7 +4068,8 @@ defmodule Corex.Design.Recipes do
               width: "100%"
             ]
           ),
-          Rule.new(~s(#{host} col[data-part="col-selection"],\n  #{host} col[data-part="col-action"]),
+          Rule.new(
+            ~s(#{host} col[data-part="col-selection"],\n  #{host} col[data-part="col-action"]),
             decls: [width: 0]
           ),
           Rule.new("#{host} col[data-part=\"col-grow\"]", decls: [width: "100%"]),
@@ -4068,9 +4139,13 @@ defmodule Corex.Design.Recipes do
             ]
           ),
           Rule.new(part("sort-text"), decls: [flex: 1, text_align: :start]),
-          Rule.new("#{tbody} tr[data-part=\"empty-row\"]:not(:only-child)", decls: [display: :none]),
+          Rule.new("#{tbody} tr[data-part=\"empty-row\"]:not(:only-child)",
+            decls: [display: :none]
+          ),
           Rule.new(part("empty"), decls: [padding: {:space, :md}]),
-          Rule.new("#{tbody} tr", decls: [{:raw, "border-bottom: 1px solid var(--color-border);"}]),
+          Rule.new("#{tbody} tr",
+            decls: [{:raw, "border-bottom: 1px solid var(--color-border);"}]
+          ),
           Rule.new("#{tbody} tr:last-child", decls: [{:raw, "border-bottom: none;"}]),
           Rule.new(
             "#{part("cell")},\n  #{part("grow-cell")},\n  #{part("action-cell")},\n  #{part("selection-cell")}",
@@ -4183,7 +4258,13 @@ defmodule Corex.Design.Recipes do
     defp size_rules do
       host = Selector.host(@id)
       thead_th = "#{part("thead")} th"
-      cells = Enum.join([part("cell"), part("grow-cell"), part("action-cell"), part("selection-cell")], ",\n  ")
+
+      cells =
+        Enum.join(
+          [part("cell"), part("grow-cell"), part("action-cell"), part("selection-cell")],
+          ",\n  "
+        )
+
       headers = Enum.join([part("selection-header"), part("action-header")], ",\n  ")
 
       for size <- Axes.size_atoms() do
@@ -4240,6 +4321,7 @@ defmodule Corex.Design.Recipes do
       ]
     end
   end
+
   defmodule DatePicker do
     @moduledoc false
 
@@ -4735,16 +4817,19 @@ defmodule Corex.Design.Recipes do
 
     defp slot(name), do: Selector.slot(@scope, name)
   end
+
   defmodule DialogModal do
     @moduledoc false
 
     def recipe, do: Corex.Design.Recipes.Dialog.modal_recipe()
   end
+
   defmodule DialogSide do
     @moduledoc false
 
     def recipe, do: Corex.Design.Recipes.Dialog.side_recipe()
   end
+
   defmodule Editable do
     @moduledoc false
 
@@ -4769,7 +4854,8 @@ defmodule Corex.Design.Recipes do
           radius: radius_variants()
         ],
         default_variants: [size: :md],
-        extra_rules: base_rules() ++ semantic_edit_trigger_rules() ++ semantic_action_trigger_rules()
+        extra_rules:
+          base_rules() ++ semantic_edit_trigger_rules() ++ semantic_action_trigger_rules()
       )
     end
 
@@ -4978,6 +5064,7 @@ defmodule Corex.Design.Recipes do
     defp size_text(:md), do: :base
     defp size_text(step), do: step
   end
+
   defmodule FileUpload do
     @moduledoc false
 
@@ -5232,6 +5319,7 @@ defmodule Corex.Design.Recipes do
     defp size_text(:md), do: :base
     defp size_text(step), do: step
   end
+
   defmodule FloatingPanel do
     @moduledoc false
 
@@ -5287,7 +5375,9 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(title, decls: [include: :ui_label]),
         Rule.new(positioner, decls: [z_index: "50"]),
-        Rule.new("#{positioner}:has(#{content}[data-state=\"closed\"])", decls: [display: "none"]),
+        Rule.new("#{positioner}:has(#{content}[data-state=\"closed\"])",
+          decls: [display: "none"]
+        ),
         Rule.new("#{positioner}:has(#{content}[data-topmost])", decls: [z_index: "999999"]),
         Rule.new(content,
           decls: [
@@ -5307,7 +5397,9 @@ defmodule Corex.Design.Recipes do
                 border_radius: {:radius, :md}
               ]
             ),
-            Rule.new("&[data-minimized]", decls: [height: "auto !important", overflow: "visible !important"]),
+            Rule.new("&[data-minimized]",
+              decls: [height: "auto !important", overflow: "visible !important"]
+            ),
             Rule.new("&[data-minimized] #{drag}", decls: [border_radius: {:radius, :md}])
           ]
         ),
@@ -5401,7 +5493,8 @@ defmodule Corex.Design.Recipes do
             Rule.new(~s(&[data-axis="e"],\n  &[data-axis="w"]),
               decls: [width: "6px", max_height: "90%"]
             ),
-            Rule.new(~s(&[data-axis="ne"],\n  &[data-axis="nw"],\n  &[data-axis="se"],\n  &[data-axis="sw"]),
+            Rule.new(
+              ~s(&[data-axis="ne"],\n  &[data-axis="nw"],\n  &[data-axis="se"],\n  &[data-axis="sw"]),
               decls: [width: "10px", height: "10px"]
             )
           ]
@@ -5417,8 +5510,7 @@ defmodule Corex.Design.Recipes do
           children: [
             Rule.new("&",
               decls: [
-                {:raw,
-                 "-webkit-user-select: auto !important; touch-action: auto !important"}
+                {:raw, "-webkit-user-select: auto !important; touch-action: auto !important"}
               ]
             )
           ]
@@ -5437,6 +5529,7 @@ defmodule Corex.Design.Recipes do
 
     defp part(name), do: Selector.part(@id, @scope, name)
   end
+
   defmodule LayoutHeading do
     @moduledoc false
 
@@ -5525,12 +5618,13 @@ defmodule Corex.Design.Recipes do
     end
 
     defp semantic_variants do
-      for role <- Palette.color_atoms(), do:
-        {role,
-         [
-           title: %{color: {:color, Palette.ink_color_atom(role)}},
-           subtitle: %{color: {:color, :ui_ink_muted}}
-         ]}
+      for role <- Palette.color_atoms(),
+          do:
+            {role,
+             [
+               title: %{color: {:color, Palette.ink_color_atom(role)}},
+               subtitle: %{color: {:color, :ui_ink_muted}}
+             ]}
     end
 
     defp text_variants do
@@ -5542,11 +5636,12 @@ defmodule Corex.Design.Recipes do
 
       spacing =
         for step <- ~W(sm md lg xl)a,
-          do: {step, [root: %{gap: {:space, step}, padding: {:space, step}}]}
+            do: {step, [root: %{gap: {:space, step}, padding: {:space, step}}]}
 
       [{:none, none} | spacing]
     end
   end
+
   defmodule Link do
     @moduledoc false
 
@@ -5647,6 +5742,7 @@ defmodule Corex.Design.Recipes do
       for r <- Axes.radius_atoms(), do: {r, Presets.rounded_block(r)}
     end
   end
+
   defmodule Listbox do
     @moduledoc false
 
@@ -5900,6 +5996,7 @@ defmodule Corex.Design.Recipes do
 
     defp slot(name), do: Selector.slot(@scope, name)
   end
+
   defmodule Marquee do
     @moduledoc false
 
@@ -5975,7 +6072,9 @@ defmodule Corex.Design.Recipes do
           ]
         ),
         Rule.new("#{host}[data-loading]", decls: [opacity: 0]),
-        Rule.new("#{host}[data-loading] #{Selector.slot(@scope, "root")}", decls: [include: :ui_loading]),
+        Rule.new("#{host}[data-loading] #{Selector.slot(@scope, "root")}",
+          decls: [include: :ui_loading]
+        ),
         Rule.new(root,
           children: [
             Rule.new("&[data-orientation=\"vertical\"]",
@@ -6036,7 +6135,8 @@ defmodule Corex.Design.Recipes do
           children: [
             Rule.new("&[dir=\"rtl\"]",
               decls: [
-                background: {:raw, "linear-gradient(to left, var(--edge-background), transparent)"}
+                background:
+                  {:raw, "linear-gradient(to left, var(--edge-background), transparent)"}
               ]
             )
           ]
@@ -6049,7 +6149,8 @@ defmodule Corex.Design.Recipes do
           children: [
             Rule.new("&[dir=\"rtl\"]",
               decls: [
-                background: {:raw, "linear-gradient(to right, var(--edge-background), transparent)"}
+                background:
+                  {:raw, "linear-gradient(to right, var(--edge-background), transparent)"}
               ]
             )
           ]
@@ -6069,6 +6170,7 @@ defmodule Corex.Design.Recipes do
       ]
     end
   end
+
   defmodule Menu do
     @moduledoc false
 
@@ -6220,7 +6322,8 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(item, decls: [include: :ui_item, min_width: "0"]),
         Rule.new(trigger_item, decls: [include: :ui_item, min_width: "0"]),
-        Rule.new("#{item} > #{slot("item-indicator")}, #{trigger_item} > #{slot("item-indicator")}",
+        Rule.new(
+          "#{item} > #{slot("item-indicator")}, #{trigger_item} > #{slot("item-indicator")}",
           decls: Map.to_list(Presets.item_row_indicator()) ++ [transition: "none !important"]
         ),
         Rule.new(item_text, decls: Map.to_list(Presets.item_row_text())),
@@ -6320,6 +6423,7 @@ defmodule Corex.Design.Recipes do
 
     defp slot(name), do: Selector.slot(@scope, name)
   end
+
   defmodule NativeInput do
     @moduledoc false
 
@@ -6436,6 +6540,7 @@ defmodule Corex.Design.Recipes do
       Palette.semantic_focus_rules(@id, input)
     end
   end
+
   defmodule NumberInput do
     @moduledoc false
 
@@ -6516,7 +6621,8 @@ defmodule Corex.Design.Recipes do
             children: [
               Rule.new("&",
                 decls: [
-                  {:raw, "border-inline-end: 0; border-end-end-radius: 0; border-start-end-radius: 0"}
+                  {:raw,
+                   "border-inline-end: 0; border-end-end-radius: 0; border-start-end-radius: 0"}
                 ]
               )
             ]
@@ -6636,6 +6742,7 @@ defmodule Corex.Design.Recipes do
       for radius <- Axes.radius_atoms(), do: {radius, [input: Presets.rounded_block(radius)]}
     end
   end
+
   defmodule Pagination do
     @moduledoc false
 
@@ -6809,6 +6916,7 @@ defmodule Corex.Design.Recipes do
     defp size_text(:md), do: :base
     defp size_text(step), do: step
   end
+
   defmodule PasswordInput do
     @moduledoc false
 
@@ -6899,8 +7007,12 @@ defmodule Corex.Design.Recipes do
               )
             ]
           ),
-          Rule.new("#{indicator}[data-state=\"visible\"] [data-hidden]", decls: [display: "none"]),
-          Rule.new("#{indicator}[data-state=\"hidden\"] [data-visible]", decls: [display: "none"]),
+          Rule.new("#{indicator}[data-state=\"visible\"] [data-hidden]",
+            decls: [display: "none"]
+          ),
+          Rule.new("#{indicator}[data-state=\"hidden\"] [data-visible]",
+            decls: [display: "none"]
+          ),
           Rule.new(visibility,
             decls: [
               include: :ui_trigger,
@@ -6971,6 +7083,7 @@ defmodule Corex.Design.Recipes do
       for radius <- Axes.radius_atoms(), do: {radius, [input: Presets.rounded_block(radius)]}
     end
   end
+
   defmodule PinInput do
     @moduledoc false
 
@@ -7130,6 +7243,7 @@ defmodule Corex.Design.Recipes do
     defp size_text(:md), do: :base
     defp size_text(step), do: step
   end
+
   defmodule RadioGroup do
     @moduledoc false
 
@@ -7262,7 +7376,8 @@ defmodule Corex.Design.Recipes do
               Rule.new("&:focus-visible,\n  &[data-focus]",
                 decls: [outline: "none", box_shadow: "inset 0 0 0 2px var(--color-ui-ink)"]
               ),
-              Rule.new(~s(&[data-state="checked"]:focus-visible,\n  &[data-state="checked"][data-focus]),
+              Rule.new(
+                ~s(&[data-state="checked"]:focus-visible,\n  &[data-state="checked"][data-focus]),
                 decls: [box_shadow: "inset 0 0 0 2px var(--color-selected-ink)"]
               ),
               Rule.new("&[data-invalid]", decls: [border_color: "var(--color-alert)"])
@@ -7281,6 +7396,7 @@ defmodule Corex.Design.Recipes do
         ]
     end
   end
+
   defmodule Select do
     @moduledoc """
     Slot recipe for `data-select`. Variant axes target explicit parts only:
@@ -7341,15 +7457,14 @@ defmodule Corex.Design.Recipes do
           font_weight: :medium,
           color: {:color, :ui_ink}
         },
-        control:
-          %{
-            display: :flex,
-            flex_direction: :row,
-            align_items: :center,
-            width: "100%",
-            min_width: 0,
-            position: :relative
-          },
+        control: %{
+          display: :flex,
+          flex_direction: :row,
+          align_items: :center,
+          width: "100%",
+          min_width: 0,
+          position: :relative
+        },
         indicator: Presets.trigger_indicator_part(),
         trigger:
           Style.merge_many([
@@ -7439,7 +7554,8 @@ defmodule Corex.Design.Recipes do
         color: {:color, :ui_ink},
         border_radius: {:radius, :none},
         outline: :none,
-        transition: {:raw, "background-color 120ms ease, color 120ms ease, box-shadow 120ms ease"},
+        transition:
+          {:raw, "background-color 120ms ease, color 120ms ease, box-shadow 120ms ease"},
         hover: %{background_color: {:color, :ui_hover}},
         active: %{background_color: {:color, :ui_active}, box_shadow: :none},
         focus_visible: %{
@@ -7746,6 +7862,7 @@ defmodule Corex.Design.Recipes do
     defp size_text(:md), do: :base
     defp size_text(step), do: step
   end
+
   defmodule SignaturePad do
     @moduledoc false
 
@@ -7919,6 +8036,7 @@ defmodule Corex.Design.Recipes do
     defp size_text(:md), do: :base
     defp size_text(step), do: step
   end
+
   defmodule Switch do
     @moduledoc false
 
@@ -7956,7 +8074,11 @@ defmodule Corex.Design.Recipes do
       for size <- Axes.size_atoms() do
         {size,
          [
-           root: Map.merge(%{gap: {:space, size}, padding_inline_end: {:space, size}}, track_var_block(size)),
+           root:
+             Map.merge(
+               %{gap: {:space, size}, padding_inline_end: {:space, size}},
+               track_var_block(size)
+             ),
            control: %{padding: {:raw, "calc(var(--space-#{size}) * 0.3)"}},
            label: Presets.text_block(size_text(size))
          ]}
@@ -7977,7 +8099,8 @@ defmodule Corex.Design.Recipes do
     defp size_text(step), do: step
 
     defp radius_variants do
-      for r <- Axes.radius_atoms(), do: {r, [control: Presets.rounded_block(r), thumb: Presets.rounded_block(r)]}
+      for r <- Axes.radius_atoms(),
+          do: {r, [control: Presets.rounded_block(r), thumb: Presets.rounded_block(r)]}
     end
 
     defp switch_rules do
@@ -8091,6 +8214,7 @@ defmodule Corex.Design.Recipes do
       ]
     end
   end
+
   defmodule Tabs do
     @moduledoc false
 
@@ -8246,6 +8370,7 @@ defmodule Corex.Design.Recipes do
 
     defp part(name), do: Selector.part(@id, @scope, name)
   end
+
   defmodule TagsInput do
     @moduledoc false
 
@@ -8374,7 +8499,9 @@ defmodule Corex.Design.Recipes do
           ]
         ),
         Rule.new("#{item_input}[hidden]", decls: [display: "none !important"]),
-        Rule.new(item_input, decls: [include: :ui_input, max_width: {:raw, "var(--container-7xs)"}]),
+        Rule.new(item_input,
+          decls: [include: :ui_input, max_width: {:raw, "var(--container-7xs)"}]
+        ),
         Rule.new(error, decls: [include: :ui_error]),
         Rule.new("#{error}.absolute", decls: [padding_block: "0", display: "block"])
       ]
@@ -8448,6 +8575,7 @@ defmodule Corex.Design.Recipes do
 
     defp slot(name), do: Selector.slot(@scope, name)
   end
+
   defmodule Timer do
     @moduledoc false
 
@@ -8723,6 +8851,7 @@ defmodule Corex.Design.Recipes do
 
     defp part(name), do: Selector.part(@id, @scope, name)
   end
+
   defmodule Toast do
     @moduledoc false
 
@@ -8778,7 +8907,8 @@ defmodule Corex.Design.Recipes do
             position: "fixed",
             inset_inline_start: "var(--viewport-offset-left)",
             inset_inline_end: "var(--viewport-offset-right)",
-            bottom: {:raw, "max(env(safe-area-inset-bottom, 0px), var(--viewport-offset-bottom))"},
+            bottom:
+              {:raw, "max(env(safe-area-inset-bottom, 0px), var(--viewport-offset-bottom))"},
             top: "auto",
             display: "flex",
             flex_direction: "column",
@@ -8890,10 +9020,13 @@ defmodule Corex.Design.Recipes do
         Rule.new("#{root}[data-type='info'] #{title}", decls: [color: {:color, :ui_ink_info}]),
         Rule.new("#{root}[data-type='info'] #{progressbar}",
           decls: [
-            background: {:raw, "linear-gradient(to left, var(--color-info-hover), var(--color-info))"}
+            background:
+              {:raw, "linear-gradient(to left, var(--color-info-hover), var(--color-info))"}
           ]
         ),
-        Rule.new("#{root}[data-type='success'] #{title}", decls: [color: {:color, :ui_ink_success}]),
+        Rule.new("#{root}[data-type='success'] #{title}",
+          decls: [color: {:color, :ui_ink_success}]
+        ),
         Rule.new("#{root}[data-type='success'] #{progressbar}",
           decls: [
             background:
@@ -8978,11 +9111,13 @@ defmodule Corex.Design.Recipes do
     end
 
     defp radius_variants do
-      for r <- Axes.radius_atoms(), do: {r, [root: Presets.rounded_block(r), content: Presets.rounded_block(r)]}
+      for r <- Axes.radius_atoms(),
+          do: {r, [root: Presets.rounded_block(r), content: Presets.rounded_block(r)]}
     end
 
     defp part(name), do: Selector.part(@id, @scope, name)
   end
+
   defmodule Toggle do
     @moduledoc false
 
@@ -9012,13 +9147,15 @@ defmodule Corex.Design.Recipes do
           variant: variant_variants(),
           size: on_root(size_variants()),
           text: on_root(text_variants()),
-          radius: on_root(radius_variants())
+          radius: on_root(radius_variants()),
+          shape: on_root(HostIcon.shape_variants())
         ],
         default_variants: [variant: :solid, size: :md],
         extra_rules:
           Palette.modifier_paint_on_rules(@id, @scope, "root") ++
             HostIcon.indicator_rules(@id) ++
             HostIcon.host_icon_rules(@id) ++
+            HostIcon.square_icon_rules(@id) ++
             host_extra_rules()
       )
     end
@@ -9080,6 +9217,7 @@ defmodule Corex.Design.Recipes do
       ]
     end
   end
+
   defmodule ToggleGroup do
     @moduledoc false
 
@@ -9106,7 +9244,10 @@ defmodule Corex.Design.Recipes do
         ],
         default_variants: [size: :md],
         extra_rules:
-          base_rules() ++ neutral_item_rules() ++ semantic_item_rules() ++ icon_rules() ++
+          base_rules() ++
+            neutral_item_rules() ++
+            semantic_item_rules() ++
+            icon_rules() ++
             item_icon_size_rules()
       )
     end
@@ -9163,7 +9304,7 @@ defmodule Corex.Design.Recipes do
 
     defp radius_variants do
       for r <- Axes.radius_atoms(),
-        do: {r, [root: Presets.rounded_block(r), item: %{border_radius: 0}]}
+          do: {r, [root: Presets.rounded_block(r), item: %{border_radius: 0}]}
     end
 
     defp neutral_item_rules do
@@ -9211,6 +9352,7 @@ defmodule Corex.Design.Recipes do
       end
     end
   end
+
   defmodule Tooltip do
     @moduledoc false
 
@@ -9348,11 +9490,13 @@ defmodule Corex.Design.Recipes do
 
     defp part(name), do: Selector.part(@id, @scope, name)
   end
+
   defmodule TreeNavigation do
     @moduledoc false
 
     def recipe, do: Corex.Design.Recipes.TreeView.navigation_recipe()
   end
+
   defmodule TreeView do
     @moduledoc false
 
@@ -9591,13 +9735,17 @@ defmodule Corex.Design.Recipes do
     defp semantic_state_children(hover, active, ink, muted, opts \\ []) do
       loading =
         if Keyword.get(opts, :loading, false) do
-          [Rule.new("&:disabled,\n  &[data-disabled],\n  &[disabled],\n  &[data-loading]",
-            decls: [background_color: {:raw, muted}, cursor: "not-allowed"]
-          )]
+          [
+            Rule.new("&:disabled,\n  &[data-disabled],\n  &[disabled],\n  &[data-loading]",
+              decls: [background_color: {:raw, muted}, cursor: "not-allowed"]
+            )
+          ]
         else
-          [Rule.new("&:disabled,\n  &[data-disabled],\n  &[disabled]",
-            decls: [background_color: {:raw, muted}, cursor: "not-allowed"]
-          )]
+          [
+            Rule.new("&:disabled,\n  &[data-disabled],\n  &[disabled]",
+              decls: [background_color: {:raw, muted}, cursor: "not-allowed"]
+            )
+          ]
         end
 
       [
@@ -9811,25 +9959,26 @@ defmodule Corex.Design.Recipes do
       item = nav_part(id, "item")
       branch_control = nav_part(id, "branch-control")
 
-      selector = """
-      #{item},
-        #{branch_control},
-        #{item}:is(:hover, :active, :focus, :focus-visible),
-        #{branch_control}:is(:hover, :active, :focus, :focus-visible),
-        #{item}[data-focus],
-        #{branch_control}[data-focus],
-        #{item}[data-highlighted],
-        #{branch_control}[data-highlighted],
-        #{item}[data-selected],
-        #{branch_control}[data-selected],
-        #{item}[data-checked],
-        #{branch_control}[data-checked],
-        #{item}[data-indeterminate],
-        #{branch_control}[data-indeterminate],
-        #{branch_control}[data-state="open"],
-        #{branch_control}[data-state="open"]:is(:hover, :active, :focus, :focus-visible)
-      """
-      |> String.trim()
+      selector =
+        """
+        #{item},
+          #{branch_control},
+          #{item}:is(:hover, :active, :focus, :focus-visible),
+          #{branch_control}:is(:hover, :active, :focus, :focus-visible),
+          #{item}[data-focus],
+          #{branch_control}[data-focus],
+          #{item}[data-highlighted],
+          #{branch_control}[data-highlighted],
+          #{item}[data-selected],
+          #{branch_control}[data-selected],
+          #{item}[data-checked],
+          #{branch_control}[data-checked],
+          #{item}[data-indeterminate],
+          #{branch_control}[data-indeterminate],
+          #{branch_control}[data-state="open"],
+          #{branch_control}[data-state="open"]:is(:hover, :active, :focus, :focus-visible)
+        """
+        |> String.trim()
 
       [
         Rule.new(

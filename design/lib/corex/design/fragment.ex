@@ -1,7 +1,6 @@
 defmodule Corex.Design.Fragment do
   @moduledoc false
 
-  alias Corex.Design.Emit.Tokens, as: Var
   alias Corex.Design.Rule
 
   @doc """
@@ -206,8 +205,7 @@ defmodule Corex.Design.Fragment do
         color: "var(--color-ui-ink)",
         border_radius: "var(--radius-none)",
         outline: "none",
-        transition:
-          "background-color 120ms ease, color 120ms ease, box-shadow 120ms ease"
+        transition: "background-color 120ms ease, color 120ms ease, box-shadow 120ms ease"
       ],
       [
         Rule.new("&:hover", decls: [background_color: "var(--color-ui-hover)"]),

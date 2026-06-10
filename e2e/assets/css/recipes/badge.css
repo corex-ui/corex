@@ -87,33 +87,33 @@
   }
 
   .badge.badge--size-sm {
-    height: calc(var(--spacing-size) * 0.8);
-    padding-inline: var(--space-sm);
     gap: var(--space-sm);
+    padding-inline: var(--space-sm);
+    height: calc(var(--spacing-size) * 0.8);
     font-size: calc(var(--text-sm) * 0.8);
     line-height: var(--text-sm--line-height);
   }
 
   .badge.badge--size-md {
-    height: calc(var(--spacing-size) * 0.8);
-    padding-inline: var(--space-sm);
     gap: var(--space-sm);
+    padding-inline: var(--space-sm);
+    height: calc(var(--spacing-size) * 0.8);
     font-size: calc(var(--text-base) * 0.8);
     line-height: var(--text-base--line-height);
   }
 
   .badge.badge--size-lg {
-    height: calc(var(--spacing-size) * 0.8);
-    padding-inline: var(--space-sm);
     gap: var(--space-sm);
+    padding-inline: var(--space-sm);
+    height: calc(var(--spacing-size) * 0.8);
     font-size: calc(var(--text-lg) * 0.8);
     line-height: var(--text-lg--line-height);
   }
 
   .badge.badge--size-xl {
-    height: calc(var(--spacing-size) * 0.8);
-    padding-inline: var(--space-sm);
     gap: var(--space-sm);
+    padding-inline: var(--space-sm);
+    height: calc(var(--spacing-size) * 0.8);
     font-size: calc(var(--text-xl) * 0.8);
     line-height: var(--text-xl--line-height);
   }

@@ -52,7 +52,13 @@ defmodule Corex.Layout.Row do
     assigns = assign(assigns, design: corex_layout_design(assigns))
 
     ~H"""
-    <.dynamic_tag tag_name={@tag} class={@design.class} {@rest}>
+    <.dynamic_tag
+      tag_name={@tag}
+      class={@design.class}
+      data-hide-below={@hide_below}
+      data-hide-from={@hide_from}
+      {@rest}
+    >
       {render_slot(@inner_block)}
     </.dynamic_tag>
     """

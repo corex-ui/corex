@@ -43,7 +43,8 @@ defmodule Corex.Design.Emit.Tokens do
     root =
       block(
         ":root",
-        static_decls_without_font() ++ dimension_decls(dt, include_font: true) ++
+        static_decls_without_font() ++
+          dimension_decls(dt, include_font: true) ++
           color_decls(colors[{dt, dm}])
       )
 
@@ -71,9 +72,15 @@ defmodule Corex.Design.Emit.Tokens do
       for {step, v} <- Scales.text_leading(), do: {"--text-#{dash(step)}--line-height", v}
 
     tracking = for {step, v} <- Scales.tracking(), do: {name([:tracking, step]), v}
-    weight = for {step, v} <- Scales.weight(), do: {name([:"font-weight", step]), Integer.to_string(v)}
+
+    weight =
+      for {step, v} <- Scales.weight(), do: {name([:"font-weight", step]), Integer.to_string(v)}
+
     shadow = for {step, tpl} <- Scales.shadow(), do: {name([:shadow, step]), tpl}
-    inset_shadow = for {step, tpl} <- Scales.inset_shadow(), do: {name([:"inset-shadow", step]), tpl}
+
+    inset_shadow =
+      for {step, tpl} <- Scales.inset_shadow(), do: {name([:"inset-shadow", step]), tpl}
+
     drop_shadow = for {step, tpl} <- Scales.drop_shadow(), do: {name([:"drop-shadow", step]), tpl}
     text_shadow = for {step, tpl} <- Scales.text_shadow(), do: {name([:"text-shadow", step]), tpl}
     blur = for {step, v} <- Scales.blur(), do: {name([:blur, step]), v}
@@ -110,6 +117,7 @@ defmodule Corex.Design.Emit.Tokens do
     radius =
       [{name([:radius]), Theme.radius_default(theme)}] ++
         for {step, v} <- Theme.radius(theme), do: {name([:radius, step]), v}
+
     container =
       if theme == Theme.default_theme() or
            Theme.container(theme) != Theme.container(Theme.default_theme()) do
@@ -149,6 +157,7 @@ defmodule Corex.Design.Emit.Tokens do
 
   defp dash(value), do: value |> to_string() |> String.replace("_", "-")
 end
+
 defmodule Corex.Design.Emit.Theme do
   @moduledoc false
 
@@ -279,6 +288,7 @@ defmodule Corex.Design.Emit.Theme do
 
   defp dash(value), do: value |> to_string() |> String.replace("_", "-")
 end
+
 defmodule Corex.Design.Emit.Typography do
   @moduledoc false
 
@@ -338,14 +348,15 @@ defmodule Corex.Design.Emit.Typography do
     |> Map.new()
   end
 end
+
 defmodule Corex.Design.Emit.StyleRecipe do
   @moduledoc false
 
   alias Corex.Design.Bem
   alias Corex.Design.Emit.TailwindCss
+  alias Corex.Design.Emit.TailwindUtilitiesRecipe
   alias Corex.Design.Selector
   alias Corex.Design.Style
-  alias Corex.Design.Emit.TailwindUtilitiesRecipe
 
   @doc """
   Compiles sx-based recipes to component-layer CSS (`@apply` extra rules, utility-skipped variants).
@@ -428,7 +439,7 @@ defmodule Corex.Design.Emit.StyleRecipe do
     ".#{name}.#{name}--#{Bem.step(axis, value)}"
   end
 
-  defp join_blocks(blocks, recipe, ctx) do
+  defp join_blocks(blocks, recipe, _ctx) do
     extras = extra_rules_css(recipe.extra_rules || [])
 
     (blocks ++ extras)
@@ -488,11 +499,6 @@ defmodule Corex.Design.Emit.StyleRecipe do
   end
 
   defp normalize_slot_map(list) when is_list(list), do: list
-
-  defp value_block(values, value) do
-    Enum.find_value(values, fn {v, block} -> if v == value, do: block end) ||
-      raise ArgumentError, "no variant value #{inspect(value)}"
-  end
 
   defp host_selector(id, _ctx), do: Selector.host(id)
 
@@ -556,6 +562,7 @@ defmodule Corex.Design.Emit.StyleRecipe do
 
   defp keyword_sizing_value?(value), do: value in [:none, :full, :auto, :fit]
 end
+
 defmodule Corex.Design.Emit.Layers do
   @moduledoc false
 
@@ -723,6 +730,7 @@ defmodule Corex.Design.Emit.Layers do
     ])
   end
 end
+
 defmodule Corex.Design.Emit.Responsive do
   @moduledoc """
   Universal, component-agnostic responsive visibility utilities (Chakra-style
@@ -772,6 +780,7 @@ defmodule Corex.Design.Emit.Responsive do
     |> String.trim_trailing()
   end
 end
+
 defmodule Corex.Design.Emit.TailwindRecipe do
   @moduledoc false
 
@@ -810,6 +819,7 @@ defmodule Corex.Design.Emit.TailwindRecipe do
     end)
   end
 end
+
 defmodule Corex.Design.Emit.TailwindUtilities do
   @moduledoc false
 
@@ -826,9 +836,9 @@ defmodule Corex.Design.Emit.TailwindUtilities do
       ui_link: link_wildcard_lines()
     }
 
-    (@base
-     |> Enum.map(&base_utility/1)
-     |> Kernel.++(Enum.map(wildcards, &wildcard_utility/1)))
+    @base
+    |> Enum.map(&base_utility/1)
+    |> Kernel.++(Enum.map(wildcards, &wildcard_utility/1))
     |> Enum.reject(&(&1 in [nil, ""]))
     |> Enum.join("\n\n")
   end
@@ -994,6 +1004,7 @@ defmodule Corex.Design.Emit.TailwindUtilities do
     ]
   end
 end
+
 defmodule Corex.Design.Emit.TailwindUtilitiesRecipe do
   @moduledoc false
 
@@ -1077,8 +1088,13 @@ defmodule Corex.Design.Emit.TailwindUtilitiesRecipe do
   end
 
   defp layout_axis_line(:padding), do: "padding: --value(--spacing-space-*, [length]);"
-  defp layout_axis_line(:padding_inline), do: "padding-inline: --value(--spacing-space-*, [length]);"
-  defp layout_axis_line(:padding_block), do: "padding-block: --value(--spacing-space-*, [length]);"
+
+  defp layout_axis_line(:padding_inline),
+    do: "padding-inline: --value(--spacing-space-*, [length]);"
+
+  defp layout_axis_line(:padding_block),
+    do: "padding-block: --value(--spacing-space-*, [length]);"
+
   defp layout_axis_line(:gap), do: "gap: --value(--spacing-space-*, [length]);"
   defp layout_axis_line(:radius), do: "border-radius: --value(--radius-*, [length]);"
   defp layout_axis_line(:text), do: axis_utility_lines(:text) |> Enum.join("\n  ")
@@ -1172,7 +1188,8 @@ defmodule Corex.Design.Emit.TailwindUtilitiesRecipe do
     end
   end
 
-  defp slot_axis_lines(%{kind: kind}, _axes) when kind in [:recipe, :style_recipe, :layout], do: []
+  defp slot_axis_lines(%{kind: kind}, _axes) when kind in [:recipe, :style_recipe, :layout],
+    do: []
 
   defp slot_axis_lines(recipe, axes) do
     axes
@@ -1187,17 +1204,18 @@ defmodule Corex.Design.Emit.TailwindUtilitiesRecipe do
           sx_keys
           |> Enum.flat_map(&sx_property_lines/1)
           |> Enum.uniq()
-          |> Enum.map(&("    " <> &1))
-          |> Enum.join("\n")
+          |> Enum.map_join("\n", &("    " <> &1))
 
         if lines == "" do
           []
         else
-          ["""
-            #{selector} {
-            #{lines}
-            }
-          """]
+          [
+            """
+              #{selector} {
+              #{lines}
+              }
+            """
+          ]
         end
       end)
     end)
@@ -1225,25 +1243,39 @@ defmodule Corex.Design.Emit.TailwindUtilitiesRecipe do
     decl_lines =
       rule.decls
       |> Enum.flat_map(fn
-        {:include, _} -> []
-        {:raw, _} -> []
-        {prop, _} when prop in [:background_color, :color, :border_inline_start, :padding_inline, :padding_inline_start, :gap] ->
+        {:include, _} ->
+          []
+
+        {:raw, _} ->
+          []
+
+        {prop, _}
+        when prop in [
+               :background_color,
+               :color,
+               :border_inline_start,
+               :padding_inline,
+               :padding_inline_start,
+               :gap
+             ] ->
           sx_property_lines(prop)
 
-        {prop, _val} -> sx_property_lines(prop)
+        {prop, _val} ->
+          sx_property_lines(prop)
       end)
       |> Enum.uniq()
-      |> Enum.map(&("    " <> &1))
-      |> Enum.join("\n")
+      |> Enum.map_join("\n", &("    " <> &1))
 
     if decl_lines == "" do
       []
     else
-      ["""
-        #{target_selector} {
-      #{decl_lines}
-        }
-      """]
+      [
+        """
+          #{target_selector} {
+        #{decl_lines}
+          }
+        """
+      ]
     end
   end
 
@@ -1324,18 +1356,34 @@ defmodule Corex.Design.Emit.TailwindUtilitiesRecipe do
   defp axis_utility_lines(_), do: []
 
   defp sx_property_lines(:font_size), do: ["font-size: --value(--text-*, [length]);"]
-  defp sx_property_lines(:line_height), do: ["line-height: --value(--text-*--line-height, [length]);"]
-  defp sx_property_lines(:padding_inline), do: ["padding-inline: --value(--spacing-space-*, [length]);"]
+
+  defp sx_property_lines(:line_height),
+    do: ["line-height: --value(--text-*--line-height, [length]);"]
+
+  defp sx_property_lines(:padding_inline),
+    do: ["padding-inline: --value(--spacing-space-*, [length]);"]
+
   defp sx_property_lines(:padding), do: ["padding: --value(--spacing-space-*, [length]);"]
   defp sx_property_lines(:gap), do: ["gap: --value(--spacing-space-*, [length]);"]
   defp sx_property_lines(:min_height), do: ["min-height: --value(--spacing-size-*, [length]);"]
-  defp sx_property_lines(:margin_bottom), do: ["margin-bottom: --value(--spacing-space-*, [length]);"]
+
+  defp sx_property_lines(:margin_bottom),
+    do: ["margin-bottom: --value(--spacing-space-*, [length]);"]
+
   defp sx_property_lines(:border_radius), do: ["border-radius: --value(--radius-*, [length]);"]
   defp sx_property_lines(:color), do: ["color: --value(--color-ui-ink-*, [color]);"]
-  defp sx_property_lines(:background_color), do: ["background-color: --value(--color-*, [color]);"]
+
+  defp sx_property_lines(:background_color),
+    do: ["background-color: --value(--color-*, [color]);"]
+
   defp sx_property_lines(:max_width), do: ["max-width: --value(--container-*, [length]);"]
-  defp sx_property_lines(:padding_inline_start), do: ["padding-inline-start: --value(--spacing-space-*, [length]);"]
-  defp sx_property_lines(:border_inline_start), do: ["border-inline-start: 1px solid --value(--color-*-ink, [color]);"]
+
+  defp sx_property_lines(:padding_inline_start),
+    do: ["padding-inline-start: --value(--spacing-space-*, [length]);"]
+
+  defp sx_property_lines(:border_inline_start),
+    do: ["border-inline-start: 1px solid --value(--color-*-ink, [color]);"]
+
   defp sx_property_lines(:outline), do: []
   defp sx_property_lines(_), do: []
 

@@ -127,7 +127,7 @@ defmodule Corex.DataListTest do
 
     test "passes rest attributes to wrapper" do
       html = render_component(&DataList.data_list/1, %{class: "my-list", items: []})
-      assert html =~ ~S(class="my-list")
+      assert html =~ "my-list"
     end
 
     test "passes orientation and dir to root" do

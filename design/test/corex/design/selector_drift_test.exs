@@ -14,7 +14,10 @@ defmodule Corex.Design.SelectorDriftTest do
     assert Bem.step(:size, "md") == "size-md"
     assert Bem.step(:variant, "solid") == "variant-solid"
     assert Bem.step(:radius, "lg") == "rounded-lg"
-    assert DesignBem.host_selector(:button, :semantic, :accent) == ".button.button--semantic-accent"
+
+    assert DesignBem.host_selector(:button, :semantic, :accent) ==
+             ".button.button--semantic-accent"
+
     assert DesignBem.host_selector(:clipboard, :size, :sm) == ".clipboard.clipboard--size-sm"
   end
 

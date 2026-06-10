@@ -244,7 +244,8 @@ defmodule Corex.Design.Presets do
       border_radius: {:radius, :md},
       appearance: :none,
       transition:
-        {:raw, "background-color 120ms ease, color 120ms ease, border-color 120ms ease, box-shadow 120ms ease"}
+        {:raw,
+         "background-color 120ms ease, color 120ms ease, border-color 120ms ease, box-shadow 120ms ease"}
     }
     |> Map.merge(trigger_interaction(:focus_ring))
   end

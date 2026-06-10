@@ -112,13 +112,31 @@ defmodule Corex.Design.Tokens.Colors do
     lightness = cfg["lightness"]
 
     if cfg["states"] do
-      put_stateful_surface_tokens(tok, key, hex, lightness, cfg, state_order, ui_ratio_base, offsets)
+      put_stateful_surface_tokens(
+        tok,
+        key,
+        hex,
+        lightness,
+        cfg,
+        state_order,
+        ui_ratio_base,
+        offsets
+      )
     else
       Map.put(tok, key, neutral_at(hex, lightness))
     end
   end
 
-  defp put_stateful_surface_tokens(tok, key, hex, lightness, cfg, state_order, ui_ratio_base, offsets) do
+  defp put_stateful_surface_tokens(
+         tok,
+         key,
+         hex,
+         lightness,
+         cfg,
+         state_order,
+         ui_ratio_base,
+         offsets
+       ) do
     base = Map.merge(ui_ratio_base, string_key_map(cfg["ratio_base"] || %{}))
     ratios = ratios_for_lightness(lightness, base)
 
@@ -161,11 +179,29 @@ defmodule Corex.Design.Tokens.Colors do
 
   defp semantic_tokens(acc, seeds, semantic, state_order, semantic_ratio_base, offsets, level) do
     Enum.reduce(semantic, acc, fn {name, cfg}, tok ->
-      put_semantic_tokens(tok, seeds, to_string(name), cfg, state_order, semantic_ratio_base, offsets, level)
+      put_semantic_tokens(
+        tok,
+        seeds,
+        to_string(name),
+        cfg,
+        state_order,
+        semantic_ratio_base,
+        offsets,
+        level
+      )
     end)
   end
 
-  defp put_semantic_tokens(tok, seeds, name, cfg, state_order, semantic_ratio_base, offsets, level) do
+  defp put_semantic_tokens(
+         tok,
+         seeds,
+         name,
+         cfg,
+         state_order,
+         semantic_ratio_base,
+         offsets,
+         level
+       ) do
     bg_hex = seed_hex(seeds, cfg["bg"])
     lightness = cfg["lightness"]
     ratio_base = Map.merge(semantic_ratio_base, string_key_map(cfg["ratio_base"] || %{}))
@@ -257,6 +293,7 @@ defmodule Corex.Design.Tokens.Colors do
     end
   end
 end
+
 defmodule Corex.Design.Tokens.Scales do
   @moduledoc false
 
@@ -437,9 +474,12 @@ defmodule Corex.Design.Tokens.Scales do
   @text_shadow [
     "2xs": "0px 1px 0px var(--color-shadow)",
     xs: "0px 1px 1px var(--color-shadow)",
-    sm: "0px 1px 0px var(--color-shadow), 0px 1px 1px var(--color-shadow), 0px 2px 2px var(--color-shadow)",
-    md: "0px 1px 1px var(--color-shadow), 0px 1px 2px var(--color-shadow), 0px 2px 4px var(--color-shadow)",
-    lg: "0px 1px 2px var(--color-shadow), 0px 3px 2px var(--color-shadow), 0px 4px 8px var(--color-shadow)"
+    sm:
+      "0px 1px 0px var(--color-shadow), 0px 1px 1px var(--color-shadow), 0px 2px 2px var(--color-shadow)",
+    md:
+      "0px 1px 1px var(--color-shadow), 0px 1px 2px var(--color-shadow), 0px 2px 4px var(--color-shadow)",
+    lg:
+      "0px 1px 2px var(--color-shadow), 0px 3px 2px var(--color-shadow), 0px 4px 8px var(--color-shadow)"
   ]
 
   @blur [

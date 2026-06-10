@@ -59,6 +59,7 @@ defmodule Corex.Design.Accessibility.Level do
 
   def to_string(level), do: level |> normalize() |> Atom.to_string()
 end
+
 defmodule Corex.Design.Accessibility.CriteriaMap do
   @moduledoc false
 
@@ -77,6 +78,7 @@ defmodule Corex.Design.Accessibility.CriteriaMap do
   defp wcag_success_criteria(ratio) when ratio >= 3.0, do: ["1.4.3"]
   defp wcag_success_criteria(_), do: ["1.4.3"]
 end
+
 defmodule Corex.Design.Accessibility.ContrastReport do
   @moduledoc false
 
@@ -275,6 +277,7 @@ defmodule Corex.Design.Accessibility.ContrastReport do
     Enum.any?(reports, fn r -> r.text_pairs_failing > 0 end)
   end
 end
+
 defmodule Corex.Design.Accessibility.Report.JSON do
   @moduledoc false
 
@@ -287,6 +290,7 @@ defmodule Corex.Design.Accessibility.Report.JSON do
     File.write!(path, encode!(report))
   end
 end
+
 defmodule Corex.Design.Accessibility.Report.Markdown do
   @moduledoc false
 
@@ -328,7 +332,7 @@ defmodule Corex.Design.Accessibility.Report.Markdown do
   defp failures_section(%{pairs_failing: 0}), do: "## Failures\n\nNone."
 
   defp failures_section(report) do
-    ["## Failures", ""] ++ [pairs_table(report.failures)]
+    (["## Failures", ""] ++ [pairs_table(report.failures)])
     |> Enum.join("\n")
   end
 

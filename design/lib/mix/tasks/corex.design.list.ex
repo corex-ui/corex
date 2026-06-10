@@ -41,7 +41,9 @@ defmodule Mix.Tasks.Corex.Design.List do
 
     typo_ids =
       recipes
-      |> Enum.reject(&(&1.kind in [:style_recipe, :style_slot_recipe, :style_part_recipe, :layout]))
+      |> Enum.reject(
+        &(&1.kind in [:style_recipe, :style_slot_recipe, :style_part_recipe, :layout])
+      )
       |> Enum.map(& &1.id)
       |> Enum.sort()
 

@@ -22,7 +22,7 @@ defmodule E2eWeb.ComponentStyleMatrix do
         code_tabs={section.code_tabs}
       >
         <:preview>
-          {render_section_example(section)}
+          {render_section_example(assigns, section)}
         </:preview>
       </.demo_section>
     </.demo_style_matrix>
@@ -33,7 +33,7 @@ defmodule E2eWeb.ComponentStyleMatrix do
     "#{slug}-style-#{key |> Atom.to_string() |> String.replace("_", "-")}"
   end
 
-  defp render_section_example(%{demo_module: demo_module, example_fun: example_fun}) do
-    apply(demo_module, example_fun, [%{}])
+  defp render_section_example(assigns, %{demo_module: demo_module, example_fun: example_fun}) do
+    apply(demo_module, example_fun, [assigns])
   end
 end

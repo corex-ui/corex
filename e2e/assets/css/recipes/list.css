@@ -24,13 +24,13 @@
 @layer components {
   .list {
     padding: 0;
+    border: 1px solid var(--color-border);
     font-size: var(--text-base);
     line-height: var(--leading-base);
     border-radius: var(--radius-md);
-    border: 1px solid var(--color-border);
     margin-block: 2em;
-    overflow: hidden;
     list-style: none;
+    overflow: hidden;
   }
 
   .list.list--w-auto {
@@ -101,8 +101,8 @@
     white-space: normal;
     padding: var(--space-md);
     color: var(--color-ui-ink);
-    text-align: start;
     border-bottom: 1px solid var(--color-border);
+    text-align: start;
   }
 
   .list li:last-child {

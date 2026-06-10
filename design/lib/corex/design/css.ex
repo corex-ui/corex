@@ -78,7 +78,9 @@ defmodule Corex.Design.Css do
   end
 
   defp resolve_tagged({:raw, literal}, _ctx), do: {:ok, to_string(literal)}
-  defp resolve_tagged({:color, name}, _ctx), do: {:ok, Var.ref([:color, RoleAliases.resolve(name)])}
+
+  defp resolve_tagged({:color, name}, _ctx),
+    do: {:ok, Var.ref([:color, RoleAliases.resolve(name)])}
 
   defp resolve_tagged({kind, step}, ctx) when kind in @scale_kinds do
     validate_step!(kind, step, ctx)
@@ -99,8 +101,23 @@ defmodule Corex.Design.Css do
 
   defp resolve_untagged(kind, value, prop, ctx) when is_atom(value) do
     case kind do
-      :enum -> Values.validate_enum!(prop, value)
-      k when k in [:space, :size, :container, :text, :leading, :weight, :tracking, :radius, :shadow, :font, :color] ->
+      :enum ->
+        Values.validate_enum!(prop, value)
+
+      k
+      when k in [
+             :space,
+             :size,
+             :container,
+             :text,
+             :leading,
+             :weight,
+             :tracking,
+             :radius,
+             :shadow,
+             :font,
+             :color
+           ] ->
         validate_step!(k, value, ctx)
         ref_for(k, value)
 
@@ -183,6 +200,7 @@ defmodule Corex.Design.Css do
     end
   end
 end
+
 defmodule Corex.Design.Css.Properties do
   @moduledoc false
 
@@ -349,11 +367,13 @@ defmodule Corex.Design.Css.Properties do
     |> String.replace("_", "-")
   end
 end
+
 defmodule Corex.Design.Css.Values do
   @moduledoc false
 
   @enums %{
-    display: ~w(none block inline inline-block flex inline-flex grid inline-grid contents table table-row table-cell),
+    display:
+      ~w(none block inline inline-block flex inline-flex grid inline-grid contents table table-row table-cell),
     position: ~w(static relative absolute fixed sticky),
     text_align: ~w(left right center justify start end),
     overflow: ~w(visible hidden scroll auto clip),
@@ -366,7 +386,8 @@ defmodule Corex.Design.Css.Values do
     flex_wrap: ~w(nowrap wrap wrap-reverse),
     align_items: ~w(flex-start flex-end center baseline stretch start end),
     align_self: ~w(auto flex-start flex-end center baseline stretch),
-    justify_content: ~w(flex-start flex-end center space-between space-around space-evenly stretch start end),
+    justify_content:
+      ~w(flex-start flex-end center space-between space-around space-evenly stretch start end),
     justify_items: ~w(start end center stretch),
     grid_auto_flow: ~w(row column dense row dense column),
     cursor: ~w(auto default pointer wait text move not-allowed grab grabbing),

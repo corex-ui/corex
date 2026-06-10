@@ -99,7 +99,9 @@ defmodule Corex.Design.ThemeTest do
         bad: %{
           seeds: %{"accent" => "#111111", "base" => "#FFFFFF", "info" => "#0000FF"},
           colors: %{
-            light: %{semantic: %{info: %{bg: "info", lightness: 40, ink: %{color: "base", ratio: 7}}}},
+            light: %{
+              semantic: %{info: %{bg: "info", lightness: 40, ink: %{color: "base", ratio: 7}}}
+            },
             dark: %{semantic: %{}, surface: %{}, ink: %{}, utility: %{}}
           },
           dimensions: %{}
@@ -125,7 +127,10 @@ defmodule Corex.Design.ThemeTest do
                 accent: %{bg: "accent", lightness: 40, ink: %{color: "base", ratio: 7}},
                 marketing: %{bg: "marketing", lightness: 40, ink: %{color: "base", ratio: 7}}
               },
-              surface: %{root: %{color: "base", lightness: 98}, ui: %{color: "base", lightness: 94}},
+              surface: %{
+                root: %{color: "base", lightness: 98},
+                ui: %{color: "base", lightness: 94}
+              },
               ink: %{default: %{color: "base", ratio: 8}},
               utility: %{border: %{color: "base", ratio: 1.3}}
             },
@@ -134,7 +139,10 @@ defmodule Corex.Design.ThemeTest do
                 accent: %{bg: "accent", lightness: 48, ink: %{color: "base", ratio: 7}},
                 marketing: %{bg: "marketing", lightness: 48, ink: %{color: "base", ratio: 7}}
               },
-              surface: %{root: %{color: "base", lightness: 8}, ui: %{color: "base", lightness: 24}},
+              surface: %{
+                root: %{color: "base", lightness: 8},
+                ui: %{color: "base", lightness: 24}
+              },
               ink: %{default: %{color: "base", ratio: 12}},
               utility: %{border: %{color: "base", ratio: 1.4}}
             }

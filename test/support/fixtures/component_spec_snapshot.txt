@@ -30,6 +30,7 @@ h3:h3
 h4:h4
 heroicon:heroicon
 hidden_input:hidden_input
+icon:icon
 kbd:kbd
 layout_heading:layout_heading
 lead:lead

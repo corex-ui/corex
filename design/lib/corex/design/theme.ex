@@ -84,7 +84,8 @@ defmodule Corex.Design.Theme do
   def space_default(_theme), do: calc_spacing(Map.new(Scales.space_mult())[:md])
 
   @doc "The default (unstepped) size value for a theme: the `md` step."
-  def size_default(theme), do: calc_spacing(Map.new(Scales.size_mult())[:md] * size_spacing_ratio(theme))
+  def size_default(theme),
+    do: calc_spacing(Map.new(Scales.size_mult())[:md] * size_spacing_ratio(theme))
 
   @doc "The default (unstepped) radius value for a theme: the `md` step."
   def radius_default(theme), do: radius(theme) |> Keyword.fetch!(:md)
@@ -164,8 +165,9 @@ defmodule Corex.Design.Theme do
     spec = spec!(theme)
     a11y = Map.get(spec, :accessibility, %{level: nil, modes: %{}})
 
-    Map.get(a11y.modes, mode) || a11y.level || global_accessibility_level()
-    |> Level.normalize()
+    Map.get(a11y.modes, mode) || a11y.level ||
+      global_accessibility_level()
+      |> Level.normalize()
   end
 
   @doc false
@@ -396,12 +398,15 @@ defmodule Corex.Design.Theme do
     %{
       seeds: Map.merge(base.seeds, over.seeds),
       colors: %{
-        light: deep_merge_mode(Map.get(bc, :light, empty_mode()), Map.get(oc, :light, empty_mode())),
+        light:
+          deep_merge_mode(Map.get(bc, :light, empty_mode()), Map.get(oc, :light, empty_mode())),
         dark: deep_merge_mode(Map.get(bc, :dark, empty_mode()), Map.get(oc, :dark, empty_mode()))
       },
-      dimensions: deep_merge_dims(Map.get(base, :dimensions, %{}), Map.get(over, :dimensions, %{})),
+      dimensions:
+        deep_merge_dims(Map.get(base, :dimensions, %{}), Map.get(over, :dimensions, %{})),
       typography: deep_merge_typography(Map.get(base, :typography), Map.get(over, :typography)),
-      accessibility: deep_merge_accessibility(Map.get(base, :accessibility), Map.get(over, :accessibility))
+      accessibility:
+        deep_merge_accessibility(Map.get(base, :accessibility), Map.get(over, :accessibility))
     }
   end
 
@@ -503,6 +508,7 @@ defmodule Corex.Design.Theme do
 
   defp config, do: Corex.Design.design_config()
 end
+
 defmodule Corex.Design.Theme.Options do
   @moduledoc """
   NimbleOptions schemas and validation for `config :corex_design, themes: %{...}`.
@@ -515,35 +521,35 @@ defmodule Corex.Design.Theme.Options do
   @hex_regex ~r/^#[0-9A-Fa-f]{6}$/
 
   @theme_spec_schema NimbleOptions.new!(
-    extends: [
-      type: :atom,
-      doc: "Parent theme id to deep-merge"
-    ],
-    seeds: [
-      type: {:map, :string, :string},
-      required: true,
-      doc: "Hex seed colors keyed by name"
-    ],
-    colors: [
-      type: :map,
-      default: %{},
-      doc: "Per-mode color overrides"
-    ],
-    dimensions: [
-      type: :map,
-      default: %{},
-      doc: "Scale multipliers and per-step overrides"
-    ],
-    typography: [
-      type: :map,
-      doc: "Optional typography element map"
-    ],
-    accessibility: [
-      type: :map,
-      default: %{},
-      doc: "Accessibility level overrides"
-    ]
-  )
+                       extends: [
+                         type: :atom,
+                         doc: "Parent theme id to deep-merge"
+                       ],
+                       seeds: [
+                         type: {:map, :string, :string},
+                         required: true,
+                         doc: "Hex seed colors keyed by name"
+                       ],
+                       colors: [
+                         type: :map,
+                         default: %{},
+                         doc: "Per-mode color overrides"
+                       ],
+                       dimensions: [
+                         type: :map,
+                         default: %{},
+                         doc: "Scale multipliers and per-step overrides"
+                       ],
+                       typography: [
+                         type: :map,
+                         doc: "Optional typography element map"
+                       ],
+                       accessibility: [
+                         type: :map,
+                         default: %{},
+                         doc: "Accessibility level overrides"
+                       ]
+                     )
 
   @doc """
   Validates a themes map. Returns `{:ok, normalized}` or `{:error, message}`.
@@ -668,7 +674,7 @@ defmodule Corex.Design.Theme.Options do
 
   defp detect_cycle!(themes, id, visited, chain) do
     if MapSet.member?(visited, id) do
-      chain_str = (chain ++ [id]) |> Enum.map(&inspect/1) |> Enum.join(" → ")
+      chain_str = Enum.map_join(chain ++ [id], " → ", &inspect/1)
       raise ArgumentError, "themes: cyclic :extends chain #{chain_str}"
     end
 
@@ -763,6 +769,7 @@ defmodule Corex.Design.Theme.Options do
     Level.normalize(level)
   end
 end
+
 defmodule Corex.Design.Theme.Presets do
   @moduledoc """
   Built-in theme presets (neo, uno, duo, leo). Copy into host config or reference
@@ -1025,19 +1032,59 @@ defmodule Corex.Design.Theme.Presets do
   end
 
   defp neo_radius_curve do
-    %{xs: 0.125, sm: 0.25, md: 0.375, lg: 0.5, xl: 0.75, "2xl": 1.0, "3xl": 1.5, "4xl": 2.0, full: 9999}
+    %{
+      xs: 0.125,
+      sm: 0.25,
+      md: 0.375,
+      lg: 0.5,
+      xl: 0.75,
+      "2xl": 1.0,
+      "3xl": 1.5,
+      "4xl": 2.0,
+      full: 9999
+    }
   end
 
   defp uno_radius_curve do
-    %{xs: 0.1, sm: 0.2, md: 0.3, lg: 0.4, xl: 0.55, "2xl": 0.7, "3xl": 1.0, "4xl": 1.25, full: 9999}
+    %{
+      xs: 0.1,
+      sm: 0.2,
+      md: 0.3,
+      lg: 0.4,
+      xl: 0.55,
+      "2xl": 0.7,
+      "3xl": 1.0,
+      "4xl": 1.25,
+      full: 9999
+    }
   end
 
   defp duo_radius_curve do
-    %{xs: 0.15, sm: 0.3, md: 0.45, lg: 0.7, xl: 1.0, "2xl": 1.35, "3xl": 2.0, "4xl": 2.75, full: 9999}
+    %{
+      xs: 0.15,
+      sm: 0.3,
+      md: 0.45,
+      lg: 0.7,
+      xl: 1.0,
+      "2xl": 1.35,
+      "3xl": 2.0,
+      "4xl": 2.75,
+      full: 9999
+    }
   end
 
   defp leo_radius_curve do
-    %{xs: 0.08, sm: 0.15, md: 0.25, lg: 0.35, xl: 0.5, "2xl": 0.65, "3xl": 0.85, "4xl": 1.1, full: 9999}
+    %{
+      xs: 0.08,
+      sm: 0.15,
+      md: 0.25,
+      lg: 0.35,
+      xl: 0.5,
+      "2xl": 0.65,
+      "3xl": 0.85,
+      "4xl": 1.1,
+      full: 9999
+    }
   end
 
   defp neo_seeds do

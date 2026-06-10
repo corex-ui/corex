@@ -9,7 +9,7 @@
       border-radius: --value(--radius-*, [length]);
   }
 
-  [data-scope="tags-input"][data-part="item-preview"] {
+  [data-scope="tags-input"][data-part="item-input"] {
       border-radius: --value(--radius-*, [length]);
   }
 
@@ -17,7 +17,7 @@
       border-radius: --value(--radius-*, [length]);
   }
 
-  [data-scope="tags-input"][data-part="item-input"] {
+  [data-scope="tags-input"][data-part="item-preview"] {
       border-radius: --value(--radius-*, [length]);
   }
 
@@ -56,8 +56,8 @@
 @utility tags-input--size-* {
   [data-scope="tags-input"][data-part="control"] {
       padding: --value(--spacing-space-*, [length]);
-    min-height: --value(--spacing-size-*, [length]);
     gap: --value(--spacing-space-*, [length]);
+    min-height: --value(--spacing-size-*, [length]);
   }
 
   [data-scope="tags-input"][data-part="input"] {
@@ -74,18 +74,18 @@
       color: --value(--color-ui-ink-*, [color]);
   }
 
-  [data-scope="tags-input"][data-part="item-preview"] {
-      min-height: --value(--spacing-size-*, [length]);
-    padding-inline: --value(--spacing-space-*, [length]);
-    gap: --value(--spacing-space-*, [length]);
+  [data-scope="tags-input"][data-part="item-input"] {
+      padding: --value(--spacing-space-*, [length]);
   }
 
   [data-scope="tags-input"][data-part="item-delete-trigger"] {
       min-height: --value(--spacing-size-*, [length]);
   }
 
-  [data-scope="tags-input"][data-part="item-input"] {
-      padding: --value(--spacing-space-*, [length]);
+  [data-scope="tags-input"][data-part="item-preview"] {
+      gap: --value(--spacing-space-*, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
+    min-height: --value(--spacing-size-*, [length]);
   }
 
 }

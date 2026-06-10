@@ -59,7 +59,9 @@ defmodule Corex.CodeTest do
 
     test "preserve_makeup_whitespace converts whitespace-only w spans" do
       html = ~S(<span class="w">  </span><span class="na">items</span>)
-      assert Corex.Code.preserve_makeup_whitespace(html) =~ ~S(<span class="w">&nbsp;&nbsp;</span>)
+
+      assert Corex.Code.preserve_makeup_whitespace(html) =~
+               ~S(<span class="w">&nbsp;&nbsp;</span>)
     end
   end
 end

@@ -22,6 +22,7 @@ defmodule Corex.Design.Accessibility.ContrastReportStrictTest do
       assert report.accessibility_level == "aa"
       assert report.target == "aa"
       assert report.thresholds.text == 4.5
+
       assert report.text_pairs_failing == 0,
              "#{report.theme} #{report.mode} text failures: #{inspect(report.text_failures)}"
     end

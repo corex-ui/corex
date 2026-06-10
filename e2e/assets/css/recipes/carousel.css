@@ -49,8 +49,8 @@
 @utility carousel--size-* {
   [data-scope="carousel"][data-part="control"] {
       padding: --value(--spacing-space-*, [length]);
-    max-width: --value(--container-*, [length]);
     gap: --value(--spacing-space-*, [length]);
+    max-width: --value(--container-*, [length]);
   }
 
   [data-scope="carousel"][data-part="root"] {

@@ -37,11 +37,19 @@ defmodule Mix.Tasks.Corex.Design.Report do
 
     {opts, _} =
       OptionParser.parse!(argv,
-        strict: [format: :keep, output_dir: :string, theme: :keep, mode: :keep, target: :string, strict: :boolean]
+        strict: [
+          format: :keep,
+          output_dir: :string,
+          theme: :keep,
+          mode: :keep,
+          target: :string,
+          strict: :boolean
+        ]
       )
 
     formats = formats(opts)
     output_dir = Keyword.get(opts, :output_dir, "priv/static/design/reports")
+
     report_opts =
       theme_mode_opts(opts)
       |> maybe_put_target(Keyword.get(opts, :target))
@@ -76,9 +84,14 @@ defmodule Mix.Tasks.Corex.Design.Report do
 
   defp formats(opts) do
     case Keyword.get_values(opts, :format) do
-      [] -> ["json", "md"]
-      ["all"] -> ["json", "md"]
-      list -> Enum.flat_map(list, &String.split(&1, ",")) |> Enum.map(&String.trim/1) |> Enum.uniq()
+      [] ->
+        ["json", "md"]
+
+      ["all"] ->
+        ["json", "md"]
+
+      list ->
+        Enum.flat_map(list, &String.split(&1, ",")) |> Enum.map(&String.trim/1) |> Enum.uniq()
     end
   end
 

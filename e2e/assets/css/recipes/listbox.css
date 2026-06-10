@@ -29,16 +29,16 @@
   }
 
   [data-scope="listbox"][data-part="item"] {
-      min-height: --value(--spacing-size-*, [length]);
+      gap: --value(--spacing-space-*, [length]);
     padding-inline: --value(--spacing-space-*, [length]);
-    gap: --value(--spacing-space-*, [length]);
+    min-height: --value(--spacing-size-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
 
   [data-scope="listbox"][data-part="item-group-label"] {
-      min-height: --value(--spacing-size-*, [length]);
-    padding-inline: --value(--spacing-space-*, [length]);
+      padding-inline: --value(--spacing-space-*, [length]);
+    min-height: --value(--spacing-size-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }

@@ -38,11 +38,9 @@ defmodule Corex.Design.RoleAliases do
   defp normalize_target(target) when is_atom(target), do: target
 
   defp normalize_target(target) when is_binary(target) do
-    try do
-      String.to_existing_atom(target)
-    rescue
-      ArgumentError -> String.to_atom(target)
-    end
+    String.to_existing_atom(target)
+  rescue
+    ArgumentError -> String.to_atom(target)
   end
 
   defp resolve_string_key(aliases, role, fallback) do
@@ -53,11 +51,9 @@ defmodule Corex.Design.RoleAliases do
   end
 
   defp resolve_atom_key(aliases, role) do
-    try do
-      atom = String.to_existing_atom(role)
-      Map.get(aliases, atom, String.to_atom(role))
-    rescue
-      ArgumentError -> String.to_atom(role)
-    end
+    atom = String.to_existing_atom(role)
+    Map.get(aliases, atom, String.to_atom(role))
+  rescue
+    ArgumentError -> String.to_atom(role)
   end
 end

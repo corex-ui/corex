@@ -61,28 +61,28 @@
   }
 
   [data-scope="editable"][data-part="edit-trigger"] {
-      max-width: --value(--container-*, [length]);
-    min-height: --value(--spacing-size-*, [length]);
+      gap: --value(--spacing-space-*, [length]);
+    max-width: --value(--container-*, [length]);
     padding-inline: --value(--spacing-space-*, [length]);
-    gap: --value(--spacing-space-*, [length]);
+    min-height: --value(--spacing-size-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
 
   [data-scope="editable"][data-part="cancel-trigger"] {
-      max-width: --value(--container-*, [length]);
-    min-height: --value(--spacing-size-*, [length]);
+      gap: --value(--spacing-space-*, [length]);
+    max-width: --value(--container-*, [length]);
     padding-inline: --value(--spacing-space-*, [length]);
-    gap: --value(--spacing-space-*, [length]);
+    min-height: --value(--spacing-size-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
 
   [data-scope="editable"][data-part="submit-trigger"] {
-      max-width: --value(--container-*, [length]);
-    min-height: --value(--spacing-size-*, [length]);
+      gap: --value(--spacing-space-*, [length]);
+    max-width: --value(--container-*, [length]);
     padding-inline: --value(--spacing-space-*, [length]);
-    gap: --value(--spacing-space-*, [length]);
+    min-height: --value(--spacing-size-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }

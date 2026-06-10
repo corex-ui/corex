@@ -24,8 +24,8 @@
 
 @utility toast--size-* {
   [data-scope="toast"][data-part="header"] {
-      padding-inline: --value(--spacing-space-*, [length]);
-    gap: --value(--spacing-space-*, [length]);
+      gap: --value(--spacing-space-*, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
   }
 
   [data-scope="toast"][data-part="description"] {

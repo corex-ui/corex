@@ -20,7 +20,7 @@ defmodule Corex.TimerTest do
       refute html =~ "data-auto-start"
     end
 
-    test "style attrs compile to data attributes on the root element" do
+    test "style attrs compile to BEM classes on the root element" do
       html =
         render_component(
           fn assigns ->
@@ -32,10 +32,11 @@ defmodule Corex.TimerTest do
         )
 
       assert [root] = Floki.find(Floki.parse_fragment!(html), "#styled")
-      assert Floki.attribute([root], "data-timer") != []
-      assert Enum.any?(Floki.attribute([root], "data-timer-semantic"), &(&1 == "accent"))
-      assert Enum.any?(Floki.attribute([root], "data-timer-size"), &(&1 == "lg"))
-      assert Enum.any?(Floki.attribute([root], "data-timer-radius"), &(&1 == "xl"))
+      classes = Floki.attribute([root], "class") |> List.first()
+      assert classes =~ "timer"
+      assert classes =~ "timer--semantic-accent"
+      assert classes =~ "timer--size-lg"
+      assert classes =~ "timer--rounded-xl"
     end
 
     test "plain class string still passes through without semantic attrs" do

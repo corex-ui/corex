@@ -39,9 +39,9 @@
   [data-scope="signature-pad"][data-part="clear-trigger"] {
       color: --value(--color-ui-ink-*, [color]);
     min-height: --value(--spacing-size-*, [length]);
-    background-color: --value(--color-*, [color]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    background-color: --value(--color-*, [color]);
   }
 
 }

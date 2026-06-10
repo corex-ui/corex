@@ -29,9 +29,9 @@
 
 @utility toggle--size-* {
   [data-scope="toggle"][data-part="root"] {
-      min-height: --value(--spacing-size-*, [length]);
+      gap: --value(--spacing-space-*, [length]);
     padding-inline: --value(--spacing-space-*, [length]);
-    gap: --value(--spacing-space-*, [length]);
+    min-height: --value(--spacing-size-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
@@ -44,15 +44,15 @@
     display: inline-flex;
     width: fit-content;
     cursor: pointer;
-    appearance: none;
-    transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
-    border-radius: var(--radius-md);
-    align-items: center;
-    justify-content: center;
     border: 1px solid transparent;
     font-weight: var(--font-weight-normal);
-    text-align: center;
+    border-radius: var(--radius-md);
     text-decoration-line: none;
+    text-align: center;
+    align-items: center;
+    appearance: none;
+    transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+    justify-content: center;
     &[data-state="on"] {
       color: var(--color-ui-ink);
       background-color: var(--color-ui);
@@ -391,6 +391,13 @@
 
   .toggle.toggle--rounded-full [data-scope="toggle"][data-part="root"] {
     border-radius: var(--radius-full);
+  }
+
+  .toggle.toggle--shape-square [data-scope="toggle"][data-part="root"] {
+    width: auto;
+    padding: 0;
+    justify-content: center;
+    aspect-ratio: 1 / 1;
   }
 
   .toggle.toggle--variant-solid [data-scope="toggle"][data-part="root"][data-state="on"] {
@@ -1106,8 +1113,8 @@
     color: currentcolor;
     height: 1em;
     align-items: center;
-    justify-content: center;
     flex-shrink: 0;
+    justify-content: center;
   }
 
   .toggle [data-part="indicator"] [data-icon] {
@@ -1119,6 +1126,14 @@
 
   .toggle [data-icon] {
     @apply ui-icon;
+  }
+
+  .toggle.toggle--shape-square > [data-icon],
+    .toggle.toggle--shape-square [data-part="indicator"] [data-icon] {
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
+    display: inline-flex;
   }
 
   .toggle[data-loading] [data-scope="toggle"][data-part="root"] {

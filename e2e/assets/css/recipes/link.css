@@ -27,16 +27,16 @@
     cursor: pointer;
     padding: 0;
     color: var(--color-link);
-    appearance: none;
-    transition: color 120ms ease, box-shadow 120ms ease;
     gap: var(--space-md);
-    background-color: transparent;
-    align-items: center;
     border: none;
-    overflow: visible;
+    background-color: transparent;
     text-decoration-line: underline;
-    text-underline-offset: 0.15em;
+    overflow: visible;
+    align-items: center;
+    appearance: none;
     text-decoration-thickness: from-font;
+    text-underline-offset: 0.15em;
+    transition: color 120ms ease, box-shadow 120ms ease;
     &:active {
       color: var(--color-ui-ink-muted);
     }
@@ -140,33 +140,33 @@
   }
 
   .link.link--size-sm {
-    min-height: var(--size-sm);
-    padding-inline: var(--space-sm);
     gap: var(--space-sm);
+    padding-inline: var(--space-sm);
+    min-height: var(--size-sm);
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
   }
 
   .link.link--size-md {
-    min-height: var(--size-md);
-    padding-inline: var(--space-md);
     gap: var(--space-md);
+    padding-inline: var(--space-md);
+    min-height: var(--size-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
   }
 
   .link.link--size-lg {
-    min-height: var(--size-lg);
-    padding-inline: var(--space-lg);
     gap: var(--space-lg);
+    padding-inline: var(--space-lg);
+    min-height: var(--size-lg);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
   }
 
   .link.link--size-xl {
-    min-height: var(--size-xl);
-    padding-inline: var(--space-xl);
     gap: var(--space-xl);
+    padding-inline: var(--space-xl);
+    min-height: var(--size-xl);
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
   }
@@ -234,8 +234,8 @@
     color: currentcolor;
     height: 1em;
     align-items: center;
-    justify-content: center;
     flex-shrink: 0;
+    justify-content: center;
   }
 
   .link [data-part="indicator"] [data-icon] {

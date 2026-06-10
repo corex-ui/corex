@@ -69,7 +69,10 @@ defmodule Corex.DesignTest do
       css = Recipe.to_css(Accordion.recipe())
 
       assert css =~ ".accordion.accordion--semantic-accent"
-      assert css =~ ".accordion.accordion--variant-solid.accordion--semantic-accent [data-scope=\"accordion\"][data-part=\"item-trigger\"]"
+
+      assert css =~
+               ".accordion.accordion--variant-solid.accordion--semantic-accent [data-scope=\"accordion\"][data-part=\"item-trigger\"]"
+
       assert css =~ "background-color: var(--color-accent)"
       assert css =~ "color: var(--color-accent-ink)"
 
@@ -289,7 +292,8 @@ defmodule Corex.DesignTest do
     end
 
     test "typography recipes are included in recipe export" do
-      css = Compiler.compile_recipe(Typo.recipe(:h1)) <> Compiler.compile_recipe(Typo.recipe(:form))
+      css =
+        Compiler.compile_recipe(Typo.recipe(:h1)) <> Compiler.compile_recipe(Typo.recipe(:form))
 
       assert css =~ ".h1 {"
       assert css =~ ".form {"
@@ -366,7 +370,6 @@ defmodule Corex.DesignTest do
       refute css =~
                ~s(.accordion.accordion--max-h-md [data-scope="accordion"][data-part="item-content"][data-state="open"] {\n  overflow-y: auto)
     end
-
   end
 
   describe "accordion horizontal layout" do

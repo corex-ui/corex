@@ -1734,5 +1734,4 @@ defmodule Corex.Accordion do
   defp normalize_value(v) when is_binary(v), do: [v]
   defp normalize_value(v) when is_list(v), do: v
   defp normalize_value(_), do: []
-
 end

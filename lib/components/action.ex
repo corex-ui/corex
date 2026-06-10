@@ -131,5 +131,4 @@ defmodule Corex.Action do
     </button>
     """
   end
-
 end
