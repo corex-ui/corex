@@ -42314,7 +42314,12 @@ ${err}`);
           triggerEls.forEach((triggerEl) => {
             const raw = triggerEl.dataset.value;
             const valueProps = raw != null && raw !== "" ? { value: raw } : {};
-            this.spreadProps(triggerEl, this.api.getTriggerProps(valueProps));
+            const tabIndexOverride = triggerEl.getAttribute("tabindex");
+            const triggerProps = this.api.getTriggerProps(valueProps);
+            if (tabIndexOverride === "-1") {
+              triggerProps.tabIndex = -1;
+            }
+            this.spreadProps(triggerEl, triggerProps);
           });
           const positionerEl = rootEl.querySelector(
             '[data-scope="tooltip"][data-part="positioner"]'
