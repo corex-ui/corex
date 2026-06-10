@@ -60,8 +60,13 @@ export class Menu extends Component<Props, Api> {
       if (!childMenu) continue;
 
       const applyProps = () => {
-        const triggerProps = this.api.getTriggerItemProps(childMenu.api);
-        this.spreadProps(triggerEl, triggerProps);
+        const disabled = triggerEl.hasAttribute("disabled");
+        const childTriggerProps = childMenu.api.getTriggerProps();
+        const itemProps = this.api.getItemProps({
+          value: childTriggerProps.id,
+          disabled: disabled || undefined,
+        });
+        this.spreadProps(triggerEl, { ...itemProps, ...childTriggerProps });
       };
 
       applyProps();
@@ -81,7 +86,12 @@ export class Menu extends Component<Props, Api> {
       '[data-scope="menu"][data-part="trigger"]'
     );
     if (triggerEl) {
-      this.spreadProps(triggerEl, this.api.getTriggerProps());
+      const disabled = triggerEl.hasAttribute("disabled");
+      this.spreadProps(triggerEl, {
+        ...this.api.getTriggerProps(),
+        disabled: disabled || undefined,
+      });
+      if (disabled && this.api.open) this.api.setOpen(false);
     }
 
     const positionerEl = this.el.querySelector<HTMLElement>(
@@ -111,7 +121,7 @@ export class Menu extends Component<Props, Api> {
 
           const value = itemEl.dataset.value;
           if (value) {
-            const disabled = itemEl.hasAttribute("data-disabled");
+            const disabled = itemEl.hasAttribute("disabled");
             this.spreadProps(
               itemEl,
               this.api.getItemProps({ value, disabled: disabled || undefined })
