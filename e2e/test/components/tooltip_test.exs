@@ -5,6 +5,7 @@ defmodule E2eWeb.TooltipTest do
   import Wallaby.Query
 
   alias E2eWeb.ComponentBehaviorSpec
+  alias E2eWeb.MenuModel, as: Menu
   alias E2eWeb.TooltipModel, as: Tooltip
 
   @moduletag :tooltip
@@ -99,6 +100,27 @@ defmodule E2eWeb.TooltipTest do
       |> Tooltip.wait_patterns_page()
       |> Tooltip.wait_section_tooltip_ready(section)
       |> Tooltip.open_first_tooltip_in_section(section)
+      |> Tooltip.wait_open_content_in_section(section, timeout: 8_000)
+    end
+
+    feature "menu item  -  open menu does not open tooltip; hover opens tooltip", %{
+      session: session
+    } do
+      section = "tooltip-pattern-menu-item"
+      menu_host = "tooltip-pattern-menu"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Tooltip, :tooltip, :patterns)
+        |> Tooltip.wait_patterns_page()
+        |> Menu.wait_section_menu_ready(section)
+        |> Tooltip.wait_section_tooltip_ready(section)
+        |> Menu.open_menu_in_section(section)
+        |> Menu.wait_menu_content_open(menu_host, timeout: 8_000)
+        |> Tooltip.refute_open_content_in_section(section)
+
+      session
+      |> Tooltip.hover_first_trigger_in_section(section)
       |> Tooltip.wait_open_content_in_section(section, timeout: 8_000)
     end
   end

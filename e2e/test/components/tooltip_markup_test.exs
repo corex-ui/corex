@@ -47,6 +47,11 @@ defmodule E2eWeb.TooltipMarkupTest do
       assert html =~ ~S(id="tooltip-pattern-profile-link-multi-tool")
       assert html =~ ~S(data-on-trigger-value-change="tooltip_pattern_link_multi_value")
       assert html =~ ~S(id="tooltip:tooltip-pattern-profile-link-multi-tool:trigger:1")
+      assert html =~ "tooltip-pattern-menu-item"
+      assert html =~ ~S(id="menu:tooltip-pattern-menu")
+      assert html =~ ~S(id="tooltip-pattern-menu-support")
+      assert html =~ ~S(id="tooltip:tooltip-pattern-menu-support:trigger")
+      assert html =~ ~s|id="tooltip:tooltip-pattern-menu-support:trigger" tabindex="-1"|
     end
 
     test "renders arrow parts when show_arrow", %{conn: conn} do
