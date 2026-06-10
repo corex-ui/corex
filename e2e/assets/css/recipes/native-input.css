@@ -21,11 +21,11 @@
 @utility native-input--size-* {
   [data-scope="native-input"][data-part="input"] {
       color: --value(--color-ui-ink-*, [color]);
-    padding-inline: --value(--spacing-space-*, [length]);
+    background-color: --value(--color-*, [color]);
     min-height: --value(--spacing-size-*, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    background-color: --value(--color-*, [color]);
   }
 
   [data-scope="native-input"][data-part="label"] {
@@ -166,8 +166,7 @@
     justify-content: center;
     padding-inline: var(--space);
     pointer-events: none;
-    & [data-icon],
-    & svg {
+    & [data-icon],\n  & svg {
       @apply ui-icon;
     }
   }

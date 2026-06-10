@@ -24,10 +24,10 @@
 @layer components {
   .p {
     color: var(--color-ui-ink);
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
     font-weight: var(--font-weight-normal);
     margin-block: var(--space-md);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
     @media (min-width: 64rem) {
       font-size: var(--text-lg);
       line-height: var(--leading-lg);

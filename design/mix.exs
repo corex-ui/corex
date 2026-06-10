@@ -97,7 +97,7 @@ defmodule CorexDesign.MixProject do
         ],
         Recipes: [
           Corex.Design.Recipes,
-          Corex.Design.Presets,
+          Corex.Design.RecipePresets,
           Corex.Design.Palette,
           Corex.Design.Taxonomy
         ],

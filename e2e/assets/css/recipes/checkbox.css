@@ -75,48 +75,48 @@
 
   .checkbox.checkbox--semantic-accent {
     --color-selected: var(--color-accent);
-    --color-selected-active: var(--color-accent-active);
     --color-selected-hover: var(--color-accent-hover);
+    --color-selected-active: var(--color-accent-active);
     --color-selected-ink: var(--color-accent-ink);
     --color-selected-muted: var(--color-accent-muted);
   }
 
   .checkbox.checkbox--semantic-brand {
     --color-selected: var(--color-brand);
-    --color-selected-active: var(--color-brand-active);
     --color-selected-hover: var(--color-brand-hover);
+    --color-selected-active: var(--color-brand-active);
     --color-selected-ink: var(--color-brand-ink);
     --color-selected-muted: var(--color-brand-muted);
   }
 
   .checkbox.checkbox--semantic-alert {
     --color-selected: var(--color-alert);
-    --color-selected-active: var(--color-alert-active);
     --color-selected-hover: var(--color-alert-hover);
+    --color-selected-active: var(--color-alert-active);
     --color-selected-ink: var(--color-alert-ink);
     --color-selected-muted: var(--color-alert-muted);
   }
 
   .checkbox.checkbox--semantic-info {
     --color-selected: var(--color-info);
-    --color-selected-active: var(--color-info-active);
     --color-selected-hover: var(--color-info-hover);
+    --color-selected-active: var(--color-info-active);
     --color-selected-ink: var(--color-info-ink);
     --color-selected-muted: var(--color-info-muted);
   }
 
   .checkbox.checkbox--semantic-success {
     --color-selected: var(--color-success);
-    --color-selected-active: var(--color-success-active);
     --color-selected-hover: var(--color-success-hover);
+    --color-selected-active: var(--color-success-active);
     --color-selected-ink: var(--color-success-ink);
     --color-selected-muted: var(--color-success-muted);
   }
 
   .checkbox.checkbox--semantic-selected {
     --color-selected: var(--color-selected);
-    --color-selected-active: var(--color-selected-active);
     --color-selected-hover: var(--color-selected-hover);
+    --color-selected-active: var(--color-selected-active);
     --color-selected-ink: var(--color-selected-ink);
     --color-selected-muted: var(--color-selected-muted);
   }
@@ -186,8 +186,7 @@
       box-shadow: inset 0 0 0 2px var(--color-ui-ink);
     }
 
-    &[data-state="checked"],
-    &[data-state="indeterminate"] {
+    &[data-state="checked"],\n  &[data-state="indeterminate"] {
       background: var(--color-accent-active);
       color: var(--color-accent-ink);
       &:hover {

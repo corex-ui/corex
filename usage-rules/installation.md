@@ -6,7 +6,7 @@
 mix archive.install hex phx_new
 mix archive.install hex corex_new
 mix corex.new my_app
-mix corex.new my_app --mode --theme --lang --designex
+mix corex.new my_app --mode --theme --lang
 ```
 
 Defaults: Corex Design, MCP in `:dev`/`:test` only.
@@ -15,7 +15,6 @@ Defaults: Corex Design, MCP in `:dev`/`:test` only.
 |------|--------|
 | `--no-design` | Skip design assets |
 | `--no-mcp` | Skip MCP plug |
-| `--designex` | Copy token sources |
 | `--mode` / `--theme` / `--lang` | Mode, theme, localization |
 
 Run `mix help corex.new`. Update generator: `mix local.corex`.
@@ -27,7 +26,8 @@ Replace `my_app` with your OTP app name.
 ### 1. Dependency
 
 ```elixir
-{:corex, "~> 0.1.0"}
+{:corex, "~> 0.2"},
+{:corex_design, "~> 0.2"}
 ```
 
 ### 2. Esbuild ESM splitting

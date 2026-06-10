@@ -25,11 +25,11 @@
   .kbd {
     padding: var(--space-sm);
     color: var(--color-ui-ink);
-    border: 1px solid var(--color-border);
-    font-family: var(--font-mono);
     background-color: var(--color-layer);
-    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
     margin-inline: var(--space-sm);
+    border-radius: var(--radius-md);
+    font-family: var(--font-mono);
   }
 
   .kbd.kbd--w-auto {

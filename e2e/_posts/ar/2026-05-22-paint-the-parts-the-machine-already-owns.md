@@ -58,7 +58,7 @@ CSS يأتي بعد ذلك، على صفحة تتحرك أصلاً. الحركة
 
 الأربع ثيمات (`neo`، `uno`، `duo`، `leo`) تأتي بملفات token فاتحة وداكنة لكل. ثمانية أسطح من مجموعة واحدة من الأدوات والمكوّنات، مع ضمان حقيقي تحتها.
 
-اللوحات تُولَّد عبر [Adobe Leonardo](https://leonardocolor.io/) API بأهداف تباين صريحة. الحبر الأساسي على خلفية الصفحة يصل 7.0:1. الحبر الخافت على خلفية الصفحة فوق 4.5:1. الحدود، accent، كل لون مسماً في النظام له رقم، لا عين.
+اللوحات تُولَّد عند التجميع عبر `corex_design` من بذور hex ومنحنيات OKLCH ونسب تباين لكل دور (اعتماد `color`). الحبر الأساسي، الحبر الخافت، الحدود، وaccent لها أهداف ratio صريحة في إعداد الثيم، لا عين.
 
 هذا ما يجعل تبديل `data-theme` أو `data-mode` على `<html>` ممكناً والتطبيق كله يبقى مقروءاً.
 
@@ -76,16 +76,10 @@ CSS يأتي بعد ذلك، على صفحة تتحرك أصلاً. الحركة
 
 ## `site.css` رفيع
 
-الإعداد صغير بما يكفي لفقرة. شغّل `mix corex.design` مرة. الملفات تحت `assets/corex/`. في `app.css`، استورد قاعدة Corex، ملفات الثيم التي تريد إظهارها، الطباعة، التخطيط، وملفاً لكل مكوّن ترسمه. وجّه Tailwind للمجلد المنسوخ. ضع `data-theme` و`data-mode` على `<html>`. ضع `class="typo layout"` على `<body>`. هذه القصة كلها.
+الإعداد صغير بما يكفي لفقرة. أضف `{:corex_design}`، سجّل مُجمّع `:corex_design`، واضبط `config :corex_design` مع `output: "assets/css/corex.tailwind.css"`، ثم شغّل `mix compile`. استورد الحزمة المولَّدة في `app.css`. ضع `data-theme` و`data-mode` على `<html>`. ضع `class="typo layout"` على `<body>`. هذه القصة كلها.
 
 ```css
-@import "../corex/main.css";
-@import "../corex/theme/neo.css";
-@import "../corex/components/typo.css";
-@import "../corex/components/layout.css";
-@import "../corex/components/accordion.css";
-@import "../corex/components/combobox.css";
-@import "../corex/components/button.css";
+@import "./corex.tailwind.css";
 ```
 
 إن كان `app.css` ما زال يحمّل daisyUI من `phx.new` الافتراضي، أزله. نظاما token يتقاتلان على نفس أسماء الأدوات هو الطريقة الأكثر موثوقية لجعل الاثنين غير سعداء.

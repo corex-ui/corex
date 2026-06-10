@@ -88,32 +88,32 @@
 
   .badge.badge--size-sm {
     gap: var(--space-sm);
-    padding-inline: var(--space-sm);
     height: calc(var(--spacing-size) * 0.8);
+    padding-inline: var(--space-sm);
     font-size: calc(var(--text-sm) * 0.8);
     line-height: var(--text-sm--line-height);
   }
 
   .badge.badge--size-md {
     gap: var(--space-sm);
-    padding-inline: var(--space-sm);
     height: calc(var(--spacing-size) * 0.8);
+    padding-inline: var(--space-sm);
     font-size: calc(var(--text-base) * 0.8);
     line-height: var(--text-base--line-height);
   }
 
   .badge.badge--size-lg {
     gap: var(--space-sm);
-    padding-inline: var(--space-sm);
     height: calc(var(--spacing-size) * 0.8);
+    padding-inline: var(--space-sm);
     font-size: calc(var(--text-lg) * 0.8);
     line-height: var(--text-lg--line-height);
   }
 
   .badge.badge--size-xl {
     gap: var(--space-sm);
-    padding-inline: var(--space-sm);
     height: calc(var(--spacing-size) * 0.8);
+    padding-inline: var(--space-sm);
     font-size: calc(var(--text-xl) * 0.8);
     line-height: var(--text-xl--line-height);
   }
@@ -139,9 +139,7 @@
     white-space: normal;
     color: var(--color-ui-ink);
     background-color: var(--color-ui);
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
+    &:disabled,\n  &[data-disabled],\n  &[disabled] {
       color: var(--color-ui-ink-muted);
       background-color: var(--color-ui-muted);
       cursor: not-allowed;

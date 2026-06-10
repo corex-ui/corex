@@ -13,7 +13,7 @@ defmodule Corex.Design.Recipe do
   contract matter for Layer 2.
   """
 
-  alias Corex.Design.Presets
+  alias Corex.Design.RecipePresets
 
   @enforce_keys [:id]
   defstruct id: nil,
@@ -59,10 +59,10 @@ defmodule Corex.Design.Recipe do
   the `[data-<id>]` / `[data-<id>-<axis>="v"]` contract.
   """
   def define(id, opts) do
-    host_sizing = Keyword.get(opts, :host_sizing, Presets.default_host_sizing())
-    variants = opts |> Keyword.get(:variants, []) |> Presets.merge_define_sizing_variants()
+    host_sizing = Keyword.get(opts, :host_sizing, RecipePresets.default_host_sizing())
+    variants = opts |> Keyword.get(:variants, []) |> RecipePresets.merge_define_sizing_variants()
     default_variants = Keyword.merge(host_sizing, Keyword.get(opts, :default_variants, []))
-    base = opts |> Keyword.get(:base, %{}) |> Presets.strip_define_sizing_base()
+    base = opts |> Keyword.get(:base, %{}) |> RecipePresets.strip_define_sizing_base()
 
     %__MODULE__{
       id: id,
@@ -81,10 +81,10 @@ defmodule Corex.Design.Recipe do
   part is `[data-scope="<scope>"][data-part="<part>"]` nested under it.
   """
   def part_recipe(id, opts) do
-    host_sizing = Keyword.get(opts, :host_sizing, Presets.default_host_sizing())
-    variants = opts |> Keyword.get(:variants, []) |> Presets.merge_host_sizing_variants()
+    host_sizing = Keyword.get(opts, :host_sizing, RecipePresets.default_host_sizing())
+    variants = opts |> Keyword.get(:variants, []) |> RecipePresets.merge_host_sizing_variants()
     default_variants = Keyword.merge(host_sizing, Keyword.get(opts, :default_variants, []))
-    base = opts |> Keyword.get(:base, []) |> Presets.strip_host_sizing_base()
+    base = opts |> Keyword.get(:base, []) |> RecipePresets.strip_host_sizing_base()
 
     %__MODULE__{
       id: id,

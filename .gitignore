@@ -33,6 +33,8 @@ corex-*.tar
 /node_modules/
 
 /assets/corex/
+/e2e/assets/corex/
+/e2e/priv/design/reports/
 
 /playground/
 

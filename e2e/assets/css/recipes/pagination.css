@@ -28,15 +28,8 @@
 
 @utility pagination--size-* {
   [data-scope="pagination"][data-part="item"] {
-      padding-inline: --value(--spacing-space-*, [length]);
-    min-height: --value(--spacing-size-*, [length]);
-    font-size: --value(--text-*, [length]);
-    line-height: --value(--text-*--line-height, [length]);
-  }
-
-  [data-scope="pagination"][data-part="ellipsis"] {
-      color: --value(--color-ui-ink-*, [color]);
-    min-height: --value(--spacing-size-*, [length]);
+      min-height: --value(--spacing-size-*, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
@@ -49,6 +42,13 @@
 
   [data-scope="pagination"][data-part="next-trigger"] {
       min-height: --value(--spacing-size-*, [length]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+  }
+
+  [data-scope="pagination"][data-part="ellipsis"] {
+      color: --value(--color-ui-ink-*, [color]);
+    min-height: --value(--spacing-size-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }

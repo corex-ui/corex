@@ -147,13 +147,11 @@
     animation-duration: var(--marquee-duration);
     animation-delay: var(--marquee-delay);
     animation-iteration-count: var(--marquee-loop-count);
-    &[data-side="start"],
-    &[data-side="end"] {
+    &[data-side="start"],\n  &[data-side="end"] {
       animation-name: marqueeX;
     }
 
-    &[data-side="top"],
-    &[data-side="bottom"] {
+    &[data-side="top"],\n  &[data-side="bottom"] {
       animation-name: marqueeY;
     }
 

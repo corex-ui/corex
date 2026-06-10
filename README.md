@@ -39,7 +39,7 @@ By default the installer adds **`plug Corex.MCP`** in `:dev` and `:test` only (s
 If you want the full feature set:
 
 ```bash
-mix corex.new my_app --mode --theme --lang --designex
+mix corex.new my_app --mode --theme --lang
 ```
 
 Run **`mix help corex.new`** or see **`Mix.Tasks.Corex.New`** in Hexdocs for every Corex-only flag.
@@ -64,10 +64,10 @@ Follow the [manual installation guide](https://hexdocs.pm/corex/manual_installat
 />
 ```
 
-If you are using Corex Design import the accordion css
+If you are using Corex Design, import the compiled bundle in `assets/css/app.css`:
 
 ```css
-@import "../corex/components/accordion.css";
+@import "./corex.tailwind.css";
 ```
 
 ### API

@@ -48,13 +48,11 @@ defmodule E2eWeb.Demos.StylePreview do
   end
 
   def preview_checkbox(assigns) do
-    controls = assigns.controls
-
     ~H"""
     <.checkbox
       id={SP.preview_id(:checkbox)}
-      semantic={SP.attr(controls, :checkbox, :semantic)}
-      size={SP.attr(controls, :checkbox, :size)}
+      semantic={SP.attr(@controls, :checkbox, :semantic)}
+      size={SP.attr(@controls, :checkbox, :size)}
       checked
     >
       <:label>Option</:label>
@@ -66,13 +64,11 @@ defmodule E2eWeb.Demos.StylePreview do
   end
 
   def preview_switch(assigns) do
-    controls = assigns.controls
-
     ~H"""
     <.switch
       id={SP.preview_id(:switch)}
-      semantic={SP.attr(controls, :switch, :semantic)}
-      size={SP.attr(controls, :switch, :size)}
+      semantic={SP.attr(@controls, :switch, :semantic)}
+      size={SP.attr(@controls, :switch, :size)}
       checked
     >
       <:label>Enable</:label>
@@ -86,17 +82,15 @@ defmodule E2eWeb.Demos.StylePreview do
   end
 
   def preview_select(assigns) do
-    controls = assigns.controls
-
     ~H"""
     <.select
       id={SP.preview_id(:select)}
-      semantic={SP.attr(controls, :select, :semantic)}
-      variant={SP.attr(controls, :select, :variant)}
-      size={SP.attr(controls, :select, :size)}
-      text={SP.attr(controls, :select, :text)}
-      radius={SP.attr(controls, :select, :radius)}
-      max_width={SP.attr(controls, :select, :max_width)}
+      semantic={SP.attr(@controls, :select, :semantic)}
+      variant={SP.attr(@controls, :select, :variant)}
+      size={SP.attr(@controls, :select, :size)}
+      text={SP.attr(@controls, :select, :text)}
+      radius={SP.attr(@controls, :select, :radius)}
+      max_width={SP.attr(@controls, :select, :max_width)}
       items={select_items()}
     >
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
@@ -105,28 +99,24 @@ defmodule E2eWeb.Demos.StylePreview do
   end
 
   def preview_timer(assigns) do
-    controls = assigns.controls
-
     ~H"""
     <.timer
       id={SP.preview_id(:timer)}
-      semantic={SP.attr(controls, :timer, :semantic)}
-      size={SP.attr(controls, :timer, :size)}
-      text={SP.attr(controls, :timer, :text)}
-      radius={SP.attr(controls, :timer, :radius)}
+      semantic={SP.attr(@controls, :timer, :semantic)}
+      size={SP.attr(@controls, :timer, :size)}
+      text={SP.attr(@controls, :timer, :text)}
+      radius={SP.attr(@controls, :timer, :radius)}
       start_ms={60_000}
     />
     """
   end
 
   def preview_avatar(assigns) do
-    controls = assigns.controls
-
     ~H"""
     <.avatar
       id={SP.preview_id(:avatar)}
-      size={SP.attr(controls, :avatar, :size)}
-      radius={SP.attr(controls, :avatar, :radius)}
+      size={SP.attr(@controls, :avatar, :size)}
+      radius={SP.attr(@controls, :avatar, :radius)}
       src=""
     >
       <:fallback>JD</:fallback>
@@ -135,13 +125,11 @@ defmodule E2eWeb.Demos.StylePreview do
   end
 
   def preview_navigate(assigns) do
-    controls = assigns.controls
-
     ~H"""
     <.navigate
       id={SP.preview_id(:navigate)}
-      semantic={SP.attr(controls, :navigate, :semantic)}
-      size={SP.attr(controls, :navigate, :size)}
+      semantic={SP.attr(@controls, :navigate, :semantic)}
+      size={SP.attr(@controls, :navigate, :size)}
       to="#"
     >
       Link
@@ -150,38 +138,32 @@ defmodule E2eWeb.Demos.StylePreview do
   end
 
   def preview_code(assigns) do
-    controls = assigns.controls
-
     ~H"""
     <.code
       id={SP.preview_id(:code)}
       code="lorem()"
-      size={SP.attr(controls, :code, :size)}
-      max_width={SP.attr(controls, :code, :max_width)}
+      size={SP.attr(@controls, :code, :size)}
+      max_width={SP.attr(@controls, :code, :max_width)}
     />
     """
   end
 
   def preview_clipboard(assigns) do
-    controls = assigns.controls
-
     ~H"""
     <.clipboard
       id={SP.preview_id(:clipboard)}
-      size={SP.attr(controls, :clipboard, :size)}
+      size={SP.attr(@controls, :clipboard, :size)}
       value="Copy me"
     />
     """
   end
 
   def preview_layout_heading(assigns) do
-    controls = assigns.controls
-
     ~H"""
     <.layout_heading
       id={SP.preview_id(:layout_heading)}
-      semantic={SP.attr(controls, :layout_heading, :semantic)}
-      max_width={SP.attr(controls, :layout_heading, :max_width)}
+      semantic={SP.attr(@controls, :layout_heading, :semantic)}
+      max_width={SP.attr(@controls, :layout_heading, :max_width)}
       title="Heading"
     />
     """

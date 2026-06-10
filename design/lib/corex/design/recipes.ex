@@ -558,7 +558,7 @@ defmodule Corex.Design.Recipes do
     @moduledoc false
 
     alias Corex.Design.Axes
-    alias Corex.Design.Presets
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Rule
     alias Corex.Design.Selector
 
@@ -571,7 +571,7 @@ defmodule Corex.Design.Recipes do
       icon = ~s(#{indicator} [data-icon])
 
       [
-        Rule.new(indicator, decls: Map.to_list(Presets.trigger_indicator_part())),
+        Rule.new(indicator, decls: Map.to_list(RecipePresets.trigger_indicator_part())),
         Rule.new(icon,
           decls: [
             width: {:raw, "1em"},
@@ -654,8 +654,8 @@ defmodule Corex.Design.Recipes do
     @moduledoc false
 
     alias Corex.Design.Axes
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Rule
     alias Corex.Design.Selector
 
@@ -867,7 +867,7 @@ defmodule Corex.Design.Recipes do
           color: "currentcolor"
         ],
         variants: [
-          text: Enum.map(Axes.text_atoms(), fn step -> {step, Presets.text_block(step)} end)
+          text: Enum.map(Axes.text_atoms(), fn step -> {step, RecipePresets.text_block(step)} end)
         ],
         default_variants: [text: :sm],
         extra_rules: [
@@ -917,8 +917,8 @@ defmodule Corex.Design.Recipes do
 
     alias Corex.Design.Axes
     alias Corex.Design.Palette
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Rule
     alias Corex.Design.Selector
     alias Corex.Design.Typography
@@ -970,7 +970,7 @@ defmodule Corex.Design.Recipes do
     end
 
     defp text_variants do
-      for step <- Axes.text_atoms(), do: {step, Presets.text_block(step)}
+      for step <- Axes.text_atoms(), do: {step, RecipePresets.text_block(step)}
     end
 
     defp semantic_variants do
@@ -998,8 +998,8 @@ defmodule Corex.Design.Recipes do
 
     alias Corex.Design.Axes
     alias Corex.Design.Palette
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Rule
     alias Corex.Design.Selector
 
@@ -1012,7 +1012,7 @@ defmodule Corex.Design.Recipes do
 
       Recipe.part_recipe(id,
         scope: @scope,
-        host_sizing: Presets.default_host_sizing(),
+        host_sizing: RecipePresets.default_host_sizing(),
         base: [],
         variants: [
           semantic: semantic_variants(),
@@ -1030,7 +1030,7 @@ defmodule Corex.Design.Recipes do
 
       Recipe.part_recipe(id,
         scope: @scope,
-        host_sizing: Presets.default_host_sizing(),
+        host_sizing: RecipePresets.default_host_sizing(),
         base: [],
         variants: [
           semantic: semantic_variants(),
@@ -1203,9 +1203,9 @@ defmodule Corex.Design.Recipes do
           do:
             {step,
              [
-               title: Presets.text_block(step),
-               description: Presets.text_block(step),
-               trigger: Presets.text_block(step)
+               title: RecipePresets.text_block(step),
+               description: RecipePresets.text_block(step),
+               trigger: RecipePresets.text_block(step)
              ]}
     end
 
@@ -1215,14 +1215,19 @@ defmodule Corex.Design.Recipes do
 
       for step <- Axes.text_atoms() do
         Rule.new(".#{name}.#{name}--text-#{step} #{content_p}",
-          decls: Map.to_list(Presets.text_block(step))
+          decls: Map.to_list(RecipePresets.text_block(step))
         )
       end
     end
 
     defp radius_variants do
       for r <- Axes.radius_atoms(),
-          do: {r, [content: Presets.rounded_block(r), close_trigger: Presets.rounded_block(r)]}
+          do:
+            {r,
+             [
+               content: RecipePresets.rounded_block(r),
+               close_trigger: RecipePresets.rounded_block(r)
+             ]}
     end
 
     defp part(id, name), do: Selector.part(id, @scope, name)
@@ -1235,8 +1240,8 @@ defmodule Corex.Design.Recipes do
 
     alias Corex.Design.Axes
     alias Corex.Design.Palette
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Rule
     alias Corex.Design.Selector
 
@@ -1264,8 +1269,9 @@ defmodule Corex.Design.Recipes do
           size: size_variants(),
           text: text_variants(),
           radius: radius_variants(),
-          height: Presets.slot_axis_variants(Presets.height_blocks(), :item_content),
-          max_height: Presets.slot_axis_variants(Presets.max_height_blocks(), :item_content)
+          height: RecipePresets.slot_axis_variants(RecipePresets.height_blocks(), :item_content),
+          max_height:
+            RecipePresets.slot_axis_variants(RecipePresets.max_height_blocks(), :item_content)
         ],
         default_variants: [variant: :subtle, size: :md, height: :auto, max_height: :none],
         axis_overrides: [
@@ -1305,7 +1311,7 @@ defmodule Corex.Design.Recipes do
             max_width: "100%",
             overflow_x: "auto"
           ],
-          children: Presets.scrollbar_sm_children()
+          children: RecipePresets.scrollbar_sm_children()
         ),
         Rule.new(item,
           decls: [display: "flex", flex_direction: "column", width: "100%", gap: "0"]
@@ -1406,18 +1412,19 @@ defmodule Corex.Design.Recipes do
       for size <- Axes.size_atoms() do
         {size,
          [
-           item_trigger: Map.merge(Presets.size_block(size), %{margin_bottom: {:space, size}}),
+           item_trigger:
+             Map.merge(RecipePresets.size_block(size), %{margin_bottom: {:space, size}}),
            item_text: %{gap: {:space, size}}
          ]}
       end
     end
 
     defp text_variants do
-      for step <- Axes.text_atoms(), do: {step, [item_trigger: Presets.text_block(step)]}
+      for step <- Axes.text_atoms(), do: {step, [item_trigger: RecipePresets.text_block(step)]}
     end
 
     defp radius_variants do
-      for r <- Axes.radius_atoms(), do: {r, [item_trigger: Presets.rounded_block(r)]}
+      for r <- Axes.radius_atoms(), do: {r, [item_trigger: RecipePresets.rounded_block(r)]}
     end
 
     defp content_p_variant_rules do
@@ -1441,14 +1448,14 @@ defmodule Corex.Design.Recipes do
       text_rules =
         for step <- Axes.text_atoms() do
           Rule.new(".#{name}.#{name}--text-#{step} #{content_p}",
-            decls: Map.to_list(Presets.text_block(step))
+            decls: Map.to_list(RecipePresets.text_block(step))
           )
         end
 
       rounded_rules =
         for r <- Axes.radius_atoms() do
           Rule.new(".#{name}.#{name}--rounded-#{r} #{content_p}",
-            decls: Map.to_list(Presets.rounded_block(r))
+            decls: Map.to_list(RecipePresets.rounded_block(r))
           )
         end
 
@@ -1529,7 +1536,7 @@ defmodule Corex.Design.Recipes do
     end
 
     defp max_height_scroll_steps do
-      [:full | Enum.map(Presets.max_height_blocks(), fn {step, _} -> step end)]
+      [:full | Enum.map(RecipePresets.max_height_blocks(), fn {step, _} -> step end)]
       |> Enum.reject(&(&1 == :none))
       |> Enum.uniq()
     end
@@ -1618,8 +1625,8 @@ defmodule Corex.Design.Recipes do
 
     alias Corex.Design.Axes
     alias Corex.Design.Palette
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Recipes.FormHost
     alias Corex.Design.Rule
     alias Corex.Design.Selector
@@ -1927,7 +1934,7 @@ defmodule Corex.Design.Recipes do
         {size,
          [
            root: %{gap: {:space, size}, padding: {:space, size}},
-           label: Presets.text_block(text),
+           label: RecipePresets.text_block(text),
            control: %{
              font_size: {:text, text},
              line_height: {:leading, text},
@@ -1945,7 +1952,7 @@ defmodule Corex.Design.Recipes do
     defp size_text(step), do: step
 
     defp radius_variants do
-      for r <- Axes.radius_atoms(), do: {r, [control: Presets.rounded_block(r)]}
+      for r <- Axes.radius_atoms(), do: {r, [control: RecipePresets.rounded_block(r)]}
     end
   end
 
@@ -1953,8 +1960,8 @@ defmodule Corex.Design.Recipes do
     @moduledoc false
 
     alias Corex.Design.Axes
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Rule
     alias Corex.Design.Selector
 
@@ -1964,7 +1971,7 @@ defmodule Corex.Design.Recipes do
     def recipe do
       Recipe.part_recipe(@id,
         scope: @scope,
-        host_sizing: Presets.inline_host_sizing(),
+        host_sizing: RecipePresets.inline_host_sizing(),
         base: [],
         variants: [
           size: size_variants(),
@@ -2076,14 +2083,15 @@ defmodule Corex.Design.Recipes do
              width: {:size, size},
              height: {:size, size}
            },
-           fallback: Presets.text_block(text)
+           fallback: RecipePresets.text_block(text)
          ]}
       end
     end
 
     defp radius_variants do
       for r <- Axes.radius_atoms(),
-          do: {r, [root: Presets.rounded_block(r), skeleton: Presets.rounded_block(r)]}
+          do:
+            {r, [root: RecipePresets.rounded_block(r), skeleton: RecipePresets.rounded_block(r)]}
     end
 
     defp part(name), do: Selector.part(@id, @scope, name)
@@ -2096,8 +2104,8 @@ defmodule Corex.Design.Recipes do
     @moduledoc false
 
     alias Corex.Design.Axes
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Recipes.HostIcon
     alias Corex.Design.Rule
     alias Corex.Design.Selector
@@ -2107,7 +2115,7 @@ defmodule Corex.Design.Recipes do
 
     def recipe do
       Recipe.define(@id,
-        host_sizing: Presets.inline_host_sizing(),
+        host_sizing: RecipePresets.inline_host_sizing(),
         base: %{},
         variants: [
           semantic: Corex.Design.Recipes.semantic_host_variants(),
@@ -2197,15 +2205,15 @@ defmodule Corex.Design.Recipes do
 
     alias Corex.Design.Axes
     alias Corex.Design.Palette
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Recipes.HostIcon
 
     @impl Corex.Design.RecipeBehaviour
     def recipe do
       Recipe.define(:button,
-        host_sizing: Presets.inline_host_sizing(),
-        base: Presets.trigger_base(),
+        host_sizing: RecipePresets.inline_host_sizing(),
+        base: RecipePresets.trigger_base(),
         variants: [
           semantic: semantic_variants(),
           variant: variant_variants(),
@@ -2235,23 +2243,23 @@ defmodule Corex.Design.Recipes do
 
     defp variant_variants do
       [
-        solid: Presets.visual_solid(),
-        ghost: Presets.visual_ghost(),
-        outline: Presets.visual_outline(),
-        subtle: Presets.visual_subtle()
+        solid: RecipePresets.visual_solid(),
+        ghost: RecipePresets.visual_ghost(),
+        outline: RecipePresets.visual_outline(),
+        subtle: RecipePresets.visual_subtle()
       ]
     end
 
     defp size_variants do
-      for size <- Axes.size_atoms(), do: {size, Presets.size_block(size)}
+      for size <- Axes.size_atoms(), do: {size, RecipePresets.size_block(size)}
     end
 
     defp text_variants do
-      for step <- Axes.text_atoms(), do: {step, Presets.text_block(step)}
+      for step <- Axes.text_atoms(), do: {step, RecipePresets.text_block(step)}
     end
 
     defp radius_variants do
-      for r <- Axes.radius_atoms(), do: {r, Presets.rounded_block(r)}
+      for r <- Axes.radius_atoms(), do: {r, RecipePresets.rounded_block(r)}
     end
   end
 
@@ -2259,8 +2267,8 @@ defmodule Corex.Design.Recipes do
     @moduledoc false
 
     alias Corex.Design.Axes
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Recipes.SemanticStates
     alias Corex.Design.Rule
     alias Corex.Design.Selector
@@ -2521,7 +2529,7 @@ defmodule Corex.Design.Recipes do
         ]
 
       for r <- Axes.radius_atoms() do
-        block = Presets.rounded_block(r)
+        block = RecipePresets.rounded_block(r)
 
         {r,
          Enum.map(rounded_parts, fn part_name ->
@@ -2541,8 +2549,8 @@ defmodule Corex.Design.Recipes do
 
     alias Corex.Design.Axes
     alias Corex.Design.Palette
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Recipes.FormHost
     alias Corex.Design.Rule
     alias Corex.Design.Selector
@@ -2579,7 +2587,7 @@ defmodule Corex.Design.Recipes do
           line_height: {:leading, size_text(size)}
         }
 
-        {size, [control: block, label: Presets.text_block(size_text(size))]}
+        {size, [control: block, label: RecipePresets.text_block(size_text(size))]}
       end
     end
 
@@ -2587,7 +2595,7 @@ defmodule Corex.Design.Recipes do
     defp size_text(step), do: step
 
     defp radius_variants do
-      for r <- Axes.radius_atoms(), do: {r, [control: Presets.rounded_block(r)]}
+      for r <- Axes.radius_atoms(), do: {r, [control: RecipePresets.rounded_block(r)]}
     end
 
     defp semantic_control_rules do
@@ -2684,8 +2692,8 @@ defmodule Corex.Design.Recipes do
 
     alias Corex.Design.Axes
     alias Corex.Design.Palette
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Rule
     alias Corex.Design.Selector
 
@@ -2695,7 +2703,7 @@ defmodule Corex.Design.Recipes do
     def recipe do
       Recipe.part_recipe(@id,
         scope: @scope,
-        host_sizing: Presets.default_host_sizing(),
+        host_sizing: RecipePresets.default_host_sizing(),
         base: [],
         variants: [
           size: size_variants()
@@ -2820,8 +2828,8 @@ defmodule Corex.Design.Recipes do
          [
            root: %{gap: {:space, size}},
            control: %{gap: {:space, size}},
-           label: Presets.text_block(text),
-           trigger: Presets.size_block(size),
+           label: RecipePresets.text_block(text),
+           trigger: RecipePresets.size_block(size),
            input: %{min_height: {:size, size}}
          ]}
       end
@@ -2850,8 +2858,8 @@ defmodule Corex.Design.Recipes do
     @moduledoc false
 
     alias Corex.Design.Axes
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Rule
     alias Corex.Design.Selector
 
@@ -2872,14 +2880,14 @@ defmodule Corex.Design.Recipes do
     end
 
     defp size_variants do
-      for size <- Axes.size_atoms(), do: {size, Presets.size_block(size)}
+      for size <- Axes.size_atoms(), do: {size, RecipePresets.size_block(size)}
     end
 
     defp text_variants do
-      for step <- Axes.text_atoms(), do: {step, Presets.text_block(step)}
+      for step <- Axes.text_atoms(), do: {step, RecipePresets.text_block(step)}
     end
 
-    defp max_width_variants, do: Presets.max_width_blocks()
+    defp max_width_variants, do: RecipePresets.max_width_blocks()
 
     defp code_rules do
       host = Selector.host(@id)
@@ -3097,8 +3105,8 @@ defmodule Corex.Design.Recipes do
 
     alias Corex.Design.Axes
     alias Corex.Design.Palette
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Recipes.SemanticStates
     alias Corex.Design.Rule
     alias Corex.Design.Selector
@@ -3230,13 +3238,13 @@ defmodule Corex.Design.Recipes do
 
           [
             Rule.new("#{host} #{trigger}",
-              decls: Map.to_list(Presets.text_block(text))
+              decls: Map.to_list(RecipePresets.text_block(text))
             ),
             Rule.new("#{host} #{closed},\n  #{host} #{opened}",
-              decls: Map.to_list(Presets.text_block(text))
+              decls: Map.to_list(RecipePresets.text_block(text))
             ),
             Rule.new("#{host} #{content},\n  #{host} #{content_p}",
-              decls: Map.to_list(Presets.text_block(text))
+              decls: Map.to_list(RecipePresets.text_block(text))
             )
           ]
         end
@@ -3282,7 +3290,7 @@ defmodule Corex.Design.Recipes do
     end
 
     defp radius_variants do
-      for r <- Axes.radius_atoms(), do: {r, [content: Presets.rounded_block(r)]}
+      for r <- Axes.radius_atoms(), do: {r, [content: RecipePresets.rounded_block(r)]}
     end
 
     defp part(name), do: Selector.part(@id, @scope, name)
@@ -3296,8 +3304,8 @@ defmodule Corex.Design.Recipes do
 
     alias Corex.Design.Axes
     alias Corex.Design.Palette
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Recipes.FormHost
     alias Corex.Design.Recipes.SemanticStates
     alias Corex.Design.Rule
@@ -3504,7 +3512,9 @@ defmodule Corex.Design.Recipes do
               height: {:raw, "calc(var(--size-md) * 0.4)"}
             ]
           ),
-          Rule.new(eye_dropper, decls: [include: :ui_trigger] ++ Presets.trigger_part_square()),
+          Rule.new(eye_dropper,
+            decls: [include: :ui_trigger] ++ RecipePresets.trigger_part_square()
+          ),
           Rule.new(swatch_trigger,
             decls: [
               include: :ui_trigger,
@@ -3538,7 +3548,7 @@ defmodule Corex.Design.Recipes do
         {size,
          [
            root: %{gap: {:space, size}},
-           label: Presets.text_block(text),
+           label: RecipePresets.text_block(text),
            control: %{
              padding: {:space, size},
              gap: {:space, size},
@@ -3584,7 +3594,10 @@ defmodule Corex.Design.Recipes do
       for radius <- Axes.radius_atoms(),
           do:
             {radius,
-             [trigger: Presets.rounded_block(radius), control: Presets.rounded_block(radius)]}
+             [
+               trigger: RecipePresets.rounded_block(radius),
+               control: RecipePresets.rounded_block(radius)
+             ]}
     end
   end
 
@@ -3592,8 +3605,8 @@ defmodule Corex.Design.Recipes do
     @moduledoc false
 
     alias Corex.Design.Axes
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Recipes.SemanticStates
     alias Corex.Design.Rule
     alias Corex.Design.Selector
@@ -3736,7 +3749,7 @@ defmodule Corex.Design.Recipes do
             padding: "0",
             box_shadow: {:raw, "var(--shadow-ui)"}
           ],
-          children: Presets.scrollbar_sm_children()
+          children: RecipePresets.scrollbar_sm_children()
         ),
         Rule.new(item_group,
           decls: [display: "flex", flex_direction: "column", min_height: "fit-content"]
@@ -3760,13 +3773,13 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(item, decls: [include: :ui_item]),
         Rule.new("#{content} #{slot("item-text")}",
-          decls: Map.to_list(Presets.item_row_text())
+          decls: Map.to_list(RecipePresets.item_row_text())
         ),
         Rule.new("#{content} #{slot("item-indicator")}",
-          decls: Map.to_list(Presets.item_row_indicator()) ++ [include: :ui_icon]
+          decls: Map.to_list(RecipePresets.item_row_indicator()) ++ [include: :ui_icon]
         ),
         Rule.new("#{content} #{slot("item-indicator")}[hidden]",
-          decls: Map.to_list(Presets.item_row_indicator_hidden())
+          decls: Map.to_list(RecipePresets.item_row_indicator_hidden())
         ),
         Rule.new(error, decls: [include: :ui_error]),
         Rule.new("#{error}.absolute", decls: [padding_block: "0", display: "block"]),
@@ -3792,7 +3805,7 @@ defmodule Corex.Design.Recipes do
     defp size_variants do
       for size <- Axes.size_atoms() do
         text = if(size == :md, do: :base, else: size)
-        block = Presets.text_block(text)
+        block = RecipePresets.text_block(text)
 
         {size,
          [
@@ -3823,7 +3836,9 @@ defmodule Corex.Design.Recipes do
 
     defp radius_variants do
       for r <- Axes.radius_atoms(),
-          do: {r, [content: Presets.rounded_block(r), trigger: Presets.rounded_block(r)]}
+          do:
+            {r,
+             [content: RecipePresets.rounded_block(r), trigger: RecipePresets.rounded_block(r)]}
     end
 
     defp part(name), do: Selector.part(@id, @scope, name)
@@ -3835,8 +3850,8 @@ defmodule Corex.Design.Recipes do
     @moduledoc false
 
     alias Corex.Design.Axes
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Rule
     alias Corex.Design.Selector
 
@@ -3890,7 +3905,7 @@ defmodule Corex.Design.Recipes do
             overflow: "auto",
             gap: "1px"
           ],
-          children: Presets.scrollbar_sm_children()
+          children: RecipePresets.scrollbar_sm_children()
         ),
         Rule.new("#{host}:has(#{root} #{item}) #{empty}", decls: [display: "none"]),
         Rule.new(empty,
@@ -4002,8 +4017,8 @@ defmodule Corex.Design.Recipes do
         {size,
          [
            item: %{padding: {:space, size}},
-           label: Map.merge(Presets.text_block(text), %{color: {:color, :ui_ink}}),
-           content: Presets.text_block(text)
+           label: Map.merge(RecipePresets.text_block(text), %{color: {:color, :ui_ink}}),
+           content: RecipePresets.text_block(text)
          ]}
       end
     end
@@ -4019,8 +4034,8 @@ defmodule Corex.Design.Recipes do
 
     alias Corex.Design.Axes
     alias Corex.Design.Palette
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Rule
     alias Corex.Design.Selector
 
@@ -4269,7 +4284,7 @@ defmodule Corex.Design.Recipes do
 
       for size <- Axes.size_atoms() do
         sel = "#{host}.#{Selector.class_name(@id)}--size-#{size}"
-        block = Presets.size_block(size)
+        block = RecipePresets.size_block(size)
 
         [
           Rule.new("#{sel} #{thead_th}",
@@ -4327,8 +4342,8 @@ defmodule Corex.Design.Recipes do
 
     alias Corex.Design.Axes
     alias Corex.Design.Palette
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Rule
     alias Corex.Design.Selector
 
@@ -4718,7 +4733,7 @@ defmodule Corex.Design.Recipes do
     defp size_variants do
       for size <- Axes.size_atoms() do
         text = if(size == :md, do: :base, else: size)
-        block = Presets.text_block(text)
+        block = RecipePresets.text_block(text)
         size_raw = "var(--size-#{size})"
         space_raw = "var(--space-#{size})"
 
@@ -4800,7 +4815,7 @@ defmodule Corex.Design.Recipes do
 
     defp radius_variants do
       for r <- Axes.radius_atoms() do
-        block = Presets.rounded_block(r)
+        block = RecipePresets.rounded_block(r)
 
         {r,
          [
@@ -4835,8 +4850,8 @@ defmodule Corex.Design.Recipes do
 
     alias Corex.Design.Axes
     alias Corex.Design.Palette
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Rule
     alias Corex.Design.Selector
 
@@ -4875,7 +4890,7 @@ defmodule Corex.Design.Recipes do
 
       square_trigger =
         [include: :ui_trigger] ++
-          Presets.trigger_part_square() ++
+          RecipePresets.trigger_part_square() ++
           [
             flex: "0 0 auto",
             width: {:raw, "calc(var(--size-md) * 0.6)"},
@@ -4993,9 +5008,9 @@ defmodule Corex.Design.Recipes do
         {size,
          [
            root: %{gap: {:space, size}},
-           label: Presets.text_block(text),
+           label: RecipePresets.text_block(text),
            edit_trigger:
-             Map.merge(Presets.text_block(text), %{
+             Map.merge(RecipePresets.text_block(text), %{
                width: dim,
                min_width: dim,
                max_width: dim,
@@ -5005,7 +5020,7 @@ defmodule Corex.Design.Recipes do
                gap: {:space, size}
              }),
            cancel_trigger:
-             Map.merge(Presets.text_block(text), %{
+             Map.merge(RecipePresets.text_block(text), %{
                width: dim,
                min_width: dim,
                max_width: dim,
@@ -5015,7 +5030,7 @@ defmodule Corex.Design.Recipes do
                gap: {:space, size}
              }),
            submit_trigger:
-             Map.merge(Presets.text_block(text), %{
+             Map.merge(RecipePresets.text_block(text), %{
                width: dim,
                min_width: dim,
                max_width: dim,
@@ -5025,7 +5040,7 @@ defmodule Corex.Design.Recipes do
                gap: {:space, size}
              }),
            preview:
-             Map.merge(Presets.text_block(text), %{
+             Map.merge(RecipePresets.text_block(text), %{
                width: field,
                max_width: field,
                min_height: {:size, size},
@@ -5033,7 +5048,7 @@ defmodule Corex.Design.Recipes do
                border_color: {:color, :border}
              }),
            input:
-             Map.merge(Presets.text_block(text), %{
+             Map.merge(RecipePresets.text_block(text), %{
                width: field,
                max_width: field,
                min_height: {:size, size},
@@ -5046,7 +5061,7 @@ defmodule Corex.Design.Recipes do
 
     defp radius_variants do
       for r <- Axes.radius_atoms() do
-        block = Presets.rounded_block(r)
+        block = RecipePresets.rounded_block(r)
 
         {r,
          [
@@ -5070,8 +5085,8 @@ defmodule Corex.Design.Recipes do
 
     alias Corex.Design.Axes
     alias Corex.Design.Emit.Tokens, as: Var
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Recipes.SemanticStates
     alias Corex.Design.Rule
     alias Corex.Design.Selector
@@ -5298,10 +5313,10 @@ defmodule Corex.Design.Recipes do
         {size,
          [
            root: %{gap: {:space, size}, max_width: {:container, size}},
-           label: Presets.text_block(text),
+           label: RecipePresets.text_block(text),
            region: %{padding: {:space, size}, gap: {:space, size}},
            trigger:
-             Map.merge(Presets.size_block(size), %{
+             Map.merge(RecipePresets.size_block(size), %{
                background_color: {:color, :accent},
                color: {:color, :accent_ink}
              })
@@ -5311,7 +5326,9 @@ defmodule Corex.Design.Recipes do
 
     defp radius_variants do
       for r <- Axes.radius_atoms(),
-          do: {r, [dropzone: Presets.rounded_block(r), trigger: Presets.rounded_block(r)]}
+          do:
+            {r,
+             [dropzone: RecipePresets.rounded_block(r), trigger: RecipePresets.rounded_block(r)]}
     end
 
     defp part(name), do: Selector.part(@id, @scope, name)
@@ -5324,8 +5341,8 @@ defmodule Corex.Design.Recipes do
     @moduledoc false
 
     alias Corex.Design.Axes
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Recipes.SemanticStates
     alias Corex.Design.Rule
     alias Corex.Design.Selector
@@ -5336,7 +5353,7 @@ defmodule Corex.Design.Recipes do
     def recipe do
       Recipe.part_recipe(@id,
         scope: @scope,
-        host_sizing: Presets.default_host_sizing(),
+        host_sizing: RecipePresets.default_host_sizing(),
         base: [],
         variants: [
           semantic: Corex.Design.Recipes.semantic_part_host_variants(),
@@ -5450,7 +5467,7 @@ defmodule Corex.Design.Recipes do
             border: {:raw, "1px solid var(--color-border)"}
           ],
           children:
-            Presets.scrollbar_sm_children() ++
+            RecipePresets.scrollbar_sm_children() ++
               [
                 Rule.new("&", decls: [{:raw, "border-block-start: 0"}]),
                 Rule.new("& p", decls: [margin_block: "0"])
@@ -5524,7 +5541,9 @@ defmodule Corex.Design.Recipes do
 
     defp radius_variants do
       for r <- Axes.radius_atoms(),
-          do: {r, [content: Presets.rounded_block(r), trigger: Presets.rounded_block(r)]}
+          do:
+            {r,
+             [content: RecipePresets.rounded_block(r), trigger: RecipePresets.rounded_block(r)]}
     end
 
     defp part(name), do: Selector.part(@id, @scope, name)
@@ -5535,8 +5554,8 @@ defmodule Corex.Design.Recipes do
 
     alias Corex.Design.Axes
     alias Corex.Design.Palette
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Rule
     alias Corex.Design.Selector
 
@@ -5546,7 +5565,7 @@ defmodule Corex.Design.Recipes do
     def recipe do
       Recipe.part_recipe(@id,
         scope: @scope,
-        host_sizing: Presets.default_host_sizing(),
+        host_sizing: RecipePresets.default_host_sizing(),
         base: [],
         variants: [
           semantic: semantic_variants(),
@@ -5614,7 +5633,7 @@ defmodule Corex.Design.Recipes do
     end
 
     defp size_variants do
-      for size <- Axes.size_atoms(), do: {size, [root: Presets.size_block(size)]}
+      for size <- Axes.size_atoms(), do: {size, [root: RecipePresets.size_block(size)]}
     end
 
     defp semantic_variants do
@@ -5628,7 +5647,7 @@ defmodule Corex.Design.Recipes do
     end
 
     defp text_variants do
-      for step <- Axes.text_atoms(), do: {step, [title: Presets.text_block(step)]}
+      for step <- Axes.text_atoms(), do: {step, [title: RecipePresets.text_block(step)]}
     end
 
     defp gap_variants do
@@ -5647,16 +5666,16 @@ defmodule Corex.Design.Recipes do
 
     alias Corex.Design.Axes
     alias Corex.Design.Palette
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Recipes.HostIcon
     alias Corex.Design.Rule
     alias Corex.Design.Selector
 
     def recipe do
       Recipe.define(:link,
-        host_sizing: Presets.inline_host_sizing(),
-        base: Presets.link_base(),
+        host_sizing: RecipePresets.inline_host_sizing(),
+        base: RecipePresets.link_base(),
         variants: [
           semantic: semantic_variants(),
           variant: variant_variants(),
@@ -5731,15 +5750,15 @@ defmodule Corex.Design.Recipes do
     end
 
     defp size_variants do
-      for size <- Axes.size_atoms(), do: {size, Presets.size_block(size)}
+      for size <- Axes.size_atoms(), do: {size, RecipePresets.size_block(size)}
     end
 
     defp text_variants do
-      for step <- Axes.text_atoms(), do: {step, Presets.text_block(step)}
+      for step <- Axes.text_atoms(), do: {step, RecipePresets.text_block(step)}
     end
 
     defp radius_variants do
-      for r <- Axes.radius_atoms(), do: {r, Presets.rounded_block(r)}
+      for r <- Axes.radius_atoms(), do: {r, RecipePresets.rounded_block(r)}
     end
   end
 
@@ -5747,8 +5766,8 @@ defmodule Corex.Design.Recipes do
     @moduledoc false
 
     alias Corex.Design.Axes
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Recipes.SemanticStates
     alias Corex.Design.Rule
     alias Corex.Design.Selector
@@ -5866,7 +5885,7 @@ defmodule Corex.Design.Recipes do
             border_radius: {:radius, :md},
             gap: "1px"
           ],
-          children: Presets.scrollbar_sm_children()
+          children: RecipePresets.scrollbar_sm_children()
         ),
         Rule.new(
           "#{content}[data-layout='grid']:not(:has(#{slot("item-group")}))",
@@ -5969,7 +5988,7 @@ defmodule Corex.Design.Recipes do
     defp size_variants do
       for size <- Axes.size_atoms() do
         text = if(size == :md, do: :base, else: size)
-        block = Presets.text_block(text)
+        block = RecipePresets.text_block(text)
 
         {size,
          [
@@ -5989,7 +6008,7 @@ defmodule Corex.Design.Recipes do
     end
 
     defp radius_variants do
-      for r <- Axes.radius_atoms(), do: {r, [content: Presets.rounded_block(r)]}
+      for r <- Axes.radius_atoms(), do: {r, [content: RecipePresets.rounded_block(r)]}
     end
 
     defp part(name), do: Selector.part(@id, @scope, name)
@@ -6002,8 +6021,8 @@ defmodule Corex.Design.Recipes do
 
     alias Corex.Design.Axes
     alias Corex.Design.Palette
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Rule
     alias Corex.Design.Selector
 
@@ -6037,7 +6056,7 @@ defmodule Corex.Design.Recipes do
 
     defp size_variants do
       for size <- Axes.size_atoms() do
-        block = Presets.size_block(size)
+        block = RecipePresets.size_block(size)
         {size, [item: Map.take(block, [:font_size, :line_height, :gap])]}
       end
     end
@@ -6177,8 +6196,8 @@ defmodule Corex.Design.Recipes do
     alias Corex.Design.Axes
     alias Corex.Design.Emit.Tokens, as: Var
     alias Corex.Design.Palette
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Recipes.SemanticStates
     alias Corex.Design.Rule
     alias Corex.Design.Selector
@@ -6189,7 +6208,7 @@ defmodule Corex.Design.Recipes do
     def recipe do
       Recipe.part_recipe(@id,
         scope: @scope,
-        host_sizing: Presets.default_host_sizing(),
+        host_sizing: RecipePresets.default_host_sizing(),
         base: [],
         variants: [
           semantic: semantic_variants(),
@@ -6324,14 +6343,15 @@ defmodule Corex.Design.Recipes do
         Rule.new(trigger_item, decls: [include: :ui_item, min_width: "0"]),
         Rule.new(
           "#{item} > #{slot("item-indicator")}, #{trigger_item} > #{slot("item-indicator")}",
-          decls: Map.to_list(Presets.item_row_indicator()) ++ [transition: "none !important"]
+          decls:
+            Map.to_list(RecipePresets.item_row_indicator()) ++ [transition: "none !important"]
         ),
-        Rule.new(item_text, decls: Map.to_list(Presets.item_row_text())),
+        Rule.new(item_text, decls: Map.to_list(RecipePresets.item_row_text())),
         Rule.new("#{item_text} > [data-icon]",
           decls: [margin_inline_start: "auto", flex_shrink: "0"]
         ),
         Rule.new(item_indicator,
-          decls: Map.to_list(Presets.item_row_indicator()) ++ [include: :ui_icon]
+          decls: Map.to_list(RecipePresets.item_row_indicator()) ++ [include: :ui_icon]
         ),
         Rule.new("#{content} #{slot("trigger-item")}",
           decls: [justify_content: "flex-start", width: "100%", min_width: "0"]
@@ -6397,7 +6417,7 @@ defmodule Corex.Design.Recipes do
     defp size_variants do
       for size <- Axes.size_atoms() do
         text = if(size == :md, do: :base, else: size)
-        block = Presets.text_block(text)
+        block = RecipePresets.text_block(text)
 
         {size,
          [
@@ -6416,7 +6436,7 @@ defmodule Corex.Design.Recipes do
     end
 
     defp radius_variants do
-      for r <- Axes.radius_atoms(), do: {r, [content: Presets.rounded_block(r)]}
+      for r <- Axes.radius_atoms(), do: {r, [content: RecipePresets.rounded_block(r)]}
     end
 
     defp part(name), do: Selector.part(@id, @scope, name)
@@ -6429,8 +6449,8 @@ defmodule Corex.Design.Recipes do
 
     alias Corex.Design.Axes
     alias Corex.Design.Palette
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Recipes.FormHost
     alias Corex.Design.Rule
     alias Corex.Design.Selector
@@ -6468,9 +6488,9 @@ defmodule Corex.Design.Recipes do
         {size,
          [
            root: %{gap: {:space, size}, max_width: {:container, size}},
-           label: Presets.text_block(text),
+           label: RecipePresets.text_block(text),
            input:
-             Map.merge(Presets.text_block(text), %{
+             Map.merge(RecipePresets.text_block(text), %{
                padding_inline: {:space, size},
                min_height: {:size, size},
                background_color: {:color, :ui},
@@ -6482,7 +6502,8 @@ defmodule Corex.Design.Recipes do
     end
 
     defp radius_variants do
-      for radius <- Axes.radius_atoms(), do: {radius, [input: Presets.rounded_block(radius)]}
+      for radius <- Axes.radius_atoms(),
+          do: {radius, [input: RecipePresets.rounded_block(radius)]}
     end
 
     defp size_text(:md), do: :base
@@ -6546,8 +6567,8 @@ defmodule Corex.Design.Recipes do
 
     alias Corex.Design.Axes
     alias Corex.Design.Palette
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Recipes.FormHost
     alias Corex.Design.Rule
     alias Corex.Design.Selector
@@ -6704,7 +6725,7 @@ defmodule Corex.Design.Recipes do
         {size,
          [
            root: %{gap: {:space, size}},
-           label: Presets.text_block(text),
+           label: RecipePresets.text_block(text),
            trigger_group: %{
              width: {:size, size},
              min_height: {:size, size},
@@ -6712,7 +6733,7 @@ defmodule Corex.Design.Recipes do
              max_height: {:size, size}
            },
            input:
-             Map.merge(Presets.text_block(text), %{
+             Map.merge(RecipePresets.text_block(text), %{
                min_height: {:size, size},
                max_height: {:size, size},
                padding_inline: {:space, size},
@@ -6720,13 +6741,13 @@ defmodule Corex.Design.Recipes do
                color: {:color, :ui_ink}
              }),
            increment_trigger:
-             Map.merge(Presets.text_block(text), %{
+             Map.merge(RecipePresets.text_block(text), %{
                background_color: {:color, :ui},
                color: {:color, :ui_ink},
                min_height: {:raw, "calc(var(--size-#{size}) / 2)"}
              }),
            decrement_trigger:
-             Map.merge(Presets.text_block(text), %{
+             Map.merge(RecipePresets.text_block(text), %{
                background_color: {:color, :ui},
                color: {:color, :ui_ink},
                min_height: {:raw, "calc(var(--size-#{size}) / 2)"}
@@ -6739,7 +6760,8 @@ defmodule Corex.Design.Recipes do
     defp size_text(step), do: step
 
     defp radius_variants do
-      for radius <- Axes.radius_atoms(), do: {radius, [input: Presets.rounded_block(radius)]}
+      for radius <- Axes.radius_atoms(),
+          do: {radius, [input: RecipePresets.rounded_block(radius)]}
     end
   end
 
@@ -6747,8 +6769,8 @@ defmodule Corex.Design.Recipes do
     @moduledoc false
 
     alias Corex.Design.Axes
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Recipes.SemanticStates
     alias Corex.Design.Rule
     alias Corex.Design.Selector
@@ -6800,7 +6822,7 @@ defmodule Corex.Design.Recipes do
             width: "100%",
             max_width: "100%"
           ],
-          children: Presets.scrollbar_sm_children()
+          children: RecipePresets.scrollbar_sm_children()
         ),
         Rule.new(prev,
           decls: [
@@ -6874,13 +6896,13 @@ defmodule Corex.Design.Recipes do
         {size,
          [
            item:
-             Map.merge(Presets.text_block(text), %{
+             Map.merge(RecipePresets.text_block(text), %{
                min_height: {:size, size},
                min_width: {:size, size},
                padding_inline: {:space, size}
              }),
            ellipsis:
-             Map.merge(Presets.text_block(text), %{
+             Map.merge(RecipePresets.text_block(text), %{
                min_height: {:size, size},
                min_width: {:size, size},
                color: {:color, :ui_ink}
@@ -6905,9 +6927,9 @@ defmodule Corex.Design.Recipes do
           do:
             {r,
              [
-               prev_trigger: Presets.rounded_block(r),
-               next_trigger: Presets.rounded_block(r),
-               item: Presets.rounded_block(r)
+               prev_trigger: RecipePresets.rounded_block(r),
+               next_trigger: RecipePresets.rounded_block(r),
+               item: RecipePresets.rounded_block(r)
              ]}
     end
 
@@ -6922,8 +6944,8 @@ defmodule Corex.Design.Recipes do
 
     alias Corex.Design.Axes
     alias Corex.Design.Palette
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Recipes.FormHost
     alias Corex.Design.Rule
     alias Corex.Design.Selector
@@ -7054,10 +7076,10 @@ defmodule Corex.Design.Recipes do
         {size,
          [
            root: %{gap: {:space, size}},
-           label: Presets.text_block(text),
+           label: RecipePresets.text_block(text),
            control: %{max_width: {:container, size}},
            input:
-             Map.merge(Presets.text_block(text), %{
+             Map.merge(RecipePresets.text_block(text), %{
                min_height: {:size, size},
                max_height: {:size, size},
                padding_inline: {:space, size},
@@ -7065,7 +7087,7 @@ defmodule Corex.Design.Recipes do
                color: {:color, :ui_ink}
              }),
            visibility_trigger:
-             Map.merge(Presets.text_block(text), %{
+             Map.merge(RecipePresets.text_block(text), %{
                min_width: {:size, size},
                min_height: {:size, size},
                max_height: {:size, size},
@@ -7080,7 +7102,8 @@ defmodule Corex.Design.Recipes do
     defp size_text(step), do: step
 
     defp radius_variants do
-      for radius <- Axes.radius_atoms(), do: {radius, [input: Presets.rounded_block(radius)]}
+      for radius <- Axes.radius_atoms(),
+          do: {radius, [input: RecipePresets.rounded_block(radius)]}
     end
   end
 
@@ -7089,8 +7112,8 @@ defmodule Corex.Design.Recipes do
 
     alias Corex.Design.Axes
     alias Corex.Design.Palette
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Recipes.FormHost
     alias Corex.Design.Rule
     alias Corex.Design.Selector
@@ -7225,10 +7248,10 @@ defmodule Corex.Design.Recipes do
         {size,
          [
            root: %{gap: {:space, size}},
-           label: Presets.text_block(text),
+           label: RecipePresets.text_block(text),
            control: %{gap: {:space, size}},
            input:
-             Map.merge(Presets.text_block(text), %{
+             Map.merge(RecipePresets.text_block(text), %{
                height: {:size, size},
                width: {:size, size}
              })
@@ -7237,7 +7260,7 @@ defmodule Corex.Design.Recipes do
     end
 
     defp radius_variants do
-      for r <- Axes.radius_atoms(), do: {r, [input: Presets.rounded_block(r)]}
+      for r <- Axes.radius_atoms(), do: {r, [input: RecipePresets.rounded_block(r)]}
     end
 
     defp size_text(:md), do: :base
@@ -7249,8 +7272,8 @@ defmodule Corex.Design.Recipes do
 
     alias Corex.Design.Axes
     alias Corex.Design.Palette
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Recipes.FormHost
     alias Corex.Design.Rule
     alias Corex.Design.Selector
@@ -7295,7 +7318,7 @@ defmodule Corex.Design.Recipes do
           line_height: {:leading, size_text(size)}
         }
 
-        {size, [item_control: block, item_text: Presets.text_block(size_text(size))]}
+        {size, [item_control: block, item_text: RecipePresets.text_block(size_text(size))]}
       end
     end
 
@@ -7303,7 +7326,7 @@ defmodule Corex.Design.Recipes do
     defp size_text(step), do: step
 
     defp radius_variants do
-      for r <- Axes.radius_atoms(), do: {r, [item_control: Presets.rounded_block(r)]}
+      for r <- Axes.radius_atoms(), do: {r, [item_control: RecipePresets.rounded_block(r)]}
     end
 
     defp radio_group_rules do
@@ -7410,8 +7433,8 @@ defmodule Corex.Design.Recipes do
 
     alias Corex.Design.Axes
     alias Corex.Design.Palette
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Rule
     alias Corex.Design.Selector
     alias Corex.Design.Style
@@ -7465,10 +7488,10 @@ defmodule Corex.Design.Recipes do
           min_width: 0,
           position: :relative
         },
-        indicator: Presets.trigger_indicator_part(),
+        indicator: RecipePresets.trigger_indicator_part(),
         trigger:
           Style.merge_many([
-            Presets.trigger_base(),
+            RecipePresets.trigger_base(),
             %{
               flex: {:raw, "1 1 0%"},
               justify_content: :space_between,
@@ -7487,11 +7510,11 @@ defmodule Corex.Design.Recipes do
               active: %{background_color: {:color, :ui_active}},
               focus_visible: %{
                 outline: :none,
-                box_shadow: Presets.inset_ring(:focus_ring)
+                box_shadow: RecipePresets.inset_ring(:focus_ring)
               },
               open: trigger_open_sx(),
               disabled:
-                Presets.lock_disabled_interaction(%{
+                RecipePresets.lock_disabled_interaction(%{
                   color: {:color, :ui_ink_muted},
                   background_color: {:color, :ui_muted},
                   cursor: :not_allowed,
@@ -7520,7 +7543,7 @@ defmodule Corex.Design.Recipes do
           padding_inline_start: {:space, :md}
         },
         item: item_sx(),
-        item_indicator: Presets.trigger_indicator_part(),
+        item_indicator: RecipePresets.trigger_indicator_part(),
         error: %{
           display: :inline_flex,
           align_items: :center,
@@ -7587,7 +7610,7 @@ defmodule Corex.Design.Recipes do
           }
         },
         disabled:
-          Presets.lock_disabled_interaction(%{
+          RecipePresets.lock_disabled_interaction(%{
             color: {:color, :ui_ink_muted},
             background_color: {:color, :ui_muted},
             cursor: :not_allowed,
@@ -7623,7 +7646,7 @@ defmodule Corex.Design.Recipes do
         open: trigger_open_sx(),
         focus_visible: %{
           outline: :none,
-          box_shadow: Presets.inset_ring(:focus_ring)
+          box_shadow: RecipePresets.inset_ring(:focus_ring)
         }
       }
     end
@@ -7639,7 +7662,7 @@ defmodule Corex.Design.Recipes do
       content = Selector.part(:select, @scope, "content")
       error = Selector.part(:select, @scope, "error")
       trigger = ~S(.select [data-scope="select"][data-part="trigger"])
-      item_text = Presets.item_text()
+      item_text = RecipePresets.item_text()
 
       [
         Rule.new("#{host}[data-loading] #{root}", decls: [include: :ui_loading]),
@@ -7694,7 +7717,7 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(
           ~s(#{trigger} > [data-scope="select"][data-part="indicator"]),
-          decls: Map.to_list(Presets.trigger_indicator_part())
+          decls: Map.to_list(RecipePresets.trigger_indicator_part())
         ),
         Rule.new(
           ~s(#{trigger} > [data-icon]),
@@ -7831,19 +7854,19 @@ defmodule Corex.Design.Recipes do
         {s,
          [
            root: %{gap: {:space, s}},
-           label: Presets.text_block(text),
+           label: RecipePresets.text_block(text),
            control: %{max_width: {:container, s}, gap: {:space, s}},
-           trigger: Presets.size_block(s),
-           item: Map.merge(Presets.size_block(s), %{min_height: {:size, s}}),
+           trigger: RecipePresets.size_block(s),
+           item: Map.merge(RecipePresets.size_block(s), %{min_height: {:size, s}}),
            item_indicator: %{padding_inline_end: {:space, s}},
-           item_group_label: Presets.text_block(text)
+           item_group_label: RecipePresets.text_block(text)
          ]}
       end
     end
 
     defp text_variants do
       for step <- Axes.text_atoms() do
-        block = Presets.text_block(step)
+        block = RecipePresets.text_block(step)
 
         {step,
          [
@@ -7856,7 +7879,7 @@ defmodule Corex.Design.Recipes do
     end
 
     defp radius_variants do
-      for r <- Axes.radius_atoms(), do: {r, [trigger: Presets.rounded_block(r)]}
+      for r <- Axes.radius_atoms(), do: {r, [trigger: RecipePresets.rounded_block(r)]}
     end
 
     defp size_text(:md), do: :base
@@ -7868,8 +7891,8 @@ defmodule Corex.Design.Recipes do
 
     alias Corex.Design.Axes
     alias Corex.Design.Palette
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Recipes.FormHost
     alias Corex.Design.Rule
     alias Corex.Design.Selector
@@ -8012,10 +8035,10 @@ defmodule Corex.Design.Recipes do
         {size,
          [
            root: %{gap: {:space, size}},
-           label: Presets.text_block(text),
+           label: RecipePresets.text_block(text),
            control: %{height: {:raw, "calc(var(--size-#{size}) * 4)"}},
            clear_trigger:
-             Map.merge(Presets.text_block(text), %{
+             Map.merge(RecipePresets.text_block(text), %{
                min_height: {:size, size},
                min_width: {:size, size},
                background_color: {:color, :accent},
@@ -8027,7 +8050,7 @@ defmodule Corex.Design.Recipes do
 
     defp radius_variants do
       for r <- Axes.radius_atoms() do
-        block = Presets.rounded_block(r)
+        block = RecipePresets.rounded_block(r)
 
         {r, [control: block, segment: block, clear_trigger: block]}
       end
@@ -8042,8 +8065,8 @@ defmodule Corex.Design.Recipes do
 
     alias Corex.Design.Axes
     alias Corex.Design.Palette
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Recipes.FormHost
     alias Corex.Design.Rule
     alias Corex.Design.Selector
@@ -8080,7 +8103,7 @@ defmodule Corex.Design.Recipes do
                track_var_block(size)
              ),
            control: %{padding: {:raw, "calc(var(--space-#{size}) * 0.3)"}},
-           label: Presets.text_block(size_text(size))
+           label: RecipePresets.text_block(size_text(size))
          ]}
       end
     end
@@ -8100,7 +8123,8 @@ defmodule Corex.Design.Recipes do
 
     defp radius_variants do
       for r <- Axes.radius_atoms(),
-          do: {r, [control: Presets.rounded_block(r), thumb: Presets.rounded_block(r)]}
+          do:
+            {r, [control: RecipePresets.rounded_block(r), thumb: RecipePresets.rounded_block(r)]}
     end
 
     defp switch_rules do
@@ -8219,8 +8243,8 @@ defmodule Corex.Design.Recipes do
     @moduledoc false
 
     alias Corex.Design.Axes
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Recipes.SemanticStates
     alias Corex.Design.Rule
     alias Corex.Design.Selector
@@ -8353,19 +8377,21 @@ defmodule Corex.Design.Recipes do
         {size,
          [
            root: %{gap: {:space, size}},
-           trigger: Presets.size_block(size)
+           trigger: RecipePresets.size_block(size)
          ]}
       end
     end
 
     defp text_variants do
       for step <- Axes.text_atoms(),
-          do: {step, [trigger: Presets.text_block(step), content: Presets.text_block(step)]}
+          do:
+            {step,
+             [trigger: RecipePresets.text_block(step), content: RecipePresets.text_block(step)]}
     end
 
     defp radius_variants do
       for r <- Axes.radius_atoms(),
-          do: {r, [list: Presets.rounded_block(r), content: Presets.rounded_block(r)]}
+          do: {r, [list: RecipePresets.rounded_block(r), content: RecipePresets.rounded_block(r)]}
     end
 
     defp part(name), do: Selector.part(@id, @scope, name)
@@ -8376,8 +8402,8 @@ defmodule Corex.Design.Recipes do
 
     alias Corex.Design.Axes
     alias Corex.Design.Palette
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Rule
     alias Corex.Design.Selector
 
@@ -8545,7 +8571,7 @@ defmodule Corex.Design.Recipes do
 
     defp text_variants do
       for step <- Axes.text_atoms() do
-        block = Presets.text_block(step)
+        block = RecipePresets.text_block(step)
 
         {step,
          [
@@ -8558,7 +8584,7 @@ defmodule Corex.Design.Recipes do
 
     defp radius_variants do
       for r <- Axes.radius_atoms() do
-        block = Presets.rounded_block(r)
+        block = RecipePresets.rounded_block(r)
 
         {r,
          [
@@ -8581,8 +8607,8 @@ defmodule Corex.Design.Recipes do
 
     alias Corex.Design.Axes
     alias Corex.Design.Palette
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Rule
     alias Corex.Design.Selector
 
@@ -8834,7 +8860,7 @@ defmodule Corex.Design.Recipes do
 
     defp text_variants do
       for step <- Axes.text_atoms() do
-        block = Presets.text_block(step)
+        block = RecipePresets.text_block(step)
 
         {step,
          [
@@ -8846,7 +8872,7 @@ defmodule Corex.Design.Recipes do
     end
 
     defp radius_variants do
-      for r <- Axes.radius_atoms(), do: {r, [action_trigger: Presets.rounded_block(r)]}
+      for r <- Axes.radius_atoms(), do: {r, [action_trigger: RecipePresets.rounded_block(r)]}
     end
 
     defp part(name), do: Selector.part(@id, @scope, name)
@@ -8858,8 +8884,8 @@ defmodule Corex.Design.Recipes do
     alias Corex.Design.Axes
     alias Corex.Design.Emit.Tokens, as: Var
     alias Corex.Design.Palette
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Rule
     alias Corex.Design.Selector
 
@@ -8869,7 +8895,7 @@ defmodule Corex.Design.Recipes do
     def recipe do
       Recipe.part_recipe(@id,
         scope: @scope,
-        host_sizing: Presets.default_host_sizing(),
+        host_sizing: RecipePresets.default_host_sizing(),
         base: [],
         variants: [
           semantic: semantic_variants(),
@@ -9091,7 +9117,7 @@ defmodule Corex.Design.Recipes do
     defp size_variants do
       for size <- Axes.size_atoms() do
         text = if(size == :md, do: :base, else: size)
-        block = Presets.text_block(text)
+        block = RecipePresets.text_block(text)
 
         {size,
          [
@@ -9112,7 +9138,7 @@ defmodule Corex.Design.Recipes do
 
     defp radius_variants do
       for r <- Axes.radius_atoms(),
-          do: {r, [root: Presets.rounded_block(r), content: Presets.rounded_block(r)]}
+          do: {r, [root: RecipePresets.rounded_block(r), content: RecipePresets.rounded_block(r)]}
     end
 
     defp part(name), do: Selector.part(@id, @scope, name)
@@ -9123,8 +9149,8 @@ defmodule Corex.Design.Recipes do
 
     alias Corex.Design.Axes
     alias Corex.Design.Palette
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Recipes.HostIcon
     alias Corex.Design.Rule
     alias Corex.Design.Selector
@@ -9136,7 +9162,7 @@ defmodule Corex.Design.Recipes do
     def recipe do
       Recipe.part_recipe(:toggle,
         scope: @scope,
-        host_sizing: Presets.default_host_sizing(),
+        host_sizing: RecipePresets.default_host_sizing(),
         base: [
           host: %{},
           root: root_base(),
@@ -9162,11 +9188,11 @@ defmodule Corex.Design.Recipes do
 
     defp root_base do
       Style.merge(
-        Presets.trigger_base(),
+        RecipePresets.trigger_base(),
         %{
           width: {:raw, "fit-content"},
-          on: Presets.visual_solid(),
-          not_on: Presets.visual_trigger()
+          on: RecipePresets.visual_solid(),
+          not_on: RecipePresets.visual_trigger()
         }
       )
     end
@@ -9177,23 +9203,23 @@ defmodule Corex.Design.Recipes do
 
     defp variant_variants do
       [
-        solid: [root: %{not_on: Presets.visual_trigger()}],
-        ghost: [root: %{not_on: Presets.visual_ghost()}],
-        outline: [root: %{not_on: Presets.visual_outline()}],
-        subtle: [root: %{not_on: Presets.visual_subtle()}]
+        solid: [root: %{not_on: RecipePresets.visual_trigger()}],
+        ghost: [root: %{not_on: RecipePresets.visual_ghost()}],
+        outline: [root: %{not_on: RecipePresets.visual_outline()}],
+        subtle: [root: %{not_on: RecipePresets.visual_subtle()}]
       ]
     end
 
     defp size_variants do
-      for size <- Axes.size_atoms(), do: {size, Presets.size_block(size)}
+      for size <- Axes.size_atoms(), do: {size, RecipePresets.size_block(size)}
     end
 
     defp text_variants do
-      for step <- Axes.text_atoms(), do: {step, Presets.text_block(step)}
+      for step <- Axes.text_atoms(), do: {step, RecipePresets.text_block(step)}
     end
 
     defp radius_variants do
-      for r <- Axes.radius_atoms(), do: {r, Presets.rounded_block(r)}
+      for r <- Axes.radius_atoms(), do: {r, RecipePresets.rounded_block(r)}
     end
 
     defp on_root(variants), do: for({value, block} <- variants, do: {value, [root: block]})
@@ -9223,8 +9249,8 @@ defmodule Corex.Design.Recipes do
 
     alias Corex.Design.Axes
     alias Corex.Design.Palette
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Recipes.SemanticStates
     alias Corex.Design.Rule
     alias Corex.Design.Selector
@@ -9295,7 +9321,7 @@ defmodule Corex.Design.Recipes do
     end
 
     defp toggle_group_item_size_block(size) do
-      Presets.size_block(size)
+      RecipePresets.size_block(size)
       |> Map.put(:padding_inline, {:space, toggle_group_item_padding(size)})
     end
 
@@ -9304,7 +9330,7 @@ defmodule Corex.Design.Recipes do
 
     defp radius_variants do
       for r <- Axes.radius_atoms(),
-          do: {r, [root: Presets.rounded_block(r), item: %{border_radius: 0}]}
+          do: {r, [root: RecipePresets.rounded_block(r), item: %{border_radius: 0}]}
     end
 
     defp neutral_item_rules do
@@ -9357,8 +9383,8 @@ defmodule Corex.Design.Recipes do
     @moduledoc false
 
     alias Corex.Design.Axes
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Rule
     alias Corex.Design.Selector
 
@@ -9368,7 +9394,7 @@ defmodule Corex.Design.Recipes do
     def recipe do
       Recipe.part_recipe(@id,
         scope: @scope,
-        host_sizing: Presets.default_host_sizing(),
+        host_sizing: RecipePresets.default_host_sizing(),
         base: [],
         variants: [
           semantic: semantic_variants(),
@@ -9481,11 +9507,11 @@ defmodule Corex.Design.Recipes do
     end
 
     defp text_variants do
-      for step <- Axes.text_atoms(), do: {step, [content: Presets.text_block(step)]}
+      for step <- Axes.text_atoms(), do: {step, [content: RecipePresets.text_block(step)]}
     end
 
     defp radius_variants do
-      for r <- Axes.radius_atoms(), do: {r, [content: Presets.rounded_block(r)]}
+      for r <- Axes.radius_atoms(), do: {r, [content: RecipePresets.rounded_block(r)]}
     end
 
     defp part(name), do: Selector.part(@id, @scope, name)
@@ -9503,8 +9529,8 @@ defmodule Corex.Design.Recipes do
     alias Corex.Design.Axes
     alias Corex.Design.Emit.Tokens, as: Var
     alias Corex.Design.Palette
-    alias Corex.Design.Presets
     alias Corex.Design.Recipe
+    alias Corex.Design.RecipePresets
     alias Corex.Design.Rule
     alias Corex.Design.Selector
 
@@ -9996,8 +10022,8 @@ defmodule Corex.Design.Recipes do
       block = fn size ->
         [
           label: %{padding_inline_start: {:space, size}},
-          item: Map.merge(Presets.size_block(size), %{padding_inline: {:space, size}}),
-          branch_control: Presets.size_block(size),
+          item: Map.merge(RecipePresets.size_block(size), %{padding_inline: {:space, size}}),
+          branch_control: RecipePresets.size_block(size),
           item_text: %{gap: {:space, size}},
           branch_text: %{gap: {:space, size}}
         ]
@@ -10009,10 +10035,10 @@ defmodule Corex.Design.Recipes do
     defp text_variants do
       block = fn step ->
         [
-          item: Presets.text_block(step),
-          branch_control: Presets.text_block(step),
-          item_text: Presets.text_block(step),
-          branch_text: Presets.text_block(step)
+          item: RecipePresets.text_block(step),
+          branch_control: RecipePresets.text_block(step),
+          item_text: RecipePresets.text_block(step),
+          branch_text: RecipePresets.text_block(step)
         ]
       end
 
@@ -10022,8 +10048,8 @@ defmodule Corex.Design.Recipes do
     defp radius_variants do
       block = fn r ->
         [
-          item: Presets.rounded_block(r),
-          branch_control: Presets.rounded_block(r)
+          item: RecipePresets.rounded_block(r),
+          branch_control: RecipePresets.rounded_block(r)
         ]
       end
 

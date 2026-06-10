@@ -1,11 +1,11 @@
 /* Corex generated design - do not edit */
 
 @utility dialog-modal--rounded-* {
-  [data-scope="dialog"][data-part="content"] {
+  [data-scope="dialog"][data-part="close-trigger"] {
       border-radius: --value(--radius-*, [length]);
   }
 
-  [data-scope="dialog"][data-part="close-trigger"] {
+  [data-scope="dialog"][data-part="content"] {
       border-radius: --value(--radius-*, [length]);
   }
 

@@ -259,22 +259,17 @@
   }
 
   .floating-panel [data-scope="floating-panel"][data-part="resize-trigger"] {
-    &[data-axis="n"],
-    &[data-axis="s"] {
+    &[data-axis="n"],\n  &[data-axis="s"] {
       height: 6px;
       max-width: 90%;
     }
 
-    &[data-axis="e"],
-    &[data-axis="w"] {
+    &[data-axis="e"],\n  &[data-axis="w"] {
       width: 6px;
       max-height: 90%;
     }
 
-    &[data-axis="ne"],
-    &[data-axis="nw"],
-    &[data-axis="se"],
-    &[data-axis="sw"] {
+    &[data-axis="ne"],\n  &[data-axis="nw"],\n  &[data-axis="se"],\n  &[data-axis="sw"] {
       width: 10px;
       height: 10px;
     }

@@ -1,4 +1,4 @@
-defmodule Corex.Design.Presets do
+defmodule Corex.Design.RecipePresets do
   @moduledoc false
 
   alias Corex.Design.Rule

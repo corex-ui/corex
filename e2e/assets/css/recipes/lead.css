@@ -23,17 +23,17 @@
 
 @layer components {
   .lead {
+    font-weight: var(--font-weight-extralight);
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
     font-family: var(--font-display);
-    font-weight: var(--font-weight-extralight);
-    @media (min-width: 48rem) {
-      font-size: var(--text-2xl);
-      line-height: var(--leading-2xl);
-    }
     @media (min-width: 64rem) {
       font-size: var(--text-3xl);
       line-height: var(--leading-3xl);
+    }
+    @media (min-width: 48rem) {
+      font-size: var(--text-2xl);
+      line-height: var(--leading-2xl);
     }
   }
 

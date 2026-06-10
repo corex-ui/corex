@@ -25,12 +25,12 @@
   .list {
     padding: 0;
     border: 1px solid var(--color-border);
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
     border-radius: var(--radius-md);
     margin-block: 2em;
-    list-style: none;
     overflow: hidden;
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+    list-style: none;
   }
 
   .list.list--w-auto {
@@ -101,8 +101,8 @@
     white-space: normal;
     padding: var(--space-md);
     color: var(--color-ui-ink);
-    border-bottom: 1px solid var(--color-border);
     text-align: start;
+    border-bottom: 1px solid var(--color-border);
   }
 
   .list li:last-child {

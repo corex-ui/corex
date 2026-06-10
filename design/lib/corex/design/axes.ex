@@ -6,12 +6,11 @@ defmodule Corex.Design.Axes do
   tokens) remain in `Corex.Design.Tokens.Scales`.
   """
 
-  alias Corex.Design.Semantics
   alias Corex.Scales
 
-  def colors, do: Semantics.strings()
-  def semantic_atoms, do: Semantics.atoms()
-  def color_atoms, do: semantic_atoms()
+  def colors, do: Enum.map(Scales.semantic_atoms(), &Atom.to_string/1)
+  def semantic_atoms, do: Scales.semantic_atoms()
+  def color_atoms, do: Scales.semantic_atoms()
 
   def sizes, do: Scales.sizes()
   def size_atoms, do: Scales.size_atoms()

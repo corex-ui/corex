@@ -2,7 +2,7 @@
 name: corex-components
 description: >-
   Load when adding Corex HEEx in lib/*_web/, registering phx-hooks in app.js,
-  importing assets/corex/components/*.css, Corex.Content.new Corex.List.new
+  importing corex.tailwind.css, Corex.Content.new Corex.List.new
   Corex.Tree.new Corex.Image.new, compound slots with meta: and :let={item},
   or accordion combobox dialog timer select tabs. Call MCP list_components and
   get_component before guessing attrs or slots.

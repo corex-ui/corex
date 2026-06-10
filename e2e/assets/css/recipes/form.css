@@ -26,11 +26,11 @@
     display: flex;
     padding: var(--space-lg);
     color: var(--color-ui-ink);
+    background-color: var(--color-layer);
+    flex-direction: column;
     gap: var(--space-md);
     border: 1px solid var(--color-border);
-    background-color: var(--color-layer);
     border-radius: var(--radius-md);
-    flex-direction: column;
   }
 
   .form.form--w-auto {

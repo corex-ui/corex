@@ -567,7 +567,7 @@ defmodule Corex.Design.Emit.Layers do
   @moduledoc false
 
   alias Corex.Design.Emit.TailwindCss
-  alias Corex.Design.Presets
+  alias Corex.Design.RecipePresets
   alias Corex.Design.Rule
 
   def reset_css do
@@ -726,7 +726,7 @@ defmodule Corex.Design.Emit.Layers do
 
   defp global_scrollbar_css do
     TailwindCss.rules_css([
-      Rule.new("*", children: Presets.scrollbar_sm_children())
+      Rule.new("*", children: RecipePresets.scrollbar_sm_children())
     ])
   end
 end

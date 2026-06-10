@@ -8,8 +8,8 @@ defmodule Corex.Design.Palette do
 
   @disabled "&:disabled,\n  &[data-disabled],\n  &[disabled]"
 
-  def semantic_atoms, do: Axes.semantic_atoms()
-  def color_atoms, do: semantic_atoms()
+  def semantic_atoms, do: Corex.Scales.semantic_atoms()
+  def color_atoms, do: Corex.Scales.semantic_atoms()
 
   def solid_var(:neutral), do: "--color-ui"
   def solid_var(role), do: "--color-#{role}"

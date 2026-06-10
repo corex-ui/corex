@@ -58,7 +58,7 @@ There is a moment, the first time you change a token and watch the entire app sh
 
 The four themes (`neo`, `uno`, `duo`, `leo`) ship with light and dark token files each. That is eight surface variants from one set of utilities and components, with a real guarantee underneath.
 
-Palettes are generated through the [Adobe Leonardo](https://leonardocolor.io/) API against explicit contrast targets. Primary ink against the page background lands at 7.0:1. Muted ink against the page background lands above 4.5:1. Borders, accents, every named color in the system gets a number, not an eyeball.
+Palettes are generated at compile time by `corex_design` from seed hexes, OKLCH lightness ramps, and per-role contrast ratios (via the `color` dependency). Primary ink, muted ink, borders, and accents each get explicit ratio targets in theme config, not an eyeball.
 
 That is what makes it possible to swap `data-theme` or `data-mode` on `<html>` and have the entire app stay readable.
 
@@ -76,18 +76,10 @@ If a label ever fails an audit, the answer is almost always to switch a theme, s
 
 ## A thin `site.css`
 
-The setup is small enough to fit in a paragraph. This example uses the **per-component vendoring** path: run `mix corex.design` once, files land under `assets/corex/`, and you import anatomy CSS per component. Phoenix apps with Tailwind 4 can instead compile `corex.tailwind.css` via `:corex_design` (see [Styled](https://hexdocs.pm/corex/styled.html)).
-
-In `app.css`, import the Corex base, the theme files you want to expose, the typography, the layout, and one file per component you render. Point Tailwind at the copied directory. Set `data-theme` and `data-mode` on `<html>`. Set `class="typo layout"` on `<body>`. That is the whole story.
+The setup is small enough to fit in a paragraph. Add `{:corex_design}`, register the `:corex_design` compiler, set `config :corex_design` with `output: "assets/css/corex.tailwind.css"`, and run `mix compile`. Import the generated bundle in `app.css`. Set `data-theme` and `data-mode` on `<html>`. Set `class="typo layout"` on `<body>`. That is the whole story (see [Styled](https://hexdocs.pm/corex/styled.html)).
 
 ```css
-@import "../corex/main.css";
-@import "../corex/theme/neo.css";
-@import "../corex/components/typo.css";
-@import "../corex/components/layout.css";
-@import "../corex/components/accordion.css";
-@import "../corex/components/combobox.css";
-@import "../corex/components/button.css";
+@import "./corex.tailwind.css";
 ```
 
 If your `app.css` still loads daisyUI from stock `phx.new`, remove it. Two token systems fighting for the same utility names is the most reliable way to make both unhappy.

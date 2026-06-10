@@ -71,8 +71,6 @@ and forward caller classes. Styling lives in optional `:corex_design` stylesheet
 - [docs] Restore `mix corex.new` on Hexdocs
 - [mcp] Security hardening
 
-Run `mix corex.design --force` in your app to refresh `assets/corex/` (CSS and tokens).
-
 ## 0.1.0
 
 Initial Corex stable release.

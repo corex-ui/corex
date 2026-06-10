@@ -63,8 +63,8 @@
   [data-scope="editable"][data-part="edit-trigger"] {
       gap: --value(--spacing-space-*, [length]);
     max-width: --value(--container-*, [length]);
-    padding-inline: --value(--spacing-space-*, [length]);
     min-height: --value(--spacing-size-*, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
@@ -72,8 +72,8 @@
   [data-scope="editable"][data-part="cancel-trigger"] {
       gap: --value(--spacing-space-*, [length]);
     max-width: --value(--container-*, [length]);
-    padding-inline: --value(--spacing-space-*, [length]);
     min-height: --value(--spacing-size-*, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
@@ -81,8 +81,8 @@
   [data-scope="editable"][data-part="submit-trigger"] {
       gap: --value(--spacing-space-*, [length]);
     max-width: --value(--container-*, [length]);
-    padding-inline: --value(--spacing-space-*, [length]);
     min-height: --value(--spacing-size-*, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }

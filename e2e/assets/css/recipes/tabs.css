@@ -43,8 +43,8 @@
 
   [data-scope="tabs"][data-part="trigger"] {
       gap: --value(--spacing-space-*, [length]);
-    padding-inline: --value(--spacing-space-*, [length]);
     min-height: --value(--spacing-size-*, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }

@@ -2,8 +2,8 @@ defmodule Corex.DesignTest do
   use ExUnit.Case, async: false
 
   alias Corex.Design.Compiler
-  alias Corex.Design.Presets
   alias Corex.Design.Recipe
+  alias Corex.Design.RecipePresets
   alias Corex.Design.Recipes
   alias Corex.Design.Recipes.Accordion
   alias Corex.Design.Recipes.Button
@@ -124,7 +124,7 @@ defmodule Corex.DesignTest do
     test "host sizing presets cover container scale" do
       steps = Scales.container() |> Keyword.keys() |> Enum.map(&to_string/1)
 
-      for {step, _} <- Presets.max_width_blocks() do
+      for {step, _} <- RecipePresets.max_width_blocks() do
         assert to_string(step) in ["none", "full" | steps]
       end
     end

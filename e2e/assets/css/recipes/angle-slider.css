@@ -21,9 +21,9 @@
 @utility angle-slider--size-* {
   [data-scope="angle-slider"][data-part="control"] {
       color: --value(--color-ui-ink-*, [color]);
+    background-color: --value(--color-*, [color]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    background-color: --value(--color-*, [color]);
   }
 
   [data-scope="angle-slider"][data-part="label"] {

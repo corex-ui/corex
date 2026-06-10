@@ -111,7 +111,7 @@ When writing, verify against:
 - Component `@moduledoc` in `lib/components/<name>.ex` (Anatomy, API, Events)
 - `assets/lib/core.ts` and `assets/hooks/<name>.ts` for client behavior
 - `guides/tableau.md` for static export
-- `guides/design.md` for tokens and Designex
+- `guides/design.md` and `guides/styled.md` for `corex_design` tokens and CSS
 
 ## Optional front matter (future)
 
