@@ -4,7 +4,7 @@ import { Menu } from "../components/menu";
 import type { SelectionDetails, OpenChangeDetails, Props } from "@zag-js/menu";
 
 import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
-import { notifyChange } from "../lib/respond-to";
+import { notifyChange, readPayloadId } from "../lib/respond-to";
 import { performRedirect, readDomItemRedirect } from "../lib/redirect";
 import { readPositioningOptions } from "../lib/positioning";
 
@@ -56,6 +56,12 @@ function destroyDescendantMenus(menu: Menu): void {
     destroyDescendantMenus(child);
     child.destroy();
   }
+}
+
+export function menuSetOpenMatches(elId: string, payload: unknown): boolean {
+  const targetId = readPayloadId(payload);
+  if (!targetId) return false;
+  return elId === targetId || elId === `menu:${targetId}`;
 }
 
 const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
@@ -175,10 +181,8 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
     this.handlers = [];
 
     this.handlers.push(
-      this.handleEvent("menu_set_open", (payload: { menu_id?: string; open: boolean }) => {
-        const targetId = payload.menu_id;
-        const matches = !targetId || el.id === targetId || el.id === `menu:${targetId}`;
-        if (!matches) return;
+      this.handleEvent("menu_set_open", (payload: { open: boolean }) => {
+        if (!menuSetOpenMatches(el.id, payload)) return;
         menu.api.setOpen(payload.open);
       })
     );

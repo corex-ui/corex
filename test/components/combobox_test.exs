@@ -317,11 +317,52 @@ defmodule Corex.ComboboxTest do
     end
   end
 
+  describe "Connect.trigger/1" do
+    test "returns trigger attributes with zag-aligned id" do
+      assigns = %{id: "test-combobox", dir: "ltr", disabled: false, invalid: false}
+      result = Connect.trigger(assigns)
+      assert result["id"] == "combobox:test-combobox:toggle-btn"
+    end
+  end
+
+  describe "Connect.clear_trigger/1" do
+    test "returns clear trigger attributes with zag-aligned id" do
+      assigns = %{id: "test-combobox", dir: "ltr", disabled: false, invalid: false}
+      result = Connect.clear_trigger(assigns)
+      assert result["id"] == "combobox:test-combobox:clear-btn"
+    end
+  end
+
   describe "Connect.positioner/1" do
-    test "returns positioner attributes" do
+    test "returns positioner attributes with zag-aligned id" do
       assigns = %{id: "test-combobox", dir: "ltr"}
       result = Connect.positioner(assigns)
       assert result["data-part"] == "positioner"
+      assert result["id"] == "combobox:test-combobox:popper"
+    end
+  end
+
+  describe "Connect.item_group/1" do
+    test "returns item group attributes with zag-aligned id" do
+      assigns = %{id: "test-combobox", group_id: "group-1", dir: "ltr"}
+      result = Connect.item_group(assigns)
+      assert result["id"] == "combobox:test-combobox:optgroup:group-1"
+    end
+  end
+
+  describe "Connect.item_group_label/1" do
+    test "returns item group label attributes with zag-aligned id" do
+      assigns = %{id: "test-combobox", html_for: "group-1", dir: "ltr"}
+      result = Connect.item_group_label(assigns)
+      assert result["id"] == "combobox:test-combobox:optgroup-label:group-1"
+    end
+  end
+
+  describe "Connect.item/1" do
+    test "returns item attributes with zag-aligned id" do
+      assigns = %{id: "test-combobox", value: "a", dir: "ltr"}
+      result = Connect.item(assigns)
+      assert result["id"] == "combobox:test-combobox:option:a"
     end
   end
 

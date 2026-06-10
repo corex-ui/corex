@@ -39,8 +39,3 @@ Run `mix compile` to refresh `assets/css/` (`corex.tailwind.css`, `layers/`, `re
 
 For a full manual install path (first-time setup), see [Manual installation](manual_installation.html).
 
-## Controlled components (0.1.0)
-
-These components support `controlled` with matching `on_*_change` handlers: accordion, angle slider, checkbox, collapsible, date picker, dialog, listbox, pagination, radio group, select, switch, tabs, tags input, toggle, and toggle group.
-
-Other stateful components use assign-driven defaults (`value`, `open`, `paths`, etc.) without `controlled` for now.

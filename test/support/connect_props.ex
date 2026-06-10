@@ -43,7 +43,7 @@ defmodule Test.Support.ConnectProps do
         placeholder: nil,
         always_submit_on_enter: false,
         auto_focus: false,
-        close_on_select: false,
+        close_on_select: true,
         input_behavior: "autohighlight",
         loop_focus: false,
         multiple: false,

@@ -1,7 +1,11 @@
 import { describe, expect, it, vi, afterEach, beforeEach } from "vitest";
 import type { CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
 import * as hookModule from "../../hooks/menu";
-import { findImmediateParentMenuHookEl, Menu as MenuHook } from "../../hooks/menu";
+import {
+  findImmediateParentMenuHookEl,
+  menuSetOpenMatches,
+  Menu as MenuHook,
+} from "../../hooks/menu";
 import { Menu as MenuComponent } from "../../components/menu";
 import { expectHookModule } from "../helpers/expect-hook";
 import { callHookDestroyed, callHookMounted, mockHookContext } from "../helpers/mock-hook";
@@ -24,6 +28,25 @@ describe("findImmediateParentMenuHookEl", () => {
   it("returns null when no parent menu hook", () => {
     const el = document.createElement("div");
     expect(findImmediateParentMenuHookEl(el)).toBeNull();
+  });
+});
+
+describe("menuSetOpenMatches", () => {
+  it("matches menu root id from server payload id", () => {
+    expect(menuSetOpenMatches("menu:menu-api-server", { id: "menu-api-server", open: true })).toBe(
+      true
+    );
+  });
+
+  it("rejects other menu roots on the same page", () => {
+    expect(menuSetOpenMatches("menu:menu-api", { id: "menu-api-server", open: true })).toBe(false);
+    expect(menuSetOpenMatches("menu:menu-api-js", { id: "menu-api-server", open: true })).toBe(
+      false
+    );
+  });
+
+  it("rejects missing payload id", () => {
+    expect(menuSetOpenMatches("menu:menu-api-server", { open: true })).toBe(false);
   });
 });
 
@@ -70,5 +93,36 @@ describe("Menu hook lifecycle", () => {
     expect(renderSpy).not.toHaveBeenCalled();
 
     renderSpy.mockRestore();
+  });
+
+  it("menu_set_open only opens the matching menu root", () => {
+    const el = document.createElement("div");
+    el.id = "menu:menu-api-server";
+    el.setAttribute("phx-hook", "Menu");
+    document.body.appendChild(el);
+
+    const { hook } = mockHookContext(el, {
+      connected: false,
+      overrides: {
+        menu: undefined as MenuComponent | undefined,
+        handlers: [] as CallbackRef[],
+      },
+    });
+
+    callHookMounted(MenuHook, hook);
+    const setOpenSpy = vi.spyOn(hook.menu!.api, "setOpen");
+    const setOpenHandler = hook.handleEvent.mock.calls.find(
+      ([event]) => event === "menu_set_open"
+    )?.[1];
+    expect(setOpenHandler).toBeDefined();
+
+    setOpenHandler!({ id: "menu-api", open: true });
+    setOpenHandler!({ id: "menu-api-server", open: true });
+
+    expect(setOpenSpy).toHaveBeenCalledTimes(1);
+    expect(setOpenSpy).toHaveBeenCalledWith(true);
+
+    callHookDestroyed(MenuHook, hook);
+    setOpenSpy.mockRestore();
   });
 });
