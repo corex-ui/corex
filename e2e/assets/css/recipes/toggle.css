@@ -29,11 +29,11 @@
 
 @utility toggle--size-* {
   [data-scope="toggle"][data-part="root"] {
-      padding-inline: --value(--spacing-space-*, [length]);
+      min-height: --value(--spacing-size-*, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
     gap: --value(--spacing-space-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-size-*, [length]);
   }
 
 }
@@ -44,15 +44,15 @@
     display: inline-flex;
     width: fit-content;
     cursor: pointer;
+    appearance: none;
+    transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
     border-radius: var(--radius-md);
     align-items: center;
     justify-content: center;
     border: 1px solid transparent;
     font-weight: var(--font-weight-normal);
     text-align: center;
-    transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
     text-decoration-line: none;
-    appearance: none;
     &[data-state="on"] {
       color: var(--color-ui-ink);
       background-color: var(--color-ui);
@@ -82,8 +82,8 @@
         }
         &:focus-visible {
           color: var(--color-ui-ink-muted);
-          background-color: var(--color-ui-muted);
           outline: none;
+          background-color: var(--color-ui-muted);
           box-shadow: none;
         }
       }
@@ -132,8 +132,8 @@
         }
         &:focus-visible {
           color: var(--color-ui-ink-muted);
-          background-color: var(--color-ui-muted);
           outline: none;
+          background-color: var(--color-ui-muted);
           box-shadow: none;
           border-color: var(--color-border);
         }
@@ -252,8 +252,8 @@
         }
         &:focus-visible {
           color: var(--color-ui-ink-muted);
-          background-color: var(--color-ui-muted);
           outline: none;
+          background-color: var(--color-ui-muted);
           box-shadow: none;
           border-color: var(--color-border);
         }
@@ -298,8 +298,8 @@
         }
         &:focus-visible {
           color: var(--color-ui-ink-muted);
-          background-color: transparent;
           outline: none;
+          background-color: transparent;
           box-shadow: none;
         }
       }
@@ -370,8 +370,8 @@
         }
         &:focus-visible {
           color: var(--color-ui-ink-muted);
-          background-color: var(--color-ui-muted);
           outline: none;
+          background-color: var(--color-ui-muted);
           box-shadow: none;
         }
       }
@@ -1104,10 +1104,10 @@
     display: inline-flex;
     width: 1em;
     color: currentcolor;
+    height: 1em;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    height: 1em;
   }
 
   .toggle [data-part="indicator"] [data-icon] {

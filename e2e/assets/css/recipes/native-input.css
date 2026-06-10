@@ -21,11 +21,11 @@
 @utility native-input--size-* {
   [data-scope="native-input"][data-part="input"] {
       color: --value(--color-ui-ink-*, [color]);
+    min-height: --value(--spacing-size-*, [length]);
     padding-inline: --value(--spacing-space-*, [length]);
     background-color: --value(--color-*, [color]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-size-*, [length]);
   }
 
   [data-scope="native-input"][data-part="label"] {

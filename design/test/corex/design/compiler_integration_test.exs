@@ -17,12 +17,12 @@ defmodule Corex.Design.CompilerIntegrationTest do
   defp restore(key, nil), do: Application.delete_env(:corex_design, key)
   defp restore(key, value), do: Application.put_env(:corex_design, key, value)
 
-  test "include_recipes shrinks full compile output" do
+  test "include_recipes shrinks recipe aggregate output" do
     Application.delete_env(:corex_design, :include_recipes)
-    full = Compiler.compile()
+    full = Compiler.tailwind_recipes_css()
 
     Application.put_env(:corex_design, :include_recipes, [:button])
-    filtered = Compiler.compile()
+    filtered = Compiler.tailwind_recipes_css()
 
     assert byte_size(filtered) < byte_size(full)
     assert filtered =~ "button"

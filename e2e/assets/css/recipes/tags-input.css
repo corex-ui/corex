@@ -56,14 +56,14 @@
 @utility tags-input--size-* {
   [data-scope="tags-input"][data-part="control"] {
       padding: --value(--spacing-space-*, [length]);
-    gap: --value(--spacing-space-*, [length]);
     min-height: --value(--spacing-size-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
   }
 
   [data-scope="tags-input"][data-part="input"] {
-      font-size: --value(--text-*, [length]);
+      min-height: --value(--spacing-size-*, [length]);
+    font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-size-*, [length]);
   }
 
   [data-scope="tags-input"][data-part="root"] {
@@ -75,9 +75,9 @@
   }
 
   [data-scope="tags-input"][data-part="item-preview"] {
-      padding-inline: --value(--spacing-space-*, [length]);
+      min-height: --value(--spacing-size-*, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
     gap: --value(--spacing-space-*, [length]);
-    min-height: --value(--spacing-size-*, [length]);
   }
 
   [data-scope="tags-input"][data-part="item-delete-trigger"] {

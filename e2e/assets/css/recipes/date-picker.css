@@ -42,11 +42,11 @@
   [data-scope="date-picker"][data-part="input"] {
       color: --value(--color-ui-ink-*, [color]);
     max-width: --value(--container-*, [length]);
+    min-height: --value(--spacing-size-*, [length]);
     padding-inline: --value(--spacing-space-*, [length]);
     background-color: --value(--color-*, [color]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-size-*, [length]);
   }
 
   [data-scope="date-picker"][data-part="label"] {
@@ -58,46 +58,46 @@
       gap: --value(--spacing-space-*, [length]);
   }
 
-  [data-scope="date-picker"][data-part="positioner"] {
-      max-width: --value(--container-*, [length]);
-  }
-
   [data-scope="date-picker"][data-part="trigger"] {
-      background-color: --value(--color-*, [color]);
+      min-height: --value(--spacing-size-*, [length]);
+    background-color: --value(--color-*, [color]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-size-*, [length]);
   }
 
   [data-scope="date-picker"][data-part="content"] {
       max-width: --value(--container-*, [length]);
   }
 
+  [data-scope="date-picker"][data-part="positioner"] {
+      max-width: --value(--container-*, [length]);
+  }
+
   [data-scope="date-picker"][data-part="prev-trigger"] {
       max-width: --value(--container-*, [length]);
+    min-height: --value(--spacing-size-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-size-*, [length]);
   }
 
   [data-scope="date-picker"][data-part="next-trigger"] {
       max-width: --value(--container-*, [length]);
+    min-height: --value(--spacing-size-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-size-*, [length]);
   }
 
   [data-scope="date-picker"][data-part="table-cell-trigger"] {
       max-width: --value(--container-*, [length]);
+    min-height: --value(--spacing-size-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-size-*, [length]);
   }
 
   [data-scope="date-picker"][data-part="view-trigger"] {
-      font-size: --value(--text-*, [length]);
+      min-height: --value(--spacing-size-*, [length]);
+    font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-size-*, [length]);
   }
 
   [data-scope="date-picker"][data-part="view-control"] {

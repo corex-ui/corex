@@ -50,9 +50,9 @@
 
   [data-scope="color-picker"][data-part="channel-input"] {
       color: --value(--color-ui-ink-*, [color]);
+    min-height: --value(--spacing-size-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-size-*, [length]);
   }
 
 }

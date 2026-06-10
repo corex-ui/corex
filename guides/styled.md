@@ -209,7 +209,7 @@ Avoid extra `class` on `<.heroicon>` when it sits inside another Corex component
 ## Related
 
 - [Unstyled](unstyled.html) — attrs, BEM hooks, and your own CSS
-- [Design config](design-config.html) — custom themes, validation, part-tree overrides
+- [Design config](design-config.html) — custom themes, validation, recipe overrides
 - [Theming](theming.html) — `data-theme` and theme picker
 - [Dark mode](dark_mode.html) — `data-mode` and mode toggle
 - Component Hexdocs — anatomy, API, and per-component examples

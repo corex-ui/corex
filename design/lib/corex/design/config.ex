@@ -38,7 +38,6 @@ defmodule Corex.Design.Config do
         {:default_theme, "Default data-theme"},
         {:default_mode, "Default data-mode"},
         {:recipes, "Host RecipeSource overrides"},
-        {:styles, "Global part-tree style overrides per component"},
         {:role_aliases, "Semantic role alias map for token resolution"},
         {:include_recipes, "Recipe id allowlist for smaller CSS bundles"}
       ]
@@ -104,17 +103,13 @@ defmodule Corex.Design.Config.Options do
       default: [],
       doc: "Host RecipeSource modules"
     ],
-    styles: [
-      type: :map,
-      doc: "Global part-tree style overrides per component id"
-    ],
     role_aliases: [
       type: :map,
       doc: "Semantic role aliases (template name -> token role)"
     ]
   )
 
-  @known_keys ~w(default_theme default_mode accessibility_level themes include_recipes recipes styles role_aliases)a
+  @known_keys ~w(default_theme default_mode accessibility_level themes include_recipes recipes role_aliases)a
 
   @doc false
   def schema, do: @schema

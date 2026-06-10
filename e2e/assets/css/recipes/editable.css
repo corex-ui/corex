@@ -38,9 +38,9 @@
   [data-scope="editable"][data-part="input"] {
       color: --value(--color-ui-ink-*, [color]);
     max-width: --value(--container-*, [length]);
+    min-height: --value(--spacing-size-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-size-*, [length]);
   }
 
   [data-scope="editable"][data-part="label"] {
@@ -55,36 +55,36 @@
   [data-scope="editable"][data-part="preview"] {
       color: --value(--color-ui-ink-*, [color]);
     max-width: --value(--container-*, [length]);
+    min-height: --value(--spacing-size-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-size-*, [length]);
   }
 
   [data-scope="editable"][data-part="edit-trigger"] {
       max-width: --value(--container-*, [length]);
+    min-height: --value(--spacing-size-*, [length]);
     padding-inline: --value(--spacing-space-*, [length]);
     gap: --value(--spacing-space-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-size-*, [length]);
   }
 
   [data-scope="editable"][data-part="cancel-trigger"] {
       max-width: --value(--container-*, [length]);
+    min-height: --value(--spacing-size-*, [length]);
     padding-inline: --value(--spacing-space-*, [length]);
     gap: --value(--spacing-space-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-size-*, [length]);
   }
 
   [data-scope="editable"][data-part="submit-trigger"] {
       max-width: --value(--container-*, [length]);
+    min-height: --value(--spacing-size-*, [length]);
     padding-inline: --value(--spacing-space-*, [length]);
     gap: --value(--spacing-space-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-size-*, [length]);
   }
 
 }

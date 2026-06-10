@@ -27,15 +27,15 @@
     cursor: pointer;
     padding: 0;
     color: var(--color-link);
+    appearance: none;
+    transition: color 120ms ease, box-shadow 120ms ease;
     gap: var(--space-md);
     background-color: transparent;
     align-items: center;
     border: none;
-    transition: color 120ms ease, box-shadow 120ms ease;
     overflow: visible;
     text-decoration-line: underline;
     text-underline-offset: 0.15em;
-    appearance: none;
     text-decoration-thickness: from-font;
     &:active {
       color: var(--color-ui-ink-muted);
@@ -140,35 +140,35 @@
   }
 
   .link.link--size-sm {
+    min-height: var(--size-sm);
     padding-inline: var(--space-sm);
     gap: var(--space-sm);
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
-    min-height: var(--size-sm);
   }
 
   .link.link--size-md {
+    min-height: var(--size-md);
     padding-inline: var(--space-md);
     gap: var(--space-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
-    min-height: var(--size-md);
   }
 
   .link.link--size-lg {
+    min-height: var(--size-lg);
     padding-inline: var(--space-lg);
     gap: var(--space-lg);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
-    min-height: var(--size-lg);
   }
 
   .link.link--size-xl {
+    min-height: var(--size-xl);
     padding-inline: var(--space-xl);
     gap: var(--space-xl);
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
-    min-height: var(--size-xl);
   }
 
   .link.link--shape-square {
@@ -232,10 +232,10 @@
     display: inline-flex;
     width: 1em;
     color: currentcolor;
+    height: 1em;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    height: 1em;
   }
 
   .link [data-part="indicator"] [data-icon] {

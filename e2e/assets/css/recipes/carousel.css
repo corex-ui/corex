@@ -62,21 +62,21 @@
   }
 
   [data-scope="carousel"][data-part="prev-trigger"] {
-      font-size: --value(--text-*, [length]);
+      min-height: --value(--spacing-size-*, [length]);
+    font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-size-*, [length]);
   }
 
   [data-scope="carousel"][data-part="next-trigger"] {
-      font-size: --value(--text-*, [length]);
+      min-height: --value(--spacing-size-*, [length]);
+    font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-size-*, [length]);
   }
 
   [data-scope="carousel"][data-part="autoplay-trigger"] {
-      font-size: --value(--text-*, [length]);
+      min-height: --value(--spacing-size-*, [length]);
+    font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-size-*, [length]);
   }
 
 }

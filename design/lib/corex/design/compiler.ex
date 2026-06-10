@@ -14,94 +14,14 @@ defmodule Corex.Design.Compiler do
   @header "/* Corex generated design - do not edit */"
 
   @doc """
-  Compiles the full Tailwind-free `design.css`: cascade-layer declaration, the
-  reset + base layers, the token layer (`:root` + theme/mode scopes), and the
-  recipe layer (component + layout recipes as plain CSS).
+  Compiles a single recipe to Tailwind component-layer CSS.
   """
-  def compile do
-    """
-    #{@header}
-    @layer reset, base, tokens;
-
-    @layer reset {
-    #{indent(Layers.reset_css())}
-    }
-
-    @layer base {
-    #{indent(Layers.base_css())}
-    #{indent(Typography.css())}
-    }
-
-    @layer tokens {
-    #{indent(Tokens.css())}
-    }
-
-    #{Scales.keyframes()}
-    #{recipes_css()}
-
-    #{Responsive.css()}
-    """
-  end
-
-  @doc """
-  Compiles reset, base, and token layers for modular CSS export.
-  """
-  def compile_base do
-    """
-    #{@header}
-    @layer reset, base, tokens;
-
-    @layer reset {
-    #{indent(Layers.reset_css())}
-    }
-
-    @layer base {
-    #{indent(Layers.base_css())}
-    #{indent(Typography.css())}
-    }
-
-    @layer tokens {
-    #{indent(Tokens.css())}
-    }
-
-    #{Scales.keyframes()}
-
-    #{Responsive.css()}
-    """
-  end
-
-  @doc """
-  Compiles a single recipe to plain CSS for modular CSS export.
-  """
-  def compile_recipe(%Recipe{} = recipe, opts \\ []) do
-    target = Keyword.get(opts, :target, :css)
-
+  def compile_recipe(%Recipe{} = recipe) do
     """
     #{@header}
 
-    #{Recipe.to_css(recipe, target: target)}
+    #{Recipe.to_css(recipe)}
     """
-  end
-
-  @doc """
-  Writes modular plain CSS export: `layers/base.css` and `components/{id}.css`.
-  """
-  def write_modular!(output_dir) do
-    layers_dir = Path.join(output_dir, "layers")
-    components_dir = Path.join(output_dir, "components")
-
-    File.mkdir_p!(layers_dir)
-    File.mkdir_p!(components_dir)
-    Write.atomic!(Path.join(layers_dir, "base.css"), compile_base())
-
-    for recipe <- Recipes.emitted() do
-      Write.atomic!(
-        Path.join(components_dir, "#{recipe_file_id(recipe)}.css"),
-        compile_recipe(recipe)
-      )
-    end
-
-    output_dir
   end
 
   @doc """
@@ -140,7 +60,7 @@ defmodule Corex.Design.Compiler do
 
       Write.atomic!(
         Path.join(recipes_dir, "#{id}.css"),
-        compile_recipe(recipe, target: :tailwind)
+        compile_recipe(recipe)
       )
     end
 
@@ -163,21 +83,6 @@ defmodule Corex.Design.Compiler do
     output_dir
   end
 
-  @doc """
-  Writes the compiled `design.css` to the given path (defaults to
-  `priv/static/corex/design.css`).
-  """
-  def write!(path \\ default_output()) do
-    File.mkdir_p!(Path.dirname(path))
-    File.write!(path, compile())
-    write_modular!(Path.dirname(path))
-    path
-  end
-
-  def default_output do
-    Path.join([File.cwd!(), "priv", "static", "corex", "design.css"])
-  end
-
   @doc false
   def tailwind_base_css do
     """
@@ -196,12 +101,6 @@ defmodule Corex.Design.Compiler do
 
     #{Layers.unlayered_host_icon_css()}
     """
-  end
-
-  @doc false
-  def recipes_css(_opts \\ []) do
-    Recipes.emitted()
-    |> Enum.map_join("\n\n", &Recipe.to_css(&1, target: :css))
   end
 
   @doc false

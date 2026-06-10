@@ -11,7 +11,7 @@ defmodule Corex.Design.ExportParityTest do
 
   test "tailwind exports avoid main modifier utility wildcards" do
     for recipe <- Recipes.all() do
-      css = Recipe.to_css(recipe, target: :tailwind)
+      css = Recipe.to_css(recipe)
       name = Selector.class_name(recipe.id)
       refute css =~ "@utility #{name}--*"
     end
@@ -27,7 +27,7 @@ defmodule Corex.Design.ExportParityTest do
 
     for {id, max_lines} <- budgets do
       recipe = Enum.find(Recipes.all(), &(&1.id == id))
-      css = Recipe.to_css(recipe, target: :tailwind)
+      css = Recipe.to_css(recipe)
       lines = css |> String.split("\n") |> length()
 
       assert lines <= max_lines,
@@ -44,7 +44,7 @@ defmodule Corex.Design.ExportParityTest do
 
     for {id, utility} <- expectations do
       recipe = Enum.find(Recipes.all(), &(&1.id == id))
-      css = Recipe.to_css(recipe, target: :tailwind)
+      css = Recipe.to_css(recipe)
 
       refute css =~ "@utility #{id}--*"
       assert css =~ utility
@@ -57,7 +57,7 @@ defmodule Corex.Design.ExportParityTest do
     css =
       Recipes.all()
       |> Enum.find(&(&1.id == :accordion))
-      |> Recipe.to_css(target: :tailwind)
+      |> Recipe.to_css()
 
     assert css =~ "@apply ui-trigger"
     assert css =~ "@utility accordion--rounded-*"

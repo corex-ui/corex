@@ -20,23 +20,6 @@ defmodule Corex.AccordionTest do
       refute html =~ "<style"
     end
 
-    @tag integration: true
-    test "style map sets host css variables without style tag" do
-      items = Corex.Content.new([%{label: "T1", content: "C1"}])
-
-      html =
-        render_component(&Accordion.accordion/1,
-          id: "faq",
-          items: items,
-          class: "accordion",
-          style: %{item: %{trigger: %{focus: [text_decoration: :underline]}}}
-        )
-
-      refute html =~ "<style"
-      assert html =~ ~s(--corex-accordion-item-trigger-focus-text-decoration)
-      assert html =~ "underline"
-    end
-
     test "renders with horizontal orientation" do
       html =
         render_component(&CorexTest.ComponentHelpers.render_accordion/1,

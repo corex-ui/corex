@@ -446,7 +446,7 @@ To upgrade an existing app, see [Updating Corex](update.html).
 
 - [Unstyled](unstyled.html) — modifier classes, axis vocabulary, `config :corex`
 - [Styled](styled.html) — Corex Design CSS setup
-- [Design config](design-config.html) — themes, validation, part-tree overrides
+- [Design config](design-config.html) — themes, validation, recipe overrides
 - [Installation](installation.html) — generator options (`config :corex, :generators`)
 - [Localize](localize.html) — Gettext backend for translated component labels
 

@@ -37,7 +37,6 @@ Registry id vs recipe filename: `action` → `button.css`, `navigate` → `link.
 | Theme tokens | `:corex_design` | `:themes` | Colors, spacing, radii on `[data-theme][data-mode]` |
 | Default theme/mode | `:corex_design` | `:default_theme`, `:default_mode` | Root HTML defaults |
 | CSS bundle size | `:corex_design` | `:include_recipes` | Which component CSS files emit |
-| Part-tree overrides | `:corex_design` | `:styles` | Global and per-id component styling |
 | Recipe overrides | `:corex_design` | `:recipes` | Host modules that replace built-in CSS |
 | Contrast floors | `:corex_design` | `:accessibility_level` | Ink token generation (`:a`, `:aa`, `:aaa`) |
 | Output path | `:corex_design` | profile keys (e.g. `:my_app`) | `output` |
@@ -125,45 +124,6 @@ Use the `semantic` attr (not a separate `color` attr):
 ```
 
 Allowed values come from `config :corex, semantics`. See [Unstyled](unstyled.html).
-
-## Part-tree styles (`:styles`)
-
-Override component parts at compile time or per render without `<style>` tags in templates.
-
-Precedence (low to high): built-in recipe defaults, global config, per-id config, host `semantic` / `size` axes, HEEx `style={...}` host CSS variables.
-
-```elixir
-config :corex_design,
-  styles: %{
-    accordion: %{
-      all: %{
-        item: %{indicator: %{open: [rotate: 180]}}
-      },
-      instances: %{
-        "faq" => %{
-          item: %{
-            trigger: %{
-              open: [color: color(:brand_ink), unset: [:background_color]]
-            }
-          }
-        }
-      }
-    }
-  }
-```
-
-- **`all`**: rules for every instance of that component.
-- **`instances`**: string keys scoped to `#faq` / `#sidebar-nav` in compiled CSS.
-- **HEEx `style`**: same nested map shape; sets `--corex-accordion-...` custom properties on the host.
-
-```heex
-<.accordion id="faq" class="accordion" semantic="brand" />
-
-<.accordion
-  id="faq"
-  style={%{item: %{trigger: %{focus: [text_decoration: :underline]}}}}
-/>
-```
 
 ## Recipe overrides
 

@@ -52,11 +52,11 @@
   }
 
   [data-scope="tree-view"][data-part="item"] {
-      padding-inline: --value(--spacing-space-*, [length]);
+      min-height: --value(--spacing-size-*, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
     gap: --value(--spacing-space-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-size-*, [length]);
   }
 
   [data-scope="tree-view"][data-part="item-text"] {
@@ -64,11 +64,11 @@
   }
 
   [data-scope="tree-view"][data-part="branch-control"] {
-      padding-inline: --value(--spacing-space-*, [length]);
+      min-height: --value(--spacing-size-*, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
     gap: --value(--spacing-space-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-size-*, [length]);
   }
 
   [data-scope="tree-view"][data-part="branch-text"] {

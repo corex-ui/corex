@@ -27,13 +27,13 @@
     line-height: var(--leading-xl);
     font-weight: var(--font-weight-extralight);
     font-family: var(--font-display);
-    @media (min-width: 64rem) {
-      font-size: var(--text-3xl);
-      line-height: var(--leading-3xl);
-    }
     @media (min-width: 48rem) {
       font-size: var(--text-2xl);
       line-height: var(--leading-2xl);
+    }
+    @media (min-width: 64rem) {
+      font-size: var(--text-3xl);
+      line-height: var(--leading-3xl);
     }
   }
 

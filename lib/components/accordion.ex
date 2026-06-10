@@ -775,12 +775,6 @@ defmodule Corex.Accordion do
   Renders an accordion. See the module documentation for list-driven `items`, With slots, Custom slots, Manual and Compound modes, patterns, API, and events.
   """
 
-  attr(:style, :map,
-    default: nil,
-    doc:
-      "Part-tree style overrides for this accordion (same shape as config :corex_design, styles)."
-  )
-
   attr(:id, :string,
     required: false,
     doc:
@@ -1018,7 +1012,6 @@ defmodule Corex.Accordion do
       |> then(&accordion_assert_trigger_content_pair!/1)
       |> then(&accordion_assign_manual_mode!/1)
       |> then(&accordion_assign_panels/1)
-      |> then(fn assigns -> assign(assigns, :host_style, host_style_vars(assigns)) end)
 
     ctx = %{
       id: assigns.id,
@@ -1038,7 +1031,6 @@ defmodule Corex.Accordion do
       data-loading
       phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       class={corex_style_class(assigns)}
-      style={@host_style}
       {Connect.props(%Props{
         id: @id,
         controlled: @controlled,
@@ -1743,14 +1735,4 @@ defmodule Corex.Accordion do
   defp normalize_value(v) when is_list(v), do: v
   defp normalize_value(_), do: []
 
-  defp host_style_vars(%{style: style}) when is_map(style) do
-    with {:module, mod} <- Code.ensure_loaded(Corex.Design.PartTree.Vars),
-         true <- function_exported?(mod, :to_host_style, 2) do
-      apply(mod, :to_host_style, [:accordion, style])
-    else
-      _ -> []
-    end
-  end
-
-  defp host_style_vars(_), do: []
 end

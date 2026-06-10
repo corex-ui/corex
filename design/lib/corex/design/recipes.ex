@@ -80,9 +80,7 @@ defmodule Corex.Design.Recipes do
     by_id = Map.new(overrides, &{&1.id, &1})
 
     replaced =
-      builtins
-      |> Enum.map(fn recipe -> Map.get(by_id, recipe.id, recipe) end)
-      |> Enum.map(&Corex.Design.Styles.apply_recipe/1)
+      Enum.map(builtins, fn recipe -> Map.get(by_id, recipe.id, recipe) end)
 
     builtin_ids = MapSet.new(builtins, & &1.id)
     added = Enum.reject(overrides, &MapSet.member?(builtin_ids, &1.id))
@@ -93,8 +91,8 @@ defmodule Corex.Design.Recipes do
   @doc """
   Recipes the compiler emits as CSS: `all/0` filtered by the optional allowlist
   `config :corex_design, include_recipes: [:button, :select, ...]` (recipe ids).
-  When unset, every recipe is emitted. Filtering shrinks `design.css` and the
-  Tailwind recipe exports for apps that use a known subset; the full vocabulary
+  When unset, every recipe is emitted. Filtering shrinks the Tailwind recipe
+  exports for apps that use a known subset; the full vocabulary
   still flows to the component contract via `all/0`.
   """
   def emitted do

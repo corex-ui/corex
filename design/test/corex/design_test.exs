@@ -55,8 +55,8 @@ defmodule Corex.DesignTest do
       refute css =~ "[data-button][data-button-semantic=\"accent\"]"
     end
 
-    test "tailwind target emits prefixed utilities and bem rules" do
-      css = Recipe.to_css(Button.recipe(), target: :tailwind)
+    test "button export emits prefixed utilities and bem rules" do
+      css = Recipe.to_css(Button.recipe())
 
       refute css =~ "@utility button--*"
       assert css =~ "@utility button--rounded-*"
@@ -65,8 +65,8 @@ defmodule Corex.DesignTest do
       assert css =~ ".button.button--semantic-accent"
     end
 
-    test "tailwind target keeps slot semantic colors in components layer" do
-      css = Recipe.to_css(Accordion.recipe(), target: :tailwind)
+    test "accordion export keeps slot semantic colors in components layer" do
+      css = Recipe.to_css(Accordion.recipe())
 
       assert css =~ ".accordion.accordion--semantic-accent"
       assert css =~ ".accordion.accordion--variant-solid.accordion--semantic-accent [data-scope=\"accordion\"][data-part=\"item-trigger\"]"
@@ -110,12 +110,12 @@ defmodule Corex.DesignTest do
       refute css =~ ".link.link--skip.link--skip"
     end
 
-    test "link skip rule is kept in tailwind export" do
-    css = Recipe.to_css(Link.recipe(), target: :tailwind)
+    test "link skip rule is kept in export" do
+      css = Recipe.to_css(Link.recipe())
 
-    assert css =~ ".link.link--skip"
-    assert css =~ "inset-block-start: -9999px"
-  end
+      assert css =~ ".link.link--skip"
+      assert css =~ "inset-block-start: -9999px"
+    end
 
     test "host sizing presets cover container scale" do
       steps = Scales.container() |> Keyword.keys() |> Enum.map(&to_string/1)
@@ -126,30 +126,8 @@ defmodule Corex.DesignTest do
     end
   end
 
-  describe "Compiler.compile/0" do
-    test "declares cascade layers and includes token + recipe layers with bem selectors by default" do
-      css = Compiler.compile()
-
-      assert css =~ "@layer reset, base, tokens;"
-      assert css =~ "@layer tokens {"
-      assert css =~ "--color-accent: #484848;"
-      assert css =~ ".button {"
-      assert css =~ ".button.button--semantic-accent"
-      assert css =~ ".select {"
-      refute css =~ "[data-button][data-button-semantic=\"accent\"]"
-    end
-
-    test "base layer includes config-driven typography element rules" do
-      css = Compiler.compile()
-
-      assert css =~ ".typo h1"
-      refute css =~ "body h1"
-      assert css =~ "font-family: var(--font-display)"
-      assert css =~ "font-size: var(--text-2xl)"
-      refute css =~ "body form, .typo form"
-    end
-
-    test "tailwind base css includes reset and typography" do
+  describe "Compiler tailwind bundle" do
+    test "base css includes reset and typography" do
       css = Compiler.tailwind_base_css()
 
       assert css =~ "@layer reset, base;"
@@ -158,7 +136,7 @@ defmodule Corex.DesignTest do
       assert css =~ "box-sizing: border-box"
     end
 
-    test "tailwind base css includes global scrollbar styling" do
+    test "base css includes global scrollbar styling" do
       css = Compiler.tailwind_base_css()
 
       assert css =~ "::-webkit-scrollbar"
@@ -194,7 +172,7 @@ defmodule Corex.DesignTest do
       css =
         Recipes.components()
         |> Enum.find(&(&1.id == :toggle))
-        |> Recipe.to_css(target: :tailwind)
+        |> Recipe.to_css()
 
       assert css =~ ".toggle [data-icon]"
       assert css =~ "ui-icon"
@@ -204,7 +182,7 @@ defmodule Corex.DesignTest do
       css =
         Recipes.components()
         |> Enum.find(&(&1.id == :badge))
-        |> Recipe.to_css(target: :tailwind)
+        |> Recipe.to_css()
 
       assert css =~ ".badge [data-icon]"
       refute css =~ ".badge.badge--size-sm [data-icon]"
@@ -214,11 +192,11 @@ defmodule Corex.DesignTest do
       refute css =~ ".badge svg"
     end
 
-    test "tailwind recipes css emits prefixed utilities and bem modifiers" do
+    test "recipes css emits prefixed utilities and bem modifiers" do
       css =
         Recipes.components()
         |> Enum.find(&(&1.id == :button))
-        |> Recipe.to_css(target: :tailwind)
+        |> Recipe.to_css()
 
       refute css =~ "@utility button--*"
       assert css =~ "@utility button--rounded-*"
@@ -228,11 +206,11 @@ defmodule Corex.DesignTest do
       assert css =~ ".button.button--variant-solid {"
     end
 
-    test "tailwind export uses max-w utility for container host sizing" do
+    test "export uses max-w utility for container host sizing" do
       css =
         Recipes.components()
         |> Enum.find(&(&1.id == :accordion))
-        |> Recipe.to_css(target: :tailwind)
+        |> Recipe.to_css()
 
       assert css =~ "@utility accordion--max-w-*"
       assert css =~ "max-width: --value(--container-*"
@@ -241,33 +219,17 @@ defmodule Corex.DesignTest do
       assert css =~ ".accordion.accordion--w-fit {"
     end
 
-    test "tailwind semantic colors live in components layer" do
+    test "semantic colors live in components layer" do
       css =
         Recipes.components()
         |> Enum.find(&(&1.id == :button))
-        |> Recipe.to_css(target: :tailwind)
+        |> Recipe.to_css()
 
       assert css =~ ".button.button--semantic-accent"
       assert css =~ ".button.button--variant-solid.button--semantic-accent"
     end
 
-    test "modular export writes base and per-recipe files" do
-      tmp = Path.join(System.tmp_dir!(), "corex-design-#{System.unique_integer()}")
-
-      try do
-        Compiler.write_modular!(tmp)
-
-        assert File.exists?(Path.join(tmp, "layers/base.css"))
-        assert File.exists?(Path.join(tmp, "components/button.css"))
-
-        button_css = File.read!(Path.join(tmp, "components/button.css"))
-        assert button_css =~ ".button.button--semantic-accent"
-      after
-        File.rm_rf!(tmp)
-      end
-    end
-
-    test "tailwind modular export writes layered folders" do
+    test "modular export writes layered folders" do
       tmp = Path.join(System.tmp_dir!(), "corex-tailwind-#{System.unique_integer()}")
 
       try do
@@ -326,41 +288,17 @@ defmodule Corex.DesignTest do
       assert css =~ ".list li:hover {"
     end
 
-    test "typography recipes are included in compiler output" do
-      css = Compiler.compile()
+    test "typography recipes are included in recipe export" do
+      css = Compiler.compile_recipe(Typo.recipe(:h1)) <> Compiler.compile_recipe(Typo.recipe(:form))
 
       assert css =~ ".h1 {"
       assert css =~ ".form {"
     end
   end
 
-  describe "CSS export token parity" do
-    test "compile uses canonical runtime tokens without bridge or namespace prefixes" do
-      css = Compiler.compile()
-
-      refute css =~ "--cx-"
-      refute css =~ "--spacing-space-"
-      refute css =~ "var(--spacing-space-"
-      assert css =~ "gap: var(--space-sm)"
-      assert css =~ "font-family: var(--font-mono)"
-      assert css =~ "min-height: var(--size)"
-    end
-  end
-
   describe "dialog closed animation selectors" do
-    test "plain export hides js/custom closed backdrop and content without duplicate host selectors" do
-      css = Compiler.compile_recipe(DialogModal.recipe())
-
-      assert css =~
-               ~s(.dialog-modal[data-animation='js'] [data-scope="dialog"][data-part="backdrop"][data-state='closed'])
-
-      refute css =~ ~s(.dialog-modal[data-animation='js'] .dialog-modal [data-scope="dialog"])
-    end
-
-    test "tailwind export hides js/custom closed backdrop and content without duplicate host selectors" do
-      css =
-        DialogModal.recipe()
-        |> Recipe.to_css(target: :tailwind)
+    test "export hides js/custom closed backdrop and content without duplicate host selectors" do
+      css = Recipe.to_css(DialogModal.recipe())
 
       assert css =~
                ~s(.dialog-modal[data-animation='js'] [data-scope="dialog"][data-part="backdrop"][data-state='closed'])
@@ -370,19 +308,8 @@ defmodule Corex.DesignTest do
   end
 
   describe "accordion closed animation selectors" do
-    test "plain export collapses js/custom closed item content without duplicate host selectors" do
-      css = Compiler.compile_recipe(Accordion.recipe())
-
-      assert css =~
-               ~s(.accordion[data-animation="js"] [data-scope="accordion"][data-part="item-content"][data-state="closed"])
-
-      refute css =~ ~s(.accordion[data-animation="js"] .accordion [data-scope="accordion"])
-    end
-
-    test "tailwind export collapses js/custom closed item content without duplicate host selectors" do
-      css =
-        Accordion.recipe()
-        |> Recipe.to_css(target: :tailwind)
+    test "export collapses js/custom closed item content without duplicate host selectors" do
+      css = Recipe.to_css(Accordion.recipe())
 
       assert css =~
                ~s(.accordion[data-animation="js"] [data-scope="accordion"][data-part="item-content"][data-state="closed"])
@@ -440,14 +367,6 @@ defmodule Corex.DesignTest do
                ~s(.accordion.accordion--max-h-md [data-scope="accordion"][data-part="item-content"][data-state="open"] {\n  overflow-y: auto)
     end
 
-    test "plain export keeps closed animation selectors after sizing changes" do
-      css = Compiler.compile_recipe(Accordion.recipe())
-
-      assert css =~
-               ~s(.accordion[data-animation="js"] [data-scope="accordion"][data-part="item-content"][data-state="closed"])
-
-      refute css =~ ~s(.accordion[data-animation="js"] .accordion [data-scope="accordion"])
-    end
   end
 
   describe "accordion horizontal layout" do
@@ -484,19 +403,8 @@ defmodule Corex.DesignTest do
   end
 
   describe "tree view closed animation selectors" do
-    test "plain export collapses js/custom closed branch content without duplicate host selectors" do
-      css = Compiler.compile_recipe(TreeView.recipe())
-
-      assert css =~
-               ~s(.tree-view[data-animation='js'] [data-scope="tree-view"][data-part="branch-content"][data-state='closed'])
-
-      refute css =~ ~s(.tree-view[data-animation='js'] .tree-view [data-scope="tree-view"])
-    end
-
-    test "tailwind export collapses js/custom closed branch content without duplicate host selectors" do
-      css =
-        TreeView.recipe()
-        |> Recipe.to_css(target: :tailwind)
+    test "export collapses js/custom closed branch content without duplicate host selectors" do
+      css = Recipe.to_css(TreeView.recipe())
 
       assert css =~
                ~s(.tree-view[data-animation='js'] [data-scope="tree-view"][data-part="branch-content"][data-state='closed'])
@@ -505,21 +413,9 @@ defmodule Corex.DesignTest do
     end
   end
 
-  describe "code typography export parity" do
-    test "pre block typography comes from host text variants only" do
-      css = Compiler.compile_recipe(Code.recipe())
-
-      assert css =~ "pre.code {"
-      refute css =~ "pre.code {\n  font-size:"
-      assert css =~ ".code.code--text-xs:is(pre)"
-      assert css =~ "font-size: var(--text-xs)"
-      assert css =~ "line-height: var(--leading-xs)"
-    end
-
-    test "tailwind pre block does not hardcode text-sm line-height" do
-      css =
-        Code.recipe()
-        |> Recipe.to_css(target: :tailwind)
+  describe "code typography export" do
+    test "pre block does not hardcode text-sm line-height" do
+      css = Recipe.to_css(Code.recipe())
 
       refute css =~ "pre.code {\n  font-size:"
       assert css =~ "pre.code {"
@@ -528,24 +424,19 @@ defmodule Corex.DesignTest do
       assert css =~ "font-size: inherit"
     end
 
-    test "highlight spans inherit code typography in both exports" do
-      plain = Compiler.compile_recipe(Code.recipe())
+    test "highlight spans inherit code typography" do
+      css = Recipe.to_css(Code.recipe())
 
-      tailwind =
-        Code.recipe()
-        |> Recipe.to_css(target: :tailwind)
-
-      assert plain =~ "pre.code code[data-part=\"content\"] span {"
-      assert plain =~ "font-size: inherit"
-      assert tailwind =~ "pre.code code[data-part=\"content\"] span {"
+      assert css =~ "pre.code code[data-part=\"content\"] span {"
+      assert css =~ "font-size: inherit"
     end
   end
 
-  describe "tailwind slot utility parity" do
+  describe "slot utility export" do
     test "slot recipes emit prefixed utilities and bem modifiers" do
       css =
         Select.recipe()
-        |> Recipe.to_css(target: :tailwind)
+        |> Recipe.to_css()
 
       refute css =~ "@utility select--*"
       assert css =~ "@utility select--rounded-*"
@@ -556,7 +447,7 @@ defmodule Corex.DesignTest do
     test "slot recipes emit host sizing modifiers outside @utility" do
       css =
         Select.recipe()
-        |> Recipe.to_css(target: :tailwind)
+        |> Recipe.to_css()
 
       assert css =~ ".select.select--w-fit {"
       assert css =~ "width: fit-content"

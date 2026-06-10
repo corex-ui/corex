@@ -65,35 +65,35 @@
   }
 
   .code.code--size-sm {
+    min-height: var(--size-sm);
     padding-inline: var(--space-sm);
     gap: var(--space-sm);
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
-    min-height: var(--size-sm);
   }
 
   .code.code--size-md {
+    min-height: var(--size-md);
     padding-inline: var(--space-md);
     gap: var(--space-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
-    min-height: var(--size-md);
   }
 
   .code.code--size-lg {
+    min-height: var(--size-lg);
     padding-inline: var(--space-lg);
     gap: var(--space-lg);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
-    min-height: var(--size-lg);
   }
 
   .code.code--size-xl {
+    min-height: var(--size-xl);
     padding-inline: var(--space-xl);
     gap: var(--space-xl);
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
-    min-height: var(--size-xl);
   }
 
   .code.code--max-w-none {

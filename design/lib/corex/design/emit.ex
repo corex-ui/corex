@@ -341,25 +341,17 @@ end
 defmodule Corex.Design.Emit.StyleRecipe do
   @moduledoc false
 
-  alias Corex.Design.Axis
   alias Corex.Design.Bem
-  alias Corex.Design.Condition
-  alias Corex.Design.Emit.Css
   alias Corex.Design.Emit.TailwindCss
   alias Corex.Design.Selector
   alias Corex.Design.Style
   alias Corex.Design.Emit.TailwindUtilitiesRecipe
-  alias Corex.Design.Tokens.Scales
 
   @doc """
-  Compiles sx-based recipes to CSS strings for the plain CSS export target.
+  Compiles sx-based recipes to component-layer CSS (`@apply` extra rules, utility-skipped variants).
   """
-  def to_css(recipe, opts \\ []) do
-    ctx = [
-      recipe: recipe,
-      kind: recipe.kind,
-      tailwind: Keyword.get(opts, :tailwind, false)
-    ]
+  def to_css(recipe) do
+    ctx = [recipe: recipe, kind: recipe.kind]
 
     case recipe.kind do
       kind when kind in [:recipe, :style_recipe] ->
@@ -423,23 +415,8 @@ defmodule Corex.Design.Emit.StyleRecipe do
       for {axis, values} <- recipe.variants,
           {value, props} <- values,
           not skip_variant?(axis, value, props, ctx) do
-        sx = sx_map(props)
-
-        base = Style.to_css(layout_variant_selector(id, axis, value), sx, ctx)
-
-        responsive =
-          if Keyword.get(ctx, :tailwind, false) do
-            []
-          else
-            for {bp, _width} <- Scales.breakpoint() do
-              inner = Style.to_css(layout_responsive_selector(id, axis, value, bp), sx, ctx)
-              if inner == "", do: "", else: wrap_media(bp, inner)
-            end
-          end
-
-        [base | responsive]
+        Style.to_css(layout_variant_selector(id, axis, value), sx_map(props), ctx)
       end
-      |> List.flatten()
 
     join_blocks([base_block | variant_blocks], recipe, ctx)
   end
@@ -451,97 +428,26 @@ defmodule Corex.Design.Emit.StyleRecipe do
     ".#{name}.#{name}--#{Bem.step(axis, value)}"
   end
 
-  defp layout_responsive_selector(id, axis, value, bp) do
-    name = Selector.class_name(id)
-    ".#{name}.#{bp}\\:#{name}--#{Bem.step(axis, value)}"
-  end
-
-  defp wrap_media(bp, inner) do
-    media = Condition.selector(bp)
-
-    body =
-      inner
-      |> String.split("\n")
-      |> Enum.map_join("\n", fn
-        "" -> ""
-        line -> "  " <> line
-      end)
-
-    "#{media} {\n#{body}\n}"
-  end
-
   defp join_blocks(blocks, recipe, ctx) do
-    extras = extra_rules_css(recipe.extra_rules || [], ctx)
+    extras = extra_rules_css(recipe.extra_rules || [])
 
     (blocks ++ extras)
     |> Enum.reject(&(&1 == ""))
     |> Enum.join("\n\n")
   end
 
-  defp extra_rules_css(rules, ctx), do: render_extra_rules(rules, ctx)
-
-  defp render_extra_rules(rules, ctx) do
-    if Keyword.get(ctx, :tailwind, false) do
-      case TailwindCss.rules_css(rules) do
-        "" -> []
-        css -> [css]
-      end
-    else
-      Enum.map(rules, &Css.rule_css/1)
+  defp extra_rules_css(rules) do
+    case TailwindCss.rules_css(rules) do
+      "" -> []
+      css -> [css]
     end
   end
 
-  defp merge_base(recipe), do: merge_base_impl(recipe)
+  defp recipe_base(recipe, _ctx), do: sx_map(recipe.base)
 
-  defp merge_base_impl(%{base: base, variants: variants, default_variants: defaults}) do
-    defaults
-    |> Enum.reduce(sx_map(base), fn {axis, value}, acc ->
-      variant_sx =
-        variants
-        |> Keyword.fetch!(axis)
-        |> value_block(value)
-        |> sx_map()
-
-      Style.merge(acc, variant_sx)
-    end)
-  end
-
-  defp recipe_base(recipe, ctx) do
-    if Keyword.get(ctx, :tailwind, false) do
-      sx_map(recipe.base)
-    else
-      merge_base(recipe)
-    end
-  end
-
-  defp slot_base_map(recipe, ctx) do
-    if Keyword.get(ctx, :tailwind, false) do
-      slot_base_without_defaults(recipe)
-    else
-      merge_slot_base(recipe)
-    end
-  end
-
-  defp slot_base_without_defaults(recipe) do
+  defp slot_base_map(recipe, _ctx) do
     recipe.base
     |> slot_blocks_map()
-  end
-
-  defp merge_slot_base(recipe), do: merge_slot_base_impl(recipe)
-
-  defp merge_slot_base_impl(%{base: base, variants: variants, default_variants: defaults}) do
-    base_map = base |> slot_blocks_map()
-
-    Enum.reduce(defaults, base_map, fn {axis, value}, acc ->
-      variant_slots =
-        variants
-        |> Keyword.fetch!(axis)
-        |> value_block(value)
-        |> normalize_slot_map()
-        |> slot_blocks_map()
-
-      Map.merge(acc, variant_slots, fn _slot, a, b -> Style.merge(a, b) end)
-    end)
   end
 
   defp variant_blocks(id, variants, ctx) do
@@ -641,12 +547,11 @@ defmodule Corex.Design.Emit.StyleRecipe do
   defp part(slot), do: slot |> to_string() |> String.replace("_", "-")
 
   defp skip_variant?(axis, value, _block, ctx) do
-    tailwind? = Keyword.get(ctx, :tailwind, false)
     recipe = Keyword.fetch!(ctx, :recipe)
     utility_axis? = axis in TailwindUtilitiesRecipe.utility_axes(recipe)
     scale_value? = not keyword_sizing_value?(value)
 
-    tailwind? and utility_axis? and scale_value?
+    utility_axis? and scale_value?
   end
 
   defp keyword_sizing_value?(value), do: value in [:none, :full, :auto, :fit]
@@ -654,7 +559,7 @@ end
 defmodule Corex.Design.Emit.Layers do
   @moduledoc false
 
-  alias Corex.Design.Emit.Css
+  alias Corex.Design.Emit.TailwindCss
   alias Corex.Design.Presets
   alias Corex.Design.Rule
 
@@ -813,7 +718,7 @@ defmodule Corex.Design.Emit.Layers do
   end
 
   defp global_scrollbar_css do
-    Css.rules_css([
+    TailwindCss.rules_css([
       Rule.new("*", children: Presets.scrollbar_sm_children())
     ])
   end
@@ -821,7 +726,7 @@ end
 defmodule Corex.Design.Emit.Responsive do
   @moduledoc """
   Universal, component-agnostic responsive visibility utilities (Chakra-style
-  `hideFrom` / `hideBelow`) emitted into both the plain-CSS and Tailwind exports.
+  `hideFrom` / `hideBelow`) emitted into the Tailwind recipe bundle.
 
   Each utility is matched by a BEM-style class, a data attribute, and (for the
   attribute form) is produced by the runtime resolver, so a page can hide an
@@ -875,7 +780,7 @@ defmodule Corex.Design.Emit.TailwindRecipe do
 
   def to_css(recipe) do
     utilities = TailwindUtilitiesRecipe.utilities(recipe)
-    body = StyleRecipe.to_css(recipe, tailwind: true)
+    body = StyleRecipe.to_css(recipe)
 
     join_sections([utilities, layer_components(body)])
   end

@@ -117,18 +117,12 @@ defmodule Corex.Design.Recipe do
   end
 
   @doc """
-  Renders the recipe to plain CSS for the given export target.
+  Renders the recipe to Tailwind component-layer CSS.
   """
-  def to_css(%__MODULE__{} = recipe, opts \\ []) do
-    alias Corex.Design.Emit.StyleRecipe
+  def to_css(%__MODULE__{} = recipe) do
     alias Corex.Design.Emit.TailwindRecipe
 
-    target = Keyword.get(opts, :target, :css)
-
-    case target do
-      :tailwind -> TailwindRecipe.to_css(recipe)
-      :css -> StyleRecipe.to_css(recipe)
-    end
+    TailwindRecipe.to_css(recipe)
   end
 
   @doc false
@@ -201,7 +195,7 @@ defmodule Corex.Design.RecipeSource do
 
   Host recipes are merged into `Corex.Design.Recipes.all/0` by `:id`: a host
   recipe whose id matches a built-in replaces it in place; a recipe with a new id
-  is appended. Editing a registered recipe regenerates `design.css` on the next
+  is appended. Editing a registered recipe regenerates `corex.tailwind.css` on the next
   `mix compile` (the resolved recipes are part of the compiler digest).
   """
 
