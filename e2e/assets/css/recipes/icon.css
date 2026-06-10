@@ -14,6 +14,46 @@
     flex-shrink: 0;
   }
 
+  .icon.icon--text-xs {
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+  }
+
+  .icon.icon--text-sm {
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+  }
+
+  .icon.icon--text-base {
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+
+  .icon.icon--text-lg {
+    font-size: var(--text-lg);
+    line-height: var(--leading-lg);
+  }
+
+  .icon.icon--text-xl {
+    font-size: var(--text-xl);
+    line-height: var(--leading-xl);
+  }
+
+  .icon.icon--text-2xl {
+    font-size: var(--text-2xl);
+    line-height: var(--leading-2xl);
+  }
+
+  .icon.icon--text-3xl {
+    font-size: var(--text-3xl);
+    line-height: var(--leading-3xl);
+  }
+
+  .icon.icon--text-4xl {
+    font-size: var(--text-4xl);
+    line-height: var(--leading-4xl);
+  }
+
   .icon [data-icon],
     .icon svg,
     .icon img {

@@ -13,12 +13,12 @@
 
 
 @utility tabs--text-* {
-  [data-scope="tabs"][data-part="trigger"] {
+  [data-scope="tabs"][data-part="content"] {
       font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
 
-  [data-scope="tabs"][data-part="content"] {
+  [data-scope="tabs"][data-part="trigger"] {
       font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
@@ -42,8 +42,8 @@
   }
 
   [data-scope="tabs"][data-part="trigger"] {
-      gap: --value(--spacing-space-*, [length]);
-    min-height: --value(--spacing-size-*, [length]);
+      min-height: --value(--spacing-size-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
     padding-inline: --value(--spacing-space-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);

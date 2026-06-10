@@ -5,7 +5,7 @@
 }
 
 
-@utility box--radius-* {
+@utility box--rounded-* {
   border-radius: --value(--radius-*, [length]);
 }
 
@@ -19,8 +19,44 @@
     padding: 0;
   }
 
+  .box.box--padding-sm {
+    padding: var(--space-sm);
+  }
+
+  .box.box--padding-md {
+    padding: var(--space-md);
+  }
+
+  .box.box--padding-lg {
+    padding: var(--space-lg);
+  }
+
+  .box.box--padding-xl {
+    padding: var(--space-xl);
+  }
+
   .box.box--rounded-none {
     border-radius: var(--radius-none);
+  }
+
+  .box.box--rounded-sm {
+    border-radius: var(--radius-sm);
+  }
+
+  .box.box--rounded-md {
+    border-radius: var(--radius-md);
+  }
+
+  .box.box--rounded-lg {
+    border-radius: var(--radius-lg);
+  }
+
+  .box.box--rounded-xl {
+    border-radius: var(--radius-xl);
+  }
+
+  .box.box--rounded-2xl {
+    border-radius: var(--radius-2xl);
   }
 
   .box.box--rounded-full {

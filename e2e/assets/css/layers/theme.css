@@ -110,11 +110,11 @@
   --theme-container-5xl: var(--container-5xl);
   --theme-container-6xl: var(--container-6xl);
   --theme-container-7xl: var(--container-7xl);
+  --theme-font-sans: var(--font-sans);
   --theme-font-serif: var(--font-serif);
   --theme-font-mono: var(--font-mono);
   --theme-font-code: var(--font-code);
   --theme-font-display: var(--font-display);
-  --theme-font-sans: var(--font-sans);
   --theme-leading-xs: var(--leading-xs);
   --theme-leading-sm: var(--leading-sm);
   --theme-leading-base: var(--leading-base);
@@ -305,11 +305,11 @@
   --container-5xl: var(--theme-container-5xl);
   --container-6xl: var(--theme-container-6xl);
   --container-7xl: var(--theme-container-7xl);
+  --font-sans: var(--theme-font-sans);
   --font-serif: var(--theme-font-serif);
   --font-mono: var(--theme-font-mono);
   --font-code: var(--theme-font-code);
   --font-display: var(--theme-font-display);
-  --font-sans: var(--theme-font-sans);
   --leading-xs: var(--theme-leading-xs);
   --leading-sm: var(--theme-leading-sm);
   --leading-base: var(--theme-leading-base);

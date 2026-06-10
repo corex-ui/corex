@@ -637,6 +637,40 @@ defmodule Corex.Design.Recipes do
       ]
     end
 
+    def scoped_size_rules(id, scope, part \\ "root") do
+      name = Selector.class_name(id)
+      host = Selector.host(id)
+      part_sel = ~s([data-scope="#{scope}"][data-part="#{part}"])
+
+      for size <- Axes.size_atoms() do
+        Rule.new(
+          ~s(#{host}.#{name}--size-#{size} #{part_sel}),
+          decls: Map.to_list(RecipePresets.size_block(size))
+        )
+      end
+    end
+
+    def scoped_shape_square_size_rules(id, scope, part \\ "root") do
+      name = Selector.class_name(id)
+      host = Selector.host(id)
+      part_sel = ~s([data-scope="#{scope}"][data-part="#{part}"])
+
+      for size <- Axes.size_atoms() do
+        Rule.new(
+          ~s(#{host}.#{name}--shape-square.#{name}--size-#{size} #{part_sel}),
+          decls: [
+            padding: 0,
+            padding_inline: 0,
+            padding_block: 0,
+            width: {:size, size},
+            min_height: {:size, size},
+            aspect_ratio: {:raw, "1 / 1"},
+            justify_content: :center
+          ]
+        )
+      end
+    end
+
     def shape_variants do
       [
         auto: %{},
@@ -6102,7 +6136,7 @@ defmodule Corex.Design.Recipes do
             Rule.new("&[data-orientation=\"horizontal\"]",
               decls: [width: "100%", height: {:raw, "fit-content"}]
             ),
-            Rule.new("&[data-paused],\n  &[data-paused] *",
+            Rule.new("&[data-paused], &[data-paused] *",
               decls: [{:raw, "animation-play-state: paused !important"}]
             )
           ]
@@ -6115,10 +6149,10 @@ defmodule Corex.Design.Recipes do
             {:raw, "animation-iteration-count: var(--marquee-loop-count);"}
           ],
           children: [
-            Rule.new(~S(&[data-side="start"],\n  &[data-side="end"]),
+            Rule.new("&[data-side=\"start\"], &[data-side=\"end\"]",
               decls: [{:raw, "animation-name: marqueeX;"}]
             ),
-            Rule.new(~S(&[data-side="top"],\n  &[data-side="bottom"]),
+            Rule.new("&[data-side=\"top\"], &[data-side=\"bottom\"]",
               decls: [{:raw, "animation-name: marqueeY;"}]
             ),
             Rule.new("&[data-reverse]", decls: [{:raw, "animation-direction: reverse;"}]),
@@ -9182,6 +9216,8 @@ defmodule Corex.Design.Recipes do
             HostIcon.indicator_rules(@id) ++
             HostIcon.host_icon_rules(@id) ++
             HostIcon.square_icon_rules(@id) ++
+            HostIcon.scoped_size_rules(@id, @scope) ++
+            HostIcon.scoped_shape_square_size_rules(@id, @scope) ++
             host_extra_rules()
       )
     end

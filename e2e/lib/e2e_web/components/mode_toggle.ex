@@ -18,6 +18,7 @@ defmodule E2eWeb.ModeToggle do
       id={@id}
       size="sm"
       shape="square"
+      radius="full"
       data-toggle-dual-label
       pressed={@mode == "dark"}
       on_pressed_change_client="corex:preview:set-mode"

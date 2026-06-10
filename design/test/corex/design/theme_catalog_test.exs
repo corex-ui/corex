@@ -199,7 +199,7 @@ defmodule Corex.Design.ThemeTest do
     assert colors[{:acme, :light}]["brand"] != colors[{:neo, :light}]["brand"]
   end
 
-  test "emitted CSS includes distinct per-theme font stacks" do
+  test "emitted CSS uses system font stacks for all themes" do
     CorexDesign.TestConfig.put([])
     css = Emit.Tokens.css()
 
@@ -209,8 +209,10 @@ defmodule Corex.Design.ThemeTest do
 
     assert root =~ "--font-sans:"
     assert root =~ "ui-sans-serif"
-    assert uno_block =~ "Inter"
-    assert duo_block =~ "Source Sans 3"
+    assert uno_block =~ "--font-sans: ui-sans-serif"
+    assert duo_block =~ "--font-sans: ui-sans-serif"
+    refute css =~ "Figtree"
+    refute css =~ "Inter"
   end
 
   defp root_block(css) do

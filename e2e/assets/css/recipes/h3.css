@@ -24,10 +24,10 @@
 @layer components {
   .h3 {
     color: var(--color-ui-ink);
-    font-weight: var(--font-weight-semibold);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
-    font-family: var(--font-display);
+    font-weight: var(--font-weight-semibold);
+    font-family: var(--font-sans);
     @media (min-width: 48rem) {
       font-size: var(--text-xl);
       line-height: var(--leading-xl);

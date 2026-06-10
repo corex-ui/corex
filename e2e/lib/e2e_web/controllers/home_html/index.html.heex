@@ -3,7 +3,7 @@
     <div class="home__hero__stack">
       <div class="home__hero__inner">
         <div class="home__hero__copy">
-          <.h1 id="home-hero-heading" text="4xl" weight="bold" width="full">
+          <.h1 id="home-hero-heading" width="full">
             {~t"The Phoenix UI with a"} <span class="h1 h1--semantic-brand">{~t"real API"}</span>.
           </.h1>
 
@@ -15,9 +15,9 @@
 
           <ul class="home__bullets" aria_label="Highlights">
             <li :for={bullet <- @hero_bullets} class="home__bullet">
-              <.row gap="sm" align="start">
+              <.row gap="sm" align="start" wrap="nowrap">
                 <.heroicon name="hero-check" />
-                <.p text="sm"  width="full">
+                <.p text="sm">
                   <strong class="p p--semibold">{bullet.title}</strong> {bullet.body}
                 </.p>
               </.row>
@@ -43,7 +43,7 @@
             <.stack
               variant="layer"
               radius="2xl"
-              padding="lg"
+              padding="xl"
               gap="sm"
               width="full"
               class="home__hero__card home__hero__card--accordion"
@@ -53,13 +53,7 @@
                   <.heroicon name="hero-bars-3-bottom-left" />
                   {~t"Accordion"}
                 </.badge>
-                <.navigate
-                  to={~p"/accordion/playground"}
-                  as="button"
-                  size="sm"
-                  variant="ghost"
-                  radius="full"
-                >
+                <.navigate to={~p"/accordion/playground"} size="sm">
                   {~t"See component"}
                   <.heroicon name="hero-arrow-right" />
                 </.navigate>
@@ -94,39 +88,41 @@
             <.stack
               variant="layer"
               radius="2xl"
-              padding="lg"
-              gap="sm"
+              padding="none"
+              gap="none"
               width="full"
               class="home__hero__card home__hero__card--code"
             >
-              <div class="home__card__header">
-                <.badge size="sm">
-                  <.heroicon name="hero-code-bracket" />
-                  HEEx
-                </.badge>
-                <.clipboard
-                  id="hero-code-clipboard"
-                  size="sm"
-                  value={@hero_code}
-                  input={false}
-                  trigger_aria_label={~t"Copy snippet"}
-                >
-                  <:copy>
-                    <span>{~t"Copy"}</span>
-                    <.heroicon name="hero-clipboard" />
-                  </:copy>
-                  <:copied>
-                    <span>{~t"Copied"}</span>
-                    <.heroicon name="hero-check" />
-                  </:copied>
-                </.clipboard>
-              </div>
+              <.stack padding="xl" gap="sm" width="full">
+                <div class="home__card__header">
+                  <.badge size="sm">
+                    <.heroicon name="hero-code-bracket" />
+                    HEEx
+                  </.badge>
+                  <.clipboard
+                    id="hero-code-clipboard"
+                    size="sm"
+                    value={@hero_code}
+                    input={false}
+                    trigger_aria_label={~t"Copy snippet"}
+                  >
+                    <:copy>
+                      <span>{~t"Copy"}</span>
+                      <.heroicon name="hero-clipboard" />
+                    </:copy>
+                    <:copied>
+                      <span>{~t"Copied"}</span>
+                      <.heroicon name="hero-check" />
+                    </:copied>
+                  </.clipboard>
+                </div>
+              </.stack>
               <.code
                 id="hero-code"
                 text="xs"
                 width="full"
                 max_width="none"
-                max_height="sm"
+                max_height="4xs"
                 language={:heex}
                 code={@hero_code}
               />
@@ -137,7 +133,7 @@
             <.stack
               variant="layer"
               radius="2xl"
-              padding="lg"
+              padding="xl"
               gap="sm"
               width="full"
               class="home__hero__card home__hero__card--api"
@@ -181,18 +177,21 @@
             <.stack
               variant="layer"
               radius="2xl"
-              padding="lg"
-              gap="sm"
+              padding="none"
+              gap="none"
               width="full"
               class="home__hero__card home__hero__card--events"
             >
-              <.badge size="sm">
-                <.heroicon name="hero-signal" />
-                {~t"Events"}
-              </.badge>
+              <.stack padding="xl" width="full">
+                <.badge size="sm">
+                  <.heroicon name="hero-signal" />
+                  {~t"Events"}
+                </.badge>
+              </.stack>
               <.data_table
                 id="hero-events-table"
-                class="max-h-2xs home__card__events-table"
+                max_height="4xs"
+                class="home__card__events-table"
                 rows={[]}
               >
                 <:col :let={_row} label={~t"Time"}></:col>
@@ -220,28 +219,28 @@
       </h2>
       <div class="home__numbers">
         <div class="home__numbers__cell">
-          <.h2 text="4xl" weight="bold">
+          <.h2 text="4xl">
             {@component_count}<span class="h2 h2--semantic-brand">+</span>
           </.h2>
           <.small text="xs" weight="semibold" >{~t"Components"}</.small>
           <.p text="sm" >{~t"Works in Controller and Live View"}</.p>
         </div>
         <div class="home__numbers__cell">
-          <.h2 text="4xl" weight="bold">
+          <.h2 text="4xl">
             100<span class="h2 h2--semantic-brand">+</span>
           </.h2>
           <.small text="xs" weight="semibold" >{~t"API & Events"}</.small>
           <.p text="sm" >{~t"From the Server and the Client"}</.p>
         </div>
         <div class="home__numbers__cell">
-          <.h2 text="4xl" weight="bold">
+          <.h2 text="4xl">
             100<span class="h2 h2--semantic-brand">%</span>
           </.h2>
           <.small text="xs" weight="semibold" >{~t"Open Source"}</.small>
           <.p text="sm" >{~t"Open Source and free to use. MIT License"}</.p>
         </div>
         <div class="home__numbers__cell">
-          <.h2 text="4xl" weight="bold">
+          <.h2 text="4xl">
             A<span class="h2 h2--semantic-brand">11y</span>
           </.h2>
           <.small text="xs" weight="semibold" >{~t"Built in"}</.small>
@@ -284,7 +283,7 @@
     <div class="home__section__inner">
       <div class="home__cta__inner">
         <.small text="xs" weight="semibold" semantic="brand">{~t"Ready?"}</.small>
-        <.h2 id="home-cta-heading" text="4xl" weight="bold">
+        <.h2 id="home-cta-heading">
           {~t"Install Corex"} <span class="h2 h2--semantic-brand">{~t"in one command."}</span>
         </.h2>
         <.lead max_width="lg">

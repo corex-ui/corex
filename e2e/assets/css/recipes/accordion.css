@@ -39,17 +39,17 @@
 
 
 @utility accordion--size-* {
-  [data-scope="accordion"][data-part="item-trigger"] {
-      gap: --value(--spacing-space-*, [length]);
-    min-height: --value(--spacing-size-*, [length]);
-    padding-inline: --value(--spacing-space-*, [length]);
-    margin-bottom: --value(--spacing-space-*, [length]);
-    font-size: --value(--text-*, [length]);
-    line-height: --value(--text-*--line-height, [length]);
-  }
-
   [data-scope="accordion"][data-part="item-text"] {
       gap: --value(--spacing-space-*, [length]);
+  }
+
+  [data-scope="accordion"][data-part="item-trigger"] {
+      min-height: --value(--spacing-size-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    margin-bottom: --value(--spacing-space-*, [length]);
   }
 
 }

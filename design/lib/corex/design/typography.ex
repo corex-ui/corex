@@ -38,8 +38,8 @@ defmodule Corex.Design.Typography do
 
   def default do
     %{
-      "h1" => heading(:"2xl", :"3xl", :black),
-      "h2" => heading(:xl, :"2xl", :bold),
+      "h1" => heading(:"3xl", :"4xl", :bold),
+      "h2" => heading(:"2xl", :"3xl", :bold),
       "h3" => heading(:lg, :xl, :semibold),
       "h4" => heading(:base, :lg, :normal),
       "p" => body_text(),
@@ -113,7 +113,7 @@ defmodule Corex.Design.Typography do
 
   defp heading(base_step, md_step, weight) do
     %{
-      font_family: {:font, :display},
+      font_family: {:font, :sans},
       font_size: {:text, base_step},
       line_height: {:leading, base_step},
       font_weight: {:weight, weight},
@@ -131,27 +131,23 @@ defmodule Corex.Design.Typography do
       line_height: {:leading, :base},
       font_weight: {:weight, :normal},
       color: {:color, :ui_ink},
-      margin_block: {:space, :md},
-      lg: %{
-        font_size: {:text, :lg},
-        line_height: {:leading, :lg}
-      }
+      margin_block: {:space, :md}
     }
   end
 
   defp display_lead do
     %{
-      font_family: {:font, :display},
-      font_size: {:text, :xl},
-      line_height: {:leading, :xl},
-      font_weight: {:weight, :extralight},
+      font_family: {:font, :sans},
+      font_size: {:text, :lg},
+      line_height: {:leading, :lg},
+      font_weight: {:weight, :normal},
       md: %{
-        font_size: {:text, :"2xl"},
-        line_height: {:leading, :"2xl"}
+        font_size: {:text, :xl},
+        line_height: {:leading, :xl}
       },
       lg: %{
-        font_size: {:text, :"3xl"},
-        line_height: {:leading, :"3xl"}
+        font_size: {:text, :"2xl"},
+        line_height: {:leading, :"2xl"}
       }
     }
   end
@@ -160,7 +156,7 @@ defmodule Corex.Design.Typography do
     %{
       font_size: {:text, :xs},
       line_height: {:leading, :xs},
-      font_weight: {:weight, :extralight},
+      font_weight: {:weight, :normal},
       margin_block: {:space, :md},
       md: %{
         font_size: {:text, :sm},

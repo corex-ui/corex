@@ -554,10 +554,15 @@ defmodule Corex.Design.Emit.StyleRecipe do
 
   defp skip_variant?(axis, value, _block, ctx) do
     recipe = Keyword.fetch!(ctx, :recipe)
-    utility_axis? = axis in TailwindUtilitiesRecipe.utility_axes(recipe)
-    scale_value? = not keyword_sizing_value?(value)
 
-    utility_axis? and scale_value?
+    if recipe.kind == :layout do
+      false
+    else
+      utility_axis? = axis in TailwindUtilitiesRecipe.utility_axes(recipe)
+      scale_value? = not keyword_sizing_value?(value)
+
+      utility_axis? and scale_value?
+    end
   end
 
   defp keyword_sizing_value?(value), do: value in [:none, :full, :auto, :fit]
@@ -1078,7 +1083,7 @@ defmodule Corex.Design.Emit.TailwindUtilitiesRecipe do
     if values == [] do
       nil
     else
-      suffix = Axis.name(axis)
+      suffix = layout_utility_suffix(axis)
 
       scale_utility(
         "#{name}--#{suffix}-*",
@@ -1086,6 +1091,9 @@ defmodule Corex.Design.Emit.TailwindUtilitiesRecipe do
       )
     end
   end
+
+  defp layout_utility_suffix(:radius), do: Map.fetch!(@prefixed_axes, :radius)
+  defp layout_utility_suffix(axis), do: Axis.name(axis)
 
   defp layout_axis_line(:padding), do: "padding: --value(--spacing-space-*, [length]);"
 

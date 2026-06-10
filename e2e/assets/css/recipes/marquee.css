@@ -136,8 +136,7 @@
       height: fit-content;
     }
 
-    &[data-paused],
-    &[data-paused] * {
+    &[data-paused], &[data-paused] * {
       animation-play-state: paused !important
     }
   }
@@ -147,11 +146,11 @@
     animation-duration: var(--marquee-duration);
     animation-delay: var(--marquee-delay);
     animation-iteration-count: var(--marquee-loop-count);
-    &[data-side="start"],\n  &[data-side="end"] {
+    &[data-side="start"], &[data-side="end"] {
       animation-name: marqueeX;
     }
 
-    &[data-side="top"],\n  &[data-side="bottom"] {
+    &[data-side="top"], &[data-side="bottom"] {
       animation-name: marqueeY;
     }
 

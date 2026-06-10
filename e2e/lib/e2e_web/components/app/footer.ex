@@ -17,7 +17,7 @@ defmodule E2eWeb.App.Footer do
         wrap="nowrap"
         gap="md"
       >
-        <.row wrap="nowrap" gap="md" align="center" shrink="0">
+        <.row wrap="nowrap" gap="lg" align="center" shrink="0">
           <.navigate semantic="accent" size="sm" to="https://netoum.com" external>
             {~t"Open source by Netoum"}
             <.heroicon name="hero-arrow-top-right-on-square" />
@@ -32,7 +32,7 @@ defmodule E2eWeb.App.Footer do
             <.heroicon name="hero-arrow-top-right-on-square" />
           </.navigate>
         </.row>
-        <.row justify="end" wrap="nowrap" gap="md" align="center" shrink="0">
+        <.row justify="end" wrap="nowrap" gap="lg" align="center" shrink="0">
           <.locale_switcher path={@path} />
           <.navigate
             as="button"

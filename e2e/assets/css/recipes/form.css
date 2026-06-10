@@ -26,10 +26,10 @@
     display: flex;
     padding: var(--space-lg);
     color: var(--color-ui-ink);
-    border: 1px solid var(--color-border);
-    background-color: var(--color-layer);
-    flex-direction: column;
     gap: var(--space-md);
+    flex-direction: column;
+    background-color: var(--color-layer);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
   }
 

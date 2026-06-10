@@ -65,12 +65,12 @@ defmodule Corex.Navigate do
 
   ```heex
   <.navigate to="/" semantic="accent">Docs</.navigate>
-  <.navigate to="/signup" as="button" variant="solid" semantic="accent" size="lg">Get started</.navigate>
-  <.navigate to="/docs" as="button" variant="solid" semantic="brand" size="lg" radius="full">Browse</.navigate>
-  <.navigate to="https://hexdocs.pm/corex" as="button" variant="ghost" size="lg" radius="full" external>Hexdocs</.navigate>
+  <.navigate to="/signup" as="button" variant="solid" semantic="accent" size="md">Get started</.navigate>
+  <.navigate to="/docs" as="button" variant="solid" semantic="brand" size="md">Browse</.navigate>
+  <.navigate to="https://hexdocs.pm/corex" as="button" variant="ghost" size="md" external>Hexdocs</.navigate>
   ```
 
-  Solid CTAs need both `variant="solid"` and a `size` step for padding and min-height. Use `semantic="brand"` and `radius="full"` for marketing primary buttons; pair with `variant="ghost"` on a secondary external link.
+  Solid CTAs need both `variant="solid"` and a `size` step for padding and min-height. Use `semantic="brand"` on a marketing primary button; pair with `variant="ghost"` on a secondary external link.
 
   """
 

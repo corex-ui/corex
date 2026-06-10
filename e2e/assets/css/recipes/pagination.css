@@ -5,11 +5,11 @@
       border-radius: --value(--radius-*, [length]);
   }
 
-  [data-scope="pagination"][data-part="prev-trigger"] {
+  [data-scope="pagination"][data-part="next-trigger"] {
       border-radius: --value(--radius-*, [length]);
   }
 
-  [data-scope="pagination"][data-part="next-trigger"] {
+  [data-scope="pagination"][data-part="prev-trigger"] {
       border-radius: --value(--radius-*, [length]);
   }
 
@@ -34,13 +34,13 @@
     line-height: --value(--text-*--line-height, [length]);
   }
 
-  [data-scope="pagination"][data-part="prev-trigger"] {
+  [data-scope="pagination"][data-part="next-trigger"] {
       min-height: --value(--spacing-size-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
 
-  [data-scope="pagination"][data-part="next-trigger"] {
+  [data-scope="pagination"][data-part="prev-trigger"] {
       min-height: --value(--spacing-size-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);

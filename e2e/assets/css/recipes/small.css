@@ -23,10 +23,10 @@
 
 @layer components {
   .small {
-    font-weight: var(--font-weight-extralight);
-    margin-block: var(--space-md);
     font-size: var(--text-xs);
     line-height: var(--leading-xs);
+    margin-block: var(--space-md);
+    font-weight: var(--font-weight-normal);
     @media (min-width: 48rem) {
       font-size: var(--text-sm);
       line-height: var(--leading-sm);

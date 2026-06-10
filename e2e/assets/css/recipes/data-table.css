@@ -25,8 +25,8 @@
   .data-table {
     position: relative;
     display: block;
-    border: 1px solid var(--color-border);
     min-width: 0;
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     overflow-x: auto;
     overflow-y: auto;

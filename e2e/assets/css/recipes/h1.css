@@ -24,13 +24,13 @@
 @layer components {
   .h1 {
     color: var(--color-ui-ink);
-    font-weight: var(--font-weight-black);
-    font-size: var(--text-2xl);
-    line-height: var(--leading-2xl);
-    font-family: var(--font-display);
+    font-size: var(--text-3xl);
+    line-height: var(--leading-3xl);
+    font-weight: var(--font-weight-bold);
+    font-family: var(--font-sans);
     @media (min-width: 48rem) {
-      font-size: var(--text-3xl);
-      line-height: var(--leading-3xl);
+      font-size: var(--text-4xl);
+      line-height: var(--leading-4xl);
     }
   }
 

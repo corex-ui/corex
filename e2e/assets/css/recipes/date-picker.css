@@ -9,11 +9,11 @@
       border-radius: --value(--radius-*, [length]);
   }
 
-  [data-scope="date-picker"][data-part="prev-trigger"] {
+  [data-scope="date-picker"][data-part="next-trigger"] {
       border-radius: --value(--radius-*, [length]);
   }
 
-  [data-scope="date-picker"][data-part="next-trigger"] {
+  [data-scope="date-picker"][data-part="prev-trigger"] {
       border-radius: --value(--radius-*, [length]);
   }
 
@@ -41,10 +41,10 @@
 
   [data-scope="date-picker"][data-part="input"] {
       color: --value(--color-ui-ink-*, [color]);
-    background-color: --value(--color-*, [color]);
     max-width: --value(--container-*, [length]);
     min-height: --value(--spacing-size-*, [length]);
     padding-inline: --value(--spacing-space-*, [length]);
+    background-color: --value(--color-*, [color]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
@@ -58,29 +58,25 @@
       gap: --value(--spacing-space-*, [length]);
   }
 
-  [data-scope="date-picker"][data-part="trigger"] {
-      background-color: --value(--color-*, [color]);
-    min-height: --value(--spacing-size-*, [length]);
-    font-size: --value(--text-*, [length]);
-    line-height: --value(--text-*--line-height, [length]);
-  }
-
-  [data-scope="date-picker"][data-part="positioner"] {
-      max-width: --value(--container-*, [length]);
-  }
-
   [data-scope="date-picker"][data-part="content"] {
       max-width: --value(--container-*, [length]);
   }
 
-  [data-scope="date-picker"][data-part="prev-trigger"] {
-      max-width: --value(--container-*, [length]);
-    min-height: --value(--spacing-size-*, [length]);
+  [data-scope="date-picker"][data-part="trigger"] {
+      min-height: --value(--spacing-size-*, [length]);
+    background-color: --value(--color-*, [color]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
 
   [data-scope="date-picker"][data-part="next-trigger"] {
+      max-width: --value(--container-*, [length]);
+    min-height: --value(--spacing-size-*, [length]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+  }
+
+  [data-scope="date-picker"][data-part="prev-trigger"] {
       max-width: --value(--container-*, [length]);
     min-height: --value(--spacing-size-*, [length]);
     font-size: --value(--text-*, [length]);
@@ -94,9 +90,13 @@
     line-height: --value(--text-*--line-height, [length]);
   }
 
-  [data-scope="date-picker"][data-part="view-trigger"] {
-      min-height: --value(--spacing-size-*, [length]);
-    font-size: --value(--text-*, [length]);
+  [data-scope="date-picker"][data-part="day-table-header"] {
+      font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+  }
+
+  [data-scope="date-picker"][data-part="table-header"] {
+      font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
 
@@ -105,14 +105,14 @@
     padding-inline: --value(--spacing-space-*, [length]);
   }
 
-  [data-scope="date-picker"][data-part="table-header"] {
-      font-size: --value(--text-*, [length]);
+  [data-scope="date-picker"][data-part="view-trigger"] {
+      min-height: --value(--spacing-size-*, [length]);
+    font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
 
-  [data-scope="date-picker"][data-part="day-table-header"] {
-      font-size: --value(--text-*, [length]);
-    line-height: --value(--text-*--line-height, [length]);
+  [data-scope="date-picker"][data-part="positioner"] {
+      max-width: --value(--container-*, [length]);
   }
 
 }

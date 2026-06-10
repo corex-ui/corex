@@ -29,8 +29,8 @@
 
 @utility toggle--size-* {
   [data-scope="toggle"][data-part="root"] {
-      gap: --value(--spacing-space-*, [length]);
-    min-height: --value(--spacing-size-*, [length]);
+      min-height: --value(--spacing-size-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
     padding-inline: --value(--spacing-space-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
@@ -44,19 +44,19 @@
     display: inline-flex;
     width: fit-content;
     cursor: pointer;
-    border: 1px solid transparent;
+    appearance: none;
     align-items: center;
     justify-content: center;
+    border: 1px solid transparent;
     border-radius: var(--radius-md);
-    font-weight: var(--font-weight-normal);
     text-align: center;
     transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+    font-weight: var(--font-weight-normal);
     text-decoration-line: none;
-    appearance: none;
     &[data-state="on"] {
       color: var(--color-ui-ink);
-      background-color: var(--color-ui);
       border-color: transparent;
+      background-color: var(--color-ui);
       &:active {
         background-color: var(--color-ui-active);
       }
@@ -101,8 +101,8 @@
     }
     &:not([data-state="on"]) {
       color: var(--color-ui-ink);
-      background-color: var(--color-ui);
       border-color: var(--color-border);
+      background-color: var(--color-ui);
       &:active {
         background-color: var(--color-ui-active);
       }
@@ -111,30 +111,30 @@
         &[disabled] {
         cursor: not-allowed;
         color: var(--color-ui-ink-muted);
-        background-color: var(--color-ui-muted);
         border-color: var(--color-border);
+        background-color: var(--color-ui-muted);
         box-shadow: none;
         &:active {
           color: var(--color-ui-ink-muted);
-          background-color: var(--color-ui-muted);
           border-color: var(--color-border);
+          background-color: var(--color-ui-muted);
           box-shadow: none;
         }
         &[data-state="open"] {
           color: var(--color-ui-ink-muted);
-          background-color: var(--color-ui-muted);
           border-color: var(--color-border);
+          background-color: var(--color-ui-muted);
         }
         &:hover {
           color: var(--color-ui-ink-muted);
-          background-color: var(--color-ui-muted);
           border-color: var(--color-border);
+          background-color: var(--color-ui-muted);
         }
         &:focus-visible {
           color: var(--color-ui-ink-muted);
           outline: none;
-          background-color: var(--color-ui-muted);
           border-color: var(--color-border);
+          background-color: var(--color-ui-muted);
           box-shadow: none;
         }
       }
@@ -221,8 +221,8 @@
   .toggle.toggle--variant-solid [data-scope="toggle"][data-part="root"] {
     &:not([data-state="on"]) {
       color: var(--color-ui-ink);
-      background-color: var(--color-ui);
       border-color: var(--color-border);
+      background-color: var(--color-ui);
       &:active {
         background-color: var(--color-ui-active);
       }
@@ -231,30 +231,30 @@
         &[disabled] {
         cursor: not-allowed;
         color: var(--color-ui-ink-muted);
-        background-color: var(--color-ui-muted);
         border-color: var(--color-border);
+        background-color: var(--color-ui-muted);
         box-shadow: none;
         &:active {
           color: var(--color-ui-ink-muted);
-          background-color: var(--color-ui-muted);
           border-color: var(--color-border);
+          background-color: var(--color-ui-muted);
           box-shadow: none;
         }
         &[data-state="open"] {
           color: var(--color-ui-ink-muted);
-          background-color: var(--color-ui-muted);
           border-color: var(--color-border);
+          background-color: var(--color-ui-muted);
         }
         &:hover {
           color: var(--color-ui-ink-muted);
-          background-color: var(--color-ui-muted);
           border-color: var(--color-border);
+          background-color: var(--color-ui-muted);
         }
         &:focus-visible {
           color: var(--color-ui-ink-muted);
           outline: none;
-          background-color: var(--color-ui-muted);
           border-color: var(--color-border);
+          background-color: var(--color-ui-muted);
           box-shadow: none;
         }
       }
@@ -271,8 +271,8 @@
   .toggle.toggle--variant-ghost [data-scope="toggle"][data-part="root"] {
     &:not([data-state="on"]) {
       color: var(--color-ui-ink);
-      background-color: transparent;
       border-color: transparent;
+      background-color: transparent;
       &:active {
         background-color: var(--color-ui-active);
       }
@@ -316,8 +316,8 @@
   .toggle.toggle--variant-outline [data-scope="toggle"][data-part="root"] {
     &:not([data-state="on"]) {
       color: var(--color-ui-ink);
-      background-color: transparent;
       border-color: var(--color-outline);
+      background-color: transparent;
       &:active {
         background-color: var(--color-ui-active);
       }
@@ -326,8 +326,8 @@
         &[disabled] {
         cursor: not-allowed;
         color: var(--color-ui-ink-muted);
-        background-color: transparent;
         border-color: var(--color-ui-muted);
+        background-color: transparent;
         box-shadow: none;
       }
       &:hover {
@@ -343,8 +343,8 @@
   .toggle.toggle--variant-subtle [data-scope="toggle"][data-part="root"] {
     &:not([data-state="on"]) {
       color: var(--color-ui-ink);
-      background-color: var(--color-ui-hover);
       border-color: transparent;
+      background-color: var(--color-ui-hover);
       &:active {
         background-color: var(--color-ui-active);
       }
@@ -1111,10 +1111,10 @@
     display: inline-flex;
     width: 1em;
     color: currentcolor;
+    height: 1em;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    height: 1em;
   }
 
   .toggle [data-part="indicator"] [data-icon] {
@@ -1134,6 +1134,78 @@
     height: 1em;
     flex-shrink: 0;
     display: inline-flex;
+  }
+
+  .toggle.toggle--size-sm [data-scope="toggle"][data-part="root"] {
+    min-height: var(--size-sm);
+    gap: var(--space-sm);
+    padding-inline: var(--space-sm);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+  }
+
+  .toggle.toggle--size-md [data-scope="toggle"][data-part="root"] {
+    min-height: var(--size-md);
+    gap: var(--space-md);
+    padding-inline: var(--space-md);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+
+  .toggle.toggle--size-lg [data-scope="toggle"][data-part="root"] {
+    min-height: var(--size-lg);
+    gap: var(--space-lg);
+    padding-inline: var(--space-lg);
+    font-size: var(--text-lg);
+    line-height: var(--leading-lg);
+  }
+
+  .toggle.toggle--size-xl [data-scope="toggle"][data-part="root"] {
+    min-height: var(--size-xl);
+    gap: var(--space-xl);
+    padding-inline: var(--space-xl);
+    font-size: var(--text-xl);
+    line-height: var(--leading-xl);
+  }
+
+  .toggle.toggle--shape-square.toggle--size-sm [data-scope="toggle"][data-part="root"] {
+    padding: 0;
+    padding-inline: 0;
+    padding-block: 0;
+    width: var(--size-sm);
+    min-height: var(--size-sm);
+    aspect-ratio: 1 / 1;
+    justify-content: center;
+  }
+
+  .toggle.toggle--shape-square.toggle--size-md [data-scope="toggle"][data-part="root"] {
+    padding: 0;
+    padding-inline: 0;
+    padding-block: 0;
+    width: var(--size-md);
+    min-height: var(--size-md);
+    aspect-ratio: 1 / 1;
+    justify-content: center;
+  }
+
+  .toggle.toggle--shape-square.toggle--size-lg [data-scope="toggle"][data-part="root"] {
+    padding: 0;
+    padding-inline: 0;
+    padding-block: 0;
+    width: var(--size-lg);
+    min-height: var(--size-lg);
+    aspect-ratio: 1 / 1;
+    justify-content: center;
+  }
+
+  .toggle.toggle--shape-square.toggle--size-xl [data-scope="toggle"][data-part="root"] {
+    padding: 0;
+    padding-inline: 0;
+    padding-block: 0;
+    width: var(--size-xl);
+    min-height: var(--size-xl);
+    aspect-ratio: 1 / 1;
+    justify-content: center;
   }
 
   .toggle[data-loading] [data-scope="toggle"][data-part="root"] {

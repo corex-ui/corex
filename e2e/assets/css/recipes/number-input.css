@@ -21,9 +21,9 @@
 @utility number-input--size-* {
   [data-scope="number-input"][data-part="input"] {
       color: --value(--color-ui-ink-*, [color]);
-    background-color: --value(--color-*, [color]);
     min-height: --value(--spacing-size-*, [length]);
     padding-inline: --value(--spacing-space-*, [length]);
+    background-color: --value(--color-*, [color]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
@@ -37,18 +37,18 @@
       gap: --value(--spacing-space-*, [length]);
   }
 
-  [data-scope="number-input"][data-part="increment-trigger"] {
+  [data-scope="number-input"][data-part="decrement-trigger"] {
       color: --value(--color-ui-ink-*, [color]);
-    background-color: --value(--color-*, [color]);
     min-height: --value(--spacing-size-*, [length]);
+    background-color: --value(--color-*, [color]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
 
-  [data-scope="number-input"][data-part="decrement-trigger"] {
+  [data-scope="number-input"][data-part="increment-trigger"] {
       color: --value(--color-ui-ink-*, [color]);
-    background-color: --value(--color-*, [color]);
     min-height: --value(--spacing-size-*, [length]);
+    background-color: --value(--color-*, [color]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }

@@ -23,17 +23,17 @@
 
 @layer components {
   .lead {
-    font-weight: var(--font-weight-extralight);
-    font-size: var(--text-xl);
-    line-height: var(--leading-xl);
-    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    line-height: var(--leading-lg);
+    font-weight: var(--font-weight-normal);
+    font-family: var(--font-sans);
     @media (min-width: 48rem) {
-      font-size: var(--text-2xl);
-      line-height: var(--leading-2xl);
+      font-size: var(--text-xl);
+      line-height: var(--leading-xl);
     }
     @media (min-width: 64rem) {
-      font-size: var(--text-3xl);
-      line-height: var(--leading-3xl);
+      font-size: var(--text-2xl);
+      line-height: var(--leading-2xl);
     }
   }
 

@@ -263,11 +263,18 @@
   .home__hero__card--code .code {
     flex: 1 1 auto;
     min-height: 0;
+    max-height: var(--container-4xs);
+    border-end-start-radius: var(--radius-2xl);
+    border-end-end-radius: var(--radius-2xl);
   }
 
   .home__hero__card--events {
     flex: 1 1 auto;
-    min-height: 12rem;
+    min-height: 0;
+  }
+
+  .home__hero__card--events .home__card__events-table {
+    max-height: var(--container-4xs);
   }
 
   .home__card__header {
@@ -295,7 +302,9 @@
   .home__hero__card--events .data-table {
     font-size: var(--text-xs);
     line-height: var(--text-xs--line-height);
-    border-radius: var(--radius-md);
+    border-radius: 0;
+    border-end-start-radius: var(--radius-2xl);
+    border-end-end-radius: var(--radius-2xl);
   }
 
   .home__hero__card--events .data-table th,

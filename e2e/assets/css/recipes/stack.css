@@ -20,7 +20,7 @@
 }
 
 
-@utility stack--radius-* {
+@utility stack--rounded-* {
   border-radius: --value(--radius-*, [length]);
 }
 
@@ -35,16 +35,80 @@
     padding: 0;
   }
 
+  .stack.stack--padding-sm {
+    padding: var(--space-sm);
+  }
+
+  .stack.stack--padding-md {
+    padding: var(--space-md);
+  }
+
+  .stack.stack--padding-lg {
+    padding: var(--space-lg);
+  }
+
+  .stack.stack--padding-xl {
+    padding: var(--space-xl);
+  }
+
   .stack.stack--padding-inline-none {
     padding-inline: 0;
+  }
+
+  .stack.stack--padding-inline-sm {
+    padding-inline: var(--space-sm);
+  }
+
+  .stack.stack--padding-inline-md {
+    padding-inline: var(--space-md);
+  }
+
+  .stack.stack--padding-inline-lg {
+    padding-inline: var(--space-lg);
+  }
+
+  .stack.stack--padding-inline-xl {
+    padding-inline: var(--space-xl);
   }
 
   .stack.stack--padding-block-none {
     padding-block: 0;
   }
 
+  .stack.stack--padding-block-sm {
+    padding-block: var(--space-sm);
+  }
+
+  .stack.stack--padding-block-md {
+    padding-block: var(--space-md);
+  }
+
+  .stack.stack--padding-block-lg {
+    padding-block: var(--space-lg);
+  }
+
+  .stack.stack--padding-block-xl {
+    padding-block: var(--space-xl);
+  }
+
   .stack.stack--gap-none {
     gap: 0;
+  }
+
+  .stack.stack--gap-sm {
+    gap: var(--space-sm);
+  }
+
+  .stack.stack--gap-md {
+    gap: var(--space-md);
+  }
+
+  .stack.stack--gap-lg {
+    gap: var(--space-lg);
+  }
+
+  .stack.stack--gap-xl {
+    gap: var(--space-xl);
   }
 
   .stack.stack--align-start {
@@ -126,13 +190,33 @@
   }
 
   .stack.stack--variant-layer {
-    border: 1px solid var(--color-border);
     background-color: var(--color-layer);
+    border: 1px solid var(--color-border);
     box-shadow: var(--shadow-md);
   }
 
   .stack.stack--rounded-none {
     border-radius: var(--radius-none);
+  }
+
+  .stack.stack--rounded-sm {
+    border-radius: var(--radius-sm);
+  }
+
+  .stack.stack--rounded-md {
+    border-radius: var(--radius-md);
+  }
+
+  .stack.stack--rounded-lg {
+    border-radius: var(--radius-lg);
+  }
+
+  .stack.stack--rounded-xl {
+    border-radius: var(--radius-xl);
+  }
+
+  .stack.stack--rounded-2xl {
+    border-radius: var(--radius-2xl);
   }
 
   .stack.stack--rounded-full {

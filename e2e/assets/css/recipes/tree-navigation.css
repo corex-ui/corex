@@ -23,12 +23,12 @@
     line-height: --value(--text-*--line-height, [length]);
   }
 
-  [data-scope="tree-view"][data-part="branch-control"] {
+  [data-scope="tree-view"][data-part="branch-text"] {
       font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
 
-  [data-scope="tree-view"][data-part="branch-text"] {
+  [data-scope="tree-view"][data-part="branch-control"] {
       font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
@@ -52,8 +52,8 @@
   }
 
   [data-scope="tree-view"][data-part="item"] {
-      gap: --value(--spacing-space-*, [length]);
-    min-height: --value(--spacing-size-*, [length]);
+      min-height: --value(--spacing-size-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
     padding-inline: --value(--spacing-space-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
@@ -63,16 +63,16 @@
       gap: --value(--spacing-space-*, [length]);
   }
 
-  [data-scope="tree-view"][data-part="branch-control"] {
+  [data-scope="tree-view"][data-part="branch-text"] {
       gap: --value(--spacing-space-*, [length]);
-    min-height: --value(--spacing-size-*, [length]);
+  }
+
+  [data-scope="tree-view"][data-part="branch-control"] {
+      min-height: --value(--spacing-size-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
     padding-inline: --value(--spacing-space-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-  }
-
-  [data-scope="tree-view"][data-part="branch-text"] {
-      gap: --value(--spacing-space-*, [length]);
   }
 
 }

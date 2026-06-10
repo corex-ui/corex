@@ -86,6 +86,9 @@ defmodule Corex.DesignTest do
 
       refute clipboard_css =~ ".clipboard .clipboard"
       refute marquee_css =~ ".marquee .marquee"
+      refute marquee_css =~ ",\\n"
+      assert marquee_css =~ ~S(&[data-side="start"], &[data-side="end"])
+      assert marquee_css =~ "animation-name: marqueeX"
     end
 
     test "tooltip, tabs, and tree view recipes emit key selectors" do
@@ -299,6 +302,35 @@ defmodule Corex.DesignTest do
 
       assert css =~ ".h1 {"
       assert css =~ ".form {"
+    end
+
+    test "h1 recipe base uses sans stack, bold weight, and 3xl scale" do
+      css = Recipe.to_css(Typo.recipe(:h1))
+      base = Regex.run(~r/\.h1 \{([^}]+)\}/, css, capture: :all_but_first) |> hd()
+
+      assert base =~ "font-family: var(--font-sans)"
+      assert base =~ "font-size: var(--text-3xl)"
+      assert base =~ "font-weight: var(--font-weight-bold)"
+    end
+
+    test "lead recipe base uses sans stack, normal weight, and lg scale" do
+      css = Recipe.to_css(Typo.recipe(:lead))
+      base = Regex.run(~r/\.lead \{([^}]+)\}/, css, capture: :all_but_first) |> hd()
+
+      assert base =~ "font-family: var(--font-sans)"
+      assert base =~ "font-size: var(--text-lg)"
+      assert base =~ "font-weight: var(--font-weight-normal)"
+    end
+
+    test "typo prose css reflects harmonized h1 and lead defaults" do
+      css = Corex.Design.Emit.Typography.css()
+      h1 = Regex.run(~r/\.typo h1 \{([^}]+)\}/, css, capture: :all_but_first) |> hd()
+      lead = Regex.run(~r/\.typo p\.display \{([^}]+)\}/, css, capture: :all_but_first) |> hd()
+
+      assert h1 =~ "font-family: var(--font-sans)"
+      assert h1 =~ "font-size: var(--text-3xl)"
+      assert lead =~ "font-size: var(--text-lg)"
+      assert lead =~ "font-weight: var(--font-weight-normal)"
     end
   end
 

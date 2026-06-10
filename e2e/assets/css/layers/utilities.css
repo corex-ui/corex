@@ -380,12 +380,6 @@
 }
 
 
-@utility ui-icon--* {
-  font-size: --value(--text-*, [length]);
-  line-height: --value(--text-*--line-height, [length]);
-}
-
-
 @utility ui-trigger--* {
   font-size: --value(--text-*, [length]);
   line-height: --value(--text-*--line-height, [length]);
@@ -441,6 +435,12 @@
       cursor: not-allowed;
     }
   }
+}
+
+
+@utility ui-icon--* {
+  font-size: --value(--text-*, [length]);
+  line-height: --value(--text-*--line-height, [length]);
 }
 
 

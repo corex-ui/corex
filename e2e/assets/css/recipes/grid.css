@@ -14,6 +14,22 @@
     gap: 0;
   }
 
+  .grid.grid--gap-sm {
+    gap: var(--space-sm);
+  }
+
+  .grid.grid--gap-md {
+    gap: var(--space-md);
+  }
+
+  .grid.grid--gap-lg {
+    gap: var(--space-lg);
+  }
+
+  .grid.grid--gap-xl {
+    gap: var(--space-xl);
+  }
+
   .grid.grid--columns-1 {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }

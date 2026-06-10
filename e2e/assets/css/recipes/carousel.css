@@ -49,8 +49,8 @@
 @utility carousel--size-* {
   [data-scope="carousel"][data-part="control"] {
       padding: --value(--spacing-space-*, [length]);
-    gap: --value(--spacing-space-*, [length]);
     max-width: --value(--container-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
   }
 
   [data-scope="carousel"][data-part="root"] {
@@ -61,7 +61,7 @@
       min-height: --value(--spacing-size-*, [length]);
   }
 
-  [data-scope="carousel"][data-part="prev-trigger"] {
+  [data-scope="carousel"][data-part="autoplay-trigger"] {
       min-height: --value(--spacing-size-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
@@ -73,7 +73,7 @@
     line-height: --value(--text-*--line-height, [length]);
   }
 
-  [data-scope="carousel"][data-part="autoplay-trigger"] {
+  [data-scope="carousel"][data-part="prev-trigger"] {
       min-height: --value(--spacing-size-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);

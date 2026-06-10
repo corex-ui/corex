@@ -178,8 +178,7 @@ defmodule E2eWeb.Demos.NavigateDemo do
         as="button"
         variant="solid"
         semantic="brand"
-        size="lg"
-        radius="full"
+        size="md"
       >
         Browse components
         <.heroicon name="hero-arrow-right" />
@@ -188,8 +187,7 @@ defmodule E2eWeb.Demos.NavigateDemo do
         to="https://hexdocs.pm/corex/installation.html"
         as="button"
         variant="ghost"
-        size="lg"
-        radius="full"
+        size="md"
         external
       >
         Visit Hexdocs
@@ -213,8 +211,7 @@ defmodule E2eWeb.Demos.NavigateDemo do
         as="button"
         variant="solid"
         semantic="brand"
-        size="lg"
-        radius="full"
+        size="md"
       >
         {@primary_label}
         <.heroicon name="hero-arrow-right" />
@@ -223,8 +220,7 @@ defmodule E2eWeb.Demos.NavigateDemo do
         to={@secondary_to}
         as="button"
         variant="ghost"
-        size="lg"
-        radius="full"
+        size="md"
         external
       >
         {@secondary_label}

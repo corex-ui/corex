@@ -26,8 +26,8 @@
   }
 
   [data-scope="menu"][data-part="trigger"] {
-      gap: --value(--spacing-space-*, [length]);
-    min-height: --value(--spacing-size-*, [length]);
+      min-height: --value(--spacing-size-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
     padding-inline: --value(--spacing-space-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
@@ -212,11 +212,11 @@
   .menu [data-scope="menu"][data-part="item"] > [data-scope="menu"][data-part="item-indicator"], .menu [data-scope="menu"][data-part="trigger-item"] > [data-scope="menu"][data-part="item-indicator"] {
     display: flex;
     flex: 0 0 auto;
+    min-height: 1em;
+    min-width: 1em;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    min-height: 1em;
-    min-width: 1em;
     margin-inline-start: auto;
     transition: none !important;
   }
@@ -226,14 +226,14 @@
     width: auto;
     white-space: nowrap;
     flex: 1 1 0%;
-    flex-direction: row;
-    gap: var(--space-md);
     max-width: 100%;
-    align-items: center;
+    gap: var(--space-md);
     min-width: 0;
-    text-align: start;
+    flex-direction: row;
+    align-items: center;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-align: start;
   }
 
   .menu [data-scope="menu"][data-part="content"] [data-scope="menu"][data-part="item-text"] > [data-icon] {
@@ -244,11 +244,11 @@
   .menu [data-scope="menu"][data-part="content"] [data-scope="menu"][data-part="item-indicator"] {
     display: flex;
     flex: 0 0 auto;
+    min-height: 1em;
+    min-width: 1em;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    min-height: 1em;
-    min-width: 1em;
     margin-inline-start: auto;
     @apply ui-icon;
   }

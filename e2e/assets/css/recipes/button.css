@@ -25,15 +25,15 @@
   .button {
     display: inline-flex;
     cursor: pointer;
-    border: 1px solid transparent;
+    appearance: none;
     align-items: center;
     justify-content: center;
+    border: 1px solid transparent;
     border-radius: var(--radius-md);
-    font-weight: var(--font-weight-normal);
     text-align: center;
     transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+    font-weight: var(--font-weight-normal);
     text-decoration-line: none;
-    appearance: none;
     &:focus-visible {
       outline: none;
       box-shadow: inset 0 0 0 2px var(--color-ui-ink);
@@ -106,8 +106,8 @@
 
   .button.button--variant-solid {
     color: var(--color-ui-ink);
-    background-color: var(--color-ui);
     border-color: transparent;
+    background-color: var(--color-ui);
     &:active {
       background-color: var(--color-ui-active);
     }
@@ -149,8 +149,8 @@
 
   .button.button--variant-ghost {
     color: var(--color-ui-ink);
-    background-color: transparent;
     border-color: transparent;
+    background-color: transparent;
     &:active {
       background-color: var(--color-ui-active);
     }
@@ -192,8 +192,8 @@
 
   .button.button--variant-outline {
     color: var(--color-ui-ink);
-    background-color: transparent;
     border-color: var(--color-outline);
+    background-color: transparent;
     &:active {
       background-color: var(--color-ui-active);
     }
@@ -202,8 +202,8 @@
       &[disabled] {
       cursor: not-allowed;
       color: var(--color-ui-ink-muted);
-      background-color: transparent;
       border-color: var(--color-ui-muted);
+      background-color: transparent;
       box-shadow: none;
     }
     &:hover {
@@ -217,8 +217,8 @@
 
   .button.button--variant-subtle {
     color: var(--color-ui-ink);
-    background-color: var(--color-ui-hover);
     border-color: transparent;
+    background-color: var(--color-ui-hover);
     &:active {
       background-color: var(--color-ui-active);
     }
@@ -259,32 +259,32 @@
   }
 
   .button.button--size-sm {
-    gap: var(--space-sm);
     min-height: var(--size-sm);
+    gap: var(--space-sm);
     padding-inline: var(--space-sm);
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
   }
 
   .button.button--size-md {
-    gap: var(--space-md);
     min-height: var(--size-md);
+    gap: var(--space-md);
     padding-inline: var(--space-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
   }
 
   .button.button--size-lg {
-    gap: var(--space-lg);
     min-height: var(--size-lg);
+    gap: var(--space-lg);
     padding-inline: var(--space-lg);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
   }
 
   .button.button--size-xl {
-    gap: var(--space-xl);
     min-height: var(--size-xl);
+    gap: var(--space-xl);
     padding-inline: var(--space-xl);
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
@@ -1021,10 +1021,10 @@
     display: inline-flex;
     width: 1em;
     color: currentcolor;
+    height: 1em;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    height: 1em;
   }
 
   .button [data-part="indicator"] [data-icon] {

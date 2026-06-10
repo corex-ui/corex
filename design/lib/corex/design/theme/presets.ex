@@ -72,8 +72,7 @@ defmodule Corex.Design.Theme.Presets do
         text_scale: 0.92,
         radius_scale: 0.88,
         container_scale: 0.92,
-        radius: uno_radius_curve(),
-        font: uno_font_stacks()
+        radius: uno_radius_curve()
       }
     }
   end
@@ -132,8 +131,7 @@ defmodule Corex.Design.Theme.Presets do
         text_scale: 1.02,
         radius_scale: 1.15,
         container_scale: 1.0,
-        radius: duo_radius_curve(),
-        font: duo_font_stacks()
+        radius: duo_radius_curve()
       }
     }
   end
@@ -195,8 +193,7 @@ defmodule Corex.Design.Theme.Presets do
         text_scale: 0.96,
         radius_scale: 0.82,
         container_scale: 0.96,
-        radius: leo_radius_curve(),
-        font: leo_font_stacks()
+        radius: leo_radius_curve()
       }
     }
   end
@@ -208,61 +205,7 @@ defmodule Corex.Design.Theme.Presets do
       text_scale: 1.0,
       radius_scale: 1.0,
       container_scale: 1.0,
-      radius: neo_radius_curve(),
-      font: neo_font_stacks()
-    }
-  end
-
-  defp neo_font_stacks do
-    figtree = [
-      "Figtree",
-      "ui-sans-serif",
-      "system-ui",
-      "sans-serif",
-      "Apple Color Emoji",
-      "Segoe UI Emoji",
-      "Segoe UI Symbol",
-      "Noto Color Emoji"
-    ]
-
-    %{sans: figtree, display: figtree}
-  end
-
-  defp uno_font_stacks do
-    %{
-      sans: [
-        "Inter",
-        "ui-sans-serif",
-        "system-ui",
-        "sans-serif",
-        "Apple Color Emoji",
-        "Segoe UI Emoji"
-      ]
-    }
-  end
-
-  defp duo_font_stacks do
-    %{
-      sans: [
-        "Source Sans 3",
-        "Segoe UI",
-        "Helvetica Neue",
-        "Arial",
-        "sans-serif"
-      ]
-    }
-  end
-
-  defp leo_font_stacks do
-    %{
-      sans: [
-        "IBM Plex Sans",
-        "Segoe UI",
-        "Roboto",
-        "Helvetica Neue",
-        "Arial",
-        "sans-serif"
-      ]
+      radius: neo_radius_curve()
     }
   end
 

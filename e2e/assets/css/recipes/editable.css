@@ -9,7 +9,7 @@
       border-radius: --value(--radius-*, [length]);
   }
 
-  [data-scope="editable"][data-part="edit-trigger"] {
+  [data-scope="editable"][data-part="submit-trigger"] {
       border-radius: --value(--radius-*, [length]);
   }
 
@@ -17,7 +17,7 @@
       border-radius: --value(--radius-*, [length]);
   }
 
-  [data-scope="editable"][data-part="submit-trigger"] {
+  [data-scope="editable"][data-part="edit-trigger"] {
       border-radius: --value(--radius-*, [length]);
   }
 
@@ -60,28 +60,28 @@
     line-height: --value(--text-*--line-height, [length]);
   }
 
-  [data-scope="editable"][data-part="edit-trigger"] {
-      gap: --value(--spacing-space-*, [length]);
-    max-width: --value(--container-*, [length]);
+  [data-scope="editable"][data-part="submit-trigger"] {
+      max-width: --value(--container-*, [length]);
     min-height: --value(--spacing-size-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
     padding-inline: --value(--spacing-space-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
 
   [data-scope="editable"][data-part="cancel-trigger"] {
-      gap: --value(--spacing-space-*, [length]);
-    max-width: --value(--container-*, [length]);
+      max-width: --value(--container-*, [length]);
     min-height: --value(--spacing-size-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
     padding-inline: --value(--spacing-space-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
 
-  [data-scope="editable"][data-part="submit-trigger"] {
-      gap: --value(--spacing-space-*, [length]);
-    max-width: --value(--container-*, [length]);
+  [data-scope="editable"][data-part="edit-trigger"] {
+      max-width: --value(--container-*, [length]);
     min-height: --value(--spacing-size-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
     padding-inline: --value(--spacing-space-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
