@@ -66,6 +66,19 @@ mix phx.server
 
 Visit [http://localhost:4000](http://localhost:4000).
 
+### Corex Design (`design/`)
+
+The `corex_design` package is developed inside the monorepo with a path dependency on `:corex`. CI runs `mix lint` and `mix test` in `design/`.
+
+```bash
+cd design
+mix deps.get
+mix lint
+mix test
+```
+
+Publishing to Hex uses `COREX_DESIGN_PUBLISH=1` so `mix.exs` resolves `{:corex, "~> 0.2.0"}` instead of `path: ".."`. See [`design/README.md`](design/README.md).
+
 ### Installer (`installer/`)
 
 ```bash
@@ -89,7 +102,8 @@ Generates apps with `corex.new` and asserts install paths. Requires `mix archive
 | `assets/test/lib/` | Unit tests for `assets/lib/` helpers |
 | `assets/components/` | Zag `Component` subclasses; colocated `*.test.ts` per module (helpers + smoke); all modules in `components-contract.test.ts` and `components-smoke.test.ts` |
 | `assets/hooks/` | LiveView hooks; hook-specific logic in `hooks/<name>.ts` + `hooks/<name>.test.ts`; wiring in `hooks-wiring.test.ts` |
-| `design/lib/corex/design/` | Corex Design pipeline: token model, component recipes, emitters |
+| `design/` | `corex_design` Hex package: token model, recipes, compiler (`mix lint`, `mix test` in `design/`) |
+| `design/lib/corex/design/` | Corex Design pipeline sources |
 | `priv/static/` | Built JS bundles (generated; run `mix assets.build`) |
 | `e2e/` | Demo LiveViews, Playwright-style tests, `doc_examples.ex` |
 | `installer/` | `corex_new` Mix installer |
@@ -104,7 +118,7 @@ Styled apps compile CSS via `{:corex_design, ...}` and `config :corex_design` (s
 2. Keep changes focused; one logical change per PR when possible.
 3. Run the checks that match your change (see below).
 4. Open a PR against `main` with a short summary and a test plan (what you ran, what you clicked).
-5. CI must pass on [GitHub Actions](.github/workflows/elixir.yml): **Lint** (Elixir + TypeScript static checks), **Hooks** (Vitest), **Unit tests**, **E2E tests**, **Installer tests**, **Integration tests**.
+5. CI must pass on [GitHub Actions](.github/workflows/elixir.yml): **Lint** (Corex, design, e2e, installer, integration_test, TypeScript), **Hooks** (Vitest), **Unit tests**, **Design tests**, **E2E tests**, **Installer tests**, **Integration tests**.
 
 We use [Conventional Commits](https://www.conventionalcommits.org/) style when it helps reviewers scan history, but it is not enforced by tooling.
 
@@ -127,7 +141,8 @@ We use [Conventional Commits](https://www.conventionalcommits.org/) style when i
 | `assets/test/helpers/` | Shared DOM fixtures (`dom.ts`, `component-fixture.ts`, `component-smoke.ts`, `mock-live-socket.ts`, `expect-hook.ts`) |
 
 New shared helper → `assets/test/lib/<name>.test.ts`. New component or hook tests → `assets/test/component/<name>.test.ts` or `assets/test/hooks/<name>.test.ts`. Export small pure functions from hooks when logic is not otherwise testable.
-| Design CSS | `mix assets.build`, visual check in e2e styling pages |
+| Design CSS / recipes | `cd design && mix test`, `mix compile` in host app, visual check in e2e styling pages |
+| `corex_design` package only | `cd design && mix lint && mix test` |
 | Moduledoc only | `mix docs` (fix any warnings) |
 | Installer | `cd installer && mix test` |
 | E2e LiveView / demo | `cd e2e && mix test` |

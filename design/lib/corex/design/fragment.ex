@@ -8,7 +8,7 @@ defmodule Corex.Design.Fragment do
   Tailwind-free replacement for the old `@utility ui-*` mixins). The emitter
   splices these inline wherever a rule declares `decls: [include: <id>]`.
   """
-  @utility_ids ~w(ui_root ui_trigger ui_icon ui_content ui_label ui_input ui_item ui_link ui_error ui_readonly ui_loading)a
+  @utility_ids ~W(ui_root ui_trigger ui_icon ui_content ui_label ui_input ui_item ui_link ui_error ui_readonly ui_loading)a
 
   def utility_ids, do: @utility_ids
 
@@ -25,6 +25,17 @@ defmodule Corex.Design.Fragment do
 
   defp frag(decls, children \\ []), do: %{decls: decls, children: children}
 
+  defp ui_readonly_lock_mask do
+    xmlns = Enum.join(["http", "://", "www.", "w3.org", "/2000", "/svg"])
+
+    svg =
+      "<svg xmlns='#{xmlns}' viewBox='0 0 20 20' fill='currentColor'>" <>
+        "<path fill-rule='evenodd' d='M10 1a4.5 4.5 0 0 0-4.5 4.5V9H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-.5V5.5A4.5 4.5 0 0 0 10 1ZM8.5 5.5V9H14V5.5a3.5 3.5 0 1 0-7 0Z' clip-rule='evenodd'/>" <>
+        "</svg>"
+
+    "url(\"data:image/svg+xml," <> URI.encode(svg) <> "\")"
+  end
+
   defp fetch(:ui_root) do
     frag(
       [
@@ -34,8 +45,8 @@ defmodule Corex.Design.Fragment do
         gap: "var(--space)"
       ],
       [
-        Rule.new(~s(&[data-orientation="vertical"]), decls: [flex_direction: "column"]),
-        Rule.new(~s(&[data-orientation="horizontal"]), decls: [flex_flow: "row wrap"])
+        Rule.new(~S(&[data-orientation="vertical"]), decls: [flex_direction: "column"]),
+        Rule.new(~S(&[data-orientation="horizontal"]), decls: [flex_flow: "row wrap"])
       ]
     )
   end
@@ -79,8 +90,8 @@ defmodule Corex.Design.Fragment do
           decls: [border_color: "var(--color-alert)", box_shadow: "none"]
         ),
         Rule.new("&[data-invalid]:focus-visible", decls: [box_shadow: "none"]),
-        Rule.new(~s(& [data-icon]), decls: [include: :ui_icon]),
-        Rule.new(~s(& [data-part="item-text"]),
+        Rule.new(~S(& [data-icon]), decls: [include: :ui_icon]),
+        Rule.new(~S(& [data-part="item-text"]),
           decls: [
             display: "flex",
             gap: "var(--space)",
@@ -105,7 +116,7 @@ defmodule Corex.Design.Fragment do
         flex_shrink: "0"
       ],
       [
-        Rule.new(~s([dir="rtl"] &), decls: [transform: "scaleX(-1)"])
+        Rule.new(~S([dir="rtl"] &), decls: [transform: "scaleX(-1)"])
       ]
     )
   end
@@ -182,7 +193,7 @@ defmodule Corex.Design.Fragment do
           "&[data-invalid]:focus,\n  &[data-invalid]:focus-within,\n  &[data-invalid]:focus-visible",
           decls: [box_shadow: "none", outline: "none"]
         ),
-        Rule.new(~s(& [data-icon],\n  & svg,\n  & img), decls: [include: :ui_icon])
+        Rule.new(~S(& [data-icon],\n  & svg,\n  & img), decls: [include: :ui_icon])
       ]
     )
   end
@@ -253,19 +264,19 @@ defmodule Corex.Design.Fragment do
           ]
         ),
         Rule.new(
-          ~s(& [data-part="branch-indicator"],\n  & [data-part="item-indicator"]),
+          ~S(& [data-part="branch-indicator"],\n  & [data-part="item-indicator"]),
           decls: [transition: "transform 0.2s ease"]
         ),
         Rule.new(
-          ~s(& [data-part="branch-indicator"][data-state="open"],\n  & [data-part="item-indicator"][data-state="open"]),
+          ~S(& [data-part="branch-indicator"][data-state="open"],\n  & [data-part="item-indicator"][data-state="open"]),
           decls: [transform: "rotate(90deg) !important"]
         ),
         Rule.new(
-          ~s(& [data-icon],\n  & svg,\n  & img,\n  & [data-part="item-indicator"] svg,\n  & [data-part="branch-indicator"] svg),
+          ~S(& [data-icon],\n  & svg,\n  & img,\n  & [data-part="item-indicator"] svg,\n  & [data-part="branch-indicator"] svg),
           decls: [include: :ui_icon]
         ),
         Rule.new(
-          ~s(& [data-part="item-text"],\n  & [data-part="branch-text"]),
+          ~S(& [data-part="item-text"],\n  & [data-part="branch-text"]),
           decls: [
             display: "flex",
             gap: "var(--space)",
@@ -281,7 +292,7 @@ defmodule Corex.Design.Fragment do
           ]
         ),
         Rule.new(
-          ~s(& [data-part="branch-indicator"],\n  & [data-part="item-indicator"]),
+          ~S(& [data-part="branch-indicator"],\n  & [data-part="item-indicator"]),
           decls: [margin_inline_start: "auto", flex_shrink: "0", min_width: "1em"]
         )
       ]
@@ -322,10 +333,10 @@ defmodule Corex.Design.Fragment do
             pointer_events: "none"
           ]
         ),
-        Rule.new(~s(&[aria-current="page"],\n  &[aria-current="location"]),
+        Rule.new(~S(&[aria-current="page"],\n  &[aria-current="location"]),
           decls: [font_weight: "var(--font-weight-semibold)", pointer_events: "none"]
         ),
-        Rule.new(~s(& [data-icon]), decls: [include: :ui_icon])
+        Rule.new(~S(& [data-icon]), decls: [include: :ui_icon])
       ]
     )
   end
@@ -350,15 +361,14 @@ defmodule Corex.Design.Fragment do
     frag([], [
       Rule.new("&::after",
         decls: [
-          content: ~s(""),
+          content: ~S(""),
           position: "absolute",
           inset_block_end: "0.25rem",
           inset_inline_end: "0.25rem",
           width: "1em",
           height: "1em",
           background_color: "var(--color-ui-ink-muted)",
-          mask_image:
-            ~S|url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M10 1a4.5 4.5 0 0 0-4.5 4.5V9H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-.5V5.5A4.5 4.5 0 0 0 10 1ZM8.5 5.5V9H14V5.5a3.5 3.5 0 1 0-7 0Z' clip-rule='evenodd'/%3E%3C/svg%3E")|,
+          mask_image: ui_readonly_lock_mask(),
           mask_size: "contain",
           mask_repeat: "no-repeat",
           mask_position: "center"

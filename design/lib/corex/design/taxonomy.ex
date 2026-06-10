@@ -8,13 +8,13 @@ defmodule Corex.Design.Taxonomy do
   A component may stamp axes a recipe does not style yet.
   """
 
-  @standard_axes ~w(semantic size variant radius text width height max_width max_height shape)a
+  @standard_axes ~W(semantic size variant radius text width height max_width max_height shape)a
 
   @categories %{
-    trigger: ~w(semantic variant size radius text width height max_width max_height)a,
-    field: ~w(semantic size radius width height max_width max_height)a,
-    surface: ~w(semantic size radius width height max_width max_height)a,
-    decorative: ~w(size width height max_width max_height)a
+    trigger: ~W(semantic variant size radius text width height max_width max_height)a,
+    field: ~W(semantic size radius width height max_width max_height)a,
+    surface: ~W(semantic size radius width height max_width max_height)a,
+    decorative: ~W(size width height max_width max_height)a
   }
 
   @component_categories %{

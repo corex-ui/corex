@@ -38,7 +38,6 @@ Registry id vs recipe filename: `action` → `button.css`, `navigate` → `link.
 | Default theme/mode | `:corex_design` | `:default_theme`, `:default_mode` | Root HTML defaults |
 | CSS bundle size | `:corex_design` | `:include_recipes` | Which component CSS files emit |
 | Recipe overrides | `:corex_design` | `:recipes` | Host modules that replace built-in CSS |
-| Contrast floors | `:corex_design` | `:accessibility_level` | Ink token generation (`:a`, `:aa`, `:aaa`) |
 | Output path | `:corex_design` | profile keys (e.g. `:my_app`) | `output` |
 
 Every semantic role in `colors.light` / `colors.dark` must appear in `config :corex, semantics`.
@@ -63,15 +62,17 @@ config :corex,
 
 config :corex_design,
   themes: %{
-    acme: %{
-      extends: :neo,
-      seeds: %{"brand" => "#E11D48"},
-      colors: %{
-        light: %{semantic: %{brand: %{bg: "brand", lightness: 42, ink: %{color: "base", ratio: 7}}}},
-        dark: %{}
-      },
-      dimensions: %{radius_scale: 1.2, space_scale: 1.0, radius: %{md: 0.5}}
-    }
+    acme:
+      Corex.Design.Theme.merge_specs(Corex.Design.Theme.Presets.neo(), %{
+        seeds: %{"brand" => "#E11D48"},
+        colors: %{
+          light: %{
+            semantic: %{brand: %{bg: "brand", lightness: 42, ink: %{color: "base", ratio: 7}}}
+          },
+          dark: %{}
+        },
+        dimensions: %{radius_scale: 1.2, space_scale: 1.0, radius: %{md: 0.5}}
+      })
   }
 ```
 
@@ -95,11 +96,11 @@ Valid:
 ```elixir
 config :corex_design,
   themes: %{
-    custom: %{
-      extends: :neo,
-      seeds: %{"brand" => "#E11D48"},
-      colors: %{light: %{semantic: %{}}, dark: %{semantic: %{}}}
-    }
+    custom:
+      Corex.Design.Theme.merge_specs(Corex.Design.Theme.Presets.neo(), %{
+        seeds: %{"brand" => "#E11D48"},
+        colors: %{light: %{semantic: %{}}, dark: %{semantic: %{}}}
+      })
   }
 ```
 
@@ -150,24 +151,6 @@ config :corex_design, recipes: [MyApp.Design.Recipes]
 ```
 
 For the full key reference, see `Corex.Design.Config.options_docs/0` in Hex docs.
-
-## Accessibility and contrast reports
-
-```elixir
-config :corex_design, accessibility_level: :aa
-```
-
-Per-theme `accessibility` can override light/dark text floors. There is no runtime `data-accessibility` attribute; only `data-theme` and `data-mode` switch tokens.
-
-Generate WCAG evidence for design reviews:
-
-```bash
-mix corex.design.report
-mix corex.design.report --format json --theme neo --mode dark
-mix corex.design.report --strict
-```
-
-`--strict` exits non-zero when text pairs fail (useful in CI).
 
 ## Related
 

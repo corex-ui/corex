@@ -8,9 +8,9 @@ defmodule Corex.Design.Css do
   alias Corex.Design.RoleAliases
   alias Corex.Design.Tokens.Scales
 
-  @scale_kinds ~w(space size container text leading weight tracking radius shadow font color)a
-  @color_keywords ~w(transparent currentcolor inherit initial unset)a
-  @layout_keywords ~w(auto min-content max-content fit-content inherit initial unset none)a
+  @scale_kinds ~W(space size container text leading weight tracking radius shadow font color)a
+  @color_keywords ~W(transparent currentcolor inherit initial unset)a
+  @layout_keywords ~W(auto min-content max-content fit-content inherit initial unset none)a
 
   def resolve(property, value, context \\ []) do
     prop = Properties.normalize(property)
@@ -373,34 +373,34 @@ defmodule Corex.Design.Css.Values do
 
   @enums %{
     display:
-      ~w(none block inline inline-block flex inline-flex grid inline-grid contents table table-row table-cell),
-    position: ~w(static relative absolute fixed sticky),
-    text_align: ~w(left right center justify start end),
-    overflow: ~w(visible hidden scroll auto clip),
-    isolation: ~w(auto isolate),
-    overflow_x: ~w(visible hidden scroll auto clip),
-    overflow_y: ~w(visible hidden scroll auto clip),
-    white_space: ~w(normal nowrap pre pre-wrap pre-line break-spaces),
-    text_overflow: ~w(clip ellipsis),
-    flex_direction: ~w(row row-reverse column column-reverse),
-    flex_wrap: ~w(nowrap wrap wrap-reverse),
-    align_items: ~w(flex-start flex-end center baseline stretch start end),
-    align_self: ~w(auto flex-start flex-end center baseline stretch),
+      ~W(none block inline inline-block flex inline-flex grid inline-grid contents table table-row table-cell),
+    position: ~W(static relative absolute fixed sticky),
+    text_align: ~W(left right center justify start end),
+    overflow: ~W(visible hidden scroll auto clip),
+    isolation: ~W(auto isolate),
+    overflow_x: ~W(visible hidden scroll auto clip),
+    overflow_y: ~W(visible hidden scroll auto clip),
+    white_space: ~W(normal nowrap pre pre-wrap pre-line break-spaces),
+    text_overflow: ~W(clip ellipsis),
+    flex_direction: ~W(row row-reverse column column-reverse),
+    flex_wrap: ~W(nowrap wrap wrap-reverse),
+    align_items: ~W(flex-start flex-end center baseline stretch start end),
+    align_self: ~W(auto flex-start flex-end center baseline stretch),
     justify_content:
-      ~w(flex-start flex-end center space-between space-around space-evenly stretch start end),
-    justify_items: ~w(start end center stretch),
-    grid_auto_flow: ~w(row column dense row dense column),
-    cursor: ~w(auto default pointer wait text move not-allowed grab grabbing),
-    pointer_events: ~w(auto none),
-    user_select: ~w(auto none text all),
-    appearance: ~w(none auto),
-    box_sizing: ~w(content-box border-box),
-    visibility: ~w(visible hidden collapse),
-    font_style: ~w(normal italic),
-    text_decoration_line: ~w(none underline line-through overline),
-    border_style: ~w(none solid dashed dotted double hidden),
-    list_style: ~w(none disc decimal),
-    vertical_align: ~w(baseline top middle bottom sub super)
+      ~W(flex-start flex-end center space-between space-around space-evenly stretch start end),
+    justify_items: ~W(start end center stretch),
+    grid_auto_flow: ~W(row column dense row dense column),
+    cursor: ~W(auto default pointer wait text move not-allowed grab grabbing),
+    pointer_events: ~W(auto none),
+    user_select: ~W(auto none text all),
+    appearance: ~W(none auto),
+    box_sizing: ~W(content-box border-box),
+    visibility: ~W(visible hidden collapse),
+    font_style: ~W(normal italic),
+    text_decoration_line: ~W(none underline line-through overline),
+    border_style: ~W(none solid dashed dotted double hidden),
+    list_style: ~W(none disc decimal),
+    vertical_align: ~W(baseline top middle bottom sub super)
   }
 
   def validate_enum!(property, value) when is_atom(value) do

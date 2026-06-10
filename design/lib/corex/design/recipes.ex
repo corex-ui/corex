@@ -371,7 +371,7 @@ defmodule Corex.Design.Recipes do
     end
 
     def toggle_group_item_rules(id, part_selector) do
-      active_sel = ~s(&[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"])
+      active_sel = ~S(&[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"])
 
       inactive =
         "&:not([data-state=\"on\"]):not([data-toggle-grouped]):not([data-state=\"checked\"]):not([data-disabled]):not(:disabled):not([disabled])"
@@ -426,7 +426,7 @@ defmodule Corex.Design.Recipes do
     def neutral_toggle_group_item_rules(id, part_selector) do
       host = ".#{Selector.class_name(id)}"
       role = :selected
-      active_sel = ~s(&[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"])
+      active_sel = ~S(&[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"])
 
       inactive =
         "&:not([data-state=\"on\"]):not([data-toggle-grouped]):not([data-state=\"checked\"]):not([data-disabled]):not(:disabled):not([disabled])"
@@ -923,7 +923,7 @@ defmodule Corex.Design.Recipes do
     alias Corex.Design.Selector
     alias Corex.Design.Typography
 
-    @text_ids ~w(h1 h2 h3 h4 p lead small kbd blockquote)a
+    @text_ids ~W(h1 h2 h3 h4 p lead small kbd blockquote)a
 
     def all do
       Enum.map(@text_ids, &recipe/1) ++ [recipe(:list), recipe(:form)]
@@ -986,7 +986,7 @@ defmodule Corex.Design.Recipes do
       none = %{gap: 0, padding: 0}
 
       spacing =
-        for step <- ~w(sm md lg xl)a,
+        for step <- ~W(sm md lg xl)a,
             do: {step, %{gap: {:space, step}, padding: {:space, step}}}
 
       [{:none, none} | spacing]
@@ -1383,7 +1383,7 @@ defmodule Corex.Design.Recipes do
         Rule.new(
           ~s(#{root}[data-async] #{slot("item-text")}::before,\n  #{root}[data-async] #{slot("item-text")}::after),
           decls: [
-            content: ~s(""),
+            content: ~S(""),
             display: "block",
             height: "var(--space)",
             background_color: "var(--color-ui-active)",
@@ -2168,7 +2168,7 @@ defmodule Corex.Design.Recipes do
           ],
           children: [
             Rule.new(
-              ~s(&:disabled,\n  &[data-disabled],\n  &[disabled]),
+              ~S(&:disabled,\n  &[data-disabled],\n  &[disabled]),
               decls: [
                 color: {:color, :ui_ink_muted},
                 background_color: {:color, :ui_muted},
@@ -2636,7 +2636,7 @@ defmodule Corex.Design.Recipes do
         FormHost.control_focus_rules(
           id,
           scope,
-          ~s(&[data-state="checked"],\n  &[data-state="indeterminate"])
+          ~S(&[data-state="checked"],\n  &[data-state="indeterminate"])
         ) ++
         [
           Rule.new(control,
@@ -3005,8 +3005,8 @@ defmodule Corex.Design.Recipes do
       [
         {["hll"], [background_color: "#fff9c4"]},
         {["bp"], [color: "#0070c1"]},
-        {~w(c c1 ch cm cs), [color: "#008000", font_style: :italic]},
-        {~w(cp cpf), [color: "#0000ff", font_style: :normal]},
+        {~W(c c1 ch cm cs), [color: "#008000", font_style: :italic]},
+        {~W(cp cpf), [color: "#0000ff", font_style: :normal]},
         {["dl"], [color: "#a31515"]},
         {["err"], [border_color: "#cd3131", color: "#cd3131"]},
         {["fm"], [color: "#795e26"]},
@@ -3021,12 +3021,12 @@ defmodule Corex.Design.Recipes do
         {["gt"], [color: "#0451a5"]},
         {["gu"], [color: "#800080", font_weight: "bold"]},
         {["il"], [color: "#098658"]},
-        {~w(k kd kr kc kn kp), [color: "#0000ff", font_weight: "bold"]},
+        {~W(k kd kr kc kn kp), [color: "#0000ff", font_weight: "bold"]},
         {["kt"], [color: "#267f99"]},
-        {~w(m mb mf mh mi mo), [color: "#098658"]},
+        {~W(m mb mf mh mi mo), [color: "#098658"]},
         {["na"], [color: "#e50000"]},
         {["nb"], [color: "#267f99"]},
-        {~w(nc nn), [color: "#267f99", font_weight: "bold"]},
+        {~W(nc nn), [color: "#267f99", font_weight: "bold"]},
         {["nd"], [color: "#af00db"]},
         {["ne"], [color: "#cd3131", font_weight: "bold"]},
         {["nf"], [color: "#795e26"]},
@@ -3034,10 +3034,10 @@ defmodule Corex.Design.Recipes do
         {["nl"], [color: "#000000"]},
         {["no"], [color: "#0070c1"]},
         {["nt"], [color: "#800000", font_weight: "bold"]},
-        {~w(nv vc vg vi vm), [color: "#001080"]},
+        {~W(nv vc vg vi vm), [color: "#001080"]},
         {["o"], [color: "#000000"]},
         {["ow"], [color: "#0000ff", font_weight: "bold"]},
-        {~w(s s1 s2 sa sb sc sh sx), [color: "#a31515"]},
+        {~W(s s1 s2 sa sb sc sh sx), [color: "#a31515"]},
         {["sd"], [color: "#a31515", font_style: :italic]},
         {["se"], [color: "#ee0000", font_weight: "bold"]},
         {["si"], [color: "#811f3f", font_weight: "bold"]},
@@ -3050,8 +3050,8 @@ defmodule Corex.Design.Recipes do
       [
         {["hll"], [background_color: "#264f78"]},
         {["bp"], [color: "#4ec9b0"]},
-        {~w(c c1 ch cm cs), [color: "#6a9955", font_style: :italic]},
-        {~w(cp cpf), [color: "#569cd6", font_style: :normal]},
+        {~W(c c1 ch cm cs), [color: "#6a9955", font_style: :italic]},
+        {~W(cp cpf), [color: "#569cd6", font_style: :normal]},
         {["dl"], [color: "#ce9178"]},
         {["err"], [border_color: "#f44747", color: "#f44747"]},
         {["fm"], [color: "#dcdcaa"]},
@@ -3066,12 +3066,12 @@ defmodule Corex.Design.Recipes do
         {["gt"], [color: "#4ec9b0"]},
         {["gu"], [color: "#c586c0", font_weight: "bold"]},
         {["il"], [color: "#b5cea8"]},
-        {~w(k kd kr kc kn kp), [color: "#569cd6", font_weight: "bold"]},
+        {~W(k kd kr kc kn kp), [color: "#569cd6", font_weight: "bold"]},
         {["kt"], [color: "#4ec9b0"]},
-        {~w(m mb mf mh mi mo), [color: "#b5cea8"]},
+        {~W(m mb mf mh mi mo), [color: "#b5cea8"]},
         {["na"], [color: "#9cdcfe"]},
         {["nb"], [color: "#4ec9b0"]},
-        {~w(nc nn), [color: "#4ec9b0", font_weight: "bold"]},
+        {~W(nc nn), [color: "#4ec9b0", font_weight: "bold"]},
         {["nd"], [color: "#c586c0"]},
         {["ne"], [color: "#f44747", font_weight: "bold"]},
         {["nf"], [color: "#dcdcaa"]},
@@ -3079,10 +3079,10 @@ defmodule Corex.Design.Recipes do
         {["nl"], [color: "#c8c8c8"]},
         {["no"], [color: "#4fc1ff"]},
         {["nt"], [color: "#569cd6", font_weight: "bold"]},
-        {~w(nv vc vg vi vm), [color: "#9cdcfe"]},
+        {~W(nv vc vg vi vm), [color: "#9cdcfe"]},
         {["o"], [color: "#d4d4d4"]},
         {["ow"], [color: "#569cd6", font_weight: "bold"]},
-        {~w(s s1 s2 sa sb sc sh sx), [color: "#ce9178"]},
+        {~W(s s1 s2 sa sb sc sh sx), [color: "#ce9178"]},
         {["sd"], [color: "#ce9178", font_style: :italic]},
         {["se"], [color: "#d7ba7d", font_weight: "bold"]},
         {["si"], [color: "#d7ba7d", font_weight: "bold"]},
@@ -5487,14 +5487,14 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(resize,
           children: [
-            Rule.new(~s(&[data-axis="n"],\n  &[data-axis="s"]),
+            Rule.new(~S(&[data-axis="n"],\n  &[data-axis="s"]),
               decls: [height: "6px", max_width: "90%"]
             ),
-            Rule.new(~s(&[data-axis="e"],\n  &[data-axis="w"]),
+            Rule.new(~S(&[data-axis="e"],\n  &[data-axis="w"]),
               decls: [width: "6px", max_height: "90%"]
             ),
             Rule.new(
-              ~s(&[data-axis="ne"],\n  &[data-axis="nw"],\n  &[data-axis="se"],\n  &[data-axis="sw"]),
+              ~S(&[data-axis="ne"],\n  &[data-axis="nw"],\n  &[data-axis="se"],\n  &[data-axis="sw"]),
               decls: [width: "10px", height: "10px"]
             )
           ]
@@ -6096,10 +6096,10 @@ defmodule Corex.Design.Recipes do
             {:raw, "animation-iteration-count: var(--marquee-loop-count);"}
           ],
           children: [
-            Rule.new(~s(&[data-side="start"],\n  &[data-side="end"]),
+            Rule.new(~S(&[data-side="start"],\n  &[data-side="end"]),
               decls: [{:raw, "animation-name: marqueeX;"}]
             ),
-            Rule.new(~s(&[data-side="top"],\n  &[data-side="bottom"]),
+            Rule.new(~S(&[data-side="top"],\n  &[data-side="bottom"]),
               decls: [{:raw, "animation-name: marqueeY;"}]
             ),
             Rule.new("&[data-reverse]", decls: [{:raw, "animation-direction: reverse;"}]),
@@ -6523,7 +6523,7 @@ defmodule Corex.Design.Recipes do
               pointer_events: "none"
             ],
             children: [
-              Rule.new(~s(& [data-icon],\n  & svg), decls: [include: :ui_icon])
+              Rule.new(~S(& [data-icon],\n  & svg), decls: [include: :ui_icon])
             ]
           ),
           Rule.new("#{host}[data-no-icon] #{input}",
@@ -7377,7 +7377,7 @@ defmodule Corex.Design.Recipes do
                 decls: [outline: "none", box_shadow: "inset 0 0 0 2px var(--color-ui-ink)"]
               ),
               Rule.new(
-                ~s(&[data-state="checked"]:focus-visible,\n  &[data-state="checked"][data-focus]),
+                ~S(&[data-state="checked"]:focus-visible,\n  &[data-state="checked"][data-focus]),
                 decls: [box_shadow: "inset 0 0 0 2px var(--color-selected-ink)"]
               ),
               Rule.new("&[data-invalid]", decls: [border_color: "var(--color-alert)"])
@@ -7638,7 +7638,7 @@ defmodule Corex.Design.Recipes do
       control = Selector.part(:select, @scope, "control")
       content = Selector.part(:select, @scope, "content")
       error = Selector.part(:select, @scope, "error")
-      trigger = ~s(.select [data-scope="select"][data-part="trigger"])
+      trigger = ~S(.select [data-scope="select"][data-part="trigger"])
       item_text = Presets.item_text()
 
       [
@@ -7709,11 +7709,11 @@ defmodule Corex.Design.Recipes do
           decls: [include: :ui_icon]
         ),
         Rule.new(
-          ~s(.select [data-scope="select"][data-part="item"] [data-part="item-text"]),
+          ~S(.select [data-scope="select"][data-part="item"] [data-part="item-text"]),
           decls: Map.to_list(item_text)
         ),
         Rule.new(
-          ~s(.select [data-scope="select"][data-part="item"] [data-part="item-indicator"]),
+          ~S(.select [data-scope="select"][data-part="item"] [data-part="item-indicator"]),
           decls: [
             flex_shrink: {:raw, "0"},
             margin_inline_start: :auto,
@@ -7721,18 +7721,18 @@ defmodule Corex.Design.Recipes do
           ]
         ),
         Rule.new(
-          ~s(.select [data-scope="select"][data-part="indicator"] [data-icon]),
+          ~S(.select [data-scope="select"][data-part="indicator"] [data-icon]),
           decls: [include: :ui_icon]
         ),
         Rule.new(
-          ~s(.select [data-scope="select"][data-part="item-indicator"] [data-icon]),
+          ~S(.select [data-scope="select"][data-part="item-indicator"] [data-icon]),
           decls: [include: :ui_icon]
         )
       ] ++ item_highlight_rules()
     end
 
     defp item_highlight_rules do
-      item = ~s(.select [data-scope="select"][data-part="item"])
+      item = ~S(.select [data-scope="select"][data-part="item"])
       selected = &selected_item_selector/1
 
       [
@@ -7796,15 +7796,15 @@ defmodule Corex.Design.Recipes do
     end
 
     defp selected_item_selector(suffix) do
-      base = ~s(.select [data-scope="select"][data-part="item"])
+      base = ~S(.select [data-scope="select"][data-part="item"])
 
       Enum.map_join(
         [
           "[data-selected]",
-          ~s([data-state="checked"]),
-          ~s([data-state="on"]),
+          ~S([data-state="checked"]),
+          ~S([data-state="on"]),
           "[data-checked]",
-          ~s([data-indeterminate])
+          ~S([data-indeterminate])
         ],
         ",\n  ",
         &"#{base}#{&1}#{suffix}"
@@ -8735,7 +8735,7 @@ defmodule Corex.Design.Recipes do
         right: "0",
         content:
           {:raw,
-           ~s("00\\a 01\\a 02\\a 03\\a 04\\a 05\\a 06\\a 07\\a 08\\a 09\\a 10\\a 11\\a 12\\a 13\\a 14\\a 15\\a 16\\a 17\\a 18\\a 19\\a 20\\a 21\\a 22\\a 23\\a 24\\a 25\\a 26\\a 27\\a 28\\a 29\\a 30\\a 31\\a 32\\a 33\\a 34\\a 35\\a 36\\a 37\\a 38\\a 39\\a 40\\a 41\\a 42\\a 43\\a 44\\a 45\\a 46\\a 47\\a 48\\a 49\\a 50\\a 51\\a 52\\a 53\\a 54\\a 55\\a 56\\a 57\\a 58\\a 59\\a 60\\a 61\\a 62\\a 63\\a 64\\a 65\\a 66\\a 67\\a 68\\a 69\\a 70\\a 71\\a 72\\a 73\\a 74\\a 75\\a 76\\a 77\\a 78\\a 79\\a 80\\a 81\\a 82\\a 83\\a 84\\a 85\\a 86\\a 87\\a 88\\a 89\\a 90\\a 91\\a 92\\a 93\\a 94\\a 95\\a 96\\a 97\\a 98\\a 99\\a")},
+           ~S("00\\a 01\\a 02\\a 03\\a 04\\a 05\\a 06\\a 07\\a 08\\a 09\\a 10\\a 11\\a 12\\a 13\\a 14\\a 15\\a 16\\a 17\\a 18\\a 19\\a 20\\a 21\\a 22\\a 23\\a 24\\a 25\\a 26\\a 27\\a 28\\a 29\\a 30\\a 31\\a 32\\a 33\\a 34\\a 35\\a 36\\a 37\\a 38\\a 39\\a 40\\a 41\\a 42\\a 43\\a 44\\a 45\\a 46\\a 47\\a 48\\a 49\\a 50\\a 51\\a 52\\a 53\\a 54\\a 55\\a 56\\a 57\\a 58\\a 59\\a 60\\a 61\\a 62\\a 63\\a 64\\a 65\\a 66\\a 67\\a 68\\a 69\\a 70\\a 71\\a 72\\a 73\\a 74\\a 75\\a 76\\a 77\\a 78\\a 79\\a 80\\a 81\\a 82\\a 83\\a 84\\a 85\\a 86\\a 87\\a 88\\a 89\\a 90\\a 91\\a 92\\a 93\\a 94\\a 95\\a 96\\a 97\\a 98\\a 99\\a")},
         white_space: "pre",
         top: "calc(var(--value) * -2em)",
         font_size: "inherit",
@@ -9666,8 +9666,8 @@ defmodule Corex.Design.Recipes do
 
       selected_attrs = [
         "[data-selected]",
-        ~s([data-state='checked']),
-        ~s([data-state='on']),
+        ~S([data-state='checked']),
+        ~S([data-state='on']),
         "[data-in-range]",
         "[data-checked]",
         "[data-indeterminate]"

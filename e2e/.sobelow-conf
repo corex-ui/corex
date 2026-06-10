@@ -1,0 +1,13 @@
+[
+  exit: false,
+  format: "txt",
+  ignore_files: [],
+  ignore: ["Config.CSP", "Traversal.FileModule", "DOS.StringToAtom"],
+  out: nil,
+  private: false,
+  router: "lib/e2e_web/router.ex",
+  skip: false,
+  threshold: :low,
+  verbose: false,
+  version: false
+]

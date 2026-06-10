@@ -7,8 +7,8 @@ defmodule Corex.Design.AxisCssCoverageTest do
   alias Corex.Design.Taxonomy
 
   @skip_axes %{
-    dialog_modal: ~w(width height max_width max_height)a,
-    dialog_side: ~w(width height max_width max_height side)a,
+    dialog_modal: ~W(width height max_width max_height)a,
+    dialog_side: ~W(width height max_width max_height side)a,
     typo: Taxonomy.standard_axes(),
     link: [:variant],
     toggle: [:variant],
@@ -41,8 +41,8 @@ defmodule Corex.Design.AxisCssCoverageTest do
   end
 
   defp axis_patterns(name, :semantic), do: [".#{name}.#{name}--semantic-accent"]
-  defp axis_patterns(name, :size), do: [".#{name}.#{name}--size-sm"]
-  defp axis_patterns(name, :text), do: [".#{name}.#{name}--text-base"]
+  defp axis_patterns(name, :size), do: ["@utility #{name}--size-*", ".#{name}.#{name}--size-sm"]
+  defp axis_patterns(name, :text), do: ["@utility #{name}--text-*", ".#{name}.#{name}--text-base"]
 
   defp axis_patterns(name, :radius),
     do: [".#{name}.#{name}--rounded-md", ".#{name}.#{name}--rounded-none"]

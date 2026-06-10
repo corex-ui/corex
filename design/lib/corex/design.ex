@@ -24,21 +24,16 @@ defmodule Corex.Design do
       config :corex_design,
         default_theme: :neo,
         default_mode: :light,
-        accessibility_level: :aa,
         themes: %{
           neo: Corex.Design.Theme.Presets.neo(),
           uno: Corex.Design.Theme.Presets.uno(),
-          acme: %{
-            extends: :neo,
-            seeds: %{"brand" => "#E11D48"},
-            colors: %{light: %{semantic: %{brand: %{lightness: 42}}}, dark: %{}},
-            dimensions: %{radius_scale: 1.2},
-            accessibility: %{level: :aa, dark: :a}
-          }
+          acme:
+            Corex.Design.Theme.merge_specs(Corex.Design.Theme.Presets.neo(), %{
+              seeds: %{"brand" => "#E11D48"},
+              colors: %{light: %{semantic: %{brand: %{lightness: 42}}}, dark: %{}},
+              dimensions: %{radius_scale: 1.2}
+            })
         }
-
-  `accessibility_level` sets the default for token contrast floors and reports.
-  Per-theme `:accessibility` can set `level` and optional `:light` / `:dark` overrides.
 
   Omit `:themes` to use the built-in neo / uno / duo / leo presets. Keep
   `config :my_app, :themes` (theme picker ids) in sync with the keys above.

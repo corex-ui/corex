@@ -72,7 +72,6 @@ defmodule Corex.Design.Config.Options do
   NimbleOptions schema for top-level `config :corex_design` keys.
   """
 
-  alias Corex.Design.Accessibility.Level
   alias Corex.Design.Theme.Options, as: ThemeOptions
 
   @schema NimbleOptions.new!(
@@ -85,11 +84,6 @@ defmodule Corex.Design.Config.Options do
               type: {:in, [:light, :dark]},
               default: :light,
               doc: "Default data-mode"
-            ],
-            accessibility_level: [
-              type: {:in, ~w(a aa aaa)a},
-              default: :aa,
-              doc: "Default text contrast floor"
             ],
             themes: [
               type: :map,
@@ -110,7 +104,7 @@ defmodule Corex.Design.Config.Options do
             ]
           )
 
-  @known_keys ~w(default_theme default_mode accessibility_level themes include_recipes recipes role_aliases)a
+  @known_keys ~W(default_theme default_mode themes include_recipes recipes role_aliases)a
 
   @doc false
   def schema, do: @schema
@@ -150,10 +144,7 @@ defmodule Corex.Design.Config.Options do
         {:ok, nil}
 
       themes when is_map(themes) ->
-        case ThemeOptions.validate(themes) do
-          {:ok, normalized} -> {:ok, normalized}
-          {:error, message} -> {:error, message}
-        end
+        ThemeOptions.validate(themes)
 
       other ->
         {:error, "themes must be a map, got: #{inspect(other)}"}
@@ -190,10 +181,5 @@ defmodule Corex.Design.Config.Options do
           "config :corex_design, recipes: #{inspect(module)} must implement Corex.Design.RecipeSource (recipes/0)"}}
       end
     end)
-  end
-
-  @doc false
-  def normalize_accessibility_level(level) do
-    Level.normalize(level)
   end
 end

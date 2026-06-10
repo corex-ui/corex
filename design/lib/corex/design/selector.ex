@@ -81,20 +81,20 @@ defmodule Corex.Design.Condition do
   }
 
   @zag_state %{
-    open: ~s(&[data-state="open"]),
-    closed: ~s(&[data-state="closed"]),
-    checked: ~s(&[data-state="checked"]),
-    unchecked: ~s(&[data-state="unchecked"]),
-    on: ~s(&[data-state="on"]),
-    off: ~s(&[data-state="off"]),
-    not_on: ~s'&:not([data-state="on"])',
-    indeterminate: ~s(&[data-state="indeterminate"])
+    open: ~S(&[data-state="open"]),
+    closed: ~S(&[data-state="closed"]),
+    checked: ~S(&[data-state="checked"]),
+    unchecked: ~S(&[data-state="unchecked"]),
+    on: ~S(&[data-state="on"]),
+    off: ~S(&[data-state="off"]),
+    not_on: ~S'&:not([data-state="on"])',
+    indeterminate: ~S(&[data-state="indeterminate"])
   }
 
   @zag_flags %{
     highlighted: "&[data-highlighted]",
     selected:
-      ~s(&[data-selected],\n  &[data-state="checked"],\n  &[data-state="on"],\n  &[data-checked],\n  &[data-indeterminate]),
+      ~S(&[data-selected],\n  &[data-state="checked"],\n  &[data-state="on"],\n  &[data-checked],\n  &[data-indeterminate]),
     invalid: "&[data-invalid]",
     readonly: "&[data-readonly]",
     in_range: "&[data-in-range]",
@@ -105,10 +105,10 @@ defmodule Corex.Design.Condition do
   }
 
   @structural %{
-    rtl: ~s([dir="rtl"] &),
-    ltr: ~s([dir="ltr"] &),
-    dark: ~s([data-mode="dark"] &),
-    light: ~s([data-mode="light"] &)
+    rtl: ~S([dir="rtl"] &),
+    ltr: ~S([dir="ltr"] &),
+    dark: ~S([data-mode="dark"] &),
+    light: ~S([data-mode="light"] &)
   }
 
   @breakpoints for {step, width} <- Corex.Design.Tokens.Scales.breakpoint(),

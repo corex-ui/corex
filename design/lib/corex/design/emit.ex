@@ -826,7 +826,7 @@ defmodule Corex.Design.Emit.TailwindUtilities do
   alias Corex.Design.Emit.TailwindCss
   alias Corex.Design.Fragment
 
-  @base ~w(ui_root ui_trigger ui_icon ui_content ui_label ui_input ui_item ui_link ui_error ui_readonly ui_loading)a
+  @base ~W(ui_root ui_trigger ui_icon ui_content ui_label ui_input ui_item ui_link ui_error ui_readonly ui_loading)a
 
   def css do
     wildcards = %{
@@ -1013,7 +1013,7 @@ defmodule Corex.Design.Emit.TailwindUtilitiesRecipe do
   alias Corex.Design.Selector
 
   @prefixed_axes %{radius: "rounded", text: "text"}
-  @layout_scale_axes ~w(padding padding_inline padding_block gap radius text)a
+  @layout_scale_axes ~W(padding padding_inline padding_block gap radius text)a
 
   def utility_axes(%{kind: :layout} = recipe) do
     @layout_scale_axes

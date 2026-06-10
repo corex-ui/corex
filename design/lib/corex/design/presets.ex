@@ -6,8 +6,8 @@ defmodule Corex.Design.Presets do
 
   alias Corex.Design.Emit.Tokens, as: Var
 
-  @host_sizing_axes ~w(width max_width height max_height)a
-  @define_sizing_axes ~w(width max_width height max_height)a
+  @host_sizing_axes ~W(width max_width height max_height)a
+  @define_sizing_axes ~W(width max_width height max_height)a
 
   def host_sizing_axes do
     [
@@ -119,9 +119,9 @@ defmodule Corex.Design.Presets do
     }
   end
 
-  def icon_child_selector, do: ~s(& [data-icon])
+  def icon_child_selector, do: ~S(& [data-icon])
 
-  def icon_child_selector_with_icon_class, do: ~s(& [data-icon],\n  & .icon)
+  def icon_child_selector_with_icon_class, do: ~S(& [data-icon],\n  & .icon)
 
   def trigger_indicator_part do
     %{

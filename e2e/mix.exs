@@ -104,7 +104,8 @@ defmodule E2e.MixProject do
       {:usage_rules, "~> 1.1", only: :dev},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:oeditus_credo, "~> 0.6.3", only: [:dev, :test], runtime: false},
-      {:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false}
+      {:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false},
+      {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false}
     ]
   end
 
@@ -173,7 +174,8 @@ defmodule E2e.MixProject do
         "format --check-formatted",
         "compile --force --warnings-as-errors",
         "compile --force --warnings-as-errors --env test",
-        "credo --strict"
+        "credo --strict",
+        "sobelow --exit"
       ],
       precommit: [
         "compile --warnings-as-errors",

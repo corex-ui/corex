@@ -2,6 +2,10 @@
 
 ## 0.2.0
 
+### `corex_design` on Hex
+
+The design pipeline ships as a separate package, `{:corex_design, "~> 0.2"}`, published from `design/` in this repository. It depends on `{:corex, "~> 0.2"}`. Monorepo development keeps `path: ".."`; Hex publish sets `COREX_DESIGN_PUBLISH=1` (see `design/README.md`).
+
 ### Elixir design pipeline (design-only)
 
 The design system has a compile-time Elixir pipeline that replaces the

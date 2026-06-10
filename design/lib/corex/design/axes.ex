@@ -43,7 +43,7 @@ defmodule Corex.Design.Axis do
     max_height: "max-h-"
   }
 
-  @slot_prefixes ~w(item branch control root label trigger indicator content error input icon)
+  @slot_prefixes ~W(item branch control root label trigger indicator content error input icon)
 
   def name(axis) when is_atom(axis) do
     axis

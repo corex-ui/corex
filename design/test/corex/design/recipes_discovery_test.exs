@@ -10,7 +10,7 @@ defmodule Corex.Design.RecipesDiscoveryTest do
     assert Corex.Design.Recipes.Accordion in modules
     assert Corex.Design.Recipes.Trigger not in modules
     assert Corex.Design.Recipes.FormHost not in modules
-    assert length(modules) == 42
+    assert length(modules) == 43
     assert modules == Enum.sort(modules)
   end
 

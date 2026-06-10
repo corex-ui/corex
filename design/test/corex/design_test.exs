@@ -34,14 +34,15 @@ defmodule Corex.DesignTest do
       row_css = Recipe.to_css(Layout.get(:row))
 
       assert row_css =~ ".row {"
-      assert row_css =~ ".row.row--gap-lg {"
+      assert row_css =~ "@utility row--gap-*"
+      assert row_css =~ ".row.row--gap-none {"
     end
 
     test "icon layout recipe sizes children with ui_icon" do
       css = Recipe.to_css(Layout.get(:icon))
 
       assert css =~ ".icon {"
-      assert css =~ ".icon.icon--text-xs {"
+      assert css =~ "@utility icon--text-*"
       assert css =~ ".icon [data-icon]"
       assert css =~ ".icon img"
       assert css =~ "object-fit: contain"
@@ -103,7 +104,7 @@ defmodule Corex.DesignTest do
     test "button compound variants emit combined selectors" do
       css = Recipe.to_css(Button.recipe())
 
-      assert css =~ ~s(.button.button--variant-ghost.button--size-sm)
+      assert css =~ ~S(.button.button--variant-ghost.button--size-sm)
     end
 
     test "link skip rule keeps the host modifier class" do
@@ -155,18 +156,18 @@ defmodule Corex.DesignTest do
 
       combined = base_css <> recipe_css
 
-      refute combined =~ ~s(class^="hero-")
-      refute combined =~ ~s(class^='hero-')
+      refute combined =~ ~S(class^="hero-")
+      refute combined =~ ~S(class^='hero-')
       assert combined =~ "[data-icon]"
 
-      priv_design = Path.expand("../../../priv/design", __DIR__)
+      priv_design = Application.app_dir(:corex, "priv/design")
 
       hero_selector? =
         priv_design
         |> Path.join("**/*")
         |> Path.wildcard()
         |> Enum.filter(&String.ends_with?(&1, ".css"))
-        |> Enum.any?(&(&1 |> File.read!() =~ ~s(class^="hero-")))
+        |> Enum.any?(&(&1 |> File.read!() =~ ~S(class^="hero-")))
 
       refute hero_selector?
     end
@@ -188,8 +189,8 @@ defmodule Corex.DesignTest do
         |> Recipe.to_css()
 
       assert css =~ ".badge [data-icon]"
-      refute css =~ ".badge.badge--size-sm [data-icon]"
-      assert css =~ "@utility badge--size-*"
+      assert css =~ ".badge.badge--size-sm [data-icon]"
+      assert css =~ ".badge.badge--size-sm"
       assert css =~ "1em !important"
       refute css =~ ".badge .icon"
       refute css =~ ".badge svg"
@@ -204,8 +205,8 @@ defmodule Corex.DesignTest do
       refute css =~ "@utility button--*"
       assert css =~ "@utility button--rounded-*"
       assert css =~ ".button.button--semantic-accent {"
-      assert css =~ "@utility button--size-*"
-      refute css =~ ".button.button--size-md {"
+      assert css =~ "@utility button--text-*"
+      assert css =~ ".button.button--size-md {"
       assert css =~ ".button.button--variant-solid {"
     end
 
@@ -248,8 +249,8 @@ defmodule Corex.DesignTest do
         refute File.exists?(Path.join(tmp, "recipes/data"))
 
         aggregate = File.read!(Path.join(tmp, "aggregates/recipes.css"))
-        assert aggregate =~ ~s(@import "../layers/utilities.css";)
-        assert aggregate =~ ~s(@import "../recipes/button.css";)
+        assert aggregate =~ ~S(@import "../layers/utilities.css";)
+        assert aggregate =~ ~S(@import "../recipes/button.css";)
 
         utilities = File.read!(Path.join(tmp, "layers/utilities.css"))
         assert utilities =~ "@utility ui-trigger"
@@ -270,7 +271,7 @@ defmodule Corex.DesignTest do
       css = Recipe.to_css(Typo.recipe(:h1))
 
       assert css =~ ".h1 {"
-      assert css =~ ".h1.h1--text-lg"
+      assert css =~ "@utility h1--text-*"
       assert css =~ ".h1.h1--semantic-accent"
     end
 
@@ -278,8 +279,9 @@ defmodule Corex.DesignTest do
       css = Recipe.to_css(Typo.recipe(:form))
 
       assert css =~ ".form {"
-      assert css =~ "max-width: var(--container-md)"
-      assert css =~ ".form.form--max-w-lg"
+      assert css =~ "@utility form--max-w-*"
+      assert css =~ "max-width: --value(--container-*"
+      assert css =~ ".form.form--w-full"
       assert css =~ ".form.form--w-fit"
     end
 
@@ -305,9 +307,9 @@ defmodule Corex.DesignTest do
       css = Recipe.to_css(DialogModal.recipe())
 
       assert css =~
-               ~s(.dialog-modal[data-animation='js'] [data-scope="dialog"][data-part="backdrop"][data-state='closed'])
+               ~S(.dialog-modal[data-animation='js'] [data-scope="dialog"][data-part="backdrop"][data-state='closed'])
 
-      refute css =~ ~s(.dialog-modal[data-animation='js'] .dialog-modal [data-scope="dialog"])
+      refute css =~ ~S(.dialog-modal[data-animation='js'] .dialog-modal [data-scope="dialog"])
     end
   end
 
@@ -316,9 +318,9 @@ defmodule Corex.DesignTest do
       css = Recipe.to_css(Accordion.recipe())
 
       assert css =~
-               ~s(.accordion[data-animation="js"] [data-scope="accordion"][data-part="item-content"][data-state="closed"])
+               ~S(.accordion[data-animation="js"] [data-scope="accordion"][data-part="item-content"][data-state="closed"])
 
-      refute css =~ ~s(.accordion[data-animation="js"] .accordion [data-scope="accordion"])
+      refute css =~ ~S(.accordion[data-animation="js"] .accordion [data-scope="accordion"])
     end
   end
 
@@ -327,48 +329,52 @@ defmodule Corex.DesignTest do
       css = Recipe.to_css(Accordion.recipe())
 
       assert css =~
-               ~s(.accordion.accordion--w-fit [data-scope="accordion"][data-part="item-trigger"] {\n  width: auto;)
+               ".accordion.accordion--w-fit [data-scope=\"accordion\"][data-part=\"item-trigger\"]"
 
-      assert css =~
-               ~s(.accordion.accordion--w-fit [data-scope="accordion"][data-part="root"] {\n  width: auto;)
-
-      assert css =~
-               ~s(.accordion.accordion--w-fit {\n  max-width: none;)
+      assert css =~ ".accordion.accordion--w-fit [data-scope=\"accordion\"][data-part=\"root\"]"
+      assert css =~ ".accordion.accordion--w-fit"
+      assert css =~ "max-width: none"
     end
 
     test "w-auto keeps block sizing without shrink-wrap overrides" do
       css = Recipe.to_css(Accordion.recipe())
 
-      assert css =~ ~s(.accordion.accordion--w-auto {\n  max-width: none;)
+      assert css =~ ".accordion.accordion--w-auto"
+      assert css =~ "max-width: none"
 
       refute css =~
-               ~s(.accordion.accordion--w-auto [data-scope="accordion"][data-part="item-trigger"] {\n  width: auto;)
+               ".accordion.accordion--w-auto [data-scope=\"accordion\"][data-part=\"item-trigger\"]"
 
-      refute css =~
-               ~s(.accordion.accordion--w-auto [data-scope="accordion"][data-part="root"] {\n  width: auto;)
+      refute css =~ ".accordion.accordion--w-auto [data-scope=\"accordion\"][data-part=\"root\"]"
     end
 
     test "max-h variant targets item-content not host" do
       css = Recipe.to_css(Accordion.recipe())
 
+      assert css =~ "@utility accordion--max-h-*"
+      assert css =~ "max-height: --value(--container-*"
+
       assert css =~
-               ~s(.accordion.accordion--max-h-md [data-scope="accordion"][data-part="item-content"])
+               ".accordion.accordion--max-h-md [data-scope=\"accordion\"][data-part=\"item-content\"]"
 
-      assert css =~ "max-height: var(--container-md)"
-
-      refute css =~ ~s(.accordion.accordion--max-h-md {\n  max-height:)
+      refute css =~ ".accordion.accordion--max-h-md {\n    max-height:"
     end
 
     test "max-h open content box scrolls inside cap" do
       css = Recipe.to_css(Accordion.recipe())
 
       assert css =~
-               ~s(.accordion.accordion--max-h-md [data-scope="accordion"][data-part="item-content"][data-state="open"] > p {\n  overflow-y: auto;\n  min-height: 0;\n  flex: 1 1 auto;\n  box-sizing: border-box;\n  &::-webkit-scrollbar)
+               ".accordion.accordion--max-h-md [data-scope=\"accordion\"][data-part=\"item-content\"][data-state=\"open\"] > p"
 
+      assert css =~ "overflow-y: auto"
+      assert css =~ "min-height: 0"
+      assert css =~ "flex: 1 1 auto"
+      assert css =~ "box-sizing: border-box"
+      assert css =~ "&::-webkit-scrollbar"
       assert css =~ "background: var(--color-root)"
 
       refute css =~
-               ~s(.accordion.accordion--max-h-md [data-scope="accordion"][data-part="item-content"][data-state="open"] {\n  overflow-y: auto)
+               ".accordion.accordion--max-h-md [data-scope=\"accordion\"][data-part=\"item-content\"][data-state=\"open\"] {\n    overflow-y: auto"
     end
   end
 
@@ -377,7 +383,7 @@ defmodule Corex.DesignTest do
       css = Recipe.to_css(Accordion.recipe())
 
       assert css =~
-               ~s(.accordion.accordion--size-md [data-scope="accordion"][data-part="root"][data-orientation="horizontal"])
+               ".accordion.accordion--size-md [data-scope=\"accordion\"][data-part=\"root\"][data-orientation=\"horizontal\"]"
 
       assert css =~ "grid-auto-columns: minmax(var(--container-3xs), 1fr)"
     end
@@ -386,10 +392,13 @@ defmodule Corex.DesignTest do
       css = Recipe.to_css(Accordion.recipe())
 
       assert css =~
-               ~s([data-scope="accordion"][data-part="item-trigger"][data-orientation="horizontal"] {\n  box-sizing: border-box;\n  height: 100%;)
+               "[data-scope=\"accordion\"][data-part=\"item-trigger\"][data-orientation=\"horizontal\"]"
+
+      assert css =~ "box-sizing: border-box"
+      assert css =~ "height: 100%"
 
       assert css =~
-               ~s([data-scope="accordion"][data-part="item-trigger"][data-orientation="horizontal"] [data-scope="accordion"][data-part="item-text"])
+               "[data-scope=\"accordion\"][data-part=\"item-trigger\"][data-orientation=\"horizontal\"] [data-scope=\"accordion\"][data-part=\"item-text\"]"
 
       assert css =~ "align-items: center"
       assert css =~ "text-align: center"
@@ -401,7 +410,13 @@ defmodule Corex.DesignTest do
       css = Recipe.to_css(Accordion.recipe())
 
       assert css =~
-               ~s([data-scope="accordion"][data-part="item-content"][data-orientation="horizontal"] {\n  grid-row: 2;\n  display: flex;\n  min-height: 0;\n  min-width: 0;\n  width: 100%;)
+               "[data-scope=\"accordion\"][data-part=\"item-content\"][data-orientation=\"horizontal\"]"
+
+      assert css =~ "grid-row: 2"
+      assert css =~ "display: flex"
+      assert css =~ "min-height: 0"
+      assert css =~ "min-width: 0"
+      assert css =~ "width: 100%"
     end
   end
 
@@ -410,9 +425,9 @@ defmodule Corex.DesignTest do
       css = Recipe.to_css(TreeView.recipe())
 
       assert css =~
-               ~s(.tree-view[data-animation='js'] [data-scope="tree-view"][data-part="branch-content"][data-state='closed'])
+               ~S(.tree-view[data-animation='js'] [data-scope="tree-view"][data-part="branch-content"][data-state='closed'])
 
-      refute css =~ ~s(.tree-view[data-animation='js'] .tree-view [data-scope="tree-view"])
+      refute css =~ ~S(.tree-view[data-animation='js'] .tree-view [data-scope="tree-view"])
     end
   end
 

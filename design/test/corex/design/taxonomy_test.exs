@@ -10,7 +10,7 @@ defmodule Corex.Design.TaxonomyTest do
   alias Corex.Design.Recipes.TreeView
   alias Corex.Design.Taxonomy
 
-  @deprecated_axes ~w(color rounded visual on)a
+  @deprecated_axes ~W(color rounded visual on)a
 
   test "recipes use canonical axis names" do
     for recipe <- Recipes.components() do

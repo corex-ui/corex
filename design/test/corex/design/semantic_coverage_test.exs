@@ -6,8 +6,8 @@ defmodule Corex.Design.SemanticCoverageTest do
   alias Corex.Design.Selector
   alias Corex.Design.Taxonomy
 
-  @compound_visual ~w(button link toggle)a
-  @skip_semantic ~w(badge timer avatar clipboard code data_list layout_heading marquee typo)a
+  @compound_visual ~W(button link toggle)a
+  @skip_semantic ~W(badge timer avatar clipboard code data_list layout_heading marquee typo)a
 
   test "recipes with semantic axis emit accent scale-token styling" do
     offenders =

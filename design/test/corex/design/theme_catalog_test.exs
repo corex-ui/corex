@@ -92,7 +92,7 @@ defmodule Corex.Design.ThemeTest do
   end
 
   test "rejects semantic role not in config semantics" do
-    Application.put_env(:corex, :semantics, ~w(accent brand)a)
+    Application.put_env(:corex, :semantics, ~W(accent brand)a)
 
     CorexDesign.TestConfig.put(
       themes: %{
@@ -115,7 +115,7 @@ defmodule Corex.Design.ThemeTest do
   end
 
   test "custom semantics list drives palette variants" do
-    Application.put_env(:corex, :semantics, ~w(accent marketing)a)
+    Application.put_env(:corex, :semantics, ~W(accent marketing)a)
 
     CorexDesign.TestConfig.put(
       themes: %{
@@ -156,19 +156,21 @@ defmodule Corex.Design.ThemeTest do
     assert Theme.theme_ids() == [:slim]
   end
 
-  test "extends merges color overrides onto parent preset" do
+  test "merge_specs merges color overrides onto parent preset" do
+    acme =
+      Theme.merge_specs(Presets.neo(), %{
+        seeds: %{"brand" => "#FF0000"},
+        colors: %{
+          light: %{semantic: %{brand: %{lightness: 50}}},
+          dark: Presets.neo().colors.dark
+        },
+        dimensions: %{radius_scale: 1.25}
+      })
+
     CorexDesign.TestConfig.put(
       themes: %{
         neo: Presets.neo(),
-        acme: %{
-          extends: :neo,
-          seeds: %{"brand" => "#FF0000"},
-          colors: %{
-            light: %{semantic: %{brand: %{lightness: 50}}},
-            dark: Presets.neo().colors.dark
-          },
-          dimensions: %{radius_scale: 1.25}
-        }
+        acme: acme
       }
     )
 
@@ -199,7 +201,7 @@ defmodule Corex.Design.ThemeTest do
 
   defp theme_block(css, theme) do
     [_, rest] = String.split(css, ~s([data-theme="#{theme}"] {), parts: 2)
-    [block, _] = String.split(rest, ~s([data-theme=), parts: 2)
+    [block, _] = String.split(rest, ~S([data-theme=), parts: 2)
     block
   end
 
@@ -208,7 +210,7 @@ defmodule Corex.Design.ThemeTest do
     css = Emit.Tokens.css()
 
     neo = parse_radius_block(css, ":root")
-    uno = parse_radius_block(css, ~s([data-theme="uno"]))
+    uno = parse_radius_block(css, ~S([data-theme="uno"]))
 
     assert neo["--radius"] == neo["--radius-md"]
     assert uno["--radius"] == uno["--radius-md"]
@@ -222,20 +224,5 @@ defmodule Corex.Design.ThemeTest do
     ~r/(--radius[^:]*):\s*([^;]+);/
     |> Regex.scan(body)
     |> Map.new(fn [_full, name, value] -> {name, String.trim(value)} end)
-  end
-
-  test "accessibility_level resolves global, theme, and per-mode overrides" do
-    neo =
-      Presets.neo()
-      |> Map.put(:accessibility, %{level: :aa, dark: :a})
-
-    CorexDesign.TestConfig.put(
-      accessibility_level: :aaa,
-      themes: %{neo: neo}
-    )
-
-    assert Theme.global_accessibility_level() == :aaa
-    assert Theme.accessibility_level(:neo, :light) == :aa
-    assert Theme.accessibility_level(:neo, :dark) == :a
   end
 end

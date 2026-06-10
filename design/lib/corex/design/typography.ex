@@ -3,12 +3,12 @@ defmodule Corex.Design.Typography do
 
   alias Corex.Design.Style
 
-  @elements ~w(
+  @elements ~W(
     h1 h2 h3 h4 p p.display small mark abbr sup sub kbd del ins b strong i em
     blockquote hr dt figcaption .list
   )
 
-  @component_ids ~w(h1 h2 h3 h4 p lead small kbd blockquote list form)a
+  @component_ids ~W(h1 h2 h3 h4 p lead small kbd blockquote list form)a
 
   def elements, do: @elements
   def component_ids, do: @component_ids

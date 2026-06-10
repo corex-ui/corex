@@ -1,7 +1,6 @@
 defmodule Corex.Design.Tokens.Colors do
   @moduledoc false
 
-  alias Corex.Design.Accessibility.Level
   alias Corex.Design.Theme
 
   @doc """
@@ -32,8 +31,6 @@ defmodule Corex.Design.Tokens.Colors do
     utility = theme["utility"] || %{}
     ink = theme["ink"] || %{}
     semantic = theme["semantic"] || %{}
-    level = accessibility_level(theme)
-
     state_order = theme["state_order"] || global["state_order"] || ~W(default muted hover active)
     ui_ratio_base = string_key_map(theme["ui_ratio_base"] || global["ui_ratio_base"] || %{})
 
@@ -51,19 +48,11 @@ defmodule Corex.Design.Tokens.Colors do
       utility: utility,
       ink: ink,
       semantic: semantic,
-      level: level,
       state_order: state_order,
       ui_ratio_base: ui_ratio_base,
       semantic_ratio_base: semantic_ratio_base,
       offsets: offsets
     })
-  end
-
-  defp accessibility_level(theme) do
-    case Map.get(theme, "accessibility_level") do
-      nil -> Level.normalize(:aa)
-      level -> Level.normalize(level)
-    end
   end
 
   defp finish_theme_tokens(acc, ctx) do
@@ -73,7 +62,6 @@ defmodule Corex.Design.Tokens.Colors do
       utility: utility,
       ink: ink,
       semantic: semantic,
-      level: level,
       state_order: state_order,
       ui_ratio_base: ui_ratio_base,
       semantic_ratio_base: semantic_ratio_base,
@@ -86,9 +74,9 @@ defmodule Corex.Design.Tokens.Colors do
       ink_reference_hex(seeds, ink_bg_cfg, state_order, ui_ratio_base, offsets)
 
     acc
-    |> utility_tokens(seeds, utility, ink_ref_hex, level)
-    |> ink_tokens(seeds, ink, ink_ref_hex, level)
-    |> semantic_tokens(seeds, semantic, state_order, semantic_ratio_base, offsets, level)
+    |> utility_tokens(seeds, utility, ink_ref_hex)
+    |> ink_tokens(seeds, ink, ink_ref_hex)
+    |> semantic_tokens(seeds, semantic, state_order, semantic_ratio_base, offsets)
   end
 
   defp theme_seeds(global, theme) do
@@ -148,11 +136,11 @@ defmodule Corex.Design.Tokens.Colors do
     end)
   end
 
-  defp utility_tokens(acc, seeds, utility, ink_ref_hex, level) do
+  defp utility_tokens(acc, seeds, utility, ink_ref_hex) do
     Enum.reduce(utility, acc, fn {name, cfg}, tok ->
       seed = seed_hex(seeds, cfg["color"])
       bg_hex = utility_contrast_bg(acc, name, ink_ref_hex)
-      ratio = utility_contrast_ratio(name, cfg, level)
+      ratio = cfg["ratio"] * 1.0
       {hex, _ach} = contrast_fg(seed, bg_hex, ratio)
       Map.put(tok, to_string(name), hex)
     end)
@@ -166,18 +154,16 @@ defmodule Corex.Design.Tokens.Colors do
     end
   end
 
-  defp utility_contrast_ratio(_name, cfg, _level), do: cfg["ratio"] * 1.0
-
-  defp ink_tokens(acc, seeds, ink, ink_ref_hex, level) do
+  defp ink_tokens(acc, seeds, ink, ink_ref_hex) do
     Enum.reduce(ink, acc, fn {name, cfg}, tok ->
       seed = seed_hex(seeds, cfg["color"])
-      ratio = Level.text_contrast_target(level, cfg["ratio"] * 1.0)
+      ratio = cfg["ratio"] * 1.0
       {hex, _ach} = contrast_fg(seed, ink_ref_hex, ratio)
       Map.put(tok, ink_output_key(to_string(name)), hex)
     end)
   end
 
-  defp semantic_tokens(acc, seeds, semantic, state_order, semantic_ratio_base, offsets, level) do
+  defp semantic_tokens(acc, seeds, semantic, state_order, semantic_ratio_base, offsets) do
     Enum.reduce(semantic, acc, fn {name, cfg}, tok ->
       put_semantic_tokens(
         tok,
@@ -186,8 +172,7 @@ defmodule Corex.Design.Tokens.Colors do
         cfg,
         state_order,
         semantic_ratio_base,
-        offsets,
-        level
+        offsets
       )
     end)
   end
@@ -199,8 +184,7 @@ defmodule Corex.Design.Tokens.Colors do
          cfg,
          state_order,
          semantic_ratio_base,
-         offsets,
-         level
+         offsets
        ) do
     bg_hex = seed_hex(seeds, cfg["bg"])
     lightness = cfg["lightness"]
@@ -217,7 +201,7 @@ defmodule Corex.Design.Tokens.Colors do
 
     sem_ref = neutral_at(bg_hex, lightness)
     ink_seed = seed_hex(seeds, cfg["ink"]["color"])
-    ratio = Level.text_contrast_target(level, cfg["ink"]["ratio"] * 1.0)
+    ratio = cfg["ink"]["ratio"] * 1.0
     {ihex, _ach} = contrast_fg(ink_seed, sem_ref, ratio)
     Map.put(tok, "#{name}-ink", ihex)
   end
@@ -254,10 +238,15 @@ defmodule Corex.Design.Tokens.Colors do
 
   defp neutral_at(hex, l_pct) do
     l = clamp01(l_pct / 100.0)
-    {:ok, c} = Color.new(hex)
-    {:ok, okl} = Color.convert(c, Color.Oklch)
-    {:ok, out} = Color.convert(%{okl | l: l}, Color.SRGB)
-    Color.to_hex(out)
+
+    with {:ok, c} <- Color.new(hex),
+         {:ok, okl} <- Color.convert(c, Color.Oklch),
+         {:ok, out} <- Color.convert(%{okl | l: l}, Color.SRGB) do
+      Color.to_hex(out)
+    else
+      {:error, reason} ->
+        raise ArgumentError, "invalid color #{inspect(hex)}: #{inspect(reason)}"
+    end
   end
 
   defp clamp_pct(v), do: min(99.0, max(1.0, v))

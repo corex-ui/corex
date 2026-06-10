@@ -112,8 +112,8 @@ defmodule Corex.Design.TokensTest do
       dt = Theme.default_theme()
       dm = Theme.default_mode()
 
-      assert css =~ ~s([data-theme="uno"] {)
-      refute css =~ ~s([data-theme="neo"] {\n)
+      assert css =~ ~S([data-theme="uno"] {)
+      refute css =~ ~S([data-theme="neo"] {\n)
 
       for theme <- Theme.themes(), mode <- Theme.modes(), {theme, mode} != {dt, dm} do
         assert css =~ ~s([data-theme="#{theme}"][data-mode="#{mode}"] {)

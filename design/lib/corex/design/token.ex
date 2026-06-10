@@ -8,6 +8,7 @@ defmodule Corex.Design.Token do
 
       padding: space(:md)
       background_color: color(:accent)
+      border_radius: literal("50%")
   """
 
   def space(step), do: {:space, step}
@@ -16,5 +17,5 @@ defmodule Corex.Design.Token do
   def color(role), do: {:color, role}
   def text(step), do: {:text, step}
   def container(step), do: {:container, step}
-  def raw(value), do: {:raw, value}
+  def literal(value), do: {:raw, value}
 end

@@ -68,15 +68,15 @@ defmodule Corex.Design.Compiler do
 
     Write.atomic!(
       Path.join(output_dir, "corex.tailwind.theme.css"),
-      ~s(@import "./layers/theme.css";\n)
+      ~S(@import "./layers/theme.css";\n)
     )
 
     Write.atomic!(
       Path.join(output_dir, "corex.tailwind.base.css"),
-      ~s(@import "./layers/base.css";\n)
+      ~S(@import "./layers/base.css";\n)
     )
 
-    Write.atomic!(Path.join(output_dir, "corex.tokens.css"), ~s(@import "./layers/tokens.css";\n))
+    Write.atomic!(Path.join(output_dir, "corex.tokens.css"), ~S(@import "./layers/tokens.css";\n))
 
     Write.atomic!(
       Path.join(output_dir, "corex.tailwind.css"),
@@ -119,7 +119,7 @@ defmodule Corex.Design.Compiler do
   defp recipes_aggregate(recipes) do
     imports =
       [
-        ~s(@import "../layers/utilities.css";),
+        ~S(@import "../layers/utilities.css";),
         recipe_imports(recipes)
       ]
       |> Enum.join("\n")
