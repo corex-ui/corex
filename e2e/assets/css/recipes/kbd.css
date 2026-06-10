@@ -25,8 +25,8 @@
   .kbd {
     padding: var(--space-sm);
     color: var(--color-ui-ink);
-    background-color: var(--color-layer);
     border: 1px solid var(--color-border);
+    background-color: var(--color-layer);
     margin-inline: var(--space-sm);
     border-radius: var(--radius-md);
     font-family: var(--font-mono);

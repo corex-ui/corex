@@ -58,7 +58,7 @@ There is a moment, the first time you change a token and watch the entire app sh
 
 The four themes (`neo`, `uno`, `duo`, `leo`) ship with light and dark token files each. That is eight surface variants from one set of utilities and components, with a real guarantee underneath.
 
-Palettes are generated at compile time by `corex_design` from seed hexes, OKLCH lightness ramps, and per-role contrast ratios (via the `color` dependency). Primary ink, muted ink, borders, and accents each get explicit ratio targets in theme config, not an eyeball.
+Palettes are generated at compile time by `corex_design` from seed hexes, `Color.Palette` tonal stops for fills, and Leonardo-style contrast ratios for ink and utilities (via the `color` dependency). Primary ink, muted ink, borders, and accents each get explicit ratio targets in theme config, not an eyeball.
 
 That is what makes it possible to swap `data-theme` or `data-mode` on `<html>` and have the entire app stay readable.
 

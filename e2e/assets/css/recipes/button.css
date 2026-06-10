@@ -25,9 +25,9 @@
   .button {
     display: inline-flex;
     cursor: pointer;
+    border: 1px solid transparent;
     align-items: center;
     justify-content: center;
-    border: 1px solid transparent;
     border-radius: var(--radius-md);
     font-weight: var(--font-weight-normal);
     text-align: center;
@@ -133,8 +133,8 @@
       }
       &:focus-visible {
         color: var(--color-ui-ink-muted);
-        background-color: var(--color-ui-muted);
         outline: none;
+        background-color: var(--color-ui-muted);
         box-shadow: none;
       }
     }
@@ -176,8 +176,8 @@
       }
       &:focus-visible {
         color: var(--color-ui-ink-muted);
-        background-color: transparent;
         outline: none;
+        background-color: transparent;
         box-shadow: none;
       }
     }
@@ -244,8 +244,8 @@
       }
       &:focus-visible {
         color: var(--color-ui-ink-muted);
-        background-color: var(--color-ui-muted);
         outline: none;
+        background-color: var(--color-ui-muted);
         box-shadow: none;
       }
     }

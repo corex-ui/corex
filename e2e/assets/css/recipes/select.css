@@ -131,8 +131,8 @@
     width: 100%;
     cursor: pointer;
     color: var(--color-ui-ink);
-    background-color: var(--color-ui);
     outline: none;
+    background-color: var(--color-ui);
     gap: var(--space-md);
     align-items: center;
     min-height: var(--size-md);
@@ -169,8 +169,8 @@
       }
       &:focus-visible {
         color: var(--color-ui-ink-muted);
-        background-color: var(--color-ui-muted);
         outline: none;
+        background-color: var(--color-ui-muted);
         box-shadow: none;
       }
     }
@@ -186,23 +186,23 @@
         color: var(--color-selected-ink);
         background-color: var(--color-selected-hover);
       }
-      &:focus-visible {
-        color: var(--color-selected-ink);
-        background-color: var(--color-selected-hover);
-        outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-selected-ink);
-      }
       &[data-highlighted] {
         color: var(--color-selected-ink);
         background-color: var(--color-selected-hover);
+      }
+      &:focus-visible {
+        color: var(--color-selected-ink);
+        outline: none;
+        background-color: var(--color-selected-hover);
+        box-shadow: inset 0 0 0 2px var(--color-selected-ink);
       }
     }
     &:hover {
       background-color: var(--color-ui-hover);
     }
     &:focus-visible {
-      background-color: var(--color-ui-hover);
       outline: none;
+      background-color: var(--color-ui-hover);
       box-shadow: inset 0 0 0 2px var(--color-ui-ink);
     }
   }
@@ -213,11 +213,11 @@
     cursor: pointer;
     color: var(--color-ui-ink);
     flex: 1 1 0%;
+    border: 1px solid var(--color-border);
     background-color: var(--color-ui);
     max-width: 100%;
     align-items: center;
     justify-content: space-between;
-    border: 1px solid var(--color-border);
     min-height: var(--size-md);
     padding-inline: var(--space-md);
     min-width: 0;
@@ -254,8 +254,8 @@
       }
       &:focus-visible {
         color: var(--color-ui-ink-muted);
-        background-color: var(--color-ui-muted);
         outline: none;
+        background-color: var(--color-ui-muted);
         box-shadow: none;
       }
     }
@@ -305,10 +305,10 @@
     width: 100%;
     padding: 0;
     color: var(--color-ui-ink);
+    border: 1px solid var(--color-border);
     background-color: var(--color-root);
     box-shadow: var(--shadow-md);
     flex-direction: column;
-    border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     z-index: 50;
     overflow: hidden;

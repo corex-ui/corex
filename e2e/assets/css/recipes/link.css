@@ -27,10 +27,10 @@
     cursor: pointer;
     padding: 0;
     color: var(--color-link);
+    border: none;
     background-color: transparent;
     gap: var(--space-md);
     align-items: center;
-    border: none;
     transition: color 120ms ease, box-shadow 120ms ease;
     overflow: visible;
     text-decoration-line: underline;

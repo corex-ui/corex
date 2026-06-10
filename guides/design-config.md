@@ -67,7 +67,14 @@ config :corex_design,
         seeds: %{"brand" => "#E11D48"},
         colors: %{
           light: %{
-            semantic: %{brand: %{bg: "brand", lightness: 42, ink: %{color: "base", ratio: 7}}}
+            semantic: %{
+              brand: %{
+                bg: "brand",
+                stop: 700,
+                states: %{muted: 600, default: 700, hover: 700, active: 800},
+                ink: %{color: "base", ratio: 7}
+              }
+            }
           },
           dark: %{}
         },

@@ -11,11 +11,9 @@ defmodule Corex.Design.Theme do
       `container_scale`, optional per-step `:radius`, optional `:font`
     * `:typography` — optional element style map (see `Corex.Design.Typography`)
 
-  Ink and semantic foreground contrast uses each role's `ratio` field and the
-  `color` dependency's OKLCH palette solver.
-
-  Semantic fills use `bg` = seed name and mid lightness (~36–44 in light mode).
-  Soft button looks use the `visual` axis, not inverted semantic roles.
+  Surface and semantic fills use `Color.Palette.tonal/2` stops from seed hexes.
+  Ink and semantic foreground contrast uses each role's `ratio` field with
+  `Color.Palette.contrast/2` (Leonardo-style WCAG targeting).
 
   When `:themes` is omitted, `Corex.Design.Theme.Presets.all/0` is used.
   Customize a preset with `merge_specs/2` instead of inheritance keys.
@@ -158,8 +156,6 @@ defmodule Corex.Design.Theme do
 
   @doc false
   def color_config do
-    global = palette_globals()
-
     themes =
       resolved_themes()
       |> Enum.flat_map(fn {id, spec} ->
@@ -179,7 +175,7 @@ defmodule Corex.Design.Theme do
       end)
       |> Map.new()
 
-    Map.put(global, "themes", themes)
+    %{"themes" => themes}
   end
 
   def validate!(themes) when is_map(themes), do: ThemeOptions.validate!(themes)
@@ -187,24 +183,6 @@ defmodule Corex.Design.Theme do
   defp themes_input do
     Corex.Design.design_config()
     |> Keyword.get(:themes)
-  end
-
-  defp palette_globals do
-    cfg = Corex.Design.design_config()
-
-    %{
-      "semantic_ratio_base" =>
-        stringify_map(
-          Keyword.get(cfg, :semantic_ratio_base, Presets.default_semantic_ratio_base())
-        ),
-      "state_lightness_offsets" =>
-        stringify_map(
-          Keyword.get(cfg, :state_lightness_offsets, Presets.default_state_lightness_offsets())
-        ),
-      "state_order" => Keyword.get(cfg, :state_order, Presets.default_state_order()),
-      "ui_ratio_base" =>
-        stringify_map(Keyword.get(cfg, :ui_ratio_base, Presets.default_ui_ratio_base()))
-    }
   end
 
   defp normalize_spec(spec) when is_map(spec) do

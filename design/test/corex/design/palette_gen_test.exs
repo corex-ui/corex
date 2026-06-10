@@ -1,0 +1,50 @@
+defmodule Corex.Design.PaletteGenTest do
+  use ExUnit.Case, async: true
+
+  alias Corex.Design.Tokens.Colors
+  alias Corex.Design.Tokens.PaletteGen
+
+  test "tonal_stop returns hex from a valid stop label" do
+    hex = PaletteGen.tonal_stop("#3b82f6", 500)
+    assert String.match?(hex, ~r/^#[0-9A-Fa-f]{6}$/)
+  end
+
+  test "tonal_scale is in sRGB gamut for preset seeds" do
+    for seed <- ["#F0F0F0", "#32479C", "#4B4B4B", "#059669"] do
+      assert PaletteGen.in_gamut?(seed)
+    end
+  end
+
+  test "normalize_stop! rejects unknown labels" do
+    assert_raise ArgumentError, ~r/invalid tonal stop/, fn ->
+      PaletteGen.normalize_stop!(123)
+    end
+  end
+
+  test "contrast_fg hits the requested ratio within tolerance" do
+    {hex, achieved} = PaletteGen.contrast_fg("#32479C", "#F0F0F0", 7.0)
+    assert is_binary(hex)
+    assert achieved >= 6.9
+  end
+
+  test "semantic ink meets configured contrast against its fill" do
+    colors = Colors.generate()
+    brand = colors[{:neo, :light}]["brand"]
+    ink = colors[{:neo, :light}]["brand-ink"]
+
+    {:ok, a} = Color.new(brand)
+    {:ok, b} = Color.new(ink)
+    ratio = Color.Contrast.wcag_ratio(a, b)
+    assert ratio >= 6.9
+  end
+
+  test "default ui ink meets configured contrast against ink reference surface" do
+    colors = Colors.generate()
+    ink = colors[{:neo, :light}]["ui-ink"]
+
+    {:ok, ink_c} = Color.new(ink)
+    {:ok, ui_muted} = Color.new(colors[{:neo, :light}]["ui-muted"])
+    ratio = Color.Contrast.wcag_ratio(ink_c, ui_muted)
+    assert ratio >= 7.9
+  end
+end

@@ -5,6 +5,7 @@ defmodule Corex.Design.Theme.Options do
 
   alias Corex.Design.Semantics
   alias Corex.Design.Theme
+  alias Corex.Design.Tokens.PaletteGen
 
   @hex_regex ~r/^#[0-9A-Fa-f]{6}$/
 
@@ -103,7 +104,8 @@ defmodule Corex.Design.Theme.Options do
 
     with {:ok, parsed} <- NimbleOptions.validate(atom_spec, @theme_spec_schema),
          :ok <- validate_seeds_hex(parsed.seeds),
-         :ok <- validate_colors_shape(parsed.colors) do
+         :ok <- validate_colors_shape(parsed.colors),
+         :ok <- validate_color_stops(parsed.colors) do
       {:ok, Theme.normalize_input_spec(parsed)}
     end
   end
@@ -155,6 +157,91 @@ defmodule Corex.Design.Theme.Options do
       :ok
     else
       {:error, "theme colors must include :light and :dark when present"}
+    end
+  end
+
+  defp validate_color_stops(colors) when is_map(colors) do
+    Enum.reduce_while([:light, :dark], :ok, fn mode, :ok ->
+      mode_map = Map.get(colors, mode, %{})
+
+      with :ok <- validate_role_stops(Map.get(mode_map, :surface, %{}), "surface"),
+           :ok <- validate_semantic_stops(Map.get(mode_map, :semantic, %{})) do
+        {:cont, :ok}
+      else
+        {:error, _} = err -> {:halt, err}
+      end
+    end)
+  end
+
+  defp validate_role_stops(roles, label) do
+    Enum.reduce_while(roles, :ok, fn {role, cfg}, :ok ->
+      case validate_fill_cfg(role, cfg, label) do
+        :ok -> {:cont, :ok}
+        {:error, _} = err -> {:halt, err}
+      end
+    end)
+  end
+
+  defp validate_semantic_stops(semantic) do
+    Enum.reduce_while(semantic, :ok, fn {role, cfg}, :ok ->
+      case validate_fill_cfg(role, cfg, "semantic") do
+        :ok -> {:cont, :ok}
+        {:error, _} = err -> {:halt, err}
+      end
+    end)
+  end
+
+  defp validate_fill_cfg(role, cfg, label) do
+    stop = Map.get(cfg, :stop)
+    states = Map.get(cfg, :states)
+
+    cond do
+      is_map(states) ->
+        validate_states(role, states, label)
+
+      is_integer(stop) ->
+        validate_stop(role, stop, label)
+
+      is_nil(stop) and is_nil(states) ->
+        :ok
+
+      true ->
+        {:error, "themes colors #{label} #{inspect(role)} requires :stop or :states"}
+    end
+  end
+
+  defp validate_states(role, states, label) do
+    allowed = MapSet.new(PaletteGen.state_names())
+
+    Enum.reduce_while(states, :ok, fn {state, stop}, :ok ->
+      state_str = if is_atom(state), do: Atom.to_string(state), else: to_string(state)
+
+      cond do
+        not MapSet.member?(allowed, state_str) ->
+          {:halt,
+           {:error,
+            "themes colors #{label} #{inspect(role)} state #{inspect(state)} must be one of #{inspect(PaletteGen.state_names())}"}}
+
+        not is_integer(stop) ->
+          {:halt,
+           {:error,
+            "themes colors #{label} #{inspect(role)} state #{inspect(state)} stop must be an integer"}}
+
+        true ->
+          case validate_stop(role, stop, label) do
+            :ok -> {:cont, :ok}
+            err -> {:halt, err}
+          end
+      end
+    end)
+  end
+
+  defp validate_stop(role, stop, label) do
+    if stop in PaletteGen.tonal_stops() do
+      :ok
+    else
+      {:error,
+       "themes colors #{label} #{inspect(role)} stop #{inspect(stop)} must be one of #{inspect(PaletteGen.tonal_stops())}"}
     end
   end
 
@@ -248,9 +335,22 @@ defmodule Corex.Design.Theme.Options do
 
   @doc false
   def validate_resolved!(resolved) when is_map(resolved) do
-    case validate_semantic_roles(resolved) do
-      :ok -> :ok
+    with :ok <- validate_semantic_roles(resolved),
+         :ok <- validate_resolved_stops(resolved) do
+      :ok
+    else
       {:error, message} -> raise ArgumentError, message
     end
+  end
+
+  defp validate_resolved_stops(resolved) do
+    Enum.reduce_while(resolved, :ok, fn {_id, spec}, :ok ->
+      colors = Map.get(spec, :colors, %{})
+
+      case validate_color_stops(colors) do
+        :ok -> {:cont, :ok}
+        {:error, _} = err -> {:halt, err}
+      end
+    end)
   end
 end
