@@ -201,6 +201,7 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
     if (!this.menu) return;
 
     syncMenuPropsFromDom(this.menu);
+    this.menu.render();
 
     if (this.menu.children.length > 0) {
       wireSubmenuTriggersDeep(this.menu);

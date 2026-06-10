@@ -80,7 +80,6 @@ defmodule Corex.Menu.Anatomy do
       "aria-haspopup",
       "aria-disabled",
       "data-disabled",
-      "disabled",
       "dir",
       "data-orientation",
       "data-state",
