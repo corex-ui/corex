@@ -41,7 +41,7 @@ end
   <.native_input field={@form[:email]} type="email" class="native-input">
     <:label>Email</:label>
   </.native_input>
-  <.action type="submit" class="button button--accent">Save</.action>
+  <.action type="submit" class="button button--semantic-accent">Save</.action>
 </.form>
 ```
 

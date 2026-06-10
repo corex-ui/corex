@@ -1,17 +1,22 @@
 defmodule E2eWeb.ActionStyleLive do
   use E2eWeb, :live_view
 
-  import E2eWeb.DemoPage,
-    only: [demo_page: 1, demo_section: 1, demo_style_matrix: 1]
+  import E2eWeb.DemoPage, only: [demo_page: 1]
 
-  alias E2eWeb.Demos.ActionDemo
+  alias E2eWeb.ComponentStyleConfig
+  alias E2eWeb.ComponentStyleMatrix
+
+  @component :action
 
   @impl true
   def handle_event("control_changed", %{"checked" => raw, "id" => id}, socket) do
     checked = raw == true or raw == "true"
 
-    send_update(E2eWeb.ActionStylePlayground,
-      id: "action-style-playground",
+    config = ComponentStyleConfig.get(@component)
+
+    send_update(config.playground_module,
+      id: "#{config.slug}-style-playground",
+      component: @component,
       control_changed: %{id: id, value: checked}
     )
 
@@ -26,8 +31,11 @@ defmodule E2eWeb.ActionStyleLive do
         [] -> nil
       end
 
-    send_update(E2eWeb.ActionStylePlayground,
-      id: "action-style-playground",
+    config = ComponentStyleConfig.get(@component)
+
+    send_update(config.playground_module,
+      id: "#{config.slug}-style-playground",
+      component: @component,
       control_changed: %{id: id, value: normalized}
     )
 
@@ -36,86 +44,18 @@ defmodule E2eWeb.ActionStyleLive do
 
   @impl true
   def render(assigns) do
+    config = ComponentStyleConfig.get(@component)
+    assigns = assign(assigns, :config, config)
+
     ~H"""
-    <Layouts.app
-      flash={@flash}
-      path={@path}
-      mode={@mode}
-      theme={@theme}
-    >
-      <.demo_page
-        path={@path}
-        id="action-style-page"
-        title="Action · Style"
-      >
-        <.live_component module={E2eWeb.ActionStylePlayground} id="action-style-playground" />
-
-        <.demo_style_matrix id="action-style-matrix">
-          <.demo_section
-            id="action-style-variant-semantic"
-            title="Variant × semantic"
-            values={ActionDemo.styling_variant_semantic_values()}
-            code={ActionDemo.styling_variant_semantic_code()}
-          >
-            <:preview>
-              <ActionDemo.styling_variant_semantic_example />
-            </:preview>
-          </.demo_section>
-
-          <.demo_section
-            id="action-style-size"
-            title="Size"
-            values={ActionDemo.styling_axis_values(:size)}
-            code={ActionDemo.styling_size_code()}
-          >
-            <:preview>
-              <ActionDemo.styling_size_example />
-            </:preview>
-          </.demo_section>
-
-          <.demo_section
-            id="action-style-rounded"
-            title="Rounded"
-            values={ActionDemo.styling_axis_values(:radius)}
-            code={ActionDemo.styling_radius_code()}
-          >
-            <:preview>
-              <ActionDemo.styling_radius_example />
-            </:preview>
-          </.demo_section>
-
-          <.demo_section
-            id="action-style-shape"
-            title="Shape"
-            values={ActionDemo.styling_axis_values(:shape)}
-            code={ActionDemo.styling_shape_code()}
-          >
-            <:preview>
-              <ActionDemo.styling_shape_example />
-            </:preview>
-          </.demo_section>
-
-          <.demo_section
-            id="action-style-disabled"
-            title="Disabled"
-            code={ActionDemo.styling_disabled_code()}
-          >
-            <:preview>
-              <ActionDemo.styling_disabled_example />
-            </:preview>
-          </.demo_section>
-
-          <.demo_section
-            id="action-style-link"
-            title="Link look"
-            values={ActionDemo.styling_link_values()}
-            code={ActionDemo.styling_link_code()}
-          >
-            <:preview>
-              <ActionDemo.styling_link_example />
-            </:preview>
-          </.demo_section>
-        </.demo_style_matrix>
+    <Layouts.app flash={@flash} path={@path} mode={@mode} theme={@theme}>
+      <.demo_page path={@path} id={@config.page_id} title={@config.title}>
+        <.live_component
+          module={@config.playground_module}
+          id={"#{@config.slug}-style-playground"}
+          component={@component}
+        />
+        <ComponentStyleMatrix.style_matrix component={@component} />
       </.demo_page>
     </Layouts.app>
     """

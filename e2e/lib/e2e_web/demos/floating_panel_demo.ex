@@ -8,7 +8,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
   def anatomy_basic_code do
     ~S"""
     <.floating_panel >
-      <:trigger class="button button--ghost button--sm">
+      <:trigger class="button button--variant-ghost button--size-sm">
         <span data-closed>Open panel</span>
         <span data-open>Close panel</span>
       </:trigger>
@@ -333,7 +333,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         
         positioning={%Corex.Positioning{placement: "top-start", gutter: 20, flip: true}}
       >
-        <:trigger class="button button--ghost button--sm">
+        <:trigger class="button button--variant-ghost button--size-sm">
           <span data-closed>Open anchored panel</span>
           <span data-open>Close anchored panel</span>
         </:trigger>
@@ -359,7 +359,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         id="floating-panel-anatomy-positioning"
         positioning={%Corex.Positioning{placement: "top-start", gutter: 20, flip: true}}
       >
-        <:trigger class="button button--ghost button--sm">
+        <:trigger class="button button--variant-ghost button--size-sm">
           <span data-closed>Open anchored panel</span>
           <span data-open>Close anchored panel</span>
         </:trigger>
@@ -386,7 +386,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
       size={%{width: 380, height: 220}}
       min_size={%{width: 280, height: 160}}
     >
-      <:trigger class="button button--ghost button--sm">
+      <:trigger class="button button--variant-ghost button--size-sm">
         <span data-closed>Open sized panel</span>
         <span data-open>Close sized panel</span>
       </:trigger>
@@ -411,7 +411,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
       size={%{width: 380, height: 220}}
       min_size={%{width: 280, height: 160}}
     >
-      <:trigger class="button button--ghost button--sm">
+      <:trigger class="button button--variant-ghost button--size-sm">
         <span data-closed>Open sized panel</span>
         <span data-open>Close sized panel</span>
       </:trigger>
@@ -579,7 +579,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
 
   defp fp_styling_panel_slots do
     ~S"""
-      <:trigger class="button button--ghost button--sm">
+      <:trigger class="button button--variant-ghost button--size-sm">
         <span data-closed>Open panel</span>
         <span data-open>Close panel</span>
       </:trigger>
@@ -636,7 +636,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     ~H"""
     <div class="flex flex-wrap gap-4 items-start w-full max-w-4xl">
       <.floating_panel id="floating-panel-style-color-default">
-        <:trigger class="button button--ghost button--sm">
+        <:trigger class="button button--variant-ghost button--size-sm">
           <span data-closed>Open (default)</span>
           <span data-open>Close panel</span>
         </:trigger>
@@ -661,7 +661,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         </:content>
       </.floating_panel>
       <.floating_panel id="floating-panel-style-color-accent" semantic="accent">
-        <:trigger class="button button--ghost button--sm">
+        <:trigger class="button button--variant-ghost button--size-sm">
           <span data-closed>Open (accent)</span>
           <span data-open>Close panel</span>
         </:trigger>
@@ -686,7 +686,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         </:content>
       </.floating_panel>
       <.floating_panel id="floating-panel-style-color-brand" semantic="brand">
-        <:trigger class="button button--ghost button--sm">
+        <:trigger class="button button--variant-ghost button--size-sm">
           <span data-closed>Open (brand)</span>
           <span data-open>Close panel</span>
         </:trigger>
@@ -711,7 +711,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         </:content>
       </.floating_panel>
       <.floating_panel id="floating-panel-style-color-alert" semantic="alert">
-        <:trigger class="button button--ghost button--sm">
+        <:trigger class="button button--variant-ghost button--size-sm">
           <span data-closed>Open (alert)</span>
           <span data-open>Close panel</span>
         </:trigger>
@@ -736,7 +736,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         </:content>
       </.floating_panel>
       <.floating_panel id="floating-panel-style-color-info" semantic="info">
-        <:trigger class="button button--ghost button--sm">
+        <:trigger class="button button--variant-ghost button--size-sm">
           <span data-closed>Open (info)</span>
           <span data-open>Close panel</span>
         </:trigger>
@@ -761,7 +761,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         </:content>
       </.floating_panel>
       <.floating_panel id="floating-panel-style-color-success" semantic="success">
-        <:trigger class="button button--ghost button--sm">
+        <:trigger class="button button--variant-ghost button--size-sm">
           <span data-closed>Open (success)</span>
           <span data-open>Close panel</span>
         </:trigger>
@@ -820,7 +820,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     ~H"""
     <div class="flex flex-col gap-4 items-start w-full max-w-2xl">
       <.floating_panel id="floating-panel-style-radius-none" radius="none">
-        <:trigger class="button button--ghost button--sm">
+        <:trigger class="button button--variant-ghost button--size-sm">
           <span data-closed>Open (rounded-none)</span>
           <span data-open>Close panel</span>
         </:trigger>
@@ -845,7 +845,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         </:content>
       </.floating_panel>
       <.floating_panel id="floating-panel-style-radius-sm" radius="sm">
-        <:trigger class="button button--ghost button--sm">
+        <:trigger class="button button--variant-ghost button--size-sm">
           <span data-closed>Open (rounded-sm)</span>
           <span data-open>Close panel</span>
         </:trigger>
@@ -870,7 +870,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         </:content>
       </.floating_panel>
       <.floating_panel id="floating-panel-style-radius-md" radius="md">
-        <:trigger class="button button--ghost button--sm">
+        <:trigger class="button button--variant-ghost button--size-sm">
           <span data-closed>Open (rounded-md)</span>
           <span data-open>Close panel</span>
         </:trigger>
@@ -895,7 +895,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         </:content>
       </.floating_panel>
       <.floating_panel id="floating-panel-style-radius-lg" radius="lg">
-        <:trigger class="button button--ghost button--sm">
+        <:trigger class="button button--variant-ghost button--size-sm">
           <span data-closed>Open (rounded-lg)</span>
           <span data-open>Close panel</span>
         </:trigger>
@@ -920,7 +920,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         </:content>
       </.floating_panel>
       <.floating_panel id="floating-panel-style-radius-xl" radius="xl">
-        <:trigger class="button button--ghost button--sm">
+        <:trigger class="button button--variant-ghost button--size-sm">
           <span data-closed>Open (rounded-xl)</span>
           <span data-open>Close panel</span>
         </:trigger>
@@ -945,7 +945,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         </:content>
       </.floating_panel>
       <.floating_panel id="floating-panel-style-radius-full" radius="full">
-        <:trigger class="button button--ghost button--sm">
+        <:trigger class="button button--variant-ghost button--size-sm">
           <span data-closed>Open (rounded-full)</span>
           <span data-open>Close panel</span>
         </:trigger>
@@ -999,4 +999,8 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     </.floating_panel>
     """
   end
+
+  def style_preview(assigns), do: E2eWeb.Demos.StylePreview.preview(:floating_panel, assigns)
+  def style_playground(assigns), do: style_preview(assigns)
+
 end

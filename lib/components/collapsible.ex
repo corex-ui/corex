@@ -74,7 +74,7 @@ defmodule Corex.Collapsible do
   ### With classes
 
   ```heex
-  <.collapsible class="collapsible collapsible--accent collapsible--md">
+  <.collapsible class="collapsible collapsible--semantic-accent collapsible--size-md">
     <:trigger>Toggle</:trigger>
     <:content>Lorem ipsum dolor sit amet.</:content>
   </.collapsible>
@@ -96,7 +96,7 @@ defmodule Corex.Collapsible do
   ### set_open
 
   ```heex
-  <.action phx-click={Corex.Collapsible.set_open("collapsible-api", true)} class="button button--sm">
+  <.action phx-click={Corex.Collapsible.set_open("collapsible-api", true)} class="button button--size-sm">
     Open
   </.action>
   <.collapsible id="collapsible-api" class="collapsible">
@@ -249,17 +249,17 @@ defmodule Corex.Collapsible do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Default | `collapsible collapsible--md` |
-  | Accent | `collapsible collapsible--md collapsible--accent` |
-  | Brand | `collapsible collapsible--md collapsible--brand` |
+  | Default | `collapsible collapsible--size-md` |
+  | Accent | `collapsible collapsible--size-md collapsible--semantic-accent` |
+  | Brand | `collapsible collapsible--size-md collapsible--semantic-brand` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `collapsible collapsible--sm` |
-  | MD | `collapsible collapsible--md` |
-  | LG | `collapsible collapsible--lg` |
+  | SM | `collapsible collapsible--size-sm` |
+  | MD | `collapsible collapsible--size-md` |
+  | LG | `collapsible collapsible--size-lg` |
 
   <!-- tabs-close -->
   '''
@@ -490,7 +490,7 @@ defmodule Corex.Collapsible do
 
   ```heex
   <.action phx-click={Corex.Collapsible.set_open("my-collapsible", true)}>Expand</.action>
-  <.collapsible id="my-collapsible" class="collapsible collapsible--md">
+  <.collapsible id="my-collapsible" class="collapsible collapsible--size-md">
     <:trigger :let={c}>{if c.open, do: "Hide", else: "Show"}</:trigger>
     <:content>Details.</:content>
   </.collapsible>
@@ -515,7 +515,7 @@ defmodule Corex.Collapsible do
 
   ```heex
   <.action phx-click="expand_collapsible">Expand</.action>
-  <.collapsible id="my-collapsible" class="collapsible collapsible--md">
+  <.collapsible id="my-collapsible" class="collapsible collapsible--size-md">
     <:trigger :let={c}>{if c.open, do: "Hide", else: "Show"}</:trigger>
     <:content>Details.</:content>
   </.collapsible>

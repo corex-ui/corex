@@ -7,7 +7,7 @@ Corex ships **no CSS**. Accessibility, state machines, and component anatomy com
 ## The styling contract
 
 1. **Style attributes** (`semantic`, `size`, `radius`, …) express design intent. They are not inline styles and they do not load CSS.
-2. Corex **translates** those attrs into BEM classes on the host: `accordion`, `accordion--accent`, `accordion--lg`.
+2. Corex **translates** those attrs into BEM classes on the host: `accordion`, `accordion--semantic-accent`, `accordion--size-lg`.
 3. **Your stylesheet** defines what those classes look like.
 
 ```heex
@@ -15,10 +15,10 @@ Corex ships **no CSS**. Accessibility, state machines, and component anatomy com
 ```
 
 ```html
-<div class="accordion accordion--accent accordion--lg" data-scope="accordion" …>
+<div class="accordion accordion--semantic-accent accordion--size-lg" data-scope="accordion" …>
 ```
 
-Write rules for `.accordion--accent` in your CSS. The attrs and classes are hooks; your stylesheet is the paint.
+Write rules for `.accordion--semantic-accent` in your CSS. The attrs and classes are hooks; your stylesheet is the paint.
 
 Want ready-made rules instead? Skip authoring CSS and use [Corex Design](styled.html).
 
@@ -32,7 +32,7 @@ Both paths are equivalent:
 
 ```heex
 <.accordion semantic="accent" size="md" class="accordion" … />
-<.accordion class="accordion accordion--accent accordion--md" … />
+<.accordion class="accordion accordion--semantic-accent accordion--size-md" … />
 ```
 
 Attributes keep templates readable. Classes help when you build `class` dynamically or copy examples from docs.
@@ -51,14 +51,14 @@ You can also style inner parts with `data-scope` and `data-part` selectors (list
 
 | Component attr | BEM modifier on host |
 | --- | --- |
-| `semantic="accent"` | `accordion--accent` |
-| `size="md"` | `accordion--md` |
+| `semantic="accent"` | `accordion--semantic-accent` |
+| `size="md"` | `accordion--size-md` |
 | `text="lg"` | `accordion--text-lg` |
 | `radius="md"` | `accordion--rounded-md` |
 | `width="full"` | `accordion--w-full` |
 | `max_width="md"` | `accordion--max-w-md` |
 
-Always include the block class: `class="accordion accordion--accent"`, not `class="accordion--accent"` alone.
+Always include the block class: `class="accordion accordion--semantic-accent"`, not `class="accordion--semantic-accent"` alone.
 
 Layout components (`row`, `stack`, `box`, …) follow the same pattern: `gap="md"` with `class="row"`, or `class="row row--gap-md"`.
 

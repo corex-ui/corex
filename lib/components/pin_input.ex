@@ -29,7 +29,7 @@ defmodule Corex.PinInput do
   ### With classes
 
   ```heex
-  <.pin_input count={4} class="pin-input pin-input--accent pin-input--md">
+  <.pin_input count={4} class="pin-input pin-input--semantic-accent pin-input--size-md">
     <:label>Code</:label>
   </.pin_input>
   ```
@@ -120,20 +120,20 @@ defmodule Corex.PinInput do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `pin-input` |
-  | Accent | `pin-input pin-input--accent` |
-  | Brand | `pin-input pin-input--brand` |
-  | Alert | `pin-input pin-input--alert` |
-  | Info | `pin-input pin-input--info` |
-  | Success | `pin-input pin-input--success` |
+  | Accent | `pin-input pin-input--semantic-accent` |
+  | Brand | `pin-input pin-input--semantic-brand` |
+  | Alert | `pin-input pin-input--semantic-alert` |
+  | Info | `pin-input pin-input--semantic-info` |
+  | Success | `pin-input pin-input--semantic-success` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `pin-input pin-input--sm` |
-  | MD | `pin-input pin-input--md` |
-  | LG | `pin-input pin-input--lg` |
-  | XL | `pin-input pin-input--xl` |
+  | SM | `pin-input pin-input--size-sm` |
+  | MD | `pin-input pin-input--size-md` |
+  | LG | `pin-input pin-input--size-lg` |
+  | XL | `pin-input pin-input--size-xl` |
 
   ### Radius
 

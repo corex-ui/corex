@@ -279,19 +279,19 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
 
     """
-    <.combobox class="combobox combobox--sm" placeholder="SM" #{items_attr}>
+    <.combobox class="combobox combobox--size-sm" placeholder="SM" #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.combobox>
-    <.combobox class="combobox combobox--md" placeholder="MD" #{items_attr}>
+    <.combobox class="combobox combobox--size-md" placeholder="MD" #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.combobox>
-    <.combobox class="combobox combobox--lg" placeholder="LG" #{items_attr}>
+    <.combobox class="combobox combobox--size-lg" placeholder="LG" #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.combobox>
-    <.combobox class="combobox combobox--xl" placeholder="XL" #{items_attr}>
+    <.combobox class="combobox combobox--size-xl" placeholder="XL" #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.combobox>
@@ -303,7 +303,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
     <div class="flex flex-col gap-4 w-full max-w-md">
       <.combobox
         id="combobox-style-sm"
-        class="combobox combobox--sm"
+        class="combobox combobox--size-sm"
         placeholder="SM"
         items={Corex.List.new(items_minimal())}
       >
@@ -312,7 +312,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       </.combobox>
       <.combobox
         id="combobox-style-md"
-        class="combobox combobox--md"
+        class="combobox combobox--size-md"
         placeholder="MD"
         items={Corex.List.new(items_minimal())}
       >
@@ -321,7 +321,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       </.combobox>
       <.combobox
         id="combobox-style-lg"
-        class="combobox combobox--lg"
+        class="combobox combobox--size-lg"
         placeholder="LG"
         items={Corex.List.new(items_minimal())}
       >
@@ -330,7 +330,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       </.combobox>
       <.combobox
         id="combobox-style-xl"
-        class="combobox combobox--xl"
+        class="combobox combobox--size-xl"
         placeholder="XL"
         items={Corex.List.new(items_minimal())}
       >
@@ -1012,23 +1012,23 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.combobox>
-    <.combobox class="combobox combobox--accent" placeholder="Accent" #{items_attr}>
+    <.combobox class="combobox combobox--semantic-accent" placeholder="Accent" #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.combobox>
-    <.combobox class="combobox combobox--brand" placeholder="Brand" #{items_attr}>
+    <.combobox class="combobox combobox--semantic-brand" placeholder="Brand" #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.combobox>
-    <.combobox class="combobox combobox--alert" placeholder="Alert" #{items_attr}>
+    <.combobox class="combobox combobox--semantic-alert" placeholder="Alert" #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.combobox>
-    <.combobox class="combobox combobox--info" placeholder="Info" #{items_attr}>
+    <.combobox class="combobox combobox--semantic-info" placeholder="Info" #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.combobox>
-    <.combobox class="combobox combobox--success" placeholder="Success" #{items_attr}>
+    <.combobox class="combobox combobox--semantic-success" placeholder="Success" #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.combobox>
@@ -1048,7 +1048,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       </.combobox>
       <.combobox
         id="combobox-style-color-accent"
-        class="combobox combobox--accent"
+        class="combobox combobox--semantic-accent"
         placeholder="Accent"
         items={Corex.List.new(items_minimal())}
       >
@@ -1057,7 +1057,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       </.combobox>
       <.combobox
         id="combobox-style-color-brand"
-        class="combobox combobox--brand"
+        class="combobox combobox--semantic-brand"
         placeholder="Brand"
         items={Corex.List.new(items_minimal())}
       >
@@ -1066,7 +1066,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       </.combobox>
       <.combobox
         id="combobox-style-color-alert"
-        class="combobox combobox--alert"
+        class="combobox combobox--semantic-alert"
         placeholder="Alert"
         items={Corex.List.new(items_minimal())}
       >
@@ -1075,7 +1075,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       </.combobox>
       <.combobox
         id="combobox-style-color-info"
-        class="combobox combobox--info"
+        class="combobox combobox--semantic-info"
         placeholder="Info"
         items={Corex.List.new(items_minimal())}
       >
@@ -1084,7 +1084,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       </.combobox>
       <.combobox
         id="combobox-style-color-success"
-        class="combobox combobox--success"
+        class="combobox combobox--semantic-success"
         placeholder="Success"
         items={Corex.List.new(items_minimal())}
       >
@@ -1335,4 +1335,8 @@ defmodule E2eWeb.Demos.ComboboxDemo do
     end
     """
   end
+
+  def style_preview(assigns), do: E2eWeb.Demos.StylePreview.preview(:combobox, assigns)
+  def style_playground(assigns), do: style_preview(assigns)
+
 end

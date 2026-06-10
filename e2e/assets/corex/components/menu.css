@@ -115,7 +115,7 @@
   }
 
   .menu [data-scope="menu"][data-part="content"] [data-part="item-text"] > .icon,
-  .menu [data-scope="menu"][data-part="content"] [data-part="item-text"] > [class^="hero-"] {
+  .menu [data-scope="menu"][data-part="content"] [data-part="item-text"] > [data-icon] {
     margin-inline-start: auto;
     flex-shrink: 0;
   }
@@ -133,9 +133,9 @@
     margin-inline-start: auto;
   }
 
-  .menu [data-scope="menu"][data-part="indicator"] [class^="hero-"],
+  .menu [data-scope="menu"][data-part="indicator"] [data-icon],
   .menu [data-scope="menu"][data-part="content"] [data-part="item-indicator"],
-  .menu [data-scope="menu"][data-part="content"] [data-part="item-indicator"] [class^="hero-"] {
+  .menu [data-scope="menu"][data-part="content"] [data-part="item-indicator"] [data-icon] {
     transition: none !important;
   }
 
@@ -151,32 +151,32 @@
     transform: none !important;
   }
 
-  .menu [data-scope="menu"][data-part="content"] [data-part="item-indicator"] [class^="hero-"],
-  .menu [data-scope="menu"][data-part="content"] [data-part="item"] > [data-part="item-indicator"] [class^="hero-"],
+  .menu [data-scope="menu"][data-part="content"] [data-part="item-indicator"] [data-icon],
+  .menu [data-scope="menu"][data-part="content"] [data-part="item"] > [data-part="item-indicator"] [data-icon],
   .menu
     [data-scope="menu"][data-part="content"]
     [data-part="trigger-item"]
     > [data-part="item-indicator"]
-    [class^="hero-"] {
+    [data-icon] {
     transform: none !important;
     transition: none !important;
   }
 
-  .menu [data-scope="menu"][data-part="content"][dir="rtl"] [data-part="item-indicator"] [class^="hero-"],
+  .menu [data-scope="menu"][data-part="content"][dir="rtl"] [data-part="item-indicator"] [data-icon],
   .menu
     [data-scope="menu"][data-part="content"]
     [data-part="item"][dir="rtl"]
     > [data-part="item-indicator"]
-    [class^="hero-"],
+    [data-icon],
   .menu
     [data-scope="menu"][data-part="content"]
     [data-part="trigger-item"][dir="rtl"]
     > [data-part="item-indicator"]
-    [class^="hero-"],
+    [data-icon],
   .menu
     [data-scope="menu"][data-part="content"]
     [data-part="item-indicator"][dir="rtl"]
-    [class^="hero-"] {
+    [data-icon] {
     transform: scaleX(-1) !important;
   }
 

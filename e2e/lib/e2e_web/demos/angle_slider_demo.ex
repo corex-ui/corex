@@ -137,35 +137,35 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         <:label>Default</:label>
       </.angle_slider>
       <.angle_slider
-        class="angle-slider angle-slider--accent"
+        class="angle-slider angle-slider--semantic-accent"
         value={90.0}
         marker_values={marker_values()}
       >
         <:label>Accent</:label>
       </.angle_slider>
       <.angle_slider
-        class="angle-slider angle-slider--brand"
+        class="angle-slider angle-slider--semantic-brand"
         value={90.0}
         marker_values={marker_values()}
       >
         <:label>Brand</:label>
       </.angle_slider>
       <.angle_slider
-        class="angle-slider angle-slider--alert"
+        class="angle-slider angle-slider--semantic-alert"
         value={90.0}
         marker_values={marker_values()}
       >
         <:label>Alert</:label>
       </.angle_slider>
       <.angle_slider
-        class="angle-slider angle-slider--info"
+        class="angle-slider angle-slider--semantic-info"
         value={90.0}
         marker_values={marker_values()}
       >
         <:label>Info</:label>
       </.angle_slider>
       <.angle_slider
-        class="angle-slider angle-slider--success"
+        class="angle-slider angle-slider--semantic-success"
         value={90.0}
         marker_values={marker_values()}
       >
@@ -181,28 +181,28 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     ~H"""
     <div class="flex flex-wrap gap-4">
       <.angle_slider
-        class="angle-slider angle-slider--sm"
+        class="angle-slider angle-slider--size-sm"
         value={90.0}
         marker_values={marker_values()}
       >
         <:label>SM</:label>
       </.angle_slider>
       <.angle_slider
-        class="angle-slider angle-slider--md"
+        class="angle-slider angle-slider--size-md"
         value={90.0}
         marker_values={marker_values()}
       >
         <:label>MD</:label>
       </.angle_slider>
       <.angle_slider
-        class="angle-slider angle-slider--lg"
+        class="angle-slider angle-slider--size-lg"
         value={90.0}
         marker_values={marker_values()}
       >
         <:label>LG</:label>
       </.angle_slider>
       <.angle_slider
-        class="angle-slider angle-slider--xl"
+        class="angle-slider angle-slider--size-xl"
         value={90.0}
         marker_values={marker_values()}
       >
@@ -246,19 +246,19 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     <.angle_slider  value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
       <:label>Default</:label>
     </.angle_slider>
-    <.angle_slider class="angle-slider angle-slider--accent" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
+    <.angle_slider class="angle-slider angle-slider--semantic-accent" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
       <:label>Accent</:label>
     </.angle_slider>
-    <.angle_slider class="angle-slider angle-slider--brand" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
+    <.angle_slider class="angle-slider angle-slider--semantic-brand" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
       <:label>Brand</:label>
     </.angle_slider>
-    <.angle_slider class="angle-slider angle-slider--alert" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
+    <.angle_slider class="angle-slider angle-slider--semantic-alert" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
       <:label>Alert</:label>
     </.angle_slider>
-    <.angle_slider class="angle-slider angle-slider--info" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
+    <.angle_slider class="angle-slider angle-slider--semantic-info" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
       <:label>Info</:label>
     </.angle_slider>
-    <.angle_slider class="angle-slider angle-slider--success" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
+    <.angle_slider class="angle-slider angle-slider--semantic-success" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
       <:label>Success</:label>
     </.angle_slider>
     """
@@ -268,16 +268,16 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
 
   def styling_size_code do
     ~S"""
-    <.angle_slider class="angle-slider angle-slider--sm" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
+    <.angle_slider class="angle-slider angle-slider--size-sm" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
       <:label>SM</:label>
     </.angle_slider>
-    <.angle_slider class="angle-slider angle-slider--md" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
+    <.angle_slider class="angle-slider angle-slider--size-md" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
       <:label>MD</:label>
     </.angle_slider>
-    <.angle_slider class="angle-slider angle-slider--lg" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
+    <.angle_slider class="angle-slider angle-slider--size-lg" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
       <:label>LG</:label>
     </.angle_slider>
-    <.angle_slider class="angle-slider angle-slider--xl" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
+    <.angle_slider class="angle-slider angle-slider--size-xl" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
       <:label>XL</:label>
     </.angle_slider>
     """
@@ -1413,4 +1413,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     end
     """
   end
+
+  def style_preview(assigns), do: E2eWeb.Demos.StylePreview.preview(:angle_slider, assigns)
+  def style_playground(assigns), do: style_preview(assigns)
+
 end

@@ -972,22 +972,22 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     <.tags_input class="tags-input w-full" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--muted" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full tags-input--semantic-muted" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--accent" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full tags-input--semantic-accent" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--brand" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full tags-input--semantic-brand" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--alert" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full tags-input--semantic-alert" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--success" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full tags-input--semantic-success" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--info" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full tags-input--semantic-info" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
     """
@@ -1003,42 +1003,42 @@ defmodule E2eWeb.Demos.TagsInputDemo do
       </.tags_input>
       <.tags_input
         id="tags-style-color-muted"
-        class="tags-input w-full tags-input--muted"
+        class="tags-input w-full tags-input--semantic-muted"
         value={@demo_tags}
       >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
       <.tags_input
         id="tags-style-color-accent"
-        class="tags-input w-full tags-input--accent"
+        class="tags-input w-full tags-input--semantic-accent"
         value={@demo_tags}
       >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
       <.tags_input
         id="tags-style-color-brand"
-        class="tags-input w-full tags-input--brand"
+        class="tags-input w-full tags-input--semantic-brand"
         value={@demo_tags}
       >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
       <.tags_input
         id="tags-style-color-alert"
-        class="tags-input w-full tags-input--alert"
+        class="tags-input w-full tags-input--semantic-alert"
         value={@demo_tags}
       >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
       <.tags_input
         id="tags-style-color-success"
-        class="tags-input w-full tags-input--success"
+        class="tags-input w-full tags-input--semantic-success"
         value={@demo_tags}
       >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
       <.tags_input
         id="tags-style-color-info"
-        class="tags-input w-full tags-input--info"
+        class="tags-input w-full tags-input--semantic-info"
         value={@demo_tags}
       >
         <:close><.heroicon name="hero-x-mark" /></:close>
@@ -1113,16 +1113,16 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def styling_size_heex do
     ~S"""
-    <.tags_input class="tags-input w-full tags-input--sm" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full tags-input--size-sm" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--md" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full tags-input--size-md" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--lg" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full tags-input--size-lg" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--xl" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full tags-input--size-xl" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
     """
@@ -1133,16 +1133,16 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
     ~H"""
     <div class="flex flex-col gap-space-lg w-full items-center">
-      <.tags_input id="tags-style-size-sm" class="tags-input w-full tags-input--sm" value={@demo_tags}>
+      <.tags_input id="tags-style-size-sm" class="tags-input w-full tags-input--size-sm" value={@demo_tags}>
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
-      <.tags_input id="tags-style-size-md" class="tags-input w-full tags-input--md" value={@demo_tags}>
+      <.tags_input id="tags-style-size-md" class="tags-input w-full tags-input--size-md" value={@demo_tags}>
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
-      <.tags_input id="tags-style-size-lg" class="tags-input w-full tags-input--lg" value={@demo_tags}>
+      <.tags_input id="tags-style-size-lg" class="tags-input w-full tags-input--size-lg" value={@demo_tags}>
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
-      <.tags_input id="tags-style-size-xl" class="tags-input w-full tags-input--xl" value={@demo_tags}>
+      <.tags_input id="tags-style-size-xl" class="tags-input w-full tags-input--size-xl" value={@demo_tags}>
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
     </div>
@@ -1479,4 +1479,8 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     end
     """
   end
+
+  def style_preview(assigns), do: E2eWeb.Demos.StylePreview.preview(:tags_input, assigns)
+  def style_playground(assigns), do: style_preview(assigns)
+
 end

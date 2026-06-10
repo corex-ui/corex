@@ -528,29 +528,29 @@ defmodule E2eWeb.Demos.TooltipDemo do
         <:trigger>Default</:trigger>
         <:content>Neutral surface</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--accent">
+      <.tooltip class="tooltip tooltip--semantic-accent">
         <:trigger>Accent</:trigger>
-        <:content>tooltip--accent</:content>
+        <:content>tooltip--semantic-accent</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--brand">
+      <.tooltip class="tooltip tooltip--semantic-brand">
         <:trigger>Brand</:trigger>
-        <:content>tooltip--brand</:content>
+        <:content>tooltip--semantic-brand</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--alert">
+      <.tooltip class="tooltip tooltip--semantic-alert">
         <:trigger>Alert</:trigger>
-        <:content>tooltip--alert</:content>
+        <:content>tooltip--semantic-alert</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--success">
+      <.tooltip class="tooltip tooltip--semantic-success">
         <:trigger>Success</:trigger>
-        <:content>tooltip--success</:content>
+        <:content>tooltip--semantic-success</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--info">
+      <.tooltip class="tooltip tooltip--semantic-info">
         <:trigger>Info</:trigger>
-        <:content>tooltip--info</:content>
+        <:content>tooltip--semantic-info</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--selected">
+      <.tooltip class="tooltip tooltip--semantic-selected">
         <:trigger>Selected</:trigger>
-        <:content>tooltip--selected</:content>
+        <:content>tooltip--semantic-selected</:content>
       </.tooltip>
     </div>
     """
@@ -565,29 +565,29 @@ defmodule E2eWeb.Demos.TooltipDemo do
         <:trigger>Default</:trigger>
         <:content>Neutral surface</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--accent">
+      <.tooltip class="tooltip tooltip--semantic-accent">
         <:trigger>Accent</:trigger>
-        <:content>tooltip--accent</:content>
+        <:content>tooltip--semantic-accent</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--brand">
+      <.tooltip class="tooltip tooltip--semantic-brand">
         <:trigger>Brand</:trigger>
-        <:content>tooltip--brand</:content>
+        <:content>tooltip--semantic-brand</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--alert">
+      <.tooltip class="tooltip tooltip--semantic-alert">
         <:trigger>Alert</:trigger>
-        <:content>tooltip--alert</:content>
+        <:content>tooltip--semantic-alert</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--success">
+      <.tooltip class="tooltip tooltip--semantic-success">
         <:trigger>Success</:trigger>
-        <:content>tooltip--success</:content>
+        <:content>tooltip--semantic-success</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--info">
+      <.tooltip class="tooltip tooltip--semantic-info">
         <:trigger>Info</:trigger>
-        <:content>tooltip--info</:content>
+        <:content>tooltip--semantic-info</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--selected">
+      <.tooltip class="tooltip tooltip--semantic-selected">
         <:trigger>Selected</:trigger>
-        <:content>tooltip--selected</:content>
+        <:content>tooltip--semantic-selected</:content>
       </.tooltip>
     </div>
     """
@@ -596,21 +596,21 @@ defmodule E2eWeb.Demos.TooltipDemo do
   def styling_size_code do
     ~S"""
     <div class="layout__row flex-wrap gap-2">
-      <.tooltip class="tooltip tooltip--sm">
+      <.tooltip class="tooltip tooltip--size-sm">
         <:trigger>Sm</:trigger>
-        <:content>tooltip--sm</:content>
+        <:content>tooltip--size-sm</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--md">
+      <.tooltip class="tooltip tooltip--size-md">
         <:trigger>Md</:trigger>
-        <:content>tooltip--md</:content>
+        <:content>tooltip--size-md</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--lg">
+      <.tooltip class="tooltip tooltip--size-lg">
         <:trigger>Lg</:trigger>
-        <:content>tooltip--lg</:content>
+        <:content>tooltip--size-lg</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--xl">
+      <.tooltip class="tooltip tooltip--size-xl">
         <:trigger>Xl</:trigger>
-        <:content>tooltip--xl</:content>
+        <:content>tooltip--size-xl</:content>
       </.tooltip>
     </div>
     """
@@ -621,21 +621,21 @@ defmodule E2eWeb.Demos.TooltipDemo do
 
     ~H"""
     <div class="layout__row flex-wrap gap-2">
-      <.tooltip class="tooltip tooltip--sm">
+      <.tooltip class="tooltip tooltip--size-sm">
         <:trigger>Sm</:trigger>
-        <:content>tooltip--sm</:content>
+        <:content>tooltip--size-sm</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--md">
+      <.tooltip class="tooltip tooltip--size-md">
         <:trigger>Md</:trigger>
-        <:content>tooltip--md</:content>
+        <:content>tooltip--size-md</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--lg">
+      <.tooltip class="tooltip tooltip--size-lg">
         <:trigger>Lg</:trigger>
-        <:content>tooltip--lg</:content>
+        <:content>tooltip--size-lg</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--xl">
+      <.tooltip class="tooltip tooltip--size-xl">
         <:trigger>Xl</:trigger>
-        <:content>tooltip--xl</:content>
+        <:content>tooltip--size-xl</:content>
       </.tooltip>
     </div>
     """
@@ -688,4 +688,8 @@ defmodule E2eWeb.Demos.TooltipDemo do
     </div>
     """
   end
+
+  def style_preview(assigns), do: E2eWeb.Demos.StylePreview.preview(:tooltip, assigns)
+  def style_playground(assigns), do: style_preview(assigns)
+
 end

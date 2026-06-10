@@ -53,7 +53,7 @@ defmodule Corex.Tooltip do
   ### With classes
 
   ```heex
-  <.tooltip class="tooltip tooltip--accent tooltip--md">
+  <.tooltip class="tooltip tooltip--semantic-accent tooltip--size-md">
     <:trigger>Hover me</:trigger>
     <:content>Tooltip content</:content>
   </.tooltip>
@@ -153,20 +153,20 @@ defmodule Corex.Tooltip do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `tooltip` |
-  | Accent | `tooltip tooltip--accent` |
-  | Brand | `tooltip tooltip--brand` |
-  | Alert | `tooltip tooltip--alert` |
-  | Info | `tooltip tooltip--info` |
-  | Success | `tooltip tooltip--success` |
+  | Accent | `tooltip tooltip--semantic-accent` |
+  | Brand | `tooltip tooltip--semantic-brand` |
+  | Alert | `tooltip tooltip--semantic-alert` |
+  | Info | `tooltip tooltip--semantic-info` |
+  | Success | `tooltip tooltip--semantic-success` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `tooltip tooltip--sm` |
-  | MD | `tooltip tooltip--md` |
-  | LG | `tooltip tooltip--lg` |
-  | XL | `tooltip tooltip--xl` |
+  | SM | `tooltip tooltip--size-sm` |
+  | MD | `tooltip tooltip--size-md` |
+  | LG | `tooltip tooltip--size-lg` |
+  | XL | `tooltip tooltip--size-xl` |
 
   ### Text
 

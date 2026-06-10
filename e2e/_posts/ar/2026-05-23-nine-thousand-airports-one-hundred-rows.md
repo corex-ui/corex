@@ -35,7 +35,7 @@ sitemap:
 ```heex
 <.combobox
   id="airport-combobox"
-  class="combobox combobox--accent combobox--lg"
+  class="combobox combobox--semantic-accent combobox--size-lg"
   placeholder="Search airports…"
   items={@items}
   filter={false}

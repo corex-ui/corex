@@ -22,6 +22,19 @@
 }
 
 
+@utility avatar--size-* {
+  [data-scope="avatar"][data-part="root"] {
+      max-width: --value(--container-*, [length]);
+  }
+
+  [data-scope="avatar"][data-part="fallback"] {
+      font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+  }
+
+}
+
+
 @layer components {
   .avatar.avatar--w-auto {
     width: auto;
@@ -41,74 +54,6 @@
 
   .avatar.avatar--max-w-full {
     max-width: 100%;
-  }
-
-  .avatar.avatar--max-w-7xs {
-    max-width: var(--container-7xs);
-  }
-
-  .avatar.avatar--max-w-6xs {
-    max-width: var(--container-6xs);
-  }
-
-  .avatar.avatar--max-w-5xs {
-    max-width: var(--container-5xs);
-  }
-
-  .avatar.avatar--max-w-4xs {
-    max-width: var(--container-4xs);
-  }
-
-  .avatar.avatar--max-w-3xs {
-    max-width: var(--container-3xs);
-  }
-
-  .avatar.avatar--max-w-2xs {
-    max-width: var(--container-2xs);
-  }
-
-  .avatar.avatar--max-w-xs {
-    max-width: var(--container-xs);
-  }
-
-  .avatar.avatar--max-w-sm {
-    max-width: var(--container-sm);
-  }
-
-  .avatar.avatar--max-w-md {
-    max-width: var(--container-md);
-  }
-
-  .avatar.avatar--max-w-lg {
-    max-width: var(--container-lg);
-  }
-
-  .avatar.avatar--max-w-xl {
-    max-width: var(--container-xl);
-  }
-
-  .avatar.avatar--max-w-2xl {
-    max-width: var(--container-2xl);
-  }
-
-  .avatar.avatar--max-w-3xl {
-    max-width: var(--container-3xl);
-  }
-
-  .avatar.avatar--max-w-4xl {
-    max-width: var(--container-4xl);
-  }
-
-  .avatar.avatar--max-w-5xl {
-    max-width: var(--container-5xl);
-  }
-
-  .avatar.avatar--max-w-6xl {
-    max-width: var(--container-6xl);
-  }
-
-  .avatar.avatar--max-w-7xl {
-    max-width: var(--container-7xl);
   }
 
   .avatar.avatar--h-auto {
@@ -131,188 +76,12 @@
     max-height: 100%;
   }
 
-  .avatar.avatar--max-h-7xs {
-    max-height: var(--container-7xs);
-  }
-
-  .avatar.avatar--max-h-6xs {
-    max-height: var(--container-6xs);
-  }
-
-  .avatar.avatar--max-h-5xs {
-    max-height: var(--container-5xs);
-  }
-
-  .avatar.avatar--max-h-4xs {
-    max-height: var(--container-4xs);
-  }
-
-  .avatar.avatar--max-h-3xs {
-    max-height: var(--container-3xs);
-  }
-
-  .avatar.avatar--max-h-2xs {
-    max-height: var(--container-2xs);
-  }
-
-  .avatar.avatar--max-h-xs {
-    max-height: var(--container-xs);
-  }
-
-  .avatar.avatar--max-h-sm {
-    max-height: var(--container-sm);
-  }
-
-  .avatar.avatar--max-h-md {
-    max-height: var(--container-md);
-  }
-
-  .avatar.avatar--max-h-lg {
-    max-height: var(--container-lg);
-  }
-
-  .avatar.avatar--max-h-xl {
-    max-height: var(--container-xl);
-  }
-
-  .avatar.avatar--max-h-2xl {
-    max-height: var(--container-2xl);
-  }
-
-  .avatar.avatar--max-h-3xl {
-    max-height: var(--container-3xl);
-  }
-
-  .avatar.avatar--max-h-4xl {
-    max-height: var(--container-4xl);
-  }
-
-  .avatar.avatar--max-h-5xl {
-    max-height: var(--container-5xl);
-  }
-
-  .avatar.avatar--max-h-6xl {
-    max-height: var(--container-6xl);
-  }
-
-  .avatar.avatar--max-h-7xl {
-    max-height: var(--container-7xl);
-  }
-
-  .avatar.avatar--sm [data-scope="avatar"][data-part="root"] {
-    width: var(--size-sm);
-    max-width: var(--container-sm);
-    height: var(--size-sm);
-  }
-
-  .avatar.avatar--sm [data-scope="avatar"][data-part="fallback"] {
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-  }
-
-  .avatar.avatar--md [data-scope="avatar"][data-part="root"] {
-    width: var(--size-md);
-    max-width: var(--container-md);
-    height: var(--size-md);
-  }
-
-  .avatar.avatar--md [data-scope="avatar"][data-part="fallback"] {
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-  }
-
-  .avatar.avatar--lg [data-scope="avatar"][data-part="root"] {
-    width: var(--size-lg);
-    max-width: var(--container-lg);
-    height: var(--size-lg);
-  }
-
-  .avatar.avatar--lg [data-scope="avatar"][data-part="fallback"] {
-    font-size: var(--text-lg);
-    line-height: var(--leading-lg);
-  }
-
-  .avatar.avatar--xl [data-scope="avatar"][data-part="root"] {
-    width: var(--size-xl);
-    max-width: var(--container-xl);
-    height: var(--size-xl);
-  }
-
-  .avatar.avatar--xl [data-scope="avatar"][data-part="fallback"] {
-    font-size: var(--text-xl);
-    line-height: var(--leading-xl);
-  }
-
   .avatar.avatar--rounded-none [data-scope="avatar"][data-part="root"] {
     border-radius: var(--radius-none);
   }
 
   .avatar.avatar--rounded-none [data-scope="avatar"][data-part="skeleton"] {
     border-radius: var(--radius-none);
-  }
-
-  .avatar.avatar--rounded-xs [data-scope="avatar"][data-part="root"] {
-    border-radius: var(--radius-xs);
-  }
-
-  .avatar.avatar--rounded-xs [data-scope="avatar"][data-part="skeleton"] {
-    border-radius: var(--radius-xs);
-  }
-
-  .avatar.avatar--rounded-sm [data-scope="avatar"][data-part="root"] {
-    border-radius: var(--radius-sm);
-  }
-
-  .avatar.avatar--rounded-sm [data-scope="avatar"][data-part="skeleton"] {
-    border-radius: var(--radius-sm);
-  }
-
-  .avatar.avatar--rounded-md [data-scope="avatar"][data-part="root"] {
-    border-radius: var(--radius-md);
-  }
-
-  .avatar.avatar--rounded-md [data-scope="avatar"][data-part="skeleton"] {
-    border-radius: var(--radius-md);
-  }
-
-  .avatar.avatar--rounded-lg [data-scope="avatar"][data-part="root"] {
-    border-radius: var(--radius-lg);
-  }
-
-  .avatar.avatar--rounded-lg [data-scope="avatar"][data-part="skeleton"] {
-    border-radius: var(--radius-lg);
-  }
-
-  .avatar.avatar--rounded-xl [data-scope="avatar"][data-part="root"] {
-    border-radius: var(--radius-xl);
-  }
-
-  .avatar.avatar--rounded-xl [data-scope="avatar"][data-part="skeleton"] {
-    border-radius: var(--radius-xl);
-  }
-
-  .avatar.avatar--rounded-2xl [data-scope="avatar"][data-part="root"] {
-    border-radius: var(--radius-2xl);
-  }
-
-  .avatar.avatar--rounded-2xl [data-scope="avatar"][data-part="skeleton"] {
-    border-radius: var(--radius-2xl);
-  }
-
-  .avatar.avatar--rounded-3xl [data-scope="avatar"][data-part="root"] {
-    border-radius: var(--radius-3xl);
-  }
-
-  .avatar.avatar--rounded-3xl [data-scope="avatar"][data-part="skeleton"] {
-    border-radius: var(--radius-3xl);
-  }
-
-  .avatar.avatar--rounded-4xl [data-scope="avatar"][data-part="root"] {
-    border-radius: var(--radius-4xl);
-  }
-
-  .avatar.avatar--rounded-4xl [data-scope="avatar"][data-part="skeleton"] {
-    border-radius: var(--radius-4xl);
   }
 
   .avatar.avatar--rounded-full [data-scope="avatar"][data-part="root"] {

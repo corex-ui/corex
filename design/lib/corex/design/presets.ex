@@ -149,6 +149,40 @@ defmodule Corex.Design.Presets do
     }
   end
 
+  def item_row_text do
+    %{
+      flex: {:raw, "1 1 0%"},
+      min_width: {:raw, "0"},
+      max_width: {:raw, "100%"},
+      width: :auto,
+      overflow: :hidden,
+      text_overflow: :ellipsis,
+      white_space: :nowrap,
+      display: :flex,
+      flex_direction: :row,
+      align_items: :center,
+      gap: {:space, :md},
+      text_align: :start
+    }
+  end
+
+  def item_row_indicator do
+    %{
+      display: :flex,
+      align_items: :center,
+      justify_content: :center,
+      flex: {:raw, "0 0 auto"},
+      flex_shrink: {:raw, "0"},
+      min_width: {:raw, "1em"},
+      min_height: {:raw, "1em"},
+      margin_inline_start: :auto
+    }
+  end
+
+  def item_row_indicator_hidden do
+    %{display: {:raw, "flex !important"}, visibility: :hidden}
+  end
+
   def link_base do
     %{
       display: :inline_flex,
@@ -181,6 +215,19 @@ defmodule Corex.Design.Presets do
           box_shadow: :none
         })
     }
+  end
+
+  def trigger_part_square do
+    [
+      aspect_ratio: {:raw, "1 / 1"},
+      padding: 0,
+      justify_content: :center,
+      width: :auto
+    ]
+  end
+
+  def trigger_part_circle do
+    trigger_part_square() ++ [border_radius: {:raw, "var(--radius-full) !important"}]
   end
 
   def trigger_base do

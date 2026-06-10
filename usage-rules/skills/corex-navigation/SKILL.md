@@ -14,14 +14,14 @@ Three patterns: links, buttons, redirect-on-select.
 ## Links
 
 ```heex
-<.navigate to={~p"/dashboard"} type="navigate" class="link link--accent">Dashboard</.navigate>
+<.navigate to={~p"/dashboard"} type="navigate" class="link link--semantic-accent">Dashboard</.navigate>
 <.navigate to={~p"/items?page=2"} type="patch" class="link">Page 2</.navigate>
 ```
 
 ## Redirect on select
 
 ```heex
-<.select id="language-switch" class="select select--sm" items={items} value={[dest]} redirect>
+<.select id="language-switch" class="select select--size-sm" items={items} value={[dest]} redirect>
   <:item :let={item}>{item.label}</:item>
 </.select>
 ```

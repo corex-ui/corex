@@ -175,7 +175,7 @@ defmodule E2eWeb.ToastPlayLive do
               <.native_input
                 field={@form[:title]}
                 type="text"
-                class="native-input native-input--sm w-full"
+                class="native-input native-input--size-sm w-full"
                 required
               >
                 <:label>Title</:label>
@@ -183,7 +183,7 @@ defmodule E2eWeb.ToastPlayLive do
               <.native_input
                 field={@form[:message]}
                 type="text"
-                class="native-input native-input--sm w-full"
+                class="native-input native-input--size-sm w-full"
                 required
               >
                 <:label>Message</:label>
@@ -197,7 +197,7 @@ defmodule E2eWeb.ToastPlayLive do
               <.number_input
                 id="toast-playground-duration"
                 field={@form[:duration]}
-                class="number-input number-input--sm w-full"
+                class="number-input number-input--size-sm w-full"
                 min={0.0}
                 step={1.0}
                 required

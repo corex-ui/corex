@@ -132,7 +132,7 @@ defmodule Corex.FloatingPanelTest do
 
             ~H"""
             <Corex.FloatingPanel.floating_panel id="panel-trigger-class">
-              <:trigger class="button button--ghost button--sm">
+              <:trigger class="button button--variant-ghost button--size-sm">
                 Trigger label
               </:trigger>
               <:title>T</:title>
@@ -144,7 +144,7 @@ defmodule Corex.FloatingPanelTest do
           %{}
         )
 
-      assert html =~ ~S(class="button button--ghost button--sm")
+      assert html =~ ~S(class="button button--variant-ghost button--size-sm")
       assert html =~ "Trigger label"
     end
   end

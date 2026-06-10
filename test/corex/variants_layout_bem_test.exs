@@ -55,12 +55,12 @@ defmodule Corex.VariantsLayoutBemTest do
         %{}
       )
 
-    assert html =~ "switch--accent"
-    assert html =~ "switch--md"
+    assert html =~ "switch--semantic-accent"
+    assert html =~ "switch--size-md"
     assert html =~ "switch--rounded-xl"
     assert html =~ "switch--max-w-md"
-    refute html =~ "switch--semantic-accent"
-    refute html =~ "switch--size-md"
+    refute html =~ "switch--accent"
+    refute html =~ "switch--md"
   end
 
   test "component unstyled keeps only the class assign" do

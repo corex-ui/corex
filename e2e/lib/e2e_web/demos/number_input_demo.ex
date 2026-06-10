@@ -91,23 +91,23 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       <:label>Default</:label>
     #{triggers}
     </.number_input>
-    <.number_input class="number-input number-input--accent" value="1">
+    <.number_input class="number-input number-input--semantic-accent" value="1">
       <:label>Accent</:label>
     #{triggers}
     </.number_input>
-    <.number_input class="number-input number-input--brand" value="1">
+    <.number_input class="number-input number-input--semantic-brand" value="1">
       <:label>Brand</:label>
     #{triggers}
     </.number_input>
-    <.number_input class="number-input number-input--alert" value="1">
+    <.number_input class="number-input number-input--semantic-alert" value="1">
       <:label>Alert</:label>
     #{triggers}
     </.number_input>
-    <.number_input class="number-input number-input--info" value="1">
+    <.number_input class="number-input number-input--semantic-info" value="1">
       <:label>Info</:label>
     #{triggers}
     </.number_input>
-    <.number_input class="number-input number-input--success" value="1">
+    <.number_input class="number-input number-input--semantic-success" value="1">
       <:label>Success</:label>
     #{triggers}
     </.number_input>
@@ -126,7 +126,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       </.number_input>
       <.number_input
         id="number-input-style-color-accent"
-        class="number-input number-input--accent"
+        class="number-input number-input--semantic-accent"
         value="1"
       >
         <:label>Accent</:label>
@@ -135,7 +135,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       </.number_input>
       <.number_input
         id="number-input-style-color-brand"
-        class="number-input number-input--brand"
+        class="number-input number-input--semantic-brand"
         value="1"
       >
         <:label>Brand</:label>
@@ -144,7 +144,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       </.number_input>
       <.number_input
         id="number-input-style-color-alert"
-        class="number-input number-input--alert"
+        class="number-input number-input--semantic-alert"
         value="1"
       >
         <:label>Alert</:label>
@@ -153,7 +153,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       </.number_input>
       <.number_input
         id="number-input-style-color-info"
-        class="number-input number-input--info"
+        class="number-input number-input--semantic-info"
         value="1"
       >
         <:label>Info</:label>
@@ -162,7 +162,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       </.number_input>
       <.number_input
         id="number-input-style-color-success"
-        class="number-input number-input--success"
+        class="number-input number-input--semantic-success"
         value="1"
       >
         <:label>Success</:label>
@@ -177,19 +177,19 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     triggers = styling_triggers_code()
 
     """
-    <.number_input class="number-input number-input--sm" value="1">
+    <.number_input class="number-input number-input--size-sm" value="1">
       <:label>SM</:label>
     #{triggers}
     </.number_input>
-    <.number_input class="number-input number-input--md" value="1">
+    <.number_input class="number-input number-input--size-md" value="1">
       <:label>MD</:label>
     #{triggers}
     </.number_input>
-    <.number_input class="number-input number-input--lg" value="1">
+    <.number_input class="number-input number-input--size-lg" value="1">
       <:label>LG</:label>
     #{triggers}
     </.number_input>
-    <.number_input class="number-input number-input--xl" value="1">
+    <.number_input class="number-input number-input--size-xl" value="1">
       <:label>XL</:label>
     #{triggers}
     </.number_input>
@@ -201,22 +201,22 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
     ~H"""
     <div class="flex flex-col gap-4 max-w-md">
-      <.number_input id="number-input-style-sm" class="number-input number-input--sm w-full" value="1">
+      <.number_input id="number-input-style-sm" class="number-input number-input--size-sm w-full" value="1">
         <:label>SM</:label>
         <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
         <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
       </.number_input>
-      <.number_input id="number-input-style-md" class="number-input number-input--md w-full" value="1">
+      <.number_input id="number-input-style-md" class="number-input number-input--size-md w-full" value="1">
         <:label>MD</:label>
         <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
         <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
       </.number_input>
-      <.number_input id="number-input-style-lg" class="number-input number-input--lg w-full" value="1">
+      <.number_input id="number-input-style-lg" class="number-input number-input--size-lg w-full" value="1">
         <:label>LG</:label>
         <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
         <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
       </.number_input>
-      <.number_input id="number-input-style-xl" class="number-input number-input--xl w-full" value="1">
+      <.number_input id="number-input-style-xl" class="number-input number-input--size-xl w-full" value="1">
         <:label>XL</:label>
         <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
         <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
@@ -1475,4 +1475,8 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     end
     """
   end
+
+  def style_preview(assigns), do: E2eWeb.Demos.StylePreview.preview(:number_input, assigns)
+  def style_playground(assigns), do: style_preview(assigns)
+
 end

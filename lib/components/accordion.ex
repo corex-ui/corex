@@ -202,7 +202,7 @@ defmodule Corex.Accordion do
   ### With classes
 
   ```heex
-  <.accordion class="accordion accordion--accent accordion--md" items={
+  <.accordion class="accordion accordion--semantic-accent accordion--size-md" items={
     Corex.Content.new([
       %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
       %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."}
@@ -656,7 +656,7 @@ defmodule Corex.Accordion do
   [data-scope="accordion"][data-part="item-indicator"] {}
   ```
 
-  Stack modifiers on the host (`class` on `<.accordion>`). Combine axes, for example `accordion accordion--accent accordion--lg`.
+  Stack modifiers on the host (`class` on `<.accordion>`). Combine axes, for example `accordion accordion--semantic-accent accordion--size-lg`.
 
   <!-- tabs-open -->
 
@@ -667,11 +667,11 @@ defmodule Corex.Accordion do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `accordion` |
-  | Accent | `accordion accordion--accent` |
-  | Brand | `accordion accordion--brand` |
-  | Alert | `accordion accordion--alert` |
-  | Info | `accordion accordion--info` |
-  | Success | `accordion accordion--success` |
+  | Accent | `accordion accordion--semantic-accent` |
+  | Brand | `accordion accordion--semantic-brand` |
+  | Alert | `accordion accordion--semantic-alert` |
+  | Info | `accordion accordion--semantic-info` |
+  | Success | `accordion accordion--semantic-success` |
 
   ### Size
 
@@ -680,10 +680,10 @@ defmodule Corex.Accordion do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `accordion` |
-  | SM | `accordion accordion--sm` |
-  | MD | `accordion accordion--md` |
-  | LG | `accordion accordion--lg` |
-  | XL | `accordion accordion--xl` |
+  | SM | `accordion accordion--size-sm` |
+  | MD | `accordion accordion--size-md` |
+  | LG | `accordion accordion--size-lg` |
+  | XL | `accordion accordion--size-xl` |
 
   ### Text
 

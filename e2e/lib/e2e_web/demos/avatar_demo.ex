@@ -10,7 +10,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
   def events_server_heex do
     ~S"""
     <form phx-change="avatar_events_changed">
-      <.native_input type="url" name="avatar_src" value="https://corex-ui.com/images/avatar.png" class="native-input native-input--sm w-full">
+      <.native_input type="url" name="avatar_src" value="https://corex-ui.com/images/avatar.png" class="native-input native-input--size-sm w-full">
         <:label>Image URL</:label>
       </.native_input>
     </form>
@@ -172,19 +172,19 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
     ~H"""
     <div class="flex flex-wrap gap-4 items-end justify-center">
-      <.avatar id="avatar-style-accent" src="" class="avatar avatar--accent">
+      <.avatar id="avatar-style-accent" src="" class="avatar avatar--semantic-accent">
         <:fallback>A</:fallback>
       </.avatar>
-      <.avatar id="avatar-style-brand" src="" class="avatar avatar--brand">
+      <.avatar id="avatar-style-brand" src="" class="avatar avatar--semantic-brand">
         <:fallback>B</:fallback>
       </.avatar>
-      <.avatar id="avatar-style-alert" src="" class="avatar avatar--alert">
+      <.avatar id="avatar-style-alert" src="" class="avatar avatar--semantic-alert">
         <:fallback>C</:fallback>
       </.avatar>
-      <.avatar id="avatar-style-info" src="" class="avatar avatar--info">
+      <.avatar id="avatar-style-info" src="" class="avatar avatar--semantic-info">
         <:fallback>D</:fallback>
       </.avatar>
-      <.avatar id="avatar-style-success" src="" class="avatar avatar--success">
+      <.avatar id="avatar-style-success" src="" class="avatar avatar--semantic-success">
         <:fallback>E</:fallback>
       </.avatar>
     </div>
@@ -193,10 +193,10 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
   def styling_semantic_code do
     ~S"""
-    <.avatar src="" class="avatar avatar--accent">
+    <.avatar src="" class="avatar avatar--semantic-accent">
       <:fallback>A</:fallback>
     </.avatar>
-    <.avatar src="" class="avatar avatar--brand">
+    <.avatar src="" class="avatar avatar--semantic-brand">
       <:fallback>B</:fallback>
     </.avatar>
     """
@@ -666,4 +666,8 @@ defmodule E2eWeb.Demos.AvatarDemo do
       loaded_server_elixir: api_loaded_server_elixir()
     }
   end
+
+  def style_preview(assigns), do: E2eWeb.Demos.StylePreview.preview(:avatar, assigns)
+  def style_playground(assigns), do: style_preview(assigns)
+
 end

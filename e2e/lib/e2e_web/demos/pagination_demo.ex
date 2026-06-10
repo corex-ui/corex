@@ -42,27 +42,27 @@ defmodule E2eWeb.Demos.PaginationDemo do
       <:next><.heroicon name="hero-chevron-right" /></:next>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
-    <.pagination class="pagination pagination--accent" count={50} page={3} page_size={10}>
+    <.pagination class="pagination pagination--semantic-accent" count={50} page={3} page_size={10}>
       <:prev><.heroicon name="hero-chevron-left" /></:prev>
       <:next><.heroicon name="hero-chevron-right" /></:next>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
-    <.pagination class="pagination pagination--brand" count={50} page={3} page_size={10}>
+    <.pagination class="pagination pagination--semantic-brand" count={50} page={3} page_size={10}>
       <:prev><.heroicon name="hero-chevron-left" /></:prev>
       <:next><.heroicon name="hero-chevron-right" /></:next>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
-    <.pagination class="pagination pagination--alert" count={50} page={3} page_size={10}>
+    <.pagination class="pagination pagination--semantic-alert" count={50} page={3} page_size={10}>
       <:prev><.heroicon name="hero-chevron-left" /></:prev>
       <:next><.heroicon name="hero-chevron-right" /></:next>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
-    <.pagination class="pagination pagination--success" count={50} page={3} page_size={10}>
+    <.pagination class="pagination pagination--semantic-success" count={50} page={3} page_size={10}>
       <:prev><.heroicon name="hero-chevron-left" /></:prev>
       <:next><.heroicon name="hero-chevron-right" /></:next>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
-    <.pagination class="pagination pagination--info" count={50} page={3} page_size={10}>
+    <.pagination class="pagination pagination--semantic-info" count={50} page={3} page_size={10}>
       <:prev><.heroicon name="hero-chevron-left" /></:prev>
       <:next><.heroicon name="hero-chevron-right" /></:next>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
@@ -76,33 +76,33 @@ defmodule E2eWeb.Demos.PaginationDemo do
     ~H"""
     <div class="flex flex-col gap-space-lg w-full items-center">
       <.style_pagination id="pagination-style-color-default" class="pagination" />
-      <.style_pagination id="pagination-style-color-accent" class="pagination pagination--accent" />
-      <.style_pagination id="pagination-style-color-brand" class="pagination pagination--brand" />
-      <.style_pagination id="pagination-style-color-alert" class="pagination pagination--alert" />
-      <.style_pagination id="pagination-style-color-success" class="pagination pagination--success" />
-      <.style_pagination id="pagination-style-color-info" class="pagination pagination--info" />
+      <.style_pagination id="pagination-style-color-accent" class="pagination pagination--semantic-accent" />
+      <.style_pagination id="pagination-style-color-brand" class="pagination pagination--semantic-brand" />
+      <.style_pagination id="pagination-style-color-alert" class="pagination pagination--semantic-alert" />
+      <.style_pagination id="pagination-style-color-success" class="pagination pagination--semantic-success" />
+      <.style_pagination id="pagination-style-color-info" class="pagination pagination--semantic-info" />
     </div>
     """
   end
 
   def styling_size_heex do
     ~S"""
-    <.pagination class="pagination pagination--sm" count={50} page={3} page_size={10}>
+    <.pagination class="pagination pagination--size-sm" count={50} page={3} page_size={10}>
       <:prev><.heroicon name="hero-chevron-left" /></:prev>
       <:next><.heroicon name="hero-chevron-right" /></:next>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
-    <.pagination class="pagination pagination--md" count={50} page={3} page_size={10}>
+    <.pagination class="pagination pagination--size-md" count={50} page={3} page_size={10}>
       <:prev><.heroicon name="hero-chevron-left" /></:prev>
       <:next><.heroicon name="hero-chevron-right" /></:next>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
-    <.pagination class="pagination pagination--lg" count={50} page={3} page_size={10}>
+    <.pagination class="pagination pagination--size-lg" count={50} page={3} page_size={10}>
       <:prev><.heroicon name="hero-chevron-left" /></:prev>
       <:next><.heroicon name="hero-chevron-right" /></:next>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
-    <.pagination class="pagination pagination--xl" count={50} page={3} page_size={10}>
+    <.pagination class="pagination pagination--size-xl" count={50} page={3} page_size={10}>
       <:prev><.heroicon name="hero-chevron-left" /></:prev>
       <:next><.heroicon name="hero-chevron-right" /></:next>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
@@ -115,10 +115,10 @@ defmodule E2eWeb.Demos.PaginationDemo do
 
     ~H"""
     <div class="flex flex-col gap-space-lg w-full items-center">
-      <.style_pagination id="pagination-style-size-sm" class="pagination pagination--sm" />
-      <.style_pagination id="pagination-style-size-md" class="pagination pagination--md" />
-      <.style_pagination id="pagination-style-size-lg" class="pagination pagination--lg" />
-      <.style_pagination id="pagination-style-size-xl" class="pagination pagination--xl" />
+      <.style_pagination id="pagination-style-size-sm" class="pagination pagination--size-sm" />
+      <.style_pagination id="pagination-style-size-md" class="pagination pagination--size-md" />
+      <.style_pagination id="pagination-style-size-lg" class="pagination pagination--size-lg" />
+      <.style_pagination id="pagination-style-size-xl" class="pagination pagination--size-xl" />
     </div>
     """
   end
@@ -951,4 +951,8 @@ defmodule E2eWeb.Demos.PaginationDemo do
       page_size: @page_size
     })
   end
+
+  def style_preview(assigns), do: E2eWeb.Demos.StylePreview.preview(:pagination, assigns)
+  def style_playground(assigns), do: style_preview(assigns)
+
 end

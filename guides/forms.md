@@ -92,7 +92,7 @@ end
     </:error>
   </.select>
 
-  <.action type="submit" class="button button--accent">Submit</.action>
+  <.action type="submit" class="button button--semantic-accent">Submit</.action>
 </.form>
 ```
 
@@ -165,7 +165,7 @@ end
     </:error>
   </.select>
 
-  <.action type="submit" class="button button--accent">Save</.action>
+  <.action type="submit" class="button button--semantic-accent">Save</.action>
 </.form>
 ```
 
@@ -194,7 +194,7 @@ Use `name` on the component when you are not using `to_form/2`. Checkbox values 
     <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
   </.select>
 
-  <.action type="submit" class="button button--accent">Submit</.action>
+  <.action type="submit" class="button button--semantic-accent">Submit</.action>
 </form>
 ```
 
@@ -292,7 +292,7 @@ Keep `invalid` off the control if you only want a custom affordance (for example
 <.select field={@form[:country]} class="select relative" controlled>
   <:label>Country</:label>
   <:error :let={msg} class="absolute top-0 end-0">
-    <.tooltip class="tooltip tooltip--sm" positioning={%Corex.Positioning{placement: "top-end"}}>
+    <.tooltip class="tooltip tooltip--size-sm" positioning={%Corex.Positioning{placement: "top-end"}}>
       <:trigger>
         <.heroicon name="hero-exclamation-circle" class="icon text-ui-ink-alert" />
       </:trigger>

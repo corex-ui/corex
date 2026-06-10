@@ -1161,4 +1161,9 @@ defmodule E2eWeb.Demos.SwitchDemo do
   def form_phoenix_elixir, do: form_doc_controller_phoenix_elixir()
   def form_ecto_heex, do: form_doc_controller_ecto_heex()
   def form_ecto_elixir, do: form_doc_controller_ecto_elixir()
+
+  def style_preview(assigns), do: E2eWeb.Demos.StylePreview.preview(:switch, assigns)
+  def style_playground(assigns), do: style_preview(assigns)
+
 end
+

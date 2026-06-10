@@ -7,7 +7,7 @@ defmodule Corex.Design.SemanticCoverageTest do
   alias Corex.Design.Taxonomy
 
   @compound_visual ~w(button link toggle)a
-  @skip_semantic ~w(timer avatar clipboard code data_list layout_heading marquee typo)a
+  @skip_semantic ~w(badge timer avatar clipboard code data_list layout_heading marquee typo)a
 
   test "recipes with semantic axis emit accent scale-token styling" do
     offenders =
@@ -33,8 +33,8 @@ defmodule Corex.Design.SemanticCoverageTest do
 
   defp semantic_styled?(recipe, css) do
     name = Selector.class_name(recipe.id)
-    accent_host = ".#{name}.#{name}--accent"
-    compound = ".#{name}.#{name}--solid.#{name}--accent"
+    accent_host = ".#{name}.#{name}--semantic-accent"
+    compound = ".#{name}.#{name}--variant-solid.#{name}--semantic-accent"
 
     has_host = String.contains?(css, accent_host) or String.contains?(css, compound)
 

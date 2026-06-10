@@ -194,7 +194,7 @@ Mode only: omit `theme.js` and `Select` if you do not use [Tableau Theming](tabl
 ```heex
 <.toggle
   id="mode-switcher"
-  class="toggle toggle--sm"
+  class="toggle toggle--size-sm"
   data-toggle-dual-label
   pressed={@mode == "dark"}
   on_pressed_change_client="corex:set-mode"

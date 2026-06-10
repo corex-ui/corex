@@ -356,27 +356,27 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
       <:item value="duis">Duis</:item>
       <:item value="donec">Donec</:item>
     </.toggle_group>
-    <.toggle_group  class="toggle-group toggle-group--accent" value={["lorem"]}>
+    <.toggle_group  class="toggle-group toggle-group--semantic-accent" value={["lorem"]}>
       <:item value="lorem">Lorem</:item>
       <:item value="duis">Duis</:item>
       <:item value="donec">Donec</:item>
     </.toggle_group>
-    <.toggle_group  class="toggle-group toggle-group--brand" value={["lorem"]}>
+    <.toggle_group  class="toggle-group toggle-group--semantic-brand" value={["lorem"]}>
       <:item value="lorem">Lorem</:item>
       <:item value="duis">Duis</:item>
       <:item value="donec">Donec</:item>
     </.toggle_group>
-    <.toggle_group  class="toggle-group toggle-group--alert" value={["lorem"]}>
+    <.toggle_group  class="toggle-group toggle-group--semantic-alert" value={["lorem"]}>
       <:item value="lorem">Lorem</:item>
       <:item value="duis">Duis</:item>
       <:item value="donec">Donec</:item>
     </.toggle_group>
-    <.toggle_group  class="toggle-group toggle-group--success" value={["lorem"]}>
+    <.toggle_group  class="toggle-group toggle-group--semantic-success" value={["lorem"]}>
       <:item value="lorem">Lorem</:item>
       <:item value="duis">Duis</:item>
       <:item value="donec">Donec</:item>
     </.toggle_group>
-    <.toggle_group  class="toggle-group toggle-group--info" value={["lorem"]}>
+    <.toggle_group  class="toggle-group toggle-group--semantic-info" value={["lorem"]}>
       <:item value="lorem">Lorem</:item>
       <:item value="duis">Duis</:item>
       <:item value="donec">Donec</:item>
@@ -396,33 +396,33 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
       </.toggle_group>
       <.toggle_group
         id="tg-style-c-accent"
-        class="toggle-group toggle-group--accent"
+        class="toggle-group toggle-group--semantic-accent"
         value={["lorem"]}
       >
         <:item value="lorem">Lorem</:item>
         <:item value="duis">Duis</:item>
         <:item value="donec">Donec</:item>
       </.toggle_group>
-      <.toggle_group id="tg-style-c-brand" class="toggle-group toggle-group--brand" value={["lorem"]}>
+      <.toggle_group id="tg-style-c-brand" class="toggle-group toggle-group--semantic-brand" value={["lorem"]}>
         <:item value="lorem">Lorem</:item>
         <:item value="duis">Duis</:item>
         <:item value="donec">Donec</:item>
       </.toggle_group>
-      <.toggle_group id="tg-style-c-alert" class="toggle-group toggle-group--alert" value={["lorem"]}>
+      <.toggle_group id="tg-style-c-alert" class="toggle-group toggle-group--semantic-alert" value={["lorem"]}>
         <:item value="lorem">Lorem</:item>
         <:item value="duis">Duis</:item>
         <:item value="donec">Donec</:item>
       </.toggle_group>
       <.toggle_group
         id="tg-style-c-success"
-        class="toggle-group toggle-group--success"
+        class="toggle-group toggle-group--semantic-success"
         value={["lorem"]}
       >
         <:item value="lorem">Lorem</:item>
         <:item value="duis">Duis</:item>
         <:item value="donec">Donec</:item>
       </.toggle_group>
-      <.toggle_group id="tg-style-c-info" class="toggle-group toggle-group--info" value={["lorem"]}>
+      <.toggle_group id="tg-style-c-info" class="toggle-group toggle-group--semantic-info" value={["lorem"]}>
         <:item value="lorem">Lorem</:item>
         <:item value="duis">Duis</:item>
         <:item value="donec">Donec</:item>
@@ -433,22 +433,22 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
 
   def styling_size_code do
     ~S"""
-    <.toggle_group  class="toggle-group toggle-group--sm" value={["lorem"]}>
+    <.toggle_group  class="toggle-group toggle-group--size-sm" value={["lorem"]}>
       <:item value="lorem">SM</:item>
       <:item value="duis">SM</:item>
       <:item value="donec">SM</:item>
     </.toggle_group>
-    <.toggle_group  class="toggle-group toggle-group--md" value={["lorem"]}>
+    <.toggle_group  class="toggle-group toggle-group--size-md" value={["lorem"]}>
       <:item value="lorem">MD</:item>
       <:item value="duis">MD</:item>
       <:item value="donec">MD</:item>
     </.toggle_group>
-    <.toggle_group  class="toggle-group toggle-group--lg" value={["lorem"]}>
+    <.toggle_group  class="toggle-group toggle-group--size-lg" value={["lorem"]}>
       <:item value="lorem">LG</:item>
       <:item value="duis">LG</:item>
       <:item value="donec">LG</:item>
     </.toggle_group>
-    <.toggle_group  class="toggle-group toggle-group--xl" value={["lorem"]}>
+    <.toggle_group  class="toggle-group toggle-group--size-xl" value={["lorem"]}>
       <:item value="lorem">XL</:item>
       <:item value="duis">XL</:item>
       <:item value="donec">XL</:item>
@@ -461,22 +461,22 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
 
     ~H"""
     <div class="flex flex-col gap-6 w-full max-w-4xl">
-      <.toggle_group id="tg-style-sm" class="toggle-group toggle-group--sm" value={["lorem"]}>
+      <.toggle_group id="tg-style-sm" class="toggle-group toggle-group--size-sm" value={["lorem"]}>
         <:item value="lorem">SM</:item>
         <:item value="duis">SM</:item>
         <:item value="donec">SM</:item>
       </.toggle_group>
-      <.toggle_group id="tg-style-md" class="toggle-group toggle-group--md" value={["lorem"]}>
+      <.toggle_group id="tg-style-md" class="toggle-group toggle-group--size-md" value={["lorem"]}>
         <:item value="lorem">MD</:item>
         <:item value="duis">MD</:item>
         <:item value="donec">MD</:item>
       </.toggle_group>
-      <.toggle_group id="tg-style-lg" class="toggle-group toggle-group--lg" value={["lorem"]}>
+      <.toggle_group id="tg-style-lg" class="toggle-group toggle-group--size-lg" value={["lorem"]}>
         <:item value="lorem">LG</:item>
         <:item value="duis">LG</:item>
         <:item value="donec">LG</:item>
       </.toggle_group>
-      <.toggle_group id="tg-style-xl" class="toggle-group toggle-group--xl" value={["lorem"]}>
+      <.toggle_group id="tg-style-xl" class="toggle-group toggle-group--size-xl" value={["lorem"]}>
         <:item value="lorem">XL</:item>
         <:item value="duis">XL</:item>
         <:item value="donec">XL</:item>
@@ -597,7 +597,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
       <:item value="donec">Donec</:item>
     </.toggle_group>
     <.toggle_group
-       class="toggle-group toggle-group--accent"
+       class="toggle-group toggle-group--semantic-accent"
       disabled
       value={["donec"]}
     >
@@ -620,7 +620,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
       </.toggle_group>
       <.toggle_group
         id="tg-style-disabled-accent"
-        class="toggle-group toggle-group--accent"
+        class="toggle-group toggle-group--semantic-accent"
         disabled
         value={["donec"]}
       >
@@ -683,4 +683,8 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
     );
     """
   end
+
+  def style_preview(assigns), do: E2eWeb.Demos.StylePreview.preview(:toggle_group, assigns)
+  def style_playground(assigns), do: style_preview(assigns)
+
 end

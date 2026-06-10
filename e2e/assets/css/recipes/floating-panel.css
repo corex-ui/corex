@@ -1,11 +1,11 @@
 /* Corex generated design - do not edit */
 
 @utility floating-panel--rounded-* {
-  [data-scope="floating-panel"][data-part="content"] {
+  [data-scope="floating-panel"][data-part="trigger"] {
       border-radius: --value(--radius-*, [length]);
   }
 
-  [data-scope="floating-panel"][data-part="trigger"] {
+  [data-scope="floating-panel"][data-part="content"] {
       border-radius: --value(--radius-*, [length]);
   }
 
@@ -43,74 +43,6 @@
     max-width: 100%;
   }
 
-  .floating-panel.floating-panel--max-w-7xs {
-    max-width: var(--container-7xs);
-  }
-
-  .floating-panel.floating-panel--max-w-6xs {
-    max-width: var(--container-6xs);
-  }
-
-  .floating-panel.floating-panel--max-w-5xs {
-    max-width: var(--container-5xs);
-  }
-
-  .floating-panel.floating-panel--max-w-4xs {
-    max-width: var(--container-4xs);
-  }
-
-  .floating-panel.floating-panel--max-w-3xs {
-    max-width: var(--container-3xs);
-  }
-
-  .floating-panel.floating-panel--max-w-2xs {
-    max-width: var(--container-2xs);
-  }
-
-  .floating-panel.floating-panel--max-w-xs {
-    max-width: var(--container-xs);
-  }
-
-  .floating-panel.floating-panel--max-w-sm {
-    max-width: var(--container-sm);
-  }
-
-  .floating-panel.floating-panel--max-w-md {
-    max-width: var(--container-md);
-  }
-
-  .floating-panel.floating-panel--max-w-lg {
-    max-width: var(--container-lg);
-  }
-
-  .floating-panel.floating-panel--max-w-xl {
-    max-width: var(--container-xl);
-  }
-
-  .floating-panel.floating-panel--max-w-2xl {
-    max-width: var(--container-2xl);
-  }
-
-  .floating-panel.floating-panel--max-w-3xl {
-    max-width: var(--container-3xl);
-  }
-
-  .floating-panel.floating-panel--max-w-4xl {
-    max-width: var(--container-4xl);
-  }
-
-  .floating-panel.floating-panel--max-w-5xl {
-    max-width: var(--container-5xl);
-  }
-
-  .floating-panel.floating-panel--max-w-6xl {
-    max-width: var(--container-6xl);
-  }
-
-  .floating-panel.floating-panel--max-w-7xl {
-    max-width: var(--container-7xl);
-  }
-
   .floating-panel.floating-panel--h-auto {
     height: auto;
   }
@@ -131,95 +63,27 @@
     max-height: 100%;
   }
 
-  .floating-panel.floating-panel--max-h-7xs {
-    max-height: var(--container-7xs);
-  }
-
-  .floating-panel.floating-panel--max-h-6xs {
-    max-height: var(--container-6xs);
-  }
-
-  .floating-panel.floating-panel--max-h-5xs {
-    max-height: var(--container-5xs);
-  }
-
-  .floating-panel.floating-panel--max-h-4xs {
-    max-height: var(--container-4xs);
-  }
-
-  .floating-panel.floating-panel--max-h-3xs {
-    max-height: var(--container-3xs);
-  }
-
-  .floating-panel.floating-panel--max-h-2xs {
-    max-height: var(--container-2xs);
-  }
-
-  .floating-panel.floating-panel--max-h-xs {
-    max-height: var(--container-xs);
-  }
-
-  .floating-panel.floating-panel--max-h-sm {
-    max-height: var(--container-sm);
-  }
-
-  .floating-panel.floating-panel--max-h-md {
-    max-height: var(--container-md);
-  }
-
-  .floating-panel.floating-panel--max-h-lg {
-    max-height: var(--container-lg);
-  }
-
-  .floating-panel.floating-panel--max-h-xl {
-    max-height: var(--container-xl);
-  }
-
-  .floating-panel.floating-panel--max-h-2xl {
-    max-height: var(--container-2xl);
-  }
-
-  .floating-panel.floating-panel--max-h-3xl {
-    max-height: var(--container-3xl);
-  }
-
-  .floating-panel.floating-panel--max-h-4xl {
-    max-height: var(--container-4xl);
-  }
-
-  .floating-panel.floating-panel--max-h-5xl {
-    max-height: var(--container-5xl);
-  }
-
-  .floating-panel.floating-panel--max-h-6xl {
-    max-height: var(--container-6xl);
-  }
-
-  .floating-panel.floating-panel--max-h-7xl {
-    max-height: var(--container-7xl);
-  }
-
-  .floating-panel.floating-panel--accent {
+  .floating-panel.floating-panel--semantic-accent {
     position: relative;
   }
 
-  .floating-panel.floating-panel--brand {
+  .floating-panel.floating-panel--semantic-brand {
     position: relative;
   }
 
-  .floating-panel.floating-panel--alert {
+  .floating-panel.floating-panel--semantic-alert {
     position: relative;
   }
 
-  .floating-panel.floating-panel--info {
+  .floating-panel.floating-panel--semantic-info {
     position: relative;
   }
 
-  .floating-panel.floating-panel--success {
+  .floating-panel.floating-panel--semantic-success {
     position: relative;
   }
 
-  .floating-panel.floating-panel--selected {
+  .floating-panel.floating-panel--semantic-selected {
     position: relative;
   }
 
@@ -229,70 +93,6 @@
 
   .floating-panel.floating-panel--rounded-none [data-scope="floating-panel"][data-part="trigger"] {
     border-radius: var(--radius-none);
-  }
-
-  .floating-panel.floating-panel--rounded-xs [data-scope="floating-panel"][data-part="content"] {
-    border-radius: var(--radius-xs);
-  }
-
-  .floating-panel.floating-panel--rounded-xs [data-scope="floating-panel"][data-part="trigger"] {
-    border-radius: var(--radius-xs);
-  }
-
-  .floating-panel.floating-panel--rounded-sm [data-scope="floating-panel"][data-part="content"] {
-    border-radius: var(--radius-sm);
-  }
-
-  .floating-panel.floating-panel--rounded-sm [data-scope="floating-panel"][data-part="trigger"] {
-    border-radius: var(--radius-sm);
-  }
-
-  .floating-panel.floating-panel--rounded-md [data-scope="floating-panel"][data-part="content"] {
-    border-radius: var(--radius-md);
-  }
-
-  .floating-panel.floating-panel--rounded-md [data-scope="floating-panel"][data-part="trigger"] {
-    border-radius: var(--radius-md);
-  }
-
-  .floating-panel.floating-panel--rounded-lg [data-scope="floating-panel"][data-part="content"] {
-    border-radius: var(--radius-lg);
-  }
-
-  .floating-panel.floating-panel--rounded-lg [data-scope="floating-panel"][data-part="trigger"] {
-    border-radius: var(--radius-lg);
-  }
-
-  .floating-panel.floating-panel--rounded-xl [data-scope="floating-panel"][data-part="content"] {
-    border-radius: var(--radius-xl);
-  }
-
-  .floating-panel.floating-panel--rounded-xl [data-scope="floating-panel"][data-part="trigger"] {
-    border-radius: var(--radius-xl);
-  }
-
-  .floating-panel.floating-panel--rounded-2xl [data-scope="floating-panel"][data-part="content"] {
-    border-radius: var(--radius-2xl);
-  }
-
-  .floating-panel.floating-panel--rounded-2xl [data-scope="floating-panel"][data-part="trigger"] {
-    border-radius: var(--radius-2xl);
-  }
-
-  .floating-panel.floating-panel--rounded-3xl [data-scope="floating-panel"][data-part="content"] {
-    border-radius: var(--radius-3xl);
-  }
-
-  .floating-panel.floating-panel--rounded-3xl [data-scope="floating-panel"][data-part="trigger"] {
-    border-radius: var(--radius-3xl);
-  }
-
-  .floating-panel.floating-panel--rounded-4xl [data-scope="floating-panel"][data-part="content"] {
-    border-radius: var(--radius-4xl);
-  }
-
-  .floating-panel.floating-panel--rounded-4xl [data-scope="floating-panel"][data-part="trigger"] {
-    border-radius: var(--radius-4xl);
   }
 
   .floating-panel.floating-panel--rounded-full [data-scope="floating-panel"][data-part="content"] {
@@ -367,7 +167,10 @@
 
   .floating-panel [data-scope="floating-panel"][data-part="stage-trigger"] {
     @apply ui-trigger;
-    @apply ui-trigger--square;
+    aspect-ratio: 1 / 1;
+    padding: 0;
+    justify-content: center;
+    width: auto;
     width: calc(var(--size-sm) * 0.8);
     min-width: calc(var(--size-sm) * 0.8);
     max-width: calc(var(--size-sm) * 0.8);
@@ -380,7 +183,10 @@
 
   .floating-panel [data-scope="floating-panel"][data-part="close-trigger"] {
     @apply ui-trigger;
-    @apply ui-trigger--square;
+    aspect-ratio: 1 / 1;
+    padding: 0;
+    justify-content: center;
+    width: auto;
     width: calc(var(--size-sm) * 0.8);
     min-width: calc(var(--size-sm) * 0.8);
     max-width: calc(var(--size-sm) * 0.8);
@@ -488,7 +294,7 @@
     }
   }
 
-  .floating-panel.floating-panel--accent [data-scope="floating-panel"][data-part="trigger"] {
+  .floating-panel.floating-panel--semantic-accent [data-scope="floating-panel"][data-part="trigger"] {
     background-color: var(--color-accent);
     color: var(--color-accent-ink);
     &:hover {
@@ -512,7 +318,7 @@
     }
   }
 
-  .floating-panel.floating-panel--brand [data-scope="floating-panel"][data-part="trigger"] {
+  .floating-panel.floating-panel--semantic-brand [data-scope="floating-panel"][data-part="trigger"] {
     background-color: var(--color-brand);
     color: var(--color-brand-ink);
     &:hover {
@@ -536,7 +342,7 @@
     }
   }
 
-  .floating-panel.floating-panel--alert [data-scope="floating-panel"][data-part="trigger"] {
+  .floating-panel.floating-panel--semantic-alert [data-scope="floating-panel"][data-part="trigger"] {
     background-color: var(--color-alert);
     color: var(--color-alert-ink);
     &:hover {
@@ -560,7 +366,7 @@
     }
   }
 
-  .floating-panel.floating-panel--info [data-scope="floating-panel"][data-part="trigger"] {
+  .floating-panel.floating-panel--semantic-info [data-scope="floating-panel"][data-part="trigger"] {
     background-color: var(--color-info);
     color: var(--color-info-ink);
     &:hover {
@@ -584,7 +390,7 @@
     }
   }
 
-  .floating-panel.floating-panel--success [data-scope="floating-panel"][data-part="trigger"] {
+  .floating-panel.floating-panel--semantic-success [data-scope="floating-panel"][data-part="trigger"] {
     background-color: var(--color-success);
     color: var(--color-success-ink);
     &:hover {
@@ -608,7 +414,7 @@
     }
   }
 
-  .floating-panel.floating-panel--selected [data-scope="floating-panel"][data-part="trigger"] {
+  .floating-panel.floating-panel--semantic-selected [data-scope="floating-panel"][data-part="trigger"] {
     background-color: var(--color-selected);
     color: var(--color-selected-ink);
     &:hover {

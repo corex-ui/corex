@@ -95,7 +95,7 @@ defmodule E2eWeb.ToggleModel do
   end
 
   def wait_styling_page(session) do
-    assert_has(session, css("#toggle-styling-page", visible: :any))
+    assert_has(session, css("#toggle-style-page", visible: :any))
     session
   end
 

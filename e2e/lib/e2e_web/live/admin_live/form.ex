@@ -37,7 +37,7 @@ defmodule E2eWeb.AdminLive.Form do
             final_focus={"dialog:admin-delete-#{@admin.id}:trigger"}
           >
             <:trigger
-              class="button button--alert button--square"
+              class="button button--semantic-alert button--shape-square"
               aria_label="Delete admin"
               title="Delete admin"
             >

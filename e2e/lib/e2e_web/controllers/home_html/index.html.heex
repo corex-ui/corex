@@ -3,22 +3,24 @@
     <div class="home__hero__stack">
       <div class="home__hero__inner">
         <div class="home__hero__copy">
-          <h1 id="home-hero-heading" class="home__display home__display--lg">
-            {~t"The Phoenix UI with a"} <span class="home__display__accent">{~t"real API"}</span>.
-          </h1>
+          <.h1 id="home-hero-heading" text="4xl" weight="bold" width="full">
+            {~t"The Phoenix UI with a"} <span class="h1 h1--brand">{~t"real API"}</span>.
+          </.h1>
 
-          <p class="home__lede">
+          <.lead max_width="lg">
             {~t"Accessible, unstyled Phoenix components with a full server-and-client API, powered by"}
             <.navigate to="https://zagjs.com" class="link" external>Zag.js</.navigate>
             {~t"state machines."}
-          </p>
+          </.lead>
 
           <ul class="home__bullets" aria_label="Highlights">
             <li :for={bullet <- @hero_bullets} class="home__bullet">
-              <.heroicon name="hero-check" />
-              <span>
-                <strong>{bullet.title}</strong> {bullet.body}
-              </span>
+              <.row gap="sm" align="start">
+                <.heroicon name="hero-check" />
+                <.p text="sm"  width="full">
+                  <strong class="p p--semibold">{bullet.title}</strong> {bullet.body}
+                </.p>
+              </.row>
             </li>
           </ul>
 
@@ -38,7 +40,14 @@
         >
           <h2 class="sr-only">{~t"Interactive preview"}</h2>
           <div class="home__hero__col home__hero__col--start">
-            <div class="home__card home__card--accordion">
+            <.stack
+              variant="layer"
+              radius="xl"
+              padding="md"
+              gap="sm"
+              width="full"
+              class="home__hero__card home__hero__card--accordion"
+            >
               <div class="home__card__header">
                 <.badge size="sm">
                   <.heroicon name="hero-bars-3-bottom-left" />
@@ -80,9 +89,16 @@
                   <.heroicon name="hero-chevron-right" />
                 </:indicator>
               </.accordion>
-            </div>
+            </.stack>
 
-            <div class="home__card home__card--code">
+            <.stack
+              variant="layer"
+              radius="xl"
+              padding="md"
+              gap="sm"
+              width="full"
+              class="home__hero__card home__hero__card--code"
+            >
               <div class="home__card__header">
                 <.badge size="sm">
                   <.heroicon name="hero-code-bracket" />
@@ -114,16 +130,25 @@
                 language={:heex}
                 code={@hero_code}
               />
-            </div>
+            </.stack>
           </div>
 
           <div class="home__hero__col home__hero__col--end">
-            <div class="home__card home__card--api">
+            <.stack
+              variant="layer"
+              radius="xl"
+              padding="md"
+              gap="sm"
+              width="full"
+              class="home__hero__card home__hero__card--api"
+            >
               <.badge size="sm">
                 <.heroicon name="hero-command-line" />
                 API
               </.badge>
-              <p class="home__card__hint">{~t"Drive the accordion from anywhere."}</p>
+              <.p text="xs"  class="home__card__hint">
+                {~t"Drive the accordion from anywhere."}
+              </.p>
               <div class="home__card__actions">
                 <.action
                   type="button"
@@ -151,9 +176,16 @@
                   <.heroicon name="hero-x-mark" /> {~t"Close all"}
                 </.action>
               </div>
-            </div>
+            </.stack>
 
-            <div class="home__card home__card--events">
+            <.stack
+              variant="layer"
+              radius="xl"
+              padding="md"
+              gap="sm"
+              width="full"
+              class="home__hero__card home__hero__card--events"
+            >
               <.badge size="sm">
                 <.heroicon name="hero-signal" />
                 {~t"Events"}
@@ -166,12 +198,12 @@
                 <:col :let={_row} label={~t"Time"}></:col>
                 <:col :let={_row} label={~t"Open items"}></:col>
                 <:empty>
-                  <p class="home__card__events-empty">
+                  <.p text="xs"  class="home__card__events-empty">
                     {~t"Toggle the accordion to watch events land."}
-                  </p>
+                  </.p>
                 </:empty>
               </.data_table>
-            </div>
+            </.stack>
           </div>
         </div>
       </div>
@@ -188,40 +220,34 @@
       </h2>
       <div class="home__numbers">
         <div class="home__numbers__cell">
-          <span class="home__numbers__value">
-            {@component_count}<span class="home__numbers__value__suffix">+</span>
-          </span>
-          <span class="home__numbers__label">{~t"Components"}</span>
-          <p class="home__numbers__hint">
-            {~t"Works in Controller and Live View"}
-          </p>
+          <.h2 text="4xl" weight="bold">
+            {@component_count}<span class="h2 h2--brand">+</span>
+          </.h2>
+          <.small text="xs" weight="semibold" >{~t"Components"}</.small>
+          <.p text="sm" >{~t"Works in Controller and Live View"}</.p>
         </div>
         <div class="home__numbers__cell">
-          <span class="home__numbers__value">
-            100<span class="home__numbers__value__suffix">+</span>
-          </span>
-          <span class="home__numbers__label">{~t"API & Events"}</span>
-          <p class="home__numbers__hint">
-            {~t"From the Server and the Client"}
-          </p>
+          <.h2 text="4xl" weight="bold">
+            100<span class="h2 h2--brand">+</span>
+          </.h2>
+          <.small text="xs" weight="semibold" >{~t"API & Events"}</.small>
+          <.p text="sm" >{~t"From the Server and the Client"}</.p>
         </div>
         <div class="home__numbers__cell">
-          <span class="home__numbers__value">
-            100<span class="home__numbers__value__suffix">%</span>
-          </span>
-          <span class="home__numbers__label">{~t"Open Source"}</span>
-          <p class="home__numbers__hint">
-            {~t"Open Source and free to use. MIT License"}
-          </p>
+          <.h2 text="4xl" weight="bold">
+            100<span class="h2 h2--brand">%</span>
+          </.h2>
+          <.small text="xs" weight="semibold" >{~t"Open Source"}</.small>
+          <.p text="sm" >{~t"Open Source and free to use. MIT License"}</.p>
         </div>
         <div class="home__numbers__cell">
-          <span class="home__numbers__value">
-            A<span class="home__numbers__value__suffix">11y</span>
-          </span>
-          <span class="home__numbers__label">{~t"Built in"}</span>
-          <p class="home__numbers__hint">
+          <.h2 text="4xl" weight="bold">
+            A<span class="h2 h2--brand">11y</span>
+          </.h2>
+          <.small text="xs" weight="semibold" >{~t"Built in"}</.small>
+          <.p text="sm" >
             {~t"Keyboard, focus and ARIA from Zag.js machines."}
-          </p>
+          </.p>
         </div>
       </div>
     </div>
@@ -231,7 +257,9 @@
     <div class="home__section__inner home__stack">
       <div class="home__stack__head">
         <span class="home__stack__rule" aria-hidden="true"></span>
-        <h2 id="home-stack-heading" class="home__eyebrow">{~t"Built with"}</h2>
+        <.small id="home-stack-heading" text="xs" weight="semibold" semantic="brand">
+          {~t"Built with"}
+        </.small>
         <span class="home__stack__rule" aria-hidden="true"></span>
       </div>
 
@@ -255,13 +283,13 @@
   <section class="home__section home__section--alt home__cta" aria-labelledby="home-cta-heading">
     <div class="home__section__inner">
       <div class="home__cta__inner">
-        <p class="home__eyebrow">{~t"Ready?"}</p>
-        <h2 id="home-cta-heading" class="home__cta__display">
-          {~t"Install Corex"} <span class="home__display__accent">{~t"in one command."}</span>
-        </h2>
-        <p class="home__lede">
+        <.small text="xs" weight="semibold" semantic="brand">{~t"Ready?"}</.small>
+        <.h2 id="home-cta-heading" text="4xl" weight="bold">
+          {~t"Install Corex"} <span class="h2 h2--brand">{~t"in one command."}</span>
+        </.h2>
+        <.lead max_width="lg">
           {~t"Corex generator wires up the dependency, the design tokens and the assets pipeline for you."}
-        </p>
+        </.lead>
 
         <.clipboard
           id="home-install-clipboard"

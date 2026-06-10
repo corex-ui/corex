@@ -57,7 +57,7 @@ defmodule Corex.Avatar do
   ### With classes
 
   ```heex
-  <.avatar class="avatar avatar--md" src="">
+  <.avatar class="avatar avatar--size-md" src="">
     <:fallback>AB</:fallback>
   </.avatar>
   ```
@@ -157,20 +157,20 @@ defmodule Corex.Avatar do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `avatar` |
-  | Accent | `avatar avatar--accent` |
-  | Brand | `avatar avatar--brand` |
-  | Alert | `avatar avatar--alert` |
-  | Info | `avatar avatar--info` |
-  | Success | `avatar avatar--success` |
+  | Accent | `avatar avatar--semantic-accent` |
+  | Brand | `avatar avatar--semantic-brand` |
+  | Alert | `avatar avatar--semantic-alert` |
+  | Info | `avatar avatar--semantic-info` |
+  | Success | `avatar avatar--semantic-success` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `avatar avatar--sm` |
-  | MD | `avatar avatar--md` |
-  | LG | `avatar avatar--lg` |
-  | XL | `avatar avatar--xl` |
+  | SM | `avatar avatar--size-sm` |
+  | MD | `avatar avatar--size-md` |
+  | LG | `avatar avatar--size-lg` |
+  | XL | `avatar avatar--size-xl` |
 
   <!-- tabs-close -->
 

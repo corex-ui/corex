@@ -25,8 +25,8 @@ defmodule E2eWeb.ActionTest do
       el = find(session, css("#my-action"))
       classes = Wallaby.Element.attr(el, "class")
       assert String.contains?(classes, "button")
-      assert String.contains?(classes, "button--solid")
-      assert String.contains?(classes, "button--md")
+      assert String.contains?(classes, "button--variant-solid")
+      assert String.contains?(classes, "button--size-md")
     end
 
     feature "as link at defaults  -  link look with recipe modifiers", %{session: session} do
@@ -39,8 +39,8 @@ defmodule E2eWeb.ActionTest do
       el = find(session, css("#my-action"))
       classes = Wallaby.Element.attr(el, "class")
       assert String.contains?(classes, "link")
-      assert String.contains?(classes, "link--solid")
-      assert String.contains?(classes, "link--md")
+      assert String.contains?(classes, "link--variant-solid")
+      assert String.contains?(classes, "link--size-md")
       refute String.contains?(classes, "button--")
     end
 
@@ -66,7 +66,7 @@ defmodule E2eWeb.ActionTest do
 
       el = find(session, css("#my-action"))
       classes = Wallaby.Element.attr(el, "class")
-      assert String.contains?(classes, "button--accent")
+      assert String.contains?(classes, "button--semantic-accent")
     end
 
     feature "variant  -  ghost adds ghost modifier on the host", %{session: session} do
@@ -78,7 +78,7 @@ defmodule E2eWeb.ActionTest do
 
       el = find(session, css("#my-action"))
       classes = Wallaby.Element.attr(el, "class")
-      assert String.contains?(classes, "button--ghost")
+      assert String.contains?(classes, "button--variant-ghost")
     end
   end
 

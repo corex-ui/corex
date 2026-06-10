@@ -77,7 +77,7 @@ defmodule Corex.AngleSlider do
   ### With classes
 
   ```heex
-  <.angle_slider class="angle-slider angle-slider--accent angle-slider--md" marker_values={[0, 90, 180, 270]}>
+  <.angle_slider class="angle-slider angle-slider--semantic-accent angle-slider--size-md" marker_values={[0, 90, 180, 270]}>
     <:label>Angle</:label>
   </.angle_slider>
   ```
@@ -158,20 +158,20 @@ defmodule Corex.AngleSlider do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `angle-slider` |
-  | Accent | `angle-slider angle-slider--accent` |
-  | Brand | `angle-slider angle-slider--brand` |
-  | Alert | `angle-slider angle-slider--alert` |
-  | Info | `angle-slider angle-slider--info` |
-  | Success | `angle-slider angle-slider--success` |
+  | Accent | `angle-slider angle-slider--semantic-accent` |
+  | Brand | `angle-slider angle-slider--semantic-brand` |
+  | Alert | `angle-slider angle-slider--semantic-alert` |
+  | Info | `angle-slider angle-slider--semantic-info` |
+  | Success | `angle-slider angle-slider--semantic-success` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `angle-slider angle-slider--sm` |
-  | MD | `angle-slider angle-slider--md` |
-  | LG | `angle-slider angle-slider--lg` |
-  | XL | `angle-slider angle-slider--xl` |
+  | SM | `angle-slider angle-slider--size-sm` |
+  | MD | `angle-slider angle-slider--size-md` |
+  | LG | `angle-slider angle-slider--size-lg` |
+  | XL | `angle-slider angle-slider--size-xl` |
 
   <!-- tabs-close -->
 

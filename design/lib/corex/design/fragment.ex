@@ -9,7 +9,7 @@ defmodule Corex.Design.Fragment do
   Tailwind-free replacement for the old `@utility ui-*` mixins). The emitter
   splices these inline wherever a rule declares `decls: [include: <id>]`.
   """
-  @utility_ids ~w(ui_root ui_trigger ui_trigger_square ui_trigger_circle ui_trigger_ghost ui_icon ui_content ui_label ui_input ui_item ui_link ui_error ui_readonly ui_loading)a
+  @utility_ids ~w(ui_root ui_trigger ui_icon ui_content ui_label ui_input ui_item ui_link ui_error ui_readonly ui_loading)a
 
   def utility_ids, do: @utility_ids
 
@@ -20,36 +20,8 @@ defmodule Corex.Design.Fragment do
     end
   end
 
-  def utility_name(:ui_trigger_square), do: "ui-trigger--square"
-  def utility_name(:ui_trigger_circle), do: "ui-trigger--circle"
-  def utility_name(:ui_trigger_ghost), do: "ui-trigger--ghost"
-
   def utility_name(id) when id in @utility_ids do
     id |> Atom.to_string() |> String.replace("_", "-")
-  end
-
-  @doc false
-  def inlined_declaration_lines do
-    @utility_ids
-    |> Enum.flat_map(fn id ->
-      id
-      |> get!()
-      |> Map.fetch!(:decls)
-      |> declaration_lines_from_decls()
-    end)
-    |> Enum.uniq()
-  end
-
-  defp declaration_lines_from_decls(decls) do
-    alias Corex.Design.Css
-
-    Enum.flat_map(decls, fn
-      {:include, _} -> []
-      {:raw, _} -> []
-      {property, value} ->
-        {css_prop, css_val} = Css.resolve_property_value({property, value})
-        ["#{css_prop}: #{css_val};"]
-    end)
   end
 
   defp frag(decls, children \\ []), do: %{decls: decls, children: children}
@@ -118,33 +90,6 @@ defmodule Corex.Design.Fragment do
             align_items: "center"
           ]
         )
-      ]
-    )
-  end
-
-  defp fetch(:ui_trigger_square) do
-    frag(aspect_ratio: "1 / 1", padding: "0", justify_content: "center", width: "auto")
-  end
-
-  defp fetch(:ui_trigger_circle) do
-    frag(
-      aspect_ratio: "1 / 1",
-      padding: "0",
-      justify_content: "center",
-      width: "auto",
-      border_radius: "var(--radius-full) !important"
-    )
-  end
-
-  defp fetch(:ui_trigger_ghost) do
-    frag(
-      [
-        border_color: "transparent !important",
-        background_color: "transparent !important"
-      ],
-      [
-        Rule.new("&:hover", decls: [background_color: "var(--color-ui-hover) !important"]),
-        Rule.new("&:active", decls: [background_color: "var(--color-ui-active) !important"])
       ]
     )
   end
@@ -326,11 +271,20 @@ defmodule Corex.Design.Fragment do
           decls: [
             display: "flex",
             gap: "var(--space)",
-            width: "100%",
+            flex: "1 1 0%",
+            min_width: "0",
+            max_width: "100%",
+            width: "auto",
+            overflow: "hidden",
+            text_overflow: "ellipsis",
+            white_space: "nowrap",
             text_align: "start",
-            align_items: "center",
-            flex: "1"
+            align_items: "center"
           ]
+        ),
+        Rule.new(
+          ~s(& [data-part="branch-indicator"],\n  & [data-part="item-indicator"]),
+          decls: [margin_inline_start: "auto", flex_shrink: "0", min_width: "1em"]
         )
       ]
     )
@@ -420,28 +374,6 @@ defmodule Corex.Design.Fragment do
       pointer_events: "none !important",
       cursor: "wait",
       user_select: "none"
-    )
-  end
-
-  defp fetch(:scrollbar) do
-    frag([],
-      [
-        Rule.new("&::-webkit-scrollbar",
-          decls: [
-            {:raw,
-             "width: calc(#{Var.ref([:space])} * 0.6); height: calc(#{Var.ref([:space])} * 0.6)"}
-          ]
-        ),
-        Rule.new("&::-webkit-scrollbar-track",
-          decls: [background: {:color, :ui}]
-        ),
-        Rule.new("&::-webkit-scrollbar-thumb",
-          decls: [background: {:color, :border}]
-        ),
-        Rule.new("&::-webkit-scrollbar-corner",
-          decls: [background: {:color, :border}]
-        )
-      ]
     )
   end
 

@@ -50,7 +50,7 @@ defmodule Corex.PasswordInput do
   ### With classes
 
   ```heex
-  <.password_input class="password-input password-input--accent password-input--md">
+  <.password_input class="password-input password-input--semantic-accent password-input--size-md">
     <:label>Password</:label>
     <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
     <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
@@ -227,20 +227,20 @@ defmodule Corex.PasswordInput do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `password-input` |
-  | Accent | `password-input password-input--accent` |
-  | Brand | `password-input password-input--brand` |
-  | Alert | `password-input password-input--alert` |
-  | Info | `password-input password-input--info` |
-  | Success | `password-input password-input--success` |
+  | Accent | `password-input password-input--semantic-accent` |
+  | Brand | `password-input password-input--semantic-brand` |
+  | Alert | `password-input password-input--semantic-alert` |
+  | Info | `password-input password-input--semantic-info` |
+  | Success | `password-input password-input--semantic-success` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `password-input password-input--sm` |
-  | MD | `password-input password-input--md` |
-  | LG | `password-input password-input--lg` |
-  | XL | `password-input password-input--xl` |
+  | SM | `password-input password-input--size-sm` |
+  | MD | `password-input password-input--size-md` |
+  | LG | `password-input password-input--size-lg` |
+  | XL | `password-input password-input--size-xl` |
 
   <!-- tabs-close -->
 

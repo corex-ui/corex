@@ -613,10 +613,10 @@ defmodule E2eWeb.Demos.TimerDemo do
 
   def styling_size_code do
     ~S"""
-    <.timer class="timer timer--sm w-full" start_ms={60_000} target_ms={0} countdown />
-    <.timer class="timer timer--md w-full" start_ms={60_000} target_ms={0} countdown />
-    <.timer class="timer timer--lg w-full" start_ms={60_000} target_ms={0} countdown />
-    <.timer class="timer timer--xl w-full" start_ms={60_000} target_ms={0} countdown />
+    <.timer class="timer timer--size-sm w-full" start_ms={60_000} target_ms={0} countdown />
+    <.timer class="timer timer--size-md w-full" start_ms={60_000} target_ms={0} countdown />
+    <.timer class="timer timer--size-lg w-full" start_ms={60_000} target_ms={0} countdown />
+    <.timer class="timer timer--size-xl w-full" start_ms={60_000} target_ms={0} countdown />
     """
   end
 
@@ -627,7 +627,7 @@ defmodule E2eWeb.Demos.TimerDemo do
     <div class="flex flex-col gap-4 w-full max-w-md">
       <.timer
         id="timer-style-sm"
-        class="timer timer--sm w-full"
+        class="timer timer--size-sm w-full"
         start_ms={60_000}
         target_ms={0}
         countdown
@@ -639,7 +639,7 @@ defmodule E2eWeb.Demos.TimerDemo do
       </.timer>
       <.timer
         id="timer-style-md"
-        class="timer timer--md w-full"
+        class="timer timer--size-md w-full"
         start_ms={60_000}
         target_ms={0}
         countdown
@@ -651,7 +651,7 @@ defmodule E2eWeb.Demos.TimerDemo do
       </.timer>
       <.timer
         id="timer-style-lg"
-        class="timer timer--lg w-full"
+        class="timer timer--size-lg w-full"
         start_ms={60_000}
         target_ms={0}
         countdown
@@ -663,7 +663,7 @@ defmodule E2eWeb.Demos.TimerDemo do
       </.timer>
       <.timer
         id="timer-style-xl"
-        class="timer timer--xl w-full"
+        class="timer timer--size-xl w-full"
         start_ms={60_000}
         target_ms={0}
         countdown
@@ -825,11 +825,11 @@ defmodule E2eWeb.Demos.TimerDemo do
   def styling_semantic_code do
     ~S"""
     <.timer class="timer w-full timer--max-w-xs" start_ms={60_000} target_ms={0} countdown />
-    <.timer class="timer timer--accent w-full timer--max-w-xs" start_ms={60_000} target_ms={0} countdown />
-    <.timer class="timer timer--brand w-full timer--max-w-xs" start_ms={60_000} target_ms={0} countdown />
-    <.timer class="timer timer--alert w-full timer--max-w-xs" start_ms={60_000} target_ms={0} countdown />
-    <.timer class="timer timer--info w-full timer--max-w-xs" start_ms={60_000} target_ms={0} countdown />
-    <.timer class="timer timer--success w-full timer--max-w-xs" start_ms={60_000} target_ms={0} countdown />
+    <.timer class="timer timer--semantic-accent w-full timer--max-w-xs" start_ms={60_000} target_ms={0} countdown />
+    <.timer class="timer timer--semantic-brand w-full timer--max-w-xs" start_ms={60_000} target_ms={0} countdown />
+    <.timer class="timer timer--semantic-alert w-full timer--max-w-xs" start_ms={60_000} target_ms={0} countdown />
+    <.timer class="timer timer--semantic-info w-full timer--max-w-xs" start_ms={60_000} target_ms={0} countdown />
+    <.timer class="timer timer--semantic-success w-full timer--max-w-xs" start_ms={60_000} target_ms={0} countdown />
     """
   end
 
@@ -852,7 +852,7 @@ defmodule E2eWeb.Demos.TimerDemo do
       </.timer>
       <.timer
         id="timer-c-ac"
-        class="timer timer--accent w-full timer--max-w-xs"
+        class="timer timer--semantic-accent w-full timer--max-w-xs"
         start_ms={60_000}
         target_ms={0}
         countdown
@@ -864,7 +864,7 @@ defmodule E2eWeb.Demos.TimerDemo do
       </.timer>
       <.timer
         id="timer-c-br"
-        class="timer timer--brand w-full timer--max-w-xs"
+        class="timer timer--semantic-brand w-full timer--max-w-xs"
         start_ms={60_000}
         target_ms={0}
         countdown
@@ -876,7 +876,7 @@ defmodule E2eWeb.Demos.TimerDemo do
       </.timer>
       <.timer
         id="timer-c-al"
-        class="timer timer--alert w-full timer--max-w-xs"
+        class="timer timer--semantic-alert w-full timer--max-w-xs"
         start_ms={60_000}
         target_ms={0}
         countdown
@@ -888,7 +888,7 @@ defmodule E2eWeb.Demos.TimerDemo do
       </.timer>
       <.timer
         id="timer-c-in"
-        class="timer timer--info w-full timer--max-w-xs"
+        class="timer timer--semantic-info w-full timer--max-w-xs"
         start_ms={60_000}
         target_ms={0}
         countdown
@@ -900,7 +900,7 @@ defmodule E2eWeb.Demos.TimerDemo do
       </.timer>
       <.timer
         id="timer-c-su"
-        class="timer timer--success w-full timer--max-w-xs"
+        class="timer timer--semantic-success w-full timer--max-w-xs"
         start_ms={60_000}
         target_ms={0}
         countdown
@@ -1079,4 +1079,8 @@ defmodule E2eWeb.Demos.TimerDemo do
     </.timer>
     """
   end
+
+  def style_preview(assigns), do: E2eWeb.Demos.StylePreview.preview(:timer, assigns)
+  def style_playground(assigns), do: style_preview(assigns)
+
 end

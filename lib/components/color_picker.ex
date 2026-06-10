@@ -29,7 +29,7 @@ defmodule Corex.ColorPicker do
   ### With classes
 
   ```heex
-  <.color_picker class="color-picker color-picker--accent color-picker--md" value="#3b82f6" label="Color" />
+  <.color_picker class="color-picker color-picker--semantic-accent color-picker--size-md" value="#3b82f6" label="Color" />
   ```
 
   <!-- tabs-close -->
@@ -48,7 +48,7 @@ defmodule Corex.ColorPicker do
   ### set_value
 
   ```heex
-  <.action phx-click={Corex.ColorPicker.set_value("color-picker-api", "#ff0000")} class="button button--sm">
+  <.action phx-click={Corex.ColorPicker.set_value("color-picker-api", "#ff0000")} class="button button--size-sm">
     Set red
   </.action>
   <.color_picker id="color-picker-api" value="#000000" label="Color" class="color-picker" />
@@ -377,20 +377,20 @@ defmodule Corex.ColorPicker do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `color-picker` |
-  | Accent | `color-picker color-picker--accent` |
-  | Brand | `color-picker color-picker--brand` |
-  | Alert | `color-picker color-picker--alert` |
-  | Info | `color-picker color-picker--info` |
-  | Success | `color-picker color-picker--success` |
+  | Accent | `color-picker color-picker--semantic-accent` |
+  | Brand | `color-picker color-picker--semantic-brand` |
+  | Alert | `color-picker color-picker--semantic-alert` |
+  | Info | `color-picker color-picker--semantic-info` |
+  | Success | `color-picker color-picker--semantic-success` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `color-picker color-picker--sm` |
-  | MD | `color-picker color-picker--md` |
-  | LG | `color-picker color-picker--lg` |
-  | XL | `color-picker color-picker--xl` |
+  | SM | `color-picker color-picker--size-sm` |
+  | MD | `color-picker color-picker--size-md` |
+  | LG | `color-picker color-picker--size-lg` |
+  | XL | `color-picker color-picker--size-xl` |
 
   <!-- tabs-close -->
   '''

@@ -128,7 +128,7 @@ defmodule E2eWeb.CarouselPlayLive do
           />
 
           <.toggle_group
-            class="toggle-group toggle-group--sm toggle--max-w-7xs"
+            class="toggle-group toggle-group--size-sm toggle--max-w-7xs"
             id="orientation"
             on_value_change="control_changed"
             multiple={false}
@@ -162,7 +162,7 @@ defmodule E2eWeb.CarouselPlayLive do
 
           <.number_input
             id="carousel-playground-slides-per-page"
-            class="number-input number-input--sm w-4xs"
+            class="number-input number-input--size-sm w-4xs"
             value={to_string(@slides_per_page)}
             step={1.0}
             min={1.0}
@@ -180,7 +180,7 @@ defmodule E2eWeb.CarouselPlayLive do
 
           <.number_input
             id="carousel-playground-spacing"
-            class="number-input number-input--sm w-4xs"
+            class="number-input number-input--size-sm w-4xs"
             value={to_string(@spacing_px)}
             step={1.0}
             min={0.0}
@@ -198,7 +198,7 @@ defmodule E2eWeb.CarouselPlayLive do
 
           <.number_input
             id="carousel-playground-padding"
-            class="number-input number-input--sm w-4xs"
+            class="number-input number-input--size-sm w-4xs"
             value={if(@padding_px, do: to_string(@padding_px), else: "")}
             step={1.0}
             min={0.0}

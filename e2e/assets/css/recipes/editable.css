@@ -34,6 +34,62 @@
 }
 
 
+@utility editable--size-* {
+  [data-scope="editable"][data-part="input"] {
+      color: --value(--color-ui-ink-*, [color]);
+    max-width: --value(--container-*, [length]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-size-*, [length]);
+  }
+
+  [data-scope="editable"][data-part="label"] {
+      font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+  }
+
+  [data-scope="editable"][data-part="root"] {
+      gap: --value(--spacing-space-*, [length]);
+  }
+
+  [data-scope="editable"][data-part="preview"] {
+      color: --value(--color-ui-ink-*, [color]);
+    max-width: --value(--container-*, [length]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-size-*, [length]);
+  }
+
+  [data-scope="editable"][data-part="edit-trigger"] {
+      max-width: --value(--container-*, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-size-*, [length]);
+  }
+
+  [data-scope="editable"][data-part="cancel-trigger"] {
+      max-width: --value(--container-*, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-size-*, [length]);
+  }
+
+  [data-scope="editable"][data-part="submit-trigger"] {
+      max-width: --value(--container-*, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-size-*, [length]);
+  }
+
+}
+
+
 @layer components {
   .editable.editable--w-auto {
     width: auto;
@@ -53,74 +109,6 @@
 
   .editable.editable--max-w-full {
     max-width: 100%;
-  }
-
-  .editable.editable--max-w-7xs {
-    max-width: var(--container-7xs);
-  }
-
-  .editable.editable--max-w-6xs {
-    max-width: var(--container-6xs);
-  }
-
-  .editable.editable--max-w-5xs {
-    max-width: var(--container-5xs);
-  }
-
-  .editable.editable--max-w-4xs {
-    max-width: var(--container-4xs);
-  }
-
-  .editable.editable--max-w-3xs {
-    max-width: var(--container-3xs);
-  }
-
-  .editable.editable--max-w-2xs {
-    max-width: var(--container-2xs);
-  }
-
-  .editable.editable--max-w-xs {
-    max-width: var(--container-xs);
-  }
-
-  .editable.editable--max-w-sm {
-    max-width: var(--container-sm);
-  }
-
-  .editable.editable--max-w-md {
-    max-width: var(--container-md);
-  }
-
-  .editable.editable--max-w-lg {
-    max-width: var(--container-lg);
-  }
-
-  .editable.editable--max-w-xl {
-    max-width: var(--container-xl);
-  }
-
-  .editable.editable--max-w-2xl {
-    max-width: var(--container-2xl);
-  }
-
-  .editable.editable--max-w-3xl {
-    max-width: var(--container-3xl);
-  }
-
-  .editable.editable--max-w-4xl {
-    max-width: var(--container-4xl);
-  }
-
-  .editable.editable--max-w-5xl {
-    max-width: var(--container-5xl);
-  }
-
-  .editable.editable--max-w-6xl {
-    max-width: var(--container-6xl);
-  }
-
-  .editable.editable--max-w-7xl {
-    max-width: var(--container-7xl);
   }
 
   .editable.editable--h-auto {
@@ -143,356 +131,28 @@
     max-height: 100%;
   }
 
-  .editable.editable--max-h-7xs {
-    max-height: var(--container-7xs);
-  }
-
-  .editable.editable--max-h-6xs {
-    max-height: var(--container-6xs);
-  }
-
-  .editable.editable--max-h-5xs {
-    max-height: var(--container-5xs);
-  }
-
-  .editable.editable--max-h-4xs {
-    max-height: var(--container-4xs);
-  }
-
-  .editable.editable--max-h-3xs {
-    max-height: var(--container-3xs);
-  }
-
-  .editable.editable--max-h-2xs {
-    max-height: var(--container-2xs);
-  }
-
-  .editable.editable--max-h-xs {
-    max-height: var(--container-xs);
-  }
-
-  .editable.editable--max-h-sm {
-    max-height: var(--container-sm);
-  }
-
-  .editable.editable--max-h-md {
-    max-height: var(--container-md);
-  }
-
-  .editable.editable--max-h-lg {
-    max-height: var(--container-lg);
-  }
-
-  .editable.editable--max-h-xl {
-    max-height: var(--container-xl);
-  }
-
-  .editable.editable--max-h-2xl {
-    max-height: var(--container-2xl);
-  }
-
-  .editable.editable--max-h-3xl {
-    max-height: var(--container-3xl);
-  }
-
-  .editable.editable--max-h-4xl {
-    max-height: var(--container-4xl);
-  }
-
-  .editable.editable--max-h-5xl {
-    max-height: var(--container-5xl);
-  }
-
-  .editable.editable--max-h-6xl {
-    max-height: var(--container-6xl);
-  }
-
-  .editable.editable--max-h-7xl {
-    max-height: var(--container-7xl);
-  }
-
-  .editable.editable--accent {
+  .editable.editable--semantic-accent {
     position: relative;
   }
 
-  .editable.editable--brand {
+  .editable.editable--semantic-brand {
     position: relative;
   }
 
-  .editable.editable--alert {
+  .editable.editable--semantic-alert {
     position: relative;
   }
 
-  .editable.editable--info {
+  .editable.editable--semantic-info {
     position: relative;
   }
 
-  .editable.editable--success {
+  .editable.editable--semantic-success {
     position: relative;
   }
 
-  .editable.editable--selected {
+  .editable.editable--semantic-selected {
     position: relative;
-  }
-
-  .editable.editable--sm [data-scope="editable"][data-part="root"] {
-    gap: var(--space-sm);
-  }
-
-  .editable.editable--sm [data-scope="editable"][data-part="label"] {
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-  }
-
-  .editable.editable--sm [data-scope="editable"][data-part="edit-trigger"] {
-    width: calc(var(--size-sm) * 0.6);
-    gap: var(--space-sm);
-    max-height: calc(var(--size-sm) * 0.6);
-    max-width: calc(var(--size-sm) * 0.6);
-    padding-inline: var(--space-sm);
-    min-height: calc(var(--size-sm) * 0.6);
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-    min-width: calc(var(--size-sm) * 0.6);
-  }
-
-  .editable.editable--sm [data-scope="editable"][data-part="cancel-trigger"] {
-    width: calc(var(--size-sm) * 0.6);
-    gap: var(--space-sm);
-    max-height: calc(var(--size-sm) * 0.6);
-    max-width: calc(var(--size-sm) * 0.6);
-    padding-inline: var(--space-sm);
-    min-height: calc(var(--size-sm) * 0.6);
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-    min-width: calc(var(--size-sm) * 0.6);
-  }
-
-  .editable.editable--sm [data-scope="editable"][data-part="submit-trigger"] {
-    width: calc(var(--size-sm) * 0.6);
-    gap: var(--space-sm);
-    max-height: calc(var(--size-sm) * 0.6);
-    max-width: calc(var(--size-sm) * 0.6);
-    padding-inline: var(--space-sm);
-    min-height: calc(var(--size-sm) * 0.6);
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-    min-width: calc(var(--size-sm) * 0.6);
-  }
-
-  .editable.editable--sm [data-scope="editable"][data-part="preview"] {
-    width: calc(var(--size-sm) * 3);
-    color: var(--color-ui-ink);
-    max-width: calc(var(--size-sm) * 3);
-    min-height: var(--size-sm);
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-    border-color: var(--color-border);
-  }
-
-  .editable.editable--sm [data-scope="editable"][data-part="input"] {
-    width: calc(var(--size-sm) * 3);
-    color: var(--color-ui-ink);
-    max-width: calc(var(--size-sm) * 3);
-    min-height: var(--size-sm);
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-    border-color: var(--color-border);
-  }
-
-  .editable.editable--md [data-scope="editable"][data-part="root"] {
-    gap: var(--space-md);
-  }
-
-  .editable.editable--md [data-scope="editable"][data-part="label"] {
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-  }
-
-  .editable.editable--md [data-scope="editable"][data-part="edit-trigger"] {
-    width: calc(var(--size-md) * 0.6);
-    gap: var(--space-md);
-    max-height: calc(var(--size-md) * 0.6);
-    max-width: calc(var(--size-md) * 0.6);
-    padding-inline: var(--space-md);
-    min-height: calc(var(--size-md) * 0.6);
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-    min-width: calc(var(--size-md) * 0.6);
-  }
-
-  .editable.editable--md [data-scope="editable"][data-part="cancel-trigger"] {
-    width: calc(var(--size-md) * 0.6);
-    gap: var(--space-md);
-    max-height: calc(var(--size-md) * 0.6);
-    max-width: calc(var(--size-md) * 0.6);
-    padding-inline: var(--space-md);
-    min-height: calc(var(--size-md) * 0.6);
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-    min-width: calc(var(--size-md) * 0.6);
-  }
-
-  .editable.editable--md [data-scope="editable"][data-part="submit-trigger"] {
-    width: calc(var(--size-md) * 0.6);
-    gap: var(--space-md);
-    max-height: calc(var(--size-md) * 0.6);
-    max-width: calc(var(--size-md) * 0.6);
-    padding-inline: var(--space-md);
-    min-height: calc(var(--size-md) * 0.6);
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-    min-width: calc(var(--size-md) * 0.6);
-  }
-
-  .editable.editable--md [data-scope="editable"][data-part="preview"] {
-    width: calc(var(--size-md) * 3);
-    color: var(--color-ui-ink);
-    max-width: calc(var(--size-md) * 3);
-    min-height: var(--size-md);
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-    border-color: var(--color-border);
-  }
-
-  .editable.editable--md [data-scope="editable"][data-part="input"] {
-    width: calc(var(--size-md) * 3);
-    color: var(--color-ui-ink);
-    max-width: calc(var(--size-md) * 3);
-    min-height: var(--size-md);
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-    border-color: var(--color-border);
-  }
-
-  .editable.editable--lg [data-scope="editable"][data-part="root"] {
-    gap: var(--space-lg);
-  }
-
-  .editable.editable--lg [data-scope="editable"][data-part="label"] {
-    font-size: var(--text-lg);
-    line-height: var(--leading-lg);
-  }
-
-  .editable.editable--lg [data-scope="editable"][data-part="edit-trigger"] {
-    width: calc(var(--size-lg) * 0.6);
-    gap: var(--space-lg);
-    max-height: calc(var(--size-lg) * 0.6);
-    max-width: calc(var(--size-lg) * 0.6);
-    padding-inline: var(--space-lg);
-    min-height: calc(var(--size-lg) * 0.6);
-    font-size: var(--text-lg);
-    line-height: var(--leading-lg);
-    min-width: calc(var(--size-lg) * 0.6);
-  }
-
-  .editable.editable--lg [data-scope="editable"][data-part="cancel-trigger"] {
-    width: calc(var(--size-lg) * 0.6);
-    gap: var(--space-lg);
-    max-height: calc(var(--size-lg) * 0.6);
-    max-width: calc(var(--size-lg) * 0.6);
-    padding-inline: var(--space-lg);
-    min-height: calc(var(--size-lg) * 0.6);
-    font-size: var(--text-lg);
-    line-height: var(--leading-lg);
-    min-width: calc(var(--size-lg) * 0.6);
-  }
-
-  .editable.editable--lg [data-scope="editable"][data-part="submit-trigger"] {
-    width: calc(var(--size-lg) * 0.6);
-    gap: var(--space-lg);
-    max-height: calc(var(--size-lg) * 0.6);
-    max-width: calc(var(--size-lg) * 0.6);
-    padding-inline: var(--space-lg);
-    min-height: calc(var(--size-lg) * 0.6);
-    font-size: var(--text-lg);
-    line-height: var(--leading-lg);
-    min-width: calc(var(--size-lg) * 0.6);
-  }
-
-  .editable.editable--lg [data-scope="editable"][data-part="preview"] {
-    width: calc(var(--size-lg) * 3);
-    color: var(--color-ui-ink);
-    max-width: calc(var(--size-lg) * 3);
-    min-height: var(--size-lg);
-    font-size: var(--text-lg);
-    line-height: var(--leading-lg);
-    border-color: var(--color-border);
-  }
-
-  .editable.editable--lg [data-scope="editable"][data-part="input"] {
-    width: calc(var(--size-lg) * 3);
-    color: var(--color-ui-ink);
-    max-width: calc(var(--size-lg) * 3);
-    min-height: var(--size-lg);
-    font-size: var(--text-lg);
-    line-height: var(--leading-lg);
-    border-color: var(--color-border);
-  }
-
-  .editable.editable--xl [data-scope="editable"][data-part="root"] {
-    gap: var(--space-xl);
-  }
-
-  .editable.editable--xl [data-scope="editable"][data-part="label"] {
-    font-size: var(--text-xl);
-    line-height: var(--leading-xl);
-  }
-
-  .editable.editable--xl [data-scope="editable"][data-part="edit-trigger"] {
-    width: calc(var(--size-xl) * 0.6);
-    gap: var(--space-xl);
-    max-height: calc(var(--size-xl) * 0.6);
-    max-width: calc(var(--size-xl) * 0.6);
-    padding-inline: var(--space-xl);
-    min-height: calc(var(--size-xl) * 0.6);
-    font-size: var(--text-xl);
-    line-height: var(--leading-xl);
-    min-width: calc(var(--size-xl) * 0.6);
-  }
-
-  .editable.editable--xl [data-scope="editable"][data-part="cancel-trigger"] {
-    width: calc(var(--size-xl) * 0.6);
-    gap: var(--space-xl);
-    max-height: calc(var(--size-xl) * 0.6);
-    max-width: calc(var(--size-xl) * 0.6);
-    padding-inline: var(--space-xl);
-    min-height: calc(var(--size-xl) * 0.6);
-    font-size: var(--text-xl);
-    line-height: var(--leading-xl);
-    min-width: calc(var(--size-xl) * 0.6);
-  }
-
-  .editable.editable--xl [data-scope="editable"][data-part="submit-trigger"] {
-    width: calc(var(--size-xl) * 0.6);
-    gap: var(--space-xl);
-    max-height: calc(var(--size-xl) * 0.6);
-    max-width: calc(var(--size-xl) * 0.6);
-    padding-inline: var(--space-xl);
-    min-height: calc(var(--size-xl) * 0.6);
-    font-size: var(--text-xl);
-    line-height: var(--leading-xl);
-    min-width: calc(var(--size-xl) * 0.6);
-  }
-
-  .editable.editable--xl [data-scope="editable"][data-part="preview"] {
-    width: calc(var(--size-xl) * 3);
-    color: var(--color-ui-ink);
-    max-width: calc(var(--size-xl) * 3);
-    min-height: var(--size-xl);
-    font-size: var(--text-xl);
-    line-height: var(--leading-xl);
-    border-color: var(--color-border);
-  }
-
-  .editable.editable--xl [data-scope="editable"][data-part="input"] {
-    width: calc(var(--size-xl) * 3);
-    color: var(--color-ui-ink);
-    max-width: calc(var(--size-xl) * 3);
-    min-height: var(--size-xl);
-    font-size: var(--text-xl);
-    line-height: var(--leading-xl);
-    border-color: var(--color-border);
   }
 
   .editable.editable--rounded-none [data-scope="editable"][data-part="input"] {
@@ -513,166 +173,6 @@
 
   .editable.editable--rounded-none [data-scope="editable"][data-part="submit-trigger"] {
     border-radius: var(--radius-none);
-  }
-
-  .editable.editable--rounded-xs [data-scope="editable"][data-part="input"] {
-    border-radius: var(--radius-xs);
-  }
-
-  .editable.editable--rounded-xs [data-scope="editable"][data-part="preview"] {
-    border-radius: var(--radius-xs);
-  }
-
-  .editable.editable--rounded-xs [data-scope="editable"][data-part="edit-trigger"] {
-    border-radius: var(--radius-xs);
-  }
-
-  .editable.editable--rounded-xs [data-scope="editable"][data-part="cancel-trigger"] {
-    border-radius: var(--radius-xs);
-  }
-
-  .editable.editable--rounded-xs [data-scope="editable"][data-part="submit-trigger"] {
-    border-radius: var(--radius-xs);
-  }
-
-  .editable.editable--rounded-sm [data-scope="editable"][data-part="input"] {
-    border-radius: var(--radius-sm);
-  }
-
-  .editable.editable--rounded-sm [data-scope="editable"][data-part="preview"] {
-    border-radius: var(--radius-sm);
-  }
-
-  .editable.editable--rounded-sm [data-scope="editable"][data-part="edit-trigger"] {
-    border-radius: var(--radius-sm);
-  }
-
-  .editable.editable--rounded-sm [data-scope="editable"][data-part="cancel-trigger"] {
-    border-radius: var(--radius-sm);
-  }
-
-  .editable.editable--rounded-sm [data-scope="editable"][data-part="submit-trigger"] {
-    border-radius: var(--radius-sm);
-  }
-
-  .editable.editable--rounded-md [data-scope="editable"][data-part="input"] {
-    border-radius: var(--radius-md);
-  }
-
-  .editable.editable--rounded-md [data-scope="editable"][data-part="preview"] {
-    border-radius: var(--radius-md);
-  }
-
-  .editable.editable--rounded-md [data-scope="editable"][data-part="edit-trigger"] {
-    border-radius: var(--radius-md);
-  }
-
-  .editable.editable--rounded-md [data-scope="editable"][data-part="cancel-trigger"] {
-    border-radius: var(--radius-md);
-  }
-
-  .editable.editable--rounded-md [data-scope="editable"][data-part="submit-trigger"] {
-    border-radius: var(--radius-md);
-  }
-
-  .editable.editable--rounded-lg [data-scope="editable"][data-part="input"] {
-    border-radius: var(--radius-lg);
-  }
-
-  .editable.editable--rounded-lg [data-scope="editable"][data-part="preview"] {
-    border-radius: var(--radius-lg);
-  }
-
-  .editable.editable--rounded-lg [data-scope="editable"][data-part="edit-trigger"] {
-    border-radius: var(--radius-lg);
-  }
-
-  .editable.editable--rounded-lg [data-scope="editable"][data-part="cancel-trigger"] {
-    border-radius: var(--radius-lg);
-  }
-
-  .editable.editable--rounded-lg [data-scope="editable"][data-part="submit-trigger"] {
-    border-radius: var(--radius-lg);
-  }
-
-  .editable.editable--rounded-xl [data-scope="editable"][data-part="input"] {
-    border-radius: var(--radius-xl);
-  }
-
-  .editable.editable--rounded-xl [data-scope="editable"][data-part="preview"] {
-    border-radius: var(--radius-xl);
-  }
-
-  .editable.editable--rounded-xl [data-scope="editable"][data-part="edit-trigger"] {
-    border-radius: var(--radius-xl);
-  }
-
-  .editable.editable--rounded-xl [data-scope="editable"][data-part="cancel-trigger"] {
-    border-radius: var(--radius-xl);
-  }
-
-  .editable.editable--rounded-xl [data-scope="editable"][data-part="submit-trigger"] {
-    border-radius: var(--radius-xl);
-  }
-
-  .editable.editable--rounded-2xl [data-scope="editable"][data-part="input"] {
-    border-radius: var(--radius-2xl);
-  }
-
-  .editable.editable--rounded-2xl [data-scope="editable"][data-part="preview"] {
-    border-radius: var(--radius-2xl);
-  }
-
-  .editable.editable--rounded-2xl [data-scope="editable"][data-part="edit-trigger"] {
-    border-radius: var(--radius-2xl);
-  }
-
-  .editable.editable--rounded-2xl [data-scope="editable"][data-part="cancel-trigger"] {
-    border-radius: var(--radius-2xl);
-  }
-
-  .editable.editable--rounded-2xl [data-scope="editable"][data-part="submit-trigger"] {
-    border-radius: var(--radius-2xl);
-  }
-
-  .editable.editable--rounded-3xl [data-scope="editable"][data-part="input"] {
-    border-radius: var(--radius-3xl);
-  }
-
-  .editable.editable--rounded-3xl [data-scope="editable"][data-part="preview"] {
-    border-radius: var(--radius-3xl);
-  }
-
-  .editable.editable--rounded-3xl [data-scope="editable"][data-part="edit-trigger"] {
-    border-radius: var(--radius-3xl);
-  }
-
-  .editable.editable--rounded-3xl [data-scope="editable"][data-part="cancel-trigger"] {
-    border-radius: var(--radius-3xl);
-  }
-
-  .editable.editable--rounded-3xl [data-scope="editable"][data-part="submit-trigger"] {
-    border-radius: var(--radius-3xl);
-  }
-
-  .editable.editable--rounded-4xl [data-scope="editable"][data-part="input"] {
-    border-radius: var(--radius-4xl);
-  }
-
-  .editable.editable--rounded-4xl [data-scope="editable"][data-part="preview"] {
-    border-radius: var(--radius-4xl);
-  }
-
-  .editable.editable--rounded-4xl [data-scope="editable"][data-part="edit-trigger"] {
-    border-radius: var(--radius-4xl);
-  }
-
-  .editable.editable--rounded-4xl [data-scope="editable"][data-part="cancel-trigger"] {
-    border-radius: var(--radius-4xl);
-  }
-
-  .editable.editable--rounded-4xl [data-scope="editable"][data-part="submit-trigger"] {
-    border-radius: var(--radius-4xl);
   }
 
   .editable.editable--rounded-full [data-scope="editable"][data-part="input"] {
@@ -761,7 +261,10 @@
 
   .editable [data-scope="editable"][data-part="edit-trigger"] {
     @apply ui-trigger;
-    @apply ui-trigger--square;
+    aspect-ratio: 1 / 1;
+    padding: 0;
+    justify-content: center;
+    width: auto;
     flex: 0 0 auto;
     width: calc(var(--size-md) * 0.6);
     min-width: calc(var(--size-md) * 0.6);
@@ -775,7 +278,10 @@
 
   .editable [data-scope="editable"][data-part="cancel-trigger"] {
     @apply ui-trigger;
-    @apply ui-trigger--square;
+    aspect-ratio: 1 / 1;
+    padding: 0;
+    justify-content: center;
+    width: auto;
     flex: 0 0 auto;
     width: calc(var(--size-md) * 0.6);
     min-width: calc(var(--size-md) * 0.6);
@@ -789,7 +295,10 @@
 
   .editable [data-scope="editable"][data-part="submit-trigger"] {
     @apply ui-trigger;
-    @apply ui-trigger--square;
+    aspect-ratio: 1 / 1;
+    padding: 0;
+    justify-content: center;
+    width: auto;
     flex: 0 0 auto;
     width: calc(var(--size-md) * 0.6);
     min-width: calc(var(--size-md) * 0.6);
@@ -805,7 +314,7 @@
     @apply ui-error;
   }
 
-  .editable.editable--accent [data-scope="editable"][data-part="edit-trigger"] {
+  .editable.editable--semantic-accent [data-scope="editable"][data-part="edit-trigger"] {
     color: var(--color-ui-ink-accent);
     &:focus-visible {
       outline: none;
@@ -820,7 +329,7 @@
     }
   }
 
-  .editable.editable--brand [data-scope="editable"][data-part="edit-trigger"] {
+  .editable.editable--semantic-brand [data-scope="editable"][data-part="edit-trigger"] {
     color: var(--color-ui-ink-brand);
     &:focus-visible {
       outline: none;
@@ -835,7 +344,7 @@
     }
   }
 
-  .editable.editable--alert [data-scope="editable"][data-part="edit-trigger"] {
+  .editable.editable--semantic-alert [data-scope="editable"][data-part="edit-trigger"] {
     color: var(--color-ui-ink-alert);
     &:focus-visible {
       outline: none;
@@ -850,7 +359,7 @@
     }
   }
 
-  .editable.editable--info [data-scope="editable"][data-part="edit-trigger"] {
+  .editable.editable--semantic-info [data-scope="editable"][data-part="edit-trigger"] {
     color: var(--color-ui-ink-info);
     &:focus-visible {
       outline: none;
@@ -865,7 +374,7 @@
     }
   }
 
-  .editable.editable--success [data-scope="editable"][data-part="edit-trigger"] {
+  .editable.editable--semantic-success [data-scope="editable"][data-part="edit-trigger"] {
     color: var(--color-ui-ink-success);
     &:focus-visible {
       outline: none;
@@ -880,7 +389,7 @@
     }
   }
 
-  .editable.editable--selected [data-scope="editable"][data-part="edit-trigger"] {
+  .editable.editable--semantic-selected [data-scope="editable"][data-part="edit-trigger"] {
     color: var(--color-selected-ink);
     &:focus-visible {
       outline: none;
@@ -895,7 +404,7 @@
     }
   }
 
-  .editable.editable--accent [data-scope="editable"][data-part="submit-trigger"] {
+  .editable.editable--semantic-accent [data-scope="editable"][data-part="submit-trigger"] {
     background-color: var(--color-accent);
     color: var(--color-accent-ink);
     &:hover {
@@ -919,7 +428,7 @@
     }
   }
 
-  .editable.editable--brand [data-scope="editable"][data-part="submit-trigger"] {
+  .editable.editable--semantic-brand [data-scope="editable"][data-part="submit-trigger"] {
     background-color: var(--color-brand);
     color: var(--color-brand-ink);
     &:hover {
@@ -943,7 +452,7 @@
     }
   }
 
-  .editable.editable--alert [data-scope="editable"][data-part="submit-trigger"] {
+  .editable.editable--semantic-alert [data-scope="editable"][data-part="submit-trigger"] {
     background-color: var(--color-alert);
     color: var(--color-alert-ink);
     &:hover {
@@ -967,7 +476,7 @@
     }
   }
 
-  .editable.editable--info [data-scope="editable"][data-part="submit-trigger"] {
+  .editable.editable--semantic-info [data-scope="editable"][data-part="submit-trigger"] {
     background-color: var(--color-info);
     color: var(--color-info-ink);
     &:hover {
@@ -991,7 +500,7 @@
     }
   }
 
-  .editable.editable--success [data-scope="editable"][data-part="submit-trigger"] {
+  .editable.editable--semantic-success [data-scope="editable"][data-part="submit-trigger"] {
     background-color: var(--color-success);
     color: var(--color-success-ink);
     &:hover {
@@ -1015,7 +524,7 @@
     }
   }
 
-  .editable.editable--selected [data-scope="editable"][data-part="submit-trigger"] {
+  .editable.editable--semantic-selected [data-scope="editable"][data-part="submit-trigger"] {
     background-color: var(--color-selected);
     color: var(--color-selected-ink);
     &:hover {
@@ -1039,7 +548,7 @@
     }
   }
 
-  .editable.editable--accent [data-scope="editable"][data-part="cancel-trigger"] {
+  .editable.editable--semantic-accent [data-scope="editable"][data-part="cancel-trigger"] {
     color: var(--color-ui-ink-accent);
     &:hover {
       background-color: var(--color-ui-hover);
@@ -1058,7 +567,7 @@
     }
   }
 
-  .editable.editable--brand [data-scope="editable"][data-part="cancel-trigger"] {
+  .editable.editable--semantic-brand [data-scope="editable"][data-part="cancel-trigger"] {
     color: var(--color-ui-ink-brand);
     &:hover {
       background-color: var(--color-ui-hover);
@@ -1077,7 +586,7 @@
     }
   }
 
-  .editable.editable--alert [data-scope="editable"][data-part="cancel-trigger"] {
+  .editable.editable--semantic-alert [data-scope="editable"][data-part="cancel-trigger"] {
     color: var(--color-ui-ink-alert);
     &:hover {
       background-color: var(--color-ui-hover);
@@ -1096,7 +605,7 @@
     }
   }
 
-  .editable.editable--info [data-scope="editable"][data-part="cancel-trigger"] {
+  .editable.editable--semantic-info [data-scope="editable"][data-part="cancel-trigger"] {
     color: var(--color-ui-ink-info);
     &:hover {
       background-color: var(--color-ui-hover);
@@ -1115,7 +624,7 @@
     }
   }
 
-  .editable.editable--success [data-scope="editable"][data-part="cancel-trigger"] {
+  .editable.editable--semantic-success [data-scope="editable"][data-part="cancel-trigger"] {
     color: var(--color-ui-ink-success);
     &:hover {
       background-color: var(--color-ui-hover);
@@ -1134,7 +643,7 @@
     }
   }
 
-  .editable.editable--selected [data-scope="editable"][data-part="cancel-trigger"] {
+  .editable.editable--semantic-selected [data-scope="editable"][data-part="cancel-trigger"] {
     color: var(--color-selected-ink);
     &:hover {
       background-color: var(--color-ui-hover);

@@ -2,7 +2,7 @@
 
 This guide describes how to add Corex to an existing Phoenix application without using `mix corex.new`. It covers the minimum needed to render Corex components in your templates: the dependency, an ESM Esbuild build, the Corex JS hooks, the root layout `<script type="module">`, and `use Corex` in your web layer. Later sections cover optional features (design, toasts, dark mode, theming, localization).
 
-Corex ships **no CSS** by default. Style attributes on components (`semantic`, `size`, …) declare the look you want; Corex turns them into BEM classes such as `accordion--accent` that **you** style. Optionally, [Corex Design](styled.html) provides ready-made CSS for those classes. See [How styling works](installation.html#how-styling-works) in the installation guide for the full picture.
+Corex ships **no CSS** by default. Style attributes on components (`semantic`, `size`, …) declare the look you want; Corex turns them into BEM classes such as `accordion--semantic-accent` that **you** style. Optionally, [Corex Design](styled.html) provides ready-made CSS for those classes. See [How styling works](installation.html#how-styling-works) in the installation guide for the full picture.
 
 If you are creating a new project instead, see the [Installation guide](installation.html).
 

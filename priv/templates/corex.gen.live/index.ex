@@ -20,7 +20,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           <:title><%= maybe_heex_slot_translate.("Listing #{schema.human_plural}", @gettext_mode) %></:title>
           <:subtitle><%= maybe_heex_slot_translate.("Add and manage #{schema.singular} records", @gettext_mode) %></:subtitle>
           <:actions>
-            <.navigate to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/new"} type="navigate" class="button button--accent">
+            <.navigate to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/new"} type="navigate" class="button button--semantic-accent">
               <.heroicon name="hero-plus" /> <%= maybe_heex_slot_translate.("New #{schema.human_singular}", @gettext_mode) %>
             </.navigate>
           </:actions>
@@ -40,7 +40,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
             </div>
             <.link
               navigate={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}/edit"}
-              class="button button--sm"
+              class="button button--size-sm"
               aria-label={"Edit #{<%= schema.singular %>.<%= schema.attrs |> Keyword.keys() |> List.first() %>}"}
             >
               <.heroicon name="hero-pencil-square" />
@@ -57,7 +57,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
               final_focus={"dialog:<%= schema.singular %>-delete-#{<%= schema.singular %>.<%= primary_key %>}:trigger"}
             >
               <:trigger
-                class="button button--sm button--alert button--square"
+                class="button button--size-sm button--semantic-alert button--shape-square"
                 aria_label={"Delete #{<%= schema.singular %>.<%= schema.attrs |> Keyword.keys() |> List.first() %>}"}
               >
                 <.heroicon name="hero-trash" />
@@ -69,7 +69,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
                   <.action
                     id={"<%= schema.singular %>-delete-#{<%= schema.singular %>.<%= primary_key %>}-cancel"}
                     phx-click={Corex.Dialog.set_open("<%= schema.singular %>-delete-#{<%= schema.singular %>.<%= primary_key %>}", false)}
-                    class="button button--sm button--ghost"
+                    class="button button--size-sm button--variant-ghost"
                   >
                     Cancel
                   </.action>
@@ -79,7 +79,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
                       Corex.Dialog.set_open("<%= schema.singular %>-delete-#{<%= schema.singular %>.<%= primary_key %>}", false)
                       |> JS.push("delete", value: %{<%= primary_key %>: <%= schema.singular %>.<%= primary_key %>})
                     }
-                    class="button button--sm button--alert"
+                    class="button button--size-sm button--semantic-alert"
                   >
                     Delete
                   </.action>

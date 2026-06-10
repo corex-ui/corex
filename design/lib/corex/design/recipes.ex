@@ -602,7 +602,7 @@ defmodule Corex.Design.Recipes do
 
       sized =
         for size <- sizes do
-          Rule.new(~s(.#{name}.#{name}--#{size} [data-icon]), decls: icon_decls)
+          Rule.new(~s(.#{name}.#{name}--size-#{size} [data-icon]), decls: icon_decls)
         end
 
       [base | sized]
@@ -614,7 +614,7 @@ defmodule Corex.Design.Recipes do
     def square_icon_rules(id) do
       host = Selector.host(id)
       name = Selector.class_name(id)
-      square = ~s(#{host}.#{name}--square)
+      square = ~s(#{host}.#{name}--shape-square)
 
       [
         Rule.new(
@@ -639,82 +639,6 @@ defmodule Corex.Design.Recipes do
           width: :auto
         }
       ]
-    end
-  end
-  defmodule Trigger do
-    @moduledoc false
-
-    alias Corex.Design.Axes
-    alias Corex.Design.Palette
-    alias Corex.Design.Rule
-
-    def base do
-      %{
-        decls: [
-          display: "inline-flex",
-          align_items: "center",
-          justify_content: "center",
-          text_align: "center",
-          cursor: "pointer",
-          width: "auto",
-          font_weight: "var(--font-weight-normal)",
-          border: "1px solid transparent",
-          appearance: "none",
-          transition:
-            "background-color 120ms ease, color 120ms ease, border-color 120ms ease, box-shadow 120ms ease"
-        ],
-        children: [
-          Rule.new("&:focus-visible",
-            decls: [
-              outline: "none",
-              box_shadow: "inset 0 0 0 2px var(--color-ui-ink)"
-            ]
-          ),
-          Rule.new(~s(& [data-icon]), decls: [include: :ui_icon])
-        ]
-      }
-    end
-
-    def visuals do
-      for v <- Axes.visual_atoms(), do: {v, visual(v)}
-    end
-
-    def visual(visual) do
-      role = :neutral
-
-      %{
-        decls: Palette.visual_decls(role, visual),
-        children: Palette.visual_children(role, visual)
-      }
-    end
-
-    def sizes do
-      for size <- Axes.size_atoms(), do: {size, size_block(size)}
-    end
-
-    def size_block(size) do
-      %{
-        decls: [
-          font_size: {:text, size_text(size)},
-          line_height: {:line_height, size_text(size)},
-          padding_inline: {:space, size},
-          gap: {:space, size},
-          min_height: {:size, size}
-        ]
-      }
-    end
-
-    defp size_text(:md), do: :base
-    defp size_text(size), do: size
-
-    def texts do
-      for step <- Axes.text_atoms() do
-        {step, %{decls: [font_size: {:text, step}, line_height: {:line_height, step}]}}
-      end
-    end
-
-    def roundeds do
-      for r <- Axes.radius_atoms(), do: {r, %{decls: [border_radius: {:radius, r}]}}
     end
   end
   defmodule Layout do
@@ -747,8 +671,22 @@ defmodule Corex.Design.Recipes do
     defp stack do
       Recipe.new(:stack,
         base: [display: "flex", flex_flow: "column nowrap"],
-        variants: flex_variants() ++ direction_variants(),
-        default_variants: flex_defaults() ++ [direction: :column]
+        variants:
+          flex_variants() ++
+            direction_variants() ++
+            [
+              variant: [
+                {:none, []},
+                {:layer,
+                 [
+                   background_color: {:color, :layer},
+                   border: {:raw, "1px solid var(--color-border)"},
+                   box_shadow: {:raw, "var(--shadow-md)"}
+                 ]}
+              ],
+              radius: radius_scale()
+            ],
+        default_variants: flex_defaults() ++ [direction: :column, variant: :none, radius: :none]
       )
     end
 
@@ -1475,7 +1413,7 @@ defmodule Corex.Design.Recipes do
         for size <- Axes.size_atoms() do
           text = size_text(size)
 
-          Rule.new(".#{name}.#{name}--#{size} #{content_p}",
+          Rule.new("#{Palette.host_size_mod(@id, size)} #{content_p}",
             decls: [
               font_size: {:text, text},
               line_height: {:leading, text},
@@ -1503,12 +1441,11 @@ defmodule Corex.Design.Recipes do
     end
 
     defp horizontal_size_column_rules do
-      name = Selector.class_name(@id)
       root = slot("root")
 
       for {size, col} <- horizontal_column_mins() do
         Rule.new(
-          ".#{name}.#{name}--#{size} #{root}[data-orientation=\"horizontal\"]",
+          "#{Palette.host_size_mod(@id, size)} #{root}[data-orientation=\"horizontal\"]",
           decls: [{:raw, "grid-auto-columns: minmax(var(--container-#{col}), 1fr)"}]
         )
       end
@@ -2167,11 +2104,7 @@ defmodule Corex.Design.Recipes do
     end
 
     defp shape_variants do
-      [
-        auto: %{},
-        square: %{},
-        circle: %{}
-      ]
+      [auto: %{}, square: %{}]
     end
 
     defp badge_rules do
@@ -2212,8 +2145,7 @@ defmodule Corex.Design.Recipes do
             )
           ]
         ),
-        Rule.new(
-          ~s(.#{@name}.#{@name}--square,\n  .#{@name}.#{@name}--circle),
+        Rule.new(".#{@name}.#{@name}--shape-square",
           decls: [
             display: "inline-flex",
             aspect_ratio: "1 / 1",
@@ -2222,8 +2154,7 @@ defmodule Corex.Design.Recipes do
             width: "auto",
             padding: 0
           ]
-        ),
-        Rule.new(".#{@name}.#{@name}--circle", decls: [border_radius: {:radius, :full}])
+        )
       ] ++ HostIcon.sized_host_icon_rules(@id)
     end
   end
@@ -2369,7 +2300,10 @@ defmodule Corex.Design.Recipes do
         Rule.new(prev,
           decls: [
             include: :ui_trigger,
-            include: :ui_trigger_square,
+            aspect_ratio: {:raw, "1 / 1"},
+            padding: 0,
+            justify_content: :center,
+            width: :auto,
             min_height: {:raw, "calc(var(--size-md) * 0.8)"},
             min_width: {:raw, "calc(var(--size-md) * 0.8)"},
             padding: "0"
@@ -2379,7 +2313,10 @@ defmodule Corex.Design.Recipes do
         Rule.new(next,
           decls: [
             include: :ui_trigger,
-            include: :ui_trigger_square,
+            aspect_ratio: {:raw, "1 / 1"},
+            padding: 0,
+            justify_content: :center,
+            width: :auto,
             min_height: {:raw, "calc(var(--size-md) * 0.8)"},
             min_width: {:raw, "calc(var(--size-md) * 0.8)"},
             padding: "0"
@@ -2389,7 +2326,10 @@ defmodule Corex.Design.Recipes do
         Rule.new(autoplay,
           decls: [
             include: :ui_trigger,
-            include: :ui_trigger_square,
+            aspect_ratio: {:raw, "1 / 1"},
+            padding: 0,
+            justify_content: :center,
+            width: :auto,
             min_height: {:size, :md},
             min_width: {:size, :md},
             padding: "0"
@@ -2462,7 +2402,11 @@ defmodule Corex.Design.Recipes do
         Rule.new(indicator,
           decls: [
             include: :ui_trigger,
-            include: :ui_trigger_circle,
+            aspect_ratio: {:raw, "1 / 1"},
+            padding: 0,
+            justify_content: :center,
+            width: :auto,
+            border_radius: {:raw, "var(--radius-full) !important"},
             min_height: {:space, :md},
             min_width: {:space, :md},
             padding: "0"
@@ -2610,12 +2554,11 @@ defmodule Corex.Design.Recipes do
 
     defp semantic_control_rules do
       id = @id
-      name = Selector.class_name(id)
       control = Selector.slot(@scope, "control")
 
       for color <- Axes.semantic_atoms() do
         c = Atom.to_string(color)
-        host_mod = ".#{name}.#{name}--#{c}"
+        host_mod = Palette.host_mod(id, color)
         checked = "#{host_mod} #{control}[data-state='checked'], #{host_mod} #{control}[data-state='indeterminate']"
 
         Rule.new(checked,
@@ -2699,6 +2642,7 @@ defmodule Corex.Design.Recipes do
     @moduledoc false
 
     alias Corex.Design.Axes
+    alias Corex.Design.Palette
     alias Corex.Design.Presets
     alias Corex.Design.Recipe
     alias Corex.Design.Rule
@@ -2839,12 +2783,13 @@ defmodule Corex.Design.Recipes do
     end
 
     defp copy_part_size_rules do
-      name = Selector.class_name(@id)
       copy = ~s(#{Selector.slot(@scope, "trigger")} #{Selector.slot(@scope, "copy")})
       copied = ~s(#{Selector.slot(@scope, "trigger")} #{Selector.slot(@scope, "copied")})
 
       for size <- Axes.size_atoms() do
-        Rule.new(".#{name}.#{name}--#{size} #{copy},\n  .#{name}.#{name}--#{size} #{copied}",
+        host = Palette.host_size_mod(@id, size)
+
+        Rule.new("#{host} #{copy},\n  #{host} #{copied}",
           decls: [gap: {:space, size}]
         )
       end
@@ -3229,16 +3174,16 @@ defmodule Corex.Design.Recipes do
       base_ui =
         for size <- Axes.size_atoms() do
           text = size_text(size)
-          name = Selector.class_name(@id)
+          host = Palette.host_size_mod(@id, size)
 
           [
-            Rule.new(".#{name}.#{name}--#{size} #{trigger}",
+            Rule.new("#{host} #{trigger}",
               decls: Map.to_list(Presets.text_block(text))
             ),
-            Rule.new(".#{name}.#{name}--#{size} #{closed},\n  .#{name}.#{name}--#{size} #{opened}",
+            Rule.new("#{host} #{closed},\n  #{host} #{opened}",
               decls: Map.to_list(Presets.text_block(text))
             ),
-            Rule.new(".#{name}.#{name}--#{size} #{content},\n  .#{name}.#{name}--#{size} #{content_p}",
+            Rule.new("#{host} #{content},\n  #{host} #{content_p}",
               decls: Map.to_list(Presets.text_block(text))
             )
           ]
@@ -3385,7 +3330,10 @@ defmodule Corex.Design.Recipes do
           Rule.new(trigger,
             decls: [
               include: :ui_trigger,
-              include: :ui_trigger_square,
+              aspect_ratio: {:raw, "1 / 1"},
+              padding: 0,
+              justify_content: :center,
+              width: :auto,
               min_width: {:size, :md},
               padding: "0",
               aspect_ratio: "1 / 1",
@@ -3499,7 +3447,7 @@ defmodule Corex.Design.Recipes do
               height: {:raw, "calc(var(--size-md) * 0.4)"}
             ]
           ),
-          Rule.new(eye_dropper, decls: [include: :ui_trigger, include: :ui_trigger_square]),
+          Rule.new(eye_dropper, decls: [include: :ui_trigger] ++ Presets.trigger_part_square()),
           Rule.new(swatch_trigger,
             decls: [
               include: :ui_trigger,
@@ -3746,6 +3694,15 @@ defmodule Corex.Design.Recipes do
           ]
         ),
         Rule.new(item, decls: [include: :ui_item]),
+        Rule.new("#{content} #{slot("item-text")}",
+          decls: Map.to_list(Presets.item_row_text())
+        ),
+        Rule.new("#{content} #{slot("item-indicator")}",
+          decls: Map.to_list(Presets.item_row_indicator()) ++ [include: :ui_icon]
+        ),
+        Rule.new("#{content} #{slot("item-indicator")}[hidden]",
+          decls: Map.to_list(Presets.item_row_indicator_hidden())
+        ),
         Rule.new(error, decls: [include: :ui_error]),
         Rule.new("#{error}.absolute", decls: [padding_block: "0", display: "block"]),
         Rule.new("#{root}[data-readonly]", decls: [include: :ui_readonly])
@@ -4101,7 +4058,11 @@ defmodule Corex.Design.Recipes do
           Rule.new(sort_trigger,
             decls: [
               include: :ui_trigger,
-              include: :ui_trigger_circle,
+              aspect_ratio: {:raw, "1 / 1"},
+              padding: 0,
+              justify_content: :center,
+              width: :auto,
+              border_radius: {:raw, "var(--radius-full) !important"},
               min_height: {:size, :sm},
               font_size: {:text, :sm},
               line_height: {:leading, :sm},
@@ -4228,7 +4189,7 @@ defmodule Corex.Design.Recipes do
       headers = Enum.join([part("selection-header"), part("action-header")], ",\n  ")
 
       for size <- Axes.size_atoms() do
-        sel = "#{host}.#{Selector.class_name(@id)}--#{size}"
+        sel = "#{host}.#{Selector.class_name(@id)}--size-#{size}"
         block = Presets.size_block(size)
 
         [
@@ -4258,7 +4219,7 @@ defmodule Corex.Design.Recipes do
       for color <- Axes.semantic_atoms() do
         ink = Palette.ink_color_atom(color)
 
-        Rule.new("#{host}.#{Selector.class_name(@id)}--#{color} #{thead_th}",
+        Rule.new("#{host}.#{Selector.class_name(@id)}--semantic-#{color} #{thead_th}",
           decls: [color: {:color, ink}]
         )
       end
@@ -4285,6 +4246,7 @@ defmodule Corex.Design.Recipes do
     @moduledoc false
 
     alias Corex.Design.Axes
+    alias Corex.Design.Palette
     alias Corex.Design.Presets
     alias Corex.Design.Recipe
     alias Corex.Design.Rule
@@ -4577,12 +4539,11 @@ defmodule Corex.Design.Recipes do
     end
 
     defp semantic_cell_rules do
-      name = Selector.class_name(@id)
       cell = part("table-cell-trigger")
 
       for color <- Axes.semantic_atoms() do
         c = Atom.to_string(color)
-        host_mod = ".#{name}.#{name}--#{c}"
+        host_mod = Palette.host_mod(@id, color)
         bg = "var(--color-#{c})"
         ink = "var(--color-#{c}-ink)"
         hover = "var(--color-#{c}-hover)"
@@ -4619,12 +4580,11 @@ defmodule Corex.Design.Recipes do
     end
 
     defp nav_trigger_rules do
-      name = Selector.class_name(@id)
       nav = "#{part("prev-trigger")}, #{part("next-trigger")}, #{part("view-trigger")}"
 
       for color <- Axes.semantic_atoms() do
         c = Atom.to_string(color)
-        host_mod = ".#{name}.#{name}--#{c}"
+        host_mod = Palette.host_mod(@id, color)
 
         Rule.new("#{host_mod} #{nav}",
           decls: [
@@ -4829,16 +4789,17 @@ defmodule Corex.Design.Recipes do
       error = part("error")
       triggers = ~s(#{host} [data-part="triggers"])
 
-      square_trigger = [
-        include: :ui_trigger,
-        include: :ui_trigger_square,
-        flex: "0 0 auto",
-        width: {:raw, "calc(var(--size-md) * 0.6)"},
-        min_width: {:raw, "calc(var(--size-md) * 0.6)"},
-        max_width: {:raw, "calc(var(--size-md) * 0.6)"},
-        min_height: {:raw, "calc(var(--size-md) * 0.6)"},
-        max_height: {:raw, "calc(var(--size-md) * 0.6)"}
-      ]
+      square_trigger =
+        [include: :ui_trigger] ++
+          Presets.trigger_part_square() ++
+          [
+            flex: "0 0 auto",
+            width: {:raw, "calc(var(--size-md) * 0.6)"},
+            min_width: {:raw, "calc(var(--size-md) * 0.6)"},
+            max_width: {:raw, "calc(var(--size-md) * 0.6)"},
+            min_height: {:raw, "calc(var(--size-md) * 0.6)"},
+            max_height: {:raw, "calc(var(--size-md) * 0.6)"}
+          ]
 
       [
         Rule.new(host, decls: [width: "fit-content"]),
@@ -5222,7 +5183,10 @@ defmodule Corex.Design.Recipes do
         Rule.new(item_delete,
           decls: [
             include: :ui_trigger,
-            include: :ui_trigger_square,
+            aspect_ratio: {:raw, "1 / 1"},
+            padding: 0,
+            justify_content: :center,
+            width: :auto,
             background_color: {:color, :alert},
             color: {:color, :alert_ink},
             border_color: {:color, :alert},
@@ -5352,7 +5316,10 @@ defmodule Corex.Design.Recipes do
         Rule.new(stage,
           decls: [
             include: :ui_trigger,
-            include: :ui_trigger_square,
+            aspect_ratio: {:raw, "1 / 1"},
+            padding: 0,
+            justify_content: :center,
+            width: :auto,
             width: {:raw, "calc(var(--size-sm) * 0.8)"},
             min_width: {:raw, "calc(var(--size-sm) * 0.8)"},
             max_width: {:raw, "calc(var(--size-sm) * 0.8)"},
@@ -5366,7 +5333,10 @@ defmodule Corex.Design.Recipes do
         Rule.new(close,
           decls: [
             include: :ui_trigger,
-            include: :ui_trigger_square,
+            aspect_ratio: {:raw, "1 / 1"},
+            padding: 0,
+            justify_content: :center,
+            width: :auto,
             width: {:raw, "calc(var(--size-sm) * 0.8)"},
             min_width: {:raw, "calc(var(--size-sm) * 0.8)"},
             max_width: {:raw, "calc(var(--size-sm) * 0.8)"},
@@ -5612,13 +5582,11 @@ defmodule Corex.Design.Recipes do
     end
 
     defp link_semantic_rules do
-      name = Selector.class_name(:link)
-
       for role <- Axes.semantic_atoms() do
         c = Atom.to_string(role)
         ink = Palette.ink_color_var(role)
 
-        Rule.new(".#{name}.#{name}--#{role}",
+        Rule.new(Palette.host_mod(:link, role),
           decls: [color: "var(#{ink})"],
           children: [
             Rule.new("&:hover", decls: [color: "var(--color-#{c}-hover)"])
@@ -5938,6 +5906,7 @@ defmodule Corex.Design.Recipes do
     @moduledoc false
 
     alias Corex.Design.Axes
+    alias Corex.Design.Palette
     alias Corex.Design.Presets
     alias Corex.Design.Recipe
     alias Corex.Design.Rule
@@ -6050,12 +6019,10 @@ defmodule Corex.Design.Recipes do
     end
 
     defp size_root_rules do
-      host = Selector.host(@id)
       root = Selector.slot(@scope, "root")
-      name = Selector.class_name(@id)
 
       for size <- Axes.size_atoms() do
-        Rule.new("#{host}.#{name}--#{size} #{root}[data-orientation=\"vertical\"]",
+        Rule.new("#{Palette.host_size_mod(@id, size)} #{root}[data-orientation=\"vertical\"]",
           decls: [height: {:raw, "calc(var(--size-#{size}) * 6)"}]
         )
       end
@@ -6148,7 +6115,7 @@ defmodule Corex.Design.Recipes do
 
       text_rules =
         for role <- Palette.color_atoms() do
-          host = ".#{Selector.class_name(@id)}.#{Selector.class_name(@id)}--#{role}"
+          host = ".#{Selector.class_name(@id)}.#{Selector.class_name(@id)}--semantic-#{role}"
 
           [
             Rule.new("#{host} #{item}[data-state='checked'] #{item_text}",
@@ -6255,23 +6222,16 @@ defmodule Corex.Design.Recipes do
         ),
         Rule.new(item, decls: [include: :ui_item, min_width: "0"]),
         Rule.new(trigger_item, decls: [include: :ui_item, min_width: "0"]),
-        Rule.new("#{item} #{slot("item-indicator")}, #{trigger_item} #{slot("item-indicator")}",
-          decls: [transition: "none !important"]
+        Rule.new("#{item} > #{slot("item-indicator")}, #{trigger_item} > #{slot("item-indicator")}",
+          decls: Map.to_list(Presets.item_row_indicator()) ++ [transition: "none !important"]
         ),
-        Rule.new(item_text,
-          decls: [
-            flex: "1 1 0%",
-            min_width: "0",
-            max_width: "100%",
-            width: "auto",
-            overflow: "hidden",
-            text_overflow: "ellipsis",
-            white_space: "nowrap",
-            display: "block",
-            text_align: "start"
-          ]
+        Rule.new(item_text, decls: Map.to_list(Presets.item_row_text())),
+        Rule.new("#{item_text} > [data-icon]",
+          decls: [margin_inline_start: "auto", flex_shrink: "0"]
         ),
-        Rule.new(item_indicator, decls: [include: :ui_icon, flex_shrink: "0"]),
+        Rule.new(item_indicator,
+          decls: Map.to_list(Presets.item_row_indicator()) ++ [include: :ui_icon]
+        ),
         Rule.new("#{content} #{slot("trigger-item")}",
           decls: [justify_content: "flex-start", width: "100%", min_width: "0"]
         ),
@@ -6579,7 +6539,10 @@ defmodule Corex.Design.Recipes do
           Rule.new(increment,
             decls: [
               include: :ui_trigger,
-              include: :ui_trigger_square,
+              aspect_ratio: {:raw, "1 / 1"},
+              padding: 0,
+              justify_content: :center,
+              width: :auto,
               flex: "1",
               min_height: "0",
               margin: "0",
@@ -6599,7 +6562,10 @@ defmodule Corex.Design.Recipes do
           Rule.new(decrement,
             decls: [
               include: :ui_trigger,
-              include: :ui_trigger_square,
+              aspect_ratio: {:raw, "1 / 1"},
+              padding: 0,
+              justify_content: :center,
+              width: :auto,
               flex: "1",
               min_height: "0",
               margin: "0",
@@ -6734,7 +6700,10 @@ defmodule Corex.Design.Recipes do
         Rule.new(prev,
           decls: [
             include: :ui_trigger,
-            include: :ui_trigger_square,
+            aspect_ratio: {:raw, "1 / 1"},
+            padding: 0,
+            justify_content: :center,
+            width: :auto,
             min_width: {:raw, "calc(var(--size-md) * 0.8)"},
             min_height: {:raw, "calc(var(--size-md) * 0.8)"},
             font_size: {:raw, "calc(var(--text-base) * 0.8)"},
@@ -6745,7 +6714,10 @@ defmodule Corex.Design.Recipes do
         Rule.new(next,
           decls: [
             include: :ui_trigger,
-            include: :ui_trigger_square,
+            aspect_ratio: {:raw, "1 / 1"},
+            padding: 0,
+            justify_content: :center,
+            width: :auto,
             min_width: {:raw, "calc(var(--size-md) * 0.8)"},
             min_height: {:raw, "calc(var(--size-md) * 0.8)"},
             font_size: {:raw, "calc(var(--text-base) * 0.8)"},
@@ -6934,7 +6906,10 @@ defmodule Corex.Design.Recipes do
           Rule.new(visibility,
             decls: [
               include: :ui_trigger,
-              include: :ui_trigger_square,
+              aspect_ratio: {:raw, "1 / 1"},
+              padding: 0,
+              justify_content: :center,
+              width: :auto,
               display: "flex",
               align_items: "center",
               justify_content: "center",
@@ -7869,7 +7844,10 @@ defmodule Corex.Design.Recipes do
           Rule.new(clear,
             decls: [
               include: :ui_trigger,
-              include: :ui_trigger_square,
+              aspect_ratio: {:raw, "1 / 1"},
+              padding: 0,
+              justify_content: :center,
+              width: :auto,
               position: "absolute",
               z_index: "1",
               top: {:space, :sm},
@@ -8094,12 +8072,11 @@ defmodule Corex.Design.Recipes do
     end
 
     defp semantic_thumb_rules do
-      name = Selector.class_name(@id)
       thumb = Selector.slot(@scope, "thumb")
 
       for color <- Axes.semantic_atoms() do
         Rule.new(
-          ".#{name}.#{name}--#{color} #{thumb}:not([data-state=\"checked\"])",
+          "#{Palette.host_mod(@id, color)} #{thumb}:not([data-state=\"checked\"])",
           decls: [background_color: "var(--color-#{color})"]
         )
       end
@@ -8655,10 +8632,10 @@ defmodule Corex.Design.Recipes do
       action = part("action-trigger")
 
       sm = [
-        Rule.new(".#{name}.#{name}--sm #{item},\n  .#{name}.#{name}--sm #{separator}",
+        Rule.new(".#{name}.#{name}--size-sm #{item},\n  .#{name}.#{name}--size-sm #{separator}",
           decls: [font_size: {:text, :"2xl"}, line_height: {:leading, :"2xl"}]
         ),
-        Rule.new(".#{name}.#{name}--sm #{action}",
+        Rule.new(".#{name}.#{name}--size-sm #{action}",
           decls: [
             font_size: {:text, :sm},
             line_height: {:leading, :sm},
@@ -8669,10 +8646,10 @@ defmodule Corex.Design.Recipes do
       ]
 
       md = [
-        Rule.new(".#{name}.#{name}--md #{item},\n  .#{name}.#{name}--md #{separator}",
+        Rule.new(".#{name}.#{name}--size-md #{item},\n  .#{name}.#{name}--size-md #{separator}",
           decls: [font_size: {:text, :"4xl"}, line_height: {:leading, :"4xl"}]
         ),
-        Rule.new(".#{name}.#{name}--md #{action}",
+        Rule.new(".#{name}.#{name}--size-md #{action}",
           decls: [
             font_size: {:text, :base},
             line_height: {:leading, :base},
@@ -8683,7 +8660,7 @@ defmodule Corex.Design.Recipes do
       ]
 
       lg = [
-        Rule.new(".#{name}.#{name}--lg #{item},\n  .#{name}.#{name}--lg #{separator}",
+        Rule.new(".#{name}.#{name}--size-lg #{item},\n  .#{name}.#{name}--size-lg #{separator}",
           children: [
             Rule.new("&",
               decls: [
@@ -8692,7 +8669,7 @@ defmodule Corex.Design.Recipes do
             )
           ]
         ),
-        Rule.new(".#{name}.#{name}--lg #{action}",
+        Rule.new(".#{name}.#{name}--size-lg #{action}",
           decls: [
             font_size: {:text, :lg},
             line_height: {:leading, :lg},
@@ -8703,7 +8680,7 @@ defmodule Corex.Design.Recipes do
       ]
 
       xl = [
-        Rule.new(".#{name}.#{name}--xl #{item},\n  .#{name}.#{name}--xl #{separator}",
+        Rule.new(".#{name}.#{name}--size-xl #{item},\n  .#{name}.#{name}--size-xl #{separator}",
           children: [
             Rule.new("&",
               decls: [
@@ -8712,7 +8689,7 @@ defmodule Corex.Design.Recipes do
             )
           ]
         ),
-        Rule.new(".#{name}.#{name}--xl #{action}",
+        Rule.new(".#{name}.#{name}--size-xl #{action}",
           decls: [
             font_size: {:text, :xl},
             line_height: {:leading, :xl},
@@ -9109,6 +9086,7 @@ defmodule Corex.Design.Recipes do
     @moduledoc false
 
     alias Corex.Design.Axes
+    alias Corex.Design.Palette
     alias Corex.Design.Presets
     alias Corex.Design.Recipe
     alias Corex.Design.Recipes.SemanticStates
@@ -9218,12 +9196,11 @@ defmodule Corex.Design.Recipes do
     end
 
     defp item_icon_size_rules do
-      name = Selector.class_name(@id)
       item = Selector.slot(@scope, "item")
 
       for size <- Axes.size_atoms() do
         Rule.new(
-          ".#{name}.#{name}--#{size} #{item} [data-icon]",
+          "#{Palette.host_size_mod(@id, size)} #{item} [data-icon]",
           decls: [
             display: :inline_flex,
             align_items: :center,
@@ -9383,6 +9360,7 @@ defmodule Corex.Design.Recipes do
 
     alias Corex.Design.Axes
     alias Corex.Design.Emit.Tokens, as: Var
+    alias Corex.Design.Palette
     alias Corex.Design.Presets
     alias Corex.Design.Recipe
     alias Corex.Design.Rule
@@ -9463,7 +9441,12 @@ defmodule Corex.Design.Recipes do
         Rule.new(branch_text,
           decls: [flex: "1 1 0%", min_width: "0", width: "auto", max_width: "100%"]
         ),
-        Rule.new(branch_indicator, decls: [flex: "0 0 auto"]),
+        Rule.new(branch_indicator,
+          decls: [flex: "0 0 auto", margin_inline_start: "auto"]
+        ),
+        Rule.new("#{branch_control} [data-icon]",
+          decls: [include: :ui_icon]
+        ),
         Rule.new(
           "#{branch_control}[data-state='open']:not([data-selected]):not([data-checked]):not([data-indeterminate]):not([data-loading])",
           decls: [background_color: {:color, :ui_active}]
@@ -9532,7 +9515,6 @@ defmodule Corex.Design.Recipes do
     end
 
     defp semantic_selection_rules(id) do
-      name = Selector.class_name(id)
       item = slot("item")
       branch_control = slot("branch-control")
       branch_content = slot("branch-content")
@@ -9551,7 +9533,7 @@ defmodule Corex.Design.Recipes do
 
       for color <- Axes.semantic_atoms() do
         c = Atom.to_string(color)
-        host_mod = ".#{name}.#{name}--#{c}"
+        host_mod = Palette.host_mod(id, color)
         bg = "var(--color-#{c})"
         ink = "var(--color-#{c}-ink)"
         hover = "var(--color-#{c}-hover)"
@@ -9689,7 +9671,9 @@ defmodule Corex.Design.Recipes do
         Rule.new(branch_control,
           decls: [flex_wrap: "nowrap", min_width: "0", overflow: "hidden"]
         ),
-        Rule.new(branch_indicator, decls: [flex: "0 0 auto"]),
+        Rule.new(branch_indicator,
+          decls: [flex: "0 0 auto", margin_inline_start: "auto"]
+        ),
         Rule.new("#{nav_host(id)}.layout__aside-tree",
           decls: [width: "100%", max_width: {:container, :xs}]
         ),

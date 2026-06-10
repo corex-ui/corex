@@ -279,20 +279,20 @@ defmodule Corex.DatePicker do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `date-picker` |
-  | Accent | `date-picker date-picker--accent` |
-  | Brand | `date-picker date-picker--brand` |
-  | Alert | `date-picker date-picker--alert` |
-  | Info | `date-picker date-picker--info` |
-  | Success | `date-picker date-picker--success` |
+  | Accent | `date-picker date-picker--semantic-accent` |
+  | Brand | `date-picker date-picker--semantic-brand` |
+  | Alert | `date-picker date-picker--semantic-alert` |
+  | Info | `date-picker date-picker--semantic-info` |
+  | Success | `date-picker date-picker--semantic-success` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `date-picker date-picker--sm` |
-  | MD | `date-picker date-picker--md` |
-  | LG | `date-picker date-picker--lg` |
-  | XL | `date-picker date-picker--xl` |
+  | SM | `date-picker date-picker--size-sm` |
+  | MD | `date-picker date-picker--size-md` |
+  | LG | `date-picker date-picker--size-lg` |
+  | XL | `date-picker date-picker--size-xl` |
 
   <!-- tabs-close -->
 

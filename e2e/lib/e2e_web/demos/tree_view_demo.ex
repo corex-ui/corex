@@ -343,7 +343,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     </.tree_view>
     <.tree_view
       id="tree-styling-color-accent"
-      class="tree-view tree-view--accent tree-view--max-w-xs"
+      class="tree-view tree-view--semantic-accent tree-view--max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
       items={styling_items()}
@@ -352,7 +352,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     </.tree_view>
     <.tree_view
       id="tree-styling-color-brand"
-      class="tree-view tree-view--brand tree-view--max-w-xs"
+      class="tree-view tree-view--semantic-brand tree-view--max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
       items={styling_items()}
@@ -361,7 +361,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     </.tree_view>
     <.tree_view
       id="tree-styling-color-info"
-      class="tree-view tree-view--info tree-view--max-w-xs"
+      class="tree-view tree-view--semantic-info tree-view--max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
       items={styling_items()}
@@ -370,7 +370,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     </.tree_view>
     <.tree_view
       id="tree-styling-color-alert"
-      class="tree-view tree-view--alert tree-view--max-w-xs"
+      class="tree-view tree-view--semantic-alert tree-view--max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
       items={styling_items()}
@@ -379,7 +379,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     </.tree_view>
     <.tree_view
       id="tree-styling-color-success"
-      class="tree-view tree-view--success tree-view--max-w-xs"
+      class="tree-view tree-view--semantic-success tree-view--max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
       items={styling_items()}
@@ -396,19 +396,19 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     <.tree_view class="tree-view tree-view--max-w-xs" items={#{items}}>
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
-    <.tree_view class="tree-view tree-view--accent tree-view--max-w-xs" items={#{items}}>
+    <.tree_view class="tree-view tree-view--semantic-accent tree-view--max-w-xs" items={#{items}}>
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
-    <.tree_view class="tree-view tree-view--brand tree-view--max-w-xs" items={#{items}}>
+    <.tree_view class="tree-view tree-view--semantic-brand tree-view--max-w-xs" items={#{items}}>
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
-    <.tree_view class="tree-view tree-view--info tree-view--max-w-xs" items={#{items}}>
+    <.tree_view class="tree-view tree-view--semantic-info tree-view--max-w-xs" items={#{items}}>
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
-    <.tree_view class="tree-view tree-view--alert tree-view--max-w-xs" items={#{items}}>
+    <.tree_view class="tree-view tree-view--semantic-alert tree-view--max-w-xs" items={#{items}}>
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
-    <.tree_view class="tree-view tree-view--success tree-view--max-w-xs" items={#{items}}>
+    <.tree_view class="tree-view tree-view--semantic-success tree-view--max-w-xs" items={#{items}}>
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
     """
@@ -418,7 +418,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     ~H"""
     <.tree_view
       id="tree-styling-size-sm"
-      class="tree-view tree-view--sm tree-view--max-w-xs"
+      class="tree-view tree-view--size-sm tree-view--max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
       items={styling_items()}
@@ -427,7 +427,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     </.tree_view>
     <.tree_view
       id="tree-styling-size-md"
-      class="tree-view tree-view--md tree-view--max-w-xs"
+      class="tree-view tree-view--size-md tree-view--max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
       items={styling_items()}
@@ -436,7 +436,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     </.tree_view>
     <.tree_view
       id="tree-styling-size-lg"
-      class="tree-view tree-view--lg tree-view--max-w-xs"
+      class="tree-view tree-view--size-lg tree-view--max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
       items={styling_items()}
@@ -445,7 +445,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     </.tree_view>
     <.tree_view
       id="tree-styling-size-xl"
-      class="tree-view tree-view--xl tree-view--max-w-xs"
+      class="tree-view tree-view--size-xl tree-view--max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
       items={styling_items()}
@@ -459,16 +459,16 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     items = code_styling_items()
 
     """
-    <.tree_view class="tree-view tree-view--sm tree-view--max-w-xs" items={#{items}}>
+    <.tree_view class="tree-view tree-view--size-sm tree-view--max-w-xs" items={#{items}}>
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
-    <.tree_view class="tree-view tree-view--md tree-view--max-w-xs" items={#{items}}>
+    <.tree_view class="tree-view tree-view--size-md tree-view--max-w-xs" items={#{items}}>
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
-    <.tree_view class="tree-view tree-view--lg tree-view--max-w-xs" items={#{items}}>
+    <.tree_view class="tree-view tree-view--size-lg tree-view--max-w-xs" items={#{items}}>
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
-    <.tree_view class="tree-view tree-view--xl tree-view--max-w-xs" items={#{items}}>
+    <.tree_view class="tree-view tree-view--size-xl tree-view--max-w-xs" items={#{items}}>
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
     """
@@ -1332,4 +1332,8 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     </.tree_view>
     """
   end
+
+  def style_preview(assigns), do: E2eWeb.Demos.StylePreview.preview(:tree_view, assigns)
+  def style_playground(assigns), do: style_preview(assigns)
+
 end

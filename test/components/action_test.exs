@@ -22,7 +22,7 @@ defmodule Corex.ActionTest do
       result = render_component(&CorexTest.ComponentHelpers.render_action/1, %{})
       assert [button] = find_in_html(result, "button")
       assert text_in_html(result) =~ "Click"
-      assert_has_classes(button, ~w(button button--solid button--md))
+      assert_has_classes(button, ~w(button button--variant-solid button--size-md))
     end
 
     test "renders button with type submit" do
@@ -69,7 +69,7 @@ defmodule Corex.ActionTest do
         )
 
       assert [button] = find_in_html(result, "button")
-      assert_has_classes(button, ~w(button button--solid button--accent button--lg))
+      assert_has_classes(button, ~w(button button--variant-solid button--semantic-accent button--size-lg))
     end
 
     test "variant and radius stamp BEM modifiers" do
@@ -80,7 +80,7 @@ defmodule Corex.ActionTest do
         )
 
       assert [button] = find_in_html(result, "button")
-      assert_has_classes(button, ~w(button button--ghost button--rounded-xl button--md))
+      assert_has_classes(button, ~w(button button--variant-ghost button--rounded-xl button--size-md))
     end
 
     test "as link stamps link BEM modifiers" do
@@ -91,7 +91,7 @@ defmodule Corex.ActionTest do
         )
 
       assert [button] = find_in_html(result, "button")
-      assert_has_classes(button, ~w(link link--solid link--accent link--md))
+      assert_has_classes(button, ~w(link link--variant-solid link--semantic-accent link--size-md))
       refute class_of(button) =~ "button--"
     end
 
@@ -103,24 +103,24 @@ defmodule Corex.ActionTest do
         )
 
       assert [button] = find_in_html(result, "button")
-      assert_has_classes(button, ~w(button button--solid button--brand button--md w-full))
+      assert_has_classes(button, ~w(button button--variant-solid button--semantic-brand button--size-md w-full))
     end
 
     test "explicit class modifiers merge with defaults" do
       result =
         render_component(&CorexTest.ComponentHelpers.render_action_styled/1,
-          class: "button button--accent"
+          class: "button button--semantic-accent"
         )
 
       assert [button] = find_in_html(result, "button")
-      assert_has_classes(button, ~w(button button--solid button--md button--accent))
+      assert_has_classes(button, ~w(button button--variant-solid button--size-md button--semantic-accent))
     end
 
     test "with neither attrs nor class stamps default solid md button" do
       result = render_component(&CorexTest.ComponentHelpers.render_action_styled/1, %{})
 
       assert [button] = find_in_html(result, "button")
-      assert_has_classes(button, ~w(button button--solid button--md))
+      assert_has_classes(button, ~w(button button--variant-solid button--size-md))
     end
 
     test "indicator slot renders data-part indicator" do
@@ -142,7 +142,7 @@ defmodule Corex.ActionTest do
         )
 
       assert [button] = find_in_html(result, "button")
-      assert_has_classes(button, ~w(button button--solid button--accent button--lg))
+      assert_has_classes(button, ~w(button button--variant-solid button--semantic-accent button--size-lg))
     end
   end
 end

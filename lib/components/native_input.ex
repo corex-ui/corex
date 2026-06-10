@@ -80,7 +80,7 @@ defmodule Corex.NativeInput do
   ### With classes
 
   ```heex
-  <.native_input type="text" name="user[name]" class="native-input native-input--accent native-input--md">
+  <.native_input type="text" name="user[name]" class="native-input native-input--semantic-accent native-input--size-md">
     <:label>Name</:label>
   </.native_input>
   ```

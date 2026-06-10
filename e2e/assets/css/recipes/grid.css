@@ -1,5 +1,10 @@
 /* Corex generated design - do not edit */
 
+@utility grid--gap-* {
+  gap: --value(--spacing-space-*, [length]);
+}
+
+
 @layer components {
   .grid {
     display: grid;
@@ -9,374 +14,28 @@
     gap: 0;
   }
 
-  @media (min-width: 40rem) {
-    .grid.sm\:grid--gap-none {
-      gap: 0;
-    }
-  }
-
-  @media (min-width: 48rem) {
-    .grid.md\:grid--gap-none {
-      gap: 0;
-    }
-  }
-
-  @media (min-width: 64rem) {
-    .grid.lg\:grid--gap-none {
-      gap: 0;
-    }
-  }
-
-  @media (min-width: 80rem) {
-    .grid.xl\:grid--gap-none {
-      gap: 0;
-    }
-  }
-
-  @media (min-width: 96rem) {
-    .grid.2xl\:grid--gap-none {
-      gap: 0;
-    }
-  }
-
-  .grid.grid--gap-sm {
-    gap: var(--space-sm);
-  }
-
-  @media (min-width: 40rem) {
-    .grid.sm\:grid--gap-sm {
-      gap: var(--space-sm);
-    }
-  }
-
-  @media (min-width: 48rem) {
-    .grid.md\:grid--gap-sm {
-      gap: var(--space-sm);
-    }
-  }
-
-  @media (min-width: 64rem) {
-    .grid.lg\:grid--gap-sm {
-      gap: var(--space-sm);
-    }
-  }
-
-  @media (min-width: 80rem) {
-    .grid.xl\:grid--gap-sm {
-      gap: var(--space-sm);
-    }
-  }
-
-  @media (min-width: 96rem) {
-    .grid.2xl\:grid--gap-sm {
-      gap: var(--space-sm);
-    }
-  }
-
-  .grid.grid--gap-md {
-    gap: var(--space-md);
-  }
-
-  @media (min-width: 40rem) {
-    .grid.sm\:grid--gap-md {
-      gap: var(--space-md);
-    }
-  }
-
-  @media (min-width: 48rem) {
-    .grid.md\:grid--gap-md {
-      gap: var(--space-md);
-    }
-  }
-
-  @media (min-width: 64rem) {
-    .grid.lg\:grid--gap-md {
-      gap: var(--space-md);
-    }
-  }
-
-  @media (min-width: 80rem) {
-    .grid.xl\:grid--gap-md {
-      gap: var(--space-md);
-    }
-  }
-
-  @media (min-width: 96rem) {
-    .grid.2xl\:grid--gap-md {
-      gap: var(--space-md);
-    }
-  }
-
-  .grid.grid--gap-lg {
-    gap: var(--space-lg);
-  }
-
-  @media (min-width: 40rem) {
-    .grid.sm\:grid--gap-lg {
-      gap: var(--space-lg);
-    }
-  }
-
-  @media (min-width: 48rem) {
-    .grid.md\:grid--gap-lg {
-      gap: var(--space-lg);
-    }
-  }
-
-  @media (min-width: 64rem) {
-    .grid.lg\:grid--gap-lg {
-      gap: var(--space-lg);
-    }
-  }
-
-  @media (min-width: 80rem) {
-    .grid.xl\:grid--gap-lg {
-      gap: var(--space-lg);
-    }
-  }
-
-  @media (min-width: 96rem) {
-    .grid.2xl\:grid--gap-lg {
-      gap: var(--space-lg);
-    }
-  }
-
-  .grid.grid--gap-xl {
-    gap: var(--space-xl);
-  }
-
-  @media (min-width: 40rem) {
-    .grid.sm\:grid--gap-xl {
-      gap: var(--space-xl);
-    }
-  }
-
-  @media (min-width: 48rem) {
-    .grid.md\:grid--gap-xl {
-      gap: var(--space-xl);
-    }
-  }
-
-  @media (min-width: 64rem) {
-    .grid.lg\:grid--gap-xl {
-      gap: var(--space-xl);
-    }
-  }
-
-  @media (min-width: 80rem) {
-    .grid.xl\:grid--gap-xl {
-      gap: var(--space-xl);
-    }
-  }
-
-  @media (min-width: 96rem) {
-    .grid.2xl\:grid--gap-xl {
-      gap: var(--space-xl);
-    }
-  }
-
   .grid.grid--columns-1 {
     grid-template-columns: repeat(1, minmax(0, 1fr));
-  }
-
-  @media (min-width: 40rem) {
-    .grid.sm\:grid--columns-1 {
-      grid-template-columns: repeat(1, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 48rem) {
-    .grid.md\:grid--columns-1 {
-      grid-template-columns: repeat(1, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 64rem) {
-    .grid.lg\:grid--columns-1 {
-      grid-template-columns: repeat(1, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 80rem) {
-    .grid.xl\:grid--columns-1 {
-      grid-template-columns: repeat(1, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 96rem) {
-    .grid.2xl\:grid--columns-1 {
-      grid-template-columns: repeat(1, minmax(0, 1fr));
-    }
   }
 
   .grid.grid--columns-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  @media (min-width: 40rem) {
-    .grid.sm\:grid--columns-2 {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 48rem) {
-    .grid.md\:grid--columns-2 {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 64rem) {
-    .grid.lg\:grid--columns-2 {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 80rem) {
-    .grid.xl\:grid--columns-2 {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 96rem) {
-    .grid.2xl\:grid--columns-2 {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-
   .grid.grid--columns-3 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  @media (min-width: 40rem) {
-    .grid.sm\:grid--columns-3 {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 48rem) {
-    .grid.md\:grid--columns-3 {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 64rem) {
-    .grid.lg\:grid--columns-3 {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 80rem) {
-    .grid.xl\:grid--columns-3 {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 96rem) {
-    .grid.2xl\:grid--columns-3 {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
   }
 
   .grid.grid--columns-4 {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
-  @media (min-width: 40rem) {
-    .grid.sm\:grid--columns-4 {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 48rem) {
-    .grid.md\:grid--columns-4 {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 64rem) {
-    .grid.lg\:grid--columns-4 {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 80rem) {
-    .grid.xl\:grid--columns-4 {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 96rem) {
-    .grid.2xl\:grid--columns-4 {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-  }
-
   .grid.grid--columns-5 {
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
-  @media (min-width: 40rem) {
-    .grid.sm\:grid--columns-5 {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 48rem) {
-    .grid.md\:grid--columns-5 {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 64rem) {
-    .grid.lg\:grid--columns-5 {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 80rem) {
-    .grid.xl\:grid--columns-5 {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 96rem) {
-    .grid.2xl\:grid--columns-5 {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-    }
-  }
-
   .grid.grid--columns-6 {
     grid-template-columns: repeat(6, minmax(0, 1fr));
-  }
-
-  @media (min-width: 40rem) {
-    .grid.sm\:grid--columns-6 {
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 48rem) {
-    .grid.md\:grid--columns-6 {
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 64rem) {
-    .grid.lg\:grid--columns-6 {
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 80rem) {
-    .grid.xl\:grid--columns-6 {
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 96rem) {
-    .grid.2xl\:grid--columns-6 {
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-    }
   }
 }
 

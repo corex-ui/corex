@@ -248,7 +248,7 @@ Place in your header or toolbar. `id="theme-switcher"` must match `theme.js`.
 ```heex
 <.select
   id="theme-switcher"
-  class="select select--sm"
+  class="select select--size-sm"
   dir="ltr"
   items={MyApp.Theme.select_items()}
   value={[@theme]}

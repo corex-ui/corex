@@ -733,23 +733,23 @@ defmodule E2eWeb.Demos.ListboxDemo do
       <:label>Default</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
-    <.listbox class="listbox listbox--accent" #{items} #{value}>
+    <.listbox class="listbox listbox--semantic-accent" #{items} #{value}>
       <:label>Accent</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
-    <.listbox class="listbox listbox--brand" #{items} #{value}>
+    <.listbox class="listbox listbox--semantic-brand" #{items} #{value}>
       <:label>Brand</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
-    <.listbox class="listbox listbox--alert" #{items} #{value}>
+    <.listbox class="listbox listbox--semantic-alert" #{items} #{value}>
       <:label>Alert</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
-    <.listbox class="listbox listbox--info" #{items} #{value}>
+    <.listbox class="listbox listbox--semantic-info" #{items} #{value}>
       <:label>Info</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
-    <.listbox class="listbox listbox--success" #{items} #{value}>
+    <.listbox class="listbox listbox--semantic-success" #{items} #{value}>
       <:label>Success</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
@@ -770,7 +770,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       </.listbox>
       <.listbox
         id="listbox-style-color-accent"
-        class="listbox listbox--accent"
+        class="listbox listbox--semantic-accent"
         items={@items}
         value={@value}
       >
@@ -779,7 +779,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       </.listbox>
       <.listbox
         id="listbox-style-color-brand"
-        class="listbox listbox--brand"
+        class="listbox listbox--semantic-brand"
         items={@items}
         value={@value}
       >
@@ -788,7 +788,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       </.listbox>
       <.listbox
         id="listbox-style-color-alert"
-        class="listbox listbox--alert"
+        class="listbox listbox--semantic-alert"
         items={@items}
         value={@value}
       >
@@ -797,7 +797,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       </.listbox>
       <.listbox
         id="listbox-style-color-info"
-        class="listbox listbox--info"
+        class="listbox listbox--semantic-info"
         items={@items}
         value={@value}
       >
@@ -806,7 +806,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       </.listbox>
       <.listbox
         id="listbox-style-color-success"
-        class="listbox listbox--success"
+        class="listbox listbox--semantic-success"
         items={@items}
         value={@value}
       >
@@ -821,19 +821,19 @@ defmodule E2eWeb.Demos.ListboxDemo do
     items = styling_items_attr()
 
     """
-    <.listbox class="listbox listbox--sm" #{items}>
+    <.listbox class="listbox listbox--size-sm" #{items}>
       <:label>SM</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
-    <.listbox class="listbox listbox--md" #{items}>
+    <.listbox class="listbox listbox--size-md" #{items}>
       <:label>MD</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
-    <.listbox class="listbox listbox--lg" #{items}>
+    <.listbox class="listbox listbox--size-lg" #{items}>
       <:label>LG</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
-    <.listbox class="listbox listbox--xl" #{items}>
+    <.listbox class="listbox listbox--size-xl" #{items}>
       <:label>XL</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
@@ -845,19 +845,19 @@ defmodule E2eWeb.Demos.ListboxDemo do
 
     ~H"""
     <div class="flex flex-col gap-4 w-full max-w-md">
-      <.listbox id="listbox-style-size-sm" class="listbox listbox--sm" items={@items}>
+      <.listbox id="listbox-style-size-sm" class="listbox listbox--size-sm" items={@items}>
         <:label>SM</:label>
         <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
       </.listbox>
-      <.listbox id="listbox-style-size-md" class="listbox listbox--md" items={@items}>
+      <.listbox id="listbox-style-size-md" class="listbox listbox--size-md" items={@items}>
         <:label>MD</:label>
         <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
       </.listbox>
-      <.listbox id="listbox-style-size-lg" class="listbox listbox--lg" items={@items}>
+      <.listbox id="listbox-style-size-lg" class="listbox listbox--size-lg" items={@items}>
         <:label>LG</:label>
         <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
       </.listbox>
-      <.listbox id="listbox-style-size-xl" class="listbox listbox--xl" items={@items}>
+      <.listbox id="listbox-style-size-xl" class="listbox listbox--size-xl" items={@items}>
         <:label>XL</:label>
         <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
       </.listbox>
@@ -937,4 +937,8 @@ defmodule E2eWeb.Demos.ListboxDemo do
     </div>
     """
   end
+
+  def style_preview(assigns), do: E2eWeb.Demos.StylePreview.preview(:listbox, assigns)
+  def style_playground(assigns), do: style_preview(assigns)
+
 end

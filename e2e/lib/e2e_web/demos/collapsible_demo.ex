@@ -485,4 +485,8 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
     end
     """
   end
+
+  def style_preview(assigns), do: E2eWeb.Demos.StylePreview.preview(:collapsible, assigns)
+  def style_playground(assigns), do: style_preview(assigns)
+
 end

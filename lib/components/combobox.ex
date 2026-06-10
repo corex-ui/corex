@@ -142,7 +142,7 @@ defmodule Corex.Combobox do
   ### With classes
 
   ```heex
-  <.combobox class="combobox combobox--accent combobox--md" items={Corex.List.new([
+  <.combobox class="combobox combobox--semantic-accent combobox--size-md" items={Corex.List.new([
     %{label: "France", value: "fra"},
     %{label: "Belgium", value: "bel"},
     %{label: "Germany", value: "deu"}
@@ -163,7 +163,7 @@ defmodule Corex.Combobox do
   | [`set_value/3`](#set_value/3) | Set selection (server) | `socket` |
 
   ```heex
-  <.action phx-click={Corex.Combobox.set_value("combobox-api", ["fra"])} class="button button--sm">France</.action>
+  <.action phx-click={Corex.Combobox.set_value("combobox-api", ["fra"])} class="button button--size-sm">France</.action>
   ```
 
   ## Events
@@ -255,7 +255,7 @@ defmodule Corex.Combobox do
   Stack modifiers on the host. See [## Styling](#module-styling).
 
   ```heex
-  <.combobox class="combobox combobox--accent combobox--lg" items={Corex.List.new([])}>
+  <.combobox class="combobox combobox--semantic-accent combobox--size-lg" items={Corex.List.new([])}>
     <:empty>No results</:empty>
     <:trigger>
       <.heroicon name="hero-chevron-down" />

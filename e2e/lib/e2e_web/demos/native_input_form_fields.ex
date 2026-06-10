@@ -11,7 +11,7 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
     ~H"""
     <div class="layout__row flex flex-col gap-8" dir={@dir}>
       <div class="flex flex-col gap-3">
-        <p class="typo typo--sm font-medium">Text</p>
+        <.small text="sm" weight="medium">Text</.small>
         <.native_input
           type="text"
           id={"#{@id_prefix}-text-icon"}
@@ -138,7 +138,7 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         </.native_input>
       </div>
       <div class="flex flex-col gap-3">
-        <p class="typo typo--sm font-medium">Date & time</p>
+        <.small text="sm" weight="medium">Date & time</.small>
         <.native_input
           type="date"
           id={"#{@id_prefix}-date"}
@@ -181,7 +181,7 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         </.native_input>
       </div>
       <div class="flex flex-col gap-3">
-        <p class="typo typo--sm font-medium">Multiple</p>
+        <.small text="sm" weight="medium">Multiple</.small>
         <.native_input
           type="select"
           multiple
@@ -195,7 +195,7 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         </.native_input>
       </div>
       <div class="flex flex-col gap-3">
-        <p class="typo typo--sm font-medium">Other</p>
+        <.small text="sm" weight="medium">Other</.small>
         <.native_input
           type="checkbox"
           id={"#{@id_prefix}-agree"}
@@ -248,7 +248,7 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
 
     ~H"""
     <div class="flex flex-col gap-3">
-      <p class="typo typo--sm font-medium">Text</p>
+      <.small text="sm" weight="medium">Text</.small>
       <.native_input
         field={@f[:name]}
         type="text"
@@ -324,7 +324,7 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
       </.native_input>
     </div>
     <div class="flex flex-col gap-3">
-      <p class="typo typo--sm font-medium">Date & time</p>
+      <.small text="sm" weight="medium">Date & time</.small>
       <.native_input
         field={@f[:birth_date]}
         type="date"
@@ -359,7 +359,7 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
       </.native_input>
     </div>
     <div class="flex flex-col gap-3">
-      <p class="typo typo--sm font-medium">Multiple</p>
+      <.small text="sm" weight="medium">Multiple</.small>
       <.native_input
         field={@f[:tags]}
         type="select"
@@ -373,7 +373,7 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
       </.native_input>
     </div>
     <div class="flex flex-col gap-3">
-      <p class="typo typo--sm font-medium">Other</p>
+      <.small text="sm" weight="medium">Other</.small>
       <.native_input
         field={@f[:color]}
         type="color"
@@ -417,7 +417,7 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
   def form_full_fields(%{variant: :native} = assigns) do
     ~H"""
     <div class="flex flex-col gap-3">
-      <p class="typo typo--sm font-medium">Text</p>
+      <.small text="sm" weight="medium">Text</.small>
       <.native_input
         type="text"
         name={"#{@name_prefix}[name]"}
@@ -485,7 +485,7 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
       </.native_input>
     </div>
     <div class="flex flex-col gap-3">
-      <p class="typo typo--sm font-medium">Date & time</p>
+      <.small text="sm" weight="medium">Date & time</.small>
       <.native_input
         type="date"
         name={"#{@name_prefix}[birth_date]"}
@@ -523,7 +523,7 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
       </.native_input>
     </div>
     <div class="flex flex-col gap-3">
-      <p class="typo typo--sm font-medium">Multiple</p>
+      <.small text="sm" weight="medium">Multiple</.small>
       <.native_input
         type="select"
         multiple
@@ -536,7 +536,7 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
       </.native_input>
     </div>
     <div class="flex flex-col gap-3">
-      <p class="typo typo--sm font-medium">Other</p>
+      <.small text="sm" weight="medium">Other</.small>
       <.native_input
         type="color"
         name={"#{@name_prefix}[color]"}

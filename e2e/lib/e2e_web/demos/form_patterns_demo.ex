@@ -58,7 +58,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
         <:error :let={msg} class="absolute top-0 end-0">
           <.tooltip
             id="form-patterns-custom-error-country-tip"
-            class="tooltip tooltip--sm"
+            class="tooltip tooltip--size-sm"
             positioning={%Corex.Positioning{placement: "top-end"}}
           >
             <:trigger>
@@ -88,7 +88,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
         <:error :let={msg} class="absolute top-0 end-0">
           <.tooltip
             id="form-patterns-custom-error-currency-tip"
-            class="tooltip tooltip--sm"
+            class="tooltip tooltip--size-sm"
             positioning={%Corex.Positioning{placement: "top-end"}}
           >
             <:trigger>
@@ -111,7 +111,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
         <:error :let={msg} class="absolute top-0 end-0">
           <.tooltip
             id="form-patterns-custom-error-tags-tip"
-            class="tooltip tooltip--sm"
+            class="tooltip tooltip--size-sm"
             positioning={%Corex.Positioning{placement: "top-end"}}
           >
             <:trigger>
@@ -137,7 +137,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
         <:error :let={msg} class="absolute top-0 end-0">
           <.tooltip
             id="form-patterns-custom-error-password-tip"
-            class="tooltip tooltip--sm"
+            class="tooltip tooltip--size-sm"
             positioning={%Corex.Positioning{placement: "top-end"}}
           >
             <:trigger>
@@ -157,7 +157,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
         <:error :let={msg} class="absolute top-0 end-0">
           <.tooltip
             id="form-patterns-custom-error-notifications-tip"
-            class="tooltip tooltip--sm"
+            class="tooltip tooltip--size-sm"
             positioning={%Corex.Positioning{placement: "top-end"}}
           >
             <:trigger>
@@ -177,7 +177,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
         <:error :let={msg} class="absolute top-0 end-0">
           <.tooltip
             id="form-patterns-custom-error-terms-tip"
-            class="tooltip tooltip--sm"
+            class="tooltip tooltip--size-sm"
             positioning={%Corex.Positioning{placement: "top-end"}}
           >
             <:trigger>

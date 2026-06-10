@@ -26,6 +26,27 @@
 }
 
 
+@utility signature-pad--size-* {
+  [data-scope="signature-pad"][data-part="label"] {
+      font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+  }
+
+  [data-scope="signature-pad"][data-part="root"] {
+      gap: --value(--spacing-space-*, [length]);
+  }
+
+  [data-scope="signature-pad"][data-part="clear-trigger"] {
+      color: --value(--color-ui-ink-*, [color]);
+    background-color: --value(--color-*, [color]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-size-*, [length]);
+  }
+
+}
+
+
 @layer components {
   .signature-pad.signature-pad--w-auto {
     width: auto;
@@ -45,74 +66,6 @@
 
   .signature-pad.signature-pad--max-w-full {
     max-width: 100%;
-  }
-
-  .signature-pad.signature-pad--max-w-7xs {
-    max-width: var(--container-7xs);
-  }
-
-  .signature-pad.signature-pad--max-w-6xs {
-    max-width: var(--container-6xs);
-  }
-
-  .signature-pad.signature-pad--max-w-5xs {
-    max-width: var(--container-5xs);
-  }
-
-  .signature-pad.signature-pad--max-w-4xs {
-    max-width: var(--container-4xs);
-  }
-
-  .signature-pad.signature-pad--max-w-3xs {
-    max-width: var(--container-3xs);
-  }
-
-  .signature-pad.signature-pad--max-w-2xs {
-    max-width: var(--container-2xs);
-  }
-
-  .signature-pad.signature-pad--max-w-xs {
-    max-width: var(--container-xs);
-  }
-
-  .signature-pad.signature-pad--max-w-sm {
-    max-width: var(--container-sm);
-  }
-
-  .signature-pad.signature-pad--max-w-md {
-    max-width: var(--container-md);
-  }
-
-  .signature-pad.signature-pad--max-w-lg {
-    max-width: var(--container-lg);
-  }
-
-  .signature-pad.signature-pad--max-w-xl {
-    max-width: var(--container-xl);
-  }
-
-  .signature-pad.signature-pad--max-w-2xl {
-    max-width: var(--container-2xl);
-  }
-
-  .signature-pad.signature-pad--max-w-3xl {
-    max-width: var(--container-3xl);
-  }
-
-  .signature-pad.signature-pad--max-w-4xl {
-    max-width: var(--container-4xl);
-  }
-
-  .signature-pad.signature-pad--max-w-5xl {
-    max-width: var(--container-5xl);
-  }
-
-  .signature-pad.signature-pad--max-w-6xl {
-    max-width: var(--container-6xl);
-  }
-
-  .signature-pad.signature-pad--max-w-7xl {
-    max-width: var(--container-7xl);
   }
 
   .signature-pad.signature-pad--h-auto {
@@ -135,184 +88,28 @@
     max-height: 100%;
   }
 
-  .signature-pad.signature-pad--max-h-7xs {
-    max-height: var(--container-7xs);
-  }
-
-  .signature-pad.signature-pad--max-h-6xs {
-    max-height: var(--container-6xs);
-  }
-
-  .signature-pad.signature-pad--max-h-5xs {
-    max-height: var(--container-5xs);
-  }
-
-  .signature-pad.signature-pad--max-h-4xs {
-    max-height: var(--container-4xs);
-  }
-
-  .signature-pad.signature-pad--max-h-3xs {
-    max-height: var(--container-3xs);
-  }
-
-  .signature-pad.signature-pad--max-h-2xs {
-    max-height: var(--container-2xs);
-  }
-
-  .signature-pad.signature-pad--max-h-xs {
-    max-height: var(--container-xs);
-  }
-
-  .signature-pad.signature-pad--max-h-sm {
-    max-height: var(--container-sm);
-  }
-
-  .signature-pad.signature-pad--max-h-md {
-    max-height: var(--container-md);
-  }
-
-  .signature-pad.signature-pad--max-h-lg {
-    max-height: var(--container-lg);
-  }
-
-  .signature-pad.signature-pad--max-h-xl {
-    max-height: var(--container-xl);
-  }
-
-  .signature-pad.signature-pad--max-h-2xl {
-    max-height: var(--container-2xl);
-  }
-
-  .signature-pad.signature-pad--max-h-3xl {
-    max-height: var(--container-3xl);
-  }
-
-  .signature-pad.signature-pad--max-h-4xl {
-    max-height: var(--container-4xl);
-  }
-
-  .signature-pad.signature-pad--max-h-5xl {
-    max-height: var(--container-5xl);
-  }
-
-  .signature-pad.signature-pad--max-h-6xl {
-    max-height: var(--container-6xl);
-  }
-
-  .signature-pad.signature-pad--max-h-7xl {
-    max-height: var(--container-7xl);
-  }
-
-  .signature-pad.signature-pad--accent {
+  .signature-pad.signature-pad--semantic-accent {
     position: relative;
   }
 
-  .signature-pad.signature-pad--brand {
+  .signature-pad.signature-pad--semantic-brand {
     position: relative;
   }
 
-  .signature-pad.signature-pad--alert {
+  .signature-pad.signature-pad--semantic-alert {
     position: relative;
   }
 
-  .signature-pad.signature-pad--info {
+  .signature-pad.signature-pad--semantic-info {
     position: relative;
   }
 
-  .signature-pad.signature-pad--success {
+  .signature-pad.signature-pad--semantic-success {
     position: relative;
   }
 
-  .signature-pad.signature-pad--selected {
+  .signature-pad.signature-pad--semantic-selected {
     position: relative;
-  }
-
-  .signature-pad.signature-pad--sm [data-scope="signature-pad"][data-part="root"] {
-    gap: var(--space-sm);
-  }
-
-  .signature-pad.signature-pad--sm [data-scope="signature-pad"][data-part="label"] {
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-  }
-
-  .signature-pad.signature-pad--sm [data-scope="signature-pad"][data-part="control"] {
-    height: calc(var(--size-sm) * 4);
-  }
-
-  .signature-pad.signature-pad--sm [data-scope="signature-pad"][data-part="clear-trigger"] {
-    color: var(--color-accent-ink);
-    min-height: var(--size-sm);
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-    background-color: var(--color-accent);
-    min-width: var(--size-sm);
-  }
-
-  .signature-pad.signature-pad--md [data-scope="signature-pad"][data-part="root"] {
-    gap: var(--space-md);
-  }
-
-  .signature-pad.signature-pad--md [data-scope="signature-pad"][data-part="label"] {
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-  }
-
-  .signature-pad.signature-pad--md [data-scope="signature-pad"][data-part="control"] {
-    height: calc(var(--size-md) * 4);
-  }
-
-  .signature-pad.signature-pad--md [data-scope="signature-pad"][data-part="clear-trigger"] {
-    color: var(--color-accent-ink);
-    min-height: var(--size-md);
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-    background-color: var(--color-accent);
-    min-width: var(--size-md);
-  }
-
-  .signature-pad.signature-pad--lg [data-scope="signature-pad"][data-part="root"] {
-    gap: var(--space-lg);
-  }
-
-  .signature-pad.signature-pad--lg [data-scope="signature-pad"][data-part="label"] {
-    font-size: var(--text-lg);
-    line-height: var(--leading-lg);
-  }
-
-  .signature-pad.signature-pad--lg [data-scope="signature-pad"][data-part="control"] {
-    height: calc(var(--size-lg) * 4);
-  }
-
-  .signature-pad.signature-pad--lg [data-scope="signature-pad"][data-part="clear-trigger"] {
-    color: var(--color-accent-ink);
-    min-height: var(--size-lg);
-    font-size: var(--text-lg);
-    line-height: var(--leading-lg);
-    background-color: var(--color-accent);
-    min-width: var(--size-lg);
-  }
-
-  .signature-pad.signature-pad--xl [data-scope="signature-pad"][data-part="root"] {
-    gap: var(--space-xl);
-  }
-
-  .signature-pad.signature-pad--xl [data-scope="signature-pad"][data-part="label"] {
-    font-size: var(--text-xl);
-    line-height: var(--leading-xl);
-  }
-
-  .signature-pad.signature-pad--xl [data-scope="signature-pad"][data-part="control"] {
-    height: calc(var(--size-xl) * 4);
-  }
-
-  .signature-pad.signature-pad--xl [data-scope="signature-pad"][data-part="clear-trigger"] {
-    color: var(--color-accent-ink);
-    min-height: var(--size-xl);
-    font-size: var(--text-xl);
-    line-height: var(--leading-xl);
-    background-color: var(--color-accent);
-    min-width: var(--size-xl);
   }
 
   .signature-pad.signature-pad--rounded-none [data-scope="signature-pad"][data-part="control"] {
@@ -325,102 +122,6 @@
 
   .signature-pad.signature-pad--rounded-none [data-scope="signature-pad"][data-part="clear-trigger"] {
     border-radius: var(--radius-none);
-  }
-
-  .signature-pad.signature-pad--rounded-xs [data-scope="signature-pad"][data-part="control"] {
-    border-radius: var(--radius-xs);
-  }
-
-  .signature-pad.signature-pad--rounded-xs [data-scope="signature-pad"][data-part="segment"] {
-    border-radius: var(--radius-xs);
-  }
-
-  .signature-pad.signature-pad--rounded-xs [data-scope="signature-pad"][data-part="clear-trigger"] {
-    border-radius: var(--radius-xs);
-  }
-
-  .signature-pad.signature-pad--rounded-sm [data-scope="signature-pad"][data-part="control"] {
-    border-radius: var(--radius-sm);
-  }
-
-  .signature-pad.signature-pad--rounded-sm [data-scope="signature-pad"][data-part="segment"] {
-    border-radius: var(--radius-sm);
-  }
-
-  .signature-pad.signature-pad--rounded-sm [data-scope="signature-pad"][data-part="clear-trigger"] {
-    border-radius: var(--radius-sm);
-  }
-
-  .signature-pad.signature-pad--rounded-md [data-scope="signature-pad"][data-part="control"] {
-    border-radius: var(--radius-md);
-  }
-
-  .signature-pad.signature-pad--rounded-md [data-scope="signature-pad"][data-part="segment"] {
-    border-radius: var(--radius-md);
-  }
-
-  .signature-pad.signature-pad--rounded-md [data-scope="signature-pad"][data-part="clear-trigger"] {
-    border-radius: var(--radius-md);
-  }
-
-  .signature-pad.signature-pad--rounded-lg [data-scope="signature-pad"][data-part="control"] {
-    border-radius: var(--radius-lg);
-  }
-
-  .signature-pad.signature-pad--rounded-lg [data-scope="signature-pad"][data-part="segment"] {
-    border-radius: var(--radius-lg);
-  }
-
-  .signature-pad.signature-pad--rounded-lg [data-scope="signature-pad"][data-part="clear-trigger"] {
-    border-radius: var(--radius-lg);
-  }
-
-  .signature-pad.signature-pad--rounded-xl [data-scope="signature-pad"][data-part="control"] {
-    border-radius: var(--radius-xl);
-  }
-
-  .signature-pad.signature-pad--rounded-xl [data-scope="signature-pad"][data-part="segment"] {
-    border-radius: var(--radius-xl);
-  }
-
-  .signature-pad.signature-pad--rounded-xl [data-scope="signature-pad"][data-part="clear-trigger"] {
-    border-radius: var(--radius-xl);
-  }
-
-  .signature-pad.signature-pad--rounded-2xl [data-scope="signature-pad"][data-part="control"] {
-    border-radius: var(--radius-2xl);
-  }
-
-  .signature-pad.signature-pad--rounded-2xl [data-scope="signature-pad"][data-part="segment"] {
-    border-radius: var(--radius-2xl);
-  }
-
-  .signature-pad.signature-pad--rounded-2xl [data-scope="signature-pad"][data-part="clear-trigger"] {
-    border-radius: var(--radius-2xl);
-  }
-
-  .signature-pad.signature-pad--rounded-3xl [data-scope="signature-pad"][data-part="control"] {
-    border-radius: var(--radius-3xl);
-  }
-
-  .signature-pad.signature-pad--rounded-3xl [data-scope="signature-pad"][data-part="segment"] {
-    border-radius: var(--radius-3xl);
-  }
-
-  .signature-pad.signature-pad--rounded-3xl [data-scope="signature-pad"][data-part="clear-trigger"] {
-    border-radius: var(--radius-3xl);
-  }
-
-  .signature-pad.signature-pad--rounded-4xl [data-scope="signature-pad"][data-part="control"] {
-    border-radius: var(--radius-4xl);
-  }
-
-  .signature-pad.signature-pad--rounded-4xl [data-scope="signature-pad"][data-part="segment"] {
-    border-radius: var(--radius-4xl);
-  }
-
-  .signature-pad.signature-pad--rounded-4xl [data-scope="signature-pad"][data-part="clear-trigger"] {
-    border-radius: var(--radius-4xl);
   }
 
   .signature-pad.signature-pad--rounded-full [data-scope="signature-pad"][data-part="control"] {
@@ -499,7 +200,10 @@
 
   .signature-pad [data-scope="signature-pad"][data-part="clear-trigger"] {
     @apply ui-trigger;
-    @apply ui-trigger--square;
+    aspect-ratio: 1 / 1;
+    padding: 0;
+    justify-content: center;
+    width: auto;
     position: absolute;
     z-index: 1;
     top: var(--space-sm);
@@ -530,7 +234,7 @@
     }
   }
 
-  .signature-pad.signature-pad--accent [data-scope="signature-pad"][data-part="clear-trigger"] {
+  .signature-pad.signature-pad--semantic-accent [data-scope="signature-pad"][data-part="clear-trigger"] {
     background-color: var(--color-accent);
     color: var(--color-accent-ink);
     &:hover {
@@ -554,7 +258,7 @@
     }
   }
 
-  .signature-pad.signature-pad--brand [data-scope="signature-pad"][data-part="clear-trigger"] {
+  .signature-pad.signature-pad--semantic-brand [data-scope="signature-pad"][data-part="clear-trigger"] {
     background-color: var(--color-brand);
     color: var(--color-brand-ink);
     &:hover {
@@ -578,7 +282,7 @@
     }
   }
 
-  .signature-pad.signature-pad--alert [data-scope="signature-pad"][data-part="clear-trigger"] {
+  .signature-pad.signature-pad--semantic-alert [data-scope="signature-pad"][data-part="clear-trigger"] {
     background-color: var(--color-alert);
     color: var(--color-alert-ink);
     &:hover {
@@ -602,7 +306,7 @@
     }
   }
 
-  .signature-pad.signature-pad--info [data-scope="signature-pad"][data-part="clear-trigger"] {
+  .signature-pad.signature-pad--semantic-info [data-scope="signature-pad"][data-part="clear-trigger"] {
     background-color: var(--color-info);
     color: var(--color-info-ink);
     &:hover {
@@ -626,7 +330,7 @@
     }
   }
 
-  .signature-pad.signature-pad--success [data-scope="signature-pad"][data-part="clear-trigger"] {
+  .signature-pad.signature-pad--semantic-success [data-scope="signature-pad"][data-part="clear-trigger"] {
     background-color: var(--color-success);
     color: var(--color-success-ink);
     &:hover {
@@ -650,7 +354,7 @@
     }
   }
 
-  .signature-pad.signature-pad--selected [data-scope="signature-pad"][data-part="clear-trigger"] {
+  .signature-pad.signature-pad--semantic-selected [data-scope="signature-pad"][data-part="clear-trigger"] {
     background-color: var(--color-selected);
     color: var(--color-selected-ink);
     &:hover {

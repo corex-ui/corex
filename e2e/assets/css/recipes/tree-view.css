@@ -23,12 +23,12 @@
     line-height: --value(--text-*--line-height, [length]);
   }
 
-  [data-scope="tree-view"][data-part="branch-text"] {
+  [data-scope="tree-view"][data-part="branch-control"] {
       font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
 
-  [data-scope="tree-view"][data-part="branch-control"] {
+  [data-scope="tree-view"][data-part="branch-text"] {
       font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
@@ -43,6 +43,38 @@
 
 @utility tree-view--max-h-* {
   max-height: --value(--container-*, [length]);
+}
+
+
+@utility tree-view--size-* {
+  [data-scope="tree-view"][data-part="label"] {
+      padding-inline-start: --value(--spacing-space-*, [length]);
+  }
+
+  [data-scope="tree-view"][data-part="item"] {
+      padding-inline: --value(--spacing-space-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-size-*, [length]);
+  }
+
+  [data-scope="tree-view"][data-part="item-text"] {
+      gap: --value(--spacing-space-*, [length]);
+  }
+
+  [data-scope="tree-view"][data-part="branch-control"] {
+      padding-inline: --value(--spacing-space-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-size-*, [length]);
+  }
+
+  [data-scope="tree-view"][data-part="branch-text"] {
+      gap: --value(--spacing-space-*, [length]);
+  }
+
 }
 
 
@@ -67,74 +99,6 @@
     max-width: 100%;
   }
 
-  .tree-view.tree-view--max-w-7xs {
-    max-width: var(--container-7xs);
-  }
-
-  .tree-view.tree-view--max-w-6xs {
-    max-width: var(--container-6xs);
-  }
-
-  .tree-view.tree-view--max-w-5xs {
-    max-width: var(--container-5xs);
-  }
-
-  .tree-view.tree-view--max-w-4xs {
-    max-width: var(--container-4xs);
-  }
-
-  .tree-view.tree-view--max-w-3xs {
-    max-width: var(--container-3xs);
-  }
-
-  .tree-view.tree-view--max-w-2xs {
-    max-width: var(--container-2xs);
-  }
-
-  .tree-view.tree-view--max-w-xs {
-    max-width: var(--container-xs);
-  }
-
-  .tree-view.tree-view--max-w-sm {
-    max-width: var(--container-sm);
-  }
-
-  .tree-view.tree-view--max-w-md {
-    max-width: var(--container-md);
-  }
-
-  .tree-view.tree-view--max-w-lg {
-    max-width: var(--container-lg);
-  }
-
-  .tree-view.tree-view--max-w-xl {
-    max-width: var(--container-xl);
-  }
-
-  .tree-view.tree-view--max-w-2xl {
-    max-width: var(--container-2xl);
-  }
-
-  .tree-view.tree-view--max-w-3xl {
-    max-width: var(--container-3xl);
-  }
-
-  .tree-view.tree-view--max-w-4xl {
-    max-width: var(--container-4xl);
-  }
-
-  .tree-view.tree-view--max-w-5xl {
-    max-width: var(--container-5xl);
-  }
-
-  .tree-view.tree-view--max-w-6xl {
-    max-width: var(--container-6xl);
-  }
-
-  .tree-view.tree-view--max-w-7xl {
-    max-width: var(--container-7xl);
-  }
-
   .tree-view.tree-view--h-auto {
     height: auto;
   }
@@ -155,368 +119,28 @@
     max-height: 100%;
   }
 
-  .tree-view.tree-view--max-h-7xs {
-    max-height: var(--container-7xs);
-  }
-
-  .tree-view.tree-view--max-h-6xs {
-    max-height: var(--container-6xs);
-  }
-
-  .tree-view.tree-view--max-h-5xs {
-    max-height: var(--container-5xs);
-  }
-
-  .tree-view.tree-view--max-h-4xs {
-    max-height: var(--container-4xs);
-  }
-
-  .tree-view.tree-view--max-h-3xs {
-    max-height: var(--container-3xs);
-  }
-
-  .tree-view.tree-view--max-h-2xs {
-    max-height: var(--container-2xs);
-  }
-
-  .tree-view.tree-view--max-h-xs {
-    max-height: var(--container-xs);
-  }
-
-  .tree-view.tree-view--max-h-sm {
-    max-height: var(--container-sm);
-  }
-
-  .tree-view.tree-view--max-h-md {
-    max-height: var(--container-md);
-  }
-
-  .tree-view.tree-view--max-h-lg {
-    max-height: var(--container-lg);
-  }
-
-  .tree-view.tree-view--max-h-xl {
-    max-height: var(--container-xl);
-  }
-
-  .tree-view.tree-view--max-h-2xl {
-    max-height: var(--container-2xl);
-  }
-
-  .tree-view.tree-view--max-h-3xl {
-    max-height: var(--container-3xl);
-  }
-
-  .tree-view.tree-view--max-h-4xl {
-    max-height: var(--container-4xl);
-  }
-
-  .tree-view.tree-view--max-h-5xl {
-    max-height: var(--container-5xl);
-  }
-
-  .tree-view.tree-view--max-h-6xl {
-    max-height: var(--container-6xl);
-  }
-
-  .tree-view.tree-view--max-h-7xl {
-    max-height: var(--container-7xl);
-  }
-
-  .tree-view.tree-view--accent {
+  .tree-view.tree-view--semantic-accent {
     position: relative;
   }
 
-  .tree-view.tree-view--brand {
+  .tree-view.tree-view--semantic-brand {
     position: relative;
   }
 
-  .tree-view.tree-view--alert {
+  .tree-view.tree-view--semantic-alert {
     position: relative;
   }
 
-  .tree-view.tree-view--info {
+  .tree-view.tree-view--semantic-info {
     position: relative;
   }
 
-  .tree-view.tree-view--success {
+  .tree-view.tree-view--semantic-success {
     position: relative;
   }
 
-  .tree-view.tree-view--selected {
+  .tree-view.tree-view--semantic-selected {
     position: relative;
-  }
-
-  .tree-view.tree-view--sm [data-scope="tree-view"][data-part="label"] {
-    padding-inline-start: var(--space-sm);
-  }
-
-  .tree-view.tree-view--sm [data-scope="tree-view"][data-part="item"] {
-    gap: var(--space-sm);
-    padding-inline: var(--space-sm);
-    min-height: var(--size-sm);
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-  }
-
-  .tree-view.tree-view--sm [data-scope="tree-view"][data-part="branch-control"] {
-    gap: var(--space-sm);
-    padding-inline: var(--space-sm);
-    min-height: var(--size-sm);
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-  }
-
-  .tree-view.tree-view--sm [data-scope="tree-view"][data-part="item-text"] {
-    gap: var(--space-sm);
-  }
-
-  .tree-view.tree-view--sm [data-scope="tree-view"][data-part="branch-text"] {
-    gap: var(--space-sm);
-  }
-
-  .tree-view.tree-view--md [data-scope="tree-view"][data-part="label"] {
-    padding-inline-start: var(--space-md);
-  }
-
-  .tree-view.tree-view--md [data-scope="tree-view"][data-part="item"] {
-    gap: var(--space-md);
-    padding-inline: var(--space-md);
-    min-height: var(--size-md);
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-  }
-
-  .tree-view.tree-view--md [data-scope="tree-view"][data-part="branch-control"] {
-    gap: var(--space-md);
-    padding-inline: var(--space-md);
-    min-height: var(--size-md);
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-  }
-
-  .tree-view.tree-view--md [data-scope="tree-view"][data-part="item-text"] {
-    gap: var(--space-md);
-  }
-
-  .tree-view.tree-view--md [data-scope="tree-view"][data-part="branch-text"] {
-    gap: var(--space-md);
-  }
-
-  .tree-view.tree-view--lg [data-scope="tree-view"][data-part="label"] {
-    padding-inline-start: var(--space-lg);
-  }
-
-  .tree-view.tree-view--lg [data-scope="tree-view"][data-part="item"] {
-    gap: var(--space-lg);
-    padding-inline: var(--space-lg);
-    min-height: var(--size-lg);
-    font-size: var(--text-lg);
-    line-height: var(--leading-lg);
-  }
-
-  .tree-view.tree-view--lg [data-scope="tree-view"][data-part="branch-control"] {
-    gap: var(--space-lg);
-    padding-inline: var(--space-lg);
-    min-height: var(--size-lg);
-    font-size: var(--text-lg);
-    line-height: var(--leading-lg);
-  }
-
-  .tree-view.tree-view--lg [data-scope="tree-view"][data-part="item-text"] {
-    gap: var(--space-lg);
-  }
-
-  .tree-view.tree-view--lg [data-scope="tree-view"][data-part="branch-text"] {
-    gap: var(--space-lg);
-  }
-
-  .tree-view.tree-view--xl [data-scope="tree-view"][data-part="label"] {
-    padding-inline-start: var(--space-xl);
-  }
-
-  .tree-view.tree-view--xl [data-scope="tree-view"][data-part="item"] {
-    gap: var(--space-xl);
-    padding-inline: var(--space-xl);
-    min-height: var(--size-xl);
-    font-size: var(--text-xl);
-    line-height: var(--leading-xl);
-  }
-
-  .tree-view.tree-view--xl [data-scope="tree-view"][data-part="branch-control"] {
-    gap: var(--space-xl);
-    padding-inline: var(--space-xl);
-    min-height: var(--size-xl);
-    font-size: var(--text-xl);
-    line-height: var(--leading-xl);
-  }
-
-  .tree-view.tree-view--xl [data-scope="tree-view"][data-part="item-text"] {
-    gap: var(--space-xl);
-  }
-
-  .tree-view.tree-view--xl [data-scope="tree-view"][data-part="branch-text"] {
-    gap: var(--space-xl);
-  }
-
-  .tree-view.tree-view--text-xs [data-scope="tree-view"][data-part="item"] {
-    font-size: var(--text-xs);
-    line-height: var(--leading-xs);
-  }
-
-  .tree-view.tree-view--text-xs [data-scope="tree-view"][data-part="branch-control"] {
-    font-size: var(--text-xs);
-    line-height: var(--leading-xs);
-  }
-
-  .tree-view.tree-view--text-xs [data-scope="tree-view"][data-part="item-text"] {
-    font-size: var(--text-xs);
-    line-height: var(--leading-xs);
-  }
-
-  .tree-view.tree-view--text-xs [data-scope="tree-view"][data-part="branch-text"] {
-    font-size: var(--text-xs);
-    line-height: var(--leading-xs);
-  }
-
-  .tree-view.tree-view--text-sm [data-scope="tree-view"][data-part="item"] {
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-  }
-
-  .tree-view.tree-view--text-sm [data-scope="tree-view"][data-part="branch-control"] {
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-  }
-
-  .tree-view.tree-view--text-sm [data-scope="tree-view"][data-part="item-text"] {
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-  }
-
-  .tree-view.tree-view--text-sm [data-scope="tree-view"][data-part="branch-text"] {
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-  }
-
-  .tree-view.tree-view--text-base [data-scope="tree-view"][data-part="item"] {
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-  }
-
-  .tree-view.tree-view--text-base [data-scope="tree-view"][data-part="branch-control"] {
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-  }
-
-  .tree-view.tree-view--text-base [data-scope="tree-view"][data-part="item-text"] {
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-  }
-
-  .tree-view.tree-view--text-base [data-scope="tree-view"][data-part="branch-text"] {
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-  }
-
-  .tree-view.tree-view--text-lg [data-scope="tree-view"][data-part="item"] {
-    font-size: var(--text-lg);
-    line-height: var(--leading-lg);
-  }
-
-  .tree-view.tree-view--text-lg [data-scope="tree-view"][data-part="branch-control"] {
-    font-size: var(--text-lg);
-    line-height: var(--leading-lg);
-  }
-
-  .tree-view.tree-view--text-lg [data-scope="tree-view"][data-part="item-text"] {
-    font-size: var(--text-lg);
-    line-height: var(--leading-lg);
-  }
-
-  .tree-view.tree-view--text-lg [data-scope="tree-view"][data-part="branch-text"] {
-    font-size: var(--text-lg);
-    line-height: var(--leading-lg);
-  }
-
-  .tree-view.tree-view--text-xl [data-scope="tree-view"][data-part="item"] {
-    font-size: var(--text-xl);
-    line-height: var(--leading-xl);
-  }
-
-  .tree-view.tree-view--text-xl [data-scope="tree-view"][data-part="branch-control"] {
-    font-size: var(--text-xl);
-    line-height: var(--leading-xl);
-  }
-
-  .tree-view.tree-view--text-xl [data-scope="tree-view"][data-part="item-text"] {
-    font-size: var(--text-xl);
-    line-height: var(--leading-xl);
-  }
-
-  .tree-view.tree-view--text-xl [data-scope="tree-view"][data-part="branch-text"] {
-    font-size: var(--text-xl);
-    line-height: var(--leading-xl);
-  }
-
-  .tree-view.tree-view--text-2xl [data-scope="tree-view"][data-part="item"] {
-    font-size: var(--text-2xl);
-    line-height: var(--leading-2xl);
-  }
-
-  .tree-view.tree-view--text-2xl [data-scope="tree-view"][data-part="branch-control"] {
-    font-size: var(--text-2xl);
-    line-height: var(--leading-2xl);
-  }
-
-  .tree-view.tree-view--text-2xl [data-scope="tree-view"][data-part="item-text"] {
-    font-size: var(--text-2xl);
-    line-height: var(--leading-2xl);
-  }
-
-  .tree-view.tree-view--text-2xl [data-scope="tree-view"][data-part="branch-text"] {
-    font-size: var(--text-2xl);
-    line-height: var(--leading-2xl);
-  }
-
-  .tree-view.tree-view--text-3xl [data-scope="tree-view"][data-part="item"] {
-    font-size: var(--text-3xl);
-    line-height: var(--leading-3xl);
-  }
-
-  .tree-view.tree-view--text-3xl [data-scope="tree-view"][data-part="branch-control"] {
-    font-size: var(--text-3xl);
-    line-height: var(--leading-3xl);
-  }
-
-  .tree-view.tree-view--text-3xl [data-scope="tree-view"][data-part="item-text"] {
-    font-size: var(--text-3xl);
-    line-height: var(--leading-3xl);
-  }
-
-  .tree-view.tree-view--text-3xl [data-scope="tree-view"][data-part="branch-text"] {
-    font-size: var(--text-3xl);
-    line-height: var(--leading-3xl);
-  }
-
-  .tree-view.tree-view--text-4xl [data-scope="tree-view"][data-part="item"] {
-    font-size: var(--text-4xl);
-    line-height: var(--leading-4xl);
-  }
-
-  .tree-view.tree-view--text-4xl [data-scope="tree-view"][data-part="branch-control"] {
-    font-size: var(--text-4xl);
-    line-height: var(--leading-4xl);
-  }
-
-  .tree-view.tree-view--text-4xl [data-scope="tree-view"][data-part="item-text"] {
-    font-size: var(--text-4xl);
-    line-height: var(--leading-4xl);
-  }
-
-  .tree-view.tree-view--text-4xl [data-scope="tree-view"][data-part="branch-text"] {
-    font-size: var(--text-4xl);
-    line-height: var(--leading-4xl);
   }
 
   .tree-view.tree-view--rounded-none [data-scope="tree-view"][data-part="item"] {
@@ -525,70 +149,6 @@
 
   .tree-view.tree-view--rounded-none [data-scope="tree-view"][data-part="branch-control"] {
     border-radius: var(--radius-none);
-  }
-
-  .tree-view.tree-view--rounded-xs [data-scope="tree-view"][data-part="item"] {
-    border-radius: var(--radius-xs);
-  }
-
-  .tree-view.tree-view--rounded-xs [data-scope="tree-view"][data-part="branch-control"] {
-    border-radius: var(--radius-xs);
-  }
-
-  .tree-view.tree-view--rounded-sm [data-scope="tree-view"][data-part="item"] {
-    border-radius: var(--radius-sm);
-  }
-
-  .tree-view.tree-view--rounded-sm [data-scope="tree-view"][data-part="branch-control"] {
-    border-radius: var(--radius-sm);
-  }
-
-  .tree-view.tree-view--rounded-md [data-scope="tree-view"][data-part="item"] {
-    border-radius: var(--radius-md);
-  }
-
-  .tree-view.tree-view--rounded-md [data-scope="tree-view"][data-part="branch-control"] {
-    border-radius: var(--radius-md);
-  }
-
-  .tree-view.tree-view--rounded-lg [data-scope="tree-view"][data-part="item"] {
-    border-radius: var(--radius-lg);
-  }
-
-  .tree-view.tree-view--rounded-lg [data-scope="tree-view"][data-part="branch-control"] {
-    border-radius: var(--radius-lg);
-  }
-
-  .tree-view.tree-view--rounded-xl [data-scope="tree-view"][data-part="item"] {
-    border-radius: var(--radius-xl);
-  }
-
-  .tree-view.tree-view--rounded-xl [data-scope="tree-view"][data-part="branch-control"] {
-    border-radius: var(--radius-xl);
-  }
-
-  .tree-view.tree-view--rounded-2xl [data-scope="tree-view"][data-part="item"] {
-    border-radius: var(--radius-2xl);
-  }
-
-  .tree-view.tree-view--rounded-2xl [data-scope="tree-view"][data-part="branch-control"] {
-    border-radius: var(--radius-2xl);
-  }
-
-  .tree-view.tree-view--rounded-3xl [data-scope="tree-view"][data-part="item"] {
-    border-radius: var(--radius-3xl);
-  }
-
-  .tree-view.tree-view--rounded-3xl [data-scope="tree-view"][data-part="branch-control"] {
-    border-radius: var(--radius-3xl);
-  }
-
-  .tree-view.tree-view--rounded-4xl [data-scope="tree-view"][data-part="item"] {
-    border-radius: var(--radius-4xl);
-  }
-
-  .tree-view.tree-view--rounded-4xl [data-scope="tree-view"][data-part="branch-control"] {
-    border-radius: var(--radius-4xl);
   }
 
   .tree-view.tree-view--rounded-full [data-scope="tree-view"][data-part="item"] {
@@ -649,6 +209,11 @@
 
   .tree-view [data-scope="tree-view"][data-part="branch-indicator"] {
     flex: 0 0 auto;
+    margin-inline-start: auto;
+  }
+
+  .tree-view [data-scope="tree-view"][data-part="branch-control"] [data-icon] {
+    @apply ui-icon;
   }
 
   .tree-view [data-scope="tree-view"][data-part="branch-control"][data-state='open']:not([data-selected]):not([data-checked]):not([data-indeterminate]):not([data-loading]) {
@@ -728,7 +293,7 @@
     animation: corex-skeleton 1.4s ease-in-out infinite;
   }
 
-  .tree-view.tree-view--accent [data-scope="tree-view"][data-part="item"][data-selected] {
+  .tree-view.tree-view--semantic-accent [data-scope="tree-view"][data-part="item"][data-selected] {
     background-color: var(--color-accent);
     color: var(--color-accent-ink);
     &:hover {
@@ -752,7 +317,7 @@
     }
   }
 
-  .tree-view.tree-view--accent [data-scope="tree-view"][data-part="item"][data-state='checked'] {
+  .tree-view.tree-view--semantic-accent [data-scope="tree-view"][data-part="item"][data-state='checked'] {
     background-color: var(--color-accent);
     color: var(--color-accent-ink);
     &:hover {
@@ -776,7 +341,7 @@
     }
   }
 
-  .tree-view.tree-view--accent [data-scope="tree-view"][data-part="item"][data-state='on'] {
+  .tree-view.tree-view--semantic-accent [data-scope="tree-view"][data-part="item"][data-state='on'] {
     background-color: var(--color-accent);
     color: var(--color-accent-ink);
     &:hover {
@@ -800,7 +365,7 @@
     }
   }
 
-  .tree-view.tree-view--accent [data-scope="tree-view"][data-part="item"][data-in-range] {
+  .tree-view.tree-view--semantic-accent [data-scope="tree-view"][data-part="item"][data-in-range] {
     background-color: var(--color-accent);
     color: var(--color-accent-ink);
     &:hover {
@@ -824,7 +389,7 @@
     }
   }
 
-  .tree-view.tree-view--accent [data-scope="tree-view"][data-part="item"][data-checked] {
+  .tree-view.tree-view--semantic-accent [data-scope="tree-view"][data-part="item"][data-checked] {
     background-color: var(--color-accent);
     color: var(--color-accent-ink);
     &:hover {
@@ -848,7 +413,7 @@
     }
   }
 
-  .tree-view.tree-view--accent [data-scope="tree-view"][data-part="item"][data-indeterminate] {
+  .tree-view.tree-view--semantic-accent [data-scope="tree-view"][data-part="item"][data-indeterminate] {
     background-color: var(--color-accent);
     color: var(--color-accent-ink);
     &:hover {
@@ -872,7 +437,7 @@
     }
   }
 
-  .tree-view.tree-view--accent [data-scope="tree-view"][data-part="branch-control"][data-selected] {
+  .tree-view.tree-view--semantic-accent [data-scope="tree-view"][data-part="branch-control"][data-selected] {
     background-color: var(--color-accent);
     color: var(--color-accent-ink);
     &:hover {
@@ -897,7 +462,7 @@
     }
   }
 
-  .tree-view.tree-view--accent [data-scope="tree-view"][data-part="branch-control"][data-state='checked'] {
+  .tree-view.tree-view--semantic-accent [data-scope="tree-view"][data-part="branch-control"][data-state='checked'] {
     background-color: var(--color-accent);
     color: var(--color-accent-ink);
     &:hover {
@@ -922,7 +487,7 @@
     }
   }
 
-  .tree-view.tree-view--accent [data-scope="tree-view"][data-part="branch-control"][data-state='on'] {
+  .tree-view.tree-view--semantic-accent [data-scope="tree-view"][data-part="branch-control"][data-state='on'] {
     background-color: var(--color-accent);
     color: var(--color-accent-ink);
     &:hover {
@@ -947,7 +512,7 @@
     }
   }
 
-  .tree-view.tree-view--accent [data-scope="tree-view"][data-part="branch-control"][data-in-range] {
+  .tree-view.tree-view--semantic-accent [data-scope="tree-view"][data-part="branch-control"][data-in-range] {
     background-color: var(--color-accent);
     color: var(--color-accent-ink);
     &:hover {
@@ -972,7 +537,7 @@
     }
   }
 
-  .tree-view.tree-view--accent [data-scope="tree-view"][data-part="branch-control"][data-checked] {
+  .tree-view.tree-view--semantic-accent [data-scope="tree-view"][data-part="branch-control"][data-checked] {
     background-color: var(--color-accent);
     color: var(--color-accent-ink);
     &:hover {
@@ -997,7 +562,7 @@
     }
   }
 
-  .tree-view.tree-view--accent [data-scope="tree-view"][data-part="branch-control"][data-indeterminate] {
+  .tree-view.tree-view--semantic-accent [data-scope="tree-view"][data-part="branch-control"][data-indeterminate] {
     background-color: var(--color-accent);
     color: var(--color-accent-ink);
     &:hover {
@@ -1022,29 +587,29 @@
     }
   }
 
-  .tree-view.tree-view--accent [data-scope="tree-view"][data-part="label"] {
+  .tree-view.tree-view--semantic-accent [data-scope="tree-view"][data-part="label"] {
     padding-inline-start: var(--space-md);
   }
 
-  .tree-view.tree-view--accent [data-scope="tree-view"][data-part="item"] {
+  .tree-view.tree-view--semantic-accent [data-scope="tree-view"][data-part="item"] {
     padding-inline: var(--space-md);
     gap: var(--space-md);
   }
 
-  .tree-view.tree-view--accent [data-scope="tree-view"][data-part="branch-control"] {
+  .tree-view.tree-view--semantic-accent [data-scope="tree-view"][data-part="branch-control"] {
     padding-inline: var(--space-md);
     gap: var(--space-md);
   }
 
-  .tree-view.tree-view--accent [data-scope="tree-view"][data-part="item-text"], .tree-view.tree-view--accent [data-scope="tree-view"][data-part="branch-text"] {
+  .tree-view.tree-view--semantic-accent [data-scope="tree-view"][data-part="item-text"], .tree-view.tree-view--semantic-accent [data-scope="tree-view"][data-part="branch-text"] {
     gap: var(--space-md);
   }
 
-  .tree-view.tree-view--accent [data-scope="tree-view"][data-part="branch-content"] [data-scope="tree-view"][data-part="branch-indent-guide"] {
+  .tree-view.tree-view--semantic-accent [data-scope="tree-view"][data-part="branch-content"] [data-scope="tree-view"][data-part="branch-indent-guide"] {
     border-inline-start: 1px solid var(--color-accent-ink);
   }
 
-  .tree-view.tree-view--brand [data-scope="tree-view"][data-part="item"][data-selected] {
+  .tree-view.tree-view--semantic-brand [data-scope="tree-view"][data-part="item"][data-selected] {
     background-color: var(--color-brand);
     color: var(--color-brand-ink);
     &:hover {
@@ -1068,7 +633,7 @@
     }
   }
 
-  .tree-view.tree-view--brand [data-scope="tree-view"][data-part="item"][data-state='checked'] {
+  .tree-view.tree-view--semantic-brand [data-scope="tree-view"][data-part="item"][data-state='checked'] {
     background-color: var(--color-brand);
     color: var(--color-brand-ink);
     &:hover {
@@ -1092,7 +657,7 @@
     }
   }
 
-  .tree-view.tree-view--brand [data-scope="tree-view"][data-part="item"][data-state='on'] {
+  .tree-view.tree-view--semantic-brand [data-scope="tree-view"][data-part="item"][data-state='on'] {
     background-color: var(--color-brand);
     color: var(--color-brand-ink);
     &:hover {
@@ -1116,7 +681,7 @@
     }
   }
 
-  .tree-view.tree-view--brand [data-scope="tree-view"][data-part="item"][data-in-range] {
+  .tree-view.tree-view--semantic-brand [data-scope="tree-view"][data-part="item"][data-in-range] {
     background-color: var(--color-brand);
     color: var(--color-brand-ink);
     &:hover {
@@ -1140,7 +705,7 @@
     }
   }
 
-  .tree-view.tree-view--brand [data-scope="tree-view"][data-part="item"][data-checked] {
+  .tree-view.tree-view--semantic-brand [data-scope="tree-view"][data-part="item"][data-checked] {
     background-color: var(--color-brand);
     color: var(--color-brand-ink);
     &:hover {
@@ -1164,7 +729,7 @@
     }
   }
 
-  .tree-view.tree-view--brand [data-scope="tree-view"][data-part="item"][data-indeterminate] {
+  .tree-view.tree-view--semantic-brand [data-scope="tree-view"][data-part="item"][data-indeterminate] {
     background-color: var(--color-brand);
     color: var(--color-brand-ink);
     &:hover {
@@ -1188,7 +753,7 @@
     }
   }
 
-  .tree-view.tree-view--brand [data-scope="tree-view"][data-part="branch-control"][data-selected] {
+  .tree-view.tree-view--semantic-brand [data-scope="tree-view"][data-part="branch-control"][data-selected] {
     background-color: var(--color-brand);
     color: var(--color-brand-ink);
     &:hover {
@@ -1213,7 +778,7 @@
     }
   }
 
-  .tree-view.tree-view--brand [data-scope="tree-view"][data-part="branch-control"][data-state='checked'] {
+  .tree-view.tree-view--semantic-brand [data-scope="tree-view"][data-part="branch-control"][data-state='checked'] {
     background-color: var(--color-brand);
     color: var(--color-brand-ink);
     &:hover {
@@ -1238,7 +803,7 @@
     }
   }
 
-  .tree-view.tree-view--brand [data-scope="tree-view"][data-part="branch-control"][data-state='on'] {
+  .tree-view.tree-view--semantic-brand [data-scope="tree-view"][data-part="branch-control"][data-state='on'] {
     background-color: var(--color-brand);
     color: var(--color-brand-ink);
     &:hover {
@@ -1263,7 +828,7 @@
     }
   }
 
-  .tree-view.tree-view--brand [data-scope="tree-view"][data-part="branch-control"][data-in-range] {
+  .tree-view.tree-view--semantic-brand [data-scope="tree-view"][data-part="branch-control"][data-in-range] {
     background-color: var(--color-brand);
     color: var(--color-brand-ink);
     &:hover {
@@ -1288,7 +853,7 @@
     }
   }
 
-  .tree-view.tree-view--brand [data-scope="tree-view"][data-part="branch-control"][data-checked] {
+  .tree-view.tree-view--semantic-brand [data-scope="tree-view"][data-part="branch-control"][data-checked] {
     background-color: var(--color-brand);
     color: var(--color-brand-ink);
     &:hover {
@@ -1313,7 +878,7 @@
     }
   }
 
-  .tree-view.tree-view--brand [data-scope="tree-view"][data-part="branch-control"][data-indeterminate] {
+  .tree-view.tree-view--semantic-brand [data-scope="tree-view"][data-part="branch-control"][data-indeterminate] {
     background-color: var(--color-brand);
     color: var(--color-brand-ink);
     &:hover {
@@ -1338,29 +903,29 @@
     }
   }
 
-  .tree-view.tree-view--brand [data-scope="tree-view"][data-part="label"] {
+  .tree-view.tree-view--semantic-brand [data-scope="tree-view"][data-part="label"] {
     padding-inline-start: var(--space-md);
   }
 
-  .tree-view.tree-view--brand [data-scope="tree-view"][data-part="item"] {
+  .tree-view.tree-view--semantic-brand [data-scope="tree-view"][data-part="item"] {
     padding-inline: var(--space-md);
     gap: var(--space-md);
   }
 
-  .tree-view.tree-view--brand [data-scope="tree-view"][data-part="branch-control"] {
+  .tree-view.tree-view--semantic-brand [data-scope="tree-view"][data-part="branch-control"] {
     padding-inline: var(--space-md);
     gap: var(--space-md);
   }
 
-  .tree-view.tree-view--brand [data-scope="tree-view"][data-part="item-text"], .tree-view.tree-view--brand [data-scope="tree-view"][data-part="branch-text"] {
+  .tree-view.tree-view--semantic-brand [data-scope="tree-view"][data-part="item-text"], .tree-view.tree-view--semantic-brand [data-scope="tree-view"][data-part="branch-text"] {
     gap: var(--space-md);
   }
 
-  .tree-view.tree-view--brand [data-scope="tree-view"][data-part="branch-content"] [data-scope="tree-view"][data-part="branch-indent-guide"] {
+  .tree-view.tree-view--semantic-brand [data-scope="tree-view"][data-part="branch-content"] [data-scope="tree-view"][data-part="branch-indent-guide"] {
     border-inline-start: 1px solid var(--color-brand-ink);
   }
 
-  .tree-view.tree-view--alert [data-scope="tree-view"][data-part="item"][data-selected] {
+  .tree-view.tree-view--semantic-alert [data-scope="tree-view"][data-part="item"][data-selected] {
     background-color: var(--color-alert);
     color: var(--color-alert-ink);
     &:hover {
@@ -1384,7 +949,7 @@
     }
   }
 
-  .tree-view.tree-view--alert [data-scope="tree-view"][data-part="item"][data-state='checked'] {
+  .tree-view.tree-view--semantic-alert [data-scope="tree-view"][data-part="item"][data-state='checked'] {
     background-color: var(--color-alert);
     color: var(--color-alert-ink);
     &:hover {
@@ -1408,7 +973,7 @@
     }
   }
 
-  .tree-view.tree-view--alert [data-scope="tree-view"][data-part="item"][data-state='on'] {
+  .tree-view.tree-view--semantic-alert [data-scope="tree-view"][data-part="item"][data-state='on'] {
     background-color: var(--color-alert);
     color: var(--color-alert-ink);
     &:hover {
@@ -1432,7 +997,7 @@
     }
   }
 
-  .tree-view.tree-view--alert [data-scope="tree-view"][data-part="item"][data-in-range] {
+  .tree-view.tree-view--semantic-alert [data-scope="tree-view"][data-part="item"][data-in-range] {
     background-color: var(--color-alert);
     color: var(--color-alert-ink);
     &:hover {
@@ -1456,7 +1021,7 @@
     }
   }
 
-  .tree-view.tree-view--alert [data-scope="tree-view"][data-part="item"][data-checked] {
+  .tree-view.tree-view--semantic-alert [data-scope="tree-view"][data-part="item"][data-checked] {
     background-color: var(--color-alert);
     color: var(--color-alert-ink);
     &:hover {
@@ -1480,7 +1045,7 @@
     }
   }
 
-  .tree-view.tree-view--alert [data-scope="tree-view"][data-part="item"][data-indeterminate] {
+  .tree-view.tree-view--semantic-alert [data-scope="tree-view"][data-part="item"][data-indeterminate] {
     background-color: var(--color-alert);
     color: var(--color-alert-ink);
     &:hover {
@@ -1504,7 +1069,7 @@
     }
   }
 
-  .tree-view.tree-view--alert [data-scope="tree-view"][data-part="branch-control"][data-selected] {
+  .tree-view.tree-view--semantic-alert [data-scope="tree-view"][data-part="branch-control"][data-selected] {
     background-color: var(--color-alert);
     color: var(--color-alert-ink);
     &:hover {
@@ -1529,7 +1094,7 @@
     }
   }
 
-  .tree-view.tree-view--alert [data-scope="tree-view"][data-part="branch-control"][data-state='checked'] {
+  .tree-view.tree-view--semantic-alert [data-scope="tree-view"][data-part="branch-control"][data-state='checked'] {
     background-color: var(--color-alert);
     color: var(--color-alert-ink);
     &:hover {
@@ -1554,7 +1119,7 @@
     }
   }
 
-  .tree-view.tree-view--alert [data-scope="tree-view"][data-part="branch-control"][data-state='on'] {
+  .tree-view.tree-view--semantic-alert [data-scope="tree-view"][data-part="branch-control"][data-state='on'] {
     background-color: var(--color-alert);
     color: var(--color-alert-ink);
     &:hover {
@@ -1579,7 +1144,7 @@
     }
   }
 
-  .tree-view.tree-view--alert [data-scope="tree-view"][data-part="branch-control"][data-in-range] {
+  .tree-view.tree-view--semantic-alert [data-scope="tree-view"][data-part="branch-control"][data-in-range] {
     background-color: var(--color-alert);
     color: var(--color-alert-ink);
     &:hover {
@@ -1604,7 +1169,7 @@
     }
   }
 
-  .tree-view.tree-view--alert [data-scope="tree-view"][data-part="branch-control"][data-checked] {
+  .tree-view.tree-view--semantic-alert [data-scope="tree-view"][data-part="branch-control"][data-checked] {
     background-color: var(--color-alert);
     color: var(--color-alert-ink);
     &:hover {
@@ -1629,7 +1194,7 @@
     }
   }
 
-  .tree-view.tree-view--alert [data-scope="tree-view"][data-part="branch-control"][data-indeterminate] {
+  .tree-view.tree-view--semantic-alert [data-scope="tree-view"][data-part="branch-control"][data-indeterminate] {
     background-color: var(--color-alert);
     color: var(--color-alert-ink);
     &:hover {
@@ -1654,29 +1219,29 @@
     }
   }
 
-  .tree-view.tree-view--alert [data-scope="tree-view"][data-part="label"] {
+  .tree-view.tree-view--semantic-alert [data-scope="tree-view"][data-part="label"] {
     padding-inline-start: var(--space-md);
   }
 
-  .tree-view.tree-view--alert [data-scope="tree-view"][data-part="item"] {
+  .tree-view.tree-view--semantic-alert [data-scope="tree-view"][data-part="item"] {
     padding-inline: var(--space-md);
     gap: var(--space-md);
   }
 
-  .tree-view.tree-view--alert [data-scope="tree-view"][data-part="branch-control"] {
+  .tree-view.tree-view--semantic-alert [data-scope="tree-view"][data-part="branch-control"] {
     padding-inline: var(--space-md);
     gap: var(--space-md);
   }
 
-  .tree-view.tree-view--alert [data-scope="tree-view"][data-part="item-text"], .tree-view.tree-view--alert [data-scope="tree-view"][data-part="branch-text"] {
+  .tree-view.tree-view--semantic-alert [data-scope="tree-view"][data-part="item-text"], .tree-view.tree-view--semantic-alert [data-scope="tree-view"][data-part="branch-text"] {
     gap: var(--space-md);
   }
 
-  .tree-view.tree-view--alert [data-scope="tree-view"][data-part="branch-content"] [data-scope="tree-view"][data-part="branch-indent-guide"] {
+  .tree-view.tree-view--semantic-alert [data-scope="tree-view"][data-part="branch-content"] [data-scope="tree-view"][data-part="branch-indent-guide"] {
     border-inline-start: 1px solid var(--color-alert-ink);
   }
 
-  .tree-view.tree-view--info [data-scope="tree-view"][data-part="item"][data-selected] {
+  .tree-view.tree-view--semantic-info [data-scope="tree-view"][data-part="item"][data-selected] {
     background-color: var(--color-info);
     color: var(--color-info-ink);
     &:hover {
@@ -1700,7 +1265,7 @@
     }
   }
 
-  .tree-view.tree-view--info [data-scope="tree-view"][data-part="item"][data-state='checked'] {
+  .tree-view.tree-view--semantic-info [data-scope="tree-view"][data-part="item"][data-state='checked'] {
     background-color: var(--color-info);
     color: var(--color-info-ink);
     &:hover {
@@ -1724,7 +1289,7 @@
     }
   }
 
-  .tree-view.tree-view--info [data-scope="tree-view"][data-part="item"][data-state='on'] {
+  .tree-view.tree-view--semantic-info [data-scope="tree-view"][data-part="item"][data-state='on'] {
     background-color: var(--color-info);
     color: var(--color-info-ink);
     &:hover {
@@ -1748,7 +1313,7 @@
     }
   }
 
-  .tree-view.tree-view--info [data-scope="tree-view"][data-part="item"][data-in-range] {
+  .tree-view.tree-view--semantic-info [data-scope="tree-view"][data-part="item"][data-in-range] {
     background-color: var(--color-info);
     color: var(--color-info-ink);
     &:hover {
@@ -1772,7 +1337,7 @@
     }
   }
 
-  .tree-view.tree-view--info [data-scope="tree-view"][data-part="item"][data-checked] {
+  .tree-view.tree-view--semantic-info [data-scope="tree-view"][data-part="item"][data-checked] {
     background-color: var(--color-info);
     color: var(--color-info-ink);
     &:hover {
@@ -1796,7 +1361,7 @@
     }
   }
 
-  .tree-view.tree-view--info [data-scope="tree-view"][data-part="item"][data-indeterminate] {
+  .tree-view.tree-view--semantic-info [data-scope="tree-view"][data-part="item"][data-indeterminate] {
     background-color: var(--color-info);
     color: var(--color-info-ink);
     &:hover {
@@ -1820,7 +1385,7 @@
     }
   }
 
-  .tree-view.tree-view--info [data-scope="tree-view"][data-part="branch-control"][data-selected] {
+  .tree-view.tree-view--semantic-info [data-scope="tree-view"][data-part="branch-control"][data-selected] {
     background-color: var(--color-info);
     color: var(--color-info-ink);
     &:hover {
@@ -1845,7 +1410,7 @@
     }
   }
 
-  .tree-view.tree-view--info [data-scope="tree-view"][data-part="branch-control"][data-state='checked'] {
+  .tree-view.tree-view--semantic-info [data-scope="tree-view"][data-part="branch-control"][data-state='checked'] {
     background-color: var(--color-info);
     color: var(--color-info-ink);
     &:hover {
@@ -1870,7 +1435,7 @@
     }
   }
 
-  .tree-view.tree-view--info [data-scope="tree-view"][data-part="branch-control"][data-state='on'] {
+  .tree-view.tree-view--semantic-info [data-scope="tree-view"][data-part="branch-control"][data-state='on'] {
     background-color: var(--color-info);
     color: var(--color-info-ink);
     &:hover {
@@ -1895,7 +1460,7 @@
     }
   }
 
-  .tree-view.tree-view--info [data-scope="tree-view"][data-part="branch-control"][data-in-range] {
+  .tree-view.tree-view--semantic-info [data-scope="tree-view"][data-part="branch-control"][data-in-range] {
     background-color: var(--color-info);
     color: var(--color-info-ink);
     &:hover {
@@ -1920,7 +1485,7 @@
     }
   }
 
-  .tree-view.tree-view--info [data-scope="tree-view"][data-part="branch-control"][data-checked] {
+  .tree-view.tree-view--semantic-info [data-scope="tree-view"][data-part="branch-control"][data-checked] {
     background-color: var(--color-info);
     color: var(--color-info-ink);
     &:hover {
@@ -1945,7 +1510,7 @@
     }
   }
 
-  .tree-view.tree-view--info [data-scope="tree-view"][data-part="branch-control"][data-indeterminate] {
+  .tree-view.tree-view--semantic-info [data-scope="tree-view"][data-part="branch-control"][data-indeterminate] {
     background-color: var(--color-info);
     color: var(--color-info-ink);
     &:hover {
@@ -1970,29 +1535,29 @@
     }
   }
 
-  .tree-view.tree-view--info [data-scope="tree-view"][data-part="label"] {
+  .tree-view.tree-view--semantic-info [data-scope="tree-view"][data-part="label"] {
     padding-inline-start: var(--space-md);
   }
 
-  .tree-view.tree-view--info [data-scope="tree-view"][data-part="item"] {
+  .tree-view.tree-view--semantic-info [data-scope="tree-view"][data-part="item"] {
     padding-inline: var(--space-md);
     gap: var(--space-md);
   }
 
-  .tree-view.tree-view--info [data-scope="tree-view"][data-part="branch-control"] {
+  .tree-view.tree-view--semantic-info [data-scope="tree-view"][data-part="branch-control"] {
     padding-inline: var(--space-md);
     gap: var(--space-md);
   }
 
-  .tree-view.tree-view--info [data-scope="tree-view"][data-part="item-text"], .tree-view.tree-view--info [data-scope="tree-view"][data-part="branch-text"] {
+  .tree-view.tree-view--semantic-info [data-scope="tree-view"][data-part="item-text"], .tree-view.tree-view--semantic-info [data-scope="tree-view"][data-part="branch-text"] {
     gap: var(--space-md);
   }
 
-  .tree-view.tree-view--info [data-scope="tree-view"][data-part="branch-content"] [data-scope="tree-view"][data-part="branch-indent-guide"] {
+  .tree-view.tree-view--semantic-info [data-scope="tree-view"][data-part="branch-content"] [data-scope="tree-view"][data-part="branch-indent-guide"] {
     border-inline-start: 1px solid var(--color-info-ink);
   }
 
-  .tree-view.tree-view--success [data-scope="tree-view"][data-part="item"][data-selected] {
+  .tree-view.tree-view--semantic-success [data-scope="tree-view"][data-part="item"][data-selected] {
     background-color: var(--color-success);
     color: var(--color-success-ink);
     &:hover {
@@ -2016,7 +1581,7 @@
     }
   }
 
-  .tree-view.tree-view--success [data-scope="tree-view"][data-part="item"][data-state='checked'] {
+  .tree-view.tree-view--semantic-success [data-scope="tree-view"][data-part="item"][data-state='checked'] {
     background-color: var(--color-success);
     color: var(--color-success-ink);
     &:hover {
@@ -2040,7 +1605,7 @@
     }
   }
 
-  .tree-view.tree-view--success [data-scope="tree-view"][data-part="item"][data-state='on'] {
+  .tree-view.tree-view--semantic-success [data-scope="tree-view"][data-part="item"][data-state='on'] {
     background-color: var(--color-success);
     color: var(--color-success-ink);
     &:hover {
@@ -2064,7 +1629,7 @@
     }
   }
 
-  .tree-view.tree-view--success [data-scope="tree-view"][data-part="item"][data-in-range] {
+  .tree-view.tree-view--semantic-success [data-scope="tree-view"][data-part="item"][data-in-range] {
     background-color: var(--color-success);
     color: var(--color-success-ink);
     &:hover {
@@ -2088,7 +1653,7 @@
     }
   }
 
-  .tree-view.tree-view--success [data-scope="tree-view"][data-part="item"][data-checked] {
+  .tree-view.tree-view--semantic-success [data-scope="tree-view"][data-part="item"][data-checked] {
     background-color: var(--color-success);
     color: var(--color-success-ink);
     &:hover {
@@ -2112,7 +1677,7 @@
     }
   }
 
-  .tree-view.tree-view--success [data-scope="tree-view"][data-part="item"][data-indeterminate] {
+  .tree-view.tree-view--semantic-success [data-scope="tree-view"][data-part="item"][data-indeterminate] {
     background-color: var(--color-success);
     color: var(--color-success-ink);
     &:hover {
@@ -2136,7 +1701,7 @@
     }
   }
 
-  .tree-view.tree-view--success [data-scope="tree-view"][data-part="branch-control"][data-selected] {
+  .tree-view.tree-view--semantic-success [data-scope="tree-view"][data-part="branch-control"][data-selected] {
     background-color: var(--color-success);
     color: var(--color-success-ink);
     &:hover {
@@ -2161,7 +1726,7 @@
     }
   }
 
-  .tree-view.tree-view--success [data-scope="tree-view"][data-part="branch-control"][data-state='checked'] {
+  .tree-view.tree-view--semantic-success [data-scope="tree-view"][data-part="branch-control"][data-state='checked'] {
     background-color: var(--color-success);
     color: var(--color-success-ink);
     &:hover {
@@ -2186,7 +1751,7 @@
     }
   }
 
-  .tree-view.tree-view--success [data-scope="tree-view"][data-part="branch-control"][data-state='on'] {
+  .tree-view.tree-view--semantic-success [data-scope="tree-view"][data-part="branch-control"][data-state='on'] {
     background-color: var(--color-success);
     color: var(--color-success-ink);
     &:hover {
@@ -2211,7 +1776,7 @@
     }
   }
 
-  .tree-view.tree-view--success [data-scope="tree-view"][data-part="branch-control"][data-in-range] {
+  .tree-view.tree-view--semantic-success [data-scope="tree-view"][data-part="branch-control"][data-in-range] {
     background-color: var(--color-success);
     color: var(--color-success-ink);
     &:hover {
@@ -2236,7 +1801,7 @@
     }
   }
 
-  .tree-view.tree-view--success [data-scope="tree-view"][data-part="branch-control"][data-checked] {
+  .tree-view.tree-view--semantic-success [data-scope="tree-view"][data-part="branch-control"][data-checked] {
     background-color: var(--color-success);
     color: var(--color-success-ink);
     &:hover {
@@ -2261,7 +1826,7 @@
     }
   }
 
-  .tree-view.tree-view--success [data-scope="tree-view"][data-part="branch-control"][data-indeterminate] {
+  .tree-view.tree-view--semantic-success [data-scope="tree-view"][data-part="branch-control"][data-indeterminate] {
     background-color: var(--color-success);
     color: var(--color-success-ink);
     &:hover {
@@ -2286,29 +1851,29 @@
     }
   }
 
-  .tree-view.tree-view--success [data-scope="tree-view"][data-part="label"] {
+  .tree-view.tree-view--semantic-success [data-scope="tree-view"][data-part="label"] {
     padding-inline-start: var(--space-md);
   }
 
-  .tree-view.tree-view--success [data-scope="tree-view"][data-part="item"] {
+  .tree-view.tree-view--semantic-success [data-scope="tree-view"][data-part="item"] {
     padding-inline: var(--space-md);
     gap: var(--space-md);
   }
 
-  .tree-view.tree-view--success [data-scope="tree-view"][data-part="branch-control"] {
+  .tree-view.tree-view--semantic-success [data-scope="tree-view"][data-part="branch-control"] {
     padding-inline: var(--space-md);
     gap: var(--space-md);
   }
 
-  .tree-view.tree-view--success [data-scope="tree-view"][data-part="item-text"], .tree-view.tree-view--success [data-scope="tree-view"][data-part="branch-text"] {
+  .tree-view.tree-view--semantic-success [data-scope="tree-view"][data-part="item-text"], .tree-view.tree-view--semantic-success [data-scope="tree-view"][data-part="branch-text"] {
     gap: var(--space-md);
   }
 
-  .tree-view.tree-view--success [data-scope="tree-view"][data-part="branch-content"] [data-scope="tree-view"][data-part="branch-indent-guide"] {
+  .tree-view.tree-view--semantic-success [data-scope="tree-view"][data-part="branch-content"] [data-scope="tree-view"][data-part="branch-indent-guide"] {
     border-inline-start: 1px solid var(--color-success-ink);
   }
 
-  .tree-view.tree-view--selected [data-scope="tree-view"][data-part="item"][data-selected] {
+  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="item"][data-selected] {
     background-color: var(--color-selected);
     color: var(--color-selected-ink);
     &:hover {
@@ -2332,7 +1897,7 @@
     }
   }
 
-  .tree-view.tree-view--selected [data-scope="tree-view"][data-part="item"][data-state='checked'] {
+  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="item"][data-state='checked'] {
     background-color: var(--color-selected);
     color: var(--color-selected-ink);
     &:hover {
@@ -2356,7 +1921,7 @@
     }
   }
 
-  .tree-view.tree-view--selected [data-scope="tree-view"][data-part="item"][data-state='on'] {
+  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="item"][data-state='on'] {
     background-color: var(--color-selected);
     color: var(--color-selected-ink);
     &:hover {
@@ -2380,7 +1945,7 @@
     }
   }
 
-  .tree-view.tree-view--selected [data-scope="tree-view"][data-part="item"][data-in-range] {
+  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="item"][data-in-range] {
     background-color: var(--color-selected);
     color: var(--color-selected-ink);
     &:hover {
@@ -2404,7 +1969,7 @@
     }
   }
 
-  .tree-view.tree-view--selected [data-scope="tree-view"][data-part="item"][data-checked] {
+  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="item"][data-checked] {
     background-color: var(--color-selected);
     color: var(--color-selected-ink);
     &:hover {
@@ -2428,7 +1993,7 @@
     }
   }
 
-  .tree-view.tree-view--selected [data-scope="tree-view"][data-part="item"][data-indeterminate] {
+  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="item"][data-indeterminate] {
     background-color: var(--color-selected);
     color: var(--color-selected-ink);
     &:hover {
@@ -2452,7 +2017,7 @@
     }
   }
 
-  .tree-view.tree-view--selected [data-scope="tree-view"][data-part="branch-control"][data-selected] {
+  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="branch-control"][data-selected] {
     background-color: var(--color-selected);
     color: var(--color-selected-ink);
     &:hover {
@@ -2477,7 +2042,7 @@
     }
   }
 
-  .tree-view.tree-view--selected [data-scope="tree-view"][data-part="branch-control"][data-state='checked'] {
+  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="branch-control"][data-state='checked'] {
     background-color: var(--color-selected);
     color: var(--color-selected-ink);
     &:hover {
@@ -2502,7 +2067,7 @@
     }
   }
 
-  .tree-view.tree-view--selected [data-scope="tree-view"][data-part="branch-control"][data-state='on'] {
+  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="branch-control"][data-state='on'] {
     background-color: var(--color-selected);
     color: var(--color-selected-ink);
     &:hover {
@@ -2527,7 +2092,7 @@
     }
   }
 
-  .tree-view.tree-view--selected [data-scope="tree-view"][data-part="branch-control"][data-in-range] {
+  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="branch-control"][data-in-range] {
     background-color: var(--color-selected);
     color: var(--color-selected-ink);
     &:hover {
@@ -2552,7 +2117,7 @@
     }
   }
 
-  .tree-view.tree-view--selected [data-scope="tree-view"][data-part="branch-control"][data-checked] {
+  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="branch-control"][data-checked] {
     background-color: var(--color-selected);
     color: var(--color-selected-ink);
     &:hover {
@@ -2577,7 +2142,7 @@
     }
   }
 
-  .tree-view.tree-view--selected [data-scope="tree-view"][data-part="branch-control"][data-indeterminate] {
+  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="branch-control"][data-indeterminate] {
     background-color: var(--color-selected);
     color: var(--color-selected-ink);
     &:hover {
@@ -2602,25 +2167,25 @@
     }
   }
 
-  .tree-view.tree-view--selected [data-scope="tree-view"][data-part="label"] {
+  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="label"] {
     padding-inline-start: var(--space-md);
   }
 
-  .tree-view.tree-view--selected [data-scope="tree-view"][data-part="item"] {
+  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="item"] {
     padding-inline: var(--space-md);
     gap: var(--space-md);
   }
 
-  .tree-view.tree-view--selected [data-scope="tree-view"][data-part="branch-control"] {
+  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="branch-control"] {
     padding-inline: var(--space-md);
     gap: var(--space-md);
   }
 
-  .tree-view.tree-view--selected [data-scope="tree-view"][data-part="item-text"], .tree-view.tree-view--selected [data-scope="tree-view"][data-part="branch-text"] {
+  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="item-text"], .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="branch-text"] {
     gap: var(--space-md);
   }
 
-  .tree-view.tree-view--selected [data-scope="tree-view"][data-part="branch-content"] [data-scope="tree-view"][data-part="branch-indent-guide"] {
+  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="branch-content"] [data-scope="tree-view"][data-part="branch-indent-guide"] {
     border-inline-start: 1px solid var(--color-selected-ink);
   }
 }

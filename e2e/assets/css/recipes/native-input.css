@@ -18,6 +18,29 @@
 }
 
 
+@utility native-input--size-* {
+  [data-scope="native-input"][data-part="input"] {
+      color: --value(--color-ui-ink-*, [color]);
+    padding-inline: --value(--spacing-space-*, [length]);
+    background-color: --value(--color-*, [color]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-size-*, [length]);
+  }
+
+  [data-scope="native-input"][data-part="label"] {
+      font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+  }
+
+  [data-scope="native-input"][data-part="root"] {
+      max-width: --value(--container-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
+  }
+
+}
+
+
 @layer components {
   .native-input.native-input--w-auto {
     width: auto;
@@ -37,74 +60,6 @@
 
   .native-input.native-input--max-w-full {
     max-width: 100%;
-  }
-
-  .native-input.native-input--max-w-7xs {
-    max-width: var(--container-7xs);
-  }
-
-  .native-input.native-input--max-w-6xs {
-    max-width: var(--container-6xs);
-  }
-
-  .native-input.native-input--max-w-5xs {
-    max-width: var(--container-5xs);
-  }
-
-  .native-input.native-input--max-w-4xs {
-    max-width: var(--container-4xs);
-  }
-
-  .native-input.native-input--max-w-3xs {
-    max-width: var(--container-3xs);
-  }
-
-  .native-input.native-input--max-w-2xs {
-    max-width: var(--container-2xs);
-  }
-
-  .native-input.native-input--max-w-xs {
-    max-width: var(--container-xs);
-  }
-
-  .native-input.native-input--max-w-sm {
-    max-width: var(--container-sm);
-  }
-
-  .native-input.native-input--max-w-md {
-    max-width: var(--container-md);
-  }
-
-  .native-input.native-input--max-w-lg {
-    max-width: var(--container-lg);
-  }
-
-  .native-input.native-input--max-w-xl {
-    max-width: var(--container-xl);
-  }
-
-  .native-input.native-input--max-w-2xl {
-    max-width: var(--container-2xl);
-  }
-
-  .native-input.native-input--max-w-3xl {
-    max-width: var(--container-3xl);
-  }
-
-  .native-input.native-input--max-w-4xl {
-    max-width: var(--container-4xl);
-  }
-
-  .native-input.native-input--max-w-5xl {
-    max-width: var(--container-5xl);
-  }
-
-  .native-input.native-input--max-w-6xl {
-    max-width: var(--container-6xl);
-  }
-
-  .native-input.native-input--max-w-7xl {
-    max-width: var(--container-7xl);
   }
 
   .native-input.native-input--h-auto {
@@ -127,212 +82,32 @@
     max-height: 100%;
   }
 
-  .native-input.native-input--max-h-7xs {
-    max-height: var(--container-7xs);
-  }
-
-  .native-input.native-input--max-h-6xs {
-    max-height: var(--container-6xs);
-  }
-
-  .native-input.native-input--max-h-5xs {
-    max-height: var(--container-5xs);
-  }
-
-  .native-input.native-input--max-h-4xs {
-    max-height: var(--container-4xs);
-  }
-
-  .native-input.native-input--max-h-3xs {
-    max-height: var(--container-3xs);
-  }
-
-  .native-input.native-input--max-h-2xs {
-    max-height: var(--container-2xs);
-  }
-
-  .native-input.native-input--max-h-xs {
-    max-height: var(--container-xs);
-  }
-
-  .native-input.native-input--max-h-sm {
-    max-height: var(--container-sm);
-  }
-
-  .native-input.native-input--max-h-md {
-    max-height: var(--container-md);
-  }
-
-  .native-input.native-input--max-h-lg {
-    max-height: var(--container-lg);
-  }
-
-  .native-input.native-input--max-h-xl {
-    max-height: var(--container-xl);
-  }
-
-  .native-input.native-input--max-h-2xl {
-    max-height: var(--container-2xl);
-  }
-
-  .native-input.native-input--max-h-3xl {
-    max-height: var(--container-3xl);
-  }
-
-  .native-input.native-input--max-h-4xl {
-    max-height: var(--container-4xl);
-  }
-
-  .native-input.native-input--max-h-5xl {
-    max-height: var(--container-5xl);
-  }
-
-  .native-input.native-input--max-h-6xl {
-    max-height: var(--container-6xl);
-  }
-
-  .native-input.native-input--max-h-7xl {
-    max-height: var(--container-7xl);
-  }
-
-  .native-input.native-input--accent {
+  .native-input.native-input--semantic-accent {
     position: relative;
   }
 
-  .native-input.native-input--brand {
+  .native-input.native-input--semantic-brand {
     position: relative;
   }
 
-  .native-input.native-input--alert {
+  .native-input.native-input--semantic-alert {
     position: relative;
   }
 
-  .native-input.native-input--info {
+  .native-input.native-input--semantic-info {
     position: relative;
   }
 
-  .native-input.native-input--success {
+  .native-input.native-input--semantic-success {
     position: relative;
   }
 
-  .native-input.native-input--selected {
+  .native-input.native-input--semantic-selected {
     position: relative;
-  }
-
-  .native-input.native-input--sm [data-scope="native-input"][data-part="root"] {
-    gap: var(--space-sm);
-    max-width: var(--container-sm);
-  }
-
-  .native-input.native-input--sm [data-scope="native-input"][data-part="label"] {
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-  }
-
-  .native-input.native-input--sm [data-scope="native-input"][data-part="input"] {
-    color: var(--color-ui-ink);
-    padding-inline: var(--space-sm);
-    min-height: var(--size-sm);
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-    background-color: var(--color-ui);
-    border-color: var(--color-border);
-  }
-
-  .native-input.native-input--md [data-scope="native-input"][data-part="root"] {
-    gap: var(--space-md);
-    max-width: var(--container-md);
-  }
-
-  .native-input.native-input--md [data-scope="native-input"][data-part="label"] {
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-  }
-
-  .native-input.native-input--md [data-scope="native-input"][data-part="input"] {
-    color: var(--color-ui-ink);
-    padding-inline: var(--space-md);
-    min-height: var(--size-md);
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-    background-color: var(--color-ui);
-    border-color: var(--color-border);
-  }
-
-  .native-input.native-input--lg [data-scope="native-input"][data-part="root"] {
-    gap: var(--space-lg);
-    max-width: var(--container-lg);
-  }
-
-  .native-input.native-input--lg [data-scope="native-input"][data-part="label"] {
-    font-size: var(--text-lg);
-    line-height: var(--leading-lg);
-  }
-
-  .native-input.native-input--lg [data-scope="native-input"][data-part="input"] {
-    color: var(--color-ui-ink);
-    padding-inline: var(--space-lg);
-    min-height: var(--size-lg);
-    font-size: var(--text-lg);
-    line-height: var(--leading-lg);
-    background-color: var(--color-ui);
-    border-color: var(--color-border);
-  }
-
-  .native-input.native-input--xl [data-scope="native-input"][data-part="root"] {
-    gap: var(--space-xl);
-    max-width: var(--container-xl);
-  }
-
-  .native-input.native-input--xl [data-scope="native-input"][data-part="label"] {
-    font-size: var(--text-xl);
-    line-height: var(--leading-xl);
-  }
-
-  .native-input.native-input--xl [data-scope="native-input"][data-part="input"] {
-    color: var(--color-ui-ink);
-    padding-inline: var(--space-xl);
-    min-height: var(--size-xl);
-    font-size: var(--text-xl);
-    line-height: var(--leading-xl);
-    background-color: var(--color-ui);
-    border-color: var(--color-border);
   }
 
   .native-input.native-input--rounded-none [data-scope="native-input"][data-part="input"] {
     border-radius: var(--radius-none);
-  }
-
-  .native-input.native-input--rounded-xs [data-scope="native-input"][data-part="input"] {
-    border-radius: var(--radius-xs);
-  }
-
-  .native-input.native-input--rounded-sm [data-scope="native-input"][data-part="input"] {
-    border-radius: var(--radius-sm);
-  }
-
-  .native-input.native-input--rounded-md [data-scope="native-input"][data-part="input"] {
-    border-radius: var(--radius-md);
-  }
-
-  .native-input.native-input--rounded-lg [data-scope="native-input"][data-part="input"] {
-    border-radius: var(--radius-lg);
-  }
-
-  .native-input.native-input--rounded-xl [data-scope="native-input"][data-part="input"] {
-    border-radius: var(--radius-xl);
-  }
-
-  .native-input.native-input--rounded-2xl [data-scope="native-input"][data-part="input"] {
-    border-radius: var(--radius-2xl);
-  }
-
-  .native-input.native-input--rounded-3xl [data-scope="native-input"][data-part="input"] {
-    border-radius: var(--radius-3xl);
-  }
-
-  .native-input.native-input--rounded-4xl [data-scope="native-input"][data-part="input"] {
-    border-radius: var(--radius-4xl);
   }
 
   .native-input.native-input--rounded-full [data-scope="native-input"][data-part="input"] {
@@ -405,42 +180,42 @@
     padding-inline-start: var(--size);
   }
 
-  .native-input.native-input--accent [data-scope="native-input"][data-part="input"] {
+  .native-input.native-input--semantic-accent [data-scope="native-input"][data-part="input"] {
     &:focus, &:focus-visible {
       outline: none;
       box-shadow: inset 0 0 0 2px var(--color-ui-ink-accent);
     }
   }
 
-  .native-input.native-input--brand [data-scope="native-input"][data-part="input"] {
+  .native-input.native-input--semantic-brand [data-scope="native-input"][data-part="input"] {
     &:focus, &:focus-visible {
       outline: none;
       box-shadow: inset 0 0 0 2px var(--color-ui-ink-brand);
     }
   }
 
-  .native-input.native-input--alert [data-scope="native-input"][data-part="input"] {
+  .native-input.native-input--semantic-alert [data-scope="native-input"][data-part="input"] {
     &:focus, &:focus-visible {
       outline: none;
       box-shadow: inset 0 0 0 2px var(--color-ui-ink-alert);
     }
   }
 
-  .native-input.native-input--info [data-scope="native-input"][data-part="input"] {
+  .native-input.native-input--semantic-info [data-scope="native-input"][data-part="input"] {
     &:focus, &:focus-visible {
       outline: none;
       box-shadow: inset 0 0 0 2px var(--color-ui-ink-info);
     }
   }
 
-  .native-input.native-input--success [data-scope="native-input"][data-part="input"] {
+  .native-input.native-input--semantic-success [data-scope="native-input"][data-part="input"] {
     &:focus, &:focus-visible {
       outline: none;
       box-shadow: inset 0 0 0 2px var(--color-ui-ink-success);
     }
   }
 
-  .native-input.native-input--selected [data-scope="native-input"][data-part="input"] {
+  .native-input.native-input--semantic-selected [data-scope="native-input"][data-part="input"] {
     &:focus, &:focus-visible {
       outline: none;
       box-shadow: inset 0 0 0 2px var(--color-selected-ink);

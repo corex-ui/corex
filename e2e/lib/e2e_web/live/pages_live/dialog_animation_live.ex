@@ -110,7 +110,7 @@ defmodule E2eWeb.DialogAnimationLive do
 
             <.number_input
               id="dialog-animation-duration"
-              class="number-input number-input--sm lg:w-full"
+              class="number-input number-input--size-sm lg:w-full"
               value={@duration}
               step={0.1}
               min={0.0}
@@ -127,7 +127,7 @@ defmodule E2eWeb.DialogAnimationLive do
 
             <.number_input
               id="dialog-animation-opacity-start"
-              class="number-input number-input--sm lg:w-full"
+              class="number-input number-input--size-sm lg:w-full"
               step={0.1}
               min={0.0}
               max={1.0}
@@ -145,7 +145,7 @@ defmodule E2eWeb.DialogAnimationLive do
 
             <.number_input
               id="dialog-animation-opacity-end"
-              class="number-input number-input--sm lg:w-full"
+              class="number-input number-input--size-sm lg:w-full"
               step={0.1}
               min={0.0}
               max={1.0}
@@ -163,7 +163,7 @@ defmodule E2eWeb.DialogAnimationLive do
 
             <.number_input
               id="dialog-animation-scale-start"
-              class="number-input number-input--sm lg:w-full"
+              class="number-input number-input--size-sm lg:w-full"
               step={0.01}
               min={0.0}
               max={1.5}
@@ -181,7 +181,7 @@ defmodule E2eWeb.DialogAnimationLive do
 
             <.number_input
               id="dialog-animation-scale-end"
-              class="number-input number-input--sm lg:w-full"
+              class="number-input number-input--size-sm lg:w-full"
               step={0.01}
               min={0.0}
               max={1.5}
@@ -229,7 +229,7 @@ defmodule E2eWeb.DialogAnimationLive do
         <.demo_section
           id="dialog-animation-instant"
           title="Instant"
-          trigger_class="button button--sm"
+          trigger_class="button button--size-sm"
           code={@instant_heex}
         >
           <:preview>
@@ -253,7 +253,7 @@ defmodule E2eWeb.DialogAnimationLive do
         <.demo_section
           id="dialog-animation-custom"
           title="Custom (Motion)"
-          trigger_class="button button--sm"
+          trigger_class="button button--size-sm"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @custom_heex},
             %{value: "js", label: "Javascript", language: :js, code: @custom_js}

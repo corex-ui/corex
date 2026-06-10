@@ -20,7 +20,7 @@ defmodule E2eWeb.AuthoringSnippetTest do
     assert attr =~ ~s(variant="subtle")
     refute attr =~ ~s(class="accordion)
 
-    assert class =~ ~s(class="accordion accordion--info)
+    assert class =~ ~s(class="accordion accordion--semantic-info)
     assert class =~ "accordion--text-4xl"
     assert class =~ "accordion--rounded-md"
     refute class =~ "accordion--subtle"

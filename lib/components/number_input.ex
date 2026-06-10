@@ -56,7 +56,7 @@ defmodule Corex.NumberInput do
   ### With classes
 
   ```heex
-  <.number_input class="number-input number-input--accent number-input--md">
+  <.number_input class="number-input number-input--semantic-accent number-input--size-md">
     <:label>Quantity</:label>
     <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
     <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
@@ -185,20 +185,20 @@ defmodule Corex.NumberInput do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `number-input` |
-  | Accent | `number-input number-input--accent` |
-  | Brand | `number-input number-input--brand` |
-  | Alert | `number-input number-input--alert` |
-  | Info | `number-input number-input--info` |
-  | Success | `number-input number-input--success` |
+  | Accent | `number-input number-input--semantic-accent` |
+  | Brand | `number-input number-input--semantic-brand` |
+  | Alert | `number-input number-input--semantic-alert` |
+  | Info | `number-input number-input--semantic-info` |
+  | Success | `number-input number-input--semantic-success` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `number-input number-input--sm` |
-  | MD | `number-input number-input--md` |
-  | LG | `number-input number-input--lg` |
-  | XL | `number-input number-input--xl` |
+  | SM | `number-input number-input--size-sm` |
+  | MD | `number-input number-input--size-md` |
+  | LG | `number-input number-input--size-lg` |
+  | XL | `number-input number-input--size-xl` |
 
   <!-- tabs-close -->
 

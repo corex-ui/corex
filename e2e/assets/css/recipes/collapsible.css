@@ -18,6 +18,15 @@
 }
 
 
+@utility collapsible--size-* {
+  [data-scope="collapsible"][data-part="root"] {
+      max-width: --value(--container-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
+  }
+
+}
+
+
 @layer components {
   .collapsible.collapsible--w-auto {
     width: auto;
@@ -37,74 +46,6 @@
 
   .collapsible.collapsible--max-w-full {
     max-width: 100%;
-  }
-
-  .collapsible.collapsible--max-w-7xs {
-    max-width: var(--container-7xs);
-  }
-
-  .collapsible.collapsible--max-w-6xs {
-    max-width: var(--container-6xs);
-  }
-
-  .collapsible.collapsible--max-w-5xs {
-    max-width: var(--container-5xs);
-  }
-
-  .collapsible.collapsible--max-w-4xs {
-    max-width: var(--container-4xs);
-  }
-
-  .collapsible.collapsible--max-w-3xs {
-    max-width: var(--container-3xs);
-  }
-
-  .collapsible.collapsible--max-w-2xs {
-    max-width: var(--container-2xs);
-  }
-
-  .collapsible.collapsible--max-w-xs {
-    max-width: var(--container-xs);
-  }
-
-  .collapsible.collapsible--max-w-sm {
-    max-width: var(--container-sm);
-  }
-
-  .collapsible.collapsible--max-w-md {
-    max-width: var(--container-md);
-  }
-
-  .collapsible.collapsible--max-w-lg {
-    max-width: var(--container-lg);
-  }
-
-  .collapsible.collapsible--max-w-xl {
-    max-width: var(--container-xl);
-  }
-
-  .collapsible.collapsible--max-w-2xl {
-    max-width: var(--container-2xl);
-  }
-
-  .collapsible.collapsible--max-w-3xl {
-    max-width: var(--container-3xl);
-  }
-
-  .collapsible.collapsible--max-w-4xl {
-    max-width: var(--container-4xl);
-  }
-
-  .collapsible.collapsible--max-w-5xl {
-    max-width: var(--container-5xl);
-  }
-
-  .collapsible.collapsible--max-w-6xl {
-    max-width: var(--container-6xl);
-  }
-
-  .collapsible.collapsible--max-w-7xl {
-    max-width: var(--container-7xl);
   }
 
   .collapsible.collapsible--h-auto {
@@ -127,152 +68,32 @@
     max-height: 100%;
   }
 
-  .collapsible.collapsible--max-h-7xs {
-    max-height: var(--container-7xs);
-  }
-
-  .collapsible.collapsible--max-h-6xs {
-    max-height: var(--container-6xs);
-  }
-
-  .collapsible.collapsible--max-h-5xs {
-    max-height: var(--container-5xs);
-  }
-
-  .collapsible.collapsible--max-h-4xs {
-    max-height: var(--container-4xs);
-  }
-
-  .collapsible.collapsible--max-h-3xs {
-    max-height: var(--container-3xs);
-  }
-
-  .collapsible.collapsible--max-h-2xs {
-    max-height: var(--container-2xs);
-  }
-
-  .collapsible.collapsible--max-h-xs {
-    max-height: var(--container-xs);
-  }
-
-  .collapsible.collapsible--max-h-sm {
-    max-height: var(--container-sm);
-  }
-
-  .collapsible.collapsible--max-h-md {
-    max-height: var(--container-md);
-  }
-
-  .collapsible.collapsible--max-h-lg {
-    max-height: var(--container-lg);
-  }
-
-  .collapsible.collapsible--max-h-xl {
-    max-height: var(--container-xl);
-  }
-
-  .collapsible.collapsible--max-h-2xl {
-    max-height: var(--container-2xl);
-  }
-
-  .collapsible.collapsible--max-h-3xl {
-    max-height: var(--container-3xl);
-  }
-
-  .collapsible.collapsible--max-h-4xl {
-    max-height: var(--container-4xl);
-  }
-
-  .collapsible.collapsible--max-h-5xl {
-    max-height: var(--container-5xl);
-  }
-
-  .collapsible.collapsible--max-h-6xl {
-    max-height: var(--container-6xl);
-  }
-
-  .collapsible.collapsible--max-h-7xl {
-    max-height: var(--container-7xl);
-  }
-
-  .collapsible.collapsible--accent {
+  .collapsible.collapsible--semantic-accent {
     position: relative;
   }
 
-  .collapsible.collapsible--brand {
+  .collapsible.collapsible--semantic-brand {
     position: relative;
   }
 
-  .collapsible.collapsible--alert {
+  .collapsible.collapsible--semantic-alert {
     position: relative;
   }
 
-  .collapsible.collapsible--info {
+  .collapsible.collapsible--semantic-info {
     position: relative;
   }
 
-  .collapsible.collapsible--success {
+  .collapsible.collapsible--semantic-success {
     position: relative;
   }
 
-  .collapsible.collapsible--selected {
+  .collapsible.collapsible--semantic-selected {
     position: relative;
-  }
-
-  .collapsible.collapsible--sm [data-scope="collapsible"][data-part="root"] {
-    gap: var(--space-sm);
-    max-width: var(--container-sm);
-  }
-
-  .collapsible.collapsible--md [data-scope="collapsible"][data-part="root"] {
-    gap: var(--space-md);
-    max-width: var(--container-md);
-  }
-
-  .collapsible.collapsible--lg [data-scope="collapsible"][data-part="root"] {
-    gap: var(--space-lg);
-    max-width: var(--container-lg);
-  }
-
-  .collapsible.collapsible--xl [data-scope="collapsible"][data-part="root"] {
-    gap: var(--space-xl);
-    max-width: var(--container-xl);
   }
 
   .collapsible.collapsible--rounded-none [data-scope="collapsible"][data-part="content"] {
     border-radius: var(--radius-none);
-  }
-
-  .collapsible.collapsible--rounded-xs [data-scope="collapsible"][data-part="content"] {
-    border-radius: var(--radius-xs);
-  }
-
-  .collapsible.collapsible--rounded-sm [data-scope="collapsible"][data-part="content"] {
-    border-radius: var(--radius-sm);
-  }
-
-  .collapsible.collapsible--rounded-md [data-scope="collapsible"][data-part="content"] {
-    border-radius: var(--radius-md);
-  }
-
-  .collapsible.collapsible--rounded-lg [data-scope="collapsible"][data-part="content"] {
-    border-radius: var(--radius-lg);
-  }
-
-  .collapsible.collapsible--rounded-xl [data-scope="collapsible"][data-part="content"] {
-    border-radius: var(--radius-xl);
-  }
-
-  .collapsible.collapsible--rounded-2xl [data-scope="collapsible"][data-part="content"] {
-    border-radius: var(--radius-2xl);
-  }
-
-  .collapsible.collapsible--rounded-3xl [data-scope="collapsible"][data-part="content"] {
-    border-radius: var(--radius-3xl);
-  }
-
-  .collapsible.collapsible--rounded-4xl [data-scope="collapsible"][data-part="content"] {
-    border-radius: var(--radius-4xl);
   }
 
   .collapsible.collapsible--rounded-full [data-scope="collapsible"][data-part="content"] {
@@ -389,70 +210,70 @@
     width: 100%;
   }
 
-  .collapsible.collapsible--sm .collapsible [data-scope="collapsible"][data-part="trigger"] {
+  .collapsible.collapsible--size-sm .collapsible [data-scope="collapsible"][data-part="trigger"] {
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
   }
 
-  .collapsible.collapsible--sm .collapsible [data-scope="collapsible"][data-part="closed"],
-    .collapsible.collapsible--sm .collapsible [data-scope="collapsible"][data-part="opened"] {
+  .collapsible.collapsible--size-sm .collapsible [data-scope="collapsible"][data-part="closed"],
+    .collapsible.collapsible--size-sm .collapsible [data-scope="collapsible"][data-part="opened"] {
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
   }
 
-  .collapsible.collapsible--sm .collapsible [data-scope="collapsible"][data-part="content"],
-    .collapsible.collapsible--sm .collapsible [data-scope="collapsible"][data-part="content"] > p {
+  .collapsible.collapsible--size-sm .collapsible [data-scope="collapsible"][data-part="content"],
+    .collapsible.collapsible--size-sm .collapsible [data-scope="collapsible"][data-part="content"] > p {
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
   }
 
-  .collapsible.collapsible--md .collapsible [data-scope="collapsible"][data-part="trigger"] {
+  .collapsible.collapsible--size-md .collapsible [data-scope="collapsible"][data-part="trigger"] {
     font-size: var(--text-base);
     line-height: var(--leading-base);
   }
 
-  .collapsible.collapsible--md .collapsible [data-scope="collapsible"][data-part="closed"],
-    .collapsible.collapsible--md .collapsible [data-scope="collapsible"][data-part="opened"] {
+  .collapsible.collapsible--size-md .collapsible [data-scope="collapsible"][data-part="closed"],
+    .collapsible.collapsible--size-md .collapsible [data-scope="collapsible"][data-part="opened"] {
     font-size: var(--text-base);
     line-height: var(--leading-base);
   }
 
-  .collapsible.collapsible--md .collapsible [data-scope="collapsible"][data-part="content"],
-    .collapsible.collapsible--md .collapsible [data-scope="collapsible"][data-part="content"] > p {
+  .collapsible.collapsible--size-md .collapsible [data-scope="collapsible"][data-part="content"],
+    .collapsible.collapsible--size-md .collapsible [data-scope="collapsible"][data-part="content"] > p {
     font-size: var(--text-base);
     line-height: var(--leading-base);
   }
 
-  .collapsible.collapsible--lg .collapsible [data-scope="collapsible"][data-part="trigger"] {
+  .collapsible.collapsible--size-lg .collapsible [data-scope="collapsible"][data-part="trigger"] {
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
   }
 
-  .collapsible.collapsible--lg .collapsible [data-scope="collapsible"][data-part="closed"],
-    .collapsible.collapsible--lg .collapsible [data-scope="collapsible"][data-part="opened"] {
+  .collapsible.collapsible--size-lg .collapsible [data-scope="collapsible"][data-part="closed"],
+    .collapsible.collapsible--size-lg .collapsible [data-scope="collapsible"][data-part="opened"] {
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
   }
 
-  .collapsible.collapsible--lg .collapsible [data-scope="collapsible"][data-part="content"],
-    .collapsible.collapsible--lg .collapsible [data-scope="collapsible"][data-part="content"] > p {
+  .collapsible.collapsible--size-lg .collapsible [data-scope="collapsible"][data-part="content"],
+    .collapsible.collapsible--size-lg .collapsible [data-scope="collapsible"][data-part="content"] > p {
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
   }
 
-  .collapsible.collapsible--xl .collapsible [data-scope="collapsible"][data-part="trigger"] {
+  .collapsible.collapsible--size-xl .collapsible [data-scope="collapsible"][data-part="trigger"] {
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
   }
 
-  .collapsible.collapsible--xl .collapsible [data-scope="collapsible"][data-part="closed"],
-    .collapsible.collapsible--xl .collapsible [data-scope="collapsible"][data-part="opened"] {
+  .collapsible.collapsible--size-xl .collapsible [data-scope="collapsible"][data-part="closed"],
+    .collapsible.collapsible--size-xl .collapsible [data-scope="collapsible"][data-part="opened"] {
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
   }
 
-  .collapsible.collapsible--xl .collapsible [data-scope="collapsible"][data-part="content"],
-    .collapsible.collapsible--xl .collapsible [data-scope="collapsible"][data-part="content"] > p {
+  .collapsible.collapsible--size-xl .collapsible [data-scope="collapsible"][data-part="content"],
+    .collapsible.collapsible--size-xl .collapsible [data-scope="collapsible"][data-part="content"] > p {
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
   }
@@ -489,11 +310,11 @@
     }
   }
 
-  .collapsible.collapsible--accent [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
+  .collapsible.collapsible--semantic-accent [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
     color: var(--color-ui-ink-accent, var(--color-ui-ink));
   }
 
-  .collapsible.collapsible--accent [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
+  .collapsible.collapsible--semantic-accent [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
     background-color: var(--color-accent);
     color: var(--color-accent-ink);
     &:hover {
@@ -521,11 +342,11 @@
     }
   }
 
-  .collapsible.collapsible--brand [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
+  .collapsible.collapsible--semantic-brand [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
     color: var(--color-ui-ink-brand, var(--color-ui-ink));
   }
 
-  .collapsible.collapsible--brand [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
+  .collapsible.collapsible--semantic-brand [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
     background-color: var(--color-brand);
     color: var(--color-brand-ink);
     &:hover {
@@ -553,11 +374,11 @@
     }
   }
 
-  .collapsible.collapsible--alert [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
+  .collapsible.collapsible--semantic-alert [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
     color: var(--color-ui-ink-alert, var(--color-ui-ink));
   }
 
-  .collapsible.collapsible--alert [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
+  .collapsible.collapsible--semantic-alert [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
     background-color: var(--color-alert);
     color: var(--color-alert-ink);
     &:hover {
@@ -585,11 +406,11 @@
     }
   }
 
-  .collapsible.collapsible--info [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
+  .collapsible.collapsible--semantic-info [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
     color: var(--color-ui-ink-info, var(--color-ui-ink));
   }
 
-  .collapsible.collapsible--info [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
+  .collapsible.collapsible--semantic-info [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
     background-color: var(--color-info);
     color: var(--color-info-ink);
     &:hover {
@@ -617,11 +438,11 @@
     }
   }
 
-  .collapsible.collapsible--success [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
+  .collapsible.collapsible--semantic-success [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
     color: var(--color-ui-ink-success, var(--color-ui-ink));
   }
 
-  .collapsible.collapsible--success [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
+  .collapsible.collapsible--semantic-success [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
     background-color: var(--color-success);
     color: var(--color-success-ink);
     &:hover {
@@ -649,11 +470,11 @@
     }
   }
 
-  .collapsible.collapsible--selected [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
+  .collapsible.collapsible--semantic-selected [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
     color: var(--color-selected-ink, var(--color-ui-ink));
   }
 
-  .collapsible.collapsible--selected [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
+  .collapsible.collapsible--semantic-selected [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
     background-color: var(--color-selected);
     color: var(--color-selected-ink);
     &:hover {

@@ -14,7 +14,7 @@ defmodule Corex.VariantsTest do
         %{}
       )
 
-    assert html =~ "badge--sm"
+    assert html =~ "badge--size-sm"
     refute html =~ "data-badge"
     refute html =~ "data-badge-size"
   end

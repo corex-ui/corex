@@ -29,7 +29,9 @@ defmodule Corex.Layout.Stack do
       min_height: :min_height,
       grow: :grow,
       shrink: :shrink,
-      direction: :direction
+      direction: :direction,
+      variant: [:none, :layer],
+      radius: [:none, :sm, :md, :lg, :xl, :"2xl", :full]
     ],
     defaults: [
       padding: "none",
@@ -41,7 +43,9 @@ defmodule Corex.Layout.Stack do
       width: "none",
       grow: "none",
       shrink: "none",
-      direction: "column"
+      direction: "column",
+      variant: "none",
+      radius: "none"
     ]
 
   attr(:tag, :string, default: "div", doc: "The host HTML element.")

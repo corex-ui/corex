@@ -46,10 +46,10 @@ defmodule E2eWeb.ShellLayoutTest do
       assert html =~ "home__hero"
       assert html =~ ~s(class="icon")
       assert html =~ ~s(id="hero-accordion")
-      assert html =~ "button--solid"
-      assert html =~ "button--brand"
-      assert html =~ "button--lg"
-      assert html =~ "button--ghost"
+      assert html =~ "button--variant-solid"
+      assert html =~ "button--semantic-brand"
+      assert html =~ "button--size-lg"
+      assert html =~ "button--variant-ghost"
       assert html =~ ~p"/accordion/playground"
       assert html =~ "class=\"stack"
     end

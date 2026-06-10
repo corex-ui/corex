@@ -348,4 +348,8 @@ defmodule E2eWeb.Demos.DataListDemo do
   end
 
   def playground_items, do: items_basic()
+
+  def style_preview(assigns), do: E2eWeb.Demos.StylePreview.preview(:data_list, assigns)
+  def style_playground(assigns), do: style_preview(assigns)
+
 end

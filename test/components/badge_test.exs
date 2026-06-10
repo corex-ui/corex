@@ -14,8 +14,8 @@ defmodule Corex.BadgeTest do
         %{}
       )
 
-    assert html =~ "badge--accent"
-    assert html =~ "badge--sm"
+    assert html =~ "badge--semantic-accent"
+    assert html =~ "badge--size-sm"
     assert html =~ "New"
   end
 end

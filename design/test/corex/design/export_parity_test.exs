@@ -19,9 +19,9 @@ defmodule Corex.Design.ExportParityTest do
 
   test "tailwind class exports stay within line budgets" do
     budgets = %{
-      accordion: 2300,
+      accordion: 2100,
       select: 1200,
-      button: 1300,
+      button: 1100,
       tree_view: 2720
     }
 
@@ -35,12 +35,19 @@ defmodule Corex.Design.ExportParityTest do
     end
   end
 
-  test "layout recipes keep bem modifiers without component utilities" do
-    for id <- [:stack, :row, :grid, :container] do
+  test "layout recipes emit functional utilities for scale axes" do
+    expectations = %{
+      stack: "@utility stack--padding-*",
+      row: "@utility row--padding-*",
+      grid: "@utility grid--gap-*"
+    }
+
+    for {id, utility} <- expectations do
       recipe = Enum.find(Recipes.all(), &(&1.id == id))
       css = Recipe.to_css(recipe, target: :tailwind)
 
       refute css =~ "@utility #{id}--*"
+      assert css =~ utility
       assert css =~ "@layer components"
       assert css =~ ".#{id} {"
     end
@@ -56,12 +63,15 @@ defmodule Corex.Design.ExportParityTest do
     assert css =~ "@utility accordion--rounded-*"
     assert css =~ "@utility accordion--text-*"
     assert css =~ "@utility accordion--max-w-*"
+    assert css =~ "@utility accordion--size-*"
     assert css =~ ".accordion.accordion--w-fit"
-    assert css =~ ".accordion.accordion--accent"
-    assert css =~ ".accordion.accordion--subtle"
+    assert css =~ ".accordion.accordion--semantic-accent"
+    assert css =~ ".accordion.accordion--variant-subtle"
     assert css =~ "[data-state=\"closed\"]"
     assert css =~ "background-color: var(--color-accent)"
     assert css =~ "color: var(--color-accent-ink)"
     refute css =~ "@utility accordion--*"
+    refute css =~ ".accordion.accordion--max-w-7xs"
+    refute css =~ ".accordion.accordion--size-md [data-part"
   end
 end

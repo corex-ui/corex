@@ -69,7 +69,7 @@ defmodule E2eWeb.ToggleGroupPlayLive do
           />
 
           <.toggle_group
-            class="toggle-group toggle-group--sm toggle--max-w-7xs"
+            class="toggle-group toggle-group--size-sm toggle--max-w-7xs"
             id="orientation"
             on_value_change="control_changed"
             multiple={false}

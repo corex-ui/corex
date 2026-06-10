@@ -2,6 +2,7 @@ defmodule Corex.Design.Palette do
   @moduledoc false
 
   alias Corex.Design.Axes
+  alias Corex.Design.Bem
   alias Corex.Design.Rule
   alias Corex.Design.Selector
 
@@ -161,10 +162,10 @@ defmodule Corex.Design.Palette do
   end
 
   defp host_compound_selector(name, :neutral, visual),
-    do: ".#{name}.#{name}--#{visual}"
+    do: ".#{name}.#{name}--variant-#{visual}"
 
   defp host_compound_selector(name, role, visual),
-    do: ".#{name}.#{name}--#{visual}.#{name}--#{role}"
+    do: ".#{name}.#{name}--variant-#{visual}.#{name}--semantic-#{role}"
 
   def visual_decls(role, :solid) do
     [
@@ -273,10 +274,11 @@ defmodule Corex.Design.Palette do
     ]
   end
 
-  def host_mod(id, role) when is_atom(role) do
-    name = Selector.class_name(id)
-    ".#{name}.#{name}--#{role}"
-  end
+  def host_mod(id, role) when is_atom(role), do: Bem.host_selector(id, :semantic, role)
+
+  def host_size_mod(id, size) when is_atom(size), do: Bem.host_selector(id, :size, size)
+
+  def host_size_mod(id, size) when is_binary(size), do: host_size_mod(id, String.to_atom(size))
 
   def neutral_host(id), do: ".#{Selector.class_name(id)}"
 

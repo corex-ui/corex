@@ -151,4 +151,8 @@ defmodule E2eWeb.Demos.CodeDemo do
     end
     """
   end
+
+  def style_preview(assigns), do: E2eWeb.Demos.StylePreview.preview(:code, assigns)
+  def style_playground(assigns), do: style_preview(assigns)
+
 end

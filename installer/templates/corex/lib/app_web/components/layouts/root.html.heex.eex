@@ -79,7 +79,7 @@
     </script>
 <% end %>
   </head>
-  <body<%= if @design do %> class="typo layout"<% end %>>
+  <body<%= if @design do %> class="layout"<% end %>>
     {@inner_content}
   </body>
 </html>

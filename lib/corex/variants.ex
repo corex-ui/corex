@@ -212,7 +212,6 @@ defmodule Corex.Variants do
   def axis_values(scale) when is_atom(scale), do: Corex.Scales.strings(scale)
   def axis_values(values) when is_list(values), do: Enum.map(values, &to_string/1)
 
-  @prefixed_bem_axes ~w(text)a
   @bem_skip_axes ~w(hide_from hide_below as modal unstyled)a
 
   @doc false
@@ -260,19 +259,7 @@ defmodule Corex.Variants do
     end
   end
 
-  defp bem_step(:max_width, value), do: "max-w-#{value}"
-  defp bem_step(:max_height, value), do: "max-h-#{value}"
-  defp bem_step(:width, value), do: "w-#{value}"
-  defp bem_step(:height, value), do: "h-#{value}"
-  defp bem_step(:surface, value), do: "on-#{value}"
-  defp bem_step(:radius, value), do: "rounded-#{value}"
-
-  defp bem_step(axis, value) when axis in @prefixed_bem_axes,
-    do: "#{bem_axis_name(axis)}-#{value}"
-
-  defp bem_step(_axis, value), do: to_string(value)
-
-  defp bem_axis_name(axis), do: axis |> Atom.to_string() |> String.replace("_", "-")
+  defp bem_step(axis, value), do: Corex.Bem.step(axis, value)
 
   defp recipe_name(assigns, default) do
     case Map.get(assigns, :as) do

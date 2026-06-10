@@ -611,16 +611,16 @@ defmodule E2eWeb.Demos.MarqueeDemo do
     slot = styling_marquee_slot()
 
     """
-    <.marquee class="marquee marquee--sm" #{items} duration={20} spacing="2rem" pause_on_interaction>
+    <.marquee class="marquee marquee--size-sm" #{items} duration={20} spacing="2rem" pause_on_interaction>
     #{slot}
     </.marquee>
-    <.marquee class="marquee marquee--md" #{items} duration={20} spacing="2rem" pause_on_interaction>
+    <.marquee class="marquee marquee--size-md" #{items} duration={20} spacing="2rem" pause_on_interaction>
     #{slot}
     </.marquee>
-    <.marquee class="marquee marquee--lg" #{items} duration={20} spacing="2rem" pause_on_interaction>
+    <.marquee class="marquee marquee--size-lg" #{items} duration={20} spacing="2rem" pause_on_interaction>
     #{slot}
     </.marquee>
-    <.marquee class="marquee marquee--xl" #{items} duration={20} spacing="2rem" pause_on_interaction>
+    <.marquee class="marquee marquee--size-xl" #{items} duration={20} spacing="2rem" pause_on_interaction>
     #{slot}
     </.marquee>
     """
@@ -633,7 +633,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
     <div class="flex flex-col gap-6 items-start w-full">
       <.marquee
         id="marquee-style-size-sm"
-        class="marquee marquee--sm"
+        class="marquee marquee--size-sm"
         items={@items}
         duration={20}
         spacing="2rem"
@@ -646,7 +646,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
       </.marquee>
       <.marquee
         id="marquee-style-size-md"
-        class="marquee marquee--md"
+        class="marquee marquee--size-md"
         items={@items}
         duration={20}
         spacing="2rem"
@@ -659,7 +659,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
       </.marquee>
       <.marquee
         id="marquee-style-size-lg"
-        class="marquee marquee--lg"
+        class="marquee marquee--size-lg"
         items={@items}
         duration={20}
         spacing="2rem"
@@ -672,7 +672,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
       </.marquee>
       <.marquee
         id="marquee-style-size-xl"
-        class="marquee marquee--xl"
+        class="marquee marquee--size-xl"
         items={@items}
         duration={20}
         spacing="2rem"
@@ -793,4 +793,8 @@ defmodule E2eWeb.Demos.MarqueeDemo do
     </.marquee>
     """
   end
+
+  def style_preview(assigns), do: E2eWeb.Demos.StylePreview.preview(:marquee, assigns)
+  def style_playground(assigns), do: style_preview(assigns)
+
 end

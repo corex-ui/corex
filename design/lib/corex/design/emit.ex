@@ -1,82 +1,3 @@
-defmodule Corex.Design.Emit.Css do
-  @moduledoc false
-
-  alias Corex.Design.Css
-  alias Corex.Design.Fragment
-  alias Corex.Design.Rule
-
-  @indent "  "
-
-  @doc """
-  Renders a list of top-level rules to plain CSS, separated by blank lines.
-  """
-  def rules_css(rules) when is_list(rules) do
-    rules
-    |> Enum.map(&rule_css/1)
-    |> Enum.reject(&(&1 == ""))
-    |> Enum.join("\n\n")
-  end
-
-  @doc """
-  Renders a single rule (and its nested children) to plain CSS using native CSS
-  nesting. Fragment includes in the declaration list are expanded inline.
-  """
-  def rule_css(rule, level \\ 0)
-
-  def rule_css(%Rule{selector: selector} = rule, level) do
-    {decls, children} = expand(rule)
-
-    inner =
-      [decl_lines(decls, level + 1), child_blocks(children, level + 1)]
-      |> Enum.reject(&(&1 == ""))
-      |> Enum.join("\n")
-
-    pad = String.duplicate(@indent, level)
-
-    if inner == "" do
-      ""
-    else
-      "#{pad}#{selector} {\n#{inner}\n#{pad}}"
-    end
-  end
-
-  defp expand(%Rule{decls: decls, children: children}) do
-    Enum.reduce(decls, {[], children}, fn
-      {:include, fragment}, {acc_decls, acc_children} ->
-        %{decls: frag_decls, children: frag_children} = Fragment.get!(fragment)
-        {acc_decls ++ frag_decls, acc_children ++ frag_children}
-
-      decl, {acc_decls, acc_children} ->
-        {acc_decls ++ [decl], acc_children}
-    end)
-  end
-
-  defp decl_lines([], _level), do: ""
-
-  defp decl_lines(decls, level) do
-    pad = String.duplicate(@indent, level)
-
-    decls
-    |> Enum.map_join("\n", fn decl -> pad <> decl_line(decl) end)
-  end
-
-  defp decl_line({:raw, css}) when is_binary(css), do: css
-
-  defp decl_line({property, value}) do
-    {css_prop, css_val} = Css.resolve_property_value({property, value})
-    "#{css_prop}: #{css_val};"
-  end
-
-  defp child_blocks([], _level), do: ""
-
-  defp child_blocks(children, level) do
-    children
-    |> Enum.map(&rule_css(&1, level))
-    |> Enum.reject(&(&1 == ""))
-    |> Enum.join("\n\n")
-  end
-
-end
 defmodule Corex.Design.Emit.Tokens do
   @moduledoc false
 
@@ -189,7 +110,13 @@ defmodule Corex.Design.Emit.Tokens do
     radius =
       [{name([:radius]), Theme.radius_default(theme)}] ++
         for {step, v} <- Theme.radius(theme), do: {name([:radius, step]), v}
-    container = for {step, v} <- Theme.container(theme), do: {name([:container, step]), v}
+    container =
+      if theme == Theme.default_theme() or
+           Theme.container(theme) != Theme.container(Theme.default_theme()) do
+        for {step, v} <- Theme.container(theme), do: {name([:container, step]), v}
+      else
+        []
+      end
 
     font =
       if include_font do
@@ -328,19 +255,21 @@ defmodule Corex.Design.Emit.Theme do
     for {step, _} <- steps, do: {"#{tailwind_ns}-#{step}", "--#{corex_ns}-#{step}"}
   end
 
-  # Tailwind only wires `--container-*` to `max-w-*`. We extend the same scale to
-  # `min-w-*`, `max-h-*`, and `min-h-*` via explicit per-step utilities. Using a
-  # specific class name (not the `*` functional form) means Tailwind's built-in
-  # keyword utilities (`min-w-0`, `max-h-full`, ...) keep working; we only add the
-  # named container steps, which never collide with those keywords.
   defp container_sizing_utilities do
-    dt = Theme.default_theme()
+    """
+    @utility min-w-* {
+      min-width: --value(--container-*, [length]);
+    }
 
-    for {prop, prefix} <- [{"min-width", "min-w"}, {"min-height", "min-h"}, {"max-height", "max-h"}],
-        {step, _} <- Theme.container(dt) do
-      "@utility #{prefix}-#{step} {\n  #{prop}: var(--container-#{step});\n}"
-    end
-    |> Enum.join("\n\n")
+    @utility min-h-* {
+      min-height: --value(--container-*, [length]);
+    }
+
+    @utility max-h-* {
+      max-height: --value(--container-*, [length]);
+    }
+    """
+    |> String.trim()
   end
 
   defp block(selector, decls) do
@@ -388,19 +317,18 @@ defmodule Corex.Design.Emit.Typography do
     |> Enum.join("\n\n")
   end
 
-  defp selectors("blockquote p"), do: "body blockquote p, .typo blockquote p"
+  defp selectors("blockquote p"), do: ".typo blockquote p"
 
-  defp selectors(".list li"), do: "body .list li, .typo .list li"
+  defp selectors(".list li"), do: ".typo .list li"
 
-  defp selectors(".list li:last-child"),
-    do: "body .list li:last-child, .typo .list li:last-child"
+  defp selectors(".list li:last-child"), do: ".typo .list li:last-child"
 
-  defp selectors(".list li:hover"), do: "body .list li:hover, .typo .list li:hover"
+  defp selectors(".list li:hover"), do: ".typo .list li:hover"
 
-  defp selectors(element), do: "body #{element}, .typo #{element}"
+  defp selectors(element), do: ".typo #{element}"
 
   defp scoped_selectors(theme, element) do
-    ~s([data-theme="#{theme}"] body #{element}, [data-theme="#{theme}"] .typo #{element})
+    ~s([data-theme="#{theme}"] .typo #{element})
   end
 
   defp diff_elements(base, over) do
@@ -414,22 +342,21 @@ defmodule Corex.Design.Emit.StyleRecipe do
   @moduledoc false
 
   alias Corex.Design.Axis
+  alias Corex.Design.Bem
   alias Corex.Design.Condition
   alias Corex.Design.Emit.Css
   alias Corex.Design.Emit.TailwindCss
-  alias Corex.Design.Emit.SelectorRewrite
   alias Corex.Design.Selector
   alias Corex.Design.Style
+  alias Corex.Design.Emit.TailwindUtilitiesRecipe
   alias Corex.Design.Tokens.Scales
-
-  @prefixed_bem_axes ~w(text)a
 
   @doc """
   Compiles sx-based recipes to CSS strings for the plain CSS export target.
   """
   def to_css(recipe, opts \\ []) do
     ctx = [
-      recipe: recipe.id,
+      recipe: recipe,
       kind: recipe.kind,
       tailwind: Keyword.get(opts, :tailwind, false)
     ]
@@ -494,15 +421,20 @@ defmodule Corex.Design.Emit.StyleRecipe do
 
     variant_blocks =
       for {axis, values} <- recipe.variants,
-          {value, props} <- values do
+          {value, props} <- values,
+          not skip_variant?(axis, value, props, ctx) do
         sx = sx_map(props)
 
         base = Style.to_css(layout_variant_selector(id, axis, value), sx, ctx)
 
         responsive =
-          for {bp, _width} <- Scales.breakpoint() do
-            inner = Style.to_css(layout_responsive_selector(id, axis, value, bp), sx, ctx)
-            if inner == "", do: "", else: wrap_media(bp, inner)
+          if Keyword.get(ctx, :tailwind, false) do
+            []
+          else
+            for {bp, _width} <- Scales.breakpoint() do
+              inner = Style.to_css(layout_responsive_selector(id, axis, value, bp), sx, ctx)
+              if inner == "", do: "", else: wrap_media(bp, inner)
+            end
           end
 
         [base | responsive]
@@ -516,12 +448,12 @@ defmodule Corex.Design.Emit.StyleRecipe do
 
   defp layout_variant_selector(id, axis, value) do
     name = Selector.class_name(id)
-    ".#{name}.#{name}--#{Axis.name(axis)}-#{value}"
+    ".#{name}.#{name}--#{Bem.step(axis, value)}"
   end
 
   defp layout_responsive_selector(id, axis, value, bp) do
     name = Selector.class_name(id)
-    ".#{name}.#{bp}\\:#{name}--#{Axis.name(axis)}-#{value}"
+    ".#{name}.#{bp}\\:#{name}--#{Bem.step(axis, value)}"
   end
 
   defp wrap_media(bp, inner) do
@@ -546,11 +478,7 @@ defmodule Corex.Design.Emit.StyleRecipe do
     |> Enum.join("\n\n")
   end
 
-  defp extra_rules_css(rules, ctx) do
-    rules
-    |> SelectorRewrite.adapt_rules()
-    |> render_extra_rules(ctx)
-  end
+  defp extra_rules_css(rules, ctx), do: render_extra_rules(rules, ctx)
 
   defp render_extra_rules(rules, ctx) do
     if Keyword.get(ctx, :tailwind, false) do
@@ -564,10 +492,6 @@ defmodule Corex.Design.Emit.StyleRecipe do
   end
 
   defp merge_base(recipe), do: merge_base_impl(recipe)
-
-  def merge_base_for_compile(recipe), do: merge_base_impl(recipe)
-
-  def merge_slot_base_for_compile(recipe), do: merge_slot_base_impl(recipe)
 
   defp merge_base_impl(%{base: base, variants: variants, default_variants: defaults}) do
     defaults
@@ -629,8 +553,7 @@ defmodule Corex.Design.Emit.StyleRecipe do
   end
 
   defp compound_blocks(id, axis_overrides, ctx) do
-    for cv <- axis_overrides,
-        not skip_compound?(cv, ctx) do
+    for cv <- axis_overrides do
       match = Map.fetch!(cv, :match)
       style = Map.fetch!(cv, :style)
       sel = compound_selector(id, match, ctx)
@@ -674,14 +597,7 @@ defmodule Corex.Design.Emit.StyleRecipe do
     ".#{name}.#{name}--#{bem_suffix(axis, value)}"
   end
 
-  defp bem_suffix(:max_width, value), do: "max-w-#{value}"
-  defp bem_suffix(:max_height, value), do: "max-h-#{value}"
-  defp bem_suffix(:width, value), do: "w-#{value}"
-  defp bem_suffix(:height, value), do: "h-#{value}"
-  defp bem_suffix(:surface, value), do: "on-#{value}"
-  defp bem_suffix(:radius, value), do: "rounded-#{value}"
-  defp bem_suffix(axis, value) when axis in @prefixed_bem_axes, do: "#{Axis.name(axis)}-#{value}"
-  defp bem_suffix(_axis, value), do: to_string(value)
+  defp bem_suffix(axis, value), do: Bem.step(axis, value)
 
   defp compound_selector(id, match, _ctx), do: bem_compound(id, match)
 
@@ -724,9 +640,16 @@ defmodule Corex.Design.Emit.StyleRecipe do
 
   defp part(slot), do: slot |> to_string() |> String.replace("_", "-")
 
-  defp skip_variant?(_axis, _value, _block, _ctx), do: false
+  defp skip_variant?(axis, value, _block, ctx) do
+    tailwind? = Keyword.get(ctx, :tailwind, false)
+    recipe = Keyword.fetch!(ctx, :recipe)
+    utility_axis? = axis in TailwindUtilitiesRecipe.utility_axes(recipe)
+    scale_value? = not keyword_sizing_value?(value)
 
-  defp skip_compound?(_cv, _ctx), do: false
+    tailwind? and utility_axis? and scale_value?
+  end
+
+  defp keyword_sizing_value?(value), do: value in [:none, :full, :auto, :fit]
 end
 defmodule Corex.Design.Emit.Layers do
   @moduledoc false
@@ -944,20 +867,11 @@ defmodule Corex.Design.Emit.Responsive do
     |> String.trim_trailing()
   end
 end
-defmodule Corex.Design.Emit.SelectorRewrite do
-  @moduledoc false
-
-  def adapt_rules(rules), do: rules
-end
 defmodule Corex.Design.Emit.TailwindRecipe do
   @moduledoc false
 
   alias Corex.Design.Emit.StyleRecipe
   alias Corex.Design.Emit.TailwindUtilitiesRecipe
-
-  def to_css(%{kind: :layout} = recipe) do
-    layer_components(StyleRecipe.to_css(recipe))
-  end
 
   def to_css(recipe) do
     utilities = TailwindUtilitiesRecipe.utilities(recipe)
@@ -991,83 +905,6 @@ defmodule Corex.Design.Emit.TailwindRecipe do
     end)
   end
 end
-defmodule Corex.Design.Emit.TailwindCss do
-  @moduledoc false
-
-  alias Corex.Design.Css
-  alias Corex.Design.Fragment
-  alias Corex.Design.Rule
-
-  @indent "  "
-
-  def rules_css(rules) when is_list(rules) do
-    rules
-    |> Enum.map(&rule_css/1)
-    |> Enum.reject(&(&1 == ""))
-    |> Enum.join("\n\n")
-  end
-
-  def rule_css(%Rule{selector: selector} = rule, level \\ 0) do
-    {decls, children} = expand(rule)
-
-    inner =
-      [decl_lines(decls, level + 1), child_blocks(children, level + 1)]
-      |> Enum.reject(&(&1 == ""))
-      |> Enum.join("\n")
-
-    pad = String.duplicate(@indent, level)
-
-    if inner == "" do
-      ""
-    else
-      "#{pad}#{selector} {\n#{inner}\n#{pad}}"
-    end
-  end
-
-  def fragment_utility_body(id) do
-    %{decls: decls, children: children} = Fragment.get!(id)
-    rule = %Rule{selector: "&", decls: decls, children: children}
-    rule_css(rule, 0) |> String.trim_leading()
-  end
-
-  defp expand(%Rule{decls: decls, children: children}) do
-    Enum.reduce(decls, {[], children}, fn
-      {:include, fragment}, {acc_decls, acc_children} ->
-        name = Fragment.utility_name(fragment)
-        {acc_decls ++ [{:apply, name}], acc_children}
-
-      decl, {acc_decls, acc_children} ->
-        {acc_decls ++ [decl], acc_children}
-    end)
-  end
-
-  defp decl_lines([], _level), do: ""
-
-  defp decl_lines(decls, level) do
-    pad = String.duplicate(@indent, level)
-
-    decls
-    |> Enum.map_join("\n", fn decl -> pad <> decl_line(decl) end)
-  end
-
-  defp decl_line({:apply, name}), do: "@apply #{name};"
-
-  defp decl_line({:raw, css}) when is_binary(css), do: css
-
-  defp decl_line({property, value}) do
-    {css_prop, css_val} = Css.resolve_property_value({property, value})
-    "#{css_prop}: #{css_val};"
-  end
-
-  defp child_blocks([], _level), do: ""
-
-  defp child_blocks(children, level) do
-    children
-    |> Enum.map(&rule_css(&1, level))
-    |> Enum.reject(&(&1 == ""))
-    |> Enum.join("\n\n")
-  end
-end
 defmodule Corex.Design.Emit.TailwindUtilities do
   @moduledoc false
 
@@ -1075,8 +912,6 @@ defmodule Corex.Design.Emit.TailwindUtilities do
   alias Corex.Design.Fragment
 
   @base ~w(ui_root ui_trigger ui_icon ui_content ui_label ui_input ui_item ui_link ui_error ui_readonly ui_loading)a
-
-  @modifiers ~w(ui_trigger_square ui_trigger_circle ui_trigger_ghost)a
 
   def css do
     wildcards = %{
@@ -1088,24 +923,12 @@ defmodule Corex.Design.Emit.TailwindUtilities do
 
     (@base
      |> Enum.map(&base_utility/1)
-     |> Kernel.++(Enum.map(@modifiers, &modifier_utility/1))
      |> Kernel.++(Enum.map(wildcards, &wildcard_utility/1)))
     |> Enum.reject(&(&1 in [nil, ""]))
     |> Enum.join("\n\n")
   end
 
   defp base_utility(id) do
-    name = Fragment.utility_name(id)
-    body = TailwindCss.fragment_utility_body(id)
-
-    """
-    @utility #{name} {
-    #{body}
-    }
-    """
-  end
-
-  defp modifier_utility(id) do
     name = Fragment.utility_name(id)
     body = TailwindCss.fragment_utility_body(id)
 
@@ -1269,12 +1092,28 @@ end
 defmodule Corex.Design.Emit.TailwindUtilitiesRecipe do
   @moduledoc false
 
+  alias Corex.Design.Axis
   alias Corex.Design.Rule
   alias Corex.Design.Selector
 
   @prefixed_axes %{radius: "rounded", text: "text"}
+  @layout_scale_axes ~w(padding padding_inline padding_block gap radius text)a
 
-  def utilities(%{kind: :layout}), do: nil
+  def utility_axes(%{kind: :layout} = recipe) do
+    @layout_scale_axes
+    |> Enum.filter(&layout_scale_axis?(&1, recipe))
+  end
+
+  def utility_axes(recipe) do
+    []
+    |> maybe_utility_axis(:radius, recipe, &prefixed_axis?/2)
+    |> maybe_utility_axis(:text, recipe, &prefixed_axis?/2)
+    |> maybe_utility_axis(:max_width, recipe, &container_axis?/2)
+    |> maybe_utility_axis(:max_height, recipe, &container_axis?/2)
+    |> maybe_utility_axis(:size, recipe, &size_axis?/2)
+  end
+
+  def utilities(%{kind: :layout} = recipe), do: layout_utilities(recipe)
 
   def utilities(recipe) do
     name = Selector.class_name(recipe.id)
@@ -1284,11 +1123,85 @@ defmodule Corex.Design.Emit.TailwindUtilitiesRecipe do
     |> maybe_add(prefixed_utility(name, :text, recipe))
     |> maybe_add(container_utility(name, :max_width, recipe))
     |> maybe_add(container_utility(name, :max_height, recipe))
+    |> maybe_add(size_utility(name, recipe))
     |> Enum.reject(&(&1 in [nil, ""]))
     |> Enum.join("\n\n")
     |> case do
       "" -> nil
       css -> css
+    end
+  end
+
+  defp layout_utilities(recipe) do
+    name = Selector.class_name(recipe.id)
+
+    @layout_scale_axes
+    |> Enum.map(&layout_scale_utility(name, &1, recipe))
+    |> Enum.reject(&(&1 in [nil, ""]))
+    |> Enum.join("\n\n")
+    |> case do
+      "" -> nil
+      css -> css
+    end
+  end
+
+  defp maybe_utility_axis(axes, axis, recipe, pred) do
+    if pred.(axis, recipe), do: [axis | axes], else: axes
+  end
+
+  defp layout_scale_axis?(axis, recipe) do
+    layout_scale_axis?(axis, recipe, scale_variant_values(recipe, axis))
+  end
+
+  defp layout_scale_axis?(_axis, _recipe, []), do: false
+  defp layout_scale_axis?(_axis, _recipe, _values), do: true
+
+  defp layout_scale_utility(name, axis, recipe) do
+    values = scale_variant_values(recipe, axis)
+
+    if values == [] do
+      nil
+    else
+      suffix = Axis.name(axis)
+
+      scale_utility(
+        "#{name}--#{suffix}-*",
+        ["  #{layout_axis_line(axis)}"]
+      )
+    end
+  end
+
+  defp layout_axis_line(:padding), do: "padding: --value(--spacing-space-*, [length]);"
+  defp layout_axis_line(:padding_inline), do: "padding-inline: --value(--spacing-space-*, [length]);"
+  defp layout_axis_line(:padding_block), do: "padding-block: --value(--spacing-space-*, [length]);"
+  defp layout_axis_line(:gap), do: "gap: --value(--spacing-space-*, [length]);"
+  defp layout_axis_line(:radius), do: "border-radius: --value(--radius-*, [length]);"
+  defp layout_axis_line(:text), do: axis_utility_lines(:text) |> Enum.join("\n  ")
+
+  defp scale_variant_values(recipe, axis) do
+    case Keyword.get(recipe.variants, axis) do
+      nil ->
+        []
+
+      values ->
+        values
+        |> Enum.reject(fn {value, _} -> keyword_sizing_value?(value) end)
+        |> Enum.map(fn {value, _} -> value end)
+    end
+  end
+
+  defp prefixed_axis?(axis, recipe), do: scale_variant_values(recipe, axis) != []
+
+  defp container_axis?(axis, recipe), do: container_slots(recipe, axis) != []
+
+  defp size_axis?(axis, recipe) do
+    axis == :size and slot_axis_lines(recipe, [:size]) != []
+  end
+
+  defp size_utility(name, recipe) do
+    case slot_axis_lines(recipe, [:size]) do
+      [] -> nil
+      lines -> scale_utility("#{name}--size-*", lines)
     end
   end
 
@@ -1398,19 +1311,11 @@ defmodule Corex.Design.Emit.TailwindUtilitiesRecipe do
   end
 
   defp variant_utility_rule?(selector, name, axes) do
-    host_mod = ".#{name}.#{name}--"
-
-    String.starts_with?(selector, host_mod) and
-      Enum.any?(axes, fn axis -> axis_rule_match?(selector, axis) end)
+    Enum.any?(axes, &Axis.utility_host?(selector, name, &1))
   end
 
-  defp axis_rule_match?(selector, :text), do: String.contains?(selector, "--text-")
-  defp axis_rule_match?(selector, :radius), do: String.contains?(selector, "--rounded-")
-  defp axis_rule_match?(selector, :size), do: String.contains?(selector, "> p")
-  defp axis_rule_match?(_selector, _axis), do: false
-
-  defp utility_rule_lines(%Rule{} = rule) do
-    target_selector = utility_target_selector(rule.selector)
+  defp utility_rule_lines(%Rule{selector: selector} = rule) do
+    target_selector = Selector.strip_host_variant(selector, recipe_name_from_selector(selector))
 
     decl_lines =
       rule.decls
@@ -1437,10 +1342,10 @@ defmodule Corex.Design.Emit.TailwindUtilitiesRecipe do
     end
   end
 
-  defp utility_target_selector(selector) do
-    selector
-    |> String.replace(~r/\.[a-z0-9-]+\.[a-z0-9-]+--(?:text-|rounded-)?[^ ]+ /, "")
-    |> String.trim()
+  defp recipe_name_from_selector("." <> rest) do
+    rest
+    |> String.split(".", parts: 2)
+    |> hd()
   end
 
   defp slot_sx_union(values) do
@@ -1499,18 +1404,7 @@ defmodule Corex.Design.Emit.TailwindUtilitiesRecipe do
     |> Enum.any?(&slot_entry_key?/1)
   end
 
-  defp slot_entry_key?(:host), do: true
-
-  defp slot_entry_key?(key) when is_atom(key) do
-    name = Atom.to_string(key)
-
-    Regex.match?(
-      ~r/^(item|branch|control|root|label|trigger|indicator|content|error|input|icon)/,
-      name
-    )
-  end
-
-  defp slot_entry_key?(_), do: false
+  defp slot_entry_key?(key), do: Axis.slot_part?(key)
 
   defp sx_map(%{} = map), do: map
   defp sx_map(list) when is_list(list), do: Map.new(list)

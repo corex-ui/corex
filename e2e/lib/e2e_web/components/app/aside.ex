@@ -23,7 +23,7 @@ defmodule E2eWeb.App.Aside do
         id={@tip_id}
         trigger_tag={:span}
         positioning={%Corex.Positioning{placement: "top"}}
-        class="tooltip tooltip--sm"
+        class="tooltip tooltip--size-sm"
         close_on_click={false}
       >
         <:trigger>

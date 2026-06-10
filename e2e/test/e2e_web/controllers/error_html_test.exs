@@ -20,7 +20,7 @@ defmodule E2eWeb.ErrorHTMLTest do
   test "404 page uses Corex button styling", %{conn: conn} do
     conn = get(conn, "/en/nonexistent")
     html = html_response(conn, 404)
-    assert html =~ "button button--accent"
+    assert html =~ "button button--semantic-accent"
     assert html =~ "Page Not Found"
   end
 

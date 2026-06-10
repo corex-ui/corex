@@ -111,7 +111,7 @@ defmodule Corex.Listbox do
   ### With classes
 
   ```heex
-  <.listbox class="listbox listbox--accent listbox--md" items={
+  <.listbox class="listbox listbox--semantic-accent listbox--size-md" items={
     Corex.List.new([
       %{label: "France", value: "fra"},
       %{label: "Belgium", value: "bel"},
@@ -143,7 +143,7 @@ defmodule Corex.Listbox do
   ### set_value
 
   ```heex
-  <.action phx-click={Corex.Listbox.set_value("listbox-api-sv-client", ["bel"])} class="button button--sm">
+  <.action phx-click={Corex.Listbox.set_value("listbox-api-sv-client", ["bel"])} class="button button--size-sm">
     Belgium
   </.action>
   <.listbox id="listbox-api-sv-client" class="listbox" items={
@@ -167,7 +167,7 @@ defmodule Corex.Listbox do
   ### value
 
   ```heex
-  <.action phx-click={Corex.Listbox.value("listbox-api-val-client")} class="button button--sm">
+  <.action phx-click={Corex.Listbox.value("listbox-api-val-client")} class="button button--size-sm">
     Read selection
   </.action>
   ```

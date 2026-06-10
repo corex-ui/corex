@@ -30,7 +30,7 @@ At render time, Corex turns those declarations into **BEM modifier classes** on 
 becomes something like:
 
 ```html
-<div class="accordion accordion--accent accordion--lg" data-scope="accordion" …>
+<div class="accordion accordion--semantic-accent accordion--size-lg" data-scope="accordion" …>
 ```
 
 You write CSS against those classes (or against `data-part` selectors inside the component) and control every visual detail. The attrs are a stable vocabulary; your stylesheet is where the pixels live.
@@ -38,7 +38,7 @@ You write CSS against those classes (or against `data-part` selectors inside the
 You can skip the attrs and set the same modifiers directly on `class`:
 
 ```heex
-<.accordion class="accordion accordion--accent accordion--lg" … />
+<.accordion class="accordion accordion--semantic-accent accordion--size-lg" … />
 ```
 
 Both forms produce the same class list. Use whichever reads better in your templates.

@@ -8,7 +8,7 @@ defmodule Corex.FloatingPanel do
 
   ```heex
   <.floating_panel>
-    <:trigger class="button button--ghost button--sm">
+    <:trigger class="button button--variant-ghost button--size-sm">
       <span data-closed>Open panel</span>
       <span data-open>Close panel</span>
     </:trigger>
@@ -36,7 +36,7 @@ defmodule Corex.FloatingPanel do
 
   Required slots: `:trigger`, `:title`, `:close_trigger`, `:content`.
 
-  Set **`class`** on **`:trigger`** to style the outer trigger button (e.g. `button button--ghost button--sm`).
+  Set **`class`** on **`:trigger`** to style the outer trigger button (e.g. `button button--variant-ghost button--size-sm`).
 
   Use **`data-open`** and **`data-closed`** on elements inside `:trigger` to swap label when the panel is open vs closed (see default rules in `floating-panel.css`). You can also target **`[data-part="trigger"][data-state="open"]`** / **`closed`** with your own selectors.
 
@@ -71,7 +71,7 @@ defmodule Corex.FloatingPanel do
   ### With classes
 
   ```heex
-  <.floating_panel class="floating-panel floating-panel--accent">
+  <.floating_panel class="floating-panel floating-panel--semantic-accent">
     <:trigger>
       <span data-closed>Open panel</span>
       <span data-open>Close panel</span>
@@ -143,11 +143,11 @@ defmodule Corex.FloatingPanel do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `floating-panel` |
-  | Accent | `floating-panel floating-panel--accent` |
-  | Brand | `floating-panel floating-panel--brand` |
-  | Alert | `floating-panel floating-panel--alert` |
-  | Info | `floating-panel floating-panel--info` |
-  | Success | `floating-panel floating-panel--success` |
+  | Accent | `floating-panel floating-panel--semantic-accent` |
+  | Brand | `floating-panel floating-panel--semantic-brand` |
+  | Alert | `floating-panel floating-panel--semantic-alert` |
+  | Info | `floating-panel floating-panel--semantic-info` |
+  | Success | `floating-panel floating-panel--semantic-success` |
 
   <!-- tabs-close -->
 
@@ -394,7 +394,7 @@ defmodule Corex.FloatingPanel do
   ```heex
   <.action phx-click={Corex.FloatingPanel.set_open("my-floating-panel", true)}>Open</.action>
   <.floating_panel id="my-floating-panel" class="floating-panel">
-    <:trigger class="button button--ghost button--sm"><span>Open</span></:trigger>
+    <:trigger class="button button--variant-ghost button--size-sm"><span>Open</span></:trigger>
     <:title>Panel</:title>
     <:close_trigger><.heroicon name="hero-x-mark" /></:close_trigger>
     <:content><p>Content.</p></:content>
@@ -426,7 +426,7 @@ defmodule Corex.FloatingPanel do
   ```heex
   <.action phx-click="open_panel">Open</.action>
   <.floating_panel id="my-floating-panel" class="floating-panel">
-    <:trigger class="button button--ghost button--sm"><span>Open</span></:trigger>
+    <:trigger class="button button--variant-ghost button--size-sm"><span>Open</span></:trigger>
     <:title>Panel</:title>
     <:close_trigger><.heroicon name="hero-x-mark" /></:close_trigger>
     <:content><p>Content.</p></:content>

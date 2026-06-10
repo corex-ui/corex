@@ -684,7 +684,7 @@ defmodule E2eWeb.Demos.ToastDemo do
           duration: 30_000,
           action: %{
             label: "Same page",
-            class: "button button--accent button--sm",
+            class: "button button--semantic-accent button--size-sm",
             js: JS.patch(~p"/toast/anatomy")
           }
         )
@@ -709,7 +709,7 @@ defmodule E2eWeb.Demos.ToastDemo do
           duration: 30_000,
           action: %{
             label: "Same page",
-            class: "button button--accent button--sm",
+            class: "button button--semantic-accent button--size-sm",
             js: JS.patch(~p"/toast/anatomy")
           }
         )
@@ -730,7 +730,7 @@ defmodule E2eWeb.Demos.ToastDemo do
           duration: :infinity,
           action: %{
             label: "Dismiss",
-            class: "button button--accent button--sm",
+            class: "button button--semantic-accent button--size-sm",
             js: Corex.Toast.dismiss("layout-toast", "toast-anatomy-dismiss")
           }
         )
@@ -755,7 +755,7 @@ defmodule E2eWeb.Demos.ToastDemo do
           duration: :infinity,
           action: %{
             label: "Dismiss",
-            class: "button button--accent button--sm",
+            class: "button button--semantic-accent button--size-sm",
             js: Corex.Toast.dismiss("layout-toast", "toast-anatomy-dismiss")
           }
         )
@@ -779,7 +779,7 @@ defmodule E2eWeb.Demos.ToastDemo do
               <.heroicon name="hero-arrow-top-right-on-square" />
               Open
             },
-            class: "button button--accent button--sm",
+            class: "button button--semantic-accent button--size-sm",
             js: JS.patch(~p"/toast/anatomy")
           }
         )
@@ -807,7 +807,7 @@ defmodule E2eWeb.Demos.ToastDemo do
               <.heroicon name="hero-arrow-top-right-on-square" />
               Open
             },
-            class: "button button--accent button--sm",
+            class: "button button--semantic-accent button--size-sm",
             js: JS.patch(~p"/toast/anatomy")
           }
         )
@@ -1110,4 +1110,8 @@ defmodule E2eWeb.Demos.ToastDemo do
       update_toast_server_elixir: api_update_toast_server_elixir()
     }
   end
+
+  def style_preview(assigns), do: E2eWeb.Demos.StylePreview.preview(:toast, assigns)
+  def style_playground(assigns), do: style_preview(assigns)
+
 end

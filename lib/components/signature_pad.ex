@@ -71,7 +71,7 @@ defmodule Corex.SignaturePad do
   ### With classes
 
   ```heex
-  <.signature_pad class="signature-pad signature-pad--accent signature-pad--md">
+  <.signature_pad class="signature-pad signature-pad--semantic-accent signature-pad--size-md">
     <:label>Sign here</:label>
     <:clear_trigger>
       <.heroicon name="hero-x-mark" />
@@ -273,7 +273,7 @@ defmodule Corex.SignaturePad do
 
   ```heex
   <.signature_pad
-    class="signature-pad signature-pad--accent signature-pad--lg signature-pad--rounded-xl"
+    class="signature-pad signature-pad--semantic-accent signature-pad--size-lg signature-pad--rounded-xl"
     drawing_fill="var(--color-ui-ink)"
   >
   ```

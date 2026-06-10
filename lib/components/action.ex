@@ -33,7 +33,7 @@ defmodule Corex.Action do
   ### With classes
 
   ```heex
-  <.action class="button button--accent button--lg">Get started</.action>
+  <.action class="button button--semantic-accent button--size-lg">Get started</.action>
   ```
 
   <!-- tabs-close -->
@@ -56,20 +56,20 @@ defmodule Corex.Action do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `button` |
-  | Accent | `button button--accent` |
-  | Brand | `button button--brand` |
-  | Alert | `button button--alert` |
-  | Info | `button button--info` |
-  | Success | `button button--success` |
+  | Accent | `button button--semantic-accent` |
+  | Brand | `button button--semantic-brand` |
+  | Alert | `button button--semantic-alert` |
+  | Info | `button button--semantic-info` |
+  | Success | `button button--semantic-success` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `button button--sm` |
-  | MD | `button button--md` |
-  | LG | `button button--lg` |
-  | XL | `button button--xl` |
+  | SM | `button button--size-sm` |
+  | MD | `button button--size-md` |
+  | LG | `button button--size-lg` |
+  | XL | `button button--size-xl` |
 
   ### Rounded
 

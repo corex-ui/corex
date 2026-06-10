@@ -993,4 +993,9 @@ defmodule E2eWeb.Demos.CheckboxDemo do
   def form_ecto_heex, do: form_doc_controller_ecto_heex()
   def form_ecto_elixir, do: form_doc_controller_ecto_elixir()
   def form_native_elixir, do: form_doc_controller_native_elixir()
+
+  def style_preview(assigns), do: E2eWeb.Demos.StylePreview.preview(:checkbox, assigns)
+  def style_playground(assigns), do: style_preview(assigns)
+
 end
+

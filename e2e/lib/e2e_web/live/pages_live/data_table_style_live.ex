@@ -1,7 +1,7 @@
 defmodule E2eWeb.DataTableStyleLive do
   use E2eWeb, :live_view
 
-  import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
+  import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1, demo_style_matrix: 1]
 
   alias E2eWeb.DataTablePatternState, as: PState
 
@@ -17,18 +17,18 @@ defmodule E2eWeb.DataTableStyleLive do
 
   @color_variants [
     {"", "data-table-styling-color-default"},
-    {"data-table--accent", "data-table-styling-color-accent"},
-    {"data-table--brand", "data-table-styling-color-brand"},
-    {"data-table--alert", "data-table-styling-color-alert"},
-    {"data-table--success", "data-table-styling-color-success"},
-    {"data-table--info", "data-table-styling-color-info"}
+    {"data-table--semantic-accent", "data-table-styling-color-accent"},
+    {"data-table--semantic-brand", "data-table-styling-color-brand"},
+    {"data-table--semantic-alert", "data-table-styling-color-alert"},
+    {"data-table--semantic-success", "data-table-styling-color-success"},
+    {"data-table--semantic-info", "data-table-styling-color-info"}
   ]
 
   @size_variants [
-    {"data-table--sm", "data-table-styling-size-sm"},
-    {"data-table--md", "data-table-styling-size-md"},
-    {"data-table--lg", "data-table-styling-size-lg"},
-    {"data-table--xl", "data-table-styling-size-xl"}
+    {"data-table--size-sm", "data-table-styling-size-sm"},
+    {"data-table--size-md", "data-table-styling-size-md"},
+    {"data-table--size-lg", "data-table-styling-size-lg"},
+    {"data-table--size-xl", "data-table-styling-size-xl"}
   ]
 
   @width_variants [
@@ -92,13 +92,13 @@ defmodule E2eWeb.DataTableStyleLive do
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
       <.demo_page
         path={@path}
-        id="data-table-styling-page"
+        id="data-table-style-page"
         title="Data Table · Style"
-        subtitle="Semantic ink on column headers, size scale on headers and cells, and host max-width modifiers. Tables include sort, selection, and actions."
         heading_class="layout-heading"
       >
+        <.demo_style_matrix id="data-table-style-matrix">
         <.demo_section
-          id="data-table-styling-color"
+          id="data-table-style-color"
           title="Color"
           values={E2eWeb.Demos.DataTableDemo.styling_axis_values(:semantic)}
           code_tabs={E2eWeb.Demos.DataTableDemo.styling_semantic_code_tabs()}
@@ -119,7 +119,7 @@ defmodule E2eWeb.DataTableStyleLive do
         </.demo_section>
 
         <.demo_section
-          id="data-table-styling-size"
+          id="data-table-style-size"
           title="Size"
           values={E2eWeb.Demos.DataTableDemo.styling_axis_values(:size)}
           code_tabs={E2eWeb.Demos.DataTableDemo.styling_size_code_tabs()}
@@ -140,7 +140,7 @@ defmodule E2eWeb.DataTableStyleLive do
         </.demo_section>
 
         <.demo_section
-          id="data-table-styling-max-width"
+          id="data-table-style-max-width"
           title="Max width"
           values={E2eWeb.Demos.DataTableDemo.styling_axis_values(:max_width)}
           code_tabs={E2eWeb.Demos.DataTableDemo.styling_max_width_code_tabs()}
@@ -159,6 +159,7 @@ defmodule E2eWeb.DataTableStyleLive do
             </div>
           </:preview>
         </.demo_section>
+        </.demo_style_matrix>
       </.demo_page>
     </Layouts.app>
     """

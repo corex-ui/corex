@@ -50,7 +50,7 @@ defmodule Corex.Toast do
   ```heex
   <.action
     phx-click={Corex.Toast.create("layout-toast", "Info", "Info description", :info, [])}
-    class="button button--sm"
+    class="button button--size-sm"
   >
     Info
   </.action>
@@ -98,11 +98,11 @@ defmodule Corex.Toast do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `toast` |
-  | Accent | `toast toast--accent` |
-  | Brand | `toast toast--brand` |
-  | Alert | `toast toast--alert` |
-  | Info | `toast toast--info` |
-  | Success | `toast toast--success` |
+  | Accent | `toast toast--semantic-accent` |
+  | Brand | `toast toast--semantic-brand` |
+  | Alert | `toast toast--semantic-alert` |
+  | Info | `toast toast--semantic-info` |
+  | Success | `toast toast--semantic-success` |
 
   <!-- tabs-close -->
 

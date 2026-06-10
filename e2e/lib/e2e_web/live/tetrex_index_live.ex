@@ -194,7 +194,7 @@ defmodule E2eWeb.TetrexIndexLive do
     ~H"""
     <.editable
       id={"tetrex-player-#{@row.id}"}
-      class="editable editable--sm"
+      class="editable editable--size-sm"
       value={@row.player_name}
       placeholder={~t"Name"}
       on_value_change="tetrex_player_name_changed"

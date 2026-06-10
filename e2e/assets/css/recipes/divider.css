@@ -13,91 +13,11 @@
     inline-size: 100%;
   }
 
-  @media (min-width: 40rem) {
-    .divider.sm\:divider--orientation-horizontal {
-      border-top: 1px solid var(--color-border);
-      inline-size: 100%;
-    }
-  }
-
-  @media (min-width: 48rem) {
-    .divider.md\:divider--orientation-horizontal {
-      border-top: 1px solid var(--color-border);
-      inline-size: 100%;
-    }
-  }
-
-  @media (min-width: 64rem) {
-    .divider.lg\:divider--orientation-horizontal {
-      border-top: 1px solid var(--color-border);
-      inline-size: 100%;
-    }
-  }
-
-  @media (min-width: 80rem) {
-    .divider.xl\:divider--orientation-horizontal {
-      border-top: 1px solid var(--color-border);
-      inline-size: 100%;
-    }
-  }
-
-  @media (min-width: 96rem) {
-    .divider.2xl\:divider--orientation-horizontal {
-      border-top: 1px solid var(--color-border);
-      inline-size: 100%;
-    }
-  }
-
   .divider.divider--orientation-vertical {
     block-size: 100%;
     border-inline-start: 1px solid var(--color-border);
     border-top: 0;
     inline-size: 0;
-  }
-
-  @media (min-width: 40rem) {
-    .divider.sm\:divider--orientation-vertical {
-      block-size: 100%;
-      border-inline-start: 1px solid var(--color-border);
-      border-top: 0;
-      inline-size: 0;
-    }
-  }
-
-  @media (min-width: 48rem) {
-    .divider.md\:divider--orientation-vertical {
-      block-size: 100%;
-      border-inline-start: 1px solid var(--color-border);
-      border-top: 0;
-      inline-size: 0;
-    }
-  }
-
-  @media (min-width: 64rem) {
-    .divider.lg\:divider--orientation-vertical {
-      block-size: 100%;
-      border-inline-start: 1px solid var(--color-border);
-      border-top: 0;
-      inline-size: 0;
-    }
-  }
-
-  @media (min-width: 80rem) {
-    .divider.xl\:divider--orientation-vertical {
-      block-size: 100%;
-      border-inline-start: 1px solid var(--color-border);
-      border-top: 0;
-      inline-size: 0;
-    }
-  }
-
-  @media (min-width: 96rem) {
-    .divider.2xl\:divider--orientation-vertical {
-      block-size: 100%;
-      border-inline-start: 1px solid var(--color-border);
-      border-top: 0;
-      inline-size: 0;
-    }
   }
 }
 

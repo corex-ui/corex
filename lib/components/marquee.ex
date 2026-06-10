@@ -71,7 +71,7 @@ defmodule Corex.Marquee do
   ### With classes
 
   ```heex
-  <.marquee class="marquee marquee--accent marquee--md" items={[
+  <.marquee class="marquee marquee--semantic-accent marquee--size-md" items={[
     %{name: "Apple", logo: "🍎"},
     %{name: "Banana", logo: "🍌"}
   ]} duration={20} spacing="2rem" pause_on_interaction>
@@ -138,20 +138,20 @@ defmodule Corex.Marquee do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `marquee` |
-  | Accent | `marquee marquee--accent` |
-  | Brand | `marquee marquee--brand` |
-  | Alert | `marquee marquee--alert` |
-  | Info | `marquee marquee--info` |
-  | Success | `marquee marquee--success` |
+  | Accent | `marquee marquee--semantic-accent` |
+  | Brand | `marquee marquee--semantic-brand` |
+  | Alert | `marquee marquee--semantic-alert` |
+  | Info | `marquee marquee--semantic-info` |
+  | Success | `marquee marquee--semantic-success` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `marquee marquee--sm` |
-  | MD | `marquee marquee--md` |
-  | LG | `marquee marquee--lg` |
-  | XL | `marquee marquee--xl` |
+  | SM | `marquee marquee--size-sm` |
+  | MD | `marquee marquee--size-md` |
+  | LG | `marquee marquee--size-lg` |
+  | XL | `marquee marquee--size-xl` |
 
   <!-- tabs-close -->
 

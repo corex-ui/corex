@@ -23,7 +23,7 @@ defmodule E2eWeb.FormPatternsFields do
       <:error :let={msg} class="absolute top-0 end-0">
         <.tooltip
           id={"#{@prefix}-country-tip"}
-          class="tooltip tooltip--sm"
+          class="tooltip tooltip--size-sm"
           positioning={%Corex.Positioning{placement: "top-end"}}
         >
           <:trigger>
@@ -53,7 +53,7 @@ defmodule E2eWeb.FormPatternsFields do
       <:error :let={msg} class="absolute top-0 end-0">
         <.tooltip
           id={"#{@prefix}-currency-tip"}
-          class="tooltip tooltip--sm"
+          class="tooltip tooltip--size-sm"
           positioning={%Corex.Positioning{placement: "top-end"}}
         >
           <:trigger>
@@ -76,7 +76,7 @@ defmodule E2eWeb.FormPatternsFields do
       <:error :let={msg} class="absolute top-0 end-0">
         <.tooltip
           id={"#{@prefix}-tags-tip"}
-          class="tooltip tooltip--sm"
+          class="tooltip tooltip--size-sm"
           positioning={%Corex.Positioning{placement: "top-end"}}
         >
           <:trigger>
@@ -102,7 +102,7 @@ defmodule E2eWeb.FormPatternsFields do
       <:error :let={msg} class="absolute top-0 end-0">
         <.tooltip
           id={"#{@prefix}-password-tip"}
-          class="tooltip tooltip--sm"
+          class="tooltip tooltip--size-sm"
           positioning={%Corex.Positioning{placement: "top-end"}}
         >
           <:trigger>
@@ -122,7 +122,7 @@ defmodule E2eWeb.FormPatternsFields do
       <:error :let={msg} class="absolute top-0 end-0">
         <.tooltip
           id={"#{@prefix}-notifications-tip"}
-          class="tooltip tooltip--sm"
+          class="tooltip tooltip--size-sm"
           positioning={%Corex.Positioning{placement: "top-end"}}
         >
           <:trigger>
@@ -142,7 +142,7 @@ defmodule E2eWeb.FormPatternsFields do
       <:error :let={msg} class="absolute top-0 end-0">
         <.tooltip
           id={"#{@prefix}-terms-tip"}
-          class="tooltip tooltip--sm"
+          class="tooltip tooltip--size-sm"
           positioning={%Corex.Positioning{placement: "top-end"}}
         >
           <:trigger>

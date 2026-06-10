@@ -39,7 +39,7 @@ defmodule Corex.Switch do
   ### With classes
 
   ```heex
-  <.switch class="switch switch--accent switch--md" aria_label="Enable notifications">
+  <.switch class="switch switch--semantic-accent switch--size-md" aria_label="Enable notifications">
     <:label>Enable</:label>
   </.switch>
   ```
@@ -178,20 +178,20 @@ defmodule Corex.Switch do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `switch` |
-  | Accent | `switch switch--accent` |
-  | Brand | `switch switch--brand` |
-  | Alert | `switch switch--alert` |
-  | Info | `switch switch--info` |
-  | Success | `switch switch--success` |
+  | Accent | `switch switch--semantic-accent` |
+  | Brand | `switch switch--semantic-brand` |
+  | Alert | `switch switch--semantic-alert` |
+  | Info | `switch switch--semantic-info` |
+  | Success | `switch switch--semantic-success` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `switch switch--sm` |
-  | MD | `switch switch--md` |
-  | LG | `switch switch--lg` |
-  | XL | `switch switch--xl` |
+  | SM | `switch switch--size-sm` |
+  | MD | `switch switch--size-md` |
+  | LG | `switch switch--size-lg` |
+  | XL | `switch switch--size-xl` |
 
   <!-- tabs-close -->
 

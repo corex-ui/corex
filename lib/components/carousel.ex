@@ -199,11 +199,11 @@ defmodule Corex.Carousel do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `carousel` |
-  | Accent | `carousel carousel--accent` |
-  | Brand | `carousel carousel--brand` |
-  | Alert | `carousel carousel--alert` |
-  | Info | `carousel carousel--info` |
-  | Success | `carousel carousel--success` |
+  | Accent | `carousel carousel--semantic-accent` |
+  | Brand | `carousel carousel--semantic-brand` |
+  | Alert | `carousel carousel--semantic-alert` |
+  | Info | `carousel carousel--semantic-info` |
+  | Success | `carousel carousel--semantic-success` |
 
   ```heex
   <.carousel
@@ -227,7 +227,7 @@ defmodule Corex.Carousel do
       Corex.Image.new("/images/star.jpg", alt: "Star"),
       Corex.Image.new("/images/winter.jpg", alt: "Winter")
     ]}
-    class="carousel carousel--accent"
+    class="carousel carousel--semantic-accent"
   >
     <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
     <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -240,10 +240,10 @@ defmodule Corex.Carousel do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `carousel carousel--sm` |
-  | MD | `carousel carousel--md` |
-  | LG | `carousel carousel--lg` |
-  | XL | `carousel carousel--xl` |
+  | SM | `carousel carousel--size-sm` |
+  | MD | `carousel carousel--size-md` |
+  | LG | `carousel carousel--size-lg` |
+  | XL | `carousel carousel--size-xl` |
 
   ```heex
   <.carousel
@@ -254,7 +254,7 @@ defmodule Corex.Carousel do
       Corex.Image.new("/images/star.jpg", alt: "Star"),
       Corex.Image.new("/images/winter.jpg", alt: "Winter")
     ]}
-    class="carousel carousel--sm"
+    class="carousel carousel--size-sm"
   >
     <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
     <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -267,7 +267,7 @@ defmodule Corex.Carousel do
       Corex.Image.new("/images/star.jpg", alt: "Star"),
       Corex.Image.new("/images/winter.jpg", alt: "Winter")
     ]}
-    class="carousel carousel--lg"
+    class="carousel carousel--size-lg"
   >
     <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
     <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>

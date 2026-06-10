@@ -27,10 +27,10 @@
     padding: var(--space-lg);
     color: var(--color-ui-ink);
     gap: var(--space-md);
-    border: 1px solid var(--color-border);
     background-color: var(--color-layer);
     border-radius: var(--radius-md);
     flex-direction: column;
+    border: 1px solid var(--color-border);
   }
 
   .form.form--w-auto {
@@ -53,74 +53,6 @@
     max-width: 100%;
   }
 
-  .form.form--max-w-7xs {
-    max-width: var(--container-7xs);
-  }
-
-  .form.form--max-w-6xs {
-    max-width: var(--container-6xs);
-  }
-
-  .form.form--max-w-5xs {
-    max-width: var(--container-5xs);
-  }
-
-  .form.form--max-w-4xs {
-    max-width: var(--container-4xs);
-  }
-
-  .form.form--max-w-3xs {
-    max-width: var(--container-3xs);
-  }
-
-  .form.form--max-w-2xs {
-    max-width: var(--container-2xs);
-  }
-
-  .form.form--max-w-xs {
-    max-width: var(--container-xs);
-  }
-
-  .form.form--max-w-sm {
-    max-width: var(--container-sm);
-  }
-
-  .form.form--max-w-md {
-    max-width: var(--container-md);
-  }
-
-  .form.form--max-w-lg {
-    max-width: var(--container-lg);
-  }
-
-  .form.form--max-w-xl {
-    max-width: var(--container-xl);
-  }
-
-  .form.form--max-w-2xl {
-    max-width: var(--container-2xl);
-  }
-
-  .form.form--max-w-3xl {
-    max-width: var(--container-3xl);
-  }
-
-  .form.form--max-w-4xl {
-    max-width: var(--container-4xl);
-  }
-
-  .form.form--max-w-5xl {
-    max-width: var(--container-5xl);
-  }
-
-  .form.form--max-w-6xl {
-    max-width: var(--container-6xl);
-  }
-
-  .form.form--max-w-7xl {
-    max-width: var(--container-7xl);
-  }
-
   .form.form--h-auto {
     height: auto;
   }
@@ -141,119 +73,51 @@
     max-height: 100%;
   }
 
-  .form.form--max-h-7xs {
-    max-height: var(--container-7xs);
-  }
-
-  .form.form--max-h-6xs {
-    max-height: var(--container-6xs);
-  }
-
-  .form.form--max-h-5xs {
-    max-height: var(--container-5xs);
-  }
-
-  .form.form--max-h-4xs {
-    max-height: var(--container-4xs);
-  }
-
-  .form.form--max-h-3xs {
-    max-height: var(--container-3xs);
-  }
-
-  .form.form--max-h-2xs {
-    max-height: var(--container-2xs);
-  }
-
-  .form.form--max-h-xs {
-    max-height: var(--container-xs);
-  }
-
-  .form.form--max-h-sm {
-    max-height: var(--container-sm);
-  }
-
-  .form.form--max-h-md {
-    max-height: var(--container-md);
-  }
-
-  .form.form--max-h-lg {
-    max-height: var(--container-lg);
-  }
-
-  .form.form--max-h-xl {
-    max-height: var(--container-xl);
-  }
-
-  .form.form--max-h-2xl {
-    max-height: var(--container-2xl);
-  }
-
-  .form.form--max-h-3xl {
-    max-height: var(--container-3xl);
-  }
-
-  .form.form--max-h-4xl {
-    max-height: var(--container-4xl);
-  }
-
-  .form.form--max-h-5xl {
-    max-height: var(--container-5xl);
-  }
-
-  .form.form--max-h-6xl {
-    max-height: var(--container-6xl);
-  }
-
-  .form.form--max-h-7xl {
-    max-height: var(--container-7xl);
-  }
-
-  .form.form--accent {
+  .form.form--semantic-accent {
     color: var(--color-ui-ink-accent);
   }
 
-  .form.form--brand {
+  .form.form--semantic-brand {
     color: var(--color-ui-ink-brand);
   }
 
-  .form.form--alert {
+  .form.form--semantic-alert {
     color: var(--color-ui-ink-alert);
   }
 
-  .form.form--info {
+  .form.form--semantic-info {
     color: var(--color-ui-ink-info);
   }
 
-  .form.form--success {
+  .form.form--semantic-success {
     color: var(--color-ui-ink-success);
   }
 
-  .form.form--selected {
+  .form.form--semantic-selected {
     color: var(--color-selected-ink);
   }
 
-  .form.form--none {
+  .form.form--gap-none {
     padding: 0;
     gap: 0;
   }
 
-  .form.form--sm {
+  .form.form--gap-sm {
     padding: var(--space-sm);
     gap: var(--space-sm);
   }
 
-  .form.form--md {
+  .form.form--gap-md {
     padding: var(--space-md);
     gap: var(--space-md);
   }
 
-  .form.form--lg {
+  .form.form--gap-lg {
     padding: var(--space-lg);
     gap: var(--space-lg);
   }
 
-  .form.form--xl {
+  .form.form--gap-xl {
     padding: var(--space-xl);
     gap: var(--space-xl);
   }

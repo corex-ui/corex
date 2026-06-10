@@ -14,8 +14,8 @@ defmodule Corex.SemanticAttrsTest do
         %{}
       )
 
-    assert html =~ "switch--accent"
-    assert html =~ "switch--lg"
+    assert html =~ "switch--semantic-accent"
+    assert html =~ "switch--size-lg"
     assert html =~ "switch--rounded-none"
     refute html =~ "data-switch-semantic"
   end
@@ -31,8 +31,8 @@ defmodule Corex.SemanticAttrsTest do
         %{}
       )
 
-    assert html =~ "toggle--brand"
-    assert html =~ "toggle--sm"
+    assert html =~ "toggle--semantic-brand"
+    assert html =~ "toggle--size-sm"
     assert html =~ "toggle--rounded-xl"
     refute html =~ "data-toggle-semantic"
   end
@@ -50,7 +50,7 @@ defmodule Corex.SemanticAttrsTest do
         %{}
       )
 
-    assert html =~ "toggle-group--success"
+    assert html =~ "toggle-group--semantic-success"
     assert html =~ "toggle-group--rounded-lg"
     refute html =~ "data-toggle-group-semantic"
   end
@@ -68,8 +68,8 @@ defmodule Corex.SemanticAttrsTest do
         %{}
       )
 
-    assert html =~ "select--info"
-    assert html =~ "select--md"
+    assert html =~ "select--semantic-info"
+    assert html =~ "select--size-md"
     assert html =~ "select--text-lg"
     assert html =~ "select--rounded-md"
     refute html =~ "data-select-semantic"
@@ -86,8 +86,8 @@ defmodule Corex.SemanticAttrsTest do
         %{}
       )
 
-    assert html =~ "checkbox--alert"
-    assert html =~ "checkbox--xl"
+    assert html =~ "checkbox--semantic-alert"
+    assert html =~ "checkbox--size-xl"
     refute html =~ "data-checkbox-semantic"
   end
 
@@ -105,8 +105,8 @@ defmodule Corex.SemanticAttrsTest do
         %{}
       )
 
-    assert html =~ "dialog-side--info"
-    assert html =~ "dialog-side--start"
+    assert html =~ "dialog-side--semantic-info"
+    assert html =~ "dialog-side--side-start"
     refute html =~ "data-dialog-side-semantic"
   end
 
@@ -127,8 +127,8 @@ defmodule Corex.SemanticAttrsTest do
         %{}
       )
 
-    assert html =~ "tree-view--accent"
-    assert html =~ "tree-view--md"
+    assert html =~ "tree-view--semantic-accent"
+    assert html =~ "tree-view--size-md"
     assert html =~ "tree-view--rounded-md"
     refute html =~ "data-tree-view-semantic"
   end
@@ -177,7 +177,7 @@ defmodule Corex.SemanticAttrsTest do
         %{}
       )
 
-    assert html =~ "switch--brand"
+    assert html =~ "switch--semantic-brand"
     assert html =~ " extra"
     refute html =~ "data-switch"
   end

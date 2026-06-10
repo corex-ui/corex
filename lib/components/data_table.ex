@@ -100,7 +100,7 @@ defmodule Corex.DataTable do
   >
     <:col :let={user} label="Name">{user.name}</:col>
     <:action :let={user}>
-      <.action class="button button--sm">Edit</.action>
+      <.action class="button button--size-sm">Edit</.action>
     </:action>
   </.data_table>
   ```
@@ -309,8 +309,8 @@ defmodule Corex.DataTable do
 
   Modifier classes on the root:
 
-  - `data-table--sm|md|lg|xl` — font size on header and body cells; cell padding
-  - `data-table--accent|brand|alert|success|info` — header ink (`--color-ui-ink-*`) on column titles only
+  - `data-table--size-sm|md|lg|xl` — font size on header and body cells; cell padding
+  - `data-table--semantic-accent|brand|alert|success|info` — header ink (`--color-ui-ink-*`) on column titles only
 
   Default host caps use `max-width` and `max-height` at `--container-md`. Override on the host with the same container scale as width, e.g. `max-w-none`, `max-h-none`, `max-h-2xs`, `min-h-md`, or `h-full` in a sized parent.
 

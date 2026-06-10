@@ -18,6 +18,34 @@
 }
 
 
+@utility listbox--size-* {
+  [data-scope="listbox"][data-part="label"] {
+      font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+  }
+
+  [data-scope="listbox"][data-part="root"] {
+      gap: --value(--spacing-space-*, [length]);
+  }
+
+  [data-scope="listbox"][data-part="item"] {
+      padding-inline: --value(--spacing-space-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-size-*, [length]);
+  }
+
+  [data-scope="listbox"][data-part="item-group-label"] {
+      padding-inline: --value(--spacing-space-*, [length]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-size-*, [length]);
+  }
+
+}
+
+
 @layer components {
   .listbox.listbox--w-auto {
     width: auto;
@@ -37,74 +65,6 @@
 
   .listbox.listbox--max-w-full {
     max-width: 100%;
-  }
-
-  .listbox.listbox--max-w-7xs {
-    max-width: var(--container-7xs);
-  }
-
-  .listbox.listbox--max-w-6xs {
-    max-width: var(--container-6xs);
-  }
-
-  .listbox.listbox--max-w-5xs {
-    max-width: var(--container-5xs);
-  }
-
-  .listbox.listbox--max-w-4xs {
-    max-width: var(--container-4xs);
-  }
-
-  .listbox.listbox--max-w-3xs {
-    max-width: var(--container-3xs);
-  }
-
-  .listbox.listbox--max-w-2xs {
-    max-width: var(--container-2xs);
-  }
-
-  .listbox.listbox--max-w-xs {
-    max-width: var(--container-xs);
-  }
-
-  .listbox.listbox--max-w-sm {
-    max-width: var(--container-sm);
-  }
-
-  .listbox.listbox--max-w-md {
-    max-width: var(--container-md);
-  }
-
-  .listbox.listbox--max-w-lg {
-    max-width: var(--container-lg);
-  }
-
-  .listbox.listbox--max-w-xl {
-    max-width: var(--container-xl);
-  }
-
-  .listbox.listbox--max-w-2xl {
-    max-width: var(--container-2xl);
-  }
-
-  .listbox.listbox--max-w-3xl {
-    max-width: var(--container-3xl);
-  }
-
-  .listbox.listbox--max-w-4xl {
-    max-width: var(--container-4xl);
-  }
-
-  .listbox.listbox--max-w-5xl {
-    max-width: var(--container-5xl);
-  }
-
-  .listbox.listbox--max-w-6xl {
-    max-width: var(--container-6xl);
-  }
-
-  .listbox.listbox--max-w-7xl {
-    max-width: var(--container-7xl);
   }
 
   .listbox.listbox--h-auto {
@@ -127,248 +87,32 @@
     max-height: 100%;
   }
 
-  .listbox.listbox--max-h-7xs {
-    max-height: var(--container-7xs);
-  }
-
-  .listbox.listbox--max-h-6xs {
-    max-height: var(--container-6xs);
-  }
-
-  .listbox.listbox--max-h-5xs {
-    max-height: var(--container-5xs);
-  }
-
-  .listbox.listbox--max-h-4xs {
-    max-height: var(--container-4xs);
-  }
-
-  .listbox.listbox--max-h-3xs {
-    max-height: var(--container-3xs);
-  }
-
-  .listbox.listbox--max-h-2xs {
-    max-height: var(--container-2xs);
-  }
-
-  .listbox.listbox--max-h-xs {
-    max-height: var(--container-xs);
-  }
-
-  .listbox.listbox--max-h-sm {
-    max-height: var(--container-sm);
-  }
-
-  .listbox.listbox--max-h-md {
-    max-height: var(--container-md);
-  }
-
-  .listbox.listbox--max-h-lg {
-    max-height: var(--container-lg);
-  }
-
-  .listbox.listbox--max-h-xl {
-    max-height: var(--container-xl);
-  }
-
-  .listbox.listbox--max-h-2xl {
-    max-height: var(--container-2xl);
-  }
-
-  .listbox.listbox--max-h-3xl {
-    max-height: var(--container-3xl);
-  }
-
-  .listbox.listbox--max-h-4xl {
-    max-height: var(--container-4xl);
-  }
-
-  .listbox.listbox--max-h-5xl {
-    max-height: var(--container-5xl);
-  }
-
-  .listbox.listbox--max-h-6xl {
-    max-height: var(--container-6xl);
-  }
-
-  .listbox.listbox--max-h-7xl {
-    max-height: var(--container-7xl);
-  }
-
-  .listbox.listbox--accent {
+  .listbox.listbox--semantic-accent {
     position: relative;
   }
 
-  .listbox.listbox--brand {
+  .listbox.listbox--semantic-brand {
     position: relative;
   }
 
-  .listbox.listbox--alert {
+  .listbox.listbox--semantic-alert {
     position: relative;
   }
 
-  .listbox.listbox--info {
+  .listbox.listbox--semantic-info {
     position: relative;
   }
 
-  .listbox.listbox--success {
+  .listbox.listbox--semantic-success {
     position: relative;
   }
 
-  .listbox.listbox--selected {
+  .listbox.listbox--semantic-selected {
     position: relative;
-  }
-
-  .listbox.listbox--sm {
-    width: 100%;
-  }
-
-  .listbox.listbox--sm [data-scope="listbox"][data-part="root"] {
-    width: 100%;
-    gap: var(--space-sm);
-  }
-
-  .listbox.listbox--sm [data-scope="listbox"][data-part="label"] {
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-  }
-
-  .listbox.listbox--sm [data-scope="listbox"][data-part="item"] {
-    gap: var(--space-sm);
-    padding-inline: var(--space-sm);
-    min-height: var(--size-sm);
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-  }
-
-  .listbox.listbox--sm [data-scope="listbox"][data-part="item-group-label"] {
-    padding-inline: var(--space-sm);
-    min-height: var(--size-sm);
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-  }
-
-  .listbox.listbox--md {
-    width: 100%;
-  }
-
-  .listbox.listbox--md [data-scope="listbox"][data-part="root"] {
-    width: 100%;
-    gap: var(--space-md);
-  }
-
-  .listbox.listbox--md [data-scope="listbox"][data-part="label"] {
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-  }
-
-  .listbox.listbox--md [data-scope="listbox"][data-part="item"] {
-    gap: var(--space-md);
-    padding-inline: var(--space-md);
-    min-height: var(--size-md);
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-  }
-
-  .listbox.listbox--md [data-scope="listbox"][data-part="item-group-label"] {
-    padding-inline: var(--space-md);
-    min-height: var(--size-md);
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-  }
-
-  .listbox.listbox--lg {
-    width: 100%;
-  }
-
-  .listbox.listbox--lg [data-scope="listbox"][data-part="root"] {
-    width: 100%;
-    gap: var(--space-lg);
-  }
-
-  .listbox.listbox--lg [data-scope="listbox"][data-part="label"] {
-    font-size: var(--text-lg);
-    line-height: var(--leading-lg);
-  }
-
-  .listbox.listbox--lg [data-scope="listbox"][data-part="item"] {
-    gap: var(--space-lg);
-    padding-inline: var(--space-lg);
-    min-height: var(--size-lg);
-    font-size: var(--text-lg);
-    line-height: var(--leading-lg);
-  }
-
-  .listbox.listbox--lg [data-scope="listbox"][data-part="item-group-label"] {
-    padding-inline: var(--space-lg);
-    min-height: var(--size-lg);
-    font-size: var(--text-lg);
-    line-height: var(--leading-lg);
-  }
-
-  .listbox.listbox--xl {
-    width: 100%;
-  }
-
-  .listbox.listbox--xl [data-scope="listbox"][data-part="root"] {
-    width: 100%;
-    gap: var(--space-xl);
-  }
-
-  .listbox.listbox--xl [data-scope="listbox"][data-part="label"] {
-    font-size: var(--text-xl);
-    line-height: var(--leading-xl);
-  }
-
-  .listbox.listbox--xl [data-scope="listbox"][data-part="item"] {
-    gap: var(--space-xl);
-    padding-inline: var(--space-xl);
-    min-height: var(--size-xl);
-    font-size: var(--text-xl);
-    line-height: var(--leading-xl);
-  }
-
-  .listbox.listbox--xl [data-scope="listbox"][data-part="item-group-label"] {
-    padding-inline: var(--space-xl);
-    min-height: var(--size-xl);
-    font-size: var(--text-xl);
-    line-height: var(--leading-xl);
   }
 
   .listbox.listbox--rounded-none [data-scope="listbox"][data-part="content"] {
     border-radius: var(--radius-none);
-  }
-
-  .listbox.listbox--rounded-xs [data-scope="listbox"][data-part="content"] {
-    border-radius: var(--radius-xs);
-  }
-
-  .listbox.listbox--rounded-sm [data-scope="listbox"][data-part="content"] {
-    border-radius: var(--radius-sm);
-  }
-
-  .listbox.listbox--rounded-md [data-scope="listbox"][data-part="content"] {
-    border-radius: var(--radius-md);
-  }
-
-  .listbox.listbox--rounded-lg [data-scope="listbox"][data-part="content"] {
-    border-radius: var(--radius-lg);
-  }
-
-  .listbox.listbox--rounded-xl [data-scope="listbox"][data-part="content"] {
-    border-radius: var(--radius-xl);
-  }
-
-  .listbox.listbox--rounded-2xl [data-scope="listbox"][data-part="content"] {
-    border-radius: var(--radius-2xl);
-  }
-
-  .listbox.listbox--rounded-3xl [data-scope="listbox"][data-part="content"] {
-    border-radius: var(--radius-3xl);
-  }
-
-  .listbox.listbox--rounded-4xl [data-scope="listbox"][data-part="content"] {
-    border-radius: var(--radius-4xl);
   }
 
   .listbox.listbox--rounded-full [data-scope="listbox"][data-part="content"] {
@@ -576,7 +320,7 @@
     border-radius: 0;
   }
 
-  .listbox.listbox--accent [data-scope="listbox"][data-part="item"][data-selected] {
+  .listbox.listbox--semantic-accent [data-scope="listbox"][data-part="item"][data-selected] {
     background-color: var(--color-accent);
     color: var(--color-accent-ink);
     &:hover {
@@ -600,7 +344,7 @@
     }
   }
 
-  .listbox.listbox--brand [data-scope="listbox"][data-part="item"][data-selected] {
+  .listbox.listbox--semantic-brand [data-scope="listbox"][data-part="item"][data-selected] {
     background-color: var(--color-brand);
     color: var(--color-brand-ink);
     &:hover {
@@ -624,7 +368,7 @@
     }
   }
 
-  .listbox.listbox--alert [data-scope="listbox"][data-part="item"][data-selected] {
+  .listbox.listbox--semantic-alert [data-scope="listbox"][data-part="item"][data-selected] {
     background-color: var(--color-alert);
     color: var(--color-alert-ink);
     &:hover {
@@ -648,7 +392,7 @@
     }
   }
 
-  .listbox.listbox--info [data-scope="listbox"][data-part="item"][data-selected] {
+  .listbox.listbox--semantic-info [data-scope="listbox"][data-part="item"][data-selected] {
     background-color: var(--color-info);
     color: var(--color-info-ink);
     &:hover {
@@ -672,7 +416,7 @@
     }
   }
 
-  .listbox.listbox--success [data-scope="listbox"][data-part="item"][data-selected] {
+  .listbox.listbox--semantic-success [data-scope="listbox"][data-part="item"][data-selected] {
     background-color: var(--color-success);
     color: var(--color-success-ink);
     &:hover {
@@ -696,7 +440,7 @@
     }
   }
 
-  .listbox.listbox--selected [data-scope="listbox"][data-part="item"][data-selected] {
+  .listbox.listbox--semantic-selected [data-scope="listbox"][data-part="item"][data-selected] {
     background-color: var(--color-selected);
     color: var(--color-selected-ink);
     &:hover {

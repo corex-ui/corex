@@ -58,7 +58,7 @@ defmodule Corex.TagsInput do
   ### With classes
 
   ```heex
-  <.tags_input class="tags-input tags-input--accent tags-input--md" value={["alpha", "beta"]}>
+  <.tags_input class="tags-input tags-input--semantic-accent tags-input--size-md" value={["alpha", "beta"]}>
     <:close><.heroicon name="hero-x-mark" /></:close>
   </.tags_input>
   ```
@@ -211,20 +211,20 @@ defmodule Corex.TagsInput do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `tags-input` |
-  | Accent | `tags-input tags-input--accent` |
-  | Brand | `tags-input tags-input--brand` |
-  | Alert | `tags-input tags-input--alert` |
-  | Info | `tags-input tags-input--info` |
-  | Success | `tags-input tags-input--success` |
+  | Accent | `tags-input tags-input--semantic-accent` |
+  | Brand | `tags-input tags-input--semantic-brand` |
+  | Alert | `tags-input tags-input--semantic-alert` |
+  | Info | `tags-input tags-input--semantic-info` |
+  | Success | `tags-input tags-input--semantic-success` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `tags-input tags-input--sm` |
-  | MD | `tags-input tags-input--md` |
-  | LG | `tags-input tags-input--lg` |
-  | XL | `tags-input tags-input--xl` |
+  | SM | `tags-input tags-input--size-sm` |
+  | MD | `tags-input tags-input--size-md` |
+  | LG | `tags-input tags-input--size-lg` |
+  | XL | `tags-input tags-input--size-xl` |
 
   <!-- tabs-close -->
 

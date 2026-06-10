@@ -678,23 +678,23 @@ defmodule E2eWeb.Demos.MenuDemo do
       <:trigger>Default</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
-    <.menu class="menu menu--accent" value="menu" #{items}>
+    <.menu class="menu menu--semantic-accent" value="menu" #{items}>
       <:trigger>Accent</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
-    <.menu class="menu menu--brand" value="menu" #{items}>
+    <.menu class="menu menu--semantic-brand" value="menu" #{items}>
       <:trigger>Brand</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
-    <.menu class="menu menu--alert" value="menu" #{items}>
+    <.menu class="menu menu--semantic-alert" value="menu" #{items}>
       <:trigger>Alert</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
-    <.menu class="menu menu--info" value="menu" #{items}>
+    <.menu class="menu menu--semantic-info" value="menu" #{items}>
       <:trigger>Info</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
-    <.menu class="menu menu--success" value="menu" #{items}>
+    <.menu class="menu menu--semantic-success" value="menu" #{items}>
       <:trigger>Success</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
@@ -710,25 +710,25 @@ defmodule E2eWeb.Demos.MenuDemo do
         <:trigger>Default</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
       </.menu>
-      <.menu id="menu-style-color-accent" class="menu menu--accent w-full" items={@items} value="menu">
+      <.menu id="menu-style-color-accent" class="menu menu--semantic-accent w-full" items={@items} value="menu">
         <:trigger>Accent</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
       </.menu>
-      <.menu id="menu-style-color-brand" class="menu menu--brand w-full" items={@items} value="menu">
+      <.menu id="menu-style-color-brand" class="menu menu--semantic-brand w-full" items={@items} value="menu">
         <:trigger>Brand</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
       </.menu>
-      <.menu id="menu-style-color-alert" class="menu menu--alert w-full" items={@items} value="menu">
+      <.menu id="menu-style-color-alert" class="menu menu--semantic-alert w-full" items={@items} value="menu">
         <:trigger>Alert</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
       </.menu>
-      <.menu id="menu-style-color-info" class="menu menu--info w-full" items={@items} value="menu">
+      <.menu id="menu-style-color-info" class="menu menu--semantic-info w-full" items={@items} value="menu">
         <:trigger>Info</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
       </.menu>
       <.menu
         id="menu-style-color-success"
-        class="menu menu--success w-full"
+        class="menu menu--semantic-success w-full"
         items={@items}
         value="menu"
       >
@@ -743,19 +743,19 @@ defmodule E2eWeb.Demos.MenuDemo do
     items = styling_items_attr()
 
     """
-    <.menu class="menu menu--sm" #{items}>
+    <.menu class="menu menu--size-sm" #{items}>
       <:trigger>SM</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
-    <.menu class="menu menu--md" #{items}>
+    <.menu class="menu menu--size-md" #{items}>
       <:trigger>MD</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
-    <.menu class="menu menu--lg" #{items}>
+    <.menu class="menu menu--size-lg" #{items}>
       <:trigger>LG</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
-    <.menu class="menu menu--xl" #{items}>
+    <.menu class="menu menu--size-xl" #{items}>
       <:trigger>XL</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
@@ -767,23 +767,27 @@ defmodule E2eWeb.Demos.MenuDemo do
 
     ~H"""
     <div class="flex flex-col gap-4 max-w-md">
-      <.menu id="menu-style-size-sm" class="menu menu--sm w-full" items={@items}>
+      <.menu id="menu-style-size-sm" class="menu menu--size-sm w-full" items={@items}>
         <:trigger>SM</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
       </.menu>
-      <.menu id="menu-style-size-md" class="menu menu--md w-full" items={@items}>
+      <.menu id="menu-style-size-md" class="menu menu--size-md w-full" items={@items}>
         <:trigger>MD</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
       </.menu>
-      <.menu id="menu-style-size-lg" class="menu menu--lg w-full" items={@items}>
+      <.menu id="menu-style-size-lg" class="menu menu--size-lg w-full" items={@items}>
         <:trigger>LG</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
       </.menu>
-      <.menu id="menu-style-size-xl" class="menu menu--xl w-full" items={@items}>
+      <.menu id="menu-style-size-xl" class="menu menu--size-xl w-full" items={@items}>
         <:trigger>XL</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
       </.menu>
     </div>
     """
   end
+
+  def style_preview(assigns), do: E2eWeb.Demos.StylePreview.preview(:menu, assigns)
+  def style_playground(assigns), do: style_preview(assigns)
+
 end

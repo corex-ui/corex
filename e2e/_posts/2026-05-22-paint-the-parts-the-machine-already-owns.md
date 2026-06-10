@@ -34,11 +34,11 @@ Tokens define the palette and scale once. Ink, borders, spacing, radius, type, e
 
 Utilities are short class names that compose tokens into patterns: `ui-input` is everything inputs need. `ui-trigger` is everything triggers need. `ui-item` is everything list rows need. `ui-content` is the surface a floating panel sits on. You almost never write these classes by hand. Component CSS uses them inside `@apply` rules and aims them at the right `data-part`.
 
-Modifiers are how you tune one instance without forking the whole system. They live on the root class. A button is `button`. An accent button is `button button--accent`. A large rounded button is `button button--accent button--lg button--rounded-lg`. The modifier system has four axes (color, size, radius, type), and they map directly to CSS variables under the hood.
+Modifiers are how you tune one instance without forking the whole system. They live on the root class. A button is `button`. An accent button is `button button--semantic-accent`. A large rounded button is `button button--semantic-accent button--size-lg button--rounded-lg`. The modifier system has four axes (color, size, radius, type), and they map directly to CSS variables under the hood.
 
 ```heex
 <.accordion
-  class="accordion accordion--accent accordion--lg accordion--rounded-lg"
+  class="accordion accordion--semantic-accent accordion--size-lg accordion--rounded-lg"
   id="faq"
   items={@topics}
 />
@@ -72,7 +72,7 @@ That is what makes it possible to swap `data-theme` or `data-mode` on `<html>` a
 
 You are not asking the palette to be pretty in two modes. You are asking it to clear an audit in two modes, and the generation pipeline is doing the work.
 
-If a label ever fails an audit, the answer is almost always to switch a theme, switch a mode, or switch a modifier (`button--accent` vs `button--muted`), before reaching for any override. Tokens are the source. Overrides are the symptom.
+If a label ever fails an audit, the answer is almost always to switch a theme, switch a mode, or switch a modifier (`button--semantic-accent` vs `button--semantic-muted`), before reaching for any override. Tokens are the source. Overrides are the symptom.
 
 ## A thin `site.css`
 

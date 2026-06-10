@@ -84,7 +84,7 @@ defmodule Corex.Dialog do
   ### With classes
 
   ```heex
-  <.dialog class="dialog dialog--accent dialog--md">
+  <.dialog class="dialog dialog--semantic-accent dialog--size-md">
     <:trigger>Open</:trigger>
     <:title>Dialog Title</:title>
     <:content><p>Body content.</p></:content>
@@ -108,7 +108,7 @@ defmodule Corex.Dialog do
   ### set_open
 
   ```heex
-  <.action phx-click={Corex.Dialog.set_open("dialog-api", true)} class="button button--sm">
+  <.action phx-click={Corex.Dialog.set_open("dialog-api", true)} class="button button--size-sm">
     Open Dialog
   </.action>
   <.dialog id="dialog-api" class="dialog">
@@ -117,7 +117,7 @@ defmodule Corex.Dialog do
     <:description>Dialog description.</:description>
     <:content>
       <p>Dialog content</p>
-      <.action phx-click={Corex.Dialog.set_open("dialog-api", false)} class="button button--sm">
+      <.action phx-click={Corex.Dialog.set_open("dialog-api", false)} class="button button--size-sm">
         Close
       </.action>
     </:content>
@@ -302,10 +302,10 @@ defmodule Corex.Dialog do
     <:description>This action cannot be undone.</:description>
     <:content>
       <div class="flex flex-wrap justify-end gap-2 mt-4">
-        <.action id="delete-item-alert-cancel" phx-click={Corex.Dialog.set_open("delete-item-alert", false)} class="button button--sm button--ghost">
+        <.action id="delete-item-alert-cancel" phx-click={Corex.Dialog.set_open("delete-item-alert", false)} class="button button--size-sm button--variant-ghost">
           Cancel
         </.action>
-        <.action phx-click={Corex.Dialog.set_open("delete-item-alert", false)} class="button button--sm button--alert">
+        <.action phx-click={Corex.Dialog.set_open("delete-item-alert", false)} class="button button--size-sm button--semantic-alert">
           Delete
         </.action>
       </div>
@@ -343,7 +343,7 @@ defmodule Corex.Dialog do
   ### Small
 
   ```heex
-  <.dialog class="dialog dialog--sm">
+  <.dialog class="dialog dialog--size-sm">
     <:trigger>Open</:trigger>
     <:title>Small</:title>
     <:content><p>Compact dialog.</p></:content>
@@ -354,7 +354,7 @@ defmodule Corex.Dialog do
   ### Large
 
   ```heex
-  <.dialog class="dialog dialog--lg">
+  <.dialog class="dialog dialog--size-lg">
     <:trigger>Open</:trigger>
     <:title>Large</:title>
     <:content><p>Spacious dialog.</p></:content>

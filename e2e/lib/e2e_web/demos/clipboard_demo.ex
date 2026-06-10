@@ -285,7 +285,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
 
   def styling_size_code do
     ~S"""
-    <.clipboard class="clipboard clipboard--sm" value="small@example.com">
+    <.clipboard class="clipboard clipboard--size-sm" value="small@example.com">
       <:copy><.heroicon name="hero-clipboard" /></:copy>
       <:copied><.heroicon name="hero-check" /></:copied>
     </.clipboard>
@@ -293,11 +293,11 @@ defmodule E2eWeb.Demos.ClipboardDemo do
       <:copy><.heroicon name="hero-clipboard" /></:copy>
       <:copied><.heroicon name="hero-check" /></:copied>
     </.clipboard>
-    <.clipboard class="clipboard clipboard--lg" value="large@example.com">
+    <.clipboard class="clipboard clipboard--size-lg" value="large@example.com">
       <:copy><.heroicon name="hero-clipboard" /></:copy>
       <:copied><.heroicon name="hero-check" /></:copied>
     </.clipboard>
-    <.clipboard class="clipboard clipboard--xl" value="xlarge@example.com">
+    <.clipboard class="clipboard clipboard--size-xl" value="xlarge@example.com">
       <:copy><.heroicon name="hero-clipboard" /></:copy>
       <:copied><.heroicon name="hero-check" /></:copied>
     </.clipboard>
@@ -309,7 +309,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
     <div class="flex flex-wrap gap-6 items-start">
       <.clipboard
         id="clipboard-style-sm"
-        class="clipboard clipboard--sm"
+        class="clipboard clipboard--size-sm"
         value="small@example.com"
         input_aria_label="Value to copy (sm)"
       >
@@ -326,7 +326,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
       </.clipboard>
       <.clipboard
         id="clipboard-style-lg"
-        class="clipboard clipboard--lg"
+        class="clipboard clipboard--size-lg"
         value="large@example.com"
         input_aria_label="Value to copy (lg)"
       >
@@ -335,7 +335,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
       </.clipboard>
       <.clipboard
         id="clipboard-style-xl"
-        class="clipboard clipboard--lg"
+        class="clipboard clipboard--size-lg"
         value="xlarge@example.com"
         input_aria_label="Value to copy (xl)"
       >
@@ -345,4 +345,8 @@ defmodule E2eWeb.Demos.ClipboardDemo do
     </div>
     """
   end
+
+  def style_preview(assigns), do: E2eWeb.Demos.StylePreview.preview(:clipboard, assigns)
+  def style_playground(assigns), do: style_preview(assigns)
+
 end

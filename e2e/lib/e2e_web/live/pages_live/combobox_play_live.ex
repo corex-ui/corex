@@ -154,7 +154,7 @@ defmodule E2eWeb.ComboboxPlayLive do
           />
 
           <.toggle_group
-            class="toggle-group toggle-group--sm toggle--max-w-7xs"
+            class="toggle-group toggle-group--size-sm toggle--max-w-7xs"
             id="orientation"
             on_value_change="control_changed"
             multiple={false}
@@ -211,7 +211,7 @@ defmodule E2eWeb.ComboboxPlayLive do
             <:label>Invalid</:label>
           </.switch>
           <.switch
-            class="switch switch--sm"
+            class="switch switch--size-sm"
             id="close_on_select"
             checked={@controls.close_on_select}
             on_checked_change="control_changed"

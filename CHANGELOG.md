@@ -28,7 +28,7 @@ and forward caller classes. Styling lives in optional `:corex_design` stylesheet
 - **`Corex.Variants`**: declares style axes from `Corex.Scales`; generates
   `attr/3` and `corex_style_class/1` (BEM class passthrough).
   Three kinds: `:component`, `:layout`, `:appearance`.
-- `<.action semantic="accent" size="lg">` merges `button button--accent button--lg`
+- `<.action semantic="accent" size="lg">` merges `button button--semantic-accent button--size-lg`
   on `class`. Generated CSS targets the same BEM selectors.
 - **Theme validation**: `mix corex.design.validate` checks theme config via
   NimbleOptions schemas.

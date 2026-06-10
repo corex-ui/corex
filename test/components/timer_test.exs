@@ -43,14 +43,16 @@ defmodule Corex.TimerTest do
         render_component(
           fn assigns ->
             ~H"""
-            <.timer id="classy" start_ms={60_000} class="timer timer--brand" />
+            <.timer id="classy" start_ms={60_000} class="timer timer--semantic-brand" />
             """
           end,
           %{}
         )
 
       assert [root] = Floki.find(Floki.parse_fragment!(html), "#classy")
-      assert root |> Floki.attribute("class") |> List.first() == "timer timer--brand"
+      classes = root |> Floki.attribute("class") |> List.first()
+      assert classes =~ "timer--semantic-brand"
+      refute classes =~ "timer--brand"
     end
 
     test "omits separator markup when separator slot is absent" do

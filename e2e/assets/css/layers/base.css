@@ -151,77 +151,77 @@
       background: var(--color-border);
     }
   }
-  body .list, .typo .list {
+  .typo .list {
     width: 100%;
     padding: 0;
-    border: 1px solid var(--color-border);
     font-size: var(--text-base);
     line-height: var(--leading-base);
     border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
     margin-block: 2em;
-    list-style: none;
     overflow: hidden;
+    list-style: none;
   }
 
-  body .list li, .typo .list li {
+  .typo .list li {
     white-space: normal;
     padding: var(--space-md);
     color: var(--color-ui-ink);
-    border-bottom: 1px solid var(--color-border);
     text-align: start;
+    border-bottom: 1px solid var(--color-border);
   }
 
-  body .list li:hover, .typo .list li:hover {
+  .typo .list li:hover {
     background-color: var(--color-layer);
   }
 
-  body .list li:last-child, .typo .list li:last-child {
+  .typo .list li:last-child {
     border-bottom: none;
   }
 
-  body abbr[title], .typo abbr[title] {
+  .typo abbr[title] {
     cursor: pointer;
     border-bottom: 1px dotted var(--color-border);
     text-decoration-line: none;
   }
 
-  body b, .typo b {
+  .typo b {
     font-weight: var(--font-weight-semibold);
   }
 
-  body blockquote, .typo blockquote {
+  .typo blockquote {
     width: fit-content;
     padding: var(--space-md);
     color: var(--color-ui-ink);
-    gap: var(--space-md);
     padding-block: var(--size-md);
-    border: 1px solid var(--color-border);
+    gap: var(--space-md);
     background-color: var(--color-layer);
     border-inline-start: 4px solid var(--color-info);
     border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
     box-shadow: var(--shadow-md);
     font-style: italic;
   }
 
-  body blockquote p, .typo blockquote p {
+  .typo blockquote p {
     margin-block: 0;
   }
 
-  body del, .typo del {
+  .typo del {
     color: var(--color-alert);
     text-decoration-line: line-through;
   }
 
-  body dt, .typo dt {
+  .typo dt {
     font-weight: var(--font-weight-semibold);
     font-style: italic;
   }
 
-  body em, .typo em {
+  .typo em {
     font-style: italic;
   }
 
-  body figcaption, .typo figcaption {
+  .typo figcaption {
     color: var(--color-ui-ink-muted);
     font-size: var(--text-xs);
     line-height: var(--leading-xs);
@@ -232,88 +232,88 @@
     }
   }
 
-  body h1, .typo h1 {
+  .typo h1 {
     color: var(--color-ui-ink);
     font-size: var(--text-2xl);
     line-height: var(--leading-2xl);
-    font-family: var(--font-display);
     font-weight: var(--font-weight-black);
+    font-family: var(--font-display);
     @media (min-width: 48rem) {
       font-size: var(--text-3xl);
       line-height: var(--leading-3xl);
     }
   }
 
-  body h2, .typo h2 {
+  .typo h2 {
     color: var(--color-ui-ink);
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
-    font-family: var(--font-display);
     font-weight: var(--font-weight-bold);
+    font-family: var(--font-display);
     @media (min-width: 48rem) {
       font-size: var(--text-2xl);
       line-height: var(--leading-2xl);
     }
   }
 
-  body h3, .typo h3 {
+  .typo h3 {
     color: var(--color-ui-ink);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
-    font-family: var(--font-display);
     font-weight: var(--font-weight-semibold);
+    font-family: var(--font-display);
     @media (min-width: 48rem) {
       font-size: var(--text-xl);
       line-height: var(--leading-xl);
     }
   }
 
-  body h4, .typo h4 {
+  .typo h4 {
     color: var(--color-ui-ink);
     font-size: var(--text-base);
     line-height: var(--leading-base);
-    font-family: var(--font-display);
     font-weight: var(--font-weight-normal);
+    font-family: var(--font-display);
     @media (min-width: 48rem) {
       font-size: var(--text-lg);
       line-height: var(--leading-lg);
     }
   }
 
-  body hr, .typo hr {
+  .typo hr {
     width: 80%;
-    margin-block: 5em;
-    border-top: 1px solid var(--color-border);
     margin-inline: auto;
+    border-top: 1px solid var(--color-border);
+    margin-block: 5em;
   }
 
-  body i, .typo i {
+  .typo i {
     font-style: italic;
   }
 
-  body ins, .typo ins {
+  .typo ins {
     color: var(--color-success);
     text-decoration-line: underline;
   }
 
-  body kbd, .typo kbd {
+  .typo kbd {
     padding: var(--space-sm);
     color: var(--color-ui-ink);
-    border: 1px solid var(--color-border);
-    font-family: var(--font-mono);
     background-color: var(--color-layer);
     border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
     margin-inline: var(--space-sm);
+    font-family: var(--font-mono);
   }
 
-  body mark, .typo mark {
+  .typo mark {
     padding: 0.1em 0.25em;
     color: var(--color-success-ink);
     background-color: var(--color-success);
     border-radius: var(--radius-sm);
   }
 
-  body p, .typo p {
+  .typo p {
     color: var(--color-ui-ink);
     font-size: var(--text-base);
     line-height: var(--leading-base);
@@ -325,22 +325,22 @@
     }
   }
 
-  body p.display, .typo p.display {
+  .typo p.display {
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
-    font-family: var(--font-display);
     font-weight: var(--font-weight-extralight);
-    @media (min-width: 48rem) {
-      font-size: var(--text-2xl);
-      line-height: var(--leading-2xl);
-    }
+    font-family: var(--font-display);
     @media (min-width: 64rem) {
       font-size: var(--text-3xl);
       line-height: var(--leading-3xl);
     }
+    @media (min-width: 48rem) {
+      font-size: var(--text-2xl);
+      line-height: var(--leading-2xl);
+    }
   }
 
-  body small, .typo small {
+  .typo small {
     font-size: var(--text-xs);
     line-height: var(--leading-xs);
     font-weight: var(--font-weight-extralight);
@@ -351,11 +351,11 @@
     }
   }
 
-  body strong, .typo strong {
+  .typo strong {
     font-weight: var(--font-weight-semibold);
   }
 
-  body sub, .typo sub {
+  .typo sub {
     position: relative;
     font-size: 0.75em;
     line-height: 1;
@@ -363,12 +363,12 @@
     vertical-align: baseline;
   }
 
-  body sup, .typo sup {
+  .typo sup {
     position: relative;
     font-size: 0.75em;
     line-height: 1;
-    vertical-align: baseline;
     top: -0.5em;
+    vertical-align: baseline;
   }
 }
 

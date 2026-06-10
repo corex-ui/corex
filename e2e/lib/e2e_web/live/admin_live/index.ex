@@ -70,7 +70,7 @@ defmodule E2eWeb.AdminLive.Index do
             final_focus={"dialog:admin-delete-#{admin.id}:trigger"}
           >
             <:trigger
-              class="button button--sm button--alert button--square"
+              class="button button--size-sm button--semantic-alert button--shape-square"
               aria_label={"Delete #{admin.name}"}
             >
               <.heroicon name="hero-trash" />

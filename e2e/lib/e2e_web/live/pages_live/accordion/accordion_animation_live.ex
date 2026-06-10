@@ -108,7 +108,7 @@ defmodule E2eWeb.AccordionAnimationLive do
 
             <.number_input
               id="accordion-animation-duration"
-              class="number-input number-input--sm"
+              class="number-input number-input--size-sm"
               width="full"
               value={@duration}
               step={0.1}
@@ -126,7 +126,7 @@ defmodule E2eWeb.AccordionAnimationLive do
 
             <.number_input
               id="accordion-animation-opacity-start"
-              class="number-input number-input--sm"
+              class="number-input number-input--size-sm"
               width="full"
               step={0.1}
               min={0.0}
@@ -145,7 +145,7 @@ defmodule E2eWeb.AccordionAnimationLive do
 
             <.number_input
               id="accordion-animation-opacity-end"
-              class="number-input number-input--sm"
+              class="number-input number-input--size-sm"
               width="full"
               step={0.1}
               min={0.0}
@@ -177,7 +177,7 @@ defmodule E2eWeb.AccordionAnimationLive do
             <.demo_preview_tabs
               id="accordion-animation-preview"
               code={@playground_snippet}
-              trigger_class="button button--sm"
+              trigger_class="button button--size-sm"
             >
               <:preview>
                 <.authoring_preview>
@@ -222,7 +222,7 @@ defmodule E2eWeb.AccordionAnimationLive do
         <.demo_section
           id="accordion-animation-instant"
           title={~t"Instant"}
-          trigger_class="button button--sm"
+          trigger_class="button button--size-sm"
           code={@instant_heex}
         >
           <:preview>
@@ -248,7 +248,7 @@ defmodule E2eWeb.AccordionAnimationLive do
         <.demo_section
           id="accordion-animation-custom"
           title={~t"Custom (Motion)"}
-          trigger_class="button button--sm"
+          trigger_class="button button--size-sm"
           code_tabs={[
             %{value: "heex", label: ~t"Heex", language: :heex, code: @custom_heex},
             %{value: "js", label: ~t"Javascript", language: :js, code: @custom_js}

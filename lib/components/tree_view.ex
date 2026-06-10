@@ -151,7 +151,7 @@ defmodule Corex.TreeView do
   ### With classes
 
   ```heex
-  <.tree_view class="tree-view tree-view--accent tree-view--md" items={
+  <.tree_view class="tree-view tree-view--semantic-accent tree-view--size-md" items={
     Corex.Tree.new([
       %{label: "Guides", value: "guides"},
       %{label: "Reference", value: "reference"}
@@ -389,20 +389,20 @@ defmodule Corex.TreeView do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `tree-view` |
-  | Accent | `tree-view tree-view--accent` |
-  | Brand | `tree-view tree-view--brand` |
-  | Alert | `tree-view tree-view--alert` |
-  | Info | `tree-view tree-view--info` |
-  | Success | `tree-view tree-view--success` |
+  | Accent | `tree-view tree-view--semantic-accent` |
+  | Brand | `tree-view tree-view--semantic-brand` |
+  | Alert | `tree-view tree-view--semantic-alert` |
+  | Info | `tree-view tree-view--semantic-info` |
+  | Success | `tree-view tree-view--semantic-success` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `tree-view tree-view--sm` |
-  | MD | `tree-view tree-view--md` |
-  | LG | `tree-view tree-view--lg` |
-  | XL | `tree-view tree-view--xl` |
+  | SM | `tree-view tree-view--size-sm` |
+  | MD | `tree-view tree-view--size-md` |
+  | LG | `tree-view tree-view--size-lg` |
+  | XL | `tree-view tree-view--size-xl` |
 
   <!-- tabs-close -->
 

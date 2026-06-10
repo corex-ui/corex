@@ -103,11 +103,13 @@ Set theme and mode on `<html>` and base classes on `<body>`:
 
 ```heex
 <html lang="en" data-theme="neo" data-mode="light">
-  <body class="typo layout">
+  <body class="layout">
     {@inner_content}
   </body>
 </html>
 ```
+
+Use `.typo` on markdown or prose wrappers only. App pages use typography components (`<.h1>`, `<.p>`, `<.lead>`, and so on).
 
 Use a `data-theme` value from your config (`neo`, `uno`, `duo`, `leo`). See [Theming](theming.html) and [Dark mode](dark_mode.html) for pickers and persistence.
 
@@ -139,7 +141,7 @@ Example:
 ```heex
 <.accordion
   id="faq"
-  class="accordion accordion--accent accordion--lg accordion--rounded-lg"
+  class="accordion accordion--semantic-accent accordion--size-lg accordion--rounded-lg"
   items={Corex.Content.new([
     [value: "lorem", label: "Lorem", content: "Lorem panel content."],
     [value: "duis", label: "Duis", content: "Duis panel content."],
@@ -158,8 +160,8 @@ Common modifier axes (not every component has every axis; check that component's
 
 | Axis | Examples | Effect |
 |------|----------|--------|
-| Color | `button--accent`, `timer--success` | Semantic palette from tokens |
-| Size | `button--sm`, `dialog--lg` | Spacing and type scale |
+| Color | `button--semantic-accent`, `timer--semantic-success` | Semantic palette from tokens |
+| Size | `button--size-sm`, `dialog--size-lg` | Spacing and type scale |
 | Radius | `accordion--rounded-xl` | Corner radius |
 | Type | `accordion--text-lg` | Font size on parts |
 
@@ -174,7 +176,7 @@ Component styles build on shared utilities in the generated layer CSS (pulled in
 | Utility | Used for |
 |---------|----------|
 | `ui-trigger` | Buttons, triggers, icon controls (hover, focus, disabled, open state) |
-| `ui-trigger--square` / `ui-trigger--circle` / `ui-trigger--ghost` | Icon-only and subtle triggers |
+| `button--shape-square` / `button--variant-ghost` | Icon-only and subtle host triggers |
 | `ui-trigger--*` | Size and color variants (`sm`, `accent`, …) |
 | `ui-input` | Text fields, combobox input, similar controls |
 | `ui-item` | Menu, listbox, select options |
@@ -184,7 +186,7 @@ Component styles build on shared utilities in the generated layer CSS (pulled in
 | `ui-link` | Link-styled controls |
 | `ui-root` | Vertical/horizontal stacks |
 
-Example: `button.css` applies `ui-trigger` to `.button`; `button--accent` maps to token colors via `@utility button--*`.
+Example: `button.css` applies `ui-trigger` to `.button`; `button--semantic-accent` maps to token colors via `@utility button--*`.
 
 ## Tokens at runtime
 

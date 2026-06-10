@@ -6,7 +6,7 @@ generated CSS to apply tokens and recipes.
 ## Hard rules
 
 1. **No custom CSS in templates** — only `@import` lines and vendor-required fragments in `site.css` / `app.css`
-2. **Modifiers are the styling API** — `class="accordion accordion--accent accordion--lg"`
+2. **Modifiers are the styling API** — `class="accordion accordion--semantic-accent accordion--size-lg"`
 3. **Never invent class names** or write `[data-scope=…]` in template CSS
 4. **`.typo layout` on body** — bare semantic tags first
 5. **Remove daisyUI** when using Corex Design
@@ -46,8 +46,10 @@ Run `mix compile` (or `mix compile.corex_design`) to write the bundle.
 
 ```heex
 <html data-theme="neo" data-mode="light">
-  <body class="typo layout">
+  <body class="layout">
 ```
+
+Use `.typo` on markdown or prose wrappers only (for example blog articles). App UI uses typography components (`<.h1>`, `<.p>`, `<.lead>`, and so on), not body-level `.typo`.
 
 Full setup: https://hexdocs.pm/corex/styled.html
 
@@ -61,20 +63,20 @@ Stack on root class. Responsive prefixes on modifiers:
 
 ```heex
 <.accordion
-  class="accordion accordion--accent accordion--sm sm:accordion--md lg:accordion--xl"
+  class="accordion accordion--semantic-accent accordion--size-sm sm:accordion--size-md lg:accordion--size-xl"
   …
 />
 
 <.timer
-  class="timer timer--accent timer--text-lg sm:timer--text-xl lg:timer--text-5xl timer--rounded-xl"
+  class="timer timer--semantic-accent timer--text-lg sm:timer--text-xl lg:timer--text-5xl timer--rounded-xl"
   …
 />
 ```
 
 | Axis | Examples |
 |------|----------|
-| Color | `--accent`, `--success`, `--info`, `--alert` |
-| Size | `--sm`, `--md`, `--lg`, `--xl` |
+| Color | `--semantic-accent`, `--semantic-success`, `--semantic-info`, `--semantic-alert` |
+| Size | `--size-sm`, `--size-md`, `--size-lg`, `--size-xl` |
 | Radius | `--rounded-md`, `--rounded-xl`, `--rounded-full` |
 | Type | `--text-lg`, `--text-2xl` |
 
@@ -84,15 +86,15 @@ Component attrs merge BEM modifiers into `class`. You can write the same modifie
 
 ```heex
 <.action semantic="accent" size="lg">Save</.action>
-<.action class="button button--accent button--lg">Save</.action>
+<.action class="button button--semantic-accent button--size-lg">Save</.action>
 ```
 
 Style attrs always merge BEM modifiers into `class`; generated CSS targets those BEM selectors.
 
 | Attribute | BEM class |
 |-----------|---------------------|
-| `semantic="accent"` | `accordion--accent` |
-| `size="lg"` | `accordion--lg` |
+| `semantic="accent"` | `accordion--semantic-accent` |
+| `size="lg"` | `accordion--size-lg` |
 | `radius="xl"` | `accordion--rounded-xl` |
 | `text="lg"` | `accordion--text-lg` |
 | `max_width="md"` | `accordion--max-w-md` |
@@ -110,9 +112,9 @@ Not every stamped axis has recipe CSS; see component-driven contract below.
 ## Demo panel pattern
 
 ```heex
-<.floating_panel id="demo" class="floating-panel floating-panel--accent">
-  <.select id="theme" class="select select--sm" … />
-  <.toggle id="mode" class="toggle toggle--sm" … />
+<.floating_panel id="demo" class="floating-panel floating-panel--semantic-accent">
+  <.select id="theme" class="select select--size-sm" … />
+  <.toggle id="mode" class="toggle toggle--size-sm" … />
 </.floating_panel>
 ```
 

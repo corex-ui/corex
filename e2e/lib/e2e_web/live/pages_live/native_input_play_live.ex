@@ -37,7 +37,7 @@ defmodule E2eWeb.NativeInputPlayLive do
           />
         </:controls>
         <:canvas>
-          <div class="w-full max-w-lg max-h-[70vh] overflow-y-auto scrollbar scrollbar--sm">
+          <div class="w-full max-w-lg max-h-[70vh] overflow-y-auto scrollbar scrollbar--size-sm">
             <.anatomy_all_fields
               id_prefix="native-input-playground"
               input_class="native-input native-input--max-w-md w-full"

@@ -948,11 +948,11 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   def styling_semantic_code do
     ~S"""
     <.color_picker  value="#3b82f6" label="Default" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
-    <.color_picker class="color-picker color-picker--accent" value="#3b82f6" label="Accent" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
-    <.color_picker class="color-picker color-picker--brand" value="#3b82f6" label="Brand" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
-    <.color_picker class="color-picker color-picker--alert" value="#3b82f6" label="Alert" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
-    <.color_picker class="color-picker color-picker--info" value="#3b82f6" label="Info" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
-    <.color_picker class="color-picker color-picker--success" value="#3b82f6" label="Success" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
+    <.color_picker class="color-picker color-picker--semantic-accent" value="#3b82f6" label="Accent" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
+    <.color_picker class="color-picker color-picker--semantic-brand" value="#3b82f6" label="Brand" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
+    <.color_picker class="color-picker color-picker--semantic-alert" value="#3b82f6" label="Alert" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
+    <.color_picker class="color-picker color-picker--semantic-info" value="#3b82f6" label="Info" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
+    <.color_picker class="color-picker color-picker--semantic-success" value="#3b82f6" label="Success" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
     """
   end
 
@@ -969,35 +969,35 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       />
       <.color_picker
         id="color-picker-style-color-accent"
-        class="color-picker color-picker--accent"
+        class="color-picker color-picker--semantic-accent"
         value="#3b82f6"
         label="Accent"
         presets={@presets}
       />
       <.color_picker
         id="color-picker-style-color-brand"
-        class="color-picker color-picker--brand"
+        class="color-picker color-picker--semantic-brand"
         value="#3b82f6"
         label="Brand"
         presets={@presets}
       />
       <.color_picker
         id="color-picker-style-color-alert"
-        class="color-picker color-picker--alert"
+        class="color-picker color-picker--semantic-alert"
         value="#3b82f6"
         label="Alert"
         presets={@presets}
       />
       <.color_picker
         id="color-picker-style-color-info"
-        class="color-picker color-picker--info"
+        class="color-picker color-picker--semantic-info"
         value="#3b82f6"
         label="Info"
         presets={@presets}
       />
       <.color_picker
         id="color-picker-style-color-success"
-        class="color-picker color-picker--success"
+        class="color-picker color-picker--semantic-success"
         value="#3b82f6"
         label="Success"
         presets={@presets}
@@ -1008,10 +1008,10 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
 
   def styling_size_code do
     ~S"""
-    <.color_picker class="color-picker color-picker--sm" value="#3b82f6" label="SM" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
-    <.color_picker class="color-picker color-picker--md" value="#3b82f6" label="MD" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
-    <.color_picker class="color-picker color-picker--lg" value="#3b82f6" label="LG" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
-    <.color_picker class="color-picker color-picker--xl" value="#3b82f6" label="XL" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
+    <.color_picker class="color-picker color-picker--size-sm" value="#3b82f6" label="SM" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
+    <.color_picker class="color-picker color-picker--size-md" value="#3b82f6" label="MD" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
+    <.color_picker class="color-picker color-picker--size-lg" value="#3b82f6" label="LG" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
+    <.color_picker class="color-picker color-picker--size-xl" value="#3b82f6" label="XL" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]} />
     """
   end
 
@@ -1022,28 +1022,28 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     <div class="flex flex-wrap gap-6 items-start w-full">
       <.color_picker
         id="color-picker-style-size-sm"
-        class="color-picker color-picker--sm"
+        class="color-picker color-picker--size-sm"
         value="#3b82f6"
         label="SM"
         presets={@presets}
       />
       <.color_picker
         id="color-picker-style-size-md"
-        class="color-picker color-picker--md"
+        class="color-picker color-picker--size-md"
         value="#3b82f6"
         label="MD"
         presets={@presets}
       />
       <.color_picker
         id="color-picker-style-size-lg"
-        class="color-picker color-picker--lg"
+        class="color-picker color-picker--size-lg"
         value="#3b82f6"
         label="LG"
         presets={@presets}
       />
       <.color_picker
         id="color-picker-style-size-xl"
-        class="color-picker color-picker--xl"
+        class="color-picker color-picker--size-xl"
         value="#3b82f6"
         label="XL"
         presets={@presets}
@@ -1051,4 +1051,8 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     </div>
     """
   end
+
+  def style_preview(assigns), do: E2eWeb.Demos.StylePreview.preview(:color_picker, assigns)
+  def style_playground(assigns), do: style_preview(assigns)
+
 end

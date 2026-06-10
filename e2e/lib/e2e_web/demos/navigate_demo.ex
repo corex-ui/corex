@@ -233,4 +233,8 @@ defmodule E2eWeb.Demos.NavigateDemo do
     </div>
     """
   end
+
+  def style_preview(assigns), do: E2eWeb.Demos.StylePreview.preview(:navigate, assigns)
+  def style_playground(assigns), do: style_preview(assigns)
+
 end

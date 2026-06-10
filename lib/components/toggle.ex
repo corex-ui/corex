@@ -58,7 +58,7 @@ defmodule Corex.Toggle do
   ### With classes
 
   ```heex
-  <.toggle class="toggle toggle--accent toggle--solid toggle--md">
+  <.toggle class="toggle toggle--semantic-accent toggle--variant-solid toggle--size-md">
     lorem
   </.toggle>
   ```
@@ -183,20 +183,20 @@ defmodule Corex.Toggle do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `toggle` |
-  | Accent | `toggle toggle--accent` |
-  | Brand | `toggle toggle--brand` |
-  | Alert | `toggle toggle--alert` |
-  | Info | `toggle toggle--info` |
-  | Success | `toggle toggle--success` |
+  | Accent | `toggle toggle--semantic-accent` |
+  | Brand | `toggle toggle--semantic-brand` |
+  | Alert | `toggle toggle--semantic-alert` |
+  | Info | `toggle toggle--semantic-info` |
+  | Success | `toggle toggle--semantic-success` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `toggle toggle--sm` |
-  | MD | `toggle toggle--md` |
-  | LG | `toggle toggle--lg` |
-  | XL | `toggle toggle--xl` |
+  | SM | `toggle toggle--size-sm` |
+  | MD | `toggle toggle--size-md` |
+  | LG | `toggle toggle--size-lg` |
+  | XL | `toggle toggle--size-xl` |
 
   ### Rounded
 

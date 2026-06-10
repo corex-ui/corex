@@ -159,7 +159,7 @@ defmodule Corex.Menu do
   ### With classes
 
   ```heex
-  <.menu class="menu menu--accent menu--md" items={[
+  <.menu class="menu menu--semantic-accent menu--size-md" items={[
     %Corex.Tree.Item{value: "edit", label: "Edit"},
     %Corex.Tree.Item{value: "duplicate", label: "Duplicate"}
   ]}>
@@ -262,7 +262,7 @@ defmodule Corex.Menu do
   ### set_open
 
   ```heex
-  <.action phx-click={Corex.Menu.set_open("menu-api", true)} class="button button--sm">
+  <.action phx-click={Corex.Menu.set_open("menu-api", true)} class="button button--size-sm">
     Open Menu
   </.action>
   ```

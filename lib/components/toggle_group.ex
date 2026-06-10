@@ -69,7 +69,7 @@ defmodule Corex.ToggleGroup do
   ### With classes
 
   ```heex
-  <.toggle_group class="toggle-group toggle-group--accent toggle-group--md">
+  <.toggle_group class="toggle-group toggle-group--semantic-accent toggle-group--size-md">
     <:item value="lorem">Lorem</:item>
     <:item value="duis">Duis</:item>
   </.toggle_group>
@@ -199,20 +199,20 @@ defmodule Corex.ToggleGroup do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `toggle-group` |
-  | Accent | `toggle-group toggle-group--accent` |
-  | Brand | `toggle-group toggle-group--brand` |
-  | Alert | `toggle-group toggle-group--alert` |
-  | Info | `toggle-group toggle-group--info` |
-  | Success | `toggle-group toggle-group--success` |
+  | Accent | `toggle-group toggle-group--semantic-accent` |
+  | Brand | `toggle-group toggle-group--semantic-brand` |
+  | Alert | `toggle-group toggle-group--semantic-alert` |
+  | Info | `toggle-group toggle-group--semantic-info` |
+  | Success | `toggle-group toggle-group--semantic-success` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `toggle-group toggle-group--sm` |
-  | MD | `toggle-group toggle-group--md` |
-  | LG | `toggle-group toggle-group--lg` |
-  | XL | `toggle-group toggle-group--xl` |
+  | SM | `toggle-group toggle-group--size-sm` |
+  | MD | `toggle-group toggle-group--size-md` |
+  | LG | `toggle-group toggle-group--size-lg` |
+  | XL | `toggle-group toggle-group--size-xl` |
 
   ### Rounded
 

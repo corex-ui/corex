@@ -61,7 +61,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-h-[70vh] overflow-y-auto scrollbar scrollbar--sm">
+    <div class="w-full max-h-[70vh] overflow-y-auto scrollbar scrollbar--size-sm">
       <.anatomy_all_fields
         id_prefix="native-input-style-all"
         name_prefix="native-input-style-all"
@@ -73,18 +73,18 @@ defmodule E2eWeb.Demos.NativeInputDemo do
 
   @styling_semantic_variants [
     %{id: "default", label: "Default", modifier: ""},
-    %{id: "accent", label: "Accent", modifier: "native-input--accent"},
-    %{id: "brand", label: "Brand", modifier: "native-input--brand"},
-    %{id: "alert", label: "Alert", modifier: "native-input--alert"},
-    %{id: "info", label: "Info", modifier: "native-input--info"},
-    %{id: "success", label: "Success", modifier: "native-input--success"}
+    %{id: "accent", label: "Accent", modifier: "native-input--semantic-accent"},
+    %{id: "brand", label: "Brand", modifier: "native-input--semantic-brand"},
+    %{id: "alert", label: "Alert", modifier: "native-input--semantic-alert"},
+    %{id: "info", label: "Info", modifier: "native-input--semantic-info"},
+    %{id: "success", label: "Success", modifier: "native-input--semantic-success"}
   ]
 
   @styling_size_variants [
-    %{id: "sm", label: "SM", modifier: "native-input--sm"},
-    %{id: "md", label: "MD", modifier: "native-input--md"},
-    %{id: "lg", label: "LG", modifier: "native-input--lg"},
-    %{id: "xl", label: "XL", modifier: "native-input--xl"}
+    %{id: "sm", label: "SM", modifier: "native-input--size-sm"},
+    %{id: "md", label: "MD", modifier: "native-input--size-md"},
+    %{id: "lg", label: "LG", modifier: "native-input--size-lg"},
+    %{id: "xl", label: "XL", modifier: "native-input--size-xl"}
   ]
 
   @styling_radius_variants [
@@ -123,9 +123,9 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     assigns = assign(assigns, :variants, variants)
 
     ~H"""
-    <div class="w-full max-h-[70vh] overflow-y-auto scrollbar scrollbar--sm">
+    <div class="w-full max-h-[70vh] overflow-y-auto scrollbar scrollbar--size-sm">
       <div :for={variant <- @variants} class="flex flex-col gap-3 pb-8 last:pb-0">
-        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <.small text="sm" weight="medium">{variant.label}</.small>
         <.anatomy_all_fields
           id_prefix={"#{@id_prefix}-#{variant.id}"}
           name_prefix={"#{@id_prefix}-#{variant.id}"}
@@ -154,7 +154,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
         else: styling_input_class(modifier)
 
     ~s"""
-    <div class="max-h-[70vh] overflow-y-auto scrollbar scrollbar--sm">
+    <div class="max-h-[70vh] overflow-y-auto scrollbar scrollbar--size-sm">
       <.anatomy_all_fields
         id_prefix="#{id_prefix}-example"
         input_class="#{input_class}"
@@ -513,7 +513,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
   end
 
   def styling_semantic_code do
-    styling_variant_code("native-input-style-color", "native-input--accent")
+    styling_variant_code("native-input-style-color", "native-input--semantic-accent")
   end
 
   def styling_semantic_example(assigns) do
@@ -528,7 +528,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
   end
 
   def styling_size_code do
-    styling_variant_code("native-input-style-size", "native-input--lg")
+    styling_variant_code("native-input-style-size", "native-input--size-lg")
   end
 
   def styling_size_example(assigns) do
@@ -695,7 +695,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <div class="flex flex-col gap-3">
-        <p class="typo typo--sm font-medium">Text</p>
+        <.small text="sm" weight="medium">Text</.small>
         <.native_input field={@form[:name]} type="text" placeholder="Your name" >
           <:label>Name</:label>
           <:error :let={msg}>{msg}</:error>
@@ -730,7 +730,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
         </.native_input>
       </div>
       <div class="flex flex-col gap-3">
-        <p class="typo typo--sm font-medium">Date & time</p>
+        <.small text="sm" weight="medium">Date & time</.small>
         <.native_input field={@form[:birth_date]} type="date" >
           <:label>Birth date</:label>
           <:error :let={msg}>{msg}</:error>
@@ -753,7 +753,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
         </.native_input>
       </div>
       <div class="flex flex-col gap-3">
-        <p class="typo typo--sm font-medium">Multiple</p>
+        <.small text="sm" weight="medium">Multiple</.small>
         <.native_input
           field={@form[:tags]}
           type="select"
@@ -773,7 +773,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
         </.native_input>
       </div>
       <div class="flex flex-col gap-3">
-        <p class="typo typo--sm font-medium">Other</p>
+        <.small text="sm" weight="medium">Other</.small>
         <.native_input field={@form[:color]} type="color" value="#3b82f6" >
           <:label>Color</:label>
           <:error :let={msg}>{msg}</:error>
@@ -890,7 +890,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     <form action={~p"/native-input/form"} method="post">
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <div class="flex flex-col gap-3">
-        <p class="typo typo--sm font-medium">Text</p>
+        <.small text="sm" weight="medium">Text</.small>
         <.native_input type="text" name="profile[name]" placeholder="Your name" >
           <:label>Name</:label>
         </.native_input>
@@ -917,7 +917,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
         </.native_input>
       </div>
       <div class="flex flex-col gap-3">
-        <p class="typo typo--sm font-medium">Date & time</p>
+        <.small text="sm" weight="medium">Date & time</.small>
         <.native_input type="date" name="profile[birth_date]" >
           <:label>Birth date</:label>
         </.native_input>
@@ -935,7 +935,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
         </.native_input>
       </div>
       <div class="flex flex-col gap-3">
-        <p class="typo typo--sm font-medium">Multiple</p>
+        <.small text="sm" weight="medium">Multiple</.small>
         <.native_input
           type="select"
           multiple
@@ -954,7 +954,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
         </.native_input>
       </div>
       <div class="flex flex-col gap-3">
-        <p class="typo typo--sm font-medium">Other</p>
+        <.small text="sm" weight="medium">Other</.small>
         <.native_input type="color" name="profile[color]" value="#3b82f6" >
           <:label>Color</:label>
         </.native_input>
@@ -1210,4 +1210,8 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     end
     """
   end
+
+  def style_preview(assigns), do: E2eWeb.Demos.StylePreview.preview(:native_input, assigns)
+  def style_playground(assigns), do: style_preview(assigns)
+
 end

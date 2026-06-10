@@ -120,7 +120,7 @@ def theme_toggle(assigns) do
   ~H"""
   <.select
     id="theme-select"
-    class="select select--sm"
+    class="select select--size-sm"
     items={[
       %{value: "neo", label: "Neo"},
       %{value: "uno", label: "Uno"},

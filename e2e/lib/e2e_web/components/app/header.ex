@@ -35,7 +35,7 @@ defmodule E2eWeb.App.Header do
             modal
           >
             <:trigger
-              class="button button--sm button--ghost button--square button--rounded-full"
+              class="button button--size-sm button--variant-ghost button--shape-square button--rounded-full"
               aria_label={~t"Open menu"}
             >
               <.heroicon name="hero-bars-3" />

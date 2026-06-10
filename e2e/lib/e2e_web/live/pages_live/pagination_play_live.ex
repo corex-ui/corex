@@ -121,7 +121,7 @@ defmodule E2eWeb.PaginationPlayLive do
 
           <.number_input
             id="pagination-playground-page-size"
-            class="number-input number-input--sm w-4xs"
+            class="number-input number-input--size-sm w-4xs"
             value={to_string(@page_size)}
             step={1.0}
             min={1.0}
@@ -139,7 +139,7 @@ defmodule E2eWeb.PaginationPlayLive do
 
           <.number_input
             id="pagination-playground-sibling"
-            class="number-input number-input--sm w-4xs"
+            class="number-input number-input--size-sm w-4xs"
             value={to_string(@sibling_count)}
             step={1.0}
             min={0.0}
@@ -157,7 +157,7 @@ defmodule E2eWeb.PaginationPlayLive do
 
           <.number_input
             id="pagination-playground-boundary"
-            class="number-input number-input--sm w-4xs"
+            class="number-input number-input--size-sm w-4xs"
             value={to_string(@boundary_count)}
             step={1.0}
             min={0.0}

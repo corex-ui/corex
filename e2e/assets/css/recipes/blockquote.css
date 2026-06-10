@@ -25,12 +25,12 @@
   .blockquote {
     padding: var(--space-md);
     color: var(--color-ui-ink);
-    gap: var(--space-md);
     padding-block: var(--size-md);
-    border: 1px solid var(--color-border);
+    gap: var(--space-md);
     background-color: var(--color-layer);
     border-inline-start: 4px solid var(--color-info);
     border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
     box-shadow: var(--shadow-md);
     font-style: italic;
   }
@@ -55,74 +55,6 @@
     max-width: 100%;
   }
 
-  .blockquote.blockquote--max-w-7xs {
-    max-width: var(--container-7xs);
-  }
-
-  .blockquote.blockquote--max-w-6xs {
-    max-width: var(--container-6xs);
-  }
-
-  .blockquote.blockquote--max-w-5xs {
-    max-width: var(--container-5xs);
-  }
-
-  .blockquote.blockquote--max-w-4xs {
-    max-width: var(--container-4xs);
-  }
-
-  .blockquote.blockquote--max-w-3xs {
-    max-width: var(--container-3xs);
-  }
-
-  .blockquote.blockquote--max-w-2xs {
-    max-width: var(--container-2xs);
-  }
-
-  .blockquote.blockquote--max-w-xs {
-    max-width: var(--container-xs);
-  }
-
-  .blockquote.blockquote--max-w-sm {
-    max-width: var(--container-sm);
-  }
-
-  .blockquote.blockquote--max-w-md {
-    max-width: var(--container-md);
-  }
-
-  .blockquote.blockquote--max-w-lg {
-    max-width: var(--container-lg);
-  }
-
-  .blockquote.blockquote--max-w-xl {
-    max-width: var(--container-xl);
-  }
-
-  .blockquote.blockquote--max-w-2xl {
-    max-width: var(--container-2xl);
-  }
-
-  .blockquote.blockquote--max-w-3xl {
-    max-width: var(--container-3xl);
-  }
-
-  .blockquote.blockquote--max-w-4xl {
-    max-width: var(--container-4xl);
-  }
-
-  .blockquote.blockquote--max-w-5xl {
-    max-width: var(--container-5xl);
-  }
-
-  .blockquote.blockquote--max-w-6xl {
-    max-width: var(--container-6xl);
-  }
-
-  .blockquote.blockquote--max-w-7xl {
-    max-width: var(--container-7xl);
-  }
-
   .blockquote.blockquote--h-auto {
     height: auto;
   }
@@ -143,171 +75,63 @@
     max-height: 100%;
   }
 
-  .blockquote.blockquote--max-h-7xs {
-    max-height: var(--container-7xs);
-  }
-
-  .blockquote.blockquote--max-h-6xs {
-    max-height: var(--container-6xs);
-  }
-
-  .blockquote.blockquote--max-h-5xs {
-    max-height: var(--container-5xs);
-  }
-
-  .blockquote.blockquote--max-h-4xs {
-    max-height: var(--container-4xs);
-  }
-
-  .blockquote.blockquote--max-h-3xs {
-    max-height: var(--container-3xs);
-  }
-
-  .blockquote.blockquote--max-h-2xs {
-    max-height: var(--container-2xs);
-  }
-
-  .blockquote.blockquote--max-h-xs {
-    max-height: var(--container-xs);
-  }
-
-  .blockquote.blockquote--max-h-sm {
-    max-height: var(--container-sm);
-  }
-
-  .blockquote.blockquote--max-h-md {
-    max-height: var(--container-md);
-  }
-
-  .blockquote.blockquote--max-h-lg {
-    max-height: var(--container-lg);
-  }
-
-  .blockquote.blockquote--max-h-xl {
-    max-height: var(--container-xl);
-  }
-
-  .blockquote.blockquote--max-h-2xl {
-    max-height: var(--container-2xl);
-  }
-
-  .blockquote.blockquote--max-h-3xl {
-    max-height: var(--container-3xl);
-  }
-
-  .blockquote.blockquote--max-h-4xl {
-    max-height: var(--container-4xl);
-  }
-
-  .blockquote.blockquote--max-h-5xl {
-    max-height: var(--container-5xl);
-  }
-
-  .blockquote.blockquote--max-h-6xl {
-    max-height: var(--container-6xl);
-  }
-
-  .blockquote.blockquote--max-h-7xl {
-    max-height: var(--container-7xl);
-  }
-
-  .blockquote.blockquote--text-xs {
-    font-size: var(--text-xs);
-    line-height: var(--leading-xs);
-  }
-
-  .blockquote.blockquote--text-sm {
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-  }
-
-  .blockquote.blockquote--text-base {
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-  }
-
-  .blockquote.blockquote--text-lg {
-    font-size: var(--text-lg);
-    line-height: var(--leading-lg);
-  }
-
-  .blockquote.blockquote--text-xl {
-    font-size: var(--text-xl);
-    line-height: var(--leading-xl);
-  }
-
-  .blockquote.blockquote--text-2xl {
-    font-size: var(--text-2xl);
-    line-height: var(--leading-2xl);
-  }
-
-  .blockquote.blockquote--text-3xl {
-    font-size: var(--text-3xl);
-    line-height: var(--leading-3xl);
-  }
-
-  .blockquote.blockquote--text-4xl {
-    font-size: var(--text-4xl);
-    line-height: var(--leading-4xl);
-  }
-
-  .blockquote.blockquote--accent {
+  .blockquote.blockquote--semantic-accent {
     color: var(--color-ui-ink-accent);
   }
 
-  .blockquote.blockquote--brand {
+  .blockquote.blockquote--semantic-brand {
     color: var(--color-ui-ink-brand);
   }
 
-  .blockquote.blockquote--alert {
+  .blockquote.blockquote--semantic-alert {
     color: var(--color-ui-ink-alert);
   }
 
-  .blockquote.blockquote--info {
+  .blockquote.blockquote--semantic-info {
     color: var(--color-ui-ink-info);
   }
 
-  .blockquote.blockquote--success {
+  .blockquote.blockquote--semantic-success {
     color: var(--color-ui-ink-success);
   }
 
-  .blockquote.blockquote--selected {
+  .blockquote.blockquote--semantic-selected {
     color: var(--color-selected-ink);
   }
 
-  .blockquote.blockquote--thin {
+  .blockquote.blockquote--weight-thin {
     font-weight: var(--font-weight-thin);
   }
 
-  .blockquote.blockquote--extralight {
+  .blockquote.blockquote--weight-extralight {
     font-weight: var(--font-weight-extralight);
   }
 
-  .blockquote.blockquote--light {
+  .blockquote.blockquote--weight-light {
     font-weight: var(--font-weight-light);
   }
 
-  .blockquote.blockquote--normal {
+  .blockquote.blockquote--weight-normal {
     font-weight: var(--font-weight-normal);
   }
 
-  .blockquote.blockquote--medium {
+  .blockquote.blockquote--weight-medium {
     font-weight: var(--font-weight-medium);
   }
 
-  .blockquote.blockquote--semibold {
+  .blockquote.blockquote--weight-semibold {
     font-weight: var(--font-weight-semibold);
   }
 
-  .blockquote.blockquote--bold {
+  .blockquote.blockquote--weight-bold {
     font-weight: var(--font-weight-bold);
   }
 
-  .blockquote.blockquote--extrabold {
+  .blockquote.blockquote--weight-extrabold {
     font-weight: var(--font-weight-extrabold);
   }
 
-  .blockquote.blockquote--black {
+  .blockquote.blockquote--weight-black {
     font-weight: var(--font-weight-black);
   }
 }

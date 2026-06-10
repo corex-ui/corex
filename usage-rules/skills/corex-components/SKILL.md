@@ -26,7 +26,7 @@ description: >-
 ## Compound slots
 
 ```heex
-<.accordion id="faq" class="accordion accordion--accent accordion--sm sm:accordion--md" items={Corex.Content.new([…])}>
+<.accordion id="faq" class="accordion accordion--semantic-accent accordion--size-sm sm:accordion--size-md" items={Corex.Content.new([…])}>
   <:trigger :let={item}>
     <.heroicon name={item.meta.icon} />
     {item.label}

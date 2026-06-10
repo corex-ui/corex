@@ -18,6 +18,48 @@
 }
 
 
+@utility number-input--size-* {
+  [data-scope="number-input"][data-part="input"] {
+      color: --value(--color-ui-ink-*, [color]);
+    padding-inline: --value(--spacing-space-*, [length]);
+    background-color: --value(--color-*, [color]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-size-*, [length]);
+  }
+
+  [data-scope="number-input"][data-part="label"] {
+      font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+  }
+
+  [data-scope="number-input"][data-part="root"] {
+      gap: --value(--spacing-space-*, [length]);
+  }
+
+  [data-scope="number-input"][data-part="increment-trigger"] {
+      color: --value(--color-ui-ink-*, [color]);
+    background-color: --value(--color-*, [color]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-size-*, [length]);
+  }
+
+  [data-scope="number-input"][data-part="decrement-trigger"] {
+      color: --value(--color-ui-ink-*, [color]);
+    background-color: --value(--color-*, [color]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-size-*, [length]);
+  }
+
+  [data-scope="number-input"][data-part="trigger-group"] {
+      min-height: --value(--spacing-size-*, [length]);
+  }
+
+}
+
+
 @layer components {
   .number-input.number-input--w-auto {
     width: auto;
@@ -37,74 +79,6 @@
 
   .number-input.number-input--max-w-full {
     max-width: 100%;
-  }
-
-  .number-input.number-input--max-w-7xs {
-    max-width: var(--container-7xs);
-  }
-
-  .number-input.number-input--max-w-6xs {
-    max-width: var(--container-6xs);
-  }
-
-  .number-input.number-input--max-w-5xs {
-    max-width: var(--container-5xs);
-  }
-
-  .number-input.number-input--max-w-4xs {
-    max-width: var(--container-4xs);
-  }
-
-  .number-input.number-input--max-w-3xs {
-    max-width: var(--container-3xs);
-  }
-
-  .number-input.number-input--max-w-2xs {
-    max-width: var(--container-2xs);
-  }
-
-  .number-input.number-input--max-w-xs {
-    max-width: var(--container-xs);
-  }
-
-  .number-input.number-input--max-w-sm {
-    max-width: var(--container-sm);
-  }
-
-  .number-input.number-input--max-w-md {
-    max-width: var(--container-md);
-  }
-
-  .number-input.number-input--max-w-lg {
-    max-width: var(--container-lg);
-  }
-
-  .number-input.number-input--max-w-xl {
-    max-width: var(--container-xl);
-  }
-
-  .number-input.number-input--max-w-2xl {
-    max-width: var(--container-2xl);
-  }
-
-  .number-input.number-input--max-w-3xl {
-    max-width: var(--container-3xl);
-  }
-
-  .number-input.number-input--max-w-4xl {
-    max-width: var(--container-4xl);
-  }
-
-  .number-input.number-input--max-w-5xl {
-    max-width: var(--container-5xl);
-  }
-
-  .number-input.number-input--max-w-6xl {
-    max-width: var(--container-6xl);
-  }
-
-  .number-input.number-input--max-w-7xl {
-    max-width: var(--container-7xl);
   }
 
   .number-input.number-input--h-auto {
@@ -127,300 +101,32 @@
     max-height: 100%;
   }
 
-  .number-input.number-input--max-h-7xs {
-    max-height: var(--container-7xs);
-  }
-
-  .number-input.number-input--max-h-6xs {
-    max-height: var(--container-6xs);
-  }
-
-  .number-input.number-input--max-h-5xs {
-    max-height: var(--container-5xs);
-  }
-
-  .number-input.number-input--max-h-4xs {
-    max-height: var(--container-4xs);
-  }
-
-  .number-input.number-input--max-h-3xs {
-    max-height: var(--container-3xs);
-  }
-
-  .number-input.number-input--max-h-2xs {
-    max-height: var(--container-2xs);
-  }
-
-  .number-input.number-input--max-h-xs {
-    max-height: var(--container-xs);
-  }
-
-  .number-input.number-input--max-h-sm {
-    max-height: var(--container-sm);
-  }
-
-  .number-input.number-input--max-h-md {
-    max-height: var(--container-md);
-  }
-
-  .number-input.number-input--max-h-lg {
-    max-height: var(--container-lg);
-  }
-
-  .number-input.number-input--max-h-xl {
-    max-height: var(--container-xl);
-  }
-
-  .number-input.number-input--max-h-2xl {
-    max-height: var(--container-2xl);
-  }
-
-  .number-input.number-input--max-h-3xl {
-    max-height: var(--container-3xl);
-  }
-
-  .number-input.number-input--max-h-4xl {
-    max-height: var(--container-4xl);
-  }
-
-  .number-input.number-input--max-h-5xl {
-    max-height: var(--container-5xl);
-  }
-
-  .number-input.number-input--max-h-6xl {
-    max-height: var(--container-6xl);
-  }
-
-  .number-input.number-input--max-h-7xl {
-    max-height: var(--container-7xl);
-  }
-
-  .number-input.number-input--accent {
+  .number-input.number-input--semantic-accent {
     position: relative;
   }
 
-  .number-input.number-input--brand {
+  .number-input.number-input--semantic-brand {
     position: relative;
   }
 
-  .number-input.number-input--alert {
+  .number-input.number-input--semantic-alert {
     position: relative;
   }
 
-  .number-input.number-input--info {
+  .number-input.number-input--semantic-info {
     position: relative;
   }
 
-  .number-input.number-input--success {
+  .number-input.number-input--semantic-success {
     position: relative;
   }
 
-  .number-input.number-input--selected {
+  .number-input.number-input--semantic-selected {
     position: relative;
-  }
-
-  .number-input.number-input--sm [data-scope="number-input"][data-part="root"] {
-    gap: var(--space-sm);
-  }
-
-  .number-input.number-input--sm [data-scope="number-input"][data-part="label"] {
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-  }
-
-  .number-input.number-input--sm [data-scope="number-input"][data-part="trigger-group"] {
-    width: var(--size-sm);
-    max-height: var(--size-sm);
-    min-height: var(--size-sm);
-    height: var(--size-sm);
-  }
-
-  .number-input.number-input--sm [data-scope="number-input"][data-part="input"] {
-    color: var(--color-ui-ink);
-    max-height: var(--size-sm);
-    padding-inline: var(--space-sm);
-    min-height: var(--size-sm);
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-    background-color: var(--color-ui);
-  }
-
-  .number-input.number-input--sm [data-scope="number-input"][data-part="increment-trigger"] {
-    color: var(--color-ui-ink);
-    min-height: calc(var(--size-sm) / 2);
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-    background-color: var(--color-ui);
-  }
-
-  .number-input.number-input--sm [data-scope="number-input"][data-part="decrement-trigger"] {
-    color: var(--color-ui-ink);
-    min-height: calc(var(--size-sm) / 2);
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-    background-color: var(--color-ui);
-  }
-
-  .number-input.number-input--md [data-scope="number-input"][data-part="root"] {
-    gap: var(--space-md);
-  }
-
-  .number-input.number-input--md [data-scope="number-input"][data-part="label"] {
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-  }
-
-  .number-input.number-input--md [data-scope="number-input"][data-part="trigger-group"] {
-    width: var(--size-md);
-    max-height: var(--size-md);
-    min-height: var(--size-md);
-    height: var(--size-md);
-  }
-
-  .number-input.number-input--md [data-scope="number-input"][data-part="input"] {
-    color: var(--color-ui-ink);
-    max-height: var(--size-md);
-    padding-inline: var(--space-md);
-    min-height: var(--size-md);
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-    background-color: var(--color-ui);
-  }
-
-  .number-input.number-input--md [data-scope="number-input"][data-part="increment-trigger"] {
-    color: var(--color-ui-ink);
-    min-height: calc(var(--size-md) / 2);
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-    background-color: var(--color-ui);
-  }
-
-  .number-input.number-input--md [data-scope="number-input"][data-part="decrement-trigger"] {
-    color: var(--color-ui-ink);
-    min-height: calc(var(--size-md) / 2);
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-    background-color: var(--color-ui);
-  }
-
-  .number-input.number-input--lg [data-scope="number-input"][data-part="root"] {
-    gap: var(--space-lg);
-  }
-
-  .number-input.number-input--lg [data-scope="number-input"][data-part="label"] {
-    font-size: var(--text-lg);
-    line-height: var(--leading-lg);
-  }
-
-  .number-input.number-input--lg [data-scope="number-input"][data-part="trigger-group"] {
-    width: var(--size-lg);
-    max-height: var(--size-lg);
-    min-height: var(--size-lg);
-    height: var(--size-lg);
-  }
-
-  .number-input.number-input--lg [data-scope="number-input"][data-part="input"] {
-    color: var(--color-ui-ink);
-    max-height: var(--size-lg);
-    padding-inline: var(--space-lg);
-    min-height: var(--size-lg);
-    font-size: var(--text-lg);
-    line-height: var(--leading-lg);
-    background-color: var(--color-ui);
-  }
-
-  .number-input.number-input--lg [data-scope="number-input"][data-part="increment-trigger"] {
-    color: var(--color-ui-ink);
-    min-height: calc(var(--size-lg) / 2);
-    font-size: var(--text-lg);
-    line-height: var(--leading-lg);
-    background-color: var(--color-ui);
-  }
-
-  .number-input.number-input--lg [data-scope="number-input"][data-part="decrement-trigger"] {
-    color: var(--color-ui-ink);
-    min-height: calc(var(--size-lg) / 2);
-    font-size: var(--text-lg);
-    line-height: var(--leading-lg);
-    background-color: var(--color-ui);
-  }
-
-  .number-input.number-input--xl [data-scope="number-input"][data-part="root"] {
-    gap: var(--space-xl);
-  }
-
-  .number-input.number-input--xl [data-scope="number-input"][data-part="label"] {
-    font-size: var(--text-xl);
-    line-height: var(--leading-xl);
-  }
-
-  .number-input.number-input--xl [data-scope="number-input"][data-part="trigger-group"] {
-    width: var(--size-xl);
-    max-height: var(--size-xl);
-    min-height: var(--size-xl);
-    height: var(--size-xl);
-  }
-
-  .number-input.number-input--xl [data-scope="number-input"][data-part="input"] {
-    color: var(--color-ui-ink);
-    max-height: var(--size-xl);
-    padding-inline: var(--space-xl);
-    min-height: var(--size-xl);
-    font-size: var(--text-xl);
-    line-height: var(--leading-xl);
-    background-color: var(--color-ui);
-  }
-
-  .number-input.number-input--xl [data-scope="number-input"][data-part="increment-trigger"] {
-    color: var(--color-ui-ink);
-    min-height: calc(var(--size-xl) / 2);
-    font-size: var(--text-xl);
-    line-height: var(--leading-xl);
-    background-color: var(--color-ui);
-  }
-
-  .number-input.number-input--xl [data-scope="number-input"][data-part="decrement-trigger"] {
-    color: var(--color-ui-ink);
-    min-height: calc(var(--size-xl) / 2);
-    font-size: var(--text-xl);
-    line-height: var(--leading-xl);
-    background-color: var(--color-ui);
   }
 
   .number-input.number-input--rounded-none [data-scope="number-input"][data-part="input"] {
     border-radius: var(--radius-none);
-  }
-
-  .number-input.number-input--rounded-xs [data-scope="number-input"][data-part="input"] {
-    border-radius: var(--radius-xs);
-  }
-
-  .number-input.number-input--rounded-sm [data-scope="number-input"][data-part="input"] {
-    border-radius: var(--radius-sm);
-  }
-
-  .number-input.number-input--rounded-md [data-scope="number-input"][data-part="input"] {
-    border-radius: var(--radius-md);
-  }
-
-  .number-input.number-input--rounded-lg [data-scope="number-input"][data-part="input"] {
-    border-radius: var(--radius-lg);
-  }
-
-  .number-input.number-input--rounded-xl [data-scope="number-input"][data-part="input"] {
-    border-radius: var(--radius-xl);
-  }
-
-  .number-input.number-input--rounded-2xl [data-scope="number-input"][data-part="input"] {
-    border-radius: var(--radius-2xl);
-  }
-
-  .number-input.number-input--rounded-3xl [data-scope="number-input"][data-part="input"] {
-    border-radius: var(--radius-3xl);
-  }
-
-  .number-input.number-input--rounded-4xl [data-scope="number-input"][data-part="input"] {
-    border-radius: var(--radius-4xl);
   }
 
   .number-input.number-input--rounded-full [data-scope="number-input"][data-part="input"] {
@@ -494,7 +200,10 @@
 
   .number-input [data-scope="number-input"][data-part="increment-trigger"] {
     @apply ui-trigger;
-    @apply ui-trigger--square;
+    aspect-ratio: 1 / 1;
+    padding: 0;
+    justify-content: center;
+    width: auto;
     flex: 1;
     min-height: 0;
     margin: 0;
@@ -508,7 +217,10 @@
 
   .number-input [data-scope="number-input"][data-part="decrement-trigger"] {
     @apply ui-trigger;
-    @apply ui-trigger--square;
+    aspect-ratio: 1 / 1;
+    padding: 0;
+    justify-content: center;
+    width: auto;
     flex: 1;
     min-height: 0;
     margin: 0;
@@ -520,49 +232,49 @@
     }
   }
 
-  .number-input.number-input--accent [data-scope="number-input"][data-part="input"] {
+  .number-input.number-input--semantic-accent [data-scope="number-input"][data-part="input"] {
     &:focus, &:focus-visible {
       outline: none;
       box-shadow: inset 0 0 0 2px var(--color-ui-ink-accent);
     }
   }
 
-  .number-input.number-input--brand [data-scope="number-input"][data-part="input"] {
+  .number-input.number-input--semantic-brand [data-scope="number-input"][data-part="input"] {
     &:focus, &:focus-visible {
       outline: none;
       box-shadow: inset 0 0 0 2px var(--color-ui-ink-brand);
     }
   }
 
-  .number-input.number-input--alert [data-scope="number-input"][data-part="input"] {
+  .number-input.number-input--semantic-alert [data-scope="number-input"][data-part="input"] {
     &:focus, &:focus-visible {
       outline: none;
       box-shadow: inset 0 0 0 2px var(--color-ui-ink-alert);
     }
   }
 
-  .number-input.number-input--info [data-scope="number-input"][data-part="input"] {
+  .number-input.number-input--semantic-info [data-scope="number-input"][data-part="input"] {
     &:focus, &:focus-visible {
       outline: none;
       box-shadow: inset 0 0 0 2px var(--color-ui-ink-info);
     }
   }
 
-  .number-input.number-input--success [data-scope="number-input"][data-part="input"] {
+  .number-input.number-input--semantic-success [data-scope="number-input"][data-part="input"] {
     &:focus, &:focus-visible {
       outline: none;
       box-shadow: inset 0 0 0 2px var(--color-ui-ink-success);
     }
   }
 
-  .number-input.number-input--selected [data-scope="number-input"][data-part="input"] {
+  .number-input.number-input--semantic-selected [data-scope="number-input"][data-part="input"] {
     &:focus, &:focus-visible {
       outline: none;
       box-shadow: inset 0 0 0 2px var(--color-selected-ink);
     }
   }
 
-  .number-input.number-input--accent [data-scope="number-input"][data-part="increment-trigger"] {
+  .number-input.number-input--semantic-accent [data-scope="number-input"][data-part="increment-trigger"] {
     color: var(--color-ui-ink-accent);
     &:hover {
       background-color: var(--color-ui-hover);
@@ -581,7 +293,7 @@
     }
   }
 
-  .number-input.number-input--brand [data-scope="number-input"][data-part="increment-trigger"] {
+  .number-input.number-input--semantic-brand [data-scope="number-input"][data-part="increment-trigger"] {
     color: var(--color-ui-ink-brand);
     &:hover {
       background-color: var(--color-ui-hover);
@@ -600,7 +312,7 @@
     }
   }
 
-  .number-input.number-input--alert [data-scope="number-input"][data-part="increment-trigger"] {
+  .number-input.number-input--semantic-alert [data-scope="number-input"][data-part="increment-trigger"] {
     color: var(--color-ui-ink-alert);
     &:hover {
       background-color: var(--color-ui-hover);
@@ -619,7 +331,7 @@
     }
   }
 
-  .number-input.number-input--info [data-scope="number-input"][data-part="increment-trigger"] {
+  .number-input.number-input--semantic-info [data-scope="number-input"][data-part="increment-trigger"] {
     color: var(--color-ui-ink-info);
     &:hover {
       background-color: var(--color-ui-hover);
@@ -638,7 +350,7 @@
     }
   }
 
-  .number-input.number-input--success [data-scope="number-input"][data-part="increment-trigger"] {
+  .number-input.number-input--semantic-success [data-scope="number-input"][data-part="increment-trigger"] {
     color: var(--color-ui-ink-success);
     &:hover {
       background-color: var(--color-ui-hover);
@@ -657,7 +369,7 @@
     }
   }
 
-  .number-input.number-input--selected [data-scope="number-input"][data-part="increment-trigger"] {
+  .number-input.number-input--semantic-selected [data-scope="number-input"][data-part="increment-trigger"] {
     color: var(--color-selected-ink);
     &:hover {
       background-color: var(--color-ui-hover);
@@ -676,7 +388,7 @@
     }
   }
 
-  .number-input.number-input--accent [data-scope="number-input"][data-part="decrement-trigger"] {
+  .number-input.number-input--semantic-accent [data-scope="number-input"][data-part="decrement-trigger"] {
     color: var(--color-ui-ink-accent);
     &:hover {
       background-color: var(--color-ui-hover);
@@ -695,7 +407,7 @@
     }
   }
 
-  .number-input.number-input--brand [data-scope="number-input"][data-part="decrement-trigger"] {
+  .number-input.number-input--semantic-brand [data-scope="number-input"][data-part="decrement-trigger"] {
     color: var(--color-ui-ink-brand);
     &:hover {
       background-color: var(--color-ui-hover);
@@ -714,7 +426,7 @@
     }
   }
 
-  .number-input.number-input--alert [data-scope="number-input"][data-part="decrement-trigger"] {
+  .number-input.number-input--semantic-alert [data-scope="number-input"][data-part="decrement-trigger"] {
     color: var(--color-ui-ink-alert);
     &:hover {
       background-color: var(--color-ui-hover);
@@ -733,7 +445,7 @@
     }
   }
 
-  .number-input.number-input--info [data-scope="number-input"][data-part="decrement-trigger"] {
+  .number-input.number-input--semantic-info [data-scope="number-input"][data-part="decrement-trigger"] {
     color: var(--color-ui-ink-info);
     &:hover {
       background-color: var(--color-ui-hover);
@@ -752,7 +464,7 @@
     }
   }
 
-  .number-input.number-input--success [data-scope="number-input"][data-part="decrement-trigger"] {
+  .number-input.number-input--semantic-success [data-scope="number-input"][data-part="decrement-trigger"] {
     color: var(--color-ui-ink-success);
     &:hover {
       background-color: var(--color-ui-hover);
@@ -771,7 +483,7 @@
     }
   }
 
-  .number-input.number-input--selected [data-scope="number-input"][data-part="decrement-trigger"] {
+  .number-input.number-input--semantic-selected [data-scope="number-input"][data-part="decrement-trigger"] {
     color: var(--color-selected-ink);
     &:hover {
       background-color: var(--color-ui-hover);

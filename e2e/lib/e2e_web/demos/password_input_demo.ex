@@ -1242,4 +1242,8 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     </div>
     """
   end
+
+  def style_preview(assigns), do: E2eWeb.Demos.StylePreview.preview(:password_input, assigns)
+  def style_playground(assigns), do: style_preview(assigns)
+
 end

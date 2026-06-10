@@ -54,74 +54,6 @@
     max-width: 100%;
   }
 
-  .p.p--max-w-7xs {
-    max-width: var(--container-7xs);
-  }
-
-  .p.p--max-w-6xs {
-    max-width: var(--container-6xs);
-  }
-
-  .p.p--max-w-5xs {
-    max-width: var(--container-5xs);
-  }
-
-  .p.p--max-w-4xs {
-    max-width: var(--container-4xs);
-  }
-
-  .p.p--max-w-3xs {
-    max-width: var(--container-3xs);
-  }
-
-  .p.p--max-w-2xs {
-    max-width: var(--container-2xs);
-  }
-
-  .p.p--max-w-xs {
-    max-width: var(--container-xs);
-  }
-
-  .p.p--max-w-sm {
-    max-width: var(--container-sm);
-  }
-
-  .p.p--max-w-md {
-    max-width: var(--container-md);
-  }
-
-  .p.p--max-w-lg {
-    max-width: var(--container-lg);
-  }
-
-  .p.p--max-w-xl {
-    max-width: var(--container-xl);
-  }
-
-  .p.p--max-w-2xl {
-    max-width: var(--container-2xl);
-  }
-
-  .p.p--max-w-3xl {
-    max-width: var(--container-3xl);
-  }
-
-  .p.p--max-w-4xl {
-    max-width: var(--container-4xl);
-  }
-
-  .p.p--max-w-5xl {
-    max-width: var(--container-5xl);
-  }
-
-  .p.p--max-w-6xl {
-    max-width: var(--container-6xl);
-  }
-
-  .p.p--max-w-7xl {
-    max-width: var(--container-7xl);
-  }
-
   .p.p--h-auto {
     height: auto;
   }
@@ -142,171 +74,63 @@
     max-height: 100%;
   }
 
-  .p.p--max-h-7xs {
-    max-height: var(--container-7xs);
-  }
-
-  .p.p--max-h-6xs {
-    max-height: var(--container-6xs);
-  }
-
-  .p.p--max-h-5xs {
-    max-height: var(--container-5xs);
-  }
-
-  .p.p--max-h-4xs {
-    max-height: var(--container-4xs);
-  }
-
-  .p.p--max-h-3xs {
-    max-height: var(--container-3xs);
-  }
-
-  .p.p--max-h-2xs {
-    max-height: var(--container-2xs);
-  }
-
-  .p.p--max-h-xs {
-    max-height: var(--container-xs);
-  }
-
-  .p.p--max-h-sm {
-    max-height: var(--container-sm);
-  }
-
-  .p.p--max-h-md {
-    max-height: var(--container-md);
-  }
-
-  .p.p--max-h-lg {
-    max-height: var(--container-lg);
-  }
-
-  .p.p--max-h-xl {
-    max-height: var(--container-xl);
-  }
-
-  .p.p--max-h-2xl {
-    max-height: var(--container-2xl);
-  }
-
-  .p.p--max-h-3xl {
-    max-height: var(--container-3xl);
-  }
-
-  .p.p--max-h-4xl {
-    max-height: var(--container-4xl);
-  }
-
-  .p.p--max-h-5xl {
-    max-height: var(--container-5xl);
-  }
-
-  .p.p--max-h-6xl {
-    max-height: var(--container-6xl);
-  }
-
-  .p.p--max-h-7xl {
-    max-height: var(--container-7xl);
-  }
-
-  .p.p--text-xs {
-    font-size: var(--text-xs);
-    line-height: var(--leading-xs);
-  }
-
-  .p.p--text-sm {
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-  }
-
-  .p.p--text-base {
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-  }
-
-  .p.p--text-lg {
-    font-size: var(--text-lg);
-    line-height: var(--leading-lg);
-  }
-
-  .p.p--text-xl {
-    font-size: var(--text-xl);
-    line-height: var(--leading-xl);
-  }
-
-  .p.p--text-2xl {
-    font-size: var(--text-2xl);
-    line-height: var(--leading-2xl);
-  }
-
-  .p.p--text-3xl {
-    font-size: var(--text-3xl);
-    line-height: var(--leading-3xl);
-  }
-
-  .p.p--text-4xl {
-    font-size: var(--text-4xl);
-    line-height: var(--leading-4xl);
-  }
-
-  .p.p--accent {
+  .p.p--semantic-accent {
     color: var(--color-ui-ink-accent);
   }
 
-  .p.p--brand {
+  .p.p--semantic-brand {
     color: var(--color-ui-ink-brand);
   }
 
-  .p.p--alert {
+  .p.p--semantic-alert {
     color: var(--color-ui-ink-alert);
   }
 
-  .p.p--info {
+  .p.p--semantic-info {
     color: var(--color-ui-ink-info);
   }
 
-  .p.p--success {
+  .p.p--semantic-success {
     color: var(--color-ui-ink-success);
   }
 
-  .p.p--selected {
+  .p.p--semantic-selected {
     color: var(--color-selected-ink);
   }
 
-  .p.p--thin {
+  .p.p--weight-thin {
     font-weight: var(--font-weight-thin);
   }
 
-  .p.p--extralight {
+  .p.p--weight-extralight {
     font-weight: var(--font-weight-extralight);
   }
 
-  .p.p--light {
+  .p.p--weight-light {
     font-weight: var(--font-weight-light);
   }
 
-  .p.p--normal {
+  .p.p--weight-normal {
     font-weight: var(--font-weight-normal);
   }
 
-  .p.p--medium {
+  .p.p--weight-medium {
     font-weight: var(--font-weight-medium);
   }
 
-  .p.p--semibold {
+  .p.p--weight-semibold {
     font-weight: var(--font-weight-semibold);
   }
 
-  .p.p--bold {
+  .p.p--weight-bold {
     font-weight: var(--font-weight-bold);
   }
 
-  .p.p--extrabold {
+  .p.p--weight-extrabold {
     font-weight: var(--font-weight-extrabold);
   }
 
-  .p.p--black {
+  .p.p--weight-black {
     font-weight: var(--font-weight-black);
   }
 }

@@ -145,7 +145,7 @@ defmodule E2eWeb.ActionStylePlayground do
             id="action-style-preview"
             code={@style_snippet}
             authoring_scope="styled"
-            trigger_class="button button--sm"
+            trigger_class="button button--size-sm"
           >
             <:preview>
               <.action

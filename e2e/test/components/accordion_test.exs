@@ -409,8 +409,8 @@ defmodule E2eWeb.AccordionTest do
       el = find(session, css("#my-accordion"))
       classes = Wallaby.Element.attr(el, "class")
       assert String.contains?(classes, "accordion")
-      assert String.contains?(classes, "accordion--subtle")
-      assert String.contains?(classes, "accordion--md")
+      assert String.contains?(classes, "accordion--variant-subtle")
+      assert String.contains?(classes, "accordion--size-md")
       assert String.contains?(classes, "accordion--w-full")
       assert String.contains?(classes, "accordion--max-w-md")
     end
@@ -431,7 +431,7 @@ defmodule E2eWeb.AccordionTest do
 
       el = find(session, css("#my-accordion"))
       classes = Wallaby.Element.attr(el, "class")
-      assert String.contains?(classes, "accordion--sm")
+      assert String.contains?(classes, "accordion--size-sm")
     end
 
     feature "semantic  -  accent adds accordion--accent on the host", %{session: session} do
@@ -448,7 +448,7 @@ defmodule E2eWeb.AccordionTest do
 
       el = find(session, css("#my-accordion"))
       classes = Wallaby.Element.attr(el, "class")
-      assert String.contains?(classes, "accordion--accent")
+      assert String.contains?(classes, "accordion--semantic-accent")
     end
 
     feature "variant  -  outline adds accordion--outline on the host", %{session: session} do

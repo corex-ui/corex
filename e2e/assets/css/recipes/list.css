@@ -24,13 +24,13 @@
 @layer components {
   .list {
     padding: 0;
-    border: 1px solid var(--color-border);
     font-size: var(--text-base);
     line-height: var(--leading-base);
     border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
     margin-block: 2em;
-    list-style: none;
     overflow: hidden;
+    list-style: none;
   }
 
   .list.list--w-auto {
@@ -53,74 +53,6 @@
     max-width: 100%;
   }
 
-  .list.list--max-w-7xs {
-    max-width: var(--container-7xs);
-  }
-
-  .list.list--max-w-6xs {
-    max-width: var(--container-6xs);
-  }
-
-  .list.list--max-w-5xs {
-    max-width: var(--container-5xs);
-  }
-
-  .list.list--max-w-4xs {
-    max-width: var(--container-4xs);
-  }
-
-  .list.list--max-w-3xs {
-    max-width: var(--container-3xs);
-  }
-
-  .list.list--max-w-2xs {
-    max-width: var(--container-2xs);
-  }
-
-  .list.list--max-w-xs {
-    max-width: var(--container-xs);
-  }
-
-  .list.list--max-w-sm {
-    max-width: var(--container-sm);
-  }
-
-  .list.list--max-w-md {
-    max-width: var(--container-md);
-  }
-
-  .list.list--max-w-lg {
-    max-width: var(--container-lg);
-  }
-
-  .list.list--max-w-xl {
-    max-width: var(--container-xl);
-  }
-
-  .list.list--max-w-2xl {
-    max-width: var(--container-2xl);
-  }
-
-  .list.list--max-w-3xl {
-    max-width: var(--container-3xl);
-  }
-
-  .list.list--max-w-4xl {
-    max-width: var(--container-4xl);
-  }
-
-  .list.list--max-w-5xl {
-    max-width: var(--container-5xl);
-  }
-
-  .list.list--max-w-6xl {
-    max-width: var(--container-6xl);
-  }
-
-  .list.list--max-w-7xl {
-    max-width: var(--container-7xl);
-  }
-
   .list.list--h-auto {
     height: auto;
   }
@@ -141,135 +73,27 @@
     max-height: 100%;
   }
 
-  .list.list--max-h-7xs {
-    max-height: var(--container-7xs);
-  }
-
-  .list.list--max-h-6xs {
-    max-height: var(--container-6xs);
-  }
-
-  .list.list--max-h-5xs {
-    max-height: var(--container-5xs);
-  }
-
-  .list.list--max-h-4xs {
-    max-height: var(--container-4xs);
-  }
-
-  .list.list--max-h-3xs {
-    max-height: var(--container-3xs);
-  }
-
-  .list.list--max-h-2xs {
-    max-height: var(--container-2xs);
-  }
-
-  .list.list--max-h-xs {
-    max-height: var(--container-xs);
-  }
-
-  .list.list--max-h-sm {
-    max-height: var(--container-sm);
-  }
-
-  .list.list--max-h-md {
-    max-height: var(--container-md);
-  }
-
-  .list.list--max-h-lg {
-    max-height: var(--container-lg);
-  }
-
-  .list.list--max-h-xl {
-    max-height: var(--container-xl);
-  }
-
-  .list.list--max-h-2xl {
-    max-height: var(--container-2xl);
-  }
-
-  .list.list--max-h-3xl {
-    max-height: var(--container-3xl);
-  }
-
-  .list.list--max-h-4xl {
-    max-height: var(--container-4xl);
-  }
-
-  .list.list--max-h-5xl {
-    max-height: var(--container-5xl);
-  }
-
-  .list.list--max-h-6xl {
-    max-height: var(--container-6xl);
-  }
-
-  .list.list--max-h-7xl {
-    max-height: var(--container-7xl);
-  }
-
-  .list.list--text-xs {
-    font-size: var(--text-xs);
-    line-height: var(--leading-xs);
-  }
-
-  .list.list--text-sm {
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-  }
-
-  .list.list--text-base {
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-  }
-
-  .list.list--text-lg {
-    font-size: var(--text-lg);
-    line-height: var(--leading-lg);
-  }
-
-  .list.list--text-xl {
-    font-size: var(--text-xl);
-    line-height: var(--leading-xl);
-  }
-
-  .list.list--text-2xl {
-    font-size: var(--text-2xl);
-    line-height: var(--leading-2xl);
-  }
-
-  .list.list--text-3xl {
-    font-size: var(--text-3xl);
-    line-height: var(--leading-3xl);
-  }
-
-  .list.list--text-4xl {
-    font-size: var(--text-4xl);
-    line-height: var(--leading-4xl);
-  }
-
-  .list.list--accent {
+  .list.list--semantic-accent {
     color: var(--color-ui-ink-accent);
   }
 
-  .list.list--brand {
+  .list.list--semantic-brand {
     color: var(--color-ui-ink-brand);
   }
 
-  .list.list--alert {
+  .list.list--semantic-alert {
     color: var(--color-ui-ink-alert);
   }
 
-  .list.list--info {
+  .list.list--semantic-info {
     color: var(--color-ui-ink-info);
   }
 
-  .list.list--success {
+  .list.list--semantic-success {
     color: var(--color-ui-ink-success);
   }
 
-  .list.list--selected {
+  .list.list--semantic-selected {
     color: var(--color-selected-ink);
   }
 
@@ -277,8 +101,8 @@
     white-space: normal;
     padding: var(--space-md);
     color: var(--color-ui-ink);
-    border-bottom: 1px solid var(--color-border);
     text-align: start;
+    border-bottom: 1px solid var(--color-border);
   }
 
   .list li:last-child {

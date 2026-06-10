@@ -18,7 +18,7 @@ sitemap:
 
 فصنعت لعبة صغيرة.
 
-Tetrex شبكة 10 في 18 من checkboxes Corex تتظاهر بأنها قطع Tetris. كل خلية `<.checkbox>` حقيقي، بـ id ثابت، ونفس آلة Zag تحت كل checkbox آخر في المكتبة، ومعدّلات BEM للون القطعة (`checkbox--accent` للقطعة accent، `checkbox--info` لـ info، وهكذا). عندما تسقط قطعة، تضيء الخلايا. عندما يُمسح صف، ينهار. عندما تنتهي اللعبة، يسجل النتيجة في لوحة متصدرين مدعومة بـ Phoenix Presence وGenServer لكل لعبة.
+Tetrex شبكة 10 في 18 من checkboxes Corex تتظاهر بأنها قطع Tetris. كل خلية `<.checkbox>` حقيقي، بـ id ثابت، ونفس آلة Zag تحت كل checkbox آخر في المكتبة، ومعدّلات BEM للون القطعة (`checkbox--semantic-accent` للقطعة accent، `checkbox--semantic-info` لـ info، وهكذا). عندما تسقط قطعة، تضيء الخلايا. عندما يُمسح صف، ينهار. عندما تنتهي اللعبة، يسجل النتيجة في لوحة متصدرين مدعومة بـ Phoenix Presence وGenServer لكل لعبة.
 
 يمكنك لعبها في [/ar/showcases/tetrex](/ar/showcases/tetrex). محرك اللعبة نفسه JavaScript عادي في `tetrex_engine.js`. الجزء المثير ليس كيف يعمل المحرك. الجزء المثير ماذا يحدث لـ 180 checkbox يمكن الوصول إليها عندما تعامل الشاشة كـ frame buffer.
 

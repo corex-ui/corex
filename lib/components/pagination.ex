@@ -99,7 +99,7 @@ defmodule Corex.Pagination do
   ### With classes
 
   ```heex
-  <.pagination class="pagination pagination--accent pagination--md" count={95} page_size={10}>
+  <.pagination class="pagination pagination--semantic-accent pagination--size-md" count={95} page_size={10}>
     <:prev><.heroicon name="hero-chevron-left" /></:prev>
     <:next><.heroicon name="hero-chevron-right" /></:next>
     <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
@@ -132,7 +132,7 @@ defmodule Corex.Pagination do
   ### set_page
 
   ```heex
-  <.action phx-click={Corex.Pagination.set_page("pagination-api-bind", 5)} class="button button--sm">5</.action>
+  <.action phx-click={Corex.Pagination.set_page("pagination-api-bind", 5)} class="button button--size-sm">5</.action>
   <.pagination id="pagination-api-bind" count={95} page={5} page_size={10}>
     <:prev><.heroicon name="hero-chevron-left" /></:prev>
     <:next><.heroicon name="hero-chevron-right" /></:next>
@@ -283,21 +283,21 @@ defmodule Corex.Pagination do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `pagination` |
-  | Accent | `pagination pagination--accent` |
-  | Brand | `pagination pagination--brand` |
-  | Alert | `pagination pagination--alert` |
-  | Success | `pagination pagination--success` |
-  | Info | `pagination pagination--info` |
+  | Accent | `pagination pagination--semantic-accent` |
+  | Brand | `pagination pagination--semantic-brand` |
+  | Alert | `pagination pagination--semantic-alert` |
+  | Success | `pagination pagination--semantic-success` |
+  | Info | `pagination pagination--semantic-info` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `pagination` |
-  | SM | `pagination pagination--sm` |
-  | MD | `pagination pagination--md` |
-  | LG | `pagination pagination--lg` |
-  | XL | `pagination pagination--xl` |
+  | SM | `pagination pagination--size-sm` |
+  | MD | `pagination pagination--size-md` |
+  | LG | `pagination pagination--size-lg` |
+  | XL | `pagination pagination--size-xl` |
 
   ### Text
 

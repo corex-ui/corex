@@ -127,12 +127,12 @@ defmodule E2eWeb.Demos.DataTableDemo do
   def styling_semantic_code_tabs do
     styling_code_tabs(
       "data-table-styling-semantic-accent",
-      "data-table data-table--accent max-w-none"
+      "data-table data-table--semantic-accent max-w-none"
     )
   end
 
   def styling_size_code_tabs do
-    styling_code_tabs("data-table-styling-size-lg", "data-table data-table--lg max-w-none")
+    styling_code_tabs("data-table-styling-size-lg", "data-table data-table--size-lg max-w-none")
   end
 
   def styling_max_width_code_tabs do

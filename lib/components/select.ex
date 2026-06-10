@@ -133,7 +133,7 @@ defmodule Corex.Select do
   ### With classes
 
   ```heex
-  <.select class="select select--accent select--md" items={Corex.List.new([
+  <.select class="select select--semantic-accent select--size-md" items={Corex.List.new([
     %{label: "France", value: "fra"},
     %{label: "Belgium", value: "bel"},
     %{label: "Germany", value: "deu"}
@@ -399,7 +399,7 @@ defmodule Corex.Select do
   ### set_value
 
   ```heex
-  <.action phx-click={Corex.Select.set_value("select-api-bind", ["fra"])} class="button button--sm">France</.action>
+  <.action phx-click={Corex.Select.set_value("select-api-bind", ["fra"])} class="button button--size-sm">France</.action>
   <.select id="select-api-bind" class="select" items={
     Corex.List.new([
       %{label: "France", value: "fra"},
@@ -514,20 +514,20 @@ defmodule Corex.Select do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `select` |
-  | Accent | `select select--accent` |
-  | Brand | `select select--brand` |
-  | Alert | `select select--alert` |
-  | Success | `select select--success` |
-  | Info | `select select--info` |
+  | Accent | `select select--semantic-accent` |
+  | Brand | `select select--semantic-brand` |
+  | Alert | `select select--semantic-alert` |
+  | Success | `select select--semantic-success` |
+  | Info | `select select--semantic-info` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `select select--sm` |
-  | MD | `select select--md` |
-  | LG | `select select--lg` |
-  | XL | `select select--xl` |
+  | SM | `select select--size-sm` |
+  | MD | `select select--size-md` |
+  | LG | `select select--size-lg` |
+  | XL | `select select--size-xl` |
 
   ### Text
 

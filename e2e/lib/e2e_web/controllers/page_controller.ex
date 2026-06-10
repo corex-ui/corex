@@ -13,41 +13,26 @@ defmodule E2eWeb.PageController do
     render(conn, :navigate_page)
   end
 
-  def navigate_styling_page(conn, _params) do
-    render(conn, :navigate_styling_page)
-  end
 
   def switch_page(conn, _params) do
     render(conn, :switch_page)
   end
 
-  def switch_styling_page(conn, _params) do
-    render(conn, :switch_styling_page)
-  end
 
   def pagination_page(conn, _params) do
     render(conn, :pagination_page)
   end
 
-  def pagination_styling_page(conn, _params) do
-    render(conn, :pagination_styling_page)
-  end
 
   def toggle_group_page(conn, _params) do
     render(conn, :toggle_group_page)
   end
 
-  def toggle_group_styling_page(conn, _params) do
-    render(conn, :toggle_group_styling_page)
-  end
 
   def combobox_page(conn, _params) do
     render(conn, :combobox_page)
   end
 
-  def combobox_styling_page(conn, _params) do
-    render(conn, :combobox_styling_page)
-  end
 
   def combobox_form_page(conn, _params) do
     phoenix_form =
@@ -141,17 +126,11 @@ defmodule E2eWeb.PageController do
     render(conn, :color_picker_page)
   end
 
-  def color_picker_styling_page(conn, _params) do
-    render(conn, :color_picker_styling_page)
-  end
 
   def checkbox_page(conn, _params) do
     render(conn, :checkbox_page)
   end
 
-  def checkbox_styling_page(conn, _params) do
-    render(conn, :checkbox_styling_page)
-  end
 
   defp assign_checkbox_form_docs(conn, scroll_to) do
     conn
@@ -323,9 +302,6 @@ defmodule E2eWeb.PageController do
     render(conn, :select_page)
   end
 
-  def select_styling_page(conn, _params) do
-    render(conn, :select_styling_page)
-  end
 
   defp assign_select_form_docs(conn, scroll_to) do
     conn
@@ -409,49 +385,31 @@ defmodule E2eWeb.PageController do
     render(conn, :tabs_page)
   end
 
-  def tabs_styling_page(conn, _params) do
-    render(conn, :tabs_styling_page)
-  end
 
   def tags_input_page(conn, _params) do
     render(conn, :tags_input_page)
   end
 
-  def tags_input_styling_page(conn, _params) do
-    render(conn, :tags_input_styling_page)
-  end
 
   def toggle_page(conn, _params) do
     render(conn, :toggle_page)
   end
 
-  def toggle_styling_page(conn, _params) do
-    render(conn, :toggle_styling_page)
-  end
 
   def collapsible_page(conn, _params) do
     render(conn, :collapsible_page)
   end
 
-  def collapsible_styling_page(conn, _params) do
-    render(conn, :collapsible_styling_page)
-  end
 
   def dialog_page(conn, _params) do
     render(conn, :dialog_page)
   end
 
-  def dialog_styling_page(conn, _params) do
-    render(conn, :dialog_styling_page)
-  end
 
   def clipboard_page(conn, _params) do
     render(conn, :clipboard_page)
   end
 
-  def clipboard_styling_page(conn, _params) do
-    render(conn, :clipboard_styling_page)
-  end
 
   def code_page(conn, _params) do
     conn
@@ -459,9 +417,6 @@ defmodule E2eWeb.PageController do
     |> render(:code_page)
   end
 
-  def code_styling_page(conn, _params) do
-    render(conn, :code_styling_page)
-  end
 
   defp assign_angle_slider_form_docs(conn, scroll_to) do
     conn
@@ -629,9 +584,6 @@ defmodule E2eWeb.PageController do
     render(conn, :date_picker_page)
   end
 
-  def date_picker_styling_page(conn, _params) do
-    render(conn, :date_picker_styling_page)
-  end
 
   defp assign_date_picker_form_docs(conn, scroll_to) do
     demo = E2eWeb.Demos.DatePickerDemo
@@ -837,9 +789,6 @@ defmodule E2eWeb.PageController do
     render(conn, :signature_page)
   end
 
-  def signature_styling_page(conn, _params) do
-    render(conn, :signature_styling_page)
-  end
 
   defp assign_signature_form_docs(conn, scroll_to) do
     conn
@@ -925,57 +874,36 @@ defmodule E2eWeb.PageController do
     render(conn, :menu_page)
   end
 
-  def menu_styling_page(conn, _params) do
-    render(conn, :menu_styling_page)
-  end
 
   def tree_view_page(conn, _params) do
     render(conn, :tree_view_page)
   end
 
-  def tree_view_styling_page(conn, _params) do
-    render(conn, :tree_view_styling_page)
-  end
 
   def layout_heading_page(conn, _params) do
     render(conn, :layout_heading_page)
   end
 
-  def layout_heading_styling_page(conn, _params) do
-    render(conn, :layout_heading_styling_page)
-  end
 
   def angle_slider_page(conn, _params) do
     render(conn, :angle_slider_page)
   end
 
-  def angle_slider_styling_page(conn, _params) do
-    render(conn, :angle_slider_styling_page)
-  end
 
   def avatar_page(conn, _params) do
     render(conn, :avatar_page)
   end
 
-  def avatar_styling_page(conn, _params) do
-    render(conn, :avatar_styling_page)
-  end
 
   def carousel_page(conn, _params) do
     render(conn, :carousel_page)
   end
 
-  def carousel_styling_page(conn, _params) do
-    render(conn, :carousel_styling_page)
-  end
 
   def data_list_page(conn, _params) do
     render(conn, :data_list_page)
   end
 
-  def data_list_styling_page(conn, _params) do
-    render(conn, :data_list_styling_page)
-  end
 
   def data_table_page(conn, _params) do
     render(conn, :data_table_page)
@@ -985,9 +913,6 @@ defmodule E2eWeb.PageController do
     render(conn, :editable_page, value_text: "My custom value")
   end
 
-  def editable_styling_page(conn, _params) do
-    render(conn, :editable_styling_page)
-  end
 
   defp assign_editable_form_docs(conn, scroll_to) do
     conn
@@ -1071,9 +996,6 @@ defmodule E2eWeb.PageController do
     render(conn, :native_input_page)
   end
 
-  def native_input_styling_page(conn, _params) do
-    render(conn, :native_input_styling_page)
-  end
 
   defp assign_native_input_form_docs(conn, scroll_to) do
     conn
@@ -1157,33 +1079,21 @@ defmodule E2eWeb.PageController do
     render(conn, :floating_panel_page)
   end
 
-  def floating_panel_styling_page(conn, _params) do
-    render(conn, :floating_panel_styling_page)
-  end
 
   def listbox_page(conn, _params) do
     render(conn, :listbox_page)
   end
 
-  def listbox_styling_page(conn, _params) do
-    render(conn, :listbox_styling_page)
-  end
 
   def marquee_page(conn, _params) do
     render(conn, :marquee_page)
   end
 
-  def marquee_styling_page(conn, _params) do
-    render(conn, :marquee_styling_page)
-  end
 
   def number_input_page(conn, _params) do
     render(conn, :number_input_page)
   end
 
-  def number_input_styling_page(conn, _params) do
-    render(conn, :number_input_styling_page)
-  end
 
   defp assign_number_input_form_docs(conn, scroll_to) do
     conn
@@ -1275,9 +1185,6 @@ defmodule E2eWeb.PageController do
     render(conn, :file_upload_page)
   end
 
-  def file_upload_styling_page(conn, _params) do
-    render(conn, :file_upload_styling_page)
-  end
 
   defp assign_file_upload_form_docs(conn, scroll_to) do
     conn
@@ -1460,9 +1367,6 @@ defmodule E2eWeb.PageController do
     render(conn, :password_input_page)
   end
 
-  def password_input_styling_page(conn, _params) do
-    render(conn, :password_input_styling_page)
-  end
 
   defp assign_password_input_form_docs(conn, scroll_to) do
     conn
@@ -1553,9 +1457,6 @@ defmodule E2eWeb.PageController do
     render(conn, :pin_input_page)
   end
 
-  def pin_input_styling_page(conn, _params) do
-    render(conn, :pin_input_styling_page)
-  end
 
   defp assign_pin_input_form_docs(conn, scroll_to) do
     conn
@@ -1720,9 +1621,6 @@ defmodule E2eWeb.PageController do
     render(conn, :radio_group_page)
   end
 
-  def radio_group_styling_page(conn, _params) do
-    render(conn, :radio_group_styling_page)
-  end
 
   defp assign_radio_group_form_docs(conn, scroll_to) do
     conn
@@ -1807,25 +1705,16 @@ defmodule E2eWeb.PageController do
     render(conn, :timer_page)
   end
 
-  def timer_styling_page(conn, _params) do
-    render(conn, :timer_styling_page)
-  end
 
   def toast_anatomy_page(conn, _params) do
     render(conn, :toast_anatomy_page)
   end
 
-  def toast_styling_page(conn, _params) do
-    render(conn, :toast_styling_page)
-  end
 
   def tooltip_page(conn, _params) do
     render(conn, :tooltip_page)
   end
 
-  def tooltip_styling_page(conn, _params) do
-    render(conn, :tooltip_styling_page)
-  end
 
   def templates_page(conn, _params) do
     template_carousel_items = [

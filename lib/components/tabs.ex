@@ -82,7 +82,7 @@ defmodule Corex.Tabs do
   ### With classes
 
   ```heex
-  <.tabs class="tabs tabs--accent tabs--md" items={Corex.Content.new([
+  <.tabs class="tabs tabs--semantic-accent tabs--size-md" items={Corex.Content.new([
     [label: "Lorem", content: "Consectetur adipiscing elit."],
     [label: "Duis", content: "Nullam eget vestibulum ligula."]
   ])} />
@@ -193,20 +193,20 @@ defmodule Corex.Tabs do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `tabs` |
-  | Accent | `tabs tabs--accent` |
-  | Brand | `tabs tabs--brand` |
-  | Alert | `tabs tabs--alert` |
-  | Info | `tabs tabs--info` |
-  | Success | `tabs tabs--success` |
+  | Accent | `tabs tabs--semantic-accent` |
+  | Brand | `tabs tabs--semantic-brand` |
+  | Alert | `tabs tabs--semantic-alert` |
+  | Info | `tabs tabs--semantic-info` |
+  | Success | `tabs tabs--semantic-success` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `tabs tabs--sm` |
-  | MD | `tabs tabs--md` |
-  | LG | `tabs tabs--lg` |
-  | XL | `tabs tabs--xl` |
+  | SM | `tabs tabs--size-sm` |
+  | MD | `tabs tabs--size-md` |
+  | LG | `tabs tabs--size-lg` |
+  | XL | `tabs tabs--size-xl` |
 
   <!-- tabs-close -->
 

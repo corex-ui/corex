@@ -47,7 +47,7 @@ defmodule Corex.Navigate do
   ### With classes
 
   ```heex
-  <.navigate to="/signup" as="button" class="button button--accent button--lg">
+  <.navigate to="/signup" as="button" class="button button--semantic-accent button--size-lg">
     Get started
   </.navigate>
   ```

@@ -22,6 +22,21 @@ defmodule Corex.Design.Selector do
   end
 
   def slot(scope, part), do: part_node(scope, part)
+
+  def strip_host_variant(selector, name) do
+    case String.split(selector, " ", parts: 2) do
+      [host, descendant] ->
+        if host_variant?(host, name), do: String.trim(descendant), else: selector
+
+      _ ->
+        selector
+    end
+  end
+
+  defp host_variant?(host, name) do
+    base = ".#{class_name(name)}.#{class_name(name)}--"
+    String.starts_with?(host, base)
+  end
 end
 
 defmodule Corex.Design.Rule do

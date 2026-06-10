@@ -8,7 +8,7 @@ Explicit anchors. Import `link.css` when using Corex Design.
 
 ```heex
 <.navigate to="/about" class="link">About</.navigate>
-<.navigate to={~p"/dashboard"} type="navigate" class="link link--accent">Dashboard</.navigate>
+<.navigate to={~p"/dashboard"} type="navigate" class="link link--semantic-accent">Dashboard</.navigate>
 <.navigate to={~p"/items?page=2"} type="patch" class="link">Page 2</.navigate>
 <.navigate to="https://example.com" external class="link">External</.navigate>
 ```
@@ -26,7 +26,7 @@ Icon-only links need `aria_label`. `external` only valid with `type="href"`.
 Actions and form submit. Can bind imperative API:
 
 ```heex
-<.action class="button button--accent" phx-click={Corex.Dialog.open("my-dialog")}>
+<.action class="button button--semantic-accent" phx-click={Corex.Dialog.open("my-dialog")}>
   Open
 </.action>
 ```
@@ -65,7 +65,7 @@ items =
 ```heex
 <.select
   id="language-switch"
-  class="select select--sm"
+  class="select select--size-sm"
   items={items}
   value={[current_dest]}
   redirect

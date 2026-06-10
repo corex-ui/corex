@@ -276,10 +276,22 @@
   & [data-part="branch-text"] {
     display: flex;
     gap: var(--space);
-    width: 100%;
+    flex: 1 1 0%;
+    min-width: 0;
+    max-width: 100%;
+    width: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     text-align: start;
     align-items: center;
-    flex: 1;
+  }
+
+  & [data-part="branch-indicator"],
+  & [data-part="item-indicator"] {
+    margin-inline-start: auto;
+    flex-shrink: 0;
+    min-width: 1em;
   }
 }
 }
@@ -379,39 +391,61 @@
 }
 
 
-@utility ui-trigger--square {
-& {
-  aspect-ratio: 1 / 1;
-  padding: 0;
-  justify-content: center;
-  width: auto;
-}
-}
+@utility ui-trigger--* {
+  font-size: --value(--text-*, [length]);
+  line-height: --value(--text-*--line-height, [length]);
+  padding-inline: --value(--spacing-space-*, [length]);
+  gap: --value(--spacing-space-*, [length]);
+  min-height: --value(--spacing-size-*, [length]);
+  background-color: --value(--color-*, [color]);
+  color: --value(--color-*-ink, [color]);
 
-
-@utility ui-trigger--circle {
-& {
-  aspect-ratio: 1 / 1;
-  padding: 0;
-  justify-content: center;
-  width: auto;
-  border-radius: var(--radius-full) !important;
-}
-}
-
-
-@utility ui-trigger--ghost {
-& {
-  border-color: transparent !important;
-  background-color: transparent !important;
   &:hover {
-    background-color: var(--color-ui-hover) !important;
+    background-color: --value(--color-*-hover, [color]);
   }
 
   &:active {
-    background-color: var(--color-ui-active) !important;
+    background-color: --value(--color-*-active, [color]);
   }
-}
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: --value(--color-*-muted, [color]);
+    cursor: not-allowed;
+  }
+
+  &[data-state="open"],
+  &[data-state="checked"],
+  &[data-state="on"] {
+    background-color: --value(--color-*, [color]);
+    color: --value(--color-*-ink, [color]);
+
+    &:hover {
+      background-color: --value(--color-*-hover, [color]);
+    }
+
+    &:active {
+      background-color: --value(--color-*-active, [color]);
+    }
+
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
+      outline: none;
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: --value(--color-*-muted, [color]);
+      cursor: not-allowed;
+    }
+  }
 }
 
 
@@ -488,62 +522,4 @@
   line-height: --value(--text-*--line-height, [length]);
   color: --value(--color-ui-ink-*, [color]);
   gap: calc(--value(--spacing-*, [length]) * 0.5);
-}
-
-
-@utility ui-trigger--* {
-  font-size: --value(--text-*, [length]);
-  line-height: --value(--text-*--line-height, [length]);
-  padding-inline: --value(--spacing-space-*, [length]);
-  gap: --value(--spacing-space-*, [length]);
-  min-height: --value(--spacing-size-*, [length]);
-  background-color: --value(--color-*, [color]);
-  color: --value(--color-*-ink, [color]);
-
-  &:hover {
-    background-color: --value(--color-*-hover, [color]);
-  }
-
-  &:active {
-    background-color: --value(--color-*-active, [color]);
-  }
-
-  &:focus-visible {
-    outline: none;
-    box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
-  }
-
-  &:disabled,
-  &[data-disabled],
-  &[disabled] {
-    background-color: --value(--color-*-muted, [color]);
-    cursor: not-allowed;
-  }
-
-  &[data-state="open"],
-  &[data-state="checked"],
-  &[data-state="on"] {
-    background-color: --value(--color-*, [color]);
-    color: --value(--color-*-ink, [color]);
-
-    &:hover {
-      background-color: --value(--color-*-hover, [color]);
-    }
-
-    &:active {
-      background-color: --value(--color-*-active, [color]);
-    }
-
-    &:focus-visible {
-      box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
-      outline: none;
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: --value(--color-*-muted, [color]);
-      cursor: not-allowed;
-    }
-  }
 }

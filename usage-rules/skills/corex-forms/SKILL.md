@@ -18,7 +18,7 @@ No `<.form>` component — Phoenix `to_form/1` + Corex inputs with `field={@form
   <.native_input field={@form[:name]} type="text" class="native-input">
     <:label>Name</:label>
   </.native_input>
-  <.action type="submit" class="button button--accent">Save</.action>
+  <.action type="submit" class="button button--semantic-accent">Save</.action>
 </.form>
 ```
 

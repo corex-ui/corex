@@ -349,7 +349,7 @@ def language_switch(assigns) do
   ~H"""
   <.select
     id="corex-language-switch"
-    class="select select--sm max-w-6xs"
+    class="select select--size-sm max-w-6xs"
     items={@items}
     value={@value}
     redirect

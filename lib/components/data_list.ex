@@ -85,7 +85,7 @@ defmodule Corex.DataList do
   ### With classes
 
   ```heex
-  <.data_list class="data-list data-list--md" items={
+  <.data_list class="data-list data-list--size-md" items={
     Corex.Content.new([
       %{label: "Name", content: "Marie Curie"},
       %{label: "Field", content: "Physics"}
@@ -120,10 +120,10 @@ defmodule Corex.DataList do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `data-list data-list--sm` |
-  | MD | `data-list data-list--md` |
-  | LG | `data-list data-list--lg` |
-  | XL | `data-list data-list--xl` |
+  | SM | `data-list data-list--size-sm` |
+  | MD | `data-list data-list--size-md` |
+  | LG | `data-list data-list--size-lg` |
+  | XL | `data-list data-list--size-xl` |
 
   <!-- tabs-close -->
   '''

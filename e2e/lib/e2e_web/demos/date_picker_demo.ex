@@ -2187,4 +2187,8 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     </div>
     """
   end
+
+  def style_preview(assigns), do: E2eWeb.Demos.StylePreview.preview(:date_picker, assigns)
+  def style_playground(assigns), do: style_preview(assigns)
+
 end

@@ -60,7 +60,7 @@ defmodule Corex.Clipboard do
   ### With classes
 
   ```heex
-  <.clipboard class="clipboard clipboard--md" value="hello@example.com">
+  <.clipboard class="clipboard clipboard--size-md" value="hello@example.com">
     <:label>Email</:label>
     <:copy><.heroicon name="hero-clipboard" /></:copy>
     <:copied><.heroicon name="hero-check" /></:copied>
@@ -145,20 +145,20 @@ defmodule Corex.Clipboard do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `clipboard` |
-  | Accent | `clipboard clipboard--accent` |
-  | Brand | `clipboard clipboard--brand` |
-  | Alert | `clipboard clipboard--alert` |
-  | Info | `clipboard clipboard--info` |
-  | Success | `clipboard clipboard--success` |
+  | Accent | `clipboard clipboard--semantic-accent` |
+  | Brand | `clipboard clipboard--semantic-brand` |
+  | Alert | `clipboard clipboard--semantic-alert` |
+  | Info | `clipboard clipboard--semantic-info` |
+  | Success | `clipboard clipboard--semantic-success` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `clipboard clipboard--sm` |
-  | MD | `clipboard clipboard--md` |
-  | LG | `clipboard clipboard--lg` |
-  | XL | `clipboard clipboard--xl` |
+  | SM | `clipboard clipboard--size-sm` |
+  | MD | `clipboard clipboard--size-md` |
+  | LG | `clipboard clipboard--size-lg` |
+  | XL | `clipboard clipboard--size-xl` |
 
   <!-- tabs-close -->
 

@@ -11,7 +11,7 @@ defmodule E2eWeb.Demos.LayoutHeadingDemo do
       <:title>Page Title</:title>
       <:subtitle>Optional subtitle or context</:subtitle>
       <:actions>
-        <.action phx-click="save" class="button button--accent">Save</.action>
+        <.action phx-click="save" class="button button--semantic-accent">Save</.action>
       </:actions>
     </.layout_heading>
     """
@@ -271,4 +271,8 @@ defmodule E2eWeb.Demos.LayoutHeadingDemo do
     </.layout_heading>
     """
   end
+
+  def style_preview(assigns), do: E2eWeb.Demos.StylePreview.preview(:layout_heading, assigns)
+  def style_playground(assigns), do: style_preview(assigns)
+
 end

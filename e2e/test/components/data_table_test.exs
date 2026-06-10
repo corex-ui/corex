@@ -16,7 +16,7 @@ defmodule E2eWeb.DataTableTest do
     test "renders styling sections with full table features", %{conn: conn} do
       {_view, html} = live_ok!(conn, ~p"/data-table/style")
 
-      assert html =~ "data-table-styling-page"
+      assert html =~ "data-table-style-page"
       assert html =~ "data-table-styling-color"
       assert html =~ "data-table-styling-size"
       assert html =~ ~r/data-part="action-cell"/

@@ -799,7 +799,7 @@ defmodule E2eWeb.TetrexLive do
       <.editable
         :if={@show_replay_link && @can_edit_name}
         id="tetrex-overlay-player-name"
-        class="editable editable--sm w-full editable--max-w-xs"
+        class="editable editable--size-sm w-full editable--max-w-xs"
         value={@player_name}
         placeholder={~t"Name"}
         on_value_change="tetrex_player_name_changed"

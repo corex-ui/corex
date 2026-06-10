@@ -18,7 +18,7 @@ I wanted to know what the Corex checkbox would do under abuse. Not in a benchmar
 
 So I made a small game.
 
-Tetrex is a 10 by 18 grid of Corex checkboxes pretending to be Tetris tiles. Every cell is a real `<.checkbox>` component, with a stable id, the same Zag machine that runs underneath every other checkbox in the library, and BEM modifiers chosen for the piece color (`checkbox--accent` for the accent piece, `checkbox--info` for the info piece, and so on). When a piece falls, the cells light up. When a line clears, the row collapses. When the game ends, the score lands in a leaderboard backed by Phoenix Presence and a per-game GenServer.
+Tetrex is a 10 by 18 grid of Corex checkboxes pretending to be Tetris tiles. Every cell is a real `<.checkbox>` component, with a stable id, the same Zag machine that runs underneath every other checkbox in the library, and BEM modifiers chosen for the piece color (`checkbox--semantic-accent` for the accent piece, `checkbox--semantic-info` for the info piece, and so on). When a piece falls, the cells light up. When a line clears, the row collapses. When the game ends, the score lands in a leaderboard backed by Phoenix Presence and a per-game GenServer.
 
 You can play it at [/en/showcases/tetrex](/en/showcases/tetrex). The game engine itself is plain JavaScript in `tetrex_engine.js`. The interesting part is not how the engine works. The interesting part is what happens to 180 accessible checkboxes when you treat the screen like a frame buffer.
 

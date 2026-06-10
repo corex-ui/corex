@@ -288,7 +288,7 @@ defmodule E2eWeb.AccordionPlayLive do
             <.demo_preview_tabs
               id="accordion-play-preview"
               code={@play_snippet}
-              trigger_class="button button--sm"
+              trigger_class="button button--size-sm"
             >
               <:preview>
                 <.authoring_preview>

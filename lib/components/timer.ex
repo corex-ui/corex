@@ -64,7 +64,7 @@ defmodule Corex.Timer do
   ### With classes
 
   ```heex
-  <.timer class="timer timer--accent timer--md" start_ms={60_000} />
+  <.timer class="timer timer--semantic-accent timer--size-md" start_ms={60_000} />
   ```
 
   <!-- tabs-close -->

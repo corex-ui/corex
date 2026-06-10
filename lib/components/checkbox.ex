@@ -76,7 +76,7 @@ defmodule Corex.Checkbox do
   ### With classes
 
   ```heex
-  <.checkbox class="checkbox checkbox--accent checkbox--md">
+  <.checkbox class="checkbox checkbox--semantic-accent checkbox--size-md">
     <:label>Option</:label>
     <:indicator>
       <.heroicon name="hero-check" />
@@ -102,13 +102,13 @@ defmodule Corex.Checkbox do
   ### set_checked
 
   ```heex
-  <.action phx-click={Corex.Checkbox.set_checked("checkbox-api-bind", true)} class="button button--sm">
+  <.action phx-click={Corex.Checkbox.set_checked("checkbox-api-bind", true)} class="button button--size-sm">
     Set checked
   </.action>
-  <.action phx-click={Corex.Checkbox.set_checked("checkbox-api-bind", false)} class="button button--sm">
+  <.action phx-click={Corex.Checkbox.set_checked("checkbox-api-bind", false)} class="button button--size-sm">
     Set unchecked
   </.action>
-  <.action phx-click={Corex.Checkbox.toggle_checked("checkbox-api-bind")} class="button button--sm">
+  <.action phx-click={Corex.Checkbox.toggle_checked("checkbox-api-bind")} class="button button--size-sm">
     Toggle
   </.action>
   <.checkbox id="checkbox-api-bind">
@@ -293,11 +293,11 @@ defmodule Corex.Checkbox do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `checkbox` |
-  | Accent | `checkbox checkbox--accent` |
-  | Brand | `checkbox checkbox--brand` |
-  | Alert | `checkbox checkbox--alert` |
-  | Info | `checkbox checkbox--info` |
-  | Success | `checkbox checkbox--success` |
+  | Accent | `checkbox checkbox--semantic-accent` |
+  | Brand | `checkbox checkbox--semantic-brand` |
+  | Alert | `checkbox checkbox--semantic-alert` |
+  | Info | `checkbox checkbox--semantic-info` |
+  | Success | `checkbox checkbox--semantic-success` |
 
   ```heex
   <.checkbox class="checkbox" checked>
@@ -309,7 +309,7 @@ defmodule Corex.Checkbox do
           <.heroicon name="hero-minus" />
         </:indeterminate>
       </.checkbox>
-      <.checkbox class="checkbox checkbox--accent" checked>
+      <.checkbox class="checkbox checkbox--semantic-accent" checked>
         <:label>Accent</:label>
         <:indicator>
           <.heroicon name="hero-check" />
@@ -318,7 +318,7 @@ defmodule Corex.Checkbox do
           <.heroicon name="hero-minus" />
         </:indeterminate>
       </.checkbox>
-      <.checkbox class="checkbox checkbox--brand" checked>
+      <.checkbox class="checkbox checkbox--semantic-brand" checked>
         <:label>Brand</:label>
         <:indicator>
           <.heroicon name="hero-check" />
@@ -327,7 +327,7 @@ defmodule Corex.Checkbox do
           <.heroicon name="hero-minus" />
         </:indeterminate>
       </.checkbox>
-      <.checkbox class="checkbox checkbox--alert" checked>
+      <.checkbox class="checkbox checkbox--semantic-alert" checked>
         <:label>Alert</:label>
         <:indicator>
           <.heroicon name="hero-check" />
@@ -336,7 +336,7 @@ defmodule Corex.Checkbox do
           <.heroicon name="hero-minus" />
         </:indeterminate>
       </.checkbox>
-      <.checkbox class="checkbox checkbox--info" checked>
+      <.checkbox class="checkbox checkbox--semantic-info" checked>
         <:label>Info</:label>
         <:indicator>
           <.heroicon name="hero-check" />
@@ -345,7 +345,7 @@ defmodule Corex.Checkbox do
           <.heroicon name="hero-minus" />
         </:indeterminate>
       </.checkbox>
-      <.checkbox class="checkbox checkbox--success" checked>
+      <.checkbox class="checkbox checkbox--semantic-success" checked>
         <:label>Success</:label>
         <:indicator>
           <.heroicon name="hero-check" />
@@ -360,22 +360,22 @@ defmodule Corex.Checkbox do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `checkbox checkbox--sm` |
+  | SM | `checkbox checkbox--size-sm` |
   | Default | `checkbox` |
-  | LG | `checkbox checkbox--lg` |
-  | XL | `checkbox checkbox--xl` |
+  | LG | `checkbox checkbox--size-lg` |
+  | XL | `checkbox checkbox--size-xl` |
 
   ```heex
-  <.checkbox class="checkbox checkbox--sm">
+  <.checkbox class="checkbox checkbox--size-sm">
         <:label>Small</:label>
       </.checkbox>
       <.checkbox class="checkbox">
         <:label>Default</:label>
       </.checkbox>
-      <.checkbox class="checkbox checkbox--lg">
+      <.checkbox class="checkbox checkbox--size-lg">
         <:label>Large</:label>
       </.checkbox>
-      <.checkbox class="checkbox checkbox--xl">
+      <.checkbox class="checkbox checkbox--size-xl">
         <:label>XLarge</:label>
       </.checkbox>
   ```
@@ -385,7 +385,7 @@ defmodule Corex.Checkbox do
   Invalid styles the label and control border. Checked indicators keep their semantic fill color.
 
   ```heex
-  <.checkbox class="checkbox checkbox--accent" invalid checked errors={["Required"]}>
+  <.checkbox class="checkbox checkbox--semantic-accent" invalid checked errors={["Required"]}>
     <:label>Subscribe</:label>
     <:indicator>
       <.heroicon name="hero-check" />

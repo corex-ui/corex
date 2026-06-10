@@ -110,7 +110,7 @@ defmodule Corex.RadioGroup do
   ```heex
   <.radio_group
     name="rg-styled"
-    class="radio-group radio-group--accent radio-group--md"
+    class="radio-group radio-group--semantic-accent radio-group--size-md"
     items={[
       %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
       %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"}
@@ -214,7 +214,7 @@ defmodule Corex.RadioGroup do
   ### set_value
 
   ```heex
-  <.action phx-click={Corex.RadioGroup.set_value("radio-group-api-server", "duis")} class="button button--sm">
+  <.action phx-click={Corex.RadioGroup.set_value("radio-group-api-server", "duis")} class="button button--size-sm">
     Set Duis
   </.action>
   <.radio_group
@@ -333,20 +333,20 @@ defmodule Corex.RadioGroup do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `radio-group` |
-  | Accent | `radio-group radio-group--accent` |
-  | Brand | `radio-group radio-group--brand` |
-  | Alert | `radio-group radio-group--alert` |
-  | Info | `radio-group radio-group--info` |
-  | Success | `radio-group radio-group--success` |
+  | Accent | `radio-group radio-group--semantic-accent` |
+  | Brand | `radio-group radio-group--semantic-brand` |
+  | Alert | `radio-group radio-group--semantic-alert` |
+  | Info | `radio-group radio-group--semantic-info` |
+  | Success | `radio-group radio-group--semantic-success` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `radio-group radio-group--sm` |
-  | MD | `radio-group radio-group--md` |
-  | LG | `radio-group radio-group--lg` |
-  | XL | `radio-group radio-group--xl` |
+  | SM | `radio-group radio-group--size-sm` |
+  | MD | `radio-group radio-group--size-md` |
+  | LG | `radio-group radio-group--size-lg` |
+  | XL | `radio-group radio-group--size-xl` |
 
   <!-- tabs-close -->
 

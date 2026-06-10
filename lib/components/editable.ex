@@ -37,7 +37,7 @@ defmodule Corex.Editable do
   ### With classes
 
   ```heex
-  <.editable class="editable editable--accent editable--md" value="Click to edit">
+  <.editable class="editable editable--semantic-accent editable--size-md" value="Click to edit">
     <:label>Name</:label>
     <:edit_trigger><.heroicon name="hero-pencil-square" /></:edit_trigger>
     <:submit_trigger><.heroicon name="hero-check" /></:submit_trigger>
@@ -143,20 +143,20 @@ defmodule Corex.Editable do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `editable` |
-  | Accent | `editable editable--accent` |
-  | Brand | `editable editable--brand` |
-  | Alert | `editable editable--alert` |
-  | Info | `editable editable--info` |
-  | Success | `editable editable--success` |
+  | Accent | `editable editable--semantic-accent` |
+  | Brand | `editable editable--semantic-brand` |
+  | Alert | `editable editable--semantic-alert` |
+  | Info | `editable editable--semantic-info` |
+  | Success | `editable editable--semantic-success` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `editable editable--sm` |
-  | MD | `editable editable--md` |
-  | LG | `editable editable--lg` |
-  | XL | `editable editable--xl` |
+  | SM | `editable editable--size-sm` |
+  | MD | `editable editable--size-md` |
+  | LG | `editable editable--size-lg` |
+  | XL | `editable editable--size-xl` |
 
   <!-- tabs-close -->
 
