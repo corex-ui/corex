@@ -35,12 +35,15 @@ defmodule Corex.Design.Theme.Presets do
       colors: %{
         light: %{
           surface: %{
-            layer: %{stop: 50},
-            root: %{stop: 50},
-            ui: %{stop: 50, states: %{muted: 50, default: 50, hover: 100, active: 100}}
+            layer: %{lightness: 97},
+            root: %{lightness: 100},
+            ui: %{
+              lightness: 94,
+              states: %{muted: 97, default: 94, hover: 90, active: 87}
+            }
           },
           utility: %{
-            border: %{ratio: 1.32},
+            border: %{ratio: 1.12},
             outline: %{ratio: 2.2},
             shadow: %{ratio: 1.1}
           },
@@ -48,12 +51,15 @@ defmodule Corex.Design.Theme.Presets do
         },
         dark: %{
           surface: %{
-            layer: %{stop: 950},
-            root: %{stop: 950},
-            ui: %{stop: 900, states: %{muted: 900, default: 900, hover: 950, active: 950}}
+            layer: %{lightness: 14},
+            root: %{lightness: 7},
+            ui: %{
+              lightness: 24,
+              states: %{muted: 27, default: 24, hover: 20, active: 17}
+            }
           },
           utility: %{
-            border: %{ratio: 1.42},
+            border: %{ratio: 1.18},
             outline: %{ratio: 2.4},
             shadow: %{ratio: 1.22}
           },
@@ -78,30 +84,42 @@ defmodule Corex.Design.Theme.Presets do
       colors: %{
         light: %{
           surface: %{
-            layer: %{stop: 50},
-            root: %{stop: 50},
-            ui: %{stop: 100, states: %{muted: 50, default: 100, hover: 100, active: 200}}
+            layer: %{lightness: 97},
+            root: %{lightness: 99},
+            ui: %{
+              lightness: 92,
+              states: %{muted: 95, default: 92, hover: 88, active: 85}
+            }
           },
           utility: %{
-            border: %{ratio: 1.34},
+            border: %{ratio: 1.14},
             outline: %{ratio: 2.2},
             shadow: %{ratio: 1.07}
           },
           ink: %{default: %{ratio: 8.25}},
           semantic: %{
-            accent: %{stop: 600, states: %{muted: 500, default: 600, hover: 600, active: 700}},
-            brand: %{stop: 800, states: %{muted: 700, default: 800, hover: 800, active: 900}},
+            accent: %{
+              lightness: 42,
+              states: %{muted: 45, default: 42, hover: 38, active: 35}
+            },
+            brand: %{
+              lightness: 38,
+              states: %{muted: 41, default: 38, hover: 34, active: 31}
+            },
             selected: %{ink: %{color: "brand", ratio: 7}}
           }
         },
         dark: %{
           surface: %{
-            layer: %{stop: 950},
-            root: %{stop: 950},
-            ui: %{stop: 900, states: %{muted: 900, default: 900, hover: 950, active: 950}}
+            layer: %{lightness: 16},
+            root: %{lightness: 10},
+            ui: %{
+              lightness: 24,
+              states: %{muted: 27, default: 24, hover: 20, active: 17}
+            }
           },
           utility: %{
-            border: %{ratio: 1.43},
+            border: %{ratio: 1.2},
             outline: %{ratio: 2.4},
             shadow: %{ratio: 1.23}
           },
@@ -126,30 +144,45 @@ defmodule Corex.Design.Theme.Presets do
       colors: %{
         light: %{
           surface: %{
-            layer: %{stop: 50},
-            root: %{stop: 50},
-            ui: %{stop: 100, states: %{muted: 50, default: 100, hover: 100, active: 200}}
+            layer: %{lightness: 96},
+            root: %{lightness: 98},
+            ui: %{
+              lightness: 92,
+              states: %{muted: 95, default: 92, hover: 88, active: 85}
+            }
           },
           utility: %{
-            border: %{ratio: 1.34},
+            border: %{ratio: 1.14},
             outline: %{ratio: 2.2},
             shadow: %{ratio: 1.07}
           },
           ink: %{default: %{ratio: 8.25}},
           semantic: %{
-            accent: %{stop: 700, states: %{muted: 600, default: 700, hover: 700, active: 800}},
-            brand: %{stop: 700, states: %{muted: 600, default: 700, hover: 700, active: 800}},
-            success: %{stop: 700, states: %{muted: 600, default: 700, hover: 700, active: 800}}
+            accent: %{
+              lightness: 36,
+              states: %{muted: 39, default: 36, hover: 32, active: 29}
+            },
+            brand: %{
+              lightness: 42,
+              states: %{muted: 45, default: 42, hover: 38, active: 35}
+            },
+            success: %{
+              lightness: 38,
+              states: %{muted: 41, default: 38, hover: 34, active: 31}
+            }
           }
         },
         dark: %{
           surface: %{
-            layer: %{stop: 950},
-            root: %{stop: 950},
-            ui: %{stop: 900, states: %{muted: 900, default: 900, hover: 950, active: 950}}
+            layer: %{lightness: 16},
+            root: %{lightness: 9},
+            ui: %{
+              lightness: 24,
+              states: %{muted: 27, default: 24, hover: 20, active: 17}
+            }
           },
           utility: %{
-            border: %{ratio: 1.43},
+            border: %{ratio: 1.2},
             outline: %{ratio: 2.4},
             shadow: %{ratio: 1.23}
           },
@@ -348,7 +381,7 @@ defmodule Corex.Design.Theme.Presets do
       semantic: neo_light_semantic(),
       surface: neo_light_surface(),
       utility: %{
-        border: %{color: "base", ratio: 1.3},
+        border: %{color: "base", ratio: 1.12},
         outline: %{color: "base", ratio: 2.2},
         shadow: %{color: "base", ratio: 1.05}
       }
@@ -370,7 +403,7 @@ defmodule Corex.Design.Theme.Presets do
       semantic: neo_dark_semantic(),
       surface: neo_dark_surface(),
       utility: %{
-        border: %{color: "base", ratio: 1.4},
+        border: %{color: "base", ratio: 1.18},
         outline: %{color: "base", ratio: 2.4},
         shadow: %{color: "base", ratio: 1.2}
       }
@@ -379,30 +412,34 @@ defmodule Corex.Design.Theme.Presets do
 
   defp neo_light_surface do
     %{
-      layer: %{color: "base", stop: 50},
-      root: %{color: "base", stop: 50},
+      layer: %{color: "base", lightness: 97},
+      root: %{color: "base", lightness: 98},
       ui: %{
         color: "base",
-        stop: 100,
-        states: %{muted: 50, default: 100, hover: 100, active: 200}
+        lightness: 94,
+        states: %{muted: 97, default: 94, hover: 90, active: 87}
       }
     }
   end
 
   defp neo_dark_surface do
     %{
-      layer: %{color: "base", stop: 950},
-      root: %{color: "base", stop: 950},
+      layer: %{color: "base", lightness: 15},
+      root: %{color: "base", lightness: 8},
       ui: %{
         color: "base",
-        stop: 900,
-        states: %{muted: 900, default: 900, hover: 950, active: 950}
+        lightness: 24,
+        states: %{muted: 27, default: 24, hover: 20, active: 17}
       }
     }
   end
 
   defp neo_light_semantic do
-    fill = %{stop: 700, states: %{muted: 600, default: 700, hover: 700, active: 800}}
+    fill = %{
+      lightness: 40,
+      states: %{muted: 43, default: 40, hover: 36, active: 33}
+    }
+
     ink = %{color: "base", ratio: 7}
 
     %{
@@ -412,8 +449,8 @@ defmodule Corex.Design.Theme.Presets do
       info: Map.merge(fill, %{bg: "info", ink: ink}),
       selected: %{
         bg: "base",
-        stop: 100,
-        states: %{muted: 100, default: 100, hover: 200, active: 200},
+        lightness: 85,
+        states: %{muted: 88, default: 85, hover: 81, active: 78},
         ink: ink
       },
       success: Map.merge(fill, %{bg: "success", ink: ink})
@@ -421,21 +458,45 @@ defmodule Corex.Design.Theme.Presets do
   end
 
   defp neo_dark_semantic do
-    fill = %{stop: 600, states: %{muted: 500, default: 600, hover: 600, active: 700}}
     ink = %{color: "base", ratio: 7}
 
     %{
-      accent: Map.merge(fill, %{bg: "accent", ink: ink}),
-      alert: Map.merge(fill, %{bg: "alert", ink: ink}),
-      brand: Map.merge(fill, %{bg: "brand", ink: ink}),
-      info: Map.merge(fill, %{bg: "info", ink: ink}),
-      selected: %{
-        bg: "base",
-        stop: 800,
-        states: %{muted: 800, default: 800, hover: 900, active: 900},
+      accent: %{
+        bg: "accent",
+        lightness: 52,
+        states: %{muted: 55, default: 52, hover: 48, active: 45},
         ink: ink
       },
-      success: Map.merge(fill, %{bg: "success", ink: ink})
+      alert: %{
+        bg: "alert",
+        lightness: 48,
+        states: %{muted: 51, default: 48, hover: 44, active: 41},
+        ink: ink
+      },
+      brand: %{
+        bg: "brand",
+        lightness: 48,
+        states: %{muted: 51, default: 48, hover: 44, active: 41},
+        ink: ink
+      },
+      info: %{
+        bg: "info",
+        lightness: 48,
+        states: %{muted: 51, default: 48, hover: 44, active: 41},
+        ink: ink
+      },
+      selected: %{
+        bg: "base",
+        lightness: 34,
+        states: %{muted: 37, default: 34, hover: 30, active: 27},
+        ink: ink
+      },
+      success: %{
+        bg: "success",
+        lightness: 48,
+        states: %{muted: 51, default: 48, hover: 44, active: 41},
+        ink: ink
+      }
     }
   end
 end

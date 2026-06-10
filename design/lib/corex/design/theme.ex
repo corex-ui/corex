@@ -11,7 +11,8 @@ defmodule Corex.Design.Theme do
       `container_scale`, optional per-step `:radius`, optional `:font`
     * `:typography` — optional element style map (see `Corex.Design.Typography`)
 
-  Surface and semantic fills use `Color.Palette.tonal/2` stops from seed hexes.
+  Surface and semantic fills use `lightness` (0–100, OKLCH L% target) resolved
+  via a dense `Color.Palette.tonal/2` ramp from seed hexes.
   Ink and semantic foreground contrast uses each role's `ratio` field with
   `Color.Palette.contrast/2` (Leonardo-style WCAG targeting).
 

@@ -30,7 +30,7 @@ defmodule Corex.Design do
           acme:
             Corex.Design.Theme.merge_specs(Corex.Design.Theme.Presets.neo(), %{
               seeds: %{"brand" => "#E11D48"},
-              colors: %{light: %{semantic: %{brand: %{stop: 700}}}, dark: %{}},
+              colors: %{light: %{semantic: %{brand: %{lightness: 42}}}, dark: %{}},
               dimensions: %{radius_scale: 1.2}
             })
         }

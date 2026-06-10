@@ -100,7 +100,7 @@ defmodule Corex.Design.ThemeTest do
           seeds: %{"accent" => "#111111", "base" => "#FFFFFF", "info" => "#0000FF"},
           colors: %{
             light: %{
-              semantic: %{info: %{bg: "info", stop: 700, ink: %{color: "base", ratio: 7}}}
+              semantic: %{info: %{bg: "info", lightness: 40, ink: %{color: "base", ratio: 7}}}
             },
             dark: %{semantic: %{}, surface: %{}, ink: %{}, utility: %{}}
           },
@@ -126,45 +126,45 @@ defmodule Corex.Design.ThemeTest do
               semantic: %{
                 accent: %{
                   bg: "accent",
-                  stop: 700,
-                  states: %{muted: 600, default: 700, hover: 700, active: 800},
+                  lightness: 40,
+                  states: %{muted: 43, default: 40, hover: 36, active: 33},
                   ink: %{color: "base", ratio: 7}
                 },
                 marketing: %{
                   bg: "marketing",
-                  stop: 700,
-                  states: %{muted: 600, default: 700, hover: 700, active: 800},
+                  lightness: 40,
+                  states: %{muted: 43, default: 40, hover: 36, active: 33},
                   ink: %{color: "base", ratio: 7}
                 }
               },
               surface: %{
-                root: %{color: "base", stop: 50},
-                ui: %{color: "base", stop: 100}
+                root: %{color: "base", lightness: 98},
+                ui: %{color: "base", lightness: 94}
               },
               ink: %{default: %{color: "base", ratio: 8}},
-              utility: %{border: %{color: "base", ratio: 1.3}}
+              utility: %{border: %{color: "base", ratio: 1.12}}
             },
             dark: %{
               semantic: %{
                 accent: %{
                   bg: "accent",
-                  stop: 600,
-                  states: %{muted: 500, default: 600, hover: 600, active: 700},
+                  lightness: 48,
+                  states: %{muted: 51, default: 48, hover: 44, active: 41},
                   ink: %{color: "base", ratio: 7}
                 },
                 marketing: %{
                   bg: "marketing",
-                  stop: 600,
-                  states: %{muted: 500, default: 600, hover: 600, active: 700},
+                  lightness: 48,
+                  states: %{muted: 51, default: 48, hover: 44, active: 41},
                   ink: %{color: "base", ratio: 7}
                 }
               },
               surface: %{
-                root: %{color: "base", stop: 950},
-                ui: %{color: "base", stop: 900}
+                root: %{color: "base", lightness: 8},
+                ui: %{color: "base", lightness: 24}
               },
               ink: %{default: %{color: "base", ratio: 12}},
-              utility: %{border: %{color: "base", ratio: 1.4}}
+              utility: %{border: %{color: "base", ratio: 1.18}}
             }
           },
           dimensions: %{}
@@ -181,7 +181,7 @@ defmodule Corex.Design.ThemeTest do
       Theme.merge_specs(Presets.neo(), %{
         seeds: %{"brand" => "#FF0000"},
         colors: %{
-          light: %{semantic: %{brand: %{stop: 500}}},
+          light: %{semantic: %{brand: %{lightness: 50}}},
           dark: Presets.neo().colors.dark
         },
         dimensions: %{radius_scale: 1.25}

@@ -70,8 +70,8 @@ config :corex_design,
             semantic: %{
               brand: %{
                 bg: "brand",
-                stop: 700,
-                states: %{muted: 600, default: 700, hover: 700, active: 800},
+                lightness: 40,
+                states: %{muted: 43, default: 40, hover: 36, active: 33},
                 ink: %{color: "base", ratio: 7}
               }
             }

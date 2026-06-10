@@ -105,7 +105,7 @@ defmodule Corex.Design.Theme.Options do
     with {:ok, parsed} <- NimbleOptions.validate(atom_spec, @theme_spec_schema),
          :ok <- validate_seeds_hex(parsed.seeds),
          :ok <- validate_colors_shape(parsed.colors),
-         :ok <- validate_color_stops(parsed.colors) do
+         :ok <- validate_color_lightness(parsed.colors) do
       {:ok, Theme.normalize_input_spec(parsed)}
     end
   end
@@ -160,12 +160,12 @@ defmodule Corex.Design.Theme.Options do
     end
   end
 
-  defp validate_color_stops(colors) when is_map(colors) do
+  defp validate_color_lightness(colors) when is_map(colors) do
     Enum.reduce_while([:light, :dark], :ok, fn mode, :ok ->
       mode_map = Map.get(colors, mode, %{})
 
-      with :ok <- validate_role_stops(Map.get(mode_map, :surface, %{}), "surface"),
-           :ok <- validate_semantic_stops(Map.get(mode_map, :semantic, %{})) do
+      with :ok <- validate_role_lightness(Map.get(mode_map, :surface, %{}), "surface"),
+           :ok <- validate_semantic_lightness(Map.get(mode_map, :semantic, %{})) do
         {:cont, :ok}
       else
         {:error, _} = err -> {:halt, err}
@@ -173,7 +173,7 @@ defmodule Corex.Design.Theme.Options do
     end)
   end
 
-  defp validate_role_stops(roles, label) do
+  defp validate_role_lightness(roles, label) do
     Enum.reduce_while(roles, :ok, fn {role, cfg}, :ok ->
       case validate_fill_cfg(role, cfg, label) do
         :ok -> {:cont, :ok}
@@ -182,7 +182,7 @@ defmodule Corex.Design.Theme.Options do
     end)
   end
 
-  defp validate_semantic_stops(semantic) do
+  defp validate_semantic_lightness(semantic) do
     Enum.reduce_while(semantic, :ok, fn {role, cfg}, :ok ->
       case validate_fill_cfg(role, cfg, "semantic") do
         :ok -> {:cont, :ok}
@@ -192,28 +192,28 @@ defmodule Corex.Design.Theme.Options do
   end
 
   defp validate_fill_cfg(role, cfg, label) do
-    stop = Map.get(cfg, :stop)
+    lightness = Map.get(cfg, :lightness)
     states = Map.get(cfg, :states)
 
     cond do
       is_map(states) ->
         validate_states(role, states, label)
 
-      is_integer(stop) ->
-        validate_stop(role, stop, label)
+      is_integer(lightness) ->
+        validate_lightness(role, lightness, label)
 
-      is_nil(stop) and is_nil(states) ->
+      is_nil(lightness) and is_nil(states) ->
         :ok
 
       true ->
-        {:error, "themes colors #{label} #{inspect(role)} requires :stop or :states"}
+        {:error, "themes colors #{label} #{inspect(role)} requires :lightness or :states"}
     end
   end
 
   defp validate_states(role, states, label) do
     allowed = MapSet.new(PaletteGen.state_names())
 
-    Enum.reduce_while(states, :ok, fn {state, stop}, :ok ->
+    Enum.reduce_while(states, :ok, fn {state, lightness}, :ok ->
       state_str = if is_atom(state), do: Atom.to_string(state), else: to_string(state)
 
       cond do
@@ -222,13 +222,13 @@ defmodule Corex.Design.Theme.Options do
            {:error,
             "themes colors #{label} #{inspect(role)} state #{inspect(state)} must be one of #{inspect(PaletteGen.state_names())}"}}
 
-        not is_integer(stop) ->
+        not is_integer(lightness) ->
           {:halt,
            {:error,
-            "themes colors #{label} #{inspect(role)} state #{inspect(state)} stop must be an integer"}}
+            "themes colors #{label} #{inspect(role)} state #{inspect(state)} lightness must be an integer"}}
 
         true ->
-          case validate_stop(role, stop, label) do
+          case validate_lightness(role, lightness, label) do
             :ok -> {:cont, :ok}
             err -> {:halt, err}
           end
@@ -236,12 +236,12 @@ defmodule Corex.Design.Theme.Options do
     end)
   end
 
-  defp validate_stop(role, stop, label) do
-    if stop in PaletteGen.tonal_stops() do
+  defp validate_lightness(role, lightness, label) do
+    if lightness in PaletteGen.lightness_range() do
       :ok
     else
       {:error,
-       "themes colors #{label} #{inspect(role)} stop #{inspect(stop)} must be one of #{inspect(PaletteGen.tonal_stops())}"}
+       "themes colors #{label} #{inspect(role)} lightness #{inspect(lightness)} must be from 0 to 100"}
     end
   end
 
@@ -347,7 +347,7 @@ defmodule Corex.Design.Theme.Options do
     Enum.reduce_while(resolved, :ok, fn {_id, spec}, :ok ->
       colors = Map.get(spec, :colors, %{})
 
-      case validate_color_stops(colors) do
+      case validate_color_lightness(colors) do
         :ok -> {:cont, :ok}
         {:error, _} = err -> {:halt, err}
       end
