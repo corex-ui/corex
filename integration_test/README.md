@@ -7,6 +7,10 @@ This project contains integration tests for Phoenix-generated projects and Corex
 CI (`.github/workflows/elixir.yml`) installs **`phx_new`** and locally built **`corex_new`**, then runs,
 in order:
 
+The matrix runs **latest** `phx_new` on OTP 26 / 27 / 28, plus a **pinned `phx_new 1.8.4`** row on OTP 27
+and Elixir 1.18 (aligned with `installer/mix.exs` `@phoenix_version`) so `corex.new` stays compatible with
+older Phoenix installers as well as current Hex releases.
+
 1. **`mix test`**  -  matches local default; `test_helper.exs` sets `exclude: [:database]`, so untagged work runs here.
 2. **`mix test --include database:postgresql`**  -  uses the job’s **Postgres 15** service on **localhost:5432**
    (`PGHOST`, `PGUSER`, `PGPASSWORD`, `PGPORT`, `DATABASE_URL` set in the workflow).
