@@ -164,9 +164,18 @@ defmodule Corex.Bem do
 
     defp axis_attr(axis) do
       doc = "Style axis `#{axis}`."
+      values = Corex.StyleAxes.attr_values(axis)
 
-      quote do
-        attr(unquote(axis), :string, default: nil, doc: unquote(doc))
+      case values do
+        nil ->
+          quote do
+            attr(unquote(axis), :string, default: nil, doc: unquote(doc))
+          end
+
+        values ->
+          quote do
+            attr(unquote(axis), :string, default: nil, values: unquote(values), doc: unquote(doc))
+          end
       end
     end
 

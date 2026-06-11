@@ -10,7 +10,6 @@ defmodule Corex.Design.Config do
   alias Corex.Design.Config.Resolved
   alias Corex.Design.Theme
   alias Corex.Design.Tokens.Colors
-  alias Corex.Design.Tokens.Scales
   alias Corex.Design.Vocabulary
 
   @doc """
@@ -56,8 +55,7 @@ defmodule Corex.Design.Config do
       config: sanitize(Corex.Design.design_config()),
       resolved: sanitize(Map.new(resolved_options())),
       vocabulary: %{
-        semantic_roles: Vocabulary.semantic_strings(),
-        scales: scale_export()
+        semantic_roles: Vocabulary.semantic_strings()
       },
       themes: theme_export(),
       colors: color_export()
@@ -82,7 +80,7 @@ defmodule Corex.Design.Config do
          {:default_theme, "Default data-theme id (default :neo)"},
          {:default_mode, "Default data-mode (default :light)"},
          {:themes, "Built-in preset subset list or full theme catalog map"},
-         {:scales, "Per-axis scale replacement: [step: value] or step lists"},
+         {:scales, "Per-axis [step: value] overrides for built-in step names; optional semantic role subset"},
          {:recipes, "Recipe allowlist and host RecipeSource modules"},
          {:aliases, "Semantic role alias map for token resolution"}
        ]}
@@ -126,18 +124,6 @@ defmodule Corex.Design.Config do
     end)
   end
 
-  defp scale_export do
-    %{
-      space: Scales.space_steps(),
-      size: Scales.size_steps(),
-      text: Scales.text_steps(),
-      radius: Scales.radius_steps(),
-      weight: Scales.weight_steps(),
-      visual: Scales.visual_steps(),
-      shape: Scales.shape_steps()
-    }
-  end
-
   defp sanitize(term), do: Jason.decode!(Jason.encode!(term))
 end
 
@@ -147,6 +133,7 @@ defmodule Corex.Design.Config.Options do
   """
 
   alias Corex.Design.Config.Resolved
+  alias Corex.Design.Scales, as: ConfiguredScales
   alias Corex.Design.Theme.Options, as: ThemeOptions
 
   @scale_axes ~w(space size text radius weight visual shape semantic)a
@@ -171,7 +158,7 @@ defmodule Corex.Design.Config.Options do
             ],
             scales: [
               type: :keyword_list,
-              doc: "Per-axis scale replacement: dimension axes as [step: value] or step lists, semantic as atom list"
+              doc: "Per-axis [step: value] overrides for built-in step names; semantic as optional role atom list"
             ],
             recipes: [
               type: :keyword_list,
@@ -344,30 +331,49 @@ defmodule Corex.Design.Config.Options do
   defp validate_axis_scale(axis, spec) when is_list(spec) do
     cond do
       keyword_with_values?(spec) ->
-        if duplicate_scale_steps?(spec) do
-          {:error,
-           "config :corex, Corex.Design, scales: #{inspect(axis)} has duplicate step names"}
-        else
-          :ok
+        cond do
+          duplicate_scale_steps?(spec) ->
+            {:error,
+             "config :corex, Corex.Design, scales: #{inspect(axis)} has duplicate step names"}
+
+          true ->
+            validate_value_map_steps(axis, spec)
         end
 
       Enum.all?(spec, &(is_atom(&1) or is_binary(&1))) ->
-        if duplicate_scale_steps?(spec) do
-          {:error,
-           "config :corex, Corex.Design, scales: #{inspect(axis)} has duplicate step names"}
-        else
-          :ok
-        end
+        {:error,
+         "config :corex, Corex.Design, scales: #{inspect(axis)} step lists are not supported; use [step: value] overrides for built-in step names"}
 
       true ->
         {:error,
-         "config :corex, Corex.Design, scales: #{inspect(axis)} must be a step list or [step: value] keyword list"}
+         "config :corex, Corex.Design, scales: #{inspect(axis)} must be a [step: value] keyword list"}
     end
   end
 
   defp validate_axis_scale(axis, other) do
     {:error,
      "config :corex, Corex.Design, scales: #{inspect(axis)} must be a list, got: #{inspect(other)}"}
+  end
+
+  defp validate_value_map_steps(axis, spec) do
+    allowed = ConfiguredScales.builtin_step_strings(axis) |> MapSet.new()
+
+    invalid =
+      Enum.reject(spec, fn {step, _} ->
+        step
+        |> normalize_scale_step()
+        |> Atom.to_string()
+        |> then(&MapSet.member?(allowed, &1))
+      end)
+
+    case invalid do
+      [] ->
+        :ok
+
+      _ ->
+        {:error,
+         "config :corex, Corex.Design, scales: #{inspect(axis)} has unknown step names #{inspect(Enum.map(invalid, &elem(&1, 0)))}; allowed: #{inspect(MapSet.to_list(allowed))}"}
+    end
   end
 
   defp normalize_scale_overrides(list) when is_list(list), do: list

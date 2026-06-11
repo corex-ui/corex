@@ -41,8 +41,8 @@ and forward caller classes. Styling lives in optional `:corex_design` stylesheet
   NimbleOptions schemas.
 - **Recipe listing**: `mix corex.design.list` prints recipe ids for
   `include_recipes`.
-- **Template lint**: `mix corex.design.lint` checks HEEx style literals against
-  exported design vocabulary.
+- **Style attr validation**: Phoenix `attr(..., values:)` on Corex style axes
+  checks string literals at compile time.
 
 ### Breaking
 

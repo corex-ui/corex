@@ -2,31 +2,9 @@ defmodule Corex.Design.Scales do
   @moduledoc false
 
   alias Corex.Design.Tokens.Scales, as: TokenScales
+  alias Corex.StyleAxes
 
   @dimension_axes ~w(space size text radius weight visual shape)a
-
-  @builtin_steps [
-    size: ~w(sm md lg xl)a,
-    text: ~w(xs sm base lg xl 2xl 3xl 4xl)a,
-    radius: ~w(none xs sm md lg xl 2xl 3xl 4xl full)a,
-    weight: ~w(thin extralight light normal medium semibold bold extrabold black)a,
-    container: ~w(7xs 6xs 5xs 4xs 3xs 2xs xs sm md lg xl 2xl 3xl 4xl 5xl 6xl 7xl)a,
-    sizing: ~w(auto fit full)a,
-    visual: ~w(solid ghost outline subtle)a,
-    shape: ~w(auto square circle)a,
-    space: ~w(none sm md lg xl)a,
-    align: ~w(start center end stretch baseline)a,
-    justify: ~w(start center end between around evenly)a,
-    direction: ~w(row column)a,
-    wrap: ~w(wrap nowrap)a,
-    grow: ~w(none fill)a,
-    shrink: ~w(none 0)a,
-    columns: ~w(1 2 3 4 5 6)a,
-    orientation: ~w(horizontal vertical)a,
-    min_height: ~w(none full screen dvh)a
-  ]
-
-  @builtin_semantics ~w(base accent brand alert info success)a
 
   def dimension_values(axis) when axis in @dimension_axes do
     case configured_axis(axis) do
@@ -36,39 +14,29 @@ defmodule Corex.Design.Scales do
   end
 
   def dimension_steps(axis) when axis in @dimension_axes do
-    case configured_axis(axis) do
-      %{steps: steps} when steps != [] -> steps
-      _ -> default_steps(axis)
-    end
+    default_steps(axis)
   end
 
   def semantic_steps do
     case configured_axis(:semantic) do
       %{steps: steps} when steps != [] -> steps
-      _ -> builtin_semantics()
+      _ -> StyleAxes.builtin_semantics()
     end
   end
 
-  def builtin_steps(axis) when is_atom(axis) do
-    case Keyword.fetch(@builtin_steps, axis) do
-      {:ok, steps} -> steps
-      :error -> derived_builtin_steps(axis)
-    end
-  end
+  defdelegate builtin_steps(axis), to: StyleAxes
+  defdelegate builtin_step_strings(axis), to: StyleAxes
+  defdelegate builtin_semantic_atoms(), to: StyleAxes
+  defdelegate builtin_semantics(), to: StyleAxes
+  defdelegate attr_values(axis), to: StyleAxes
+  defdelegate attr_value_strings(axis), to: StyleAxes
 
-  def builtin_step_strings(axis) when is_atom(axis),
-    do: Enum.map(builtin_steps(axis), &Atom.to_string/1)
-
-  def builtin_semantic_atoms, do: @builtin_semantics
-
-  def builtin_semantics, do: Enum.map(@builtin_semantics, &Atom.to_string/1)
-
-  def builtin_visual_atoms, do: builtin_steps(:visual)
-  def builtin_shape_atoms, do: builtin_steps(:shape)
-  def builtin_size_atoms, do: builtin_steps(:size)
-  def builtin_text_atoms, do: builtin_steps(:text)
-  def builtin_radius_atoms, do: builtin_steps(:radius)
-  def builtin_weight_atoms, do: builtin_steps(:weight)
+  def builtin_visual_atoms, do: StyleAxes.builtin_steps(:visual)
+  def builtin_shape_atoms, do: StyleAxes.builtin_steps(:shape)
+  def builtin_size_atoms, do: StyleAxes.builtin_steps(:size)
+  def builtin_text_atoms, do: StyleAxes.builtin_steps(:text)
+  def builtin_radius_atoms, do: StyleAxes.builtin_steps(:radius)
+  def builtin_weight_atoms, do: StyleAxes.builtin_steps(:weight)
 
   defp configured_axis(axis) do
     parse_axis(axis, scales_input())
@@ -90,14 +58,19 @@ defmodule Corex.Design.Scales do
         %{steps: Enum.map(spec, &normalize_step/1), values: %{}}
 
       keyword_with_values?(spec) ->
+        overrides =
+          spec
+          |> Map.new(fn {step, value} -> {normalize_step(step), value} end)
+
+        defaults = default_values(axis)
+
         %{
-          steps: Enum.map(spec, fn {step, _} -> normalize_step(step) end),
-          values: Map.new(spec)
+          steps: default_steps(axis),
+          values: Map.merge(defaults, overrides)
         }
 
       true ->
-        steps = Enum.map(spec, &normalize_step/1)
-        %{steps: steps, values: pick_defaults(axis, steps)}
+        %{steps: default_steps(axis), values: default_values(axis)}
     end
   end
 
@@ -106,7 +79,7 @@ defmodule Corex.Design.Scales do
   defp normalize_entries(_), do: []
 
   defp default_steps(axis) do
-    builtin_steps(axis) |> Enum.map(&Atom.to_string/1)
+    StyleAxes.builtin_step_strings(axis)
   end
 
   defp default_values(axis) do
@@ -124,23 +97,6 @@ defmodule Corex.Design.Scales do
     Map.new(table)
   end
 
-  defp pick_defaults(axis, steps) do
-    defaults = default_values(axis)
-
-    steps
-    |> Enum.map(fn step ->
-      key =
-        try do
-          String.to_existing_atom(step)
-        rescue
-          ArgumentError -> String.to_atom(step)
-        end
-
-      {key, Map.fetch!(defaults, key)}
-    end)
-    |> Map.new()
-  end
-
   defp keyword_with_values?(list) do
     Keyword.keyword?(list) and
       Enum.all?(list, fn
@@ -153,19 +109,4 @@ defmodule Corex.Design.Scales do
 
   defp normalize_step(step) when is_atom(step), do: Atom.to_string(step)
   defp normalize_step(step) when is_binary(step), do: step
-
-  defp derived_builtin_steps(:semantic), do: @builtin_semantics
-
-  defp derived_builtin_steps(:max_width),
-    do: [:none, :full | builtin_steps(:container)]
-
-  defp derived_builtin_steps(:max_height),
-    do: [:none, :full | builtin_steps(:container)]
-
-  defp derived_builtin_steps(:width), do: builtin_steps(:sizing)
-  defp derived_builtin_steps(:height), do: builtin_steps(:sizing)
-
-  defp derived_builtin_steps(axis) do
-    raise ArgumentError, "unknown Corex.Design.Scales axis #{inspect(axis)}"
-  end
 end

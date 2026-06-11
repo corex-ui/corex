@@ -13,6 +13,7 @@ It includes design tokens, built-in themes (neo, uno, duo, leo), light/dark mode
 | New app **with** design (default) | `mix corex.new my_app` |
 | New app **without** design | `mix corex.new my_app --no-design` |
 | Validate theme tokens | `mix corex.design.validate` |
+| Style attr literals | Phoenix `values:` on component attrs (compile time) |
 
 Related installer flags (all imply design): `--mode` (light/dark), `--theme` (neo, uno, duo, leo). See [Dark mode](dark_mode.html) and [Theming](theming.html).
 

@@ -49,7 +49,7 @@ Full setup: https://hexdocs.pm/corex/styled.html
 
 Compiler recipes may split variants (`dialog_modal`, `dialog_side`, `tree_navigation`) that share `.dialog` / `.tree-view` roots in generated `recipes/`.
 
-Validate theme config: `mix corex.design.validate`. List recipe ids: `mix corex.design.list`.
+Validate theme config: `mix corex.design.validate`. Style attr string literals are checked at compile time via Phoenix `values:`. List recipe ids: `mix corex.design.list`.
 
 ## Modifier stacking
 

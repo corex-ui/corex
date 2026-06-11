@@ -5,11 +5,9 @@ defmodule Corex.Design.Palette do
   alias Corex.Design.Bem
   alias Corex.Design.Rule
   alias Corex.Design.Selector
-  alias Corex.Design.Semantics
-
   @disabled "&:disabled,\n  &[data-disabled],\n  &[disabled]"
 
-  def semantic_atoms, do: Semantics.atoms()
+  def semantic_atoms, do: Axes.semantic_atoms()
   def color_atoms, do: semantic_atoms()
 
   def paint_roles, do: [:implicit | semantic_atoms()]

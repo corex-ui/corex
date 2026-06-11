@@ -27,13 +27,35 @@ defmodule Corex.Design.ConfigTest do
     assert :ok = Config.validate!()
   end
 
-  test "validate!/0 accepts custom scale steps with values" do
+  test "validate!/0 accepts scale value overrides for built-in steps" do
     CorexDesign.TestConfig.put(
       output: "assets/css/corex.tailwind.css",
-      scales: [size: [sm: 0.5, md: 1.0, huge: 2.0]]
+      scales: [size: [sm: 0.5, md: 1.0, lg: 1.5]]
     )
 
     assert :ok = Config.validate!()
+  end
+
+  test "validate!/0 rejects custom scale step lists" do
+    CorexDesign.TestConfig.put(
+      output: "assets/css/corex.tailwind.css",
+      scales: [size: ~w(sm md)a]
+    )
+
+    assert_raise ArgumentError, ~r/step lists are not supported/, fn ->
+      Config.validate!()
+    end
+  end
+
+  test "validate!/0 rejects unknown steps in value overrides" do
+    CorexDesign.TestConfig.put(
+      output: "assets/css/corex.tailwind.css",
+      scales: [size: [md: 1.0, huge: 2.0]]
+    )
+
+    assert_raise ArgumentError, ~r/unknown step names/, fn ->
+      Config.validate!()
+    end
   end
 
   test "validate!/0 rejects unknown scale axes" do

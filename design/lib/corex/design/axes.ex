@@ -1,7 +1,6 @@
 defmodule Corex.Design.Axes do
   @moduledoc """
-  Design-side axis vocabulary from resolved `config :corex, Corex.Design` scales
-  plus semantic roles from themes.
+  Design-side axis vocabulary from built-in Corex scale step names.
   """
 
   alias Corex.Design.Scales, as: ConfiguredScales
@@ -19,32 +18,22 @@ defmodule Corex.Design.Axes do
   end
 
   def sizes, do: Enum.map(size_atoms(), &Atom.to_string/1)
-  def size_atoms, do: axis_atoms(:size, &ConfiguredScales.builtin_size_atoms/0)
+  def size_atoms, do: ConfiguredScales.builtin_size_atoms()
 
   def texts, do: Enum.map(text_atoms(), &Atom.to_string/1)
-  def text_atoms, do: axis_atoms(:text, &ConfiguredScales.builtin_text_atoms/0)
+  def text_atoms, do: ConfiguredScales.builtin_text_atoms()
 
   def visuals, do: Enum.map(visual_atoms(), &Atom.to_string/1)
-  def visual_atoms, do: axis_atoms(:visual, &ConfiguredScales.builtin_visual_atoms/0)
+  def visual_atoms, do: ConfiguredScales.builtin_visual_atoms()
 
   def radii, do: Enum.map(radius_atoms(), &Atom.to_string/1)
-  def radius_atoms, do: axis_atoms(:radius, &ConfiguredScales.builtin_radius_atoms/0)
+  def radius_atoms, do: ConfiguredScales.builtin_radius_atoms()
 
   def weights, do: Enum.map(weight_atoms(), &Atom.to_string/1)
-  def weight_atoms, do: axis_atoms(:weight, &ConfiguredScales.builtin_weight_atoms/0)
+  def weight_atoms, do: ConfiguredScales.builtin_weight_atoms()
 
   def shapes, do: Enum.map(shape_atoms(), &Atom.to_string/1)
-  def shape_atoms, do: axis_atoms(:shape, &ConfiguredScales.builtin_shape_atoms/0)
-
-  defp axis_atoms(axis, default_fun) do
-    case ConfiguredScales.dimension_steps(axis) do
-      [] -> default_fun.()
-      steps -> Enum.map(steps, &normalize_step/1)
-    end
-  end
-
-  defp normalize_step(step) when is_atom(step), do: step
-  defp normalize_step(step) when is_binary(step), do: String.to_atom(step)
+  def shape_atoms, do: ConfiguredScales.builtin_shape_atoms()
 end
 
 defmodule Corex.Design.Axis do

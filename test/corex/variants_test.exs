@@ -73,4 +73,9 @@ defmodule Corex.Bem.VariantsTest do
     assert class =~ "button--semantic-accent"
     assert class =~ "button--size-lg"
   end
+
+  test "size attr values are built-in scale steps" do
+    assert "md" in Corex.StyleAxes.attr_values(:size)
+    refute "not-a-size" in Corex.StyleAxes.attr_values(:size)
+  end
 end
