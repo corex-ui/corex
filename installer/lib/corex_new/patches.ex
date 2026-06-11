@@ -449,7 +449,7 @@ defmodule Corex.New.Patches do
   end
 
   defp corex_dep_constraint do
-    version = Mix.Project.config()[:version] || "0.1.1"
+    version = Mix.Project.config()[:version] || "0.1.2"
     "\"~> #{version}\""
   end
 
