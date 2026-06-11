@@ -27,14 +27,14 @@
     width: 100%;
     padding: var(--spacing-lg);
     color: var(--color-on-page);
+    background-color: var(--color-surface-raised);
     max-width: var(--container-md);
-    height: auto;
     max-height: none;
     gap: var(--spacing-md);
+    border-radius: var(--radius-md);
     flex-direction: column;
     border: 1px solid var(--color-border);
-    background-color: var(--color-surface-raised);
-    border-radius: var(--radius-md);
+    height: auto;
   }
 
   .form.form--w-auto {
@@ -78,31 +78,31 @@
   }
 
   .form.form--semantic-accent {
-    color: var(--color-on-accent);
+    color: var(--color-accent);
   }
 
   .form.form--semantic-alert {
-    color: var(--color-on-alert);
+    color: var(--color-alert);
   }
 
   .form.form--semantic-brand {
-    color: var(--color-on-brand);
+    color: var(--color-brand);
   }
 
   .form.form--semantic-info {
-    color: var(--color-on-info);
+    color: var(--color-info);
   }
 
   .form.form--semantic-neutral {
-    color: var(--color-on-neutral);
+    color: var(--color-neutral);
   }
 
   .form.form--semantic-selected {
-    color: var(--color-on-selected);
+    color: var(--color-selected);
   }
 
   .form.form--semantic-success {
-    color: var(--color-on-success);
+    color: var(--color-success);
   }
 
   .form.form--gap-none {

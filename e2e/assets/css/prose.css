@@ -13,7 +13,7 @@
     font-size: var(--text-xl);
     line-height: var(--text-xl--line-height);
     font-weight: var(--font-weight-bold);
-    margin-block: var(--spacing-space-xl) var(--spacing-space);
+    margin-block: var(--spacing-xl) var(--spacing);
   }
 
   @media (min-width: theme("breakpoint.md")) {
@@ -24,24 +24,24 @@
   }
 
   .typo.prose.markdown h2 {
-    margin-block-start: var(--spacing-space-xl);
-    margin-block-end: var(--spacing-space-sm);
+    margin-block-start: var(--spacing-xl);
+    margin-block-end: var(--spacing-sm);
   }
 
   .typo.prose.markdown h3 {
-    margin-block-start: var(--spacing-space-lg);
-    margin-block-end: var(--spacing-space-sm);
+    margin-block-start: var(--spacing-lg);
+    margin-block-end: var(--spacing-sm);
   }
 
   .typo.prose.markdown h4 {
-    margin-block-start: var(--spacing-space-lg);
-    margin-block-end: var(--spacing-space-sm);
+    margin-block-start: var(--spacing-lg);
+    margin-block-end: var(--spacing-sm);
   }
 
   .typo.prose.markdown > p:first-of-type {
     font-size: var(--text-lg);
     line-height: var(--text-lg--line-height);
-    color: var(--color-ink-muted);
+    color: var(--color-on-muted);
   }
 
   @media (min-width: theme("breakpoint.lg")) {
@@ -52,7 +52,7 @@
   }
 
   .typo.prose.markdown p {
-    margin-block: var(--spacing-space);
+    margin-block: var(--spacing);
   }
 
   .typo.prose.markdown a {
@@ -68,40 +68,40 @@
   .typo.prose.markdown blockquote {
     width: auto;
     max-width: 100%;
-    margin-block: var(--spacing-space-lg);
+    margin-block: var(--spacing-lg);
   }
 
   .typo.prose.markdown hr {
-    margin-block: var(--spacing-space-xl);
+    margin-block: var(--spacing-xl);
     width: 100%;
   }
 
   .typo.prose.markdown .relative {
-    margin-block: var(--spacing-space-lg);
+    margin-block: var(--spacing-lg);
     max-width: 100%;
   }
 
   .typo.prose.markdown pre:not(:has(.code)) {
-    margin-block: var(--spacing-space-lg);
+    margin-block: var(--spacing-lg);
   }
 
   .markdown.corex-callout {
-    margin-block: var(--spacing-space-lg);
-    padding: var(--spacing-space);
+    margin-block: var(--spacing-lg);
+    padding: var(--spacing);
     border-radius: var(--radius-md);
     border: 1px solid var(--color-border);
-    background: var(--color-layer);
+    background: var(--color-surface-raised);
     max-width: 100%;
     box-sizing: border-box;
   }
 
   .markdown.corex-callout-title {
     font-weight: var(--font-weight-semibold);
-    margin-block: 0 var(--spacing-space-sm);
+    margin-block: 0 var(--spacing-sm);
   }
 
   .markdown.corex-callout-body p {
-    margin-block: var(--spacing-space-sm);
+    margin-block: var(--spacing-sm);
   }
 
   .markdown.corex-callout-body p:last-child {

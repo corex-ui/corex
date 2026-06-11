@@ -20,7 +20,7 @@
 
 @utility angle-slider--size-* {
   [data-scope="angle-slider"][data-part="control"] {
-      color: --value(--color-on-*, [color]);
+      color: --value(--color-*, [color]);
     background-color: --value(--color-*, [color]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
@@ -63,8 +63,8 @@
   .angle-slider {
     width: 100%;
     max-width: none;
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .angle-slider.angle-slider--w-auto {
@@ -394,7 +394,7 @@
     background-color: var(--color-accent);
     &:focus-visible {
       outline: none;
-      box-shadow: 0 0 0 1px var(--color-on-accent);
+      box-shadow: 0 0 0 1px var(--color-accent);
     }
   }
 
@@ -406,7 +406,7 @@
     background-color: var(--color-alert);
     &:focus-visible {
       outline: none;
-      box-shadow: 0 0 0 1px var(--color-on-alert);
+      box-shadow: 0 0 0 1px var(--color-alert);
     }
   }
 
@@ -418,7 +418,7 @@
     background-color: var(--color-brand);
     &:focus-visible {
       outline: none;
-      box-shadow: 0 0 0 1px var(--color-on-brand);
+      box-shadow: 0 0 0 1px var(--color-brand);
     }
   }
 
@@ -430,7 +430,7 @@
     background-color: var(--color-info);
     &:focus-visible {
       outline: none;
-      box-shadow: 0 0 0 1px var(--color-on-info);
+      box-shadow: 0 0 0 1px var(--color-info);
     }
   }
 
@@ -454,7 +454,7 @@
     background-color: var(--color-selected);
     &:focus-visible {
       outline: none;
-      box-shadow: 0 0 0 1px var(--color-on-selected);
+      box-shadow: 0 0 0 1px var(--color-selected);
     }
   }
 
@@ -466,7 +466,7 @@
     background-color: var(--color-success);
     &:focus-visible {
       outline: none;
-      box-shadow: 0 0 0 1px var(--color-on-success);
+      box-shadow: 0 0 0 1px var(--color-success);
     }
   }
 

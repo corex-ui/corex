@@ -8,9 +8,9 @@ defmodule E2eWeb.DataTableModel do
   )
 
   @style_sections ~W(
-    data-table-styling-color
-    data-table-styling-size
-    data-table-styling-max-width
+    data-table-style-color
+    data-table-style-size
+    data-table-style-max-width
   )
 
   @pattern_sections ~W(

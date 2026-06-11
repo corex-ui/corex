@@ -35,9 +35,9 @@
 @layer components {
   .checkbox [data-scope="checkbox"][data-part="control"] {
     width: calc(var(--spacing-control-md) * 0.6);
-    height: calc(var(--spacing-control-md) * 0.6);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    height: calc(var(--spacing-control-md) * 0.6);
     --size: var(--spacing-control-md);
   }
 
@@ -49,8 +49,8 @@
   .checkbox {
     width: 100%;
     max-width: var(--container-4xl);
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .checkbox.checkbox--w-auto {
@@ -216,7 +216,7 @@
 
     &[data-state="checked"],\n  &[data-state="indeterminate"] {
       background: var(--color-accent-active);
-      color: var(--color-accent-ink);
+      color: var(--color-on-accent);
       &:hover {
         background-color: var(--color-accent-hover);
       }
@@ -227,7 +227,7 @@
 
       &:focus-visible,
     &[data-focus] {
-        box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+        box-shadow: inset 0 0 0 2px var(--color-on-accent);
       }
     }
 
@@ -303,7 +303,7 @@
 
   .checkbox.checkbox--semantic-accent [data-scope="checkbox"][data-part="control"][data-state='checked'], .checkbox.checkbox--semantic-accent [data-scope="checkbox"][data-part="control"][data-state='indeterminate'] {
     background-color: var(--color-accent);
-    color: var(--color-accent-ink);
+    color: var(--color-on-accent);
     border-color: var(--color-accent);
     &:hover {
       background-color: var(--color-accent-hover);
@@ -315,13 +315,13 @@
 
     &:focus-visible, &[data-focus] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
     }
   }
 
   .checkbox.checkbox--semantic-alert [data-scope="checkbox"][data-part="control"][data-state='checked'], .checkbox.checkbox--semantic-alert [data-scope="checkbox"][data-part="control"][data-state='indeterminate'] {
     background-color: var(--color-alert);
-    color: var(--color-alert-ink);
+    color: var(--color-on-alert);
     border-color: var(--color-alert);
     &:hover {
       background-color: var(--color-alert-hover);
@@ -333,13 +333,13 @@
 
     &:focus-visible, &[data-focus] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
     }
   }
 
   .checkbox.checkbox--semantic-brand [data-scope="checkbox"][data-part="control"][data-state='checked'], .checkbox.checkbox--semantic-brand [data-scope="checkbox"][data-part="control"][data-state='indeterminate'] {
     background-color: var(--color-brand);
-    color: var(--color-brand-ink);
+    color: var(--color-on-brand);
     border-color: var(--color-brand);
     &:hover {
       background-color: var(--color-brand-hover);
@@ -351,13 +351,13 @@
 
     &:focus-visible, &[data-focus] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-brand-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
     }
   }
 
   .checkbox.checkbox--semantic-info [data-scope="checkbox"][data-part="control"][data-state='checked'], .checkbox.checkbox--semantic-info [data-scope="checkbox"][data-part="control"][data-state='indeterminate'] {
     background-color: var(--color-info);
-    color: var(--color-info-ink);
+    color: var(--color-on-info);
     border-color: var(--color-info);
     &:hover {
       background-color: var(--color-info-hover);
@@ -369,13 +369,13 @@
 
     &:focus-visible, &[data-focus] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-info-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
     }
   }
 
   .checkbox.checkbox--semantic-neutral [data-scope="checkbox"][data-part="control"][data-state='checked'], .checkbox.checkbox--semantic-neutral [data-scope="checkbox"][data-part="control"][data-state='indeterminate'] {
     background-color: var(--color-neutral);
-    color: var(--color-neutral-ink);
+    color: var(--color-on-neutral);
     border-color: var(--color-neutral);
     &:hover {
       background-color: var(--color-neutral-hover);
@@ -387,13 +387,13 @@
 
     &:focus-visible, &[data-focus] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-neutral-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
     }
   }
 
   .checkbox.checkbox--semantic-selected [data-scope="checkbox"][data-part="control"][data-state='checked'], .checkbox.checkbox--semantic-selected [data-scope="checkbox"][data-part="control"][data-state='indeterminate'] {
     background-color: var(--color-selected);
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
     border-color: var(--color-selected);
     &:hover {
       background-color: var(--color-selected-hover);
@@ -405,13 +405,13 @@
 
     &:focus-visible, &[data-focus] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
     }
   }
 
   .checkbox.checkbox--semantic-success [data-scope="checkbox"][data-part="control"][data-state='checked'], .checkbox.checkbox--semantic-success [data-scope="checkbox"][data-part="control"][data-state='indeterminate'] {
     background-color: var(--color-success);
-    color: var(--color-success-ink);
+    color: var(--color-on-success);
     border-color: var(--color-success);
     &:hover {
       background-color: var(--color-success-hover);
@@ -423,7 +423,7 @@
 
     &:focus-visible, &[data-focus] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-success-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
     }
   }
 }

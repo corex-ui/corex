@@ -29,18 +29,18 @@
   }
 
   [data-scope="listbox"][data-part="item"] {
-      gap: --value(--spacing-*, [length]);
-    padding-inline: --value(--spacing-*, [length]);
-    min-height: --value(--spacing-control-*, [length]);
+      padding-inline: --value(--spacing-*, [length]);
+    gap: --value(--spacing-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
   [data-scope="listbox"][data-part="item-group-label"] {
       padding-inline: --value(--spacing-*, [length]);
-    min-height: --value(--spacing-control-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
 }
@@ -60,23 +60,23 @@
   .listbox {
     width: 100%;
     max-width: var(--container-3xs);
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .listbox [data-scope="listbox"][data-part="item"] {
-    gap: var(--spacing-md);
     padding-inline: var(--spacing-md);
-    min-height: var(--spacing-control-md);
+    gap: var(--spacing-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-height: var(--spacing-control-md);
   }
 
   .listbox [data-scope="listbox"][data-part="item-group-label"] {
     padding-inline: var(--spacing-md);
-    min-height: var(--spacing-control-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-height: var(--spacing-control-md);
   }
 
   .listbox.listbox--w-auto {

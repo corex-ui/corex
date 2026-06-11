@@ -380,12 +380,6 @@
 }
 
 
-@utility part-icon--* {
-  font-size: --value(--text-*, [length]);
-  line-height: --value(--text-*--line-height, [length]);
-}
-
-
 @utility part-trigger--* {
   font-size: --value(--text-*, [length]);
   line-height: --value(--text-*--line-height, [length]);
@@ -393,7 +387,7 @@
   gap: --value(--spacing-*, [length]);
   min-height: --value(--spacing-control-*, [length]);
   background-color: --value(--color-*, [color]);
-  color: --value(--color-*-ink, [color]);
+  color: --value(--color-*, [color]);
 
   &:hover {
     background-color: --value(--color-*-hover, [color]);
@@ -405,7 +399,7 @@
 
   &:focus-visible {
     outline: none;
-    box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
+    box-shadow: inset 0 0 0 2px --value(--color-*, [color]);
   }
 
   &:disabled,
@@ -419,7 +413,7 @@
   &[data-state="checked"],
   &[data-state="on"] {
     background-color: --value(--color-*, [color]);
-    color: --value(--color-*-ink, [color]);
+    color: --value(--color-on-*, [color]);
 
     &:hover {
       background-color: --value(--color-*-hover, [color]);
@@ -430,7 +424,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
+      box-shadow: inset 0 0 0 2px --value(--color-on-*, [color]);
       outline: none;
     }
 
@@ -444,6 +438,12 @@
 }
 
 
+@utility part-icon--* {
+  font-size: --value(--text-*, [length]);
+  line-height: --value(--text-*--line-height, [length]);
+}
+
+
 @utility part-item--* {
   font-size: --value(--text-*, [length]);
   line-height: --value(--text-*--line-height, [length]);
@@ -451,7 +451,7 @@
   gap: --value(--spacing-*, [length]);
   min-height: --value(--spacing-control-*, [length]);
   background-color: --value(--color-*, [color]);
-  color: --value(--color-*-ink, [color]);
+  color: --value(--color-*, [color]);
 
   &:hover {
     background-color: --value(--color-*-hover, [color]);
@@ -463,7 +463,7 @@
 
   &:focus-visible {
     outline: none;
-    box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
+    box-shadow: inset 0 0 0 2px --value(--color-*, [color]);
   }
 
   &:disabled,
@@ -481,7 +481,7 @@
   &[data-checked],
   &[data-indeterminate] {
     background-color: --value(--color-*, [color]);
-    color: --value(--color-*-ink, [color]);
+    color: --value(--color-on-*, [color]);
 
     &:hover {
       background-color: --value(--color-*-hover, [color]);
@@ -492,7 +492,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
+      box-shadow: inset 0 0 0 2px --value(--color-on-*, [color]);
       outline: none;
     }
 
@@ -509,6 +509,6 @@
 @utility part-link--* {
   font-size: --value(--text-*, [length]);
   line-height: --value(--text-*--line-height, [length]);
-  color: --value(--color-on-*, [color]);
+  color: --value(--color-*, [color]);
   gap: calc(--value(--spacing-*, [length]) * 0.5);
 }

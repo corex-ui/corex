@@ -24,9 +24,9 @@
   .row {
     display: flex;
     padding: 0;
-    gap: 0;
     padding-inline: 0;
     padding-block: 0;
+    gap: 0;
     align-items: center;
     justify-content: flex-start;
     flex-flow: row wrap;

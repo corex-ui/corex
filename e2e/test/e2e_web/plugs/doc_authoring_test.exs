@@ -72,8 +72,8 @@ defmodule E2eWeb.Plugs.DocAuthoringTest do
 
     assert html =~ ~s(id="accordion-style-page")
     assert html =~ ~s(id="accordion-style-matrix")
-    assert html =~ ~s(id="accordion-styling-variant-semantic")
-    assert html =~ ~s(id="accordion-styling-size")
+    assert html =~ ~s(id="accordion-style-variant-semantic")
+    assert html =~ ~s(id="accordion-style-size")
   end
 
   test "action style live page includes authoring settings", %{conn: conn} do

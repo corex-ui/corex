@@ -37,11 +37,11 @@ defmodule E2eWeb.PaginationModel do
   @anatomy_sections ~W(pagination-anatomy-minimal)
 
   @style_sections ~W(
-    pagination-styling-color
-    pagination-styling-size
-    pagination-styling-text
-    pagination-styling-radius
-    pagination-styling-max-width
+    pagination-style-semantic
+    pagination-style-size
+    pagination-style-text
+    pagination-style-radius
+    pagination-style-max-width
   )
 
   @api_sections ~W(

@@ -36,8 +36,8 @@
   .collapsible {
     width: 100%;
     max-width: var(--container-md);
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .collapsible.collapsible--w-auto {
@@ -327,7 +327,7 @@
   }
 
   .collapsible.collapsible--semantic-accent [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
-    color: var(--color-on-accent, var(--color-on-page));
+    color: var(--color-accent, var(--color-on-page));
   }
 
   .collapsible.collapsible--semantic-accent [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
@@ -359,7 +359,7 @@
   }
 
   .collapsible.collapsible--semantic-alert [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
-    color: var(--color-on-alert, var(--color-on-page));
+    color: var(--color-alert, var(--color-on-page));
   }
 
   .collapsible.collapsible--semantic-alert [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
@@ -391,7 +391,7 @@
   }
 
   .collapsible.collapsible--semantic-brand [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
-    color: var(--color-on-brand, var(--color-on-page));
+    color: var(--color-brand, var(--color-on-page));
   }
 
   .collapsible.collapsible--semantic-brand [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
@@ -423,7 +423,7 @@
   }
 
   .collapsible.collapsible--semantic-info [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
-    color: var(--color-on-info, var(--color-on-page));
+    color: var(--color-info, var(--color-on-page));
   }
 
   .collapsible.collapsible--semantic-info [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
@@ -487,7 +487,7 @@
   }
 
   .collapsible.collapsible--semantic-selected [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
-    color: var(--color-on-selected, var(--color-on-page));
+    color: var(--color-selected, var(--color-on-page));
   }
 
   .collapsible.collapsible--semantic-selected [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
@@ -519,7 +519,7 @@
   }
 
   .collapsible.collapsible--semantic-success [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
-    color: var(--color-on-success, var(--color-on-page));
+    color: var(--color-success, var(--color-on-page));
   }
 
   .collapsible.collapsible--semantic-success [data-scope="collapsible"][data-part="trigger"][data-state="open"] {

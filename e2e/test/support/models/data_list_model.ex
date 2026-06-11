@@ -9,9 +9,9 @@ defmodule E2eWeb.DataListModel do
   )
 
   @style_sections ~W(
-    data-list-styling-color
-    data-list-styling-size
-    data-list-styling-max-width
+    data-list-style-semantic
+    data-list-style-text
+    data-list-style-max-width
   )
 
   def anatomy_section_ids, do: @anatomy_sections

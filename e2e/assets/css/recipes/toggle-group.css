@@ -24,11 +24,11 @@
 
 @utility toggle-group--size-* {
   [data-scope="toggle-group"][data-part="item"] {
-      gap: --value(--spacing-*, [length]);
-    padding-inline: --value(--spacing-*, [length]);
-    min-height: --value(--spacing-control-*, [length]);
+      padding-inline: --value(--spacing-*, [length]);
+    gap: --value(--spacing-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
 }
@@ -38,16 +38,16 @@
   .toggle-group {
     width: 100%;
     max-width: var(--container-4xs);
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .toggle-group [data-scope="toggle-group"][data-part="item"] {
-    gap: var(--spacing-md);
     padding-inline: var(--spacing-md);
-    min-height: var(--spacing-control-md);
+    gap: var(--spacing-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-height: var(--spacing-control-md);
   }
 
   .toggle-group.toggle-group--w-auto {
@@ -255,7 +255,7 @@
 
   .toggle-group.toggle-group--semantic-accent [data-scope="toggle-group"][data-part="item"] {
     &:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not([data-disabled]):not(:disabled):not([disabled]) {
-      color: var(--color-on-accent, var(--color-on-page));
+      color: var(--color-accent, var(--color-on-page));
       &:focus-visible {
         outline: none;
         box-shadow: inset 0 0 0 2px var(--color-accent);
@@ -346,7 +346,7 @@
 
   .toggle-group.toggle-group--semantic-alert [data-scope="toggle-group"][data-part="item"] {
     &:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not([data-disabled]):not(:disabled):not([disabled]) {
-      color: var(--color-on-alert, var(--color-on-page));
+      color: var(--color-alert, var(--color-on-page));
       &:focus-visible {
         outline: none;
         box-shadow: inset 0 0 0 2px var(--color-alert);
@@ -437,7 +437,7 @@
 
   .toggle-group.toggle-group--semantic-brand [data-scope="toggle-group"][data-part="item"] {
     &:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not([data-disabled]):not(:disabled):not([disabled]) {
-      color: var(--color-on-brand, var(--color-on-page));
+      color: var(--color-brand, var(--color-on-page));
       &:focus-visible {
         outline: none;
         box-shadow: inset 0 0 0 2px var(--color-brand);
@@ -528,7 +528,7 @@
 
   .toggle-group.toggle-group--semantic-info [data-scope="toggle-group"][data-part="item"] {
     &:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not([data-disabled]):not(:disabled):not([disabled]) {
-      color: var(--color-on-info, var(--color-on-page));
+      color: var(--color-info, var(--color-on-page));
       &:focus-visible {
         outline: none;
         box-shadow: inset 0 0 0 2px var(--color-info);
@@ -710,7 +710,7 @@
 
   .toggle-group.toggle-group--semantic-selected [data-scope="toggle-group"][data-part="item"] {
     &:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not([data-disabled]):not(:disabled):not([disabled]) {
-      color: var(--color-on-selected, var(--color-on-page));
+      color: var(--color-selected, var(--color-on-page));
       &:focus-visible {
         outline: none;
         box-shadow: inset 0 0 0 2px var(--color-selected);
@@ -801,7 +801,7 @@
 
   .toggle-group.toggle-group--semantic-success [data-scope="toggle-group"][data-part="item"] {
     &:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not([data-disabled]):not(:disabled):not([disabled]) {
-      color: var(--color-on-success, var(--color-on-page));
+      color: var(--color-success, var(--color-on-page));
       &:focus-visible {
         outline: none;
         box-shadow: inset 0 0 0 2px var(--color-success);

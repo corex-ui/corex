@@ -39,17 +39,17 @@
 
 
 @utility accordion--size-* {
-  [data-scope="accordion"][data-part="item-text"] {
-      gap: --value(--spacing-*, [length]);
-  }
-
   [data-scope="accordion"][data-part="item-trigger"] {
-      gap: --value(--spacing-*, [length]);
-    padding-inline: --value(--spacing-*, [length]);
-    min-height: --value(--spacing-control-*, [length]);
-    margin-bottom: --value(--spacing-*, [length]);
+      padding-inline: --value(--spacing-*, [length]);
+    gap: --value(--spacing-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
+    margin-bottom: --value(--spacing-*, [length]);
+  }
+
+  [data-scope="accordion"][data-part="item-text"] {
+      gap: --value(--spacing-*, [length]);
   }
 
 }
@@ -61,22 +61,22 @@
     max-width: var(--container-md);
   }
 
-  .accordion [data-scope="accordion"][data-part="item-text"] {
-    gap: var(--spacing-md);
-  }
-
   .accordion [data-scope="accordion"][data-part="item-content"] {
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .accordion [data-scope="accordion"][data-part="item-trigger"] {
-    gap: var(--spacing-md);
     padding-inline: var(--spacing-md);
-    min-height: var(--spacing-control-md);
-    margin-bottom: var(--spacing-md);
+    gap: var(--spacing-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-height: var(--spacing-control-md);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .accordion [data-scope="accordion"][data-part="item-text"] {
+    gap: var(--spacing-md);
   }
 
   .accordion.accordion--w-auto {
@@ -504,7 +504,7 @@
 
   .accordion.accordion--variant-ghost.accordion--semantic-accent [data-scope="accordion"][data-part="item-trigger"] {
     background-color: transparent;
-    color: var(--color-on-accent);
+    color: var(--color-accent);
     border-color: transparent;
     &:hover {
       background-color: var(--color-surface-control-hover);
@@ -516,7 +516,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-accent);
+      box-shadow: inset 0 0 0 2px var(--color-accent);
     }
 
     &:disabled,
@@ -538,7 +538,7 @@
 
   .accordion.accordion--variant-outline.accordion--semantic-accent [data-scope="accordion"][data-part="item-trigger"] {
     background-color: transparent;
-    color: var(--color-on-accent);
+    color: var(--color-accent);
     border-color: var(--color-accent);
     &:hover {
       background-color: var(--color-surface-control-hover);
@@ -550,7 +550,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-accent);
+      box-shadow: inset 0 0 0 2px var(--color-accent);
     }
 
     &:disabled,
@@ -573,7 +573,7 @@
 
   .accordion.accordion--variant-subtle.accordion--semantic-accent [data-scope="accordion"][data-part="item-trigger"] {
     background-color: var(--color-surface-control-hover);
-    color: var(--color-on-accent);
+    color: var(--color-accent);
     border-color: transparent;
     &:hover {
       background-color: var(--color-surface-control-active);
@@ -581,7 +581,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-accent);
+      box-shadow: inset 0 0 0 2px var(--color-accent);
     }
 
     &:disabled,
@@ -637,7 +637,7 @@
 
   .accordion.accordion--variant-ghost.accordion--semantic-alert [data-scope="accordion"][data-part="item-trigger"] {
     background-color: transparent;
-    color: var(--color-on-alert);
+    color: var(--color-alert);
     border-color: transparent;
     &:hover {
       background-color: var(--color-surface-control-hover);
@@ -649,7 +649,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-alert);
+      box-shadow: inset 0 0 0 2px var(--color-alert);
     }
 
     &:disabled,
@@ -671,7 +671,7 @@
 
   .accordion.accordion--variant-outline.accordion--semantic-alert [data-scope="accordion"][data-part="item-trigger"] {
     background-color: transparent;
-    color: var(--color-on-alert);
+    color: var(--color-alert);
     border-color: var(--color-alert);
     &:hover {
       background-color: var(--color-surface-control-hover);
@@ -683,7 +683,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-alert);
+      box-shadow: inset 0 0 0 2px var(--color-alert);
     }
 
     &:disabled,
@@ -706,7 +706,7 @@
 
   .accordion.accordion--variant-subtle.accordion--semantic-alert [data-scope="accordion"][data-part="item-trigger"] {
     background-color: var(--color-surface-control-hover);
-    color: var(--color-on-alert);
+    color: var(--color-alert);
     border-color: transparent;
     &:hover {
       background-color: var(--color-surface-control-active);
@@ -714,7 +714,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-alert);
+      box-shadow: inset 0 0 0 2px var(--color-alert);
     }
 
     &:disabled,
@@ -770,7 +770,7 @@
 
   .accordion.accordion--variant-ghost.accordion--semantic-brand [data-scope="accordion"][data-part="item-trigger"] {
     background-color: transparent;
-    color: var(--color-on-brand);
+    color: var(--color-brand);
     border-color: transparent;
     &:hover {
       background-color: var(--color-surface-control-hover);
@@ -782,7 +782,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+      box-shadow: inset 0 0 0 2px var(--color-brand);
     }
 
     &:disabled,
@@ -804,7 +804,7 @@
 
   .accordion.accordion--variant-outline.accordion--semantic-brand [data-scope="accordion"][data-part="item-trigger"] {
     background-color: transparent;
-    color: var(--color-on-brand);
+    color: var(--color-brand);
     border-color: var(--color-brand);
     &:hover {
       background-color: var(--color-surface-control-hover);
@@ -816,7 +816,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+      box-shadow: inset 0 0 0 2px var(--color-brand);
     }
 
     &:disabled,
@@ -839,7 +839,7 @@
 
   .accordion.accordion--variant-subtle.accordion--semantic-brand [data-scope="accordion"][data-part="item-trigger"] {
     background-color: var(--color-surface-control-hover);
-    color: var(--color-on-brand);
+    color: var(--color-brand);
     border-color: transparent;
     &:hover {
       background-color: var(--color-surface-control-active);
@@ -847,7 +847,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+      box-shadow: inset 0 0 0 2px var(--color-brand);
     }
 
     &:disabled,
@@ -903,7 +903,7 @@
 
   .accordion.accordion--variant-ghost.accordion--semantic-info [data-scope="accordion"][data-part="item-trigger"] {
     background-color: transparent;
-    color: var(--color-on-info);
+    color: var(--color-info);
     border-color: transparent;
     &:hover {
       background-color: var(--color-surface-control-hover);
@@ -915,7 +915,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-info);
+      box-shadow: inset 0 0 0 2px var(--color-info);
     }
 
     &:disabled,
@@ -937,7 +937,7 @@
 
   .accordion.accordion--variant-outline.accordion--semantic-info [data-scope="accordion"][data-part="item-trigger"] {
     background-color: transparent;
-    color: var(--color-on-info);
+    color: var(--color-info);
     border-color: var(--color-info);
     &:hover {
       background-color: var(--color-surface-control-hover);
@@ -949,7 +949,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-info);
+      box-shadow: inset 0 0 0 2px var(--color-info);
     }
 
     &:disabled,
@@ -972,7 +972,7 @@
 
   .accordion.accordion--variant-subtle.accordion--semantic-info [data-scope="accordion"][data-part="item-trigger"] {
     background-color: var(--color-surface-control-hover);
-    color: var(--color-on-info);
+    color: var(--color-info);
     border-color: transparent;
     &:hover {
       background-color: var(--color-surface-control-active);
@@ -980,7 +980,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-info);
+      box-shadow: inset 0 0 0 2px var(--color-info);
     }
 
     &:disabled,
@@ -1169,7 +1169,7 @@
 
   .accordion.accordion--variant-ghost.accordion--semantic-selected [data-scope="accordion"][data-part="item-trigger"] {
     background-color: transparent;
-    color: var(--color-on-selected);
+    color: var(--color-selected);
     border-color: transparent;
     &:hover {
       background-color: var(--color-surface-control-hover);
@@ -1181,7 +1181,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
+      box-shadow: inset 0 0 0 2px var(--color-selected);
     }
 
     &:disabled,
@@ -1203,7 +1203,7 @@
 
   .accordion.accordion--variant-outline.accordion--semantic-selected [data-scope="accordion"][data-part="item-trigger"] {
     background-color: transparent;
-    color: var(--color-on-selected);
+    color: var(--color-selected);
     border-color: var(--color-selected);
     &:hover {
       background-color: var(--color-surface-control-hover);
@@ -1215,7 +1215,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
+      box-shadow: inset 0 0 0 2px var(--color-selected);
     }
 
     &:disabled,
@@ -1238,7 +1238,7 @@
 
   .accordion.accordion--variant-subtle.accordion--semantic-selected [data-scope="accordion"][data-part="item-trigger"] {
     background-color: var(--color-surface-control-hover);
-    color: var(--color-on-selected);
+    color: var(--color-selected);
     border-color: transparent;
     &:hover {
       background-color: var(--color-surface-control-active);
@@ -1246,7 +1246,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
+      box-shadow: inset 0 0 0 2px var(--color-selected);
     }
 
     &:disabled,
@@ -1302,7 +1302,7 @@
 
   .accordion.accordion--variant-ghost.accordion--semantic-success [data-scope="accordion"][data-part="item-trigger"] {
     background-color: transparent;
-    color: var(--color-on-success);
+    color: var(--color-success);
     border-color: transparent;
     &:hover {
       background-color: var(--color-surface-control-hover);
@@ -1314,7 +1314,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-success);
+      box-shadow: inset 0 0 0 2px var(--color-success);
     }
 
     &:disabled,
@@ -1336,7 +1336,7 @@
 
   .accordion.accordion--variant-outline.accordion--semantic-success [data-scope="accordion"][data-part="item-trigger"] {
     background-color: transparent;
-    color: var(--color-on-success);
+    color: var(--color-success);
     border-color: var(--color-success);
     &:hover {
       background-color: var(--color-surface-control-hover);
@@ -1348,7 +1348,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-success);
+      box-shadow: inset 0 0 0 2px var(--color-success);
     }
 
     &:disabled,
@@ -1371,7 +1371,7 @@
 
   .accordion.accordion--variant-subtle.accordion--semantic-success [data-scope="accordion"][data-part="item-trigger"] {
     background-color: var(--color-surface-control-hover);
-    color: var(--color-on-success);
+    color: var(--color-success);
     border-color: transparent;
     &:hover {
       background-color: var(--color-surface-control-active);
@@ -1379,7 +1379,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-success);
+      box-shadow: inset 0 0 0 2px var(--color-success);
     }
 
     &:disabled,

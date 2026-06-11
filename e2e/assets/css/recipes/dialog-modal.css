@@ -1,11 +1,11 @@
 /* Corex generated design - do not edit */
 
 @utility dialog-modal--rounded-* {
-  [data-scope="dialog"][data-part="content"] {
+  [data-scope="dialog"][data-part="close-trigger"] {
       border-radius: --value(--radius-*, [length]);
   }
 
-  [data-scope="dialog"][data-part="close-trigger"] {
+  [data-scope="dialog"][data-part="content"] {
       border-radius: --value(--radius-*, [length]);
   }
 
@@ -73,8 +73,8 @@
   .dialog-modal {
     width: fit-content;
     max-width: none;
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .dialog-modal [data-scope="dialog"][data-part="description"] {
@@ -268,14 +268,14 @@
   }
 
   .dialog-modal.dialog-modal--semantic-accent [data-scope="dialog"][data-part="close-trigger"] {
-    color: var(--color-on-accent);
+    color: var(--color-accent);
     &:hover {
       background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-accent);
+      box-shadow: inset 0 0 0 2px var(--color-accent);
     }
 
     &:disabled,
@@ -287,14 +287,14 @@
   }
 
   .dialog-modal.dialog-modal--semantic-alert [data-scope="dialog"][data-part="close-trigger"] {
-    color: var(--color-on-alert);
+    color: var(--color-alert);
     &:hover {
       background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-alert);
+      box-shadow: inset 0 0 0 2px var(--color-alert);
     }
 
     &:disabled,
@@ -306,14 +306,14 @@
   }
 
   .dialog-modal.dialog-modal--semantic-brand [data-scope="dialog"][data-part="close-trigger"] {
-    color: var(--color-on-brand);
+    color: var(--color-brand);
     &:hover {
       background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+      box-shadow: inset 0 0 0 2px var(--color-brand);
     }
 
     &:disabled,
@@ -325,14 +325,14 @@
   }
 
   .dialog-modal.dialog-modal--semantic-info [data-scope="dialog"][data-part="close-trigger"] {
-    color: var(--color-on-info);
+    color: var(--color-info);
     &:hover {
       background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-info);
+      box-shadow: inset 0 0 0 2px var(--color-info);
     }
 
     &:disabled,
@@ -363,14 +363,14 @@
   }
 
   .dialog-modal.dialog-modal--semantic-selected [data-scope="dialog"][data-part="close-trigger"] {
-    color: var(--color-on-selected);
+    color: var(--color-selected);
     &:hover {
       background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
+      box-shadow: inset 0 0 0 2px var(--color-selected);
     }
 
     &:disabled,
@@ -382,14 +382,14 @@
   }
 
   .dialog-modal.dialog-modal--semantic-success [data-scope="dialog"][data-part="close-trigger"] {
-    color: var(--color-on-success);
+    color: var(--color-success);
     &:hover {
       background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-success);
+      box-shadow: inset 0 0 0 2px var(--color-success);
     }
 
     &:disabled,

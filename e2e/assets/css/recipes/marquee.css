@@ -28,8 +28,8 @@
   .marquee {
     width: 100%;
     max-width: var(--container-md);
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .marquee [data-scope="marquee"][data-part="edge"] {

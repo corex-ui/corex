@@ -593,7 +593,7 @@ defmodule E2eWeb.DemoPage do
       <h4 class="text-sm font-medium text-ui-ink-muted">Event log</h4>
       <ol
         :if={@events != []}
-        class="flex flex-col gap-1 max-h-64 overflow-auto rounded-md border border-border bg-ui p-2 text-sm font-mono"
+        class="flex flex-col gap-1 max-h-64 overflow-auto rounded-md border border-border bg-layer p-2 text-sm font-mono"
       >
         <li :for={event <- @events} class="flex gap-2 items-start">
           <span class="text-ui-ink-muted">{event.name}</span>

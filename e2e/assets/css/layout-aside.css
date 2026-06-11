@@ -4,7 +4,7 @@
     width: 100%;
     min-width: 0;
     align-items: center;
-    gap: var(--spacing-space);
+    gap: var(--spacing);
   }
 
   .layout__aside-tree-label-text {
@@ -25,7 +25,7 @@
     display: flex;
     flex-shrink: 0;
     align-items: center;
-    gap: var(--spacing-space);
+    gap: var(--spacing);
   }
 
 }

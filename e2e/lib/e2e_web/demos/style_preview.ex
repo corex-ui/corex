@@ -17,7 +17,6 @@ defmodule E2eWeb.Demos.StylePreview do
     editable: {E2eWeb.Demos.EditableDemo, :minimal_example},
     file_upload: {E2eWeb.Demos.FileUploadDemo, :minimal_example},
     floating_panel: {E2eWeb.Demos.FloatingPanelDemo, :minimal_example},
-    listbox: {E2eWeb.Demos.ListboxDemo, :minimal_example},
     menu: {E2eWeb.Demos.MenuDemo, :minimal_example},
     native_input: {E2eWeb.Demos.NativeInputDemo, :minimal_example},
     number_input: {E2eWeb.Demos.NumberInputDemo, :minimal_example},
@@ -98,6 +97,23 @@ defmodule E2eWeb.Demos.StylePreview do
     """
   end
 
+  def preview_listbox(assigns) do
+    ~H"""
+    <.listbox
+      id={SP.preview_id(:listbox)}
+      class="listbox"
+      semantic={SP.attr(@controls, :listbox, :semantic)}
+      size={SP.attr(@controls, :listbox, :size)}
+      max_width={SP.attr(@controls, :listbox, :max_width)}
+      items={listbox_items()}
+      value={["fra"]}
+    >
+      <:label>Country</:label>
+      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+    </.listbox>
+    """
+  end
+
   def preview_timer(assigns) do
     ~H"""
     <.timer
@@ -174,7 +190,9 @@ defmodule E2eWeb.Demos.StylePreview do
     E2eWeb.Demos.MarqueeDemo.anatomy_minimal_example(%{})
   end
 
-  defp select_items do
+  defp select_items, do: listbox_items()
+
+  defp listbox_items do
     Corex.List.new([
       %{label: "France", value: "fra"},
       %{label: "Belgium", value: "bel"},

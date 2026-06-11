@@ -16,26 +16,26 @@ defmodule E2eWeb.DataTableStyleLive do
   ]
 
   @color_variants [
-    {"", "data-table-styling-color-default"},
-    {"data-table--semantic-accent", "data-table-styling-color-accent"},
-    {"data-table--semantic-brand", "data-table-styling-color-brand"},
-    {"data-table--semantic-alert", "data-table-styling-color-alert"},
-    {"data-table--semantic-success", "data-table-styling-color-success"},
-    {"data-table--semantic-info", "data-table-styling-color-info"}
+    {"", "data-table-style-color-default"},
+    {"data-table--semantic-accent", "data-table-style-color-accent"},
+    {"data-table--semantic-brand", "data-table-style-color-brand"},
+    {"data-table--semantic-alert", "data-table-style-color-alert"},
+    {"data-table--semantic-success", "data-table-style-color-success"},
+    {"data-table--semantic-info", "data-table-style-color-info"}
   ]
 
   @size_variants [
-    {"data-table--size-sm", "data-table-styling-size-sm"},
-    {"data-table--size-md", "data-table-styling-size-md"},
-    {"data-table--size-lg", "data-table-styling-size-lg"},
-    {"data-table--size-xl", "data-table-styling-size-xl"}
+    {"data-table--size-sm", "data-table-style-size-sm"},
+    {"data-table--size-md", "data-table-style-size-md"},
+    {"data-table--size-lg", "data-table-style-size-lg"},
+    {"data-table--size-xl", "data-table-style-size-xl"}
   ]
 
   @width_variants [
-    {"data-table--max-w-2xs", "data-table-styling-max-w-2xs"},
-    {"data-table--max-w-md", "data-table-styling-max-w-md"},
-    {"data-table--max-w-xl", "data-table-styling-max-w-xl"},
-    {"data-table--max-w-2xl", "data-table-styling-max-w-2xl"}
+    {"data-table--max-w-2xs", "data-table-style-max-w-2xs"},
+    {"data-table--max-w-md", "data-table-style-max-w-md"},
+    {"data-table--max-w-xl", "data-table-style-max-w-xl"},
+    {"data-table--max-w-2xl", "data-table-style-max-w-2xl"}
   ]
 
   @impl true

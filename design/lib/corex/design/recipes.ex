@@ -217,13 +217,13 @@ defmodule Corex.Design.Recipes do
             Rule.new(checked_selector,
               decls: [
                 background: "var(--color-accent-active)",
-                color: "var(--color-accent-ink)"
+                color: "var(--color-on-accent)"
               ],
               children: [
                 Rule.new("&:hover", decls: [background_color: "var(--color-accent-hover)"]),
                 Rule.new("&:active", decls: [background_color: "var(--color-accent)"]),
                 Rule.new("&:focus-visible,\n  &[data-focus]",
-                  decls: [box_shadow: "inset 0 0 0 2px var(--color-accent-ink)"]
+                  decls: [box_shadow: "inset 0 0 0 2px var(--color-on-accent)"]
                 )
               ]
             ),
@@ -2646,7 +2646,7 @@ defmodule Corex.Design.Recipes do
         Rule.new(checked,
           decls: [
             background_color: {:raw, "var(--color-#{c})"},
-            color: {:raw, "var(--color-#{c}-ink)"},
+            color: {:raw, "var(--color-on-#{c})"},
             border_color: {:raw, "var(--color-#{c})"}
           ],
           children: [
@@ -2655,7 +2655,7 @@ defmodule Corex.Design.Recipes do
             Rule.new("&:focus-visible, &[data-focus]",
               decls: [
                 outline: "none",
-                box_shadow: {:raw, "inset 0 0 0 2px var(--color-#{c}-ink)"}
+                box_shadow: {:raw, "inset 0 0 0 2px var(--color-on-#{c})"}
               ]
             )
           ]
@@ -2787,7 +2787,7 @@ defmodule Corex.Design.Recipes do
         Rule.new(~s(#{input}[data-copied]),
           decls: [
             background_color: "var(--color-success)",
-            color: "var(--color-success-ink)"
+            color: "var(--color-on-success)"
           ]
         ),
         Rule.new(trigger, decls: [include: :part_trigger]),
@@ -2810,9 +2810,9 @@ defmodule Corex.Design.Recipes do
         Rule.new(~s(#{trigger}[data-copied]),
           decls: [
             background_color: "var(--color-success)",
-            color: "var(--color-success-ink)",
+            color: "var(--color-on-success)",
             outline: "none",
-            box_shadow: "inset 0 0 0 2px var(--color-success-ink)"
+            box_shadow: "inset 0 0 0 2px var(--color-on-success)"
           ]
         ),
         Rule.new(~s(#{trigger}[data-copied] #{Selector.slot(@scope, "copy")}),
@@ -3884,6 +3884,7 @@ defmodule Corex.Design.Recipes do
     @moduledoc false
 
     alias Corex.Design.Axes
+    alias Corex.Design.Palette
     alias Corex.Design.Recipe
     alias Corex.Design.RecipePresets
     alias Corex.Design.Rule
@@ -3898,6 +3899,7 @@ defmodule Corex.Design.Recipes do
         host_sizing: [width: :full, max_width: :md, height: :auto, max_height: :none],
         base: [],
         variants: [
+          semantic: for(color <- Axes.semantic_atoms(), do: {color, %{}}),
           size: size_variants()
         ],
         default_variants: [size: :md],
@@ -4041,7 +4043,18 @@ defmodule Corex.Design.Recipes do
             align_self: "auto"
           ]
         )
-      ]
+      ] ++ semantic_rules()
+    end
+
+    defp semantic_rules do
+      host = Selector.host(@id)
+      label = part("label")
+
+      for color <- Axes.semantic_atoms() do
+        Rule.new("#{host}.#{Selector.class_name(@id)}--semantic-#{color} #{label}",
+          decls: [color: {:color, Palette.ink_color_atom(color)}]
+        )
+      end
     end
 
     defp size_variants do
@@ -4674,7 +4687,7 @@ defmodule Corex.Design.Recipes do
         c = Atom.to_string(color)
         host_mod = Palette.host_mod(@id, color)
         bg = "var(--color-#{c})"
-        ink = "var(--color-#{c}-ink)"
+        ink = "var(--color-on-#{c})"
         hover = "var(--color-#{c}-hover)"
         active = "var(--color-#{c}-active)"
         today = "var(--color-#{c})"
@@ -5007,7 +5020,7 @@ defmodule Corex.Design.Recipes do
             square_trigger ++
               [
                 background_color: {:color, :alert},
-                color: {:color, :alert_ink},
+                color: {:color, :on_alert},
                 border_color: {:color, :alert}
               ]
         ),
@@ -5016,7 +5029,7 @@ defmodule Corex.Design.Recipes do
             square_trigger ++
               [
                 background_color: {:color, :success},
-                color: {:color, :success_ink},
+                color: {:color, :on_success},
                 border_color: {:color, :success}
               ]
         ),
@@ -5322,7 +5335,7 @@ defmodule Corex.Design.Recipes do
             justify_content: :center,
             width: :auto,
             background_color: {:color, :alert},
-            color: {:color, :alert_ink},
+            color: {:color, :on_alert},
             border_color: {:color, :alert},
             min_height: {:size, :sm},
             font_size: {:text, :sm},
@@ -5352,7 +5365,7 @@ defmodule Corex.Design.Recipes do
            trigger:
              Map.merge(RecipePresets.size_block(size), %{
                background_color: {:color, :accent},
-               color: {:color, :accent_ink}
+               color: {:color, :on_accent}
              })
          ]}
       end
@@ -7412,7 +7425,7 @@ defmodule Corex.Design.Recipes do
               Rule.new("&[data-state=\"checked\"]",
                 decls: [
                   background: "var(--color-selected)",
-                  color: "var(--color-selected-ink)",
+                  color: "var(--color-on-selected)",
                   border_color: "var(--color-selected)"
                 ],
                 children: [
@@ -7436,7 +7449,7 @@ defmodule Corex.Design.Recipes do
               ),
               Rule.new(
                 ~S(&[data-state="checked"]:focus-visible,\n  &[data-state="checked"][data-focus]),
-                decls: [box_shadow: "inset 0 0 0 2px var(--color-selected-ink)"]
+                decls: [box_shadow: "inset 0 0 0 2px var(--color-on-selected)"]
               ),
               Rule.new("&[data-invalid]", decls: [border_color: "var(--color-alert)"])
             ]
@@ -7623,25 +7636,25 @@ defmodule Corex.Design.Recipes do
         },
         selected: %{
           background_color: {:color, :selected},
-          color: {:color, :selected_ink},
+          color: {:color, :on_selected},
           hover: %{
             background_color: {:color, :selected_hover},
-            color: {:color, :selected_ink}
+            color: {:color, :on_selected}
           },
           active: %{
             background_color: {:color, :selected_active},
-            color: {:color, :selected_ink},
+            color: {:color, :on_selected},
             box_shadow: :none
           },
           focus_visible: %{
             background_color: {:color, :selected_hover},
-            color: {:color, :selected_ink},
-            box_shadow: {:raw, "inset 0 0 0 2px var(--color-selected-ink)"},
+            color: {:color, :on_selected},
+            box_shadow: {:raw, "inset 0 0 0 2px var(--color-on-selected)"},
             outline: :none
           },
           highlighted: %{
             background_color: {:color, :selected_hover},
-            color: {:color, :selected_ink}
+            color: {:color, :on_selected}
           }
         },
         disabled:
@@ -7810,15 +7823,15 @@ defmodule Corex.Design.Recipes do
             Rule.new(selected.("[data-highlighted]:not(:hover)"),
               decls: [
                 background_color: {:color, :selected_hover},
-                color: {:color, :selected_ink},
-                box_shadow: {:raw, "inset 0 0 0 2px var(--color-selected-ink)"},
+                color: {:color, :on_selected},
+                box_shadow: {:raw, "inset 0 0 0 2px var(--color-on-selected)"},
                 outline: :none
               ]
             ),
             Rule.new(selected.("[data-highlighted]:hover"),
               decls: [
                 background_color: {:color, :selected_hover},
-                color: {:color, :selected_ink},
+                color: {:color, :on_selected},
                 box_shadow: :none,
                 outline: :none
               ]
@@ -7826,7 +7839,7 @@ defmodule Corex.Design.Recipes do
             Rule.new(selected.("[data-highlighted]:active"),
               decls: [
                 background_color: {:color, :selected_active},
-                color: {:color, :selected_ink},
+                color: {:color, :on_selected},
                 box_shadow: :none
               ]
             )
@@ -7844,8 +7857,8 @@ defmodule Corex.Design.Recipes do
             Rule.new(selected.("[data-highlighted]"),
               decls: [
                 background_color: {:color, :selected_hover},
-                color: {:color, :selected_ink},
-                box_shadow: {:raw, "inset 0 0 0 2px var(--color-selected-ink)"},
+                color: {:color, :on_selected},
+                box_shadow: {:raw, "inset 0 0 0 2px var(--color-on-selected)"},
                 outline: :none
               ]
             )
@@ -7873,12 +7886,12 @@ defmodule Corex.Design.Recipes do
     defp trigger_open_sx do
       %{
         background_color: {:color, :selected},
-        color: {:color, :selected_ink},
+        color: {:color, :on_selected},
         hover: %{background_color: {:color, :selected_hover}},
         active: %{background_color: {:color, :selected_active}},
         focus_visible: %{
           outline: :none,
-          box_shadow: {:raw, "inset 0 0 0 2px var(--color-selected-ink)"}
+          box_shadow: {:raw, "inset 0 0 0 2px var(--color-on-selected)"}
         }
       }
     end
@@ -8078,7 +8091,7 @@ defmodule Corex.Design.Recipes do
                min_height: {:size, size},
                min_width: {:size, size},
                background_color: {:color, :accent},
-               color: {:color, :accent_ink}
+               color: {:color, :on_accent}
              })
          ]}
       end
@@ -8207,7 +8220,7 @@ defmodule Corex.Design.Recipes do
               Rule.new("&[data-state=\"checked\"]",
                 decls: [background_color: "var(--color-selected)"],
                 children: [
-                  Rule.new(thumb_child, decls: [background_color: "var(--color-selected-ink)"])
+                  Rule.new(thumb_child, decls: [background_color: "var(--color-on-selected)"])
                 ]
               ),
               Rule.new("&[data-disabled]",
@@ -8239,7 +8252,7 @@ defmodule Corex.Design.Recipes do
               Rule.new("&[data-state=\"checked\"]",
                 decls: [
                   transform: "translateX(var(--switch-thumb-x))",
-                  background_color: "var(--color-selected-ink)"
+                  background_color: "var(--color-on-selected)"
                 ]
               ),
               Rule.new("&[data-invalid]", decls: [background: "var(--color-alert)"])
@@ -9421,6 +9434,7 @@ defmodule Corex.Design.Recipes do
     @moduledoc false
 
     alias Corex.Design.Axes
+    alias Corex.Design.Palette
     alias Corex.Design.Recipe
     alias Corex.Design.RecipePresets
     alias Corex.Design.Rule
@@ -9520,7 +9534,7 @@ defmodule Corex.Design.Recipes do
          [
            content: %{
              background_color: {:color, color},
-             color: {:color, String.to_atom("#{c}_ink")},
+             color: {:color, Palette.ink_color_atom(color)},
              border_color: {:raw, "var(--color-border-#{c}, var(--color-border))"}
            },
            arrow: %{"--arrow-background": {:raw, "var(--color-#{c})"}},
@@ -9741,7 +9755,7 @@ defmodule Corex.Design.Recipes do
         c = Atom.to_string(color)
         host_mod = Palette.host_mod(id, color)
         bg = "var(--color-#{c})"
-        ink = "var(--color-#{c}-ink)"
+        ink = "var(--color-on-#{c})"
         hover = "var(--color-#{c}-hover)"
         active = "var(--color-#{c}-active)"
         muted = "var(--color-#{c}-muted)"

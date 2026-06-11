@@ -27,11 +27,11 @@
     display: block;
     width: 100%;
     max-width: var(--container-md);
-    height: auto;
     max-height: var(--container-md);
-    border: 1px solid var(--color-border);
-    min-width: 0;
     border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    height: auto;
+    min-width: 0;
     overflow-x: auto;
     overflow-y: auto;
   }
@@ -161,31 +161,31 @@
   }
 
   .data-table.data-table--semantic-accent .data-table [data-scope="data-table"][data-part="thead"] th {
-    color: var(--color-on-accent);
+    color: var(--color-accent);
   }
 
   .data-table.data-table--semantic-alert .data-table [data-scope="data-table"][data-part="thead"] th {
-    color: var(--color-on-alert);
+    color: var(--color-alert);
   }
 
   .data-table.data-table--semantic-brand .data-table [data-scope="data-table"][data-part="thead"] th {
-    color: var(--color-on-brand);
+    color: var(--color-brand);
   }
 
   .data-table.data-table--semantic-info .data-table [data-scope="data-table"][data-part="thead"] th {
-    color: var(--color-on-info);
+    color: var(--color-info);
   }
 
   .data-table.data-table--semantic-neutral .data-table [data-scope="data-table"][data-part="thead"] th {
-    color: var(--color-on-neutral);
+    color: var(--color-neutral);
   }
 
   .data-table.data-table--semantic-selected .data-table [data-scope="data-table"][data-part="thead"] th {
-    color: var(--color-on-selected);
+    color: var(--color-selected);
   }
 
   .data-table.data-table--semantic-success .data-table [data-scope="data-table"][data-part="thead"] th {
-    color: var(--color-on-success);
+    color: var(--color-success);
   }
 
   .data-table [data-scope="data-table"][data-part="root"] {

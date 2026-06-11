@@ -55,9 +55,9 @@
 #tetrex-board .checkbox.checkbox--accent [data-scope="checkbox"][data-part="control"][data-state="checked"]:active,
 #tetrex-next .checkbox.checkbox--accent [data-scope="checkbox"][data-part="control"][data-state="checked"],
 #tetrex-next .checkbox.checkbox--accent [data-scope="checkbox"][data-part="control"][data-state="indeterminate"] {
-  background-color: var(--color-ink-accent);
+  background-color: var(--color-on-accent);
   border-color: var(--color-border);
-  color: var(--color-ink-accent);
+  color: var(--color-on-accent);
 }
 
 #tetrex-board .checkbox.checkbox--brand [data-scope="checkbox"][data-part="control"][data-state="checked"],
@@ -66,9 +66,9 @@
 #tetrex-board .checkbox.checkbox--brand [data-scope="checkbox"][data-part="control"][data-state="checked"]:active,
 #tetrex-next .checkbox.checkbox--brand [data-scope="checkbox"][data-part="control"][data-state="checked"],
 #tetrex-next .checkbox.checkbox--brand [data-scope="checkbox"][data-part="control"][data-state="indeterminate"] {
-  background-color: var(--color-ink-brand);
+  background-color: var(--color-on-brand);
   border-color: var(--color-border);
-  color: var(--color-ink-brand);
+  color: var(--color-on-brand);
 }
 
 #tetrex-board .checkbox.checkbox--alert [data-scope="checkbox"][data-part="control"][data-state="checked"],
@@ -77,9 +77,9 @@
 #tetrex-board .checkbox.checkbox--alert [data-scope="checkbox"][data-part="control"][data-state="checked"]:active,
 #tetrex-next .checkbox.checkbox--alert [data-scope="checkbox"][data-part="control"][data-state="checked"],
 #tetrex-next .checkbox.checkbox--alert [data-scope="checkbox"][data-part="control"][data-state="indeterminate"] {
-  background-color: var(--color-ink-alert);
+  background-color: var(--color-on-page-alert);
   border-color: var(--color-border);
-  color: var(--color-ink-alert);
+  color: var(--color-on-page-alert);
 }
 
 #tetrex-board .checkbox.checkbox--success [data-scope="checkbox"][data-part="control"][data-state="checked"],
@@ -88,9 +88,9 @@
 #tetrex-board .checkbox.checkbox--success [data-scope="checkbox"][data-part="control"][data-state="checked"]:active,
 #tetrex-next .checkbox.checkbox--success [data-scope="checkbox"][data-part="control"][data-state="checked"],
 #tetrex-next .checkbox.checkbox--success [data-scope="checkbox"][data-part="control"][data-state="indeterminate"] {
-  background-color: var(--color-ink-success);
+  background-color: var(--color-on-page-success);
   border-color: var(--color-border);
-  color: var(--color-ink-success);
+  color: var(--color-on-page-success);
 }
 
 #tetrex-board-stage {
@@ -113,7 +113,7 @@
   }
 
   body:has(#tetrex-page) .shell-content--blog {
-    padding-block: var(--spacing-space-sm);
+    padding-block: var(--spacing-sm);
   }
 
   body:has(#tetrex-page) footer {
@@ -126,13 +126,13 @@
 
   body:has(#tetrex-page) .shell-main--blog {
     min-height: 0;
-    max-height: calc(100dvh - var(--size-lg));
+    max-height: calc(100dvh - var(--spacing-control-lg));
   }
 
   body:has(#tetrex-page) .shell-content--blog {
     flex: 1 1 auto;
     min-height: 0;
-    max-height: calc(100dvh - var(--spacing-size-lg));
+    max-height: calc(100dvh - var(--spacing-control-lg));
     display: flex;
     flex-direction: column;
     overflow: hidden;

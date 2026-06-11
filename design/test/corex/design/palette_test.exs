@@ -4,15 +4,15 @@ defmodule Corex.Design.PaletteTest do
   alias Corex.Design.Palette
 
   test "scale token helpers map roles to --color-* names" do
-    assert Palette.fg_var(:accent) == "--color-on-accent"
+    assert Palette.fg_var(:accent) == "--color-accent"
     assert Palette.solid_var(:accent) == "--color-accent"
     assert Palette.on_solid_var(:accent) == "--color-on-accent"
-    assert Palette.fg_var(:selected) == "--color-on-selected"
+    assert Palette.fg_var(:selected) == "--color-selected"
     assert Palette.solid_var(:neutral) == "--color-neutral"
   end
 
   test "on-solid and ink token names follow background-ink contrast pattern" do
-    assert Palette.ink_color_var(:accent) == "--color-on-accent"
+    assert Palette.ink_color_var(:accent) == "--color-accent"
     assert Palette.on_solid_color_var(:accent) == "--color-on-accent"
     assert Palette.on_solid_color_var(:selected) == "--color-on-selected"
   end

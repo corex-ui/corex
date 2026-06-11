@@ -28,19 +28,19 @@
     cursor: pointer;
     padding: 0;
     color: var(--color-on-link);
-    max-width: none;
-    height: auto;
-    max-height: none;
-    gap: var(--spacing-md);
-    padding-inline: var(--spacing-md);
-    min-height: var(--spacing-control-md);
-    transition: color 120ms ease, box-shadow 120ms ease;
-    align-items: center;
-    border: none;
     background-color: transparent;
-    overflow: visible;
+    max-width: none;
+    max-height: none;
+    padding-inline: var(--spacing-md);
+    gap: var(--spacing-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-height: var(--spacing-control-md);
+    align-items: center;
+    border: none;
+    height: auto;
+    transition: color 120ms ease, box-shadow 120ms ease;
+    overflow: visible;
     text-decoration-line: underline;
     text-underline-offset: 0.15em;
     appearance: none;
@@ -152,35 +152,35 @@
   }
 
   .link.link--size-sm {
-    gap: var(--spacing-sm);
     padding-inline: var(--spacing-sm);
-    min-height: var(--spacing-control-sm);
+    gap: var(--spacing-sm);
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
+    min-height: var(--spacing-control-sm);
   }
 
   .link.link--size-md {
-    gap: var(--spacing-md);
     padding-inline: var(--spacing-md);
-    min-height: var(--spacing-control-md);
+    gap: var(--spacing-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-height: var(--spacing-control-md);
   }
 
   .link.link--size-lg {
-    gap: var(--spacing-lg);
     padding-inline: var(--spacing-lg);
-    min-height: var(--spacing-control-lg);
+    gap: var(--spacing-lg);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
+    min-height: var(--spacing-control-lg);
   }
 
   .link.link--size-xl {
-    gap: var(--spacing-xl);
     padding-inline: var(--spacing-xl);
-    min-height: var(--spacing-control-xl);
+    gap: var(--spacing-xl);
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
+    min-height: var(--spacing-control-xl);
   }
 
   .link.link--shape-square {
@@ -199,49 +199,49 @@
   }
 
   .link.link--semantic-accent {
-    color: var(--color-on-accent);
+    color: var(--color-accent);
     &:hover {
       color: var(--color-accent-hover);
     }
   }
 
   .link.link--semantic-alert {
-    color: var(--color-on-alert);
+    color: var(--color-alert);
     &:hover {
       color: var(--color-alert-hover);
     }
   }
 
   .link.link--semantic-brand {
-    color: var(--color-on-brand);
+    color: var(--color-brand);
     &:hover {
       color: var(--color-brand-hover);
     }
   }
 
   .link.link--semantic-info {
-    color: var(--color-on-info);
+    color: var(--color-info);
     &:hover {
       color: var(--color-info-hover);
     }
   }
 
   .link.link--semantic-neutral {
-    color: var(--color-on-neutral);
+    color: var(--color-neutral);
     &:hover {
       color: var(--color-neutral-hover);
     }
   }
 
   .link.link--semantic-selected {
-    color: var(--color-on-selected);
+    color: var(--color-selected);
     &:hover {
       color: var(--color-selected-hover);
     }
   }
 
   .link.link--semantic-success {
-    color: var(--color-on-success);
+    color: var(--color-success);
     &:hover {
       color: var(--color-success-hover);
     }
@@ -251,10 +251,10 @@
     display: inline-flex;
     width: 1em;
     color: currentcolor;
-    height: 1em;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    height: 1em;
   }
 
   .link [data-part="indicator"] [data-icon] {

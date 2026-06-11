@@ -20,7 +20,7 @@ defmodule Corex.Design.Palette do
   def muted_var(role), do: "--color-#{role}-muted"
 
   def fg_var(:neutral), do: "--color-on-control"
-  def fg_var(role), do: "--color-on-#{role}"
+  def fg_var(role), do: solid_var(role)
 
   def on_solid_var(role), do: "--color-on-#{role}"
 
@@ -31,11 +31,12 @@ defmodule Corex.Design.Palette do
   def surface_var, do: "--color-surface-control-hover"
   def surface_active_var, do: "--color-surface-control-active"
 
-  def inset_ring(role, _kind) do
+  def inset_ring(role, kind) do
     var =
-      case role do
-        :neutral -> "--color-focus"
-        _ -> on_solid_var(role)
+      case {role, kind} do
+        {:neutral, _} -> "--color-focus"
+        {_, :on_solid} -> on_solid_var(role)
+        _ -> solid_var(role)
       end
 
     "inset 0 0 0 2px var(#{var})"
@@ -53,11 +54,9 @@ defmodule Corex.Design.Palette do
     }
   end
 
-  def ink_color_atom(role) when is_atom(role), do: :"on_#{role}"
+  def ink_color_atom(role) when is_atom(role), do: role
 
-  def ink_color_var(role) when is_atom(role) do
-    "--color-on-" <> Atom.to_string(role)
-  end
+  def ink_color_var(role) when is_atom(role), do: solid_var(role)
 
   def on_solid_color_atom(role) when is_atom(role), do: :"on_#{role}"
 

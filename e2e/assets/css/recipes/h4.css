@@ -26,11 +26,11 @@
     width: fit-content;
     color: var(--color-on-page);
     max-width: none;
-    height: auto;
     max-height: none;
-    font-weight: var(--font-weight-normal);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    height: auto;
+    font-weight: var(--font-weight-normal);
     font-family: var(--font-sans);
     @media (min-width: 48rem) {
       font-size: var(--text-lg);
@@ -79,31 +79,31 @@
   }
 
   .h4.h4--semantic-accent {
-    color: var(--color-on-accent);
+    color: var(--color-accent);
   }
 
   .h4.h4--semantic-alert {
-    color: var(--color-on-alert);
+    color: var(--color-alert);
   }
 
   .h4.h4--semantic-brand {
-    color: var(--color-on-brand);
+    color: var(--color-brand);
   }
 
   .h4.h4--semantic-info {
-    color: var(--color-on-info);
+    color: var(--color-info);
   }
 
   .h4.h4--semantic-neutral {
-    color: var(--color-on-neutral);
+    color: var(--color-neutral);
   }
 
   .h4.h4--semantic-selected {
-    color: var(--color-on-selected);
+    color: var(--color-selected);
   }
 
   .h4.h4--semantic-success {
-    color: var(--color-on-success);
+    color: var(--color-success);
   }
 
   .h4.h4--weight-thin {

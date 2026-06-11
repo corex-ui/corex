@@ -788,7 +788,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
 
   def styling_drawing_color_code do
     ~S"""
-    <.signature_pad  drawing_fill="var(--color-ui-ink)">
+    <.signature_pad  drawing_fill="var(--color-on-page)">
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
     </.signature_pad>
@@ -821,7 +821,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     ~H"""
     <.signature_pad
       id="signature-style-drawing-ink"
-      drawing_fill="var(--color-ui-ink)"
+      drawing_fill="var(--color-on-page)"
     >
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
@@ -866,27 +866,27 @@ defmodule E2eWeb.Demos.SignatureDemo do
 
   def styling_trigger_color_code do
     ~S"""
-    <.signature_pad  drawing_fill="var(--color-ui-ink)">
+    <.signature_pad  drawing_fill="var(--color-on-page)">
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
     </.signature_pad>
-    <.signature_pad class="signature-pad signature-pad--semantic-accent" drawing_fill="var(--color-ui-ink)">
+    <.signature_pad class="signature-pad signature-pad--semantic-accent" drawing_fill="var(--color-on-page)">
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
     </.signature_pad>
-    <.signature_pad class="signature-pad signature-pad--semantic-brand" drawing_fill="var(--color-ui-ink)">
+    <.signature_pad class="signature-pad signature-pad--semantic-brand" drawing_fill="var(--color-on-page)">
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
     </.signature_pad>
-    <.signature_pad class="signature-pad signature-pad--semantic-alert" drawing_fill="var(--color-ui-ink)">
+    <.signature_pad class="signature-pad signature-pad--semantic-alert" drawing_fill="var(--color-on-page)">
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
     </.signature_pad>
-    <.signature_pad class="signature-pad signature-pad--semantic-success" drawing_fill="var(--color-ui-ink)">
+    <.signature_pad class="signature-pad signature-pad--semantic-success" drawing_fill="var(--color-on-page)">
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
     </.signature_pad>
-    <.signature_pad class="signature-pad signature-pad--semantic-info" drawing_fill="var(--color-ui-ink)">
+    <.signature_pad class="signature-pad signature-pad--semantic-info" drawing_fill="var(--color-on-page)">
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
     </.signature_pad>
@@ -899,7 +899,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     ~H"""
     <.signature_pad
       id="signature-style-trigger-default"
-      drawing_fill="var(--color-ui-ink)"
+      drawing_fill="var(--color-on-page)"
     >
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
@@ -907,7 +907,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     <.signature_pad
       id="signature-style-trigger-accent"
       class="signature-pad signature-pad--semantic-accent"
-      drawing_fill="var(--color-ui-ink)"
+      drawing_fill="var(--color-on-page)"
     >
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
@@ -915,7 +915,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     <.signature_pad
       id="signature-style-trigger-brand"
       class="signature-pad signature-pad--semantic-brand"
-      drawing_fill="var(--color-ui-ink)"
+      drawing_fill="var(--color-on-page)"
     >
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
@@ -923,7 +923,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     <.signature_pad
       id="signature-style-trigger-alert"
       class="signature-pad signature-pad--semantic-alert"
-      drawing_fill="var(--color-ui-ink)"
+      drawing_fill="var(--color-on-page)"
     >
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
@@ -931,7 +931,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     <.signature_pad
       id="signature-style-trigger-success"
       class="signature-pad signature-pad--semantic-success"
-      drawing_fill="var(--color-ui-ink)"
+      drawing_fill="var(--color-on-page)"
     >
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
@@ -939,7 +939,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     <.signature_pad
       id="signature-style-trigger-info"
       class="signature-pad signature-pad--semantic-info"
-      drawing_fill="var(--color-ui-ink)"
+      drawing_fill="var(--color-on-page)"
     >
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
@@ -949,19 +949,19 @@ defmodule E2eWeb.Demos.SignatureDemo do
 
   def styling_size_code do
     ~S"""
-    <.signature_pad class="signature-pad signature-pad--size-sm" drawing_fill="var(--color-ui-ink)">
+    <.signature_pad class="signature-pad signature-pad--size-sm" drawing_fill="var(--color-on-page)">
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
     </.signature_pad>
-    <.signature_pad class="signature-pad signature-pad--size-md" drawing_fill="var(--color-ui-ink)">
+    <.signature_pad class="signature-pad signature-pad--size-md" drawing_fill="var(--color-on-page)">
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
     </.signature_pad>
-    <.signature_pad class="signature-pad signature-pad--size-lg" drawing_fill="var(--color-ui-ink)">
+    <.signature_pad class="signature-pad signature-pad--size-lg" drawing_fill="var(--color-on-page)">
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
     </.signature_pad>
-    <.signature_pad class="signature-pad signature-pad--size-xl" drawing_fill="var(--color-ui-ink)">
+    <.signature_pad class="signature-pad signature-pad--size-xl" drawing_fill="var(--color-on-page)">
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
     </.signature_pad>
@@ -975,7 +975,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     <.signature_pad
       id="signature-style-size-sm"
       class="signature-pad signature-pad--size-sm"
-      drawing_fill="var(--color-ui-ink)"
+      drawing_fill="var(--color-on-page)"
     >
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
@@ -983,7 +983,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     <.signature_pad
       id="signature-style-size-md"
       class="signature-pad signature-pad--size-md"
-      drawing_fill="var(--color-ui-ink)"
+      drawing_fill="var(--color-on-page)"
     >
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
@@ -991,7 +991,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     <.signature_pad
       id="signature-style-size-lg"
       class="signature-pad signature-pad--size-lg"
-      drawing_fill="var(--color-ui-ink)"
+      drawing_fill="var(--color-on-page)"
     >
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
@@ -999,7 +999,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     <.signature_pad
       id="signature-style-size-xl"
       class="signature-pad signature-pad--size-xl"
-      drawing_fill="var(--color-ui-ink)"
+      drawing_fill="var(--color-on-page)"
     >
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
@@ -1009,19 +1009,19 @@ defmodule E2eWeb.Demos.SignatureDemo do
 
   def styling_max_width_code do
     ~S"""
-    <.signature_pad class="signature-pad signature-pad--max-w-2xs" drawing_fill="var(--color-ui-ink)">
+    <.signature_pad class="signature-pad signature-pad--max-w-2xs" drawing_fill="var(--color-on-page)">
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
     </.signature_pad>
-    <.signature_pad class="signature-pad signature-pad--max-w-md" drawing_fill="var(--color-ui-ink)">
+    <.signature_pad class="signature-pad signature-pad--max-w-md" drawing_fill="var(--color-on-page)">
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
     </.signature_pad>
-    <.signature_pad class="signature-pad signature-pad--max-w-xl" drawing_fill="var(--color-ui-ink)">
+    <.signature_pad class="signature-pad signature-pad--max-w-xl" drawing_fill="var(--color-on-page)">
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
     </.signature_pad>
-    <.signature_pad class="signature-pad signature-pad--max-w-2xl" drawing_fill="var(--color-ui-ink)">
+    <.signature_pad class="signature-pad signature-pad--max-w-2xl" drawing_fill="var(--color-on-page)">
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
     </.signature_pad>
@@ -1035,7 +1035,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     <.signature_pad
       id="signature-style-max-2xs"
       class="signature-pad signature-pad--max-w-2xs"
-      drawing_fill="var(--color-ui-ink)"
+      drawing_fill="var(--color-on-page)"
     >
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
@@ -1043,7 +1043,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     <.signature_pad
       id="signature-style-max-md"
       class="signature-pad signature-pad--max-w-md"
-      drawing_fill="var(--color-ui-ink)"
+      drawing_fill="var(--color-on-page)"
     >
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
@@ -1051,7 +1051,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     <.signature_pad
       id="signature-style-max-xl"
       class="signature-pad signature-pad--max-w-xl"
-      drawing_fill="var(--color-ui-ink)"
+      drawing_fill="var(--color-on-page)"
     >
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
@@ -1059,7 +1059,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     <.signature_pad
       id="signature-style-max-2xl"
       class="signature-pad signature-pad--max-w-2xl"
-      drawing_fill="var(--color-ui-ink)"
+      drawing_fill="var(--color-on-page)"
     >
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
@@ -1069,23 +1069,23 @@ defmodule E2eWeb.Demos.SignatureDemo do
 
   def styling_radius_code do
     ~S"""
-    <.signature_pad class="signature-pad signature-pad--rounded-none" drawing_fill="var(--color-ui-ink)">
+    <.signature_pad class="signature-pad signature-pad--rounded-none" drawing_fill="var(--color-on-page)">
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
     </.signature_pad>
-    <.signature_pad class="signature-pad signature-pad--rounded-sm" drawing_fill="var(--color-ui-ink)">
+    <.signature_pad class="signature-pad signature-pad--rounded-sm" drawing_fill="var(--color-on-page)">
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
     </.signature_pad>
-    <.signature_pad class="signature-pad signature-pad--rounded-md" drawing_fill="var(--color-ui-ink)">
+    <.signature_pad class="signature-pad signature-pad--rounded-md" drawing_fill="var(--color-on-page)">
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
     </.signature_pad>
-    <.signature_pad class="signature-pad signature-pad--rounded-lg" drawing_fill="var(--color-ui-ink)">
+    <.signature_pad class="signature-pad signature-pad--rounded-lg" drawing_fill="var(--color-on-page)">
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
     </.signature_pad>
-    <.signature_pad class="signature-pad signature-pad--rounded-xl" drawing_fill="var(--color-ui-ink)">
+    <.signature_pad class="signature-pad signature-pad--rounded-xl" drawing_fill="var(--color-on-page)">
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
     </.signature_pad>
@@ -1099,7 +1099,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     <.signature_pad
       id="signature-style-rounded-none"
       class="signature-pad signature-pad--rounded-none"
-      drawing_fill="var(--color-ui-ink)"
+      drawing_fill="var(--color-on-page)"
     >
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
@@ -1107,7 +1107,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     <.signature_pad
       id="signature-style-rounded-sm"
       class="signature-pad signature-pad--rounded-sm"
-      drawing_fill="var(--color-ui-ink)"
+      drawing_fill="var(--color-on-page)"
     >
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
@@ -1115,7 +1115,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     <.signature_pad
       id="signature-style-rounded-md"
       class="signature-pad signature-pad--rounded-md"
-      drawing_fill="var(--color-ui-ink)"
+      drawing_fill="var(--color-on-page)"
     >
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
@@ -1123,7 +1123,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     <.signature_pad
       id="signature-style-rounded-lg"
       class="signature-pad signature-pad--rounded-lg"
-      drawing_fill="var(--color-ui-ink)"
+      drawing_fill="var(--color-on-page)"
     >
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
@@ -1131,7 +1131,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     <.signature_pad
       id="signature-style-rounded-xl"
       class="signature-pad signature-pad--rounded-xl"
-      drawing_fill="var(--color-ui-ink)"
+      drawing_fill="var(--color-on-page)"
     >
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>

@@ -55,7 +55,7 @@ defmodule Corex.Design.Taxonomy do
     avatar: :decorative,
     clipboard: :decorative,
     code: :decorative,
-    data_list: :decorative,
+    data_list: :surface,
     marquee: :decorative,
     angle_slider: :decorative,
     signature_pad: :field,
@@ -72,7 +72,8 @@ defmodule Corex.Design.Taxonomy do
   end
 
   @required_axis_omit %{
-    floating_panel: [:size]
+    floating_panel: [:size],
+    data_list: [:radius, :width, :height, :max_width, :max_height]
   }
 
   def required_axes(component_id) when is_atom(component_id) do

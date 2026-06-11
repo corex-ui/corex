@@ -114,17 +114,17 @@ defmodule E2eWeb.Demos.DataListDemo do
 
   def styling_text_example(assigns) do
     ~H"""
-    <.data_list class="data-list data-list--sm" items={styling_items()} />
-    <.data_list class="data-list data-list--md" items={styling_items()} />
-    <.data_list class="data-list data-list--lg" items={styling_items()} />
-    <.data_list class="data-list data-list--xl" items={styling_items()} />
+    <.data_list class="data-list data-list--size-sm" items={styling_items()} />
+    <.data_list class="data-list data-list--size-md" items={styling_items()} />
+    <.data_list class="data-list data-list--size-lg" items={styling_items()} />
+    <.data_list class="data-list data-list--size-xl" items={styling_items()} />
     """
   end
 
   def styling_text_code do
     ~S"""
     <.data_list
-      class="data-list data-list--sm"
+      class="data-list data-list--size-sm"
       items={
         Corex.Content.new([
           %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
@@ -134,7 +134,7 @@ defmodule E2eWeb.Demos.DataListDemo do
       }
     />
     <.data_list
-      class="data-list data-list--md"
+      class="data-list data-list--size-md"
       items={
         Corex.Content.new([
           %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
@@ -144,7 +144,7 @@ defmodule E2eWeb.Demos.DataListDemo do
       }
     />
     <.data_list
-      class="data-list data-list--lg"
+      class="data-list data-list--size-lg"
       items={
         Corex.Content.new([
           %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
@@ -154,7 +154,7 @@ defmodule E2eWeb.Demos.DataListDemo do
       }
     />
     <.data_list
-      class="data-list data-list--xl"
+      class="data-list data-list--size-xl"
       items={
         Corex.Content.new([
           %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
@@ -169,11 +169,11 @@ defmodule E2eWeb.Demos.DataListDemo do
   def styling_semantic_example(assigns) do
     ~H"""
     <.data_list items={styling_items()} />
-    <.data_list class="data-list data-list--accent" items={styling_items()} />
-    <.data_list class="data-list data-list--brand" items={styling_items()} />
-    <.data_list class="data-list data-list--alert" items={styling_items()} />
-    <.data_list class="data-list data-list--success" items={styling_items()} />
-    <.data_list class="data-list data-list--info" items={styling_items()} />
+    <.data_list class="data-list data-list--semantic-accent" items={styling_items()} />
+    <.data_list class="data-list data-list--semantic-brand" items={styling_items()} />
+    <.data_list class="data-list data-list--semantic-alert" items={styling_items()} />
+    <.data_list class="data-list data-list--semantic-success" items={styling_items()} />
+    <.data_list class="data-list data-list--semantic-info" items={styling_items()} />
     """
   end
 
@@ -190,7 +190,7 @@ defmodule E2eWeb.Demos.DataListDemo do
       }
     />
     <.data_list
-      class="data-list data-list--accent"
+      class="data-list data-list--semantic-accent"
       items={
         Corex.Content.new([
           %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
@@ -200,7 +200,7 @@ defmodule E2eWeb.Demos.DataListDemo do
       }
     />
     <.data_list
-      class="data-list data-list--brand"
+      class="data-list data-list--semantic-brand"
       items={
         Corex.Content.new([
           %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
@@ -210,7 +210,7 @@ defmodule E2eWeb.Demos.DataListDemo do
       }
     />
     <.data_list
-      class="data-list data-list--alert"
+      class="data-list data-list--semantic-alert"
       items={
         Corex.Content.new([
           %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
@@ -220,7 +220,7 @@ defmodule E2eWeb.Demos.DataListDemo do
       }
     />
     <.data_list
-      class="data-list data-list--success"
+      class="data-list data-list--semantic-success"
       items={
         Corex.Content.new([
           %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
@@ -230,7 +230,7 @@ defmodule E2eWeb.Demos.DataListDemo do
       }
     />
     <.data_list
-      class="data-list data-list--info"
+      class="data-list data-list--semantic-info"
       items={
         Corex.Content.new([
           %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},

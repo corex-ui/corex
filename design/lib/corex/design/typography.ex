@@ -47,7 +47,7 @@ defmodule Corex.Design.Typography do
       "small" => small_text(),
       "mark" => %{
         background_color: {:color, :success},
-        color: {:color, :success_ink},
+        color: {:color, :on_success},
         padding: {:raw, "0.1em 0.25em"},
         border_radius: {:radius, :sm}
       },

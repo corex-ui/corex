@@ -42,11 +42,11 @@
   }
 
   [data-scope="tabs"][data-part="trigger"] {
-      gap: --value(--spacing-*, [length]);
-    padding-inline: --value(--spacing-*, [length]);
-    min-height: --value(--spacing-control-*, [length]);
+      padding-inline: --value(--spacing-*, [length]);
+    gap: --value(--spacing-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
 }
@@ -60,16 +60,16 @@
   .tabs {
     width: 100%;
     max-width: var(--container-md);
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .tabs [data-scope="tabs"][data-part="trigger"] {
-    gap: var(--spacing-md);
     padding-inline: var(--spacing-md);
-    min-height: var(--spacing-control-md);
+    gap: var(--spacing-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-height: var(--spacing-control-md);
   }
 
   .tabs.tabs--w-auto {

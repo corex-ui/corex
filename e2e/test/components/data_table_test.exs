@@ -17,8 +17,8 @@ defmodule E2eWeb.DataTableTest do
       {_view, html} = live_ok!(conn, ~p"/data-table/style")
 
       assert html =~ "data-table-style-page"
-      assert html =~ "data-table-styling-color"
-      assert html =~ "data-table-styling-size"
+      assert html =~ "data-table-style-color"
+      assert html =~ "data-table-style-size"
       assert html =~ ~r/data-part="action-cell"/
       assert html =~ ~r/data-part="sort-trigger"/
       assert html =~ "hero-pencil-square"

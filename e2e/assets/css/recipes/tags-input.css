@@ -61,9 +61,9 @@
   }
 
   [data-scope="tags-input"][data-part="input"] {
-      min-height: --value(--spacing-control-*, [length]);
-    font-size: --value(--text-*, [length]);
+      font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
   [data-scope="tags-input"][data-part="root"] {
@@ -71,12 +71,12 @@
   }
 
   [data-scope="tags-input"][data-part="item-text"] {
-      color: --value(--color-on-*, [color]);
+      color: --value(--color-*, [color]);
   }
 
   [data-scope="tags-input"][data-part="item-preview"] {
-      gap: --value(--spacing-*, [length]);
-    padding-inline: --value(--spacing-*, [length]);
+      padding-inline: --value(--spacing-*, [length]);
+    gap: --value(--spacing-*, [length]);
     min-height: --value(--spacing-control-*, [length]);
   }
 
@@ -99,9 +99,9 @@
   }
 
   .tags-input [data-scope="tags-input"][data-part="input"] {
-    min-height: var(--spacing-control-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-height: var(--spacing-control-md);
   }
 
   .tags-input [data-scope="tags-input"][data-part="root"] {
@@ -111,8 +111,8 @@
   .tags-input {
     width: 100%;
     max-width: var(--container-md);
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .tags-input [data-scope="tags-input"][data-part="item-text"] {
@@ -120,8 +120,8 @@
   }
 
   .tags-input [data-scope="tags-input"][data-part="item-preview"] {
-    gap: var(--spacing-md);
     padding-inline: var(--spacing-md);
+    gap: var(--spacing-md);
     min-height: var(--spacing-control-md);
   }
 

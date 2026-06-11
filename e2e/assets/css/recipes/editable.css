@@ -5,11 +5,11 @@
       border-radius: --value(--radius-*, [length]);
   }
 
-  [data-scope="editable"][data-part="edit-trigger"] {
+  [data-scope="editable"][data-part="preview"] {
       border-radius: --value(--radius-*, [length]);
   }
 
-  [data-scope="editable"][data-part="submit-trigger"] {
+  [data-scope="editable"][data-part="edit-trigger"] {
       border-radius: --value(--radius-*, [length]);
   }
 
@@ -17,7 +17,7 @@
       border-radius: --value(--radius-*, [length]);
   }
 
-  [data-scope="editable"][data-part="preview"] {
+  [data-scope="editable"][data-part="submit-trigger"] {
       border-radius: --value(--radius-*, [length]);
   }
 
@@ -36,11 +36,11 @@
 
 @utility editable--size-* {
   [data-scope="editable"][data-part="input"] {
-      color: --value(--color-on-*, [color]);
+      color: --value(--color-*, [color]);
     max-width: --value(--container-*, [length]);
-    min-height: --value(--spacing-control-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
   [data-scope="editable"][data-part="label"] {
@@ -52,39 +52,39 @@
       gap: --value(--spacing-*, [length]);
   }
 
-  [data-scope="editable"][data-part="edit-trigger"] {
-      max-width: --value(--container-*, [length]);
-    gap: --value(--spacing-*, [length]);
-    padding-inline: --value(--spacing-*, [length]);
-    min-height: --value(--spacing-control-*, [length]);
+  [data-scope="editable"][data-part="preview"] {
+      color: --value(--color-*, [color]);
+    max-width: --value(--container-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
-  [data-scope="editable"][data-part="submit-trigger"] {
+  [data-scope="editable"][data-part="edit-trigger"] {
       max-width: --value(--container-*, [length]);
-    gap: --value(--spacing-*, [length]);
     padding-inline: --value(--spacing-*, [length]);
-    min-height: --value(--spacing-control-*, [length]);
+    gap: --value(--spacing-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
   [data-scope="editable"][data-part="cancel-trigger"] {
       max-width: --value(--container-*, [length]);
-    gap: --value(--spacing-*, [length]);
     padding-inline: --value(--spacing-*, [length]);
-    min-height: --value(--spacing-control-*, [length]);
+    gap: --value(--spacing-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
-  [data-scope="editable"][data-part="preview"] {
-      color: --value(--color-on-*, [color]);
-    max-width: --value(--container-*, [length]);
-    min-height: --value(--spacing-control-*, [length]);
+  [data-scope="editable"][data-part="submit-trigger"] {
+      max-width: --value(--container-*, [length]);
+    padding-inline: --value(--spacing-*, [length]);
+    gap: --value(--spacing-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
 }
@@ -94,11 +94,11 @@
   .editable [data-scope="editable"][data-part="input"] {
     width: calc(var(--spacing-control-md) * 3);
     color: var(--color-on-page);
-    max-width: calc(var(--spacing-control-md) * 3);
-    min-height: var(--spacing-control-md);
     border-color: var(--color-border);
+    max-width: calc(var(--spacing-control-md) * 3);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-height: var(--spacing-control-md);
   }
 
   .editable [data-scope="editable"][data-part="label"] {
@@ -113,54 +113,54 @@
   .editable {
     width: fit-content;
     max-width: none;
-    height: auto;
     max-height: none;
+    height: auto;
+  }
+
+  .editable [data-scope="editable"][data-part="preview"] {
+    width: calc(var(--spacing-control-md) * 3);
+    color: var(--color-on-page);
+    border-color: var(--color-border);
+    max-width: calc(var(--spacing-control-md) * 3);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+    min-height: var(--spacing-control-md);
   }
 
   .editable [data-scope="editable"][data-part="edit-trigger"] {
     width: calc(var(--spacing-control-md) * 0.6);
     max-width: calc(var(--spacing-control-md) * 0.6);
     max-height: calc(var(--spacing-control-md) * 0.6);
-    gap: var(--spacing-md);
     padding-inline: var(--spacing-md);
-    min-height: calc(var(--spacing-control-md) * 0.6);
-    min-width: calc(var(--spacing-control-md) * 0.6);
+    gap: var(--spacing-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
-  }
-
-  .editable [data-scope="editable"][data-part="submit-trigger"] {
-    width: calc(var(--spacing-control-md) * 0.6);
-    max-width: calc(var(--spacing-control-md) * 0.6);
-    max-height: calc(var(--spacing-control-md) * 0.6);
-    gap: var(--spacing-md);
-    padding-inline: var(--spacing-md);
     min-height: calc(var(--spacing-control-md) * 0.6);
     min-width: calc(var(--spacing-control-md) * 0.6);
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
   }
 
   .editable [data-scope="editable"][data-part="cancel-trigger"] {
     width: calc(var(--spacing-control-md) * 0.6);
     max-width: calc(var(--spacing-control-md) * 0.6);
     max-height: calc(var(--spacing-control-md) * 0.6);
-    gap: var(--spacing-md);
     padding-inline: var(--spacing-md);
+    gap: var(--spacing-md);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
     min-height: calc(var(--spacing-control-md) * 0.6);
     min-width: calc(var(--spacing-control-md) * 0.6);
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
   }
 
-  .editable [data-scope="editable"][data-part="preview"] {
-    width: calc(var(--spacing-control-md) * 3);
-    color: var(--color-on-page);
-    max-width: calc(var(--spacing-control-md) * 3);
-    min-height: var(--spacing-control-md);
-    border-color: var(--color-border);
+  .editable [data-scope="editable"][data-part="submit-trigger"] {
+    width: calc(var(--spacing-control-md) * 0.6);
+    max-width: calc(var(--spacing-control-md) * 0.6);
+    max-height: calc(var(--spacing-control-md) * 0.6);
+    padding-inline: var(--spacing-md);
+    gap: var(--spacing-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-height: calc(var(--spacing-control-md) * 0.6);
+    min-width: calc(var(--spacing-control-md) * 0.6);
   }
 
   .editable.editable--w-auto {
@@ -365,7 +365,7 @@
     min-height: calc(var(--spacing-control-md) * 0.6);
     max-height: calc(var(--spacing-control-md) * 0.6);
     background-color: var(--color-alert);
-    color: var(--color-alert-ink);
+    color: var(--color-on-alert);
     border-color: var(--color-alert);
   }
 
@@ -382,7 +382,7 @@
     min-height: calc(var(--spacing-control-md) * 0.6);
     max-height: calc(var(--spacing-control-md) * 0.6);
     background-color: var(--color-success);
-    color: var(--color-success-ink);
+    color: var(--color-on-success);
     border-color: var(--color-success);
   }
 
@@ -391,10 +391,10 @@
   }
 
   .editable.editable--semantic-accent [data-scope="editable"][data-part="edit-trigger"] {
-    color: var(--color-on-accent);
+    color: var(--color-accent);
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-accent);
+      box-shadow: inset 0 0 0 2px var(--color-accent);
     }
 
     &:disabled,
@@ -406,10 +406,10 @@
   }
 
   .editable.editable--semantic-alert [data-scope="editable"][data-part="edit-trigger"] {
-    color: var(--color-on-alert);
+    color: var(--color-alert);
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-alert);
+      box-shadow: inset 0 0 0 2px var(--color-alert);
     }
 
     &:disabled,
@@ -421,10 +421,10 @@
   }
 
   .editable.editable--semantic-brand [data-scope="editable"][data-part="edit-trigger"] {
-    color: var(--color-on-brand);
+    color: var(--color-brand);
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+      box-shadow: inset 0 0 0 2px var(--color-brand);
     }
 
     &:disabled,
@@ -436,10 +436,10 @@
   }
 
   .editable.editable--semantic-info [data-scope="editable"][data-part="edit-trigger"] {
-    color: var(--color-on-info);
+    color: var(--color-info);
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-info);
+      box-shadow: inset 0 0 0 2px var(--color-info);
     }
 
     &:disabled,
@@ -466,10 +466,10 @@
   }
 
   .editable.editable--semantic-selected [data-scope="editable"][data-part="edit-trigger"] {
-    color: var(--color-on-selected);
+    color: var(--color-selected);
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
+      box-shadow: inset 0 0 0 2px var(--color-selected);
     }
 
     &:disabled,
@@ -481,10 +481,10 @@
   }
 
   .editable.editable--semantic-success [data-scope="editable"][data-part="edit-trigger"] {
-    color: var(--color-on-success);
+    color: var(--color-success);
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-success);
+      box-shadow: inset 0 0 0 2px var(--color-success);
     }
 
     &:disabled,
@@ -664,14 +664,14 @@
   }
 
   .editable.editable--semantic-accent [data-scope="editable"][data-part="cancel-trigger"] {
-    color: var(--color-on-accent);
+    color: var(--color-accent);
     &:hover {
       background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-accent);
+      box-shadow: inset 0 0 0 2px var(--color-accent);
     }
 
     &:disabled,
@@ -683,14 +683,14 @@
   }
 
   .editable.editable--semantic-alert [data-scope="editable"][data-part="cancel-trigger"] {
-    color: var(--color-on-alert);
+    color: var(--color-alert);
     &:hover {
       background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-alert);
+      box-shadow: inset 0 0 0 2px var(--color-alert);
     }
 
     &:disabled,
@@ -702,14 +702,14 @@
   }
 
   .editable.editable--semantic-brand [data-scope="editable"][data-part="cancel-trigger"] {
-    color: var(--color-on-brand);
+    color: var(--color-brand);
     &:hover {
       background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+      box-shadow: inset 0 0 0 2px var(--color-brand);
     }
 
     &:disabled,
@@ -721,14 +721,14 @@
   }
 
   .editable.editable--semantic-info [data-scope="editable"][data-part="cancel-trigger"] {
-    color: var(--color-on-info);
+    color: var(--color-info);
     &:hover {
       background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-info);
+      box-shadow: inset 0 0 0 2px var(--color-info);
     }
 
     &:disabled,
@@ -759,14 +759,14 @@
   }
 
   .editable.editable--semantic-selected [data-scope="editable"][data-part="cancel-trigger"] {
-    color: var(--color-on-selected);
+    color: var(--color-selected);
     &:hover {
       background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
+      box-shadow: inset 0 0 0 2px var(--color-selected);
     }
 
     &:disabled,
@@ -778,14 +778,14 @@
   }
 
   .editable.editable--semantic-success [data-scope="editable"][data-part="cancel-trigger"] {
-    color: var(--color-on-success);
+    color: var(--color-success);
     &:hover {
       background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-success);
+      box-shadow: inset 0 0 0 2px var(--color-success);
     }
 
     &:disabled,

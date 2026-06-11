@@ -26,12 +26,12 @@
     width: fit-content;
     color: var(--color-on-page);
     max-width: none;
-    height: auto;
     max-height: none;
-    font-weight: var(--font-weight-normal);
-    margin-block: var(--spacing-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    height: auto;
+    font-weight: var(--font-weight-normal);
+    margin-block: var(--spacing-md);
   }
 
   .p.p--w-auto {
@@ -75,31 +75,31 @@
   }
 
   .p.p--semantic-accent {
-    color: var(--color-on-accent);
+    color: var(--color-accent);
   }
 
   .p.p--semantic-alert {
-    color: var(--color-on-alert);
+    color: var(--color-alert);
   }
 
   .p.p--semantic-brand {
-    color: var(--color-on-brand);
+    color: var(--color-brand);
   }
 
   .p.p--semantic-info {
-    color: var(--color-on-info);
+    color: var(--color-info);
   }
 
   .p.p--semantic-neutral {
-    color: var(--color-on-neutral);
+    color: var(--color-neutral);
   }
 
   .p.p--semantic-selected {
-    color: var(--color-on-selected);
+    color: var(--color-selected);
   }
 
   .p.p--semantic-success {
-    color: var(--color-on-success);
+    color: var(--color-success);
   }
 
   .p.p--weight-thin {

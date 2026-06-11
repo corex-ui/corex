@@ -41,8 +41,8 @@
   .timer {
     width: 100%;
     max-width: none;
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .timer.timer--w-auto {

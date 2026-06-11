@@ -24,7 +24,7 @@
 
 @utility combobox--size-* {
   [data-scope="combobox"][data-part="input"] {
-      color: --value(--color-on-*, [color]);
+      color: --value(--color-*, [color]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
@@ -44,23 +44,23 @@
   }
 
   [data-scope="combobox"][data-part="trigger"] {
-      color: --value(--color-on-*, [color]);
-    gap: --value(--spacing-*, [length]);
+      color: --value(--color-*, [color]);
     padding-inline: --value(--spacing-*, [length]);
+    gap: --value(--spacing-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
 
   [data-scope="combobox"][data-part="clear-trigger"] {
-      color: --value(--color-on-*, [color]);
-    gap: --value(--spacing-*, [length]);
+      color: --value(--color-*, [color]);
     padding-inline: --value(--spacing-*, [length]);
+    gap: --value(--spacing-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
 
   [data-scope="combobox"][data-part="item-group-label"] {
-      color: --value(--color-on-*, [color]);
+      color: --value(--color-*, [color]);
     min-height: --value(--spacing-control-*, [length]);
   }
 
@@ -87,8 +87,8 @@
   .combobox {
     width: 100%;
     max-width: var(--container-3xs);
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .combobox [data-scope="combobox"][data-part="item"] {
@@ -98,16 +98,16 @@
 
   .combobox [data-scope="combobox"][data-part="trigger"] {
     color: var(--color-on-page);
-    gap: var(--spacing-md);
     padding-inline: var(--spacing-md);
+    gap: var(--spacing-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
   }
 
   .combobox [data-scope="combobox"][data-part="clear-trigger"] {
     color: var(--color-on-page);
-    gap: var(--spacing-md);
     padding-inline: var(--spacing-md);
+    gap: var(--spacing-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
   }

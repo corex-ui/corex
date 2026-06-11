@@ -333,7 +333,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   def styling_semantic_example(assigns) do
     ~H"""
     <.tree_view
-      id="tree-styling-color-default"
+      id="tree-style-color-default"
       class="tree-view tree-view--max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
@@ -342,7 +342,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
     <.tree_view
-      id="tree-styling-color-accent"
+      id="tree-style-color-accent"
       class="tree-view tree-view--semantic-accent tree-view--max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
@@ -351,7 +351,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
     <.tree_view
-      id="tree-styling-color-brand"
+      id="tree-style-color-brand"
       class="tree-view tree-view--semantic-brand tree-view--max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
@@ -360,7 +360,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
     <.tree_view
-      id="tree-styling-color-info"
+      id="tree-style-color-info"
       class="tree-view tree-view--semantic-info tree-view--max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
@@ -369,7 +369,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
     <.tree_view
-      id="tree-styling-color-alert"
+      id="tree-style-color-alert"
       class="tree-view tree-view--semantic-alert tree-view--max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
@@ -378,7 +378,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
     <.tree_view
-      id="tree-styling-color-success"
+      id="tree-style-color-success"
       class="tree-view tree-view--semantic-success tree-view--max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
@@ -417,7 +417,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   def styling_size_example(assigns) do
     ~H"""
     <.tree_view
-      id="tree-styling-size-sm"
+      id="tree-style-size-sm"
       class="tree-view tree-view--size-sm tree-view--max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
@@ -426,7 +426,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
     <.tree_view
-      id="tree-styling-size-md"
+      id="tree-style-size-md"
       class="tree-view tree-view--size-md tree-view--max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
@@ -435,7 +435,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
     <.tree_view
-      id="tree-styling-size-lg"
+      id="tree-style-size-lg"
       class="tree-view tree-view--size-lg tree-view--max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
@@ -444,7 +444,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
     <.tree_view
-      id="tree-styling-size-xl"
+      id="tree-style-size-xl"
       class="tree-view tree-view--size-xl tree-view--max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
@@ -477,7 +477,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   def styling_text_example(assigns) do
     ~H"""
     <.tree_view
-      id="tree-styling-text-sm"
+      id="tree-style-text-sm"
       class="tree-view tree-view--text-sm tree-view--max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
@@ -486,7 +486,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
     <.tree_view
-      id="tree-styling-text-md"
+      id="tree-style-text-md"
       class="tree-view tree-view--text-md tree-view--max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
@@ -495,7 +495,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
     <.tree_view
-      id="tree-styling-text-lg"
+      id="tree-style-text-lg"
       class="tree-view tree-view--text-lg tree-view--max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
@@ -504,7 +504,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
     <.tree_view
-      id="tree-styling-text-xl"
+      id="tree-style-text-xl"
       class="tree-view tree-view--text-xl tree-view--max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
@@ -513,7 +513,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
     <.tree_view
-      id="tree-styling-text-2xl"
+      id="tree-style-text-2xl"
       class="tree-view tree-view--text-2xl tree-view--max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
@@ -549,7 +549,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   def styling_radius_example(assigns) do
     ~H"""
     <.tree_view
-      id="tree-styling-radius-none"
+      id="tree-style-radius-none"
       class="tree-view tree-view--rounded-none tree-view--max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
@@ -558,7 +558,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
     <.tree_view
-      id="tree-styling-radius-sm"
+      id="tree-style-radius-sm"
       class="tree-view tree-view--rounded-sm tree-view--max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
@@ -567,7 +567,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
     <.tree_view
-      id="tree-styling-radius-md"
+      id="tree-style-radius-md"
       class="tree-view tree-view--rounded-md tree-view--max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
@@ -576,7 +576,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
     <.tree_view
-      id="tree-styling-radius-lg"
+      id="tree-style-radius-lg"
       class="tree-view tree-view--rounded-lg tree-view--max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
@@ -585,7 +585,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
     <.tree_view
-      id="tree-styling-radius-xl"
+      id="tree-style-radius-xl"
       class="tree-view tree-view--rounded-xl tree-view--max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
@@ -594,7 +594,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
     <.tree_view
-      id="tree-styling-radius-full"
+      id="tree-style-radius-full"
       class="tree-view tree-view--rounded-full tree-view--max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
@@ -633,7 +633,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   def styling_max_width_example(assigns) do
     ~H"""
     <.tree_view
-      id="tree-styling-max-width-2xs"
+      id="tree-style-max-width-2xs"
       class="tree-view tree-view--max-w-2xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
@@ -642,7 +642,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
     <.tree_view
-      id="tree-styling-max-width-md"
+      id="tree-style-max-width-md"
       class="tree-view tree-view--max-w-md"
       expanded_value={styling_expanded()}
       value={styling_value()}
@@ -651,7 +651,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
     <.tree_view
-      id="tree-styling-max-width-xl"
+      id="tree-style-max-width-xl"
       class="tree-view tree-view--max-w-xl"
       expanded_value={styling_expanded()}
       value={styling_value()}
@@ -660,7 +660,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
     <.tree_view
-      id="tree-styling-max-width-2xl"
+      id="tree-style-max-width-2xl"
       class="tree-view tree-view--max-w-2xl"
       expanded_value={styling_expanded()}
       value={styling_value()}

@@ -15,7 +15,8 @@ defmodule Corex.Design.Emit.Tokens do
       [:space, step] -> "--spacing-#{dash(step)}"
       [:size] -> "--spacing-control-md"
       [:size, step] -> "--spacing-control-#{dash(step)}"
-      [:color, role] -> "--color-#{dash(role)}"
+      [:color, role] when is_binary(role) -> "--color-#{role}"
+      [:color, role] -> "--color-#{dash(normalize_color_role(role))}"
       [single] -> "--#{dash(single)}"
       [ns, step] -> "--#{dash(ns)}-#{dash(step)}"
       _ -> "--" <> Enum.map_join(parts, "-", &dash/1)
@@ -162,6 +163,16 @@ defmodule Corex.Design.Emit.Tokens do
   defp block(selector, decls) do
     body = Enum.map_join(decls, "\n", fn {name, value} -> "  #{name}: #{value};" end)
     "#{selector} {\n#{body}\n}"
+  end
+
+  defp normalize_color_role(role) when is_atom(role) do
+    name = Atom.to_string(role)
+
+    cond do
+      String.starts_with?(name, "on_") -> role
+      String.ends_with?(name, "_ink") -> String.trim_trailing(name, "_ink") |> String.to_atom()
+      true -> role
+    end
   end
 
   defp dash(value), do: value |> to_string() |> String.replace("_", "-")
@@ -864,7 +875,7 @@ defmodule Corex.Design.Emit.TailwindUtilities do
     scale_lines() ++
       [
         "  background-color: --value(--color-*, [color]);",
-        "  color: --value(--color-*-ink, [color]);",
+        "  color: --value(--color-*, [color]);",
         "",
         "  &:hover {",
         "    background-color: --value(--color-*-hover, [color]);",
@@ -876,7 +887,7 @@ defmodule Corex.Design.Emit.TailwindUtilities do
         "",
         "  &:focus-visible {",
         "    outline: none;",
-        "    box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);",
+        "    box-shadow: inset 0 0 0 2px --value(--color-*, [color]);",
         "  }",
         "",
         "  &:disabled,",
@@ -890,7 +901,7 @@ defmodule Corex.Design.Emit.TailwindUtilities do
         "  &[data-state=\"checked\"],",
         "  &[data-state=\"on\"] {",
         "    background-color: --value(--color-*, [color]);",
-        "    color: --value(--color-*-ink, [color]);",
+        "    color: --value(--color-on-*, [color]);",
         "",
         "    &:hover {",
         "      background-color: --value(--color-*-hover, [color]);",
@@ -901,7 +912,7 @@ defmodule Corex.Design.Emit.TailwindUtilities do
         "    }",
         "",
         "    &:focus-visible {",
-        "      box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);",
+        "      box-shadow: inset 0 0 0 2px --value(--color-on-*, [color]);",
         "      outline: none;",
         "    }",
         "",
@@ -926,7 +937,7 @@ defmodule Corex.Design.Emit.TailwindUtilities do
     scale_lines() ++
       [
         "  background-color: --value(--color-*, [color]);",
-        "  color: --value(--color-*-ink, [color]);",
+        "  color: --value(--color-*, [color]);",
         "",
         "  &:hover {",
         "    background-color: --value(--color-*-hover, [color]);",
@@ -938,7 +949,7 @@ defmodule Corex.Design.Emit.TailwindUtilities do
         "",
         "  &:focus-visible {",
         "    outline: none;",
-        "    box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);",
+        "    box-shadow: inset 0 0 0 2px --value(--color-*, [color]);",
         "  }",
         "",
         "  &:disabled,",
@@ -956,7 +967,7 @@ defmodule Corex.Design.Emit.TailwindUtilities do
         "  &[data-checked],",
         "  &[data-indeterminate] {",
         "    background-color: --value(--color-*, [color]);",
-        "    color: --value(--color-*-ink, [color]);",
+        "    color: --value(--color-on-*, [color]);",
         "",
         "    &:hover {",
         "      background-color: --value(--color-*-hover, [color]);",
@@ -967,7 +978,7 @@ defmodule Corex.Design.Emit.TailwindUtilities do
         "    }",
         "",
         "    &:focus-visible {",
-        "      box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);",
+        "      box-shadow: inset 0 0 0 2px --value(--color-on-*, [color]);",
         "      outline: none;",
         "    }",
         "",
@@ -985,7 +996,7 @@ defmodule Corex.Design.Emit.TailwindUtilities do
     [
       "  font-size: --value(--text-*, [length]);",
       "  line-height: --value(--text-*--line-height, [length]);",
-      "  color: --value(--color-on-*, [color]);",
+      "  color: --value(--color-*, [color]);",
       "  gap: calc(--value(--spacing-*, [length]) * 0.5);"
     ]
   end
@@ -1370,7 +1381,7 @@ defmodule Corex.Design.Emit.TailwindUtilitiesRecipe do
     do: ["margin-bottom: --value(--spacing-*, [length]);"]
 
   defp sx_property_lines(:border_radius), do: ["border-radius: --value(--radius-*, [length]);"]
-  defp sx_property_lines(:color), do: ["color: --value(--color-on-*, [color]);"]
+  defp sx_property_lines(:color), do: ["color: --value(--color-*, [color]);"]
 
   defp sx_property_lines(:background_color),
     do: ["background-color: --value(--color-*, [color]);"]
@@ -1381,7 +1392,7 @@ defmodule Corex.Design.Emit.TailwindUtilitiesRecipe do
     do: ["padding-inline-start: --value(--spacing-*, [length]);"]
 
   defp sx_property_lines(:border_inline_start),
-    do: ["border-inline-start: 1px solid --value(--color-*-ink, [color]);"]
+    do: ["border-inline-start: 1px solid --value(--color-*, [color]);"]
 
   defp sx_property_lines(:outline), do: []
   defp sx_property_lines(_), do: []

@@ -1049,19 +1049,19 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def styling_trigger_heex do
     ~S"""
-    <.tags_input class="tags-input w-full tags-input--trigger--accent" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full tags-input--semantic-accent" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--trigger--brand" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full tags-input--semantic-brand" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--trigger--alert" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full tags-input--semantic-alert" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--trigger--success" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full tags-input--semantic-success" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--trigger--info" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full tags-input--semantic-info" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
     """
@@ -1074,35 +1074,35 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     <div class="flex flex-col gap-space-lg w-full items-center">
       <.tags_input
         id="tags-style-trigger-accent"
-        class="tags-input w-full tags-input--trigger--accent"
+        class="tags-input w-full tags-input--semantic-accent"
         value={@demo_tags}
       >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
       <.tags_input
         id="tags-style-trigger-brand"
-        class="tags-input w-full tags-input--trigger--brand"
+        class="tags-input w-full tags-input--semantic-brand"
         value={@demo_tags}
       >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
       <.tags_input
         id="tags-style-trigger-alert"
-        class="tags-input w-full tags-input--trigger--alert"
+        class="tags-input w-full tags-input--semantic-alert"
         value={@demo_tags}
       >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
       <.tags_input
         id="tags-style-trigger-success"
-        class="tags-input w-full tags-input--trigger--success"
+        class="tags-input w-full tags-input--semantic-success"
         value={@demo_tags}
       >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
       <.tags_input
         id="tags-style-trigger-info"
-        class="tags-input w-full tags-input--trigger--info"
+        class="tags-input w-full tags-input--semantic-info"
         value={@demo_tags}
       >
         <:close><.heroicon name="hero-x-mark" /></:close>

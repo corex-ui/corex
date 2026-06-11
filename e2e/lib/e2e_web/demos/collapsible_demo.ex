@@ -357,15 +357,15 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
 
   def styling_semantic_code do
     ~S"""
-    <.collapsible class="collapsible collapsible--md">
+    <.collapsible class="collapsible collapsible--size-md">
       <:trigger>Default width</:trigger>
       <:content>Content</:content>
     </.collapsible>
-    <.collapsible class="collapsible collapsible--md collapsible--accent">
+    <.collapsible class="collapsible collapsible--size-md collapsible--semantic-accent">
       <:trigger>Accent trigger</:trigger>
       <:content>Content</:content>
     </.collapsible>
-    <.collapsible class="collapsible collapsible--md collapsible--brand">
+    <.collapsible class="collapsible collapsible--size-md collapsible--semantic-brand">
       <:trigger>Brand trigger</:trigger>
       <:content>Content</:content>
     </.collapsible>
@@ -375,20 +375,20 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
   def styling_semantic_example(assigns) do
     ~H"""
     <div class="flex flex-col gap-4 items-start w-full max-w-xl">
-      <.collapsible id="collapsible-style-default" class="collapsible collapsible--md">
+      <.collapsible id="collapsible-style-default" class="collapsible collapsible--size-md">
         <:trigger>Default width</:trigger>
         <:content>Content</:content>
       </.collapsible>
       <.collapsible
         id="collapsible-style-accent"
-        class="collapsible collapsible--md collapsible--accent"
+        class="collapsible collapsible--size-md collapsible--semantic-accent"
       >
         <:trigger>Accent trigger</:trigger>
         <:content>Content</:content>
       </.collapsible>
       <.collapsible
         id="collapsible-style-brand"
-        class="collapsible collapsible--md collapsible--brand"
+        class="collapsible collapsible--size-md collapsible--semantic-brand"
       >
         <:trigger>Brand trigger</:trigger>
         <:content>Content</:content>
@@ -399,11 +399,11 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
 
   def styling_size_code do
     ~S"""
-    <.collapsible class="collapsible collapsible--sm">
+    <.collapsible class="collapsible collapsible--size-sm">
       <:trigger>Small max-width</:trigger>
       <:content>Content</:content>
     </.collapsible>
-    <.collapsible class="collapsible collapsible--lg">
+    <.collapsible class="collapsible collapsible--size-lg">
       <:trigger>Large max-width</:trigger>
       <:content>Content</:content>
     </.collapsible>
@@ -413,11 +413,11 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
   def styling_size_example(assigns) do
     ~H"""
     <div class="flex flex-col gap-4 items-start w-full">
-      <.collapsible id="collapsible-style-sm" class="collapsible collapsible--sm">
+      <.collapsible id="collapsible-style-sm" class="collapsible collapsible--size-sm">
         <:trigger>Small max-width</:trigger>
         <:content>Content</:content>
       </.collapsible>
-      <.collapsible id="collapsible-style-lg" class="collapsible collapsible--lg">
+      <.collapsible id="collapsible-style-lg" class="collapsible collapsible--size-lg">
         <:trigger>Large max-width</:trigger>
         <:content>Content</:content>
       </.collapsible>

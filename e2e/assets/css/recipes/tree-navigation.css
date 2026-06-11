@@ -23,12 +23,12 @@
     line-height: --value(--text-*--line-height, [length]);
   }
 
-  [data-scope="tree-view"][data-part="branch-text"] {
+  [data-scope="tree-view"][data-part="branch-control"] {
       font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
 
-  [data-scope="tree-view"][data-part="branch-control"] {
+  [data-scope="tree-view"][data-part="branch-text"] {
       font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
@@ -52,27 +52,27 @@
   }
 
   [data-scope="tree-view"][data-part="item"] {
-      gap: --value(--spacing-*, [length]);
-    padding-inline: --value(--spacing-*, [length]);
-    min-height: --value(--spacing-control-*, [length]);
+      padding-inline: --value(--spacing-*, [length]);
+    gap: --value(--spacing-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
   [data-scope="tree-view"][data-part="item-text"] {
       gap: --value(--spacing-*, [length]);
   }
 
-  [data-scope="tree-view"][data-part="branch-text"] {
-      gap: --value(--spacing-*, [length]);
-  }
-
   [data-scope="tree-view"][data-part="branch-control"] {
-      gap: --value(--spacing-*, [length]);
-    padding-inline: --value(--spacing-*, [length]);
-    min-height: --value(--spacing-control-*, [length]);
+      padding-inline: --value(--spacing-*, [length]);
+    gap: --value(--spacing-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
+  }
+
+  [data-scope="tree-view"][data-part="branch-text"] {
+      gap: --value(--spacing-*, [length]);
   }
 
 }
@@ -86,32 +86,32 @@
   .tree-navigation {
     width: 100%;
     max-width: var(--container-md);
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .tree-navigation [data-scope="tree-view"][data-part="item"] {
-    gap: var(--spacing-md);
     padding-inline: var(--spacing-md);
-    min-height: var(--spacing-control-md);
+    gap: var(--spacing-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-height: var(--spacing-control-md);
   }
 
   .tree-navigation [data-scope="tree-view"][data-part="item-text"] {
     gap: var(--spacing-md);
   }
 
-  .tree-navigation [data-scope="tree-view"][data-part="branch-text"] {
-    gap: var(--spacing-md);
-  }
-
   .tree-navigation [data-scope="tree-view"][data-part="branch-control"] {
-    gap: var(--spacing-md);
     padding-inline: var(--spacing-md);
-    min-height: var(--spacing-control-md);
+    gap: var(--spacing-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-height: var(--spacing-control-md);
+  }
+
+  .tree-navigation [data-scope="tree-view"][data-part="branch-text"] {
+    gap: var(--spacing-md);
   }
 
   .tree-navigation.tree-navigation--w-auto {
@@ -334,7 +334,7 @@
 
   .tree-navigation.tree-navigation--semantic-accent [data-scope="tree-view"][data-part="item"][data-selected] {
     background-color: var(--color-accent);
-    color: var(--color-accent-ink);
+    color: var(--color-on-accent);
     &:hover {
       background-color: var(--color-accent-hover);
     }
@@ -344,7 +344,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
       outline: none;
     }
 
@@ -358,7 +358,7 @@
 
   .tree-navigation.tree-navigation--semantic-accent [data-scope="tree-view"][data-part="item"][data-state='checked'] {
     background-color: var(--color-accent);
-    color: var(--color-accent-ink);
+    color: var(--color-on-accent);
     &:hover {
       background-color: var(--color-accent-hover);
     }
@@ -368,7 +368,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
       outline: none;
     }
 
@@ -382,7 +382,7 @@
 
   .tree-navigation.tree-navigation--semantic-accent [data-scope="tree-view"][data-part="item"][data-state='on'] {
     background-color: var(--color-accent);
-    color: var(--color-accent-ink);
+    color: var(--color-on-accent);
     &:hover {
       background-color: var(--color-accent-hover);
     }
@@ -392,7 +392,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
       outline: none;
     }
 
@@ -406,7 +406,7 @@
 
   .tree-navigation.tree-navigation--semantic-accent [data-scope="tree-view"][data-part="item"][data-in-range] {
     background-color: var(--color-accent);
-    color: var(--color-accent-ink);
+    color: var(--color-on-accent);
     &:hover {
       background-color: var(--color-accent-hover);
     }
@@ -416,7 +416,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
       outline: none;
     }
 
@@ -430,7 +430,7 @@
 
   .tree-navigation.tree-navigation--semantic-accent [data-scope="tree-view"][data-part="item"][data-checked] {
     background-color: var(--color-accent);
-    color: var(--color-accent-ink);
+    color: var(--color-on-accent);
     &:hover {
       background-color: var(--color-accent-hover);
     }
@@ -440,7 +440,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
       outline: none;
     }
 
@@ -454,7 +454,7 @@
 
   .tree-navigation.tree-navigation--semantic-accent [data-scope="tree-view"][data-part="item"][data-indeterminate] {
     background-color: var(--color-accent);
-    color: var(--color-accent-ink);
+    color: var(--color-on-accent);
     &:hover {
       background-color: var(--color-accent-hover);
     }
@@ -464,7 +464,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
       outline: none;
     }
 
@@ -478,7 +478,7 @@
 
   .tree-navigation.tree-navigation--semantic-accent [data-scope="tree-view"][data-part="branch-control"][data-selected] {
     background-color: var(--color-accent);
-    color: var(--color-accent-ink);
+    color: var(--color-on-accent);
     &:hover {
       background-color: var(--color-accent-hover);
     }
@@ -488,7 +488,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
       outline: none;
     }
 
@@ -503,7 +503,7 @@
 
   .tree-navigation.tree-navigation--semantic-accent [data-scope="tree-view"][data-part="branch-control"][data-state='checked'] {
     background-color: var(--color-accent);
-    color: var(--color-accent-ink);
+    color: var(--color-on-accent);
     &:hover {
       background-color: var(--color-accent-hover);
     }
@@ -513,7 +513,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
       outline: none;
     }
 
@@ -528,7 +528,7 @@
 
   .tree-navigation.tree-navigation--semantic-accent [data-scope="tree-view"][data-part="branch-control"][data-state='on'] {
     background-color: var(--color-accent);
-    color: var(--color-accent-ink);
+    color: var(--color-on-accent);
     &:hover {
       background-color: var(--color-accent-hover);
     }
@@ -538,7 +538,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
       outline: none;
     }
 
@@ -553,7 +553,7 @@
 
   .tree-navigation.tree-navigation--semantic-accent [data-scope="tree-view"][data-part="branch-control"][data-in-range] {
     background-color: var(--color-accent);
-    color: var(--color-accent-ink);
+    color: var(--color-on-accent);
     &:hover {
       background-color: var(--color-accent-hover);
     }
@@ -563,7 +563,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
       outline: none;
     }
 
@@ -578,7 +578,7 @@
 
   .tree-navigation.tree-navigation--semantic-accent [data-scope="tree-view"][data-part="branch-control"][data-checked] {
     background-color: var(--color-accent);
-    color: var(--color-accent-ink);
+    color: var(--color-on-accent);
     &:hover {
       background-color: var(--color-accent-hover);
     }
@@ -588,7 +588,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
       outline: none;
     }
 
@@ -603,7 +603,7 @@
 
   .tree-navigation.tree-navigation--semantic-accent [data-scope="tree-view"][data-part="branch-control"][data-indeterminate] {
     background-color: var(--color-accent);
-    color: var(--color-accent-ink);
+    color: var(--color-on-accent);
     &:hover {
       background-color: var(--color-accent-hover);
     }
@@ -613,7 +613,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
       outline: none;
     }
 
@@ -645,12 +645,12 @@
   }
 
   .tree-navigation.tree-navigation--semantic-accent [data-scope="tree-view"][data-part="branch-content"] [data-scope="tree-view"][data-part="branch-indent-guide"] {
-    border-inline-start: 1px solid var(--color-accent-ink);
+    border-inline-start: 1px solid var(--color-on-accent);
   }
 
   .tree-navigation.tree-navigation--semantic-alert [data-scope="tree-view"][data-part="item"][data-selected] {
     background-color: var(--color-alert);
-    color: var(--color-alert-ink);
+    color: var(--color-on-alert);
     &:hover {
       background-color: var(--color-alert-hover);
     }
@@ -660,7 +660,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
       outline: none;
     }
 
@@ -674,7 +674,7 @@
 
   .tree-navigation.tree-navigation--semantic-alert [data-scope="tree-view"][data-part="item"][data-state='checked'] {
     background-color: var(--color-alert);
-    color: var(--color-alert-ink);
+    color: var(--color-on-alert);
     &:hover {
       background-color: var(--color-alert-hover);
     }
@@ -684,7 +684,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
       outline: none;
     }
 
@@ -698,7 +698,7 @@
 
   .tree-navigation.tree-navigation--semantic-alert [data-scope="tree-view"][data-part="item"][data-state='on'] {
     background-color: var(--color-alert);
-    color: var(--color-alert-ink);
+    color: var(--color-on-alert);
     &:hover {
       background-color: var(--color-alert-hover);
     }
@@ -708,7 +708,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
       outline: none;
     }
 
@@ -722,7 +722,7 @@
 
   .tree-navigation.tree-navigation--semantic-alert [data-scope="tree-view"][data-part="item"][data-in-range] {
     background-color: var(--color-alert);
-    color: var(--color-alert-ink);
+    color: var(--color-on-alert);
     &:hover {
       background-color: var(--color-alert-hover);
     }
@@ -732,7 +732,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
       outline: none;
     }
 
@@ -746,7 +746,7 @@
 
   .tree-navigation.tree-navigation--semantic-alert [data-scope="tree-view"][data-part="item"][data-checked] {
     background-color: var(--color-alert);
-    color: var(--color-alert-ink);
+    color: var(--color-on-alert);
     &:hover {
       background-color: var(--color-alert-hover);
     }
@@ -756,7 +756,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
       outline: none;
     }
 
@@ -770,7 +770,7 @@
 
   .tree-navigation.tree-navigation--semantic-alert [data-scope="tree-view"][data-part="item"][data-indeterminate] {
     background-color: var(--color-alert);
-    color: var(--color-alert-ink);
+    color: var(--color-on-alert);
     &:hover {
       background-color: var(--color-alert-hover);
     }
@@ -780,7 +780,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
       outline: none;
     }
 
@@ -794,7 +794,7 @@
 
   .tree-navigation.tree-navigation--semantic-alert [data-scope="tree-view"][data-part="branch-control"][data-selected] {
     background-color: var(--color-alert);
-    color: var(--color-alert-ink);
+    color: var(--color-on-alert);
     &:hover {
       background-color: var(--color-alert-hover);
     }
@@ -804,7 +804,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
       outline: none;
     }
 
@@ -819,7 +819,7 @@
 
   .tree-navigation.tree-navigation--semantic-alert [data-scope="tree-view"][data-part="branch-control"][data-state='checked'] {
     background-color: var(--color-alert);
-    color: var(--color-alert-ink);
+    color: var(--color-on-alert);
     &:hover {
       background-color: var(--color-alert-hover);
     }
@@ -829,7 +829,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
       outline: none;
     }
 
@@ -844,7 +844,7 @@
 
   .tree-navigation.tree-navigation--semantic-alert [data-scope="tree-view"][data-part="branch-control"][data-state='on'] {
     background-color: var(--color-alert);
-    color: var(--color-alert-ink);
+    color: var(--color-on-alert);
     &:hover {
       background-color: var(--color-alert-hover);
     }
@@ -854,7 +854,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
       outline: none;
     }
 
@@ -869,7 +869,7 @@
 
   .tree-navigation.tree-navigation--semantic-alert [data-scope="tree-view"][data-part="branch-control"][data-in-range] {
     background-color: var(--color-alert);
-    color: var(--color-alert-ink);
+    color: var(--color-on-alert);
     &:hover {
       background-color: var(--color-alert-hover);
     }
@@ -879,7 +879,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
       outline: none;
     }
 
@@ -894,7 +894,7 @@
 
   .tree-navigation.tree-navigation--semantic-alert [data-scope="tree-view"][data-part="branch-control"][data-checked] {
     background-color: var(--color-alert);
-    color: var(--color-alert-ink);
+    color: var(--color-on-alert);
     &:hover {
       background-color: var(--color-alert-hover);
     }
@@ -904,7 +904,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
       outline: none;
     }
 
@@ -919,7 +919,7 @@
 
   .tree-navigation.tree-navigation--semantic-alert [data-scope="tree-view"][data-part="branch-control"][data-indeterminate] {
     background-color: var(--color-alert);
-    color: var(--color-alert-ink);
+    color: var(--color-on-alert);
     &:hover {
       background-color: var(--color-alert-hover);
     }
@@ -929,7 +929,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
       outline: none;
     }
 
@@ -961,12 +961,12 @@
   }
 
   .tree-navigation.tree-navigation--semantic-alert [data-scope="tree-view"][data-part="branch-content"] [data-scope="tree-view"][data-part="branch-indent-guide"] {
-    border-inline-start: 1px solid var(--color-alert-ink);
+    border-inline-start: 1px solid var(--color-on-alert);
   }
 
   .tree-navigation.tree-navigation--semantic-brand [data-scope="tree-view"][data-part="item"][data-selected] {
     background-color: var(--color-brand);
-    color: var(--color-brand-ink);
+    color: var(--color-on-brand);
     &:hover {
       background-color: var(--color-brand-hover);
     }
@@ -976,7 +976,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-brand-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
       outline: none;
     }
 
@@ -990,7 +990,7 @@
 
   .tree-navigation.tree-navigation--semantic-brand [data-scope="tree-view"][data-part="item"][data-state='checked'] {
     background-color: var(--color-brand);
-    color: var(--color-brand-ink);
+    color: var(--color-on-brand);
     &:hover {
       background-color: var(--color-brand-hover);
     }
@@ -1000,7 +1000,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-brand-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
       outline: none;
     }
 
@@ -1014,7 +1014,7 @@
 
   .tree-navigation.tree-navigation--semantic-brand [data-scope="tree-view"][data-part="item"][data-state='on'] {
     background-color: var(--color-brand);
-    color: var(--color-brand-ink);
+    color: var(--color-on-brand);
     &:hover {
       background-color: var(--color-brand-hover);
     }
@@ -1024,7 +1024,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-brand-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
       outline: none;
     }
 
@@ -1038,7 +1038,7 @@
 
   .tree-navigation.tree-navigation--semantic-brand [data-scope="tree-view"][data-part="item"][data-in-range] {
     background-color: var(--color-brand);
-    color: var(--color-brand-ink);
+    color: var(--color-on-brand);
     &:hover {
       background-color: var(--color-brand-hover);
     }
@@ -1048,7 +1048,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-brand-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
       outline: none;
     }
 
@@ -1062,7 +1062,7 @@
 
   .tree-navigation.tree-navigation--semantic-brand [data-scope="tree-view"][data-part="item"][data-checked] {
     background-color: var(--color-brand);
-    color: var(--color-brand-ink);
+    color: var(--color-on-brand);
     &:hover {
       background-color: var(--color-brand-hover);
     }
@@ -1072,7 +1072,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-brand-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
       outline: none;
     }
 
@@ -1086,7 +1086,7 @@
 
   .tree-navigation.tree-navigation--semantic-brand [data-scope="tree-view"][data-part="item"][data-indeterminate] {
     background-color: var(--color-brand);
-    color: var(--color-brand-ink);
+    color: var(--color-on-brand);
     &:hover {
       background-color: var(--color-brand-hover);
     }
@@ -1096,7 +1096,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-brand-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
       outline: none;
     }
 
@@ -1110,7 +1110,7 @@
 
   .tree-navigation.tree-navigation--semantic-brand [data-scope="tree-view"][data-part="branch-control"][data-selected] {
     background-color: var(--color-brand);
-    color: var(--color-brand-ink);
+    color: var(--color-on-brand);
     &:hover {
       background-color: var(--color-brand-hover);
     }
@@ -1120,7 +1120,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-brand-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
       outline: none;
     }
 
@@ -1135,7 +1135,7 @@
 
   .tree-navigation.tree-navigation--semantic-brand [data-scope="tree-view"][data-part="branch-control"][data-state='checked'] {
     background-color: var(--color-brand);
-    color: var(--color-brand-ink);
+    color: var(--color-on-brand);
     &:hover {
       background-color: var(--color-brand-hover);
     }
@@ -1145,7 +1145,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-brand-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
       outline: none;
     }
 
@@ -1160,7 +1160,7 @@
 
   .tree-navigation.tree-navigation--semantic-brand [data-scope="tree-view"][data-part="branch-control"][data-state='on'] {
     background-color: var(--color-brand);
-    color: var(--color-brand-ink);
+    color: var(--color-on-brand);
     &:hover {
       background-color: var(--color-brand-hover);
     }
@@ -1170,7 +1170,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-brand-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
       outline: none;
     }
 
@@ -1185,7 +1185,7 @@
 
   .tree-navigation.tree-navigation--semantic-brand [data-scope="tree-view"][data-part="branch-control"][data-in-range] {
     background-color: var(--color-brand);
-    color: var(--color-brand-ink);
+    color: var(--color-on-brand);
     &:hover {
       background-color: var(--color-brand-hover);
     }
@@ -1195,7 +1195,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-brand-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
       outline: none;
     }
 
@@ -1210,7 +1210,7 @@
 
   .tree-navigation.tree-navigation--semantic-brand [data-scope="tree-view"][data-part="branch-control"][data-checked] {
     background-color: var(--color-brand);
-    color: var(--color-brand-ink);
+    color: var(--color-on-brand);
     &:hover {
       background-color: var(--color-brand-hover);
     }
@@ -1220,7 +1220,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-brand-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
       outline: none;
     }
 
@@ -1235,7 +1235,7 @@
 
   .tree-navigation.tree-navigation--semantic-brand [data-scope="tree-view"][data-part="branch-control"][data-indeterminate] {
     background-color: var(--color-brand);
-    color: var(--color-brand-ink);
+    color: var(--color-on-brand);
     &:hover {
       background-color: var(--color-brand-hover);
     }
@@ -1245,7 +1245,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-brand-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
       outline: none;
     }
 
@@ -1277,12 +1277,12 @@
   }
 
   .tree-navigation.tree-navigation--semantic-brand [data-scope="tree-view"][data-part="branch-content"] [data-scope="tree-view"][data-part="branch-indent-guide"] {
-    border-inline-start: 1px solid var(--color-brand-ink);
+    border-inline-start: 1px solid var(--color-on-brand);
   }
 
   .tree-navigation.tree-navigation--semantic-info [data-scope="tree-view"][data-part="item"][data-selected] {
     background-color: var(--color-info);
-    color: var(--color-info-ink);
+    color: var(--color-on-info);
     &:hover {
       background-color: var(--color-info-hover);
     }
@@ -1292,7 +1292,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-info-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
       outline: none;
     }
 
@@ -1306,7 +1306,7 @@
 
   .tree-navigation.tree-navigation--semantic-info [data-scope="tree-view"][data-part="item"][data-state='checked'] {
     background-color: var(--color-info);
-    color: var(--color-info-ink);
+    color: var(--color-on-info);
     &:hover {
       background-color: var(--color-info-hover);
     }
@@ -1316,7 +1316,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-info-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
       outline: none;
     }
 
@@ -1330,7 +1330,7 @@
 
   .tree-navigation.tree-navigation--semantic-info [data-scope="tree-view"][data-part="item"][data-state='on'] {
     background-color: var(--color-info);
-    color: var(--color-info-ink);
+    color: var(--color-on-info);
     &:hover {
       background-color: var(--color-info-hover);
     }
@@ -1340,7 +1340,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-info-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
       outline: none;
     }
 
@@ -1354,7 +1354,7 @@
 
   .tree-navigation.tree-navigation--semantic-info [data-scope="tree-view"][data-part="item"][data-in-range] {
     background-color: var(--color-info);
-    color: var(--color-info-ink);
+    color: var(--color-on-info);
     &:hover {
       background-color: var(--color-info-hover);
     }
@@ -1364,7 +1364,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-info-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
       outline: none;
     }
 
@@ -1378,7 +1378,7 @@
 
   .tree-navigation.tree-navigation--semantic-info [data-scope="tree-view"][data-part="item"][data-checked] {
     background-color: var(--color-info);
-    color: var(--color-info-ink);
+    color: var(--color-on-info);
     &:hover {
       background-color: var(--color-info-hover);
     }
@@ -1388,7 +1388,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-info-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
       outline: none;
     }
 
@@ -1402,7 +1402,7 @@
 
   .tree-navigation.tree-navigation--semantic-info [data-scope="tree-view"][data-part="item"][data-indeterminate] {
     background-color: var(--color-info);
-    color: var(--color-info-ink);
+    color: var(--color-on-info);
     &:hover {
       background-color: var(--color-info-hover);
     }
@@ -1412,7 +1412,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-info-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
       outline: none;
     }
 
@@ -1426,7 +1426,7 @@
 
   .tree-navigation.tree-navigation--semantic-info [data-scope="tree-view"][data-part="branch-control"][data-selected] {
     background-color: var(--color-info);
-    color: var(--color-info-ink);
+    color: var(--color-on-info);
     &:hover {
       background-color: var(--color-info-hover);
     }
@@ -1436,7 +1436,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-info-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
       outline: none;
     }
 
@@ -1451,7 +1451,7 @@
 
   .tree-navigation.tree-navigation--semantic-info [data-scope="tree-view"][data-part="branch-control"][data-state='checked'] {
     background-color: var(--color-info);
-    color: var(--color-info-ink);
+    color: var(--color-on-info);
     &:hover {
       background-color: var(--color-info-hover);
     }
@@ -1461,7 +1461,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-info-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
       outline: none;
     }
 
@@ -1476,7 +1476,7 @@
 
   .tree-navigation.tree-navigation--semantic-info [data-scope="tree-view"][data-part="branch-control"][data-state='on'] {
     background-color: var(--color-info);
-    color: var(--color-info-ink);
+    color: var(--color-on-info);
     &:hover {
       background-color: var(--color-info-hover);
     }
@@ -1486,7 +1486,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-info-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
       outline: none;
     }
 
@@ -1501,7 +1501,7 @@
 
   .tree-navigation.tree-navigation--semantic-info [data-scope="tree-view"][data-part="branch-control"][data-in-range] {
     background-color: var(--color-info);
-    color: var(--color-info-ink);
+    color: var(--color-on-info);
     &:hover {
       background-color: var(--color-info-hover);
     }
@@ -1511,7 +1511,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-info-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
       outline: none;
     }
 
@@ -1526,7 +1526,7 @@
 
   .tree-navigation.tree-navigation--semantic-info [data-scope="tree-view"][data-part="branch-control"][data-checked] {
     background-color: var(--color-info);
-    color: var(--color-info-ink);
+    color: var(--color-on-info);
     &:hover {
       background-color: var(--color-info-hover);
     }
@@ -1536,7 +1536,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-info-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
       outline: none;
     }
 
@@ -1551,7 +1551,7 @@
 
   .tree-navigation.tree-navigation--semantic-info [data-scope="tree-view"][data-part="branch-control"][data-indeterminate] {
     background-color: var(--color-info);
-    color: var(--color-info-ink);
+    color: var(--color-on-info);
     &:hover {
       background-color: var(--color-info-hover);
     }
@@ -1561,7 +1561,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-info-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
       outline: none;
     }
 
@@ -1593,12 +1593,12 @@
   }
 
   .tree-navigation.tree-navigation--semantic-info [data-scope="tree-view"][data-part="branch-content"] [data-scope="tree-view"][data-part="branch-indent-guide"] {
-    border-inline-start: 1px solid var(--color-info-ink);
+    border-inline-start: 1px solid var(--color-on-info);
   }
 
   .tree-navigation.tree-navigation--semantic-neutral [data-scope="tree-view"][data-part="item"][data-selected] {
     background-color: var(--color-neutral);
-    color: var(--color-neutral-ink);
+    color: var(--color-on-neutral);
     &:hover {
       background-color: var(--color-neutral-hover);
     }
@@ -1608,7 +1608,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-neutral-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
       outline: none;
     }
 
@@ -1622,7 +1622,7 @@
 
   .tree-navigation.tree-navigation--semantic-neutral [data-scope="tree-view"][data-part="item"][data-state='checked'] {
     background-color: var(--color-neutral);
-    color: var(--color-neutral-ink);
+    color: var(--color-on-neutral);
     &:hover {
       background-color: var(--color-neutral-hover);
     }
@@ -1632,7 +1632,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-neutral-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
       outline: none;
     }
 
@@ -1646,7 +1646,7 @@
 
   .tree-navigation.tree-navigation--semantic-neutral [data-scope="tree-view"][data-part="item"][data-state='on'] {
     background-color: var(--color-neutral);
-    color: var(--color-neutral-ink);
+    color: var(--color-on-neutral);
     &:hover {
       background-color: var(--color-neutral-hover);
     }
@@ -1656,7 +1656,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-neutral-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
       outline: none;
     }
 
@@ -1670,7 +1670,7 @@
 
   .tree-navigation.tree-navigation--semantic-neutral [data-scope="tree-view"][data-part="item"][data-in-range] {
     background-color: var(--color-neutral);
-    color: var(--color-neutral-ink);
+    color: var(--color-on-neutral);
     &:hover {
       background-color: var(--color-neutral-hover);
     }
@@ -1680,7 +1680,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-neutral-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
       outline: none;
     }
 
@@ -1694,7 +1694,7 @@
 
   .tree-navigation.tree-navigation--semantic-neutral [data-scope="tree-view"][data-part="item"][data-checked] {
     background-color: var(--color-neutral);
-    color: var(--color-neutral-ink);
+    color: var(--color-on-neutral);
     &:hover {
       background-color: var(--color-neutral-hover);
     }
@@ -1704,7 +1704,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-neutral-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
       outline: none;
     }
 
@@ -1718,7 +1718,7 @@
 
   .tree-navigation.tree-navigation--semantic-neutral [data-scope="tree-view"][data-part="item"][data-indeterminate] {
     background-color: var(--color-neutral);
-    color: var(--color-neutral-ink);
+    color: var(--color-on-neutral);
     &:hover {
       background-color: var(--color-neutral-hover);
     }
@@ -1728,7 +1728,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-neutral-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
       outline: none;
     }
 
@@ -1742,7 +1742,7 @@
 
   .tree-navigation.tree-navigation--semantic-neutral [data-scope="tree-view"][data-part="branch-control"][data-selected] {
     background-color: var(--color-neutral);
-    color: var(--color-neutral-ink);
+    color: var(--color-on-neutral);
     &:hover {
       background-color: var(--color-neutral-hover);
     }
@@ -1752,7 +1752,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-neutral-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
       outline: none;
     }
 
@@ -1767,7 +1767,7 @@
 
   .tree-navigation.tree-navigation--semantic-neutral [data-scope="tree-view"][data-part="branch-control"][data-state='checked'] {
     background-color: var(--color-neutral);
-    color: var(--color-neutral-ink);
+    color: var(--color-on-neutral);
     &:hover {
       background-color: var(--color-neutral-hover);
     }
@@ -1777,7 +1777,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-neutral-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
       outline: none;
     }
 
@@ -1792,7 +1792,7 @@
 
   .tree-navigation.tree-navigation--semantic-neutral [data-scope="tree-view"][data-part="branch-control"][data-state='on'] {
     background-color: var(--color-neutral);
-    color: var(--color-neutral-ink);
+    color: var(--color-on-neutral);
     &:hover {
       background-color: var(--color-neutral-hover);
     }
@@ -1802,7 +1802,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-neutral-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
       outline: none;
     }
 
@@ -1817,7 +1817,7 @@
 
   .tree-navigation.tree-navigation--semantic-neutral [data-scope="tree-view"][data-part="branch-control"][data-in-range] {
     background-color: var(--color-neutral);
-    color: var(--color-neutral-ink);
+    color: var(--color-on-neutral);
     &:hover {
       background-color: var(--color-neutral-hover);
     }
@@ -1827,7 +1827,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-neutral-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
       outline: none;
     }
 
@@ -1842,7 +1842,7 @@
 
   .tree-navigation.tree-navigation--semantic-neutral [data-scope="tree-view"][data-part="branch-control"][data-checked] {
     background-color: var(--color-neutral);
-    color: var(--color-neutral-ink);
+    color: var(--color-on-neutral);
     &:hover {
       background-color: var(--color-neutral-hover);
     }
@@ -1852,7 +1852,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-neutral-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
       outline: none;
     }
 
@@ -1867,7 +1867,7 @@
 
   .tree-navigation.tree-navigation--semantic-neutral [data-scope="tree-view"][data-part="branch-control"][data-indeterminate] {
     background-color: var(--color-neutral);
-    color: var(--color-neutral-ink);
+    color: var(--color-on-neutral);
     &:hover {
       background-color: var(--color-neutral-hover);
     }
@@ -1877,7 +1877,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-neutral-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
       outline: none;
     }
 
@@ -1909,12 +1909,12 @@
   }
 
   .tree-navigation.tree-navigation--semantic-neutral [data-scope="tree-view"][data-part="branch-content"] [data-scope="tree-view"][data-part="branch-indent-guide"] {
-    border-inline-start: 1px solid var(--color-neutral-ink);
+    border-inline-start: 1px solid var(--color-on-neutral);
   }
 
   .tree-navigation.tree-navigation--semantic-selected [data-scope="tree-view"][data-part="item"][data-selected] {
     background-color: var(--color-selected);
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
     &:hover {
       background-color: var(--color-selected-hover);
     }
@@ -1924,7 +1924,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
       outline: none;
     }
 
@@ -1938,7 +1938,7 @@
 
   .tree-navigation.tree-navigation--semantic-selected [data-scope="tree-view"][data-part="item"][data-state='checked'] {
     background-color: var(--color-selected);
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
     &:hover {
       background-color: var(--color-selected-hover);
     }
@@ -1948,7 +1948,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
       outline: none;
     }
 
@@ -1962,7 +1962,7 @@
 
   .tree-navigation.tree-navigation--semantic-selected [data-scope="tree-view"][data-part="item"][data-state='on'] {
     background-color: var(--color-selected);
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
     &:hover {
       background-color: var(--color-selected-hover);
     }
@@ -1972,7 +1972,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
       outline: none;
     }
 
@@ -1986,7 +1986,7 @@
 
   .tree-navigation.tree-navigation--semantic-selected [data-scope="tree-view"][data-part="item"][data-in-range] {
     background-color: var(--color-selected);
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
     &:hover {
       background-color: var(--color-selected-hover);
     }
@@ -1996,7 +1996,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
       outline: none;
     }
 
@@ -2010,7 +2010,7 @@
 
   .tree-navigation.tree-navigation--semantic-selected [data-scope="tree-view"][data-part="item"][data-checked] {
     background-color: var(--color-selected);
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
     &:hover {
       background-color: var(--color-selected-hover);
     }
@@ -2020,7 +2020,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
       outline: none;
     }
 
@@ -2034,7 +2034,7 @@
 
   .tree-navigation.tree-navigation--semantic-selected [data-scope="tree-view"][data-part="item"][data-indeterminate] {
     background-color: var(--color-selected);
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
     &:hover {
       background-color: var(--color-selected-hover);
     }
@@ -2044,7 +2044,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
       outline: none;
     }
 
@@ -2058,7 +2058,7 @@
 
   .tree-navigation.tree-navigation--semantic-selected [data-scope="tree-view"][data-part="branch-control"][data-selected] {
     background-color: var(--color-selected);
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
     &:hover {
       background-color: var(--color-selected-hover);
     }
@@ -2068,7 +2068,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
       outline: none;
     }
 
@@ -2083,7 +2083,7 @@
 
   .tree-navigation.tree-navigation--semantic-selected [data-scope="tree-view"][data-part="branch-control"][data-state='checked'] {
     background-color: var(--color-selected);
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
     &:hover {
       background-color: var(--color-selected-hover);
     }
@@ -2093,7 +2093,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
       outline: none;
     }
 
@@ -2108,7 +2108,7 @@
 
   .tree-navigation.tree-navigation--semantic-selected [data-scope="tree-view"][data-part="branch-control"][data-state='on'] {
     background-color: var(--color-selected);
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
     &:hover {
       background-color: var(--color-selected-hover);
     }
@@ -2118,7 +2118,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
       outline: none;
     }
 
@@ -2133,7 +2133,7 @@
 
   .tree-navigation.tree-navigation--semantic-selected [data-scope="tree-view"][data-part="branch-control"][data-in-range] {
     background-color: var(--color-selected);
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
     &:hover {
       background-color: var(--color-selected-hover);
     }
@@ -2143,7 +2143,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
       outline: none;
     }
 
@@ -2158,7 +2158,7 @@
 
   .tree-navigation.tree-navigation--semantic-selected [data-scope="tree-view"][data-part="branch-control"][data-checked] {
     background-color: var(--color-selected);
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
     &:hover {
       background-color: var(--color-selected-hover);
     }
@@ -2168,7 +2168,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
       outline: none;
     }
 
@@ -2183,7 +2183,7 @@
 
   .tree-navigation.tree-navigation--semantic-selected [data-scope="tree-view"][data-part="branch-control"][data-indeterminate] {
     background-color: var(--color-selected);
-    color: var(--color-selected-ink);
+    color: var(--color-on-selected);
     &:hover {
       background-color: var(--color-selected-hover);
     }
@@ -2193,7 +2193,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
       outline: none;
     }
 
@@ -2225,12 +2225,12 @@
   }
 
   .tree-navigation.tree-navigation--semantic-selected [data-scope="tree-view"][data-part="branch-content"] [data-scope="tree-view"][data-part="branch-indent-guide"] {
-    border-inline-start: 1px solid var(--color-selected-ink);
+    border-inline-start: 1px solid var(--color-on-selected);
   }
 
   .tree-navigation.tree-navigation--semantic-success [data-scope="tree-view"][data-part="item"][data-selected] {
     background-color: var(--color-success);
-    color: var(--color-success-ink);
+    color: var(--color-on-success);
     &:hover {
       background-color: var(--color-success-hover);
     }
@@ -2240,7 +2240,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-success-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
       outline: none;
     }
 
@@ -2254,7 +2254,7 @@
 
   .tree-navigation.tree-navigation--semantic-success [data-scope="tree-view"][data-part="item"][data-state='checked'] {
     background-color: var(--color-success);
-    color: var(--color-success-ink);
+    color: var(--color-on-success);
     &:hover {
       background-color: var(--color-success-hover);
     }
@@ -2264,7 +2264,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-success-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
       outline: none;
     }
 
@@ -2278,7 +2278,7 @@
 
   .tree-navigation.tree-navigation--semantic-success [data-scope="tree-view"][data-part="item"][data-state='on'] {
     background-color: var(--color-success);
-    color: var(--color-success-ink);
+    color: var(--color-on-success);
     &:hover {
       background-color: var(--color-success-hover);
     }
@@ -2288,7 +2288,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-success-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
       outline: none;
     }
 
@@ -2302,7 +2302,7 @@
 
   .tree-navigation.tree-navigation--semantic-success [data-scope="tree-view"][data-part="item"][data-in-range] {
     background-color: var(--color-success);
-    color: var(--color-success-ink);
+    color: var(--color-on-success);
     &:hover {
       background-color: var(--color-success-hover);
     }
@@ -2312,7 +2312,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-success-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
       outline: none;
     }
 
@@ -2326,7 +2326,7 @@
 
   .tree-navigation.tree-navigation--semantic-success [data-scope="tree-view"][data-part="item"][data-checked] {
     background-color: var(--color-success);
-    color: var(--color-success-ink);
+    color: var(--color-on-success);
     &:hover {
       background-color: var(--color-success-hover);
     }
@@ -2336,7 +2336,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-success-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
       outline: none;
     }
 
@@ -2350,7 +2350,7 @@
 
   .tree-navigation.tree-navigation--semantic-success [data-scope="tree-view"][data-part="item"][data-indeterminate] {
     background-color: var(--color-success);
-    color: var(--color-success-ink);
+    color: var(--color-on-success);
     &:hover {
       background-color: var(--color-success-hover);
     }
@@ -2360,7 +2360,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-success-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
       outline: none;
     }
 
@@ -2374,7 +2374,7 @@
 
   .tree-navigation.tree-navigation--semantic-success [data-scope="tree-view"][data-part="branch-control"][data-selected] {
     background-color: var(--color-success);
-    color: var(--color-success-ink);
+    color: var(--color-on-success);
     &:hover {
       background-color: var(--color-success-hover);
     }
@@ -2384,7 +2384,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-success-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
       outline: none;
     }
 
@@ -2399,7 +2399,7 @@
 
   .tree-navigation.tree-navigation--semantic-success [data-scope="tree-view"][data-part="branch-control"][data-state='checked'] {
     background-color: var(--color-success);
-    color: var(--color-success-ink);
+    color: var(--color-on-success);
     &:hover {
       background-color: var(--color-success-hover);
     }
@@ -2409,7 +2409,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-success-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
       outline: none;
     }
 
@@ -2424,7 +2424,7 @@
 
   .tree-navigation.tree-navigation--semantic-success [data-scope="tree-view"][data-part="branch-control"][data-state='on'] {
     background-color: var(--color-success);
-    color: var(--color-success-ink);
+    color: var(--color-on-success);
     &:hover {
       background-color: var(--color-success-hover);
     }
@@ -2434,7 +2434,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-success-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
       outline: none;
     }
 
@@ -2449,7 +2449,7 @@
 
   .tree-navigation.tree-navigation--semantic-success [data-scope="tree-view"][data-part="branch-control"][data-in-range] {
     background-color: var(--color-success);
-    color: var(--color-success-ink);
+    color: var(--color-on-success);
     &:hover {
       background-color: var(--color-success-hover);
     }
@@ -2459,7 +2459,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-success-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
       outline: none;
     }
 
@@ -2474,7 +2474,7 @@
 
   .tree-navigation.tree-navigation--semantic-success [data-scope="tree-view"][data-part="branch-control"][data-checked] {
     background-color: var(--color-success);
-    color: var(--color-success-ink);
+    color: var(--color-on-success);
     &:hover {
       background-color: var(--color-success-hover);
     }
@@ -2484,7 +2484,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-success-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
       outline: none;
     }
 
@@ -2499,7 +2499,7 @@
 
   .tree-navigation.tree-navigation--semantic-success [data-scope="tree-view"][data-part="branch-control"][data-indeterminate] {
     background-color: var(--color-success);
-    color: var(--color-success-ink);
+    color: var(--color-on-success);
     &:hover {
       background-color: var(--color-success-hover);
     }
@@ -2509,7 +2509,7 @@
     }
 
     &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-success-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
       outline: none;
     }
 
@@ -2541,7 +2541,7 @@
   }
 
   .tree-navigation.tree-navigation--semantic-success [data-scope="tree-view"][data-part="branch-content"] [data-scope="tree-view"][data-part="branch-indent-guide"] {
-    border-inline-start: 1px solid var(--color-success-ink);
+    border-inline-start: 1px solid var(--color-on-success);
   }
 
   .tree-navigation [data-scope="tree-view"][data-part="root"] {

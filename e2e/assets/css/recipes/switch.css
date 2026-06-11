@@ -61,8 +61,8 @@
   .switch {
     width: 100%;
     max-width: var(--container-4xl);
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .switch.switch--w-auto {
@@ -262,7 +262,7 @@
     &[data-state="checked"] {
       background-color: var(--color-selected);
       & [data-scope="switch"][data-part="thumb"] {
-        background-color: var(--color-selected-ink);
+        background-color: var(--color-on-selected);
       }
     }
 
@@ -297,7 +297,7 @@
     position: relative;
     &[data-state="checked"] {
       transform: translateX(var(--switch-thumb-x));
-      background-color: var(--color-selected-ink);
+      background-color: var(--color-on-selected);
     }
 
     &[data-invalid] {

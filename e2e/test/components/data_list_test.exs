@@ -47,19 +47,19 @@ defmodule E2eWeb.DataListTest do
     feature "color section renders items", %{session: session} do
       session
       |> ComponentBehaviorSpec.visit_ready(DataList, :data_list, :style)
-      |> DataList.see_in_section("data-list-styling-color", "Lorem ipsum dolor sit amet")
+      |> DataList.see_in_section("data-list-style-semantic", "Lorem ipsum dolor sit amet")
     end
 
     feature "size section renders items", %{session: session} do
       session
       |> ComponentBehaviorSpec.visit_ready(DataList, :data_list, :style)
-      |> DataList.see_in_section("data-list-styling-size", "Lorem ipsum dolor sit amet")
+      |> DataList.see_in_section("data-list-style-text", "Lorem ipsum dolor sit amet")
     end
 
     feature "max width section renders items", %{session: session} do
       session
       |> ComponentBehaviorSpec.visit_ready(DataList, :data_list, :style)
-      |> DataList.see_in_section("data-list-styling-max-width", "Lorem ipsum dolor sit amet")
+      |> DataList.see_in_section("data-list-style-max-width", "Lorem ipsum dolor sit amet")
     end
   end
 

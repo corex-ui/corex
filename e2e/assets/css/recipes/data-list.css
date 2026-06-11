@@ -12,7 +12,7 @@
 
 @utility data-list--size-* {
   [data-scope="data-list"][data-part="label"] {
-      color: --value(--color-on-*, [color]);
+      color: --value(--color-*, [color]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
@@ -39,8 +39,8 @@
   .data-list {
     width: 100%;
     max-width: var(--container-md);
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .data-list [data-scope="data-list"][data-part="item"] {
@@ -225,6 +225,34 @@
     width: auto;
     text-align: start;
     align-self: auto;
+  }
+
+  .data-list.data-list--semantic-accent .data-list [data-scope="data-list"][data-part="label"] {
+    color: var(--color-accent);
+  }
+
+  .data-list.data-list--semantic-alert .data-list [data-scope="data-list"][data-part="label"] {
+    color: var(--color-alert);
+  }
+
+  .data-list.data-list--semantic-brand .data-list [data-scope="data-list"][data-part="label"] {
+    color: var(--color-brand);
+  }
+
+  .data-list.data-list--semantic-info .data-list [data-scope="data-list"][data-part="label"] {
+    color: var(--color-info);
+  }
+
+  .data-list.data-list--semantic-neutral .data-list [data-scope="data-list"][data-part="label"] {
+    color: var(--color-neutral);
+  }
+
+  .data-list.data-list--semantic-selected .data-list [data-scope="data-list"][data-part="label"] {
+    color: var(--color-selected);
+  }
+
+  .data-list.data-list--semantic-success .data-list [data-scope="data-list"][data-part="label"] {
+    color: var(--color-success);
   }
 }
 

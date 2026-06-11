@@ -25,12 +25,12 @@
   .small {
     width: fit-content;
     max-width: none;
-    height: auto;
     max-height: none;
-    font-weight: var(--font-weight-normal);
-    margin-block: var(--spacing-md);
     font-size: var(--text-xs);
     line-height: var(--leading-xs);
+    height: auto;
+    font-weight: var(--font-weight-normal);
+    margin-block: var(--spacing-md);
     @media (min-width: 48rem) {
       font-size: var(--text-sm);
       line-height: var(--leading-sm);
@@ -78,31 +78,31 @@
   }
 
   .small.small--semantic-accent {
-    color: var(--color-on-accent);
+    color: var(--color-accent);
   }
 
   .small.small--semantic-alert {
-    color: var(--color-on-alert);
+    color: var(--color-alert);
   }
 
   .small.small--semantic-brand {
-    color: var(--color-on-brand);
+    color: var(--color-brand);
   }
 
   .small.small--semantic-info {
-    color: var(--color-on-info);
+    color: var(--color-info);
   }
 
   .small.small--semantic-neutral {
-    color: var(--color-on-neutral);
+    color: var(--color-neutral);
   }
 
   .small.small--semantic-selected {
-    color: var(--color-on-selected);
+    color: var(--color-selected);
   }
 
   .small.small--semantic-success {
-    color: var(--color-on-success);
+    color: var(--color-success);
   }
 
   .small.small--weight-thin {

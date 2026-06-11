@@ -256,7 +256,7 @@ defmodule E2eWeb.ToggleTest do
 
   describe "style" do
     feature "color section mounts", %{session: session} do
-      section = "toggle-styling-color"
+      section = "toggle-style-semantic"
 
       session
       |> ComponentBehaviorSpec.visit_ready(Toggle, :toggle, :style)
@@ -265,7 +265,7 @@ defmodule E2eWeb.ToggleTest do
     end
 
     feature "disabled section shows data-disabled", %{session: session} do
-      section = "toggle-styling-disabled"
+      section = "toggle-style-disabled"
 
       session
       |> ComponentBehaviorSpec.visit_ready(Toggle, :toggle, :style)

@@ -451,7 +451,7 @@ defmodule E2eWeb.AccordionTest do
       assert String.contains?(classes, "accordion--semantic-accent")
     end
 
-    feature "variant  -  outline adds accordion--outline on the host", %{session: session} do
+    feature "variant  -  outline adds accordion--variant-outline on the host", %{session: session} do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :style)
@@ -465,7 +465,7 @@ defmodule E2eWeb.AccordionTest do
 
       el = find(session, css("#my-accordion"))
       classes = Wallaby.Element.attr(el, "class")
-      assert String.contains?(classes, "accordion--outline")
+      assert String.contains?(classes, "accordion--variant-outline")
     end
 
     feature "text  -  xl adds accordion--text-xl on the host", %{session: session} do

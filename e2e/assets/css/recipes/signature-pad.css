@@ -37,11 +37,11 @@
   }
 
   [data-scope="signature-pad"][data-part="clear-trigger"] {
-      color: --value(--color-on-*, [color]);
-    min-height: --value(--spacing-control-*, [length]);
+      color: --value(--color-*, [color]);
     background-color: --value(--color-*, [color]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
 }
@@ -64,17 +64,17 @@
   .signature-pad {
     width: 100%;
     max-width: var(--container-xs);
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .signature-pad [data-scope="signature-pad"][data-part="clear-trigger"] {
-    color: var(--color-accent-ink);
-    min-height: var(--spacing-control-md);
+    color: var(--color-on-accent);
     background-color: var(--color-accent);
-    min-width: var(--spacing-control-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-height: var(--spacing-control-md);
+    min-width: var(--spacing-control-md);
   }
 
   .signature-pad.signature-pad--w-auto {

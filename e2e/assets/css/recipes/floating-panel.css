@@ -26,8 +26,8 @@
   .floating-panel {
     width: fit-content;
     max-width: none;
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .floating-panel.floating-panel--w-auto {

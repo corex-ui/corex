@@ -37,8 +37,8 @@
   .radio-group {
     width: fit-content;
     max-width: var(--container-md);
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .radio-group [data-scope="radio-group"][data-part="item-text"] {
@@ -49,9 +49,9 @@
   .radio-group [data-scope="radio-group"][data-part="item-control"] {
     width: calc(var(--spacing-control-md) * 0.6);
     padding: calc(var(--spacing-md) * 0.25);
-    height: calc(var(--spacing-control-md) * 0.6);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    height: calc(var(--spacing-control-md) * 0.6);
   }
 
   .radio-group.radio-group--w-auto {
@@ -226,7 +226,7 @@
     padding: calc(var(--spacing-md) * 0.25);
     &[data-state="checked"] {
       background: var(--color-selected);
-      color: var(--color-selected-ink);
+      color: var(--color-on-selected);
       border-color: var(--color-selected);
       &:hover {
         background-color: var(--color-selected-hover);
@@ -257,7 +257,7 @@
     }
 
     &[data-state="checked"]:focus-visible,\n  &[data-state="checked"][data-focus] {
-      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      box-shadow: inset 0 0 0 2px var(--color-on-selected);
     }
 
     &[data-invalid] {

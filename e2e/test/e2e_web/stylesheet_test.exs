@@ -37,7 +37,7 @@ defmodule E2eWeb.StylesheetTest do
     refute File.exists?(Path.join(dir, "recipes/data"))
 
     utilities = File.read!(Path.join(dir, "layers/utilities.css"))
-    assert utilities =~ "@utility ui-trigger"
+    assert utilities =~ "@utility part-trigger"
 
     assert theme =~ "@theme inline"
     assert base =~ ".typo h1"
@@ -47,22 +47,22 @@ defmodule E2eWeb.StylesheetTest do
     assert button =~ ".button.button--semantic-accent"
     assert button =~ ".button.button--variant-solid.button--semantic-accent"
     assert button =~ "background-color: var(--color-accent)"
-    assert button =~ "color: var(--color-accent-ink)"
+    assert button =~ "color: var(--color-on-accent)"
     refute button =~ "--ui-solid"
     refute accordion =~ "data-accordion-semantic"
-    assert accordion =~ "@apply ui-trigger"
+    assert accordion =~ "@apply part-trigger"
     assert accordion =~ "@utility accordion--rounded-*"
     assert accordion =~ "@utility accordion--max-w-*"
     refute accordion =~ ".accordion.accordion--rounded-md {"
     assert accordion =~ ".accordion.accordion--semantic-accent"
     assert accordion =~ "@utility accordion--size-*"
     assert accordion =~ "background-color: var(--color-accent)"
-    assert accordion =~ "color: var(--color-accent-ink)"
+    assert accordion =~ "color: var(--color-on-accent)"
     assert row =~ ".row"
     refute button =~ "[data-button]"
     assert tokens =~ "--color-brand:"
     assert tokens =~ "--spacing:"
-    assert theme =~ "--spacing-space-lg: var(--theme-spacing-space-lg)"
+    assert theme =~ "--spacing-lg:"
   end
 
   test "css export chrome does not duplicate recipe layer or legacy migrated components", %{

@@ -29,28 +29,28 @@
 @utility pagination--size-* {
   [data-scope="pagination"][data-part="item"] {
       padding-inline: --value(--spacing-*, [length]);
-    min-height: --value(--spacing-control-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
   [data-scope="pagination"][data-part="prev-trigger"] {
-      min-height: --value(--spacing-control-*, [length]);
-    font-size: --value(--text-*, [length]);
+      font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
   [data-scope="pagination"][data-part="next-trigger"] {
-      min-height: --value(--spacing-control-*, [length]);
-    font-size: --value(--text-*, [length]);
+      font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
   [data-scope="pagination"][data-part="ellipsis"] {
-      color: --value(--color-on-*, [color]);
-    min-height: --value(--spacing-control-*, [length]);
+      color: --value(--color-*, [color]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
 }
@@ -60,38 +60,38 @@
   .pagination {
     width: fit-content;
     max-width: var(--container-md);
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .pagination [data-scope="pagination"][data-part="item"] {
     padding-inline: var(--spacing-md);
-    min-height: var(--spacing-control-md);
-    min-width: var(--spacing-control-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-height: var(--spacing-control-md);
+    min-width: var(--spacing-control-md);
   }
 
   .pagination [data-scope="pagination"][data-part="prev-trigger"] {
-    min-height: calc(var(--spacing-control-md) * 0.8);
-    min-width: calc(var(--spacing-control-md) * 0.8);
     font-size: calc(var(--text-base) * 0.8);
     line-height: calc(var(--text-base--line-height) * 0.8);
+    min-height: calc(var(--spacing-control-md) * 0.8);
+    min-width: calc(var(--spacing-control-md) * 0.8);
   }
 
   .pagination [data-scope="pagination"][data-part="next-trigger"] {
-    min-height: calc(var(--spacing-control-md) * 0.8);
-    min-width: calc(var(--spacing-control-md) * 0.8);
     font-size: calc(var(--text-base) * 0.8);
     line-height: calc(var(--text-base--line-height) * 0.8);
+    min-height: calc(var(--spacing-control-md) * 0.8);
+    min-width: calc(var(--spacing-control-md) * 0.8);
   }
 
   .pagination [data-scope="pagination"][data-part="ellipsis"] {
     color: var(--color-on-page);
-    min-height: var(--spacing-control-md);
-    min-width: var(--spacing-control-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-height: var(--spacing-control-md);
+    min-width: var(--spacing-control-md);
   }
 
   .pagination.pagination--w-auto {

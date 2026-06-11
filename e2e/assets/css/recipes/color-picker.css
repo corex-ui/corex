@@ -49,10 +49,10 @@
   }
 
   [data-scope="color-picker"][data-part="channel-input"] {
-      color: --value(--color-on-*, [color]);
-    min-height: --value(--spacing-control-*, [length]);
+      color: --value(--color-*, [color]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
 }
@@ -78,15 +78,15 @@
   .color-picker {
     width: fit-content;
     max-width: none;
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .color-picker [data-scope="color-picker"][data-part="trigger"] {
     max-height: var(--spacing-control-md);
     min-height: var(--spacing-control-md);
-    min-width: var(--spacing-control-md);
     border-radius: var(--radius-md);
+    min-width: var(--spacing-control-md);
     overflow: hidden;
   }
 
@@ -96,20 +96,20 @@
     min-width: calc(var(--container-4xs) * var(--spacing-control-md) / var(--spacing-control-md));
   }
 
-  .color-picker [data-scope="color-picker"][data-part="area-thumb"] {
-    width: calc(var(--spacing-control-md) * 0.4);
-    height: calc(var(--spacing-control-md) * 0.4);
-    border: calc(var(--spacing-md) / 8) solid var(--color-on-page);
-    box-shadow: inset 0 0 0 var(--spacing-md) var(--color-surface-page);
-  }
-
   .color-picker [data-scope="color-picker"][data-part="channel-input"] {
     color: var(--color-on-page);
-    max-height: var(--spacing-control-md);
-    min-height: var(--spacing-control-md);
     border-color: var(--color-border);
+    max-height: var(--spacing-control-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-height: var(--spacing-control-md);
+  }
+
+  .color-picker [data-scope="color-picker"][data-part="area-thumb"] {
+    width: calc(var(--spacing-control-md) * 0.4);
+    box-shadow: inset 0 0 0 var(--spacing-md) var(--color-surface-page);
+    border: calc(var(--spacing-md) / 8) solid var(--color-on-page);
+    height: calc(var(--spacing-control-md) * 0.4);
   }
 
   .color-picker.color-picker--w-auto {
@@ -410,28 +410,28 @@
   .color-picker.color-picker--semantic-accent [data-scope="color-picker"][data-part="trigger"] {
     &:focus, &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-accent);
+      box-shadow: inset 0 0 0 2px var(--color-accent);
     }
   }
 
   .color-picker.color-picker--semantic-alert [data-scope="color-picker"][data-part="trigger"] {
     &:focus, &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-alert);
+      box-shadow: inset 0 0 0 2px var(--color-alert);
     }
   }
 
   .color-picker.color-picker--semantic-brand [data-scope="color-picker"][data-part="trigger"] {
     &:focus, &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+      box-shadow: inset 0 0 0 2px var(--color-brand);
     }
   }
 
   .color-picker.color-picker--semantic-info [data-scope="color-picker"][data-part="trigger"] {
     &:focus, &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-info);
+      box-shadow: inset 0 0 0 2px var(--color-info);
     }
   }
 
@@ -445,14 +445,14 @@
   .color-picker.color-picker--semantic-selected [data-scope="color-picker"][data-part="trigger"] {
     &:focus, &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
+      box-shadow: inset 0 0 0 2px var(--color-selected);
     }
   }
 
   .color-picker.color-picker--semantic-success [data-scope="color-picker"][data-part="trigger"] {
     &:focus, &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-success);
+      box-shadow: inset 0 0 0 2px var(--color-success);
     }
   }
 

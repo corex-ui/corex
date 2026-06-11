@@ -25,11 +25,11 @@
   .lead {
     width: fit-content;
     max-width: none;
-    height: auto;
     max-height: none;
-    font-weight: var(--font-weight-normal);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
+    height: auto;
+    font-weight: var(--font-weight-normal);
     font-family: var(--font-sans);
     @media (min-width: 64rem) {
       font-size: var(--text-2xl);
@@ -82,31 +82,31 @@
   }
 
   .lead.lead--semantic-accent {
-    color: var(--color-on-accent);
+    color: var(--color-accent);
   }
 
   .lead.lead--semantic-alert {
-    color: var(--color-on-alert);
+    color: var(--color-alert);
   }
 
   .lead.lead--semantic-brand {
-    color: var(--color-on-brand);
+    color: var(--color-brand);
   }
 
   .lead.lead--semantic-info {
-    color: var(--color-on-info);
+    color: var(--color-info);
   }
 
   .lead.lead--semantic-neutral {
-    color: var(--color-on-neutral);
+    color: var(--color-neutral);
   }
 
   .lead.lead--semantic-selected {
-    color: var(--color-on-selected);
+    color: var(--color-selected);
   }
 
   .lead.lead--semantic-success {
-    color: var(--color-on-success);
+    color: var(--color-success);
   }
 
   .lead.lead--weight-thin {

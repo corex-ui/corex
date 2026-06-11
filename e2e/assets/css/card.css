@@ -2,7 +2,7 @@
   .card {
     width: 100%;
     max-width: var(--container-md);
-    background: var(--color-layer);
+    background: var(--color-surface-raised);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     overflow: hidden;
@@ -11,7 +11,7 @@
   .card__header,
   .card__footer {
     padding: --spacing(6);
-    background: var(--color-layer);
+    background: var(--color-surface-raised);
   }
 
   .card__header {
@@ -20,7 +20,7 @@
 
   .card__content {
     padding: --spacing(6);
-    background: var(--color-layer);
+    background: var(--color-surface-raised);
   }
 
   .card__footer {
@@ -47,7 +47,7 @@
     align-items: stretch;
     border-radius: var(--radius-md);
     border: 1px solid var(--color-border);
-    background-color: var(--color-layer);
+    background-color: var(--color-surface-raised);
     overflow: hidden;
   }
 
@@ -68,7 +68,7 @@
     align-items: center;
     justify-content: flex-start;
     gap: --spacing(6);
-    background-color: var(--color-layer);
+    background-color: var(--color-surface-raised);
     border-top: 1px solid var(--color-border);
     padding-block: --spacing(11);
     padding-inline: var(--space);
@@ -86,7 +86,7 @@
   .preview__sidebar--wrap {
     flex-direction: row;
     flex-wrap: wrap;
-    gap: var(--spacing-size);
+    gap: var(--spacing);
     padding: var(--space);
     
     overflow-x: auto;
@@ -111,7 +111,7 @@
     min-width: 0;
     display: flex;
     flex-direction: column;
-    background-color: var(--color-root);
+    background-color: var(--color-surface-page);
   }
 
   @media (min-width: 64rem) {

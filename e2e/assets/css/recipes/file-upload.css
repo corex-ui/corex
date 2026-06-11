@@ -34,13 +34,13 @@
   }
 
   [data-scope="file-upload"][data-part="trigger"] {
-      color: --value(--color-on-*, [color]);
-    gap: --value(--spacing-*, [length]);
-    padding-inline: --value(--spacing-*, [length]);
-    min-height: --value(--spacing-control-*, [length]);
+      color: --value(--color-*, [color]);
     background-color: --value(--color-*, [color]);
+    padding-inline: --value(--spacing-*, [length]);
+    gap: --value(--spacing-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
   [data-scope="file-upload"][data-part="region"] {
@@ -65,18 +65,18 @@
   .file-upload {
     width: 100%;
     max-width: var(--container-md);
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .file-upload [data-scope="file-upload"][data-part="trigger"] {
-    color: var(--color-accent-ink);
-    gap: var(--spacing-md);
-    padding-inline: var(--spacing-md);
-    min-height: var(--spacing-control-md);
+    color: var(--color-on-accent);
     background-color: var(--color-accent);
+    padding-inline: var(--spacing-md);
+    gap: var(--spacing-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-height: var(--spacing-control-md);
   }
 
   .file-upload [data-scope="file-upload"][data-part="region"] {
@@ -345,7 +345,7 @@
     justify-content: center;
     width: auto;
     background-color: var(--color-alert);
-    color: var(--color-alert-ink);
+    color: var(--color-on-alert);
     border-color: var(--color-alert);
     min-height: var(--spacing-control-sm);
     font-size: var(--text-sm);

@@ -10,10 +10,10 @@
   .icon {
     display: inline-flex;
     color: currentcolor;
-    align-items: center;
-    flex-shrink: 0;
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
+    align-items: center;
+    flex-shrink: 0;
   }
 
   .icon.icon--text-xs {

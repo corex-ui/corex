@@ -29,11 +29,11 @@
   }
 
   [data-scope="clipboard"][data-part="trigger"] {
-      gap: --value(--spacing-*, [length]);
-    padding-inline: --value(--spacing-*, [length]);
-    min-height: --value(--spacing-control-*, [length]);
+      padding-inline: --value(--spacing-*, [length]);
+    gap: --value(--spacing-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
 }
@@ -60,16 +60,16 @@
   .clipboard {
     width: fit-content;
     max-width: none;
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .clipboard [data-scope="clipboard"][data-part="trigger"] {
-    gap: var(--spacing-md);
     padding-inline: var(--spacing-md);
-    min-height: var(--spacing-control-md);
+    gap: var(--spacing-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-height: var(--spacing-control-md);
   }
 
   .clipboard.clipboard--w-auto {
@@ -154,7 +154,7 @@
 
   .clipboard [data-scope="clipboard"][data-part="input"][data-copied] {
     background-color: var(--color-success);
-    color: var(--color-success-ink);
+    color: var(--color-on-success);
   }
 
   .clipboard [data-scope="clipboard"][data-part="trigger"] {
@@ -177,9 +177,9 @@
 
   .clipboard [data-scope="clipboard"][data-part="trigger"][data-copied] {
     background-color: var(--color-success);
-    color: var(--color-success-ink);
+    color: var(--color-on-success);
     outline: none;
-    box-shadow: inset 0 0 0 2px var(--color-success-ink);
+    box-shadow: inset 0 0 0 2px var(--color-on-success);
   }
 
   .clipboard [data-scope="clipboard"][data-part="trigger"][data-copied] [data-scope="clipboard"][data-part="copy"] {

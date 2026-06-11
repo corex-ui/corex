@@ -50,8 +50,8 @@ defmodule E2eWeb.DataTableWallabyTest do
         session
         |> ComponentBehaviorSpec.visit_ready(DataTable, :data_table, :style)
 
-      assert_has(session, css("#data-table-styling-color table", minimum: 1, visible: :any))
-      DataTable.see_in_section(session, "data-table-styling-color", "Alice")
+      assert_has(session, css("#data-table-style-color table", minimum: 1, visible: :any))
+      DataTable.see_in_section(session, "data-table-style-color", "Alice")
     end
 
     feature "size section renders tables", %{session: session} do
@@ -59,7 +59,7 @@ defmodule E2eWeb.DataTableWallabyTest do
         session
         |> ComponentBehaviorSpec.visit_ready(DataTable, :data_table, :style)
 
-      assert_has(session, css("#data-table-styling-size table", minimum: 1, visible: :any))
+      assert_has(session, css("#data-table-style-size table", minimum: 1, visible: :any))
     end
 
     feature "max width section renders tables", %{session: session} do
@@ -67,7 +67,7 @@ defmodule E2eWeb.DataTableWallabyTest do
         session
         |> ComponentBehaviorSpec.visit_ready(DataTable, :data_table, :style)
 
-      assert_has(session, css("#data-table-styling-max-width table", minimum: 1, visible: :any))
+      assert_has(session, css("#data-table-style-max-width table", minimum: 1, visible: :any))
     end
   end
 

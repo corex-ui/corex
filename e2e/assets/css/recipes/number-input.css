@@ -20,12 +20,12 @@
 
 @utility number-input--size-* {
   [data-scope="number-input"][data-part="input"] {
-      color: --value(--color-on-*, [color]);
-    padding-inline: --value(--spacing-*, [length]);
-    min-height: --value(--spacing-control-*, [length]);
+      color: --value(--color-*, [color]);
     background-color: --value(--color-*, [color]);
+    padding-inline: --value(--spacing-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
   [data-scope="number-input"][data-part="label"] {
@@ -37,20 +37,20 @@
       gap: --value(--spacing-*, [length]);
   }
 
-  [data-scope="number-input"][data-part="decrement-trigger"] {
-      color: --value(--color-on-*, [color]);
-    min-height: --value(--spacing-control-*, [length]);
+  [data-scope="number-input"][data-part="increment-trigger"] {
+      color: --value(--color-*, [color]);
     background-color: --value(--color-*, [color]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
-  [data-scope="number-input"][data-part="increment-trigger"] {
-      color: --value(--color-on-*, [color]);
-    min-height: --value(--spacing-control-*, [length]);
+  [data-scope="number-input"][data-part="decrement-trigger"] {
+      color: --value(--color-*, [color]);
     background-color: --value(--color-*, [color]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
   [data-scope="number-input"][data-part="trigger-group"] {
@@ -63,12 +63,12 @@
 @layer components {
   .number-input [data-scope="number-input"][data-part="input"] {
     color: var(--color-on-page);
+    background-color: var(--color-surface-control);
     max-height: var(--spacing-control-md);
     padding-inline: var(--spacing-md);
-    min-height: var(--spacing-control-md);
-    background-color: var(--color-surface-control);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-height: var(--spacing-control-md);
   }
 
   .number-input [data-scope="number-input"][data-part="label"] {
@@ -83,31 +83,31 @@
   .number-input {
     width: 100%;
     max-width: none;
-    height: auto;
     max-height: none;
-  }
-
-  .number-input [data-scope="number-input"][data-part="decrement-trigger"] {
-    color: var(--color-on-page);
-    min-height: calc(var(--spacing-control-md) / 2);
-    background-color: var(--color-surface-control);
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
+    height: auto;
   }
 
   .number-input [data-scope="number-input"][data-part="increment-trigger"] {
     color: var(--color-on-page);
-    min-height: calc(var(--spacing-control-md) / 2);
     background-color: var(--color-surface-control);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-height: calc(var(--spacing-control-md) / 2);
+  }
+
+  .number-input [data-scope="number-input"][data-part="decrement-trigger"] {
+    color: var(--color-on-page);
+    background-color: var(--color-surface-control);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+    min-height: calc(var(--spacing-control-md) / 2);
   }
 
   .number-input [data-scope="number-input"][data-part="trigger-group"] {
     width: var(--spacing-control-md);
-    height: var(--spacing-control-md);
     max-height: var(--spacing-control-md);
     min-height: var(--spacing-control-md);
+    height: var(--spacing-control-md);
   }
 
   .number-input.number-input--w-auto {
@@ -288,28 +288,28 @@
   .number-input.number-input--semantic-accent [data-scope="number-input"][data-part="input"] {
     &:focus, &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-accent);
+      box-shadow: inset 0 0 0 2px var(--color-accent);
     }
   }
 
   .number-input.number-input--semantic-alert [data-scope="number-input"][data-part="input"] {
     &:focus, &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-alert);
+      box-shadow: inset 0 0 0 2px var(--color-alert);
     }
   }
 
   .number-input.number-input--semantic-brand [data-scope="number-input"][data-part="input"] {
     &:focus, &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+      box-shadow: inset 0 0 0 2px var(--color-brand);
     }
   }
 
   .number-input.number-input--semantic-info [data-scope="number-input"][data-part="input"] {
     &:focus, &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-info);
+      box-shadow: inset 0 0 0 2px var(--color-info);
     }
   }
 
@@ -323,26 +323,26 @@
   .number-input.number-input--semantic-selected [data-scope="number-input"][data-part="input"] {
     &:focus, &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
+      box-shadow: inset 0 0 0 2px var(--color-selected);
     }
   }
 
   .number-input.number-input--semantic-success [data-scope="number-input"][data-part="input"] {
     &:focus, &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-success);
+      box-shadow: inset 0 0 0 2px var(--color-success);
     }
   }
 
   .number-input.number-input--semantic-accent [data-scope="number-input"][data-part="increment-trigger"] {
-    color: var(--color-on-accent);
+    color: var(--color-accent);
     &:hover {
       background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-accent);
+      box-shadow: inset 0 0 0 2px var(--color-accent);
     }
 
     &:disabled,
@@ -354,14 +354,14 @@
   }
 
   .number-input.number-input--semantic-alert [data-scope="number-input"][data-part="increment-trigger"] {
-    color: var(--color-on-alert);
+    color: var(--color-alert);
     &:hover {
       background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-alert);
+      box-shadow: inset 0 0 0 2px var(--color-alert);
     }
 
     &:disabled,
@@ -373,14 +373,14 @@
   }
 
   .number-input.number-input--semantic-brand [data-scope="number-input"][data-part="increment-trigger"] {
-    color: var(--color-on-brand);
+    color: var(--color-brand);
     &:hover {
       background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+      box-shadow: inset 0 0 0 2px var(--color-brand);
     }
 
     &:disabled,
@@ -392,14 +392,14 @@
   }
 
   .number-input.number-input--semantic-info [data-scope="number-input"][data-part="increment-trigger"] {
-    color: var(--color-on-info);
+    color: var(--color-info);
     &:hover {
       background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-info);
+      box-shadow: inset 0 0 0 2px var(--color-info);
     }
 
     &:disabled,
@@ -430,14 +430,14 @@
   }
 
   .number-input.number-input--semantic-selected [data-scope="number-input"][data-part="increment-trigger"] {
-    color: var(--color-on-selected);
+    color: var(--color-selected);
     &:hover {
       background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
+      box-shadow: inset 0 0 0 2px var(--color-selected);
     }
 
     &:disabled,
@@ -449,14 +449,14 @@
   }
 
   .number-input.number-input--semantic-success [data-scope="number-input"][data-part="increment-trigger"] {
-    color: var(--color-on-success);
+    color: var(--color-success);
     &:hover {
       background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-success);
+      box-shadow: inset 0 0 0 2px var(--color-success);
     }
 
     &:disabled,
@@ -468,14 +468,14 @@
   }
 
   .number-input.number-input--semantic-accent [data-scope="number-input"][data-part="decrement-trigger"] {
-    color: var(--color-on-accent);
+    color: var(--color-accent);
     &:hover {
       background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-accent);
+      box-shadow: inset 0 0 0 2px var(--color-accent);
     }
 
     &:disabled,
@@ -487,14 +487,14 @@
   }
 
   .number-input.number-input--semantic-alert [data-scope="number-input"][data-part="decrement-trigger"] {
-    color: var(--color-on-alert);
+    color: var(--color-alert);
     &:hover {
       background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-alert);
+      box-shadow: inset 0 0 0 2px var(--color-alert);
     }
 
     &:disabled,
@@ -506,14 +506,14 @@
   }
 
   .number-input.number-input--semantic-brand [data-scope="number-input"][data-part="decrement-trigger"] {
-    color: var(--color-on-brand);
+    color: var(--color-brand);
     &:hover {
       background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+      box-shadow: inset 0 0 0 2px var(--color-brand);
     }
 
     &:disabled,
@@ -525,14 +525,14 @@
   }
 
   .number-input.number-input--semantic-info [data-scope="number-input"][data-part="decrement-trigger"] {
-    color: var(--color-on-info);
+    color: var(--color-info);
     &:hover {
       background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-info);
+      box-shadow: inset 0 0 0 2px var(--color-info);
     }
 
     &:disabled,
@@ -563,14 +563,14 @@
   }
 
   .number-input.number-input--semantic-selected [data-scope="number-input"][data-part="decrement-trigger"] {
-    color: var(--color-on-selected);
+    color: var(--color-selected);
     &:hover {
       background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
+      box-shadow: inset 0 0 0 2px var(--color-selected);
     }
 
     &:disabled,
@@ -582,14 +582,14 @@
   }
 
   .number-input.number-input--semantic-success [data-scope="number-input"][data-part="decrement-trigger"] {
-    color: var(--color-on-success);
+    color: var(--color-success);
     &:hover {
       background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-success);
+      box-shadow: inset 0 0 0 2px var(--color-success);
     }
 
     &:disabled,

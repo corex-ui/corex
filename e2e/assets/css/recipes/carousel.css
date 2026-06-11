@@ -62,21 +62,21 @@
   }
 
   [data-scope="carousel"][data-part="prev-trigger"] {
-      min-height: --value(--spacing-control-*, [length]);
-    font-size: --value(--text-*, [length]);
+      font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
   [data-scope="carousel"][data-part="next-trigger"] {
-      min-height: --value(--spacing-control-*, [length]);
-    font-size: --value(--text-*, [length]);
+      font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
   [data-scope="carousel"][data-part="autoplay-trigger"] {
-      min-height: --value(--spacing-control-*, [length]);
-    font-size: --value(--text-*, [length]);
+      font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
 }
@@ -96,8 +96,8 @@
   .carousel {
     width: 100%;
     max-width: var(--container-md);
-    height: auto;
     max-height: var(--container-md);
+    height: auto;
   }
 
   .carousel [data-scope="carousel"][data-part="indicator"] {
@@ -106,24 +106,24 @@
   }
 
   .carousel [data-scope="carousel"][data-part="prev-trigger"] {
-    min-height: calc(var(--spacing-control-md) * 0.8);
-    min-width: calc(var(--spacing-control-md) * 0.8);
     font-size: calc(var(--text-base) * 0.8);
     line-height: calc(var(--text-base--line-height) * 0.8);
+    min-height: calc(var(--spacing-control-md) * 0.8);
+    min-width: calc(var(--spacing-control-md) * 0.8);
   }
 
   .carousel [data-scope="carousel"][data-part="next-trigger"] {
-    min-height: calc(var(--spacing-control-md) * 0.8);
-    min-width: calc(var(--spacing-control-md) * 0.8);
     font-size: calc(var(--text-base) * 0.8);
     line-height: calc(var(--text-base--line-height) * 0.8);
+    min-height: calc(var(--spacing-control-md) * 0.8);
+    min-width: calc(var(--spacing-control-md) * 0.8);
   }
 
   .carousel [data-scope="carousel"][data-part="autoplay-trigger"] {
-    min-height: calc(var(--spacing-control-md) * 0.8);
-    min-width: calc(var(--spacing-control-md) * 0.8);
     font-size: calc(var(--text-base) * 0.8);
     line-height: calc(var(--text-base--line-height) * 0.8);
+    min-height: calc(var(--spacing-control-md) * 0.8);
+    min-width: calc(var(--spacing-control-md) * 0.8);
   }
 
   .carousel.carousel--w-auto {

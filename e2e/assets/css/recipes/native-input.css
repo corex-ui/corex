@@ -20,12 +20,12 @@
 
 @utility native-input--size-* {
   [data-scope="native-input"][data-part="input"] {
-      color: --value(--color-on-*, [color]);
-    padding-inline: --value(--spacing-*, [length]);
-    min-height: --value(--spacing-control-*, [length]);
+      color: --value(--color-*, [color]);
     background-color: --value(--color-*, [color]);
+    padding-inline: --value(--spacing-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
   [data-scope="native-input"][data-part="label"] {
@@ -44,12 +44,12 @@
 @layer components {
   .native-input [data-scope="native-input"][data-part="input"] {
     color: var(--color-on-page);
-    padding-inline: var(--spacing-md);
-    min-height: var(--spacing-control-md);
     background-color: var(--color-surface-control);
     border-color: var(--color-border);
+    padding-inline: var(--spacing-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-height: var(--spacing-control-md);
   }
 
   .native-input [data-scope="native-input"][data-part="label"] {
@@ -65,8 +65,8 @@
   .native-input {
     width: 100%;
     max-width: var(--container-4xl);
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .native-input.native-input--w-auto {
@@ -213,28 +213,28 @@
   .native-input.native-input--semantic-accent [data-scope="native-input"][data-part="input"] {
     &:focus, &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-accent);
+      box-shadow: inset 0 0 0 2px var(--color-accent);
     }
   }
 
   .native-input.native-input--semantic-alert [data-scope="native-input"][data-part="input"] {
     &:focus, &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-alert);
+      box-shadow: inset 0 0 0 2px var(--color-alert);
     }
   }
 
   .native-input.native-input--semantic-brand [data-scope="native-input"][data-part="input"] {
     &:focus, &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+      box-shadow: inset 0 0 0 2px var(--color-brand);
     }
   }
 
   .native-input.native-input--semantic-info [data-scope="native-input"][data-part="input"] {
     &:focus, &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-info);
+      box-shadow: inset 0 0 0 2px var(--color-info);
     }
   }
 
@@ -248,14 +248,14 @@
   .native-input.native-input--semantic-selected [data-scope="native-input"][data-part="input"] {
     &:focus, &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
+      box-shadow: inset 0 0 0 2px var(--color-selected);
     }
   }
 
   .native-input.native-input--semantic-success [data-scope="native-input"][data-part="input"] {
     &:focus, &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-success);
+      box-shadow: inset 0 0 0 2px var(--color-success);
     }
   }
 }

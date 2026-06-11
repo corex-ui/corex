@@ -99,7 +99,7 @@ defmodule E2eWeb.Demos.LayoutHeadingDemo do
           <.action type="button" size="sm" variant="ghost">Cancel</.action>
         </:actions>
       </.layout_heading>
-      <.layout_heading class="layout-heading layout-heading--accent">
+      <.layout_heading class="layout-heading layout-heading--semantic-accent">
         <:title>Accent</:title>
         <:subtitle>Semantic accent on title and subtitle.</:subtitle>
         <:actions>
@@ -107,7 +107,7 @@ defmodule E2eWeb.Demos.LayoutHeadingDemo do
           <.action type="button" size="sm" variant="ghost">Cancel</.action>
         </:actions>
       </.layout_heading>
-      <.layout_heading class="layout-heading layout-heading--brand">
+      <.layout_heading class="layout-heading layout-heading--semantic-brand">
         <:title>Brand</:title>
         <:subtitle>Semantic brand on title and subtitle.</:subtitle>
         <:actions>
@@ -115,7 +115,7 @@ defmodule E2eWeb.Demos.LayoutHeadingDemo do
           <.action type="button" size="sm" variant="ghost">Cancel</.action>
         </:actions>
       </.layout_heading>
-      <.layout_heading class="layout-heading layout-heading--alert">
+      <.layout_heading class="layout-heading layout-heading--semantic-alert">
         <:title>Alert</:title>
         <:subtitle>Semantic alert on title and subtitle.</:subtitle>
         <:actions>
@@ -123,7 +123,7 @@ defmodule E2eWeb.Demos.LayoutHeadingDemo do
           <.action type="button" size="sm" variant="ghost">Cancel</.action>
         </:actions>
       </.layout_heading>
-      <.layout_heading class="layout-heading layout-heading--success">
+      <.layout_heading class="layout-heading layout-heading--semantic-success">
         <:title>Success</:title>
         <:subtitle>Semantic success on title and subtitle.</:subtitle>
         <:actions>
@@ -131,7 +131,7 @@ defmodule E2eWeb.Demos.LayoutHeadingDemo do
           <.action type="button" size="sm" variant="ghost">Cancel</.action>
         </:actions>
       </.layout_heading>
-      <.layout_heading class="layout-heading layout-heading--info">
+      <.layout_heading class="layout-heading layout-heading--semantic-info">
         <:title>Info</:title>
         <:subtitle>Semantic info on title and subtitle.</:subtitle>
         <:actions>
@@ -153,7 +153,7 @@ defmodule E2eWeb.Demos.LayoutHeadingDemo do
         <.action type="button" size="sm" variant="ghost">Cancel</.action>
       </:actions>
     </.layout_heading>
-    <.layout_heading class="layout-heading layout-heading--accent">
+    <.layout_heading class="layout-heading layout-heading--semantic-accent">
       <:title>Accent</:title>
       <:subtitle>Semantic accent on title and subtitle.</:subtitle>
       <:actions>
@@ -161,7 +161,7 @@ defmodule E2eWeb.Demos.LayoutHeadingDemo do
         <.action type="button" size="sm" variant="ghost">Cancel</.action>
       </:actions>
     </.layout_heading>
-    <.layout_heading class="layout-heading layout-heading--brand">
+    <.layout_heading class="layout-heading layout-heading--semantic-brand">
       <:title>Brand</:title>
       <:subtitle>Semantic brand on title and subtitle.</:subtitle>
       <:actions>
@@ -169,7 +169,7 @@ defmodule E2eWeb.Demos.LayoutHeadingDemo do
         <.action type="button" size="sm" variant="ghost">Cancel</.action>
       </:actions>
     </.layout_heading>
-    <.layout_heading class="layout-heading layout-heading--alert">
+    <.layout_heading class="layout-heading layout-heading--semantic-alert">
       <:title>Alert</:title>
       <:subtitle>Semantic alert on title and subtitle.</:subtitle>
       <:actions>
@@ -177,7 +177,7 @@ defmodule E2eWeb.Demos.LayoutHeadingDemo do
         <.action type="button" size="sm" variant="ghost">Cancel</.action>
       </:actions>
     </.layout_heading>
-    <.layout_heading class="layout-heading layout-heading--success">
+    <.layout_heading class="layout-heading layout-heading--semantic-success">
       <:title>Success</:title>
       <:subtitle>Semantic success on title and subtitle.</:subtitle>
       <:actions>
@@ -185,7 +185,7 @@ defmodule E2eWeb.Demos.LayoutHeadingDemo do
         <.action type="button" size="sm" variant="ghost">Cancel</.action>
       </:actions>
     </.layout_heading>
-    <.layout_heading class="layout-heading layout-heading--info">
+    <.layout_heading class="layout-heading layout-heading--semantic-info">
       <:title>Info</:title>
       <:subtitle>Semantic info on title and subtitle.</:subtitle>
       <:actions>

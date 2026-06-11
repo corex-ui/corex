@@ -26,11 +26,11 @@
     width: fit-content;
     color: var(--color-on-page);
     max-width: none;
-    height: auto;
     max-height: none;
-    font-weight: var(--font-weight-bold);
     font-size: var(--text-2xl);
     line-height: var(--leading-2xl);
+    height: auto;
+    font-weight: var(--font-weight-bold);
     font-family: var(--font-sans);
     @media (min-width: 48rem) {
       font-size: var(--text-3xl);
@@ -79,31 +79,31 @@
   }
 
   .h2.h2--semantic-accent {
-    color: var(--color-on-accent);
+    color: var(--color-accent);
   }
 
   .h2.h2--semantic-alert {
-    color: var(--color-on-alert);
+    color: var(--color-alert);
   }
 
   .h2.h2--semantic-brand {
-    color: var(--color-on-brand);
+    color: var(--color-brand);
   }
 
   .h2.h2--semantic-info {
-    color: var(--color-on-info);
+    color: var(--color-info);
   }
 
   .h2.h2--semantic-neutral {
-    color: var(--color-on-neutral);
+    color: var(--color-neutral);
   }
 
   .h2.h2--semantic-selected {
-    color: var(--color-on-selected);
+    color: var(--color-selected);
   }
 
   .h2.h2--semantic-success {
-    color: var(--color-on-success);
+    color: var(--color-success);
   }
 
   .h2.h2--weight-thin {

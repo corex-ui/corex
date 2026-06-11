@@ -29,11 +29,11 @@
 
 @utility toggle--size-* {
   [data-scope="toggle"][data-part="root"] {
-      gap: --value(--spacing-*, [length]);
-    padding-inline: --value(--spacing-*, [length]);
-    min-height: --value(--spacing-control-*, [length]);
+      padding-inline: --value(--spacing-*, [length]);
+    gap: --value(--spacing-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
 }
@@ -44,18 +44,18 @@
     display: inline-flex;
     width: fit-content;
     cursor: pointer;
-    gap: var(--spacing-md);
     padding-inline: var(--spacing-md);
+    gap: var(--spacing-md);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
     min-height: var(--spacing-control-md);
-    transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+    border-radius: var(--radius-md);
     align-items: center;
     justify-content: center;
     border: 1px solid transparent;
-    border-radius: var(--radius-md);
     font-weight: var(--font-weight-normal);
     text-align: center;
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
+    transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
     text-decoration-line: none;
     appearance: none;
     &[data-state="on"] {
@@ -117,13 +117,13 @@
         cursor: not-allowed;
         color: var(--color-on-muted);
         background-color: var(--color-surface-control-muted);
-        box-shadow: none;
         border-color: var(--color-border);
+        box-shadow: none;
         &:active {
           color: var(--color-on-muted);
           background-color: var(--color-surface-control-muted);
-          box-shadow: none;
           border-color: var(--color-border);
+          box-shadow: none;
         }
         &[data-state="open"] {
           color: var(--color-on-muted);
@@ -138,9 +138,9 @@
         &:focus-visible {
           color: var(--color-on-muted);
           background-color: var(--color-surface-control-muted);
+          border-color: var(--color-border);
           outline: none;
           box-shadow: none;
-          border-color: var(--color-border);
         }
       }
       &:hover {
@@ -156,8 +156,8 @@
   .toggle {
     width: fit-content;
     max-width: none;
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .toggle [data-scope="toggle"][data-part="indicator"] {
@@ -248,13 +248,13 @@
         cursor: not-allowed;
         color: var(--color-on-muted);
         background-color: var(--color-surface-control-muted);
-        box-shadow: none;
         border-color: var(--color-border);
+        box-shadow: none;
         &:active {
           color: var(--color-on-muted);
           background-color: var(--color-surface-control-muted);
-          box-shadow: none;
           border-color: var(--color-border);
+          box-shadow: none;
         }
         &[data-state="open"] {
           color: var(--color-on-muted);
@@ -269,9 +269,9 @@
         &:focus-visible {
           color: var(--color-on-muted);
           background-color: var(--color-surface-control-muted);
+          border-color: var(--color-border);
           outline: none;
           box-shadow: none;
-          border-color: var(--color-border);
         }
       }
       &:hover {
@@ -343,8 +343,8 @@
         cursor: not-allowed;
         color: var(--color-on-muted);
         background-color: transparent;
-        box-shadow: none;
         border-color: var(--color-surface-control-muted);
+        box-shadow: none;
       }
       &:hover {
         background-color: var(--color-surface-control-hover);
@@ -545,7 +545,7 @@
 
   .toggle.toggle--variant-ghost.toggle--semantic-accent [data-scope="toggle"][data-part="root"][data-state="on"] {
     background-color: transparent;
-    color: var(--color-on-accent);
+    color: var(--color-accent);
     border-color: transparent;
     &:hover {
       background-color: var(--color-surface-control-hover);
@@ -557,7 +557,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-accent);
+      box-shadow: inset 0 0 0 2px var(--color-accent);
     }
 
     &:disabled,
@@ -571,7 +571,7 @@
 
   .toggle.toggle--variant-outline.toggle--semantic-accent [data-scope="toggle"][data-part="root"][data-state="on"] {
     background-color: transparent;
-    color: var(--color-on-accent);
+    color: var(--color-accent);
     border-color: var(--color-accent);
     &:hover {
       background-color: var(--color-surface-control-hover);
@@ -583,7 +583,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-accent);
+      box-shadow: inset 0 0 0 2px var(--color-accent);
     }
 
     &:disabled,
@@ -598,7 +598,7 @@
 
   .toggle.toggle--variant-subtle.toggle--semantic-accent [data-scope="toggle"][data-part="root"][data-state="on"] {
     background-color: var(--color-surface-control-hover);
-    color: var(--color-on-accent);
+    color: var(--color-accent);
     border-color: transparent;
     &:hover {
       background-color: var(--color-surface-control-active);
@@ -606,7 +606,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-accent);
+      box-shadow: inset 0 0 0 2px var(--color-accent);
     }
 
     &:disabled,
@@ -646,7 +646,7 @@
 
   .toggle.toggle--variant-ghost.toggle--semantic-alert [data-scope="toggle"][data-part="root"][data-state="on"] {
     background-color: transparent;
-    color: var(--color-on-alert);
+    color: var(--color-alert);
     border-color: transparent;
     &:hover {
       background-color: var(--color-surface-control-hover);
@@ -658,7 +658,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-alert);
+      box-shadow: inset 0 0 0 2px var(--color-alert);
     }
 
     &:disabled,
@@ -672,7 +672,7 @@
 
   .toggle.toggle--variant-outline.toggle--semantic-alert [data-scope="toggle"][data-part="root"][data-state="on"] {
     background-color: transparent;
-    color: var(--color-on-alert);
+    color: var(--color-alert);
     border-color: var(--color-alert);
     &:hover {
       background-color: var(--color-surface-control-hover);
@@ -684,7 +684,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-alert);
+      box-shadow: inset 0 0 0 2px var(--color-alert);
     }
 
     &:disabled,
@@ -699,7 +699,7 @@
 
   .toggle.toggle--variant-subtle.toggle--semantic-alert [data-scope="toggle"][data-part="root"][data-state="on"] {
     background-color: var(--color-surface-control-hover);
-    color: var(--color-on-alert);
+    color: var(--color-alert);
     border-color: transparent;
     &:hover {
       background-color: var(--color-surface-control-active);
@@ -707,7 +707,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-alert);
+      box-shadow: inset 0 0 0 2px var(--color-alert);
     }
 
     &:disabled,
@@ -747,7 +747,7 @@
 
   .toggle.toggle--variant-ghost.toggle--semantic-brand [data-scope="toggle"][data-part="root"][data-state="on"] {
     background-color: transparent;
-    color: var(--color-on-brand);
+    color: var(--color-brand);
     border-color: transparent;
     &:hover {
       background-color: var(--color-surface-control-hover);
@@ -759,7 +759,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+      box-shadow: inset 0 0 0 2px var(--color-brand);
     }
 
     &:disabled,
@@ -773,7 +773,7 @@
 
   .toggle.toggle--variant-outline.toggle--semantic-brand [data-scope="toggle"][data-part="root"][data-state="on"] {
     background-color: transparent;
-    color: var(--color-on-brand);
+    color: var(--color-brand);
     border-color: var(--color-brand);
     &:hover {
       background-color: var(--color-surface-control-hover);
@@ -785,7 +785,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+      box-shadow: inset 0 0 0 2px var(--color-brand);
     }
 
     &:disabled,
@@ -800,7 +800,7 @@
 
   .toggle.toggle--variant-subtle.toggle--semantic-brand [data-scope="toggle"][data-part="root"][data-state="on"] {
     background-color: var(--color-surface-control-hover);
-    color: var(--color-on-brand);
+    color: var(--color-brand);
     border-color: transparent;
     &:hover {
       background-color: var(--color-surface-control-active);
@@ -808,7 +808,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+      box-shadow: inset 0 0 0 2px var(--color-brand);
     }
 
     &:disabled,
@@ -848,7 +848,7 @@
 
   .toggle.toggle--variant-ghost.toggle--semantic-info [data-scope="toggle"][data-part="root"][data-state="on"] {
     background-color: transparent;
-    color: var(--color-on-info);
+    color: var(--color-info);
     border-color: transparent;
     &:hover {
       background-color: var(--color-surface-control-hover);
@@ -860,7 +860,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-info);
+      box-shadow: inset 0 0 0 2px var(--color-info);
     }
 
     &:disabled,
@@ -874,7 +874,7 @@
 
   .toggle.toggle--variant-outline.toggle--semantic-info [data-scope="toggle"][data-part="root"][data-state="on"] {
     background-color: transparent;
-    color: var(--color-on-info);
+    color: var(--color-info);
     border-color: var(--color-info);
     &:hover {
       background-color: var(--color-surface-control-hover);
@@ -886,7 +886,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-info);
+      box-shadow: inset 0 0 0 2px var(--color-info);
     }
 
     &:disabled,
@@ -901,7 +901,7 @@
 
   .toggle.toggle--variant-subtle.toggle--semantic-info [data-scope="toggle"][data-part="root"][data-state="on"] {
     background-color: var(--color-surface-control-hover);
-    color: var(--color-on-info);
+    color: var(--color-info);
     border-color: transparent;
     &:hover {
       background-color: var(--color-surface-control-active);
@@ -909,7 +909,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-info);
+      box-shadow: inset 0 0 0 2px var(--color-info);
     }
 
     &:disabled,
@@ -1050,7 +1050,7 @@
 
   .toggle.toggle--variant-ghost.toggle--semantic-selected [data-scope="toggle"][data-part="root"][data-state="on"] {
     background-color: transparent;
-    color: var(--color-on-selected);
+    color: var(--color-selected);
     border-color: transparent;
     &:hover {
       background-color: var(--color-surface-control-hover);
@@ -1062,7 +1062,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
+      box-shadow: inset 0 0 0 2px var(--color-selected);
     }
 
     &:disabled,
@@ -1076,7 +1076,7 @@
 
   .toggle.toggle--variant-outline.toggle--semantic-selected [data-scope="toggle"][data-part="root"][data-state="on"] {
     background-color: transparent;
-    color: var(--color-on-selected);
+    color: var(--color-selected);
     border-color: var(--color-selected);
     &:hover {
       background-color: var(--color-surface-control-hover);
@@ -1088,7 +1088,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
+      box-shadow: inset 0 0 0 2px var(--color-selected);
     }
 
     &:disabled,
@@ -1103,7 +1103,7 @@
 
   .toggle.toggle--variant-subtle.toggle--semantic-selected [data-scope="toggle"][data-part="root"][data-state="on"] {
     background-color: var(--color-surface-control-hover);
-    color: var(--color-on-selected);
+    color: var(--color-selected);
     border-color: transparent;
     &:hover {
       background-color: var(--color-surface-control-active);
@@ -1111,7 +1111,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
+      box-shadow: inset 0 0 0 2px var(--color-selected);
     }
 
     &:disabled,
@@ -1151,7 +1151,7 @@
 
   .toggle.toggle--variant-ghost.toggle--semantic-success [data-scope="toggle"][data-part="root"][data-state="on"] {
     background-color: transparent;
-    color: var(--color-on-success);
+    color: var(--color-success);
     border-color: transparent;
     &:hover {
       background-color: var(--color-surface-control-hover);
@@ -1163,7 +1163,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-success);
+      box-shadow: inset 0 0 0 2px var(--color-success);
     }
 
     &:disabled,
@@ -1177,7 +1177,7 @@
 
   .toggle.toggle--variant-outline.toggle--semantic-success [data-scope="toggle"][data-part="root"][data-state="on"] {
     background-color: transparent;
-    color: var(--color-on-success);
+    color: var(--color-success);
     border-color: var(--color-success);
     &:hover {
       background-color: var(--color-surface-control-hover);
@@ -1189,7 +1189,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-success);
+      box-shadow: inset 0 0 0 2px var(--color-success);
     }
 
     &:disabled,
@@ -1204,7 +1204,7 @@
 
   .toggle.toggle--variant-subtle.toggle--semantic-success [data-scope="toggle"][data-part="root"][data-state="on"] {
     background-color: var(--color-surface-control-hover);
-    color: var(--color-on-success);
+    color: var(--color-success);
     border-color: transparent;
     &:hover {
       background-color: var(--color-surface-control-active);
@@ -1212,7 +1212,7 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-success);
+      box-shadow: inset 0 0 0 2px var(--color-success);
     }
 
     &:disabled,
@@ -1228,10 +1228,10 @@
     display: inline-flex;
     width: 1em;
     color: currentcolor;
-    height: 1em;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    height: 1em;
   }
 
   .toggle [data-part="indicator"] [data-icon] {
@@ -1254,35 +1254,35 @@
   }
 
   .toggle.toggle--size-sm [data-scope="toggle"][data-part="root"] {
-    gap: var(--spacing-sm);
     padding-inline: var(--spacing-sm);
-    min-height: var(--spacing-control-sm);
+    gap: var(--spacing-sm);
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
+    min-height: var(--spacing-control-sm);
   }
 
   .toggle.toggle--size-md [data-scope="toggle"][data-part="root"] {
-    gap: var(--spacing-md);
     padding-inline: var(--spacing-md);
-    min-height: var(--spacing-control-md);
+    gap: var(--spacing-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-height: var(--spacing-control-md);
   }
 
   .toggle.toggle--size-lg [data-scope="toggle"][data-part="root"] {
-    gap: var(--spacing-lg);
     padding-inline: var(--spacing-lg);
-    min-height: var(--spacing-control-lg);
+    gap: var(--spacing-lg);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
+    min-height: var(--spacing-control-lg);
   }
 
   .toggle.toggle--size-xl [data-scope="toggle"][data-part="root"] {
-    gap: var(--spacing-xl);
     padding-inline: var(--spacing-xl);
-    min-height: var(--spacing-control-xl);
+    gap: var(--spacing-xl);
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
+    min-height: var(--spacing-control-xl);
   }
 
   .toggle.toggle--shape-square.toggle--size-sm [data-scope="toggle"][data-part="root"] {

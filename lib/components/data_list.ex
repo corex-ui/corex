@@ -134,7 +134,7 @@ defmodule Corex.DataList do
 
   use Corex.Bem.Variants,
     base: "data-list",
-    axes: [:width, :max_width, :height, :max_height, :size]
+    axes: [:width, :max_width, :height, :max_height, :semantic, :size]
 
   @doc """
   Renders a semantic data list.
