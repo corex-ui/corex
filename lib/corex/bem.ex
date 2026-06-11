@@ -29,6 +29,8 @@ defmodule Corex.Bem do
   defmodule Variants do
     @moduledoc false
 
+    @design_config_key Module.concat(:Corex, :Design)
+
     @bem_skip_axes ~W(as modal unstyled)a
 
     defmacro __using__(opts) do
@@ -260,7 +262,18 @@ defmodule Corex.Bem do
     end
 
     defp emit_style_classes? do
-      Application.get_env(:corex, :emit_style_classes, false)
+      case Application.get_env(:corex, :emit_style_classes) do
+        false -> false
+        true -> true
+        nil -> design_configured?()
+      end
+    end
+
+    defp design_configured? do
+      case Application.get_env(:corex, @design_config_key) do
+        config when is_list(config) and config != [] -> true
+        _ -> false
+      end
     end
   end
 end

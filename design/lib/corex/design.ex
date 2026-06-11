@@ -27,7 +27,7 @@ defmodule Corex.Design do
         Map.new(config)
 
       _ ->
-        legacy_design_config()
+        %{}
     end
   end
 
@@ -179,17 +179,4 @@ defmodule Corex.Design do
   defp log_compile(false), do: :ok
   defp log_compile(:info), do: Logger.info("Corex design compiled")
   defp log_compile(:watch_rebuild), do: IO.puts("[watch] Corex design rebuilt")
-
-  defp legacy_design_config do
-    env = Application.get_all_env(:corex_design) |> Map.new()
-
-    if map_size(env) > 0 do
-      IO.warn(
-        "config :corex_design is deprecated; use config :corex, Corex.Design instead",
-        []
-      )
-    end
-
-    env
-  end
 end

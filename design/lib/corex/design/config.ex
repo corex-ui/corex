@@ -73,7 +73,8 @@ defmodule Corex.Design.Config do
        [
          {:debug, "Enable Corex debug output"},
          {:generators, "mix corex.new generator options"},
-         {:emit_style_classes, "Emit BEM modifiers from style attrs (default false)"}
+         {:emit_style_classes,
+          "Emit BEM modifiers from style attrs (default false; auto on when Corex.Design is configured)"}
        ]},
       {Corex.Design,
        [

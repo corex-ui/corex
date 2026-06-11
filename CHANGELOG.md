@@ -29,15 +29,20 @@ Node/Style-Dictionary build for the default path.
 Components carry no runtime style engine: they merge BEM modifiers into `class`
 and forward caller classes. Styling lives in optional `:corex_design` stylesheets.
 
-- **`Corex.Bem.Variants`**: declares style axes from `Corex.Design.Scales`; generates
-  `attr/3` and `corex_style_class/1` (BEM class passthrough).
-  Three kinds: `:component`, `:layout`, `:appearance`.
+- **`Corex.Bem.Variants`**: declares style axes per component; generates `attr/3`
+  and `corex_style_class/1` (BEM class passthrough). Kinds: `:component`, `:layout`,
+  `:polymorphic`.
+- BEM emit is off by default. Set `config :corex, emit_style_classes: true` for
+  headless apps, or configure `config :corex, Corex.Design` for automatic emit
+  with Corex Design.
 - `<.action semantic="accent" size="lg">` merges `button button--semantic-accent button--size-lg`
   on `class`. Generated CSS targets the same BEM selectors.
 - **Theme validation**: `mix corex.design.validate` checks theme config via
   NimbleOptions schemas.
 - **Recipe listing**: `mix corex.design.list` prints recipe ids for
   `include_recipes`.
+- **Template lint**: `mix corex.design.lint` checks HEEx style literals against
+  exported design vocabulary.
 
 ### Breaking
 
@@ -45,10 +50,10 @@ and forward caller classes. Styling lives in optional `:corex_design` stylesheet
   tree from the `:corex` package. Per-component vendoring into `assets/corex/` is
   no longer supported.
 - **Migration:** add `{:corex_design, "~> 0.2"}`, register the `:corex_design`
-  compiler, set `config :corex_design, output: "assets/css/corex.tailwind.css", ...`,
+  compiler, set `config :corex, Corex.Design, output: "assets/css/corex.tailwind.css", ...`,
   run `mix compile`, and replace per-component
   `@import "../corex/components/..."` lines with `@import "./corex.tailwind.css";`
-  in `app.css`.
+  in `app.css`. The legacy `config :corex_design` namespace is not supported.
 - New apps with `--theme` wire `:corex_design`, the compiler, and CSS imports via
   the installer.
 ## 0.1.1

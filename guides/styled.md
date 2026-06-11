@@ -60,13 +60,11 @@ compilers: Mix.compilers() ++ [:corex_design]
 In `config/config.exs`:
 
 ```elixir
-config :corex, emit_style_classes: true
-
 config :corex, Corex.Design,
   output: "assets/css/corex.tailwind.css"
 ```
 
-`mix corex.new` adds both blocks. Omit `:themes` to use built-in presets (neo, uno, duo, leo). Full key reference: [Design config](design-config.html).
+BEM modifiers emit automatically when `Corex.Design` is configured. `mix corex.new` adds this block. Omit `:themes` to use built-in presets (neo, uno, duo, leo). Full key reference: [Design config](design-config.html).
 
 ### 4. Compile
 

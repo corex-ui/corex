@@ -76,7 +76,7 @@ If a label ever fails an audit, the answer is almost always to switch a theme, s
 
 ## A thin `site.css`
 
-The setup is small enough to fit in a paragraph. Add `{:corex_design}`, register the `:corex_design` compiler, set `config :corex_design` with `output: "assets/css/corex.tailwind.css"`, and run `mix compile`. Import the generated bundle in `app.css`. Set `data-theme` and `data-mode` on `<html>`. Set `class="typo layout"` on `<body>`. That is the whole story (see [Styled](https://hexdocs.pm/corex/styled.html)).
+The setup is small enough to fit in a paragraph. Add `{:corex_design}`, register the `:corex_design` compiler, set `config :corex, Corex.Design` with `output: "assets/css/corex.tailwind.css"`, and run `mix compile`. Import the generated bundle in `app.css`. Set `data-theme` and `data-mode` on `<html>`. Set `class="typo layout"` on `<body>`. That is the whole story (see [Styled](https://hexdocs.pm/corex/styled.html)).
 
 ```css
 @import "./corex.tailwind.css";

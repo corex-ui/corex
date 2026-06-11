@@ -82,8 +82,6 @@ config :tailwind,
     cd: Path.expand("..", __DIR__)
   ]
 
-config :corex, emit_style_classes: true
-
 config :corex, Corex.Design,
   output: "assets/css/corex.tailwind.css"
 

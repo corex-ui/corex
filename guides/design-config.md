@@ -22,6 +22,7 @@ Validate without a full CSS rebuild:
 
 ```shell
 mix corex.design.validate
+mix corex.design.lint
 ```
 
 Export resolved config for tooling:
@@ -51,13 +52,11 @@ Registry id vs recipe filename: `action` → `button.css`, `navigate` → `link.
 
 Component roles for `semantic=` in theme specs use `roles` keys with `component: true`.
 
-`:corex` does not validate style attrs. Set `emit_style_classes: true` under `config :corex` for BEM modifiers. `mix corex.new` sets this when Corex Design is installed.
+`:corex` does not validate style attrs at render time. BEM modifiers emit when `config :corex, Corex.Design` is set, or when you opt in with `emit_style_classes: true` on headless apps.
 
 ## Minimal styled app
 
 ```elixir
-config :corex, emit_style_classes: true
-
 config :corex, Corex.Design,
   output: "assets/css/corex.tailwind.css"
 ```
@@ -76,8 +75,6 @@ config :corex,
     gettext: :sigils,
     layout: [theme: true, mode: true, locale: true]
   ]
-
-config :corex, emit_style_classes: true
 
 config :corex, Corex.Design,
   output: "assets/css/corex.tailwind.css",

@@ -31,7 +31,7 @@ Lazy hooks: PascalCase keys (`Dialog: () => import("corex/dialog")`).
 
 ## Design + optional toast
 
-Add `{:corex_design}`, register the `:corex_design` compiler, set `config :corex_design`, then:
+Add `{:corex_design}`, register the `:corex_design` compiler, set `config :corex, Corex.Design`, then:
 
 ```sh
 mix compile

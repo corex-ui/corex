@@ -134,7 +134,7 @@ defmodule Corex.New.Patches do
   @doc """
   Ensures `config/config.exs` has:
     * `config :corex, Corex.Design, output: ...` when `--design`
-    * optional `themes:` on `:corex_design` when `--themes` is passed
+    * optional `themes:` on `Corex.Design` when `--themes` is passed
     * `config :localize, ...` when `--lang`
     * esbuild args contain `--format=esm --splitting --target=es2022`
       and `--outdir=../priv/static/assets/js`.
@@ -576,8 +576,6 @@ defmodule Corex.New.Patches do
           end
 
         block = """
-        config :corex, emit_style_classes: true
-
         config :corex, Corex.Design,
           output: "assets/css/corex.tailwind.css",
         #{themes_line}

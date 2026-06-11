@@ -339,7 +339,8 @@ defmodule Corex.Integration.CodeGeneratorCase do
 
     assert_file(Path.join([base, "config", "config.exs"]), fn c ->
       assert c =~ "config :corex, Corex.Design"
-      assert c =~ "emit_style_classes: true"
+      refute c =~ "emit_style_classes:"
+      refute c =~ "config :corex_design"
       assert c =~ "output: \"assets/css/corex.tailwind.css\""
     end)
 

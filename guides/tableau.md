@@ -56,8 +56,6 @@ end
 In `config/config.exs`:
 
 ```elixir
-config :corex, emit_style_classes: true
-
 config :corex, Corex.Design,
   output: "assets/css/corex.tailwind.css"
 ```

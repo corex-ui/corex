@@ -76,7 +76,7 @@ CSS يأتي بعد ذلك، على صفحة تتحرك أصلاً. الحركة
 
 ## `site.css` رفيع
 
-الإعداد صغير بما يكفي لفقرة. أضف `{:corex_design}`، سجّل مُجمّع `:corex_design`، واضبط `config :corex_design` مع `output: "assets/css/corex.tailwind.css"`، ثم شغّل `mix compile`. استورد الحزمة المولَّدة في `app.css`. ضع `data-theme` و`data-mode` على `<html>`. ضع `class="typo layout"` على `<body>`. هذه القصة كلها.
+الإعداد صغير بما يكفي لفقرة. أضف `{:corex_design}`، سجّل مُجمّع `:corex_design`، واضبط `config :corex, Corex.Design` مع `output: "assets/css/corex.tailwind.css"`، ثم شغّل `mix compile`. استورد الحزمة المولَّدة في `app.css`. ضع `data-theme` و`data-mode` على `<html>`. ضع `class="typo layout"` على `<body>`. هذه القصة كلها.
 
 ```css
 @import "./corex.tailwind.css";

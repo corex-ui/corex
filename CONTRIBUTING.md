@@ -110,7 +110,7 @@ Generates apps with `corex.new` and asserts install paths. Requires `mix archive
 | `guides/` | Hexdocs guides |
 | `test/` | Unit tests for the library |
 
-Styled apps compile CSS via `{:corex_design, ...}` and `config :corex_design` (see `design/` and `guides/styled.md`).
+Styled apps compile CSS via `{:corex_design, ...}` and `config :corex, Corex.Design` (see `design/` and `guides/styled.md`).
 
 ## Pull requests
 

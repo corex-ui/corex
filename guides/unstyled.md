@@ -8,7 +8,7 @@ Corex ships **no CSS**. Accessibility, state machines, and component anatomy com
 
 1. **Style attributes** (`semantic`, `size`, `radius`, …) express design intent. They are not inline styles and they do not load CSS.
 2. By default, `:corex` does **not** emit BEM modifiers. Only your `class` assign appears on the host.
-3. Opt in to BEM with `config :corex, emit_style_classes: true` (`mix corex.new` sets this when Corex Design is installed).
+3. Opt in to BEM with `config :corex, emit_style_classes: true`, or install Corex Design (`config :corex, Corex.Design` enables BEM automatically).
 4. **Your stylesheet** (or Corex Design CSS) defines what block and modifier classes look like.
 
 With BEM enabled:
@@ -73,7 +73,7 @@ Layout attr values are design shorthand (`gap="md"`, `justify="between"`), not T
 | --- | --- |
 | `{:corex}` only (default) | Off |
 | `config :corex, emit_style_classes: true` | On |
-| `{:corex_design}` (installer sets `emit_style_classes: true`) | On |
+| `{:corex_design}` + `config :corex, Corex.Design` | On (automatic) |
 
 Style each axis with **named attrs** (`semantic`, `size`, `gap`, `hide_below`, `as`, …) or equivalent BEM classes on `class`. There is no bundled `style={%{...}}` map attribute.
 

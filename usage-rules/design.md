@@ -27,7 +27,7 @@ compilers: Mix.compilers() ++ [:corex_design]
 Requires OTP 27+ (Elixir 1.18+ recommended).
 
 ```elixir
-config :corex_design,
+config :corex, Corex.Design,
   output: "assets/css/corex.tailwind.css"
 ```
 
@@ -129,7 +129,7 @@ No `class` on `<.heroicon>` inside Corex components or slots:
 
 ## Elixir design pipeline
 
-- `mix compile` runs `Compile.CorexDesign` when `config :corex_design` is set.
+- `mix compile` runs `Compile.CorexDesign` when `config :corex, Corex.Design` is set.
 - Output: `corex.tailwind.css` shim plus `layers/`, `recipes/{id}.css`, and `aggregates/recipes.css` under `assets/css/`.
 
 ### Layout components
@@ -154,7 +154,7 @@ Generated CSS writes `layers/`, `recipes/{id}.css`, and `aggregates/` under `ass
 
 ## Customization contract (upgrade-safe overrides)
 
-1. **Tokens** (global). Override themes in `config :corex_design`.
+1. **Tokens** (global). Override themes in `config :corex, Corex.Design`.
 2. **Variants** (per instance). Component attrs or BEM on `class`.
 3. **CSS override** (anything else). Unlayered app CSS after `corex.tailwind.css`.
 4. **Recipe override**. `Corex.Design.RecipeSource` modules merged by `:id`.

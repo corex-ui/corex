@@ -2,10 +2,11 @@ defmodule Corex.Design.Taxonomy do
   @moduledoc """
   Recipe styling coverage expectations by component category.
 
-  Components declare their accepted axes via `Corex.Bem.Variants` (the public contract).
+  Components declare accepted axes via `Corex.Bem.Variants` (`axes:` on each module).
   Recipes declare which axes they **style** via `variants`. This taxonomy lists
   axes a recipe in each category is expected to cover for baseline styling.
-  A component may stamp axes a recipe does not style yet.
+  Parity is enforced by `Corex.Design.AxisCoverageTest`; component `axes:` lists
+  may be broader than recipe `variants` until aligned per component.
   """
 
   @standard_axes ~W(semantic size variant radius text width height max_width max_height shape)a
