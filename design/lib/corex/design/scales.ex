@@ -26,7 +26,7 @@ defmodule Corex.Design.Scales do
     min_height: ~w(none full screen dvh)a
   ]
 
-  @builtin_semantics ~w(accent brand alert info success selected neutral)a
+  @builtin_semantics ~w(base accent brand alert info success)a
 
   def dimension_values(axis) when axis in @dimension_axes do
     case configured_axis(axis) do

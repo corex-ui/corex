@@ -58,6 +58,17 @@ defmodule Corex.Design.Recipes do
 
   def semantic_slot_host_variants, do: semantic_part_host_variants()
 
+  def semantic_variants(opts \\ []) do
+    host = Keyword.get(opts, :host, Corex.Design.Palette.semantic_host_marker())
+    part = Keyword.get(opts, :part, false)
+
+    if part do
+      for role <- Corex.Design.Semantics.axis_atoms(), do: {role, [host: host]}
+    else
+      for role <- Corex.Design.Semantics.axis_atoms(), do: {role, host}
+    end
+  end
+
   @doc "All component recipes (anatomy, states, variants)."
   def components do
     Enum.map(@component_recipe_modules, & &1.recipe())
@@ -411,8 +422,12 @@ defmodule Corex.Design.Recipes do
     end
 
     def neutral_selected_trigger_rules(id, part_selector, attr \\ "[data-selected]") do
-      host = ".#{Selector.class_name(id)}"
-      role = :selected
+      implicit_active_trigger_rules(id, part_selector, attr)
+    end
+
+    def implicit_active_trigger_rules(id, part_selector, attr \\ "[data-selected]") do
+      host = Palette.implicit_host(id)
+      role = :implicit
       muted = "var(#{Palette.muted_var(role)})"
 
       [
@@ -424,8 +439,12 @@ defmodule Corex.Design.Recipes do
     end
 
     def neutral_toggle_group_item_rules(id, part_selector) do
-      host = ".#{Selector.class_name(id)}"
-      role = :selected
+      implicit_toggle_group_item_rules(id, part_selector)
+    end
+
+    def implicit_toggle_group_item_rules(id, part_selector) do
+      host = Palette.implicit_host(id)
+      role = :implicit
       active_sel = ~S(&[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"])
 
       inactive =
@@ -1307,7 +1326,7 @@ defmodule Corex.Design.Recipes do
           max_height:
             RecipePresets.slot_axis_variants(RecipePresets.max_height_blocks(), :item_content)
         ],
-        default_variants: [variant: :subtle, size: :md, height: :auto, max_height: :none],
+        default_variants: [variant: :subtle, size: :md, text: :base, height: :auto, max_height: :none],
         axis_overrides: [
           %{match: %{width: :fit}, style: [host: %{max_width: :none}]},
           %{match: %{width: :auto}, style: [host: %{max_width: :none}]}
@@ -1436,7 +1455,7 @@ defmodule Corex.Design.Recipes do
       ]
     end
 
-    defp semantic_variants, do: Corex.Design.Recipes.semantic_part_host_variants()
+    defp semantic_variants, do: Corex.Design.Recipes.semantic_variants(part: true)
 
     defp variant_variants do
       for visual <- Axes.visual_atoms(), do: {visual, [host: %{}]}
@@ -1447,14 +1466,23 @@ defmodule Corex.Design.Recipes do
         {size,
          [
            item_trigger:
-             Map.merge(RecipePresets.size_block(size), %{margin_bottom: {:space, size}}),
+             Map.merge(RecipePresets.control_size_block(size), %{margin_bottom: {:space, size}}),
            item_text: %{gap: {:space, size}}
          ]}
       end
     end
 
     defp text_variants do
-      for step <- Axes.text_atoms(), do: {step, [item_trigger: RecipePresets.text_block(step)]}
+      for step <- Axes.text_atoms() do
+        block = RecipePresets.text_block(step)
+
+        {step,
+         [
+           item_trigger: block,
+           item_text: block,
+           item_indicator: block
+         ]}
+      end
     end
 
     defp radius_variants do
@@ -1467,15 +1495,8 @@ defmodule Corex.Design.Recipes do
 
       size_rules =
         for size <- Axes.size_atoms() do
-          text = size_text(size)
-
           Rule.new("#{Palette.host_size_mod(@id, size)} #{content_p}",
-            decls: [
-              font_size: {:text, text},
-              line_height: {:leading, text},
-              padding: {:space, size},
-              margin_bottom: {:space, size}
-            ]
+            decls: Map.to_list(RecipePresets.content_spacing_block(size))
           )
         end
 
@@ -1649,9 +1670,6 @@ defmodule Corex.Design.Recipes do
     end
 
     defp expand_anatomy_part(_entry), do: []
-
-    defp size_text(:md), do: :base
-    defp size_text(step), do: step
   end
 
   defmodule AngleSlider do
@@ -2491,7 +2509,7 @@ defmodule Corex.Design.Recipes do
             padding: "0"
           ],
           children: [
-            Rule.new("&[data-current]", decls: [background_color: {:color, :selected}])
+            Rule.new("&[data-current]", decls: [background_color: {:color, :base}])
           ]
         )
       ]
@@ -2608,7 +2626,7 @@ defmodule Corex.Design.Recipes do
     end
 
     defp semantic_variants do
-      for color <- Axes.semantic_atoms(), do: {color, [host: Palette.selected_host_sx(color)]}
+      Corex.Design.Recipes.semantic_variants(part: true)
     end
 
     defp size_variants do
@@ -7352,8 +7370,7 @@ defmodule Corex.Design.Recipes do
     end
 
     defp semantic_variants do
-      for color <- Axes.semantic_atoms(),
-          do: {color, [host: Map.merge(Palette.semantic_host_marker(), Palette.selected_host_sx(color))]}
+      Corex.Design.Recipes.semantic_variants(part: true)
     end
 
     defp size_variants do
@@ -7422,17 +7439,6 @@ defmodule Corex.Design.Recipes do
               padding: "calc(var(--spacing-md) * 0.25)"
             ],
             children: [
-              Rule.new("&[data-state=\"checked\"]",
-                decls: [
-                  background: "var(--color-selected)",
-                  color: "var(--color-on-selected)",
-                  border_color: "var(--color-selected)"
-                ],
-                children: [
-                  Rule.new("&:hover", decls: [background_color: "var(--color-selected-hover)"]),
-                  Rule.new("&:active", decls: [background_color: "var(--color-selected-active)"])
-                ]
-              ),
               Rule.new("&[data-state=\"unchecked\"]",
                 decls: [
                   background: "var(--color-surface-control)",
@@ -7447,13 +7453,10 @@ defmodule Corex.Design.Recipes do
               Rule.new("&:focus-visible,\n  &[data-focus]",
                 decls: [outline: "none", box_shadow: "inset 0 0 0 2px var(--color-on-page)"]
               ),
-              Rule.new(
-                ~S(&[data-state="checked"]:focus-visible,\n  &[data-state="checked"][data-focus]),
-                decls: [box_shadow: "inset 0 0 0 2px var(--color-on-selected)"]
-              ),
               Rule.new("&[data-invalid]", decls: [border_color: "var(--color-alert)"])
             ]
           ),
+        ] ++ radio_group_checked_rules(item_control) ++ [
           Rule.new("#{item_control} .data-checked", decls: [display: "none"]),
           Rule.new(
             ~s(#{host} #{item_control_slot}[data-state="checked"] .data-checked),
@@ -7466,13 +7469,43 @@ defmodule Corex.Design.Recipes do
           )
         ]
     end
+
+    defp radio_group_checked_rules(item_control) do
+      for role <- Palette.paint_roles() do
+        host = highlight_host(@id, role)
+        paint = Palette.paint_role(role)
+
+        Rule.new("#{host} #{item_control}[data-state=\"checked\"]",
+          decls: [
+            background: {:raw, "var(--color-#{paint})"},
+            color: {:raw, "var(--color-on-#{paint})"},
+            border_color: {:raw, "var(--color-#{paint})"}
+          ],
+          children: [
+            Rule.new("&:hover",
+              decls: [background_color: {:raw, "var(--color-#{paint}-hover)"}]
+            ),
+            Rule.new("&:active",
+              decls: [background_color: {:raw, "var(--color-#{paint}-active)"}]
+            ),
+            Rule.new(
+              ~S(&:focus-visible,\n  &[data-focus]),
+              decls: [box_shadow: {:raw, "inset 0 0 0 2px var(--color-on-#{paint})"}]
+            )
+          ]
+        )
+      end
+    end
+
+    defp highlight_host(id, :implicit), do: Palette.implicit_host(id)
+    defp highlight_host(id, role), do: Palette.host_mod(id, role)
   end
 
   defmodule Select do
     @moduledoc """
     Slot recipe for `data-select`. Variant axes target explicit parts only:
 
-    * `color` — host (`--color-selected-*` tokens)
+    * `semantic` — host role tokens (`--color-base-*`, `--color-accent-*`, …)
     * `visual` — trigger (`ghost`)
     * `size` — root, label, control, trigger, item, item_indicator, item_group_label
     * `text` — label, trigger, item, item_group_label
@@ -7635,26 +7668,26 @@ defmodule Corex.Design.Recipes do
           background_color: {:color, :surface_control_hover}
         },
         selected: %{
-          background_color: {:color, :selected},
-          color: {:color, :on_selected},
+          background_color: {:color, :base},
+          color: {:color, :on_base},
           hover: %{
-            background_color: {:color, :selected_hover},
-            color: {:color, :on_selected}
+            background_color: {:color, :base_hover},
+            color: {:color, :on_base}
           },
           active: %{
-            background_color: {:color, :selected_active},
-            color: {:color, :on_selected},
+            background_color: {:color, :base_active},
+            color: {:color, :on_base},
             box_shadow: :none
           },
           focus_visible: %{
-            background_color: {:color, :selected_hover},
-            color: {:color, :on_selected},
-            box_shadow: {:raw, "inset 0 0 0 2px var(--color-on-selected)"},
+            background_color: {:color, :base_hover},
+            color: {:color, :on_base},
+            box_shadow: {:raw, "inset 0 0 0 2px var(--color-on-base)"},
             outline: :none
           },
           highlighted: %{
-            background_color: {:color, :selected_hover},
-            color: {:color, :on_selected}
+            background_color: {:color, :base_hover},
+            color: {:color, :on_base}
           }
         },
         disabled:
@@ -7701,7 +7734,7 @@ defmodule Corex.Design.Recipes do
 
     defp semantic_variants do
       for color <- Axes.semantic_atoms(),
-          do: {color, [host: Map.merge(Palette.semantic_host_marker(), Palette.selected_host_sx(color))]}
+          do: {color, [host: Palette.semantic_host_marker()]}
     end
 
     defp select_extra_rules do
@@ -7804,72 +7837,79 @@ defmodule Corex.Design.Recipes do
     end
 
     defp item_highlight_rules do
-      item = ~S(.select [data-scope="select"][data-part="item"])
-      selected = &selected_item_selector/1
+      for role <- Palette.paint_roles() do
+        host = highlight_host(:select, role)
+        paint = Palette.paint_role(role)
+        item = "#{host} [data-scope=\"select\"][data-part=\"item\"]"
+        selected = &selected_item_selector(item, &1)
 
-      [
-        Rule.new("@media (hover: hover)",
-          children: [
-            Rule.new("#{item}[data-highlighted]:not(:hover)",
-              decls: [
-                outline: :none,
-                box_shadow: {:raw, "inset 0 0 0 2px var(--color-on-page)"},
-                background_color: {:color, :surface_control_hover}
-              ]
-            ),
-            Rule.new("#{item}[data-highlighted]:active",
-              decls: [background_color: {:color, :surface_control_active}, box_shadow: :none]
-            ),
-            Rule.new(selected.("[data-highlighted]:not(:hover)"),
-              decls: [
-                background_color: {:color, :selected_hover},
-                color: {:color, :on_selected},
-                box_shadow: {:raw, "inset 0 0 0 2px var(--color-on-selected)"},
-                outline: :none
-              ]
-            ),
-            Rule.new(selected.("[data-highlighted]:hover"),
-              decls: [
-                background_color: {:color, :selected_hover},
-                color: {:color, :on_selected},
-                box_shadow: :none,
-                outline: :none
-              ]
-            ),
-            Rule.new(selected.("[data-highlighted]:active"),
-              decls: [
-                background_color: {:color, :selected_active},
-                color: {:color, :on_selected},
-                box_shadow: :none
-              ]
-            )
-          ]
-        ),
-        Rule.new("@media (hover: none)",
-          children: [
-            Rule.new("#{item}[data-highlighted]",
-              decls: [
-                outline: :none,
-                box_shadow: {:raw, "inset 0 0 0 2px var(--color-on-page)"},
-                background_color: {:color, :surface_control_hover}
-              ]
-            ),
-            Rule.new(selected.("[data-highlighted]"),
-              decls: [
-                background_color: {:color, :selected_hover},
-                color: {:color, :on_selected},
-                box_shadow: {:raw, "inset 0 0 0 2px var(--color-on-selected)"},
-                outline: :none
-              ]
-            )
-          ]
-        )
-      ]
+        [
+          Rule.new("@media (hover: hover)",
+            children: [
+              Rule.new("#{item}[data-highlighted]:not(:hover)",
+                decls: [
+                  outline: :none,
+                  box_shadow: {:raw, "inset 0 0 0 2px var(--color-on-page)"},
+                  background_color: {:color, :surface_control_hover}
+                ]
+              ),
+              Rule.new("#{item}[data-highlighted]:active",
+                decls: [background_color: {:color, :surface_control_active}, box_shadow: :none]
+              ),
+              Rule.new(selected.("[data-highlighted]:not(:hover)"),
+                decls: [
+                  background_color: {:raw, "var(--color-#{paint}-hover)"},
+                  color: {:raw, "var(--color-on-#{paint})"},
+                  box_shadow: {:raw, "inset 0 0 0 2px var(--color-on-#{paint})"},
+                  outline: :none
+                ]
+              ),
+              Rule.new(selected.("[data-highlighted]:hover"),
+                decls: [
+                  background_color: {:raw, "var(--color-#{paint}-hover)"},
+                  color: {:raw, "var(--color-on-#{paint})"},
+                  box_shadow: :none,
+                  outline: :none
+                ]
+              ),
+              Rule.new(selected.("[data-highlighted]:active"),
+                decls: [
+                  background_color: {:raw, "var(--color-#{paint}-active)"},
+                  color: {:raw, "var(--color-on-#{paint})"},
+                  box_shadow: :none
+                ]
+              )
+            ]
+          ),
+          Rule.new("@media (hover: none)",
+            children: [
+              Rule.new("#{item}[data-highlighted]",
+                decls: [
+                  outline: :none,
+                  box_shadow: {:raw, "inset 0 0 0 2px var(--color-on-page)"},
+                  background_color: {:color, :surface_control_hover}
+                ]
+              ),
+              Rule.new(selected.("[data-highlighted]"),
+                decls: [
+                  background_color: {:raw, "var(--color-#{paint}-hover)"},
+                  color: {:raw, "var(--color-on-#{paint})"},
+                  box_shadow: {:raw, "inset 0 0 0 2px var(--color-on-#{paint})"},
+                  outline: :none
+                ]
+              )
+            ]
+          )
+        ]
+      end
+      |> List.flatten()
     end
 
-    defp selected_item_selector(suffix) do
-      base = ~S(.select [data-scope="select"][data-part="item"])
+    defp highlight_host(id, :implicit), do: Palette.implicit_host(id)
 
+    defp highlight_host(id, role), do: Palette.host_mod(id, role)
+
+    defp selected_item_selector(item, suffix) do
       Enum.map_join(
         [
           "[data-selected]",
@@ -7879,19 +7919,19 @@ defmodule Corex.Design.Recipes do
           ~S([data-indeterminate])
         ],
         ",\n  ",
-        &"#{base}#{&1}#{suffix}"
+        &"#{item}#{&1}#{suffix}"
       )
     end
 
     defp trigger_open_sx do
       %{
-        background_color: {:color, :selected},
-        color: {:color, :on_selected},
-        hover: %{background_color: {:color, :selected_hover}},
-        active: %{background_color: {:color, :selected_active}},
+        background_color: {:color, :base},
+        color: {:color, :on_base},
+        hover: %{background_color: {:color, :base_hover}},
+        active: %{background_color: {:color, :base_active}},
         focus_visible: %{
           outline: :none,
-          box_shadow: {:raw, "inset 0 0 0 2px var(--color-on-selected)"}
+          box_shadow: {:raw, "inset 0 0 0 2px var(--color-on-base)"}
         }
       }
     end
@@ -8139,7 +8179,7 @@ defmodule Corex.Design.Recipes do
     end
 
     defp semantic_variants do
-      for color <- Axes.semantic_atoms(), do: {color, [host: Palette.selected_host_sx(color)]}
+      Corex.Design.Recipes.semantic_variants(part: true)
     end
 
     defp size_variants do
@@ -8217,12 +8257,6 @@ defmodule Corex.Design.Recipes do
                 "background 150ms ease, border-color 150ms ease, color 150ms ease, transform 150ms ease"
             ],
             children: [
-              Rule.new("&[data-state=\"checked\"]",
-                decls: [background_color: "var(--color-selected)"],
-                children: [
-                  Rule.new(thumb_child, decls: [background_color: "var(--color-on-selected)"])
-                ]
-              ),
               Rule.new("&[data-disabled]",
                 decls: [
                   color: "var(--color-on-muted)",
@@ -8249,12 +8283,6 @@ defmodule Corex.Design.Recipes do
               position: "relative"
             ],
             children: [
-              Rule.new("&[data-state=\"checked\"]",
-                decls: [
-                  transform: "translateX(var(--switch-thumb-x))",
-                  background_color: "var(--color-on-selected)"
-                ]
-              ),
               Rule.new("&[data-invalid]", decls: [background: "var(--color-alert)"])
             ]
           ),
@@ -8262,8 +8290,34 @@ defmodule Corex.Design.Recipes do
             ~s(#{root}[dir="rtl"] #{Selector.slot(scope, "thumb")}[data-state="checked"]),
             decls: [transform: "translateX(calc(var(--switch-thumb-x) * -1))"]
           )
-        ]
+        ] ++ switch_checked_rules(control, thumb, thumb_child)
     end
+
+    defp switch_checked_rules(control, thumb, thumb_child) do
+      for role <- Palette.paint_roles() do
+        host = switch_highlight_host(@id, role)
+        paint = Palette.paint_role(role)
+
+        [
+          Rule.new("#{host} #{control}[data-state=\"checked\"]",
+            decls: [background_color: {:raw, "var(--color-#{paint})"}],
+            children: [
+              Rule.new(thumb_child, decls: [background_color: {:raw, "var(--color-on-#{paint})"}])
+            ]
+          ),
+          Rule.new("#{host} #{thumb}[data-state=\"checked\"]",
+            decls: [
+              transform: "translateX(var(--switch-thumb-x))",
+              background_color: {:raw, "var(--color-on-#{paint})"}
+            ]
+          )
+        ]
+      end
+      |> List.flatten()
+    end
+
+    defp switch_highlight_host(id, :implicit), do: Palette.implicit_host(id)
+    defp switch_highlight_host(id, role), do: Palette.host_mod(id, role)
 
     defp semantic_thumb_rules do
       thumb = Selector.slot(@scope, "thumb")

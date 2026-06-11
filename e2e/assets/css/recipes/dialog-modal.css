@@ -73,8 +73,8 @@
   .dialog-modal {
     width: fit-content;
     max-width: none;
-    max-height: none;
     height: auto;
+    max-height: none;
   }
 
   .dialog-modal [data-scope="dialog"][data-part="description"] {
@@ -135,19 +135,15 @@
     position: relative;
   }
 
+  .dialog-modal.dialog-modal--semantic-base {
+    position: relative;
+  }
+
   .dialog-modal.dialog-modal--semantic-brand {
     position: relative;
   }
 
   .dialog-modal.dialog-modal--semantic-info {
-    position: relative;
-  }
-
-  .dialog-modal.dialog-modal--semantic-neutral {
-    position: relative;
-  }
-
-  .dialog-modal.dialog-modal--semantic-selected {
     position: relative;
   }
 
@@ -305,6 +301,25 @@
     }
   }
 
+  .dialog-modal.dialog-modal--semantic-base [data-scope="dialog"][data-part="close-trigger"] {
+    color: var(--color-base);
+    &:hover {
+      background-color: var(--color-surface-control-hover);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-base);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      color: var(--color-on-muted);
+      cursor: not-allowed;
+    }
+  }
+
   .dialog-modal.dialog-modal--semantic-brand [data-scope="dialog"][data-part="close-trigger"] {
     color: var(--color-brand);
     &:hover {
@@ -333,44 +348,6 @@
     &:focus-visible {
       outline: none;
       box-shadow: inset 0 0 0 2px var(--color-info);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .dialog-modal.dialog-modal--semantic-neutral [data-scope="dialog"][data-part="close-trigger"] {
-    color: var(--color-on-control);
-    &:hover {
-      background-color: var(--color-surface-control-hover);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-focus);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .dialog-modal.dialog-modal--semantic-selected [data-scope="dialog"][data-part="close-trigger"] {
-    color: var(--color-selected);
-    &:hover {
-      background-color: var(--color-surface-control-hover);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-selected);
     }
 
     &:disabled,

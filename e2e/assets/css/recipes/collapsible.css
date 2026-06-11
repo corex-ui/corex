@@ -20,8 +20,8 @@
 
 @utility collapsible--size-* {
   [data-scope="collapsible"][data-part="root"] {
-      max-width: --value(--container-*, [length]);
-    gap: --value(--spacing-*, [length]);
+      gap: --value(--spacing-*, [length]);
+    max-width: --value(--container-*, [length]);
   }
 
 }
@@ -29,15 +29,15 @@
 
 @layer components {
   .collapsible [data-scope="collapsible"][data-part="root"] {
-    max-width: var(--container-md);
     gap: var(--spacing-md);
+    max-width: var(--container-md);
   }
 
   .collapsible {
     width: 100%;
     max-width: var(--container-md);
-    max-height: none;
     height: auto;
+    max-height: none;
   }
 
   .collapsible.collapsible--w-auto {
@@ -88,19 +88,15 @@
     position: relative;
   }
 
+  .collapsible.collapsible--semantic-base {
+    position: relative;
+  }
+
   .collapsible.collapsible--semantic-brand {
     position: relative;
   }
 
   .collapsible.collapsible--semantic-info {
-    position: relative;
-  }
-
-  .collapsible.collapsible--semantic-neutral {
-    position: relative;
-  }
-
-  .collapsible.collapsible--semantic-selected {
     position: relative;
   }
 
@@ -299,25 +295,25 @@
   }
 
   .collapsible [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
-    background-color: var(--color-selected);
-    color: var(--color-on-selected);
+    background-color: var(--color-base);
+    color: var(--color-on-base);
     &:hover {
-      background-color: var(--color-selected-hover);
+      background-color: var(--color-base-hover);
     }
 
     &:active {
-      background-color: var(--color-selected-active);
+      background-color: var(--color-base-active);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
+      box-shadow: inset 0 0 0 2px var(--color-on-base);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
-      background-color: --color-selected-muted;
+      background-color: --color-base-muted;
       cursor: not-allowed;
     }
 
@@ -390,6 +386,38 @@
     }
   }
 
+  .collapsible.collapsible--semantic-base [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
+    color: var(--color-base, var(--color-on-page));
+  }
+
+  .collapsible.collapsible--semantic-base [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
+    background-color: var(--color-base);
+    color: var(--color-on-base);
+    &:hover {
+      background-color: var(--color-base-hover);
+    }
+
+    &:active {
+      background-color: var(--color-base-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-base);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-base-muted);
+      cursor: not-allowed;
+    }
+
+    & [data-icon] {
+      color: currentcolor;
+    }
+  }
+
   .collapsible.collapsible--semantic-brand [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
     color: var(--color-brand, var(--color-on-page));
   }
@@ -446,70 +474,6 @@
     &[data-disabled],
     &[disabled] {
       background-color: var(--color-info-muted);
-      cursor: not-allowed;
-    }
-
-    & [data-icon] {
-      color: currentcolor;
-    }
-  }
-
-  .collapsible.collapsible--semantic-neutral [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
-    color: var(--color-on-control, var(--color-on-page));
-  }
-
-  .collapsible.collapsible--semantic-neutral [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
-    background-color: var(--color-neutral);
-    color: var(--color-on-neutral);
-    &:hover {
-      background-color: var(--color-neutral-hover);
-    }
-
-    &:active {
-      background-color: var(--color-neutral-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-neutral-muted);
-      cursor: not-allowed;
-    }
-
-    & [data-icon] {
-      color: currentcolor;
-    }
-  }
-
-  .collapsible.collapsible--semantic-selected [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
-    color: var(--color-selected, var(--color-on-page));
-  }
-
-  .collapsible.collapsible--semantic-selected [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
-    background-color: var(--color-selected);
-    color: var(--color-on-selected);
-    &:hover {
-      background-color: var(--color-selected-hover);
-    }
-
-    &:active {
-      background-color: var(--color-selected-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-selected-muted);
       cursor: not-allowed;
     }
 

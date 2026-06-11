@@ -92,7 +92,7 @@ defmodule Corex.Design.ThemeTest do
       output: "assets/css/corex.tailwind.css",
       themes: %{
         bad: %{
-          palette: %{"accent" => "#111111", "neutral" => "#FFFFFF"},
+          palette: %{"accent" => "#111111", "base" => "#FFFFFF"},
           colors: %{
             light: %{
               roles: %{info: %{palette: :info, lightness: 40}}
@@ -115,7 +115,7 @@ defmodule Corex.Design.ThemeTest do
       themes: %{
         slim: %{
           palette: %{
-            neutral: "#FFFFFF",
+            base: "#FFFFFF",
             accent: "#111111",
             marketing: "#7C3AED"
           },
@@ -136,13 +136,13 @@ defmodule Corex.Design.ThemeTest do
                 }
               },
               surface: %{
-                page: %{palette: :neutral, lightness: 98},
-                control: %{palette: :neutral, lightness: 94}
+                page: %{palette: :base, lightness: 98},
+                control: %{palette: :base, lightness: 94}
               },
-              on: %{page: %{palette: :neutral, against: :page, ratio: 8}},
-              border: %{palette: :neutral, against: :control, ratio: 1.12},
-              focus: %{palette: :neutral, against: :control, ratio: 2.2},
-              shadow: %{palette: :neutral, against: :page, ratio: 1.05}
+              on: %{page: %{palette: :base, against: :page, ratio: 8}},
+              border: %{palette: :base, against: :control, ratio: 1.12},
+              focus: %{palette: :base, against: :control, ratio: 2.2},
+              shadow: %{palette: :base, against: :page, ratio: 1.05}
             },
             dark: %{
               roles: %{
@@ -160,13 +160,13 @@ defmodule Corex.Design.ThemeTest do
                 }
               },
               surface: %{
-                page: %{palette: :neutral, lightness: 8},
-                control: %{palette: :neutral, lightness: 24}
+                page: %{palette: :base, lightness: 8},
+                control: %{palette: :base, lightness: 24}
               },
-              on: %{page: %{palette: :neutral, against: :page, ratio: 12}},
-              border: %{palette: :neutral, against: :control, ratio: 1.18},
-              focus: %{palette: :neutral, against: :control, ratio: 2.4},
-              shadow: %{palette: :neutral, against: :page, ratio: 1.2}
+              on: %{page: %{palette: :base, against: :page, ratio: 12}},
+              border: %{palette: :base, against: :control, ratio: 1.18},
+              focus: %{palette: :base, against: :control, ratio: 2.4},
+              shadow: %{palette: :base, against: :page, ratio: 1.2}
             }
           },
           dimensions: %{}

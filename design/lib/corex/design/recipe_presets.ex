@@ -384,6 +384,18 @@ defmodule Corex.Design.RecipePresets do
     }
   end
 
+  def control_size_block(size) do
+    %{
+      padding_inline: {:space, size},
+      gap: {:space, size},
+      min_height: {:size, size}
+    }
+  end
+
+  def content_spacing_block(size) do
+    %{padding: {:space, size}, margin_bottom: {:space, size}}
+  end
+
   def text_block(step) do
     %{font_size: {:text, step}, line_height: {:leading, step}}
   end

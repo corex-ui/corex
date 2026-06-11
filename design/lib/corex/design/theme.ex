@@ -174,8 +174,8 @@ defmodule Corex.Design.Theme do
     Map.new(palette, fn {k, v} -> {normalize_palette_key(k), to_string(v)} end)
   end
 
-  defp normalize_palette_key(:base), do: "neutral"
-  defp normalize_palette_key("base"), do: "neutral"
+  defp normalize_palette_key(:neutral), do: "base"
+  defp normalize_palette_key("neutral"), do: "base"
   defp normalize_palette_key(k) when is_atom(k), do: Atom.to_string(k)
   defp normalize_palette_key(k) when is_binary(k), do: k
 

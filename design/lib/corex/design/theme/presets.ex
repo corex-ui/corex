@@ -254,7 +254,7 @@ defmodule Corex.Design.Theme.Presets do
 
   defp neo_palette do
     %{
-      neutral: "#F0F0F0",
+      base: "#F0F0F0",
       accent: "#4B4B4B",
       alert: "#A43C3C",
       brand: "#32479C",
@@ -265,7 +265,7 @@ defmodule Corex.Design.Theme.Presets do
 
   defp uno_palette do
     %{
-      neutral: "#EEF2F7",
+      base: "#EEF2F7",
       accent: "#475569",
       alert: "#B91C1C",
       brand: "#0E7490",
@@ -276,7 +276,7 @@ defmodule Corex.Design.Theme.Presets do
 
   defp duo_palette do
     %{
-      neutral: "#FAF7F2",
+      base: "#FAF7F2",
       accent: "#57534E",
       alert: "#9F1239",
       brand: "#5B21B6",
@@ -287,7 +287,7 @@ defmodule Corex.Design.Theme.Presets do
 
   defp leo_palette do
     %{
-      neutral: "#F4F4F5",
+      base: "#F4F4F5",
       accent: "#3F3F46",
       alert: "#991B1B",
       brand: "#B45309",
@@ -301,9 +301,9 @@ defmodule Corex.Design.Theme.Presets do
       surface: neo_light_surface(),
       roles: neo_light_roles(),
       on: neo_light_on(),
-      border: %{palette: :neutral, against: :control, ratio: 1.12},
-      focus: %{palette: :neutral, against: :control, ratio: 2.2},
-      shadow: %{palette: :neutral, against: :page, ratio: 1.05}
+      border: %{palette: :base, against: :control, ratio: 1.12},
+      focus: %{palette: :base, against: :control, ratio: 2.2},
+      shadow: %{palette: :base, against: :page, ratio: 1.05}
     }
   end
 
@@ -312,18 +312,18 @@ defmodule Corex.Design.Theme.Presets do
       surface: neo_dark_surface(),
       roles: neo_dark_roles(),
       on: neo_dark_on(),
-      border: %{palette: :neutral, against: :control, ratio: 1.18},
-      focus: %{palette: :neutral, against: :control, ratio: 2.4},
-      shadow: %{palette: :neutral, against: :page, ratio: 1.2}
+      border: %{palette: :base, against: :control, ratio: 1.18},
+      focus: %{palette: :base, against: :control, ratio: 2.4},
+      shadow: %{palette: :base, against: :page, ratio: 1.2}
     }
   end
 
   defp neo_light_surface do
     %{
-      page: %{palette: :neutral, lightness: 98},
-      raised: %{palette: :neutral, lightness: 97},
+      page: %{palette: :base, lightness: 98},
+      raised: %{palette: :base, lightness: 97},
       control: %{
-        palette: :neutral,
+        palette: :base,
         lightness: 94,
         states: %{muted: 97, default: 94, hover: 90, active: 87}
       }
@@ -332,10 +332,10 @@ defmodule Corex.Design.Theme.Presets do
 
   defp neo_dark_surface do
     %{
-      page: %{palette: :neutral, lightness: 8},
-      raised: %{palette: :neutral, lightness: 15},
+      page: %{palette: :base, lightness: 8},
+      raised: %{palette: :base, lightness: 15},
       control: %{
-        palette: :neutral,
+        palette: :base,
         lightness: 24,
         states: %{muted: 27, default: 24, hover: 20, active: 17}
       }
@@ -344,19 +344,19 @@ defmodule Corex.Design.Theme.Presets do
 
   defp neo_light_on do
     %{
-      page: %{palette: :neutral, against: :page, ratio: 8},
-      muted: %{palette: :neutral, against: :page, ratio: 5.15},
+      page: %{palette: :base, against: :page, ratio: 8},
+      muted: %{palette: :base, against: :page, ratio: 5.15},
       link: %{palette: :info, against: :page, ratio: 6},
-      control: %{palette: :neutral, against: :control, ratio: 8}
+      control: %{palette: :base, against: :control, ratio: 8}
     }
   end
 
   defp neo_dark_on do
     %{
-      page: %{palette: :neutral, against: :page, ratio: 12},
-      muted: %{palette: :neutral, against: :page, ratio: 6},
+      page: %{palette: :base, against: :page, ratio: 12},
+      muted: %{palette: :base, against: :page, ratio: 6},
       link: %{palette: :info, against: :page, ratio: 7.5},
-      control: %{palette: :neutral, against: :control, ratio: 12}
+      control: %{palette: :base, against: :control, ratio: 12}
     }
   end
 
@@ -368,23 +368,17 @@ defmodule Corex.Design.Theme.Presets do
     }
 
     %{
-      accent: Map.merge(fill, %{palette: :accent}),
-      alert: Map.merge(fill, %{palette: :alert}),
-      brand: Map.merge(fill, %{palette: :brand}),
-      info: Map.merge(fill, %{palette: :info}),
-      success: Map.merge(fill, %{palette: :success}),
-      neutral: %{
-        palette: :neutral,
+      base: %{
+        palette: :base,
         lightness: 94,
         states: %{muted: 97, default: 94, hover: 90, active: 87},
         component: true
       },
-      selected: %{
-        palette: :neutral,
-        lightness: 85,
-        states: %{muted: 88, default: 85, hover: 81, active: 78},
-        component: true
-      }
+      accent: Map.merge(fill, %{palette: :accent}),
+      alert: Map.merge(fill, %{palette: :alert}),
+      brand: Map.merge(fill, %{palette: :brand}),
+      info: Map.merge(fill, %{palette: :info}),
+      success: Map.merge(fill, %{palette: :success})
     }
   end
 
@@ -396,23 +390,17 @@ defmodule Corex.Design.Theme.Presets do
     }
 
     %{
-      accent: Map.merge(fill, %{palette: :accent}),
-      alert: Map.merge(fill, %{palette: :alert}),
-      brand: Map.merge(fill, %{palette: :brand}),
-      info: Map.merge(fill, %{palette: :info}),
-      success: Map.merge(fill, %{palette: :success}),
-      neutral: %{
-        palette: :neutral,
+      base: %{
+        palette: :base,
         lightness: 24,
         states: %{muted: 27, default: 24, hover: 20, active: 17},
         component: true
       },
-      selected: %{
-        palette: :neutral,
-        lightness: 34,
-        states: %{muted: 37, default: 34, hover: 30, active: 27},
-        component: true
-      }
+      accent: Map.merge(fill, %{palette: :accent}),
+      alert: Map.merge(fill, %{palette: :alert}),
+      brand: Map.merge(fill, %{palette: :brand}),
+      info: Map.merge(fill, %{palette: :info}),
+      success: Map.merge(fill, %{palette: :success})
     }
   end
 end

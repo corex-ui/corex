@@ -1047,6 +1047,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   @styling_matrix_semantics [
     {"Default", nil},
+    {"Base", "base"},
     {"Accent", "accent"},
     {"Brand", "brand"},
     {"Alert", "alert"},

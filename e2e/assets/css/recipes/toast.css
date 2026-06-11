@@ -24,8 +24,8 @@
 
 @utility toast--size-* {
   [data-scope="toast"][data-part="header"] {
-      padding-inline: --value(--spacing-*, [length]);
-    gap: --value(--spacing-*, [length]);
+      gap: --value(--spacing-*, [length]);
+    padding-inline: --value(--spacing-*, [length]);
   }
 
   [data-scope="toast"][data-part="description"] {
@@ -47,16 +47,16 @@
 
 @layer components {
   .toast [data-scope="toast"][data-part="header"] {
+    gap: var(--spacing-md);
     padding-inline: var(--spacing-md);
     padding-block: calc(var(--spacing-md) * 0.5);
-    gap: var(--spacing-md);
   }
 
   .toast {
     width: fit-content;
     max-width: none;
-    max-height: none;
     height: auto;
+    max-height: none;
   }
 
   .toast [data-scope="toast"][data-part="description"] {
@@ -121,19 +121,15 @@
     position: relative;
   }
 
+  .toast.toast--semantic-base {
+    position: relative;
+  }
+
   .toast.toast--semantic-brand {
     position: relative;
   }
 
   .toast.toast--semantic-info {
-    position: relative;
-  }
-
-  .toast.toast--semantic-neutral {
-    position: relative;
-  }
-
-  .toast.toast--semantic-selected {
     position: relative;
   }
 
@@ -380,6 +376,30 @@
     }
   }
 
+  .toast.toast--semantic-base [data-scope="toast"][data-part="action-trigger"] {
+    background-color: var(--color-base);
+    color: var(--color-on-base);
+    &:hover {
+      background-color: var(--color-base-hover);
+    }
+
+    &:active {
+      background-color: var(--color-base-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-base);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-surface-control-muted);
+      cursor: not-allowed;
+    }
+  }
+
   .toast.toast--semantic-brand [data-scope="toast"][data-part="action-trigger"] {
     background-color: var(--color-brand);
     color: var(--color-on-brand);
@@ -418,54 +438,6 @@
     &:focus-visible {
       outline: none;
       box-shadow: inset 0 0 0 2px var(--color-on-info);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toast.toast--semantic-neutral [data-scope="toast"][data-part="action-trigger"] {
-    background-color: var(--color-neutral);
-    color: var(--color-on-neutral);
-    &:hover {
-      background-color: var(--color-neutral-hover);
-    }
-
-    &:active {
-      background-color: var(--color-neutral-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toast.toast--semantic-selected [data-scope="toast"][data-part="action-trigger"] {
-    background-color: var(--color-selected);
-    color: var(--color-on-selected);
-    &:hover {
-      background-color: var(--color-selected-hover);
-    }
-
-    &:active {
-      background-color: var(--color-selected-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
     }
 
     &:disabled,
@@ -538,6 +510,25 @@
     }
   }
 
+  .toast.toast--semantic-base [data-scope="toast"][data-part="close-trigger"] {
+    color: var(--color-base);
+    &:hover {
+      background-color: var(--color-surface-control-hover);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-base);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      color: var(--color-on-muted);
+      cursor: not-allowed;
+    }
+  }
+
   .toast.toast--semantic-brand [data-scope="toast"][data-part="close-trigger"] {
     color: var(--color-brand);
     &:hover {
@@ -566,44 +557,6 @@
     &:focus-visible {
       outline: none;
       box-shadow: inset 0 0 0 2px var(--color-info);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toast.toast--semantic-neutral [data-scope="toast"][data-part="close-trigger"] {
-    color: var(--color-on-control);
-    &:hover {
-      background-color: var(--color-surface-control-hover);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-focus);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toast.toast--semantic-selected [data-scope="toast"][data-part="close-trigger"] {
-    color: var(--color-selected);
-    &:hover {
-      background-color: var(--color-surface-control-hover);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-selected);
     }
 
     &:disabled,

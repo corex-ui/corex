@@ -26,12 +26,12 @@
     position: relative;
     display: block;
     width: 100%;
-    max-width: var(--container-md);
-    max-height: var(--container-md);
-    border-radius: var(--radius-md);
     border: 1px solid var(--color-border);
+    max-width: var(--container-md);
     height: auto;
     min-width: 0;
+    border-radius: var(--radius-md);
+    max-height: var(--container-md);
     overflow-x: auto;
     overflow-y: auto;
   }
@@ -168,20 +168,16 @@
     color: var(--color-alert);
   }
 
+  .data-table.data-table--semantic-base .data-table [data-scope="data-table"][data-part="thead"] th {
+    color: var(--color-base);
+  }
+
   .data-table.data-table--semantic-brand .data-table [data-scope="data-table"][data-part="thead"] th {
     color: var(--color-brand);
   }
 
   .data-table.data-table--semantic-info .data-table [data-scope="data-table"][data-part="thead"] th {
     color: var(--color-info);
-  }
-
-  .data-table.data-table--semantic-neutral .data-table [data-scope="data-table"][data-part="thead"] th {
-    color: var(--color-neutral);
-  }
-
-  .data-table.data-table--semantic-selected .data-table [data-scope="data-table"][data-part="thead"] th {
-    color: var(--color-selected);
   }
 
   .data-table.data-table--semantic-success .data-table [data-scope="data-table"][data-part="thead"] th {

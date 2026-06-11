@@ -44,8 +44,8 @@
 
 @utility select--size-* {
   [data-scope="select"][data-part="control"] {
-      max-width: --value(--container-*, [length]);
-    gap: --value(--spacing-*, [length]);
+      gap: --value(--spacing-*, [length]);
+    max-width: --value(--container-*, [length]);
   }
 
   [data-scope="select"][data-part="label"] {
@@ -58,19 +58,19 @@
   }
 
   [data-scope="select"][data-part="item"] {
-      padding-inline: --value(--spacing-*, [length]);
-    gap: --value(--spacing-*, [length]);
+      gap: --value(--spacing-*, [length]);
+    padding-inline: --value(--spacing-*, [length]);
+    min-height: --value(--spacing-control-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-control-*, [length]);
   }
 
   [data-scope="select"][data-part="trigger"] {
-      padding-inline: --value(--spacing-*, [length]);
-    gap: --value(--spacing-*, [length]);
+      gap: --value(--spacing-*, [length]);
+    padding-inline: --value(--spacing-*, [length]);
+    min-height: --value(--spacing-control-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-control-*, [length]);
   }
 
   [data-scope="select"][data-part="item-group-label"] {
@@ -86,23 +86,23 @@
     display: inline-flex;
     width: auto;
     color: var(--color-alert);
-    padding-block: var(--spacing-md);
     gap: 0.25rem;
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
     align-items: center;
     justify-content: start;
+    padding-block: var(--spacing-md);
     font-weight: var(--font-weight-normal);
     text-align: start;
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
   }
 
   .select [data-scope="select"][data-part="control"] {
     position: relative;
     display: flex;
     width: 100%;
-    max-width: var(--container-md);
-    gap: var(--spacing-md);
     flex-direction: row;
+    gap: var(--spacing-md);
+    max-width: var(--container-md);
     align-items: center;
     min-width: 0;
   }
@@ -111,28 +111,28 @@
     display: flex;
     width: auto;
     color: var(--color-on-page);
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
     align-items: center;
     justify-content: start;
     font-weight: var(--font-weight-medium);
     text-align: start;
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
   }
 
   .select [data-scope="select"][data-part="root"] {
     position: relative;
     display: flex;
     width: 100%;
-    gap: var(--spacing-md);
     flex-direction: column;
+    gap: var(--spacing-md);
     padding-inline-end: var(--spacing-md);
   }
 
   .select {
     width: 100%;
     max-width: var(--container-4xs);
-    max-height: none;
     height: auto;
+    max-height: none;
   }
 
   .select [data-scope="select"][data-part="item"] {
@@ -140,18 +140,18 @@
     width: 100%;
     cursor: pointer;
     color: var(--color-on-page);
+    gap: var(--spacing-md);
+    align-items: center;
     background-color: var(--color-surface-control);
     outline: none;
     padding-inline: var(--spacing-md);
-    gap: var(--spacing-md);
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
     min-height: var(--spacing-control-md);
     border-radius: var(--radius-none);
-    align-items: center;
     font-weight: var(--font-weight-normal);
     text-align: start;
     transition: background-color 120ms ease, color 120ms ease, box-shadow 120ms ease;
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
     &:active {
       background-color: var(--color-surface-control-active);
       box-shadow: none;
@@ -184,26 +184,26 @@
       }
     }
     &[data-selected],\n  &[data-state="checked"],\n  &[data-state="on"],\n  &[data-checked],\n  &[data-indeterminate] {
-      color: var(--color-on-selected);
-      background-color: var(--color-selected);
+      color: var(--color-on-base);
+      background-color: var(--color-base);
       &:active {
-        color: var(--color-on-selected);
-        background-color: var(--color-selected-active);
+        color: var(--color-on-base);
+        background-color: var(--color-base-active);
         box-shadow: none;
       }
       &:hover {
-        color: var(--color-on-selected);
-        background-color: var(--color-selected-hover);
+        color: var(--color-on-base);
+        background-color: var(--color-base-hover);
       }
       &:focus-visible {
-        color: var(--color-on-selected);
-        background-color: var(--color-selected-hover);
+        color: var(--color-on-base);
+        background-color: var(--color-base-hover);
         outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-on-selected);
+        box-shadow: inset 0 0 0 2px var(--color-on-base);
       }
       &[data-highlighted] {
-        color: var(--color-on-selected);
-        background-color: var(--color-selected-hover);
+        color: var(--color-on-base);
+        background-color: var(--color-base-hover);
       }
     }
     &:hover {
@@ -216,27 +216,41 @@
     }
   }
 
+  .select [data-scope="select"][data-part="indicator"] {
+    display: inline-flex;
+    width: 1em;
+    color: currentcolor;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    height: 1em;
+  }
+
+  .select [data-scope="select"][data-part="positioner"] {
+    position: relative;
+  }
+
   .select [data-scope="select"][data-part="trigger"] {
     display: inline-flex;
     width: 100%;
     cursor: pointer;
     color: var(--color-on-page);
     flex: 1 1 0%;
-    background-color: var(--color-surface-control);
-    max-width: 100%;
-    padding-inline: var(--spacing-md);
+    border: 1px solid var(--color-border);
     gap: var(--spacing-md);
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-    min-height: var(--spacing-control-md);
-    border-radius: var(--radius-md);
+    max-width: 100%;
     align-items: center;
     justify-content: space-between;
-    border: 1px solid var(--color-border);
+    background-color: var(--color-surface-control);
+    padding-inline: var(--spacing-md);
+    min-height: var(--spacing-control-md);
     min-width: 0;
+    border-radius: var(--radius-md);
     font-weight: var(--font-weight-normal);
     text-align: center;
     transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
     text-decoration-line: none;
     appearance: none;
     &:active {
@@ -270,21 +284,21 @@
       }
     }
     &[data-invalid] {
-      border-color: var(--color-alert);
       box-shadow: none;
+      border-color: var(--color-alert);
     }
     &[data-state="open"] {
-      color: var(--color-on-selected);
-      background-color: var(--color-selected);
+      color: var(--color-on-base);
+      background-color: var(--color-base);
       &:active {
-        background-color: var(--color-selected-active);
+        background-color: var(--color-base-active);
       }
       &:hover {
-        background-color: var(--color-selected-hover);
+        background-color: var(--color-base-hover);
       }
       &:focus-visible {
         outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-on-selected);
+        box-shadow: inset 0 0 0 2px var(--color-on-base);
       }
     }
     &:hover {
@@ -296,30 +310,16 @@
     }
   }
 
-  .select [data-scope="select"][data-part="indicator"] {
-    display: inline-flex;
-    width: 1em;
-    color: currentcolor;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    height: 1em;
-  }
-
-  .select [data-scope="select"][data-part="positioner"] {
-    position: relative;
-  }
-
   .select [data-scope="select"][data-part="content"] {
     display: flex;
     width: 100%;
     padding: 0;
     color: var(--color-on-page);
+    border: 1px solid var(--color-border);
+    flex-direction: column;
     background-color: var(--color-surface-page);
     box-shadow: var(--shadow-md);
     border-radius: var(--radius-md);
-    flex-direction: column;
-    border: 1px solid var(--color-border);
     z-index: 50;
     overflow: hidden;
     list-style: none;
@@ -327,28 +327,6 @@
     &:focus-visible {
       outline: none;
     }
-  }
-
-  .select [data-scope="select"][data-part="item-group"] {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .select [data-scope="select"][data-part="item-group-label"] {
-    display: flex;
-    width: auto;
-    color: var(--color-on-page);
-    background-color: var(--color-surface-page);
-    box-shadow: var(--shadow-md);
-    padding-inline-start: var(--spacing-md);
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-    align-items: center;
-    justify-content: start;
-    border-top: 1px solid var(--color-border);
-    font-weight: var(--font-weight-medium);
-    text-align: start;
-    border-bottom: 1px solid var(--color-border);
   }
 
   .select [data-scope="select"][data-part="item-indicator"] {
@@ -360,6 +338,28 @@
     flex-shrink: 0;
     height: 1em;
     padding-inline-end: var(--spacing-md);
+  }
+
+  .select [data-scope="select"][data-part="item-group"] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .select [data-scope="select"][data-part="item-group-label"] {
+    display: flex;
+    width: auto;
+    color: var(--color-on-page);
+    align-items: center;
+    justify-content: start;
+    background-color: var(--color-surface-page);
+    box-shadow: var(--shadow-md);
+    border-top: 1px solid var(--color-border);
+    font-weight: var(--font-weight-medium);
+    text-align: start;
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+    border-bottom: 1px solid var(--color-border);
+    padding-inline-start: var(--spacing-md);
   }
 
   .select.select--w-auto {
@@ -404,82 +404,43 @@
 
   .select.select--semantic-accent {
     position: relative;
-    --color-selected: var(--color-accent);
-    --color-selected-hover: var(--color-accent-hover);
-    --color-selected-active: var(--color-accent-active);
-    --color-selected-muted: var(--color-accent-muted);
-    --color-on-selected: var(--color-on-accent);
   }
 
   .select.select--semantic-alert {
     position: relative;
-    --color-selected: var(--color-alert);
-    --color-selected-hover: var(--color-alert-hover);
-    --color-selected-active: var(--color-alert-active);
-    --color-selected-muted: var(--color-alert-muted);
-    --color-on-selected: var(--color-on-alert);
+  }
+
+  .select.select--semantic-base {
+    position: relative;
   }
 
   .select.select--semantic-brand {
     position: relative;
-    --color-selected: var(--color-brand);
-    --color-selected-hover: var(--color-brand-hover);
-    --color-selected-active: var(--color-brand-active);
-    --color-selected-muted: var(--color-brand-muted);
-    --color-on-selected: var(--color-on-brand);
   }
 
   .select.select--semantic-info {
     position: relative;
-    --color-selected: var(--color-info);
-    --color-selected-hover: var(--color-info-hover);
-    --color-selected-active: var(--color-info-active);
-    --color-selected-muted: var(--color-info-muted);
-    --color-on-selected: var(--color-on-info);
-  }
-
-  .select.select--semantic-neutral {
-    position: relative;
-    --color-selected: var(--color-neutral);
-    --color-selected-hover: var(--color-neutral-hover);
-    --color-selected-active: var(--color-neutral-active);
-    --color-selected-muted: var(--color-neutral-muted);
-    --color-on-selected: var(--color-on-neutral);
-  }
-
-  .select.select--semantic-selected {
-    position: relative;
-    --color-selected: var(--color-selected);
-    --color-selected-hover: var(--color-selected-hover);
-    --color-selected-active: var(--color-selected-active);
-    --color-selected-muted: var(--color-selected-muted);
-    --color-on-selected: var(--color-on-selected);
   }
 
   .select.select--semantic-success {
     position: relative;
-    --color-selected: var(--color-success);
-    --color-selected-hover: var(--color-success-hover);
-    --color-selected-active: var(--color-success-active);
-    --color-selected-muted: var(--color-success-muted);
-    --color-on-selected: var(--color-on-success);
   }
 
   .select.select--variant-ghost [data-scope="select"][data-part="trigger"] {
     background-color: transparent;
     border-color: transparent;
     &[data-state="open"] {
-      color: var(--color-on-selected);
-      background-color: var(--color-selected);
+      color: var(--color-on-base);
+      background-color: var(--color-base);
       &:active {
-        background-color: var(--color-selected-active);
+        background-color: var(--color-base-active);
       }
       &:hover {
-        background-color: var(--color-selected-hover);
+        background-color: var(--color-base-hover);
       }
       &:focus-visible {
         outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-on-selected);
+        box-shadow: inset 0 0 0 2px var(--color-on-base);
       }
     }
     &:hover {
@@ -624,9 +585,9 @@
     .select [data-scope="select"][data-part="item"][data-state="on"][data-highlighted]:not(:hover),
     .select [data-scope="select"][data-part="item"][data-checked][data-highlighted]:not(:hover),
     .select [data-scope="select"][data-part="item"][data-indeterminate][data-highlighted]:not(:hover) {
-      background-color: var(--color-selected-hover);
-      color: var(--color-on-selected);
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
+      background-color: var(--color-base-hover);
+      color: var(--color-on-base);
+      box-shadow: inset 0 0 0 2px var(--color-on-base);
       outline: none;
     }
 
@@ -635,8 +596,8 @@
     .select [data-scope="select"][data-part="item"][data-state="on"][data-highlighted]:hover,
     .select [data-scope="select"][data-part="item"][data-checked][data-highlighted]:hover,
     .select [data-scope="select"][data-part="item"][data-indeterminate][data-highlighted]:hover {
-      background-color: var(--color-selected-hover);
-      color: var(--color-on-selected);
+      background-color: var(--color-base-hover);
+      color: var(--color-on-base);
       box-shadow: none;
       outline: none;
     }
@@ -646,8 +607,8 @@
     .select [data-scope="select"][data-part="item"][data-state="on"][data-highlighted]:active,
     .select [data-scope="select"][data-part="item"][data-checked][data-highlighted]:active,
     .select [data-scope="select"][data-part="item"][data-indeterminate][data-highlighted]:active {
-      background-color: var(--color-selected-active);
-      color: var(--color-on-selected);
+      background-color: var(--color-base-active);
+      color: var(--color-on-base);
       box-shadow: none;
     }
   }
@@ -664,9 +625,393 @@
     .select [data-scope="select"][data-part="item"][data-state="on"][data-highlighted],
     .select [data-scope="select"][data-part="item"][data-checked][data-highlighted],
     .select [data-scope="select"][data-part="item"][data-indeterminate][data-highlighted] {
-      background-color: var(--color-selected-hover);
-      color: var(--color-on-selected);
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
+      background-color: var(--color-base-hover);
+      color: var(--color-on-base);
+      box-shadow: inset 0 0 0 2px var(--color-on-base);
+      outline: none;
+    }
+  }
+
+  @media (hover: hover) {
+    .select.select--semantic-accent [data-scope="select"][data-part="item"][data-highlighted]:not(:hover) {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-page);
+      background-color: var(--color-surface-control-hover);
+    }
+
+    .select.select--semantic-accent [data-scope="select"][data-part="item"][data-highlighted]:active {
+      background-color: var(--color-surface-control-active);
+      box-shadow: none;
+    }
+
+    .select.select--semantic-accent [data-scope="select"][data-part="item"][data-selected][data-highlighted]:not(:hover),
+    .select.select--semantic-accent [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted]:not(:hover),
+    .select.select--semantic-accent [data-scope="select"][data-part="item"][data-state="on"][data-highlighted]:not(:hover),
+    .select.select--semantic-accent [data-scope="select"][data-part="item"][data-checked][data-highlighted]:not(:hover),
+    .select.select--semantic-accent [data-scope="select"][data-part="item"][data-indeterminate][data-highlighted]:not(:hover) {
+      background-color: var(--color-accent-hover);
+      color: var(--color-on-accent);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
+      outline: none;
+    }
+
+    .select.select--semantic-accent [data-scope="select"][data-part="item"][data-selected][data-highlighted]:hover,
+    .select.select--semantic-accent [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted]:hover,
+    .select.select--semantic-accent [data-scope="select"][data-part="item"][data-state="on"][data-highlighted]:hover,
+    .select.select--semantic-accent [data-scope="select"][data-part="item"][data-checked][data-highlighted]:hover,
+    .select.select--semantic-accent [data-scope="select"][data-part="item"][data-indeterminate][data-highlighted]:hover {
+      background-color: var(--color-accent-hover);
+      color: var(--color-on-accent);
+      box-shadow: none;
+      outline: none;
+    }
+
+    .select.select--semantic-accent [data-scope="select"][data-part="item"][data-selected][data-highlighted]:active,
+    .select.select--semantic-accent [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted]:active,
+    .select.select--semantic-accent [data-scope="select"][data-part="item"][data-state="on"][data-highlighted]:active,
+    .select.select--semantic-accent [data-scope="select"][data-part="item"][data-checked][data-highlighted]:active,
+    .select.select--semantic-accent [data-scope="select"][data-part="item"][data-indeterminate][data-highlighted]:active {
+      background-color: var(--color-accent-active);
+      color: var(--color-on-accent);
+      box-shadow: none;
+    }
+  }
+
+  @media (hover: none) {
+    .select.select--semantic-accent [data-scope="select"][data-part="item"][data-highlighted] {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-page);
+      background-color: var(--color-surface-control-hover);
+    }
+
+    .select.select--semantic-accent [data-scope="select"][data-part="item"][data-selected][data-highlighted],
+    .select.select--semantic-accent [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted],
+    .select.select--semantic-accent [data-scope="select"][data-part="item"][data-state="on"][data-highlighted],
+    .select.select--semantic-accent [data-scope="select"][data-part="item"][data-checked][data-highlighted],
+    .select.select--semantic-accent [data-scope="select"][data-part="item"][data-indeterminate][data-highlighted] {
+      background-color: var(--color-accent-hover);
+      color: var(--color-on-accent);
+      box-shadow: inset 0 0 0 2px var(--color-on-accent);
+      outline: none;
+    }
+  }
+
+  @media (hover: hover) {
+    .select.select--semantic-alert [data-scope="select"][data-part="item"][data-highlighted]:not(:hover) {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-page);
+      background-color: var(--color-surface-control-hover);
+    }
+
+    .select.select--semantic-alert [data-scope="select"][data-part="item"][data-highlighted]:active {
+      background-color: var(--color-surface-control-active);
+      box-shadow: none;
+    }
+
+    .select.select--semantic-alert [data-scope="select"][data-part="item"][data-selected][data-highlighted]:not(:hover),
+    .select.select--semantic-alert [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted]:not(:hover),
+    .select.select--semantic-alert [data-scope="select"][data-part="item"][data-state="on"][data-highlighted]:not(:hover),
+    .select.select--semantic-alert [data-scope="select"][data-part="item"][data-checked][data-highlighted]:not(:hover),
+    .select.select--semantic-alert [data-scope="select"][data-part="item"][data-indeterminate][data-highlighted]:not(:hover) {
+      background-color: var(--color-alert-hover);
+      color: var(--color-on-alert);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
+      outline: none;
+    }
+
+    .select.select--semantic-alert [data-scope="select"][data-part="item"][data-selected][data-highlighted]:hover,
+    .select.select--semantic-alert [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted]:hover,
+    .select.select--semantic-alert [data-scope="select"][data-part="item"][data-state="on"][data-highlighted]:hover,
+    .select.select--semantic-alert [data-scope="select"][data-part="item"][data-checked][data-highlighted]:hover,
+    .select.select--semantic-alert [data-scope="select"][data-part="item"][data-indeterminate][data-highlighted]:hover {
+      background-color: var(--color-alert-hover);
+      color: var(--color-on-alert);
+      box-shadow: none;
+      outline: none;
+    }
+
+    .select.select--semantic-alert [data-scope="select"][data-part="item"][data-selected][data-highlighted]:active,
+    .select.select--semantic-alert [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted]:active,
+    .select.select--semantic-alert [data-scope="select"][data-part="item"][data-state="on"][data-highlighted]:active,
+    .select.select--semantic-alert [data-scope="select"][data-part="item"][data-checked][data-highlighted]:active,
+    .select.select--semantic-alert [data-scope="select"][data-part="item"][data-indeterminate][data-highlighted]:active {
+      background-color: var(--color-alert-active);
+      color: var(--color-on-alert);
+      box-shadow: none;
+    }
+  }
+
+  @media (hover: none) {
+    .select.select--semantic-alert [data-scope="select"][data-part="item"][data-highlighted] {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-page);
+      background-color: var(--color-surface-control-hover);
+    }
+
+    .select.select--semantic-alert [data-scope="select"][data-part="item"][data-selected][data-highlighted],
+    .select.select--semantic-alert [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted],
+    .select.select--semantic-alert [data-scope="select"][data-part="item"][data-state="on"][data-highlighted],
+    .select.select--semantic-alert [data-scope="select"][data-part="item"][data-checked][data-highlighted],
+    .select.select--semantic-alert [data-scope="select"][data-part="item"][data-indeterminate][data-highlighted] {
+      background-color: var(--color-alert-hover);
+      color: var(--color-on-alert);
+      box-shadow: inset 0 0 0 2px var(--color-on-alert);
+      outline: none;
+    }
+  }
+
+  @media (hover: hover) {
+    .select.select--semantic-base [data-scope="select"][data-part="item"][data-highlighted]:not(:hover) {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-page);
+      background-color: var(--color-surface-control-hover);
+    }
+
+    .select.select--semantic-base [data-scope="select"][data-part="item"][data-highlighted]:active {
+      background-color: var(--color-surface-control-active);
+      box-shadow: none;
+    }
+
+    .select.select--semantic-base [data-scope="select"][data-part="item"][data-selected][data-highlighted]:not(:hover),
+    .select.select--semantic-base [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted]:not(:hover),
+    .select.select--semantic-base [data-scope="select"][data-part="item"][data-state="on"][data-highlighted]:not(:hover),
+    .select.select--semantic-base [data-scope="select"][data-part="item"][data-checked][data-highlighted]:not(:hover),
+    .select.select--semantic-base [data-scope="select"][data-part="item"][data-indeterminate][data-highlighted]:not(:hover) {
+      background-color: var(--color-base-hover);
+      color: var(--color-on-base);
+      box-shadow: inset 0 0 0 2px var(--color-on-base);
+      outline: none;
+    }
+
+    .select.select--semantic-base [data-scope="select"][data-part="item"][data-selected][data-highlighted]:hover,
+    .select.select--semantic-base [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted]:hover,
+    .select.select--semantic-base [data-scope="select"][data-part="item"][data-state="on"][data-highlighted]:hover,
+    .select.select--semantic-base [data-scope="select"][data-part="item"][data-checked][data-highlighted]:hover,
+    .select.select--semantic-base [data-scope="select"][data-part="item"][data-indeterminate][data-highlighted]:hover {
+      background-color: var(--color-base-hover);
+      color: var(--color-on-base);
+      box-shadow: none;
+      outline: none;
+    }
+
+    .select.select--semantic-base [data-scope="select"][data-part="item"][data-selected][data-highlighted]:active,
+    .select.select--semantic-base [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted]:active,
+    .select.select--semantic-base [data-scope="select"][data-part="item"][data-state="on"][data-highlighted]:active,
+    .select.select--semantic-base [data-scope="select"][data-part="item"][data-checked][data-highlighted]:active,
+    .select.select--semantic-base [data-scope="select"][data-part="item"][data-indeterminate][data-highlighted]:active {
+      background-color: var(--color-base-active);
+      color: var(--color-on-base);
+      box-shadow: none;
+    }
+  }
+
+  @media (hover: none) {
+    .select.select--semantic-base [data-scope="select"][data-part="item"][data-highlighted] {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-page);
+      background-color: var(--color-surface-control-hover);
+    }
+
+    .select.select--semantic-base [data-scope="select"][data-part="item"][data-selected][data-highlighted],
+    .select.select--semantic-base [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted],
+    .select.select--semantic-base [data-scope="select"][data-part="item"][data-state="on"][data-highlighted],
+    .select.select--semantic-base [data-scope="select"][data-part="item"][data-checked][data-highlighted],
+    .select.select--semantic-base [data-scope="select"][data-part="item"][data-indeterminate][data-highlighted] {
+      background-color: var(--color-base-hover);
+      color: var(--color-on-base);
+      box-shadow: inset 0 0 0 2px var(--color-on-base);
+      outline: none;
+    }
+  }
+
+  @media (hover: hover) {
+    .select.select--semantic-brand [data-scope="select"][data-part="item"][data-highlighted]:not(:hover) {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-page);
+      background-color: var(--color-surface-control-hover);
+    }
+
+    .select.select--semantic-brand [data-scope="select"][data-part="item"][data-highlighted]:active {
+      background-color: var(--color-surface-control-active);
+      box-shadow: none;
+    }
+
+    .select.select--semantic-brand [data-scope="select"][data-part="item"][data-selected][data-highlighted]:not(:hover),
+    .select.select--semantic-brand [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted]:not(:hover),
+    .select.select--semantic-brand [data-scope="select"][data-part="item"][data-state="on"][data-highlighted]:not(:hover),
+    .select.select--semantic-brand [data-scope="select"][data-part="item"][data-checked][data-highlighted]:not(:hover),
+    .select.select--semantic-brand [data-scope="select"][data-part="item"][data-indeterminate][data-highlighted]:not(:hover) {
+      background-color: var(--color-brand-hover);
+      color: var(--color-on-brand);
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+      outline: none;
+    }
+
+    .select.select--semantic-brand [data-scope="select"][data-part="item"][data-selected][data-highlighted]:hover,
+    .select.select--semantic-brand [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted]:hover,
+    .select.select--semantic-brand [data-scope="select"][data-part="item"][data-state="on"][data-highlighted]:hover,
+    .select.select--semantic-brand [data-scope="select"][data-part="item"][data-checked][data-highlighted]:hover,
+    .select.select--semantic-brand [data-scope="select"][data-part="item"][data-indeterminate][data-highlighted]:hover {
+      background-color: var(--color-brand-hover);
+      color: var(--color-on-brand);
+      box-shadow: none;
+      outline: none;
+    }
+
+    .select.select--semantic-brand [data-scope="select"][data-part="item"][data-selected][data-highlighted]:active,
+    .select.select--semantic-brand [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted]:active,
+    .select.select--semantic-brand [data-scope="select"][data-part="item"][data-state="on"][data-highlighted]:active,
+    .select.select--semantic-brand [data-scope="select"][data-part="item"][data-checked][data-highlighted]:active,
+    .select.select--semantic-brand [data-scope="select"][data-part="item"][data-indeterminate][data-highlighted]:active {
+      background-color: var(--color-brand-active);
+      color: var(--color-on-brand);
+      box-shadow: none;
+    }
+  }
+
+  @media (hover: none) {
+    .select.select--semantic-brand [data-scope="select"][data-part="item"][data-highlighted] {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-page);
+      background-color: var(--color-surface-control-hover);
+    }
+
+    .select.select--semantic-brand [data-scope="select"][data-part="item"][data-selected][data-highlighted],
+    .select.select--semantic-brand [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted],
+    .select.select--semantic-brand [data-scope="select"][data-part="item"][data-state="on"][data-highlighted],
+    .select.select--semantic-brand [data-scope="select"][data-part="item"][data-checked][data-highlighted],
+    .select.select--semantic-brand [data-scope="select"][data-part="item"][data-indeterminate][data-highlighted] {
+      background-color: var(--color-brand-hover);
+      color: var(--color-on-brand);
+      box-shadow: inset 0 0 0 2px var(--color-on-brand);
+      outline: none;
+    }
+  }
+
+  @media (hover: hover) {
+    .select.select--semantic-info [data-scope="select"][data-part="item"][data-highlighted]:not(:hover) {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-page);
+      background-color: var(--color-surface-control-hover);
+    }
+
+    .select.select--semantic-info [data-scope="select"][data-part="item"][data-highlighted]:active {
+      background-color: var(--color-surface-control-active);
+      box-shadow: none;
+    }
+
+    .select.select--semantic-info [data-scope="select"][data-part="item"][data-selected][data-highlighted]:not(:hover),
+    .select.select--semantic-info [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted]:not(:hover),
+    .select.select--semantic-info [data-scope="select"][data-part="item"][data-state="on"][data-highlighted]:not(:hover),
+    .select.select--semantic-info [data-scope="select"][data-part="item"][data-checked][data-highlighted]:not(:hover),
+    .select.select--semantic-info [data-scope="select"][data-part="item"][data-indeterminate][data-highlighted]:not(:hover) {
+      background-color: var(--color-info-hover);
+      color: var(--color-on-info);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
+      outline: none;
+    }
+
+    .select.select--semantic-info [data-scope="select"][data-part="item"][data-selected][data-highlighted]:hover,
+    .select.select--semantic-info [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted]:hover,
+    .select.select--semantic-info [data-scope="select"][data-part="item"][data-state="on"][data-highlighted]:hover,
+    .select.select--semantic-info [data-scope="select"][data-part="item"][data-checked][data-highlighted]:hover,
+    .select.select--semantic-info [data-scope="select"][data-part="item"][data-indeterminate][data-highlighted]:hover {
+      background-color: var(--color-info-hover);
+      color: var(--color-on-info);
+      box-shadow: none;
+      outline: none;
+    }
+
+    .select.select--semantic-info [data-scope="select"][data-part="item"][data-selected][data-highlighted]:active,
+    .select.select--semantic-info [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted]:active,
+    .select.select--semantic-info [data-scope="select"][data-part="item"][data-state="on"][data-highlighted]:active,
+    .select.select--semantic-info [data-scope="select"][data-part="item"][data-checked][data-highlighted]:active,
+    .select.select--semantic-info [data-scope="select"][data-part="item"][data-indeterminate][data-highlighted]:active {
+      background-color: var(--color-info-active);
+      color: var(--color-on-info);
+      box-shadow: none;
+    }
+  }
+
+  @media (hover: none) {
+    .select.select--semantic-info [data-scope="select"][data-part="item"][data-highlighted] {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-page);
+      background-color: var(--color-surface-control-hover);
+    }
+
+    .select.select--semantic-info [data-scope="select"][data-part="item"][data-selected][data-highlighted],
+    .select.select--semantic-info [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted],
+    .select.select--semantic-info [data-scope="select"][data-part="item"][data-state="on"][data-highlighted],
+    .select.select--semantic-info [data-scope="select"][data-part="item"][data-checked][data-highlighted],
+    .select.select--semantic-info [data-scope="select"][data-part="item"][data-indeterminate][data-highlighted] {
+      background-color: var(--color-info-hover);
+      color: var(--color-on-info);
+      box-shadow: inset 0 0 0 2px var(--color-on-info);
+      outline: none;
+    }
+  }
+
+  @media (hover: hover) {
+    .select.select--semantic-success [data-scope="select"][data-part="item"][data-highlighted]:not(:hover) {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-page);
+      background-color: var(--color-surface-control-hover);
+    }
+
+    .select.select--semantic-success [data-scope="select"][data-part="item"][data-highlighted]:active {
+      background-color: var(--color-surface-control-active);
+      box-shadow: none;
+    }
+
+    .select.select--semantic-success [data-scope="select"][data-part="item"][data-selected][data-highlighted]:not(:hover),
+    .select.select--semantic-success [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted]:not(:hover),
+    .select.select--semantic-success [data-scope="select"][data-part="item"][data-state="on"][data-highlighted]:not(:hover),
+    .select.select--semantic-success [data-scope="select"][data-part="item"][data-checked][data-highlighted]:not(:hover),
+    .select.select--semantic-success [data-scope="select"][data-part="item"][data-indeterminate][data-highlighted]:not(:hover) {
+      background-color: var(--color-success-hover);
+      color: var(--color-on-success);
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
+      outline: none;
+    }
+
+    .select.select--semantic-success [data-scope="select"][data-part="item"][data-selected][data-highlighted]:hover,
+    .select.select--semantic-success [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted]:hover,
+    .select.select--semantic-success [data-scope="select"][data-part="item"][data-state="on"][data-highlighted]:hover,
+    .select.select--semantic-success [data-scope="select"][data-part="item"][data-checked][data-highlighted]:hover,
+    .select.select--semantic-success [data-scope="select"][data-part="item"][data-indeterminate][data-highlighted]:hover {
+      background-color: var(--color-success-hover);
+      color: var(--color-on-success);
+      box-shadow: none;
+      outline: none;
+    }
+
+    .select.select--semantic-success [data-scope="select"][data-part="item"][data-selected][data-highlighted]:active,
+    .select.select--semantic-success [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted]:active,
+    .select.select--semantic-success [data-scope="select"][data-part="item"][data-state="on"][data-highlighted]:active,
+    .select.select--semantic-success [data-scope="select"][data-part="item"][data-checked][data-highlighted]:active,
+    .select.select--semantic-success [data-scope="select"][data-part="item"][data-indeterminate][data-highlighted]:active {
+      background-color: var(--color-success-active);
+      color: var(--color-on-success);
+      box-shadow: none;
+    }
+  }
+
+  @media (hover: none) {
+    .select.select--semantic-success [data-scope="select"][data-part="item"][data-highlighted] {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-page);
+      background-color: var(--color-surface-control-hover);
+    }
+
+    .select.select--semantic-success [data-scope="select"][data-part="item"][data-selected][data-highlighted],
+    .select.select--semantic-success [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted],
+    .select.select--semantic-success [data-scope="select"][data-part="item"][data-state="on"][data-highlighted],
+    .select.select--semantic-success [data-scope="select"][data-part="item"][data-checked][data-highlighted],
+    .select.select--semantic-success [data-scope="select"][data-part="item"][data-indeterminate][data-highlighted] {
+      background-color: var(--color-success-hover);
+      color: var(--color-on-success);
+      box-shadow: inset 0 0 0 2px var(--color-on-success);
       outline: none;
     }
   }

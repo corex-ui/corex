@@ -28,8 +28,8 @@
   .marquee {
     width: 100%;
     max-width: var(--container-md);
-    max-height: none;
     height: auto;
+    max-height: none;
   }
 
   .marquee [data-scope="marquee"][data-part="edge"] {
@@ -84,20 +84,16 @@
     --edge-background: var(--color-alert);
   }
 
+  .marquee.marquee--semantic-base [data-scope="marquee"][data-part="edge"] {
+    --edge-background: var(--color-base);
+  }
+
   .marquee.marquee--semantic-brand [data-scope="marquee"][data-part="edge"] {
     --edge-background: var(--color-brand);
   }
 
   .marquee.marquee--semantic-info [data-scope="marquee"][data-part="edge"] {
     --edge-background: var(--color-info);
-  }
-
-  .marquee.marquee--semantic-neutral [data-scope="marquee"][data-part="edge"] {
-    --edge-background: var(--color-neutral);
-  }
-
-  .marquee.marquee--semantic-selected [data-scope="marquee"][data-part="edge"] {
-    --edge-background: var(--color-selected);
   }
 
   .marquee.marquee--semantic-success [data-scope="marquee"][data-part="edge"] {

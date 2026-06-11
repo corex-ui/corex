@@ -73,8 +73,8 @@
   .dialog-side {
     width: fit-content;
     max-width: none;
-    max-height: none;
     height: auto;
+    max-height: none;
   }
 
   .dialog-side [data-scope="dialog"][data-part="description"] {
@@ -140,19 +140,15 @@
     position: relative;
   }
 
+  .dialog-side.dialog-side--semantic-base {
+    position: relative;
+  }
+
   .dialog-side.dialog-side--semantic-brand {
     position: relative;
   }
 
   .dialog-side.dialog-side--semantic-info {
-    position: relative;
-  }
-
-  .dialog-side.dialog-side--semantic-neutral {
-    position: relative;
-  }
-
-  .dialog-side.dialog-side--semantic-selected {
     position: relative;
   }
 
@@ -330,6 +326,25 @@
     }
   }
 
+  .dialog-side.dialog-side--semantic-base [data-scope="dialog"][data-part="close-trigger"] {
+    color: var(--color-base);
+    &:hover {
+      background-color: var(--color-surface-control-hover);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-base);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      color: var(--color-on-muted);
+      cursor: not-allowed;
+    }
+  }
+
   .dialog-side.dialog-side--semantic-brand [data-scope="dialog"][data-part="close-trigger"] {
     color: var(--color-brand);
     &:hover {
@@ -358,44 +373,6 @@
     &:focus-visible {
       outline: none;
       box-shadow: inset 0 0 0 2px var(--color-info);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .dialog-side.dialog-side--semantic-neutral [data-scope="dialog"][data-part="close-trigger"] {
-    color: var(--color-on-control);
-    &:hover {
-      background-color: var(--color-surface-control-hover);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-focus);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .dialog-side.dialog-side--semantic-selected [data-scope="dialog"][data-part="close-trigger"] {
-    color: var(--color-selected);
-    &:hover {
-      background-color: var(--color-surface-control-hover);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-selected);
     }
 
     &:disabled,

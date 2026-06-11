@@ -26,12 +26,12 @@
     width: fit-content;
     color: var(--color-on-page);
     max-width: none;
-    max-height: none;
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
     height: auto;
+    max-height: none;
     font-weight: var(--font-weight-normal);
     margin-block: var(--spacing-md);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
   }
 
   .p.p--w-auto {
@@ -82,20 +82,16 @@
     color: var(--color-alert);
   }
 
+  .p.p--semantic-base {
+    color: var(--color-base);
+  }
+
   .p.p--semantic-brand {
     color: var(--color-brand);
   }
 
   .p.p--semantic-info {
     color: var(--color-info);
-  }
-
-  .p.p--semantic-neutral {
-    color: var(--color-neutral);
-  }
-
-  .p.p--semantic-selected {
-    color: var(--color-selected);
   }
 
   .p.p--semantic-success {

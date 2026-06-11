@@ -155,10 +155,10 @@ Common modifier axes (not every component has every axis; check that component's
 
 | Axis | Examples | Effect |
 |------|----------|--------|
-| Color | `button--semantic-accent`, `timer--semantic-success` | Semantic palette from tokens |
-| Size | `button--size-sm`, `dialog--size-lg` | Spacing and type scale |
+| Color | `button--semantic-accent`, `accordion--semantic-base` | Semantic palette from tokens (`base`, `accent`, `brand`, `alert`, `info`, `success`) |
+| Size | `button--size-sm`, `dialog--size-lg` | Spacing and control scale only |
 | Radius | `accordion--rounded-xl` | Corner radius |
-| Type | `accordion--text-lg` | Font size on parts |
+| Type | `accordion--text-lg` | Font size on labeled parts |
 
 Stack modifiers on the root `class` attribute. Do not invent new class names; use only modifiers defined for that component in generated `assets/css/recipes/<name>.css`.
 

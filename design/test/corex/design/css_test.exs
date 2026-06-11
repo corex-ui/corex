@@ -28,7 +28,7 @@ defmodule Corex.Design.CssTest do
   end
 
   test "resolve/3 maps custom property color refs to var()" do
-    assert Css.resolve(:"--color-selected", {:color, :accent}) == "var(--color-accent)"
-    assert Css.resolve(:"--color-selected-ink", {:color, :brand_ink}) == "var(--color-brand)"
+    assert Css.resolve(:"--color-base", {:color, :accent}) == "var(--color-accent)"
+    assert Css.resolve(:"--color-base-ink", {:color, :brand_ink}) == "var(--color-brand)"
   end
 end

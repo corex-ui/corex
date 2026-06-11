@@ -21,11 +21,11 @@
 
 @utility layout-heading--size-* {
   [data-scope="layout-heading"][data-part="root"] {
-      padding-inline: --value(--spacing-*, [length]);
-    gap: --value(--spacing-*, [length]);
+      gap: --value(--spacing-*, [length]);
+    padding-inline: --value(--spacing-*, [length]);
+    min-height: --value(--spacing-control-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-control-*, [length]);
   }
 
 }
@@ -40,8 +40,8 @@
   .layout-heading {
     width: fit-content;
     max-width: none;
-    max-height: none;
     height: auto;
+    max-height: none;
   }
 
   .layout-heading [data-scope="layout-heading"][data-part="title"] {
@@ -105,6 +105,14 @@
     color: var(--color-on-muted);
   }
 
+  .layout-heading.layout-heading--semantic-base [data-scope="layout-heading"][data-part="title"] {
+    color: var(--color-base);
+  }
+
+  .layout-heading.layout-heading--semantic-base [data-scope="layout-heading"][data-part="subtitle"] {
+    color: var(--color-on-muted);
+  }
+
   .layout-heading.layout-heading--semantic-brand [data-scope="layout-heading"][data-part="title"] {
     color: var(--color-brand);
   }
@@ -118,22 +126,6 @@
   }
 
   .layout-heading.layout-heading--semantic-info [data-scope="layout-heading"][data-part="subtitle"] {
-    color: var(--color-on-muted);
-  }
-
-  .layout-heading.layout-heading--semantic-neutral [data-scope="layout-heading"][data-part="title"] {
-    color: var(--color-neutral);
-  }
-
-  .layout-heading.layout-heading--semantic-neutral [data-scope="layout-heading"][data-part="subtitle"] {
-    color: var(--color-on-muted);
-  }
-
-  .layout-heading.layout-heading--semantic-selected [data-scope="layout-heading"][data-part="title"] {
-    color: var(--color-selected);
-  }
-
-  .layout-heading.layout-heading--semantic-selected [data-scope="layout-heading"][data-part="subtitle"] {
     color: var(--color-on-muted);
   }
 

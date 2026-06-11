@@ -87,6 +87,7 @@ Style attrs always merge BEM modifiers into `class`; generated CSS targets those
 
 | Attribute | BEM class |
 |-----------|---------------------|
+| `semantic="base"` | `accordion--semantic-base` |
 | `semantic="accent"` | `accordion--semantic-accent` |
 | `size="lg"` | `accordion--size-lg` |
 | `radius="xl"` | `accordion--rounded-xl` |
@@ -164,6 +165,18 @@ Generated CSS writes `layers/`, `recipes/{id}.css`, and `aggregates/` under `ass
 optional styling; they may not style every axis a component stamps.
 
 **Stability promise:** BEM `<base>--<mod>`, `[data-scope][data-part]`, and `[data-state]` are the public CSS API for Tailwind apps.
+
+## Semantic, size, and text axes
+
+| Axis | Values | Role |
+|------|--------|------|
+| `semantic` | `base`, `accent`, `brand`, `alert`, `info`, `success` | Tokens and BEM use the same names (`--color-base`, `accordion--semantic-base`, …). Open, selected, and checked UI follows the host semantic (implicit default uses `base`). |
+| `size` | `sm`, `md`, `lg`, `xl` | Spacing and control geometry only (accordion pilot; other components migrate next). |
+| `text` | text scale steps | Typography on labeled parts; not derived from `size`. |
+
+Removed: `neutral`, `selected`, `--color-neutral-*`, `--color-selected-*`.
+
+**Deferred migration:** triggers (`button`, `link`, `toggle`), surfaces (`tabs`, `dialog`, …), fields (`select`, `listbox`, …), then data display (`data_list`, `data_table`) still use legacy `size_block` (size includes font) until each category is migrated after accordion sign-off.
 
 ## References
 

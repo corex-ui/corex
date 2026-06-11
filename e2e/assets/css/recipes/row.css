@@ -24,11 +24,11 @@
   .row {
     display: flex;
     padding: 0;
-    padding-inline: 0;
-    padding-block: 0;
     gap: 0;
     align-items: center;
     justify-content: flex-start;
+    padding-inline: 0;
+    padding-block: 0;
     flex-flow: row wrap;
   }
 

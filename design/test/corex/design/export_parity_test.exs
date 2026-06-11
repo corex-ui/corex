@@ -66,6 +66,7 @@ defmodule Corex.Design.ExportParityTest do
     assert css =~ "@utility accordion--size-*"
     assert css =~ ".accordion.accordion--w-fit"
     assert css =~ ".accordion.accordion--semantic-accent"
+    assert css =~ ".accordion.accordion--semantic-base"
     assert css =~ ".accordion.accordion--variant-subtle"
     assert css =~ "[data-state=\"closed\"]"
     assert css =~ "background-color: var(--color-accent)"
@@ -73,5 +74,12 @@ defmodule Corex.Design.ExportParityTest do
     refute css =~ "@utility accordion--*"
     refute css =~ ".accordion.accordion--max-w-7xs"
     refute css =~ ".accordion.accordion--size-md [data-part"
+    refute css =~ "semantic-neutral"
+    refute css =~ "semantic-selected"
+    refute css =~ "--color-neutral"
+    refute css =~ "--color-selected"
+
+    assert css =~ "@utility accordion--size-*"
+    refute css =~ ~r/accordion--size-\* \{[\s\S]*item-trigger\][\s\S]*font-size:/
   end
 end

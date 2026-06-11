@@ -3,11 +3,19 @@ defmodule Corex.Design.Semantics do
 
   alias Corex.Design.Vocabulary
 
-  @fallback ~W(accent brand alert info success selected neutral)a
+  @axis_atoms ~w(base accent brand alert info success)a
+  @fallback @axis_atoms
+
+  def axis_atoms, do: @axis_atoms
+
+  def axis_strings, do: Enum.map(@axis_atoms, &Atom.to_string/1)
 
   def atoms do
     if Corex.Design.configured?() do
-      Vocabulary.semantic_roles()
+      case Vocabulary.semantic_roles() do
+        [] -> @fallback
+        roles -> roles
+      end
     else
       @fallback
     end

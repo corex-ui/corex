@@ -52,11 +52,11 @@
   }
 
   [data-scope="tree-view"][data-part="item"] {
-      padding-inline: --value(--spacing-*, [length]);
-    gap: --value(--spacing-*, [length]);
+      gap: --value(--spacing-*, [length]);
+    padding-inline: --value(--spacing-*, [length]);
+    min-height: --value(--spacing-control-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-control-*, [length]);
   }
 
   [data-scope="tree-view"][data-part="item-text"] {
@@ -64,11 +64,11 @@
   }
 
   [data-scope="tree-view"][data-part="branch-control"] {
-      padding-inline: --value(--spacing-*, [length]);
-    gap: --value(--spacing-*, [length]);
+      gap: --value(--spacing-*, [length]);
+    padding-inline: --value(--spacing-*, [length]);
+    min-height: --value(--spacing-control-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-control-*, [length]);
   }
 
   [data-scope="tree-view"][data-part="branch-text"] {
@@ -86,16 +86,16 @@
   .tree-view {
     width: 100%;
     max-width: var(--container-md);
-    max-height: none;
     height: auto;
+    max-height: none;
   }
 
   .tree-view [data-scope="tree-view"][data-part="item"] {
-    padding-inline: var(--spacing-md);
     gap: var(--spacing-md);
+    padding-inline: var(--spacing-md);
+    min-height: var(--spacing-control-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
-    min-height: var(--spacing-control-md);
   }
 
   .tree-view [data-scope="tree-view"][data-part="item-text"] {
@@ -103,11 +103,11 @@
   }
 
   .tree-view [data-scope="tree-view"][data-part="branch-control"] {
-    padding-inline: var(--spacing-md);
     gap: var(--spacing-md);
+    padding-inline: var(--spacing-md);
+    min-height: var(--spacing-control-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
-    min-height: var(--spacing-control-md);
   }
 
   .tree-view [data-scope="tree-view"][data-part="branch-text"] {
@@ -162,19 +162,15 @@
     position: relative;
   }
 
+  .tree-view.tree-view--semantic-base {
+    position: relative;
+  }
+
   .tree-view.tree-view--semantic-brand {
     position: relative;
   }
 
   .tree-view.tree-view--semantic-info {
-    position: relative;
-  }
-
-  .tree-view.tree-view--semantic-neutral {
-    position: relative;
-  }
-
-  .tree-view.tree-view--semantic-selected {
     position: relative;
   }
 
@@ -964,6 +960,322 @@
     border-inline-start: 1px solid var(--color-on-alert);
   }
 
+  .tree-view.tree-view--semantic-base [data-scope="tree-view"][data-part="item"][data-selected] {
+    background-color: var(--color-base);
+    color: var(--color-on-base);
+    &:hover {
+      background-color: var(--color-base-hover);
+    }
+
+    &:active {
+      background-color: var(--color-base-active);
+    }
+
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px var(--color-on-base);
+      outline: none;
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-base-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .tree-view.tree-view--semantic-base [data-scope="tree-view"][data-part="item"][data-state='checked'] {
+    background-color: var(--color-base);
+    color: var(--color-on-base);
+    &:hover {
+      background-color: var(--color-base-hover);
+    }
+
+    &:active {
+      background-color: var(--color-base-active);
+    }
+
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px var(--color-on-base);
+      outline: none;
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-base-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .tree-view.tree-view--semantic-base [data-scope="tree-view"][data-part="item"][data-state='on'] {
+    background-color: var(--color-base);
+    color: var(--color-on-base);
+    &:hover {
+      background-color: var(--color-base-hover);
+    }
+
+    &:active {
+      background-color: var(--color-base-active);
+    }
+
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px var(--color-on-base);
+      outline: none;
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-base-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .tree-view.tree-view--semantic-base [data-scope="tree-view"][data-part="item"][data-in-range] {
+    background-color: var(--color-base);
+    color: var(--color-on-base);
+    &:hover {
+      background-color: var(--color-base-hover);
+    }
+
+    &:active {
+      background-color: var(--color-base-active);
+    }
+
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px var(--color-on-base);
+      outline: none;
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-base-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .tree-view.tree-view--semantic-base [data-scope="tree-view"][data-part="item"][data-checked] {
+    background-color: var(--color-base);
+    color: var(--color-on-base);
+    &:hover {
+      background-color: var(--color-base-hover);
+    }
+
+    &:active {
+      background-color: var(--color-base-active);
+    }
+
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px var(--color-on-base);
+      outline: none;
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-base-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .tree-view.tree-view--semantic-base [data-scope="tree-view"][data-part="item"][data-indeterminate] {
+    background-color: var(--color-base);
+    color: var(--color-on-base);
+    &:hover {
+      background-color: var(--color-base-hover);
+    }
+
+    &:active {
+      background-color: var(--color-base-active);
+    }
+
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px var(--color-on-base);
+      outline: none;
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-base-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .tree-view.tree-view--semantic-base [data-scope="tree-view"][data-part="branch-control"][data-selected] {
+    background-color: var(--color-base);
+    color: var(--color-on-base);
+    &:hover {
+      background-color: var(--color-base-hover);
+    }
+
+    &:active {
+      background-color: var(--color-base-active);
+    }
+
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px var(--color-on-base);
+      outline: none;
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled],
+    &[data-loading] {
+      background-color: var(--color-base-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .tree-view.tree-view--semantic-base [data-scope="tree-view"][data-part="branch-control"][data-state='checked'] {
+    background-color: var(--color-base);
+    color: var(--color-on-base);
+    &:hover {
+      background-color: var(--color-base-hover);
+    }
+
+    &:active {
+      background-color: var(--color-base-active);
+    }
+
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px var(--color-on-base);
+      outline: none;
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled],
+    &[data-loading] {
+      background-color: var(--color-base-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .tree-view.tree-view--semantic-base [data-scope="tree-view"][data-part="branch-control"][data-state='on'] {
+    background-color: var(--color-base);
+    color: var(--color-on-base);
+    &:hover {
+      background-color: var(--color-base-hover);
+    }
+
+    &:active {
+      background-color: var(--color-base-active);
+    }
+
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px var(--color-on-base);
+      outline: none;
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled],
+    &[data-loading] {
+      background-color: var(--color-base-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .tree-view.tree-view--semantic-base [data-scope="tree-view"][data-part="branch-control"][data-in-range] {
+    background-color: var(--color-base);
+    color: var(--color-on-base);
+    &:hover {
+      background-color: var(--color-base-hover);
+    }
+
+    &:active {
+      background-color: var(--color-base-active);
+    }
+
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px var(--color-on-base);
+      outline: none;
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled],
+    &[data-loading] {
+      background-color: var(--color-base-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .tree-view.tree-view--semantic-base [data-scope="tree-view"][data-part="branch-control"][data-checked] {
+    background-color: var(--color-base);
+    color: var(--color-on-base);
+    &:hover {
+      background-color: var(--color-base-hover);
+    }
+
+    &:active {
+      background-color: var(--color-base-active);
+    }
+
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px var(--color-on-base);
+      outline: none;
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled],
+    &[data-loading] {
+      background-color: var(--color-base-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .tree-view.tree-view--semantic-base [data-scope="tree-view"][data-part="branch-control"][data-indeterminate] {
+    background-color: var(--color-base);
+    color: var(--color-on-base);
+    &:hover {
+      background-color: var(--color-base-hover);
+    }
+
+    &:active {
+      background-color: var(--color-base-active);
+    }
+
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px var(--color-on-base);
+      outline: none;
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled],
+    &[data-loading] {
+      background-color: var(--color-base-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .tree-view.tree-view--semantic-base [data-scope="tree-view"][data-part="label"] {
+    padding-inline-start: var(--spacing-md);
+  }
+
+  .tree-view.tree-view--semantic-base [data-scope="tree-view"][data-part="item"] {
+    padding-inline: var(--spacing-md);
+    gap: var(--spacing-md);
+  }
+
+  .tree-view.tree-view--semantic-base [data-scope="tree-view"][data-part="branch-control"] {
+    padding-inline: var(--spacing-md);
+    gap: var(--spacing-md);
+  }
+
+  .tree-view.tree-view--semantic-base [data-scope="tree-view"][data-part="item-text"], .tree-view.tree-view--semantic-base [data-scope="tree-view"][data-part="branch-text"] {
+    gap: var(--spacing-md);
+  }
+
+  .tree-view.tree-view--semantic-base [data-scope="tree-view"][data-part="branch-content"] [data-scope="tree-view"][data-part="branch-indent-guide"] {
+    border-inline-start: 1px solid var(--color-on-base);
+  }
+
   .tree-view.tree-view--semantic-brand [data-scope="tree-view"][data-part="item"][data-selected] {
     background-color: var(--color-brand);
     color: var(--color-on-brand);
@@ -1594,638 +1906,6 @@
 
   .tree-view.tree-view--semantic-info [data-scope="tree-view"][data-part="branch-content"] [data-scope="tree-view"][data-part="branch-indent-guide"] {
     border-inline-start: 1px solid var(--color-on-info);
-  }
-
-  .tree-view.tree-view--semantic-neutral [data-scope="tree-view"][data-part="item"][data-selected] {
-    background-color: var(--color-neutral);
-    color: var(--color-on-neutral);
-    &:hover {
-      background-color: var(--color-neutral-hover);
-    }
-
-    &:active {
-      background-color: var(--color-neutral-active);
-    }
-
-    &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
-      outline: none;
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-neutral-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .tree-view.tree-view--semantic-neutral [data-scope="tree-view"][data-part="item"][data-state='checked'] {
-    background-color: var(--color-neutral);
-    color: var(--color-on-neutral);
-    &:hover {
-      background-color: var(--color-neutral-hover);
-    }
-
-    &:active {
-      background-color: var(--color-neutral-active);
-    }
-
-    &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
-      outline: none;
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-neutral-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .tree-view.tree-view--semantic-neutral [data-scope="tree-view"][data-part="item"][data-state='on'] {
-    background-color: var(--color-neutral);
-    color: var(--color-on-neutral);
-    &:hover {
-      background-color: var(--color-neutral-hover);
-    }
-
-    &:active {
-      background-color: var(--color-neutral-active);
-    }
-
-    &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
-      outline: none;
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-neutral-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .tree-view.tree-view--semantic-neutral [data-scope="tree-view"][data-part="item"][data-in-range] {
-    background-color: var(--color-neutral);
-    color: var(--color-on-neutral);
-    &:hover {
-      background-color: var(--color-neutral-hover);
-    }
-
-    &:active {
-      background-color: var(--color-neutral-active);
-    }
-
-    &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
-      outline: none;
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-neutral-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .tree-view.tree-view--semantic-neutral [data-scope="tree-view"][data-part="item"][data-checked] {
-    background-color: var(--color-neutral);
-    color: var(--color-on-neutral);
-    &:hover {
-      background-color: var(--color-neutral-hover);
-    }
-
-    &:active {
-      background-color: var(--color-neutral-active);
-    }
-
-    &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
-      outline: none;
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-neutral-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .tree-view.tree-view--semantic-neutral [data-scope="tree-view"][data-part="item"][data-indeterminate] {
-    background-color: var(--color-neutral);
-    color: var(--color-on-neutral);
-    &:hover {
-      background-color: var(--color-neutral-hover);
-    }
-
-    &:active {
-      background-color: var(--color-neutral-active);
-    }
-
-    &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
-      outline: none;
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-neutral-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .tree-view.tree-view--semantic-neutral [data-scope="tree-view"][data-part="branch-control"][data-selected] {
-    background-color: var(--color-neutral);
-    color: var(--color-on-neutral);
-    &:hover {
-      background-color: var(--color-neutral-hover);
-    }
-
-    &:active {
-      background-color: var(--color-neutral-active);
-    }
-
-    &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
-      outline: none;
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled],
-    &[data-loading] {
-      background-color: var(--color-neutral-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .tree-view.tree-view--semantic-neutral [data-scope="tree-view"][data-part="branch-control"][data-state='checked'] {
-    background-color: var(--color-neutral);
-    color: var(--color-on-neutral);
-    &:hover {
-      background-color: var(--color-neutral-hover);
-    }
-
-    &:active {
-      background-color: var(--color-neutral-active);
-    }
-
-    &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
-      outline: none;
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled],
-    &[data-loading] {
-      background-color: var(--color-neutral-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .tree-view.tree-view--semantic-neutral [data-scope="tree-view"][data-part="branch-control"][data-state='on'] {
-    background-color: var(--color-neutral);
-    color: var(--color-on-neutral);
-    &:hover {
-      background-color: var(--color-neutral-hover);
-    }
-
-    &:active {
-      background-color: var(--color-neutral-active);
-    }
-
-    &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
-      outline: none;
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled],
-    &[data-loading] {
-      background-color: var(--color-neutral-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .tree-view.tree-view--semantic-neutral [data-scope="tree-view"][data-part="branch-control"][data-in-range] {
-    background-color: var(--color-neutral);
-    color: var(--color-on-neutral);
-    &:hover {
-      background-color: var(--color-neutral-hover);
-    }
-
-    &:active {
-      background-color: var(--color-neutral-active);
-    }
-
-    &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
-      outline: none;
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled],
-    &[data-loading] {
-      background-color: var(--color-neutral-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .tree-view.tree-view--semantic-neutral [data-scope="tree-view"][data-part="branch-control"][data-checked] {
-    background-color: var(--color-neutral);
-    color: var(--color-on-neutral);
-    &:hover {
-      background-color: var(--color-neutral-hover);
-    }
-
-    &:active {
-      background-color: var(--color-neutral-active);
-    }
-
-    &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
-      outline: none;
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled],
-    &[data-loading] {
-      background-color: var(--color-neutral-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .tree-view.tree-view--semantic-neutral [data-scope="tree-view"][data-part="branch-control"][data-indeterminate] {
-    background-color: var(--color-neutral);
-    color: var(--color-on-neutral);
-    &:hover {
-      background-color: var(--color-neutral-hover);
-    }
-
-    &:active {
-      background-color: var(--color-neutral-active);
-    }
-
-    &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
-      outline: none;
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled],
-    &[data-loading] {
-      background-color: var(--color-neutral-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .tree-view.tree-view--semantic-neutral [data-scope="tree-view"][data-part="label"] {
-    padding-inline-start: var(--spacing-md);
-  }
-
-  .tree-view.tree-view--semantic-neutral [data-scope="tree-view"][data-part="item"] {
-    padding-inline: var(--spacing-md);
-    gap: var(--spacing-md);
-  }
-
-  .tree-view.tree-view--semantic-neutral [data-scope="tree-view"][data-part="branch-control"] {
-    padding-inline: var(--spacing-md);
-    gap: var(--spacing-md);
-  }
-
-  .tree-view.tree-view--semantic-neutral [data-scope="tree-view"][data-part="item-text"], .tree-view.tree-view--semantic-neutral [data-scope="tree-view"][data-part="branch-text"] {
-    gap: var(--spacing-md);
-  }
-
-  .tree-view.tree-view--semantic-neutral [data-scope="tree-view"][data-part="branch-content"] [data-scope="tree-view"][data-part="branch-indent-guide"] {
-    border-inline-start: 1px solid var(--color-on-neutral);
-  }
-
-  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="item"][data-selected] {
-    background-color: var(--color-selected);
-    color: var(--color-on-selected);
-    &:hover {
-      background-color: var(--color-selected-hover);
-    }
-
-    &:active {
-      background-color: var(--color-selected-active);
-    }
-
-    &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
-      outline: none;
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-selected-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="item"][data-state='checked'] {
-    background-color: var(--color-selected);
-    color: var(--color-on-selected);
-    &:hover {
-      background-color: var(--color-selected-hover);
-    }
-
-    &:active {
-      background-color: var(--color-selected-active);
-    }
-
-    &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
-      outline: none;
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-selected-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="item"][data-state='on'] {
-    background-color: var(--color-selected);
-    color: var(--color-on-selected);
-    &:hover {
-      background-color: var(--color-selected-hover);
-    }
-
-    &:active {
-      background-color: var(--color-selected-active);
-    }
-
-    &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
-      outline: none;
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-selected-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="item"][data-in-range] {
-    background-color: var(--color-selected);
-    color: var(--color-on-selected);
-    &:hover {
-      background-color: var(--color-selected-hover);
-    }
-
-    &:active {
-      background-color: var(--color-selected-active);
-    }
-
-    &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
-      outline: none;
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-selected-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="item"][data-checked] {
-    background-color: var(--color-selected);
-    color: var(--color-on-selected);
-    &:hover {
-      background-color: var(--color-selected-hover);
-    }
-
-    &:active {
-      background-color: var(--color-selected-active);
-    }
-
-    &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
-      outline: none;
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-selected-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="item"][data-indeterminate] {
-    background-color: var(--color-selected);
-    color: var(--color-on-selected);
-    &:hover {
-      background-color: var(--color-selected-hover);
-    }
-
-    &:active {
-      background-color: var(--color-selected-active);
-    }
-
-    &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
-      outline: none;
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-selected-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="branch-control"][data-selected] {
-    background-color: var(--color-selected);
-    color: var(--color-on-selected);
-    &:hover {
-      background-color: var(--color-selected-hover);
-    }
-
-    &:active {
-      background-color: var(--color-selected-active);
-    }
-
-    &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
-      outline: none;
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled],
-    &[data-loading] {
-      background-color: var(--color-selected-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="branch-control"][data-state='checked'] {
-    background-color: var(--color-selected);
-    color: var(--color-on-selected);
-    &:hover {
-      background-color: var(--color-selected-hover);
-    }
-
-    &:active {
-      background-color: var(--color-selected-active);
-    }
-
-    &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
-      outline: none;
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled],
-    &[data-loading] {
-      background-color: var(--color-selected-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="branch-control"][data-state='on'] {
-    background-color: var(--color-selected);
-    color: var(--color-on-selected);
-    &:hover {
-      background-color: var(--color-selected-hover);
-    }
-
-    &:active {
-      background-color: var(--color-selected-active);
-    }
-
-    &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
-      outline: none;
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled],
-    &[data-loading] {
-      background-color: var(--color-selected-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="branch-control"][data-in-range] {
-    background-color: var(--color-selected);
-    color: var(--color-on-selected);
-    &:hover {
-      background-color: var(--color-selected-hover);
-    }
-
-    &:active {
-      background-color: var(--color-selected-active);
-    }
-
-    &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
-      outline: none;
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled],
-    &[data-loading] {
-      background-color: var(--color-selected-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="branch-control"][data-checked] {
-    background-color: var(--color-selected);
-    color: var(--color-on-selected);
-    &:hover {
-      background-color: var(--color-selected-hover);
-    }
-
-    &:active {
-      background-color: var(--color-selected-active);
-    }
-
-    &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
-      outline: none;
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled],
-    &[data-loading] {
-      background-color: var(--color-selected-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="branch-control"][data-indeterminate] {
-    background-color: var(--color-selected);
-    color: var(--color-on-selected);
-    &:hover {
-      background-color: var(--color-selected-hover);
-    }
-
-    &:active {
-      background-color: var(--color-selected-active);
-    }
-
-    &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
-      outline: none;
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled],
-    &[data-loading] {
-      background-color: var(--color-selected-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="label"] {
-    padding-inline-start: var(--spacing-md);
-  }
-
-  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="item"] {
-    padding-inline: var(--spacing-md);
-    gap: var(--spacing-md);
-  }
-
-  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="branch-control"] {
-    padding-inline: var(--spacing-md);
-    gap: var(--spacing-md);
-  }
-
-  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="item-text"], .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="branch-text"] {
-    gap: var(--spacing-md);
-  }
-
-  .tree-view.tree-view--semantic-selected [data-scope="tree-view"][data-part="branch-content"] [data-scope="tree-view"][data-part="branch-indent-guide"] {
-    border-inline-start: 1px solid var(--color-on-selected);
   }
 
   .tree-view.tree-view--semantic-success [data-scope="tree-view"][data-part="item"][data-selected] {

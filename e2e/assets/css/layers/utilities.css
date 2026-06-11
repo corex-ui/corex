@@ -380,6 +380,12 @@
 }
 
 
+@utility part-icon--* {
+  font-size: --value(--text-*, [length]);
+  line-height: --value(--text-*--line-height, [length]);
+}
+
+
 @utility part-trigger--* {
   font-size: --value(--text-*, [length]);
   line-height: --value(--text-*--line-height, [length]);
@@ -435,12 +441,6 @@
       cursor: not-allowed;
     }
   }
-}
-
-
-@utility part-icon--* {
-  font-size: --value(--text-*, [length]);
-  line-height: --value(--text-*--line-height, [length]);
 }
 
 

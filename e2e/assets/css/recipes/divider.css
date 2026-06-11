@@ -15,9 +15,9 @@
 
   .divider.divider--orientation-vertical {
     block-size: 100%;
-    border-inline-start: 1px solid var(--color-border);
     border-top: 0;
     inline-size: 0;
+    border-inline-start: 1px solid var(--color-border);
   }
 }
 

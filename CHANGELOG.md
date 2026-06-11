@@ -46,6 +46,13 @@ and forward caller classes. Styling lives in optional `:corex_design` stylesheet
 
 ### Breaking
 
+- **Semantic tokens aligned with axis values:** `neutral` and `selected` roles and
+  `--color-neutral-*` / `--color-selected-*` tokens are removed. Use `base` and
+  `--color-base-*` instead. Open, selected, and checked UI follows the host
+  `semantic` role (`base` when unset).
+- **Size vs text axes (accordion pilot):** `size` is spacing and control geometry
+  only; `text` sets typography on trigger, indicator, and content. They no longer
+  share font scale.
 - **Removed `mix corex.design`** (copy task) and the hand-authored `priv/design/`
   tree from the `:corex` package. Per-component vendoring into `assets/corex/` is
   no longer supported.

@@ -61,8 +61,8 @@
   .switch {
     width: 100%;
     max-width: var(--container-4xl);
-    max-height: none;
     height: auto;
+    max-height: none;
   }
 
   .switch.switch--w-auto {
@@ -105,60 +105,28 @@
     max-height: 100%;
   }
 
-  .switch.switch--semantic-accent {
-    --color-selected: var(--color-accent);
-    --color-selected-hover: var(--color-accent-hover);
-    --color-selected-active: var(--color-accent-active);
-    --color-selected-muted: var(--color-accent-muted);
-    --color-on-selected: var(--color-on-accent);
+  .switch.switch--semantic-base {
+    position: relative;
   }
 
-  .switch.switch--semantic-alert {
-    --color-selected: var(--color-alert);
-    --color-selected-hover: var(--color-alert-hover);
-    --color-selected-active: var(--color-alert-active);
-    --color-selected-muted: var(--color-alert-muted);
-    --color-on-selected: var(--color-on-alert);
+  .switch.switch--semantic-accent {
+    position: relative;
   }
 
   .switch.switch--semantic-brand {
-    --color-selected: var(--color-brand);
-    --color-selected-hover: var(--color-brand-hover);
-    --color-selected-active: var(--color-brand-active);
-    --color-selected-muted: var(--color-brand-muted);
-    --color-on-selected: var(--color-on-brand);
+    position: relative;
+  }
+
+  .switch.switch--semantic-alert {
+    position: relative;
   }
 
   .switch.switch--semantic-info {
-    --color-selected: var(--color-info);
-    --color-selected-hover: var(--color-info-hover);
-    --color-selected-active: var(--color-info-active);
-    --color-selected-muted: var(--color-info-muted);
-    --color-on-selected: var(--color-on-info);
-  }
-
-  .switch.switch--semantic-neutral {
-    --color-selected: var(--color-neutral);
-    --color-selected-hover: var(--color-neutral-hover);
-    --color-selected-active: var(--color-neutral-active);
-    --color-selected-muted: var(--color-neutral-muted);
-    --color-on-selected: var(--color-on-neutral);
-  }
-
-  .switch.switch--semantic-selected {
-    --color-selected: var(--color-selected);
-    --color-selected-hover: var(--color-selected-hover);
-    --color-selected-active: var(--color-selected-active);
-    --color-selected-muted: var(--color-selected-muted);
-    --color-on-selected: var(--color-on-selected);
+    position: relative;
   }
 
   .switch.switch--semantic-success {
-    --color-selected: var(--color-success);
-    --color-selected-hover: var(--color-success-hover);
-    --color-selected-active: var(--color-success-active);
-    --color-selected-muted: var(--color-success-muted);
-    --color-on-selected: var(--color-on-success);
+    position: relative;
   }
 
   .switch.switch--rounded-none [data-scope="switch"][data-part="control"] {
@@ -211,20 +179,16 @@
     background-color: var(--color-alert);
   }
 
+  .switch.switch--semantic-base [data-scope="switch"][data-part="thumb"]:not([data-state="checked"]) {
+    background-color: var(--color-base);
+  }
+
   .switch.switch--semantic-brand [data-scope="switch"][data-part="thumb"]:not([data-state="checked"]) {
     background-color: var(--color-brand);
   }
 
   .switch.switch--semantic-info [data-scope="switch"][data-part="thumb"]:not([data-state="checked"]) {
     background-color: var(--color-info);
-  }
-
-  .switch.switch--semantic-neutral [data-scope="switch"][data-part="thumb"]:not([data-state="checked"]) {
-    background-color: var(--color-neutral);
-  }
-
-  .switch.switch--semantic-selected [data-scope="switch"][data-part="thumb"]:not([data-state="checked"]) {
-    background-color: var(--color-selected);
   }
 
   .switch.switch--semantic-success [data-scope="switch"][data-part="thumb"]:not([data-state="checked"]) {
@@ -259,13 +223,6 @@
     height: var(--switch-track-height);
     background: var(--color-surface-control);
     transition: background 150ms ease, border-color 150ms ease, color 150ms ease, transform 150ms ease;
-    &[data-state="checked"] {
-      background-color: var(--color-selected);
-      & [data-scope="switch"][data-part="thumb"] {
-        background-color: var(--color-on-selected);
-      }
-    }
-
     &[data-disabled] {
       color: var(--color-on-muted);
       background: var(--color-surface-control-muted);
@@ -295,11 +252,6 @@
     height: var(--switch-track-height);
     flex-shrink: 0;
     position: relative;
-    &[data-state="checked"] {
-      transform: translateX(var(--switch-thumb-x));
-      background-color: var(--color-on-selected);
-    }
-
     &[data-invalid] {
       background: var(--color-alert);
     }
@@ -307,6 +259,90 @@
 
   .switch [data-scope="switch"][data-part="root"][dir="rtl"] [data-scope="switch"][data-part="thumb"][data-state="checked"] {
     transform: translateX(calc(var(--switch-thumb-x) * -1));
+  }
+
+  .switch .switch [data-scope="switch"][data-part="control"][data-state="checked"] {
+    background-color: var(--color-base);
+    & [data-scope="switch"][data-part="thumb"] {
+      background-color: var(--color-on-base);
+    }
+  }
+
+  .switch .switch [data-scope="switch"][data-part="thumb"][data-state="checked"] {
+    transform: translateX(var(--switch-thumb-x));
+    background-color: var(--color-on-base);
+  }
+
+  .switch.switch--semantic-accent .switch [data-scope="switch"][data-part="control"][data-state="checked"] {
+    background-color: var(--color-accent);
+    & [data-scope="switch"][data-part="thumb"] {
+      background-color: var(--color-on-accent);
+    }
+  }
+
+  .switch.switch--semantic-accent .switch [data-scope="switch"][data-part="thumb"][data-state="checked"] {
+    transform: translateX(var(--switch-thumb-x));
+    background-color: var(--color-on-accent);
+  }
+
+  .switch.switch--semantic-alert .switch [data-scope="switch"][data-part="control"][data-state="checked"] {
+    background-color: var(--color-alert);
+    & [data-scope="switch"][data-part="thumb"] {
+      background-color: var(--color-on-alert);
+    }
+  }
+
+  .switch.switch--semantic-alert .switch [data-scope="switch"][data-part="thumb"][data-state="checked"] {
+    transform: translateX(var(--switch-thumb-x));
+    background-color: var(--color-on-alert);
+  }
+
+  .switch.switch--semantic-base .switch [data-scope="switch"][data-part="control"][data-state="checked"] {
+    background-color: var(--color-base);
+    & [data-scope="switch"][data-part="thumb"] {
+      background-color: var(--color-on-base);
+    }
+  }
+
+  .switch.switch--semantic-base .switch [data-scope="switch"][data-part="thumb"][data-state="checked"] {
+    transform: translateX(var(--switch-thumb-x));
+    background-color: var(--color-on-base);
+  }
+
+  .switch.switch--semantic-brand .switch [data-scope="switch"][data-part="control"][data-state="checked"] {
+    background-color: var(--color-brand);
+    & [data-scope="switch"][data-part="thumb"] {
+      background-color: var(--color-on-brand);
+    }
+  }
+
+  .switch.switch--semantic-brand .switch [data-scope="switch"][data-part="thumb"][data-state="checked"] {
+    transform: translateX(var(--switch-thumb-x));
+    background-color: var(--color-on-brand);
+  }
+
+  .switch.switch--semantic-info .switch [data-scope="switch"][data-part="control"][data-state="checked"] {
+    background-color: var(--color-info);
+    & [data-scope="switch"][data-part="thumb"] {
+      background-color: var(--color-on-info);
+    }
+  }
+
+  .switch.switch--semantic-info .switch [data-scope="switch"][data-part="thumb"][data-state="checked"] {
+    transform: translateX(var(--switch-thumb-x));
+    background-color: var(--color-on-info);
+  }
+
+  .switch.switch--semantic-success .switch [data-scope="switch"][data-part="control"][data-state="checked"] {
+    background-color: var(--color-success);
+    & [data-scope="switch"][data-part="thumb"] {
+      background-color: var(--color-on-success);
+    }
+  }
+
+  .switch.switch--semantic-success .switch [data-scope="switch"][data-part="thumb"][data-state="checked"] {
+    transform: translateX(var(--switch-thumb-x));
+    background-color: var(--color-on-success);
   }
 }
 

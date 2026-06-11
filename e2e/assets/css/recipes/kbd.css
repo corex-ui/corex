@@ -26,13 +26,13 @@
     width: fit-content;
     padding: var(--spacing-sm);
     color: var(--color-on-page);
-    background-color: var(--color-surface-raised);
-    max-width: none;
-    max-height: none;
-    border-radius: var(--radius-md);
     border: 1px solid var(--color-border);
+    max-width: none;
+    background-color: var(--color-surface-raised);
     height: auto;
     margin-inline: var(--spacing-sm);
+    border-radius: var(--radius-md);
+    max-height: none;
     font-family: var(--font-mono);
   }
 
@@ -84,20 +84,16 @@
     color: var(--color-alert);
   }
 
+  .kbd.kbd--semantic-base {
+    color: var(--color-base);
+  }
+
   .kbd.kbd--semantic-brand {
     color: var(--color-brand);
   }
 
   .kbd.kbd--semantic-info {
     color: var(--color-info);
-  }
-
-  .kbd.kbd--semantic-neutral {
-    color: var(--color-neutral);
-  }
-
-  .kbd.kbd--semantic-selected {
-    color: var(--color-selected);
   }
 
   .kbd.kbd--semantic-success {

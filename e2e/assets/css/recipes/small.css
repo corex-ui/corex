@@ -25,12 +25,12 @@
   .small {
     width: fit-content;
     max-width: none;
-    max-height: none;
-    font-size: var(--text-xs);
-    line-height: var(--leading-xs);
     height: auto;
+    max-height: none;
     font-weight: var(--font-weight-normal);
     margin-block: var(--spacing-md);
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
     @media (min-width: 48rem) {
       font-size: var(--text-sm);
       line-height: var(--leading-sm);
@@ -85,20 +85,16 @@
     color: var(--color-alert);
   }
 
+  .small.small--semantic-base {
+    color: var(--color-base);
+  }
+
   .small.small--semantic-brand {
     color: var(--color-brand);
   }
 
   .small.small--semantic-info {
     color: var(--color-info);
-  }
-
-  .small.small--semantic-neutral {
-    color: var(--color-neutral);
-  }
-
-  .small.small--semantic-selected {
-    color: var(--color-selected);
   }
 
   .small.small--semantic-success {

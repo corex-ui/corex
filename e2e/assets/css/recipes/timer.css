@@ -41,8 +41,8 @@
   .timer {
     width: 100%;
     max-width: none;
-    max-height: none;
     height: auto;
+    max-height: none;
   }
 
   .timer.timer--w-auto {
@@ -93,19 +93,15 @@
     position: relative;
   }
 
+  .timer.timer--semantic-base {
+    position: relative;
+  }
+
   .timer.timer--semantic-brand {
     position: relative;
   }
 
   .timer.timer--semantic-info {
-    position: relative;
-  }
-
-  .timer.timer--semantic-neutral {
-    position: relative;
-  }
-
-  .timer.timer--semantic-selected {
     position: relative;
   }
 
@@ -291,6 +287,30 @@
     }
   }
 
+  .timer.timer--semantic-base [data-scope="timer"][data-part="action-trigger"] {
+    background-color: var(--color-base);
+    color: var(--color-on-base);
+    &:hover {
+      background-color: var(--color-base-hover);
+    }
+
+    &:active {
+      background-color: var(--color-base-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-base);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-surface-control-muted);
+      cursor: not-allowed;
+    }
+  }
+
   .timer.timer--semantic-brand [data-scope="timer"][data-part="action-trigger"] {
     background-color: var(--color-brand);
     color: var(--color-on-brand);
@@ -329,54 +349,6 @@
     &:focus-visible {
       outline: none;
       box-shadow: inset 0 0 0 2px var(--color-on-info);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .timer.timer--semantic-neutral [data-scope="timer"][data-part="action-trigger"] {
-    background-color: var(--color-neutral);
-    color: var(--color-on-neutral);
-    &:hover {
-      background-color: var(--color-neutral-hover);
-    }
-
-    &:active {
-      background-color: var(--color-neutral-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .timer.timer--semantic-selected [data-scope="timer"][data-part="action-trigger"] {
-    background-color: var(--color-selected);
-    color: var(--color-on-selected);
-    &:hover {
-      background-color: var(--color-selected-hover);
-    }
-
-    &:active {
-      background-color: var(--color-selected-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
     }
 
     &:disabled,

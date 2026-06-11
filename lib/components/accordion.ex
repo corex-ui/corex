@@ -667,6 +667,7 @@ defmodule Corex.Accordion do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `accordion` |
+  | Base | `accordion accordion--semantic-base` |
   | Accent | `accordion accordion--semantic-accent` |
   | Brand | `accordion accordion--semantic-brand` |
   | Alert | `accordion accordion--semantic-alert` |
@@ -687,7 +688,7 @@ defmodule Corex.Accordion do
 
   ### Text
 
-  Font size on trigger and content.
+  Font size on trigger, indicator, and content.
 
   | Modifier | Classes |
   | -------- | ------- |

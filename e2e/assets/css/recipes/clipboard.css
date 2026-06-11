@@ -29,11 +29,11 @@
   }
 
   [data-scope="clipboard"][data-part="trigger"] {
-      padding-inline: --value(--spacing-*, [length]);
-    gap: --value(--spacing-*, [length]);
+      gap: --value(--spacing-*, [length]);
+    padding-inline: --value(--spacing-*, [length]);
+    min-height: --value(--spacing-control-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-control-*, [length]);
   }
 
 }
@@ -60,16 +60,16 @@
   .clipboard {
     width: fit-content;
     max-width: none;
-    max-height: none;
     height: auto;
+    max-height: none;
   }
 
   .clipboard [data-scope="clipboard"][data-part="trigger"] {
-    padding-inline: var(--spacing-md);
     gap: var(--spacing-md);
+    padding-inline: var(--spacing-md);
+    min-height: var(--spacing-control-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
-    min-height: var(--spacing-control-md);
   }
 
   .clipboard.clipboard--w-auto {

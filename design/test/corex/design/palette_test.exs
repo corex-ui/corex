@@ -7,13 +7,14 @@ defmodule Corex.Design.PaletteTest do
     assert Palette.fg_var(:accent) == "--color-accent"
     assert Palette.solid_var(:accent) == "--color-accent"
     assert Palette.on_solid_var(:accent) == "--color-on-accent"
-    assert Palette.fg_var(:selected) == "--color-selected"
-    assert Palette.solid_var(:neutral) == "--color-neutral"
+    assert Palette.fg_var(:base) == "--color-base"
+    assert Palette.solid_var(:base) == "--color-base"
+    assert Palette.solid_var(:implicit) == "--color-base"
   end
 
   test "on-solid and ink token names follow background-ink contrast pattern" do
     assert Palette.ink_color_var(:accent) == "--color-accent"
     assert Palette.on_solid_color_var(:accent) == "--color-on-accent"
-    assert Palette.on_solid_color_var(:selected) == "--color-on-selected"
+    assert Palette.on_solid_color_var(:base) == "--color-on-base"
   end
 end

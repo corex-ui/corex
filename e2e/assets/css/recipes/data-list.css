@@ -39,8 +39,8 @@
   .data-list {
     width: 100%;
     max-width: var(--container-md);
-    max-height: none;
     height: auto;
+    max-height: none;
   }
 
   .data-list [data-scope="data-list"][data-part="item"] {
@@ -235,20 +235,16 @@
     color: var(--color-alert);
   }
 
+  .data-list.data-list--semantic-base .data-list [data-scope="data-list"][data-part="label"] {
+    color: var(--color-base);
+  }
+
   .data-list.data-list--semantic-brand .data-list [data-scope="data-list"][data-part="label"] {
     color: var(--color-brand);
   }
 
   .data-list.data-list--semantic-info .data-list [data-scope="data-list"][data-part="label"] {
     color: var(--color-info);
-  }
-
-  .data-list.data-list--semantic-neutral .data-list [data-scope="data-list"][data-part="label"] {
-    color: var(--color-neutral);
-  }
-
-  .data-list.data-list--semantic-selected .data-list [data-scope="data-list"][data-part="label"] {
-    color: var(--color-selected);
   }
 
   .data-list.data-list--semantic-success .data-list [data-scope="data-list"][data-part="label"] {

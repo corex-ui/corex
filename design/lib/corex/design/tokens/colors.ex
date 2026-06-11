@@ -4,15 +4,15 @@ defmodule Corex.Design.Tokens.Colors do
   alias Corex.Design.Theme
   alias Corex.Design.Tokens.PaletteGen
 
-  @default_on_ink %{palette: "neutral", ratio: 7.0}
-  @default_on_page_light %{palette: "neutral", against: :page, ratio: 8.0}
-  @default_on_page_dark %{palette: "neutral", against: :page, ratio: 12.0}
-  @default_on_muted_light %{palette: "neutral", against: :page, ratio: 5.15}
-  @default_on_muted_dark %{palette: "neutral", against: :page, ratio: 6.0}
+  @default_on_ink %{palette: "base", ratio: 7.0}
+  @default_on_page_light %{palette: "base", against: :page, ratio: 8.0}
+  @default_on_page_dark %{palette: "base", against: :page, ratio: 12.0}
+  @default_on_muted_light %{palette: "base", against: :page, ratio: 5.15}
+  @default_on_muted_dark %{palette: "base", against: :page, ratio: 6.0}
   @default_on_link_light %{palette: "info", against: :page, ratio: 6.0}
   @default_on_link_dark %{palette: "info", against: :page, ratio: 7.5}
-  @default_on_control_light %{palette: "neutral", against: :control, ratio: 8.0}
-  @default_on_control_dark %{palette: "neutral", against: :control, ratio: 12.0}
+  @default_on_control_light %{palette: "base", against: :control, ratio: 8.0}
+  @default_on_control_dark %{palette: "base", against: :control, ratio: 12.0}
 
   def generate do
     for {theme_id, spec} <- Theme.resolved_themes(),
@@ -54,7 +54,7 @@ defmodule Corex.Design.Tokens.Colors do
   defp surface_key(key) when is_binary(key), do: key
 
   defp put_surface_token(tok, palette, key, cfg, cache) do
-    hex = palette_hex(palette, Map.get(cfg, :palette, Map.get(cfg, :color, "neutral")))
+    hex = palette_hex(palette, Map.get(cfg, :palette, Map.get(cfg, :color, "base")))
 
     case Map.get(cfg, :states) do
       %{} = states ->
@@ -100,7 +100,7 @@ defmodule Corex.Design.Tokens.Colors do
     Enum.reduce(on, {acc, cache}, fn {name, cfg}, {tok, c} ->
       key = on_key(name)
       bg = contrast_bg(cfg, surface_tokens, role_tokens)
-      seed = palette_hex(palette, Map.get(cfg, :palette, Map.get(cfg, :color, "neutral")))
+      seed = palette_hex(palette, Map.get(cfg, :palette, Map.get(cfg, :color, "base")))
       ratio = Map.get(cfg, :ratio, 7.0) * 1.0
       {hex, _ach} = PaletteGen.contrast_fg(seed, bg, ratio)
       {Map.put(tok, "on-#{key}", hex), c}
@@ -137,7 +137,7 @@ defmodule Corex.Design.Tokens.Colors do
 
   defp put_flat_token(acc, palette, name, cfg, surface_tokens, _cache) when is_map(cfg) do
     bg = flat_contrast_bg(cfg, surface_tokens)
-    seed = palette_hex(palette, Map.get(cfg, :palette, Map.get(cfg, :color, "neutral")))
+    seed = palette_hex(palette, Map.get(cfg, :palette, Map.get(cfg, :color, "base")))
     ratio = Map.get(cfg, :ratio, 1.12) * 1.0
     {hex, _ach} = PaletteGen.contrast_fg(seed, bg, ratio)
     Map.put(acc, Atom.to_string(name), hex)
@@ -167,7 +167,7 @@ defmodule Corex.Design.Tokens.Colors do
         default =
           if Map.get(cfg, :component, true) do
             %{
-              palette: "neutral",
+              palette: "base",
               against: String.to_atom(role_str),
               ratio: Map.get(@default_on_ink, :ratio)
             }
@@ -206,9 +206,13 @@ defmodule Corex.Design.Tokens.Colors do
   defp default_on(_), do: default_on(:light)
 
   defp palette_hex(palette, key) do
-    s = to_string(key)
+    s = key |> to_string() |> normalize_palette_ref()
+
     if String.starts_with?(s, "#"), do: s, else: Map.fetch!(palette, s)
   end
+
+  defp normalize_palette_ref("neutral"), do: "base"
+  defp normalize_palette_ref(key), do: key
 
   defp at_lightness(hex, lightness, cache) do
     PaletteGen.at_lightness(hex, lightness, cache)

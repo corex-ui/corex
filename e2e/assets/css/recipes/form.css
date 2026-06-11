@@ -27,14 +27,14 @@
     width: 100%;
     padding: var(--spacing-lg);
     color: var(--color-on-page);
-    background-color: var(--color-surface-raised);
-    max-width: var(--container-md);
-    max-height: none;
-    gap: var(--spacing-md);
-    border-radius: var(--radius-md);
-    flex-direction: column;
     border: 1px solid var(--color-border);
+    flex-direction: column;
+    gap: var(--spacing-md);
+    max-width: var(--container-md);
+    background-color: var(--color-surface-raised);
     height: auto;
+    border-radius: var(--radius-md);
+    max-height: none;
   }
 
   .form.form--w-auto {
@@ -85,20 +85,16 @@
     color: var(--color-alert);
   }
 
+  .form.form--semantic-base {
+    color: var(--color-base);
+  }
+
   .form.form--semantic-brand {
     color: var(--color-brand);
   }
 
   .form.form--semantic-info {
     color: var(--color-info);
-  }
-
-  .form.form--semantic-neutral {
-    color: var(--color-neutral);
-  }
-
-  .form.form--semantic-selected {
-    color: var(--color-selected);
   }
 
   .form.form--semantic-success {

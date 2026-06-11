@@ -90,7 +90,7 @@ config :corex, Corex.Design,
     visual: [:solid, :ghost, :outline, :subtle],
     shape: [:auto, :square, :circle],
     space: [sm: 2, md: 3, lg: 4, xl: 5],
-    semantic: [:accent, :brand, :alert, :success, :neutral]
+    semantic: [:base, :accent, :brand, :alert, :info, :success]
   },
 
   recipes: [
@@ -117,15 +117,15 @@ Each theme spec:
 
 ```elixir
 %{
-  palette: %{neutral: "#F0F0F0", accent: "#4B4B4B", ...},
+  palette: %{base: "#F0F0F0", accent: "#4B4B4B", ...},
   colors: %{
     light: %{
       surface: %{page: %{...}, raised: %{...}, control: %{...}},
       roles: %{accent: %{palette: :accent, lightness: 40, component: true}, ...},
-      on: %{page: %{palette: :neutral, against: :page, ratio: 8}, ...},
-      border: %{palette: :neutral, against: :control, ratio: 1.12},
-      focus: %{palette: :neutral, against: :control, ratio: 2.2},
-      shadow: %{palette: :neutral, against: :page, ratio: 1.05}
+      on: %{page: %{palette: :base, against: :page, ratio: 8}, ...},
+      border: %{palette: :base, against: :control, ratio: 1.12},
+      focus: %{palette: :base, against: :control, ratio: 2.2},
+      shadow: %{palette: :base, against: :page, ratio: 1.05}
     },
     dark: %{...}
   },

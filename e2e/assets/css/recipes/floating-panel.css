@@ -26,8 +26,8 @@
   .floating-panel {
     width: fit-content;
     max-width: none;
-    max-height: none;
     height: auto;
+    max-height: none;
   }
 
   .floating-panel.floating-panel--w-auto {
@@ -78,19 +78,15 @@
     position: relative;
   }
 
+  .floating-panel.floating-panel--semantic-base {
+    position: relative;
+  }
+
   .floating-panel.floating-panel--semantic-brand {
     position: relative;
   }
 
   .floating-panel.floating-panel--semantic-info {
-    position: relative;
-  }
-
-  .floating-panel.floating-panel--semantic-neutral {
-    position: relative;
-  }
-
-  .floating-panel.floating-panel--semantic-selected {
     position: relative;
   }
 
@@ -348,6 +344,30 @@
     }
   }
 
+  .floating-panel.floating-panel--semantic-base [data-scope="floating-panel"][data-part="trigger"] {
+    background-color: var(--color-base);
+    color: var(--color-on-base);
+    &:hover {
+      background-color: var(--color-base-hover);
+    }
+
+    &:active {
+      background-color: var(--color-base-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-base);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-surface-control-muted);
+      cursor: not-allowed;
+    }
+  }
+
   .floating-panel.floating-panel--semantic-brand [data-scope="floating-panel"][data-part="trigger"] {
     background-color: var(--color-brand);
     color: var(--color-on-brand);
@@ -386,54 +406,6 @@
     &:focus-visible {
       outline: none;
       box-shadow: inset 0 0 0 2px var(--color-on-info);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .floating-panel.floating-panel--semantic-neutral [data-scope="floating-panel"][data-part="trigger"] {
-    background-color: var(--color-neutral);
-    color: var(--color-on-neutral);
-    &:hover {
-      background-color: var(--color-neutral-hover);
-    }
-
-    &:active {
-      background-color: var(--color-neutral-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .floating-panel.floating-panel--semantic-selected [data-scope="floating-panel"][data-part="trigger"] {
-    background-color: var(--color-selected);
-    color: var(--color-on-selected);
-    &:hover {
-      background-color: var(--color-selected-hover);
-    }
-
-    &:active {
-      background-color: var(--color-selected-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
     }
 
     &:disabled,

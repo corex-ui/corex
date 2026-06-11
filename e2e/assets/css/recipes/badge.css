@@ -24,13 +24,13 @@
 @layer components {
   .badge {
     width: auto;
-    max-width: none;
-    max-height: none;
-    padding-inline: var(--spacing-sm);
     gap: var(--spacing-sm);
+    max-width: none;
+    height: calc(var(--spacing-control-md) * 0.8);
+    padding-inline: var(--spacing-sm);
+    max-height: none;
     font-size: calc(var(--text-base) * 0.8);
     line-height: var(--text-base--line-height);
-    height: calc(var(--spacing-control-md) * 0.8);
   }
 
   .badge.badge--w-auto {
@@ -81,6 +81,10 @@
     position: relative;
   }
 
+  .badge.badge--semantic-base {
+    position: relative;
+  }
+
   .badge.badge--semantic-brand {
     position: relative;
   }
@@ -89,48 +93,40 @@
     position: relative;
   }
 
-  .badge.badge--semantic-neutral {
-    position: relative;
-  }
-
-  .badge.badge--semantic-selected {
-    position: relative;
-  }
-
   .badge.badge--semantic-success {
     position: relative;
   }
 
   .badge.badge--size-sm {
-    padding-inline: var(--spacing-sm);
     gap: var(--spacing-sm);
+    height: calc(var(--spacing-control-md) * 0.8);
+    padding-inline: var(--spacing-sm);
     font-size: calc(var(--text-sm) * 0.8);
     line-height: var(--text-sm--line-height);
-    height: calc(var(--spacing-control-md) * 0.8);
   }
 
   .badge.badge--size-md {
-    padding-inline: var(--spacing-sm);
     gap: var(--spacing-sm);
+    height: calc(var(--spacing-control-md) * 0.8);
+    padding-inline: var(--spacing-sm);
     font-size: calc(var(--text-base) * 0.8);
     line-height: var(--text-base--line-height);
-    height: calc(var(--spacing-control-md) * 0.8);
   }
 
   .badge.badge--size-lg {
-    padding-inline: var(--spacing-sm);
     gap: var(--spacing-sm);
+    height: calc(var(--spacing-control-md) * 0.8);
+    padding-inline: var(--spacing-sm);
     font-size: calc(var(--text-lg) * 0.8);
     line-height: var(--text-lg--line-height);
-    height: calc(var(--spacing-control-md) * 0.8);
   }
 
   .badge.badge--size-xl {
-    padding-inline: var(--spacing-sm);
     gap: var(--spacing-sm);
+    height: calc(var(--spacing-control-md) * 0.8);
+    padding-inline: var(--spacing-sm);
     font-size: calc(var(--text-xl) * 0.8);
     line-height: var(--text-xl--line-height);
-    height: calc(var(--spacing-control-md) * 0.8);
   }
 
   .badge {

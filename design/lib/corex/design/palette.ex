@@ -5,24 +5,27 @@ defmodule Corex.Design.Palette do
   alias Corex.Design.Bem
   alias Corex.Design.Rule
   alias Corex.Design.Selector
-  alias Corex.Design.Vocabulary
+  alias Corex.Design.Semantics
 
   @disabled "&:disabled,\n  &[data-disabled],\n  &[disabled]"
 
-  def semantic_atoms, do: Vocabulary.semantic_roles()
+  def semantic_atoms, do: Semantics.atoms()
   def color_atoms, do: semantic_atoms()
 
-  def solid_var(:neutral), do: "--color-neutral"
-  def solid_var(role), do: "--color-#{role}"
+  def paint_roles, do: [:implicit | semantic_atoms()]
 
-  def solid_hover_var(role), do: "--color-#{role}-hover"
-  def solid_active_var(role), do: "--color-#{role}-active"
-  def muted_var(role), do: "--color-#{role}-muted"
+  def paint_role(:implicit), do: :base
+  def paint_role(role), do: role
 
-  def fg_var(:neutral), do: "--color-on-control"
+  def solid_var(role), do: "--color-#{paint_role(role)}"
+
+  def solid_hover_var(role), do: "--color-#{paint_role(role)}-hover"
+  def solid_active_var(role), do: "--color-#{paint_role(role)}-active"
+  def muted_var(role), do: "--color-#{paint_role(role)}-muted"
+
   def fg_var(role), do: solid_var(role)
 
-  def on_solid_var(role), do: "--color-on-#{role}"
+  def on_solid_var(role), do: "--color-on-#{paint_role(role)}"
 
   def outline_var(_role), do: "--color-focus"
 
@@ -33,35 +36,22 @@ defmodule Corex.Design.Palette do
 
   def inset_ring(role, kind) do
     var =
-      case {role, kind} do
-        {:neutral, _} -> "--color-focus"
-        {_, :on_solid} -> on_solid_var(role)
+      case kind do
+        :on_solid -> on_solid_var(role)
         _ -> solid_var(role)
       end
 
     "inset 0 0 0 2px var(#{var})"
   end
 
-  def selected_host_sx(color) when is_atom(color) do
-    c = Atom.to_string(color)
-
-    %{
-      "--color-selected": {:raw, "var(--color-#{c})"},
-      "--color-selected-hover": {:raw, "var(--color-#{c}-hover)"},
-      "--color-selected-active": {:raw, "var(--color-#{c}-active)"},
-      "--color-selected-muted": {:raw, "var(--color-#{c}-muted)"},
-      "--color-on-selected": {:raw, "var(--color-on-#{c})"}
-    }
-  end
-
-  def ink_color_atom(role) when is_atom(role), do: role
+  def ink_color_atom(role) when is_atom(role), do: paint_role(role)
 
   def ink_color_var(role) when is_atom(role), do: solid_var(role)
 
-  def on_solid_color_atom(role) when is_atom(role), do: :"on_#{role}"
+  def on_solid_color_atom(role) when is_atom(role), do: :"on_#{paint_role(role)}"
 
   def on_solid_color_var(role) when is_atom(role) do
-    "--color-on-" <> Atom.to_string(role)
+    "--color-on-" <> Atom.to_string(paint_role(role))
   end
 
   def compound_visual_rules(id), do: modifier_paint_rules(id)
@@ -73,7 +63,7 @@ defmodule Corex.Design.Palette do
   def modifier_paint_rules(id) do
     name = Selector.class_name(id)
 
-    for role <- [:neutral | semantic_atoms()],
+    for role <- paint_roles(),
         visual <- Axes.visual_atoms() do
       Rule.new(
         host_compound_selector(name, role, visual),
@@ -87,7 +77,7 @@ defmodule Corex.Design.Palette do
     name = Selector.class_name(id)
     part_sel = ~s([data-scope="#{scope}"][data-part="#{part}"][data-state="on"])
 
-    for role <- [:neutral | semantic_atoms()],
+    for role <- paint_roles(),
         visual <- Axes.visual_atoms() do
       Rule.new(
         "#{host_compound_selector(name, role, visual)} #{part_sel}",
@@ -108,7 +98,7 @@ defmodule Corex.Design.Palette do
       end) ++
         [Rule.new("& [data-icon]", decls: [color: "currentcolor"])]
 
-    for role <- [:neutral | semantic_atoms()],
+    for role <- paint_roles(),
         visual <- Axes.visual_atoms() do
       host_sel = host_compound_selector(name, role, visual)
 
@@ -119,10 +109,10 @@ defmodule Corex.Design.Palette do
     end
   end
 
-  def neutral_open_closed_trigger_rules(id, part_selector, opts \\ []) do
+  def implicit_open_closed_trigger_rules(id, part_selector, opts \\ []) do
     inherit = Keyword.get(opts, :inherit, [])
-    role = :selected
-    host = ".#{Selector.class_name(id)}"
+    role = :implicit
+    host = implicit_host(id)
     muted = muted_var(role)
 
     closed =
@@ -146,7 +136,10 @@ defmodule Corex.Design.Palette do
     [closed, open]
   end
 
-  defp host_compound_selector(name, :neutral, visual),
+  def neutral_open_closed_trigger_rules(id, part_selector, opts \\ []),
+    do: implicit_open_closed_trigger_rules(id, part_selector, opts)
+
+  defp host_compound_selector(name, :implicit, visual),
     do: ".#{name}.#{name}--variant-#{visual}"
 
   defp host_compound_selector(name, role, visual),
@@ -267,7 +260,9 @@ defmodule Corex.Design.Palette do
 
   def host_size_mod(id, size) when is_binary(size), do: host_size_mod(id, String.to_atom(size))
 
-  def neutral_host(id), do: ".#{Selector.class_name(id)}"
+  def implicit_host(id), do: ".#{Selector.class_name(id)}"
+
+  def neutral_host(id), do: implicit_host(id)
 
   def semantic_host_marker, do: %{position: :relative}
 

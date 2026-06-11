@@ -40,8 +40,8 @@
   .tooltip {
     width: fit-content;
     max-width: none;
-    max-height: none;
     height: auto;
+    max-height: none;
   }
 
   .tooltip [data-scope="tooltip"][data-part="content"] {
@@ -121,6 +121,20 @@
     border-color: var(--color-border-alert, var(--color-border));
   }
 
+  .tooltip.tooltip--semantic-base [data-scope="tooltip"][data-part="content"] {
+    color: var(--color-base);
+    background-color: var(--color-base);
+    border-color: var(--color-border-base, var(--color-border));
+  }
+
+  .tooltip.tooltip--semantic-base [data-scope="tooltip"][data-part="arrow"] {
+    --arrow-background: var(--color-base);
+  }
+
+  .tooltip.tooltip--semantic-base [data-scope="tooltip"][data-part="arrow-tip"] {
+    border-color: var(--color-border-base, var(--color-border));
+  }
+
   .tooltip.tooltip--semantic-brand [data-scope="tooltip"][data-part="content"] {
     color: var(--color-brand);
     background-color: var(--color-brand);
@@ -147,34 +161,6 @@
 
   .tooltip.tooltip--semantic-info [data-scope="tooltip"][data-part="arrow-tip"] {
     border-color: var(--color-border-info, var(--color-border));
-  }
-
-  .tooltip.tooltip--semantic-neutral [data-scope="tooltip"][data-part="content"] {
-    color: var(--color-neutral);
-    background-color: var(--color-neutral);
-    border-color: var(--color-border-neutral, var(--color-border));
-  }
-
-  .tooltip.tooltip--semantic-neutral [data-scope="tooltip"][data-part="arrow"] {
-    --arrow-background: var(--color-neutral);
-  }
-
-  .tooltip.tooltip--semantic-neutral [data-scope="tooltip"][data-part="arrow-tip"] {
-    border-color: var(--color-border-neutral, var(--color-border));
-  }
-
-  .tooltip.tooltip--semantic-selected [data-scope="tooltip"][data-part="content"] {
-    color: var(--color-selected);
-    background-color: var(--color-selected);
-    border-color: var(--color-border-selected, var(--color-border));
-  }
-
-  .tooltip.tooltip--semantic-selected [data-scope="tooltip"][data-part="arrow"] {
-    --arrow-background: var(--color-selected);
-  }
-
-  .tooltip.tooltip--semantic-selected [data-scope="tooltip"][data-part="arrow-tip"] {
-    border-color: var(--color-border-selected, var(--color-border));
   }
 
   .tooltip.tooltip--semantic-success [data-scope="tooltip"][data-part="content"] {

@@ -45,8 +45,8 @@
   .avatar {
     width: auto;
     max-width: none;
-    max-height: none;
     height: auto;
+    max-height: none;
   }
 
   .avatar [data-scope="avatar"][data-part="fallback"] {

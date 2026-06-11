@@ -39,9 +39,9 @@
   [data-scope="signature-pad"][data-part="clear-trigger"] {
       color: --value(--color-*, [color]);
     background-color: --value(--color-*, [color]);
+    min-height: --value(--spacing-control-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-control-*, [length]);
   }
 
 }
@@ -64,17 +64,17 @@
   .signature-pad {
     width: 100%;
     max-width: var(--container-xs);
-    max-height: none;
     height: auto;
+    max-height: none;
   }
 
   .signature-pad [data-scope="signature-pad"][data-part="clear-trigger"] {
     color: var(--color-on-accent);
     background-color: var(--color-accent);
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
     min-height: var(--spacing-control-md);
     min-width: var(--spacing-control-md);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
   }
 
   .signature-pad.signature-pad--w-auto {
@@ -125,19 +125,15 @@
     position: relative;
   }
 
+  .signature-pad.signature-pad--semantic-base {
+    position: relative;
+  }
+
   .signature-pad.signature-pad--semantic-brand {
     position: relative;
   }
 
   .signature-pad.signature-pad--semantic-info {
-    position: relative;
-  }
-
-  .signature-pad.signature-pad--semantic-neutral {
-    position: relative;
-  }
-
-  .signature-pad.signature-pad--semantic-selected {
     position: relative;
   }
 
@@ -315,6 +311,30 @@
     }
   }
 
+  .signature-pad.signature-pad--semantic-base [data-scope="signature-pad"][data-part="clear-trigger"] {
+    background-color: var(--color-base);
+    color: var(--color-on-base);
+    &:hover {
+      background-color: var(--color-base-hover);
+    }
+
+    &:active {
+      background-color: var(--color-base-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-on-base);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-surface-control-muted);
+      cursor: not-allowed;
+    }
+  }
+
   .signature-pad.signature-pad--semantic-brand [data-scope="signature-pad"][data-part="clear-trigger"] {
     background-color: var(--color-brand);
     color: var(--color-on-brand);
@@ -353,54 +373,6 @@
     &:focus-visible {
       outline: none;
       box-shadow: inset 0 0 0 2px var(--color-on-info);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .signature-pad.signature-pad--semantic-neutral [data-scope="signature-pad"][data-part="clear-trigger"] {
-    background-color: var(--color-neutral);
-    color: var(--color-on-neutral);
-    &:hover {
-      background-color: var(--color-neutral-hover);
-    }
-
-    &:active {
-      background-color: var(--color-neutral-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-neutral);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .signature-pad.signature-pad--semantic-selected [data-scope="signature-pad"][data-part="clear-trigger"] {
-    background-color: var(--color-selected);
-    color: var(--color-on-selected);
-    &:hover {
-      background-color: var(--color-selected-hover);
-    }
-
-    &:active {
-      background-color: var(--color-selected-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-selected);
     }
 
     &:disabled,

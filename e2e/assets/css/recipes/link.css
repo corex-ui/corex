@@ -28,19 +28,19 @@
     cursor: pointer;
     padding: 0;
     color: var(--color-on-link);
-    background-color: transparent;
-    max-width: none;
-    max-height: none;
-    padding-inline: var(--spacing-md);
-    gap: var(--spacing-md);
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-    min-height: var(--spacing-control-md);
-    align-items: center;
     border: none;
+    gap: var(--spacing-md);
+    max-width: none;
+    align-items: center;
+    background-color: transparent;
     height: auto;
+    padding-inline: var(--spacing-md);
+    min-height: var(--spacing-control-md);
+    max-height: none;
     transition: color 120ms ease, box-shadow 120ms ease;
     overflow: visible;
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
     text-decoration-line: underline;
     text-underline-offset: 0.15em;
     appearance: none;
@@ -131,6 +131,10 @@
     position: relative;
   }
 
+  .link.link--semantic-base {
+    position: relative;
+  }
+
   .link.link--semantic-brand {
     position: relative;
   }
@@ -139,48 +143,40 @@
     position: relative;
   }
 
-  .link.link--semantic-neutral {
-    position: relative;
-  }
-
-  .link.link--semantic-selected {
-    position: relative;
-  }
-
   .link.link--semantic-success {
     position: relative;
   }
 
   .link.link--size-sm {
-    padding-inline: var(--spacing-sm);
     gap: var(--spacing-sm);
+    padding-inline: var(--spacing-sm);
+    min-height: var(--spacing-control-sm);
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
-    min-height: var(--spacing-control-sm);
   }
 
   .link.link--size-md {
-    padding-inline: var(--spacing-md);
     gap: var(--spacing-md);
+    padding-inline: var(--spacing-md);
+    min-height: var(--spacing-control-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
-    min-height: var(--spacing-control-md);
   }
 
   .link.link--size-lg {
-    padding-inline: var(--spacing-lg);
     gap: var(--spacing-lg);
+    padding-inline: var(--spacing-lg);
+    min-height: var(--spacing-control-lg);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
-    min-height: var(--spacing-control-lg);
   }
 
   .link.link--size-xl {
-    padding-inline: var(--spacing-xl);
     gap: var(--spacing-xl);
+    padding-inline: var(--spacing-xl);
+    min-height: var(--spacing-control-xl);
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
-    min-height: var(--spacing-control-xl);
   }
 
   .link.link--shape-square {
@@ -212,6 +208,13 @@
     }
   }
 
+  .link.link--semantic-base {
+    color: var(--color-base);
+    &:hover {
+      color: var(--color-base-hover);
+    }
+  }
+
   .link.link--semantic-brand {
     color: var(--color-brand);
     &:hover {
@@ -223,20 +226,6 @@
     color: var(--color-info);
     &:hover {
       color: var(--color-info-hover);
-    }
-  }
-
-  .link.link--semantic-neutral {
-    color: var(--color-neutral);
-    &:hover {
-      color: var(--color-neutral-hover);
-    }
-  }
-
-  .link.link--semantic-selected {
-    color: var(--color-selected);
-    &:hover {
-      color: var(--color-selected-hover);
     }
   }
 

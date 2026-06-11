@@ -26,11 +26,11 @@
     width: fit-content;
     color: var(--color-on-page);
     max-width: none;
+    height: auto;
     max-height: none;
+    font-weight: var(--font-weight-bold);
     font-size: var(--text-3xl);
     line-height: var(--leading-3xl);
-    height: auto;
-    font-weight: var(--font-weight-bold);
     font-family: var(--font-sans);
     @media (min-width: 48rem) {
       font-size: var(--text-4xl);
@@ -86,20 +86,16 @@
     color: var(--color-alert);
   }
 
+  .h1.h1--semantic-base {
+    color: var(--color-base);
+  }
+
   .h1.h1--semantic-brand {
     color: var(--color-brand);
   }
 
   .h1.h1--semantic-info {
     color: var(--color-info);
-  }
-
-  .h1.h1--semantic-neutral {
-    color: var(--color-neutral);
-  }
-
-  .h1.h1--semantic-selected {
-    color: var(--color-selected);
   }
 
   .h1.h1--semantic-success {
