@@ -685,6 +685,64 @@ defmodule Corex.New.PatchesTest do
       end)
     end
 
+    test "joins NODE_PATH env lists for tailwind and esbuild on Elixir 1.18" do
+      in_tmp(:patch_config_node_path, fn ->
+        File.mkdir_p!("config")
+        File.write!("config/config.exs", @stock_config_exs)
+
+        Patches.patch_config_exs(File.cwd!(), otp_app: :my_app)
+        body = File.read!("config/config.exs")
+
+        assert body =~
+                 ~s|"NODE_PATH" => Enum.join([Path.expand("../deps", __DIR__), Mix.Project.build_path()], ":")|
+
+        refute body =~
+                 ~s|"NODE_PATH" => [Path.expand("../deps", __DIR__), Mix.Project.build_path()]|
+      end)
+    end
+
+    test "leaves NODE_PATH unchanged when already a string" do
+      in_tmp(:patch_config_node_path_string, fn ->
+        File.mkdir_p!("config")
+
+        config = """
+        import Config
+
+        config :esbuild,
+          version: "0.25.4",
+          my_app: [
+            args: ~w(js/app.js --bundle),
+            cd: Path.expand("../assets", __DIR__),
+            env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
+          ]
+
+        import_config "#{"#"}{config_env()}.exs"
+        """
+
+        File.write!("config/config.exs", config)
+        Patches.patch_config_exs(File.cwd!(), otp_app: :my_app)
+        body = File.read!("config/config.exs")
+
+        assert body =~ ~s|"NODE_PATH" => Path.expand("../deps", __DIR__)|
+        refute body =~ "Enum.join"
+      end)
+    end
+
+    test "NODE_PATH list patch is idempotent" do
+      in_tmp(:patch_config_node_path_idempotent, fn ->
+        File.mkdir_p!("config")
+        File.write!("config/config.exs", @stock_config_exs)
+
+        Patches.patch_config_exs(File.cwd!(), otp_app: :my_app)
+        Patches.patch_config_exs(File.cwd!(), otp_app: :my_app)
+        body = File.read!("config/config.exs")
+
+        assert length(Regex.scan(~r/"NODE_PATH"\s*=>/u, body)) == 1
+        assert body =~ "Enum.join"
+        refute body =~ ~s|"NODE_PATH" => [Path.expand("../deps", __DIR__), Mix.Project.build_path()]|
+      end)
+    end
+
     test "skips themes config when themes key already exists" do
       in_tmp(:patch_config_themes_present, fn ->
         File.mkdir_p!("config")
