@@ -8,7 +8,7 @@ Corex ships **no CSS**. Accessibility, state machines, and component anatomy com
 
 1. **Style attributes** (`semantic`, `size`, `radius`, …) express design intent. They are not inline styles and they do not load CSS.
 2. By default, `:corex` does **not** emit BEM modifiers. Only your `class` assign appears on the host.
-3. Opt in to BEM with `config :corex, emit_style_classes: true`, or install [Corex Design](styled.html) (BEM is automatic when design is configured).
+3. Opt in to BEM with `config :corex, emit_style_classes: true` (`mix corex.new` sets this when Corex Design is installed).
 4. **Your stylesheet** (or Corex Design CSS) defines what block and modifier classes look like.
 
 With BEM enabled:
@@ -67,17 +67,17 @@ Layout components (`row`, `stack`, `box`, …) follow the same pattern: `gap="md
 
 Layout attr values are design shorthand (`gap="md"`, `justify="between"`), not Tailwind utility strings.
 
-## BEM and validation tiers
+## BEM tiers
 
-| Setup | BEM in `class` | Attr validation |
-| --- | --- | --- |
-| `{:corex}` only (default) | Off | None |
-| `config :corex, emit_style_classes: true` | On | None |
-| `{:corex_design}` + `config :corex, Corex.Design` | On (automatic) | `on_invalid_style:` under design config (default `:raise`) |
+| Setup | BEM in `class` |
+| --- | --- |
+| `{:corex}` only (default) | Off |
+| `config :corex, emit_style_classes: true` | On |
+| `{:corex_design}` (installer sets `emit_style_classes: true`) | On |
 
 Style each axis with **named attrs** (`semantic`, `size`, `gap`, `hide_below`, `as`, …) or equivalent BEM classes on `class`. There is no bundled `style={%{...}}` map attribute.
 
-`:corex` alone accepts any style string and performs no validation. With [Corex Design](styled.html), `scales:` in design config drives CSS and runtime validation via `on_invalid_style:` under `config :corex, Corex.Design`. Builtin step names are listed in [Design config](design-config.html). Theme `dimensions` tune how large `md` looks without renaming steps.
+`:corex` accepts any style string and performs no validation. It maps attrs to BEM modifiers with fixed rules only. With [Corex Design](styled.html), `scales:` in design config drives generated CSS. Builtin step names are listed in [Design config](design-config.html). Theme `dimensions` tune how large `md` looks without renaming steps.
 
 Polymorphic components pick a look with `as` (any string; known names use the component `looks` alias map):
 

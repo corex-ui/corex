@@ -30,8 +30,8 @@
     height: auto;
     max-height: var(--container-md);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
     min-width: 0;
+    border-radius: var(--radius-md);
     overflow-x: auto;
     overflow-y: auto;
   }

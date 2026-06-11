@@ -29,11 +29,11 @@
     height: auto;
     max-height: none;
     border: 1px solid var(--color-border);
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
     border-radius: var(--radius-md);
     margin-block: 2em;
     overflow: hidden;
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
     list-style: none;
   }
 

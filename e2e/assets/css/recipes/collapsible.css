@@ -20,8 +20,8 @@
 
 @utility collapsible--size-* {
   [data-scope="collapsible"][data-part="root"] {
-      gap: --value(--spacing-*, [length]);
-    max-width: --value(--container-*, [length]);
+      max-width: --value(--container-*, [length]);
+    gap: --value(--spacing-*, [length]);
   }
 
 }
@@ -29,8 +29,8 @@
 
 @layer components {
   .collapsible [data-scope="collapsible"][data-part="root"] {
-    gap: var(--spacing-md);
     max-width: var(--container-md);
+    gap: var(--spacing-md);
   }
 
   .collapsible {

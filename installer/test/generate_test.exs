@@ -29,7 +29,7 @@ defmodule Corex.New.GenerateTest do
 
       config = File.read!("config/config.exs")
       assert config =~ "config :corex, Corex.Design"
-      assert config =~ "on_invalid_style: :raise"
+      assert config =~ "emit_style_classes: true"
       assert config =~ "output: \"assets/css/corex.tailwind.css\""
 
       assert File.read!(Path.join("assets/css", "app.css")) =~ ~s(@import "./corex.tailwind.css")

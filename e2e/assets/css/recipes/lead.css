@@ -27,17 +27,17 @@
     max-width: none;
     height: auto;
     max-height: none;
+    font-weight: var(--font-weight-normal);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
-    font-weight: var(--font-weight-normal);
     font-family: var(--font-sans);
-    @media (min-width: 48rem) {
-      font-size: var(--text-xl);
-      line-height: var(--leading-xl);
-    }
     @media (min-width: 64rem) {
       font-size: var(--text-2xl);
       line-height: var(--leading-2xl);
+    }
+    @media (min-width: 48rem) {
+      font-size: var(--text-xl);
+      line-height: var(--leading-xl);
     }
   }
 

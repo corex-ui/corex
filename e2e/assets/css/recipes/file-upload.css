@@ -29,8 +29,8 @@
   }
 
   [data-scope="file-upload"][data-part="root"] {
-      gap: --value(--spacing-*, [length]);
-    max-width: --value(--container-*, [length]);
+      max-width: --value(--container-*, [length]);
+    gap: --value(--spacing-*, [length]);
   }
 
   [data-scope="file-upload"][data-part="trigger"] {
@@ -58,8 +58,8 @@
   }
 
   .file-upload [data-scope="file-upload"][data-part="root"] {
-    gap: var(--spacing-md);
     max-width: var(--container-md);
+    gap: var(--spacing-md);
   }
 
   .file-upload {

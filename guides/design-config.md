@@ -48,18 +48,18 @@ Registry id vs recipe filename: `action` → `button.css`, `navigate` → `link.
 | `:scales` | no | built-in defaults | Per-axis replacement: step lists or `[step: value]` keyword lists |
 | `:recipes` | no | all / `[]` sources | `include:` allowlist, `sources:` host modules |
 | `:aliases` | no | `%{}` | Semantic role aliases for token resolution |
-| `:on_invalid_style` | no | `:raise` | Runtime attr validation: `:raise`, `:warn`, or `:ignore` |
 
 Component roles for `semantic=` in theme specs use `roles` keys with `component: true`.
 
-`:corex` alone does not validate style attrs. Set `emit_style_classes: true` under `config :corex` for BEM without design. With design configured, BEM is automatic.
+`:corex` does not validate style attrs. Set `emit_style_classes: true` under `config :corex` for BEM modifiers. `mix corex.new` sets this when Corex Design is installed.
 
 ## Minimal styled app
 
 ```elixir
+config :corex, emit_style_classes: true
+
 config :corex, Corex.Design,
-  output: "assets/css/corex.tailwind.css",
-  on_invalid_style: :raise
+  output: "assets/css/corex.tailwind.css"
 ```
 
 Omit optional keys to use built-in neo, uno, duo, and leo presets with light/dark modes. See [Theming](theming.html).
@@ -77,9 +77,10 @@ config :corex,
     layout: [theme: true, mode: true, locale: true]
   ]
 
+config :corex, emit_style_classes: true
+
 config :corex, Corex.Design,
   output: "assets/css/corex.tailwind.css",
-  on_invalid_style: :raise,
   default_theme: :neo,
   default_mode: :light,
   themes: ~w(neo uno duo leo)a,
@@ -181,9 +182,7 @@ Tier 1 customization: edit `palette` and `dimensions` only; inherit surface, rol
 
 Omitted axes keep built-in defaults. Full replacement per axis when provided; adapt theme presets if custom steps break preset dimension maps.
 
-Runtime validation uses `on_invalid_style:` under `config :corex, Corex.Design` (default `:raise`). Invalid style attrs (for example `size="xl"` when `xl` is not in resolved scales) raise when the component renders.
-
-After changing `scales:` or `themes:`, run `mix corex.design.validate` and exercise templates in tests or dev so runtime checks cover your attrs.
+After changing `scales:` or `themes:`, run `mix corex.design.validate` to check design config.
 
 ## Recipe overrides
 

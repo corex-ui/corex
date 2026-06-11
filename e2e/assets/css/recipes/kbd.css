@@ -31,8 +31,8 @@
     max-height: none;
     border: 1px solid var(--color-border);
     background-color: var(--color-surface-raised);
-    border-radius: var(--radius-md);
     margin-inline: var(--spacing-sm);
+    border-radius: var(--radius-md);
     font-family: var(--font-mono);
   }
 

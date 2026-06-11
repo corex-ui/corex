@@ -27,10 +27,10 @@
     width: 100%;
     padding: var(--spacing-lg);
     color: var(--color-on-page);
-    gap: var(--spacing-md);
     max-width: var(--container-md);
     height: auto;
     max-height: none;
+    gap: var(--spacing-md);
     flex-direction: column;
     border: 1px solid var(--color-border);
     background-color: var(--color-surface-raised);

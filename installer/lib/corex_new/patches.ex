@@ -576,9 +576,10 @@ defmodule Corex.New.Patches do
           end
 
         block = """
+        config :corex, emit_style_classes: true
+
         config :corex, Corex.Design,
           output: "assets/css/corex.tailwind.css",
-          on_invalid_style: :raise,
         #{themes_line}
         """
 

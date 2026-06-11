@@ -172,9 +172,9 @@
     max-width: calc(var(--spacing-control-md) * 0.8);
     max-height: calc(var(--spacing-control-md) * 0.8);
     min-height: calc(var(--spacing-control-md) * 0.8);
+    min-width: calc(var(--spacing-control-md) * 0.8);
     font-size: var(--text-base);
     line-height: var(--leading-base);
-    min-width: calc(var(--spacing-control-md) * 0.8);
   }
 
   .date-picker [data-scope="date-picker"][data-part="next-trigger"] {
@@ -182,9 +182,9 @@
     max-width: calc(var(--spacing-control-md) * 0.8);
     max-height: calc(var(--spacing-control-md) * 0.8);
     min-height: calc(var(--spacing-control-md) * 0.8);
+    min-width: calc(var(--spacing-control-md) * 0.8);
     font-size: var(--text-base);
     line-height: var(--leading-base);
-    min-width: calc(var(--spacing-control-md) * 0.8);
   }
 
   .date-picker [data-scope="date-picker"][data-part="positioner"] {
@@ -204,9 +204,9 @@
     height: calc(var(--spacing-control-md) * 0.95);
     max-height: calc(var(--spacing-control-md) * 0.95);
     min-height: calc(var(--spacing-control-md) * 0.95);
+    min-width: calc(var(--spacing-control-md) * 0.95);
     font-size: var(--text-base);
     line-height: var(--leading-base);
-    min-width: calc(var(--spacing-control-md) * 0.95);
   }
 
   .date-picker [data-scope="date-picker"][data-part="view-control"] {

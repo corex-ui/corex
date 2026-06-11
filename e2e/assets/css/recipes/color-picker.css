@@ -25,8 +25,8 @@
 @utility color-picker--size-* {
   [data-scope="color-picker"][data-part="control"] {
       padding: --value(--spacing-*, [length]);
-    gap: --value(--spacing-*, [length]);
     max-width: --value(--container-*, [length]);
+    gap: --value(--spacing-*, [length]);
   }
 
   [data-scope="color-picker"][data-part="label"] {
@@ -44,8 +44,8 @@
   }
 
   [data-scope="color-picker"][data-part="content"] {
-      gap: --value(--spacing-*, [length]);
-    max-width: --value(--container-*, [length]);
+      max-width: --value(--container-*, [length]);
+    gap: --value(--spacing-*, [length]);
   }
 
   [data-scope="color-picker"][data-part="channel-input"] {
@@ -62,8 +62,8 @@
   .color-picker [data-scope="color-picker"][data-part="control"] {
     width: fit-content;
     padding: var(--spacing-md);
-    gap: var(--spacing-md);
     max-width: fit-content;
+    gap: var(--spacing-md);
   }
 
   .color-picker [data-scope="color-picker"][data-part="label"] {
@@ -85,15 +85,22 @@
   .color-picker [data-scope="color-picker"][data-part="trigger"] {
     max-height: var(--spacing-control-md);
     min-height: var(--spacing-control-md);
-    border-radius: var(--radius-md);
     min-width: var(--spacing-control-md);
+    border-radius: var(--radius-md);
     overflow: hidden;
   }
 
   .color-picker [data-scope="color-picker"][data-part="content"] {
-    gap: var(--spacing-md);
     max-width: calc(var(--container-4xs) * var(--spacing-control-md) / var(--spacing-control-md));
+    gap: var(--spacing-md);
     min-width: calc(var(--container-4xs) * var(--spacing-control-md) / var(--spacing-control-md));
+  }
+
+  .color-picker [data-scope="color-picker"][data-part="area-thumb"] {
+    width: calc(var(--spacing-control-md) * 0.4);
+    height: calc(var(--spacing-control-md) * 0.4);
+    border: calc(var(--spacing-md) / 8) solid var(--color-on-page);
+    box-shadow: inset 0 0 0 var(--spacing-md) var(--color-surface-page);
   }
 
   .color-picker [data-scope="color-picker"][data-part="channel-input"] {
@@ -103,13 +110,6 @@
     border-color: var(--color-border);
     font-size: var(--text-base);
     line-height: var(--leading-base);
-  }
-
-  .color-picker [data-scope="color-picker"][data-part="area-thumb"] {
-    width: calc(var(--spacing-control-md) * 0.4);
-    height: calc(var(--spacing-control-md) * 0.4);
-    border: calc(var(--spacing-md) / 8) solid var(--color-on-page);
-    box-shadow: inset 0 0 0 var(--spacing-md) var(--color-surface-page);
   }
 
   .color-picker.color-picker--w-auto {

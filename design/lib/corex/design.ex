@@ -15,7 +15,7 @@ defmodule Corex.Design do
       config :corex, Corex.Design,
         output: "assets/css/corex.tailwind.css"
 
-  When `{:corex_design}` is configured, `Corex.Design.Vocabulary` validates style attrs at render time. `:corex_design` requires OTP 27+.
+  `:corex_design` requires OTP 27+.
   '''
 
   @compile {:no_warn_undefined, [Corex.Design.Watch]}

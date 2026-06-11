@@ -72,9 +72,9 @@
     color: var(--color-accent-ink);
     min-height: var(--spacing-control-md);
     background-color: var(--color-accent);
+    min-width: var(--spacing-control-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
-    min-width: var(--spacing-control-md);
   }
 
   .signature-pad.signature-pad--w-auto {

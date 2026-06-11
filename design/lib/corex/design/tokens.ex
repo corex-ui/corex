@@ -292,9 +292,6 @@ defmodule Corex.Design.Tokens.Scales do
   def breakpoint, do: @breakpoint
   def keyframes, do: @keyframes
 
-  @visual ~W(solid ghost outline subtle)a
-  @shape ~W(auto square circle)a
-
   def space_steps, do: ConfiguredScales.dimension_steps(:space)
   def size_steps, do: ConfiguredScales.dimension_steps(:size)
   def text_steps, do: ConfiguredScales.dimension_steps(:text)

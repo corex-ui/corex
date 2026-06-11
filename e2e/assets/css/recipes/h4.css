@@ -28,9 +28,9 @@
     max-width: none;
     height: auto;
     max-height: none;
+    font-weight: var(--font-weight-normal);
     font-size: var(--text-base);
     line-height: var(--leading-base);
-    font-weight: var(--font-weight-normal);
     font-family: var(--font-sans);
     @media (min-width: 48rem) {
       font-size: var(--text-lg);

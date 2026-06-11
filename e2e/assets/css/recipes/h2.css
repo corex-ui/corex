@@ -28,9 +28,9 @@
     max-width: none;
     height: auto;
     max-height: none;
+    font-weight: var(--font-weight-bold);
     font-size: var(--text-2xl);
     line-height: var(--leading-2xl);
-    font-weight: var(--font-weight-bold);
     font-family: var(--font-sans);
     @media (min-width: 48rem) {
       font-size: var(--text-3xl);

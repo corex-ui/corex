@@ -27,10 +27,10 @@
     width: auto;
     cursor: pointer;
     color: var(--color-on-page);
-    gap: var(--spacing-md);
     max-width: none;
     height: auto;
     max-height: none;
+    gap: var(--spacing-md);
     padding-inline: var(--spacing-md);
     min-height: var(--spacing-control-md);
     transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
@@ -39,11 +39,11 @@
     border: 1px solid transparent;
     background-color: var(--color-surface-control);
     border-color: transparent;
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
     border-radius: var(--radius-md);
     font-weight: var(--font-weight-normal);
     text-align: center;
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
     text-decoration-line: none;
     appearance: none;
     &:active {
@@ -71,8 +71,8 @@
       }
       &:focus-visible {
         color: var(--color-on-muted);
-        outline: none;
         background-color: var(--color-surface-control-muted);
+        outline: none;
         box-shadow: none;
       }
     }
@@ -182,8 +182,8 @@
       }
       &:focus-visible {
         color: var(--color-on-muted);
-        outline: none;
         background-color: var(--color-surface-control-muted);
+        outline: none;
         box-shadow: none;
       }
     }
@@ -225,8 +225,8 @@
       }
       &:focus-visible {
         color: var(--color-on-muted);
-        outline: none;
         background-color: transparent;
+        outline: none;
         box-shadow: none;
       }
     }
@@ -293,8 +293,8 @@
       }
       &:focus-visible {
         color: var(--color-on-muted);
-        outline: none;
         background-color: var(--color-surface-control-muted);
+        outline: none;
         box-shadow: none;
       }
     }

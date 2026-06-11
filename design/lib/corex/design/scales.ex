@@ -61,7 +61,7 @@ defmodule Corex.Design.Scales do
 
   def builtin_semantic_atoms, do: @builtin_semantics
 
-  def builtin_semantics, do: Enum.map(@builtin_semantic_atoms, &Atom.to_string/1)
+  def builtin_semantics, do: Enum.map(@builtin_semantics, &Atom.to_string/1)
 
   def builtin_visual_atoms, do: builtin_steps(:visual)
   def builtin_shape_atoms, do: builtin_steps(:shape)

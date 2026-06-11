@@ -6,37 +6,6 @@ defmodule Corex.Design.Vocabulary do
 
   @style_axes ~W(semantic size text radius weight visual shape space)a
 
-  def configured?, do: Corex.Design.configured?()
-
-  def on_invalid_style do
-    case Application.get_env(:corex, Corex.Design) do
-      config when is_list(config) ->
-        case Keyword.get(config, :on_invalid_style, :raise) do
-          mode when mode in [:raise, :warn, :ignore] ->
-            mode
-
-          other ->
-            raise ArgumentError,
-                  "invalid config :corex, Corex.Design, on_invalid_style: #{inspect(other)}"
-        end
-
-      _ ->
-        :ignore
-    end
-  end
-
-  def check_style_axes(_base, axis_names, assigns) do
-    if configured?() do
-      case on_invalid_style() do
-        :ignore -> :ok
-        :warn -> check_axes(axis_names, assigns, &warn!/2)
-        :raise -> check_axes(axis_names, assigns, &validate!/2)
-      end
-    else
-      :ok
-    end
-  end
-
   def semantic_roles do
     Theme.resolved_themes()
     |> Map.values()
@@ -53,52 +22,6 @@ defmodule Corex.Design.Vocabulary do
       other -> [nil | scale_strings(other)]
     end
   end
-
-  def validate!(axis, value) when is_binary(value) do
-    if axis in @style_axes do
-      allowed = axis_values(axis)
-
-      if value in allowed do
-        :ok
-      else
-        raise ArgumentError, invalid_message(axis, allowed, value)
-      end
-    else
-      :ok
-    end
-  end
-
-  def validate!(axis, value) when is_atom(value) do
-    validate!(axis, Atom.to_string(value))
-  end
-
-  def warn!(axis, value) do
-    if axis in @style_axes do
-      allowed = axis_values(axis)
-
-      if value in allowed do
-        :ok
-      else
-        require Logger
-        Logger.warning(invalid_message(axis, allowed, value))
-      end
-    else
-      :ok
-    end
-  end
-
-  defp check_axes(axis_names, assigns, fun) do
-    for axis <- axis_names,
-        value = Map.get(assigns, axis),
-        is_binary(value) do
-      fun.(vocabulary_axis(axis), value)
-    end
-
-    :ok
-  end
-
-  defp vocabulary_axis(:variant), do: :visual
-  defp vocabulary_axis(axis), do: axis
 
   defp component_roles(spec) do
     for mode <- Theme.modes(),
@@ -120,15 +43,4 @@ defmodule Corex.Design.Vocabulary do
   defp scale_strings(:visual), do: Scales.visual_steps()
   defp scale_strings(:shape), do: Scales.shape_steps()
   defp scale_strings(:space), do: Scales.space_steps()
-
-  defp invalid_message(axis, allowed, value) do
-    shown = allowed |> Enum.reject(&is_nil/1) |> Enum.sort()
-
-    """
-    invalid value for attribute "#{axis}".
-    Expected one of #{inspect(shown)},
-    got: #{inspect(value)}
-    """
-    |> String.trim()
-  end
 end

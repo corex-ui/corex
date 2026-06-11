@@ -344,8 +344,8 @@
     width: auto;
     white-space: nowrap;
     flex: 1 1 0%;
-    gap: var(--spacing-md);
     max-width: 100%;
+    gap: var(--spacing-md);
     flex-direction: row;
     align-items: center;
     min-width: 0;

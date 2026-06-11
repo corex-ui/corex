@@ -687,7 +687,7 @@ defmodule Corex.New.PatchesTest do
         Patches.patch_config_exs(File.cwd!(), otp_app: :my_app, design: true)
         body = File.read!("config/config.exs")
         assert body =~ "config :corex, Corex.Design"
-        assert body =~ "on_invalid_style: :raise"
+        assert body =~ "emit_style_classes: true"
         assert body =~ "output: \"assets/css/corex.tailwind.css\""
         refute body =~ "Corex.Design.Theme.Presets.all()"
 

@@ -70,70 +70,70 @@
 
 @media (min-width: 40rem) {
   .hide-from-sm,
-  [data-hide-from="sm"] {
+  [class*="--hide-from-sm"] {
     display: none !important;
   }
 }
 
 @media not all and (min-width: 40rem) {
   .hide-below-sm,
-  [data-hide-below="sm"] {
+  [class*="--hide-below-sm"] {
     display: none !important;
   }
 }
 
 @media (min-width: 48rem) {
   .hide-from-md,
-  [data-hide-from="md"] {
+  [class*="--hide-from-md"] {
     display: none !important;
   }
 }
 
 @media not all and (min-width: 48rem) {
   .hide-below-md,
-  [data-hide-below="md"] {
+  [class*="--hide-below-md"] {
     display: none !important;
   }
 }
 
 @media (min-width: 64rem) {
   .hide-from-lg,
-  [data-hide-from="lg"] {
+  [class*="--hide-from-lg"] {
     display: none !important;
   }
 }
 
 @media not all and (min-width: 64rem) {
   .hide-below-lg,
-  [data-hide-below="lg"] {
+  [class*="--hide-below-lg"] {
     display: none !important;
   }
 }
 
 @media (min-width: 80rem) {
   .hide-from-xl,
-  [data-hide-from="xl"] {
+  [class*="--hide-from-xl"] {
     display: none !important;
   }
 }
 
 @media not all and (min-width: 80rem) {
   .hide-below-xl,
-  [data-hide-below="xl"] {
+  [class*="--hide-below-xl"] {
     display: none !important;
   }
 }
 
 @media (min-width: 96rem) {
   .hide-from-2xl,
-  [data-hide-from="2xl"] {
+  [class*="--hide-from-2xl"] {
     display: none !important;
   }
 }
 
 @media not all and (min-width: 96rem) {
   .hide-below-2xl,
-  [data-hide-below="2xl"] {
+  [class*="--hide-below-2xl"] {
     display: none !important;
   }
 }

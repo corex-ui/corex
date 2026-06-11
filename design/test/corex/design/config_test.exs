@@ -56,7 +56,6 @@ defmodule Corex.Design.ConfigTest do
     assert :emit_style_classes in corex_keys
 
     design_keys = map[Corex.Design] |> Enum.map(&elem(&1, 0))
-    assert :on_invalid_style in design_keys
     assert :output in design_keys
     assert :default_theme in design_keys
     assert :default_mode in design_keys

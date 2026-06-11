@@ -26,10 +26,10 @@
     width: fit-content;
     padding: var(--spacing-md);
     color: var(--color-on-page);
-    gap: var(--spacing-md);
     max-width: none;
     height: auto;
     max-height: none;
+    gap: var(--spacing-md);
     padding-block: var(--spacing-control-md);
     border: 1px solid var(--color-border);
     background-color: var(--color-surface-raised);

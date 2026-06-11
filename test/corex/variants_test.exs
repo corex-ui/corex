@@ -1,5 +1,5 @@
 defmodule Corex.Bem.VariantsTest do
-  use CorexTest.ComponentCase, async: true
+  use CorexTest.ComponentCase, async: false
 
   import Phoenix.Component
 

@@ -170,8 +170,6 @@ defmodule Corex.Bem do
 
     @doc "Builds the host BEM class for a styled component, honoring `unstyled` and `class`."
     def component_style_class(base, axis_names, assigns) do
-      maybe_validate_style_axes(base, axis_names, assigns)
-
       cond do
         Map.get(assigns, :unstyled, false) ->
           class_only(assigns)
@@ -198,7 +196,6 @@ defmodule Corex.Bem do
 
     @doc "Builds the host BEM class for the selected polymorphic look."
     def polymorphic_class(looks, default_as, axis_names, assigns) do
-      maybe_validate_style_axes(nil, axis_names, assigns)
       name = look_name(assigns, default_as)
       base = Map.get(looks, name, name)
 
@@ -217,8 +214,6 @@ defmodule Corex.Bem do
 
     @doc "Builds layout design output (`%{class: ...}`) from layout axis assigns."
     def layout_design(base, axis_names, assigns) do
-      maybe_validate_style_axes(base, axis_names, assigns)
-
       class =
         cond do
           Map.get(assigns, :unstyled, false) ->
@@ -264,32 +259,8 @@ defmodule Corex.Bem do
       end
     end
 
-    defp maybe_validate_style_axes(base, axis_names, assigns) do
-      if Code.ensure_loaded?(Corex.Design.Vocabulary) and
-           function_exported?(Corex.Design.Vocabulary, :check_style_axes, 3) do
-        Corex.Design.Vocabulary.check_style_axes(base, axis_names, assigns)
-      end
-
-      :ok
-    end
-
     defp emit_style_classes? do
-      cond do
-        design_emits_bem?() ->
-          true
-
-        Application.get_env(:corex, :emit_style_classes, false) ->
-          true
-
-        true ->
-          false
-      end
-    end
-
-    defp design_emits_bem? do
-      Code.ensure_loaded?(Corex.Design) and
-        function_exported?(Corex.Design, :configured?, 0) and
-        Corex.Design.configured?()
+      Application.get_env(:corex, :emit_style_classes, false)
     end
   end
 end

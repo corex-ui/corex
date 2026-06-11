@@ -27,10 +27,10 @@
     max-width: none;
     height: auto;
     max-height: none;
-    font-size: var(--text-xs);
-    line-height: var(--leading-xs);
     font-weight: var(--font-weight-normal);
     margin-block: var(--spacing-md);
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
     @media (min-width: 48rem) {
       font-size: var(--text-sm);
       line-height: var(--leading-sm);

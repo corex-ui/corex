@@ -53,8 +53,8 @@
   }
 
   [data-scope="editable"][data-part="edit-trigger"] {
-      gap: --value(--spacing-*, [length]);
-    max-width: --value(--container-*, [length]);
+      max-width: --value(--container-*, [length]);
+    gap: --value(--spacing-*, [length]);
     padding-inline: --value(--spacing-*, [length]);
     min-height: --value(--spacing-control-*, [length]);
     font-size: --value(--text-*, [length]);
@@ -62,8 +62,8 @@
   }
 
   [data-scope="editable"][data-part="submit-trigger"] {
-      gap: --value(--spacing-*, [length]);
-    max-width: --value(--container-*, [length]);
+      max-width: --value(--container-*, [length]);
+    gap: --value(--spacing-*, [length]);
     padding-inline: --value(--spacing-*, [length]);
     min-height: --value(--spacing-control-*, [length]);
     font-size: --value(--text-*, [length]);
@@ -71,8 +71,8 @@
   }
 
   [data-scope="editable"][data-part="cancel-trigger"] {
-      gap: --value(--spacing-*, [length]);
-    max-width: --value(--container-*, [length]);
+      max-width: --value(--container-*, [length]);
+    gap: --value(--spacing-*, [length]);
     padding-inline: --value(--spacing-*, [length]);
     min-height: --value(--spacing-control-*, [length]);
     font-size: --value(--text-*, [length]);
@@ -119,38 +119,38 @@
 
   .editable [data-scope="editable"][data-part="edit-trigger"] {
     width: calc(var(--spacing-control-md) * 0.6);
-    gap: var(--spacing-md);
     max-width: calc(var(--spacing-control-md) * 0.6);
     max-height: calc(var(--spacing-control-md) * 0.6);
+    gap: var(--spacing-md);
     padding-inline: var(--spacing-md);
     min-height: calc(var(--spacing-control-md) * 0.6);
+    min-width: calc(var(--spacing-control-md) * 0.6);
     font-size: var(--text-base);
     line-height: var(--leading-base);
-    min-width: calc(var(--spacing-control-md) * 0.6);
   }
 
   .editable [data-scope="editable"][data-part="submit-trigger"] {
     width: calc(var(--spacing-control-md) * 0.6);
-    gap: var(--spacing-md);
     max-width: calc(var(--spacing-control-md) * 0.6);
     max-height: calc(var(--spacing-control-md) * 0.6);
+    gap: var(--spacing-md);
     padding-inline: var(--spacing-md);
     min-height: calc(var(--spacing-control-md) * 0.6);
+    min-width: calc(var(--spacing-control-md) * 0.6);
     font-size: var(--text-base);
     line-height: var(--leading-base);
-    min-width: calc(var(--spacing-control-md) * 0.6);
   }
 
   .editable [data-scope="editable"][data-part="cancel-trigger"] {
     width: calc(var(--spacing-control-md) * 0.6);
-    gap: var(--spacing-md);
     max-width: calc(var(--spacing-control-md) * 0.6);
     max-height: calc(var(--spacing-control-md) * 0.6);
+    gap: var(--spacing-md);
     padding-inline: var(--spacing-md);
     min-height: calc(var(--spacing-control-md) * 0.6);
+    min-width: calc(var(--spacing-control-md) * 0.6);
     font-size: var(--text-base);
     line-height: var(--leading-base);
-    min-width: calc(var(--spacing-control-md) * 0.6);
   }
 
   .editable [data-scope="editable"][data-part="preview"] {

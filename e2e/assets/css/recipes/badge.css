@@ -24,10 +24,10 @@
 @layer components {
   .badge {
     width: auto;
-    gap: var(--spacing-sm);
     max-width: none;
     height: calc(var(--spacing-control-md) * 0.8);
     max-height: none;
+    gap: var(--spacing-sm);
     padding-inline: var(--spacing-sm);
     font-size: calc(var(--text-base) * 0.8);
     line-height: var(--text-base--line-height);
@@ -102,32 +102,32 @@
   }
 
   .badge.badge--size-sm {
-    gap: var(--spacing-sm);
     height: calc(var(--spacing-control-md) * 0.8);
+    gap: var(--spacing-sm);
     padding-inline: var(--spacing-sm);
     font-size: calc(var(--text-sm) * 0.8);
     line-height: var(--text-sm--line-height);
   }
 
   .badge.badge--size-md {
-    gap: var(--spacing-sm);
     height: calc(var(--spacing-control-md) * 0.8);
+    gap: var(--spacing-sm);
     padding-inline: var(--spacing-sm);
     font-size: calc(var(--text-base) * 0.8);
     line-height: var(--text-base--line-height);
   }
 
   .badge.badge--size-lg {
-    gap: var(--spacing-sm);
     height: calc(var(--spacing-control-md) * 0.8);
+    gap: var(--spacing-sm);
     padding-inline: var(--spacing-sm);
     font-size: calc(var(--text-lg) * 0.8);
     line-height: var(--text-lg--line-height);
   }
 
   .badge.badge--size-xl {
-    gap: var(--spacing-sm);
     height: calc(var(--spacing-control-md) * 0.8);
+    gap: var(--spacing-sm);
     padding-inline: var(--spacing-sm);
     font-size: calc(var(--text-xl) * 0.8);
     line-height: var(--text-xl--line-height);

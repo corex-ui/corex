@@ -34,8 +34,8 @@
   }
 
   [data-scope="native-input"][data-part="root"] {
-      gap: --value(--spacing-*, [length]);
-    max-width: --value(--container-*, [length]);
+      max-width: --value(--container-*, [length]);
+    gap: --value(--spacing-*, [length]);
   }
 
 }
@@ -58,8 +58,8 @@
   }
 
   .native-input [data-scope="native-input"][data-part="root"] {
-    gap: var(--spacing-md);
     max-width: var(--container-md);
+    gap: var(--spacing-md);
   }
 
   .native-input {

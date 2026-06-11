@@ -47,9 +47,9 @@
       gap: --value(--spacing-*, [length]);
     padding-inline: --value(--spacing-*, [length]);
     min-height: --value(--spacing-control-*, [length]);
+    margin-bottom: --value(--spacing-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    margin-bottom: --value(--spacing-*, [length]);
   }
 
 }
@@ -74,9 +74,9 @@
     gap: var(--spacing-md);
     padding-inline: var(--spacing-md);
     min-height: var(--spacing-control-md);
+    margin-bottom: var(--spacing-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
-    margin-bottom: var(--spacing-md);
   }
 
   .accordion.accordion--w-auto {

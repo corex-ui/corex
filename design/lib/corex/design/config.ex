@@ -83,8 +83,7 @@ defmodule Corex.Design.Config do
          {:themes, "Built-in preset subset list or full theme catalog map"},
          {:scales, "Per-axis scale replacement: [step: value] or step lists"},
          {:recipes, "Recipe allowlist and host RecipeSource modules"},
-         {:aliases, "Semantic role alias map for token resolution"},
-         {:on_invalid_style, "Runtime attr validation: :raise (default), :warn, or :ignore"}
+         {:aliases, "Semantic role alias map for token resolution"}
        ]}
     ])
   end
@@ -191,15 +190,10 @@ defmodule Corex.Design.Config.Options do
             aliases: [
               type: :map,
               doc: "Semantic role aliases (template name -> token role)"
-            ],
-            on_invalid_style: [
-              type: {:in, [:raise, :warn, :ignore]},
-              default: :raise,
-              doc: "Runtime style attr validation when design is configured"
             ]
           )
 
-  @known_keys ~w(output default_theme default_mode themes scales recipes aliases on_invalid_style)a
+  @known_keys ~w(output default_theme default_mode themes scales recipes aliases)a
 
   @doc false
   def schema, do: @schema

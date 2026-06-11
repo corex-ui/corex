@@ -49,8 +49,8 @@
 @utility carousel--size-* {
   [data-scope="carousel"][data-part="control"] {
       padding: --value(--spacing-*, [length]);
-    gap: --value(--spacing-*, [length]);
     max-width: --value(--container-*, [length]);
+    gap: --value(--spacing-*, [length]);
   }
 
   [data-scope="carousel"][data-part="root"] {
@@ -85,8 +85,8 @@
 @layer components {
   .carousel [data-scope="carousel"][data-part="control"] {
     padding: var(--spacing-md);
-    gap: var(--spacing-md);
     max-width: var(--container-md);
+    gap: var(--spacing-md);
   }
 
   .carousel [data-scope="carousel"][data-part="root"] {
@@ -107,23 +107,23 @@
 
   .carousel [data-scope="carousel"][data-part="prev-trigger"] {
     min-height: calc(var(--spacing-control-md) * 0.8);
+    min-width: calc(var(--spacing-control-md) * 0.8);
     font-size: calc(var(--text-base) * 0.8);
     line-height: calc(var(--text-base--line-height) * 0.8);
-    min-width: calc(var(--spacing-control-md) * 0.8);
   }
 
   .carousel [data-scope="carousel"][data-part="next-trigger"] {
     min-height: calc(var(--spacing-control-md) * 0.8);
+    min-width: calc(var(--spacing-control-md) * 0.8);
     font-size: calc(var(--text-base) * 0.8);
     line-height: calc(var(--text-base--line-height) * 0.8);
-    min-width: calc(var(--spacing-control-md) * 0.8);
   }
 
   .carousel [data-scope="carousel"][data-part="autoplay-trigger"] {
     min-height: calc(var(--spacing-control-md) * 0.8);
+    min-width: calc(var(--spacing-control-md) * 0.8);
     font-size: calc(var(--text-base) * 0.8);
     line-height: calc(var(--text-base--line-height) * 0.8);
-    min-width: calc(var(--spacing-control-md) * 0.8);
   }
 
   .carousel.carousel--w-auto {

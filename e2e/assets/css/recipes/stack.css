@@ -34,8 +34,8 @@
     padding-block: 0;
     align-items: stretch;
     justify-content: flex-start;
-    border-radius: var(--radius-none);
     flex-flow: column nowrap;
+    border-radius: var(--radius-none);
   }
 
   .stack.stack--padding-none {

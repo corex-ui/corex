@@ -135,7 +135,7 @@ defmodule E2eWeb.AuthoringSnippet do
         if extra_class, do: Map.put(map, :class, extra_class), else: map
       end)
 
-    class = Corex.Bem.Variants.host_class(base, axis_names, %{}, assigns)
+    class = Corex.Bem.Variants.host_class(base, axis_names, assigns)
     tag(component, non_style_attrs, inner, slots, class)
   end
 

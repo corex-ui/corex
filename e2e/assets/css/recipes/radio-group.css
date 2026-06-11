@@ -19,14 +19,14 @@
 
 
 @utility radio-group--size-* {
-  [data-scope="radio-group"][data-part="item-control"] {
-      padding: --value(--spacing-*, [length]);
-    font-size: --value(--text-*, [length]);
+  [data-scope="radio-group"][data-part="item-text"] {
+      font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
 
-  [data-scope="radio-group"][data-part="item-text"] {
-      font-size: --value(--text-*, [length]);
+  [data-scope="radio-group"][data-part="item-control"] {
+      padding: --value(--spacing-*, [length]);
+    font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
 
@@ -41,15 +41,15 @@
     max-height: none;
   }
 
-  .radio-group [data-scope="radio-group"][data-part="item-control"] {
-    width: calc(var(--spacing-control-md) * 0.6);
-    padding: calc(var(--spacing-md) * 0.25);
-    height: calc(var(--spacing-control-md) * 0.6);
+  .radio-group [data-scope="radio-group"][data-part="item-text"] {
     font-size: var(--text-base);
     line-height: var(--leading-base);
   }
 
-  .radio-group [data-scope="radio-group"][data-part="item-text"] {
+  .radio-group [data-scope="radio-group"][data-part="item-control"] {
+    width: calc(var(--spacing-control-md) * 0.6);
+    padding: calc(var(--spacing-md) * 0.25);
+    height: calc(var(--spacing-control-md) * 0.6);
     font-size: var(--text-base);
     line-height: var(--leading-base);
   }

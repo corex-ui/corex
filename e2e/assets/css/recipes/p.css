@@ -28,10 +28,10 @@
     max-width: none;
     height: auto;
     max-height: none;
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
     font-weight: var(--font-weight-normal);
     margin-block: var(--spacing-md);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
   }
 
   .p.p--w-auto {
