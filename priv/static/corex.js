@@ -29816,8 +29816,13 @@ ${err}`);
             const childMenu = this.children.find((child) => child.el.id === `menu:${nestedMenuId}`);
             if (!childMenu) continue;
             const applyProps = () => {
-              const triggerProps = this.api.getTriggerItemProps(childMenu.api);
-              this.spreadProps(triggerEl, triggerProps);
+              const disabled = triggerEl.hasAttribute("disabled");
+              const childTriggerProps = childMenu.api.getTriggerProps();
+              const itemProps = this.api.getItemProps({
+                value: childTriggerProps.id,
+                disabled: disabled || void 0
+              });
+              this.spreadProps(triggerEl, __spreadValues(__spreadValues({}, itemProps), childTriggerProps));
             };
             applyProps();
             this.submenuTriggerUnsubs.push(this.machine.subscribe(applyProps));
@@ -29829,7 +29834,11 @@ ${err}`);
             '[data-scope="menu"][data-part="trigger"]'
           );
           if (triggerEl) {
-            this.spreadProps(triggerEl, this.api.getTriggerProps());
+            const disabled = triggerEl.hasAttribute("disabled");
+            this.spreadProps(triggerEl, __spreadProps(__spreadValues({}, this.api.getTriggerProps()), {
+              disabled: disabled || void 0
+            }));
+            if (disabled && this.api.open) this.api.setOpen(false);
           }
           const positionerEl = this.el.querySelector(
             '[data-scope="menu"][data-part="positioner"]'
@@ -29854,7 +29863,7 @@ ${err}`);
                 if (!this.isOwnElement(itemEl)) return;
                 const value = itemEl.dataset.value;
                 if (value) {
-                  const disabled = itemEl.hasAttribute("data-disabled");
+                  const disabled = itemEl.hasAttribute("disabled");
                   this.spreadProps(
                     itemEl,
                     this.api.getItemProps({ value, disabled: disabled || void 0 })
@@ -30012,6 +30021,7 @@ ${err}`);
           if (this.el.hasAttribute("data-nested")) return;
           if (!this.menu) return;
           syncMenuPropsFromDom(this.menu);
+          this.menu.render();
           if (this.menu.children.length > 0) {
             wireSubmenuTriggersDeep(this.menu);
           }
@@ -31805,6 +31815,22 @@ ${err}`);
       }
     };
   }
+  function adjustDeadLinkTriggerProps(props) {
+    if (props.href != null && props.href !== "") return props;
+    if (props.type === "button") return props;
+    return __spreadProps(__spreadValues({}, props), { "aria-label": void 0 });
+  }
+  function corexPaginationConnect(service, normalize) {
+    const api = connect19(service, normalize);
+    return __spreadProps(__spreadValues({}, api), {
+      getPrevTriggerProps() {
+        return adjustDeadLinkTriggerProps(api.getPrevTriggerProps());
+      },
+      getNextTriggerProps() {
+        return adjustDeadLinkTriggerProps(api.getNextTriggerProps());
+      }
+    });
+  }
   function uniquePaginationTranslations(el, translations) {
     var _a4;
     const label = ((_a4 = translations == null ? void 0 : translations.rootLabel) == null ? void 0 : _a4.trim()) || "Pagination";
@@ -32180,7 +32206,7 @@ ${err}`);
           return new VanillaMachine(machine19, props);
         }
         initApi() {
-          return this.zagConnect(connect19);
+          return this.zagConnect(corexPaginationConnect);
         }
         render() {
           const rootEl = this.el.querySelector(
@@ -42314,7 +42340,12 @@ ${err}`);
           triggerEls.forEach((triggerEl) => {
             const raw = triggerEl.dataset.value;
             const valueProps = raw != null && raw !== "" ? { value: raw } : {};
-            this.spreadProps(triggerEl, this.api.getTriggerProps(valueProps));
+            const tabIndexOverride = triggerEl.getAttribute("tabindex");
+            const triggerProps = this.api.getTriggerProps(valueProps);
+            if (tabIndexOverride === "-1") {
+              triggerProps.tabIndex = -1;
+            }
+            this.spreadProps(triggerEl, triggerProps);
           });
           const positionerEl = rootEl.querySelector(
             '[data-scope="tooltip"][data-part="positioner"]'

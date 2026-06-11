@@ -1,7 +1,8 @@
-import { connect, machine, type Api, type Props } from "@zag-js/pagination";
+import { machine, type Api, type Props } from "@zag-js/pagination";
 import type { IntlTranslations } from "@zag-js/pagination";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
+import { corexPaginationConnect } from "./pagination-connect";
 import { isAllowedRedirectDestination } from "../lib/redirect";
 import { cloneTemplateChildren, getString } from "../lib/util";
 
@@ -12,7 +13,7 @@ export class Pagination extends Component<Props, Api> {
   }
 
   initApi(): Api {
-    return this.zagConnect(connect);
+    return this.zagConnect(corexPaginationConnect);
   }
 
   render(): void {

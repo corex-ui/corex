@@ -3,15 +3,58 @@ defmodule E2eWeb.MenuPlayLive do
 
   import E2eWeb.DemoPage, only: [demo_playground: 1, playground_dir_toggle: 1]
 
+  @playground_item_options [
+    %{label: "Listbox", value: "listbox"},
+    %{label: "Corex", value: "corex"},
+    %{label: "Tabs", value: "tabs"},
+    %{label: "Combobox (nested)", value: "combobox"},
+    %{label: "Date picker (nested)", value: "date-picker"},
+    %{label: "Menu (nested)", value: "menu"},
+    %{label: "Dialog (nested)", value: "dialog"}
+  ]
+
+  defp playground_items(controls) do
+    disabled_ids = Map.get(controls, :disabled_item_ids, [])
+
+    [
+      playground_item("listbox", "Listbox", disabled_ids),
+      %Corex.Tree.Item{
+        value: "corex",
+        label: "Corex",
+        disabled: "corex" in disabled_ids,
+        children:
+          Enum.map(E2eWeb.Demos.MenuDemo.demo_nested_flat_children(), fn child ->
+            %{child | disabled: child.value in disabled_ids}
+          end)
+      },
+      playground_item("tabs", ~t"Tabs", disabled_ids)
+    ]
+  end
+
+  defp playground_item(value, label, disabled_ids) do
+    %Corex.Tree.Item{
+      value: value,
+      label: label,
+      disabled: value in disabled_ids
+    }
+  end
+
   @impl true
   def mount(_params, _session, socket) do
     controls = %{
       dir: "ltr",
       close_on_select: false,
-      loop_focus: false
+      loop_focus: false,
+      disabled: false,
+      disabled_item_ids: []
     }
 
-    {:ok, assign(socket, controls: controls, selected: nil)}
+    {:ok,
+     socket
+     |> assign(:controls, controls)
+     |> assign(:disabled_item_options, @playground_item_options)
+     |> assign(:items, playground_items(controls))
+     |> assign(:selected, nil)}
   end
 
   @impl true
@@ -29,6 +72,24 @@ defmodule E2eWeb.MenuPlayLive do
     {:noreply, update_control(socket, id, value)}
   end
 
+  def handle_event("disabled_items_changed", %{"value" => value}, socket) when is_list(value) do
+    {:noreply,
+     socket
+     |> update(:controls, &%{&1 | disabled_item_ids: value})
+     |> sync_items()}
+  end
+
+  def handle_event("disabled_items_changed", _params, socket) do
+    {:noreply,
+     socket
+     |> update(:controls, &%{&1 | disabled_item_ids: []})
+     |> sync_items()}
+  end
+
+  defp sync_items(socket) do
+    assign(socket, :items, playground_items(socket.assigns.controls))
+  end
+
   defp control_bool(v) when v in [true, "true"], do: true
   defp control_bool(v) when v in [false, "false"], do: false
   defp control_bool(v), do: !!v
@@ -40,6 +101,12 @@ defmodule E2eWeb.MenuPlayLive do
 
   defp update_control(socket, "loop_focus", checked),
     do: update(socket, :controls, &%{&1 | loop_focus: checked})
+
+  defp update_control(socket, "menu-playground-disabled", true),
+    do: update(socket, :controls, &%{&1 | disabled: true})
+
+  defp update_control(socket, "menu-playground-disabled", false),
+    do: update(socket, :controls, &Map.put(&1, :disabled, false))
 
   defp update_control(socket, _unknown, _value), do: socket
 
@@ -64,6 +131,31 @@ defmodule E2eWeb.MenuPlayLive do
             on_value_change="control_changed"
             value={[@controls.dir]}
           />
+
+          <.select
+            id="menu-playground-disabled-items"
+            class="select select--sm w-4xs"
+            positioning={%Corex.Positioning{same_width: true}}
+            multiple
+            deselectable={true}
+            close_on_select={false}
+            value={@controls.disabled_item_ids}
+            items={@disabled_item_options}
+            on_value_change="disabled_items_changed"
+            translation={%Corex.Select.Translation{placeholder: "Disabled items"}}
+          >
+            <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+            <:label>Disabled items</:label>
+          </.select>
+
+          <.switch
+            class="switch switch--sm"
+            id="menu-playground-disabled"
+            checked={@controls.disabled}
+            on_checked_change="control_changed"
+          >
+            <:label>Disabled</:label>
+          </.switch>
 
           <.switch
             class="switch switch--sm"
@@ -90,16 +182,9 @@ defmodule E2eWeb.MenuPlayLive do
             dir={@controls.dir}
             close_on_select={@controls.close_on_select}
             loop_focus={@controls.loop_focus}
+            disabled={@controls.disabled}
             on_select="menu_play_selected"
-            items={[
-              %Corex.Tree.Item{value: "listbox", label: "Listbox"},
-              %Corex.Tree.Item{
-                value: "corex",
-                label: "Corex",
-                children: E2eWeb.Demos.MenuDemo.demo_nested_flat_children()
-              },
-              %Corex.Tree.Item{value: "tabs", label: ~t"Tabs"}
-            ]}
+            items={@items}
           >
             <:trigger>Corex</:trigger>
             <:indicator><.heroicon name="hero-chevron-down" /></:indicator>

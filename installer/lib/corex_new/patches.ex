@@ -151,6 +151,7 @@ defmodule Corex.New.Patches do
       |> maybe_add_corex_generators_config(opts)
       |> maybe_add_designex_config(opts)
       |> patch_esbuild_for_esm()
+      |> patch_env_path_lists()
 
     write_if_changed!(path, content, updated)
   end
@@ -748,6 +749,17 @@ defmodule Corex.New.Patches do
           content <> block
         end
     end
+  end
+
+  defp patch_env_path_lists(content) do
+    Regex.replace(
+      ~r/"NODE_PATH"\s*=>\s*\[([^\]]+)\]/u,
+      content,
+      fn _, inner ->
+        paths = inner |> String.split(",") |> Enum.map(&String.trim/1)
+        ~s/"NODE_PATH" => Enum.join([#{Enum.join(paths, ", ")}], ":")/
+      end
+    )
   end
 
   defp patch_esbuild_for_esm(content) do

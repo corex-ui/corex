@@ -11,4 +11,15 @@ describe("Tooltip", () => {
     expect(el.querySelector('[data-part="positioner"]')).toBeTruthy();
     c.destroy();
   });
+
+  it("preserves tabindex -1 on trigger after render", () => {
+    const el = tooltipTree();
+    const trigger = el.querySelector<HTMLElement>('[data-part="trigger"]');
+    expect(trigger).toBeTruthy();
+    trigger!.setAttribute("tabindex", "-1");
+    const c = new Tooltip(el, { id: el.id });
+    c.render();
+    expect(trigger!.getAttribute("tabindex")).toBe("-1");
+    c.destroy();
+  });
 });

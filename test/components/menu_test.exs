@@ -3,6 +3,7 @@ defmodule Corex.MenuTest do
   import Phoenix.Component
 
   alias Corex.Menu
+  alias Corex.Menu.Anatomy.{Item, Trigger}
   alias Corex.Menu.Connect
 
   describe "menu/1" do
@@ -257,7 +258,13 @@ defmodule Corex.MenuTest do
           %{}
         )
 
-      assert html =~ "aria-disabled"
+      assert html =~ ~S(id="menu:menu-disabled:trigger")
+      assert html =~ ~S(data-part="trigger" data-scope="menu" disabled)
+      assert html =~ ~S(aria-disabled="true")
+      refute html =~ ~S(data-part="trigger" data-scope="menu" data-disabled)
+      assert html =~ ~S(id="menu-disabled/off")
+      assert html =~ ~S(data-value="off" disabled)
+      assert html =~ ~S(data-disabled="")
       assert html =~ "Off"
     end
   end
@@ -304,15 +311,19 @@ defmodule Corex.MenuTest do
       result = Connect.trigger(assigns)
       assert result["id"] == "menu:test-menu:trigger"
       assert result["data-scope"] == "menu"
+      refute result["disabled"]
       assert result["aria-disabled"] == "false"
       assert result["tabindex"] == 0
+      refute Map.has_key?(result, "data-disabled")
     end
 
     test "returns trigger attributes when disabled" do
       assigns = %{id: "test-menu", dir: "ltr", disabled: true}
       result = Connect.trigger(assigns)
+      assert result["disabled"]
       assert result["aria-disabled"] == "true"
       assert result["tabindex"] == -1
+      refute Map.has_key?(result, "data-disabled")
     end
   end
 
@@ -361,6 +372,25 @@ defmodule Corex.MenuTest do
       assert result["id"] == "test-menu/item-1"
       assert result["data-value"] == "item-1"
       assert result["role"] == "menuitem"
+      refute result["disabled"]
+      assert result["data-disabled"] == nil
+    end
+
+    test "returns item attributes when disabled" do
+      assigns = %{
+        id: "test-menu",
+        value: "item-1",
+        dir: "ltr",
+        disabled: true,
+        nested_menu_id: nil,
+        has_nested: false,
+        redirect: false,
+        new_tab: false
+      }
+
+      result = Connect.item(assigns)
+      assert result["disabled"]
+      assert result["data-disabled"] == ""
     end
   end
 
@@ -394,6 +424,25 @@ defmodule Corex.MenuTest do
       result = Connect.props(assigns)
       assert result["id"] == "test-menu"
       assert result["data-position-placement"] == "bottom-start"
+    end
+  end
+
+  describe "Trigger.ignored_attrs/0" do
+    test "allows LiveView to patch only native disabled on trigger" do
+      ignored = Trigger.ignored_attrs()
+      refute "disabled" in ignored
+      assert "data-disabled" in ignored
+      assert "aria-disabled" in ignored
+      assert "tabindex" in ignored
+    end
+  end
+
+  describe "Item.ignored_attrs/0" do
+    test "allows LiveView to patch only native disabled on items" do
+      ignored = Item.ignored_attrs()
+      refute "disabled" in ignored
+      assert "data-disabled" in ignored
+      assert "aria-disabled" in ignored
     end
   end
 

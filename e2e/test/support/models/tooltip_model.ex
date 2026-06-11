@@ -91,20 +91,13 @@ defmodule E2eWeb.TooltipModel do
   def hover_first_trigger_in_section(session, section_dom_id) do
     if not valid_dom_id?(section_dom_id), do: raise(ArgumentError, "invalid section dom id")
 
-    _ =
-      execute_script(
-        session,
-        """
-        const section = document.querySelector(arguments[0]);
-        if (!section) return;
-        const trigger = section.querySelector('[data-scope="tooltip"][data-part="trigger"]');
-        if (!trigger) return;
-        trigger.scrollIntoView({block: 'center'});
-        trigger.dispatchEvent(new MouseEvent('pointerenter', { bubbles: true }));
-        trigger.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));
-        """,
-        ["section#" <> section_dom_id]
+    hover(
+      session,
+      css(
+        ~s|section##{section_dom_id} [data-scope="tooltip"][data-part="trigger"]|,
+        visible: :any
       )
+    )
 
     session
   end
@@ -117,6 +110,20 @@ defmodule E2eWeb.TooltipModel do
         visible: :any
       ),
       opts
+    )
+
+    session
+  end
+
+  def refute_open_content_in_section(session, section_dom_id) do
+    if not valid_dom_id?(section_dom_id), do: raise(ArgumentError, "invalid section dom id")
+
+    refute_has(
+      session,
+      css(
+        ~s|section##{section_dom_id} [data-scope="tooltip"][data-part="content"][data-state="open"]|,
+        visible: :any
+      )
     )
 
     session
