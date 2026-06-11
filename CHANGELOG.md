@@ -11,11 +11,9 @@
 - [installer] Join `NODE_PATH` env lists in `corex.new` config for Elixir 1.18 and tailwind 0.4.x
 - [file-upload-live] Drop invalid `live_img_preview` sizing attrs; preview size comes from file-upload CSS
 
-### CI
+### Enhancements
 
 - Integration tests: repeat all OTP / Elixir rows with pinned `phx_new 1.8.4` alongside latest
-
-Run `mix corex.design --force` in your app to refresh `assets/corex/` (CSS and tokens).
 
 ## 0.1.1
 
