@@ -29,6 +29,24 @@
 }
 
 
+@utility data-list--semantic-* {
+  --paint-bg: --value(--color-*, [color]);
+  --paint-fg: --value(--color-on-*, [color]);
+  --paint-bg-hover: --value(--color-*-hover, [color]);
+  --paint-bg-active: --value(--color-*-active, [color]);
+  --paint-ring: --value(--color-*, [color]);
+  --paint-border: --value(--color-*, [color]);
+  --paint-ink: --value(--color-*, [color]);
+}
+
+
+@utility data-list--semantic-base {
+  --paint-ring: --value(--color-on-base, [color]);
+  --paint-border: --value(--color-on-base, [color]);
+  --paint-ink: --value(--color-on-base, [color]);
+}
+
+
 @layer components {
   .data-list [data-scope="data-list"][data-part="label"] {
     color: var(--color-on-page);
@@ -39,8 +57,8 @@
   .data-list {
     width: 100%;
     max-width: var(--container-md);
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .data-list [data-scope="data-list"][data-part="item"] {
@@ -225,30 +243,6 @@
     width: auto;
     text-align: start;
     align-self: auto;
-  }
-
-  .data-list.data-list--semantic-accent .data-list [data-scope="data-list"][data-part="label"] {
-    color: var(--color-accent);
-  }
-
-  .data-list.data-list--semantic-alert .data-list [data-scope="data-list"][data-part="label"] {
-    color: var(--color-alert);
-  }
-
-  .data-list.data-list--semantic-base .data-list [data-scope="data-list"][data-part="label"] {
-    color: var(--color-base);
-  }
-
-  .data-list.data-list--semantic-brand .data-list [data-scope="data-list"][data-part="label"] {
-    color: var(--color-brand);
-  }
-
-  .data-list.data-list--semantic-info .data-list [data-scope="data-list"][data-part="label"] {
-    color: var(--color-info);
-  }
-
-  .data-list.data-list--semantic-success .data-list [data-scope="data-list"][data-part="label"] {
-    color: var(--color-success);
   }
 }
 

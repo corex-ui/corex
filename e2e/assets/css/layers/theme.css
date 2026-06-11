@@ -132,9 +132,9 @@
   --font-weight-black: var(--font-weight-black);
   --font-weight-light: var(--font-weight-light);
   --font-weight-medium: var(--font-weight-medium);
+  --font-weight-semibold: var(--font-weight-semibold);
   --font-weight-thin: var(--font-weight-thin);
   --font-weight-extralight: var(--font-weight-extralight);
-  --font-weight-semibold: var(--font-weight-semibold);
   --font-weight-bold: var(--font-weight-bold);
   --font-weight-extrabold: var(--font-weight-extrabold);
   --shadow-2xs: var(--shadow-2xs);

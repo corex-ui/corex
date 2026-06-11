@@ -29,13 +29,13 @@
   .stack {
     display: flex;
     padding: 0;
-    gap: 0;
-    align-items: stretch;
-    justify-content: flex-start;
     padding-inline: 0;
     padding-block: 0;
-    flex-flow: column nowrap;
+    gap: 0;
     border-radius: var(--radius-none);
+    align-items: stretch;
+    justify-content: flex-start;
+    flex-flow: column nowrap;
   }
 
   .stack.stack--padding-none {
@@ -197,8 +197,8 @@
   }
 
   .stack.stack--variant-layer {
-    border: 1px solid var(--color-border);
     background-color: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
     box-shadow: var(--shadow-md);
   }
 

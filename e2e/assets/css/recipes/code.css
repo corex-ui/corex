@@ -35,10 +35,10 @@
   .code {
     width: 100%;
     max-width: var(--container-md);
-    height: auto;
     max-height: none;
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
+    height: auto;
   }
 
   .code.code--w-auto {
@@ -74,35 +74,35 @@
   }
 
   .code.code--size-sm {
-    gap: var(--spacing-sm);
     padding-inline: var(--spacing-sm);
-    min-height: var(--spacing-control-sm);
+    gap: var(--spacing-sm);
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
+    min-height: var(--spacing-control-sm);
   }
 
   .code.code--size-md {
-    gap: var(--spacing-md);
     padding-inline: var(--spacing-md);
-    min-height: var(--spacing-control-md);
+    gap: var(--spacing-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-height: var(--spacing-control-md);
   }
 
   .code.code--size-lg {
-    gap: var(--spacing-lg);
     padding-inline: var(--spacing-lg);
-    min-height: var(--spacing-control-lg);
+    gap: var(--spacing-lg);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
+    min-height: var(--spacing-control-lg);
   }
 
   .code.code--size-xl {
-    gap: var(--spacing-xl);
     padding-inline: var(--spacing-xl);
-    min-height: var(--spacing-control-xl);
+    gap: var(--spacing-xl);
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
+    min-height: var(--spacing-control-xl);
   }
 
   .code.code--max-w-none {

@@ -21,16 +21,42 @@
 }
 
 
+@utility badge--size-* {
+  [data-icon] {
+    padding: --value(--spacing-*, [length]);
+  }
+
+}
+
+
+@utility badge--semantic-* {
+  --paint-bg: --value(--color-*, [color]);
+  --paint-fg: --value(--color-on-*, [color]);
+  --paint-bg-hover: --value(--color-*-hover, [color]);
+  --paint-bg-active: --value(--color-*-active, [color]);
+  --paint-ring: --value(--color-*, [color]);
+  --paint-border: --value(--color-*, [color]);
+  --paint-ink: --value(--color-*, [color]);
+}
+
+
+@utility badge--semantic-base {
+  --paint-ring: --value(--color-on-base, [color]);
+  --paint-border: --value(--color-on-base, [color]);
+  --paint-ink: --value(--color-on-base, [color]);
+}
+
+
 @layer components {
   .badge {
     width: auto;
-    gap: var(--spacing-sm);
     max-width: none;
-    height: calc(var(--spacing-control-md) * 0.8);
-    padding-inline: var(--spacing-sm);
     max-height: none;
+    padding-inline: var(--spacing-sm);
+    gap: var(--spacing-sm);
     font-size: calc(var(--text-base) * 0.8);
     line-height: var(--text-base--line-height);
+    height: calc(var(--spacing-control-md) * 0.8);
   }
 
   .badge.badge--w-auto {
@@ -73,60 +99,36 @@
     max-height: 100%;
   }
 
-  .badge.badge--semantic-accent {
-    position: relative;
-  }
-
-  .badge.badge--semantic-alert {
-    position: relative;
-  }
-
-  .badge.badge--semantic-base {
-    position: relative;
-  }
-
-  .badge.badge--semantic-brand {
-    position: relative;
-  }
-
-  .badge.badge--semantic-info {
-    position: relative;
-  }
-
-  .badge.badge--semantic-success {
-    position: relative;
-  }
-
   .badge.badge--size-sm {
-    gap: var(--spacing-sm);
-    height: calc(var(--spacing-control-md) * 0.8);
     padding-inline: var(--spacing-sm);
+    gap: var(--spacing-sm);
     font-size: calc(var(--text-sm) * 0.8);
     line-height: var(--text-sm--line-height);
+    height: calc(var(--spacing-control-md) * 0.8);
   }
 
   .badge.badge--size-md {
-    gap: var(--spacing-sm);
-    height: calc(var(--spacing-control-md) * 0.8);
     padding-inline: var(--spacing-sm);
+    gap: var(--spacing-sm);
     font-size: calc(var(--text-base) * 0.8);
     line-height: var(--text-base--line-height);
+    height: calc(var(--spacing-control-md) * 0.8);
   }
 
   .badge.badge--size-lg {
-    gap: var(--spacing-sm);
-    height: calc(var(--spacing-control-md) * 0.8);
     padding-inline: var(--spacing-sm);
+    gap: var(--spacing-sm);
     font-size: calc(var(--text-lg) * 0.8);
     line-height: var(--text-lg--line-height);
+    height: calc(var(--spacing-control-md) * 0.8);
   }
 
   .badge.badge--size-xl {
-    gap: var(--spacing-sm);
-    height: calc(var(--spacing-control-md) * 0.8);
     padding-inline: var(--spacing-sm);
+    gap: var(--spacing-sm);
     font-size: calc(var(--text-xl) * 0.8);
     line-height: var(--text-xl--line-height);
+    height: calc(var(--spacing-control-md) * 0.8);
   }
 
   .badge {

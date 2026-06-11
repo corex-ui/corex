@@ -21,13 +21,31 @@
 
 @utility layout-heading--size-* {
   [data-scope="layout-heading"][data-part="root"] {
-      gap: --value(--spacing-*, [length]);
-    padding-inline: --value(--spacing-*, [length]);
-    min-height: --value(--spacing-control-*, [length]);
+      padding-inline: --value(--spacing-*, [length]);
+    gap: --value(--spacing-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
+}
+
+
+@utility layout-heading--semantic-* {
+  --paint-bg: --value(--color-*, [color]);
+  --paint-fg: --value(--color-on-*, [color]);
+  --paint-bg-hover: --value(--color-*-hover, [color]);
+  --paint-bg-active: --value(--color-*-active, [color]);
+  --paint-ring: --value(--color-*, [color]);
+  --paint-border: --value(--color-*, [color]);
+  --paint-ink: --value(--color-*, [color]);
+}
+
+
+@utility layout-heading--semantic-base {
+  --paint-ring: --value(--color-on-base, [color]);
+  --paint-border: --value(--color-on-base, [color]);
+  --paint-ink: --value(--color-on-base, [color]);
 }
 
 
@@ -40,8 +58,8 @@
   .layout-heading {
     width: fit-content;
     max-width: none;
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .layout-heading [data-scope="layout-heading"][data-part="title"] {
@@ -87,54 +105,6 @@
 
   .layout-heading.layout-heading--max-h-full {
     max-height: 100%;
-  }
-
-  .layout-heading.layout-heading--semantic-accent [data-scope="layout-heading"][data-part="title"] {
-    color: var(--color-accent);
-  }
-
-  .layout-heading.layout-heading--semantic-accent [data-scope="layout-heading"][data-part="subtitle"] {
-    color: var(--color-on-muted);
-  }
-
-  .layout-heading.layout-heading--semantic-alert [data-scope="layout-heading"][data-part="title"] {
-    color: var(--color-alert);
-  }
-
-  .layout-heading.layout-heading--semantic-alert [data-scope="layout-heading"][data-part="subtitle"] {
-    color: var(--color-on-muted);
-  }
-
-  .layout-heading.layout-heading--semantic-base [data-scope="layout-heading"][data-part="title"] {
-    color: var(--color-base);
-  }
-
-  .layout-heading.layout-heading--semantic-base [data-scope="layout-heading"][data-part="subtitle"] {
-    color: var(--color-on-muted);
-  }
-
-  .layout-heading.layout-heading--semantic-brand [data-scope="layout-heading"][data-part="title"] {
-    color: var(--color-brand);
-  }
-
-  .layout-heading.layout-heading--semantic-brand [data-scope="layout-heading"][data-part="subtitle"] {
-    color: var(--color-on-muted);
-  }
-
-  .layout-heading.layout-heading--semantic-info [data-scope="layout-heading"][data-part="title"] {
-    color: var(--color-info);
-  }
-
-  .layout-heading.layout-heading--semantic-info [data-scope="layout-heading"][data-part="subtitle"] {
-    color: var(--color-on-muted);
-  }
-
-  .layout-heading.layout-heading--semantic-success [data-scope="layout-heading"][data-part="title"] {
-    color: var(--color-success);
-  }
-
-  .layout-heading.layout-heading--semantic-success [data-scope="layout-heading"][data-part="subtitle"] {
-    color: var(--color-on-muted);
   }
 
   .layout-heading.layout-heading--gap-none [data-scope="layout-heading"][data-part="root"] {

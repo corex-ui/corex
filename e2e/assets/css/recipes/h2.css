@@ -21,16 +21,34 @@
 }
 
 
+@utility h2--semantic-* {
+  --paint-bg: --value(--color-*, [color]);
+  --paint-fg: --value(--color-on-*, [color]);
+  --paint-bg-hover: --value(--color-*-hover, [color]);
+  --paint-bg-active: --value(--color-*-active, [color]);
+  --paint-ring: --value(--color-*, [color]);
+  --paint-border: --value(--color-*, [color]);
+  --paint-ink: --value(--color-*, [color]);
+}
+
+
+@utility h2--semantic-base {
+  --paint-ring: --value(--color-on-base, [color]);
+  --paint-border: --value(--color-on-base, [color]);
+  --paint-ink: --value(--color-on-base, [color]);
+}
+
+
 @layer components {
   .h2 {
     width: fit-content;
     color: var(--color-on-page);
     max-width: none;
-    height: auto;
     max-height: none;
-    font-weight: var(--font-weight-bold);
     font-size: var(--text-2xl);
     line-height: var(--leading-2xl);
+    height: auto;
+    font-weight: var(--font-weight-bold);
     font-family: var(--font-sans);
     @media (min-width: 48rem) {
       font-size: var(--text-3xl);
@@ -76,30 +94,6 @@
 
   .h2.h2--max-h-full {
     max-height: 100%;
-  }
-
-  .h2.h2--semantic-accent {
-    color: var(--color-accent);
-  }
-
-  .h2.h2--semantic-alert {
-    color: var(--color-alert);
-  }
-
-  .h2.h2--semantic-base {
-    color: var(--color-base);
-  }
-
-  .h2.h2--semantic-brand {
-    color: var(--color-brand);
-  }
-
-  .h2.h2--semantic-info {
-    color: var(--color-info);
-  }
-
-  .h2.h2--semantic-success {
-    color: var(--color-success);
   }
 
   .h2.h2--weight-thin {

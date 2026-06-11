@@ -29,13 +29,67 @@
 
 @utility toggle--size-* {
   [data-scope="toggle"][data-part="root"] {
-      gap: --value(--spacing-*, [length]);
-    padding-inline: --value(--spacing-*, [length]);
-    min-height: --value(--spacing-control-*, [length]);
+      padding-inline: --value(--spacing-*, [length]);
+    gap: --value(--spacing-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
+  [data-scope="toggle"][data-part="root"] {
+    padding-inline: --value(--spacing-*, [length]);
+    gap: --value(--spacing-*, [length]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
+  }
+
+}
+
+
+@utility toggle--semantic-* {
+  --paint-bg: --value(--color-*, [color]);
+  --paint-fg: --value(--color-on-*, [color]);
+  --paint-bg-hover: --value(--color-*-hover, [color]);
+  --paint-bg-active: --value(--color-*-active, [color]);
+  --paint-ring: --value(--color-*, [color]);
+  --paint-border: --value(--color-*, [color]);
+  --paint-ink: --value(--color-*, [color]);
+}
+
+
+@utility toggle--semantic-base {
+  --paint-ring: --value(--color-on-base, [color]);
+  --paint-border: --value(--color-on-base, [color]);
+  --paint-ink: --value(--color-on-base, [color]);
+}
+
+
+@utility toggle--variant-solid {
+[data-scope="toggle"][data-part="root"][data-state="on"] {
+    @apply visual-solid;
+  }
+}
+
+
+@utility toggle--variant-ghost {
+[data-scope="toggle"][data-part="root"][data-state="on"] {
+    @apply visual-ghost;
+  }
+}
+
+
+@utility toggle--variant-outline {
+[data-scope="toggle"][data-part="root"][data-state="on"] {
+    @apply visual-outline;
+  }
+}
+
+
+@utility toggle--variant-subtle {
+[data-scope="toggle"][data-part="root"][data-state="on"] {
+    @apply visual-subtle;
+  }
 }
 
 
@@ -44,18 +98,18 @@
     display: inline-flex;
     width: fit-content;
     cursor: pointer;
-    border: 1px solid transparent;
-    gap: var(--spacing-md);
-    align-items: center;
-    justify-content: center;
     padding-inline: var(--spacing-md);
+    gap: var(--spacing-md);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
     min-height: var(--spacing-control-md);
     border-radius: var(--radius-md);
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
     font-weight: var(--font-weight-normal);
     text-align: center;
     transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
     text-decoration-line: none;
     appearance: none;
     &[data-state="on"] {
@@ -87,8 +141,8 @@
         }
         &:focus-visible {
           color: var(--color-on-muted);
-          background-color: var(--color-surface-control-muted);
           outline: none;
+          background-color: var(--color-surface-control-muted);
           box-shadow: none;
         }
       }
@@ -137,8 +191,8 @@
         }
         &:focus-visible {
           color: var(--color-on-muted);
-          background-color: var(--color-surface-control-muted);
           outline: none;
+          background-color: var(--color-surface-control-muted);
           box-shadow: none;
           border-color: var(--color-border);
         }
@@ -156,8 +210,8 @@
   .toggle {
     width: fit-content;
     max-width: none;
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .toggle [data-scope="toggle"][data-part="indicator"] {
@@ -206,197 +260,6 @@
     max-height: 100%;
   }
 
-  .toggle.toggle--semantic-accent {
-    position: relative;
-  }
-
-  .toggle.toggle--semantic-alert {
-    position: relative;
-  }
-
-  .toggle.toggle--semantic-base {
-    position: relative;
-  }
-
-  .toggle.toggle--semantic-brand {
-    position: relative;
-  }
-
-  .toggle.toggle--semantic-info {
-    position: relative;
-  }
-
-  .toggle.toggle--semantic-success {
-    position: relative;
-  }
-
-  .toggle.toggle--variant-solid [data-scope="toggle"][data-part="root"] {
-    &:not([data-state="on"]) {
-      color: var(--color-on-page);
-      background-color: var(--color-surface-control);
-      border-color: var(--color-border);
-      &:active {
-        background-color: var(--color-surface-control-active);
-      }
-      &:disabled,
-        &[data-disabled],
-        &[disabled] {
-        cursor: not-allowed;
-        color: var(--color-on-muted);
-        background-color: var(--color-surface-control-muted);
-        box-shadow: none;
-        border-color: var(--color-border);
-        &:active {
-          color: var(--color-on-muted);
-          background-color: var(--color-surface-control-muted);
-          box-shadow: none;
-          border-color: var(--color-border);
-        }
-        &[data-state="open"] {
-          color: var(--color-on-muted);
-          background-color: var(--color-surface-control-muted);
-          border-color: var(--color-border);
-        }
-        &:hover {
-          color: var(--color-on-muted);
-          background-color: var(--color-surface-control-muted);
-          border-color: var(--color-border);
-        }
-        &:focus-visible {
-          color: var(--color-on-muted);
-          background-color: var(--color-surface-control-muted);
-          outline: none;
-          box-shadow: none;
-          border-color: var(--color-border);
-        }
-      }
-      &:hover {
-        background-color: var(--color-surface-control-hover);
-      }
-      &:focus-visible {
-        outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-on-page);
-      }
-    }
-  }
-
-  .toggle.toggle--variant-ghost [data-scope="toggle"][data-part="root"] {
-    &:not([data-state="on"]) {
-      color: var(--color-on-page);
-      background-color: transparent;
-      border-color: transparent;
-      &:active {
-        background-color: var(--color-surface-control-active);
-      }
-      &:disabled,
-        &[data-disabled],
-        &[disabled] {
-        cursor: not-allowed;
-        color: var(--color-on-muted);
-        background-color: transparent;
-        box-shadow: none;
-        &:active {
-          color: var(--color-on-muted);
-          background-color: transparent;
-          box-shadow: none;
-        }
-        &[data-state="open"] {
-          color: var(--color-on-muted);
-          background-color: transparent;
-        }
-        &:hover {
-          color: var(--color-on-muted);
-          background-color: transparent;
-        }
-        &:focus-visible {
-          color: var(--color-on-muted);
-          background-color: transparent;
-          outline: none;
-          box-shadow: none;
-        }
-      }
-      &:hover {
-        background-color: var(--color-surface-control-hover);
-      }
-      &:focus-visible {
-        outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-on-page);
-      }
-    }
-  }
-
-  .toggle.toggle--variant-outline [data-scope="toggle"][data-part="root"] {
-    &:not([data-state="on"]) {
-      color: var(--color-on-page);
-      background-color: transparent;
-      border-color: var(--color-focus);
-      &:active {
-        background-color: var(--color-surface-control-active);
-      }
-      &:disabled,
-        &[data-disabled],
-        &[disabled] {
-        cursor: not-allowed;
-        color: var(--color-on-muted);
-        background-color: transparent;
-        box-shadow: none;
-        border-color: var(--color-surface-control-muted);
-      }
-      &:hover {
-        background-color: var(--color-surface-control-hover);
-      }
-      &:focus-visible {
-        outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-on-page);
-      }
-    }
-  }
-
-  .toggle.toggle--variant-subtle [data-scope="toggle"][data-part="root"] {
-    &:not([data-state="on"]) {
-      color: var(--color-on-page);
-      background-color: var(--color-surface-control-hover);
-      border-color: transparent;
-      &:active {
-        background-color: var(--color-surface-control-active);
-      }
-      &:disabled,
-        &[data-disabled],
-        &[disabled] {
-        cursor: not-allowed;
-        color: var(--color-on-muted);
-        background-color: var(--color-surface-control-muted);
-        box-shadow: none;
-        &:active {
-          color: var(--color-on-muted);
-          background-color: var(--color-surface-control-muted);
-          box-shadow: none;
-        }
-        &[data-state="open"] {
-          color: var(--color-on-muted);
-          background-color: var(--color-surface-control-muted);
-        }
-        &:hover {
-          color: var(--color-on-muted);
-          background-color: var(--color-surface-control-muted);
-        }
-        &:focus-visible {
-          color: var(--color-on-muted);
-          background-color: var(--color-surface-control-muted);
-          outline: none;
-          box-shadow: none;
-        }
-      }
-      &:hover {
-        background-color: var(--color-surface-control-active);
-      }
-      &:focus-visible {
-        outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-on-page);
-      }
-    }
-  }
-
   .toggle.toggle--rounded-none [data-scope="toggle"][data-part="root"] {
     border-radius: var(--radius-none);
   }
@@ -412,711 +275,14 @@
     aspect-ratio: 1 / 1;
   }
 
-  .toggle.toggle--variant-solid [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background-color: var(--color-base);
-    color: var(--color-on-base);
-    border-color: transparent;
-    &:hover {
-      background-color: var(--color-base-hover);
-    }
-
-    &:active {
-      background-color: var(--color-base-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-base);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toggle.toggle--variant-ghost [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background-color: transparent;
-    color: var(--color-base);
-    border-color: transparent;
-    &:hover {
-      background-color: var(--color-surface-control-hover);
-    }
-
-    &:active {
-      background-color: var(--color-surface-control-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-base);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: transparent;
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toggle.toggle--variant-outline [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background-color: transparent;
-    color: var(--color-base);
-    border-color: var(--color-base);
-    &:hover {
-      background-color: var(--color-surface-control-hover);
-    }
-
-    &:active {
-      background-color: var(--color-surface-control-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-base);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: transparent;
-      color: var(--color-on-muted);
-      border-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toggle.toggle--variant-subtle [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background-color: var(--color-surface-control-hover);
-    color: var(--color-base);
-    border-color: transparent;
-    &:hover {
-      background-color: var(--color-surface-control-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-base);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toggle.toggle--variant-solid.toggle--semantic-accent [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background-color: var(--color-accent);
-    color: var(--color-on-accent);
-    border-color: transparent;
-    &:hover {
-      background-color: var(--color-accent-hover);
-    }
-
-    &:active {
-      background-color: var(--color-accent-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-accent);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toggle.toggle--variant-ghost.toggle--semantic-accent [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background-color: transparent;
-    color: var(--color-accent);
-    border-color: transparent;
-    &:hover {
-      background-color: var(--color-surface-control-hover);
-    }
-
-    &:active {
-      background-color: var(--color-surface-control-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-accent);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: transparent;
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toggle.toggle--variant-outline.toggle--semantic-accent [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background-color: transparent;
-    color: var(--color-accent);
-    border-color: var(--color-accent);
-    &:hover {
-      background-color: var(--color-surface-control-hover);
-    }
-
-    &:active {
-      background-color: var(--color-surface-control-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-accent);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: transparent;
-      color: var(--color-on-muted);
-      border-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toggle.toggle--variant-subtle.toggle--semantic-accent [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background-color: var(--color-surface-control-hover);
-    color: var(--color-accent);
-    border-color: transparent;
-    &:hover {
-      background-color: var(--color-surface-control-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-accent);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toggle.toggle--variant-solid.toggle--semantic-alert [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background-color: var(--color-alert);
-    color: var(--color-on-alert);
-    border-color: transparent;
-    &:hover {
-      background-color: var(--color-alert-hover);
-    }
-
-    &:active {
-      background-color: var(--color-alert-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-alert);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toggle.toggle--variant-ghost.toggle--semantic-alert [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background-color: transparent;
-    color: var(--color-alert);
-    border-color: transparent;
-    &:hover {
-      background-color: var(--color-surface-control-hover);
-    }
-
-    &:active {
-      background-color: var(--color-surface-control-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-alert);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: transparent;
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toggle.toggle--variant-outline.toggle--semantic-alert [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background-color: transparent;
-    color: var(--color-alert);
-    border-color: var(--color-alert);
-    &:hover {
-      background-color: var(--color-surface-control-hover);
-    }
-
-    &:active {
-      background-color: var(--color-surface-control-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-alert);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: transparent;
-      color: var(--color-on-muted);
-      border-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toggle.toggle--variant-subtle.toggle--semantic-alert [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background-color: var(--color-surface-control-hover);
-    color: var(--color-alert);
-    border-color: transparent;
-    &:hover {
-      background-color: var(--color-surface-control-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-alert);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toggle.toggle--variant-solid.toggle--semantic-base [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background-color: var(--color-base);
-    color: var(--color-on-base);
-    border-color: transparent;
-    &:hover {
-      background-color: var(--color-base-hover);
-    }
-
-    &:active {
-      background-color: var(--color-base-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-base);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toggle.toggle--variant-ghost.toggle--semantic-base [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background-color: transparent;
-    color: var(--color-base);
-    border-color: transparent;
-    &:hover {
-      background-color: var(--color-surface-control-hover);
-    }
-
-    &:active {
-      background-color: var(--color-surface-control-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-base);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: transparent;
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toggle.toggle--variant-outline.toggle--semantic-base [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background-color: transparent;
-    color: var(--color-base);
-    border-color: var(--color-base);
-    &:hover {
-      background-color: var(--color-surface-control-hover);
-    }
-
-    &:active {
-      background-color: var(--color-surface-control-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-base);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: transparent;
-      color: var(--color-on-muted);
-      border-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toggle.toggle--variant-subtle.toggle--semantic-base [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background-color: var(--color-surface-control-hover);
-    color: var(--color-base);
-    border-color: transparent;
-    &:hover {
-      background-color: var(--color-surface-control-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-base);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toggle.toggle--variant-solid.toggle--semantic-brand [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background-color: var(--color-brand);
-    color: var(--color-on-brand);
-    border-color: transparent;
-    &:hover {
-      background-color: var(--color-brand-hover);
-    }
-
-    &:active {
-      background-color: var(--color-brand-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-brand);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toggle.toggle--variant-ghost.toggle--semantic-brand [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background-color: transparent;
-    color: var(--color-brand);
-    border-color: transparent;
-    &:hover {
-      background-color: var(--color-surface-control-hover);
-    }
-
-    &:active {
-      background-color: var(--color-surface-control-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-brand);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: transparent;
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toggle.toggle--variant-outline.toggle--semantic-brand [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background-color: transparent;
-    color: var(--color-brand);
-    border-color: var(--color-brand);
-    &:hover {
-      background-color: var(--color-surface-control-hover);
-    }
-
-    &:active {
-      background-color: var(--color-surface-control-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-brand);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: transparent;
-      color: var(--color-on-muted);
-      border-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toggle.toggle--variant-subtle.toggle--semantic-brand [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background-color: var(--color-surface-control-hover);
-    color: var(--color-brand);
-    border-color: transparent;
-    &:hover {
-      background-color: var(--color-surface-control-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-brand);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toggle.toggle--variant-solid.toggle--semantic-info [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background-color: var(--color-info);
-    color: var(--color-on-info);
-    border-color: transparent;
-    &:hover {
-      background-color: var(--color-info-hover);
-    }
-
-    &:active {
-      background-color: var(--color-info-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-info);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toggle.toggle--variant-ghost.toggle--semantic-info [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background-color: transparent;
-    color: var(--color-info);
-    border-color: transparent;
-    &:hover {
-      background-color: var(--color-surface-control-hover);
-    }
-
-    &:active {
-      background-color: var(--color-surface-control-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-info);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: transparent;
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toggle.toggle--variant-outline.toggle--semantic-info [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background-color: transparent;
-    color: var(--color-info);
-    border-color: var(--color-info);
-    &:hover {
-      background-color: var(--color-surface-control-hover);
-    }
-
-    &:active {
-      background-color: var(--color-surface-control-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-info);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: transparent;
-      color: var(--color-on-muted);
-      border-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toggle.toggle--variant-subtle.toggle--semantic-info [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background-color: var(--color-surface-control-hover);
-    color: var(--color-info);
-    border-color: transparent;
-    &:hover {
-      background-color: var(--color-surface-control-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-info);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toggle.toggle--variant-solid.toggle--semantic-success [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background-color: var(--color-success);
-    color: var(--color-on-success);
-    border-color: transparent;
-    &:hover {
-      background-color: var(--color-success-hover);
-    }
-
-    &:active {
-      background-color: var(--color-success-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-success);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toggle.toggle--variant-ghost.toggle--semantic-success [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background-color: transparent;
-    color: var(--color-success);
-    border-color: transparent;
-    &:hover {
-      background-color: var(--color-surface-control-hover);
-    }
-
-    &:active {
-      background-color: var(--color-surface-control-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-success);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: transparent;
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toggle.toggle--variant-outline.toggle--semantic-success [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background-color: transparent;
-    color: var(--color-success);
-    border-color: var(--color-success);
-    &:hover {
-      background-color: var(--color-surface-control-hover);
-    }
-
-    &:active {
-      background-color: var(--color-surface-control-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-success);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: transparent;
-      color: var(--color-on-muted);
-      border-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toggle.toggle--variant-subtle.toggle--semantic-success [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background-color: var(--color-surface-control-hover);
-    color: var(--color-success);
-    border-color: transparent;
-    &:hover {
-      background-color: var(--color-surface-control-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-success);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
+  .toggle {
+    --paint-bg: var(--color-base);
+    --paint-fg: var(--color-on-base);
+    --paint-ink: var(--color-on-base);
+    --paint-bg-hover: var(--color-base-hover);
+    --paint-bg-active: var(--color-base-active);
+    --paint-ring: var(--color-on-base);
+    --paint-border: var(--color-on-base);
   }
 
   .toggle [data-part="indicator"] {
@@ -1146,38 +312,6 @@
     height: 1em;
     flex-shrink: 0;
     display: inline-flex;
-  }
-
-  .toggle.toggle--size-sm [data-scope="toggle"][data-part="root"] {
-    gap: var(--spacing-sm);
-    padding-inline: var(--spacing-sm);
-    min-height: var(--spacing-control-sm);
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-  }
-
-  .toggle.toggle--size-md [data-scope="toggle"][data-part="root"] {
-    gap: var(--spacing-md);
-    padding-inline: var(--spacing-md);
-    min-height: var(--spacing-control-md);
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-  }
-
-  .toggle.toggle--size-lg [data-scope="toggle"][data-part="root"] {
-    gap: var(--spacing-lg);
-    padding-inline: var(--spacing-lg);
-    min-height: var(--spacing-control-lg);
-    font-size: var(--text-lg);
-    line-height: var(--leading-lg);
-  }
-
-  .toggle.toggle--size-xl [data-scope="toggle"][data-part="root"] {
-    gap: var(--spacing-xl);
-    padding-inline: var(--spacing-xl);
-    min-height: var(--spacing-control-xl);
-    font-size: var(--text-xl);
-    line-height: var(--leading-xl);
   }
 
   .toggle.toggle--shape-square.toggle--size-sm [data-scope="toggle"][data-part="root"] {

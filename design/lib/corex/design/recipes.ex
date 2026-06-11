@@ -59,13 +59,16 @@ defmodule Corex.Design.Recipes do
   def semantic_slot_host_variants, do: semantic_part_host_variants()
 
   def semantic_variants(opts \\ []) do
-    host = Keyword.get(opts, :host, Corex.Design.Palette.semantic_host_marker())
     part = Keyword.get(opts, :part, false)
 
-    if part do
-      for role <- Corex.Design.Semantics.axis_atoms(), do: {role, [host: host]}
-    else
-      for role <- Corex.Design.Semantics.axis_atoms(), do: {role, host}
+    for role <- Corex.Design.Semantics.axis_atoms() do
+      sx = Corex.Design.Palette.semantic_paint_sx(role)
+
+      if part do
+        {role, [host: sx]}
+      else
+        {role, sx}
+      end
     end
   end
 
@@ -280,80 +283,43 @@ defmodule Corex.Design.Recipes do
     alias Corex.Design.Selector
 
     def open_closed_trigger_rules(id, part_selector, opts \\ []) do
-      inherit = Keyword.get(opts, :inherit, [])
-
-      for role <- Palette.color_atoms() do
-        host = host_mod(id, role)
-        muted = "var(#{Palette.muted_var(role)})"
-
-        closed =
-          Rule.new("#{host} #{slot_selector(id, part_selector)}[data-state=\"closed\"]",
-            decls: [color: "var(#{Palette.fg_var(role)}, var(--color-on-page))"]
-          )
-
-        open_children =
-          Palette.active_state_children(role, muted: muted) ++
-            Enum.map(inherit, fn sel ->
-              Rule.new("& #{sel}", decls: [color: "inherit"])
-            end) ++
-            [Rule.new("& [data-icon]", decls: [color: "currentcolor"])]
-
-        open =
-          Rule.new("#{host} #{slot_selector(id, part_selector)}[data-state=\"open\"]",
-            decls: Palette.active_decls(role),
-            children: open_children
-          )
-
-        [closed, open]
-      end
-      |> List.flatten()
+      Palette.open_closed_trigger_apply_rules(id, part_selector, opts)
     end
 
     def selected_trigger_rules(id, part_selector, attr \\ "[data-selected]") do
-      for role <- Palette.color_atoms() do
-        host = host_mod(id, role)
-        muted = "var(#{Palette.muted_var(role)})"
-
-        Rule.new("#{host} #{slot_selector(id, part_selector)}#{attr}",
-          decls: Palette.active_decls(role),
-          children: Palette.active_state_children(role, muted: muted)
+      [
+        Rule.new(
+          "#{Palette.implicit_host(id)} #{slot_selector(id, part_selector)}#{attr}",
+          decls: [{:apply, "visual-solid"}]
         )
-      end
+      ]
     end
 
     def active_part_rules(id, part_selector, attrs, opts \\ []) do
       highlighted = Keyword.get(opts, :highlighted, false)
+      host = Palette.implicit_host(id)
 
-      for role <- Palette.color_atoms(), attr <- List.wrap(attrs) do
-        host = host_mod(id, role)
-
-        children =
-          Palette.active_state_children(role) ++
-            if(highlighted, do: highlighted_children(role), else: [])
+      for attr <- List.wrap(attrs) do
+        children = if(highlighted, do: highlighted_children(), else: [])
 
         Rule.new("#{host} #{slot_selector(id, part_selector)}#{attr}",
-          decls: Palette.active_decls(role),
+          decls: [{:apply, "visual-solid"}],
           children: children
         )
       end
-      |> List.flatten()
     end
 
     def active_selector_rules(id, selector, opts \\ []) do
       highlighted = Keyword.get(opts, :highlighted, false)
+      host = Palette.implicit_host(id)
+      children = if(highlighted, do: highlighted_children(), else: [])
 
-      for role <- Palette.color_atoms() do
-        host = host_mod(id, role)
-
-        children =
-          Palette.active_state_children(role) ++
-            if(highlighted, do: highlighted_children(role), else: [])
-
+      [
         Rule.new("#{host} #{slot_selector(id, selector)}",
-          decls: Palette.active_decls(role),
+          decls: [{:apply, "visual-solid"}],
           children: children
         )
-      end
+      ]
     end
 
     def solid_trigger_rules(id, part_selectors) when is_list(part_selectors) do
@@ -363,18 +329,15 @@ defmodule Corex.Design.Recipes do
     end
 
     def solid_part_rules(id, selectors) when is_list(selectors) do
-      for role <- Palette.color_atoms() do
-        host = host_mod(id, role)
+      host = Palette.implicit_host(id)
 
-        combined =
-          selectors
-          |> Enum.map_join(",\n  ", fn selector -> "#{host} #{selector}" end)
+      combined =
+        selectors
+        |> Enum.map_join(",\n  ", fn selector -> "#{host} #{selector}" end)
 
-        Rule.new(combined,
-          decls: Palette.active_decls(role),
-          children: Palette.active_state_children(role)
-        )
-      end
+      [
+        Rule.new(combined, decls: [{:apply, "visual-solid"}])
+      ]
     end
 
     def solid_part_rules(id, selector) when is_binary(selector) do
@@ -382,108 +345,56 @@ defmodule Corex.Design.Recipes do
     end
 
     def toggle_group_item_rules(id, part_selector) do
+      host = Palette.implicit_host(id)
       active_sel = ~S(&[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"])
 
       inactive =
         "&:not([data-state=\"on\"]):not([data-toggle-grouped]):not([data-state=\"checked\"]):not([data-disabled]):not(:disabled):not([disabled])"
 
-      for role <- Palette.color_atoms() do
-        host = host_mod(id, role)
-        focus_ring = "var(#{Palette.solid_var(role)})"
-        ink_on_disabled = "var(#{Palette.on_solid_var(role)})"
-        muted = "var(#{Palette.muted_var(role)})"
-
+      [
         Rule.new("#{host} #{slot_selector(id, part_selector)}",
           decls: [],
           children:
             [
               Rule.new(inactive,
-                decls: [color: "var(#{Palette.fg_var(role)}, var(--color-on-page))"],
+                decls: [color: "var(--paint-ink)"],
                 children: [
                   Rule.new("&:focus-visible",
-                    decls: [outline: "none", box_shadow: "inset 0 0 0 2px #{focus_ring}"]
+                    decls: [
+                      outline: "none",
+                      box_shadow: "inset 0 0 0 2px var(--paint-ring)"
+                    ]
                   )
                 ]
               ),
               Rule.new("&:disabled,\n  &[data-disabled],\n  &[disabled]",
-                decls: [background_color: muted, color: ink_on_disabled, cursor: "not-allowed"]
+                decls: [
+                  background_color: "var(--color-surface-control-muted)",
+                  color: "var(--color-on-muted)",
+                  cursor: "not-allowed"
+                ]
               ),
-              Rule.new(active_sel,
-                decls: Palette.active_decls(role),
-                children:
-                  Palette.active_state_children(role,
-                    muted: muted,
-                    disabled_color: ink_on_disabled
-                  )
-              )
-            ] ++ toggle_group_highlight_rules(active_sel, focus_ring, role)
+              Rule.new(active_sel, decls: [{:apply, "visual-solid"}])
+            ] ++ toggle_group_highlight_rules(active_sel)
         )
-      end
+      ]
     end
 
     def neutral_selected_trigger_rules(id, part_selector, attr \\ "[data-selected]") do
-      implicit_active_trigger_rules(id, part_selector, attr)
+      selected_trigger_rules(id, part_selector, attr)
     end
 
     def implicit_active_trigger_rules(id, part_selector, attr \\ "[data-selected]") do
-      host = Palette.implicit_host(id)
-      role = :implicit
-      muted = "var(#{Palette.muted_var(role)})"
-
-      [
-        Rule.new("#{host} #{slot_selector(id, part_selector)}#{attr}",
-          decls: Palette.active_decls(role),
-          children: Palette.active_state_children(role, muted: muted)
-        )
-      ]
+      selected_trigger_rules(id, part_selector, attr)
     end
 
     def neutral_toggle_group_item_rules(id, part_selector) do
-      implicit_toggle_group_item_rules(id, part_selector)
+      toggle_group_item_rules(id, part_selector)
     end
 
     def implicit_toggle_group_item_rules(id, part_selector) do
-      host = Palette.implicit_host(id)
-      role = :implicit
-      active_sel = ~S(&[data-state="on"],\n  &[data-toggle-grouped],\n  &[data-state="checked"])
-
-      inactive =
-        "&:not([data-state=\"on\"]):not([data-toggle-grouped]):not([data-state=\"checked\"]):not([data-disabled]):not(:disabled):not([disabled])"
-
-      focus_ring = "var(#{Palette.solid_var(role)})"
-      ink_on_disabled = "var(#{Palette.on_solid_var(role)})"
-      muted = "var(#{Palette.muted_var(role)})"
-
-      [
-        Rule.new("#{host} #{slot_selector(id, part_selector)}",
-          decls: [],
-          children:
-            [
-              Rule.new(inactive,
-                decls: [color: "var(--color-on-page)"],
-                children: [
-                  Rule.new("&:focus-visible",
-                    decls: [outline: "none", box_shadow: "inset 0 0 0 2px #{focus_ring}"]
-                  )
-                ]
-              ),
-              Rule.new("&:disabled,\n  &[data-disabled],\n  &[disabled]",
-                decls: [background_color: muted, color: ink_on_disabled, cursor: "not-allowed"]
-              ),
-              Rule.new(active_sel,
-                decls: Palette.active_decls(role),
-                children:
-                  Palette.active_state_children(role,
-                    muted: muted,
-                    disabled_color: ink_on_disabled
-                  )
-              )
-            ] ++ toggle_group_highlight_rules(active_sel, focus_ring, role)
-        )
-      ]
+      toggle_group_item_rules(id, part_selector)
     end
-
-    defp host_mod(id, role), do: Palette.host_mod(id, role)
 
     defp slot_selector(id, selector) do
       host = Selector.host(id)
@@ -496,7 +407,7 @@ defmodule Corex.Design.Recipes do
       end
     end
 
-    defp toggle_group_highlight_rules(active_sel, focus_ring, role) do
+    defp toggle_group_highlight_rules(active_sel) do
       inactive_highlight =
         "&[data-highlighted]:not([data-state=\"on\"]):not([data-toggle-grouped]):not([data-state=\"checked\"])"
 
@@ -504,33 +415,33 @@ defmodule Corex.Design.Recipes do
         Rule.new("#{inactive_highlight}:not(:hover)",
           decls: [
             outline: "none",
-            box_shadow: "inset 0 0 0 2px #{focus_ring}",
-            background_color: "var(#{Palette.surface_var()})"
+            box_shadow: "inset 0 0 0 2px var(--paint-ring)",
+            background_color: "var(--color-surface-control-hover)"
           ]
         ),
         Rule.new("#{inactive_highlight}:active", decls: [box_shadow: "none"]),
         Rule.new("#{active_sel}[data-highlighted]:not(:hover)",
           decls: [
             outline: "none",
-            box_shadow: "inset 0 0 0 2px var(#{Palette.on_solid_var(role)})",
-            background_color: "var(#{Palette.solid_hover_var(role)})",
-            color: "var(#{Palette.on_solid_var(role)})"
+            box_shadow: "inset 0 0 0 2px var(--paint-fg)",
+            background_color: "var(--paint-bg-hover)",
+            color: "var(--paint-fg)"
           ]
         ),
         Rule.new("#{active_sel}[data-highlighted]:hover",
           decls: [
             outline: "none",
             box_shadow: "none",
-            background_color: "var(#{Palette.solid_hover_var(role)})",
-            color: "var(#{Palette.on_solid_var(role)})"
+            background_color: "var(--paint-bg-hover)",
+            color: "var(--paint-fg)"
           ]
         ),
         Rule.new("#{active_sel}[data-highlighted]:active",
           decls: [
             outline: "none",
             box_shadow: "none",
-            background_color: "var(#{Palette.solid_active_var(role)})",
-            color: "var(#{Palette.on_solid_var(role)})"
+            background_color: "var(--paint-bg-active)",
+            color: "var(--paint-fg)"
           ]
         )
       ]
@@ -539,16 +450,16 @@ defmodule Corex.Design.Recipes do
         Rule.new(inactive_highlight,
           decls: [
             outline: "none",
-            box_shadow: "inset 0 0 0 2px #{focus_ring}",
-            background_color: "var(#{Palette.surface_var()})"
+            box_shadow: "inset 0 0 0 2px var(--paint-ring)",
+            background_color: "var(--color-surface-control-hover)"
           ]
         ),
         Rule.new("#{active_sel}[data-highlighted]",
           decls: [
             outline: "none",
-            box_shadow: "inset 0 0 0 2px var(#{Palette.on_solid_var(role)})",
-            background_color: "var(#{Palette.solid_hover_var(role)})",
-            color: "var(#{Palette.on_solid_var(role)})"
+            box_shadow: "inset 0 0 0 2px var(--paint-fg)",
+            background_color: "var(--paint-bg-hover)",
+            color: "var(--paint-fg)"
           ]
         )
       ]
@@ -559,14 +470,14 @@ defmodule Corex.Design.Recipes do
       ]
     end
 
-    defp highlighted_children(role) do
+    defp highlighted_children do
       [
         Rule.new("&[data-highlighted]",
           decls: [
             outline: "none",
-            box_shadow: "inset 0 0 0 2px var(#{Palette.on_solid_var(role)})",
-            background_color: "var(#{Palette.solid_hover_var(role)})",
-            color: "var(#{Palette.on_solid_var(role)})"
+            box_shadow: "inset 0 0 0 2px var(--paint-fg)",
+            background_color: "var(--paint-bg-hover)",
+            color: "var(--paint-fg)"
           ]
         )
       ]
@@ -1560,40 +1471,31 @@ defmodule Corex.Design.Recipes do
     defp max_height_scroll_rules do
       item_content = slot("item-content")
       name = Selector.class_name(@id)
+      mod =
+        ".#{name}[class*=\"--max-h-\"]:not(.#{name}.#{name}--max-h-none)"
+      open = "#{mod} #{item_content}[data-state=\"open\"]"
 
-      for step <- max_height_scroll_steps() do
-        mod = ".#{name}.#{name}--max-h-#{step}"
-        open = "#{mod} #{item_content}[data-state=\"open\"]"
-
-        [
-          Rule.new(open,
-            decls: [
-              display: "flex",
-              flex_direction: "column",
-              min_height: "0",
-              overflow: "hidden"
-            ]
-          ),
-          Rule.new("#{open} > p",
-            decls: [
-              overflow_y: "auto",
-              min_height: "0",
-              flex: "1 1 auto",
-              box_sizing: "border-box"
-            ],
-            children:
-              content_scrollbar_children() ++
-                [Rule.new("&", decls: [{:raw, "overflow-wrap: break-word"}])]
-          )
-        ]
-      end
-      |> List.flatten()
-    end
-
-    defp max_height_scroll_steps do
-      [:full | Enum.map(RecipePresets.max_height_blocks(), fn {step, _} -> step end)]
-      |> Enum.reject(&(&1 == :none))
-      |> Enum.uniq()
+      [
+        Rule.new(open,
+          decls: [
+            display: "flex",
+            flex_direction: "column",
+            min_height: "0",
+            overflow: "hidden"
+          ]
+        ),
+        Rule.new("#{open} > p",
+          decls: [
+            overflow_y: "auto",
+            min_height: "0",
+            flex: "1 1 auto",
+            box_sizing: "border-box"
+          ],
+          children:
+            content_scrollbar_children() ++
+              [Rule.new("&", decls: [{:raw, "overflow-wrap: break-word"}])]
+        )
+      ]
     end
 
     defp content_scrollbar_children do
@@ -2267,7 +2169,7 @@ defmodule Corex.Design.Recipes do
         host_sizing: RecipePresets.inline_host_sizing(),
         base: RecipePresets.trigger_base(),
         variants: [
-          semantic: semantic_variants(),
+          semantic: Corex.Design.Recipes.semantic_variants(),
           variant: variant_variants(),
           size: size_variants(),
           text: text_variants(),
@@ -2289,17 +2191,8 @@ defmodule Corex.Design.Recipes do
       )
     end
 
-    defp semantic_variants do
-      for color <- Axes.semantic_atoms(), do: {color, %{position: :relative}}
-    end
-
     defp variant_variants do
-      [
-        solid: RecipePresets.visual_solid(),
-        ghost: RecipePresets.visual_ghost(),
-        outline: RecipePresets.visual_outline(),
-        subtle: RecipePresets.visual_subtle()
-      ]
+      for variant <- Axes.visual_atoms(), do: {variant, %{}}
     end
 
     defp size_variants do
@@ -5742,7 +5635,7 @@ defmodule Corex.Design.Recipes do
         host_sizing: RecipePresets.inline_host_sizing(),
         base: RecipePresets.link_base(),
         variants: [
-          semantic: semantic_variants(),
+          semantic: Corex.Design.Recipes.semantic_variants(),
           variant: variant_variants(),
           size: size_variants(),
           text: text_variants(),
@@ -5808,10 +5701,6 @@ defmodule Corex.Design.Recipes do
 
     defp variant_variants do
       for variant <- Axes.visual_atoms(), do: {variant, %{}}
-    end
-
-    defp semantic_variants do
-      for color <- Axes.semantic_atoms(), do: {color, %{position: :relative}}
     end
 
     defp size_variants do
@@ -7734,7 +7623,7 @@ defmodule Corex.Design.Recipes do
 
     defp semantic_variants do
       for color <- Axes.semantic_atoms(),
-          do: {color, [host: Palette.semantic_host_marker()]}
+          do: {color, [host: Palette.semantic_paint_sx(color)]}
     end
 
     defp select_extra_rules do

@@ -36,12 +36,30 @@
 }
 
 
+@utility tooltip--semantic-* {
+  --paint-bg: --value(--color-*, [color]);
+  --paint-fg: --value(--color-on-*, [color]);
+  --paint-bg-hover: --value(--color-*-hover, [color]);
+  --paint-bg-active: --value(--color-*-active, [color]);
+  --paint-ring: --value(--color-*, [color]);
+  --paint-border: --value(--color-*, [color]);
+  --paint-ink: --value(--color-*, [color]);
+}
+
+
+@utility tooltip--semantic-base {
+  --paint-ring: --value(--color-on-base, [color]);
+  --paint-border: --value(--color-on-base, [color]);
+  --paint-ink: --value(--color-on-base, [color]);
+}
+
+
 @layer components {
   .tooltip {
     width: fit-content;
     max-width: none;
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .tooltip [data-scope="tooltip"][data-part="content"] {
@@ -91,90 +109,6 @@
 
   .tooltip.tooltip--max-h-full {
     max-height: 100%;
-  }
-
-  .tooltip.tooltip--semantic-accent [data-scope="tooltip"][data-part="content"] {
-    color: var(--color-accent);
-    background-color: var(--color-accent);
-    border-color: var(--color-border-accent, var(--color-border));
-  }
-
-  .tooltip.tooltip--semantic-accent [data-scope="tooltip"][data-part="arrow"] {
-    --arrow-background: var(--color-accent);
-  }
-
-  .tooltip.tooltip--semantic-accent [data-scope="tooltip"][data-part="arrow-tip"] {
-    border-color: var(--color-border-accent, var(--color-border));
-  }
-
-  .tooltip.tooltip--semantic-alert [data-scope="tooltip"][data-part="content"] {
-    color: var(--color-alert);
-    background-color: var(--color-alert);
-    border-color: var(--color-border-alert, var(--color-border));
-  }
-
-  .tooltip.tooltip--semantic-alert [data-scope="tooltip"][data-part="arrow"] {
-    --arrow-background: var(--color-alert);
-  }
-
-  .tooltip.tooltip--semantic-alert [data-scope="tooltip"][data-part="arrow-tip"] {
-    border-color: var(--color-border-alert, var(--color-border));
-  }
-
-  .tooltip.tooltip--semantic-base [data-scope="tooltip"][data-part="content"] {
-    color: var(--color-base);
-    background-color: var(--color-base);
-    border-color: var(--color-border-base, var(--color-border));
-  }
-
-  .tooltip.tooltip--semantic-base [data-scope="tooltip"][data-part="arrow"] {
-    --arrow-background: var(--color-base);
-  }
-
-  .tooltip.tooltip--semantic-base [data-scope="tooltip"][data-part="arrow-tip"] {
-    border-color: var(--color-border-base, var(--color-border));
-  }
-
-  .tooltip.tooltip--semantic-brand [data-scope="tooltip"][data-part="content"] {
-    color: var(--color-brand);
-    background-color: var(--color-brand);
-    border-color: var(--color-border-brand, var(--color-border));
-  }
-
-  .tooltip.tooltip--semantic-brand [data-scope="tooltip"][data-part="arrow"] {
-    --arrow-background: var(--color-brand);
-  }
-
-  .tooltip.tooltip--semantic-brand [data-scope="tooltip"][data-part="arrow-tip"] {
-    border-color: var(--color-border-brand, var(--color-border));
-  }
-
-  .tooltip.tooltip--semantic-info [data-scope="tooltip"][data-part="content"] {
-    color: var(--color-info);
-    background-color: var(--color-info);
-    border-color: var(--color-border-info, var(--color-border));
-  }
-
-  .tooltip.tooltip--semantic-info [data-scope="tooltip"][data-part="arrow"] {
-    --arrow-background: var(--color-info);
-  }
-
-  .tooltip.tooltip--semantic-info [data-scope="tooltip"][data-part="arrow-tip"] {
-    border-color: var(--color-border-info, var(--color-border));
-  }
-
-  .tooltip.tooltip--semantic-success [data-scope="tooltip"][data-part="content"] {
-    color: var(--color-success);
-    background-color: var(--color-success);
-    border-color: var(--color-border-success, var(--color-border));
-  }
-
-  .tooltip.tooltip--semantic-success [data-scope="tooltip"][data-part="arrow"] {
-    --arrow-background: var(--color-success);
-  }
-
-  .tooltip.tooltip--semantic-success [data-scope="tooltip"][data-part="arrow-tip"] {
-    border-color: var(--color-border-success, var(--color-border));
   }
 
   .tooltip.tooltip--rounded-none [data-scope="tooltip"][data-part="content"] {

@@ -445,11 +445,19 @@ defmodule Corex.Design.Emit.StyleRecipe do
   end
 
   defp join_blocks(blocks, recipe, _ctx) do
-    extras = extra_rules_css(recipe.extra_rules || [])
+    extras =
+      recipe.extra_rules
+      |> List.wrap()
+      |> reject_utility_variant_rules(recipe)
+      |> extra_rules_css()
 
     (blocks ++ extras)
     |> Enum.reject(&(&1 == ""))
     |> Enum.join("\n\n")
+  end
+
+  defp reject_utility_variant_rules(rules, recipe) do
+    Enum.filter(rules, &TailwindUtilitiesRecipe.components_layer_extra_rule?(recipe, &1))
   end
 
   defp extra_rules_css(rules) do
@@ -846,8 +854,154 @@ defmodule Corex.Design.Emit.TailwindUtilities do
     @base
     |> Enum.map(&base_utility/1)
     |> Kernel.++(Enum.map(wildcards, &wildcard_utility/1))
+    |> Kernel.++(visual_utilities())
+    |> Kernel.++(part_variants())
     |> Enum.reject(&(&1 in [nil, ""]))
     |> Enum.join("\n\n")
+  end
+
+  defp visual_utilities do
+    [
+      visual_utility(:solid, visual_solid_lines()),
+      visual_utility(:ghost, visual_ghost_lines()),
+      visual_utility(:outline, visual_outline_lines()),
+      visual_utility(:subtle, visual_subtle_lines())
+    ]
+  end
+
+  defp part_variants do
+    [
+      """
+      @custom-variant cx-trigger (& [data-part="item-trigger"], & [data-part="trigger"]);
+      """,
+      """
+      @custom-variant cx-open (& [data-state="open"]);
+      """,
+      """
+      @custom-variant cx-trigger-open (& [data-part="item-trigger"][data-state="open"], & [data-part="trigger"][data-state="open"]);
+      """
+    ]
+  end
+
+  defp visual_utility(name, lines) do
+    body = Enum.join(lines, "\n")
+
+    """
+    @utility visual-#{name} {
+    & {
+    #{body}
+    }
+    }
+    """
+  end
+
+  defp visual_solid_lines do
+    [
+      "  background-color: var(--paint-bg);",
+      "  color: var(--paint-fg);",
+      "  border-color: transparent;",
+      "  &:hover {",
+      "    background-color: var(--paint-bg-hover);",
+      "  }",
+      "",
+      "  &:active {",
+      "    background-color: var(--paint-bg-active);",
+      "  }",
+      "",
+      "  &:focus-visible {",
+      "    outline: none;",
+      "    box-shadow: inset 0 0 0 2px var(--paint-ring);",
+      "  }",
+      "",
+      "  &:disabled,",
+      "  &[data-disabled],",
+      "  &[disabled] {",
+      "    background-color: var(--color-surface-control-muted);",
+      "    color: var(--color-on-muted);",
+      "    cursor: not-allowed;",
+      "  }"
+    ]
+  end
+
+  defp visual_ghost_lines do
+    [
+      "  background-color: transparent;",
+      "  color: var(--paint-ink);",
+      "  border-color: transparent;",
+      "  &:hover {",
+      "    background-color: var(--color-surface-control-hover);",
+      "  }",
+      "",
+      "  &:active {",
+      "    background-color: var(--color-surface-control-active);",
+      "  }",
+      "",
+      "  &:focus-visible {",
+      "    outline: none;",
+      "    box-shadow: inset 0 0 0 2px var(--paint-ring);",
+      "  }",
+      "",
+      "  &:disabled,",
+      "  &[data-disabled],",
+      "  &[disabled] {",
+      "    background-color: transparent;",
+      "    color: var(--color-on-muted);",
+      "    cursor: not-allowed;",
+      "  }"
+    ]
+  end
+
+  defp visual_outline_lines do
+    [
+      "  background-color: transparent;",
+      "  color: var(--paint-ink);",
+      "  border-color: var(--paint-border);",
+      "  &:hover {",
+      "    background-color: var(--color-surface-control-hover);",
+      "  }",
+      "",
+      "  &:active {",
+      "    background-color: var(--color-surface-control-active);",
+      "  }",
+      "",
+      "  &:focus-visible {",
+      "    outline: none;",
+      "    box-shadow: inset 0 0 0 2px var(--paint-ring);",
+      "  }",
+      "",
+      "  &:disabled,",
+      "  &[data-disabled],",
+      "  &[disabled] {",
+      "    background-color: transparent;",
+      "    color: var(--color-on-muted);",
+      "    border-color: var(--color-surface-control-muted);",
+      "    cursor: not-allowed;",
+      "  }"
+    ]
+  end
+
+  defp visual_subtle_lines do
+    [
+      "  background-color: var(--color-surface-control-hover);",
+      "  color: var(--paint-ink);",
+      "  border-color: transparent;",
+      "  &:hover {",
+      "    background-color: var(--color-surface-control-active);",
+      "  }",
+      "",
+      "  &:focus-visible {",
+      "    outline: none;",
+      "    box-shadow: inset 0 0 0 2px var(--paint-ring);",
+      "  }",
+      "",
+      "  &:disabled,",
+      "  &[data-disabled],",
+      "  &[disabled] {",
+      "    background-color: var(--color-surface-control-muted);",
+      "    color: var(--color-on-muted);",
+      "    cursor: not-allowed;",
+      "  }"
+    ]
   end
 
   defp base_utility(id) do
@@ -1015,7 +1169,9 @@ end
 defmodule Corex.Design.Emit.TailwindUtilitiesRecipe do
   @moduledoc false
 
+  alias Corex.Design.Axes
   alias Corex.Design.Axis
+  alias Corex.Design.Palette
   alias Corex.Design.Rule
   alias Corex.Design.Selector
 
@@ -1034,6 +1190,41 @@ defmodule Corex.Design.Emit.TailwindUtilitiesRecipe do
     |> maybe_utility_axis(:max_width, recipe, &container_axis?/2)
     |> maybe_utility_axis(:max_height, recipe, &container_axis?/2)
     |> maybe_utility_axis(:size, recipe, &size_axis?/2)
+    |> maybe_utility_axis(:semantic, recipe, &semantic_axis?/2)
+    |> maybe_utility_axis(:variant, recipe, &variant_axis?/2)
+  end
+
+  def components_layer_extra_rule?(recipe, %Rule{} = rule) do
+    not utility_absorbed_extra_rule?(recipe, rule)
+  end
+
+  def utility_absorbed_extra_rule?(recipe, %Rule{} = rule) do
+    name = Selector.class_name(recipe.id)
+
+    Enum.any?(utility_axes(recipe), fn axis ->
+      plain_utility_host_rule?(rule.selector, name, axis) and
+        Axis.utility_host?(rule.selector, name, axis) and
+        utility_rule_lines(rule) != []
+    end)
+  end
+
+  defp plain_utility_host_rule?(selector, name, axis) do
+    case Axis.utility_prefix(axis) do
+      nil ->
+        false
+
+      prefix ->
+        case String.split(selector, " ", parts: 2) do
+          [host, _descendant] ->
+            Regex.match?(
+              ~r/^\.#{Regex.escape(name)}\.#{Regex.escape(name)}--#{Regex.escape(prefix)}[a-z0-9-]+$/,
+              host
+            )
+
+          _ ->
+            false
+        end
+    end
   end
 
   def utilities(%{kind: :layout} = recipe), do: layout_utilities(recipe)
@@ -1047,6 +1238,8 @@ defmodule Corex.Design.Emit.TailwindUtilitiesRecipe do
     |> maybe_add(container_utility(name, :max_width, recipe))
     |> maybe_add(container_utility(name, :max_height, recipe))
     |> maybe_add(size_utility(name, recipe))
+    |> Kernel.++(semantic_utilities(name, recipe))
+    |> Kernel.++(variant_utilities(name, recipe))
     |> Enum.reject(&(&1 in [nil, ""]))
     |> Enum.join("\n\n")
     |> case do
@@ -1129,10 +1322,131 @@ defmodule Corex.Design.Emit.TailwindUtilitiesRecipe do
     axis == :size and slot_axis_lines(recipe, [:size]) != []
   end
 
+  defp semantic_axis?(_axis, recipe), do: semantic_axis?(recipe)
+
+  defp variant_axis?(_axis, recipe), do: Palette.variant_paint_target(recipe) != nil
+
+  defp semantic_axis?(recipe) do
+    case Keyword.get(recipe.variants, :semantic) do
+      nil -> false
+      [] -> false
+      _ -> true
+    end
+  end
+
+  defp semantic_utilities(name, recipe) do
+    if semantic_axis?(recipe) do
+      [
+        scale_utility("#{name}--semantic-*", semantic_paint_role_lines()),
+        scale_utility("#{name}--semantic-base", semantic_paint_base_ink_lines())
+      ]
+    else
+      []
+    end
+  end
+
+  defp semantic_paint_role_lines do
+    [
+      "  --paint-bg: --value(--color-*, [color]);",
+      "  --paint-fg: --value(--color-on-*, [color]);",
+      "  --paint-bg-hover: --value(--color-*-hover, [color]);",
+      "  --paint-bg-active: --value(--color-*-active, [color]);",
+      "  --paint-ring: --value(--color-*, [color]);",
+      "  --paint-border: --value(--color-*, [color]);",
+      "  --paint-ink: --value(--color-*, [color]);"
+    ]
+  end
+
+  defp semantic_paint_base_ink_lines do
+    [
+      "  --paint-ring: --value(--color-on-base, [color]);",
+      "  --paint-border: --value(--color-on-base, [color]);",
+      "  --paint-ink: --value(--color-on-base, [color]);"
+    ]
+  end
+
+  defp variant_utilities(name, recipe) do
+    case Palette.variant_paint_target(recipe) do
+      nil ->
+        []
+
+      target ->
+        for visual <- Axes.visual_atoms() do
+          lines = variant_paint_lines(target, visual)
+          scale_utility("#{name}--variant-#{visual}", lines)
+        end
+    end
+  end
+
+  defp variant_paint_lines(:host, visual) do
+    ["  @apply visual-#{visual};"]
+  end
+
+  defp variant_paint_lines({:part, scope, part, inherit_parts}, visual) do
+    variant_part_paint_lines(scope, part, inherit_parts, visual)
+  end
+
+  defp variant_paint_lines({:part_on, scope, part}, visual) do
+    variant_part_on_paint_lines(scope, part, visual)
+  end
+
+  defp variant_part_paint_lines(scope, part, inherit_parts, visual) do
+    trigger = ~s([data-scope="#{scope}"][data-part="#{part}"])
+
+    inherit_lines =
+      Enum.map(inherit_parts, fn inherit_part ->
+        inherit_sel = ~s([data-scope="#{scope}"][data-part="#{inherit_part}"])
+
+        """
+          & #{inherit_sel} {
+            color: inherit;
+          }
+        """
+        |> String.trim()
+      end)
+
+    [
+      """
+        #{trigger} {
+          @apply visual-#{visual};
+      """ <>
+        if inherit_lines == [] do
+          ""
+        else
+          "\n    " <> Enum.join(inherit_lines, "\n    ") <> "\n"
+        end <>
+        """
+          & [data-icon] {
+            color: currentcolor;
+          }
+        }
+      """
+      |> String.trim()
+    ]
+  end
+
+  defp variant_part_on_paint_lines(scope, part, visual) do
+    selector = ~s([data-scope="#{scope}"][data-part="#{part}"][data-state="on"])
+
+    [
+      """
+        #{selector} {
+          @apply visual-#{visual};
+        }
+      """
+      |> String.trim()
+    ]
+  end
+
   defp size_utility(name, recipe) do
-    case slot_axis_lines(recipe, [:size]) do
+    lines =
+      (slot_axis_lines(recipe, [:size]) ++ utility_extra_lines(recipe, name, [:size]))
+      |> Enum.uniq()
+      |> Enum.reject(&(&1 == ""))
+
+    case lines do
       [] -> nil
-      lines -> scale_utility("#{name}--size-*", lines)
+      _ -> scale_utility("#{name}--size-*", lines)
     end
   end
 
@@ -1372,6 +1686,9 @@ defmodule Corex.Design.Emit.TailwindUtilitiesRecipe do
 
   defp sx_property_lines(:padding_inline),
     do: ["padding-inline: --value(--spacing-*, [length]);"]
+
+  defp sx_property_lines(:padding_block),
+    do: ["padding-block: calc(--value(--spacing-*, [length]) * 0.5);"]
 
   defp sx_property_lines(:padding), do: ["padding: --value(--spacing-*, [length]);"]
   defp sx_property_lines(:gap), do: ["gap: --value(--spacing-*, [length]);"]

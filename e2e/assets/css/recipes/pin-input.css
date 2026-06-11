@@ -40,6 +40,24 @@
 }
 
 
+@utility pin-input--semantic-* {
+  --paint-bg: --value(--color-*, [color]);
+  --paint-fg: --value(--color-on-*, [color]);
+  --paint-bg-hover: --value(--color-*-hover, [color]);
+  --paint-bg-active: --value(--color-*-active, [color]);
+  --paint-ring: --value(--color-*, [color]);
+  --paint-border: --value(--color-*, [color]);
+  --paint-ink: --value(--color-*, [color]);
+}
+
+
+@utility pin-input--semantic-base {
+  --paint-ring: --value(--color-on-base, [color]);
+  --paint-border: --value(--color-on-base, [color]);
+  --paint-ink: --value(--color-on-base, [color]);
+}
+
+
 @layer components {
   .pin-input [data-scope="pin-input"][data-part="control"] {
     gap: var(--spacing-md);
@@ -47,9 +65,9 @@
 
   .pin-input [data-scope="pin-input"][data-part="input"] {
     width: var(--spacing-control-md);
-    height: var(--spacing-control-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    height: var(--spacing-control-md);
   }
 
   .pin-input [data-scope="pin-input"][data-part="label"] {
@@ -64,8 +82,8 @@
   .pin-input {
     width: auto;
     max-width: var(--container-md);
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .pin-input.pin-input--w-auto {
@@ -106,30 +124,6 @@
 
   .pin-input.pin-input--max-h-full {
     max-height: 100%;
-  }
-
-  .pin-input.pin-input--semantic-accent {
-    position: relative;
-  }
-
-  .pin-input.pin-input--semantic-alert {
-    position: relative;
-  }
-
-  .pin-input.pin-input--semantic-base {
-    position: relative;
-  }
-
-  .pin-input.pin-input--semantic-brand {
-    position: relative;
-  }
-
-  .pin-input.pin-input--semantic-info {
-    position: relative;
-  }
-
-  .pin-input.pin-input--semantic-success {
-    position: relative;
   }
 
   .pin-input.pin-input--rounded-none [data-scope="pin-input"][data-part="input"] {
@@ -252,92 +246,17 @@
     }
   }
 
-  .pin-input.pin-input--semantic-accent [data-scope="pin-input"][data-part="input"] {
+  .pin-input [data-scope="pin-input"][data-part="input"] {
     &:focus, &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-accent);
+      box-shadow: inset 0 0 0 2px var(--paint-ring);
     }
 
     &[data-complete] {
-      border-color: var(--color-accent);
+      border-color: var(--paint-border);
       &:focus, &:focus-visible {
         outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-accent);
-      }
-    }
-  }
-
-  .pin-input.pin-input--semantic-alert [data-scope="pin-input"][data-part="input"] {
-    &:focus, &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-alert);
-    }
-
-    &[data-complete] {
-      border-color: var(--color-alert);
-      &:focus, &:focus-visible {
-        outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-alert);
-      }
-    }
-  }
-
-  .pin-input.pin-input--semantic-base [data-scope="pin-input"][data-part="input"] {
-    &:focus, &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-base);
-    }
-
-    &[data-complete] {
-      border-color: var(--color-base);
-      &:focus, &:focus-visible {
-        outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-base);
-      }
-    }
-  }
-
-  .pin-input.pin-input--semantic-brand [data-scope="pin-input"][data-part="input"] {
-    &:focus, &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-brand);
-    }
-
-    &[data-complete] {
-      border-color: var(--color-brand);
-      &:focus, &:focus-visible {
-        outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-brand);
-      }
-    }
-  }
-
-  .pin-input.pin-input--semantic-info [data-scope="pin-input"][data-part="input"] {
-    &:focus, &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-info);
-    }
-
-    &[data-complete] {
-      border-color: var(--color-info);
-      &:focus, &:focus-visible {
-        outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-info);
-      }
-    }
-  }
-
-  .pin-input.pin-input--semantic-success [data-scope="pin-input"][data-part="input"] {
-    &:focus, &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-success);
-    }
-
-    &[data-complete] {
-      border-color: var(--color-success);
-      &:focus, &:focus-visible {
-        outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-success);
+        box-shadow: inset 0 0 0 2px var(--paint-ring);
       }
     }
   }

@@ -21,18 +21,36 @@
 }
 
 
+@utility kbd--semantic-* {
+  --paint-bg: --value(--color-*, [color]);
+  --paint-fg: --value(--color-on-*, [color]);
+  --paint-bg-hover: --value(--color-*-hover, [color]);
+  --paint-bg-active: --value(--color-*-active, [color]);
+  --paint-ring: --value(--color-*, [color]);
+  --paint-border: --value(--color-*, [color]);
+  --paint-ink: --value(--color-*, [color]);
+}
+
+
+@utility kbd--semantic-base {
+  --paint-ring: --value(--color-on-base, [color]);
+  --paint-border: --value(--color-on-base, [color]);
+  --paint-ink: --value(--color-on-base, [color]);
+}
+
+
 @layer components {
   .kbd {
     width: fit-content;
     padding: var(--spacing-sm);
     color: var(--color-on-page);
-    border: 1px solid var(--color-border);
     max-width: none;
+    max-height: none;
     background-color: var(--color-surface-raised);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
     height: auto;
     margin-inline: var(--spacing-sm);
-    border-radius: var(--radius-md);
-    max-height: none;
     font-family: var(--font-mono);
   }
 
@@ -74,30 +92,6 @@
 
   .kbd.kbd--max-h-full {
     max-height: 100%;
-  }
-
-  .kbd.kbd--semantic-accent {
-    color: var(--color-accent);
-  }
-
-  .kbd.kbd--semantic-alert {
-    color: var(--color-alert);
-  }
-
-  .kbd.kbd--semantic-base {
-    color: var(--color-base);
-  }
-
-  .kbd.kbd--semantic-brand {
-    color: var(--color-brand);
-  }
-
-  .kbd.kbd--semantic-info {
-    color: var(--color-info);
-  }
-
-  .kbd.kbd--semantic-success {
-    color: var(--color-success);
   }
 
   .kbd.kbd--weight-thin {

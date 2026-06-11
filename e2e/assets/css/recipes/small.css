@@ -21,16 +21,34 @@
 }
 
 
+@utility small--semantic-* {
+  --paint-bg: --value(--color-*, [color]);
+  --paint-fg: --value(--color-on-*, [color]);
+  --paint-bg-hover: --value(--color-*-hover, [color]);
+  --paint-bg-active: --value(--color-*-active, [color]);
+  --paint-ring: --value(--color-*, [color]);
+  --paint-border: --value(--color-*, [color]);
+  --paint-ink: --value(--color-*, [color]);
+}
+
+
+@utility small--semantic-base {
+  --paint-ring: --value(--color-on-base, [color]);
+  --paint-border: --value(--color-on-base, [color]);
+  --paint-ink: --value(--color-on-base, [color]);
+}
+
+
 @layer components {
   .small {
     width: fit-content;
     max-width: none;
-    height: auto;
     max-height: none;
-    font-weight: var(--font-weight-normal);
-    margin-block: var(--spacing-md);
     font-size: var(--text-xs);
     line-height: var(--leading-xs);
+    height: auto;
+    font-weight: var(--font-weight-normal);
+    margin-block: var(--spacing-md);
     @media (min-width: 48rem) {
       font-size: var(--text-sm);
       line-height: var(--leading-sm);
@@ -75,30 +93,6 @@
 
   .small.small--max-h-full {
     max-height: 100%;
-  }
-
-  .small.small--semantic-accent {
-    color: var(--color-accent);
-  }
-
-  .small.small--semantic-alert {
-    color: var(--color-alert);
-  }
-
-  .small.small--semantic-base {
-    color: var(--color-base);
-  }
-
-  .small.small--semantic-brand {
-    color: var(--color-brand);
-  }
-
-  .small.small--semantic-info {
-    color: var(--color-info);
-  }
-
-  .small.small--semantic-success {
-    color: var(--color-success);
   }
 
   .small.small--weight-thin {

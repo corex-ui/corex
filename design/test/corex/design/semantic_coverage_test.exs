@@ -33,13 +33,15 @@ defmodule Corex.Design.SemanticCoverageTest do
 
   defp semantic_styled?(recipe, css) do
     name = Selector.class_name(recipe.id)
-    accent_host = ".#{name}.#{name}--semantic-accent"
-    compound = ".#{name}.#{name}--variant-solid.#{name}--semantic-accent"
+    utility = "@utility #{name}--semantic-*"
 
-    has_host = String.contains?(css, accent_host) or String.contains?(css, compound)
+    has_host =
+      String.contains?(css, utility) or
+        String.contains?(css, ".#{name}.#{name}--semantic-accent")
 
     has_token =
-      String.contains?(css, "--color-accent") or
+      String.contains?(css, "--value(--color-*") or
+        String.contains?(css, "--color-accent") or
         String.contains?(css, "--color-on-accent")
 
     has_host and has_token

@@ -20,6 +20,24 @@
 }
 
 
+@utility marquee--semantic-* {
+  --paint-bg: --value(--color-*, [color]);
+  --paint-fg: --value(--color-on-*, [color]);
+  --paint-bg-hover: --value(--color-*-hover, [color]);
+  --paint-bg-active: --value(--color-*-active, [color]);
+  --paint-ring: --value(--color-*, [color]);
+  --paint-border: --value(--color-*, [color]);
+  --paint-ink: --value(--color-*, [color]);
+}
+
+
+@utility marquee--semantic-base {
+  --paint-ring: --value(--color-on-base, [color]);
+  --paint-border: --value(--color-on-base, [color]);
+  --paint-ink: --value(--color-on-base, [color]);
+}
+
+
 @layer components {
   .marquee [data-scope="marquee"][data-part="root"] {
     width: 100%;
@@ -28,8 +46,8 @@
   .marquee {
     width: 100%;
     max-width: var(--container-md);
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .marquee [data-scope="marquee"][data-part="edge"] {
@@ -74,30 +92,6 @@
 
   .marquee.marquee--max-h-full {
     max-height: 100%;
-  }
-
-  .marquee.marquee--semantic-accent [data-scope="marquee"][data-part="edge"] {
-    --edge-background: var(--color-accent);
-  }
-
-  .marquee.marquee--semantic-alert [data-scope="marquee"][data-part="edge"] {
-    --edge-background: var(--color-alert);
-  }
-
-  .marquee.marquee--semantic-base [data-scope="marquee"][data-part="edge"] {
-    --edge-background: var(--color-base);
-  }
-
-  .marquee.marquee--semantic-brand [data-scope="marquee"][data-part="edge"] {
-    --edge-background: var(--color-brand);
-  }
-
-  .marquee.marquee--semantic-info [data-scope="marquee"][data-part="edge"] {
-    --edge-background: var(--color-info);
-  }
-
-  .marquee.marquee--semantic-success [data-scope="marquee"][data-part="edge"] {
-    --edge-background: var(--color-success);
   }
 
   @keyframes marqueeX {

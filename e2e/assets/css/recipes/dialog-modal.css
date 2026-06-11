@@ -64,6 +64,24 @@
 }
 
 
+@utility dialog-modal--semantic-* {
+  --paint-bg: --value(--color-*, [color]);
+  --paint-fg: --value(--color-on-*, [color]);
+  --paint-bg-hover: --value(--color-*-hover, [color]);
+  --paint-bg-active: --value(--color-*-active, [color]);
+  --paint-ring: --value(--color-*, [color]);
+  --paint-border: --value(--color-*, [color]);
+  --paint-ink: --value(--color-*, [color]);
+}
+
+
+@utility dialog-modal--semantic-base {
+  --paint-ring: --value(--color-on-base, [color]);
+  --paint-border: --value(--color-on-base, [color]);
+  --paint-ink: --value(--color-on-base, [color]);
+}
+
+
 @layer components {
   .dialog-modal [data-scope="dialog"][data-part="header"] {
     padding: var(--spacing-md);
@@ -73,8 +91,8 @@
   .dialog-modal {
     width: fit-content;
     max-width: none;
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .dialog-modal [data-scope="dialog"][data-part="description"] {
@@ -125,30 +143,6 @@
 
   .dialog-modal.dialog-modal--max-h-full {
     max-height: 100%;
-  }
-
-  .dialog-modal.dialog-modal--semantic-accent {
-    position: relative;
-  }
-
-  .dialog-modal.dialog-modal--semantic-alert {
-    position: relative;
-  }
-
-  .dialog-modal.dialog-modal--semantic-base {
-    position: relative;
-  }
-
-  .dialog-modal.dialog-modal--semantic-brand {
-    position: relative;
-  }
-
-  .dialog-modal.dialog-modal--semantic-info {
-    position: relative;
-  }
-
-  .dialog-modal.dialog-modal--semantic-success {
-    position: relative;
   }
 
   .dialog-modal.dialog-modal--rounded-none [data-scope="dialog"][data-part="content"] {
@@ -263,15 +257,15 @@
     opacity: calc(0.4 + var(--nested-layer-count) * 0.1);
   }
 
-  .dialog-modal.dialog-modal--semantic-accent [data-scope="dialog"][data-part="close-trigger"] {
-    color: var(--color-accent);
+  .dialog-modal [data-scope="dialog"][data-part="close-trigger"] {
+    color: var(--paint-ink);
     &:hover {
       background-color: var(--color-surface-control-hover);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-accent);
+      box-shadow: inset 0 0 0 2px var(--paint-ring);
     }
 
     &:disabled,
@@ -280,141 +274,6 @@
       color: var(--color-on-muted);
       cursor: not-allowed;
     }
-  }
-
-  .dialog-modal.dialog-modal--semantic-alert [data-scope="dialog"][data-part="close-trigger"] {
-    color: var(--color-alert);
-    &:hover {
-      background-color: var(--color-surface-control-hover);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-alert);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .dialog-modal.dialog-modal--semantic-base [data-scope="dialog"][data-part="close-trigger"] {
-    color: var(--color-base);
-    &:hover {
-      background-color: var(--color-surface-control-hover);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-base);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .dialog-modal.dialog-modal--semantic-brand [data-scope="dialog"][data-part="close-trigger"] {
-    color: var(--color-brand);
-    &:hover {
-      background-color: var(--color-surface-control-hover);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-brand);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .dialog-modal.dialog-modal--semantic-info [data-scope="dialog"][data-part="close-trigger"] {
-    color: var(--color-info);
-    &:hover {
-      background-color: var(--color-surface-control-hover);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-info);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .dialog-modal.dialog-modal--semantic-success [data-scope="dialog"][data-part="close-trigger"] {
-    color: var(--color-success);
-    &:hover {
-      background-color: var(--color-surface-control-hover);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-success);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      color: var(--color-on-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .dialog-modal.dialog-modal--text-xs [data-scope="dialog"][data-part="content"] p {
-    font-size: var(--text-xs);
-    line-height: var(--leading-xs);
-  }
-
-  .dialog-modal.dialog-modal--text-sm [data-scope="dialog"][data-part="content"] p {
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-  }
-
-  .dialog-modal.dialog-modal--text-base [data-scope="dialog"][data-part="content"] p {
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
-  }
-
-  .dialog-modal.dialog-modal--text-lg [data-scope="dialog"][data-part="content"] p {
-    font-size: var(--text-lg);
-    line-height: var(--leading-lg);
-  }
-
-  .dialog-modal.dialog-modal--text-xl [data-scope="dialog"][data-part="content"] p {
-    font-size: var(--text-xl);
-    line-height: var(--leading-xl);
-  }
-
-  .dialog-modal.dialog-modal--text-2xl [data-scope="dialog"][data-part="content"] p {
-    font-size: var(--text-2xl);
-    line-height: var(--leading-2xl);
-  }
-
-  .dialog-modal.dialog-modal--text-3xl [data-scope="dialog"][data-part="content"] p {
-    font-size: var(--text-3xl);
-    line-height: var(--leading-3xl);
-  }
-
-  .dialog-modal.dialog-modal--text-4xl [data-scope="dialog"][data-part="content"] p {
-    font-size: var(--text-4xl);
-    line-height: var(--leading-4xl);
   }
 }
 

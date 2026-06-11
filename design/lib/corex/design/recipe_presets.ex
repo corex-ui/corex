@@ -385,15 +385,22 @@ defmodule Corex.Design.RecipePresets do
   end
 
   def control_size_block(size) do
+    space = Var.ref([:space, size])
+
     %{
       padding_inline: {:space, size},
+      padding_block: {:raw, "calc(#{space} * 0.5)"},
       gap: {:space, size},
       min_height: {:size, size}
     }
   end
 
   def content_spacing_block(size) do
-    %{padding: {:space, size}, margin_bottom: {:space, size}}
+    %{
+      padding: {:space, size},
+      margin_bottom: {:space, size},
+      min_height: {:size, size}
+    }
   end
 
   def text_block(step) do

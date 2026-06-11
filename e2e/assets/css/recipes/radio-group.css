@@ -33,12 +33,30 @@
 }
 
 
+@utility radio-group--semantic-* {
+  --paint-bg: --value(--color-*, [color]);
+  --paint-fg: --value(--color-on-*, [color]);
+  --paint-bg-hover: --value(--color-*-hover, [color]);
+  --paint-bg-active: --value(--color-*-active, [color]);
+  --paint-ring: --value(--color-*, [color]);
+  --paint-border: --value(--color-*, [color]);
+  --paint-ink: --value(--color-*, [color]);
+}
+
+
+@utility radio-group--semantic-base {
+  --paint-ring: --value(--color-on-base, [color]);
+  --paint-border: --value(--color-on-base, [color]);
+  --paint-ink: --value(--color-on-base, [color]);
+}
+
+
 @layer components {
   .radio-group {
     width: fit-content;
     max-width: var(--container-md);
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .radio-group [data-scope="radio-group"][data-part="item-text"] {
@@ -49,9 +67,9 @@
   .radio-group [data-scope="radio-group"][data-part="item-control"] {
     width: calc(var(--spacing-control-md) * 0.6);
     padding: calc(var(--spacing-md) * 0.25);
-    height: calc(var(--spacing-control-md) * 0.6);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    height: calc(var(--spacing-control-md) * 0.6);
   }
 
   .radio-group.radio-group--w-auto {
@@ -92,30 +110,6 @@
 
   .radio-group.radio-group--max-h-full {
     max-height: 100%;
-  }
-
-  .radio-group.radio-group--semantic-base {
-    position: relative;
-  }
-
-  .radio-group.radio-group--semantic-accent {
-    position: relative;
-  }
-
-  .radio-group.radio-group--semantic-brand {
-    position: relative;
-  }
-
-  .radio-group.radio-group--semantic-alert {
-    position: relative;
-  }
-
-  .radio-group.radio-group--semantic-info {
-    position: relative;
-  }
-
-  .radio-group.radio-group--semantic-success {
-    position: relative;
   }
 
   .radio-group.radio-group--rounded-none [data-scope="radio-group"][data-part="item-control"] {
@@ -223,108 +217,6 @@
 
     &:focus-visible,\n  &[data-focus] {
       box-shadow: inset 0 0 0 2px var(--color-on-base);
-    }
-  }
-
-  .radio-group.radio-group--semantic-accent .radio-group [data-scope="radio-group"][data-part="item-control"][data-state="checked"] {
-    background: var(--color-accent);
-    color: var(--color-on-accent);
-    border-color: var(--color-accent);
-    &:hover {
-      background-color: var(--color-accent-hover);
-    }
-
-    &:active {
-      background-color: var(--color-accent-active);
-    }
-
-    &:focus-visible,\n  &[data-focus] {
-      box-shadow: inset 0 0 0 2px var(--color-on-accent);
-    }
-  }
-
-  .radio-group.radio-group--semantic-alert .radio-group [data-scope="radio-group"][data-part="item-control"][data-state="checked"] {
-    background: var(--color-alert);
-    color: var(--color-on-alert);
-    border-color: var(--color-alert);
-    &:hover {
-      background-color: var(--color-alert-hover);
-    }
-
-    &:active {
-      background-color: var(--color-alert-active);
-    }
-
-    &:focus-visible,\n  &[data-focus] {
-      box-shadow: inset 0 0 0 2px var(--color-on-alert);
-    }
-  }
-
-  .radio-group.radio-group--semantic-base .radio-group [data-scope="radio-group"][data-part="item-control"][data-state="checked"] {
-    background: var(--color-base);
-    color: var(--color-on-base);
-    border-color: var(--color-base);
-    &:hover {
-      background-color: var(--color-base-hover);
-    }
-
-    &:active {
-      background-color: var(--color-base-active);
-    }
-
-    &:focus-visible,\n  &[data-focus] {
-      box-shadow: inset 0 0 0 2px var(--color-on-base);
-    }
-  }
-
-  .radio-group.radio-group--semantic-brand .radio-group [data-scope="radio-group"][data-part="item-control"][data-state="checked"] {
-    background: var(--color-brand);
-    color: var(--color-on-brand);
-    border-color: var(--color-brand);
-    &:hover {
-      background-color: var(--color-brand-hover);
-    }
-
-    &:active {
-      background-color: var(--color-brand-active);
-    }
-
-    &:focus-visible,\n  &[data-focus] {
-      box-shadow: inset 0 0 0 2px var(--color-on-brand);
-    }
-  }
-
-  .radio-group.radio-group--semantic-info .radio-group [data-scope="radio-group"][data-part="item-control"][data-state="checked"] {
-    background: var(--color-info);
-    color: var(--color-on-info);
-    border-color: var(--color-info);
-    &:hover {
-      background-color: var(--color-info-hover);
-    }
-
-    &:active {
-      background-color: var(--color-info-active);
-    }
-
-    &:focus-visible,\n  &[data-focus] {
-      box-shadow: inset 0 0 0 2px var(--color-on-info);
-    }
-  }
-
-  .radio-group.radio-group--semantic-success .radio-group [data-scope="radio-group"][data-part="item-control"][data-state="checked"] {
-    background: var(--color-success);
-    color: var(--color-on-success);
-    border-color: var(--color-success);
-    &:hover {
-      background-color: var(--color-success-hover);
-    }
-
-    &:active {
-      background-color: var(--color-success-active);
-    }
-
-    &:focus-visible,\n  &[data-focus] {
-      box-shadow: inset 0 0 0 2px var(--color-on-success);
     }
   }
 

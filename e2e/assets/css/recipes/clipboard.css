@@ -29,11 +29,31 @@
   }
 
   [data-scope="clipboard"][data-part="trigger"] {
-      gap: --value(--spacing-*, [length]);
-    padding-inline: --value(--spacing-*, [length]);
-    min-height: --value(--spacing-control-*, [length]);
+      padding-inline: --value(--spacing-*, [length]);
+    gap: --value(--spacing-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
+  }
+
+  [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copy"],
+  .clipboard.clipboard--size-sm [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copied"] {
+    gap: --value(--spacing-*, [length]);
+  }
+
+  [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copy"],
+  .clipboard.clipboard--size-md [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copied"] {
+    gap: --value(--spacing-*, [length]);
+  }
+
+  [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copy"],
+  .clipboard.clipboard--size-lg [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copied"] {
+    gap: --value(--spacing-*, [length]);
+  }
+
+  [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copy"],
+  .clipboard.clipboard--size-xl [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copied"] {
+    gap: --value(--spacing-*, [length]);
   }
 
 }
@@ -60,16 +80,16 @@
   .clipboard {
     width: fit-content;
     max-width: none;
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .clipboard [data-scope="clipboard"][data-part="trigger"] {
-    gap: var(--spacing-md);
     padding-inline: var(--spacing-md);
-    min-height: var(--spacing-control-md);
+    gap: var(--spacing-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-height: var(--spacing-control-md);
   }
 
   .clipboard.clipboard--w-auto {
@@ -198,26 +218,6 @@
     flex-shrink: 0;
     width: 0.875em !important;
     height: 0.875em !important;
-  }
-
-  .clipboard.clipboard--size-sm [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copy"],
-    .clipboard.clipboard--size-sm [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copied"] {
-    gap: var(--spacing-sm);
-  }
-
-  .clipboard.clipboard--size-md [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copy"],
-    .clipboard.clipboard--size-md [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copied"] {
-    gap: var(--spacing-md);
-  }
-
-  .clipboard.clipboard--size-lg [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copy"],
-    .clipboard.clipboard--size-lg [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copied"] {
-    gap: var(--spacing-lg);
-  }
-
-  .clipboard.clipboard--size-xl [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copy"],
-    .clipboard.clipboard--size-xl [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copied"] {
-    gap: var(--spacing-xl);
   }
 
   .clipboard.clipboard--w-full [data-scope="clipboard"][data-part="root"] {

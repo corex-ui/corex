@@ -21,17 +21,35 @@
 }
 
 
+@utility p--semantic-* {
+  --paint-bg: --value(--color-*, [color]);
+  --paint-fg: --value(--color-on-*, [color]);
+  --paint-bg-hover: --value(--color-*-hover, [color]);
+  --paint-bg-active: --value(--color-*-active, [color]);
+  --paint-ring: --value(--color-*, [color]);
+  --paint-border: --value(--color-*, [color]);
+  --paint-ink: --value(--color-*, [color]);
+}
+
+
+@utility p--semantic-base {
+  --paint-ring: --value(--color-on-base, [color]);
+  --paint-border: --value(--color-on-base, [color]);
+  --paint-ink: --value(--color-on-base, [color]);
+}
+
+
 @layer components {
   .p {
     width: fit-content;
     color: var(--color-on-page);
     max-width: none;
-    height: auto;
     max-height: none;
-    font-weight: var(--font-weight-normal);
-    margin-block: var(--spacing-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    height: auto;
+    font-weight: var(--font-weight-normal);
+    margin-block: var(--spacing-md);
   }
 
   .p.p--w-auto {
@@ -72,30 +90,6 @@
 
   .p.p--max-h-full {
     max-height: 100%;
-  }
-
-  .p.p--semantic-accent {
-    color: var(--color-accent);
-  }
-
-  .p.p--semantic-alert {
-    color: var(--color-alert);
-  }
-
-  .p.p--semantic-base {
-    color: var(--color-base);
-  }
-
-  .p.p--semantic-brand {
-    color: var(--color-brand);
-  }
-
-  .p.p--semantic-info {
-    color: var(--color-info);
-  }
-
-  .p.p--semantic-success {
-    color: var(--color-success);
   }
 
   .p.p--weight-thin {

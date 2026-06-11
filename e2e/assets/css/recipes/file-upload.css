@@ -29,18 +29,18 @@
   }
 
   [data-scope="file-upload"][data-part="root"] {
-      gap: --value(--spacing-*, [length]);
-    max-width: --value(--container-*, [length]);
+      max-width: --value(--container-*, [length]);
+    gap: --value(--spacing-*, [length]);
   }
 
   [data-scope="file-upload"][data-part="trigger"] {
       color: --value(--color-*, [color]);
+    padding-inline: --value(--spacing-*, [length]);
     gap: --value(--spacing-*, [length]);
     background-color: --value(--color-*, [color]);
-    padding-inline: --value(--spacing-*, [length]);
-    min-height: --value(--spacing-control-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
   [data-scope="file-upload"][data-part="region"] {
@@ -51,6 +51,24 @@
 }
 
 
+@utility file-upload--semantic-* {
+  --paint-bg: --value(--color-*, [color]);
+  --paint-fg: --value(--color-on-*, [color]);
+  --paint-bg-hover: --value(--color-*-hover, [color]);
+  --paint-bg-active: --value(--color-*-active, [color]);
+  --paint-ring: --value(--color-*, [color]);
+  --paint-border: --value(--color-*, [color]);
+  --paint-ink: --value(--color-*, [color]);
+}
+
+
+@utility file-upload--semantic-base {
+  --paint-ring: --value(--color-on-base, [color]);
+  --paint-border: --value(--color-on-base, [color]);
+  --paint-ink: --value(--color-on-base, [color]);
+}
+
+
 @layer components {
   .file-upload [data-scope="file-upload"][data-part="label"] {
     font-size: var(--text-base);
@@ -58,25 +76,25 @@
   }
 
   .file-upload [data-scope="file-upload"][data-part="root"] {
-    gap: var(--spacing-md);
     max-width: var(--container-md);
+    gap: var(--spacing-md);
   }
 
   .file-upload {
     width: 100%;
     max-width: var(--container-md);
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .file-upload [data-scope="file-upload"][data-part="trigger"] {
     color: var(--color-on-accent);
+    padding-inline: var(--spacing-md);
     gap: var(--spacing-md);
     background-color: var(--color-accent);
-    padding-inline: var(--spacing-md);
-    min-height: var(--spacing-control-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-height: var(--spacing-control-md);
   }
 
   .file-upload [data-scope="file-upload"][data-part="region"] {
@@ -122,30 +140,6 @@
 
   .file-upload.file-upload--max-h-full {
     max-height: 100%;
-  }
-
-  .file-upload.file-upload--semantic-accent {
-    position: relative;
-  }
-
-  .file-upload.file-upload--semantic-alert {
-    position: relative;
-  }
-
-  .file-upload.file-upload--semantic-base {
-    position: relative;
-  }
-
-  .file-upload.file-upload--semantic-brand {
-    position: relative;
-  }
-
-  .file-upload.file-upload--semantic-info {
-    position: relative;
-  }
-
-  .file-upload.file-upload--semantic-success {
-    position: relative;
   }
 
   .file-upload.file-upload--rounded-none [data-scope="file-upload"][data-part="dropzone"] {
@@ -355,148 +349,8 @@
     @apply part-error;
   }
 
-  .file-upload.file-upload--semantic-accent [data-scope="file-upload"][data-part="trigger"] {
-    background-color: var(--color-accent);
-    color: var(--color-on-accent);
-    &:hover {
-      background-color: var(--color-accent-hover);
-    }
-
-    &:active {
-      background-color: var(--color-accent-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-accent);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .file-upload.file-upload--semantic-alert [data-scope="file-upload"][data-part="trigger"] {
-    background-color: var(--color-alert);
-    color: var(--color-on-alert);
-    &:hover {
-      background-color: var(--color-alert-hover);
-    }
-
-    &:active {
-      background-color: var(--color-alert-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-alert);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .file-upload.file-upload--semantic-base [data-scope="file-upload"][data-part="trigger"] {
-    background-color: var(--color-base);
-    color: var(--color-on-base);
-    &:hover {
-      background-color: var(--color-base-hover);
-    }
-
-    &:active {
-      background-color: var(--color-base-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-base);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .file-upload.file-upload--semantic-brand [data-scope="file-upload"][data-part="trigger"] {
-    background-color: var(--color-brand);
-    color: var(--color-on-brand);
-    &:hover {
-      background-color: var(--color-brand-hover);
-    }
-
-    &:active {
-      background-color: var(--color-brand-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-brand);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .file-upload.file-upload--semantic-info [data-scope="file-upload"][data-part="trigger"] {
-    background-color: var(--color-info);
-    color: var(--color-on-info);
-    &:hover {
-      background-color: var(--color-info-hover);
-    }
-
-    &:active {
-      background-color: var(--color-info-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-info);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .file-upload.file-upload--semantic-success [data-scope="file-upload"][data-part="trigger"] {
-    background-color: var(--color-success);
-    color: var(--color-on-success);
-    &:hover {
-      background-color: var(--color-success-hover);
-    }
-
-    &:active {
-      background-color: var(--color-success-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-success);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
+  .file-upload [data-scope="file-upload"][data-part="trigger"] {
+    @apply visual-solid;
   }
 }
 

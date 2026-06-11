@@ -52,7 +52,7 @@ defmodule Corex.DesignTest do
       css = Recipe.to_css(Button.recipe())
 
       assert css =~ ".button {"
-      assert css =~ ".button.button--semantic-accent {"
+      assert css =~ "@utility button--semantic-*"
       refute css =~ "[data-button][data-button-semantic=\"accent\"]"
     end
 
@@ -62,11 +62,12 @@ defmodule Corex.DesignTest do
       refute css =~ "@utility button--*"
       assert css =~ "@utility button--rounded-*"
       assert css =~ ".button {"
-      assert css =~ ".button.button--variant-solid"
-      assert css =~ ".button.button--semantic-accent"
+      assert css =~ "@utility button--variant-solid"
+      assert css =~ "@apply visual-solid;"
+      assert css =~ "@utility button--semantic-*"
     end
 
-    test "button base merges default variant styles for bare block class" do
+    test "button base merges default host paint vars and layout" do
       css = Recipe.to_css(Button.recipe())
 
       assert Regex.match?(
@@ -74,10 +75,7 @@ defmodule Corex.DesignTest do
                css
              )
 
-      assert Regex.match?(
-               ~r/\.button \{[^}]*background-color: var\(--color-surface-control\)/s,
-               css
-             )
+      assert css =~ "--paint-bg: var(--color-base)"
 
       assert Regex.match?(
                ~r/\.button \{[^}]*padding-inline:/s,
@@ -96,14 +94,9 @@ defmodule Corex.DesignTest do
     test "accordion export keeps slot semantic colors in components layer" do
       css = Recipe.to_css(Accordion.recipe())
 
-      assert css =~ ".accordion.accordion--semantic-accent"
-
-      assert css =~
-               ".accordion.accordion--variant-solid.accordion--semantic-accent [data-scope=\"accordion\"][data-part=\"item-trigger\"]"
-
-      assert css =~ "background-color: var(--color-accent)"
-      assert css =~ "color: var(--color-on-accent)"
-
+      assert css =~ "@utility accordion--semantic-*"
+      assert css =~ "@utility accordion--variant-solid"
+      assert css =~ "@apply visual-solid"
       refute css =~ "[data-part=\"item-trigger\"][data-state=\"open\"]"
     end
 
@@ -124,7 +117,7 @@ defmodule Corex.DesignTest do
       tree_view_css = Recipe.to_css(TreeNavigation.recipe())
 
       assert tooltip_css =~ ".tooltip [data-scope=\"tooltip\"][data-part=\"content\"]"
-      assert tooltip_css =~ ".tooltip.tooltip--semantic-accent"
+      assert tooltip_css =~ "@utility tooltip--semantic-*"
 
       assert tabs_css =~ ".tabs [data-scope=\"tabs\"][data-part=\"item-indicator\"]"
 
@@ -234,10 +227,10 @@ defmodule Corex.DesignTest do
 
       refute css =~ "@utility button--*"
       assert css =~ "@utility button--rounded-*"
-      assert css =~ ".button.button--semantic-accent {"
+      assert css =~ "@utility button--semantic-*"
+      assert css =~ "@utility button--variant-solid"
       assert css =~ "@utility button--text-*"
       assert css =~ ".button.button--size-md {"
-      assert css =~ ".button.button--variant-solid {"
     end
 
     test "export uses max-w utility for container host sizing" do
@@ -259,8 +252,9 @@ defmodule Corex.DesignTest do
         |> Enum.find(&(&1.id == :button))
         |> Recipe.to_css()
 
-      assert css =~ ".button.button--semantic-accent"
-      assert css =~ ".button.button--variant-solid.button--semantic-accent"
+      assert css =~ "@utility button--semantic-*"
+      assert css =~ "@utility button--variant-solid"
+      assert css =~ "--paint-bg: --value(--color-*, [color])"
     end
 
     test "modular export writes layered folders" do
@@ -284,6 +278,7 @@ defmodule Corex.DesignTest do
 
         utilities = File.read!(Path.join(tmp, "layers/utilities.css"))
         assert utilities =~ "@utility part-trigger"
+        assert utilities =~ "@utility visual-solid"
         refute utilities =~ "@utility part-trigger--square"
         refute utilities =~ "@utility part-trigger--circle"
         refute utilities =~ "@utility part-trigger--ghost"
@@ -302,7 +297,7 @@ defmodule Corex.DesignTest do
 
       assert css =~ ".h1 {"
       assert css =~ "@utility h1--text-*"
-      assert css =~ ".h1.h1--semantic-accent"
+      assert css =~ "@utility h1--semantic-*"
     end
 
     test "form recipe defaults to full width and md max width" do
@@ -414,7 +409,7 @@ defmodule Corex.DesignTest do
       assert css =~ "max-height: --value(--container-*"
 
       assert css =~
-               ".accordion.accordion--max-h-md [data-scope=\"accordion\"][data-part=\"item-content\"]"
+               "[data-scope=\"accordion\"][data-part=\"item-content\"] {\n    max-height: --value(--container-*"
 
       refute css =~ ".accordion.accordion--max-h-md {\n    max-height:"
     end
@@ -422,9 +417,10 @@ defmodule Corex.DesignTest do
     test "max-h open content box scrolls inside cap" do
       css = Recipe.to_css(Accordion.recipe())
 
-      assert css =~
-               ".accordion.accordion--max-h-md [data-scope=\"accordion\"][data-part=\"item-content\"][data-state=\"open\"] > p"
+      scroll =
+        ".accordion[class*=\"--max-h-\"]:not(.accordion.accordion--max-h-none) [data-scope=\"accordion\"][data-part=\"item-content\"][data-state=\"open\"] > p"
 
+      assert css =~ scroll
       assert css =~ "overflow-y: auto"
       assert css =~ "min-height: 0"
       assert css =~ "flex: 1 1 auto"
@@ -517,7 +513,7 @@ defmodule Corex.DesignTest do
 
       refute css =~ "@utility select--*"
       assert css =~ "@utility select--rounded-*"
-      assert css =~ ".select.select--semantic-accent"
+      assert css =~ "@utility select--semantic-*"
       assert css =~ "[data-scope=\"select\"][data-part=\"trigger\"]"
     end
 

@@ -44,7 +44,9 @@ defmodule Corex.Design.Axis do
     radius: "rounded-",
     size: "size-",
     max_width: "max-w-",
-    max_height: "max-h-"
+    max_height: "max-h-",
+    semantic: "semantic-",
+    variant: "variant-"
   }
 
   @slot_prefixes ~W(item branch control root label trigger indicator content error input icon)

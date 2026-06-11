@@ -39,6 +39,24 @@
 }
 
 
+@utility switch--semantic-* {
+  --paint-bg: --value(--color-*, [color]);
+  --paint-fg: --value(--color-on-*, [color]);
+  --paint-bg-hover: --value(--color-*-hover, [color]);
+  --paint-bg-active: --value(--color-*-active, [color]);
+  --paint-ring: --value(--color-*, [color]);
+  --paint-border: --value(--color-*, [color]);
+  --paint-ink: --value(--color-*, [color]);
+}
+
+
+@utility switch--semantic-base {
+  --paint-ring: --value(--color-on-base, [color]);
+  --paint-border: --value(--color-on-base, [color]);
+  --paint-ink: --value(--color-on-base, [color]);
+}
+
+
 @layer components {
   .switch [data-scope="switch"][data-part="control"] {
     padding: calc(var(--spacing-md) * 0.3);
@@ -61,8 +79,8 @@
   .switch {
     width: 100%;
     max-width: var(--container-4xl);
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .switch.switch--w-auto {
@@ -105,30 +123,6 @@
     max-height: 100%;
   }
 
-  .switch.switch--semantic-base {
-    position: relative;
-  }
-
-  .switch.switch--semantic-accent {
-    position: relative;
-  }
-
-  .switch.switch--semantic-brand {
-    position: relative;
-  }
-
-  .switch.switch--semantic-alert {
-    position: relative;
-  }
-
-  .switch.switch--semantic-info {
-    position: relative;
-  }
-
-  .switch.switch--semantic-success {
-    position: relative;
-  }
-
   .switch.switch--rounded-none [data-scope="switch"][data-part="control"] {
     border-radius: var(--radius-none);
   }
@@ -169,30 +163,6 @@
 
   .switch [data-scope="switch"][data-part="error"] {
     @apply part-error;
-  }
-
-  .switch.switch--semantic-accent [data-scope="switch"][data-part="thumb"]:not([data-state="checked"]) {
-    background-color: var(--color-accent);
-  }
-
-  .switch.switch--semantic-alert [data-scope="switch"][data-part="thumb"]:not([data-state="checked"]) {
-    background-color: var(--color-alert);
-  }
-
-  .switch.switch--semantic-base [data-scope="switch"][data-part="thumb"]:not([data-state="checked"]) {
-    background-color: var(--color-base);
-  }
-
-  .switch.switch--semantic-brand [data-scope="switch"][data-part="thumb"]:not([data-state="checked"]) {
-    background-color: var(--color-brand);
-  }
-
-  .switch.switch--semantic-info [data-scope="switch"][data-part="thumb"]:not([data-state="checked"]) {
-    background-color: var(--color-info);
-  }
-
-  .switch.switch--semantic-success [data-scope="switch"][data-part="thumb"]:not([data-state="checked"]) {
-    background-color: var(--color-success);
   }
 
   .switch [data-scope="switch"][data-part="root"] {
@@ -271,78 +241,6 @@
   .switch .switch [data-scope="switch"][data-part="thumb"][data-state="checked"] {
     transform: translateX(var(--switch-thumb-x));
     background-color: var(--color-on-base);
-  }
-
-  .switch.switch--semantic-accent .switch [data-scope="switch"][data-part="control"][data-state="checked"] {
-    background-color: var(--color-accent);
-    & [data-scope="switch"][data-part="thumb"] {
-      background-color: var(--color-on-accent);
-    }
-  }
-
-  .switch.switch--semantic-accent .switch [data-scope="switch"][data-part="thumb"][data-state="checked"] {
-    transform: translateX(var(--switch-thumb-x));
-    background-color: var(--color-on-accent);
-  }
-
-  .switch.switch--semantic-alert .switch [data-scope="switch"][data-part="control"][data-state="checked"] {
-    background-color: var(--color-alert);
-    & [data-scope="switch"][data-part="thumb"] {
-      background-color: var(--color-on-alert);
-    }
-  }
-
-  .switch.switch--semantic-alert .switch [data-scope="switch"][data-part="thumb"][data-state="checked"] {
-    transform: translateX(var(--switch-thumb-x));
-    background-color: var(--color-on-alert);
-  }
-
-  .switch.switch--semantic-base .switch [data-scope="switch"][data-part="control"][data-state="checked"] {
-    background-color: var(--color-base);
-    & [data-scope="switch"][data-part="thumb"] {
-      background-color: var(--color-on-base);
-    }
-  }
-
-  .switch.switch--semantic-base .switch [data-scope="switch"][data-part="thumb"][data-state="checked"] {
-    transform: translateX(var(--switch-thumb-x));
-    background-color: var(--color-on-base);
-  }
-
-  .switch.switch--semantic-brand .switch [data-scope="switch"][data-part="control"][data-state="checked"] {
-    background-color: var(--color-brand);
-    & [data-scope="switch"][data-part="thumb"] {
-      background-color: var(--color-on-brand);
-    }
-  }
-
-  .switch.switch--semantic-brand .switch [data-scope="switch"][data-part="thumb"][data-state="checked"] {
-    transform: translateX(var(--switch-thumb-x));
-    background-color: var(--color-on-brand);
-  }
-
-  .switch.switch--semantic-info .switch [data-scope="switch"][data-part="control"][data-state="checked"] {
-    background-color: var(--color-info);
-    & [data-scope="switch"][data-part="thumb"] {
-      background-color: var(--color-on-info);
-    }
-  }
-
-  .switch.switch--semantic-info .switch [data-scope="switch"][data-part="thumb"][data-state="checked"] {
-    transform: translateX(var(--switch-thumb-x));
-    background-color: var(--color-on-info);
-  }
-
-  .switch.switch--semantic-success .switch [data-scope="switch"][data-part="control"][data-state="checked"] {
-    background-color: var(--color-success);
-    & [data-scope="switch"][data-part="thumb"] {
-      background-color: var(--color-on-success);
-    }
-  }
-
-  .switch.switch--semantic-success .switch [data-scope="switch"][data-part="thumb"][data-state="checked"] {
-    transform: translateX(var(--switch-thumb-x));
-    background-color: var(--color-on-success);
   }
 }
 

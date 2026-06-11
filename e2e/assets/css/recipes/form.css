@@ -21,20 +21,38 @@
 }
 
 
+@utility form--semantic-* {
+  --paint-bg: --value(--color-*, [color]);
+  --paint-fg: --value(--color-on-*, [color]);
+  --paint-bg-hover: --value(--color-*-hover, [color]);
+  --paint-bg-active: --value(--color-*-active, [color]);
+  --paint-ring: --value(--color-*, [color]);
+  --paint-border: --value(--color-*, [color]);
+  --paint-ink: --value(--color-*, [color]);
+}
+
+
+@utility form--semantic-base {
+  --paint-ring: --value(--color-on-base, [color]);
+  --paint-border: --value(--color-on-base, [color]);
+  --paint-ink: --value(--color-on-base, [color]);
+}
+
+
 @layer components {
   .form {
     display: flex;
     width: 100%;
     padding: var(--spacing-lg);
     color: var(--color-on-page);
-    border: 1px solid var(--color-border);
-    flex-direction: column;
-    gap: var(--spacing-md);
     max-width: var(--container-md);
-    background-color: var(--color-surface-raised);
-    height: auto;
-    border-radius: var(--radius-md);
     max-height: none;
+    gap: var(--spacing-md);
+    background-color: var(--color-surface-raised);
+    border-radius: var(--radius-md);
+    flex-direction: column;
+    border: 1px solid var(--color-border);
+    height: auto;
   }
 
   .form.form--w-auto {
@@ -75,30 +93,6 @@
 
   .form.form--max-h-full {
     max-height: 100%;
-  }
-
-  .form.form--semantic-accent {
-    color: var(--color-accent);
-  }
-
-  .form.form--semantic-alert {
-    color: var(--color-alert);
-  }
-
-  .form.form--semantic-base {
-    color: var(--color-base);
-  }
-
-  .form.form--semantic-brand {
-    color: var(--color-brand);
-  }
-
-  .form.form--semantic-info {
-    color: var(--color-info);
-  }
-
-  .form.form--semantic-success {
-    color: var(--color-success);
   }
 
   .form.form--gap-none {

@@ -21,6 +21,24 @@
 }
 
 
+@utility link--semantic-* {
+  --paint-bg: --value(--color-*, [color]);
+  --paint-fg: --value(--color-on-*, [color]);
+  --paint-bg-hover: --value(--color-*-hover, [color]);
+  --paint-bg-active: --value(--color-*-active, [color]);
+  --paint-ring: --value(--color-*, [color]);
+  --paint-border: --value(--color-*, [color]);
+  --paint-ink: --value(--color-*, [color]);
+}
+
+
+@utility link--semantic-base {
+  --paint-ring: --value(--color-on-base, [color]);
+  --paint-border: --value(--color-on-base, [color]);
+  --paint-ink: --value(--color-on-base, [color]);
+}
+
+
 @layer components {
   .link {
     display: inline-flex;
@@ -28,19 +46,19 @@
     cursor: pointer;
     padding: 0;
     color: var(--color-on-link);
-    border: none;
-    gap: var(--spacing-md);
     max-width: none;
-    align-items: center;
-    background-color: transparent;
-    height: auto;
-    padding-inline: var(--spacing-md);
-    min-height: var(--spacing-control-md);
     max-height: none;
-    transition: color 120ms ease, box-shadow 120ms ease;
-    overflow: visible;
+    padding-inline: var(--spacing-md);
+    gap: var(--spacing-md);
+    background-color: transparent;
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-height: var(--spacing-control-md);
+    align-items: center;
+    border: none;
+    height: auto;
+    transition: color 120ms ease, box-shadow 120ms ease;
+    overflow: visible;
     text-decoration-line: underline;
     text-underline-offset: 0.15em;
     appearance: none;
@@ -123,60 +141,36 @@
     max-height: 100%;
   }
 
-  .link.link--semantic-accent {
-    position: relative;
-  }
-
-  .link.link--semantic-alert {
-    position: relative;
-  }
-
-  .link.link--semantic-base {
-    position: relative;
-  }
-
-  .link.link--semantic-brand {
-    position: relative;
-  }
-
-  .link.link--semantic-info {
-    position: relative;
-  }
-
-  .link.link--semantic-success {
-    position: relative;
-  }
-
   .link.link--size-sm {
-    gap: var(--spacing-sm);
     padding-inline: var(--spacing-sm);
-    min-height: var(--spacing-control-sm);
+    gap: var(--spacing-sm);
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
+    min-height: var(--spacing-control-sm);
   }
 
   .link.link--size-md {
-    gap: var(--spacing-md);
     padding-inline: var(--spacing-md);
-    min-height: var(--spacing-control-md);
+    gap: var(--spacing-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-height: var(--spacing-control-md);
   }
 
   .link.link--size-lg {
-    gap: var(--spacing-lg);
     padding-inline: var(--spacing-lg);
-    min-height: var(--spacing-control-lg);
+    gap: var(--spacing-lg);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
+    min-height: var(--spacing-control-lg);
   }
 
   .link.link--size-xl {
-    gap: var(--spacing-xl);
     padding-inline: var(--spacing-xl);
-    min-height: var(--spacing-control-xl);
+    gap: var(--spacing-xl);
     font-size: var(--text-xl);
     line-height: var(--leading-xl);
+    min-height: var(--spacing-control-xl);
   }
 
   .link.link--shape-square {

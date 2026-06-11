@@ -21,6 +21,7 @@ defmodule Corex.Design.Palette do
   def solid_active_var(role), do: "--color-#{paint_role(role)}-active"
   def muted_var(role), do: "--color-#{paint_role(role)}-muted"
 
+  def fg_var(role) when role in [:base, :implicit], do: on_solid_var(role)
   def fg_var(role), do: solid_var(role)
 
   def on_solid_var(role), do: "--color-on-#{paint_role(role)}"
@@ -36,6 +37,7 @@ defmodule Corex.Design.Palette do
     var =
       case kind do
         :on_solid -> on_solid_var(role)
+        :focus_ring -> fg_var(role)
         _ -> solid_var(role)
       end
 
@@ -52,42 +54,91 @@ defmodule Corex.Design.Palette do
     "--color-on-" <> Atom.to_string(paint_role(role))
   end
 
-  def compound_visual_rules(id), do: modifier_paint_rules(id)
-  def compound_visual_on_rules(id, scope, part), do: modifier_paint_on_rules(id, scope, part)
+  def paint_sx(role) do
+    r = paint_role(role)
+    solid = "--color-#{r}"
+    on = "--color-on-#{r}"
+    ink = if r == :base, do: on, else: solid
 
-  def compound_visual_open_closed_trigger_rules(id, part_selector, opts \\ []),
-    do: modifier_paint_open_closed_trigger_rules(id, part_selector, opts)
-
-  def modifier_paint_rules(id) do
-    name = Selector.class_name(id)
-
-    for role <- paint_roles(),
-        visual <- Axes.visual_atoms() do
-      Rule.new(
-        host_compound_selector(name, role, visual),
-        decls: visual_decls(role, visual),
-        children: visual_children(role, visual)
-      )
-    end
+    %{
+      "--paint-bg": {:raw, "var(#{solid})"},
+      "--paint-fg": {:raw, "var(#{on})"},
+      "--paint-ink": {:raw, "var(#{ink})"},
+      "--paint-bg-hover": {:raw, "var(#{solid}-hover)"},
+      "--paint-bg-active": {:raw, "var(#{solid}-active)"},
+      "--paint-ring": {:raw, "var(#{ink})"},
+      "--paint-border": {:raw, "var(#{ink})"}
+    }
   end
 
-  def modifier_paint_on_rules(id, scope, part) do
-    name = Selector.class_name(id)
-    part_sel = ~s([data-scope="#{scope}"][data-part="#{part}"][data-state="on"])
-
-    for role <- paint_roles(),
-        visual <- Axes.visual_atoms() do
-      Rule.new(
-        "#{host_compound_selector(name, role, visual)} #{part_sel}",
-        decls: visual_decls(role, visual),
-        children: visual_children(role, visual)
-      )
-    end
+  def paint_decls(role) do
+    paint_sx(role)
+    |> Map.to_list()
   end
 
-  def modifier_paint_open_closed_trigger_rules(id, part_selector, opts \\ []) do
+  def semantic_paint_sx(role), do: paint_sx(role)
+
+  def semantic_host_marker, do: semantic_paint_sx(:base)
+
+  def semantic_host_variants do
+    for role <- semantic_atoms(), do: {role, semantic_paint_sx(role)}
+  end
+
+  def semantic_part_host_variants do
+    for role <- semantic_atoms(), do: {role, [host: semantic_paint_sx(role)]}
+  end
+
+  def semantic_slot_host_variants, do: semantic_part_host_variants()
+
+  def default_paint_host_rule(id) do
+    Rule.new(implicit_host(id), decls: paint_decls(:implicit))
+  end
+
+  def variant_visual_apply_rules(id, opts \\ []) do
+    name = Selector.class_name(id)
+    part = Keyword.get(opts, :part)
     inherit = Keyword.get(opts, :inherit, [])
-    name = Selector.class_name(id)
+
+    inherit_children =
+      Enum.map(inherit, fn sel ->
+        Rule.new("& #{sel}", decls: [color: "inherit"])
+      end) ++
+        [Rule.new("& [data-icon]", decls: [color: "currentcolor"])]
+
+    for visual <- Axes.visual_atoms() do
+      utility = "visual-#{visual}"
+
+      selector =
+        if part do
+          ".#{name}.#{name}--variant-#{visual} #{part}"
+        else
+          ".#{name}.#{name}--variant-#{visual}"
+        end
+
+      children = if inherit == [], do: [], else: inherit_children
+
+      Rule.new(selector, decls: [{:apply, utility}], children: children)
+    end
+  end
+
+  def variant_visual_on_apply_rules(id, scope, part, opts \\ []) do
+    part_sel = ~s([data-scope="#{scope}"][data-part="#{part}"][data-state="on"])
+    variant_visual_apply_rules(id, Keyword.merge(opts, part: part_sel))
+  end
+
+  def variant_paint_target(%{id: :button}), do: :host
+
+  def variant_paint_target(%{id: :accordion, scope: scope}),
+    do: {:part, scope, "item-trigger", ["item-text"]}
+
+  def variant_paint_target(%{id: :toggle, scope: scope}),
+    do: {:part_on, scope, "root"}
+
+  def variant_paint_target(_), do: nil
+
+  def open_closed_trigger_apply_rules(id, part_selector, opts \\ []) do
+    inherit = Keyword.get(opts, :inherit, [])
+    host = implicit_host(id)
     trigger = slot_selector(id, part_selector)
 
     inherit_children =
@@ -96,159 +147,79 @@ defmodule Corex.Design.Palette do
       end) ++
         [Rule.new("& [data-icon]", decls: [color: "currentcolor"])]
 
-    for role <- paint_roles(),
-        visual <- Axes.visual_atoms() do
-      host_sel = host_compound_selector(name, role, visual)
-
-      Rule.new("#{host_sel} #{trigger}",
-        decls: visual_decls(role, visual),
-        children: visual_children(role, visual) ++ inherit_children
+    [
+      Rule.new("#{host} #{trigger}[data-state=\"closed\"]",
+        decls: [color: "var(--paint-ink)"]
+      ),
+      Rule.new("#{host} #{trigger}[data-state=\"open\"]",
+        decls: [{:apply, "visual-solid"}],
+        children: inherit_children
       )
-    end
+    ]
   end
 
-  def implicit_open_closed_trigger_rules(id, part_selector, opts \\ []) do
-    inherit = Keyword.get(opts, :inherit, [])
-    role = :implicit
-    host = implicit_host(id)
-    muted = muted_var(role)
-
-    closed =
-      Rule.new("#{host} #{slot_selector(id, part_selector)}[data-state=\"closed\"]",
-        decls: [color: "var(--color-on-page)"]
-      )
-
-    open_children =
-      active_state_children(role, muted: muted) ++
-        Enum.map(inherit, fn sel ->
-          Rule.new("& #{sel}", decls: [color: "inherit"])
-        end) ++
-        [Rule.new("& [data-icon]", decls: [color: "currentcolor"])]
-
-    open =
-      Rule.new("#{host} #{slot_selector(id, part_selector)}[data-state=\"open\"]",
-        decls: active_decls(role),
-        children: open_children
-      )
-
-    [closed, open]
+  def compound_visual_rules(id) do
+    [default_paint_host_rule(id)]
   end
+
+  def compound_visual_on_rules(id, _scope, _part) do
+    [default_paint_host_rule(id)]
+  end
+
+  def compound_visual_open_closed_trigger_rules(id, _part_selector, _opts \\ []) do
+    [default_paint_host_rule(id)]
+  end
+
+  def modifier_paint_rules(id), do: compound_visual_rules(id)
+
+  def modifier_paint_on_rules(id, scope, part),
+    do: compound_visual_on_rules(id, scope, part)
+
+  def modifier_paint_open_closed_trigger_rules(id, part_selector, opts \\ []),
+    do: compound_visual_open_closed_trigger_rules(id, part_selector, opts)
+
+  def implicit_open_closed_trigger_rules(id, part_selector, opts \\ []),
+    do: open_closed_trigger_apply_rules(id, part_selector, opts)
 
   def neutral_open_closed_trigger_rules(id, part_selector, opts \\ []),
-    do: implicit_open_closed_trigger_rules(id, part_selector, opts)
+    do: open_closed_trigger_apply_rules(id, part_selector, opts)
 
-  defp host_compound_selector(name, :implicit, visual),
-    do: ".#{name}.#{name}--variant-#{visual}"
-
-  defp host_compound_selector(name, role, visual),
-    do: ".#{name}.#{name}--variant-#{visual}.#{name}--semantic-#{role}"
-
-  def visual_decls(role, :solid) do
+  def visual_decls(_role, :solid) do
     [
-      background_color: "var(#{solid_var(role)})",
-      color: "var(#{on_solid_var(role)})",
+      background_color: "var(--paint-bg)",
+      color: "var(--paint-fg)",
       border_color: "transparent"
     ]
   end
 
-  def visual_decls(role, :ghost) do
+  def visual_decls(_role, :ghost) do
     [
       background_color: "transparent",
-      color: "var(#{fg_var(role)})",
+      color: "var(--paint-ink)",
       border_color: "transparent"
     ]
   end
 
-  def visual_decls(role, :outline) do
+  def visual_decls(_role, :outline) do
     [
       background_color: "transparent",
-      color: "var(#{fg_var(role)})",
-      border_color: "var(#{solid_var(role)})"
+      color: "var(--paint-ink)",
+      border_color: "var(--paint-border)"
     ]
   end
 
-  def visual_decls(role, :subtle) do
+  def visual_decls(_role, :subtle) do
     [
       background_color: "var(#{surface_var()})",
-      color: "var(#{fg_var(role)})",
+      color: "var(--paint-ink)",
       border_color: "transparent"
     ]
   end
 
-  def visual_children(role, :solid) do
+  def active_decls(_role) do
     [
-      Rule.new("&:hover", decls: [background_color: "var(#{solid_hover_var(role)})"]),
-      Rule.new("&:active", decls: [background_color: "var(#{solid_active_var(role)})"]),
-      Rule.new("&:focus-visible",
-        decls: [outline: "none", box_shadow: inset_ring(role, :on_solid)]
-      ),
-      Rule.new(@disabled,
-        decls: [
-          background_color: "var(#{disabled_bg_var()})",
-          color: "var(#{disabled_fg_var()})",
-          cursor: "not-allowed"
-        ]
-      )
-    ]
-  end
-
-  def visual_children(role, visual) when visual in [:ghost, :outline, :subtle] do
-    hover_active =
-      case visual do
-        :subtle ->
-          [Rule.new("&:hover", decls: [background_color: "var(#{surface_active_var()})"])]
-
-        _ ->
-          [
-            Rule.new("&:hover", decls: [background_color: "var(#{surface_var()})"]),
-            Rule.new("&:active", decls: [background_color: "var(#{surface_active_var()})"])
-          ]
-      end
-
-    disabled =
-      case visual do
-        :outline ->
-          Rule.new(@disabled,
-            decls: [
-              background_color: "transparent",
-              color: "var(#{disabled_fg_var()})",
-              border_color: "var(#{disabled_bg_var()})",
-              cursor: "not-allowed"
-            ]
-          )
-
-        :ghost ->
-          Rule.new(@disabled,
-            decls: [
-              background_color: "transparent",
-              color: "var(#{disabled_fg_var()})",
-              cursor: "not-allowed"
-            ]
-          )
-
-        :subtle ->
-          Rule.new(@disabled,
-            decls: [
-              background_color: "var(#{disabled_bg_var()})",
-              color: "var(#{disabled_fg_var()})",
-              cursor: "not-allowed"
-            ]
-          )
-      end
-
-    hover_active ++
-      [
-        Rule.new("&:focus-visible",
-          decls: [outline: "none", box_shadow: inset_ring(role, :focus_ring)]
-        ),
-        disabled
-      ]
-  end
-
-  def active_decls(role) do
-    [
-      background_color: "var(#{solid_var(role)})",
-      color: "var(#{on_solid_var(role)})"
+      background_color: "var(--paint-bg)",
+      color: "var(--paint-fg)"
     ]
   end
 
@@ -262,115 +233,77 @@ defmodule Corex.Design.Palette do
 
   def neutral_host(id), do: implicit_host(id)
 
-  def semantic_host_marker, do: %{position: :relative}
-
-  def semantic_host_variants do
-    for role <- semantic_atoms(), do: {role, semantic_host_marker()}
-  end
-
-  def semantic_part_host_variants do
-    for role <- semantic_atoms(), do: {role, [host: semantic_host_marker()]}
-  end
-
-  def semantic_slot_host_variants, do: semantic_part_host_variants()
-
   def semantic_solid_part_rules(id, part_selector) do
-    for role <- semantic_atoms() do
-      host = host_mod(id, role)
-
-      Rule.new("#{host} #{slot_selector(id, part_selector)}",
-        decls: active_decls(role),
-        children: active_state_children(role)
+    [
+      Rule.new(
+        "#{implicit_host(id)} #{slot_selector(id, part_selector)}",
+        decls: [{:apply, "visual-solid"}]
       )
-    end
+    ]
   end
 
   def semantic_ink_part_rules(id, part_selector, opts \\ []) do
     hover = Keyword.get(opts, :hover, true)
 
-    for role <- semantic_atoms() do
-      host = host_mod(id, role)
+    children =
+      [
+        if(hover,
+          do: Rule.new("&:hover", decls: [background_color: "var(#{surface_var()})"]),
+          else: nil
+        ),
+        Rule.new("&:focus-visible",
+          decls: [outline: "none", box_shadow: "inset 0 0 0 2px var(--paint-ring)"]
+        ),
+        Rule.new(@disabled,
+          decls: [color: "var(#{disabled_fg_var()})", cursor: "not-allowed"]
+        )
+      ]
+      |> Enum.reject(&is_nil/1)
 
-      children =
-        [
-          if(hover,
-            do: Rule.new("&:hover", decls: [background_color: "var(#{surface_var()})"]),
-            else: nil
-          ),
-          Rule.new("&:focus-visible",
-            decls: [outline: "none", box_shadow: inset_ring(role, :focus_ring)]
-          ),
-          Rule.new(@disabled,
-            decls: [color: "var(#{disabled_fg_var()})", cursor: "not-allowed"]
-          )
-        ]
-        |> Enum.reject(&is_nil/1)
-
-      Rule.new("#{host} #{slot_selector(id, part_selector)}",
-        decls: [color: "var(#{fg_var(role)})"],
+    [
+      Rule.new("#{implicit_host(id)} #{slot_selector(id, part_selector)}",
+        decls: [color: "var(--paint-ink)"],
         children: children
       )
-    end
+    ]
   end
 
   def semantic_focus_rules(id, part_selector, opts \\ []) do
     complete = Keyword.get(opts, :complete, false)
 
-    for role <- semantic_atoms() do
-      host = host_mod(id, role)
-      ring = "var(#{fg_var(role)})"
-      solid = "var(#{solid_var(role)})"
+    focus_children = [
+      Rule.new("&:focus, &:focus-visible",
+        decls: [outline: "none", box_shadow: "inset 0 0 0 2px var(--paint-ring)"]
+      )
+    ]
 
-      focus_children = [
-        Rule.new("&:focus, &:focus-visible",
-          decls: [outline: "none", box_shadow: "inset 0 0 0 2px #{ring}"]
-        )
-      ]
+    children =
+      if complete do
+        focus_children ++
+          [
+            Rule.new("&[data-complete]",
+              decls: [border_color: "var(--paint-border)"],
+              children: focus_children
+            )
+          ]
+      else
+        focus_children
+      end
 
-      children =
-        if complete do
-          focus_children ++
-            [
-              Rule.new("&[data-complete]",
-                decls: [border_color: solid],
-                children: focus_children
-              )
-            ]
-        else
-          focus_children
-        end
-
-      Rule.new("#{host} #{slot_selector(id, part_selector)}", decls: [], children: children)
-    end
+    [
+      Rule.new("#{implicit_host(id)} #{slot_selector(id, part_selector)}",
+        decls: [],
+        children: children
+      )
+    ]
   end
 
   def semantic_ink_variant(role) when is_atom(role) do
     %{color: {:color, ink_color_atom(role)}}
   end
 
-  def active_state_children(role, opts \\ []) do
-    muted = Keyword.get(opts, :muted)
-    disabled_color = Keyword.get(opts, :disabled_color)
-
-    disabled_decls =
-      if muted do
-        [background_color: muted, cursor: "not-allowed"] ++
-          if(disabled_color, do: [color: disabled_color], else: [])
-      else
-        [background_color: "var(#{disabled_bg_var()})", cursor: "not-allowed"]
-      end
-
-    [
-      Rule.new("&:hover", decls: [background_color: "var(#{solid_hover_var(role)})"]),
-      Rule.new("&:active", decls: [background_color: "var(#{solid_active_var(role)})"]),
-      Rule.new("&:focus-visible",
-        decls: [
-          outline: "none",
-          box_shadow: "inset 0 0 0 2px var(#{on_solid_var(role)})"
-        ]
-      ),
-      Rule.new(@disabled, decls: disabled_decls)
-    ]
+  def active_state_children(_role, _opts \\ []) do
+    []
   end
 
   defp slot_selector(id, selector) do

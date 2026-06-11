@@ -21,15 +21,33 @@
 }
 
 
+@utility lead--semantic-* {
+  --paint-bg: --value(--color-*, [color]);
+  --paint-fg: --value(--color-on-*, [color]);
+  --paint-bg-hover: --value(--color-*-hover, [color]);
+  --paint-bg-active: --value(--color-*-active, [color]);
+  --paint-ring: --value(--color-*, [color]);
+  --paint-border: --value(--color-*, [color]);
+  --paint-ink: --value(--color-*, [color]);
+}
+
+
+@utility lead--semantic-base {
+  --paint-ring: --value(--color-on-base, [color]);
+  --paint-border: --value(--color-on-base, [color]);
+  --paint-ink: --value(--color-on-base, [color]);
+}
+
+
 @layer components {
   .lead {
     width: fit-content;
     max-width: none;
-    height: auto;
     max-height: none;
-    font-weight: var(--font-weight-normal);
     font-size: var(--text-lg);
     line-height: var(--leading-lg);
+    height: auto;
+    font-weight: var(--font-weight-normal);
     font-family: var(--font-sans);
     @media (min-width: 64rem) {
       font-size: var(--text-2xl);
@@ -79,30 +97,6 @@
 
   .lead.lead--max-h-full {
     max-height: 100%;
-  }
-
-  .lead.lead--semantic-accent {
-    color: var(--color-accent);
-  }
-
-  .lead.lead--semantic-alert {
-    color: var(--color-alert);
-  }
-
-  .lead.lead--semantic-base {
-    color: var(--color-base);
-  }
-
-  .lead.lead--semantic-brand {
-    color: var(--color-brand);
-  }
-
-  .lead.lead--semantic-info {
-    color: var(--color-info);
-  }
-
-  .lead.lead--semantic-success {
-    color: var(--color-success);
   }
 
   .lead.lead--weight-thin {

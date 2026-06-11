@@ -49,8 +49,8 @@
 @utility carousel--size-* {
   [data-scope="carousel"][data-part="control"] {
       padding: --value(--spacing-*, [length]);
-    gap: --value(--spacing-*, [length]);
     max-width: --value(--container-*, [length]);
+    gap: --value(--spacing-*, [length]);
   }
 
   [data-scope="carousel"][data-part="root"] {
@@ -62,31 +62,49 @@
   }
 
   [data-scope="carousel"][data-part="prev-trigger"] {
-      min-height: --value(--spacing-control-*, [length]);
-    font-size: --value(--text-*, [length]);
+      font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
   [data-scope="carousel"][data-part="next-trigger"] {
-      min-height: --value(--spacing-control-*, [length]);
-    font-size: --value(--text-*, [length]);
+      font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
   [data-scope="carousel"][data-part="autoplay-trigger"] {
-      min-height: --value(--spacing-control-*, [length]);
-    font-size: --value(--text-*, [length]);
+      font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
+}
+
+
+@utility carousel--semantic-* {
+  --paint-bg: --value(--color-*, [color]);
+  --paint-fg: --value(--color-on-*, [color]);
+  --paint-bg-hover: --value(--color-*-hover, [color]);
+  --paint-bg-active: --value(--color-*-active, [color]);
+  --paint-ring: --value(--color-*, [color]);
+  --paint-border: --value(--color-*, [color]);
+  --paint-ink: --value(--color-*, [color]);
+}
+
+
+@utility carousel--semantic-base {
+  --paint-ring: --value(--color-on-base, [color]);
+  --paint-border: --value(--color-on-base, [color]);
+  --paint-ink: --value(--color-on-base, [color]);
 }
 
 
 @layer components {
   .carousel [data-scope="carousel"][data-part="control"] {
     padding: var(--spacing-md);
-    gap: var(--spacing-md);
     max-width: var(--container-md);
+    gap: var(--spacing-md);
   }
 
   .carousel [data-scope="carousel"][data-part="root"] {
@@ -96,8 +114,8 @@
   .carousel {
     width: 100%;
     max-width: var(--container-md);
-    height: auto;
     max-height: var(--container-md);
+    height: auto;
   }
 
   .carousel [data-scope="carousel"][data-part="indicator"] {
@@ -106,24 +124,24 @@
   }
 
   .carousel [data-scope="carousel"][data-part="prev-trigger"] {
-    min-height: calc(var(--spacing-control-md) * 0.8);
-    min-width: calc(var(--spacing-control-md) * 0.8);
     font-size: calc(var(--text-base) * 0.8);
     line-height: calc(var(--text-base--line-height) * 0.8);
+    min-height: calc(var(--spacing-control-md) * 0.8);
+    min-width: calc(var(--spacing-control-md) * 0.8);
   }
 
   .carousel [data-scope="carousel"][data-part="next-trigger"] {
-    min-height: calc(var(--spacing-control-md) * 0.8);
-    min-width: calc(var(--spacing-control-md) * 0.8);
     font-size: calc(var(--text-base) * 0.8);
     line-height: calc(var(--text-base--line-height) * 0.8);
+    min-height: calc(var(--spacing-control-md) * 0.8);
+    min-width: calc(var(--spacing-control-md) * 0.8);
   }
 
   .carousel [data-scope="carousel"][data-part="autoplay-trigger"] {
-    min-height: calc(var(--spacing-control-md) * 0.8);
-    min-width: calc(var(--spacing-control-md) * 0.8);
     font-size: calc(var(--text-base) * 0.8);
     line-height: calc(var(--text-base--line-height) * 0.8);
+    min-height: calc(var(--spacing-control-md) * 0.8);
+    min-width: calc(var(--spacing-control-md) * 0.8);
   }
 
   .carousel.carousel--w-auto {
@@ -164,30 +182,6 @@
 
   .carousel.carousel--max-h-full {
     max-height: 100%;
-  }
-
-  .carousel.carousel--semantic-accent {
-    position: relative;
-  }
-
-  .carousel.carousel--semantic-alert {
-    position: relative;
-  }
-
-  .carousel.carousel--semantic-base {
-    position: relative;
-  }
-
-  .carousel.carousel--semantic-brand {
-    position: relative;
-  }
-
-  .carousel.carousel--semantic-info {
-    position: relative;
-  }
-
-  .carousel.carousel--semantic-success {
-    position: relative;
   }
 
   .carousel.carousel--rounded-none [data-scope="carousel"][data-part="root"] {
@@ -418,304 +412,14 @@
     }
   }
 
-  .carousel.carousel--semantic-accent [data-scope="carousel"][data-part="next-trigger"],
-    .carousel.carousel--semantic-accent [data-scope="carousel"][data-part="prev-trigger"],
-    .carousel.carousel--semantic-accent [data-scope="carousel"][data-part="autoplay-trigger"] {
-    background-color: var(--color-accent);
-    color: var(--color-on-accent);
-    &:hover {
-      background-color: var(--color-accent-hover);
-    }
-
-    &:active {
-      background-color: var(--color-accent-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-accent);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
+  .carousel [data-scope="carousel"][data-part="next-trigger"],
+    .carousel [data-scope="carousel"][data-part="prev-trigger"],
+    .carousel [data-scope="carousel"][data-part="autoplay-trigger"] {
+    @apply visual-solid;
   }
 
-  .carousel.carousel--semantic-alert [data-scope="carousel"][data-part="next-trigger"],
-    .carousel.carousel--semantic-alert [data-scope="carousel"][data-part="prev-trigger"],
-    .carousel.carousel--semantic-alert [data-scope="carousel"][data-part="autoplay-trigger"] {
-    background-color: var(--color-alert);
-    color: var(--color-on-alert);
-    &:hover {
-      background-color: var(--color-alert-hover);
-    }
-
-    &:active {
-      background-color: var(--color-alert-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-alert);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .carousel.carousel--semantic-base [data-scope="carousel"][data-part="next-trigger"],
-    .carousel.carousel--semantic-base [data-scope="carousel"][data-part="prev-trigger"],
-    .carousel.carousel--semantic-base [data-scope="carousel"][data-part="autoplay-trigger"] {
-    background-color: var(--color-base);
-    color: var(--color-on-base);
-    &:hover {
-      background-color: var(--color-base-hover);
-    }
-
-    &:active {
-      background-color: var(--color-base-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-base);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .carousel.carousel--semantic-brand [data-scope="carousel"][data-part="next-trigger"],
-    .carousel.carousel--semantic-brand [data-scope="carousel"][data-part="prev-trigger"],
-    .carousel.carousel--semantic-brand [data-scope="carousel"][data-part="autoplay-trigger"] {
-    background-color: var(--color-brand);
-    color: var(--color-on-brand);
-    &:hover {
-      background-color: var(--color-brand-hover);
-    }
-
-    &:active {
-      background-color: var(--color-brand-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-brand);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .carousel.carousel--semantic-info [data-scope="carousel"][data-part="next-trigger"],
-    .carousel.carousel--semantic-info [data-scope="carousel"][data-part="prev-trigger"],
-    .carousel.carousel--semantic-info [data-scope="carousel"][data-part="autoplay-trigger"] {
-    background-color: var(--color-info);
-    color: var(--color-on-info);
-    &:hover {
-      background-color: var(--color-info-hover);
-    }
-
-    &:active {
-      background-color: var(--color-info-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-info);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .carousel.carousel--semantic-success [data-scope="carousel"][data-part="next-trigger"],
-    .carousel.carousel--semantic-success [data-scope="carousel"][data-part="prev-trigger"],
-    .carousel.carousel--semantic-success [data-scope="carousel"][data-part="autoplay-trigger"] {
-    background-color: var(--color-success);
-    color: var(--color-on-success);
-    &:hover {
-      background-color: var(--color-success-hover);
-    }
-
-    &:active {
-      background-color: var(--color-success-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-success);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .carousel.carousel--semantic-accent [data-scope="carousel"][data-part="indicator"][data-current] {
-    background-color: var(--color-accent);
-    color: var(--color-on-accent);
-    &:hover {
-      background-color: var(--color-accent-hover);
-    }
-
-    &:active {
-      background-color: var(--color-accent-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-accent);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .carousel.carousel--semantic-alert [data-scope="carousel"][data-part="indicator"][data-current] {
-    background-color: var(--color-alert);
-    color: var(--color-on-alert);
-    &:hover {
-      background-color: var(--color-alert-hover);
-    }
-
-    &:active {
-      background-color: var(--color-alert-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-alert);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .carousel.carousel--semantic-base [data-scope="carousel"][data-part="indicator"][data-current] {
-    background-color: var(--color-base);
-    color: var(--color-on-base);
-    &:hover {
-      background-color: var(--color-base-hover);
-    }
-
-    &:active {
-      background-color: var(--color-base-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-base);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .carousel.carousel--semantic-brand [data-scope="carousel"][data-part="indicator"][data-current] {
-    background-color: var(--color-brand);
-    color: var(--color-on-brand);
-    &:hover {
-      background-color: var(--color-brand-hover);
-    }
-
-    &:active {
-      background-color: var(--color-brand-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-brand);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .carousel.carousel--semantic-info [data-scope="carousel"][data-part="indicator"][data-current] {
-    background-color: var(--color-info);
-    color: var(--color-on-info);
-    &:hover {
-      background-color: var(--color-info-hover);
-    }
-
-    &:active {
-      background-color: var(--color-info-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-info);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .carousel.carousel--semantic-success [data-scope="carousel"][data-part="indicator"][data-current] {
-    background-color: var(--color-success);
-    color: var(--color-on-success);
-    &:hover {
-      background-color: var(--color-success-hover);
-    }
-
-    &:active {
-      background-color: var(--color-success-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-success);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
+  .carousel [data-scope="carousel"][data-part="indicator"][data-current] {
+    @apply visual-solid;
   }
 }
 

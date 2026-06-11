@@ -19,9 +19,9 @@ defmodule Corex.Design.ExportParityTest do
 
   test "tailwind class exports stay within line budgets" do
     budgets = %{
-      accordion: 2150,
+      accordion: 750,
       select: 1200,
-      button: 1200,
+      button: 350,
       tree_view: 2720
     }
 
@@ -59,21 +59,17 @@ defmodule Corex.Design.ExportParityTest do
       |> Enum.find(&(&1.id == :accordion))
       |> Recipe.to_css()
 
+    assert css =~ "@utility accordion--semantic-*"
+    assert css =~ "@utility accordion--semantic-base"
     assert css =~ "@apply part-trigger"
-    assert css =~ "@utility accordion--rounded-*"
-    assert css =~ "@utility accordion--text-*"
-    assert css =~ "@utility accordion--max-w-*"
-    assert css =~ "@utility accordion--size-*"
-    assert css =~ ".accordion.accordion--w-fit"
-    assert css =~ ".accordion.accordion--semantic-accent"
-    assert css =~ ".accordion.accordion--semantic-base"
-    assert css =~ ".accordion.accordion--variant-subtle"
     assert css =~ "[data-state=\"closed\"]"
-    assert css =~ "background-color: var(--color-accent)"
-    assert css =~ "color: var(--color-on-accent)"
+    assert css =~ "--paint-bg: --value(--color-*, [color])"
+    assert css =~ "@utility accordion--variant-solid"
+    assert css =~ "@apply visual-solid"
     refute css =~ "@utility accordion--*"
     refute css =~ ".accordion.accordion--max-w-7xs"
-    refute css =~ ".accordion.accordion--size-md [data-part"
+    refute css =~ ".accordion.accordion--size-md [data-scope=\"accordion\"][data-part=\"item-trigger\"]"
+    refute css =~ ".accordion.accordion--text-base [data-scope=\"accordion\"][data-part=\"item-content\"] > p"
     refute css =~ "semantic-neutral"
     refute css =~ "semantic-selected"
     refute css =~ "--color-neutral"

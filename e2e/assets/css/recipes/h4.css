@@ -21,16 +21,34 @@
 }
 
 
+@utility h4--semantic-* {
+  --paint-bg: --value(--color-*, [color]);
+  --paint-fg: --value(--color-on-*, [color]);
+  --paint-bg-hover: --value(--color-*-hover, [color]);
+  --paint-bg-active: --value(--color-*-active, [color]);
+  --paint-ring: --value(--color-*, [color]);
+  --paint-border: --value(--color-*, [color]);
+  --paint-ink: --value(--color-*, [color]);
+}
+
+
+@utility h4--semantic-base {
+  --paint-ring: --value(--color-on-base, [color]);
+  --paint-border: --value(--color-on-base, [color]);
+  --paint-ink: --value(--color-on-base, [color]);
+}
+
+
 @layer components {
   .h4 {
     width: fit-content;
     color: var(--color-on-page);
     max-width: none;
-    height: auto;
     max-height: none;
-    font-weight: var(--font-weight-normal);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    height: auto;
+    font-weight: var(--font-weight-normal);
     font-family: var(--font-sans);
     @media (min-width: 48rem) {
       font-size: var(--text-lg);
@@ -76,30 +94,6 @@
 
   .h4.h4--max-h-full {
     max-height: 100%;
-  }
-
-  .h4.h4--semantic-accent {
-    color: var(--color-accent);
-  }
-
-  .h4.h4--semantic-alert {
-    color: var(--color-alert);
-  }
-
-  .h4.h4--semantic-base {
-    color: var(--color-base);
-  }
-
-  .h4.h4--semantic-brand {
-    color: var(--color-brand);
-  }
-
-  .h4.h4--semantic-info {
-    color: var(--color-info);
-  }
-
-  .h4.h4--semantic-success {
-    color: var(--color-success);
   }
 
   .h4.h4--weight-thin {

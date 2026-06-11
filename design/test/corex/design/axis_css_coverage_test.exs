@@ -40,7 +40,8 @@ defmodule Corex.Design.AxisCssCoverageTest do
     |> Enum.any?(&String.contains?(css, &1))
   end
 
-  defp axis_patterns(name, :semantic), do: [".#{name}.#{name}--semantic-accent"]
+  defp axis_patterns(name, :semantic),
+    do: ["@utility #{name}--semantic-*", "@utility #{name}--semantic-base"]
   defp axis_patterns(name, :size), do: ["@utility #{name}--size-*", ".#{name}.#{name}--size-sm"]
   defp axis_patterns(name, :text), do: ["@utility #{name}--text-*", ".#{name}.#{name}--text-base"]
 
@@ -53,11 +54,7 @@ defmodule Corex.Design.AxisCssCoverageTest do
   defp axis_patterns(name, :max_height), do: [".#{name}.#{name}--max-h-"]
 
   defp axis_patterns(name, :variant),
-    do: [
-      ".#{name}.#{name}--variant-solid",
-      ".#{name}.#{name}--variant-ghost",
-      ".#{name}.#{name}--variant-outline"
-    ]
+    do: ["@utility #{name}--variant-solid", "@apply visual-solid"]
 
   defp axis_patterns(name, :shape), do: [".#{name}.#{name}--shape-square"]
   defp axis_patterns(_name, _axis), do: []

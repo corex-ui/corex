@@ -18,8 +18,8 @@ defmodule Corex.Design.RecipesTokenLintTest do
     recipes = File.read!(@recipes_path)
     emit = File.read!(@emit_path)
 
-    refute String.contains?(recipes, "-ink)"),
-           "legacy -ink var() strings in recipes (use --color-on-*)"
+    refute Regex.match?(~r/(?<!\-\-paint)\-ink\)/, recipes),
+           "legacy -ink var() strings in recipes (use --color-on-* or --paint-ink)"
 
     refute Regex.match?(~r/\{:color,\s*:[a-z_]+_ink\}/, recipes),
            "legacy {:color, :*_ink} atoms in recipes (use :on_* via Palette.ink_color_atom/1)"

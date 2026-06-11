@@ -26,11 +26,11 @@
   }
 
   [data-scope="menu"][data-part="trigger"] {
-      gap: --value(--spacing-*, [length]);
-    padding-inline: --value(--spacing-*, [length]);
-    min-height: --value(--spacing-control-*, [length]);
+      padding-inline: --value(--spacing-*, [length]);
+    gap: --value(--spacing-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-control-*, [length]);
   }
 
   [data-scope="menu"][data-part="item-group-label"] {
@@ -47,12 +47,30 @@
 }
 
 
+@utility menu--semantic-* {
+  --paint-bg: --value(--color-*, [color]);
+  --paint-fg: --value(--color-on-*, [color]);
+  --paint-bg-hover: --value(--color-*-hover, [color]);
+  --paint-bg-active: --value(--color-*-active, [color]);
+  --paint-ring: --value(--color-*, [color]);
+  --paint-border: --value(--color-*, [color]);
+  --paint-ink: --value(--color-*, [color]);
+}
+
+
+@utility menu--semantic-base {
+  --paint-ring: --value(--color-on-base, [color]);
+  --paint-border: --value(--color-on-base, [color]);
+  --paint-ink: --value(--color-on-base, [color]);
+}
+
+
 @layer components {
   .menu {
     width: fit-content;
     max-width: none;
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .menu [data-scope="menu"][data-part="item"] {
@@ -62,11 +80,11 @@
   }
 
   .menu [data-scope="menu"][data-part="trigger"] {
-    gap: var(--spacing-md);
     padding-inline: var(--spacing-md);
-    min-height: var(--spacing-control-md);
+    gap: var(--spacing-md);
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    min-height: var(--spacing-control-md);
   }
 
   .menu [data-scope="menu"][data-part="content"] {
@@ -122,30 +140,6 @@
 
   .menu.menu--max-h-full {
     max-height: 100%;
-  }
-
-  .menu.menu--semantic-accent {
-    position: relative;
-  }
-
-  .menu.menu--semantic-alert {
-    position: relative;
-  }
-
-  .menu.menu--semantic-base {
-    position: relative;
-  }
-
-  .menu.menu--semantic-brand {
-    position: relative;
-  }
-
-  .menu.menu--semantic-info {
-    position: relative;
-  }
-
-  .menu.menu--semantic-success {
-    position: relative;
   }
 
   .menu.menu--rounded-none [data-scope="menu"][data-part="content"] {
@@ -248,10 +242,10 @@
   .menu [data-scope="menu"][data-part="item"] > [data-scope="menu"][data-part="item-indicator"], .menu [data-scope="menu"][data-part="trigger-item"] > [data-scope="menu"][data-part="item-indicator"] {
     display: flex;
     flex: 0 0 auto;
+    min-height: 1em;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    min-height: 1em;
     min-width: 1em;
     margin-inline-start: auto;
     transition: none !important;
@@ -262,9 +256,9 @@
     width: auto;
     white-space: nowrap;
     flex: 1 1 0%;
-    flex-direction: row;
-    gap: var(--spacing-md);
     max-width: 100%;
+    gap: var(--spacing-md);
+    flex-direction: row;
     align-items: center;
     min-width: 0;
     text-align: start;
@@ -280,10 +274,10 @@
   .menu [data-scope="menu"][data-part="content"] [data-scope="menu"][data-part="item-indicator"] {
     display: flex;
     flex: 0 0 auto;
+    min-height: 1em;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    min-height: 1em;
     min-width: 1em;
     margin-inline-start: auto;
     @apply part-icon;
@@ -331,796 +325,44 @@
     pointer-events: auto;
   }
 
-  .menu.menu--semantic-accent [data-scope="menu"][data-part="item"][data-selected] {
-    background-color: var(--color-accent);
-    color: var(--color-on-accent);
-    &:hover {
-      background-color: var(--color-accent-hover);
-    }
-
-    &:active {
-      background-color: var(--color-accent-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-accent);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-
+  .menu [data-scope="menu"][data-part="item"][data-selected] {
+    @apply visual-solid;
     &[data-highlighted] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-accent);
-      background-color: var(--color-accent-hover);
-      color: var(--color-on-accent);
+      box-shadow: inset 0 0 0 2px var(--paint-fg);
+      background-color: var(--paint-bg-hover);
+      color: var(--paint-fg);
     }
   }
 
-  .menu.menu--semantic-accent [data-scope="menu"][data-part="item"][data-state='checked'] {
-    background-color: var(--color-accent);
-    color: var(--color-on-accent);
-    &:hover {
-      background-color: var(--color-accent-hover);
-    }
-
-    &:active {
-      background-color: var(--color-accent-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-accent);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-
+  .menu [data-scope="menu"][data-part="item"][data-state='checked'] {
+    @apply visual-solid;
     &[data-highlighted] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-accent);
-      background-color: var(--color-accent-hover);
-      color: var(--color-on-accent);
+      box-shadow: inset 0 0 0 2px var(--paint-fg);
+      background-color: var(--paint-bg-hover);
+      color: var(--paint-fg);
     }
   }
 
-  .menu.menu--semantic-alert [data-scope="menu"][data-part="item"][data-selected] {
-    background-color: var(--color-alert);
-    color: var(--color-on-alert);
-    &:hover {
-      background-color: var(--color-alert-hover);
-    }
-
-    &:active {
-      background-color: var(--color-alert-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-alert);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-
+  .menu [data-scope="menu"][data-part="trigger-item"][data-selected] {
+    @apply visual-solid;
     &[data-highlighted] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-alert);
-      background-color: var(--color-alert-hover);
-      color: var(--color-on-alert);
+      box-shadow: inset 0 0 0 2px var(--paint-fg);
+      background-color: var(--paint-bg-hover);
+      color: var(--paint-fg);
     }
   }
 
-  .menu.menu--semantic-alert [data-scope="menu"][data-part="item"][data-state='checked'] {
-    background-color: var(--color-alert);
-    color: var(--color-on-alert);
-    &:hover {
-      background-color: var(--color-alert-hover);
-    }
-
-    &:active {
-      background-color: var(--color-alert-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-alert);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-
+  .menu [data-scope="menu"][data-part="trigger-item"][data-state='checked'] {
+    @apply visual-solid;
     &[data-highlighted] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-alert);
-      background-color: var(--color-alert-hover);
-      color: var(--color-on-alert);
+      box-shadow: inset 0 0 0 2px var(--paint-fg);
+      background-color: var(--paint-bg-hover);
+      color: var(--paint-fg);
     }
-  }
-
-  .menu.menu--semantic-base [data-scope="menu"][data-part="item"][data-selected] {
-    background-color: var(--color-base);
-    color: var(--color-on-base);
-    &:hover {
-      background-color: var(--color-base-hover);
-    }
-
-    &:active {
-      background-color: var(--color-base-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-base);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-
-    &[data-highlighted] {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-base);
-      background-color: var(--color-base-hover);
-      color: var(--color-on-base);
-    }
-  }
-
-  .menu.menu--semantic-base [data-scope="menu"][data-part="item"][data-state='checked'] {
-    background-color: var(--color-base);
-    color: var(--color-on-base);
-    &:hover {
-      background-color: var(--color-base-hover);
-    }
-
-    &:active {
-      background-color: var(--color-base-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-base);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-
-    &[data-highlighted] {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-base);
-      background-color: var(--color-base-hover);
-      color: var(--color-on-base);
-    }
-  }
-
-  .menu.menu--semantic-brand [data-scope="menu"][data-part="item"][data-selected] {
-    background-color: var(--color-brand);
-    color: var(--color-on-brand);
-    &:hover {
-      background-color: var(--color-brand-hover);
-    }
-
-    &:active {
-      background-color: var(--color-brand-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-brand);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-
-    &[data-highlighted] {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-brand);
-      background-color: var(--color-brand-hover);
-      color: var(--color-on-brand);
-    }
-  }
-
-  .menu.menu--semantic-brand [data-scope="menu"][data-part="item"][data-state='checked'] {
-    background-color: var(--color-brand);
-    color: var(--color-on-brand);
-    &:hover {
-      background-color: var(--color-brand-hover);
-    }
-
-    &:active {
-      background-color: var(--color-brand-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-brand);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-
-    &[data-highlighted] {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-brand);
-      background-color: var(--color-brand-hover);
-      color: var(--color-on-brand);
-    }
-  }
-
-  .menu.menu--semantic-info [data-scope="menu"][data-part="item"][data-selected] {
-    background-color: var(--color-info);
-    color: var(--color-on-info);
-    &:hover {
-      background-color: var(--color-info-hover);
-    }
-
-    &:active {
-      background-color: var(--color-info-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-info);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-
-    &[data-highlighted] {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-info);
-      background-color: var(--color-info-hover);
-      color: var(--color-on-info);
-    }
-  }
-
-  .menu.menu--semantic-info [data-scope="menu"][data-part="item"][data-state='checked'] {
-    background-color: var(--color-info);
-    color: var(--color-on-info);
-    &:hover {
-      background-color: var(--color-info-hover);
-    }
-
-    &:active {
-      background-color: var(--color-info-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-info);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-
-    &[data-highlighted] {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-info);
-      background-color: var(--color-info-hover);
-      color: var(--color-on-info);
-    }
-  }
-
-  .menu.menu--semantic-success [data-scope="menu"][data-part="item"][data-selected] {
-    background-color: var(--color-success);
-    color: var(--color-on-success);
-    &:hover {
-      background-color: var(--color-success-hover);
-    }
-
-    &:active {
-      background-color: var(--color-success-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-success);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-
-    &[data-highlighted] {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-success);
-      background-color: var(--color-success-hover);
-      color: var(--color-on-success);
-    }
-  }
-
-  .menu.menu--semantic-success [data-scope="menu"][data-part="item"][data-state='checked'] {
-    background-color: var(--color-success);
-    color: var(--color-on-success);
-    &:hover {
-      background-color: var(--color-success-hover);
-    }
-
-    &:active {
-      background-color: var(--color-success-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-success);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-
-    &[data-highlighted] {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-success);
-      background-color: var(--color-success-hover);
-      color: var(--color-on-success);
-    }
-  }
-
-  .menu.menu--semantic-accent [data-scope="menu"][data-part="trigger-item"][data-selected] {
-    background-color: var(--color-accent);
-    color: var(--color-on-accent);
-    &:hover {
-      background-color: var(--color-accent-hover);
-    }
-
-    &:active {
-      background-color: var(--color-accent-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-accent);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-
-    &[data-highlighted] {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-accent);
-      background-color: var(--color-accent-hover);
-      color: var(--color-on-accent);
-    }
-  }
-
-  .menu.menu--semantic-accent [data-scope="menu"][data-part="trigger-item"][data-state='checked'] {
-    background-color: var(--color-accent);
-    color: var(--color-on-accent);
-    &:hover {
-      background-color: var(--color-accent-hover);
-    }
-
-    &:active {
-      background-color: var(--color-accent-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-accent);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-
-    &[data-highlighted] {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-accent);
-      background-color: var(--color-accent-hover);
-      color: var(--color-on-accent);
-    }
-  }
-
-  .menu.menu--semantic-alert [data-scope="menu"][data-part="trigger-item"][data-selected] {
-    background-color: var(--color-alert);
-    color: var(--color-on-alert);
-    &:hover {
-      background-color: var(--color-alert-hover);
-    }
-
-    &:active {
-      background-color: var(--color-alert-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-alert);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-
-    &[data-highlighted] {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-alert);
-      background-color: var(--color-alert-hover);
-      color: var(--color-on-alert);
-    }
-  }
-
-  .menu.menu--semantic-alert [data-scope="menu"][data-part="trigger-item"][data-state='checked'] {
-    background-color: var(--color-alert);
-    color: var(--color-on-alert);
-    &:hover {
-      background-color: var(--color-alert-hover);
-    }
-
-    &:active {
-      background-color: var(--color-alert-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-alert);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-
-    &[data-highlighted] {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-alert);
-      background-color: var(--color-alert-hover);
-      color: var(--color-on-alert);
-    }
-  }
-
-  .menu.menu--semantic-base [data-scope="menu"][data-part="trigger-item"][data-selected] {
-    background-color: var(--color-base);
-    color: var(--color-on-base);
-    &:hover {
-      background-color: var(--color-base-hover);
-    }
-
-    &:active {
-      background-color: var(--color-base-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-base);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-
-    &[data-highlighted] {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-base);
-      background-color: var(--color-base-hover);
-      color: var(--color-on-base);
-    }
-  }
-
-  .menu.menu--semantic-base [data-scope="menu"][data-part="trigger-item"][data-state='checked'] {
-    background-color: var(--color-base);
-    color: var(--color-on-base);
-    &:hover {
-      background-color: var(--color-base-hover);
-    }
-
-    &:active {
-      background-color: var(--color-base-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-base);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-
-    &[data-highlighted] {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-base);
-      background-color: var(--color-base-hover);
-      color: var(--color-on-base);
-    }
-  }
-
-  .menu.menu--semantic-brand [data-scope="menu"][data-part="trigger-item"][data-selected] {
-    background-color: var(--color-brand);
-    color: var(--color-on-brand);
-    &:hover {
-      background-color: var(--color-brand-hover);
-    }
-
-    &:active {
-      background-color: var(--color-brand-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-brand);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-
-    &[data-highlighted] {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-brand);
-      background-color: var(--color-brand-hover);
-      color: var(--color-on-brand);
-    }
-  }
-
-  .menu.menu--semantic-brand [data-scope="menu"][data-part="trigger-item"][data-state='checked'] {
-    background-color: var(--color-brand);
-    color: var(--color-on-brand);
-    &:hover {
-      background-color: var(--color-brand-hover);
-    }
-
-    &:active {
-      background-color: var(--color-brand-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-brand);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-
-    &[data-highlighted] {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-brand);
-      background-color: var(--color-brand-hover);
-      color: var(--color-on-brand);
-    }
-  }
-
-  .menu.menu--semantic-info [data-scope="menu"][data-part="trigger-item"][data-selected] {
-    background-color: var(--color-info);
-    color: var(--color-on-info);
-    &:hover {
-      background-color: var(--color-info-hover);
-    }
-
-    &:active {
-      background-color: var(--color-info-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-info);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-
-    &[data-highlighted] {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-info);
-      background-color: var(--color-info-hover);
-      color: var(--color-on-info);
-    }
-  }
-
-  .menu.menu--semantic-info [data-scope="menu"][data-part="trigger-item"][data-state='checked'] {
-    background-color: var(--color-info);
-    color: var(--color-on-info);
-    &:hover {
-      background-color: var(--color-info-hover);
-    }
-
-    &:active {
-      background-color: var(--color-info-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-info);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-
-    &[data-highlighted] {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-info);
-      background-color: var(--color-info-hover);
-      color: var(--color-on-info);
-    }
-  }
-
-  .menu.menu--semantic-success [data-scope="menu"][data-part="trigger-item"][data-selected] {
-    background-color: var(--color-success);
-    color: var(--color-on-success);
-    &:hover {
-      background-color: var(--color-success-hover);
-    }
-
-    &:active {
-      background-color: var(--color-success-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-success);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-
-    &[data-highlighted] {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-success);
-      background-color: var(--color-success-hover);
-      color: var(--color-on-success);
-    }
-  }
-
-  .menu.menu--semantic-success [data-scope="menu"][data-part="trigger-item"][data-state='checked'] {
-    background-color: var(--color-success);
-    color: var(--color-on-success);
-    &:hover {
-      background-color: var(--color-success-hover);
-    }
-
-    &:active {
-      background-color: var(--color-success-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-success);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-surface-control-muted);
-      cursor: not-allowed;
-    }
-
-    &[data-highlighted] {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-on-success);
-      background-color: var(--color-success-hover);
-      color: var(--color-on-success);
-    }
-  }
-
-  .menu.menu--semantic-accent [data-scope="menu"][data-part="item"][data-state='checked'] [data-scope="menu"][data-part="item-text"] {
-    color: inherit;
-  }
-
-  .menu.menu--semantic-accent [data-scope="menu"][data-part="trigger-item"][data-state='checked'] [data-scope="menu"][data-part="item-text"] {
-    color: inherit;
-  }
-
-  .menu.menu--semantic-alert [data-scope="menu"][data-part="item"][data-state='checked'] [data-scope="menu"][data-part="item-text"] {
-    color: inherit;
-  }
-
-  .menu.menu--semantic-alert [data-scope="menu"][data-part="trigger-item"][data-state='checked'] [data-scope="menu"][data-part="item-text"] {
-    color: inherit;
-  }
-
-  .menu.menu--semantic-base [data-scope="menu"][data-part="item"][data-state='checked'] [data-scope="menu"][data-part="item-text"] {
-    color: inherit;
-  }
-
-  .menu.menu--semantic-base [data-scope="menu"][data-part="trigger-item"][data-state='checked'] [data-scope="menu"][data-part="item-text"] {
-    color: inherit;
-  }
-
-  .menu.menu--semantic-brand [data-scope="menu"][data-part="item"][data-state='checked'] [data-scope="menu"][data-part="item-text"] {
-    color: inherit;
-  }
-
-  .menu.menu--semantic-brand [data-scope="menu"][data-part="trigger-item"][data-state='checked'] [data-scope="menu"][data-part="item-text"] {
-    color: inherit;
-  }
-
-  .menu.menu--semantic-info [data-scope="menu"][data-part="item"][data-state='checked'] [data-scope="menu"][data-part="item-text"] {
-    color: inherit;
-  }
-
-  .menu.menu--semantic-info [data-scope="menu"][data-part="trigger-item"][data-state='checked'] [data-scope="menu"][data-part="item-text"] {
-    color: inherit;
-  }
-
-  .menu.menu--semantic-success [data-scope="menu"][data-part="item"][data-state='checked'] [data-scope="menu"][data-part="item-text"] {
-    color: inherit;
-  }
-
-  .menu.menu--semantic-success [data-scope="menu"][data-part="trigger-item"][data-state='checked'] [data-scope="menu"][data-part="item-text"] {
-    color: inherit;
   }
 
   .menu [data-scope="menu"][data-part="indicator"] [data-icon], .menu [data-scope="menu"][data-part="content"] [data-scope="menu"][data-part="item-indicator"],

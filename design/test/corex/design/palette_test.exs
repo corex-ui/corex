@@ -7,7 +7,8 @@ defmodule Corex.Design.PaletteTest do
     assert Palette.fg_var(:accent) == "--color-accent"
     assert Palette.solid_var(:accent) == "--color-accent"
     assert Palette.on_solid_var(:accent) == "--color-on-accent"
-    assert Palette.fg_var(:base) == "--color-base"
+    assert Palette.fg_var(:base) == "--color-on-base"
+    assert Palette.fg_var(:implicit) == "--color-on-base"
     assert Palette.solid_var(:base) == "--color-base"
     assert Palette.solid_var(:implicit) == "--color-base"
   end

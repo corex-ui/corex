@@ -39,15 +39,33 @@
 }
 
 
+@utility angle-slider--semantic-* {
+  --paint-bg: --value(--color-*, [color]);
+  --paint-fg: --value(--color-on-*, [color]);
+  --paint-bg-hover: --value(--color-*-hover, [color]);
+  --paint-bg-active: --value(--color-*-active, [color]);
+  --paint-ring: --value(--color-*, [color]);
+  --paint-border: --value(--color-*, [color]);
+  --paint-ink: --value(--color-*, [color]);
+}
+
+
+@utility angle-slider--semantic-base {
+  --paint-ring: --value(--color-on-base, [color]);
+  --paint-border: --value(--color-on-base, [color]);
+  --paint-ink: --value(--color-on-base, [color]);
+}
+
+
 @layer components {
   .angle-slider [data-scope="angle-slider"][data-part="control"] {
     color: var(--color-on-page);
     background-color: var(--color-surface-control);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
     border-color: var(--color-border);
     --size: var(--spacing-control-md);
     --thumb-size: calc(var(--spacing-control-md) * 0.5);
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
   }
 
   .angle-slider [data-scope="angle-slider"][data-part="label"] {
@@ -63,8 +81,8 @@
   .angle-slider {
     width: 100%;
     max-width: none;
-    height: auto;
     max-height: none;
+    height: auto;
   }
 
   .angle-slider.angle-slider--w-auto {
@@ -105,30 +123,6 @@
 
   .angle-slider.angle-slider--max-h-full {
     max-height: 100%;
-  }
-
-  .angle-slider.angle-slider--semantic-accent {
-    position: relative;
-  }
-
-  .angle-slider.angle-slider--semantic-alert {
-    position: relative;
-  }
-
-  .angle-slider.angle-slider--semantic-base {
-    position: relative;
-  }
-
-  .angle-slider.angle-slider--semantic-brand {
-    position: relative;
-  }
-
-  .angle-slider.angle-slider--semantic-info {
-    position: relative;
-  }
-
-  .angle-slider.angle-slider--semantic-success {
-    position: relative;
   }
 
   .angle-slider.angle-slider--rounded-none [data-scope="angle-slider"][data-part="control"] {
@@ -386,72 +380,24 @@
     box-sizing: border-box;
   }
 
-  .angle-slider.angle-slider--semantic-accent [data-scope="angle-slider"][data-part="thumb"]::before {
-    background-color: var(--color-accent);
-    &:focus-visible {
-      outline: none;
-      box-shadow: 0 0 0 1px var(--color-accent);
-    }
-  }
-
   .angle-slider.angle-slider--semantic-accent [data-scope="angle-slider"][data-part="marker"][data-state="under-value"] {
     --marker-color: var(--color-accent);
-  }
-
-  .angle-slider.angle-slider--semantic-alert [data-scope="angle-slider"][data-part="thumb"]::before {
-    background-color: var(--color-alert);
-    &:focus-visible {
-      outline: none;
-      box-shadow: 0 0 0 1px var(--color-alert);
-    }
   }
 
   .angle-slider.angle-slider--semantic-alert [data-scope="angle-slider"][data-part="marker"][data-state="under-value"] {
     --marker-color: var(--color-alert);
   }
 
-  .angle-slider.angle-slider--semantic-base [data-scope="angle-slider"][data-part="thumb"]::before {
-    background-color: var(--color-base);
-    &:focus-visible {
-      outline: none;
-      box-shadow: 0 0 0 1px var(--color-base);
-    }
-  }
-
   .angle-slider.angle-slider--semantic-base [data-scope="angle-slider"][data-part="marker"][data-state="under-value"] {
     --marker-color: var(--color-base);
-  }
-
-  .angle-slider.angle-slider--semantic-brand [data-scope="angle-slider"][data-part="thumb"]::before {
-    background-color: var(--color-brand);
-    &:focus-visible {
-      outline: none;
-      box-shadow: 0 0 0 1px var(--color-brand);
-    }
   }
 
   .angle-slider.angle-slider--semantic-brand [data-scope="angle-slider"][data-part="marker"][data-state="under-value"] {
     --marker-color: var(--color-brand);
   }
 
-  .angle-slider.angle-slider--semantic-info [data-scope="angle-slider"][data-part="thumb"]::before {
-    background-color: var(--color-info);
-    &:focus-visible {
-      outline: none;
-      box-shadow: 0 0 0 1px var(--color-info);
-    }
-  }
-
   .angle-slider.angle-slider--semantic-info [data-scope="angle-slider"][data-part="marker"][data-state="under-value"] {
     --marker-color: var(--color-info);
-  }
-
-  .angle-slider.angle-slider--semantic-success [data-scope="angle-slider"][data-part="thumb"]::before {
-    background-color: var(--color-success);
-    &:focus-visible {
-      outline: none;
-      box-shadow: 0 0 0 1px var(--color-success);
-    }
   }
 
   .angle-slider.angle-slider--semantic-success [data-scope="angle-slider"][data-part="marker"][data-state="under-value"] {

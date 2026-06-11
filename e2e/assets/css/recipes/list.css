@@ -21,19 +21,37 @@
 }
 
 
+@utility list--semantic-* {
+  --paint-bg: --value(--color-*, [color]);
+  --paint-fg: --value(--color-on-*, [color]);
+  --paint-bg-hover: --value(--color-*-hover, [color]);
+  --paint-bg-active: --value(--color-*-active, [color]);
+  --paint-ring: --value(--color-*, [color]);
+  --paint-border: --value(--color-*, [color]);
+  --paint-ink: --value(--color-*, [color]);
+}
+
+
+@utility list--semantic-base {
+  --paint-ring: --value(--color-on-base, [color]);
+  --paint-border: --value(--color-on-base, [color]);
+  --paint-ink: --value(--color-on-base, [color]);
+}
+
+
 @layer components {
   .list {
     width: fit-content;
     padding: 0;
-    border: 1px solid var(--color-border);
     max-width: none;
-    height: auto;
-    border-radius: var(--radius-md);
     max-height: none;
-    margin-block: 2em;
-    overflow: hidden;
     font-size: var(--text-base);
     line-height: var(--leading-base);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    height: auto;
+    margin-block: 2em;
+    overflow: hidden;
     list-style: none;
   }
 
@@ -75,30 +93,6 @@
 
   .list.list--max-h-full {
     max-height: 100%;
-  }
-
-  .list.list--semantic-accent {
-    color: var(--color-accent);
-  }
-
-  .list.list--semantic-alert {
-    color: var(--color-alert);
-  }
-
-  .list.list--semantic-base {
-    color: var(--color-base);
-  }
-
-  .list.list--semantic-brand {
-    color: var(--color-brand);
-  }
-
-  .list.list--semantic-info {
-    color: var(--color-info);
-  }
-
-  .list.list--semantic-success {
-    color: var(--color-success);
   }
 
   .list li {
