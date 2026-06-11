@@ -46,7 +46,17 @@ defmodule Corex.Tooltip.Anatomy do
 
   defmodule Trigger do
     @moduledoc false
-    defstruct [:id, :dir, :open, :disabled, orientation: "horizontal", tag: :button, value: nil]
+    defstruct [
+      :id,
+      :dir,
+      :open,
+      :disabled,
+      :tabindex,
+      orientation: "horizontal",
+      tag: :button,
+      value: nil,
+      focusable: true
+    ]
 
     @ignored_attrs [
       "type",
