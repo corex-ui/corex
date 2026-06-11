@@ -62,7 +62,7 @@ defmodule E2eWeb.TooltipPatternsLive do
         path={@path}
         id="tooltip-patterns-page"
         title="Tooltip · Pattern"
-        subtitle="Multi-trigger with LiveView, per-row tooltips in a ul, and one tooltip with several link triggers."
+        subtitle="Multi-trigger with LiveView, per-row tooltips in a ul, link triggers, and tooltip inside a menu item."
       >
         <.demo_section
           id="tooltip-pattern-multi-trigger-lv"
@@ -179,6 +179,53 @@ defmodule E2eWeb.TooltipPatternsLive do
                 </:content>
               </.tooltip>
             </div>
+          </:preview>
+        </.demo_section>
+
+        <.demo_section
+          id="tooltip-pattern-menu-item"
+          title="Tooltip inside menu item"
+          code_tabs={[
+            %{
+              value: "heex",
+              label: "Heex",
+              language: :heex,
+              code: E2eWeb.Demos.TooltipDemo.patterns_menu_item_heex()
+            },
+            %{
+              value: "elixir",
+              label: ~t"Elixir",
+              language: :elixir,
+              code: E2eWeb.Demos.TooltipDemo.patterns_menu_item_elixir()
+            }
+          ]}
+        >
+          <:preview>
+            <.menu
+              id="tooltip-pattern-menu"
+              class="menu"
+              items={E2eWeb.Demos.TooltipDemo.patterns_menu_item_items()}
+            >
+              <:trigger>Actions</:trigger>
+              <:indicator>
+                <.heroicon name="hero-chevron-down" />
+              </:indicator>
+              <:item :let={item}>
+                <%= if item.value == "support" do %>
+                  <.tooltip
+                    id="tooltip-pattern-menu-support"
+                    class="tooltip tooltip--sm"
+                    trigger_tag={:span}
+                    show_arrow={false}
+                  >
+                    <:trigger focusable={false}>{item.label}</:trigger>
+                    <:content>Coming soon</:content>
+                  </.tooltip>
+                <% else %>
+                  {item.label}
+                <% end %>
+              </:item>
+            </.menu>
           </:preview>
         </.demo_section>
       </.demo_page>

@@ -209,6 +209,50 @@ defmodule Corex.TooltipTest do
       t = Connect.trigger(%{id: "t", open: true, disabled: false, value: "x"})
       assert t["data-value"] == "x"
     end
+
+    test "focusable false sets tabindex -1" do
+      t =
+        Connect.trigger(%{
+          id: "t",
+          open: false,
+          disabled: false,
+          focusable: false,
+          dir: "ltr",
+          tag: :button
+        })
+
+      assert t["tabindex"] == -1
+    end
+
+    test "explicit tabindex overrides focusable" do
+      t =
+        Connect.trigger(%{
+          id: "t",
+          open: false,
+          disabled: false,
+          focusable: true,
+          tabindex: -1,
+          dir: "ltr",
+          tag: :button
+        })
+
+      assert t["tabindex"] == -1
+    end
+
+    test "disabled wins over focusable" do
+      t =
+        Connect.trigger(%{
+          id: "t",
+          open: false,
+          disabled: true,
+          focusable: true,
+          tabindex: 0,
+          dir: "ltr",
+          tag: :button
+        })
+
+      assert t["tabindex"] == -1
+    end
   end
 
   describe "Connect ignore and part helpers" do

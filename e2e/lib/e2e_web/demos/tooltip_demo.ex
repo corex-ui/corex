@@ -273,6 +273,49 @@ defmodule E2eWeb.Demos.TooltipDemo do
     """
   end
 
+  def patterns_menu_item_items do
+    Corex.Tree.new([
+      %{label: "Edit", value: "edit"},
+      %{label: "Support", value: "support", disabled: true}
+    ])
+  end
+
+  def patterns_menu_item_heex do
+    ~S"""
+    <.menu id="tooltip-pattern-menu" class="menu" items={@items}>
+      <:trigger>Actions</:trigger>
+      <:indicator>
+        <.heroicon name="hero-chevron-down" />
+      </:indicator>
+      <:item :let={item}>
+        <%= if item.value == "support" do %>
+          <.tooltip
+            id="tooltip-pattern-menu-support"
+            class="tooltip tooltip--sm"
+            trigger_tag={:span}
+            show_arrow={false}
+          >
+            <:trigger focusable={false}>{item.label}</:trigger>
+            <:content>Coming soon</:content>
+          </.tooltip>
+        <% else %>
+          {item.label}
+        <% end %>
+      </:item>
+    </.menu>
+    """
+  end
+
+  def patterns_menu_item_elixir do
+    ~S"""
+    items =
+      Corex.Tree.new([
+        %{label: "Edit", value: "edit"},
+        %{label: "Support", value: "support", disabled: true}
+      ])
+    """
+  end
+
   def api_set_open_client_binding_heex do
     ~S"""
     <div class="layout__row">

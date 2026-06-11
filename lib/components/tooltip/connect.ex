@@ -49,7 +49,7 @@ defmodule Corex.Tooltip.Connect do
     base = %{
       "data-scope" => "tooltip",
       "data-part" => "trigger",
-      "tabindex" => if(assigns.disabled, do: -1, else: 0),
+      "tabindex" => trigger_tabindex(assigns),
       "data-disabled" => assigns.disabled,
       "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
@@ -143,5 +143,14 @@ defmodule Corex.Tooltip.Connect do
     JS.ignore_attributes(ArrowTip.ignored_attrs(),
       to: Selectors.css_id("tooltip:#{assigns.id}:arrow-tip")
     )
+  end
+
+  defp trigger_tabindex(assigns) do
+    cond do
+      assigns.disabled -> -1
+      is_integer(Map.get(assigns, :tabindex)) -> Map.get(assigns, :tabindex)
+      Map.get(assigns, :focusable, true) == false -> -1
+      true -> 0
+    end
   end
 end

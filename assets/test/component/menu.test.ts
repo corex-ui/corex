@@ -83,6 +83,55 @@ describe("Menu", () => {
     child.destroy();
   });
 
+  it("render spreads native disabled on root trigger without data-disabled", () => {
+    const el = menuTree();
+    el.id = "menu:disabled-trigger";
+    document.body.appendChild(el);
+
+    const trigger = el.querySelector<HTMLElement>('[data-part="trigger"]')!;
+    trigger.setAttribute("disabled", "");
+
+    const menu = new Menu(el, { id: "disabled-trigger" });
+    menu.init();
+    menu.render();
+
+    expect(trigger.hasAttribute("disabled")).toBe(true);
+    expect(trigger.hasAttribute("data-disabled")).toBe(false);
+
+    menu.destroy();
+  });
+
+  it("render applies Zag data-disabled on disabled item when open", () => {
+    const el = menuTree();
+    el.id = "menu:disabled-item";
+    el.setAttribute("phx-hook", "Menu");
+
+    const positioner = document.createElement("div");
+    positioner.dataset.scope = "menu";
+    positioner.dataset.part = "positioner";
+    el.appendChild(positioner);
+
+    const content = el.querySelector<HTMLElement>('[data-part="content"]')!;
+    const item = document.createElement("div");
+    item.dataset.scope = "menu";
+    item.dataset.part = "item";
+    item.dataset.value = "a";
+    item.setAttribute("disabled", "");
+    content.appendChild(item);
+
+    document.body.appendChild(el);
+
+    const menu = new Menu(el, { id: "disabled-item", defaultOpen: true });
+    menu.init();
+    menu.render();
+
+    expect(menu.api.open).toBe(true);
+    expect(item.getAttribute("aria-disabled")).toBe("true");
+    expect(item.dataset.disabled).toBe("");
+
+    menu.destroy();
+  });
+
   it("destroy clears submenu trigger subscriptions", () => {
     const { parentEl, childEl } = nestedMenuFixture();
     document.body.appendChild(parentEl);

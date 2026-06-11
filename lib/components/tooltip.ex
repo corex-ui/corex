@@ -106,6 +106,21 @@ defmodule Corex.Tooltip do
   end
   ```
 
+  ### Inside menu (or other roving-focus containers)
+
+  When a tooltip trigger sits inside a menu item, set `focusable={false}` on `<:trigger>` so
+  open focus does not land on the trigger and open the tooltip. Prefer `trigger_tag={:span}`
+  to avoid nested `<button>` elements inside `role="menuitem"`.
+
+  ```heex
+  <.menu_item disabled value="support">
+    <.tooltip class="tooltip tooltip--sm" trigger_tag={:span}>
+      <:trigger focusable={false}>Support</:trigger>
+      <:content>Coming soon</:content>
+    </.tooltip>
+  </.menu_item>
+  ```
+
   <!-- tabs-close -->
 
   ## Style
@@ -271,6 +286,16 @@ defmodule Corex.Tooltip do
       "Trigger element content. Use :let={tooltip} for assigns such as disabled. With more than one <:trigger>, each must set value=\"…\" (unique, stable across LiveView patches)." do
     attr(:class, :string, required: false)
     attr(:value, :string, required: false)
+
+    attr(:focusable, :boolean,
+      doc:
+        "When false, the trigger is not tabbable (tabindex -1). Use inside menus or other roving-focus containers so focus does not open the tooltip. Defaults to true."
+    )
+
+    attr(:tabindex, :integer,
+      doc:
+        "Explicit tabindex for the trigger. Overrides focusable when set. Tooltip disabled still forces -1."
+    )
   end
 
   slot :content,
@@ -317,52 +342,16 @@ defmodule Corex.Tooltip do
         <%= if @trigger_tag == :span do %>
           <span
             class={Map.get(t, :class, nil)}
-            phx-mounted={
-              Connect.ignore_trigger(%Trigger{
-                id: @id,
-                dir: @dir,
-                open: false,
-                disabled: @disabled,
-                orientation: @orientation,
-                tag: @trigger_tag,
-                value: Map.get(t, :value)
-              })
-            }
-            {Connect.trigger(%Trigger{
-              id: @id,
-              dir: @dir,
-              open: false,
-              disabled: @disabled,
-              orientation: @orientation,
-              tag: @trigger_tag,
-              value: Map.get(t, :value)
-            })}
+            phx-mounted={Connect.ignore_trigger(trigger_connect_assigns(@id, @dir, @orientation, @disabled, @trigger_tag, t))}
+            {Connect.trigger(trigger_connect_assigns(@id, @dir, @orientation, @disabled, @trigger_tag, t))}
           >
             {render_slot(t, @slot_assigns)}
           </span>
         <% else %>
           <button
             class={Map.get(t, :class, nil)}
-            phx-mounted={
-              Connect.ignore_trigger(%Trigger{
-                id: @id,
-                dir: @dir,
-                open: false,
-                disabled: @disabled,
-                orientation: @orientation,
-                tag: @trigger_tag,
-                value: Map.get(t, :value)
-              })
-            }
-            {Connect.trigger(%Trigger{
-              id: @id,
-              dir: @dir,
-              open: false,
-              disabled: @disabled,
-              orientation: @orientation,
-              tag: @trigger_tag,
-              value: Map.get(t, :value)
-            })}
+            phx-mounted={Connect.ignore_trigger(trigger_connect_assigns(@id, @dir, @orientation, @disabled, @trigger_tag, t))}
+            {Connect.trigger(trigger_connect_assigns(@id, @dir, @orientation, @disabled, @trigger_tag, t))}
           >
             {render_slot(t, @slot_assigns)}
           </button>
@@ -443,6 +432,20 @@ defmodule Corex.Tooltip do
       tooltip_id: tooltip_id,
       open: open
     })
+  end
+
+  defp trigger_connect_assigns(id, dir, orientation, disabled, trigger_tag, trigger_slot) do
+    %Trigger{
+      id: id,
+      dir: dir,
+      open: false,
+      disabled: disabled,
+      orientation: orientation,
+      tag: trigger_tag,
+      value: Map.get(trigger_slot, :value),
+      focusable: Map.get(trigger_slot, :focusable, true),
+      tabindex: Map.get(trigger_slot, :tabindex)
+    }
   end
 
   defp validate_triggers!(triggers) when is_list(triggers) do
