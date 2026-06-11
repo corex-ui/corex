@@ -6,22 +6,30 @@ defmodule Corex.Design do
   Corex's Elixir design pipeline: token generation and component recipe
   compilation into the Tailwind CSS bundle under `assets/css/`.
 
-  Components merge BEM modifiers into `class` from style attrs (see `Corex.Variants`);
+  Components merge BEM modifiers into `class` from style attrs (see `Corex.Bem.Variants`);
   this module produces the stylesheets that target those BEM selectors.
 
-  Host configuration lives under `config :corex_design`. Only `output` is required;
+  Host configuration lives under `config :corex, Corex.Design`. Only `output` is required;
   optional keys customize themes, scales, recipes, and aliases at compile time.
 
-      config :corex_design,
+      config :corex, Corex.Design,
         output: "assets/css/corex.tailwind.css"
 
-  `:corex` does not read design config at render time. `:corex_design` requires OTP 27+.
+  When `{:corex_design}` is configured, `Corex.Design.Vocabulary` validates style attrs at render time. `:corex_design` requires OTP 27+.
   '''
 
   @compile {:no_warn_undefined, [Corex.Design.Watch]}
 
   @doc false
-  def design_config, do: Application.get_all_env(:corex_design)
+  def design_config do
+    case Application.get_env(:corex, Corex.Design) do
+      config when is_list(config) ->
+        Map.new(config)
+
+      _ ->
+        legacy_design_config()
+    end
+  end
 
   @doc false
   def design_source_dir, do: @design_source_dir
@@ -50,14 +58,14 @@ defmodule Corex.Design do
   end
 
   @doc "Whether the design compiler should run (host has Corex design configuration)."
-  def configured?, do: Application.get_all_env(:corex_design) != []
+  def configured?, do: map_size(design_config()) > 0
 
   @doc """
   Declarative inputs used to detect when generated CSS is stale:
 
     * the design DSL source files (tokens, recipes, fragments, emitters), so
       editing a recipe or token regenerates the stylesheet, and
-    * the resolved design-affecting host config (`:corex_design`), so a
+    * the resolved design-affecting host config (`config :corex, Corex.Design`), so a
       config edit triggers a rebuild on the next `mix compile`.
   """
   def compile_inputs do
@@ -155,9 +163,9 @@ defmodule Corex.Design do
     case output_path() do
       nil ->
         raise ArgumentError, """
-        config :corex_design, output: is required. For example:
+        config :corex, Corex.Design, output: is required. For example:
 
-            config :corex_design,
+            config :corex, Corex.Design,
               output: "assets/css/corex.tailwind.css"
         """
 
@@ -171,4 +179,17 @@ defmodule Corex.Design do
   defp log_compile(false), do: :ok
   defp log_compile(:info), do: Logger.info("Corex design compiled")
   defp log_compile(:watch_rebuild), do: IO.puts("[watch] Corex design rebuilt")
+
+  defp legacy_design_config do
+    env = Application.get_all_env(:corex_design) |> Map.new()
+
+    if map_size(env) > 0 do
+      IO.warn(
+        "config :corex_design is deprecated; use config :corex, Corex.Design instead",
+        []
+      )
+    end
+
+    env
+  end
 end

@@ -1,12 +1,14 @@
 defmodule Corex.Design.Config.Resolved do
   @moduledoc false
 
-  def normalize(config) when is_list(config) do
-    flatten_options(Map.new(config))
-  end
+  def normalize(config) when is_list(config), do: flatten_options(Map.new(config))
+  def normalize(config) when is_map(config), do: flatten_options(config)
 
   def resolved_options(config \\ Corex.Design.design_config()) do
-    normalize(config)
+    case config do
+      list when is_list(list) -> normalize(list)
+      map when is_map(map) -> normalize(map)
+    end
   end
 
   defp flatten_options(config) do

@@ -9,17 +9,9 @@ defmodule Corex.Typography.H1 do
   '''
   use Phoenix.Component
 
-  use Corex.Variants,
+  use Corex.Bem.Variants,
     base: "h1",
-    axes: [
-      width: :width,
-      max_width: :max_width,
-      height: :height,
-      max_height: :max_height,
-      text: :text,
-      semantic: :semantic,
-      weight: :weight
-    ]
+    axes: [:width, :max_width, :height, :max_height, :text, :semantic, :weight]
 
   attr(:rest, :global)
   slot(:inner_block, required: true)

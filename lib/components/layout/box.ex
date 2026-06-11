@@ -12,10 +12,10 @@ defmodule Corex.Layout.Box do
   '''
   use Phoenix.Component
 
-  use Corex.Variants,
+  use Corex.Bem.Variants,
     kind: :layout,
     base: "box",
-    axes: [padding: :space, radius: [:none, :sm, :md, :lg, :xl, :"2xl", :full]]
+    axes: [:padding, :radius]
 
   attr(:tag, :string, default: "div", doc: "The host HTML element.")
   slot(:inner_block, required: true)

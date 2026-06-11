@@ -2,7 +2,7 @@ defmodule Corex.Design.RoleAliases do
   @moduledoc false
 
   @doc """
-  Resolves a semantic/color role through `config :corex_design, aliases:`.
+  Resolves a semantic/color role through `config :corex, Corex.Design, aliases:`.
   """
   def resolve(role) when is_atom(role) do
     aliases = config()

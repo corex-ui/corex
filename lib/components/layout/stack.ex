@@ -15,23 +15,23 @@ defmodule Corex.Layout.Stack do
   '''
   use Phoenix.Component
 
-  use Corex.Variants,
+  use Corex.Bem.Variants,
     kind: :layout,
     base: "stack",
     axes: [
-      padding: :space,
-      padding_inline: :space,
-      padding_block: :space,
-      gap: :space,
-      align: :align,
-      justify: :justify,
-      width: [:none, :full],
-      min_height: :min_height,
-      grow: :grow,
-      shrink: :shrink,
-      direction: :direction,
-      variant: [:none, :layer],
-      radius: [:none, :sm, :md, :lg, :xl, :"2xl", :full]
+      :padding,
+      :padding_inline,
+      :padding_block,
+      :gap,
+      :align,
+      :justify,
+      :width,
+      :min_height,
+      :grow,
+      :shrink,
+      :direction,
+      :variant,
+      :radius
     ]
 
   attr(:tag, :string, default: "div", doc: "The host HTML element.")

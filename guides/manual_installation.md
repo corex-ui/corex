@@ -184,7 +184,7 @@ compilers: [:phoenix_live_view] ++ Mix.compilers() ++ [:corex_design]
 
 ```elixir
 # config/config.exs
-config :corex_design,
+config :corex, Corex.Design,
   output: "assets/css/corex.tailwind.css"
 ```
 
@@ -440,7 +440,7 @@ To upgrade an existing app, see [Updating Corex](update.html).
 
 ### Configuration
 
-- [Unstyled](unstyled.html) — modifier classes, axis vocabulary, `config :corex_design`
+- [Unstyled](unstyled.html) — modifier classes, axis vocabulary, `config :corex, Corex.Design`
 - [Styled](styled.html) — Corex Design CSS setup
 - [Design config](design-config.html) — themes, validation, recipe overrides
 - [Installation](installation.html) — generator options (`config :corex, :generators`)

@@ -432,7 +432,7 @@ This gives you URL-driven locales with a persistent user choice, RTL handling wh
 
 ## Related
 
-- [Unstyled](unstyled.html) — axis vocabulary and `config :corex_design`
+- [Unstyled](unstyled.html) — axis vocabulary and `config :corex, Corex.Design`
 - [Installation](installation.html) — `mix corex.new --lang`
 - [Tableau Localize](tableau_localize.html) — static site equivalent
 - [Dark mode](dark_mode.html) and [Theming](theming.html) — Mode/Theme plugs after localize plugs when combined

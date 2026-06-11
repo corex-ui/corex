@@ -2,7 +2,7 @@
 
 Configure how Corex Design generates CSS: theme colors, spacing, radii, which recipes to emit, and token aliases.
 
-Register the `:corex_design` compiler in `mix.exs`, set `config :corex_design`, then run `mix compile`.
+Register the `:corex_design` compiler in `mix.exs`, set `config :corex, Corex.Design`, then run `mix compile`.
 
 Requires **OTP 27+** (stdlib `:json`, used by the `color` dependency). Elixir **1.18+** is recommended.
 
@@ -24,10 +24,11 @@ Validate without a full CSS rebuild:
 mix corex.design.validate
 ```
 
-After changing `scales:` or `themes:`, lint templates in CI:
+Export resolved config for tooling:
 
 ```shell
-mix corex.design.lint
+mix corex.design.config
+mix corex.design.config --output /tmp/corex-design.json
 ```
 
 Set `output: "assets/css/corex.tailwind.css"` and import `@import "./corex.tailwind.css";` in `app.css`.
@@ -44,17 +45,21 @@ Registry id vs recipe filename: `action` → `button.css`, `navigate` → `link.
 | `:default_theme` | no | `:neo` | HTML `data-theme` default |
 | `:default_mode` | no | `:light` | HTML `data-mode` default |
 | `:themes` | no | all presets | Preset id list or full theme catalog map |
-| `:scales` | no | full `Corex.Scales` | Subset of built-in steps per axis (smaller CSS) |
+| `:scales` | no | built-in defaults | Per-axis replacement: step lists or `[step: value]` keyword lists |
 | `:recipes` | no | all / `[]` sources | `include:` allowlist, `sources:` host modules |
 | `:aliases` | no | `%{}` | Semantic role aliases for token resolution |
+| `:on_invalid_style` | no | `:raise` | Runtime attr validation: `:raise`, `:warn`, or `:ignore` |
 
 Component roles for `semantic=` in theme specs use `roles` keys with `component: true`.
+
+`:corex` alone does not validate style attrs. Set `emit_style_classes: true` under `config :corex` for BEM without design. With design configured, BEM is automatic.
 
 ## Minimal styled app
 
 ```elixir
-config :corex_design,
-  output: "assets/css/corex.tailwind.css"
+config :corex, Corex.Design,
+  output: "assets/css/corex.tailwind.css",
+  on_invalid_style: :raise
 ```
 
 Omit optional keys to use built-in neo, uno, duo, and leo presets with light/dark modes. See [Theming](theming.html).
@@ -72,21 +77,23 @@ config :corex,
     layout: [theme: true, mode: true, locale: true]
   ]
 
-config :corex_design,
+config :corex, Corex.Design,
   output: "assets/css/corex.tailwind.css",
+  on_invalid_style: :raise,
   default_theme: :neo,
   default_mode: :light,
   themes: ~w(neo uno duo leo)a,
 
-  scales: [
-    size: ~w(sm md lg xl)a,
-    text: ~w(xs sm base lg xl 2xl 3xl 4xl)a,
-    radius: ~w(none xs sm md lg xl 2xl 3xl 4xl full)a,
-    weight: ~w(thin extralight light normal medium semibold bold extrabold black)a,
-    visual: ~w(solid ghost outline subtle)a,
-    shape: ~w(auto square circle)a,
-    space: ~w(none sm md lg xl)a
-  ],
+  scales: %{
+    size: [sm: 0.5, md: 1.0, lg: 1.5, xl: 2.0],
+    text: [xs: 0.75, sm: 0.875, base: 1.0, lg: 1.125, xl: 1.25, "2xl": 1.5],
+    radius: [none: 0, sm: 0.25, md: 0.375, lg: 0.5, full: 9999],
+    weight: [normal: 400, medium: 500, bold: 700],
+    visual: [:solid, :ghost, :outline, :subtle],
+    shape: [:auto, :square, :circle],
+    space: [sm: 2, md: 3, lg: 4, xl: 5],
+    semantic: [:accent, :brand, :alert, :success, :neutral]
+  },
 
   recipes: [
     include: nil,
@@ -133,7 +140,7 @@ CSS variables use Tailwind v4 namespaces: `--spacing-md`, `--color-surface-page`
 ## Custom theme
 
 ```elixir
-config :corex_design,
+config :corex, Corex.Design,
   output: "assets/css/corex.tailwind.css",
   default_theme: :custom,
   default_mode: :light,
@@ -165,20 +172,23 @@ config :corex_design,
 
 Tier 1 customization: edit `palette` and `dimensions` only; inherit surface, roles, on, and structural tokens from the merged preset.
 
-## Scales (fixed vocabulary, optional subset)
+## Scales
 
-Step **names** (`sm`, `md`, `lg`, `accent`, …) are fixed in `Corex.Scales`. Components expose those values on style attrs. You cannot add or rename steps in config.
+`scales:` under `config :corex, Corex.Design` replaces each axis you list:
 
-Optional `scales:` narrows which steps get token CSS and recipe variant rules (smaller bundles). Every configured step must exist in `Corex.Scales` for that axis; invalid config fails at `mix compile`.
+- **Dimension axes** (`size`, `radius`, `text`, `weight`, `space`, …): keyword list `[step: value]` or a step name list (values fall back to built-in numerics for listed steps).
+- **`semantic`**: atom list of theme role names (`[:accent, :brand, …]`).
 
-Visual tuning (how big is `md`?) belongs in theme `dimensions`, not new step names.
+Omitted axes keep built-in defaults. Full replacement per axis when provided; adapt theme presets if custom steps break preset dimension maps.
 
-After subsetting, run `mix corex.design.lint` to catch templates still using dropped steps (for example `size="xl"` when `xl` was removed from config).
+Runtime validation uses `on_invalid_style:` under `config :corex, Corex.Design` (default `:raise`). Invalid style attrs (for example `size="xl"` when `xl` is not in resolved scales) raise when the component renders.
+
+After changing `scales:` or `themes:`, run `mix corex.design.validate` and exercise templates in tests or dev so runtime checks cover your attrs.
 
 ## Recipe overrides
 
 ```elixir
-config :corex_design,
+config :corex, Corex.Design,
   output: "assets/css/corex.tailwind.css",
   recipes: [
     sources: [MyApp.DesignRecipes]
@@ -190,7 +200,7 @@ Host modules implement `Corex.Design.RecipeSource` and return recipe structs. Bu
 ## Smaller CSS bundles
 
 ```elixir
-config :corex_design,
+config :corex, Corex.Design,
   output: "assets/css/corex.tailwind.css",
   recipes: [
     include: ~w(button accordion select)a

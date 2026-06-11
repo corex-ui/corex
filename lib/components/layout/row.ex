@@ -15,21 +15,21 @@ defmodule Corex.Layout.Row do
   '''
   use Phoenix.Component
 
-  use Corex.Variants,
+  use Corex.Bem.Variants,
     kind: :layout,
     base: "row",
     axes: [
-      padding: :space,
-      padding_inline: :space,
-      padding_block: :space,
-      gap: :space,
-      align: :align,
-      justify: :justify,
-      width: [:none, :full],
-      min_height: :min_height,
-      grow: :grow,
-      shrink: :shrink,
-      wrap: :wrap
+      :padding,
+      :padding_inline,
+      :padding_block,
+      :gap,
+      :align,
+      :justify,
+      :width,
+      :min_height,
+      :grow,
+      :shrink,
+      :wrap
     ]
 
   attr(:tag, :string, default: "div", doc: "The host HTML element.")
@@ -40,13 +40,7 @@ defmodule Corex.Layout.Row do
     assigns = assign(assigns, design: corex_layout_design(assigns))
 
     ~H"""
-    <.dynamic_tag
-      tag_name={@tag}
-      class={@design.class}
-      data-hide-below={@hide_below}
-      data-hide-from={@hide_from}
-      {@rest}
-    >
+    <.dynamic_tag tag_name={@tag} class={@design.class} {@rest}>
       {render_slot(@inner_block)}
     </.dynamic_tag>
     """

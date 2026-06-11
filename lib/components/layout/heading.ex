@@ -76,18 +76,9 @@ defmodule Corex.Layout.Heading do
   '''
   use Phoenix.Component
 
-  use Corex.Variants,
+  use Corex.Bem.Variants,
     base: "layout-heading",
-    axes: [
-      width: :width,
-      max_width: :max_width,
-      height: :height,
-      max_height: :max_height,
-      semantic: :semantic,
-      size: :size,
-      text: :text,
-      gap: :space
-    ]
+    axes: [:width, :max_width, :height, :max_height, :semantic, :size, :text, :gap]
 
   attr(:rest, :global, doc: "Additional HTML attributes on the outer wrapper.")
 

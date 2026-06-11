@@ -17,10 +17,10 @@ defmodule Corex.Icon do
   '''
   use Phoenix.Component
 
-  use Corex.Variants,
+  use Corex.Bem.Variants,
     kind: :layout,
     base: "icon",
-    axes: [text: :text]
+    axes: [:text]
 
   slot(:inner_block, required: true)
 

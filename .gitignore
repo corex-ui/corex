@@ -62,6 +62,7 @@ corex-*.tar
 /design/doc/
 /design/cover/
 /design/tmp/
+/design/priv/
 
 /.claude/
 

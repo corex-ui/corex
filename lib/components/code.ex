@@ -96,16 +96,9 @@ defmodule Corex.Code do
   @doc type: :component
   use Phoenix.Component
 
-  use Corex.Variants,
+  use Corex.Bem.Variants,
     base: "code",
-    axes: [
-      width: :width,
-      height: :height,
-      max_height: :max_height,
-      size: :size,
-      text: :text,
-      max_width: :max_width
-    ]
+    axes: [:width, :height, :max_height, :size, :text, :max_width]
 
   attr(:code, :string, required: true, doc: "The raw source code to display")
 

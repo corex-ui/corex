@@ -56,8 +56,9 @@ end
 In `config/config.exs`:
 
 ```elixir
-config :corex_design,
-  output: "assets/css/corex.tailwind.css"
+config :corex, Corex.Design,
+  output: "assets/css/corex.tailwind.css",
+  on_invalid_style: :raise
 ```
 
 ```bash

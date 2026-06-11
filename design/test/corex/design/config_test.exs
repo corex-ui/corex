@@ -27,15 +27,13 @@ defmodule Corex.Design.ConfigTest do
     assert :ok = Config.validate!()
   end
 
-  test "validate!/0 rejects scale steps outside Corex.Scales" do
+  test "validate!/0 accepts custom scale steps with values" do
     CorexDesign.TestConfig.put(
       output: "assets/css/corex.tailwind.css",
-      scales: [size: ~w(sm huge)a]
+      scales: [size: [sm: 0.5, md: 1.0, huge: 2.0]]
     )
 
-    assert_raise ArgumentError, ~r/subset of Corex.Scales/, fn ->
-      Config.validate!()
-    end
+    assert :ok = Config.validate!()
   end
 
   test "validate!/0 rejects unknown scale axes" do
@@ -49,21 +47,25 @@ defmodule Corex.Design.ConfigTest do
     end
   end
 
-  test "customization_map lists flat corex_design keys" do
+  test "customization_map lists corex and Corex.Design keys" do
     map = Config.customization_map()
-    assert Keyword.has_key?(map, :corex_design)
-    refute Keyword.has_key?(map, :corex)
+    assert Map.has_key?(map, :corex)
+    assert Map.has_key?(map, Corex.Design)
 
-    keys = map[:corex_design] |> Enum.map(&elem(&1, 0))
-    assert :output in keys
-    assert :default_theme in keys
-    assert :default_mode in keys
-    assert :themes in keys
-    assert :scales in keys
-    assert :recipes in keys
-    assert :aliases in keys
-    refute :theme in keys
-    refute :vocabulary in keys
+    corex_keys = map[:corex] |> Enum.map(&elem(&1, 0))
+    assert :emit_style_classes in corex_keys
+
+    design_keys = map[Corex.Design] |> Enum.map(&elem(&1, 0))
+    assert :on_invalid_style in design_keys
+    assert :output in design_keys
+    assert :default_theme in design_keys
+    assert :default_mode in design_keys
+    assert :themes in design_keys
+    assert :scales in design_keys
+    assert :recipes in design_keys
+    assert :aliases in design_keys
+    refute :theme in design_keys
+    refute :vocabulary in design_keys
   end
 
   test "normalize maps flat keys to canonical options" do
@@ -72,7 +74,7 @@ defmodule Corex.Design.ConfigTest do
       default_theme: :uno,
       default_mode: :dark,
       themes: ~w(neo uno)a,
-      scales: [size: ~w(sm lg)a],
+      scales: [size: [sm: 0.5, md: 1.0]],
       recipes: [include: [:button], sources: []],
       aliases: %{promo: :brand}
     ]
@@ -82,7 +84,7 @@ defmodule Corex.Design.ConfigTest do
     assert Keyword.get(flat, :default_theme) == :uno
     assert Keyword.get(flat, :default_mode) == :dark
     assert Keyword.get(flat, :themes) == ~w(neo uno)a
-    assert Keyword.get(flat, :scales) == [size: ~w(sm lg)a]
+    assert Keyword.get(flat, :scales) == [size: [sm: 0.5, md: 1.0]]
     assert Keyword.get(flat, :include_recipes) == [:button]
     assert Keyword.get(flat, :role_aliases) == %{promo: :brand}
   end

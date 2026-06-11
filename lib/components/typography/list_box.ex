@@ -11,16 +11,9 @@ defmodule Corex.Typography.ListBox do
   '''
   use Phoenix.Component
 
-  use Corex.Variants,
+  use Corex.Bem.Variants,
     base: "list",
-    axes: [
-      width: :width,
-      max_width: :max_width,
-      height: :height,
-      max_height: :max_height,
-      text: :text,
-      semantic: :semantic
-    ]
+    axes: [:width, :max_width, :height, :max_height, :text, :semantic]
 
   attr(:rest, :global)
   slot(:inner_block, required: true)

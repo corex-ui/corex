@@ -82,8 +82,9 @@ config :tailwind,
     cd: Path.expand("..", __DIR__)
   ]
 
-config :corex_design,
-  output: "assets/css/corex.tailwind.css"
+config :corex, Corex.Design,
+  output: "assets/css/corex.tailwind.css",
+  on_invalid_style: :raise
 
 # Configure Elixir's Logger
 config :logger, :default_formatter,

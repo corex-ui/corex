@@ -1,6 +1,6 @@
 defmodule Corex.Design.Theme do
   @moduledoc """
-  Resolves `config :corex_design` theme keys into color and dimension inputs for the compiler.
+  Resolves `config :corex, Corex.Design` theme keys into color and dimension inputs for the compiler.
 
   Configure with flat keys: `default_theme`, `default_mode`, and `themes` (preset id list or catalog map).
   When `themes` is omitted, `Corex.Design.Theme.Presets.all/0` is used.

@@ -593,18 +593,18 @@ defmodule Corex.Select do
   import Corex.Helpers,
     only: [normalize_items: 1, has_groups?: 1, group_by_group: 1, validate_value!: 1]
 
-  use Corex.Variants,
+  use Corex.Bem.Variants,
     base: "select",
     axes: [
-      width: :width,
-      max_width: :max_width,
-      height: :height,
-      max_height: :max_height,
-      semantic: :semantic,
-      variant: [:ghost],
-      size: :size,
-      text: :text,
-      radius: :radius
+      :width,
+      :max_width,
+      :height,
+      :max_height,
+      :semantic,
+      :variant,
+      :size,
+      :text,
+      :radius
     ]
 
   attr(:id, :string, required: false, doc: "The id of the select component")

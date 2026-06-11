@@ -1,6 +1,6 @@
 defmodule Corex.Design.Config do
   @moduledoc """
-  Facade for `:corex_design` host config.
+  Facade for `config :corex, Corex.Design` host config.
 
   Validates host config before compile via `validate!/0`. For key reference,
   see `options_docs/0`.
@@ -8,14 +8,25 @@ defmodule Corex.Design.Config do
 
   alias Corex.Design.Config.Options
   alias Corex.Design.Config.Resolved
+  alias Corex.Design.Theme
+  alias Corex.Design.Tokens.Colors
+  alias Corex.Design.Tokens.Scales
+  alias Corex.Design.Vocabulary
 
   @doc """
-  Validates `config :corex_design` and resolves themes. Raises on invalid config.
+  Validates `config :corex, Corex.Design` and resolves themes. Raises on invalid config.
   """
   def validate!(config \\ Corex.Design.design_config()) do
     Options.validate!(config)
     _ = Corex.Design.Theme.resolved_themes()
-    :ok
+
+    case warn_scale_theme_links() do
+      :ok ->
+        :ok
+
+      {:warn, messages} ->
+        raise ArgumentError, Enum.join(messages, "\n")
+    end
   end
 
   @doc """
@@ -33,25 +44,49 @@ defmodule Corex.Design.Config do
   end
 
   @doc """
-  Returns formatted NimbleOptions documentation for `config :corex_design` keys.
+  Returns formatted NimbleOptions documentation for `config :corex, Corex.Design` keys.
   """
   def options_docs, do: Options.options_docs()
+
+  @doc """
+  Exports resolved design config, vocabulary, themes, and colors for tooling.
+  """
+  def export do
+    %{
+      config: sanitize(Corex.Design.design_config()),
+      resolved: sanitize(Map.new(resolved_options())),
+      vocabulary: %{
+        semantic_roles: Vocabulary.semantic_strings(),
+        scales: scale_export()
+      },
+      themes: theme_export(),
+      colors: color_export()
+    }
+  end
 
   @doc """
   Returns a keyword list describing the customization map for docs and tooling.
   """
   def customization_map do
-    [
-      corex_design: [
-        {:output, "Generated corex.tailwind.css path (relative to project root, required)"},
-        {:default_theme, "Default data-theme id (default :neo)"},
-        {:default_mode, "Default data-mode (default :light)"},
-        {:themes, "Built-in preset subset list or full theme catalog map"},
-        {:scales, "Optional subset of Corex.Scales steps per axis (smaller CSS bundles)"},
-        {:recipes, "Recipe allowlist and host RecipeSource modules"},
-        {:aliases, "Semantic role alias map for token resolution"}
-      ]
-    ]
+    Map.new([
+      {:corex,
+       [
+         {:debug, "Enable Corex debug output"},
+         {:generators, "mix corex.new generator options"},
+         {:emit_style_classes, "Emit BEM modifiers from style attrs (default false)"}
+       ]},
+      {Corex.Design,
+       [
+         {:output, "Generated corex.tailwind.css path (relative to project root, required)"},
+         {:default_theme, "Default data-theme id (default :neo)"},
+         {:default_mode, "Default data-mode (default :light)"},
+         {:themes, "Built-in preset subset list or full theme catalog map"},
+         {:scales, "Per-axis scale replacement: [step: value] or step lists"},
+         {:recipes, "Recipe allowlist and host RecipeSource modules"},
+         {:aliases, "Semantic role alias map for token resolution"},
+         {:on_invalid_style, "Runtime attr validation: :raise (default), :warn, or :ignore"}
+       ]}
+    ])
   end
 
   @doc """
@@ -76,15 +111,45 @@ defmodule Corex.Design.Config do
       msgs -> {:warn, msgs}
     end
   end
+
+  defp theme_export do
+    Theme.resolved_themes()
+    |> Map.new(fn {id, spec} ->
+      {Atom.to_string(id), sanitize(spec)}
+    end)
+  end
+
+  defp color_export do
+    Colors.generate()
+    |> Map.new(fn {{theme, mode}, tokens} ->
+      {"#{theme}-#{mode}", tokens}
+    end)
+  end
+
+  defp scale_export do
+    %{
+      space: Scales.space_steps(),
+      size: Scales.size_steps(),
+      text: Scales.text_steps(),
+      radius: Scales.radius_steps(),
+      weight: Scales.weight_steps(),
+      visual: Scales.visual_steps(),
+      shape: Scales.shape_steps()
+    }
+  end
+
+  defp sanitize(term), do: Jason.decode!(Jason.encode!(term))
 end
 
 defmodule Corex.Design.Config.Options do
   @moduledoc """
-  NimbleOptions schema for top-level `config :corex_design` keys.
+  NimbleOptions schema for `config :corex, Corex.Design` keys.
   """
 
   alias Corex.Design.Config.Resolved
   alias Corex.Design.Theme.Options, as: ThemeOptions
+
+  @scale_axes ~w(space size text radius weight visual shape semantic)a
 
   @schema NimbleOptions.new!(
             output: [
@@ -106,7 +171,7 @@ defmodule Corex.Design.Config.Options do
             ],
             scales: [
               type: :keyword_list,
-              doc: "Optional subset of Corex.Scales steps per axis (smaller CSS bundles)"
+              doc: "Per-axis scale replacement: dimension axes as [step: value] or step lists, semantic as atom list"
             ],
             recipes: [
               type: :keyword_list,
@@ -126,22 +191,29 @@ defmodule Corex.Design.Config.Options do
             aliases: [
               type: :map,
               doc: "Semantic role aliases (template name -> token role)"
+            ],
+            on_invalid_style: [
+              type: {:in, [:raise, :warn, :ignore]},
+              default: :raise,
+              doc: "Runtime style attr validation when design is configured"
             ]
           )
 
-  @known_keys ~w(output default_theme default_mode themes scales recipes aliases)a
+  @known_keys ~w(output default_theme default_mode themes scales recipes aliases on_invalid_style)a
 
   @doc false
   def schema, do: @schema
 
   @doc """
-  Returns formatted NimbleOptions documentation for `config :corex_design` keys.
+  Returns formatted NimbleOptions documentation for `config :corex, Corex.Design` keys.
   """
   def options_docs, do: NimbleOptions.docs(@schema)
 
   @doc """
-  Validates `:corex_design` config keyword list.
+  Validates `config :corex, Corex.Design` keyword list.
   """
+  def validate(config) when is_map(config), do: validate(Map.to_list(config))
+
   def validate(config) when is_list(config) do
     flat = Resolved.resolved_options(config)
     grouped = Map.new(config) |> Map.take(@known_keys)
@@ -157,6 +229,8 @@ defmodule Corex.Design.Config.Options do
   end
 
   @doc false
+  def validate!(config) when is_map(config), do: validate!(Map.to_list(config))
+
   def validate!(config) when is_list(config) do
     case validate(config) do
       {:ok, _} -> :ok
@@ -167,7 +241,8 @@ defmodule Corex.Design.Config.Options do
   defp validate_output(grouped) do
     case Map.get(grouped, :output) do
       path when is_binary(path) and path != "" -> :ok
-      _ -> {:error, "config :corex_design requires output: \"assets/css/corex.tailwind.css\""}
+      _ ->
+        {:error, "config :corex, Corex.Design requires output: \"assets/css/corex.tailwind.css\""}
     end
   end
 
@@ -200,12 +275,13 @@ defmodule Corex.Design.Config.Options do
       invalid = Enum.reject(ids, &(&1 in preset_ids))
 
       {:error,
-       "config :corex_design, themes: preset ids must be one of #{inspect(preset_ids)}, got invalid #{inspect(invalid)}"}
+       "config :corex, Corex.Design, themes: preset ids must be one of #{inspect(preset_ids)}, got invalid #{inspect(invalid)}"}
     end
   end
 
   defp validate_themes(other) do
-    {:error, "config :corex_design, themes: must be a preset id list or a map, got: #{inspect(other)}"}
+    {:error,
+     "config :corex, Corex.Design, themes: must be a preset id list or a map, got: #{inspect(other)}"}
   end
 
   defp validate_default_theme(default_theme, nil) do
@@ -213,7 +289,7 @@ defmodule Corex.Design.Config.Options do
       :ok
     else
       {:error,
-       "config :corex_design, default_theme: #{inspect(default_theme)} not in built-in presets #{inspect(ThemeOptions.preset_ids())}"}
+       "config :corex, Corex.Design, default_theme: #{inspect(default_theme)} not in built-in presets #{inspect(ThemeOptions.preset_ids())}"}
     end
   end
 
@@ -224,7 +300,7 @@ defmodule Corex.Design.Config.Options do
       :ok
     else
       {:error,
-       "config :corex_design, default_theme: #{inspect(default_theme)} not in themes list #{inspect(ids)}"}
+       "config :corex, Corex.Design, default_theme: #{inspect(default_theme)} not in themes list #{inspect(ids)}"}
     end
   end
 
@@ -233,54 +309,98 @@ defmodule Corex.Design.Config.Options do
       :ok
     else
       {:error,
-       "config :corex_design, default_theme: #{inspect(default_theme)} not in theme catalog (got #{inspect(Map.keys(themes) |> Enum.sort())})"}
+       "config :corex, Corex.Design, default_theme: #{inspect(default_theme)} not in theme catalog (got #{inspect(Map.keys(themes) |> Enum.sort())})"}
     end
   end
 
   defp validate_scales(nil), do: :ok
 
-  defp validate_scales(scales) when is_list(scales) do
+  defp validate_scales(scales) when is_list(scales) or is_map(scales) do
     scales
     |> normalize_scale_overrides()
-    |> Enum.reduce_while(:ok, fn {axis, steps}, :ok ->
-      case canonical_scale_steps(axis) do
-        :error ->
-          {:halt,
-           {:error,
-            "config :corex_design, scales: unknown axis #{inspect(axis)} (must be a Corex.Scales axis)"}}
-
-        canonical ->
-          invalid =
-            steps
-            |> Enum.map(&normalize_scale_step/1)
-            |> Enum.reject(&(&1 in canonical))
-
-          if invalid == [] do
-            {:cont, :ok}
-          else
-            {:halt,
-             {:error,
-              "config :corex_design, scales: #{inspect(axis)} steps #{inspect(invalid)} must be a subset of Corex.Scales #{inspect(canonical)}"}}
-          end
+    |> Enum.reduce_while(:ok, fn {axis, spec}, :ok ->
+      if axis in @scale_axes do
+        case validate_axis_scale(axis, spec) do
+          :ok -> {:cont, :ok}
+          {:error, message} -> {:halt, {:error, message}}
+        end
+      else
+        {:halt,
+         {:error,
+          "config :corex, Corex.Design, scales: unknown axis #{inspect(axis)} (allowed: #{inspect(@scale_axes)})"}}
       end
     end)
   end
 
   defp validate_scales(other) do
-    {:error, "config :corex_design, scales: must be a keyword list, got: #{inspect(other)}"}
+    {:error,
+     "config :corex, Corex.Design, scales: must be a keyword list or map, got: #{inspect(other)}"}
+  end
+
+  defp validate_axis_scale(:semantic, spec) when is_list(spec) do
+    if Enum.all?(spec, &(is_atom(&1) or is_binary(&1))) do
+      :ok
+    else
+      {:error,
+       "config :corex, Corex.Design, scales: semantic must be a list of role atoms, got: #{inspect(spec)}"}
+    end
+  end
+
+  defp validate_axis_scale(axis, spec) when is_list(spec) do
+    cond do
+      keyword_with_values?(spec) ->
+        if duplicate_scale_steps?(spec) do
+          {:error,
+           "config :corex, Corex.Design, scales: #{inspect(axis)} has duplicate step names"}
+        else
+          :ok
+        end
+
+      Enum.all?(spec, &(is_atom(&1) or is_binary(&1))) ->
+        if duplicate_scale_steps?(spec) do
+          {:error,
+           "config :corex, Corex.Design, scales: #{inspect(axis)} has duplicate step names"}
+        else
+          :ok
+        end
+
+      true ->
+        {:error,
+         "config :corex, Corex.Design, scales: #{inspect(axis)} must be a step list or [step: value] keyword list"}
+    end
+  end
+
+  defp validate_axis_scale(axis, other) do
+    {:error,
+     "config :corex, Corex.Design, scales: #{inspect(axis)} must be a list, got: #{inspect(other)}"}
   end
 
   defp normalize_scale_overrides(list) when is_list(list), do: list
   defp normalize_scale_overrides(map) when is_map(map), do: Map.to_list(map)
 
+  defp keyword_with_values?(list) do
+    Keyword.keyword?(list) and
+      Enum.all?(list, fn
+        {_step, value} when is_number(value) -> true
+        {_step, :zero} -> true
+        {_step, :full} -> true
+        _ -> false
+      end)
+  end
+
+  defp duplicate_scale_steps?(list) do
+    steps =
+      if keyword_with_values?(list) do
+        Enum.map(list, fn {step, _} -> normalize_scale_step(step) end)
+      else
+        Enum.map(list, &normalize_scale_step/1)
+      end
+
+    length(steps) != length(Enum.uniq(steps))
+  end
+
   defp normalize_scale_step(step) when is_atom(step), do: step
   defp normalize_scale_step(step) when is_binary(step), do: String.to_atom(step)
-
-  defp canonical_scale_steps(axis) when is_atom(axis) do
-    Corex.Scales.steps(axis)
-  rescue
-    ArgumentError -> :error
-  end
 
   defp validate_recipe_sources(modules) when is_list(modules) do
     Enum.reduce_while(modules, :ok, fn module, :ok ->
@@ -291,7 +411,7 @@ defmodule Corex.Design.Config.Options do
       else
         {:halt,
          {:error,
-          "config :corex_design, recipes: [sources: #{inspect(module)}] must implement Corex.Design.RecipeSource (recipes/0)"}}
+          "config :corex, Corex.Design, recipes: [sources: #{inspect(module)}] must implement Corex.Design.RecipeSource (recipes/0)"}}
       end
     end)
   end

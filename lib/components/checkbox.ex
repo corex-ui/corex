@@ -798,17 +798,9 @@ defmodule Corex.Checkbox do
   alias Corex.Checkbox.Connect
   alias Phoenix.HTML.Form
 
-  use Corex.Variants,
+  use Corex.Bem.Variants,
     base: "checkbox",
-    axes: [
-      width: :width,
-      max_width: :max_width,
-      height: :height,
-      max_height: :max_height,
-      semantic: :semantic,
-      size: :size,
-      radius: :radius
-    ]
+    axes: [:width, :max_width, :height, :max_height, :semantic, :size, :radius]
 
   @doc """
   Renders a checkbox component.

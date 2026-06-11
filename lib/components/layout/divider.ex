@@ -13,10 +13,10 @@ defmodule Corex.Layout.Divider do
   '''
   use Phoenix.Component
 
-  use Corex.Variants,
+  use Corex.Bem.Variants,
     kind: :layout,
     base: "divider",
-    axes: [orientation: :orientation]
+    axes: [:orientation]
 
   attr(:tag, :string, default: "hr", doc: "The host HTML element.")
 

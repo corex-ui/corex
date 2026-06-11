@@ -104,8 +104,8 @@ defmodule CorexDesign.MixProject do
         "Mix tasks": [
           Mix.Tasks.Compile.CorexDesign,
           Mix.Tasks.Corex.Design.Build,
+          Mix.Tasks.Corex.Design.Config,
           Mix.Tasks.Corex.Design.List,
-          Mix.Tasks.Corex.Design.Tailwind,
           Mix.Tasks.Corex.Design.Validate
         ]
       ]

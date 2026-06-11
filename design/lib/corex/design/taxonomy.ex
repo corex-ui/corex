@@ -2,7 +2,7 @@ defmodule Corex.Design.Taxonomy do
   @moduledoc """
   Recipe styling coverage expectations by component category.
 
-  Components declare their accepted axes via `Corex.Variants` (the public contract).
+  Components declare their accepted axes via `Corex.Bem.Variants` (the public contract).
   Recipes declare which axes they **style** via `variants`. This taxonomy lists
   axes a recipe in each category is expected to cover for baseline styling.
   A component may stamp axes a recipe does not style yet.

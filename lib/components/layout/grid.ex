@@ -15,10 +15,10 @@ defmodule Corex.Layout.Grid do
   '''
   use Phoenix.Component
 
-  use Corex.Variants,
+  use Corex.Bem.Variants,
     kind: :layout,
     base: "grid",
-    axes: [gap: :space, columns: :columns]
+    axes: [:gap, :columns]
 
   attr(:tag, :string, default: "div", doc: "The host HTML element.")
   slot(:inner_block, required: true)

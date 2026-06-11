@@ -16,7 +16,7 @@ Static Tableau sites use the same `data-theme` pattern without plugs—see [Tabl
 
 ## How it works
 
-1. **`config :corex_design`** defines output path, optional theme catalog, and compile options (see [Design config](design-config.html)). Built-in presets are neo, uno, duo, leo.
+1. **`config :corex, Corex.Design`** defines output path, optional theme catalog, and compile options (see [Design config](design-config.html)). Built-in presets are neo, uno, duo, leo.
 2. **`Plugs.Theme`** reads `Corex.Design.Theme.picker_ids/0` and `default_theme/0` for the allowlist and default.
 3. **Bridge script** reconciles `localStorage`, `data-theme`, and the default.
 4. **`<.select on_value_change_client="phx:set-theme">`** updates theme without a server round-trip.
@@ -28,7 +28,7 @@ Static Tableau sites use the same `data-theme` pattern without plugs—see [Tabl
 `config/config.exs`:
 
 ```elixir
-config :corex_design,
+config :corex, Corex.Design,
   output: "assets/css/corex.tailwind.css"
 ```
 

@@ -2,6 +2,10 @@ import Config
 
 config :corex, mcp_verbose_errors: false
 
+if Mix.env() == :test do
+  config :corex, emit_style_classes: true
+end
+
 config :logger, :console,
   colors: [enabled: false],
   format: "\n$time $metadata[$level] $message\n",

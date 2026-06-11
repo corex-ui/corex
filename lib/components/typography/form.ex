@@ -17,16 +17,9 @@ defmodule Corex.Typography.Form do
   '''
   use Phoenix.Component
 
-  use Corex.Variants,
+  use Corex.Bem.Variants,
     base: "form",
-    axes: [
-      width: :width,
-      max_width: :max_width,
-      height: :height,
-      max_height: :max_height,
-      semantic: :semantic,
-      gap: :space
-    ]
+    axes: [:width, :max_width, :height, :max_height, :semantic, :gap]
 
   attr(:for, :any, required: true, doc: "An existing form or the form source data.")
   attr(:as, :atom, default: nil, doc: "Parameter prefix for form fields.")
@@ -46,7 +39,7 @@ defmodule Corex.Typography.Form do
   @doc type: :component
   def form(assigns) do
     class =
-      Corex.Style.merge_class([
+      Corex.Bem.merge_class([
         corex_style_class(assigns),
         Map.get(assigns, :class),
         Map.get(assigns.rest || %{}, :class)

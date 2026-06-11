@@ -1,9 +1,16 @@
 defmodule CorexDesign.TestConfig do
   @moduledoc false
 
-  def snapshot, do: Application.get_all_env(:corex_design)
+  def snapshot do
+    %{
+      design: Application.get_env(:corex, Corex.Design),
+      legacy: Application.get_all_env(:corex_design)
+    }
+  end
 
   def reset do
+    Application.delete_env(:corex, Corex.Design)
+
     for {key, _} <- Application.get_all_env(:corex_design) do
       Application.delete_env(:corex_design, key)
     end
@@ -13,13 +20,18 @@ defmodule CorexDesign.TestConfig do
 
   def put(config) do
     reset()
-    for {key, value} <- config, do: Application.put_env(:corex_design, key, value)
+    Application.put_env(:corex, Corex.Design, config)
     :ok
   end
 
-  def restore(snapshot) do
+  def restore(%{design: design, legacy: legacy}) do
     reset()
-    for {key, value} <- snapshot, do: Application.put_env(:corex_design, key, value)
+
+    if design do
+      Application.put_env(:corex, Corex.Design, design)
+    end
+
+    for {key, value} <- legacy, do: Application.put_env(:corex_design, key, value)
     :ok
   end
 end

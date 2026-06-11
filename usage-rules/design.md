@@ -93,7 +93,7 @@ Style attrs always merge BEM modifiers into `class`; generated CSS targets those
 | `text="lg"` | `accordion--text-lg` |
 | `max_width="md"` | `accordion--max-w-md` |
 
-A component only exposes the axes declared in its `use Corex.Variants` list.
+A component only exposes the axes declared in its `use Corex.Bem.Variants` list.
 Not every stamped axis has recipe CSS; see component-driven contract below.
 
 | Registry id | BEM root / vendored CSS |
@@ -160,7 +160,7 @@ Generated CSS writes `layers/`, `recipes/{id}.css`, and `aggregates/` under `ass
 4. **Recipe override**. `Corex.Design.RecipeSource` modules merged by `:id`.
 
 **Component contract:** axes and defaults live in each component's
-`use Corex.Variants` declaration (sourced from `Corex.Scales`). Recipes are
+`use Corex.Bem.Variants` declaration. Builtin steps and `scales:` live in design config. Recipes are
 optional styling; they may not style every axis a component stamps.
 
 **Stability promise:** BEM `<base>--<mod>`, `[data-scope][data-part]`, and `[data-state]` are the public CSS API for Tailwind apps.

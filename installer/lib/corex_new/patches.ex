@@ -133,7 +133,7 @@ defmodule Corex.New.Patches do
 
   @doc """
   Ensures `config/config.exs` has:
-    * `config :corex_design, output: ...` when `--design`
+    * `config :corex, Corex.Design, output: ...` when `--design`
     * optional `themes:` on `:corex_design` when `--themes` is passed
     * `config :localize, ...` when `--lang`
     * esbuild args contain `--format=esm --splitting --target=es2022`
@@ -560,7 +560,7 @@ defmodule Corex.New.Patches do
       not Keyword.get(opts, :design, true) ->
         content
 
-      String.contains?(content, "config :corex_design") ->
+      String.contains?(content, "config :corex, Corex.Design") ->
         content
 
       true ->
@@ -576,8 +576,9 @@ defmodule Corex.New.Patches do
           end
 
         block = """
-        config :corex_design,
+        config :corex, Corex.Design,
           output: "assets/css/corex.tailwind.css",
+          on_invalid_style: :raise,
         #{themes_line}
         """
 
@@ -612,7 +613,7 @@ defmodule Corex.New.Patches do
       layout == [] and is_nil(gettext_opt) ->
         content
 
-      String.contains?(content, "config :corex,") ->
+      String.contains?(content, "config :corex,\n  generators:") ->
         content
 
       true ->

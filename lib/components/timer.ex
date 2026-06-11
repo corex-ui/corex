@@ -206,18 +206,9 @@ defmodule Corex.Timer do
 
   @parts [:days, :hours, :minutes, :seconds]
 
-  use Corex.Variants,
+  use Corex.Bem.Variants,
     base: "timer",
-    axes: [
-      width: :width,
-      max_width: :max_width,
-      height: :height,
-      max_height: :max_height,
-      semantic: :semantic,
-      size: :size,
-      text: :text,
-      radius: :radius
-    ]
+    axes: [:width, :max_width, :height, :max_height, :semantic, :size, :text, :radius]
 
   attr(:id, :string,
     required: false,

@@ -5,7 +5,7 @@ defmodule Corex.Design.Recipe do
   Styling splits into two layers:
 
   1. **Host modifiers** — axes (`semantic`, `size`, `variant`, …) stamped as BEM
-     classes on the component host via `Corex.Variants`.
+     classes on the component host via `Corex.Bem.Variants`.
   2. **Part rules** — CSS targeting `[data-scope][data-part]` descendants via
      `extra_rules` and optional per-part variant blocks.
 
@@ -108,7 +108,7 @@ defmodule Corex.Design.Recipe do
 
   @doc """
   Axes this recipe emits CSS for. May be a subset of the matching component's
-  accepted axes (see `Corex.Variants`).
+  accepted axes (see `Corex.Bem.Variants`).
   """
   def styled_axes(recipe), do: axes(recipe)
 
@@ -270,7 +270,7 @@ defmodule Corex.Design.RecipeSource do
   `define/2`, `slot_recipe/2`, `new/2`) and register the module under the design
   pipeline config:
 
-      config :corex_design, recipes: [MyApp.Design.Recipes]
+      config :corex, Corex.Design, recipes: [MyApp.Design.Recipes]
 
   Host recipes are merged into `Corex.Design.Recipes.all/0` by `:id`: a host
   recipe whose id matches a built-in replaces it in place; a recipe with a new id

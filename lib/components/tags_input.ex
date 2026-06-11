@@ -233,18 +233,9 @@ defmodule Corex.TagsInput do
   @doc type: :component
   use Phoenix.Component
 
-  use Corex.Variants,
+  use Corex.Bem.Variants,
     base: "tags-input",
-    axes: [
-      width: :width,
-      max_width: :max_width,
-      height: :height,
-      max_height: :max_height,
-      semantic: :semantic,
-      size: :size,
-      text: :text,
-      radius: :radius
-    ]
+    axes: [:width, :max_width, :height, :max_height, :semantic, :size, :text, :radius]
 
   import Corex.Api.Doc
 

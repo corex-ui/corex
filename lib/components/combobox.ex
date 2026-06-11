@@ -288,17 +288,9 @@ defmodule Corex.Combobox do
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
-  use Corex.Variants,
+  use Corex.Bem.Variants,
     base: "combobox",
-    axes: [
-      width: :width,
-      max_width: :max_width,
-      height: :height,
-      max_height: :max_height,
-      semantic: :semantic,
-      size: :size,
-      radius: :radius
-    ]
+    axes: [:width, :max_width, :height, :max_height, :semantic, :size, :radius]
 
   alias Corex.Combobox.Anatomy.{
     ClearTrigger,

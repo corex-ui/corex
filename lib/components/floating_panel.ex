@@ -156,16 +156,9 @@ defmodule Corex.FloatingPanel do
   @doc type: :component
   use Phoenix.Component
 
-  use Corex.Variants,
+  use Corex.Bem.Variants,
     base: "floating-panel",
-    axes: [
-      width: :width,
-      max_width: :max_width,
-      height: :height,
-      max_height: :max_height,
-      semantic: :semantic,
-      radius: :radius
-    ]
+    axes: [:width, :max_width, :height, :max_height, :semantic, :radius]
 
   import Corex.Api.Doc
 

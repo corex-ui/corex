@@ -60,8 +60,9 @@ compilers: Mix.compilers() ++ [:corex_design]
 In `config/config.exs`:
 
 ```elixir
-config :corex_design,
-  output: "assets/css/corex.tailwind.css"
+config :corex, Corex.Design,
+  output: "assets/css/corex.tailwind.css",
+  on_invalid_style: :raise
 ```
 
 Omit `:themes` to use built-in presets (neo, uno, duo, leo). Full key reference: [Design config](design-config.html).
@@ -162,7 +163,7 @@ Common modifier axes (not every component has every axis; check that component's
 
 Stack modifiers on the root `class` attribute. Do not invent new class names; use only modifiers defined for that component in generated `assets/css/recipes/<name>.css`.
 
-Omitted style attrs emit block class only; recipe `default_variants` merge into base CSS. If you subset `config :corex_design, scales:`, run `mix corex.design.lint` so templates do not use dropped steps ([Design config](design-config.html)).
+Omitted style attrs emit block class only; recipe `default_variants` merge into base CSS. Invalid style attrs raise at render time when `on_invalid_style: :raise` (installer default). After changing `scales:`, run `mix corex.design.validate` ([Design config](design-config.html)).
 
 ## Shared utilities
 

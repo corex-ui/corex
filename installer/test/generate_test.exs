@@ -28,7 +28,8 @@ defmodule Corex.New.GenerateTest do
       assert mix_exs =~ ":corex_design"
 
       config = File.read!("config/config.exs")
-      assert config =~ "config :corex_design"
+      assert config =~ "config :corex, Corex.Design"
+      assert config =~ "on_invalid_style: :raise"
       assert config =~ "output: \"assets/css/corex.tailwind.css\""
 
       assert File.read!(Path.join("assets/css", "app.css")) =~ ~s(@import "./corex.tailwind.css")
@@ -64,7 +65,7 @@ defmodule Corex.New.GenerateTest do
       assert File.exists?(Path.join(["priv", "gettext", "ar", "LC_MESSAGES", "default.po"]))
 
       config = File.read!("config/config.exs")
-      assert config =~ "config :corex_design"
+      assert config =~ "config :corex, Corex.Design"
       refute config =~ "config :my_app, themes:"
     end)
   end
@@ -82,7 +83,7 @@ defmodule Corex.New.GenerateTest do
       refute File.exists?(Path.join("assets/corex", "main.css"))
       refute File.read!(Path.join("assets/css", "app.css")) =~ "corex.tailwind.css"
       refute File.read!("mix.exs") =~ "{:corex_design,"
-      refute File.read!("config/config.exs") =~ "config :corex_design"
+      refute File.read!("config/config.exs") =~ "config :corex, Corex.Design"
     end)
   end
 

@@ -3,7 +3,7 @@ defmodule Corex.Design.Theme.Presets do
   Built-in theme presets (neo, uno, duo, leo). Copy into host config or reference
   directly:
 
-      config :corex_design,
+      config :corex, Corex.Design,
         output: "assets/css/corex.tailwind.css"
   """
 

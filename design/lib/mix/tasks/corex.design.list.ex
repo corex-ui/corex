@@ -6,7 +6,7 @@ defmodule Mix.Tasks.Corex.Design.List do
   @moduledoc """
   Prints every recipe id the design compiler knows about, grouped by kind.
 
-  Use these atoms in `config :corex_design, recipes: [include: [...]]`.
+  Use these atoms in `config :corex, Corex.Design, recipes: [include: [...]]`.
 
   ## Examples
 
@@ -59,7 +59,7 @@ defmodule Mix.Tasks.Corex.Design.List do
     Mix.shell().info("\nExample allowlist:")
 
     Mix.shell().info(
-      "  config :corex_design, recipes: [include: #{inspect(Enum.take(component_ids ++ layout_ids, 5))}]"
+      "  config :corex, Corex.Design, recipes: [include: #{inspect(Enum.take(component_ids ++ layout_ids, 5))}]"
     )
   end
 end

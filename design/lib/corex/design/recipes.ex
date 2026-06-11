@@ -71,7 +71,7 @@ defmodule Corex.Design.Recipes do
 
   @doc """
   Every recipe the compiler renders into the recipe layer, with host overrides
-  from `config :corex_design, recipes: [...]` merged by `:id` (a host recipe
+  from `config :corex, Corex.Design, recipes: [...]` merged by `:id` (a host recipe
   replaces a built-in with the same id in place; a new id is appended).
   """
   def all do
@@ -90,7 +90,7 @@ defmodule Corex.Design.Recipes do
 
   @doc """
   Recipes the compiler emits as CSS: `all/0` filtered by the optional allowlist
-  `config :corex_design, recipes: [include: [:button, :select, ...]]` (recipe ids).
+  `config :corex, Corex.Design, recipes: [include: [:button, :select, ...]]` (recipe ids).
   When unset, every recipe is emitted. Filtering shrinks the Tailwind recipe
   exports for apps that use a known subset; the full vocabulary
   still flows to the component contract via `all/0`.
@@ -122,7 +122,7 @@ defmodule Corex.Design.Recipes do
 
     unless function_exported?(module, :recipes, 0) do
       raise ArgumentError,
-            "config :corex_design, recipes: expects modules implementing " <>
+            "config :corex, Corex.Design, recipes: expects modules implementing " <>
               "Corex.Design.RecipeSource (recipes/0); got #{inspect(module)}"
     end
 
@@ -131,7 +131,7 @@ defmodule Corex.Design.Recipes do
 
   defp source_recipes(other) do
     raise ArgumentError,
-          "config :corex_design, recipes: expects a list of modules, got #{inspect(other)}"
+          "config :corex, Corex.Design, recipes: expects a list of modules, got #{inspect(other)}"
   end
 
   defp validate_recipe!(%Corex.Design.Recipe{} = recipe, _module), do: recipe

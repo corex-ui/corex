@@ -24,12 +24,12 @@ Node/Style-Dictionary build for the default path.
 - **Layout patterns**: `box`, `stack`, `row`, `grid`, `container`, `spacer`,
   `divider` Phoenix components with BEM modifiers on `class`.
 
-### Dumb components (`Corex.Variants`)
+### Dumb components (`Corex.Bem.Variants`)
 
 Components carry no runtime style engine: they merge BEM modifiers into `class`
 and forward caller classes. Styling lives in optional `:corex_design` stylesheets.
 
-- **`Corex.Variants`**: declares style axes from `Corex.Scales`; generates
+- **`Corex.Bem.Variants`**: declares style axes from `Corex.Design.Scales`; generates
   `attr/3` and `corex_style_class/1` (BEM class passthrough).
   Three kinds: `:component`, `:layout`, `:appearance`.
 - `<.action semantic="accent" size="lg">` merges `button button--semantic-accent button--size-lg`

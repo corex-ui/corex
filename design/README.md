@@ -27,8 +27,9 @@ compilers: Mix.compilers() ++ [:corex_design]
 Configure output and themes:
 
 ```elixir
-config :corex_design,
-  output: "assets/css/corex.tailwind.css"
+config :corex, Corex.Design,
+  output: "assets/css/corex.tailwind.css",
+  on_invalid_style: :raise
 ```
 
 Import the bundle from your app CSS:

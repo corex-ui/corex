@@ -417,20 +417,11 @@ defmodule Corex.TreeView do
   alias Corex.TreeView.Anatomy.{Branch, Item, Label, Props, Root}
   alias Corex.TreeView.Connect
 
-  use Corex.Variants,
+  use Corex.Bem.Variants,
     kind: :polymorphic,
     looks: [treeview: "tree-view", navigation: "tree-navigation"],
     default_as: :treeview,
-    axes: [
-      width: :width,
-      max_width: :max_width,
-      height: :height,
-      max_height: :max_height,
-      semantic: :semantic,
-      size: :size,
-      text: :text,
-      radius: :radius
-    ]
+    axes: [:width, :max_width, :height, :max_height, :semantic, :size, :text, :radius]
 
   @doc """
   Renders a tree view. Pass `items` as `Corex.Tree.new/1`. Component id = tree root id; names capitalized from labels.

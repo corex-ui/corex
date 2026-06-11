@@ -1,6 +1,6 @@
 defmodule Corex.Design.Theme.Options do
   @moduledoc """
-  NimbleOptions schemas and validation for `config :corex_design, themes: %{...}`.
+  NimbleOptions schemas and validation for `config :corex, Corex.Design, themes: %{...}`.
   """
 
   alias Corex.Design.Theme

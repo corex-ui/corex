@@ -12,7 +12,7 @@ defmodule Corex.Layout.Spacer do
   '''
   use Phoenix.Component
 
-  use Corex.Variants,
+  use Corex.Bem.Variants,
     kind: :layout,
     base: "spacer",
     axes: []

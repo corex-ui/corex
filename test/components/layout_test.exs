@@ -30,11 +30,11 @@ defmodule Corex.LayoutTest do
     refute result =~ "data-row-margin"
   end
 
-  test "stack renders default column direction with gap" do
+  test "stack renders explicit gap attribute" do
     result = render_component(&LayoutHelpers.render_stack/1, %{})
 
     assert [stack] = find_in_html(result, "div")
-    assert_has_classes(stack, ~w(stack stack--gap-md stack--direction-column))
+    assert_has_classes(stack, ~w(stack stack--gap-md))
   end
 
   test "grid renders column count" do

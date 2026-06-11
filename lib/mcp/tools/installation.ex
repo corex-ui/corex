@@ -97,7 +97,7 @@ defmodule Corex.MCP.Tools.Installation do
       design_assets: %{
         guide: "https://hexdocs.pm/corex/styled.html",
         note:
-          "Add {:corex_design}, register the :corex_design compiler, set config :corex_design, run mix compile, and @import ./corex.tailwind.css in app.css."
+          "Add {:corex_design}, register the :corex_design compiler, set config :corex, Corex.Design, run mix compile, and @import ./corex.tailwind.css in app.css."
       }
     }
   end

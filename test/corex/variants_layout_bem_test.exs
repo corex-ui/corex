@@ -1,4 +1,4 @@
-defmodule Corex.VariantsLayoutBemTest do
+defmodule Corex.Bem.VariantsLayoutBemTest do
   use CorexTest.ComponentCase, async: true
 
   import Phoenix.Component
@@ -65,5 +65,22 @@ defmodule Corex.VariantsLayoutBemTest do
 
   test "component unstyled keeps only the class assign" do
     assert Corex.Accordion.corex_style_class(%{unstyled: true, class: "foo"}) == "foo"
+  end
+
+  test "layout hide_below emits bem modifier in class not data attrs" do
+    html =
+      render_component(
+        fn assigns ->
+          ~H"""
+          <Corex.Layout.Row.row hide_below="md" gap="lg">child</Corex.Layout.Row.row>
+          """
+        end,
+        %{}
+      )
+
+    assert html =~ "row--hide-below-md"
+    assert html =~ "row--gap-lg"
+    refute html =~ "data-hide-below"
+    refute html =~ "data-hide-from"
   end
 end

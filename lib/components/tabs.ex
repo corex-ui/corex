@@ -227,18 +227,9 @@ defmodule Corex.Tabs do
       validate_tabs_value!: 1
     ]
 
-  use Corex.Variants,
+  use Corex.Bem.Variants,
     base: "tabs",
-    axes: [
-      width: :width,
-      max_width: :max_width,
-      height: :height,
-      max_height: :max_height,
-      semantic: :semantic,
-      size: :size,
-      text: :text,
-      radius: :radius
-    ]
+    axes: [:width, :max_width, :height, :max_height, :semantic, :size, :text, :radius]
 
   @doc """
   Renders a tabs component.

@@ -14,5 +14,5 @@ Initial Hex release of the Elixir design pipeline (previously shipped inside the
 - Token engine (`Corex.Design.Tokens`, `Corex.Design.Emit`) for OKLCH colors and dimension scales from theme config.
 - Recipe engine (`Corex.Design.Recipe`, `Corex.Design.Recipes`) compiling BEM modifiers and Tailwind `@utility` axes.
 - `:corex_design` compiler (`Mix.Tasks.Compile.CorexDesign`) writing `corex.tailwind.css` and modular `layers/` / `recipes/` output.
-- Mix tasks: `corex.design.validate`, `corex.design.list`, `corex.design.build`, `corex.design.tailwind`.
+- Mix tasks: `corex.design.validate`, `corex.design.config`, `corex.design.list`, `corex.design.build`.
 - Requires `{:corex, "~> 0.2"}` and OTP 27+.

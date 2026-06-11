@@ -29,7 +29,7 @@ mix compile
 mix assets.build
 ```
 
-Run `mix compile` to refresh `assets/css/` (`corex.tailwind.css`, `layers/`, `recipes/`, `aggregates/`). If you customized `config :corex_design`, review [Design config](design-config.html) for new keys after upgrading. First-time setup is in [Styled](styled.html).
+Run `mix compile` to refresh `assets/css/` (`corex.tailwind.css`, `layers/`, `recipes/`, `aggregates/`). If you customized `config :corex, Corex.Design`, review [Design config](design-config.html) for new keys after upgrading. First-time setup is in [Styled](styled.html).
 
 ## After upgrading
 

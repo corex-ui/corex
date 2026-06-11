@@ -209,17 +209,9 @@ defmodule Corex.Switch do
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
-  use Corex.Variants,
+  use Corex.Bem.Variants,
     base: "switch",
-    axes: [
-      width: :width,
-      max_width: :max_width,
-      height: :height,
-      max_height: :max_height,
-      semantic: :semantic,
-      size: :size,
-      radius: [:none]
-    ]
+    axes: [:width, :max_width, :height, :max_height, :semantic, :size, :radius]
 
   @doc """
   Renders a switch component.

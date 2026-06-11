@@ -749,19 +749,9 @@ defmodule Corex.Accordion do
       normalize_string_list_value!: 1
     ]
 
-  use Corex.Variants,
+  use Corex.Bem.Variants,
     base: "accordion",
-    axes: [
-      width: :width,
-      max_width: :max_width,
-      height: :height,
-      max_height: :max_height,
-      semantic: :semantic,
-      variant: :visual,
-      size: :size,
-      text: :text,
-      radius: :radius
-    ]
+    axes: [:width, :max_width, :height, :max_height, :semantic, :variant, :size, :text, :radius]
 
   @doc """
   Renders an accordion. See the module documentation for list-driven `items`, With slots, Custom slots, Manual and Compound modes, patterns, API, and events.

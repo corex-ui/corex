@@ -7,8 +7,11 @@ Corex ships **no CSS**. Accessibility, state machines, and component anatomy com
 ## The styling contract
 
 1. **Style attributes** (`semantic`, `size`, `radius`, …) express design intent. They are not inline styles and they do not load CSS.
-2. Corex **translates non-nil attrs** into BEM modifiers on the host. Omitted attrs emit **no modifier** (block class only).
-3. **Your stylesheet** (or [Corex Design](styled.html) base CSS) defines what the block and modifiers look like.
+2. By default, `:corex` does **not** emit BEM modifiers. Only your `class` assign appears on the host.
+3. Opt in to BEM with `config :corex, emit_style_classes: true`, or install [Corex Design](styled.html) (BEM is automatic when design is configured).
+4. **Your stylesheet** (or Corex Design CSS) defines what block and modifier classes look like.
+
+With BEM enabled:
 
 ```heex
 <.accordion semantic="accent" size="lg" class="accordion" … />
@@ -18,7 +21,7 @@ Corex ships **no CSS**. Accessibility, state machines, and component anatomy com
 <div class="accordion accordion--semantic-accent accordion--size-lg" data-scope="accordion" …>
 ```
 
-Bare `class="accordion"` with no attrs emits only `accordion`. With Corex Design, recipe defaults are merged into the `.accordion` base rule in generated CSS.
+With Corex Design, recipe defaults are merged into the `.accordion` base rule in generated CSS.
 
 Want ready-made rules instead? Skip authoring CSS and use [Corex Design](styled.html).
 
@@ -64,13 +67,19 @@ Layout components (`row`, `stack`, `box`, …) follow the same pattern: `gap="md
 
 Layout attr values are design shorthand (`gap="md"`, `justify="between"`), not Tailwind utility strings.
 
-## Allowed values
+## BEM and validation tiers
 
-Step names are fixed in `Corex.Scales` (`sm`, `md`, `accent`, …). Hexdocs lists allowed steps for each attr (for example `padding="sm"` on [`Corex.Layout.Box`](Corex.Layout.Box.html)).
+| Setup | BEM in `class` | Attr validation |
+| --- | --- | --- |
+| `{:corex}` only (default) | Off | None |
+| `config :corex, emit_style_classes: true` | On | None |
+| `{:corex_design}` + `config :corex, Corex.Design` | On (automatic) | `on_invalid_style:` under design config (default `:raise`) |
 
-With [Corex Design](styled.html), optional `scales:` may **subset** those steps for smaller CSS. Theme `dimensions` tune how large `md` looks without renaming steps. Run `mix corex.design.lint` after subsetting ([Design config](design-config.html)).
+Style each axis with **named attrs** (`semantic`, `size`, `gap`, `hide_below`, `as`, …) or equivalent BEM classes on `class`. There is no bundled `style={%{...}}` map attribute.
 
-Polymorphic components pick a look with `as`:
+`:corex` alone accepts any style string and performs no validation. With [Corex Design](styled.html), `scales:` in design config drives CSS and runtime validation via `on_invalid_style:` under `config :corex, Corex.Design`. Builtin step names are listed in [Design config](design-config.html). Theme `dimensions` tune how large `md` looks without renaming steps.
+
+Polymorphic components pick a look with `as` (any string; known names use the component `looks` alias map):
 
 ```heex
 <.action as="button" semantic="accent" aria_label="Close">
@@ -79,7 +88,10 @@ Polymorphic components pick a look with `as`:
 
 <.tree_view as="navigation" class="tree-navigation" items={@items} />
 <.dialog as="side" side="start" modal />
+<.row hide_below="lg" gap="md" />
 ```
+
+`hide_below` and `hide_from` emit layout BEM modifiers (`row--hide-below-md`), not `data-hide-*` attributes.
 
 ## Related
 

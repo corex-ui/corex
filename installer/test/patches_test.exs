@@ -634,7 +634,7 @@ defmodule Corex.New.PatchesTest do
         )
 
         body = File.read!("config/config.exs")
-        assert body =~ "config :corex_design"
+        assert body =~ "config :corex, Corex.Design"
         assert body =~ "themes: ~w(neo uno)a"
         refute body =~ "config :my_app, themes:"
       end)
@@ -679,31 +679,32 @@ defmodule Corex.New.PatchesTest do
       end)
     end
 
-    test "adds config :corex_design when design: true" do
+    test "adds config :corex, Corex.Design when design: true" do
       in_tmp(:patch_config_corex_design, fn ->
         File.mkdir_p!("config")
         File.write!("config/config.exs", @stock_config_exs)
 
         Patches.patch_config_exs(File.cwd!(), otp_app: :my_app, design: true)
         body = File.read!("config/config.exs")
-        assert body =~ "config :corex_design"
+        assert body =~ "config :corex, Corex.Design"
+        assert body =~ "on_invalid_style: :raise"
         assert body =~ "output: \"assets/css/corex.tailwind.css\""
         refute body =~ "Corex.Design.Theme.Presets.all()"
 
         Patches.patch_config_exs(File.cwd!(), otp_app: :my_app, design: true)
         body2 = File.read!("config/config.exs")
-        assert Regex.scan(~r/config :corex_design/, body2) |> length() == 1
+        assert Regex.scan(~r/config :corex, Corex\.Design/, body2) |> length() == 1
       end)
     end
 
-    test "skips config :corex_design when design: false" do
+    test "skips config :corex, Corex.Design when design: false" do
       in_tmp(:patch_config_no_design, fn ->
         File.mkdir_p!("config")
         File.write!("config/config.exs", @stock_config_exs)
 
         Patches.patch_config_exs(File.cwd!(), otp_app: :my_app, design: false)
         body = File.read!("config/config.exs")
-        refute body =~ "config :corex_design"
+        refute body =~ "config :corex, Corex.Design"
       end)
     end
   end

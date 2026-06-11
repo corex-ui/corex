@@ -733,13 +733,9 @@ end
 
 defmodule Corex.Design.Emit.Responsive do
   @moduledoc """
-  Universal, component-agnostic responsive visibility utilities (Chakra-style
-  `hideFrom` / `hideBelow`) emitted into the Tailwind recipe bundle.
-
-  Each utility is matched by a BEM-style class, a data attribute, and (for the
-  attribute form) is produced by the runtime resolver, so a page can hide an
-  element responsively via `<.row hide_below="md">`, `class="row hide-below-md"`,
-  or `data-hide-below="md"` interchangeably.
+  Responsive visibility utilities (Chakra-style `hideFrom` / `hideBelow`) for
+  layout BEM modifiers (`row--hide-below-md`, `stack--hide-from-lg`) and manual
+  `hide-below-*` / `hide-from-*` classes in the recipe bundle.
   """
 
   alias Corex.Design.Tokens.Scales
@@ -765,14 +761,14 @@ defmodule Corex.Design.Emit.Responsive do
     """
     @media (min-width: #{width}) {
       .hide-from-#{step},
-      [data-hide-from="#{step}"] {
+      [class*="--hide-from-#{step}"] {
         display: none !important;
       }
     }
 
     @media not all and (min-width: #{width}) {
       .hide-below-#{step},
-      [data-hide-below="#{step}"] {
+      [class*="--hide-below-#{step}"] {
         display: none !important;
       }
     }

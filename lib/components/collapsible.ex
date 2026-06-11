@@ -273,17 +273,9 @@ defmodule Corex.Collapsible do
   alias Corex.Collapsible.Anatomy.{Closed, Content, Opened, Props, Root, Trigger}
   alias Corex.Collapsible.Connect
 
-  use Corex.Variants,
+  use Corex.Bem.Variants,
     base: "collapsible",
-    axes: [
-      width: :width,
-      max_width: :max_width,
-      height: :height,
-      max_height: :max_height,
-      semantic: :semantic,
-      size: :size,
-      radius: :radius
-    ]
+    axes: [:width, :max_width, :height, :max_height, :semantic, :size, :radius]
 
   @doc """
   Renders a collapsible component.

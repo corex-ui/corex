@@ -91,22 +91,11 @@ defmodule Corex.Action do
   @doc type: :component
   use Phoenix.Component
 
-  use Corex.Variants,
+  use Corex.Bem.Variants,
     kind: :polymorphic,
     looks: [button: "button", link: "link"],
     default_as: :button,
-    axes: [
-      width: :width,
-      max_width: :max_width,
-      height: :height,
-      max_height: :max_height,
-      semantic: :semantic,
-      size: :size,
-      text: :text,
-      radius: :radius,
-      variant: :visual,
-      shape: :shape
-    ]
+    axes: [:width, :max_width, :height, :max_height, :semantic, :size, :text, :radius, :variant, :shape]
 
   attr(:type, :string,
     default: "button",

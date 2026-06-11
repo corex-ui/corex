@@ -13,10 +13,10 @@ defmodule Corex.Layout.Container do
   '''
   use Phoenix.Component
 
-  use Corex.Variants,
+  use Corex.Bem.Variants,
     kind: :layout,
     base: "container",
-    axes: [size: :container]
+    axes: [:size]
 
   attr(:tag, :string, default: "div", doc: "The host HTML element.")
   slot(:inner_block, required: true)
