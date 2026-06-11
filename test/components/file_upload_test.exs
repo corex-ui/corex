@@ -134,6 +134,9 @@ defmodule Corex.FileUploadTest do
       result = Connect.hidden_input(assigns)
       assert result["id"] == "file:test-up:input"
       assert result["type"] == "file"
+      assert result["tabindex"] == -1
+      assert result["aria-hidden"] == true
+      assert result["style"] =~ "position:absolute"
       assert result["name"] == "user[avatar]"
       assert result["form"] == "f1"
     end

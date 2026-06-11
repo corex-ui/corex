@@ -136,6 +136,8 @@ defmodule Corex.FileUpload.Anatomy do
       "capture",
       "webkitdirectory",
       "aria-hidden",
+      "ariaHidden",
+      "tabindex",
       "tabIndex",
       "style",
       "data-disabled",
