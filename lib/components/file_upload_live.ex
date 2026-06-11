@@ -262,8 +262,6 @@ defmodule Corex.FileUploadLive do
                   entry={entry}
                   data-scope="file-upload"
                   data-part="item-preview-image"
-                  width="40"
-                  height="40"
                 />
               </div>
             </div>

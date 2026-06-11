@@ -379,7 +379,7 @@ jobs:
           unzip -l /tmp/corex_new_archive_check.ez | grep -q 'priv/corex_design/corex/' || (echo 'missing priv/corex_design in archive'; exit 1)
 
   integration-tests:
-    name: Integration tests (OTP ${{ matrix.otp }} | Elixir ${{ matrix.elixir }})
+    name: Integration tests (OTP ${{ matrix.otp }} | Elixir ${{ matrix.elixir }}${{ matrix.phx_new_suffix }})
     runs-on: ubuntu-24.04
 
     strategy:
@@ -387,10 +387,28 @@ jobs:
         include:
           - elixir: 1.17.3
             otp: 26.2.5.2
+            phx_new_version: ""
+            phx_new_suffix: ""
           - elixir: 1.18.4
             otp: 27.3
+            phx_new_version: ""
+            phx_new_suffix: ""
           - elixir: 1.18.4
             otp: 28.0.1
+            phx_new_version: ""
+            phx_new_suffix: ""
+          - elixir: 1.17.3
+            otp: 26.2.5.2
+            phx_new_version: "1.8.4"
+            phx_new_suffix: " | phx_new 1.8.4"
+          - elixir: 1.18.4
+            otp: 27.3
+            phx_new_version: "1.8.4"
+            phx_new_suffix: " | phx_new 1.8.4"
+          - elixir: 1.18.4
+            otp: 28.0.1
+            phx_new_version: "1.8.4"
+            phx_new_suffix: " | phx_new 1.8.4"
 
     services:
       postgres:
@@ -441,7 +459,12 @@ jobs:
           mix archive.install corex_new.ez --force
 
       - name: Install Mix archives for corex.new (phx_new)
-        run: mix archive.install hex phx_new --force
+        run: |
+          if [ -n "${{ matrix.phx_new_version }}" ]; then
+            mix archive.install hex phx_new ${{ matrix.phx_new_version }} --force
+          else
+            mix archive.install hex phx_new --force
+          fi
 
       - name: Run integration tests (fast)
         working-directory: integration_test
