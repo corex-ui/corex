@@ -55,7 +55,7 @@ defmodule Corex.MixProject do
     [
       {:jason, "~> 1.0"},
       {:phoenix, "~> 1.8.1"},
-      {:phoenix_live_view, "~> 1.1.0"},
+      {:phoenix_live_view, "~> 1.1"},
       {:gettext, "~> 1.0"},
       {:esbuild, "~> 0.8", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.40", only: [:dev, :docs], runtime: false},
