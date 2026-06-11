@@ -89,6 +89,22 @@ defmodule Corex.PaginationTest do
       assert attrs["data-disabled"] == ""
     end
 
+    test "next_trigger disabled link omits aria-label" do
+      attrs =
+        Connect.next_trigger(%NextTrigger{
+          id: "p1",
+          dir: "ltr",
+          disabled: true,
+          aria_label: "Next",
+          href: nil,
+          redirect: "patch",
+          tag: "link"
+        })
+
+      refute Map.has_key?(attrs, "aria-label")
+      assert attrs["data-disabled"] == ""
+    end
+
     test "root aria-label is unique per id" do
       attrs =
         Connect.root(%Corex.Pagination.Anatomy.Root{

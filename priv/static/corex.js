@@ -31815,6 +31815,22 @@ ${err}`);
       }
     };
   }
+  function adjustDeadLinkTriggerProps(props) {
+    if (props.href != null && props.href !== "") return props;
+    if (props.type === "button") return props;
+    return __spreadProps(__spreadValues({}, props), { "aria-label": void 0 });
+  }
+  function corexPaginationConnect(service, normalize) {
+    const api = connect19(service, normalize);
+    return __spreadProps(__spreadValues({}, api), {
+      getPrevTriggerProps() {
+        return adjustDeadLinkTriggerProps(api.getPrevTriggerProps());
+      },
+      getNextTriggerProps() {
+        return adjustDeadLinkTriggerProps(api.getNextTriggerProps());
+      }
+    });
+  }
   function uniquePaginationTranslations(el, translations) {
     var _a4;
     const label = ((_a4 = translations == null ? void 0 : translations.rootLabel) == null ? void 0 : _a4.trim()) || "Pagination";
@@ -32190,7 +32206,7 @@ ${err}`);
           return new VanillaMachine(machine19, props);
         }
         initApi() {
-          return this.zagConnect(connect19);
+          return this.zagConnect(corexPaginationConnect);
         }
         render() {
           const rootEl = this.el.querySelector(

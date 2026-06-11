@@ -392,6 +392,25 @@ var machine = createMachine({
 });
 var clampPage = (page, totalPages) => Math.min(Math.max(page, 1), totalPages);
 
+// components/pagination-connect.ts
+function adjustDeadLinkTriggerProps(props) {
+  if (props.href != null && props.href !== "") return props;
+  if (props.type === "button") return props;
+  return { ...props, "aria-label": void 0 };
+}
+function corexPaginationConnect(service, normalize) {
+  const api = connect(service, normalize);
+  return {
+    ...api,
+    getPrevTriggerProps() {
+      return adjustDeadLinkTriggerProps(api.getPrevTriggerProps());
+    },
+    getNextTriggerProps() {
+      return adjustDeadLinkTriggerProps(api.getNextTriggerProps());
+    }
+  };
+}
+
 // components/pagination.ts
 var Pagination = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -399,7 +418,7 @@ var Pagination = class extends Component {
     return new VanillaMachine(machine, props);
   }
   initApi() {
-    return this.zagConnect(connect);
+    return this.zagConnect(corexPaginationConnect);
   }
   render() {
     const rootEl = this.el.querySelector(
