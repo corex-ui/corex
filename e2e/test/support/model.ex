@@ -268,6 +268,39 @@ defmodule E2eWeb.Model do
         )
       end
 
+      def wait_doc_page_interactive(session, id_selector, opts \\ [])
+          when is_binary(id_selector) do
+        unless String.match?(id_selector, ~r/^#[a-zA-Z0-9_-]+$/) do
+          raise ArgumentError, "expected #id selector, got: #{id_selector}"
+        end
+
+        timeout = Keyword.get(opts, :timeout)
+
+        for q <- [
+              css(~s|#{id_selector}[data-loading]|, count: 0, visible: :any),
+              css(~s|#{id_selector} [phx-hook][data-loading]|, count: 0, visible: :any)
+            ] do
+          case timeout do
+            nil ->
+              assert_has(session, q)
+
+            max_ms when is_integer(max_ms) and max_ms > 0 ->
+              wait_for_has(session, q, timeout: max_ms)
+          end
+        end
+
+        session
+      end
+
+      def doc_live_page?(path) when is_binary(path) do
+        String.contains?(path, "/events") or
+          String.contains?(path, "/api") or
+          String.contains?(path, "/patterns") or
+          String.contains?(path, "/playground") or
+          String.contains?(path, "live-form") or
+          String.contains?(path, "-live/")
+      end
+
       def prepare_live_form(session) do
         E2eWeb.Model.with_layout_toast_ready(
           session,
