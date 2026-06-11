@@ -739,7 +739,9 @@ defmodule Corex.New.PatchesTest do
 
         assert length(Regex.scan(~r/"NODE_PATH"\s*=>/u, body)) == 1
         assert body =~ "Enum.join"
-        refute body =~ ~s|"NODE_PATH" => [Path.expand("../deps", __DIR__), Mix.Project.build_path()]|
+
+        refute body =~
+                 ~s|"NODE_PATH" => [Path.expand("../deps", __DIR__), Mix.Project.build_path()]|
       end)
     end
 
