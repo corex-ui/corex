@@ -8,7 +8,7 @@ defmodule Corex.MixProject do
     end
   end
 
-  @version "0.1.1"
+  @version "0.1.2"
   @elixir_requirement "~> 1.17"
 
   def project do
