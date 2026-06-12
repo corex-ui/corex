@@ -198,4 +198,51 @@ defmodule E2eWeb.MenuModel do
 
     wait_menu_content_open(session, host_dom_id)
   end
+
+  defp trigger_selector(host_dom_id) do
+    ~s|[id="menu:#{host_dom_id}:trigger"]|
+  end
+
+  def assert_trigger_disabled(session, host_dom_id, opts \\ []) when is_binary(host_dom_id) do
+    if not (String.match?(host_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and host_dom_id != "") do
+      raise ArgumentError, "invalid menu host dom id"
+    end
+
+    wait_for_has(
+      session,
+      css(
+        ~s|#{trigger_selector(host_dom_id)}[disabled][aria-disabled="true"][tabindex="-1"]|,
+        visible: :any
+      ),
+      opts
+    )
+
+    session
+  end
+
+  def assert_trigger_enabled(session, host_dom_id, opts \\ []) when is_binary(host_dom_id) do
+    if not (String.match?(host_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and host_dom_id != "") do
+      raise ArgumentError, "invalid menu host dom id"
+    end
+
+    wait_for_has(
+      session,
+      css(
+        ~s|#{trigger_selector(host_dom_id)}:not([disabled])[aria-disabled="false"][tabindex="0"]|,
+        visible: :any
+      ),
+      opts
+    )
+
+    session
+  end
+
+  def click_playground_disabled_switch(session) do
+    click(
+      session,
+      css("#menu-playground-disabled [data-scope='switch'][data-part='control']", visible: :any)
+    )
+
+    session
+  end
 end

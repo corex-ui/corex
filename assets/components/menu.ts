@@ -2,6 +2,14 @@ import { connect, machine, type Props, type Api } from "@zag-js/menu";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 
+function triggerDisabledAttrs(disabled: boolean) {
+  return {
+    disabled: disabled || undefined,
+    "aria-disabled": disabled ? "true" : "false",
+    tabindex: disabled ? -1 : 0,
+  };
+}
+
 export class Menu extends Component<Props, Api> {
   children: Menu[] = [];
   private submenuTriggerUnsubs: Array<() => void> = [];
@@ -89,7 +97,7 @@ export class Menu extends Component<Props, Api> {
       const disabled = triggerEl.hasAttribute("disabled");
       this.spreadProps(triggerEl, {
         ...this.api.getTriggerProps(),
-        disabled: disabled || undefined,
+        ...triggerDisabledAttrs(disabled),
       });
       if (disabled && this.api.open) this.api.setOpen(false);
     }
