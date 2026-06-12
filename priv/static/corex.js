@@ -28686,6 +28686,13 @@ ${err}`);
       }
     };
   }
+  function triggerDisabledAttrs(disabled) {
+    return {
+      disabled: disabled || void 0,
+      "aria-disabled": disabled ? "true" : "false",
+      tabindex: disabled ? -1 : 0
+    };
+  }
   function findImmediateParentMenuHookEl(nestedEl) {
     let node = nestedEl.parentElement;
     while (node) {
@@ -29835,9 +29842,7 @@ ${err}`);
           );
           if (triggerEl) {
             const disabled = triggerEl.hasAttribute("disabled");
-            this.spreadProps(triggerEl, __spreadProps(__spreadValues({}, this.api.getTriggerProps()), {
-              disabled: disabled || void 0
-            }));
+            this.spreadProps(triggerEl, __spreadValues(__spreadValues({}, this.api.getTriggerProps()), triggerDisabledAttrs(disabled)));
             if (disabled && this.api.open) this.api.setOpen(false);
           }
           const positionerEl = this.el.querySelector(
