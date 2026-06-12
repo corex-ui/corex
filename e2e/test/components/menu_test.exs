@@ -79,6 +79,18 @@ defmodule E2eWeb.MenuTest do
       |> Menu.wait_playground_menu_ready()
     end
 
+    feature "disabled switch syncs trigger aria-disabled and tabindex", %{session: session} do
+      session
+      |> ComponentBehaviorSpec.visit_ready(Menu, :menu, :playground)
+      |> Menu.prepare_live_form()
+      |> Menu.wait_playground_menu_ready()
+      |> Menu.assert_trigger_enabled("menu-playground", timeout: 8_000)
+      |> Menu.click_playground_disabled_switch()
+      |> Menu.assert_trigger_disabled("menu-playground", timeout: 8_000)
+      |> Menu.click_playground_disabled_switch()
+      |> Menu.assert_trigger_enabled("menu-playground", timeout: 8_000)
+    end
+
     feature "stays anchored and interactive after LiveView patch while open", %{session: session} do
       session
       |> ComponentBehaviorSpec.visit_ready(Menu, :menu, :playground)

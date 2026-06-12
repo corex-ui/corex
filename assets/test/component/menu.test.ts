@@ -101,6 +101,40 @@ describe("Menu", () => {
     menu.destroy();
   });
 
+  it("render syncs trigger aria-disabled and tabindex when disabled toggles", () => {
+    const el = menuTree();
+    el.id = "menu:disabled-toggle";
+    document.body.appendChild(el);
+
+    const trigger = el.querySelector<HTMLElement>('[data-part="trigger"]')!;
+    trigger.setAttribute("aria-disabled", "true");
+    trigger.setAttribute("tabindex", "-1");
+    trigger.setAttribute("disabled", "");
+
+    const menu = new Menu(el, { id: "disabled-toggle" });
+    menu.init();
+    menu.render();
+
+    expect(trigger.getAttribute("aria-disabled")).toBe("true");
+    expect(trigger.getAttribute("tabindex")).toBe("-1");
+
+    trigger.removeAttribute("disabled");
+    menu.render();
+
+    expect(trigger.hasAttribute("disabled")).toBe(false);
+    expect(trigger.getAttribute("aria-disabled")).toBe("false");
+    expect(trigger.getAttribute("tabindex")).toBe("0");
+
+    trigger.setAttribute("disabled", "");
+    menu.render();
+
+    expect(trigger.hasAttribute("disabled")).toBe(true);
+    expect(trigger.getAttribute("aria-disabled")).toBe("true");
+    expect(trigger.getAttribute("tabindex")).toBe("-1");
+
+    menu.destroy();
+  });
+
   it("render applies Zag data-disabled on disabled item when open", () => {
     const el = menuTree();
     el.id = "menu:disabled-item";
