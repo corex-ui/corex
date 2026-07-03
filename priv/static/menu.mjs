@@ -1622,6 +1622,13 @@ var machine = createMachine({
 });
 
 // components/menu.ts
+function triggerDisabledAttrs(disabled) {
+  return {
+    disabled: disabled || void 0,
+    "aria-disabled": disabled ? "true" : "false",
+    tabindex: disabled ? -1 : 0
+  };
+}
 var Menu = class extends Component {
   children = [];
   submenuTriggerUnsubs = [];
@@ -1693,7 +1700,7 @@ var Menu = class extends Component {
       const disabled = triggerEl.hasAttribute("disabled");
       this.spreadProps(triggerEl, {
         ...this.api.getTriggerProps(),
-        disabled: disabled || void 0
+        ...triggerDisabledAttrs(disabled)
       });
       if (disabled && this.api.open) this.api.setOpen(false);
     }
