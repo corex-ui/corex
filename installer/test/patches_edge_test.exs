@@ -145,16 +145,16 @@ defmodule Corex.New.PatchesEdgeTest do
     end
 
     test "warns when assets.build alias is missing" do
-      in_tmp(:patch_designex_no_alias, fn ->
+      in_tmp(:patch_corex_design_build_no_alias, fn ->
         File.write!("mix.exs", @stock_mix_exs)
 
         flush()
-        Patches.patch_mix_exs(File.cwd!(), designex: true)
+        Patches.patch_mix_exs(File.cwd!(), design: true)
         assert_shell_info_contains!("assets.build")
       end)
     end
 
-    test "inserts designex after multiline compile in assets.build" do
+    test "inserts corex.design.build after multiline compile in assets.build" do
       mix_exs = """
       defmodule MyApp.MixProject do
         use Mix.Project
@@ -183,30 +183,30 @@ defmodule Corex.New.PatchesEdgeTest do
       end
       """
 
-      in_tmp(:patch_designex_multiline_build, fn ->
+      in_tmp(:patch_corex_design_build_multiline_build, fn ->
         File.write!("mix.exs", mix_exs)
-        Patches.patch_mix_exs(File.cwd!(), designex: true)
+        Patches.patch_mix_exs(File.cwd!(), design: true)
         body = File.read!("mix.exs")
-        assert body =~ "\"designex corex\""
+        assert body =~ "\"corex.design.build\""
       end)
     end
   end
 
   describe "patch_config_exs/2 edge cases" do
-    test "appends designex config when import_config marker is absent" do
+    test "appends Corex.Design config when import_config marker is absent" do
       config = """
       import Config
 
       config :my_app, ecto_repos: [MyApp.Repo]
       """
 
-      in_tmp(:patch_config_designex_append, fn ->
+      in_tmp(:patch_config_corex_design_build_append, fn ->
         File.mkdir_p!("config")
         File.write!("config/config.exs", config)
 
-        Patches.patch_config_exs(File.cwd!(), otp_app: :my_app, designex: true)
+        Patches.patch_config_exs(File.cwd!(), otp_app: :my_app, design: true)
         body = File.read!("config/config.exs")
-        assert body =~ "config :designex"
+        assert body =~ "config :corex_design"
       end)
     end
 

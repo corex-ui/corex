@@ -1,0 +1,283 @@
+@import "../main.css";
+
+@layer components {
+  .clipboard[data-loading] [data-scope="clipboard"][data-part="root"] {
+    @apply ui-loading;
+  }
+
+  .clipboard {
+    width: fit-content;
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="root"] {
+    @apply ui-root;
+
+    gap: var(--spacing-space);
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="root"][data-orientation="horizontal"] {
+    align-items: center;
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="root"][data-orientation="vertical"] {
+    align-items: start;
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="label"] {
+    @apply ui-label;
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="control"] {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: start;
+    gap: var(--spacing-space-sm);
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="input"] {
+    @apply ui-input;
+
+    flex: 1 1 auto;
+    min-width: 0;
+    width: auto;
+    max-width: none;
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="input"][data-copied] {
+    color: var(--color-ink-success);
+    border-color: var(--color-success);
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="trigger"] {
+    @apply ui-trigger;
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copy"],
+  .clipboard [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copied"] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-space);
+    pointer-events: none;
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copied"] {
+    display: none;
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="trigger"][data-copied] {
+    color: var(--color-ink-success);
+    border-color: var(--color-success);
+    outline: none;
+  }
+
+  .clipboard
+    [data-scope="clipboard"][data-part="trigger"][data-copied]
+    [data-scope="clipboard"][data-part="copy"] {
+    display: none;
+  }
+
+  .clipboard
+    [data-scope="clipboard"][data-part="trigger"][data-copied]
+    [data-scope="clipboard"][data-part="copied"] {
+    display: inline-flex;
+  }
+
+  .clipboard:not(.clipboard--variant-solid):not(.clipboard--variant-ghost):not(.clipboard--variant-outline)
+    [data-scope="clipboard"][data-part="trigger"]:not([data-copied]) {
+    background-color: var(--color-ui);
+    color: var(--clipboard-ink-text, var(--color-ink));
+    border-color: var(--color-border);
+
+    &:hover {
+      background-color: var(--color-ui-active);
+    }
+
+    &:active {
+      background-color: var(--color-ui-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--clipboard-ink-text, var(--color-ink));
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-ui-muted);
+      color: var(--color-ink-muted);
+      border-color: var(--color-ui-muted);
+      cursor: not-allowed;
+    }
+  }
+}
+
+@utility clipboard--* {
+
+  & [data-scope="clipboard"][data-part="root"] {
+    gap: --value(--spacing-space-*, [length]);
+  }
+
+  & [data-scope="clipboard"][data-part="control"] {
+    gap: --value(--spacing-space-*, [length]);
+  }
+
+  & [data-scope="clipboard"][data-part="trigger"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
+    min-height: --value(--spacing-size-*, [length]);
+    --clipboard-fill: --value(--color-*, [color]);
+    --clipboard-fill-hover: --value(--color-*-hover, [color]);
+    --clipboard-fill-active: --value(--color-*-active, [color]);
+    --clipboard-ink: --value(--color-*-ink, [color]);
+    --clipboard-ink-text: --value(--color-ink-*, [color]);
+    --clipboard-muted: --value(--color-*-muted, [color]);
+  }
+
+  & [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copy"],
+  & [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copied"] {
+    gap: --value(--spacing-space-*, [length]);
+  }
+
+  & [data-scope="clipboard"][data-part="label"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+  }
+
+  & [data-scope="clipboard"][data-part="input"] {
+    min-height: --value(--spacing-size-*, [length]);
+  }
+
+  & [data-scope="clipboard"][data-part="input"][data-copied],
+  & [data-scope="clipboard"][data-part="trigger"][data-copied] {
+    color: --value(--color-ink-*, [color]);
+    border-color: --value(--color-*, [color]);
+  }
+}
+
+@utility clipboard--variant-solid {
+  & [data-scope="clipboard"][data-part="trigger"]:not([data-copied]) {
+    background-color: var(--clipboard-fill, var(--color-ui-active));
+    color: var(--clipboard-ink, var(--color-ink));
+    border-color: transparent;
+
+    &:hover {
+      background-color: var(--clipboard-fill-hover, var(--color-ui-hover));
+    }
+
+    &:active {
+      background-color: var(--clipboard-fill-active, var(--color-ui-active));
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--clipboard-ink, var(--color-ink));
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--clipboard-muted, var(--color-ui-muted));
+      color: var(--clipboard-ink, var(--color-ink-muted));
+      cursor: not-allowed;
+    }
+  }
+}
+
+@utility clipboard--variant-subtle {
+  & [data-scope="clipboard"][data-part="trigger"]:not([data-copied]) {
+    background-color: var(--color-ui);
+    color: var(--clipboard-ink-text, var(--color-ink));
+    border-color: var(--color-border);
+
+    &:hover {
+      background-color: var(--color-ui-active);
+    }
+
+    &:active {
+      background-color: var(--color-ui-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--clipboard-ink-text, var(--color-ink));
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-ui-muted);
+      color: var(--color-ink-muted);
+      border-color: var(--color-ui-muted);
+      cursor: not-allowed;
+    }
+  }
+}
+
+@utility clipboard--variant-ghost {
+  & [data-scope="clipboard"][data-part="trigger"]:not([data-copied]) {
+    background-color: transparent;
+    color: var(--clipboard-ink-text, var(--color-ink));
+    border-color: transparent;
+
+    &:hover {
+      background-color: var(--color-ui-hover);
+    }
+
+    &:active {
+      background-color: var(--color-ui-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--clipboard-ink-text, var(--color-ink));
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: transparent;
+      color: var(--color-ink-muted);
+      cursor: not-allowed;
+    }
+  }
+}
+
+@utility clipboard--variant-outline {
+  & [data-scope="clipboard"][data-part="trigger"]:not([data-copied]) {
+    background-color: transparent;
+    color: var(--clipboard-ink-text, var(--color-ink));
+    border-color: var(--clipboard-fill, var(--color-border));
+
+    &:hover {
+      background-color: var(--color-ui-hover);
+    }
+
+    &:active {
+      background-color: var(--color-ui-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--clipboard-fill, var(--color-ink));
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: transparent;
+      color: var(--color-ink-muted);
+      border-color: var(--color-ui-muted);
+      cursor: not-allowed;
+    }
+  }
+}
+
+@utility clipboard--rounded-* {
+  & [data-scope="clipboard"][data-part="input"],
+  & [data-scope="clipboard"][data-part="trigger"] {
+    border-radius: --value(--radius-*, [length]);
+  }
+}

@@ -37,9 +37,9 @@ defmodule <%= @web_module %>.Layouts do
 
   def app(assigns) do
     ~H"""
-    <header class="layout__header">
-      <div class="layout__header__content">
-        <div class="layout__row">
+    <header class="sticky top-0 z-10 flex h-size-lg items-center border-b border-border bg-layer">
+      <div class="mx-auto flex min-h-size-lg w-full flex-wrap items-center justify-between gap-space px-space-xl py-space-lg">
+        <div class="flex flex-wrap items-center gap-space">
           <.navigate to={~p"/"} class="link link--lg link--brand uppercase font-black">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 136 136" class="icon icon--lg">
               <path
@@ -51,22 +51,22 @@ defmodule <%= @web_module %>.Layouts do
             Corex
           </.navigate>
         </div>
-<%= if @mode or @theme do %>        <div class="layout__row">
+<%= if @mode or @theme do %>        <div class="flex flex-wrap items-center gap-space">
 <%= if @theme do %>          <.theme_toggle theme={@theme} />
 <% end %><%= if @mode do %>          <.mode_toggle mode={@mode} />
 <% end %>        </div>
 <% end %>      </div>
     </header>
 
-    <main class="layout__main">
-      <div class="layout__content">
+    <main class="relative mx-auto flex w-full min-w-0 flex-1 flex-col">
+      <div class="mx-auto flex w-full max-w-6xl flex-1 flex-col items-center gap-size px-space-xl py-size">
         {render_slot(@inner_block)}
       </div>
     </main>
 
-    <footer class="layout__footer">
-      <div class="layout__footer__content">
-        <div class="layout__row">
+    <footer class="flex min-h-size-lg items-center border-t border-border bg-layer">
+      <div class="mx-auto flex min-h-size-lg w-full flex-wrap items-center justify-between gap-space px-space-xl py-space-lg">
+        <div class="flex flex-wrap items-center gap-space">
           <.navigate
             class="button button--sm button--circle text-ink-brand"
             external

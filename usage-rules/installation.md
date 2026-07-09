@@ -6,16 +6,15 @@
 mix archive.install hex phx_new
 mix archive.install hex corex_new
 mix corex.new my_app
-mix corex.new my_app --mode --theme --lang --designex
+mix corex.new my_app --mode --theme --lang
 ```
 
 Defaults: Corex Design, MCP in `:dev`/`:test` only.
 
 | Flag | Effect |
 |------|--------|
-| `--no-design` | Skip design assets |
+| `--no-design` | Skip corex_design dependency and design CSS |
 | `--no-mcp` | Skip MCP plug |
-| `--designex` | Copy token sources |
 | `--mode` / `--theme` / `--lang` | Mode, theme, localization |
 
 Run `mix help corex.new`. Update generator: `mix local.corex`.
@@ -97,17 +96,13 @@ mix compile && mix assets.build
 
 ## Design assets
 
+Add `{:corex_design, "~> 0.2", runtime: false, only: :dev}`, configure `config :corex_design`, then:
+
 ```sh
-mix corex.design
-mix corex.design --force
+mix corex.design.build
 ```
 
-When using mode/theme/lang pickers, also import:
-
-```css
-@import "../corex/components/toggle.css";
-@import "../corex/components/select.css";
-```
+When using mode/theme/lang pickers, include `toggle` and `select` in `components:` in `config :corex_design` so they appear in the generated `components.css` entry.
 
 ## Optional toast layout
 

@@ -8,7 +8,7 @@ defmodule Corex.MixProject do
     end
   end
 
-  @version "0.1.2"
+  @version "0.2.0"
   @elixir_requirement "~> 1.17"
 
   def project do
@@ -66,7 +66,7 @@ defmodule Corex.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:oeditus_credo, "~> 0.6.3", only: [:dev, :test], runtime: false},
       {:floki, "~> 0.38.0", only: :test},
-      {:corex_new, path: "installer", only: [:docs, :test], runtime: false},
+      {:corex_design, path: "design", runtime: false, only: :test},
       {:phoenix_ecto, "~> 4.0", only: :test},
       {:excoveralls, "~> 0.18", only: :test},
       {:bandit, "~> 1.0", only: :dev},
@@ -79,7 +79,6 @@ defmodule Corex.MixProject do
     [
       docs: ["docs"],
       "assets.build": [
-        &copy_design_to_installer/1,
         "esbuild module",
         "esbuild corex_hooks",
         &clean_priv_static_chunks/1,
@@ -100,27 +99,10 @@ defmodule Corex.MixProject do
       ],
       "release.check": ["hex.audit", "lint", "test", "assets.build"],
       "pre.publish": ["release.check"],
+      "hex.build": ["hex.build"],
       tidewave:
         "run --no-halt -e 'Agent.start(fn -> Bandit.start_link(plug: Tidewave, port: 4004) end)'"
     ]
-  end
-
-  defp copy_design_to_installer(_) do
-    source = Path.join(__DIR__, "priv/design")
-    priv_dest = Path.join(__DIR__, "installer/priv/corex_design")
-
-    unless File.dir?(source) do
-      Mix.raise("Expected Corex design tree at #{source}")
-    end
-
-    File.mkdir_p!(Path.dirname(priv_dest))
-
-    if File.exists?(priv_dest) do
-      File.rm_rf!(priv_dest)
-    end
-
-    File.cp_r!(source, priv_dest)
-    :ok
   end
 
   defp clean_priv_static_chunks(_) do
@@ -165,6 +147,7 @@ defmodule Corex.MixProject do
         "guides/installation.md",
         "guides/manual_installation.md",
         "guides/design.md",
+        "design/guides/modifiers.md",
         "guides/forms.md",
         "guides/tableau.md",
         "guides/tableau_theming.md",
@@ -192,7 +175,8 @@ defmodule Corex.MixProject do
          [
            "guides/installation.md",
            "guides/manual_installation.md",
-           "guides/design.md"
+           "guides/design.md",
+           "design/guides/modifiers.md"
          ]},
         {:Guides,
          [

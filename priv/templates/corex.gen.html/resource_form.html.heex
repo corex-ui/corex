@@ -4,7 +4,7 @@
   action={@action}
 >
 <%= Mix.Tasks.Corex.Gen.Html.indent_inputs(inputs, 2) %>
-  <div class="layout__row justify-between">
+  <div class="flex flex-wrap items-center justify-between gap-space">
     <.navigate :if={@return_to} to={@return_to} type="href" class="button">Cancel</.navigate>
     <.action class="button button--accent" type="submit">Save <%= schema.human_singular %></.action>
   </div>

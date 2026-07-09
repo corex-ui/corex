@@ -16,7 +16,7 @@ No custom CSS in templates — modifiers only. `.typo layout` on body. Remove da
 ```css
 @import "../corex/main.css";
 @import "../corex/theme/neo.css";
-@import "../corex/components/typo.css";
+@import "../corex/components.css";
 @source "../corex";
 ```
 
@@ -24,7 +24,7 @@ No custom CSS in templates — modifiers only. `.typo layout` on body. Remove da
 
 ```heex
 <.accordion class="accordion accordion--accent accordion--sm sm:accordion--md lg:accordion--xl" … />
-<.timer class="timer timer--accent timer--text-lg sm:timer--text-xl lg:timer--text-5xl timer--rounded-xl" … />
+<.timer class="timer timer--accent timer--lg timer--rounded-xl" … />
 ```
 
 No `class` on `<.heroicon>` inside Corex components.

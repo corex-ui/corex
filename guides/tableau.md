@@ -18,7 +18,7 @@ Reference templates: [corex-ui/soonex](https://github.com/corex-ui/soonex) and [
 
 ## How it works
 
-1. **`mix corex.design`** copies token and component CSS into `assets/corex/`.
+1. **`mix corex.design.build`** generates token and component CSS into `assets/corex/` via the `corex_design` dependency.
 2. **Esbuild** bundles `assets/js/site.js` as ESM with splitting into `_site/js/`.
 3. **`RootLayout`** loads CSRF meta, `site.css`, and `type="module"` for `site.js`.
 4. **`LiveSocket`** registers only the Corex hooks you import (lazy factories keep chunks small).
@@ -32,15 +32,16 @@ mix tableau.new my_site --template heex --js esbuild --css tailwind
 cd my_site
 ```
 
-Add Corex to `mix.exs`:
+Add Corex and Corex Design to `mix.exs`:
 
 ```elixir
-{:corex, "~> 0.1.0"}
+{:corex, "~> 0.1.0"},
+{:corex_design, "~> 0.2", runtime: false, only: :dev},
 ```
 
 ```bash
 mix deps.get
-mix corex.design
+mix corex.design.build
 ```
 
 Configure Esbuild in `config/config.exs` (ESM + splitting for dynamic hook imports):
@@ -64,9 +65,7 @@ Import Corex CSS in `assets/css/site.css`:
 @import "../corex/main.css";
 @import "../corex/theme/neo.css";
 
-@import "../corex/components/typo.css";
-@import "../corex/components/layout.css";
-@import "../corex/components/accordion.css";
+@import "../corex/components.css";
 ```
 
 Add `typo` and `layout` classes on `<body>` in your root layout (see below).
@@ -237,6 +236,6 @@ Point your MCP client at `http://localhost:4004`.
 ## Related
 
 - [Tableau Theming](tableau_theming.html), [Tableau Mode](tableau_mode.html), [Tableau Localize](tableau_localize.html)
-- [Manual installation](manual_installation.html) — Esbuild, `mix corex.design`, `use Corex`
+- [Manual installation](manual_installation.html) — Esbuild, `corex_design`, `use Corex`
 - [MCP](mcp.html) — plug behavior and Phoenix endpoint setup
 - [Installation](installation.html) — `mix corex.new` for full Phoenix apps

@@ -95,9 +95,14 @@ defmodule Corex.MCP.Tools.Installation do
       minimal_steps: minimal_steps_existing_project(),
       mcp_mount_optional_dev: mcp_mount_snippet(),
       design_assets: %{
-        command: "mix corex.design",
+        steps: [
+          "Add {:corex_design, \"~> 0.2\", runtime: false, only: :dev} to mix.exs",
+          "Add config :corex_design to config/config.exs (see manual_installation guide)",
+          "Add corex.design.build to assets.build and assets.deploy aliases",
+          "Run mix corex.design.build"
+        ],
         note:
-          "Copies priv/design into assets/corex/. Pass --designex to also copy the token source tree. Pass --force to overwrite existing files."
+          "Generated apps from mix corex.new include these steps by default when --design is on."
       }
     }
   end

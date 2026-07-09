@@ -1,0 +1,410 @@
+@import "../main.css";
+@import "./scrollbar.css";
+
+@layer components {
+  .floating-panel[data-loading] [data-scope="floating-panel"][data-part="root"] {
+    @apply ui-loading;
+  }
+
+  .floating-panel [data-scope="floating-panel"][data-part="trigger"] {
+    @apply ui-trigger;
+
+    min-height: calc(var(--spacing-size) * 0.8);
+  }
+
+  .floating-panel:not(.floating-panel--variant-solid):not(.floating-panel--variant-ghost):not(.floating-panel--variant-outline)
+    [data-scope="floating-panel"][data-part="trigger"] {
+    background-color: var(--color-ui);
+    color: var(--floating-panel-ink-text, var(--color-ink));
+    border-color: var(--color-border);
+
+    &:hover {
+      background-color: var(--color-ui-active);
+    }
+
+    &:active {
+      background-color: var(--color-ui-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--floating-panel-ink-text, var(--color-ink));
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-ui-muted);
+      color: var(--color-ink-muted);
+      border-color: var(--color-ui-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  .floating-panel
+    [data-scope="floating-panel"][data-part="trigger"][data-state="open"]
+    [data-closed] {
+    display: none;
+  }
+
+  .floating-panel
+    [data-scope="floating-panel"][data-part="trigger"][data-state="closed"]
+    [data-open] {
+    display: none;
+  }
+
+  .floating-panel [data-part="title"] {
+    @apply ui-label;
+  }
+
+  .floating-panel [data-scope="floating-panel"][data-part="positioner"] {
+    z-index: 50;
+  }
+
+  .floating-panel
+    [data-scope="floating-panel"][data-part="positioner"]:has(
+      [data-scope="floating-panel"][data-part="content"][data-state="closed"]
+    ) {
+    display: none;
+  }
+
+  .floating-panel
+    [data-scope="floating-panel"][data-part="positioner"]:has(
+      [data-scope="floating-panel"][data-part="content"][data-topmost]
+    ) {
+    z-index: 999999;
+  }
+
+  .floating-panel [data-scope="floating-panel"][data-part="content"] {
+    display: flex;
+    flex-direction: column;
+    z-index: var(--z-index);
+    position: relative;
+    
+    box-shadow: var(--shadow-ui);
+
+    &[data-topmost] {
+      z-index: 999999;
+    }
+
+    &[data-behind] {
+      opacity: 0.8;
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-ink);
+      border-radius: var(--radius-md);
+    }
+
+    &[data-minimized] {
+      height: auto !important;
+      overflow: visible !important;
+    }
+
+    &[data-minimized] [data-scope="floating-panel"][data-part="drag-trigger"] {
+      border-radius: var(--radius-md);
+    }
+  }
+
+  .floating-panel [data-scope="floating-panel"][data-part="stage-trigger"],
+  .floating-panel [data-scope="floating-panel"][data-part="close-trigger"] {
+    @apply ui-trigger ui-trigger--square ui-trigger--sm;
+
+    width: calc(var(--spacing-size-sm) * 0.8);
+    min-width: calc(var(--spacing-size-sm) * 0.8);
+    max-width: calc(var(--spacing-size-sm) * 0.8);
+    min-height: calc(var(--spacing-size-sm) * 0.8);
+    max-height: calc(var(--spacing-size-sm) * 0.8);
+    padding: 0;
+    font-size: var(--text-xs);
+    line-height: var(--text-xs--line-height);
+  }
+
+  [data-scope="floating-panel"][data-part="body"] {
+    @apply scrollbar scrollbar--sm;
+
+    position: relative;
+    overflow: auto;
+    flex: 1 1 auto;
+    min-height: fit-content;
+    height: var(--height);
+    padding: var(--spacing-space);
+    background-color: var(--color-root);
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    border: 1px solid var(--color-border);
+    border-block-start: 0;
+
+    & p {
+      margin-block: 0;
+    }
+  }
+
+  [data-scope="floating-panel"][data-part="header"] {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    padding-block: var(--spacing-space-sm);
+    padding-inline: var(--spacing-space);
+    gap: var(--spacing-space);
+  }
+
+  [data-scope="floating-panel"][data-part="drag-trigger"] {
+    background-color: var(--color-layer);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+
+    &:focus-visible {
+      outline: none;
+    }
+  }
+
+  [data-scope="floating-panel"][data-part="control"] {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    gap: var(--spacing-space);
+  }
+
+  [data-scope="floating-panel"][data-part="resize-trigger"] {
+    &[data-axis="n"],
+    &[data-axis="s"] {
+      height: 6px;
+      max-width: 90%;
+    }
+
+    &[data-axis="e"],
+    &[data-axis="w"] {
+      width: 6px;
+      max-height: 90%;
+    }
+
+    &[data-axis="ne"],
+    &[data-axis="nw"],
+    &[data-axis="se"],
+    &[data-axis="sw"] {
+      width: 10px;
+      height: 10px;
+    }
+  }
+
+  .floating-panel:not([data-resizable])
+    [data-scope="floating-panel"][data-part="resize-trigger"],
+  .floating-panel
+    [data-scope="floating-panel"][data-part="resize-trigger"][data-disabled] {
+    display: none;
+  }
+
+  .floating-panel:not([data-draggable])
+    [data-scope="floating-panel"][data-part="drag-trigger"],
+  .floating-panel
+    [data-scope="floating-panel"][data-part="drag-trigger"][data-disabled] {
+    cursor: default !important;
+    touch-action: auto !important;
+    -webkit-user-select: auto !important;
+    user-select: auto !important;
+  }
+}
+
+@utility floating-panel--* {
+  [data-scope="floating-panel"][data-part="trigger"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
+    min-height: --value(--spacing-size-*, [length]);
+    --floating-panel-fill: --value(--color-*, [color]);
+    --floating-panel-fill-hover: --value(--color-*-hover, [color]);
+    --floating-panel-fill-active: --value(--color-*-active, [color]);
+    --floating-panel-ink: --value(--color-*-ink, [color]);
+    --floating-panel-ink-text: --value(--color-ink-*, [color]);
+    --floating-panel-muted: --value(--color-*-muted, [color]);
+  }
+
+  [data-part="title"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+  }
+
+  [data-scope="floating-panel"][data-part="body"] {
+    padding: --value(--spacing-space-*, [length]);
+    --floating-panel-panel-fill: --value(--color-*, [color]);
+    --floating-panel-panel-ink-text: --value(--color-ink-*, [color]);
+  }
+
+  [data-scope="floating-panel"][data-part="drag-trigger"] {
+    --floating-panel-panel-fill: --value(--color-*, [color]);
+    --floating-panel-panel-ink-text: --value(--color-ink-*, [color]);
+  }
+}
+
+@utility floating-panel--rounded-* {
+  [data-scope="floating-panel"][data-part="trigger"],
+  [data-scope="floating-panel"][data-part="drag-trigger"],
+  [data-scope="floating-panel"][data-part="body"] {
+    border-radius: --value(--radius-*, [length]);
+  }
+}
+
+@utility floating-panel--variant-solid {
+  [data-scope="floating-panel"][data-part="trigger"] {
+    background-color: var(--floating-panel-fill, var(--color-ui-active));
+    color: var(--floating-panel-ink, var(--color-ink));
+    border-color: transparent;
+
+    &:hover {
+      background-color: var(--floating-panel-fill-hover, var(--color-ui-hover));
+    }
+
+    &:active {
+      background-color: var(--floating-panel-fill-active, var(--color-ui-active));
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--floating-panel-ink, var(--color-ink));
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--floating-panel-muted, var(--color-ui-muted));
+      color: var(--floating-panel-ink, var(--color-ink-muted));
+      cursor: not-allowed;
+    }
+  }
+
+  [data-scope="floating-panel"][data-part="drag-trigger"] {
+    background-color: var(--floating-panel-panel-fill, var(--color-ui-active));
+    border-color: transparent;
+  }
+
+  [data-scope="floating-panel"][data-part="body"] {
+    background-color: var(--floating-panel-panel-fill, var(--color-ui-active));
+    color: var(--floating-panel-panel-ink-text, var(--color-ink));
+    border-color: transparent;
+  }
+}
+
+@utility floating-panel--variant-subtle {
+  [data-scope="floating-panel"][data-part="trigger"] {
+    background-color: var(--color-ui);
+    color: var(--floating-panel-ink-text, var(--color-ink));
+    border-color: var(--color-border);
+
+    &:hover {
+      background-color: var(--color-ui-active);
+    }
+
+    &:active {
+      background-color: var(--color-ui-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--floating-panel-ink-text, var(--color-ink));
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-ui-muted);
+      color: var(--color-ink-muted);
+      border-color: var(--color-ui-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  [data-scope="floating-panel"][data-part="drag-trigger"] {
+    background-color: var(--color-layer);
+    border-color: var(--color-border);
+  }
+
+  [data-scope="floating-panel"][data-part="body"] {
+    background-color: var(--color-root);
+    color: var(--color-ink);
+    border-color: var(--color-border);
+  }
+}
+
+@utility floating-panel--variant-ghost {
+  [data-scope="floating-panel"][data-part="trigger"] {
+    background-color: transparent;
+    color: var(--floating-panel-ink-text, var(--color-ink));
+    border-color: transparent;
+
+    &:hover {
+      background-color: var(--color-ui-hover);
+    }
+
+    &:active {
+      background-color: var(--color-ui-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--floating-panel-ink-text, var(--color-ink));
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: transparent;
+      color: var(--color-ink-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  [data-scope="floating-panel"][data-part="drag-trigger"] {
+    background-color: transparent;
+    border-color: transparent;
+  }
+
+  [data-scope="floating-panel"][data-part="body"] {
+    background-color: transparent;
+    color: var(--floating-panel-panel-ink-text, var(--color-ink));
+    border-color: transparent;
+  }
+}
+
+@utility floating-panel--variant-outline {
+  [data-scope="floating-panel"][data-part="trigger"] {
+    background-color: transparent;
+    color: var(--floating-panel-ink-text, var(--color-ink));
+    border-color: var(--floating-panel-fill, var(--color-border));
+
+    &:hover {
+      background-color: var(--color-ui-hover);
+    }
+
+    &:active {
+      background-color: var(--color-ui-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--floating-panel-fill, var(--color-ink));
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: transparent;
+      color: var(--color-ink-muted);
+      border-color: var(--color-ui-muted);
+      cursor: not-allowed;
+    }
+  }
+
+  [data-scope="floating-panel"][data-part="drag-trigger"] {
+    background-color: transparent;
+    border-color: var(--floating-panel-panel-fill, var(--color-border));
+  }
+
+  [data-scope="floating-panel"][data-part="body"] {
+    background-color: transparent;
+    color: var(--floating-panel-panel-ink-text, var(--color-ink));
+    border-color: var(--floating-panel-panel-fill, var(--color-border));
+  }
+}

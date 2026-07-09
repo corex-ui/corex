@@ -11,7 +11,7 @@ Never guess. Fallback: `mix usage_rules.search_docs "<id>" -p corex`.
 
 | Step | File | Action |
 |------|------|--------|
-| CSS | `assets/css/app.css` | `@import "../corex/components/<id>.css"` |
+| CSS | `assets/css/app.css` | `@import "../corex/components.css"` (list ids in `components:` config) |
 | Hook | `assets/js/app.js` | Register if component uses `phx-hook` |
 | HEEx | `lib/*_web/` | `<.<id> id="stable-id" class="<id> …">` |
 

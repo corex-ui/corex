@@ -69,8 +69,10 @@ assigns = Map.put(assigns, :mode, MyApp.Mode.current(assigns))
 Import in `assets/css/site.css`:
 
 ```css
-@import "../corex/components/toggle.css";
+@import "../corex/components.css";
 ```
+
+Include `toggle` in `components:` when you use a mode switcher.
 
 ### With Tableau Theming
 

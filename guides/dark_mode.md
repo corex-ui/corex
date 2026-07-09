@@ -212,10 +212,10 @@ If you use `mix corex.new --lang`, `on_mount MyAppWeb.Hooks.Layout` may already 
 ```css
 @import "../corex/main.css";
 @import "../corex/theme/neo.css";
-@import "../corex/components/typo.css";
-@import "../corex/components/layout.css";
-@import "../corex/components/toggle.css";
+@import "../corex/components.css";
 ```
+
+Include `toggle` in `components:` when you use a mode switcher.
 
 Corex Design themes define `[data-mode=dark]` overrides. Custom CSS can target `[data-mode="dark"]` the same way.
 

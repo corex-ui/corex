@@ -1,0 +1,56 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+[data-theme="neo"] {
+  --theme-text-sm: 0.875rem;
+  --theme-text-base: 1rem;
+  --theme-text-2xl: 1.5rem;
+  --theme-text-3xl: 1.875rem;
+  --theme-text-4xl: 2.25rem;
+  --theme-text-lg: 1.125rem;
+  --theme-text-xl: 1.25rem;
+  --theme-text-xs: 0.75rem;
+  --theme-text-5xl: 3rem;
+  --theme-text-6xl: 3.75rem;
+  --theme-text-7xl: 4.5rem;
+  --theme-text-8xl: 6rem;
+  --theme-text-9xl: 8rem;
+  --theme-text-xs--line-height: calc(1 / 0.75);
+  --theme-text-sm--line-height: calc(1.25 / 0.875);
+  --theme-text-base--line-height: calc(1.5 / 1);
+  --theme-text-lg--line-height: calc(1.75 / 1.125);
+  --theme-text-xl--line-height: calc(1.75 / 1.25);
+  --theme-text-2xl--line-height: calc(2 / 1.5);
+  --theme-text-3xl--line-height: calc(2.25 / 1.875);
+  --theme-text-4xl--line-height: calc(2.5 / 2.25);
+  --theme-text-5xl--line-height: 1;
+  --theme-text-6xl--line-height: 1;
+  --theme-text-7xl--line-height: 1;
+  --theme-text-8xl--line-height: 1;
+  --theme-text-9xl--line-height: 1;
+  --theme-text-leading-xs: 1.3333;
+  --theme-text-leading-sm: 1.4286;
+  --theme-text-leading-md: 1.5;
+  --theme-text-leading-lg: 1.5556;
+  --theme-text-leading-xl: 1.4;
+  --theme-text-leading-2xl: 1.3333;
+  --theme-text-leading-3xl: 1.2;
+  --theme-text-leading-4xl: 1.1111;
+  --theme-text-leading-5xl: 1;
+  --theme-text-leading-6xl: 1;
+  --theme-text-leading-7xl: 1;
+  --theme-text-leading-8xl: 1;
+  --theme-text-leading-9xl: 1;
+  --theme-text-leading-tight: 1.25;
+  --theme-text-leading-snug: 1.375;
+  --theme-text-leading-normal: 1.5;
+  --theme-text-leading-relaxed: 1.625;
+  --theme-text-leading-loose: 2;
+  --theme-text-tracking-tighter: -0.05em;
+  --theme-text-tracking-tight: -0.025em;
+  --theme-text-tracking-normal: 0em;
+  --theme-text-tracking-wide: 0.025em;
+  --theme-text-tracking-wider: 0.05em;
+  --theme-text-tracking-widest: 0.1em;
+}

@@ -79,7 +79,7 @@
     </script>
 <% end %>
   </head>
-  <body<%= if @design do %> class="typo layout"<% end %>>
+  <body<%= if @design do %> class="typo flex min-h-dvh min-w-0 flex-col overflow-x-hidden bg-root text-ink antialiased scrollbar scrollbar--sm [scrollbar-gutter:stable]"<% end %>>
     {@inner_content}
   </body>
 </html>

@@ -1,0 +1,309 @@
+@import "../main.css";
+
+@layer components {
+  .pin-input {
+    width: fit-content;
+    max-width: var(--container-md);
+  }
+
+  .pin-input[data-loading] [data-scope="pin-input"][data-part="root"] {
+    @apply ui-loading;
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="root"] {
+    @apply ui-root;
+
+    gap: var(--spacing-space);
+    position: relative;
+    padding-inline-end: var(--spacing-space);
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="root"][data-disabled] {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="root"][data-readonly] {
+    @apply ui-readonly;
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="label"] {
+    @apply ui-label;
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="label"][data-invalid] {
+    color: var(--color-ink-alert);
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="label"][data-disabled] {
+    color: var(--color-ink-muted);
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="label"][data-complete] {
+    color: var(--color-ink-success);
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="label"][data-readonly] {
+    color: var(--color-ink-muted);
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="control"] {
+    display: flex;
+    flex-flow: row nowrap;
+    gap: var(--spacing-space);
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="input"] {
+    @apply ui-input;
+
+    height: var(--spacing-size);
+    width: var(--spacing-size);
+    flex-shrink: 0;
+    text-align: center;
+    padding-inline: 0;
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="input"]:focus {
+    background-color: var(--color-root);
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--color-ink);
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="input"][data-filled]:not([data-complete]) {
+    background-color: var(--color-ui-hover);
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="input"][data-complete] {
+    color: var(--color-ink);
+    background-color: var(--color-ui);
+    border-color: var(--color-success);
+    box-shadow: none;
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="input"][data-complete]:focus {
+    box-shadow: inset 0 0 0 2px var(--color-success);
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="input"][data-invalid] {
+    color: var(--color-ink);
+    background-color: var(--color-ui);
+    border-color: var(--color-alert);
+    box-shadow: none;
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="input"][data-invalid]:focus {
+    box-shadow: inset 0 0 0 2px var(--color-alert);
+    outline: none;
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="input"][data-disabled] {
+    color: var(--color-ink-muted);
+    background-color: var(--color-ui-muted);
+    cursor: not-allowed;
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="error"] {
+    @apply ui-error;
+  }
+
+  .pin-input:not(.pin-input--variant-solid):not(.pin-input--variant-ghost):not(.pin-input--variant-outline)
+    [data-scope="pin-input"][data-part="input"]:not([data-complete]):not([data-invalid]) {
+    background-color: var(--color-ui);
+    color: var(--pin-input-ink-text, var(--color-ink));
+    border-color: var(--color-border);
+
+    &:hover {
+      background-color: var(--color-ui-active);
+    }
+
+    &:focus {
+      background-color: var(--color-root);
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--pin-input-ink-text, var(--color-ink));
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-ui-muted);
+      color: var(--color-ink-muted);
+      border-color: var(--color-ui-muted);
+      cursor: not-allowed;
+    }
+  }
+}
+
+@utility pin-input--* {
+  [data-scope="pin-input"][data-part="root"] {
+    gap: --value(--spacing-space-*, [length]);
+  }
+
+  [data-scope="pin-input"][data-part="label"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+  }
+
+  [data-scope="pin-input"][data-part="control"] {
+    gap: --value(--spacing-space-*, [length]);
+  }
+
+  [data-scope="pin-input"][data-part="input"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    height: --value(--spacing-size-*, [length]);
+    width: --value(--spacing-size-*, [length]);
+    --pin-input-fill: --value(--color-*, [color]);
+    --pin-input-fill-hover: --value(--color-*-hover, [color]);
+    --pin-input-fill-active: --value(--color-*-active, [color]);
+    --pin-input-ink: --value(--color-*-ink, [color]);
+    --pin-input-ink-text: --value(--color-ink-*, [color]);
+    --pin-input-muted: --value(--color-*-muted, [color]);
+  }
+
+  [data-scope="pin-input"][data-part="input"]:hover {
+    background-color: --value(--color-ui-hover, [color]);
+  }
+
+  [data-scope="pin-input"][data-part="input"]:focus {
+    background-color: var(--color-root);
+    box-shadow: inset 0 0 0 2px var(--pin-input-ink-text, var(--color-ink));
+  }
+
+  [data-scope="pin-input"][data-part="input"][data-filled]:not([data-complete]) {
+    background-color: --value(--color-ui-hover, [color]);
+  }
+
+  [data-scope="pin-input"][data-part="input"][data-complete] {
+    color: var(--color-ink);
+    background-color: --value(--color-ui, [color]);
+    border-color: --value(--color-*, [color]);
+  }
+
+  [data-scope="pin-input"][data-part="input"][data-complete]:focus {
+    box-shadow: inset 0 0 0 2px --value(--color-*, [color]);
+  }
+
+  [data-scope="pin-input"][data-part="input"][data-invalid] {
+    border-color: var(--color-alert);
+    background-color: --value(--color-ui, [color]);
+    color: var(--color-ink);
+  }
+
+  [data-scope="pin-input"][data-part="input"][data-invalid]:focus {
+    box-shadow: inset 0 0 0 2px var(--color-alert);
+  }
+}
+
+@utility pin-input--variant-solid {
+  [data-scope="pin-input"][data-part="input"]:not([data-complete]):not([data-invalid]) {
+    background-color: var(--pin-input-fill, var(--color-ui-active));
+    color: var(--pin-input-ink, var(--color-ink));
+    border-color: transparent;
+
+    &:hover {
+      background-color: var(--pin-input-fill-hover, var(--color-ui-hover));
+    }
+
+    &:focus {
+      background-color: var(--pin-input-fill, var(--color-ui-active));
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--pin-input-ink, var(--color-ink));
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--pin-input-muted, var(--color-ui-muted));
+      color: var(--pin-input-ink, var(--color-ink-muted));
+      cursor: not-allowed;
+    }
+  }
+}
+
+@utility pin-input--variant-subtle {
+  [data-scope="pin-input"][data-part="input"]:not([data-complete]):not([data-invalid]) {
+    background-color: var(--color-ui);
+    color: var(--pin-input-ink-text, var(--color-ink));
+    border-color: var(--color-border);
+
+    &:hover {
+      background-color: var(--color-ui-active);
+    }
+
+    &:focus {
+      background-color: var(--color-root);
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--pin-input-ink-text, var(--color-ink));
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-ui-muted);
+      color: var(--color-ink-muted);
+      border-color: var(--color-ui-muted);
+      cursor: not-allowed;
+    }
+  }
+}
+
+@utility pin-input--variant-ghost {
+  [data-scope="pin-input"][data-part="input"]:not([data-complete]):not([data-invalid]) {
+    background-color: transparent;
+    color: var(--pin-input-ink-text, var(--color-ink));
+    border-color: transparent;
+
+    &:hover {
+      background-color: var(--color-ui-hover);
+    }
+
+    &:focus {
+      background-color: transparent;
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--pin-input-ink-text, var(--color-ink));
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: transparent;
+      color: var(--color-ink-muted);
+      cursor: not-allowed;
+    }
+  }
+}
+
+@utility pin-input--variant-outline {
+  [data-scope="pin-input"][data-part="input"]:not([data-complete]):not([data-invalid]) {
+    background-color: transparent;
+    color: var(--pin-input-ink-text, var(--color-ink));
+    border-color: var(--pin-input-fill, var(--color-border));
+
+    &:hover {
+      background-color: var(--color-ui-hover);
+    }
+
+    &:focus {
+      background-color: transparent;
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--pin-input-fill, var(--color-ink));
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: transparent;
+      color: var(--color-ink-muted);
+      border-color: var(--color-ui-muted);
+      cursor: not-allowed;
+    }
+  }
+}
+
+@utility pin-input--rounded-* {
+  [data-scope="pin-input"][data-part="input"] {
+    border-radius: --value(--radius-*, [length]);
+  }
+}

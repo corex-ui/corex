@@ -1,0 +1,194 @@
+@import "../main.css";
+
+@layer components {
+  .avatar[data-loading] [data-scope="avatar"][data-part="root"] {
+    @apply ui-loading;
+  }
+
+  .avatar[dir="rtl"] [data-scope="avatar"][data-part="fallback"] {
+    text-align: end;
+  }
+
+  .avatar [data-scope="avatar"][data-part="root"] {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: var(--spacing-size);
+    height: var(--spacing-size);
+    aspect-ratio: 1 / 1;
+    max-width: 100%;
+    border-radius: var(--radius-full);
+    overflow: hidden;
+  }
+
+  .avatar [data-scope="avatar"][data-part="fallback"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: start;
+    width: 100%;
+    height: 100%;
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
+    font-weight: var(--font-weight-normal);
+    border-radius: inherit;
+    border: 1px solid var(--color-border);
+    gap: var(--spacing-space);
+    --avatar-fill: var(--color-ui);
+    --avatar-fill-hover: var(--color-ui-hover);
+    --avatar-fill-active: var(--color-ui-active);
+    --avatar-ink: var(--color-ink);
+    --avatar-ink-text: var(--color-ink);
+    --avatar-muted: var(--color-ui-muted);
+  }
+
+  .avatar:not(.avatar--variant-subtle):not(.avatar--variant-ghost):not(.avatar--variant-outline)
+    [data-scope="avatar"][data-part="fallback"] {
+    background-color: var(--avatar-fill, var(--color-ui-active));
+    color: var(--avatar-ink, var(--color-ink));
+    border-color: transparent;
+  }
+
+  .avatar [data-scope="avatar"][data-part="image"] {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: inherit;
+    position: relative;
+    z-index: 1;
+  }
+
+  .avatar [data-scope="avatar"][data-part="skeleton"] {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: block;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    border-radius: inherit;
+    background: linear-gradient(
+      90deg,
+      var(--color-ui-muted) 0%,
+      var(--color-border) 50%,
+      var(--color-ui-muted) 100%
+    );
+    background-size: 200% 100%;
+    animation: avatar-skeleton-loading 1.2s ease-in-out infinite;
+  }
+
+  .avatar [data-scope="avatar"][data-part="skeleton"][data-state="hidden"] {
+    display: none;
+  }
+}
+
+@keyframes avatar-skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@utility avatar--* {
+  & [data-scope="avatar"][data-part="fallback"] {
+    --avatar-fill: --value(--color-*, [color]);
+    --avatar-fill-hover: --value(--color-*-hover, [color]);
+    --avatar-fill-active: --value(--color-*-active, [color]);
+    --avatar-ink: --value(--color-*-ink, [color]);
+    --avatar-ink-text: --value(--color-ink-*, [color]);
+    --avatar-muted: --value(--color-*-muted, [color]);
+  }
+}
+
+@utility avatar--sm {
+  & [data-scope="avatar"][data-part="root"] {
+    max-width: var(--container-sm);
+    width: var(--spacing-size-sm);
+    height: var(--spacing-size-sm);
+  }
+
+  & [data-scope="avatar"][data-part="fallback"] {
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+  }
+}
+
+@utility avatar--md {
+  & [data-scope="avatar"][data-part="root"] {
+    max-width: var(--container-md);
+    width: var(--spacing-size-md);
+    height: var(--spacing-size-md);
+  }
+
+  & [data-scope="avatar"][data-part="fallback"] {
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
+  }
+}
+
+@utility avatar--lg {
+  & [data-scope="avatar"][data-part="root"] {
+    max-width: var(--container-lg);
+    width: var(--spacing-size-lg);
+    height: var(--spacing-size-lg);
+  }
+
+  & [data-scope="avatar"][data-part="fallback"] {
+    font-size: var(--text-lg);
+    line-height: var(--text-lg--line-height);
+  }
+}
+
+@utility avatar--xl {
+  & [data-scope="avatar"][data-part="root"] {
+    max-width: var(--container-xl);
+    width: var(--spacing-size-xl);
+    height: var(--spacing-size-xl);
+  }
+
+  & [data-scope="avatar"][data-part="fallback"] {
+    font-size: var(--text-xl);
+    line-height: var(--text-xl--line-height);
+  }
+}
+
+@utility avatar--rounded-* {
+  & [data-scope="avatar"][data-part="root"] {
+    border-radius: --value(--radius-*, [length]);
+  }
+}
+
+@utility avatar--variant-solid {
+  & [data-scope="avatar"][data-part="fallback"] {
+    background-color: var(--avatar-fill, var(--color-ui-active));
+    color: var(--avatar-ink, var(--color-ink));
+    border-color: transparent;
+  }
+}
+
+@utility avatar--variant-subtle {
+  & [data-scope="avatar"][data-part="fallback"] {
+    background-color: var(--color-ui);
+    color: var(--avatar-ink-text, var(--color-ink));
+    border-color: var(--color-border);
+  }
+}
+
+@utility avatar--variant-ghost {
+  & [data-scope="avatar"][data-part="fallback"] {
+    background-color: transparent;
+    color: var(--avatar-ink-text, var(--color-ink));
+    border-color: transparent;
+  }
+}
+
+@utility avatar--variant-outline {
+  & [data-scope="avatar"][data-part="fallback"] {
+    background-color: transparent;
+    color: var(--avatar-ink-text, var(--color-ink));
+    border-color: var(--avatar-fill, var(--color-border));
+  }
+}

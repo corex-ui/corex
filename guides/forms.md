@@ -69,6 +69,9 @@ end
 <.form :let={f} for={@form} action="/account/preferences" method="post">
   <.checkbox field={f[:terms]} class="checkbox">
     <:label>Accept terms</:label>
+    <:indicator>
+      <.heroicon name="hero-check" />
+    </:indicator>
     <:error :let={msg}>
       <.heroicon name="hero-exclamation-circle" class="icon" />
       {msg}
@@ -140,6 +143,9 @@ end
     invalid={Corex.FormField.invalid?(@form[:terms])}
   >
     <:label>Accept terms</:label>
+    <:indicator>
+      <.heroicon name="hero-check" />
+    </:indicator>
     <:error :let={msg}>
       <.heroicon name="hero-exclamation-circle" class="icon" />
       {msg}
@@ -179,6 +185,9 @@ Use `name` on the component when you are not using `to_form/2`. Checkbox values 
 
   <.checkbox name="user[accept_terms]" class="checkbox">
     <:label>Accept terms</:label>
+    <:indicator>
+      <.heroicon name="hero-check" />
+    </:indicator>
   </.checkbox>
 
   <.select
@@ -256,6 +265,9 @@ In LiveView, call `changeset_validate/2` inside `handle_event("validate", ...)` 
 ```heex
 <.checkbox field={@form[:terms]} class="checkbox" invalid={Corex.FormField.invalid?(@form[:terms])}>
   <:label>Accept terms</:label>
+  <:indicator>
+    <.heroicon name="hero-check" />
+  </:indicator>
   <:error :let={msg}>
     <.heroicon name="hero-exclamation-circle" class="icon" />
     {msg}

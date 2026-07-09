@@ -65,9 +65,35 @@ defmodule Corex.New.PostGenerate do
 
     if install? do
       PhxWrapper.run_deps_get!(phx_root)
+
+      if Keyword.get(opts, :design, false) do
+        build_design_assets!(phx_root)
+      end
     end
 
     Mix.shell().info(next_steps_message(cd_hint, install?, opts))
+  end
+
+  defp build_design_assets!(project_path) do
+    Mix.shell().info([:green, "* building ", :reset, "Corex design → assets/corex/"])
+
+    {output, exit_code} =
+      System.cmd(
+        "mix",
+        ["corex.design.build"],
+        cd: project_path,
+        stderr_to_stdout: true
+      )
+
+    if exit_code != 0 do
+      Mix.raise("""
+      Failed to build Corex design assets:
+
+      #{output}
+      """)
+    end
+
+    :ok
   end
 
   defp next_steps_message(cd_hint, install?, opts) do

@@ -34,6 +34,9 @@ corex-*.tar
 
 /assets/corex/
 
+/priv/corex_design/
+/priv/design/
+
 /playground/
 
 .cursor

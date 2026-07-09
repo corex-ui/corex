@@ -1,0 +1,175 @@
+@import "../main.css";
+
+@layer components {
+  .button {
+    @apply ui-trigger;
+
+    width: fit-content;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .button.button--square {
+    @apply ui-trigger--square;
+  }
+
+  .button.button--circle {
+    @apply ui-trigger--circle;
+  }
+
+  .button:not(.button--variant-solid):not(.button--variant-ghost):not(.button--variant-outline) {
+    background-color: var(--color-ui);
+    color: var(--button-ink-text, var(--color-ink));
+    border-color: var(--color-border);
+
+    &:hover {
+      background-color: var(--color-ui-active);
+    }
+
+    &:active {
+      background-color: var(--color-ui-active);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--button-ink-text, var(--color-ink));
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--color-ui-muted);
+      color: var(--color-ink-muted);
+      border-color: var(--color-ui-muted);
+      cursor: not-allowed;
+    }
+  }
+}
+
+@utility button--* {
+  font-size: --value(--text-*, [length]);
+  line-height: --value(--text-*--line-height, [length]);
+  padding: --value(--spacing-space-*, [length]);
+  gap: --value(--spacing-space-*, [length]);
+  min-height: --value(--spacing-size-*, [length]);
+  --button-fill: --value(--color-*, [color]);
+  --button-fill-hover: --value(--color-*-hover, [color]);
+  --button-fill-active: --value(--color-*-active, [color]);
+  --button-ink: --value(--color-*-ink, [color]);
+  --button-ink-text: --value(--color-ink-*, [color]);
+  --button-muted: --value(--color-*-muted, [color]);
+}
+
+@utility button--variant-solid {
+  background-color: var(--button-fill, var(--color-ui-active));
+  color: var(--button-ink, var(--color-ink));
+  border-color: transparent;
+
+  &:hover {
+    background-color: var(--button-fill-hover, var(--color-ui-hover));
+  }
+
+  &:active {
+    background-color: var(--button-fill-active, var(--color-ui-active));
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--button-ink, var(--color-ink));
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--button-muted, var(--color-ui-muted));
+    color: var(--button-ink, var(--color-ink-muted));
+    cursor: not-allowed;
+  }
+}
+
+@utility button--variant-subtle {
+  background-color: var(--color-ui);
+  color: var(--button-ink-text, var(--color-ink));
+  border-color: var(--color-border);
+
+  &:hover {
+    background-color: var(--color-ui-active);
+  }
+
+  &:active {
+    background-color: var(--color-ui-active);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--button-ink-text, var(--color-ink));
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: var(--color-ui-muted);
+    color: var(--color-ink-muted);
+    border-color: var(--color-ui-muted);
+    cursor: not-allowed;
+  }
+}
+
+@utility button--variant-ghost {
+  background-color: transparent;
+  color: var(--button-ink-text, var(--color-ink));
+  border-color: transparent;
+
+  &:hover {
+    background-color: var(--color-ui-hover);
+  }
+
+  &:active {
+    background-color: var(--color-ui-active);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--button-ink-text, var(--color-ink));
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: transparent;
+    color: var(--color-ink-muted);
+    cursor: not-allowed;
+  }
+}
+
+@utility button--variant-outline {
+  background-color: transparent;
+  color: var(--button-ink-text, var(--color-ink));
+  border-color: var(--button-fill, var(--color-border));
+
+  &:hover {
+    background-color: var(--color-ui-hover);
+  }
+
+  &:active {
+    background-color: var(--color-ui-active);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--button-fill, var(--color-ink));
+  }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: transparent;
+    color: var(--color-ink-muted);
+    border-color: var(--color-ui-muted);
+    cursor: not-allowed;
+  }
+}
+
+@utility button--rounded-* {
+  border-radius: --value(--radius-*, [length]);
+}

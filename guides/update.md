@@ -1,19 +1,19 @@
 # Updating Corex
 
-How to pull a newer **0.1.x** release into your app and refresh vendored assets.
+How to pull a newer Corex release into your app and refresh design assets.
 
 ## Elixir dependency
 
 In `mix.exs`:
 
 ```elixir
-{:corex, "~> 0.1.0"}
+{:corex, "~> 0.2.0"}
 ```
 
-`~> 0.1.0` keeps you on **0.1.0-rc.x** and **0.1.x** (patch and minor releases on that line). To move to a future **0.2.0**, change the requirement after reading [CHANGELOG.md](https://github.com/corex-ui/corex/blob/main/CHANGELOG.md).
+`~> 0.2.0` keeps you on **0.2.x** (patch and minor releases on that line). To move from **0.1.x**, change the requirement after reading [CHANGELOG.md](https://github.com/corex-ui/corex/blob/main/CHANGELOG.md).
 
 ```bash
-mix deps.update corex
+mix deps.update corex corex_design
 mix deps.get
 mix compile
 ```
@@ -23,16 +23,23 @@ mix compile
 When the release notes mention CSS, tokens, or design files:
 
 ```bash
-mix corex.design --force
+mix corex.design.build
 ```
 
-If you use Designex:
+Or run a full asset build:
 
 ```bash
-mix corex.design --designex --force
+mix assets.build
 ```
 
-Compare `assets/corex/VERSION` in your app with the version in `mix deps` after updating.
+### Migrating from `mix corex.design`
+
+If your app still uses copied design files without the `corex_design` dependency:
+
+1. Add `{:corex_design, "~> 0.2", runtime: false, only: :dev}` to `mix.exs`
+2. Add `config :corex_design` to `config/config.exs` (see [Manual installation](manual_installation.html))
+3. Add `"corex.design.build"` to `assets.build` and `assets.deploy`
+4. Run `mix deps.get && mix corex.design.build`
 
 ## After upgrading
 
@@ -41,4 +48,3 @@ Compare `assets/corex/VERSION` in your app with the version in `mix deps` after 
 3. Spot-check pages that use components you rely on (forms, overlays, tables).
 
 For a full manual install path (first-time setup), see [Manual installation](manual_installation.html).
-

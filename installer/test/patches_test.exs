@@ -242,7 +242,7 @@ defmodule Corex.New.PatchesTest do
       end)
     end
 
-    test "adds designex to single-line assets.deploy aliases" do
+    test "adds corex.design.build to single-line assets.deploy aliases" do
       mix_exs = """
       defmodule MyApp.MixProject do
         use Mix.Project
@@ -264,15 +264,15 @@ defmodule Corex.New.PatchesTest do
       end
       """
 
-      in_tmp(:patch_designex_deploy_single_line, fn ->
+      in_tmp(:patch_corex_design_build_deploy_single_line, fn ->
         File.write!("mix.exs", mix_exs)
-        Patches.patch_mix_exs(File.cwd!(), designex: true)
+        Patches.patch_mix_exs(File.cwd!(), design: true)
         body = File.read!("mix.exs")
-        assert body =~ ~s("assets.deploy": ["designex corex", "tailwind my_app --minify")
+        assert body =~ ~s("assets.deploy": ["corex.design.build", "tailwind my_app --minify")
       end)
     end
 
-    test "adds designex to multiline assets.deploy aliases" do
+    test "adds corex.design.build to multiline assets.deploy aliases" do
       mix_exs = """
       defmodule MyApp.MixProject do
         use Mix.Project
@@ -298,15 +298,15 @@ defmodule Corex.New.PatchesTest do
       end
       """
 
-      in_tmp(:patch_designex_deploy_multiline, fn ->
+      in_tmp(:patch_corex_design_build_deploy_multiline, fn ->
         File.write!("mix.exs", mix_exs)
-        Patches.patch_mix_exs(File.cwd!(), designex: true)
+        Patches.patch_mix_exs(File.cwd!(), design: true)
         body = File.read!("mix.exs")
-        assert body =~ "\"compile\", \"designex corex\", \"tailwind my_app --minify\""
+        assert body =~ "\"compile\", \"corex.design.build\", \"tailwind my_app --minify\""
       end)
     end
 
-    test "adds designex to multiline assets.build aliases" do
+    test "adds corex.design.build to multiline assets.build aliases" do
       mix_exs = """
       defmodule MyApp.MixProject do
         use Mix.Project
@@ -331,31 +331,31 @@ defmodule Corex.New.PatchesTest do
       end
       """
 
-      in_tmp(:patch_mix_exs_designex_multiline, fn ->
+      in_tmp(:patch_mix_exs_corex_design_build_multiline, fn ->
         File.write!("mix.exs", mix_exs)
-        Patches.patch_mix_exs(File.cwd!(), designex: true)
+        Patches.patch_mix_exs(File.cwd!(), design: true)
         body = File.read!("mix.exs")
-        assert body =~ "\"compile\", \"designex corex\""
-        assert body =~ "\"assets.deploy\": [\"designex corex\""
+        assert body =~ "\"compile\", \"corex.design.build\""
+        assert body =~ "\"assets.deploy\": [\"corex.design.build\""
       end)
     end
 
-    test "adds designex dep and aliases when designex: true" do
-      in_tmp(:patch_mix_exs_designex, fn ->
+    test "adds corex_design dep and corex.design.build aliases when design: true" do
+      in_tmp(:patch_mix_exs_corex_design_build, fn ->
         File.write!("mix.exs", @mix_exs_with_aliases)
 
-        Patches.patch_mix_exs(File.cwd!(), designex: true)
+        Patches.patch_mix_exs(File.cwd!(), design: true)
         body = File.read!("mix.exs")
-        assert body =~ ~r/\{:designex,\s*"~> 1.0",\s*runtime:\s*Mix\.env\(\)\s*==\s*:dev\}/
+        assert body =~ ~r/\{:corex_design,\s*"~> 0.2",\s*runtime:\s*false,\s*only:\s*:dev\}/
 
         assert body =~
-                 ~r/"assets\.build":\s*\[\s*"compile",\s*"designex corex",\s*"tailwind my_app"/
+                 ~r/"assets\.build":\s*\[\s*"compile",\s*"corex.design.build",\s*"tailwind my_app"/
 
-        assert body =~ ~r/"assets\.deploy":\s*\[\s*"designex corex",\s*"tailwind my_app --minify"/
+        assert body =~ ~r/"assets\.deploy":\s*\[\s*"corex.design.build",\s*"tailwind my_app --minify"/
 
-        Patches.patch_mix_exs(File.cwd!(), designex: true)
+        Patches.patch_mix_exs(File.cwd!(), design: true)
         body2 = File.read!("mix.exs")
-        assert Regex.scan(~r/"designex corex"/, body2) |> length() == 2
+        assert Regex.scan(~r/"corex.design.build"/, body2) |> length() == 2
       end)
     end
 
@@ -802,22 +802,19 @@ defmodule Corex.New.PatchesTest do
       end)
     end
 
-    test "adds config :designex when designex: true" do
-      in_tmp(:patch_config_designex, fn ->
+    test "adds config :corex_design when design: true" do
+      in_tmp(:patch_config_corex_design_build, fn ->
         File.mkdir_p!("config")
         File.write!("config/config.exs", @stock_config_exs)
 
-        Patches.patch_config_exs(File.cwd!(), otp_app: :my_app, designex: true)
+        Patches.patch_config_exs(File.cwd!(), otp_app: :my_app, design: true)
         body = File.read!("config/config.exs")
-        assert body =~ "config :designex"
-        assert body =~ ~s(version: "1.0.2")
-        assert body =~ ~s(commit: "1da4b31")
-        assert body =~ ~s(dir: "corex")
-        assert body =~ "--dir=design --script=build.mjs --tokens=tokens"
+        assert body =~ "config :corex_design"
+        assert body =~ ~s(output: "assets/corex")
 
-        Patches.patch_config_exs(File.cwd!(), otp_app: :my_app, designex: true)
+        Patches.patch_config_exs(File.cwd!(), otp_app: :my_app, design: true)
         body2 = File.read!("config/config.exs")
-        assert Regex.scan(~r/config :designex/, body2) |> length() == 1
+        assert Regex.scan(~r/config :corex_design/, body2) |> length() == 1
       end)
     end
   end

@@ -97,10 +97,10 @@ end
 
 ### CSS
 
-Add `select.css` and each theme file to `assets/css/site.css` (after the [Tableau](tableau.html) baseline imports):
+Add `select` to `components:` in `config :corex_design`, then import the generated entry in `assets/css/site.css` (after the [Tableau](tableau.html) baseline imports):
 
 ```css
-@import "../corex/components/select.css";
+@import "../corex/components.css";
 
 @import "../corex/theme/uno.css";
 @import "../corex/theme/duo.css";
