@@ -66,28 +66,22 @@ describe("buildDrawingOptions matrix", () => {
 
 describe("tree-view attr readers matrix", () => {
   it.each([
-    [{ controlled: true, expandedValue: "a,b" }, "expanded-value", "a,b"],
-    [{ defaultExpandedValue: "x" }, "expanded-value", "x"],
-    [{ controlled: true }, "expanded-value", ""],
-  ] as const)("readExpandedAttr %#", (attrs, attrName, expected) => {
+    [{ defaultExpandedValue: "a,b" }, "a,b"],
+    [{ defaultExpandedValue: "x" }, "x"],
+    [{}, ""],
+  ] as const)("readExpandedAttr %#", (attrs, expected) => {
     const node = document.createElement("div");
-    if (hasKey(attrs, "controlled") && attrs.controlled) node.dataset.controlled = "true";
-    if ("expandedValue" in attrs && typeof attrs.expandedValue === "string")
-      node.setAttribute(`data-${attrName}`, attrs.expandedValue);
     if ("defaultExpandedValue" in attrs && typeof attrs.defaultExpandedValue === "string")
       node.setAttribute("data-default-expanded-value", attrs.defaultExpandedValue);
     expect(readExpandedAttr(node)).toBe(expected);
   });
 
   it.each([
-    [{ controlled: true, selectedValue: "id-1" }, "id-1"],
+    [{ defaultSelectedValue: "id-1" }, "id-1"],
     [{ defaultSelectedValue: "id-2" }, "id-2"],
     [{}, ""],
   ] as const)("readSelectedAttr %#", (attrs, expected) => {
     const node = document.createElement("div");
-    if (hasKey(attrs, "controlled") && attrs.controlled) node.dataset.controlled = "true";
-    if ("selectedValue" in attrs && typeof attrs.selectedValue === "string")
-      node.setAttribute("data-selected-value", attrs.selectedValue);
     if ("defaultSelectedValue" in attrs && typeof attrs.defaultSelectedValue === "string")
       node.setAttribute("data-default-selected-value", attrs.defaultSelectedValue);
     expect(readSelectedAttr(node)).toBe(expected);

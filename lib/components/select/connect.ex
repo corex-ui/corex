@@ -31,20 +31,22 @@ defmodule Corex.Select.Connect do
     vlist = assigns.value || []
     form_field = Map.get(assigns, :form_field, false)
     controlled = Map.get(assigns, :controlled, false)
-    zag_controlled = form_field || controlled
+    zag_controlled = controlled
 
-    joined =
+    joined_csv = Corex.Helpers.joined_csv_values(vlist)
+
+    default_joined =
       if form_field do
         FormField.dataset_default_json(vlist)
       else
-        Corex.Helpers.joined_csv_values(vlist)
+        joined_csv
       end
 
     {value_str, default_value_str} =
       if zag_controlled do
-        {joined, nil}
+        {joined_csv, nil}
       else
-        Corex.Helpers.controlled_dataset_values(controlled, joined)
+        {nil, default_joined}
       end
 
     base = %{

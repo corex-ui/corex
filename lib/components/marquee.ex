@@ -98,14 +98,16 @@ defmodule Corex.Marquee do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/marquee.css";
+  @import "../corex/components.css";
   ```
 
   Stack modifiers on the host (`class` on `<.marquee>`).
 
+  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text). No variant axis (animation surface only). See the [modifier guide](modifiers.html).
+
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
 
   | Modifier | Classes |
   | -------- | ------- |

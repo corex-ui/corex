@@ -18,18 +18,17 @@ import {
 import "./chunks/chunk-B5L2AGOH.mjs";
 import {
   syncArrayHiddenInputsForPhoenix
-} from "./chunks/chunk-NZ3YNDJS.mjs";
+} from "./chunks/chunk-YVULSJ7W.mjs";
 import {
   notifyPhoenixFormChange
-} from "./chunks/chunk-VMKNATWC.mjs";
+} from "./chunks/chunk-ASQD2R2U.mjs";
 import {
   readPositioningOptions
 } from "./chunks/chunk-CNPBJL2G.mjs";
 import {
   mountStringListBinding,
-  readDatasetStringList,
-  readUpdatedServerStringList
-} from "./chunks/chunk-I2HPUDHJ.mjs";
+  readDatasetStringList
+} from "./chunks/chunk-S4GKLIQE.mjs";
 import {
   notifyChange
 } from "./chunks/chunk-2WCNJX5P.mjs";
@@ -4638,10 +4637,7 @@ var DatePickerHook = {
     const zag = this.datePicker;
     const min = getString(el, "min");
     const max = getString(el, "max");
-    const valuePatch = readUpdatedServerStringList(el);
-    const parsedValue = "value" in valuePatch ? { value: valuePatch.value.map((x) => parse(x)) } : {};
     zag?.updateProps({
-      ...parsedValue,
       dir: getString(el, "dir"),
       locale: getString(el, "locale"),
       timeZone: getString(el, "timeZone"),
@@ -4664,16 +4660,6 @@ var DatePickerHook = {
       positioning: readPositioningOptions(el),
       ...resolveZagDatePickerTranslations(el)
     });
-    if (!getString(el, "submitName")) {
-      queueMicrotask(() => {
-        const serverValues = "value" in valuePatch ? valuePatch.value : null;
-        let isoList = resolveIsoListForFormSync(el, zag?.api.value, serverValues);
-        if (zag) {
-          isoList = applyServerIsoToZagIfNeeded(zag, isoList);
-        }
-        syncDatePickerValueInput(el, isoList.join(","), false);
-      });
-    }
   },
   destroyed() {
     if (this.onSetValue) {

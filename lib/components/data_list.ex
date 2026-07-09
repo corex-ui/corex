@@ -81,6 +81,10 @@ defmodule Corex.DataList do
   [data-scope="data-list"][data-part="content"] {}
   [data-scope="data-list"][data-part="empty"] {}
   ```
+
+  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+
+  Variant modifiers control item row surface treatment. Default is subtle; add `data-list--variant-solid` for filled rows.
   '''
 
   @doc type: :component
@@ -194,6 +198,7 @@ defmodule Corex.DataList do
         data-part="root"
         data-orientation={@orientation}
         dir={@dir}
+        tabindex="0"
       >
         <div
           :if={@data_list_manual_mode}

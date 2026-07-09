@@ -160,6 +160,55 @@ defmodule Corex.Timer do
 
   <!-- tabs-close -->
 
+  ## Style
+
+  Import `timer.css` and stack modifiers on the host (`class` on `<.timer>`). Use Tailwind `max-w-*` on the root for width caps.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components.css";
+  ```
+
+  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on action triggers. Variant modifiers control action trigger surface treatment. Default is subtle; add `timer--variant-solid` for filled play/pause controls.
+
+  <!-- tabs-open -->
+
+  ### Semantic
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `timer` |
+  | Accent | `timer timer--accent` |
+  | Brand | `timer timer--brand` |
+  | Alert | `timer timer--alert` |
+  | Info | `timer timer--info` |
+  | Success | `timer timer--success` |
+
+  ### Variant
+
+  Visual treatment of `[data-part="action-trigger"]` only. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `timer` or `timer timer--accent` |
+  | Solid | `timer timer--accent timer--variant-solid` |
+  | Ghost | `timer timer--variant-ghost` |
+  | Outline | `timer timer--accent timer--variant-outline` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `timer timer--sm` |
+  | MD | `timer timer--md` |
+  | LG | `timer timer--lg` |
+  | XL | `timer timer--xl` |
+
+  <!-- tabs-close -->
+
   '''
 
   @doc type: :component

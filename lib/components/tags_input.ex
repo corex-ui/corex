@@ -184,14 +184,20 @@ defmodule Corex.TagsInput do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/tags-input.css";
+  @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.tags_input>`).
+  Stack modifiers on the host (`class` on `<.tags_input>`). Combine axes, for example `tags-input tags-input--accent tags-input--lg` or `tags-input tags-input--info tags-input--variant-solid`.
+
+  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on the input and tag chips. Variant modifiers control input surface treatment. Default is subtle; add `tags-input--variant-solid` for a filled typing field.
 
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
+
+  Palette variables for tags input ink and fill. Does not change surface treatment by itself.
 
   | Modifier | Classes |
   | -------- | ------- |
@@ -201,6 +207,17 @@ defmodule Corex.TagsInput do
   | Alert | `tags-input tags-input--alert` |
   | Info | `tags-input tags-input--info` |
   | Success | `tags-input tags-input--success` |
+
+  ### Variant
+
+  Visual treatment of the typing input surface. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `tags-input` or `tags-input tags-input--accent` |
+  | Solid | `tags-input tags-input--accent tags-input--variant-solid` |
+  | Ghost | `tags-input tags-input--variant-ghost` |
+  | Outline | `tags-input tags-input--accent tags-input--variant-outline` |
 
   ### Size
 
@@ -246,10 +263,9 @@ defmodule Corex.TagsInput do
 
   attr(:value, :list,
     default: [],
-    doc: "Initial or controlled list of tag strings; JSON-encoded for the hook"
+    doc: "Initial list of tag strings; JSON-encoded for the hook"
   )
 
-  attr(:controlled, :boolean, default: false)
   attr(:disabled, :boolean, default: false)
   attr(:read_only, :boolean, default: false)
   attr(:invalid, :boolean, default: false)
@@ -357,7 +373,6 @@ defmodule Corex.TagsInput do
         form_field: form_field,
         field_used: field_used,
         value: assigns.value,
-        controlled: assigns.controlled,
         disabled: assigns.disabled,
         read_only: assigns.read_only,
         invalid: assigns.invalid,

@@ -4,7 +4,7 @@ import {
 import {
   readStringControlledZagProps,
   readStringControlledZagUpdate
-} from "./chunks/chunk-I2HPUDHJ.mjs";
+} from "./chunks/chunk-S4GKLIQE.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -593,7 +593,7 @@ var Tabs = class extends Component {
     );
     triggers.forEach((triggerEl) => {
       const value = triggerEl.dataset.value;
-      const disabled = triggerEl.dataset.disabled == "";
+      const disabled = triggerEl.dataset.disabled === "";
       if (!value) return;
       this.spreadProps(triggerEl, this.api.getTriggerProps({ value, disabled }));
     });

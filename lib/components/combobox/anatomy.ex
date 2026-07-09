@@ -35,7 +35,20 @@ defmodule Corex.Combobox.Anatomy do
       on_value_change_client: nil,
       filter: true,
       redirect: false,
-      submit_name: nil
+      submit_name: nil,
+      allow_custom_value: false,
+      selection_behavior: "replace",
+      clear_on_empty: false,
+      open_on_click: nil,
+      open_on_change: nil,
+      open_on_key_press: nil,
+      composite: nil,
+      disable_layer: nil,
+      on_highlight_change: nil,
+      on_highlight_change_client: nil,
+      on_select: nil,
+      on_select_client: nil,
+      translation: nil
     ]
 
     @type t :: %__MODULE__{
@@ -67,7 +80,20 @@ defmodule Corex.Combobox.Anatomy do
             filter: boolean(),
             redirect: boolean(),
             form_field: boolean(),
-            submit_name: String.t() | nil
+            submit_name: String.t() | nil,
+            allow_custom_value: boolean(),
+            selection_behavior: String.t(),
+            clear_on_empty: boolean(),
+            open_on_click: boolean() | nil,
+            open_on_change: boolean() | nil,
+            open_on_key_press: boolean() | nil,
+            composite: boolean() | nil,
+            disable_layer: boolean() | nil,
+            on_highlight_change: String.t() | nil,
+            on_highlight_change_client: String.t() | nil,
+            on_select: String.t() | nil,
+            on_select_client: String.t() | nil,
+            translation: Corex.Combobox.Translation.t() | nil
           }
   end
 

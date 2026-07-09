@@ -254,14 +254,20 @@ defmodule Corex.Pagination do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/pagination.css";
+  @import "../corex/components.css";
   ```
 
-  Stack modifiers on `<.pagination class="pagination ...">`.
+  Stack modifiers on `<.pagination class="pagination ...">`. Combine axes, for example `pagination pagination--accent pagination--lg` or `pagination pagination--info pagination--variant-solid`.
+
+  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on item triggers. Variant modifiers control surface treatment. Default is subtle: unselected items use a neutral surface, the active page uses selected with semantic ink text. Add `pagination--variant-solid` for filled active and nav triggers.
 
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
+
+  Palette variables for pagination ink and fill. Does not change surface treatment by itself.
 
   | Modifier | Classes |
   | -------- | ------- |
@@ -272,6 +278,17 @@ defmodule Corex.Pagination do
   | Success | `pagination pagination--success` |
   | Info | `pagination pagination--info` |
 
+  ### Variant
+
+  Visual treatment of prev, next, and page item triggers. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `pagination` or `pagination pagination--accent` |
+  | Solid | `pagination pagination--accent pagination--variant-solid` |
+  | Ghost | `pagination pagination--variant-ghost` |
+  | Outline | `pagination pagination--accent pagination--variant-outline` |
+
   ### Size
 
   | Modifier | Classes |
@@ -281,16 +298,6 @@ defmodule Corex.Pagination do
   | MD | `pagination pagination--md` |
   | LG | `pagination pagination--lg` |
   | XL | `pagination pagination--xl` |
-
-  ### Text
-
-  | Modifier | Classes |
-  | -------- | ------- |
-  | Default | `pagination` |
-  | SM | `pagination pagination--text-sm` |
-  | XL | `pagination pagination--text-xl` |
-  | 2XL | `pagination pagination--text-2xl` |
-  | 4XL | `pagination pagination--text-4xl` |
 
   ### Rounded
 

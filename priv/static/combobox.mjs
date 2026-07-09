@@ -14,11 +14,11 @@ import {
 import "./chunks/chunk-B5L2AGOH.mjs";
 import {
   syncArrayHiddenInputsForPhoenix
-} from "./chunks/chunk-NZ3YNDJS.mjs";
+} from "./chunks/chunk-YVULSJ7W.mjs";
 import {
   queueLiveViewFormInputSync,
   reapplyLiveViewValueInputUsage
-} from "./chunks/chunk-VMKNATWC.mjs";
+} from "./chunks/chunk-ASQD2R2U.mjs";
 import {
   readPositioningOptions
 } from "./chunks/chunk-CNPBJL2G.mjs";
@@ -42,9 +42,8 @@ import {
   trackFocusVisible
 } from "./chunks/chunk-VDUSDBJS.mjs";
 import {
-  mountStringListBinding,
-  readUpdatedServerStringList
-} from "./chunks/chunk-I2HPUDHJ.mjs";
+  mountStringListBinding
+} from "./chunks/chunk-S4GKLIQE.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -65,6 +64,7 @@ import {
   dataAttr,
   ensure,
   getBoolean,
+  getBooleanValue,
   getDir,
   getEventKey,
   getString,
@@ -1554,6 +1554,27 @@ function getOpenChangeReason(event) {
 }
 
 // components/combobox.ts
+function resolveZagComboboxTranslations(el) {
+  const defaults = {
+    triggerLabel: "Open options",
+    clearTriggerLabel: "Clear selection"
+  };
+  const raw = el.dataset.translation;
+  if (!raw) {
+    return { translations: defaults };
+  }
+  try {
+    const m = JSON.parse(raw);
+    return {
+      translations: {
+        triggerLabel: m.triggerLabel ?? defaults.triggerLabel,
+        clearTriggerLabel: m.clearTriggerLabel ?? defaults.clearTriggerLabel
+      }
+    };
+  } catch {
+    return { translations: defaults };
+  }
+}
 var Combobox = class extends Component {
   options;
   allOptions;
@@ -1946,8 +1967,25 @@ function syncVisibleInputAttribute(el, value) {
   const visible = el.querySelector('[data-scope="combobox"][data-part="input"]');
   if (visible) visible.setAttribute("value", value);
 }
+function zagName(el) {
+  if (getString(el, "submitName")) return void 0;
+  const hidden = el.querySelector(
+    '[data-scope="combobox"][data-part="hidden-input"]'
+  );
+  if (hidden?.name) return void 0;
+  return getString(el, "name");
+}
+function zagForm(el) {
+  return getString(el, "form");
+}
+function optionalBooleanProp(el, key) {
+  const value = getBooleanValue(el, key);
+  if (value === void 0) return {};
+  return { [key]: value };
+}
 function buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox, markFieldTouched) {
   const redirectOn = getBoolean(el, "redirect");
+  const selectionBehavior = getString(el, "selectionBehavior") ?? "replace";
   return {
     id: el.id,
     disabled: getBoolean(el, "disabled"),
@@ -1960,11 +1998,19 @@ function buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox, mar
     loopFocus: getBoolean(el, "loopFocus"),
     multiple: redirectOn ? false : getBoolean(el, "multiple"),
     invalid: getBoolean(el, "invalid"),
-    allowCustomValue: false,
-    selectionBehavior: "replace",
+    allowCustomValue: getBoolean(el, "allowCustomValue"),
+    selectionBehavior,
     readOnly: getBoolean(el, "readonly"),
     required: getBoolean(el, "required"),
+    name: zagName(el),
+    form: zagForm(el),
     positioning: readPositioningOptions(el),
+    ...resolveZagComboboxTranslations(el),
+    ...optionalBooleanProp(el, "openOnClick"),
+    ...optionalBooleanProp(el, "openOnChange"),
+    ...optionalBooleanProp(el, "openOnKeyPress"),
+    ...optionalBooleanProp(el, "composite"),
+    ...optionalBooleanProp(el, "disableLayer"),
     onOpenChange: (details) => {
       notifyChange({
         el,
@@ -1982,6 +2028,9 @@ function buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox, mar
     },
     onInputValueChange: (details) => {
       syncVisibleInputAttribute(el, details.inputValue ?? "");
+      if (getBoolean(el, "clearOnEmpty") && details.reason === "input-change" && !(details.inputValue ?? "")) {
+        getCombobox()?.api.clearValue();
+      }
       notifyChange({
         el,
         canPushServer: canPush(),
@@ -2018,6 +2067,33 @@ function buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox, mar
         serverEventName: getString(el, "onValueChange"),
         clientEventName: getString(el, "onValueChangeClient")
       });
+    },
+    onHighlightChange: (details) => {
+      notifyChange({
+        el,
+        canPushServer: canPush(),
+        pushEvent,
+        payload: {
+          id: el.id,
+          highlightedValue: details.highlightedValue
+        },
+        serverEventName: getString(el, "onHighlightChange"),
+        clientEventName: getString(el, "onHighlightChangeClient")
+      });
+    },
+    onSelect: (details) => {
+      notifyChange({
+        el,
+        canPushServer: canPush(),
+        pushEvent,
+        payload: {
+          id: el.id,
+          value: details.value,
+          itemValue: details.itemValue
+        },
+        serverEventName: getString(el, "onSelect"),
+        clientEventName: getString(el, "onSelectClient")
+      });
     }
   };
 }
@@ -2028,6 +2104,8 @@ function comboboxMachineDomPropsForUpdate(el, pushEvent, canPush, liveSocket, ge
   delete rest.onOpenChange;
   delete rest.onInputValueChange;
   delete rest.onValueChange;
+  delete rest.onHighlightChange;
+  delete rest.onSelect;
   return rest;
 }
 var ComboboxHook = {
@@ -2070,16 +2148,23 @@ var ComboboxHook = {
     domRegistry.add("corex:combobox:set-value", (event) => {
       combobox.api.setValue(event.detail.value);
     });
+    domRegistry.add("corex:combobox:set-open", (event) => {
+      combobox.api.setOpen(event.detail.open);
+    });
     const registry = createHookHandleEventRegistry(this);
     this.handleRegistry = registry;
     registry.add("combobox_set_value", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       combobox.api.setValue(payload.value);
     });
+    registry.add("combobox_set_open", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      if (payload.open === void 0) return;
+      combobox.api.setOpen(payload.open);
+    });
   },
   updated() {
     if (!this.combobox) return;
-    const valuePatch = readUpdatedServerStringList(this.el);
     const newItemsJson = this.el.getAttribute("data-items") ?? "[]";
     if (newItemsJson !== this.lastItemsJson) {
       this.lastItemsJson = newItemsJson;
@@ -2100,24 +2185,13 @@ var ComboboxHook = {
         () => {
           this.fieldTouched = true;
         }
-      ),
-      ...valuePatch
+      )
     });
     if (this.combobox.api.open) {
       this.combobox.api.reposition();
     }
     this.combobox.renderItems();
     this.combobox.applyItemProps();
-    if ("value" in valuePatch) {
-      syncComboboxHiddenInputForPhoenix(this.el, valuePatch.value, void 0);
-      reapplyComboboxHiddenInputUsage(this.el);
-      const items = JSON.parse(this.el.getAttribute("data-items") ?? "[]");
-      const labels = valuePatch.value.map((value) => {
-        const item = items.find((entry) => String(entry.value ?? "") === String(value));
-        return { value, label: item?.label ?? value };
-      });
-      syncVisibleInputAttribute(this.el, selectedItemLabel(labels));
-    }
   },
   destroyed() {
     this.domRegistry?.teardown();

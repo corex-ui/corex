@@ -27,22 +27,12 @@ defmodule Corex.NumberInput.Connect do
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
-    form_field = Map.get(assigns, :form_field, false)
-    controlled = Map.get(assigns, :controlled, false)
     value_dataset = FormField.default_value_dataset(assigns, value_str(assigns.value))
-
-    {value_attr, default_attr} =
-      cond do
-        controlled -> {value_dataset, nil}
-        form_field -> {value_dataset, nil}
-        true -> {nil, value_dataset}
-      end
 
     %{
       "id" => assigns.id,
-      "data-controlled" => get_boolean(controlled),
-      "data-value" => value_attr,
-      "data-default-value" => default_attr,
+      "data-value" => nil,
+      "data-default-value" => value_dataset,
       "data-min" => num_attr(assigns.min),
       "data-max" => num_attr(assigns.max),
       "data-step" => num_attr(assigns.step),

@@ -295,14 +295,20 @@ defmodule Corex.RadioGroup do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/radio-group.css";
+  @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.radio_group>`).
+  Stack modifiers on the host (`class` on `<.radio_group>`). Combine axes, for example `radio-group radio-group--accent radio-group--lg` or `radio-group radio-group--info radio-group--variant-solid`.
+
+  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on item controls. Variant modifiers control surface treatment. Default is subtle: unchecked uses a neutral surface, checked uses selected with semantic ink text. Add `radio-group--variant-solid` for a filled checked state.
 
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
+
+  Palette variables for control ink and fill. Does not change surface treatment by itself.
 
   | Modifier | Classes |
   | -------- | ------- |
@@ -312,6 +318,17 @@ defmodule Corex.RadioGroup do
   | Alert | `radio-group radio-group--alert` |
   | Info | `radio-group radio-group--info` |
   | Success | `radio-group radio-group--success` |
+
+  ### Variant
+
+  Visual treatment of item controls. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `radio-group` or `radio-group radio-group--accent` |
+  | Solid | `radio-group radio-group--accent radio-group--variant-solid` |
+  | Ghost | `radio-group radio-group--variant-ghost` |
+  | Outline | `radio-group radio-group--accent radio-group--variant-outline` |
 
   ### Size
 

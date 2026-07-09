@@ -3,7 +3,6 @@ import {
 } from "./chunks/chunk-JDGMEOQK.mjs";
 import {
   contentDatasetValue,
-  isJsAnimation,
   prepareJsHeightInitialState,
   runHeightOpenTransition,
   stripHiddenFromProps
@@ -1443,10 +1442,10 @@ var TreeView = class extends Component {
 
 // hooks/tree-view.ts
 function readExpandedAttr(el) {
-  return getBoolean(el, "controlled") ? el.getAttribute("data-expanded-value") ?? "" : el.getAttribute("data-default-expanded-value") ?? "";
+  return el.getAttribute("data-default-expanded-value") ?? "";
 }
 function readSelectedAttr(el) {
-  return getBoolean(el, "controlled") ? el.getAttribute("data-selected-value") ?? "" : el.getAttribute("data-default-selected-value") ?? "";
+  return el.getAttribute("data-default-selected-value") ?? "";
 }
 function parseRootNode(el) {
   const raw = el.dataset.tree;
@@ -1471,21 +1470,15 @@ var TreeViewHook = {
     const canPush = () => canPushEvent(this.liveSocket);
     const rootNode = parseRootNode(el);
     this.lastDataTree = el.dataset.tree;
-    const controlled = getBoolean(el, "controlled");
-    self.lastExpanded = controlled ? getStringList(el, "expandedValue") ?? [] : getStringList(el, "defaultExpandedValue") ?? [];
-    self.lastSelected = controlled ? getStringList(el, "selectedValue") ?? [] : getStringList(el, "defaultSelectedValue") ?? [];
+    self.lastExpanded = getStringList(el, "defaultExpandedValue") ?? [];
+    self.lastSelected = getStringList(el, "defaultSelectedValue") ?? [];
     self.lastExpandedAttr = readExpandedAttr(el);
     self.lastSelectedAttr = readSelectedAttr(el);
     const treeView = new TreeView(el, {
       id: el.id,
       rootNode,
-      ...controlled ? {
-        expandedValue: getStringList(el, "expandedValue") ?? [],
-        selectedValue: getStringList(el, "selectedValue") ?? []
-      } : {
-        defaultExpandedValue: getStringList(el, "defaultExpandedValue") ?? [],
-        defaultSelectedValue: getStringList(el, "defaultSelectedValue") ?? []
-      },
+      defaultExpandedValue: getStringList(el, "defaultExpandedValue") ?? [],
+      defaultSelectedValue: getStringList(el, "defaultSelectedValue") ?? [],
       selectionMode: getString(el, "selectionMode") ?? "single",
       typeahead: el.dataset.typeahead !== "false",
       dir: getDir(el),
@@ -1610,12 +1603,6 @@ var TreeViewHook = {
       emitExpandedValue(parseRespondTo(payload));
     });
   },
-  beforeUpdate() {
-    const { el } = this;
-    if (getBoolean(el, "controlled") && isJsAnimation(el)) {
-      this.previousExpanded = getStringList(el, "expandedValue") ?? [];
-    }
-  },
   updated() {
     const { el } = this;
     const tv = this.treeView;
@@ -1625,38 +1612,18 @@ var TreeViewHook = {
       this.lastDataTree = rawTree;
       tv.replaceRootNode(parseRootNode(el));
     }
-    const controlled = getBoolean(el, "controlled");
     const interaction = readTreeViewInteractionProps(el);
-    const selected = controlled ? getStringList(el, "selectedValue") ?? [] : getStringList(el, "defaultSelectedValue") ?? [];
-    const expanded = controlled ? getStringList(el, "expandedValue") ?? [] : getStringList(el, "defaultExpandedValue") ?? [];
+    const selected = getStringList(el, "defaultSelectedValue") ?? [];
+    const expanded = getStringList(el, "defaultExpandedValue") ?? [];
     const expandedAttr = readExpandedAttr(el);
     const selectedAttr = readSelectedAttr(el);
     const expandedAttrChanged = expandedAttr !== this.lastExpandedAttr;
     const selectedAttrChanged = selectedAttr !== this.lastSelectedAttr;
     this.lastExpandedAttr = expandedAttr;
     this.lastSelectedAttr = selectedAttr;
-    if (!controlled) {
-      tv.updateProps(interaction);
-      if (expandedAttrChanged) tv.api.setExpandedValue(expanded);
-      if (selectedAttrChanged) tv.api.setSelectedValue(selected);
-      return;
-    }
-    const prevExpanded = this.previousExpanded ?? this.lastExpanded ?? [];
-    this.previousExpanded = void 0;
-    if (expandedAttrChanged) this.lastExpanded = expanded;
-    if (selectedAttrChanged) this.lastSelected = selected;
-    runHeightOpenTransition({
-      el,
-      selector: BRANCH_CONTENT_SELECTOR,
-      prevOpen: prevExpanded,
-      nextOpen: expanded,
-      resolveValue: contentDatasetValue
-    });
-    tv.updateProps({
-      ...interaction,
-      expandedValue: expanded,
-      selectedValue: selected
-    });
+    tv.updateProps(interaction);
+    if (expandedAttrChanged) tv.api.setExpandedValue(expanded);
+    if (selectedAttrChanged) tv.api.setSelectedValue(selected);
   },
   destroyed() {
     this.domRegistry?.teardown();

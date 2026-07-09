@@ -63,16 +63,17 @@ defmodule Corex.ComboboxTest do
       assert html =~ ~r/Required/
     end
 
-    test "renders open combobox" do
+    test "renders with allow_custom_value and selection_behavior attrs" do
       html =
         render_component(
           fn assigns ->
             ~H"""
             <Corex.Combobox.combobox
-              id="cb-open"
-              open
-              value="a"
-              items={Corex.List.new([%{label: "A", value: "a"}, %{label: "B", value: "b"}])}
+              id="cb-attrs"
+              allow_custom_value={true}
+              selection_behavior="preserve"
+              clear_on_empty={true}
+              items={Corex.List.new([%{label: "A", value: "a"}])}
             >
               <:trigger>Pick</:trigger>
             </Corex.Combobox.combobox>
@@ -81,7 +82,9 @@ defmodule Corex.ComboboxTest do
           %{}
         )
 
-      assert html =~ ~S(data-part="positioner")
+      assert html =~ ~s/data-allow-custom-value/
+      assert html =~ ~s/data-selection-behavior="preserve"/
+      assert html =~ ~s/data-clear-on-empty/
     end
 
     test "Connect.props with filter false sets data-filter to nil" do
@@ -124,7 +127,37 @@ defmodule Corex.ComboboxTest do
           assigns
         )
 
-      assert html =~ ~r/data-default-value="fra"/
+      assert html =~ ~r/data-default-value="\[\&quot;fra\&quot;\]"/
+    end
+
+    test "empty form field value encodes empty selection and hides clear trigger" do
+      form = %Phoenix.HTML.Form{id: "user", name: "user", data: %{}, params: %{}}
+
+      field = %Phoenix.HTML.FormField{
+        form: form,
+        field: :country,
+        id: "user_country",
+        name: "user[country]",
+        value: "",
+        errors: []
+      }
+
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <Corex.Combobox.combobox field={@field} items={[%{value: "fra", label: "France"}]}>
+              <:trigger>v</:trigger>
+              <:clear_trigger>clear</:clear_trigger>
+            </Corex.Combobox.combobox>
+            """
+          end,
+          %{field: field}
+        )
+
+      assert html =~ ~r/data-default-value="\[\]"/
+      assert html =~ ~r/data-part="clear-trigger"/
+      assert html =~ ~r/<button hidden[^>]*data-part="clear-trigger"/
     end
 
     test "visible input renders selected label as value attribute to survive morphdom patches" do
@@ -234,7 +267,7 @@ defmodule Corex.ComboboxTest do
           assigns
         )
 
-      assert html =~ ~r/data-default-value="unknown_id"/
+      assert html =~ ~r/data-default-value="\[\&quot;unknown_id\&quot;\]"/
     end
 
     test "renders with field as multiple values" do
@@ -263,7 +296,7 @@ defmodule Corex.ComboboxTest do
           assigns
         )
 
-      assert html =~ ~r/data-default-value="fra,bel"/
+      assert html =~ ~r/data-default-value="\[\&quot;fra\&quot;,\&quot;bel\&quot;\]"/
     end
   end
 
@@ -387,6 +420,26 @@ defmodule Corex.ComboboxTest do
       assert result["data-default-value"] == "a"
       assert result["data-value"] == nil
       assert result["data-controlled"] == nil
+    end
+  end
+
+  describe "set_open/2" do
+    test "returns JS command when open is true" do
+      js = Corex.Combobox.set_open("my-combobox", true)
+      assert %Phoenix.LiveView.JS{} = js
+    end
+
+    test "returns JS command when open is false" do
+      js = Corex.Combobox.set_open("my-combobox", false)
+      assert %Phoenix.LiveView.JS{} = js
+    end
+  end
+
+  describe "set_open/3" do
+    test "pushes event to socket" do
+      socket = %Phoenix.LiveView.Socket{}
+      result = Corex.Combobox.set_open(socket, "my-combobox", false)
+      assert %Phoenix.LiveView.Socket{} = result
     end
   end
 end

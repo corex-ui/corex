@@ -113,23 +113,40 @@ defmodule Corex.Clipboard do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/clipboard.css";
+  @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.clipboard>`).
+  Stack modifiers on the host (`class` on `<.clipboard>`). Combine axes, for example `clipboard clipboard--accent clipboard--lg` or `clipboard clipboard--info clipboard--variant-solid`.
+
+  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on the trigger. Variant modifiers control trigger surface treatment. Default is subtle. Copied feedback tints the input and trigger border and text only (surface stays on the UI tokens). Default copied palette is success; add a semantic modifier to override.
 
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
+
+  Palette variables for clipboard ink and fill. Does not change surface treatment by itself.
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Default | `clipboard` |
+  | Default (success on copy) | `clipboard` |
   | Accent | `clipboard clipboard--accent` |
   | Brand | `clipboard clipboard--brand` |
   | Alert | `clipboard clipboard--alert` |
   | Info | `clipboard clipboard--info` |
   | Success | `clipboard clipboard--success` |
+
+  ### Variant
+
+  Visual treatment of the copy trigger. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `clipboard` or `clipboard clipboard--accent` |
+  | Solid | `clipboard clipboard--accent clipboard--variant-solid` |
+  | Ghost | `clipboard clipboard--variant-ghost` |
+  | Outline | `clipboard clipboard--accent clipboard--variant-outline` |
 
   ### Size
 

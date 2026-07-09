@@ -242,12 +242,12 @@ defmodule Corex.SignaturePad do
   ```
 
   If you wish to use the default Corex styling, you can use the class `signature-pad` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+  This requires the `corex_design` dependency and `mix corex.design.build`; import the component css file.
 
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/signature-pad.css";
+  @import "../corex/components.css";
   ```
 
   Drawing stroke color is set with the `drawing_fill` attribute (a CSS color value such as
@@ -262,13 +262,18 @@ defmodule Corex.SignaturePad do
   >
   ```
 
+  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+
   | Modifier | Applies to |
   | -------- | ---------- |
-  | `signature-pad--{accent,brand,alert,success,info}` | Clear trigger only |
+  | `signature-pad--{accent,brand,alert,success,info}` | Clear trigger palette variables |
+  | `signature-pad--variant-{solid,subtle,ghost,outline}` | Clear trigger surface treatment |
   | `signature-pad--{sm,md,lg,xl}` | Label, control height, clear trigger |
   | `signature-pad--rounded-{none,sm,md,lg,xl,full}` | Control, pad surface, clear trigger |
 
-  The guide line (`data-part="guide"`) is not themed by color modifiers.
+  Default clear trigger treatment is subtle. Add `signature-pad--variant-solid` for a filled clear button.
+
+  The guide line (`data-part="guide"`) is not themed by semantic modifiers.
 
   '''
 

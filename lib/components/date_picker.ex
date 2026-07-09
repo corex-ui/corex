@@ -273,14 +273,20 @@ defmodule Corex.DatePicker do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/date-picker.css";
+  @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.date_picker>`).
+  Stack modifiers on the host (`class` on `<.date_picker>`). Combine axes, for example `date-picker date-picker--accent date-picker--lg` or `date-picker date-picker--info date-picker--variant-solid`.
+
+  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on the input and calendar trigger. Variant modifiers control field surface treatment. Default is subtle; add `date-picker--variant-solid` for a filled control.
 
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
+
+  Palette variables for date picker ink and fill. Does not change surface treatment by itself.
 
   | Modifier | Classes |
   | -------- | ------- |
@@ -290,6 +296,17 @@ defmodule Corex.DatePicker do
   | Alert | `date-picker date-picker--alert` |
   | Info | `date-picker date-picker--info` |
   | Success | `date-picker date-picker--success` |
+
+  ### Variant
+
+  Visual treatment of the input and calendar trigger surfaces. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `date-picker` or `date-picker date-picker--accent` |
+  | Solid | `date-picker date-picker--accent date-picker--variant-solid` |
+  | Ghost | `date-picker date-picker--variant-ghost` |
+  | Outline | `date-picker date-picker--accent date-picker--variant-outline` |
 
   ### Size
 
@@ -331,13 +348,7 @@ defmodule Corex.DatePicker do
 
   attr(:value, :string,
     default: nil,
-    doc: "The initial value or the controlled value (ISO date string)"
-  )
-
-  attr(:controlled, :boolean,
-    default: false,
-    doc:
-      "Whether the date picker is controlled. Only in LiveView, the on_value_change event is required"
+    doc: "The initial value (ISO date string)"
   )
 
   attr(:locale, :string,
@@ -582,7 +593,6 @@ defmodule Corex.DatePicker do
       {Connect.props(%Anatomy.Props{
         id: @id,
         form_field: @form_field,
-        controlled: @controlled,
         value: @value,
         locale: @locale,
         time_zone: @time_zone,

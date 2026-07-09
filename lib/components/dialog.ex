@@ -48,7 +48,7 @@ defmodule Corex.Dialog do
     <:content>
       <p>Are you sure you want to continue?</p>
       <div class="flex flex-wrap justify-end gap-2 mt-4">
-        <.action phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)} class="button button--sm button--ghost">
+        <.action phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)} class="button button--sm button--variant-ghost">
           Cancel
         </.action>
         <.action phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)} class="button button--sm">
@@ -275,7 +275,7 @@ defmodule Corex.Dialog do
     <:description>This action cannot be undone.</:description>
     <:content>
       <div class="flex flex-wrap justify-end gap-2 mt-4">
-        <.action id="delete-item-alert-cancel" phx-click={Corex.Dialog.set_open("delete-item-alert", false)} class="button button--sm button--ghost">
+        <.action id="delete-item-alert-cancel" phx-click={Corex.Dialog.set_open("delete-item-alert", false)} class="button button--sm button--variant-ghost">
           Cancel
         </.action>
         <.action phx-click={Corex.Dialog.set_open("delete-item-alert", false)} class="button button--sm button--alert">
@@ -297,6 +297,10 @@ defmodule Corex.Dialog do
   ## Style
 
   Stack modifiers on the host (`class` on `<.dialog>`).
+
+  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on the trigger and title. Variant modifiers control trigger and content panel surface treatment. Default is subtle; add `dialog--variant-solid` for a filled trigger or panel.
 
   When `prevent_scroll` is enabled, Zag sets `--scrollbar-width` on the document root. Fixed or sticky app chrome can compensate with `calc(... + var(--scrollbar-width, 0px))` at the app level; Corex does not apply this globally.
 
@@ -331,17 +335,6 @@ defmodule Corex.Dialog do
     <:trigger>Open</:trigger>
     <:title>Large</:title>
     <:content><p>Spacious dialog.</p></:content>
-    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
-  </.dialog>
-  ```
-
-  ### Text
-
-  ```heex
-  <.dialog class="dialog dialog--text-xl">
-    <:trigger>Open</:trigger>
-    <:title>Larger type</:title>
-    <:content><p>Title, description, and body scale with the modifier.</p></:content>
     <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
   </.dialog>
   ```

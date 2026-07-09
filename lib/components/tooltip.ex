@@ -137,14 +137,18 @@ defmodule Corex.Tooltip do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/tooltip.css";
+  @import "../corex/components.css";
   ```
 
   Stack modifiers on the host (`class` on `<.tooltip>`).
 
+  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on the content panel. Variant modifiers control tooltip panel surface treatment. Default is subtle; add `tooltip--variant-solid` for a filled panel.
+
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
 
   | Modifier | Classes |
   | -------- | ------- |
@@ -155,6 +159,17 @@ defmodule Corex.Tooltip do
   | Info | `tooltip tooltip--info` |
   | Success | `tooltip tooltip--success` |
 
+  ### Variant
+
+  Visual treatment of `[data-part="content"]`.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `tooltip` or `tooltip tooltip--accent` |
+  | Solid | `tooltip tooltip--accent tooltip--variant-solid` |
+  | Ghost | `tooltip tooltip--variant-ghost` |
+  | Outline | `tooltip tooltip--accent tooltip--variant-outline` |
+
   ### Size
 
   | Modifier | Classes |
@@ -163,13 +178,6 @@ defmodule Corex.Tooltip do
   | MD | `tooltip tooltip--md` |
   | LG | `tooltip tooltip--lg` |
   | XL | `tooltip tooltip--xl` |
-
-  ### Text
-
-  | Modifier | Classes |
-  | -------- | ------- |
-  | SM | `tooltip tooltip--text-sm` |
-  | XL | `tooltip tooltip--text-xl` |
 
   <!-- tabs-close -->
 

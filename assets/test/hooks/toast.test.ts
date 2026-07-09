@@ -1,4 +1,4 @@
-import { describe, expect, it, afterEach } from "vitest";
+import { describe, expect, it, afterEach, vi } from "vitest";
 import type { CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
 import {
   parseActionSpec,
@@ -143,6 +143,51 @@ describe("Toast hook lifecycle", () => {
       '[data-scope="toast"][data-part="action-trigger"]'
     );
     expect(action).toBeNull();
+
+    document.body.removeChild(el);
+    callHookDestroyed(Toast, hook);
+  });
+
+  it("corex:toast:create renders trusted action triggers", async () => {
+    const el = document.createElement("div");
+    el.id = groupId;
+    document.body.appendChild(el);
+
+    const { hook } = mockHookContext(el, {
+      connected: false,
+      overrides: {
+        groupId: "",
+        handlers: [] as CallbackRef[],
+        domListeners: [] as Array<{ el: HTMLElement; name: string; fn: EventListener }>,
+        js: () => ({ exec: () => {} }),
+      },
+    });
+
+    callHookMounted(Toast, hook);
+
+    el.dispatchEvent(
+      new CustomEvent("corex:toast:create", {
+        detail: {
+          id: "binding-toast",
+          title: "Saved",
+          description: "With action",
+          type: "success",
+          action: {
+            label: "Same page",
+            effects: [{ kind: "exec_js", encoded: "abc" }],
+          },
+        },
+      })
+    );
+
+    await vi.waitFor(() => {
+      const action = el.querySelector<HTMLElement>(
+        '[data-scope="toast"][data-part="action-trigger"]'
+      );
+      expect(action).toBeTruthy();
+      expect(action!.hidden).toBe(false);
+      expect(action!.textContent).toBe("Same page");
+    });
 
     document.body.removeChild(el);
     callHookDestroyed(Toast, hook);

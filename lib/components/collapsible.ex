@@ -223,18 +223,40 @@ defmodule Corex.Collapsible do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/collapsible.css";
+  @import "../corex/components.css";
   ```
+
+  Stack modifiers on the host (`class` on `<.collapsible>`). Combine axes, for example `collapsible collapsible--accent collapsible--lg` or `collapsible collapsible--info collapsible--variant-ghost`.
+
+  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on triggers. Variant modifiers control surface treatment. Default open triggers use a neutral selected surface with semantic text ink; add `collapsible--variant-solid` for a filled open trigger.
 
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
+
+  Palette variables for trigger ink and fill. Does not change open trigger treatment by itself.
 
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `collapsible collapsible--md` |
   | Accent | `collapsible collapsible--md collapsible--accent` |
   | Brand | `collapsible collapsible--md collapsible--brand` |
+  | Alert | `collapsible collapsible--md collapsible--alert` |
+  | Info | `collapsible collapsible--md collapsible--info` |
+  | Success | `collapsible collapsible--md collapsible--success` |
+
+  ### Variant
+
+  Visual treatment of the trigger. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `collapsible collapsible--md` or `collapsible collapsible--md collapsible--accent` |
+  | Solid | `collapsible collapsible--md collapsible--accent collapsible--variant-solid` |
+  | Ghost | `collapsible collapsible--md collapsible--info collapsible--variant-ghost` |
+  | Outline | `collapsible collapsible--md collapsible--accent collapsible--variant-outline` |
 
   ### Size
 

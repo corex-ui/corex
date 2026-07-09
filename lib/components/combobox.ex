@@ -133,6 +133,8 @@ defmodule Corex.Combobox do
   | -------- | ------ | ------- |
   | [`set_value/2`](#set_value/2) | Set selection (client) | `%Phoenix.LiveView.JS{}` |
   | [`set_value/3`](#set_value/3) | Set selection (server) | `socket` |
+  | [`set_open/2`](#set_open/2) | Open or close menu (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_open/3`](#set_open/3) | Open or close menu (server) | `socket` |
 
   ```heex
   <.action phx-click={Corex.Combobox.set_value("combobox-api", ["fra"])} class="button button--sm">France</.action>
@@ -144,16 +146,21 @@ defmodule Corex.Combobox do
 
   | Event | When | Payload |
   | ----- | ---- | ------- |
-  | `on_value_change="combobox_value_changed"` | Selection changes | `%{"id" => id, "value" => values}` |
-  | `on_open_change="combobox_open_changed"` | Menu open state changes | `%{"id" => id, "open" => open}` |
+  | `on_value_change="combobox_value_changed"` | Selection changes | `%{"id" => id, "value" => values, "items" => items}` |
+  | `on_open_change="combobox_open_changed"` | Menu open state changes | `%{"id" => id, "open" => open, "reason" => reason, "value" => values}` |
   | `on_input_value_change="combobox_search"` | Input text changes (server filter) | `%{"id" => id, "value" => string, "reason" => reason}` |
+  | `on_highlight_change="combobox_highlight_changed"` | Highlighted option changes | `%{"id" => id, "highlightedValue" => value}` |
+  | `on_select="combobox_selected"` | Item picked | `%{"id" => id, "value" => values, "itemValue" => item}` |
 
   ### Client events
 
   | Event | When | `event.detail` |
   | ----- | ---- | -------------- |
   | `on_value_change_client="combobox-value-changed"` | Selection changes | `id`, `value`, `items` |
-  | `on_open_change_client="combobox-open-changed"` | Menu open state changes | `id`, `open` |
+  | `on_open_change_client="combobox-open-changed"` | Menu open state changes | `id`, `open`, `reason`, `value` |
+  | `on_input_value_change_client="combobox-input-changed"` | Input text changes | `id`, `value`, `reason` |
+  | `on_highlight_change_client="combobox-highlight-changed"` | Highlighted option changes | `id`, `highlightedValue` |
+  | `on_select_client="combobox-selected"` | Item picked | `id`, `value`, `itemValue` |
 
   ## Patterns
 
@@ -225,12 +232,12 @@ defmodule Corex.Combobox do
   ```
 
   If you wish to use the default Corex styling, you can use the class `combobox` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+  This requires the `corex_design` dependency and `mix corex.design.build`; import the component css file.
 
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/combobox.css";
+  @import "../corex/components.css";
   ```
 
   You can then use modifiers
@@ -243,6 +250,47 @@ defmodule Corex.Combobox do
     </:trigger>
   </.combobox>
   ```
+
+  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on the input and triggers. Variant modifiers control field surface treatment. Default is subtle; add `combobox--variant-solid` for a filled control.
+
+  <!-- tabs-open -->
+
+  ### Semantic
+
+  Palette variables for combobox ink and fill. Does not change surface treatment by itself.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `combobox` |
+  | Accent | `combobox combobox--accent` |
+  | Brand | `combobox combobox--brand` |
+  | Alert | `combobox combobox--alert` |
+  | Info | `combobox combobox--info` |
+  | Success | `combobox combobox--success` |
+
+  ### Variant
+
+  Visual treatment of the input and trigger surfaces. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `combobox` or `combobox combobox--accent` |
+  | Solid | `combobox combobox--accent combobox--variant-solid` |
+  | Ghost | `combobox combobox--variant-ghost` |
+  | Outline | `combobox combobox--accent combobox--variant-outline` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `combobox combobox--sm` |
+  | MD | `combobox combobox--md` |
+  | LG | `combobox combobox--lg` |
+  | XL | `combobox combobox--xl` |
+
+  <!-- tabs-close -->
 
   ## Form
 
@@ -369,6 +417,47 @@ defmodule Corex.Combobox do
       "When true, filter options client-side by input value. Set to false when using on_input_value_change for server-side filtering"
   )
 
+  attr(:allow_custom_value, :boolean,
+    default: false,
+    doc: "Whether the combobox accepts values not in the collection"
+  )
+
+  attr(:selection_behavior, :string,
+    default: "replace",
+    values: ["clear", "replace", "preserve"],
+    doc: "How selection behaves when picking items"
+  )
+
+  attr(:clear_on_empty, :boolean,
+    default: false,
+    doc: "When true, clearing the input text clears the current selection"
+  )
+
+  attr(:open_on_click, :boolean,
+    default: nil,
+    doc: "Whether clicking the input opens the menu. Omit to use the Zag default (false)"
+  )
+
+  attr(:open_on_change, :boolean,
+    default: nil,
+    doc: "Whether typing opens the menu. Omit to use the Zag default (true)"
+  )
+
+  attr(:open_on_key_press, :boolean,
+    default: nil,
+    doc: "Whether key presses open the menu. Omit to use the Zag default (true)"
+  )
+
+  attr(:composite, :boolean,
+    default: nil,
+    doc: "Whether the combobox is composite. Omit to use the Zag default (true)"
+  )
+
+  attr(:disable_layer, :boolean,
+    default: nil,
+    doc: "Whether to disable the popover layer. Omit to use the Zag default (false)"
+  )
+
   attr(:on_input_value_change, :string,
     default: nil,
     doc: "The server event name to trigger on input value change"
@@ -387,6 +476,26 @@ defmodule Corex.Combobox do
   attr(:on_value_change_client, :string,
     default: nil,
     doc: "The client event name to trigger on value change"
+  )
+
+  attr(:on_highlight_change, :string,
+    default: nil,
+    doc: "The server event name to trigger on highlight change"
+  )
+
+  attr(:on_highlight_change_client, :string,
+    default: nil,
+    doc: "The client event name to trigger on highlight change"
+  )
+
+  attr(:on_select, :string,
+    default: nil,
+    doc: "The server event name to trigger when an item is selected"
+  )
+
+  attr(:on_select_client, :string,
+    default: nil,
+    doc: "The client event name to trigger when an item is selected"
   )
 
   attr(:redirect, :boolean,
@@ -442,6 +551,8 @@ defmodule Corex.Combobox do
     doc:
       "A form field struct retrieved from the form, for example: @form[:country]. Automatically sets id, name, value, and errors from the form field"
   )
+
+  attr(:form_field, :boolean, default: false)
 
   attr(:errors, :list,
     default: [],
@@ -506,23 +617,15 @@ defmodule Corex.Combobox do
         end
       end)
 
+    assigns = assign(assigns, :hook_attrs, combobox_connect_props(assigns))
+
     ~H"""
     <div id={@id} 
     phx-hook="Combobox" 
     data-loading
     phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
     {@rest}
-    {Connect.props(%Props{
-      id: @id, items: @items, form_field: @form_field, placeholder: @placeholder, value: @value,
-      always_submit_on_enter: @always_submit_on_enter, auto_focus: @auto_focus, close_on_select: @close_on_select,
-      dir: @dir, orientation: @orientation, input_behavior: @input_behavior, loop_focus: @loop_focus, multiple: @multiple, invalid: @invalid,
-      read_only: @read_only, required: @required,
-      on_open_change: @on_open_change, on_open_change_client: @on_open_change_client, on_input_value_change: @on_input_value_change, on_input_value_change_client: @on_input_value_change_client, on_value_change: @on_value_change,
-      on_value_change_client: @on_value_change_client,
-      positioning: @positioning,
-      redirect: @redirect,
-      disabled: @disabled, filter: @filter, submit_name: @submit_name
-    })}>
+    {@hook_attrs}>
       <div phx-mounted={Connect.ignore_root(%Root{id: @id, invalid: @invalid, read_only: @read_only, orientation: @orientation, dir: @dir})} {Connect.root(%Root{id: @id, invalid: @invalid, read_only: @read_only, orientation: @orientation, dir: @dir})}>
         <div
           :if={@submit_name}
@@ -712,10 +815,23 @@ defmodule Corex.Combobox do
 
   defp get_value(field_value) do
     case field_value do
-      nil -> []
-      [] -> []
-      value when is_list(value) -> Enum.map(value, &to_string/1)
-      value -> [to_string(value)]
+      nil ->
+        []
+
+      "" ->
+        []
+
+      [] ->
+        []
+
+      value when is_list(value) ->
+        value
+        |> Enum.map(&to_string/1)
+        |> Enum.reject(&(&1 == ""))
+
+      value ->
+        s = to_string(value)
+        if s == "", do: [], else: [s]
     end
   end
 
@@ -825,5 +941,97 @@ defmodule Corex.Combobox do
       id: combobox_id,
       value: Corex.Helpers.normalize_string_list_value!(value)
     })
+  end
+
+  api_doc(~S"""
+  Open or close the menu from a control (`phx-click`).
+
+  ```heex
+  <.action phx-click={Corex.Combobox.set_open("my-combobox", true)}>Open</.action>
+  ```
+
+  ```javascript
+  document.getElementById("my-combobox")?.dispatchEvent(
+    new CustomEvent("corex:combobox:set-open", {
+      bubbles: false,
+      detail: { open: true },
+    })
+  );
+  ```
+  """)
+
+  def set_open(combobox_id, open) when is_binary(combobox_id) and is_boolean(open) do
+    JS.dispatch("corex:combobox:set-open",
+      to: "##{combobox_id}",
+      detail: %{open: open},
+      bubbles: false
+    )
+  end
+
+  api_doc(~S"""
+  Open or close the menu from `handle_event`. Pushes `combobox_set_open`.
+
+  ```elixir
+  def handle_event("open_combobox", _, socket) do
+    {:noreply, Corex.Combobox.set_open(socket, "my-combobox", true)}
+  end
+  ```
+  """)
+
+  def set_open(socket, combobox_id, open)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(combobox_id) and
+             is_boolean(open) do
+    LiveView.push_event(socket, "combobox_set_open", %{id: combobox_id, open: open})
+  end
+
+  defp combobox_connect_props(assigns) do
+    props = %Props{
+      id: assigns.id,
+      items: assigns.items,
+      form_field: assigns[:form_field] == true,
+      placeholder: assigns.placeholder,
+      value: assigns.value,
+      name: assigns.name,
+      form: assigns.form,
+      translation: assigns.translation,
+      always_submit_on_enter: assigns.always_submit_on_enter,
+      auto_focus: assigns.auto_focus,
+      close_on_select: assigns.close_on_select,
+      dir: assigns.dir,
+      orientation: assigns.orientation,
+      input_behavior: assigns.input_behavior,
+      loop_focus: assigns.loop_focus,
+      multiple: assigns.multiple,
+      invalid: assigns.invalid,
+      read_only: assigns.read_only,
+      required: assigns.required,
+      on_open_change: assigns.on_open_change,
+      on_open_change_client: assigns.on_open_change_client,
+      on_input_value_change: assigns.on_input_value_change,
+      on_input_value_change_client: assigns.on_input_value_change_client,
+      on_value_change: assigns.on_value_change,
+      on_value_change_client: assigns.on_value_change_client,
+      on_highlight_change: assigns.on_highlight_change,
+      on_highlight_change_client: assigns.on_highlight_change_client,
+      on_select: assigns.on_select,
+      on_select_client: assigns.on_select_client,
+      positioning: assigns.positioning,
+      redirect: assigns.redirect,
+      disabled: assigns.disabled,
+      filter: assigns.filter,
+      allow_custom_value: Map.get(assigns, :allow_custom_value, false),
+      selection_behavior: Map.get(assigns, :selection_behavior, "replace"),
+      clear_on_empty: Map.get(assigns, :clear_on_empty, false),
+      open_on_click: Map.get(assigns, :open_on_click),
+      open_on_change: Map.get(assigns, :open_on_change),
+      open_on_key_press: Map.get(assigns, :open_on_key_press),
+      composite: Map.get(assigns, :composite),
+      disable_layer: Map.get(assigns, :disable_layer),
+      submit_name: Map.get(assigns, :submit_name)
+    }
+
+    props
+    |> Connect.props()
+    |> Corex.FormField.put_form_field_attrs(assigns)
   end
 end

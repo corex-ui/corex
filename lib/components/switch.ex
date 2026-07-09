@@ -149,14 +149,20 @@ defmodule Corex.Switch do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/switch.css";
+  @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.switch>`).
+  Stack modifiers on the host (`class` on `<.switch>`). Combine axes, for example `switch switch--accent switch--lg` or `switch switch--info switch--variant-solid`.
+
+  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on the track and thumb. Variant modifiers control surface treatment. Default is subtle: unchecked uses a neutral track with semantic thumb color, checked uses selected with semantic ink text. Add `switch--variant-solid` for a filled checked track.
 
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
+
+  Palette variables for track fill and thumb ink. Does not change surface treatment by itself.
 
   | Modifier | Classes |
   | -------- | ------- |
@@ -166,6 +172,17 @@ defmodule Corex.Switch do
   | Alert | `switch switch--alert` |
   | Info | `switch switch--info` |
   | Success | `switch switch--success` |
+
+  ### Variant
+
+  Visual treatment of the track and thumb. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `switch` or `switch switch--accent` |
+  | Solid | `switch switch--accent switch--variant-solid` |
+  | Ghost | `switch switch--variant-ghost` |
+  | Outline | `switch switch--accent switch--variant-outline` |
 
   ### Size
 

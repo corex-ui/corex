@@ -99,39 +99,7 @@ defmodule Corex.PinInputTest do
       assert result["data-on-value-complete-client"] == "done-client"
     end
 
-    test "controlled uses data-value" do
-      result =
-        Connect.props(%{
-          id: "pin",
-          controlled: true,
-          value: ["1", "2"],
-          count: 4,
-          disabled: false,
-          invalid: false,
-          required: false,
-          read_only: false,
-          mask: false,
-          otp: false,
-          blur_on_complete: false,
-          select_on_focus: false,
-          name: nil,
-          form: nil,
-          dir: "ltr",
-          orientation: "horizontal",
-          type: "numeric",
-          placeholder: "○",
-          on_value_change: nil,
-          on_value_change_client: nil,
-          on_value_complete: nil,
-          on_value_complete_client: nil
-        })
-
-      assert result["data-controlled"] == ""
-      assert result["data-value"] == ~S(["1","2","",""])
-      assert result["data-default-value"] == nil
-    end
-
-    test "form_field uses data-value and data-controlled" do
+    test "form_field uses data-default-value" do
       result =
         Connect.props(%{
           id: "pin",
@@ -158,10 +126,10 @@ defmodule Corex.PinInputTest do
           on_value_complete_client: nil
         })
 
-      assert result["data-controlled"] == ""
+      assert result["data-controlled"] == nil
       assert result["data-form-field"] == "true"
-      assert result["data-value"] == ~S(["1","","",""])
-      assert result["data-default-value"] == nil
+      assert result["data-default-value"] == ~S(["1","","",""])
+      assert result["data-value"] == nil
     end
 
     test "renders on_value_complete_client on host" do

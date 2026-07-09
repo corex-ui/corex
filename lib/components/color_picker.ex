@@ -36,8 +36,51 @@ defmodule Corex.ColorPicker do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/color-picker.css";
+  @import "../corex/components.css";
   ```
+
+  Stack modifiers on the host (`class` on `<.color_picker>`). Combine axes, for example `color-picker color-picker--accent color-picker--lg` or `color-picker color-picker--info color-picker--variant-solid`.
+
+  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on the swatch trigger and channel inputs. Variant modifiers control field surface treatment. Default is subtle; add `color-picker--variant-solid` for a filled control.
+
+  <!-- tabs-open -->
+
+  ### Semantic
+
+  Palette variables for color picker ink and fill. Does not change surface treatment by itself.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `color-picker` |
+  | Accent | `color-picker color-picker--accent` |
+  | Brand | `color-picker color-picker--brand` |
+  | Alert | `color-picker color-picker--alert` |
+  | Info | `color-picker color-picker--info` |
+  | Success | `color-picker color-picker--success` |
+
+  ### Variant
+
+  Visual treatment of the swatch trigger and channel input surfaces. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `color-picker` or `color-picker color-picker--accent` |
+  | Solid | `color-picker color-picker--accent color-picker--variant-solid` |
+  | Ghost | `color-picker color-picker--variant-ghost` |
+  | Outline | `color-picker color-picker--accent color-picker--variant-outline` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `color-picker color-picker--sm` |
+  | MD | `color-picker color-picker--md` |
+  | LG | `color-picker color-picker--lg` |
+  | XL | `color-picker color-picker--xl` |
+
+  <!-- tabs-close -->
 
   ## API
 

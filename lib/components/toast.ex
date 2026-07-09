@@ -92,14 +92,18 @@ defmodule Corex.Toast do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/toast.css";
+  @import "../corex/components.css";
   ```
 
   Stack modifiers on the group host (`class` on `<.toast_group>`).
 
+  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on action triggers and content panels. Variant modifiers control action trigger and toast panel surface treatment. Default is subtle; add `toast--variant-solid` for filled action buttons or panels.
+
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
 
   | Modifier | Classes |
   | -------- | ------- |
@@ -109,6 +113,17 @@ defmodule Corex.Toast do
   | Alert | `toast toast--alert` |
   | Info | `toast toast--info` |
   | Success | `toast toast--success` |
+
+  ### Variant
+
+  Visual treatment of `[data-part="action-trigger"]` and the content panel.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `toast` or `toast toast--accent` |
+  | Solid | `toast toast--accent toast--variant-solid` |
+  | Ghost | `toast toast--variant-ghost` |
+  | Outline | `toast toast--accent toast--variant-outline` |
 
   <!-- tabs-close -->
 
@@ -478,7 +493,7 @@ defmodule Corex.Toast do
   end
 
   api_doc(~S"""
-  Append a toast from `phx-click`. Dispatches `toast:create` on the toast group host (`id`). Optional keyword `opts`: `:id`, `:duration`, `:loading`, `:priority`, `:action`.
+  Append a toast from `phx-click`. Dispatches `corex:toast:create` on the toast group host (`id`). Optional keyword `opts`: `:id`, `:duration`, `:loading`, `:priority`, `:action`.
 
   ```heex
   <.action phx-click={Corex.Toast.create("toast-group-id", "Saved", "Draft stored.", :info, duration: 4_000)}>Notify</.action>
@@ -498,7 +513,7 @@ defmodule Corex.Toast do
   def create(toast_group_id, title, description, type, opts)
       when is_binary(toast_group_id) and is_list(opts) do
     detail = ToastPayload.create_detail(title, description, type, opts)
-    JS.dispatch("toast:create", to: "##{toast_group_id}", detail: detail)
+    JS.dispatch("corex:toast:create", to: "##{toast_group_id}", detail: detail)
   end
 
   api_doc(~S"""

@@ -277,9 +277,37 @@ defmodule Corex.TreeViewTest do
       }
 
       result = Connect.item(assigns)
-      assert result["id"] == "tree:test-tree:node:node-1"
+      assert result["id"] == "tree:test-tree:node:0"
       assert result["data-value"] == "node-1"
       assert result["style"] == "--depth: 1"
+    end
+
+    test "uses index path for ids when values repeat" do
+      first =
+        Connect.item(%{
+          id: "test-tree",
+          value: "/shared",
+          index_path: [0, 1],
+          disabled: false,
+          redirect: true,
+          new_tab: false,
+          dir: "ltr"
+        })
+
+      second =
+        Connect.item(%{
+          id: "test-tree",
+          value: "/shared",
+          index_path: [1, 1],
+          disabled: false,
+          redirect: true,
+          new_tab: false,
+          dir: "ltr"
+        })
+
+      assert first["id"] == "tree:test-tree:node:0-1"
+      assert second["id"] == "tree:test-tree:node:1-1"
+      refute first["id"] == second["id"]
     end
 
     test "adds data-name when name present" do

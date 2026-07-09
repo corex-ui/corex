@@ -129,14 +129,18 @@ defmodule Corex.Avatar do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/avatar.css";
+  @import "../corex/components.css";
   ```
 
   Stack modifiers on the host (`class` on `<.avatar>`).
 
+  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on the fallback surface. Variant modifiers control fallback surface treatment. Default is solid; add `avatar--variant-subtle` for a neutral fallback chip.
+
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
 
   | Modifier | Classes |
   | -------- | ------- |
@@ -147,6 +151,17 @@ defmodule Corex.Avatar do
   | Info | `avatar avatar--info` |
   | Success | `avatar avatar--success` |
 
+  ### Variant
+
+  Visual treatment of `[data-part="fallback"]`.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Solid (default) | `avatar` or `avatar avatar--accent` |
+  | Subtle | `avatar avatar--accent avatar--variant-subtle` |
+  | Ghost | `avatar avatar--variant-ghost` |
+  | Outline | `avatar avatar--accent avatar--variant-outline` |
+
   ### Size
 
   | Modifier | Classes |
@@ -155,6 +170,20 @@ defmodule Corex.Avatar do
   | MD | `avatar avatar--md` |
   | LG | `avatar avatar--lg` |
   | XL | `avatar avatar--xl` |
+
+  ### Radius
+
+  Default is a circle (`rounded-full`). Override with `avatar--rounded-*`.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `avatar` |
+  | None | `avatar avatar--rounded-none` |
+  | SM | `avatar avatar--rounded-sm` |
+  | MD | `avatar avatar--rounded-md` |
+  | LG | `avatar avatar--rounded-lg` |
+  | XL | `avatar avatar--rounded-xl` |
+  | Full | `avatar avatar--rounded-full` |
 
   <!-- tabs-close -->
 

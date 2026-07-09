@@ -15,23 +15,21 @@ describe("parseRootNode", () => {
 });
 
 describe("readExpandedAttr", () => {
-  it("reads controlled expanded value attribute", () => {
-    const node = el({ controlled: true });
-    node.setAttribute("data-expanded-value", "a,b");
+  it("reads default expanded value attribute", () => {
+    const node = el({});
+    node.setAttribute("data-default-expanded-value", "a,b");
     expect(readExpandedAttr(node)).toBe("a,b");
   });
 
-  it("reads default expanded when uncontrolled", () => {
-    const node = el({});
-    node.setAttribute("data-default-expanded-value", "x");
-    expect(readExpandedAttr(node)).toBe("x");
+  it("returns empty when unset", () => {
+    expect(readExpandedAttr(el({}))).toBe("");
   });
 });
 
 describe("readSelectedAttr", () => {
-  it("reads controlled selected value attribute", () => {
-    const node = el({ controlled: true });
-    node.setAttribute("data-selected-value", "item-1");
+  it("reads default selected value attribute", () => {
+    const node = el({});
+    node.setAttribute("data-default-selected-value", "item-1");
     expect(readSelectedAttr(node)).toBe("item-1");
   });
 });

@@ -153,14 +153,20 @@ defmodule Corex.NumberInput do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/number-input.css";
+  @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.number_input>`).
+  Stack modifiers on the host (`class` on `<.number_input>`). Combine axes, for example `number-input number-input--accent number-input--lg` or `number-input number-input--info number-input--variant-solid`.
+
+  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on the input and stepper triggers. Variant modifiers control field surface treatment. Default is subtle; add `number-input--variant-solid` for a filled control.
 
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
+
+  Palette variables for number input ink and fill. Does not change surface treatment by itself.
 
   | Modifier | Classes |
   | -------- | ------- |
@@ -170,6 +176,17 @@ defmodule Corex.NumberInput do
   | Alert | `number-input number-input--alert` |
   | Info | `number-input number-input--info` |
   | Success | `number-input number-input--success` |
+
+  ### Variant
+
+  Visual treatment of the input and stepper trigger surfaces. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `number-input` or `number-input number-input--accent` |
+  | Solid | `number-input number-input--accent number-input--variant-solid` |
+  | Ghost | `number-input number-input--variant-ghost` |
+  | Outline | `number-input number-input--accent number-input--variant-outline` |
 
   ### Size
 

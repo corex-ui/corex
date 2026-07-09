@@ -8,12 +8,11 @@ import {
   bindArrayFieldSubmitIntent,
   isFormFieldUsed,
   syncArrayHiddenInputsForPhoenix
-} from "./chunks/chunk-NZ3YNDJS.mjs";
-import "./chunks/chunk-VMKNATWC.mjs";
+} from "./chunks/chunk-YVULSJ7W.mjs";
+import "./chunks/chunk-ASQD2R2U.mjs";
 import {
-  mountTagsBinding,
-  readUpdatedServerTags
-} from "./chunks/chunk-I2HPUDHJ.mjs";
+  mountTagsBinding
+} from "./chunks/chunk-S4GKLIQE.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -1500,7 +1499,6 @@ var TagsInputHook = {
   },
   updated() {
     const el = this.el;
-    const valuePatch = readUpdatedServerTags(el);
     const blur = blurBehavior(el);
     const max = maxProp(el);
     const delimiter = getString(el, "delimiter");
@@ -1508,7 +1506,6 @@ var TagsInputHook = {
     this.tagsInput?.updateProps({
       id: el.id,
       ...resolveZagTagsInputTranslations(el),
-      ...valuePatch,
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readonly"),
       invalid: getBoolean(el, "invalid"),
@@ -1526,12 +1523,6 @@ var TagsInputHook = {
       ...delimiter !== void 0 && delimiter !== "" ? { delimiter } : {},
       ...placeholder !== void 0 ? { placeholder } : {}
     });
-    if ("value" in valuePatch) {
-      syncTagsInputFormForPhoenix(el, valuePatch.value, void 0, {
-        notifyLiveView: false,
-        fieldTouched: isFormFieldUsed(el, this.fieldTouched === true)
-      });
-    }
     this.tagsInput?.render();
   },
   destroyed() {

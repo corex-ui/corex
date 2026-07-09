@@ -638,16 +638,20 @@ defmodule Corex.Accordion do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/accordion.css";
+  @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.accordion>`). Combine axes, for example `accordion accordion--accent accordion--lg`.
+  Stack modifiers on the host (`class` on `<.accordion>`). Combine axes, for example `accordion accordion--accent accordion--lg` or `accordion accordion--info accordion--variant-ghost`.
+
+  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-none`, `--rounded-sm`, `--rounded-md`, `--rounded-lg`, `--rounded-xl`, `--rounded-full`), **Max width** (`max-w-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on triggers. Variant modifiers control surface treatment. Default open triggers use a neutral selected surface with semantic text ink; add `accordion--variant-solid` for a filled open trigger.
 
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
 
-  Semantic palette on the open item trigger (from design tokens).
+  Palette variables for trigger ink and fill. Does not change open trigger treatment by itself.
 
   | Modifier | Classes |
   | -------- | ------- |
@@ -657,6 +661,17 @@ defmodule Corex.Accordion do
   | Alert | `accordion accordion--alert` |
   | Info | `accordion accordion--info` |
   | Success | `accordion accordion--success` |
+
+  ### Variant
+
+  Visual treatment of item triggers. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `accordion` or `accordion accordion--accent` |
+  | Solid | `accordion accordion--accent accordion--variant-solid` |
+  | Ghost | `accordion accordion--info accordion--variant-ghost` |
+  | Outline | `accordion accordion--accent accordion--variant-outline` |
 
   ### Size
 
@@ -669,18 +684,6 @@ defmodule Corex.Accordion do
   | MD | `accordion accordion--md` |
   | LG | `accordion accordion--lg` |
   | XL | `accordion accordion--xl` |
-
-  ### Text
-
-  Font size on trigger and content.
-
-  | Modifier | Classes |
-  | -------- | ------- |
-  | Default | `accordion` |
-  | SM | `accordion accordion--text-sm` |
-  | XL | `accordion accordion--text-xl` |
-  | 2XL | `accordion accordion--text-2xl` |
-  | 4XL | `accordion accordion--text-4xl` |
 
   ### Rounded
 

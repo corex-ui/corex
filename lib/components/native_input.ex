@@ -106,13 +106,54 @@ defmodule Corex.NativeInput do
   The root has `data-no-icon` when no icon is shown (icon slot empty or type is textarea/date/time), so the input uses full-width padding. Use the class `native-input` for default Corex styling.
 
   If you wish to use the default Corex styling, you can use the class `native-input` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+  This requires the `corex_design` dependency and `mix corex.design.build`; import the component css file.
 
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/native-input.css";
+  @import "../corex/components.css";
   ```
+
+  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on the input. Variant modifiers control input surface treatment. Default is subtle; add `native-input--variant-solid` for a filled field. Checkbox and radio inputs keep their dedicated styling.
+
+  <!-- tabs-open -->
+
+  ### Semantic
+
+  Palette variables for native input ink and fill. Does not change surface treatment by itself.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `native-input` |
+  | Accent | `native-input native-input--accent` |
+  | Brand | `native-input native-input--brand` |
+  | Alert | `native-input native-input--alert` |
+  | Info | `native-input native-input--info` |
+  | Success | `native-input native-input--success` |
+
+  ### Variant
+
+  Visual treatment of the input surface. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `native-input` or `native-input native-input--accent` |
+  | Solid | `native-input native-input--accent native-input--variant-solid` |
+  | Ghost | `native-input native-input--variant-ghost` |
+  | Outline | `native-input native-input--accent native-input--variant-outline` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `native-input native-input--sm` |
+  | MD | `native-input native-input--md` |
+  | LG | `native-input native-input--lg` |
+  | XL | `native-input native-input--xl` |
+
+  <!-- tabs-close -->
   '''
 
   @doc type: :component

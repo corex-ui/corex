@@ -171,14 +171,20 @@ defmodule Corex.ToggleGroup do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/toggle-group.css";
+  @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.toggle_group>`).
+  Stack modifiers on the host (`class` on `<.toggle_group>`). Combine axes, for example `toggle-group toggle-group--accent toggle-group--lg` or `toggle-group toggle-group--info toggle-group--variant-solid`.
+
+  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on item triggers. Variant modifiers control surface treatment. Default is subtle: off uses a neutral surface, on uses selected with semantic ink text. Add `toggle-group--variant-solid` for a filled on state.
 
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
+
+  Palette variables for item ink and fill. Does not change surface treatment by itself.
 
   | Modifier | Classes |
   | -------- | ------- |
@@ -188,6 +194,17 @@ defmodule Corex.ToggleGroup do
   | Alert | `toggle-group toggle-group--alert` |
   | Info | `toggle-group toggle-group--info` |
   | Success | `toggle-group toggle-group--success` |
+
+  ### Variant
+
+  Visual treatment of item triggers. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `toggle-group` or `toggle-group toggle-group--accent` |
+  | Solid | `toggle-group toggle-group--accent toggle-group--variant-solid` |
+  | Ghost | `toggle-group toggle-group--variant-ghost` |
+  | Outline | `toggle-group toggle-group--accent toggle-group--variant-outline` |
 
   ### Size
 

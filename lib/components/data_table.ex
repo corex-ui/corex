@@ -294,15 +294,19 @@ defmodule Corex.DataTable do
   - `data-table--sm|md|lg|xl` — font size on header and body cells; cell padding
   - `data-table--accent|brand|alert|success|info` — header ink (`--color-ink-*`) on column titles only
 
+  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+
+  Variant modifiers control sort trigger surface treatment. Default is subtle; add `data-table--variant-solid` for filled sort controls.
+
   Default host caps use `max-width` and `max-height` at `--container-md`. Override on the host with the same container scale as width, e.g. `max-w-none`, `max-h-none`, `max-h-2xs`, `min-h-md`, or `h-full` in a sized parent.
 
   Optional `dir="ltr"` or `dir="rtl"` on the component root for text direction.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+  This requires the `corex_design` dependency and `mix corex.design.build`; import the component css file.
 
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/data-table.css";
+  @import "../corex/components.css";
   ```
   '''
 

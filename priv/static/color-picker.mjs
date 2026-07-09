@@ -21,9 +21,8 @@ import {
   readPositioningOptions
 } from "./chunks/chunk-CNPBJL2G.mjs";
 import {
-  mountStringBinding,
-  readUpdatedServerString
-} from "./chunks/chunk-I2HPUDHJ.mjs";
+  mountStringBinding
+} from "./chunks/chunk-S4GKLIQE.mjs";
 import {
   idMatches,
   notifyChange,
@@ -2496,10 +2495,7 @@ var ColorPickerHook = {
   updated() {
     const el = this.el;
     const zag = this.colorPicker;
-    const valuePatch = readUpdatedServerString(el);
-    const parsed = "value" in valuePatch && valuePatch.value ? { value: parse(valuePatch.value) } : {};
     zag?.updateProps({
-      ...parsed,
       name: getString(el, "name"),
       closeOnSelect: getBoolean(el, "closeOnSelect"),
       openAutoFocus: getBoolean(el, "openAutoFocus"),
@@ -2510,9 +2506,6 @@ var ColorPickerHook = {
       dir: getDir(el),
       positioning: readPositioningOptions(el)
     });
-    if ("value" in valuePatch && valuePatch.value) {
-      syncColorHiddenAndNotify(el, valuePatch.value);
-    }
   },
   destroyed() {
     if (this.onSetValue) {

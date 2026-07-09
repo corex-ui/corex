@@ -6,7 +6,6 @@ defmodule Corex.Checkable.Connect do
   import Corex.Checkable.Helpers,
     only: [
       checked_attr_value: 1,
-      checked_controlled_attr: 2,
       checked_default_attr: 2,
       native_checked: 1,
       normalize_checked: 1
@@ -18,22 +17,27 @@ defmodule Corex.Checkable.Connect do
   def props(assigns, _scope) do
     form_field = Map.get(assigns, :form_field, false)
     controlled = Map.get(assigns, :controlled, false)
-    zag_controlled = form_field || controlled
     checked_val = checked_attr_value(normalize_checked(assigns.checked))
 
+    default_checked_out =
+      if form_field do
+        FormField.dataset_default_boolean(assigns.checked)
+      else
+        checked_default_attr(false, assigns.checked)
+      end
+
     {checked_attr, default_checked_attr} =
-      if zag_controlled do
+      if controlled do
         {checked_val, nil}
       else
-        {checked_controlled_attr(controlled, assigns.checked),
-         checked_default_attr(controlled, assigns.checked)}
+        {nil, default_checked_out}
       end
 
     %{
       "id" => assigns.id,
       "data-default-checked" => default_checked_attr,
       "data-checked" => checked_attr,
-      "data-controlled" => get_boolean(zag_controlled),
+      "data-controlled" => get_boolean(controlled),
       "data-disabled" => get_boolean(assigns.disabled),
       "data-value" => assigns.value,
       "data-name" => assigns.name,

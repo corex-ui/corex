@@ -309,6 +309,55 @@ defmodule Corex.Menu do
   | `on_select_client="menu-selected"` | Item selected | `id`, `value` |
   | `on_open_change_client="menu-open-changed"` | Open state changes | `id`, `open` |
 
+  ## Style
+
+  Import `menu.css` and stack modifiers on the host (`class` on `<.menu>`).
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components.css";
+  ```
+
+  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on triggers and selected items. Variant modifiers control trigger and content panel surface treatment. Default is subtle; add `menu--variant-solid` for a filled trigger or panel.
+
+  <!-- tabs-open -->
+
+  ### Semantic
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `menu` |
+  | Accent | `menu menu--accent` |
+  | Brand | `menu menu--brand` |
+  | Alert | `menu menu--alert` |
+  | Info | `menu menu--info` |
+  | Success | `menu menu--success` |
+
+  ### Variant
+
+  Visual treatment of the trigger and content panel. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `menu` or `menu menu--accent` |
+  | Solid | `menu menu--accent menu--variant-solid` |
+  | Ghost | `menu menu--variant-ghost` |
+  | Outline | `menu menu--accent menu--variant-outline` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `menu menu--sm` |
+  | MD | `menu menu--md` |
+  | LG | `menu menu--lg` |
+  | XL | `menu menu--xl` |
+
+  <!-- tabs-close -->
+
   '''
 
   @doc type: :component

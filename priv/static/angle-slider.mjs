@@ -8,9 +8,8 @@ import {
   snapValueToStep
 } from "./chunks/chunk-PE34YET2.mjs";
 import {
-  mountNumberBinding,
-  readUpdatedServerNumber
-} from "./chunks/chunk-I2HPUDHJ.mjs";
+  mountNumberBinding
+} from "./chunks/chunk-S4GKLIQE.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -630,10 +629,8 @@ var AngleSliderHook = {
   updated() {
     const el = this.el;
     const zag = this.angleSlider;
-    const valuePatch = readUpdatedServerNumber(el);
     zag?.updateProps({
       id: el.id,
-      ...valuePatch,
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readonly"),
       invalid: getBoolean(el, "invalid"),

@@ -8,7 +8,7 @@ import {
 import {
   mountCheckedBinding,
   readUpdatedServerChecked
-} from "./chunks/chunk-I2HPUDHJ.mjs";
+} from "./chunks/chunk-S4GKLIQE.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry

@@ -362,14 +362,18 @@ defmodule Corex.TreeView do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/tree-view.css";
+  @import "../corex/components.css";
   ```
 
   Stack modifiers on the host (`class` on `<.tree_view>`).
 
+  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+
+  Variant modifiers control unselected item and closed branch control surface treatment. Selected/checked states keep semantic fill. Default is subtle; add `tree-view--variant-solid` for filled rows.
+
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
 
   | Modifier | Classes |
   | -------- | ------- |
@@ -379,6 +383,17 @@ defmodule Corex.TreeView do
   | Alert | `tree-view tree-view--alert` |
   | Info | `tree-view tree-view--info` |
   | Success | `tree-view tree-view--success` |
+
+  ### Variant
+
+  Visual treatment of unselected items and closed branch controls.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `tree-view` or `tree-view tree-view--accent` |
+  | Solid | `tree-view tree-view--accent tree-view--variant-solid` |
+  | Ghost | `tree-view tree-view--variant-ghost` |
+  | Outline | `tree-view tree-view--accent tree-view--variant-outline` |
 
   ### Size
 
@@ -1129,6 +1144,7 @@ defmodule Corex.TreeView do
       index_path: index_path,
       name: tree_item.label,
       dir: assigns.dir,
+      disabled: tree_item.disabled,
       expanded: expanded,
       selected: selected,
       focused: false,
@@ -1146,6 +1162,7 @@ defmodule Corex.TreeView do
       index_path: index_path,
       name: tree_item.label,
       dir: assigns.dir,
+      disabled: tree_item.disabled,
       redirect: tree_item.redirect,
       new_tab: tree_item.new_tab,
       selected: selected,
@@ -1163,6 +1180,7 @@ defmodule Corex.TreeView do
       index_path: index_path,
       name: tree_item.label,
       dir: ctx.dir,
+      disabled: tree_item.disabled,
       expanded: expanded,
       selected: selected,
       focused: false,
@@ -1180,6 +1198,7 @@ defmodule Corex.TreeView do
       index_path: index_path,
       name: tree_item.label,
       dir: ctx.dir,
+      disabled: tree_item.disabled,
       redirect: tree_item.redirect,
       new_tab: tree_item.new_tab,
       selected: selected,

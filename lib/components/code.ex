@@ -75,6 +75,10 @@ defmodule Corex.Code do
   With Corex Design, syntax highlighting styles are included in
   `code.css`. Nothing else is required.
 
+  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+
+  Variant modifiers control inline and block code surface treatment. Default is subtle; add `code--variant-solid` for a filled code surface.
+
   Without Corex Design, run `mix corex.code` to generate the Makeup stylesheet and
   import it in your CSS:
 

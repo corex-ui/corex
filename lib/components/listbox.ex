@@ -293,6 +293,56 @@ defmodule Corex.Listbox do
   ```
 
   <!-- tabs-close -->
+
+  ## Style
+
+  Import `listbox.css` and stack modifiers on the host (`class` on `<.listbox>`). Use Tailwind `max-w-*` on the root for width caps.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components.css";
+  ```
+
+  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+
+  Variant modifiers control unselected item surface treatment. Selected items keep semantic fill. Default is subtle; add `listbox--variant-solid` for filled rows.
+
+  <!-- tabs-open -->
+
+  ### Semantic
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `listbox` |
+  | Accent | `listbox listbox--accent` |
+  | Brand | `listbox listbox--brand` |
+  | Alert | `listbox listbox--alert` |
+  | Info | `listbox listbox--info` |
+  | Success | `listbox listbox--success` |
+
+  ### Variant
+
+  Visual treatment of unselected items.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `listbox` or `listbox listbox--accent` |
+  | Solid | `listbox listbox--accent listbox--variant-solid` |
+  | Ghost | `listbox listbox--variant-ghost` |
+  | Outline | `listbox listbox--accent listbox--variant-outline` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `listbox listbox--sm` |
+  | MD | `listbox listbox--md` |
+  | LG | `listbox listbox--lg` |
+  | XL | `listbox listbox--xl` |
+
+  <!-- tabs-close -->
+
   '''
 
   @doc type: :component

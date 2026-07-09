@@ -33,12 +33,12 @@ defmodule Corex.Navigate do
   ## Style
 
   If you wish to use the default Corex styling, you can use the `link` class on the component.
-  This requires you to install `Mix.Tasks.Corex.Design` first and import the component css file.
+  This requires the `corex_design` dependency and `mix corex.design.build`; import the component css file.
 
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/link.css";
+  @import "../corex/components.css";
   ```
 
   You can then use modifiers
@@ -46,6 +46,17 @@ defmodule Corex.Navigate do
   ```heex
   <.navigate class="link link--accent link--lg">
   ```
+
+  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text). See the [modifier guide](modifiers.html).
+
+  Variant modifiers control link surface treatment. Default is subtle (underline). Solid and outline use pill radii; ghost removes underline and adds hover background.
+
+  | Variant | Treatment |
+  | ------- | --------- |
+  | Subtle (default) | Underline |
+  | Solid | Pill fill |
+  | Ghost | No underline, hover background |
+  | Outline | Bordered pill |
 
   """
 

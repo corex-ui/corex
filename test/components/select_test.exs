@@ -28,6 +28,13 @@ defmodule Corex.SelectTest do
       assert html =~ ~r/id="user_country"/
     end
 
+    test "with field from form renders defaultValue connect attrs" do
+      html = render_component(&CorexTest.ComponentHelpers.render_select_with_field/1, [])
+      assert html =~ ~r/data-form-field="true"/
+      assert html =~ ~r/data-default-value="\[\&quot;fra\&quot;\]"/
+      refute html =~ ~r/id="user_country"[^>]*data-controlled=""/
+    end
+
     test "uses placeholder for aria-label and placeholder span when no selection" do
       html =
         render_component(&CorexTest.ComponentHelpers.render_select_with_opts/1,
@@ -125,6 +132,42 @@ defmodule Corex.SelectTest do
 
       result = Connect.props(Map.merge(ConnectProps.default_select(), assigns))
       assert result["data-value"] == "a"
+      assert result["data-default-value"] == nil
+      assert result["data-controlled"] == ""
+    end
+
+    test "returns props for form field without controlled" do
+      assigns = %{
+        id: "test-select",
+        items: [%{value: "a", label: "A"}],
+        controlled: false,
+        form_field: true,
+        value: ["a"],
+        dir: "ltr"
+      }
+
+      result = Connect.props(Map.merge(ConnectProps.default_select(), assigns))
+      assert result["data-default-value"] == "[\"a\"]"
+      assert result["data-value"] == nil
+      refute result["data-controlled"]
+      assert result["data-form-field"] == "true"
+    end
+
+    test "returns props for form field with controlled" do
+      assigns = %{
+        id: "test-select",
+        items: [%{value: "a", label: "A"}],
+        controlled: true,
+        form_field: true,
+        value: ["a"],
+        dir: "ltr"
+      }
+
+      result = Connect.props(Map.merge(ConnectProps.default_select(), assigns))
+      assert result["data-value"] == "a"
+      assert result["data-default-value"] == nil
+      assert result["data-controlled"] == ""
+      assert result["data-form-field"] == "true"
     end
 
     test "returns props with redirect" do

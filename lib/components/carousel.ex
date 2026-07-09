@@ -193,14 +193,18 @@ defmodule Corex.Carousel do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/carousel.css";
+  @import "../corex/components.css";
   ```
 
   Stack modifiers on the host (`class` on `<.carousel>`).
 
+  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on nav triggers. Variant modifiers control prev/next/autoplay trigger surface treatment. Default is subtle; add `carousel--variant-solid` for filled nav controls.
+
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
 
   | Modifier | Classes |
   | -------- | ------- |
@@ -239,6 +243,17 @@ defmodule Corex.Carousel do
     <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
   </.carousel>
   ```
+
+  ### Variant
+
+  Visual treatment of prev/next/autoplay triggers only.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `carousel` or `carousel carousel--accent` |
+  | Solid | `carousel carousel--accent carousel--variant-solid` |
+  | Ghost | `carousel carousel--variant-ghost` |
+  | Outline | `carousel carousel--accent carousel--variant-outline` |
 
   ### Size
 

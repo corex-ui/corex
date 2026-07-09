@@ -106,12 +106,12 @@ defmodule Corex.Editable do
   ```
 
   If you wish to use the default Corex styling, you can use the class `editable` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+  This requires the `corex_design` dependency and `mix corex.design.build`; import the component css file.
 
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/editable.css";
+  @import "../corex/components.css";
   ```
 
   You can then use modifiers
@@ -124,6 +124,47 @@ defmodule Corex.Editable do
     <:cancel_trigger>Cancel</:cancel_trigger>
   </.editable>
   ```
+
+  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on the input, preview, and edit trigger. Variant modifiers control field surface treatment. Default is subtle; add `editable--variant-solid` for a filled field. Cancel and submit triggers keep their alert and success styling.
+
+  <!-- tabs-open -->
+
+  ### Semantic
+
+  Palette variables for editable ink and fill. Does not change surface treatment by itself.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `editable` |
+  | Accent | `editable editable--accent` |
+  | Brand | `editable editable--brand` |
+  | Alert | `editable editable--alert` |
+  | Info | `editable editable--info` |
+  | Success | `editable editable--success` |
+
+  ### Variant
+
+  Visual treatment of the input, preview, and edit trigger surfaces. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `editable` or `editable editable--accent` |
+  | Solid | `editable editable--accent editable--variant-solid` |
+  | Ghost | `editable editable--variant-ghost` |
+  | Outline | `editable editable--accent editable--variant-outline` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `editable editable--sm` |
+  | MD | `editable editable--md` |
+  | LG | `editable editable--lg` |
+  | XL | `editable editable--xl` |
+
+  <!-- tabs-close -->
 
   '''
 

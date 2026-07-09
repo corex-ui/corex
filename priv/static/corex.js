@@ -3052,7 +3052,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-I2HPUDHJ.mjs
+  // ../priv/static/chunks/chunk-S4GKLIQE.mjs
   function fractionDigitsForStep(step) {
     var _a4;
     if (!Number.isFinite(step) || step === Math.trunc(step)) {
@@ -3134,22 +3134,24 @@ var Corex = (() => {
     return { open: getBoolean(el, openKey) };
   }
   function isZagValueControlled(el) {
-    return getBoolean(el, "controlled") || getBoolean(el, "formField");
+    return getBoolean(el, "controlled");
   }
   function readDatasetStringList(el, datasetKey) {
     var _a4, _b;
     return (_b = (_a4 = getJsonStringList(el, datasetKey)) != null ? _a4 : getStringList(el, datasetKey)) != null ? _b : [];
   }
-  function readUpdatedServerStringList(el) {
+  function readUpdatedServerStringList(el, lastServerValue) {
+    var _a4;
     if (!isZagValueControlled(el)) {
       return {};
     }
-    return { value: readDatasetStringList(el, "value") };
+    const raw = (_a4 = getString(el, "value")) != null ? _a4 : "";
+    if (raw === lastServerValue) {
+      return {};
+    }
+    return { value: readDatasetStringList(el, "value"), nextServerValue: raw };
   }
   function mountStringListBinding(el) {
-    if (getBoolean(el, "formField")) {
-      return { defaultValue: readDatasetStringList(el, "value") };
-    }
     if (getBoolean(el, "controlled")) {
       return { value: readDatasetStringList(el, "value") };
     }
@@ -3160,22 +3162,19 @@ var Corex = (() => {
       return {};
     }
     const raw = getString(el, "value");
-    if (getBoolean(el, "formField") && raw === lastServerValue) {
+    if (raw === lastServerValue) {
       return {};
     }
     return { value: z(raw) };
   }
   function mountStringBinding(el, valueKey, defaultKey) {
-    if (getBoolean(el, "formField")) {
-      return { defaultValue: z(getString(el, valueKey)) };
-    }
     if (getBoolean(el, "controlled")) {
       return { value: z(getString(el, valueKey)) };
     }
     return { defaultValue: z(getString(el, defaultKey)) };
   }
   function isZagCheckedControlled(el) {
-    return getBoolean(el, "controlled") || getBoolean(el, "formField");
+    return getBoolean(el, "controlled");
   }
   function readUpdatedServerChecked(el) {
     if (!isZagCheckedControlled(el)) {
@@ -3184,9 +3183,6 @@ var Corex = (() => {
     return { checked: getCheckedState(el, "checked") };
   }
   function mountCheckedBinding(el) {
-    if (getBoolean(el, "formField")) {
-      return { defaultChecked: getCheckedState(el, "checked") };
-    }
     if (getBoolean(el, "controlled")) {
       return { checked: getCheckedState(el, "checked") };
     }
@@ -3202,12 +3198,6 @@ var Corex = (() => {
       return [];
     }
   }
-  function readUpdatedServerTags(el) {
-    if (!isZagValueControlled(el)) {
-      return {};
-    }
-    return { value: readDatasetTagsList(el, "tags") };
-  }
   function mountTagsBinding(el) {
     if (isZagValueControlled(el)) {
       return { value: readDatasetTagsList(el, "tags") };
@@ -3218,34 +3208,6 @@ var Corex = (() => {
     var _a4;
     return (_a4 = getNumber(el, "step")) != null ? _a4 : 1;
   }
-  function readUpdatedServerNumber(el, lastServerValue) {
-    const step = numberInputStep(el);
-    const base = { step };
-    if (getBoolean(el, "controlled")) {
-      const raw = getString(el, "value");
-      if (raw === void 0 || raw === "") {
-        return base;
-      }
-      return __spreadProps(__spreadValues({}, base), {
-        value: formatDisplayValue(raw, step),
-        nextServerValue: raw
-      });
-    }
-    if (getBoolean(el, "formField")) {
-      const raw = getString(el, "value");
-      if (raw === void 0 || raw === "") {
-        return base;
-      }
-      if (raw === lastServerValue) {
-        return base;
-      }
-      return __spreadProps(__spreadValues({}, base), {
-        value: formatDisplayValue(raw, step),
-        nextServerValue: raw
-      });
-    }
-    return base;
-  }
   function mountNumberBinding(el) {
     const step = numberInputStep(el);
     if (getBoolean(el, "controlled")) {
@@ -3253,29 +3215,22 @@ var Corex = (() => {
       const value = raw !== void 0 && raw !== "" ? formatDisplayValue(raw, step) : void 0;
       return { value, step };
     }
-    if (getBoolean(el, "formField")) {
-      const raw = getString(el, "value");
-      const defaultValue2 = raw !== void 0 && raw !== "" ? formatDisplayValue(raw, step) : void 0;
-      return { defaultValue: defaultValue2, step };
-    }
     const rawDefault = getString(el, "defaultValue");
     const defaultValue = rawDefault !== void 0 && rawDefault !== "" ? formatDisplayValue(rawDefault, step) : void 0;
     return { defaultValue, step };
   }
-  function readStringListControlledZagUpdate(el, _valueKey, _defaultValueKey) {
-    return readUpdatedServerStringList(el);
+  function readStringListControlledZagUpdate(el, _valueKey, _defaultValueKey, lastServerValue) {
+    const patch = readUpdatedServerStringList(el, lastServerValue);
+    if (!("value" in patch)) {
+      return {};
+    }
+    return { value: patch.value };
   }
   function readPressedControlledZagUpdate(el) {
     if (!getBoolean(el, "controlled")) {
       return {};
     }
     return { pressed: getBoolean(el, "pressed") };
-  }
-  function readEditControlledZagUpdate(el) {
-    if (!getBoolean(el, "controlled")) {
-      return {};
-    }
-    return { edit: getBoolean(el, "edit") };
   }
   function readBooleanControlledZagProps(el, openKey, defaultOpenKey) {
     return getBoolean(el, "controlled") ? { open: getBoolean(el, openKey) } : { defaultOpen: getBoolean(el, defaultOpenKey) };
@@ -3291,8 +3246,8 @@ var Corex = (() => {
     return (_a4 = getBoolean(el, "controlled") ? getStringList(el, valueKey) : getStringList(el, defaultValueKey)) != null ? _a4 : [];
   }
   var MAX_FRACTION_DIGITS, z;
-  var init_chunk_I2HPUDHJ = __esm({
-    "../priv/static/chunks/chunk-I2HPUDHJ.mjs"() {
+  var init_chunk_S4GKLIQE = __esm({
+    "../priv/static/chunks/chunk-S4GKLIQE.mjs"() {
       "use strict";
       init_chunk_2GQRP3FN();
       MAX_FRACTION_DIGITS = 10;
@@ -3635,7 +3590,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_JDGMEOQK();
       init_chunk_SBA2GV3P();
-      init_chunk_I2HPUDHJ();
+      init_chunk_S4GKLIQE();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_2GQRP3FN();
@@ -4437,7 +4392,7 @@ var Corex = (() => {
       init_chunk_YV3G4M5K();
       init_chunk_QB2YSZP6();
       init_chunk_PE34YET2();
-      init_chunk_I2HPUDHJ();
+      init_chunk_S4GKLIQE();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_2GQRP3FN();
@@ -4785,16 +4740,14 @@ var Corex = (() => {
         updated() {
           const el = this.el;
           const zag = this.angleSlider;
-          const valuePatch = readUpdatedServerNumber(el);
-          zag == null ? void 0 : zag.updateProps(__spreadProps(__spreadValues({
-            id: el.id
-          }, valuePatch), {
+          zag == null ? void 0 : zag.updateProps({
+            id: el.id,
             disabled: getBoolean(el, "disabled"),
             readOnly: getBoolean(el, "readonly"),
             invalid: getBoolean(el, "invalid"),
             name: getString(el, "name"),
             dir: getDir(el)
-          }));
+          });
         },
         destroyed() {
           var _a4, _b, _c;
@@ -6205,15 +6158,14 @@ var Corex = (() => {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
-          const controlled = getBoolean(el, "controlled");
           const slideCount = getNumber(el, "slideCount");
           if (slideCount == null || slideCount < 1) {
             return;
           }
-          const zag = new Carousel(el, __spreadProps(__spreadValues({
+          const zag = new Carousel(el, {
             id: el.id,
-            slideCount
-          }, controlled ? { page: readCorexPage(el, "page") } : { defaultPage: readCorexPage(el, "defaultPage") }), {
+            slideCount,
+            defaultPage: readCorexPage(el, "defaultPage"),
             dir: getDir(el),
             orientation: getString(el, "orientation"),
             slidesPerPage: getNumber(el, "slidesPerPage"),
@@ -6240,7 +6192,7 @@ var Corex = (() => {
                 clientEventName: getString(el, "onPageChangeClient")
               });
             }
-          }));
+          });
           zag.init();
           this.carousel = zag;
           const domRegistry = createDomEventRegistry(el);
@@ -6280,11 +6232,9 @@ var Corex = (() => {
           var _a4;
           const slideCount = getNumber(this.el, "slideCount");
           if (slideCount == null || slideCount < 1) return;
-          const controlled = getBoolean(this.el, "controlled");
-          (_a4 = this.carousel) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
+          (_a4 = this.carousel) == null ? void 0 : _a4.updateProps({
             id: this.el.id,
-            slideCount
-          }, controlled ? { page: readCorexPage(this.el, "page") } : {}), {
+            slideCount,
             dir: getDir(this.el),
             orientation: getString(this.el, "orientation"),
             slidesPerPage: getNumber(this.el, "slidesPerPage"),
@@ -6297,7 +6247,7 @@ var Corex = (() => {
             inViewThreshold: getNumber(this.el, "inViewThreshold"),
             snapType: getString(this.el, "snapType"),
             autoSize: getBoolean(this.el, "autoSize")
-          }));
+          });
         },
         destroyed() {
           var _a4, _b, _c;
@@ -6622,7 +6572,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_KGTC4ZGG();
       init_chunk_VDUSDBJS();
-      init_chunk_I2HPUDHJ();
+      init_chunk_S4GKLIQE();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_2GQRP3FN();
@@ -7483,7 +7433,7 @@ var Corex = (() => {
     "../priv/static/collapsible.mjs"() {
       "use strict";
       init_chunk_PE34YET2();
-      init_chunk_I2HPUDHJ();
+      init_chunk_S4GKLIQE();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_2GQRP3FN();
@@ -10539,7 +10489,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-VMKNATWC.mjs
+  // ../priv/static/chunks/chunk-ASQD2R2U.mjs
   function reapplyLiveViewValueInputUsage(input) {
     const p2 = input;
     if (!p2.phxPrivate) p2.phxPrivate = {};
@@ -10547,9 +10497,10 @@ var Corex = (() => {
   }
   function notifyPhoenixFormChange(input, value, options = {}) {
     var _a4;
-    if (String(input.value) !== String(value)) {
-      input.value = value;
+    if (String(input.value) === String(value)) {
+      return;
     }
+    input.value = value;
     (_a4 = options.onTouched) == null ? void 0 : _a4.call(options);
     if (options.markUsed === false) {
       return;
@@ -10566,14 +10517,14 @@ var Corex = (() => {
     });
   }
   var PHX_HAS_FOCUSED;
-  var init_chunk_VMKNATWC = __esm({
-    "../priv/static/chunks/chunk-VMKNATWC.mjs"() {
+  var init_chunk_ASQD2R2U = __esm({
+    "../priv/static/chunks/chunk-ASQD2R2U.mjs"() {
       "use strict";
       PHX_HAS_FOCUSED = "phx-has-focused";
     }
   });
 
-  // ../priv/static/chunks/chunk-NZ3YNDJS.mjs
+  // ../priv/static/chunks/chunk-YVULSJ7W.mjs
   function isFormFieldUsed(el, userTouched = false) {
     return userTouched || getBoolean(el, "fieldUsed") === true;
   }
@@ -10680,10 +10631,10 @@ var Corex = (() => {
     form.addEventListener("submit", handler, { capture: true });
     return () => form.removeEventListener("submit", handler, { capture: true });
   }
-  var init_chunk_NZ3YNDJS = __esm({
-    "../priv/static/chunks/chunk-NZ3YNDJS.mjs"() {
+  var init_chunk_YVULSJ7W = __esm({
+    "../priv/static/chunks/chunk-YVULSJ7W.mjs"() {
       "use strict";
-      init_chunk_VMKNATWC();
+      init_chunk_ASQD2R2U();
       init_chunk_2GQRP3FN();
     }
   });
@@ -13479,6 +13430,28 @@ var Corex = (() => {
   function getOpenChangeReason(event) {
     return (event.previousEvent || event).src;
   }
+  function resolveZagComboboxTranslations(el) {
+    var _a4, _b;
+    const defaults = {
+      triggerLabel: "Open options",
+      clearTriggerLabel: "Clear selection"
+    };
+    const raw = el.dataset.translation;
+    if (!raw) {
+      return { translations: defaults };
+    }
+    try {
+      const m2 = JSON.parse(raw);
+      return {
+        translations: {
+          triggerLabel: (_a4 = m2.triggerLabel) != null ? _a4 : defaults.triggerLabel,
+          clearTriggerLabel: (_b = m2.clearTriggerLabel) != null ? _b : defaults.clearTriggerLabel
+        }
+      };
+    } catch (e2) {
+      return { translations: defaults };
+    }
+  }
   function formatComboboxHiddenValue(el, values) {
     var _a4;
     const list = values.map((v2) => String(v2));
@@ -13516,9 +13489,27 @@ var Corex = (() => {
     const visible = el.querySelector('[data-scope="combobox"][data-part="input"]');
     if (visible) visible.setAttribute("value", value);
   }
+  function zagName(el) {
+    if (getString(el, "submitName")) return void 0;
+    const hidden = el.querySelector(
+      '[data-scope="combobox"][data-part="hidden-input"]'
+    );
+    if (hidden == null ? void 0 : hidden.name) return void 0;
+    return getString(el, "name");
+  }
+  function zagForm(el) {
+    return getString(el, "form");
+  }
+  function optionalBooleanProp(el, key) {
+    const value = getBooleanValue(el, key);
+    if (value === void 0) return {};
+    return { [key]: value };
+  }
   function buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox, markFieldTouched) {
+    var _a4;
     const redirectOn = getBoolean(el, "redirect");
-    return {
+    const selectionBehavior = (_a4 = getString(el, "selectionBehavior")) != null ? _a4 : "replace";
+    return __spreadProps(__spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadValues({
       id: el.id,
       disabled: getBoolean(el, "disabled"),
       placeholder: getString(el, "placeholder"),
@@ -13530,11 +13521,14 @@ var Corex = (() => {
       loopFocus: getBoolean(el, "loopFocus"),
       multiple: redirectOn ? false : getBoolean(el, "multiple"),
       invalid: getBoolean(el, "invalid"),
-      allowCustomValue: false,
-      selectionBehavior: "replace",
+      allowCustomValue: getBoolean(el, "allowCustomValue"),
+      selectionBehavior,
       readOnly: getBoolean(el, "readonly"),
       required: getBoolean(el, "required"),
-      positioning: readPositioningOptions(el),
+      name: zagName(el),
+      form: zagForm(el),
+      positioning: readPositioningOptions(el)
+    }, resolveZagComboboxTranslations(el)), optionalBooleanProp(el, "openOnClick")), optionalBooleanProp(el, "openOnChange")), optionalBooleanProp(el, "openOnKeyPress")), optionalBooleanProp(el, "composite")), optionalBooleanProp(el, "disableLayer")), {
       onOpenChange: (details) => {
         notifyChange({
           el,
@@ -13551,8 +13545,11 @@ var Corex = (() => {
         });
       },
       onInputValueChange: (details) => {
-        var _a4;
-        syncVisibleInputAttribute(el, (_a4 = details.inputValue) != null ? _a4 : "");
+        var _a5, _b, _c;
+        syncVisibleInputAttribute(el, (_a5 = details.inputValue) != null ? _a5 : "");
+        if (getBoolean(el, "clearOnEmpty") && details.reason === "input-change" && !((_b = details.inputValue) != null ? _b : "")) {
+          (_c = getCombobox()) == null ? void 0 : _c.api.clearValue();
+        }
         notifyChange({
           el,
           canPushServer: canPush(),
@@ -13567,7 +13564,7 @@ var Corex = (() => {
         });
       },
       onValueChange: (details) => {
-        var _a4;
+        var _a5;
         const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
         if (redirectOn && firstValue) {
           const itemEl = el.querySelector(
@@ -13576,7 +13573,7 @@ var Corex = (() => {
           performRedirect(readDomItemRedirect(itemEl, firstValue), { liveSocket });
         }
         syncComboboxHiddenInputForPhoenix(el, details.value, markFieldTouched);
-        (_a4 = getCombobox()) == null ? void 0 : _a4.restoreFilteredOptions();
+        (_a5 = getCombobox()) == null ? void 0 : _a5.restoreFilteredOptions();
         syncVisibleInputAttribute(el, selectedItemLabel(details.items));
         notifyChange({
           el,
@@ -13590,14 +13587,43 @@ var Corex = (() => {
           serverEventName: getString(el, "onValueChange"),
           clientEventName: getString(el, "onValueChangeClient")
         });
+      },
+      onHighlightChange: (details) => {
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: {
+            id: el.id,
+            highlightedValue: details.highlightedValue
+          },
+          serverEventName: getString(el, "onHighlightChange"),
+          clientEventName: getString(el, "onHighlightChangeClient")
+        });
+      },
+      onSelect: (details) => {
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: {
+            id: el.id,
+            value: details.value,
+            itemValue: details.itemValue
+          },
+          serverEventName: getString(el, "onSelect"),
+          clientEventName: getString(el, "onSelectClient")
+        });
       }
-    };
+    });
   }
   function comboboxMachineDomPropsForUpdate(el, pushEvent, canPush, liveSocket, getCombobox, markFieldTouched) {
     const rest = __spreadValues({}, buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox, markFieldTouched));
     delete rest.onOpenChange;
     delete rest.onInputValueChange;
     delete rest.onValueChange;
+    delete rest.onHighlightChange;
+    delete rest.onSelect;
     return rest;
   }
   var anatomy9, parts9, collection2, getRootId9, getLabelId5, getControlId3, getInputId2, getContentId3, getPositionerId, getTriggerId2, getClearTriggerId, getItemGroupId3, getItemGroupLabelId2, getItemId4, getContentEl3, getInputEl2, getPositionerEl, getControlEl2, getTriggerEl, getClearTriggerEl, getItemEl2, focusInputEl, focusTriggerEl, guards2, createMachine3, choose, and2, not3, machine9, Combobox, ComboboxHook;
@@ -13609,14 +13635,14 @@ var Corex = (() => {
       init_chunk_RK6266HP();
       init_chunk_WJDVLJMP();
       init_chunk_B5L2AGOH();
-      init_chunk_NZ3YNDJS();
-      init_chunk_VMKNATWC();
+      init_chunk_YVULSJ7W();
+      init_chunk_ASQD2R2U();
       init_chunk_CNPBJL2G();
       init_chunk_NICWUGGL();
       init_chunk_FVGYE2AE();
       init_chunk_HZLPIQBD();
       init_chunk_VDUSDBJS();
-      init_chunk_I2HPUDHJ();
+      init_chunk_S4GKLIQE();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_2GQRP3FN();
@@ -15109,17 +15135,24 @@ var Corex = (() => {
           domRegistry.add("corex:combobox:set-value", (event) => {
             combobox.api.setValue(event.detail.value);
           });
+          domRegistry.add("corex:combobox:set-open", (event) => {
+            combobox.api.setOpen(event.detail.open);
+          });
           const registry = createHookHandleEventRegistry(this);
           this.handleRegistry = registry;
           registry.add("combobox_set_value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             combobox.api.setValue(payload.value);
           });
+          registry.add("combobox_set_open", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            if (payload.open === void 0) return;
+            combobox.api.setOpen(payload.open);
+          });
         },
         updated() {
-          var _a4, _b;
+          var _a4;
           if (!this.combobox) return;
-          const valuePatch = readUpdatedServerStringList(this.el);
           const newItemsJson = (_a4 = this.el.getAttribute("data-items")) != null ? _a4 : "[]";
           if (newItemsJson !== this.lastItemsJson) {
             this.lastItemsJson = newItemsJson;
@@ -15130,7 +15163,7 @@ var Corex = (() => {
           }
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
-          this.combobox.updateProps(__spreadValues(__spreadValues({}, comboboxMachineDomPropsForUpdate(
+          this.combobox.updateProps(__spreadValues({}, comboboxMachineDomPropsForUpdate(
             this.el,
             pushEvent,
             canPush,
@@ -15139,26 +15172,12 @@ var Corex = (() => {
             () => {
               this.fieldTouched = true;
             }
-          )), valuePatch));
+          )));
           if (this.combobox.api.open) {
             this.combobox.api.reposition();
           }
           this.combobox.renderItems();
           this.combobox.applyItemProps();
-          if ("value" in valuePatch) {
-            syncComboboxHiddenInputForPhoenix(this.el, valuePatch.value, void 0);
-            reapplyComboboxHiddenInputUsage(this.el);
-            const items = JSON.parse((_b = this.el.getAttribute("data-items")) != null ? _b : "[]");
-            const labels = valuePatch.value.map((value) => {
-              var _a5;
-              const item = items.find((entry) => {
-                var _a6;
-                return String((_a6 = entry.value) != null ? _a6 : "") === String(value);
-              });
-              return { value, label: (_a5 = item == null ? void 0 : item.label) != null ? _a5 : value };
-            });
-            syncVisibleInputAttribute(this.el, selectedItemLabel(labels));
-          }
         },
         destroyed() {
           var _a4, _b, _c;
@@ -15981,7 +16000,7 @@ var Corex = (() => {
       init_chunk_WJDVLJMP();
       init_chunk_B5L2AGOH();
       init_chunk_CNPBJL2G();
-      init_chunk_I2HPUDHJ();
+      init_chunk_S4GKLIQE();
       init_chunk_2WCNJX5P();
       init_chunk_2GQRP3FN();
       anatomy10 = createAnatomy("color-picker", [
@@ -17621,9 +17640,7 @@ var Corex = (() => {
         updated() {
           const el = this.el;
           const zag = this.colorPicker;
-          const valuePatch = readUpdatedServerString(el);
-          const parsed = "value" in valuePatch && valuePatch.value ? { value: parse(valuePatch.value) } : {};
-          zag == null ? void 0 : zag.updateProps(__spreadProps(__spreadValues({}, parsed), {
+          zag == null ? void 0 : zag.updateProps({
             name: getString(el, "name"),
             closeOnSelect: getBoolean(el, "closeOnSelect"),
             openAutoFocus: getBoolean(el, "openAutoFocus"),
@@ -17633,10 +17650,7 @@ var Corex = (() => {
             required: getBoolean(el, "required"),
             dir: getDir(el),
             positioning: readPositioningOptions(el)
-          }));
-          if ("value" in valuePatch && valuePatch.value) {
-            syncColorHiddenAndNotify(el, valuePatch.value);
-          }
+          });
         },
         destroyed() {
           var _a4;
@@ -19994,10 +20008,10 @@ var Corex = (() => {
       init_chunk_RK6266HP();
       init_chunk_WJDVLJMP();
       init_chunk_B5L2AGOH();
-      init_chunk_NZ3YNDJS();
-      init_chunk_VMKNATWC();
+      init_chunk_YVULSJ7W();
+      init_chunk_ASQD2R2U();
       init_chunk_CNPBJL2G();
-      init_chunk_I2HPUDHJ();
+      init_chunk_S4GKLIQE();
       init_chunk_2WCNJX5P();
       init_chunk_2GQRP3FN();
       anatomy11 = createAnatomy("date-picker").parts(
@@ -22279,9 +22293,7 @@ var Corex = (() => {
           const zag = this.datePicker;
           const min4 = getString(el, "min");
           const max3 = getString(el, "max");
-          const valuePatch = readUpdatedServerStringList(el);
-          const parsedValue = "value" in valuePatch ? { value: valuePatch.value.map((x2) => parse2(x2)) } : {};
-          zag == null ? void 0 : zag.updateProps(__spreadValues(__spreadProps(__spreadValues({}, parsedValue), {
+          zag == null ? void 0 : zag.updateProps(__spreadValues({
             dir: getString(el, "dir"),
             locale: getString(el, "locale"),
             timeZone: getString(el, "timeZone"),
@@ -22302,17 +22314,7 @@ var Corex = (() => {
             maxView: getString(el, "maxView"),
             inline: getBoolean(el, "inline"),
             positioning: readPositioningOptions(el)
-          }), resolveZagDatePickerTranslations(el)));
-          if (!getString(el, "submitName")) {
-            queueMicrotask(() => {
-              const serverValues = "value" in valuePatch ? valuePatch.value : null;
-              let isoList = resolveIsoListForFormSync(el, zag == null ? void 0 : zag.api.value, serverValues);
-              if (zag) {
-                isoList = applyServerIsoToZagIfNeeded(zag, isoList);
-              }
-              syncDatePickerValueInput(el, isoList.join(","), false);
-            });
-          }
+          }, resolveZagDatePickerTranslations(el)));
         },
         destroyed() {
           var _a4;
@@ -22609,7 +22611,7 @@ var Corex = (() => {
       init_chunk_SBA2GV3P();
       init_chunk_WJDVLJMP();
       init_chunk_B5L2AGOH();
-      init_chunk_I2HPUDHJ();
+      init_chunk_S4GKLIQE();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_2GQRP3FN();
@@ -24028,7 +24030,7 @@ var Corex = (() => {
     form.addEventListener("submit", onSubmit, true);
     return () => form.removeEventListener("submit", onSubmit, true);
   }
-  function zagName(el) {
+  function zagName2(el) {
     if (formValueInput(el)) return void 0;
     return getString(el, "name");
   }
@@ -24037,8 +24039,8 @@ var Corex = (() => {
     "../priv/static/editable.mjs"() {
       "use strict";
       init_chunk_B5L2AGOH();
-      init_chunk_VMKNATWC();
-      init_chunk_I2HPUDHJ();
+      init_chunk_ASQD2R2U();
+      init_chunk_S4GKLIQE();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_2GQRP3FN();
@@ -24383,17 +24385,18 @@ var Corex = (() => {
           const selectOnFocus = getBoolean(el, "selectOnFocus");
           this.allowFormNotify = false;
           const valueBinding = mountStringBinding(el, "value", "defaultValue");
-          const zag = new Editable(el, __spreadProps(__spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadProps(__spreadValues({
+          const zag = new Editable(el, __spreadProps(__spreadValues(__spreadValues(__spreadValues(__spreadProps(__spreadValues({
             id: el.id
           }, "value" in valueBinding ? { value: (_a4 = valueBinding.value) != null ? _a4 : "" } : { defaultValue: (_b = valueBinding.defaultValue) != null ? _b : "" }), {
             disabled: getBoolean(el, "disabled"),
             readOnly: getBoolean(el, "readonly"),
             required: getBoolean(el, "required"),
             invalid: getBoolean(el, "invalid"),
-            name: zagName(el),
+            name: zagName2(el),
             form: formValueInput(el) ? void 0 : getString(el, "form"),
             dir: getDir(el)
-          }), placeholder !== void 0 ? { placeholder } : {}), activationMode !== void 0 ? { activationMode } : {}), selectOnFocus !== void 0 ? { selectOnFocus } : {}), getBoolean(el, "controlled") ? { edit: getBoolean(el, "edit") } : { defaultEdit: getBoolean(el, "defaultEdit") }), {
+          }), placeholder !== void 0 ? { placeholder } : {}), activationMode !== void 0 ? { activationMode } : {}), selectOnFocus !== void 0 ? { selectOnFocus } : {}), {
+            defaultEdit: getBoolean(el, "defaultEdit"),
             onValueChange: (details) => {
               notifyEditableValueChange(el, pushEvent, canPush, details.value, this);
             },
@@ -24423,24 +24426,18 @@ var Corex = (() => {
           });
         },
         updated() {
-          var _a4, _b;
+          var _a4;
           const el = this.el;
-          const valuePatch = readUpdatedServerString(el);
-          const editPatch = readEditControlledZagUpdate(el);
-          const props = __spreadValues({
+          (_a4 = this.editable) == null ? void 0 : _a4.updateProps({
             id: el.id,
             disabled: getBoolean(el, "disabled"),
             readOnly: getBoolean(el, "readonly"),
             required: getBoolean(el, "required"),
             invalid: getBoolean(el, "invalid"),
-            name: zagName(el),
+            name: zagName2(el),
             form: formValueInput(el) ? void 0 : getString(el, "form"),
             dir: getDir(el)
-          }, editPatch);
-          if (!((_a4 = this.editable) == null ? void 0 : _a4.api.editing) && "value" in valuePatch) {
-            Object.assign(props, valuePatch);
-          }
-          (_b = this.editable) == null ? void 0 : _b.updateProps(props);
+          });
         },
         destroyed() {
           var _a4, _b, _c, _d;
@@ -24962,8 +24959,8 @@ var Corex = (() => {
   var init_file_upload = __esm({
     "../priv/static/file-upload.mjs"() {
       "use strict";
-      init_chunk_NZ3YNDJS();
-      init_chunk_VMKNATWC();
+      init_chunk_YVULSJ7W();
+      init_chunk_ASQD2R2U();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_2GQRP3FN();
@@ -27372,7 +27369,7 @@ ${err}`);
       init_chunk_FVGYE2AE();
       init_chunk_HZLPIQBD();
       init_chunk_VDUSDBJS();
-      init_chunk_I2HPUDHJ();
+      init_chunk_S4GKLIQE();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_2GQRP3FN();
@@ -30647,8 +30644,8 @@ ${err}`);
       init_chunk_HWSJUKAB();
       init_chunk_YV3G4M5K();
       init_chunk_PE34YET2();
-      init_chunk_VMKNATWC();
-      init_chunk_I2HPUDHJ();
+      init_chunk_ASQD2R2U();
+      init_chunk_S4GKLIQE();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_2GQRP3FN();
@@ -31518,16 +31515,15 @@ ${err}`);
       };
       NumberInputHook = {
         mounted() {
-          var _a4, _b, _c;
+          var _a4;
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
           const zag = new NumberInput(el, buildMachineProps(el, pushEvent, canPush));
           zag.init();
           this.numberInput = zag;
-          this.lastServerValue = (_b = (_a4 = getString(el, "value")) != null ? _a4 : getString(el, "defaultValue")) != null ? _b : void 0;
           const initialSubmit = submitValueForHost(el, zag.api.valueAsNumber);
-          syncNumberInputValueInput(el, (_c = zag.api.value) != null ? _c : "", true, zag.api.valueAsNumber);
+          syncNumberInputValueInput(el, (_a4 = zag.api.value) != null ? _a4 : "", true, zag.api.valueAsNumber);
           const valueInput = el.querySelector(
             '[data-scope="number-input"][data-part="value-input"]'
           );
@@ -31619,21 +31615,13 @@ ${err}`);
         updated() {
           const el = this.el;
           const zag = this.numberInput;
-          const valuePatch = readUpdatedServerNumber(el, this.lastServerValue);
-          if (valuePatch.nextServerValue !== void 0) {
-            this.lastServerValue = valuePatch.nextServerValue;
-          }
-          const zagPatch = __spreadValues({}, valuePatch);
-          delete zagPatch.nextServerValue;
-          zag == null ? void 0 : zag.updateProps(__spreadValues(__spreadValues({}, numberInputPropsForUpdate(el)), zagPatch));
+          zag == null ? void 0 : zag.updateProps(__spreadValues({}, numberInputPropsForUpdate(el)));
           queueMicrotask(() => {
-            var _a4, _b, _c;
-            if (zag && "value" in zagPatch) {
-              syncNumberInputValueInput(el, String((_a4 = zagPatch.value) != null ? _a4 : ""), false, zag.api.valueAsNumber);
-            } else if (zag) {
+            var _a4, _b;
+            if (zag) {
               syncNumberInputValueInput(
                 el,
-                (_c = (_b = zag.api.value) != null ? _b : getString(el, "defaultValue")) != null ? _c : "",
+                (_b = (_a4 = zag.api.value) != null ? _a4 : getString(el, "defaultValue")) != null ? _b : "",
                 false,
                 zag.api.valueAsNumber
               );
@@ -32478,7 +32466,6 @@ ${err}`);
   var init_password_input = __esm({
     "../priv/static/password-input.mjs"() {
       "use strict";
-      init_chunk_I2HPUDHJ();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_2GQRP3FN();
@@ -32690,25 +32677,15 @@ ${err}`);
         updated() {
           var _a4;
           const el = this.el;
-          const valuePatch = readUpdatedServerString(el);
-          (_a4 = this.passwordInput) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
-            id: el.id
-          }, valuePatch), {
+          (_a4 = this.passwordInput) == null ? void 0 : _a4.updateProps({
+            id: el.id,
             disabled: getBoolean(el, "disabled"),
             invalid: getBoolean(el, "invalid"),
             readOnly: getBoolean(el, "readonly"),
             required: getBoolean(el, "required"),
             name: getString(el, "name"),
             dir: getDir(el)
-          }));
-          if ("value" in valuePatch && valuePatch.value !== null) {
-            const input = el.querySelector(
-              '[data-scope="password-input"][data-part="input"]'
-            );
-            if (input && input.value !== valuePatch.value) {
-              input.value = valuePatch.value;
-            }
-          }
+          });
         },
         destroyed() {
           var _a4, _b, _c;
@@ -32999,10 +32976,8 @@ ${err}`);
     }
     return { defaultValue: padToCount(binding.defaultValue, count) };
   }
-  function readUpdatedPinValue(el, count) {
-    const patch = readUpdatedServerStringList(el);
-    if (!("value" in patch)) return {};
-    return { value: padToCount(patch.value, count) };
+  function readUpdatedPinValue(_el, _count) {
+    return {};
   }
   function syncPinInputFormForPhoenix(el, values, onTouched, opts = {}) {
     var _a4;
@@ -33093,9 +33068,9 @@ ${err}`);
       init_chunk_YV3G4M5K();
       init_chunk_PE34YET2();
       init_chunk_BRLTIGVO();
-      init_chunk_NZ3YNDJS();
-      init_chunk_VMKNATWC();
-      init_chunk_I2HPUDHJ();
+      init_chunk_YVULSJ7W();
+      init_chunk_ASQD2R2U();
+      init_chunk_S4GKLIQE();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_2GQRP3FN();
@@ -33549,11 +33524,9 @@ ${err}`);
           const el = this.el;
           const zag = this.pinInput;
           const count = (_a4 = getNumber(el, "count")) != null ? _a4 : 0;
-          const valuePatch = readUpdatedPinValue(el, count);
-          zag == null ? void 0 : zag.updateProps(__spreadProps(__spreadValues({
+          zag == null ? void 0 : zag.updateProps({
             id: el.id,
-            count
-          }, valuePatch), {
+            count,
             disabled: getBoolean(el, "disabled"),
             invalid: getBoolean(el, "invalid"),
             required: getBoolean(el, "required"),
@@ -33567,10 +33540,7 @@ ${err}`);
             dir: getDir(el),
             type: getString(el, "type"),
             placeholder: getString(el, "placeholder")
-          }));
-          if ("value" in valuePatch) {
-            syncPinInputFormForPhoenix(el, valuePatch.value, void 0, { notifyLiveView: false });
-          }
+          });
         },
         destroyed() {
           var _a4, _b, _c;
@@ -33832,9 +33802,9 @@ ${err}`);
       "use strict";
       init_chunk_KGTC4ZGG();
       init_chunk_PE34YET2();
-      init_chunk_VMKNATWC();
+      init_chunk_ASQD2R2U();
       init_chunk_VDUSDBJS();
-      init_chunk_I2HPUDHJ();
+      init_chunk_S4GKLIQE();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_2GQRP3FN();
@@ -34303,8 +34273,10 @@ ${err}`);
   __export(select_exports, {
     Select: () => SelectHook,
     buildCollection: () => buildCollection2,
+    controlledValueMatchesServer: () => controlledValueMatchesServer,
     formatSelectHiddenValue: () => formatSelectHiddenValue,
     reapplySelectInteractiveState: () => reapplySelectInteractiveState,
+    syncControlledValueInputFromServer: () => syncControlledValueInputFromServer,
     syncSelectHiddenInputForPhoenix: () => syncSelectHiddenInputForPhoenix,
     syncSelectHiddenSelectForPhoenix: () => syncSelectHiddenSelectForPhoenix
   });
@@ -34747,7 +34719,7 @@ ${err}`);
     if (getBoolean(el, "multiple") && selectHiddenSelectForForm(el)) return "";
     return getBoolean(el, "multiple") ? list.join(",") : (_a4 = list[0]) != null ? _a4 : "";
   }
-  function syncSelectHiddenSelectForPhoenix(hiddenSelect, values, onTouched) {
+  function syncSelectHiddenSelectForPhoenix(hiddenSelect, values) {
     const valueSet = new Set(values.map(String));
     Array.from(hiddenSelect.options).forEach((option) => {
       if (option.value === "") {
@@ -34756,28 +34728,40 @@ ${err}`);
       }
       option.selected = valueSet.has(option.value);
     });
-    queueMicrotask(() => {
-      onTouched == null ? void 0 : onTouched();
-      hiddenSelect.dispatchEvent(new Event("input", { bubbles: true }));
-      hiddenSelect.dispatchEvent(new Event("change", { bubbles: true }));
-    });
+    hiddenSelect.dispatchEvent(new Event("input", { bubbles: true }));
+    hiddenSelect.dispatchEvent(new Event("change", { bubbles: true }));
   }
-  function syncSelectHiddenInputForPhoenix(el, values, onTouched) {
+  function syncSelectHiddenInputForPhoenix(el, values) {
     const hiddenSelect = selectHiddenSelectForForm(el);
     if (hiddenSelect && getBoolean(el, "multiple")) {
-      syncSelectHiddenSelectForPhoenix(hiddenSelect, values, onTouched);
+      syncSelectHiddenSelectForPhoenix(hiddenSelect, values);
       return;
     }
     const valueInput = el.querySelector(
       '[data-scope="select"][data-part="value-input"]'
     );
     if (!valueInput) return;
-    queueLiveViewFormInputSync(valueInput, () => formatSelectHiddenValue(el, values), onTouched);
+    notifyPhoenixFormChange(valueInput, formatSelectHiddenValue(el, values));
+  }
+  function syncControlledValueInputFromServer(el, values) {
+    if (!getBoolean(el, "controlled")) return;
+    const valueInput = el.querySelector(
+      '[data-scope="select"][data-part="value-input"]'
+    );
+    if (!(valueInput == null ? void 0 : valueInput.name)) return;
+    const next2 = formatSelectHiddenValue(el, values);
+    if (valueInput.value !== next2) {
+      valueInput.value = next2;
+    }
   }
   function buildCollection2(items, hasGroups) {
     return collection3(zagListCollectionConfig(items, hasGroups));
   }
-  function selectZagPropsBase(el, liveSocket, pushEvent, canPush, markFieldTouched) {
+  function controlledValueMatchesServer(el, values) {
+    var _a4;
+    return formatSelectHiddenValue(el, values) === ((_a4 = getString(el, "value")) != null ? _a4 : "");
+  }
+  function selectLayoutProps(el) {
     const redirectOn = getBoolean(el, "redirect");
     return {
       id: el.id,
@@ -34792,30 +34776,41 @@ ${err}`);
       readOnly: getBoolean(el, "readonly"),
       required: getBoolean(el, "required"),
       deselectable: getBoolean(el, "deselectable"),
-      positioning: readPositioningOptions(el),
-      onValueChange: (details) => {
-        const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
-        if (getBoolean(el, "redirect") && firstValue) {
-          const itemEl = el.querySelector(
-            `[data-scope="select"][data-part="item"][data-value="${CSS.escape(firstValue)}"]`
-          );
-          performRedirect(readDomItemRedirect(itemEl, firstValue), { liveSocket });
-        }
-        syncSelectHiddenInputForPhoenix(el, details.value, markFieldTouched);
-        notifyChange({
-          el,
-          canPushServer: canPush(),
-          pushEvent,
-          payload: {
-            id: el.id,
-            value: details.value,
-            items: details.items
-          },
-          serverEventName: getString(el, "onValueChange"),
-          clientEventName: getString(el, "onValueChangeClient")
-        });
-      }
+      positioning: readPositioningOptions(el)
     };
+  }
+  function createSelectOnValueChange(getEl, liveSocket, pushEvent, canPush) {
+    return (details) => {
+      const el = getEl();
+      if (getBoolean(el, "controlled") && controlledValueMatchesServer(el, details.value)) {
+        return;
+      }
+      const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
+      if (getBoolean(el, "redirect") && firstValue) {
+        const itemEl = el.querySelector(
+          `[data-scope="select"][data-part="item"][data-value="${CSS.escape(firstValue)}"]`
+        );
+        performRedirect(readDomItemRedirect(itemEl, firstValue), { liveSocket });
+      }
+      syncSelectHiddenInputForPhoenix(el, details.value);
+      notifyChange({
+        el,
+        canPushServer: canPush(),
+        pushEvent,
+        payload: {
+          id: el.id,
+          value: details.value,
+          items: details.items
+        },
+        serverEventName: getString(el, "onValueChange"),
+        clientEventName: getString(el, "onValueChangeClient")
+      });
+    };
+  }
+  function selectZagPropsBase(el, onValueChange) {
+    return __spreadProps(__spreadValues({}, selectLayoutProps(el)), {
+      onValueChange
+    });
   }
   function reapplySelectInteractiveState(el) {
     el.removeAttribute("data-loading");
@@ -34832,13 +34827,13 @@ ${err}`);
       init_chunk_RK6266HP();
       init_chunk_WJDVLJMP();
       init_chunk_B5L2AGOH();
-      init_chunk_VMKNATWC();
+      init_chunk_ASQD2R2U();
       init_chunk_CNPBJL2G();
       init_chunk_NICWUGGL();
       init_chunk_FVGYE2AE();
       init_chunk_HZLPIQBD();
       init_chunk_VDUSDBJS();
-      init_chunk_I2HPUDHJ();
+      init_chunk_S4GKLIQE();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_2GQRP3FN();
@@ -35722,7 +35717,7 @@ ${err}`);
           const formArrayName = getString(this.el, "hiddenSelectName");
           if (valueInput) {
             syncInputFormAssociation(valueInput, this.el);
-            if (valueInput.name && !formArrayName) {
+            if (valueInput.name && !formArrayName && !getBoolean(this.el, "controlled")) {
               const valueStr = ((_b = this.api.value) == null ? void 0 : _b.length) ? this.api.value.map(String).join(",") : "";
               valueInput.value = valueStr;
             }
@@ -35744,6 +35739,9 @@ ${err}`);
                 option.selected = valueSet.has(option.value);
               });
               if (valueInput) valueInput.removeAttribute("name");
+            } else if (valueInput == null ? void 0 : valueInput.name) {
+              hiddenSelect.disabled = true;
+              hiddenSelect.removeAttribute("name");
             } else if (hiddenSelect.name) {
               const valueSet = new Set(((_d = this.api.value) != null ? _d : []).map(String));
               Array.from(hiddenSelect.options).forEach((option) => {
@@ -35795,35 +35793,23 @@ ${err}`);
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
-          const hook = this;
-          hook.fieldTouched = false;
-          const markFieldTouched = () => {
-            hook.fieldTouched = true;
-          };
-          const defaultValues = (_a4 = getStringList(el, "defaultValue")) != null ? _a4 : [];
-          if (defaultValues.length > 0) {
-            hook.fieldTouched = true;
-            queueMicrotask(() => {
-              const hiddenSelect = selectHiddenSelectForForm(el);
-              if (hiddenSelect && getBoolean(el, "multiple")) {
-                syncSelectHiddenSelectForPhoenix(hiddenSelect, defaultValues);
-                return;
-              }
-              const valueInput = el.querySelector(
-                '[data-scope="select"][data-part="value-input"]'
-              );
-              if (valueInput) reapplyLiveViewValueInputUsage(valueInput);
-            });
-          }
           const allItems = JSON.parse(el.dataset.items || "[]");
           const hasGroups = allItems.some((item) => Boolean(item.group));
-          const selectComponent = new Select(el, __spreadValues(__spreadProps(__spreadValues({}, selectZagPropsBase(el, this.liveSocket, pushEvent, canPush, markFieldTouched)), {
+          const onValueChange = createSelectOnValueChange(
+            () => this.el,
+            this.liveSocket,
+            pushEvent,
+            canPush
+          );
+          this.onValueChange = onValueChange;
+          const selectComponent = new Select(el, __spreadValues(__spreadProps(__spreadValues({}, selectZagPropsBase(el, onValueChange)), {
             collection: buildCollection2(allItems, hasGroups)
-          }), mountStringListBinding(el)));
+          }), readStringListControlledZagProps(el, "value", "defaultValue")));
           selectComponent.hasGroups = hasGroups;
           selectComponent.setOptions(allItems);
           selectComponent.init();
           this.select = selectComponent;
+          this.lastServerValue = (_a4 = getString(el, "value")) != null ? _a4 : "";
           this.handlers = [];
           const domRegistry = createDomEventRegistry(el);
           this.domRegistry = domRegistry;
@@ -35847,35 +35833,19 @@ ${err}`);
         },
         updated() {
           if (!this.select) return;
-          const valuePatch = readUpdatedServerStringList(this.el);
           const newItems = JSON.parse(this.el.dataset.items || "[]");
           const hasGroups = newItems.some((item) => Boolean(item.group));
           this.select.hasGroups = hasGroups;
           this.select.setOptions(newItems);
-          const pushEvent = this.pushEvent.bind(this);
-          const canPush = () => canPushEvent(this.liveSocket);
-          this.select.updateProps(__spreadValues(__spreadProps(__spreadValues({}, selectZagPropsBase(this.el, this.liveSocket, pushEvent, canPush, () => {
-            this.fieldTouched = true;
-          })), {
-            collection: this.select.getCollection()
-          }), valuePatch));
-          queueMicrotask(() => {
-            reapplySelectInteractiveState(this.el);
-            if (!("value" in valuePatch) || !this.select) return;
-            const values = valuePatch.value;
-            const hiddenSelect = selectHiddenSelectForForm(this.el);
-            if (hiddenSelect && getBoolean(this.el, "multiple")) {
-              syncSelectHiddenSelectForPhoenix(hiddenSelect, values);
-              return;
-            }
-            const valueInput = this.el.querySelector(
-              '[data-scope="select"][data-part="value-input"]'
-            );
-            if (!valueInput) return;
-            const v2 = formatSelectHiddenValue(this.el, values);
-            if (valueInput.value !== v2) valueInput.value = v2;
-            reapplyLiveViewValueInputUsage(valueInput);
-          });
+          const valuePatch = readUpdatedServerStringList(this.el, this.lastServerValue);
+          if ("nextServerValue" in valuePatch) {
+            this.lastServerValue = valuePatch.nextServerValue;
+          }
+          if (valuePatch.value !== void 0) {
+            syncControlledValueInputFromServer(this.el, valuePatch.value);
+          }
+          this.select.updateProps(__spreadValues(__spreadValues({}, selectLayoutProps(this.el)), valuePatch.value !== void 0 ? { value: valuePatch.value } : {}));
+          reapplySelectInteractiveState(this.el);
         },
         destroyed() {
           var _a4, _b, _c;
@@ -36271,9 +36241,9 @@ ${err}`);
     "../priv/static/signature-pad.mjs"() {
       "use strict";
       init_chunk_BRLTIGVO();
-      init_chunk_NZ3YNDJS();
-      init_chunk_VMKNATWC();
-      init_chunk_I2HPUDHJ();
+      init_chunk_YVULSJ7W();
+      init_chunk_ASQD2R2U();
+      init_chunk_S4GKLIQE();
       init_chunk_2WCNJX5P();
       init_chunk_2GQRP3FN();
       anatomy24 = createAnatomy("signature-pad").parts(
@@ -36822,7 +36792,7 @@ ${err}`);
       "use strict";
       init_chunk_KGTC4ZGG();
       init_chunk_VDUSDBJS();
-      init_chunk_I2HPUDHJ();
+      init_chunk_S4GKLIQE();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_2GQRP3FN();
@@ -37591,9 +37561,9 @@ ${err}`);
       "use strict";
       init_chunk_7BZGUIUZ();
       init_chunk_B5L2AGOH();
-      init_chunk_NZ3YNDJS();
-      init_chunk_VMKNATWC();
-      init_chunk_I2HPUDHJ();
+      init_chunk_YVULSJ7W();
+      init_chunk_ASQD2R2U();
+      init_chunk_S4GKLIQE();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_2GQRP3FN();
@@ -38624,14 +38594,13 @@ ${err}`);
         updated() {
           var _a4, _b;
           const el = this.el;
-          const valuePatch = readUpdatedServerTags(el);
           const blur = blurBehavior(el);
           const max3 = maxProp(el);
           const delimiter = getString(el, "delimiter");
           const placeholder = readPlaceholderFromMainInput(el);
-          (_a4 = this.tagsInput) == null ? void 0 : _a4.updateProps(__spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadProps(__spreadValues(__spreadProps(__spreadValues(__spreadValues({
+          (_a4 = this.tagsInput) == null ? void 0 : _a4.updateProps(__spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadProps(__spreadValues(__spreadProps(__spreadValues({
             id: el.id
-          }, resolveZagTagsInputTranslations(el)), valuePatch), {
+          }, resolveZagTagsInputTranslations(el)), {
             disabled: getBoolean(el, "disabled"),
             readOnly: getBoolean(el, "readonly"),
             invalid: getBoolean(el, "invalid"),
@@ -38645,12 +38614,6 @@ ${err}`);
           }), getBooleanValue(el, "editable") === void 0 ? {} : { editable: getBooleanValue(el, "editable") === true }), {
             autoFocus: getBoolean(el, "autoFocus")
           }), blur !== void 0 ? { blurBehavior: blur } : {}), max3 !== void 0 ? { max: max3 } : {}), delimiter !== void 0 && delimiter !== "" ? { delimiter } : {}), placeholder !== void 0 ? { placeholder } : {}));
-          if ("value" in valuePatch) {
-            syncTagsInputFormForPhoenix(el, valuePatch.value, void 0, {
-              notifyLiveView: false,
-              fieldTouched: isFormFieldUsed(el, this.fieldTouched === true)
-            });
-          }
           (_b = this.tagsInput) == null ? void 0 : _b.render();
         },
         destroyed() {
@@ -38888,7 +38851,7 @@ ${err}`);
     "../priv/static/tabs.mjs"() {
       "use strict";
       init_chunk_PE34YET2();
-      init_chunk_I2HPUDHJ();
+      init_chunk_S4GKLIQE();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_2GQRP3FN();
@@ -39262,7 +39225,7 @@ ${err}`);
           );
           triggers.forEach((triggerEl) => {
             const value = triggerEl.dataset.value;
-            const disabled = triggerEl.dataset.disabled == "";
+            const disabled = triggerEl.dataset.disabled === "";
             if (!value) return;
             this.spreadProps(triggerEl, this.api.getTriggerProps({ value, disabled }));
           });
@@ -41603,6 +41566,16 @@ ${err}`);
               console.error("Failed to create toast:", error);
             }
           };
+          const onCorexToastCreate = (event) => {
+            const { detail } = event;
+            const st = getToastStore(detail.groupId || this.groupId);
+            if (!st) return;
+            try {
+              st.create(buildCreateOptions(detail, true));
+            } catch (error) {
+              console.error("Failed to create toast:", error);
+            }
+          };
           const onToastUpdate = (event) => {
             const { detail } = event;
             const st = getToastStore(detail.groupId || this.groupId);
@@ -41625,6 +41598,7 @@ ${err}`);
             domListeners.push({ el, name, fn });
           };
           this.domListeners = domListeners;
+          addDom("corex:toast:create", onCorexToastCreate);
           addDom("toast:create", onToastCreate);
           addDom("toast:update", onToastUpdate);
           addDom("toast:dismiss", onToastDismiss);
@@ -42496,7 +42470,7 @@ ${err}`);
   var init_toggle = __esm({
     "../priv/static/toggle.mjs"() {
       "use strict";
-      init_chunk_I2HPUDHJ();
+      init_chunk_S4GKLIQE();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_2GQRP3FN();
@@ -42790,7 +42764,7 @@ ${err}`);
   var init_toggle_group = __esm({
     "../priv/static/toggle-group.mjs"() {
       "use strict";
-      init_chunk_I2HPUDHJ();
+      init_chunk_S4GKLIQE();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_2GQRP3FN();
@@ -43678,12 +43652,12 @@ ${err}`);
     });
   }
   function readExpandedAttr(el) {
-    var _a4, _b;
-    return getBoolean(el, "controlled") ? (_a4 = el.getAttribute("data-expanded-value")) != null ? _a4 : "" : (_b = el.getAttribute("data-default-expanded-value")) != null ? _b : "";
+    var _a4;
+    return (_a4 = el.getAttribute("data-default-expanded-value")) != null ? _a4 : "";
   }
   function readSelectedAttr(el) {
-    var _a4, _b;
-    return getBoolean(el, "controlled") ? (_a4 = el.getAttribute("data-selected-value")) != null ? _a4 : "" : (_b = el.getAttribute("data-default-selected-value")) != null ? _b : "";
+    var _a4;
+    return (_a4 = el.getAttribute("data-default-selected-value")) != null ? _a4 : "";
   }
   function parseRootNode(el) {
     const raw = el.dataset.tree;
@@ -44501,29 +44475,23 @@ ${err}`);
       BRANCH_CONTENT_SELECTOR = '[data-scope="tree-view"][data-part="branch-content"]';
       TreeViewHook = {
         mounted() {
-          var _a4, _b, _c, _d, _e, _f, _g, _h, _i;
+          var _a4, _b, _c, _d, _e;
           const el = this.el;
           const self2 = this;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
           const rootNode = parseRootNode(el);
           this.lastDataTree = el.dataset.tree;
-          const controlled = getBoolean(el, "controlled");
-          self2.lastExpanded = controlled ? (_a4 = getStringList(el, "expandedValue")) != null ? _a4 : [] : (_b = getStringList(el, "defaultExpandedValue")) != null ? _b : [];
-          self2.lastSelected = controlled ? (_c = getStringList(el, "selectedValue")) != null ? _c : [] : (_d = getStringList(el, "defaultSelectedValue")) != null ? _d : [];
+          self2.lastExpanded = (_a4 = getStringList(el, "defaultExpandedValue")) != null ? _a4 : [];
+          self2.lastSelected = (_b = getStringList(el, "defaultSelectedValue")) != null ? _b : [];
           self2.lastExpandedAttr = readExpandedAttr(el);
           self2.lastSelectedAttr = readSelectedAttr(el);
-          const treeView = new TreeView(el, __spreadProps(__spreadValues({
+          const treeView = new TreeView(el, {
             id: el.id,
-            rootNode
-          }, controlled ? {
-            expandedValue: (_e = getStringList(el, "expandedValue")) != null ? _e : [],
-            selectedValue: (_f = getStringList(el, "selectedValue")) != null ? _f : []
-          } : {
-            defaultExpandedValue: (_g = getStringList(el, "defaultExpandedValue")) != null ? _g : [],
-            defaultSelectedValue: (_h = getStringList(el, "defaultSelectedValue")) != null ? _h : []
-          }), {
-            selectionMode: (_i = getString(el, "selectionMode")) != null ? _i : "single",
+            rootNode,
+            defaultExpandedValue: (_c = getStringList(el, "defaultExpandedValue")) != null ? _c : [],
+            defaultSelectedValue: (_d = getStringList(el, "defaultSelectedValue")) != null ? _d : [],
+            selectionMode: (_e = getString(el, "selectionMode")) != null ? _e : "single",
             typeahead: el.dataset.typeahead !== "false",
             dir: getDir(el),
             onSelectionChange: (details) => {
@@ -44589,7 +44557,7 @@ ${err}`);
                 resolveValue: contentDatasetValue
               });
             }
-          }));
+          });
           treeView.init();
           this.treeView = treeView;
           prepareJsHeightInitialState(el, BRANCH_CONTENT_SELECTOR);
@@ -44649,15 +44617,8 @@ ${err}`);
             emitExpandedValue(parseRespondTo(payload));
           });
         },
-        beforeUpdate() {
-          var _a4;
-          const { el } = this;
-          if (getBoolean(el, "controlled") && isJsAnimation(el)) {
-            this.previousExpanded = (_a4 = getStringList(el, "expandedValue")) != null ? _a4 : [];
-          }
-        },
         updated() {
-          var _a4, _b, _c, _d, _e, _f;
+          var _a4, _b;
           const { el } = this;
           const tv = this.treeView;
           if (!tv) return;
@@ -44666,37 +44627,18 @@ ${err}`);
             this.lastDataTree = rawTree;
             tv.replaceRootNode(parseRootNode(el));
           }
-          const controlled = getBoolean(el, "controlled");
           const interaction = readTreeViewInteractionProps(el);
-          const selected = controlled ? (_a4 = getStringList(el, "selectedValue")) != null ? _a4 : [] : (_b = getStringList(el, "defaultSelectedValue")) != null ? _b : [];
-          const expanded = controlled ? (_c = getStringList(el, "expandedValue")) != null ? _c : [] : (_d = getStringList(el, "defaultExpandedValue")) != null ? _d : [];
+          const selected = (_a4 = getStringList(el, "defaultSelectedValue")) != null ? _a4 : [];
+          const expanded = (_b = getStringList(el, "defaultExpandedValue")) != null ? _b : [];
           const expandedAttr = readExpandedAttr(el);
           const selectedAttr = readSelectedAttr(el);
           const expandedAttrChanged = expandedAttr !== this.lastExpandedAttr;
           const selectedAttrChanged = selectedAttr !== this.lastSelectedAttr;
           this.lastExpandedAttr = expandedAttr;
           this.lastSelectedAttr = selectedAttr;
-          if (!controlled) {
-            tv.updateProps(interaction);
-            if (expandedAttrChanged) tv.api.setExpandedValue(expanded);
-            if (selectedAttrChanged) tv.api.setSelectedValue(selected);
-            return;
-          }
-          const prevExpanded = (_f = (_e = this.previousExpanded) != null ? _e : this.lastExpanded) != null ? _f : [];
-          this.previousExpanded = void 0;
-          if (expandedAttrChanged) this.lastExpanded = expanded;
-          if (selectedAttrChanged) this.lastSelected = selected;
-          runHeightOpenTransition({
-            el,
-            selector: BRANCH_CONTENT_SELECTOR,
-            prevOpen: prevExpanded,
-            nextOpen: expanded,
-            resolveValue: contentDatasetValue
-          });
-          tv.updateProps(__spreadProps(__spreadValues({}, interaction), {
-            expandedValue: expanded,
-            selectedValue: selected
-          }));
+          tv.updateProps(interaction);
+          if (expandedAttrChanged) tv.api.setExpandedValue(expanded);
+          if (selectedAttrChanged) tv.api.setSelectedValue(selected);
         },
         destroyed() {
           var _a4, _b, _c;

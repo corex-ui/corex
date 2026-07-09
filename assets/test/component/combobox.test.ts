@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { Combobox, type ComboboxItem } from "../../components/combobox";
+import {
+  Combobox,
+  resolveZagComboboxTranslations,
+  type ComboboxItem,
+} from "../../components/combobox";
 import { comboboxTree } from "../helpers/component-smoke";
 
 function comboboxTreeWithTemplates(items: ComboboxItem[]): HTMLElement {
@@ -54,6 +58,22 @@ describe("Combobox", () => {
     { label: "Alpha", value: "a" },
     { label: "Beta", value: "b" },
   ];
+
+  it("resolveZagComboboxTranslations maps trigger and clear labels", () => {
+    const el = document.createElement("div");
+    el.dataset.translation = JSON.stringify({
+      triggerLabel: "Open list",
+      clearTriggerLabel: "Clear",
+    });
+    expect(resolveZagComboboxTranslations(el)).toEqual({
+      translations: { triggerLabel: "Open list", clearTriggerLabel: "Clear" },
+    });
+  });
+
+  it("resolveZagComboboxTranslations falls back to defaults", () => {
+    const el = document.createElement("div");
+    expect(resolveZagComboboxTranslations(el).translations.triggerLabel).toBe("Open options");
+  });
 
   it("getCollection reflects active options", () => {
     const c = new Combobox(comboboxTree(), { id: "cb" }, items, false);

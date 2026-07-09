@@ -36,29 +36,6 @@ export function readCheckedControlledZagUpdate(
   return readUpdatedServerChecked(el);
 }
 
-export function readFormFieldServerChecked(el: HTMLElement): boolean | undefined {
-  if (!getBoolean(el, "formField")) {
-    return undefined;
-  }
-
-  if (!el.hasAttribute("data-default-checked")) {
-    return false;
-  }
-
-  return getCheckedState(el, "defaultChecked") === true;
-}
-
-export function readFormFieldServerString(
-  el: HTMLElement,
-  datasetKey = "defaultValue"
-): string | undefined {
-  if (!getBoolean(el, "formField")) {
-    return undefined;
-  }
-
-  return getString(el, datasetKey) ?? "";
-}
-
 export function getJsonStringList(el: HTMLElement, datasetKey: string): string[] | undefined {
   const raw = el.dataset[datasetKey];
   if (raw === undefined) return undefined;
@@ -67,70 +44,6 @@ export function getJsonStringList(el: HTMLElement, datasetKey: string): string[]
   if (!trimmed.startsWith("[")) return undefined;
   try {
     const v = JSON.parse(trimmed) as unknown;
-    return Array.isArray(v) && v.every((x) => typeof x === "string") ? (v as string[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-export function readFormFieldServerStringList(
-  el: HTMLElement,
-  datasetKey = "defaultValue"
-): string[] | undefined {
-  if (!getBoolean(el, "formField")) {
-    return undefined;
-  }
-
-  return getJsonStringList(el, datasetKey) ?? getStringList(el, datasetKey) ?? [];
-}
-
-export function formFieldValuesDiffer(current: string[], server: string[]): boolean {
-  if (current.length !== server.length) return true;
-  return current.some((v, i) => v !== server[i]);
-}
-
-export function readFormFieldDefaultAttr(
-  el: HTMLElement,
-  attrName: "data-default-value" | "data-default-checked"
-): string | undefined {
-  if (!getBoolean(el, "formField")) {
-    return undefined;
-  }
-  return el.getAttribute(attrName) ?? "";
-}
-
-export function shouldResyncFormFieldString(
-  el: HTMLElement,
-  lastAttr: string | undefined
-): { resync: boolean; nextAttr: string } | null {
-  const currentAttr = readFormFieldDefaultAttr(el, "data-default-value");
-  if (currentAttr === undefined) return null;
-  if (lastAttr === currentAttr) return null;
-  return { resync: true, nextAttr: currentAttr };
-}
-
-export function shouldResyncFormFieldChecked(
-  el: HTMLElement,
-  lastAttr: string | undefined
-): { resync: boolean; nextAttr: string } | null {
-  const currentAttr = readFormFieldDefaultAttr(el, "data-default-checked");
-  if (currentAttr === undefined) return null;
-  if (lastAttr === currentAttr) return null;
-  return { resync: true, nextAttr: currentAttr };
-}
-
-export function readFormFieldServerJsonTags(
-  el: HTMLElement,
-  datasetKey: "defaultTags" | "tags" = "defaultTags"
-): string[] | undefined {
-  if (!getBoolean(el, "formField")) {
-    return undefined;
-  }
-
-  const raw = el.dataset[datasetKey];
-  if (!raw || raw.trim() === "") return [];
-  try {
-    const v = JSON.parse(raw) as unknown;
     return Array.isArray(v) && v.every((x) => typeof x === "string") ? (v as string[]) : [];
   } catch {
     return [];
@@ -169,7 +82,7 @@ export function readBooleanControlledZagUpdate(
 }
 
 export function isZagValueControlled(el: HTMLElement): boolean {
-  return getBoolean(el, "controlled") || getBoolean(el, "formField");
+  return getBoolean(el, "controlled");
 }
 
 export function readDatasetStringList(el: HTMLElement, datasetKey: string): string[] {
@@ -177,22 +90,25 @@ export function readDatasetStringList(el: HTMLElement, datasetKey: string): stri
 }
 
 export function readUpdatedServerStringList(
-  el: HTMLElement
-): { value: string[] } | Record<string, never> {
+  el: HTMLElement,
+  lastServerValue?: string
+): { value: string[]; nextServerValue: string } | Record<string, never> {
   if (!isZagValueControlled(el)) {
     return {};
   }
 
-  return { value: readDatasetStringList(el, "value") };
+  const raw = getString(el, "value") ?? "";
+
+  if (raw === lastServerValue) {
+    return {};
+  }
+
+  return { value: readDatasetStringList(el, "value"), nextServerValue: raw };
 }
 
 export function mountStringListBinding(
   el: HTMLElement
 ): { value: string[] } | { defaultValue: string[] } {
-  if (getBoolean(el, "formField")) {
-    return { defaultValue: readDatasetStringList(el, "value") };
-  }
-
   if (getBoolean(el, "controlled")) {
     return { value: readDatasetStringList(el, "value") };
   }
@@ -210,7 +126,7 @@ export function readUpdatedServerString(
 
   const raw = getString(el, "value");
 
-  if (getBoolean(el, "formField") && raw === lastServerValue) {
+  if (raw === lastServerValue) {
     return {};
   }
 
@@ -222,10 +138,6 @@ export function mountStringBinding(
   valueKey: string,
   defaultKey: string
 ): { value: string | null } | { defaultValue: string | null } {
-  if (getBoolean(el, "formField")) {
-    return { defaultValue: z(getString(el, valueKey)) };
-  }
-
   if (getBoolean(el, "controlled")) {
     return { value: z(getString(el, valueKey)) };
   }
@@ -234,7 +146,7 @@ export function mountStringBinding(
 }
 
 export function isZagCheckedControlled(el: HTMLElement): boolean {
-  return getBoolean(el, "controlled") || getBoolean(el, "formField");
+  return getBoolean(el, "controlled");
 }
 
 export function readUpdatedServerChecked(
@@ -250,10 +162,6 @@ export function readUpdatedServerChecked(
 export function mountCheckedBinding(
   el: HTMLElement
 ): { checked: CheckedState } | { defaultChecked: CheckedState } {
-  if (getBoolean(el, "formField")) {
-    return { defaultChecked: getCheckedState(el, "checked") };
-  }
-
   if (getBoolean(el, "controlled")) {
     return { checked: getCheckedState(el, "checked") };
   }
@@ -270,16 +178,6 @@ function readDatasetTagsList(el: HTMLElement, datasetKey: "tags" | "defaultTags"
   } catch {
     return [];
   }
-}
-
-export function readUpdatedServerTags(
-  el: HTMLElement
-): { value: string[] } | Record<string, never> {
-  if (!isZagValueControlled(el)) {
-    return {};
-  }
-
-  return { value: readDatasetTagsList(el, "tags") };
 }
 
 export function mountTagsBinding(
@@ -315,19 +213,6 @@ export function readUpdatedServerNumber(
       return base;
     }
 
-    return {
-      ...base,
-      value: formatDisplayValue(raw, step),
-      nextServerValue: raw,
-    };
-  }
-
-  if (getBoolean(el, "formField")) {
-    const raw = getString(el, "value");
-    if (raw === undefined || raw === "") {
-      return base;
-    }
-
     if (raw === lastServerValue) {
       return base;
     }
@@ -351,13 +236,6 @@ export function mountNumberBinding(el: HTMLElement): NumZag {
     return { value, step };
   }
 
-  if (getBoolean(el, "formField")) {
-    const raw = getString(el, "value");
-    const defaultValue =
-      raw !== undefined && raw !== "" ? formatDisplayValue(raw, step) : undefined;
-    return { defaultValue, step };
-  }
-
   const rawDefault = getString(el, "defaultValue");
   const defaultValue =
     rawDefault !== undefined && rawDefault !== ""
@@ -370,9 +248,15 @@ export function mountNumberBinding(el: HTMLElement): NumZag {
 export function readStringListControlledZagUpdate(
   el: HTMLElement,
   _valueKey: string,
-  _defaultValueKey: string
+  _defaultValueKey: string,
+  lastServerValue?: string
 ): { value: string[] | undefined } | Record<string, never> {
-  return readUpdatedServerStringList(el);
+  const patch = readUpdatedServerStringList(el, lastServerValue);
+  if (!("value" in patch)) {
+    return {};
+  }
+
+  return { value: patch.value };
 }
 
 export function readPressedControlledZagUpdate(

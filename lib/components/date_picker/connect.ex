@@ -25,26 +25,13 @@ defmodule Corex.DatePicker.Connect do
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
-    form_field = Map.get(assigns, :form_field, false)
-    controlled = Map.get(assigns, :controlled, false)
-    zag_controlled = form_field || controlled
     default_raw = default_value_for_props(assigns)
-
-    value_attr =
-      cond do
-        form_field -> default_raw
-        controlled -> assigns.value
-        true -> nil
-      end
-
-    default_attr =
-      if(zag_controlled, do: nil, else: FormField.default_value_dataset(assigns, default_raw))
+    default_attr = FormField.default_value_dataset(assigns, default_raw)
 
     %{
       "id" => assigns.id,
-      "data-controlled" => get_boolean(zag_controlled),
       "data-default-value" => default_attr,
-      "data-value" => value_attr,
+      "data-value" => nil,
       "data-locale" => assigns.locale,
       "data-time-zone" => assigns.time_zone,
       "data-name" => assigns.name,

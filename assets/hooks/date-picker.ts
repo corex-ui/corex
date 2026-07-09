@@ -12,11 +12,7 @@ import * as datePicker from "@zag-js/date-picker";
 
 import { getString, getBoolean, getNumber, canPushEvent } from "../lib/util";
 import { syncArrayHiddenInputsForPhoenix } from "../lib/form-array-submit";
-import {
-  mountStringListBinding,
-  readDatasetStringList,
-  readUpdatedServerStringList,
-} from "../lib/read-props";
+import { mountStringListBinding, readDatasetStringList } from "../lib/read-props";
 import { notifyPhoenixFormChange } from "../lib/live-view-form-input";
 import { readPositioningOptions } from "../lib/positioning";
 import { notifyChange } from "../lib/respond-to";
@@ -317,12 +313,8 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
     const zag = this.datePicker;
     const min = getString(el, "min");
     const max = getString(el, "max");
-    const valuePatch = readUpdatedServerStringList(el);
-    const parsedValue =
-      "value" in valuePatch ? { value: valuePatch.value.map((x) => datePicker.parse(x)) } : {};
 
     zag?.updateProps({
-      ...parsedValue,
       dir: getString<Direction>(el, "dir"),
       locale: getString(el, "locale"),
       timeZone: getString(el, "timeZone"),
@@ -345,19 +337,6 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
       positioning: readPositioningOptions(el),
       ...resolveZagDatePickerTranslations(el),
     } as Props);
-
-    if (!getString(el, "submitName")) {
-      queueMicrotask(() => {
-        const serverValues = "value" in valuePatch ? valuePatch.value : null;
-        let isoList = resolveIsoListForFormSync(el, zag?.api.value, serverValues);
-
-        if (zag) {
-          isoList = applyServerIsoToZagIfNeeded(zag, isoList);
-        }
-
-        syncDatePickerValueInput(el, isoList.join(","), false);
-      });
-    }
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & DatePickerHookState) {

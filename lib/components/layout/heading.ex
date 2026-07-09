@@ -44,6 +44,8 @@ defmodule Corex.Layout.Heading do
 
   Use `class="layout-heading"` on the host, plus optional `layout-heading--*` modifiers for semantic ink on the title and subtitle.
 
+  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text). No variant axis (typography layout only). See the [modifier guide](modifiers.html).
+
   <!-- tabs-open -->
 
   ### Accent

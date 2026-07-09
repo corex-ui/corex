@@ -15,7 +15,7 @@ import {
   formatSubmitValue,
   mergeFormatOptions,
 } from "../lib/number-input-format";
-import { mountNumberBinding, readUpdatedServerNumber } from "../lib/read-props";
+import { mountNumberBinding } from "../lib/read-props";
 import {
   notifyChange,
   emitResponse,
@@ -53,7 +53,6 @@ type NumberInputHookState = {
   numberInput?: NumberInput;
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
-  lastServerValue?: string;
 };
 
 function submitValueForHost(el: HTMLElement, valueAsNumber: number): string {
@@ -194,7 +193,6 @@ const NumberInputHook: Hook<object & NumberInputHookState, HTMLElement> = {
     const zag = new NumberInput(el, buildMachineProps(el, pushEvent, canPush));
     zag.init();
     this.numberInput = zag;
-    this.lastServerValue = getString(el, "value") ?? getString(el, "defaultValue") ?? undefined;
     const initialSubmit = submitValueForHost(el, zag.api.valueAsNumber);
     syncNumberInputValueInput(el, zag.api.value ?? "", true, zag.api.valueAsNumber);
     const valueInput = el.querySelector<HTMLInputElement>(
@@ -307,24 +305,13 @@ const NumberInputHook: Hook<object & NumberInputHookState, HTMLElement> = {
   updated(this: object & HookInterface<HTMLElement> & NumberInputHookState) {
     const el = this.el;
     const zag = this.numberInput;
-    const valuePatch = readUpdatedServerNumber(el, this.lastServerValue);
-
-    if (valuePatch.nextServerValue !== undefined) {
-      this.lastServerValue = valuePatch.nextServerValue;
-    }
-
-    const zagPatch = { ...valuePatch };
-    delete zagPatch.nextServerValue;
 
     zag?.updateProps({
       ...numberInputPropsForUpdate(el),
-      ...zagPatch,
     } as Partial<Props>);
 
     queueMicrotask(() => {
-      if (zag && "value" in zagPatch) {
-        syncNumberInputValueInput(el, String(zagPatch.value ?? ""), false, zag.api.valueAsNumber);
-      } else if (zag) {
+      if (zag) {
         syncNumberInputValueInput(
           el,
           zag.api.value ?? getString(el, "defaultValue") ?? "",

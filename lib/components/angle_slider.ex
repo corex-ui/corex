@@ -127,19 +127,25 @@ defmodule Corex.AngleSlider do
   ```
 
   If you wish to use the default Corex styling, you can use the class `angle-slider` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+  This requires the `corex_design` dependency and `mix corex.design.build`; import the component css file.
 
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/angle-slider.css";
+  @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.angle_slider>`).
+  Stack modifiers on the host (`class` on `<.angle_slider>`). Combine axes, for example `angle-slider angle-slider--accent angle-slider--lg` or `angle-slider angle-slider--info angle-slider--variant-solid`.
+
+  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on the control and thumb handle. Variant modifiers control surface treatment. Default is subtle: a neutral control ring with semantic thumb color. Add `angle-slider--variant-solid` for a filled control and matching handle.
 
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
+
+  Palette variables for control fill and thumb ink. Does not change surface treatment by itself.
 
   | Modifier | Classes |
   | -------- | ------- |
@@ -149,6 +155,17 @@ defmodule Corex.AngleSlider do
   | Alert | `angle-slider angle-slider--alert` |
   | Info | `angle-slider angle-slider--info` |
   | Success | `angle-slider angle-slider--success` |
+
+  ### Variant
+
+  Visual treatment of the control ring and thumb handle. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `angle-slider` or `angle-slider angle-slider--accent` |
+  | Solid | `angle-slider angle-slider--accent angle-slider--variant-solid` |
+  | Ghost | `angle-slider angle-slider--variant-ghost` |
+  | Outline | `angle-slider angle-slider--accent angle-slider--variant-outline` |
 
   ### Size
 
@@ -234,8 +251,7 @@ defmodule Corex.AngleSlider do
   import Corex.Helpers, only: [respond_to_fields: 1]
 
   attr(:id, :string, required: false, doc: "The id of the angle slider")
-  attr(:value, :float, default: 0.0, doc: "The value or controlled value in degrees")
-  attr(:controlled, :boolean, default: false, doc: "Whether the value is controlled")
+  attr(:value, :float, default: 0.0, doc: "The initial value in degrees")
   attr(:step, :float, default: 1.0, doc: "Step value")
   attr(:disabled, :boolean, default: false, doc: "Whether the slider is disabled")
   attr(:read_only, :boolean, default: false, doc: "Whether the slider is read-only")
@@ -325,7 +341,6 @@ defmodule Corex.AngleSlider do
       dir: assigns.dir,
       orientation: assigns.orientation,
       value: assigns.value,
-      controlled: assigns.controlled,
       step: assigns.step,
       disabled: assigns.disabled,
       read_only: assigns.read_only,
@@ -348,7 +363,6 @@ defmodule Corex.AngleSlider do
         id: @id,
         form_field: @form_field,
         value: @value,
-        controlled: @controlled,
         step: @step,
         disabled: @disabled,
         read_only: @read_only,

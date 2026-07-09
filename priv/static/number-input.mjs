@@ -17,14 +17,13 @@ import {
 import {
   queueLiveViewFormInputSync,
   reapplyLiveViewValueInputUsage
-} from "./chunks/chunk-VMKNATWC.mjs";
+} from "./chunks/chunk-ASQD2R2U.mjs";
 import {
   formatDisplayValue,
   formatSubmitValue,
   mergeFormatOptions,
-  mountNumberBinding,
-  readUpdatedServerNumber
-} from "./chunks/chunk-I2HPUDHJ.mjs";
+  mountNumberBinding
+} from "./chunks/chunk-S4GKLIQE.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -1502,7 +1501,6 @@ var NumberInputHook = {
     const zag = new NumberInput(el, buildMachineProps(el, pushEvent, canPush));
     zag.init();
     this.numberInput = zag;
-    this.lastServerValue = getString(el, "value") ?? getString(el, "defaultValue") ?? void 0;
     const initialSubmit = submitValueForHost(el, zag.api.valueAsNumber);
     syncNumberInputValueInput(el, zag.api.value ?? "", true, zag.api.valueAsNumber);
     const valueInput = el.querySelector(
@@ -1595,20 +1593,11 @@ var NumberInputHook = {
   updated() {
     const el = this.el;
     const zag = this.numberInput;
-    const valuePatch = readUpdatedServerNumber(el, this.lastServerValue);
-    if (valuePatch.nextServerValue !== void 0) {
-      this.lastServerValue = valuePatch.nextServerValue;
-    }
-    const zagPatch = { ...valuePatch };
-    delete zagPatch.nextServerValue;
     zag?.updateProps({
-      ...numberInputPropsForUpdate(el),
-      ...zagPatch
+      ...numberInputPropsForUpdate(el)
     });
     queueMicrotask(() => {
-      if (zag && "value" in zagPatch) {
-        syncNumberInputValueInput(el, String(zagPatch.value ?? ""), false, zag.api.valueAsNumber);
-      } else if (zag) {
+      if (zag) {
         syncNumberInputValueInput(
           el,
           zag.api.value ?? getString(el, "defaultValue") ?? "",

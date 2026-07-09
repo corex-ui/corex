@@ -9,15 +9,14 @@ import {
 } from "./chunks/chunk-BRLTIGVO.mjs";
 import {
   syncArrayHiddenInputsForPhoenix
-} from "./chunks/chunk-NZ3YNDJS.mjs";
+} from "./chunks/chunk-YVULSJ7W.mjs";
 import {
   notifyPhoenixFormChange
-} from "./chunks/chunk-VMKNATWC.mjs";
+} from "./chunks/chunk-ASQD2R2U.mjs";
 import {
   getJsonStringList,
-  mountStringListBinding,
-  readUpdatedServerStringList
-} from "./chunks/chunk-I2HPUDHJ.mjs";
+  mountStringListBinding
+} from "./chunks/chunk-S4GKLIQE.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -692,10 +691,8 @@ function padStringListBinding(el, count) {
   }
   return { defaultValue: padToCount(binding.defaultValue, count) };
 }
-function readUpdatedPinValue(el, count) {
-  const patch = readUpdatedServerStringList(el);
-  if (!("value" in patch)) return {};
-  return { value: padToCount(patch.value, count) };
+function readUpdatedPinValue(_el, _count) {
+  return {};
 }
 function syncPinInputFormForPhoenix(el, values, onTouched, opts = {}) {
   const submitName = getString(el, "submitName");
@@ -842,11 +839,9 @@ var PinInputHook = {
     const el = this.el;
     const zag = this.pinInput;
     const count = getNumber(el, "count") ?? 0;
-    const valuePatch = readUpdatedPinValue(el, count);
     zag?.updateProps({
       id: el.id,
       count,
-      ...valuePatch,
       disabled: getBoolean(el, "disabled"),
       invalid: getBoolean(el, "invalid"),
       required: getBoolean(el, "required"),
@@ -861,9 +856,6 @@ var PinInputHook = {
       type: getString(el, "type"),
       placeholder: getString(el, "placeholder")
     });
-    if ("value" in valuePatch) {
-      syncPinInputFormForPhoenix(el, valuePatch.value, void 0, { notifyLiveView: false });
-    }
   },
   destroyed() {
     this.domRegistry?.teardown();
