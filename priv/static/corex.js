@@ -15146,7 +15146,7 @@ var Corex = (() => {
           });
           registry.add("combobox_set_open", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
-            if (payload.open === void 0) return;
+            if (typeof payload.open !== "boolean") return;
             combobox.api.setOpen(payload.open);
           });
         },
