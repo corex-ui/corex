@@ -1,6 +1,8 @@
 defmodule E2eWeb.Demos.CodeDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.DemoScales
+
   def examples do
     %{
       elixir: ~S"""
@@ -95,24 +97,97 @@ defmodule E2eWeb.Demos.CodeDemo do
     """
   end
 
-  def styling_size_code do
+  def styling_variant_code do
     c = inspect(snippet())
 
-    """
-    <.code class="code code--text-xs" language={:elixir} code={#{c}} />
-    <.code class="code" language={:elixir} code={#{c}} />
-    <.code class="code code--text-lg" language={:elixir} code={#{c}} />
+    DemoScales.styling_variant_axis_steps("code")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("code", modifier)
+      ~s|<.code class="#{class}" language={:elixir} code={#{c}} />|
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_variant_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:styling_snippet, snippet())
+      |> assign(:variants, DemoScales.styling_variant_axis_steps("code"))
+
+    ~H"""
+    <div class="flex flex-wrap gap-4 items-start w-full max-w-4xl">
+      <.code
+        :for={variant <- @variants}
+        id={"code-style-variant-#{variant.label |> String.downcase() |> String.replace(" ", "-") |> String.replace("(", "") |> String.replace(")", "")}"}
+        class={DemoScales.join_modifiers("code", variant.modifier)}
+        language={:elixir}
+        code={@styling_snippet}
+      />
+    </div>
     """
   end
 
-  def styling_size_example(assigns) do
-    assigns = assign(assigns, :styling_snippet, snippet())
+  def styling_variant_matrix_code do
+    c = inspect(snippet())
+
+    for semantic <- DemoScales.styling_semantic_axis_steps("code"),
+        variant <- DemoScales.styling_variant_axis_steps("code") do
+      class = DemoScales.join_matrix_modifiers("code", semantic.modifier, variant.modifier)
+      ~s|<.code class="#{class}" language={:elixir} code={#{c}} />|
+    end
+    |> DemoScales.join_code()
+  end
+
+  def styling_variant_matrix_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:styling_snippet, snippet())
+      |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("code"))
+      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("code"))
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start justify-center w-full">
-      <.code class="code code--text-xs" language={:elixir} code={@styling_snippet} />
-      <.code class="code" language={:elixir} code={@styling_snippet} />
-      <.code class="code code--text-lg" language={:elixir} code={@styling_snippet} />
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+      <div class="grid grid-cols-4 gap-space gap-2 items-start min-w-max">
+        <div :for={semantic <- @matrix_semantics} class="contents">
+          <.code
+            :for={variant <- @matrix_variants}
+            class={DemoScales.join_matrix_modifiers("code", semantic.modifier, variant.modifier)}
+            language={:elixir}
+            code={@styling_snippet}
+          />
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  def styling_size_code do
+    c = inspect(snippet())
+
+    DemoScales.text_steps()
+    |> Enum.map(fn step ->
+      modifier = if step == "md", do: "code", else: "code code--text-#{step}"
+      ~s|<.code class="#{modifier}" language={:elixir} code={#{c}} />|
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_size_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:styling_snippet, snippet())
+      |> assign(:text_steps, DemoScales.text_steps())
+
+    ~H"""
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={step <- @text_steps} class="flex flex-col gap-2">
+        <p class="typo typo--sm font-medium">{step}</p>
+        <.code
+          class={if step == "md", do: "code", else: "code code--text-#{step}"}
+          language={:elixir}
+          code={@styling_snippet}
+        />
+      </div>
     </div>
     """
   end
@@ -120,21 +195,56 @@ defmodule E2eWeb.Demos.CodeDemo do
   def styling_max_width_code do
     c = inspect(snippet())
 
-    """
-    <.code class="code code--max-w-none w-full" language={:elixir} code={#{c}} />
-    <.code class="code code--max-w-sm" language={:elixir} code={#{c}} />
-    <.code class="code" language={:elixir} code={#{c}} />
-    """
+    DemoScales.max_width_variants("code")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("code", modifier)
+      ~s|<.code class="#{class}" language={:elixir} code={#{c}} />|
+    end)
+    |> DemoScales.join_code()
   end
 
   def styling_max_width_example(assigns) do
-    assigns = assign(assigns, :styling_snippet, snippet())
+    assigns =
+      assigns
+      |> assign(:styling_snippet, snippet())
+      |> assign(:max_width_variants, DemoScales.max_width_variants("code"))
 
     ~H"""
-    <div class="flex flex-col gap-4 items-stretch w-full max-w-4xl mx-auto">
-      <.code class="code code--max-w-none w-full" language={:elixir} code={@styling_snippet} />
-      <.code class="code code--max-w-sm" language={:elixir} code={@styling_snippet} />
-      <.code class="code" language={:elixir} code={@styling_snippet} />
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <.code
+          class={DemoScales.join_modifiers("code", variant.modifier)}
+          language={:elixir}
+          code={@styling_snippet}
+        />
+      </div>
+    </div>
+    """
+  end
+
+  def styling_rounded_code do
+    c = inspect(snippet())
+
+    DemoScales.radius_steps()
+    |> Enum.map(fn step ->
+      ~s|<.code class="code code--rounded-#{step}" language={:elixir} code={#{c}} />|
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_rounded_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:styling_snippet, snippet())
+      |> assign(:radius_steps, DemoScales.radius_steps())
+
+    ~H"""
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={step <- @radius_steps} class="flex flex-col gap-2">
+        <p class="typo typo--sm font-medium">{step}</p>
+        <.code class={"code code--rounded-#{step}"} language={:elixir} code={@styling_snippet} />
+      </div>
     </div>
     """
   end

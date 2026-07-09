@@ -1,6 +1,7 @@
 defmodule E2eWeb.Demos.FileUploadDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.DemoScales
   alias Phoenix.LiveView.JS
 
   def anatomy_minimal_code do
@@ -788,6 +789,388 @@ defmodule E2eWeb.Demos.FileUploadDemo do
         end
       end
     end
+    """
+  end
+
+  def styling_color_code do
+    close = styling_close_code()
+
+    """
+    <.file_upload name="document" class="file-upload">
+      <:label>Default</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" class="file-upload file-upload--accent">
+      <:label>Accent</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" class="file-upload file-upload--brand">
+      <:label>Brand</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" class="file-upload file-upload--alert">
+      <:label>Alert</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" class="file-upload file-upload--info">
+      <:label>Info</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" class="file-upload file-upload--success">
+      <:label>Success</:label>
+    #{close}
+    </.file_upload>
+    """
+  end
+
+  def styling_color_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-4 max-w-md">
+      <.file_upload id="file-upload-style-color-default" name="document" class="file-upload w-full">
+        <:label>Default</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+      <.file_upload
+        id="file-upload-style-color-accent"
+        name="document"
+        class="file-upload file-upload--accent w-full"
+      >
+        <:label>Accent</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+      <.file_upload
+        id="file-upload-style-color-brand"
+        name="document"
+        class="file-upload file-upload--brand w-full"
+      >
+        <:label>Brand</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+      <.file_upload
+        id="file-upload-style-color-alert"
+        name="document"
+        class="file-upload file-upload--alert w-full"
+      >
+        <:label>Alert</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+      <.file_upload
+        id="file-upload-style-color-info"
+        name="document"
+        class="file-upload file-upload--info w-full"
+      >
+        <:label>Info</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+      <.file_upload
+        id="file-upload-style-color-success"
+        name="document"
+        class="file-upload file-upload--success w-full"
+      >
+        <:label>Success</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+    </div>
+    """
+  end
+
+  def styling_variant_code do
+    close = styling_close_code()
+
+    """
+    <.file_upload name="document" class="file-upload">
+      <:label>Subtle (default)</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" class="file-upload file-upload--variant-solid">
+      <:label>Solid</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" class="file-upload file-upload--variant-ghost">
+      <:label>Ghost</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" class="file-upload file-upload--variant-outline">
+      <:label>Outline</:label>
+    #{close}
+    </.file_upload>
+    """
+  end
+
+  def styling_variant_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-4 max-w-md">
+      <.file_upload id="file-upload-style-variant-subtle" name="document" class="file-upload w-full">
+        <:label>Subtle (default)</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+      <.file_upload
+        id="file-upload-style-variant-solid"
+        name="document"
+        class="file-upload file-upload--variant-solid w-full"
+      >
+        <:label>Solid</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+      <.file_upload
+        id="file-upload-style-variant-ghost"
+        name="document"
+        class="file-upload file-upload--variant-ghost w-full"
+      >
+        <:label>Ghost</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+      <.file_upload
+        id="file-upload-style-variant-outline"
+        name="document"
+        class="file-upload file-upload--variant-outline w-full"
+      >
+        <:label>Outline</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+    </div>
+    """
+  end
+
+  def styling_variant_matrix_code do
+    close = styling_close_code()
+
+    for semantic <- DemoScales.styling_semantic_axis_steps("file-upload"),
+        variant <- DemoScales.styling_variant_axis_steps("file-upload") do
+      class = DemoScales.join_matrix_modifiers("file-upload", semantic.modifier, variant.modifier)
+
+      """
+      <.file_upload name="document" class="#{class}">
+        <:label>#{semantic.label}</:label>
+      #{close}
+      </.file_upload>
+      """
+    end
+    |> DemoScales.join_code()
+  end
+
+  def styling_variant_matrix_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("file-upload"))
+      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("file-upload"))
+
+    ~H"""
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+      <div class="grid grid-cols-4 gap-space gap-2 items-start min-w-max">
+        <div :for={semantic <- @matrix_semantics} class="contents">
+          <.file_upload
+            :for={variant <- @matrix_variants}
+            name="document"
+            class={DemoScales.join_matrix_modifiers("file-upload", semantic.modifier, variant.modifier) <> " w-full"}
+          >
+            <:label>{semantic.label}</:label>
+            <:close><.heroicon name="hero-x-mark" /></:close>
+          </.file_upload>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  def styling_size_code do
+    close = styling_close_code()
+
+    """
+    <.file_upload name="document" class="file-upload file-upload--sm">
+      <:label>SM</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" class="file-upload file-upload--md">
+      <:label>MD</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" class="file-upload file-upload--lg">
+      <:label>LG</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" class="file-upload file-upload--xl">
+      <:label>XL</:label>
+    #{close}
+    </.file_upload>
+    """
+  end
+
+  def styling_size_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-4 max-w-md">
+      <.file_upload
+        id="file-upload-style-sm"
+        name="document"
+        class="file-upload file-upload--sm w-full"
+      >
+        <:label>SM</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+      <.file_upload
+        id="file-upload-style-md"
+        name="document"
+        class="file-upload file-upload--md w-full"
+      >
+        <:label>MD</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+      <.file_upload
+        id="file-upload-style-lg"
+        name="document"
+        class="file-upload file-upload--lg w-full"
+      >
+        <:label>LG</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+      <.file_upload
+        id="file-upload-style-xl"
+        name="document"
+        class="file-upload file-upload--xl w-full"
+      >
+        <:label>XL</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+    </div>
+    """
+  end
+
+  def styling_rounded_code do
+    close = styling_close_code()
+
+    """
+    <.file_upload name="document" class="file-upload file-upload--rounded-none">
+      <:label>None</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" class="file-upload file-upload--rounded-sm">
+      <:label>SM</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" class="file-upload file-upload--rounded-md">
+      <:label>MD</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" class="file-upload file-upload--rounded-lg">
+      <:label>LG</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" class="file-upload file-upload--rounded-xl">
+      <:label>XL</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" class="file-upload file-upload--rounded-full">
+      <:label>Full</:label>
+    #{close}
+    </.file_upload>
+    """
+  end
+
+  def styling_rounded_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-4 max-w-md">
+      <.file_upload
+        id="file-upload-style-rounded-none"
+        name="document"
+        class="file-upload file-upload--rounded-none w-full"
+      >
+        <:label>None</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+      <.file_upload
+        id="file-upload-style-rounded-sm"
+        name="document"
+        class="file-upload file-upload--rounded-sm w-full"
+      >
+        <:label>SM</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+      <.file_upload
+        id="file-upload-style-rounded-md"
+        name="document"
+        class="file-upload file-upload--rounded-md w-full"
+      >
+        <:label>MD</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+      <.file_upload
+        id="file-upload-style-rounded-lg"
+        name="document"
+        class="file-upload file-upload--rounded-lg w-full"
+      >
+        <:label>LG</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+      <.file_upload
+        id="file-upload-style-rounded-xl"
+        name="document"
+        class="file-upload file-upload--rounded-xl w-full"
+      >
+        <:label>XL</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+      <.file_upload
+        id="file-upload-style-rounded-full"
+        name="document"
+        class="file-upload file-upload--rounded-full w-full"
+      >
+        <:label>Full</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+    </div>
+    """
+  end
+
+  def styling_max_width_code do
+    close = styling_close_code()
+
+    DemoScales.max_width_variants("file-upload")
+    |> Enum.map(fn %{label: label, modifier: modifier} ->
+      class = DemoScales.join_block_modifiers("file-upload", modifier)
+
+      """
+      <.file_upload name="document" class="#{class}">
+        <:label>#{label}</:label>
+      #{close}
+      </.file_upload>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_max_width_example(assigns) do
+    assigns = assign(assigns, :max_width_variants, DemoScales.max_width_variants("file-upload"))
+
+    ~H"""
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <.file_upload
+          id={"file-upload-style-max-#{variant.id}"}
+          name="document"
+          class={DemoScales.join_block_modifiers("file-upload", variant.modifier)}
+        >
+          <:label>{variant.label}</:label>
+          <:close><.heroicon name="hero-x-mark" /></:close>
+        </.file_upload>
+      </div>
+    </div>
+    """
+  end
+
+  defp styling_close_code do
+    """
+      <:close>
+        <.heroicon name="hero-x-mark" />
+      </:close>
     """
   end
 end

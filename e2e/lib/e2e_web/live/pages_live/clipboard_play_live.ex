@@ -61,7 +61,7 @@ defmodule E2eWeb.ClipboardPlayLive do
           />
 
           <.toggle_group
-            class="toggle-group toggle-group--sm max-w-7xs"
+            class="toggle-group toggle-group--sm max-w-3xs"
             id="orientation"
             on_value_change="control_changed"
             multiple={false}

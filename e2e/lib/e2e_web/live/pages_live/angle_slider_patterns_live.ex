@@ -5,33 +5,21 @@ defmodule E2eWeb.AngleSliderPatternsLive do
 
   @id "patterns-angle-slider"
   @id_async "patterns-angle-slider-async"
-  @id_controlled "patterns-angle-slider-controlled"
 
   def mount(_params, _session, socket) do
     socket =
       socket
       |> assign(:id, @id)
       |> assign(:id_async, @id_async)
-      |> assign(:id_controlled, @id_controlled)
-      |> assign(:value, 90.0)
-      |> assign(:angle_value, nil)
-      |> assign(:angle_value_as_degree, nil)
-      |> assign(:angle_dragging, nil)
       |> assign(:async_heex_full, E2eWeb.Demos.AngleSliderDemo.patterns_async_heex_full())
       |> assign(:async_heex_panel, E2eWeb.Demos.AngleSliderDemo.patterns_async_heex_panel())
       |> assign(:async_elixir, E2eWeb.Demos.AngleSliderDemo.patterns_async_elixir())
-      |> assign(:controlled_heex, E2eWeb.Demos.AngleSliderDemo.patterns_controlled_heex())
-      |> assign(:controlled_elixir, E2eWeb.Demos.AngleSliderDemo.patterns_controlled_elixir())
       |> assign_async(:angle_slider, fn ->
         Process.sleep(1000)
         {:ok, %{angle_slider: %{value: 90.0}}}
       end)
 
     {:ok, socket}
-  end
-
-  def handle_event("patterns_controlled_changed", %{"value" => value}, socket) do
-    {:noreply, assign(socket, :value, value)}
   end
 
   def render(assigns) do
@@ -71,28 +59,6 @@ defmodule E2eWeb.AngleSliderPatternsLive do
                 <:label>Angle</:label>
               </.angle_slider>
             </.async_result>
-          </:preview>
-        </.demo_section>
-
-        <.demo_section
-          id="angle-slider-patterns-controlled"
-          title={~t"Controlled (LiveView)"}
-          code_tabs={[
-            %{value: "heex", label: ~t"Heex", language: :heex, code: @controlled_heex},
-            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @controlled_elixir}
-          ]}
-        >
-          <:preview>
-            <.angle_slider
-              id={@id_controlled}
-              class="angle-slider"
-              marker_values={[0, 90, 180, 270]}
-              controlled
-              value={@value}
-              on_value_change="patterns_controlled_changed"
-            >
-              <:label>Angle</:label>
-            </.angle_slider>
           </:preview>
         </.demo_section>
       </.demo_page>

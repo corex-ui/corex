@@ -56,7 +56,7 @@ defmodule E2eWeb.DataListPlayLive do
             value={[@controls.dir]}
           />
           <.toggle_group
-            class="toggle-group toggle-group--sm max-w-7xs"
+            class="toggle-group toggle-group--sm max-w-3xs"
             id="orientation"
             on_value_change="control_changed"
             multiple={false}

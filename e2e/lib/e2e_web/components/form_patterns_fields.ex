@@ -135,6 +135,9 @@ defmodule E2eWeb.FormPatternsFields do
 
     <.checkbox field={@form[:terms]} class="checkbox max-w-xs w-full relative" id={"#{@prefix}-terms"}>
       <:label>Accept the terms</:label>
+      <:indicator>
+        <.heroicon name="hero-check" />
+      </:indicator>
       <:error :let={msg} class="absolute top-0 end-0">
         <.tooltip
           id={"#{@prefix}-terms-tip"}

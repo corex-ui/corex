@@ -1,10 +1,12 @@
 defmodule E2eWeb.Demos.FloatingPanelDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.DemoScales
+
   def anatomy_basic_code do
     ~S"""
     <.floating_panel class="floating-panel">
-      <:trigger class="button button--ghost button--sm">
+      <:trigger class="button button--variant-ghost button--sm">
         <span data-closed>Open panel</span>
         <span data-open>Close panel</span>
       </:trigger>
@@ -33,7 +35,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
 
   def api_client_binding_code do
     """
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action phx-click={Corex.FloatingPanel.set_open("floating-panel-api-bind", true)} class="button button--sm">
         Open
       </.action>
@@ -48,7 +50,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
 
   def api_client_binding_example(assigns) do
     ~H"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action
         phx-click={Corex.FloatingPanel.set_open("floating-panel-api-bind", true)}
         class="button button--sm"
@@ -72,7 +74,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
 
   def api_client_js_heex do
     ~S"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <button type="button" id="floating-panel-api-js-open" class="button button--sm">
         Open
       </button>
@@ -156,7 +158,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
 
   def api_client_js_example(assigns) do
     ~H"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <button type="button" id="floating-panel-api-js-open" class="button button--sm">
         Open
       </button>
@@ -198,7 +200,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
 
   def api_server_heex do
     """
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action phx-click="floating_panel_api_server_open" class="button button--sm">
         Open
       </.action>
@@ -225,7 +227,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
 
   def api_server_example(assigns) do
     ~H"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action phx-click="floating_panel_api_server_open" class="button button--sm">
         Open
       </.action>
@@ -329,7 +331,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         class="floating-panel"
         positioning={%Corex.Positioning{placement: "top-start", gutter: 20, flip: true}}
       >
-        <:trigger class="button button--ghost button--sm">
+        <:trigger class="button button--variant-ghost button--sm">
           <span data-closed>Open anchored panel</span>
           <span data-open>Close anchored panel</span>
         </:trigger>
@@ -356,7 +358,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         class="floating-panel"
         positioning={%Corex.Positioning{placement: "top-start", gutter: 20, flip: true}}
       >
-        <:trigger class="button button--ghost button--sm">
+        <:trigger class="button button--variant-ghost button--sm">
           <span data-closed>Open anchored panel</span>
           <span data-open>Close anchored panel</span>
         </:trigger>
@@ -383,7 +385,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
       size={%{width: 380, height: 220}}
       min_size={%{width: 280, height: 160}}
     >
-      <:trigger class="button button--ghost button--sm">
+      <:trigger class="button button--variant-ghost button--sm">
         <span data-closed>Open sized panel</span>
         <span data-open>Close sized panel</span>
       </:trigger>
@@ -409,7 +411,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
       size={%{width: 380, height: 220}}
       min_size={%{width: 280, height: 160}}
     >
-      <:trigger class="button button--ghost button--sm">
+      <:trigger class="button button--variant-ghost button--sm">
         <span data-closed>Open sized panel</span>
         <span data-open>Close sized panel</span>
       </:trigger>
@@ -599,6 +601,522 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         <p>#{inner_text}</p>
       </:content>
     </.floating_panel>
+    """
+  end
+
+  def styling_color_code do
+    """
+    <.floating_panel class="floating-panel">
+      <:trigger class="button button--variant-ghost button--sm">Default</:trigger>
+      <:title>Notes</:title>
+      #{styling_panel_controls_code()}
+      <:content><p>Drag, resize, and minimize this panel while you work.</p></:content>
+    </.floating_panel>
+    <.floating_panel class="floating-panel floating-panel--accent">
+      <:trigger class="button button--variant-ghost button--sm">Accent</:trigger>
+      <:title>Notes</:title>
+      #{styling_panel_controls_code()}
+      <:content><p>Drag, resize, and minimize this panel while you work.</p></:content>
+    </.floating_panel>
+    <.floating_panel class="floating-panel floating-panel--brand">
+      <:trigger class="button button--variant-ghost button--sm">Brand</:trigger>
+      <:title>Notes</:title>
+      #{styling_panel_controls_code()}
+      <:content><p>Drag, resize, and minimize this panel while you work.</p></:content>
+    </.floating_panel>
+    <.floating_panel class="floating-panel floating-panel--alert">
+      <:trigger class="button button--variant-ghost button--sm">Alert</:trigger>
+      <:title>Notes</:title>
+      #{styling_panel_controls_code()}
+      <:content><p>Drag, resize, and minimize this panel while you work.</p></:content>
+    </.floating_panel>
+    <.floating_panel class="floating-panel floating-panel--info">
+      <:trigger class="button button--variant-ghost button--sm">Info</:trigger>
+      <:title>Notes</:title>
+      #{styling_panel_controls_code()}
+      <:content><p>Drag, resize, and minimize this panel while you work.</p></:content>
+    </.floating_panel>
+    <.floating_panel class="floating-panel floating-panel--success">
+      <:trigger class="button button--variant-ghost button--sm">Success</:trigger>
+      <:title>Notes</:title>
+      #{styling_panel_controls_code()}
+      <:content><p>Drag, resize, and minimize this panel while you work.</p></:content>
+    </.floating_panel>
+    """
+  end
+
+  def styling_color_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-4 items-start w-full max-w-md">
+      <.floating_panel id="floating-panel-style-color-default" class="floating-panel">
+        <:trigger class="button button--variant-ghost button--sm">Default</:trigger>
+        <:title>Notes</:title>
+        <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" class="icon" />
+        </:maximize_trigger>
+        <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+        <:content>
+          <p>Drag, resize, and minimize this panel while you work.</p>
+        </:content>
+      </.floating_panel>
+      <.floating_panel
+        id="floating-panel-style-color-accent"
+        class="floating-panel floating-panel--accent"
+      >
+        <:trigger class="button button--variant-ghost button--sm">Accent</:trigger>
+        <:title>Notes</:title>
+        <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" class="icon" />
+        </:maximize_trigger>
+        <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+        <:content>
+          <p>Drag, resize, and minimize this panel while you work.</p>
+        </:content>
+      </.floating_panel>
+      <.floating_panel
+        id="floating-panel-style-color-brand"
+        class="floating-panel floating-panel--brand"
+      >
+        <:trigger class="button button--variant-ghost button--sm">Brand</:trigger>
+        <:title>Notes</:title>
+        <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" class="icon" />
+        </:maximize_trigger>
+        <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+        <:content>
+          <p>Drag, resize, and minimize this panel while you work.</p>
+        </:content>
+      </.floating_panel>
+      <.floating_panel
+        id="floating-panel-style-color-alert"
+        class="floating-panel floating-panel--alert"
+      >
+        <:trigger class="button button--variant-ghost button--sm">Alert</:trigger>
+        <:title>Notes</:title>
+        <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" class="icon" />
+        </:maximize_trigger>
+        <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+        <:content>
+          <p>Drag, resize, and minimize this panel while you work.</p>
+        </:content>
+      </.floating_panel>
+      <.floating_panel
+        id="floating-panel-style-color-info"
+        class="floating-panel floating-panel--info"
+      >
+        <:trigger class="button button--variant-ghost button--sm">Info</:trigger>
+        <:title>Notes</:title>
+        <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" class="icon" />
+        </:maximize_trigger>
+        <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+        <:content>
+          <p>Drag, resize, and minimize this panel while you work.</p>
+        </:content>
+      </.floating_panel>
+      <.floating_panel
+        id="floating-panel-style-color-success"
+        class="floating-panel floating-panel--success"
+      >
+        <:trigger class="button button--variant-ghost button--sm">Success</:trigger>
+        <:title>Notes</:title>
+        <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" class="icon" />
+        </:maximize_trigger>
+        <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+        <:content>
+          <p>Drag, resize, and minimize this panel while you work.</p>
+        </:content>
+      </.floating_panel>
+    </div>
+    """
+  end
+
+  def styling_variant_code do
+    """
+    <.floating_panel class="floating-panel">
+      <:trigger class="button button--variant-ghost button--sm">Subtle (default)</:trigger>
+      <:title>Notes</:title>
+      #{styling_panel_controls_code()}
+      <:content><p>Drag, resize, and minimize this panel while you work.</p></:content>
+    </.floating_panel>
+    <.floating_panel class="floating-panel floating-panel--variant-solid">
+      <:trigger class="button button--variant-ghost button--sm">Solid</:trigger>
+      <:title>Notes</:title>
+      #{styling_panel_controls_code()}
+      <:content><p>Drag, resize, and minimize this panel while you work.</p></:content>
+    </.floating_panel>
+    <.floating_panel class="floating-panel floating-panel--variant-ghost">
+      <:trigger class="button button--variant-ghost button--sm">Ghost</:trigger>
+      <:title>Notes</:title>
+      #{styling_panel_controls_code()}
+      <:content><p>Drag, resize, and minimize this panel while you work.</p></:content>
+    </.floating_panel>
+    <.floating_panel class="floating-panel floating-panel--variant-outline">
+      <:trigger class="button button--variant-ghost button--sm">Outline</:trigger>
+      <:title>Notes</:title>
+      #{styling_panel_controls_code()}
+      <:content><p>Drag, resize, and minimize this panel while you work.</p></:content>
+    </.floating_panel>
+    """
+  end
+
+  def styling_variant_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-4 items-start w-full max-w-2xl">
+      <.floating_panel id="floating-panel-style-variant-subtle" class="floating-panel">
+        <:trigger class="button button--variant-ghost button--sm">Subtle (default)</:trigger>
+        <:title>Notes</:title>
+        <:minimize_trigger><.heroicon name="hero-minus" class="icon" /></:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" class="icon" />
+        </:maximize_trigger>
+        <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+        <:content>
+          <p>Drag, resize, and minimize this panel while you work.</p>
+        </:content>
+      </.floating_panel>
+      <.floating_panel
+        id="floating-panel-style-variant-solid"
+        class="floating-panel floating-panel--variant-solid"
+      >
+        <:trigger class="button button--variant-ghost button--sm">Solid</:trigger>
+        <:title>Notes</:title>
+        <:minimize_trigger><.heroicon name="hero-minus" class="icon" /></:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" class="icon" />
+        </:maximize_trigger>
+        <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+        <:content>
+          <p>Drag, resize, and minimize this panel while you work.</p>
+        </:content>
+      </.floating_panel>
+      <.floating_panel
+        id="floating-panel-style-variant-ghost"
+        class="floating-panel floating-panel--variant-ghost"
+      >
+        <:trigger class="button button--variant-ghost button--sm">Ghost</:trigger>
+        <:title>Notes</:title>
+        <:minimize_trigger><.heroicon name="hero-minus" class="icon" /></:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" class="icon" />
+        </:maximize_trigger>
+        <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+        <:content>
+          <p>Drag, resize, and minimize this panel while you work.</p>
+        </:content>
+      </.floating_panel>
+      <.floating_panel
+        id="floating-panel-style-variant-outline"
+        class="floating-panel floating-panel--variant-outline"
+      >
+        <:trigger class="button button--variant-ghost button--sm">Outline</:trigger>
+        <:title>Notes</:title>
+        <:minimize_trigger><.heroicon name="hero-minus" class="icon" /></:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" class="icon" />
+        </:maximize_trigger>
+        <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+        <:content>
+          <p>Drag, resize, and minimize this panel while you work.</p>
+        </:content>
+      </.floating_panel>
+    </div>
+    """
+  end
+
+  def styling_variant_matrix_code do
+    for semantic <- DemoScales.styling_semantic_axis_steps("floating-panel"),
+        variant <- DemoScales.styling_variant_axis_steps("floating-panel") do
+      class =
+        DemoScales.join_matrix_modifiers("floating-panel", semantic.modifier, variant.modifier)
+
+      """
+      <.floating_panel class="#{class}">
+        <:trigger class="button button--variant-ghost button--sm">#{semantic.label}</:trigger>
+        <:title>Notes</:title>
+        #{styling_panel_controls_code()}
+        <:content><p>Drag, resize, and minimize this panel while you work.</p></:content>
+      </.floating_panel>
+      """
+    end
+    |> DemoScales.join_code()
+  end
+
+  def styling_variant_matrix_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("floating-panel"))
+      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("floating-panel"))
+
+    ~H"""
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+      <div class="grid grid-cols-4 gap-space gap-2 items-start min-w-max">
+        <div :for={semantic <- @matrix_semantics} class="contents">
+          <.floating_panel
+            :for={variant <- @matrix_variants}
+            class={
+              DemoScales.join_matrix_modifiers("floating-panel", semantic.modifier, variant.modifier)
+            }
+          >
+            <:trigger class="button button--variant-ghost button--sm">{semantic.label}</:trigger>
+            <:title>Notes</:title>
+            <:minimize_trigger><.heroicon name="hero-minus" class="icon" /></:minimize_trigger>
+            <:maximize_trigger>
+              <.heroicon name="hero-arrows-pointing-out" class="icon" />
+            </:maximize_trigger>
+            <:default_trigger>
+              <.heroicon name="hero-rectangle-stack" class="icon" />
+            </:default_trigger>
+            <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+            <:content>
+              <p>Drag, resize, and minimize this panel while you work.</p>
+            </:content>
+          </.floating_panel>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  def styling_size_code do
+    Enum.map(["sm", "md", "lg", "xl"], fn size ->
+      label = String.upcase(size)
+
+      """
+      <.floating_panel class="floating-panel floating-panel--#{size}">
+        <:trigger class="button button--variant-ghost button--sm">#{label}</:trigger>
+        <:title>#{label}</:title>
+        #{styling_panel_controls_code()}
+        <:content><p>Panel density scales with floating-panel--#{size}.</p></:content>
+      </.floating_panel>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_size_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-4 items-start w-full max-w-md">
+      <.floating_panel id="floating-panel-style-sm" class="floating-panel floating-panel--sm">
+        <:trigger class="button button--variant-ghost button--sm">SM</:trigger>
+        <:title>SM</:title>
+        <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" class="icon" />
+        </:maximize_trigger>
+        <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+        <:content>
+          <p>Panel density scales with floating-panel--sm.</p>
+        </:content>
+      </.floating_panel>
+      <.floating_panel id="floating-panel-style-md" class="floating-panel floating-panel--md">
+        <:trigger class="button button--variant-ghost button--sm">MD</:trigger>
+        <:title>MD</:title>
+        <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" class="icon" />
+        </:maximize_trigger>
+        <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+        <:content>
+          <p>Panel density scales with floating-panel--md.</p>
+        </:content>
+      </.floating_panel>
+      <.floating_panel id="floating-panel-style-lg" class="floating-panel floating-panel--lg">
+        <:trigger class="button button--variant-ghost button--sm">LG</:trigger>
+        <:title>LG</:title>
+        <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" class="icon" />
+        </:maximize_trigger>
+        <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+        <:content>
+          <p>Panel density scales with floating-panel--lg.</p>
+        </:content>
+      </.floating_panel>
+      <.floating_panel id="floating-panel-style-xl" class="floating-panel floating-panel--xl">
+        <:trigger class="button button--variant-ghost button--sm">XL</:trigger>
+        <:title>XL</:title>
+        <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" class="icon" />
+        </:maximize_trigger>
+        <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+        <:content>
+          <p>Panel density scales with floating-panel--xl.</p>
+        </:content>
+      </.floating_panel>
+    </div>
+    """
+  end
+
+  def styling_rounded_code do
+    for {suffix, label} <- [
+          {"none", "None"},
+          {"sm", "SM"},
+          {"md", "MD"},
+          {"lg", "LG"},
+          {"xl", "XL"},
+          {"full", "Full"}
+        ] do
+      """
+      <.floating_panel class="floating-panel floating-panel--rounded-#{suffix}">
+        <:trigger class="button button--variant-ghost button--sm">#{label}</:trigger>
+        <:title>#{label}</:title>
+        #{styling_panel_controls_code()}
+        <:content><p>Corner radius via floating-panel--rounded-#{suffix}.</p></:content>
+      </.floating_panel>
+      """
+    end
+    |> DemoScales.join_code()
+  end
+
+  def styling_rounded_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-4 items-start w-full max-w-md">
+      <.floating_panel
+        id="floating-panel-style-rounded-none"
+        class="floating-panel floating-panel--rounded-none"
+      >
+        <:trigger class="button button--variant-ghost button--sm">None</:trigger>
+        <:title>None</:title>
+        <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" class="icon" />
+        </:maximize_trigger>
+        <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+        <:content>
+          <p>Corner radius via floating-panel--rounded-none.</p>
+        </:content>
+      </.floating_panel>
+      <.floating_panel
+        id="floating-panel-style-rounded-sm"
+        class="floating-panel floating-panel--rounded-sm"
+      >
+        <:trigger class="button button--variant-ghost button--sm">SM</:trigger>
+        <:title>SM</:title>
+        <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" class="icon" />
+        </:maximize_trigger>
+        <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+        <:content>
+          <p>Corner radius via floating-panel--rounded-sm.</p>
+        </:content>
+      </.floating_panel>
+      <.floating_panel
+        id="floating-panel-style-rounded-md"
+        class="floating-panel floating-panel--rounded-md"
+      >
+        <:trigger class="button button--variant-ghost button--sm">MD</:trigger>
+        <:title>MD</:title>
+        <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" class="icon" />
+        </:maximize_trigger>
+        <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+        <:content>
+          <p>Corner radius via floating-panel--rounded-md.</p>
+        </:content>
+      </.floating_panel>
+      <.floating_panel
+        id="floating-panel-style-rounded-lg"
+        class="floating-panel floating-panel--rounded-lg"
+      >
+        <:trigger class="button button--variant-ghost button--sm">LG</:trigger>
+        <:title>LG</:title>
+        <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" class="icon" />
+        </:maximize_trigger>
+        <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+        <:content>
+          <p>Corner radius via floating-panel--rounded-lg.</p>
+        </:content>
+      </.floating_panel>
+      <.floating_panel
+        id="floating-panel-style-rounded-xl"
+        class="floating-panel floating-panel--rounded-xl"
+      >
+        <:trigger class="button button--variant-ghost button--sm">XL</:trigger>
+        <:title>XL</:title>
+        <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" class="icon" />
+        </:maximize_trigger>
+        <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+        <:content>
+          <p>Corner radius via floating-panel--rounded-xl.</p>
+        </:content>
+      </.floating_panel>
+      <.floating_panel
+        id="floating-panel-style-rounded-full"
+        class="floating-panel floating-panel--rounded-full"
+      >
+        <:trigger class="button button--variant-ghost button--sm">Full</:trigger>
+        <:title>Full</:title>
+        <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" class="icon" />
+        </:maximize_trigger>
+        <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+        <:content>
+          <p>Corner radius via floating-panel--rounded-full.</p>
+        </:content>
+      </.floating_panel>
+    </div>
+    """
+  end
+
+  defp styling_panel_controls_code do
+    """
+      <:minimize_trigger>
+        <.heroicon name="hero-arrow-down-left" class="icon" />
+      </:minimize_trigger>
+      <:maximize_trigger>
+        <.heroicon name="hero-arrows-pointing-out" class="icon" />
+      </:maximize_trigger>
+      <:default_trigger>
+        <.heroicon name="hero-rectangle-stack" class="icon" />
+      </:default_trigger>
+      <:close_trigger>
+        <.heroicon name="hero-x-mark" class="icon" />
+      </:close_trigger>
     """
   end
 end

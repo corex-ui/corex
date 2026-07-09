@@ -5,7 +5,7 @@ defmodule E2eWeb.Demos.ToastDemo do
 
   def api_client_binding_code do
     ~S"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action
         phx-click={Corex.Toast.create("layout-toast", "Info", "Info description", :info, [])}
         class="button button--sm"
@@ -41,7 +41,7 @@ defmodule E2eWeb.Demos.ToastDemo do
 
   def api_client_binding_example(assigns) do
     ~H"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action
         phx-click={Corex.Toast.create("layout-toast", "Info", "Info description", :info, [])}
         class="button button--sm"
@@ -77,7 +77,7 @@ defmodule E2eWeb.Demos.ToastDemo do
 
   def api_create_client_js_heex do
     ~S"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <button
         type="button"
         class="button button--sm"
@@ -200,7 +200,7 @@ defmodule E2eWeb.Demos.ToastDemo do
     _ = assigns
 
     ~H"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <button
         type="button"
         class="button button--sm"
@@ -235,7 +235,7 @@ defmodule E2eWeb.Demos.ToastDemo do
 
   def api_create_server_heex do
     ~S"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action phx-click="toast_api_push_info" class="button button--sm">Info</.action>
       <.action phx-click="toast_api_push_success" class="button button--sm">Success</.action>
       <.action phx-click="toast_api_push_error" class="button button--sm">Error</.action>
@@ -274,7 +274,7 @@ defmodule E2eWeb.Demos.ToastDemo do
     _ = assigns
 
     ~H"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action phx-click="toast_api_push_info" class="button button--sm">Info</.action>
       <.action phx-click="toast_api_push_success" class="button button--sm">Success</.action>
       <.action phx-click="toast_api_push_error" class="button button--sm">Error</.action>
@@ -285,7 +285,7 @@ defmodule E2eWeb.Demos.ToastDemo do
 
   def api_update_toast_client_binding_code do
     ~S"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action
         phx-click={
           Corex.Toast.create("layout-toast", "Before update", "Create this toast once, then tap Update.", :info,
@@ -316,7 +316,7 @@ defmodule E2eWeb.Demos.ToastDemo do
 
   def api_update_toast_client_binding_example(assigns) do
     ~H"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action
         phx-click={
           Corex.Toast.create(
@@ -351,7 +351,7 @@ defmodule E2eWeb.Demos.ToastDemo do
 
   def api_update_toast_client_js_heex do
     ~S"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <button
         type="button"
         class="button button--sm"
@@ -440,7 +440,7 @@ defmodule E2eWeb.Demos.ToastDemo do
     _ = assigns
 
     ~H"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <button
         type="button"
         class="button button--sm"
@@ -461,7 +461,7 @@ defmodule E2eWeb.Demos.ToastDemo do
 
   def api_update_toast_server_heex do
     ~S"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action phx-click="toast_api_seed_update_demo" class="button button--sm">Create demo toast</.action>
       <.action phx-click="toast_api_update_demo" class="button button--sm">Update</.action>
     </div>
@@ -494,7 +494,7 @@ defmodule E2eWeb.Demos.ToastDemo do
     _ = assigns
 
     ~H"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action phx-click="toast_api_seed_update_demo" class="button button--sm">
         Create demo toast
       </.action>
@@ -505,7 +505,7 @@ defmodule E2eWeb.Demos.ToastDemo do
 
   def anatomy_type_code do
     ~S"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action
         phx-click={Corex.Toast.create("layout-toast", "Info", "Client binding", :info, [])}
         class="button button--sm"
@@ -532,7 +532,7 @@ defmodule E2eWeb.Demos.ToastDemo do
     _ = assigns
 
     ~H"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action
         phx-click={Corex.Toast.create("layout-toast", "Info", "Client binding", :info, [])}
         class="button button--sm"
@@ -557,7 +557,7 @@ defmodule E2eWeb.Demos.ToastDemo do
 
   def anatomy_duration_code do
     ~S"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action
         phx-click={Corex.Toast.create("layout-toast", "2 seconds", "duration: 2000", :info, duration: 2000)}
         class="button button--sm"
@@ -586,7 +586,7 @@ defmodule E2eWeb.Demos.ToastDemo do
     _ = assigns
 
     ~H"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action
         phx-click={
           Corex.Toast.create("layout-toast", "2 seconds", "duration: 2000", :info, duration: 2000)
@@ -621,7 +621,7 @@ defmodule E2eWeb.Demos.ToastDemo do
 
   def anatomy_loading_code do
     ~S"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action
         phx-click={Corex.Toast.create("layout-toast", "No loading", "Default slot", :info, duration: 5000)}
         class="button button--sm"
@@ -647,7 +647,7 @@ defmodule E2eWeb.Demos.ToastDemo do
     _ = assigns
 
     ~H"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action
         phx-click={
           Corex.Toast.create("layout-toast", "No loading", "Default slot", :info, duration: 5000)

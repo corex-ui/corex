@@ -51,7 +51,7 @@ defmodule E2eWeb.AdminLive.Form do
                 <.action
                   id={"admin-delete-#{@admin.id}-cancel"}
                   phx-click={Corex.Dialog.set_open("admin-delete-#{@admin.id}", false)}
-                  class="button button--sm button--ghost"
+                  class="button button--sm button--variant-ghost"
                 >
                   Cancel
                 </.action>

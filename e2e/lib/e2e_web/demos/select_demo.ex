@@ -1,6 +1,8 @@
 defmodule E2eWeb.Demos.SelectDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.DemoScales
+
   defp items do
     Corex.List.new([
       %{label: "France", value: "fra"},
@@ -351,6 +353,117 @@ defmodule E2eWeb.Demos.SelectDemo do
     """
   end
 
+  def styling_variant_code do
+    items_attr =
+      ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
+
+    value_attr = ~S|value={["fra"]}|
+
+    """
+    <.select class="select" #{items_attr} #{value_attr}>
+      <:label>Subtle (default)</:label>
+      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    </.select>
+    <.select class="select select--variant-solid" #{items_attr} #{value_attr}>
+      <:label>Solid</:label>
+      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    </.select>
+    <.select class="select select--variant-ghost" #{items_attr} #{value_attr}>
+      <:label>Ghost</:label>
+      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    </.select>
+    <.select class="select select--variant-outline" #{items_attr} #{value_attr}>
+      <:label>Outline</:label>
+      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    </.select>
+    """
+  end
+
+  def styling_variant_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
+      <.select id="select-style-variant-subtle" class="select" items={items()} value={["fra"]}>
+        <:label>Subtle (default)</:label>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.select>
+      <.select
+        id="select-style-variant-solid"
+        class="select select--variant-solid"
+        items={items()}
+        value={["fra"]}
+      >
+        <:label>Solid</:label>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.select>
+      <.select
+        id="select-style-variant-ghost"
+        class="select select--variant-ghost"
+        items={items()}
+        value={["fra"]}
+      >
+        <:label>Ghost</:label>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.select>
+      <.select
+        id="select-style-variant-outline"
+        class="select select--variant-outline"
+        items={items()}
+        value={["fra"]}
+      >
+        <:label>Outline</:label>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.select>
+    </div>
+    """
+  end
+
+  def styling_variant_matrix_code do
+    items_attr =
+      ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
+
+    value_attr = ~S|value={["fra"]}|
+
+    for semantic <- DemoScales.styling_semantic_axis_steps("select"),
+        variant <- DemoScales.styling_variant_axis_steps("select") do
+      class = DemoScales.join_matrix_modifiers("select", semantic.modifier, variant.modifier)
+
+      """
+      <.select class="#{class}" #{items_attr} #{value_attr}>
+        <:label>#{semantic.label}</:label>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.select>
+      """
+    end
+    |> DemoScales.join_code()
+  end
+
+  def styling_variant_matrix_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("select"))
+      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("select"))
+
+    ~H"""
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+      <div class="grid grid-cols-4 gap-space gap-2 items-start min-w-max">
+        <div :for={semantic <- @matrix_semantics} class="contents">
+          <.select
+            :for={variant <- @matrix_variants}
+            class={DemoScales.join_matrix_modifiers("select", semantic.modifier, variant.modifier)}
+            items={items()}
+            value={["fra"]}
+          >
+            <:label>{semantic.label}</:label>
+            <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+          </.select>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
   def styling_size_code do
     items_attr =
       ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
@@ -384,45 +497,6 @@ defmodule E2eWeb.Demos.SelectDemo do
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
       </.select>
       <.select id="select-style-xl" class="select select--xl" items={items()}>
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-      </.select>
-    </div>
-    """
-  end
-
-  def styling_text_code do
-    items_attr =
-      ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
-
-    """
-    <.select class="select select--text-sm" #{items_attr}>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-    </.select>
-    <.select class="select select--text-xl" #{items_attr}>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-    </.select>
-    <.select class="select select--text-2xl" #{items_attr}>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-    </.select>
-    <.select class="select select--text-4xl" #{items_attr}>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-    </.select>
-    """
-  end
-
-  def styling_text_example(assigns) do
-    ~H"""
-    <div class="flex flex-col gap-4 w-full max-w-md">
-      <.select id="select-style-text-sm" class="select select--text-sm" items={items()}>
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-      </.select>
-      <.select id="select-style-text-xl" class="select select--text-xl" items={items()}>
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-      </.select>
-      <.select id="select-style-text-2xl" class="select select--text-2xl" items={items()}>
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-      </.select>
-      <.select id="select-style-text-4xl" class="select select--text-4xl" items={items()}>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
       </.select>
     </div>
@@ -478,37 +552,34 @@ defmodule E2eWeb.Demos.SelectDemo do
     items_attr =
       ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
 
-    """
-    <.select class="select max-w-2xs" #{items_attr}>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-    </.select>
-    <.select class="select max-w-md" #{items_attr}>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-    </.select>
-    <.select class="select max-w-xl" #{items_attr}>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-    </.select>
-    <.select class="select max-w-2xl" #{items_attr}>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-    </.select>
-    """
+    DemoScales.max_width_variants("select")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("select", modifier)
+
+      """
+      <.select class="#{class}" #{items_attr}>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.select>
+      """
+    end)
+    |> DemoScales.join_code()
   end
 
   def styling_max_width_example(assigns) do
+    assigns = assign(assigns, :max_width_variants, DemoScales.max_width_variants("select"))
+
     ~H"""
-    <div class="flex flex-col gap-4 w-full items-start">
-      <.select id="select-style-max-2xs" class="select max-w-2xs" items={items()}>
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-      </.select>
-      <.select id="select-style-max-md" class="select max-w-md" items={items()}>
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-      </.select>
-      <.select id="select-style-max-xl" class="select max-w-xl" items={items()}>
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-      </.select>
-      <.select id="select-style-max-2xl" class="select max-w-2xl" items={items()}>
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-      </.select>
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <.select
+          id={"select-style-max-#{variant.id}"}
+          class={DemoScales.join_modifiers("select", variant.modifier)}
+          items={items()}
+        >
+          <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        </.select>
+      </div>
     </div>
     """
   end
@@ -679,12 +750,6 @@ defmodule E2eWeb.Demos.SelectDemo do
       def changeset(form, attrs \\ %{}) do
         form
         |> cast(attrs, [:country])
-        |> validate_required([:country])
-      end
-
-      def changeset_validate(form, attrs \\ %{}) do
-        form
-        |> cast(attrs, [:country])
         |> validate_required([:country], message: "can't be blank")
       end
     end
@@ -710,6 +775,7 @@ defmodule E2eWeb.Demos.SelectDemo do
           %{label: "Switzerland", value: "che"},
           %{label: "Austria", value: "aut"}
         ])}
+        deselectable
       >
         <:label>Country</:label>
         <:trigger>
@@ -759,6 +825,7 @@ defmodule E2eWeb.Demos.SelectDemo do
           %{label: "Switzerland", value: "che"},
           %{label: "Austria", value: "aut"}
         ])}
+        deselectable
       >
         <:label>Country</:label>
         <:trigger>
@@ -781,7 +848,7 @@ defmodule E2eWeb.Demos.SelectDemo do
     def form_page(conn, _params) do
       form =
         %MyApp.Forms.CountryForm{}
-        |> MyApp.Forms.CountryForm.changeset_validate(%{})
+        |> MyApp.Forms.CountryForm.changeset(%{})
         |> Phoenix.Component.to_form(as: :select_validate, id: "select-validate-form")
 
       render(conn, :form_page, form: form)
@@ -806,6 +873,7 @@ defmodule E2eWeb.Demos.SelectDemo do
           %{label: "Switzerland", value: "che"},
           %{label: "Austria", value: "aut"}
         ])}
+        deselectable
       >
         <:label>Country</:label>
         <:trigger>
@@ -851,6 +919,7 @@ defmodule E2eWeb.Demos.SelectDemo do
           %{label: "Austria", value: "aut"}
         ])}
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
+        deselectable
         on_value_change="select_country_changed"
       >
         <:label>Country</:label>
@@ -889,6 +958,7 @@ defmodule E2eWeb.Demos.SelectDemo do
           %{label: "Austria", value: "aut"}
         ])}
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
+        deselectable
         on_value_change="select_country_changed_strict"
       >
         <:label>Country</:label>
@@ -983,7 +1053,7 @@ defmodule E2eWeb.Demos.SelectDemo do
     def mount(_params, _session, socket) do
       form =
         %MyApp.Forms.CountryForm{}
-        |> MyApp.Forms.CountryForm.changeset_validate(%{})
+        |> MyApp.Forms.CountryForm.changeset(%{})
         |> Phoenix.Component.to_form(as: :select_strict, id: "select-strict-form-live")
 
       {:ok, assign(socket, :strict_form, form)}
@@ -995,7 +1065,7 @@ defmodule E2eWeb.Demos.SelectDemo do
 
       changeset =
         %MyApp.Forms.CountryForm{}
-        |> MyApp.Forms.CountryForm.changeset_validate(params)
+        |> MyApp.Forms.CountryForm.changeset(params)
         |> Map.put(:action, :validate)
 
       {:noreply,
@@ -1013,7 +1083,7 @@ defmodule E2eWeb.Demos.SelectDemo do
     def handle_event("validate_strict", %{"select_strict" => params}, socket) do
       changeset =
         %MyApp.Forms.CountryForm{}
-        |> MyApp.Forms.CountryForm.changeset_validate(params)
+        |> MyApp.Forms.CountryForm.changeset(params)
         |> Map.put(:action, :validate)
 
       {:noreply,
@@ -1029,7 +1099,7 @@ defmodule E2eWeb.Demos.SelectDemo do
     end
 
     def handle_event("save_strict", %{"select_strict" => params}, socket) do
-      case MyApp.Forms.CountryForm.changeset_validate(%MyApp.Forms.CountryForm{}, params) do
+      case MyApp.Forms.CountryForm.changeset(%MyApp.Forms.CountryForm{}, params) do
         %Ecto.Changeset{valid?: true} = changeset ->
           _data = Ecto.Changeset.apply_changes(changeset)
           {:noreply,
@@ -1037,7 +1107,7 @@ defmodule E2eWeb.Demos.SelectDemo do
              socket,
              :strict_form,
              Phoenix.Component.to_form(
-               MyApp.Forms.CountryForm.changeset_validate(%MyApp.Forms.CountryForm{}, %{}),
+               MyApp.Forms.CountryForm.changeset(%MyApp.Forms.CountryForm{}, %{}),
                as: :select_strict,
                id: "select-strict-form-live"
              )
@@ -1074,6 +1144,7 @@ defmodule E2eWeb.Demos.SelectDemo do
           %{label: "Switzerland", value: "che"},
           %{label: "Austria", value: "aut"}
         ])}
+        deselectable
       >
         <:label>Country</:label>
         <:trigger>
@@ -1127,6 +1198,7 @@ defmodule E2eWeb.Demos.SelectDemo do
           %{label: "Austria", value: "aut"}
         ])}
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
+        deselectable
       >
         <:label>Country</:label>
         <:trigger>
@@ -1175,26 +1247,31 @@ defmodule E2eWeb.Demos.SelectDemo do
     defmodule MyAppWeb.SelectFormLive do
       use MyAppWeb, :live_view
 
+      alias MyApp.Forms.CountryForm
+
       def mount(_params, _session, socket) do
-        ecto_form =
-          %MyApp.Forms.CountryForm{}
-          |> MyApp.Forms.CountryForm.changeset_validate(%{})
-          |> Phoenix.Component.to_form(as: :select_ecto, id: "select-live-form-ecto")
-
-        {:ok, assign(socket, :ecto_form, ecto_form)}
-      end
-
-      def handle_event("select_country_changed", %{"value" => value}, socket) do
-        country = List.first(value) || ""
-        validate_ecto(socket, %{"country" => country})
+        {:ok,
+         assign(
+           socket,
+           :ecto_form,
+           CountryForm.changeset(%CountryForm{}, %{})
+           |> Phoenix.Component.to_form(as: :select_ecto, id: "select-live-form-ecto")
+         )}
       end
 
       def handle_event("validate", %{"select_ecto" => params}, socket) do
-        validate_ecto(socket, params)
+        changeset = CountryForm.changeset(%CountryForm{}, params)
+
+        {:noreply,
+         assign(
+           socket,
+           :ecto_form,
+           Phoenix.Component.to_form(changeset, action: :validate, as: :select_ecto, id: "select-live-form-ecto")
+         )}
       end
 
       def handle_event("save", %{"select_ecto" => params}, socket) do
-        case MyApp.Forms.CountryForm.changeset_validate(%MyApp.Forms.CountryForm{}, params) do
+        case CountryForm.changeset(%CountryForm{}, params) do
           %Ecto.Changeset{valid?: true} = changeset ->
             _data = Ecto.Changeset.apply_changes(changeset)
 
@@ -1203,13 +1280,13 @@ defmodule E2eWeb.Demos.SelectDemo do
                socket,
                :ecto_form,
                Phoenix.Component.to_form(
-                 MyApp.Forms.CountryForm.changeset_validate(%MyApp.Forms.CountryForm{}, params),
+                 CountryForm.changeset(%CountryForm{}, params),
                  as: :select_ecto,
                  id: "select-live-form-ecto"
                )
              )}
 
-          %Ecto.Changeset{} = changeset ->
+          changeset ->
             {:noreply,
              assign(
                socket,
@@ -1217,20 +1294,6 @@ defmodule E2eWeb.Demos.SelectDemo do
                Phoenix.Component.to_form(changeset, action: :insert, as: :select_ecto, id: "select-live-form-ecto")
              )}
         end
-      end
-
-      defp validate_ecto(socket, params) do
-        changeset =
-          %MyApp.Forms.CountryForm{}
-          |> MyApp.Forms.CountryForm.changeset_validate(params)
-          |> Map.put(:action, :validate)
-
-        {:noreply,
-         assign(
-           socket,
-           :ecto_form,
-           Phoenix.Component.to_form(changeset, action: :validate, as: :select_ecto, id: "select-live-form-ecto")
-         )}
       end
     end
     """
@@ -1251,6 +1314,7 @@ defmodule E2eWeb.Demos.SelectDemo do
         class="select"
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
         items={form_country_items()}
+        deselectable
       >
         <:label>Country</:label>
         <:trigger>
@@ -1283,6 +1347,7 @@ defmodule E2eWeb.Demos.SelectDemo do
         class="select"
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
         items={form_country_items()}
+        deselectable
       >
         <:label>Country</:label>
         <:trigger>
@@ -1317,6 +1382,7 @@ defmodule E2eWeb.Demos.SelectDemo do
         class="select"
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
         items={form_country_items()}
+        deselectable
       >
         <:label>Country</:label>
         <:trigger>
@@ -1345,6 +1411,7 @@ defmodule E2eWeb.Demos.SelectDemo do
         field={@form[:country]}
         items={form_country_items()}
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
+        deselectable
         on_value_change="select_country_changed"
       >
         <:label>Country</:label>
@@ -1378,6 +1445,7 @@ defmodule E2eWeb.Demos.SelectDemo do
         field={@form[:country]}
         items={form_country_items()}
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
+        deselectable
         on_value_change="select_country_changed_strict"
       >
         <:label>Country</:label>
@@ -1750,6 +1818,7 @@ defmodule E2eWeb.Demos.SelectDemo do
         class="select"
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
         items={form_country_items()}
+        deselectable
       >
         <:label>Country</:label>
         <:trigger>
@@ -1768,9 +1837,6 @@ defmodule E2eWeb.Demos.SelectDemo do
   def form_phoenix_elixir, do: form_doc_controller_phoenix_elixir()
   def form_ecto_heex, do: form_validate_heex()
   def form_ecto_elixir, do: form_validate_elixir()
-  def form_doc_live_ecto_heex, do: form_doc_live_validate_heex()
-
-  attr(:form, :any, required: true)
 
   def form_preview_live_phoenix(assigns) do
     ~H"""
@@ -1781,6 +1847,7 @@ defmodule E2eWeb.Demos.SelectDemo do
         field={@form[:country]}
         items={form_country_items()}
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
+        deselectable
       >
         <:label>Country</:label>
         <:trigger>
@@ -1803,7 +1870,7 @@ defmodule E2eWeb.Demos.SelectDemo do
         field={@form[:country]}
         items={form_country_items()}
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
-        on_value_change="select_country_changed"
+        deselectable
       >
         <:label>Country</:label>
         <:trigger>
@@ -1818,6 +1885,263 @@ defmodule E2eWeb.Demos.SelectDemo do
         Submit
       </.action>
     </.form>
+    """
+  end
+
+  def form_doc_live_ecto_heex do
+    ~S"""
+    <.form for={@ecto_form} phx-change="validate" phx-submit="save">
+      <.select
+        id="select-live-form-ecto-country"
+        class="select"
+        field={@ecto_form[:country]}
+        items={form_country_items()}
+        translation={%Corex.Select.Translation{placeholder: "Select a country"}}
+        deselectable
+      >
+        <:label>Country</:label>
+        <:trigger>
+          <.heroicon name="hero-chevron-down" class="icon" />
+        </:trigger>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.select>
+      <.action type="submit" id="select-live-form-ecto-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_doc_live_ecto_controlled_heex do
+    ~S"""
+    <.form for={@ecto_controlled_form} phx-change="validate_controlled" phx-submit="save_controlled">
+      <.select
+        id="select-live-form-ecto-controlled-country"
+        class="select"
+        field={@ecto_controlled_form[:country]}
+        items={form_country_items()}
+        translation={%Corex.Select.Translation{placeholder: "Select a country"}}
+        deselectable
+        controlled
+      >
+        <:label>Country</:label>
+        <:trigger>
+          <.heroicon name="hero-chevron-down" class="icon" />
+        </:trigger>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.select>
+      <.action type="submit" id="select-live-form-ecto-controlled-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_doc_live_ecto_invalid_heex do
+    ~S"""
+    <.form for={@ecto_invalid_form} phx-change="validate_invalid" phx-submit="save_invalid">
+      <.select
+        id="select-live-form-ecto-invalid-country"
+        class="select"
+        field={@ecto_invalid_form[:country]}
+        items={form_country_items()}
+        translation={%Corex.Select.Translation{placeholder: "Select a country"}}
+        deselectable
+        invalid={Corex.FormField.invalid?(@ecto_invalid_form[:country])}
+      >
+        <:label>Country</:label>
+        <:trigger>
+          <.heroicon name="hero-chevron-down" class="icon" />
+        </:trigger>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.select>
+      <.action type="submit" id="select-live-form-ecto-invalid-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_live_ecto_controlled(assigns) do
+    ~H"""
+    <.form for={@form} phx-change="validate_controlled" phx-submit="save_controlled">
+      <.select
+        id="select-live-form-ecto-controlled-country"
+        class="select"
+        field={@form[:country]}
+        items={form_country_items()}
+        translation={%Corex.Select.Translation{placeholder: "Select a country"}}
+        deselectable
+        controlled
+      >
+        <:label>Country</:label>
+        <:trigger>
+          <.heroicon name="hero-chevron-down" class="icon" />
+        </:trigger>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.select>
+      <.action
+        type="submit"
+        id="select-live-form-ecto-controlled-submit"
+        class="button button--accent"
+      >
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_live_ecto_invalid(assigns) do
+    ~H"""
+    <.form for={@form} phx-change="validate_invalid" phx-submit="save_invalid">
+      <.select
+        id="select-live-form-ecto-invalid-country"
+        class="select"
+        field={@form[:country]}
+        items={form_country_items()}
+        translation={%Corex.Select.Translation{placeholder: "Select a country"}}
+        deselectable
+        invalid={Corex.FormField.invalid?(@form[:country])}
+      >
+        <:label>Country</:label>
+        <:trigger>
+          <.heroicon name="hero-chevron-down" class="icon" />
+        </:trigger>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.select>
+      <.action type="submit" id="select-live-form-ecto-invalid-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_doc_live_ecto_controlled_elixir do
+    ~S"""
+    defmodule MyAppWeb.SelectFormLive do
+      use MyAppWeb, :live_view
+
+      alias MyApp.Forms.CountryForm
+
+      def handle_event("validate_controlled", %{"select_ecto_controlled" => params}, socket) do
+        changeset = CountryForm.changeset(%CountryForm{}, params)
+
+        {:noreply,
+         assign(
+           socket,
+           :ecto_controlled_form,
+           Phoenix.Component.to_form(changeset,
+             action: :validate,
+             as: :select_ecto_controlled,
+             id: "select-live-form-ecto-controlled"
+           )
+         )}
+      end
+
+      def handle_event("save_controlled", %{"select_ecto_controlled" => params}, socket) do
+        case CountryForm.changeset(%CountryForm{}, params) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            _data = Ecto.Changeset.apply_changes(changeset)
+
+            {:noreply,
+             assign(
+               socket,
+               :ecto_controlled_form,
+               Phoenix.Component.to_form(
+                 CountryForm.changeset(%CountryForm{}, params),
+                 as: :select_ecto_controlled,
+                 id: "select-live-form-ecto-controlled"
+               )
+             )}
+
+          changeset ->
+            {:noreply,
+             assign(
+               socket,
+               :ecto_controlled_form,
+               Phoenix.Component.to_form(changeset,
+                 action: :insert,
+                 as: :select_ecto_controlled,
+                 id: "select-live-form-ecto-controlled"
+               )
+             )}
+        end
+      end
+    end
+    """
+  end
+
+  def form_doc_live_ecto_invalid_elixir do
+    ~S"""
+    defmodule MyAppWeb.SelectFormLive do
+      use MyAppWeb, :live_view
+
+      alias MyApp.Forms.CountryForm
+
+      def handle_event("validate_invalid", %{"select_ecto_invalid" => params}, socket) do
+        changeset = CountryForm.changeset(%CountryForm{}, params)
+
+        {:noreply,
+         assign(
+           socket,
+           :ecto_invalid_form,
+           Phoenix.Component.to_form(changeset,
+             action: :validate,
+             as: :select_ecto_invalid,
+             id: "select-live-form-ecto-invalid"
+           )
+         )}
+      end
+
+      def handle_event("save_invalid", %{"select_ecto_invalid" => params}, socket) do
+        case CountryForm.changeset(%CountryForm{}, params) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            _data = Ecto.Changeset.apply_changes(changeset)
+
+            {:noreply,
+             assign(
+               socket,
+               :ecto_invalid_form,
+               Phoenix.Component.to_form(
+                 CountryForm.changeset(%CountryForm{}, params),
+                 as: :select_ecto_invalid,
+                 id: "select-live-form-ecto-invalid"
+               )
+             )}
+
+          changeset ->
+            {:noreply,
+             assign(
+               socket,
+               :ecto_invalid_form,
+               Phoenix.Component.to_form(changeset,
+                 action: :insert,
+                 as: :select_ecto_invalid,
+                 id: "select-live-form-ecto-invalid"
+               )
+             )}
+        end
+      end
+    end
     """
   end
 end

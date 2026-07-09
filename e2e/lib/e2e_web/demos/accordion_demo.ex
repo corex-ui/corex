@@ -1,6 +1,8 @@
 defmodule E2eWeb.Demos.AccordionDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.DemoScales
+
   def minimal_example(assigns) do
     ~H"""
     <.accordion class="accordion" items={items_basic()} />
@@ -430,6 +432,48 @@ defmodule E2eWeb.Demos.AccordionDemo do
     """
   end
 
+  def api_client_read_listener(assigns) do
+    ~H"""
+    <div
+      id={"accordion-api-read-listener-#{@id}"}
+      phx-hook=".AccordionApiClientReadListener"
+      phx-update="ignore"
+      data-accordion-id={@id}
+      hidden
+    >
+      <script :type={Phoenix.LiveView.ColocatedHook} name=".AccordionApiClientReadListener">
+        export default {
+          mounted() {
+            const accordionId = this.el.dataset.accordionId;
+            const el = document.getElementById(accordionId);
+            if (!el) return;
+            const layoutToast = (title, description) => {
+              document.querySelector("#layout-toast")?.dispatchEvent(
+                new CustomEvent("toast:create", {
+                  bubbles: true,
+                  detail: { title, description, type: "info", duration: 5000 },
+                })
+              );
+            };
+            el.addEventListener("accordion-value", (e) => {
+              layoutToast(
+                "accordion-value",
+                `${e.detail.id}\n${JSON.stringify(e.detail.value)}`
+              );
+            });
+            el.addEventListener("accordion-focused", (e) => {
+              layoutToast(
+                "accordion-focused",
+                `${e.detail.id}\n${JSON.stringify(e.detail.value)}`
+              );
+            });
+          },
+        };
+      </script>
+    </div>
+    """
+  end
+
   def api_value_client_binding_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
@@ -446,6 +490,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
         <.heroicon name="hero-chevron-right" />
       </:indicator>
     </.accordion>
+    <.api_client_read_listener id={@id} />
     """
   end
 
@@ -476,6 +521,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
         <.heroicon name="hero-chevron-right" />
       </:indicator>
     </.accordion>
+    <.api_client_read_listener id={@id} />
     """
   end
 
@@ -492,6 +538,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
         <.heroicon name="hero-chevron-right" />
       </:indicator>
     </.accordion>
+    <.api_client_read_listener id={@id} />
     """
   end
 
@@ -508,6 +555,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
         <.heroicon name="hero-chevron-right" />
       </:indicator>
     </.accordion>
+    <.api_client_read_listener id={@id} />
     """
   end
 
@@ -524,6 +572,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
         <.heroicon name="hero-chevron-right" />
       </:indicator>
     </.accordion>
+    <.api_client_read_listener id={@id} />
     """
   end
 
@@ -540,6 +589,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
         <.heroicon name="hero-chevron-right" />
       </:indicator>
     </.accordion>
+    <.api_client_read_listener id={@id} />
     """
   end
 
@@ -594,17 +644,25 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def api_set_value_server_heex, do: api_string(:set_value_server_heex)
   def api_set_value_server_elixir, do: api_string(:set_value_server_elixir)
   def api_value_client_heex, do: api_string(:value_client_heex)
+  def api_value_client_binding_js, do: api_string(:value_client_binding_js)
+  def api_value_client_binding_ts, do: api_string(:value_client_binding_ts)
   def api_value_client_js_heex, do: api_string(:value_js_heex)
   def api_value_client_js_js, do: api_string(:value_js)
   def api_value_client_js_ts, do: api_string(:value_js_ts)
   def api_value_server_heex, do: api_string(:value_server_heex)
   def api_value_server_elixir, do: api_string(:value_elixir)
+  def api_value_server_js, do: api_string(:value_server_js)
+  def api_value_server_ts, do: api_string(:value_server_ts)
   def api_focused_client_heex, do: api_string(:focused_client_heex)
+  def api_focused_client_binding_js, do: api_string(:focused_client_binding_js)
+  def api_focused_client_binding_ts, do: api_string(:focused_client_binding_ts)
   def api_focused_client_js_heex, do: api_string(:focused_js_heex)
   def api_focused_client_js_js, do: api_string(:focused_js)
   def api_focused_client_js_ts, do: api_string(:focused_js_ts)
   def api_focused_server_heex, do: api_string(:focused_server_heex)
   def api_focused_server_elixir, do: api_string(:focused_elixir)
+  def api_focused_server_js, do: api_string(:focused_server_js)
+  def api_focused_server_ts, do: api_string(:focused_server_ts)
   def api_item_state_client_heex, do: api_string(:item_state_client_heex)
   def api_item_state_client_js_heex, do: api_string(:item_state_js_heex)
   def api_item_state_client_js_js, do: api_string(:item_state_js)
@@ -612,7 +670,36 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def api_item_state_server_heex, do: api_string(:item_state_server_heex)
   def api_item_state_server_elixir, do: api_string(:item_state_elixir)
 
+  @api_set_value_keys ~W(
+    set_value_js_heex set_value_js set_value_js_ts set_value_server_heex set_value_server_elixir
+  )a
+
+  @api_value_keys ~W(
+    value_client_heex value_client_binding_js value_client_binding_ts value_js_heex value_js
+    value_js_ts value_server_heex value_elixir value_server_js value_server_ts
+  )a
+
+  @api_focused_keys ~W(
+    focused_client_heex focused_client_binding_js focused_client_binding_ts focused_js_heex
+    focused_js focused_js_ts focused_server_heex focused_server_js focused_server_ts focused_elixir
+  )a
+
+  @api_item_state_keys ~W(
+    item_state_client_heex item_state_js_heex item_state_js item_state_js_ts
+    item_state_server_heex item_state_elixir
+  )a
+
   defp api_string(key) do
+    cond do
+      key in @api_set_value_keys -> api_set_value_string(key)
+      key in @api_value_keys -> api_value_string(key)
+      key in @api_focused_keys -> api_focused_string(key)
+      key in @api_item_state_keys -> api_item_state_string(key)
+      true -> raise ArgumentError, "unknown api string key: #{inspect(key)}"
+    end
+  end
+
+  defp api_set_value_string(key) do
     case key do
       :set_value_js_heex ->
         """
@@ -683,6 +770,13 @@ defmodule E2eWeb.Demos.AccordionDemo do
         end
         """
 
+      _ ->
+        raise ArgumentError, "unknown api set-value key: #{inspect(key)}"
+    end
+  end
+
+  defp api_value_string(key) do
+    case key do
       :value_client_heex ->
         """
         <.action phx-click={Corex.Accordion.value("api-value-client")}>Value</.action>
@@ -692,6 +786,60 @@ defmodule E2eWeb.Demos.AccordionDemo do
           %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
           %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
         ])} />
+        """
+
+      :value_client_binding_js ->
+        """
+        const layoutToast = (title, description) => {
+          document.querySelector("#layout-toast")?.dispatchEvent(
+            new CustomEvent("toast:create", {
+              bubbles: true,
+              detail: { title, description, type: "info", duration: 5000 },
+            })
+          );
+        };
+        const el = document.getElementById("api-value-client");
+        el?.addEventListener("accordion-value", (e) => {
+          layoutToast(
+            "accordion-value",
+            `${e.detail.id}\\n${JSON.stringify(e.detail.value)}`
+          );
+        });
+        el?.dispatchEvent(
+          new CustomEvent("corex:accordion:value", { bubbles: false, detail: {} })
+        );
+        el?.dispatchEvent(
+          new CustomEvent("corex:accordion:value", {
+            bubbles: false,
+            detail: { respond_to: "client" },
+          })
+        );
+        """
+
+      :value_client_binding_ts ->
+        """
+        const layoutToast = (title: string, description: string) => {
+          document.querySelector("#layout-toast")?.dispatchEvent(
+            new CustomEvent("toast:create", {
+              bubbles: true,
+              detail: { title, description, type: "info", duration: 5000 },
+            })
+          );
+        };
+        const el: HTMLElement | null = document.getElementById("api-value-client");
+        el?.addEventListener("accordion-value", (e: Event) => {
+          const d = (e as CustomEvent<{ id: string; value: string[] | null }>).detail;
+          layoutToast("accordion-value", `${d.id}\\n${JSON.stringify(d.value)}`);
+        });
+        el?.dispatchEvent(
+          new CustomEvent("corex:accordion:value", { bubbles: false, detail: {} })
+        );
+        el?.dispatchEvent(
+          new CustomEvent("corex:accordion:value", {
+            bubbles: false,
+            detail: { respond_to: "client" },
+          })
+        );
         """
 
       :value_js_heex ->
@@ -716,15 +864,21 @@ defmodule E2eWeb.Demos.AccordionDemo do
           );
         };
         const el = document.getElementById("api-value-client-js");
-        el?.dispatchEvent(
-          new CustomEvent("corex:accordion:value", { bubbles: false, detail: {} })
-        );
         el?.addEventListener("accordion-value", (e) => {
           layoutToast(
             "accordion-value",
             `${e.detail.id}\\n${JSON.stringify(e.detail.value)}`
           );
         });
+        el?.dispatchEvent(
+          new CustomEvent("corex:accordion:value", { bubbles: false, detail: {} })
+        );
+        el?.dispatchEvent(
+          new CustomEvent("corex:accordion:value", {
+            bubbles: false,
+            detail: { respond_to: "client" },
+          })
+        );
         """
 
       :value_js_ts ->
@@ -738,13 +892,19 @@ defmodule E2eWeb.Demos.AccordionDemo do
           );
         };
         const el: HTMLElement | null = document.getElementById("api-value-client-js");
-        el?.dispatchEvent(
-          new CustomEvent("corex:accordion:value", { bubbles: false, detail: {} })
-        );
         el?.addEventListener("accordion-value", (e: Event) => {
           const d = (e as CustomEvent<{ id: string; value: string[] | null }>).detail;
           layoutToast("accordion-value", `${d.id}\\n${JSON.stringify(d.value)}`);
         });
+        el?.dispatchEvent(
+          new CustomEvent("corex:accordion:value", { bubbles: false, detail: {} })
+        );
+        el?.dispatchEvent(
+          new CustomEvent("corex:accordion:value", {
+            bubbles: false,
+            detail: { respond_to: "client" },
+          })
+        );
         """
 
       :value_server_heex ->
@@ -776,6 +936,49 @@ defmodule E2eWeb.Demos.AccordionDemo do
         end
         """
 
+      :value_server_js ->
+        """
+        const layoutToast = (title, description) => {
+          document.querySelector("#layout-toast")?.dispatchEvent(
+            new CustomEvent("toast:create", {
+              bubbles: true,
+              detail: { title, description, type: "info", duration: 5000 },
+            })
+          );
+        };
+        const el = document.getElementById("api-value-server");
+        el?.addEventListener("accordion-value", (e) => {
+          layoutToast(
+            "accordion-value",
+            `${e.detail.id}\\n${JSON.stringify(e.detail.value)}`
+          );
+        });
+        """
+
+      :value_server_ts ->
+        """
+        const layoutToast = (title: string, description: string) => {
+          document.querySelector("#layout-toast")?.dispatchEvent(
+            new CustomEvent("toast:create", {
+              bubbles: true,
+              detail: { title, description, type: "info", duration: 5000 },
+            })
+          );
+        };
+        const el: HTMLElement | null = document.getElementById("api-value-server");
+        el?.addEventListener("accordion-value", (e: Event) => {
+          const d = (e as CustomEvent<{ id: string; value: string[] | null }>).detail;
+          layoutToast("accordion-value", `${d.id}\\n${JSON.stringify(d.value)}`);
+        });
+        """
+
+      _ ->
+        raise ArgumentError, "unknown api value key: #{inspect(key)}"
+    end
+  end
+
+  defp api_focused_string(key) do
+    case key do
       :focused_client_heex ->
         """
         <.action phx-click="api_focused_client">Focused</.action>
@@ -785,6 +988,66 @@ defmodule E2eWeb.Demos.AccordionDemo do
           %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
           %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
         ])} />
+        """
+
+      :focused_client_binding_js ->
+        """
+        const layoutToast = (title, description) => {
+          document.querySelector("#layout-toast")?.dispatchEvent(
+            new CustomEvent("toast:create", {
+              bubbles: true,
+              detail: { title, description, type: "info", duration: 5000 },
+            })
+          );
+        };
+        const el = document.getElementById("api-focused-client");
+        el?.addEventListener("accordion-focused", (e) => {
+          layoutToast(
+            "accordion-focused",
+            `${e.detail.id}\\n${JSON.stringify(e.detail.value)}`
+          );
+        });
+        setTimeout(() => {
+          el?.dispatchEvent(
+            new CustomEvent("corex:accordion:focused", { bubbles: false, detail: {} })
+          );
+        }, 5000);
+        setTimeout(() => {
+          el?.dispatchEvent(
+            new CustomEvent("corex:accordion:focused", {
+              bubbles: false,
+              detail: { respond_to: "client" },
+            })
+          );
+        }, 5000);
+        """
+
+      :focused_client_binding_ts ->
+        """
+        const layoutToast = (title: string, description: string) => {
+          document.querySelector("#layout-toast")?.dispatchEvent(
+            new CustomEvent("toast:create", {
+              bubbles: true,
+              detail: { title, description, type: "info", duration: 5000 },
+            })
+          );
+        };
+        const el: HTMLElement | null = document.getElementById("api-focused-client");
+        el?.addEventListener("accordion-focused", (e: Event) => {
+          const d = (e as CustomEvent<{ id: string; value: string | null }>).detail;
+          layoutToast("accordion-focused", `${d.id}\\n${JSON.stringify(d.value)}`);
+        });
+        const focused = (respond_to?: "client") =>
+          setTimeout(() => {
+            el?.dispatchEvent(
+              new CustomEvent("corex:accordion:focused", {
+                bubbles: false,
+                detail: respond_to ? { respond_to } : {},
+              })
+            );
+          }, 5000);
+        focused();
+        focused("client");
         """
 
       :focused_js_heex ->
@@ -800,28 +1063,56 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
       :focused_js ->
         """
-        const el = document.getElementById(\"api-focused-client-js\");
-        el?.dispatchEvent(new CustomEvent(\"corex:accordion:focused\", { bubbles: false, detail: {} }));
+        const layoutToast = (title, description) => {
+          document.querySelector("#layout-toast")?.dispatchEvent(
+            new CustomEvent("toast:create", {
+              bubbles: true,
+              detail: { title, description, type: "info", duration: 5000 },
+            })
+          );
+        };
+        const el = document.getElementById("api-focused-client-js");
+        el?.addEventListener("accordion-focused", (e) => {
+          layoutToast(
+            "accordion-focused",
+            `${e.detail.id}\\n${JSON.stringify(e.detail.value)}`
+          );
+        });
         el?.dispatchEvent(
-          new CustomEvent(\"corex:accordion:focused\", {
+          new CustomEvent("corex:accordion:focused", { bubbles: false, detail: {} })
+        );
+        el?.dispatchEvent(
+          new CustomEvent("corex:accordion:focused", {
             bubbles: false,
-            detail: { respond_to: \"client\" },
+            detail: { respond_to: "client" },
           })
         );
         """
 
       :focused_js_ts ->
         """
-        const el: HTMLElement | null = document.getElementById(\"api-focused-client-js\");
-        const focused = (respond_to?: \"client\") =>
+        const layoutToast = (title: string, description: string) => {
+          document.querySelector("#layout-toast")?.dispatchEvent(
+            new CustomEvent("toast:create", {
+              bubbles: true,
+              detail: { title, description, type: "info", duration: 5000 },
+            })
+          );
+        };
+        const el: HTMLElement | null = document.getElementById("api-focused-client-js");
+        el?.addEventListener("accordion-focused", (e: Event) => {
+          const d = (e as CustomEvent<{ id: string; value: string | null }>).detail;
+          layoutToast("accordion-focused", `${d.id}\\n${JSON.stringify(d.value)}`);
+        });
+        const focused = (respond_to?: "client") =>
           el?.dispatchEvent(
-            new CustomEvent(\"corex:accordion:focused\", {
+            new CustomEvent("corex:accordion:focused", {
               bubbles: false,
               detail: respond_to ? { respond_to } : {},
             })
           );
         focused();
-        focused(\"client\");
+        focused("client");
         """
 
       :focused_server_heex ->
@@ -833,6 +1124,42 @@ defmodule E2eWeb.Demos.AccordionDemo do
           %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
           %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
         ])} />
+        """
+
+      :focused_server_js ->
+        """
+        const layoutToast = (title, description) => {
+          document.querySelector("#layout-toast")?.dispatchEvent(
+            new CustomEvent("toast:create", {
+              bubbles: true,
+              detail: { title, description, type: "info", duration: 5000 },
+            })
+          );
+        };
+        const el = document.getElementById("api-focused-server");
+        el?.addEventListener("accordion-focused", (e) => {
+          layoutToast(
+            "accordion-focused",
+            `${e.detail.id}\\n${JSON.stringify(e.detail.value)}`
+          );
+        });
+        """
+
+      :focused_server_ts ->
+        """
+        const layoutToast = (title: string, description: string) => {
+          document.querySelector("#layout-toast")?.dispatchEvent(
+            new CustomEvent("toast:create", {
+              bubbles: true,
+              detail: { title, description, type: "info", duration: 5000 },
+            })
+          );
+        };
+        const el: HTMLElement | null = document.getElementById("api-focused-server");
+        el?.addEventListener("accordion-focused", (e: Event) => {
+          const d = (e as CustomEvent<{ id: string; value: string | null }>).detail;
+          layoutToast("accordion-focused", `${d.id}\\n${JSON.stringify(d.value)}`);
+        });
         """
 
       :focused_elixir ->
@@ -881,8 +1208,26 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
           {:noreply, socket}
         end
+
+        def handle_info({:accordion_api_focused_after_delay, accordion_id, opts}, socket) do
+          {:noreply, Corex.Accordion.focused(socket, accordion_id, opts)}
+        end
+
+        def handle_event("accordion_focused_response", %{"id" => id, "value" => value}, socket) do
+          desc = "#{id}\n#{inspect(value)}"
+
+          {:noreply,
+           Corex.Toast.create(socket, "layout-toast", "accordion_focused_response", desc, :info, duration: 5000)}
+        end
         """
 
+      _ ->
+        raise ArgumentError, "unknown api focused key: #{inspect(key)}"
+    end
+  end
+
+  defp api_item_state_string(key) do
+    case key do
       :item_state_client_heex ->
         """
         <.action phx-click={Corex.Accordion.item_state("api-item-client", "lorem")}>lorem</.action>
@@ -957,6 +1302,9 @@ defmodule E2eWeb.Demos.AccordionDemo do
           {:noreply, Corex.Accordion.item_state(socket, "api-item-server", "donec", disabled: true)}
         end
         """
+
+      _ ->
+        raise ArgumentError, "unknown api item-state key: #{inspect(key)}"
     end
   end
 
@@ -1003,6 +1351,57 @@ defmodule E2eWeb.Demos.AccordionDemo do
     """
   end
 
+  def styling_variant_example(assigns) do
+    ~H"""
+    <.accordion class="accordion" value="item-1" items={styling_items()}>
+      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+    </.accordion>
+    <.accordion class="accordion accordion--variant-solid" value="item-1" items={styling_items()}>
+      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+    </.accordion>
+    <.accordion class="accordion accordion--variant-ghost" value="item-1" items={styling_items()}>
+      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+    </.accordion>
+    <.accordion class="accordion accordion--variant-outline" value="item-1" items={styling_items()}>
+      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+    </.accordion>
+    """
+  end
+
+  def styling_variant_matrix_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("accordion"))
+      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("accordion"))
+
+    ~H"""
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+      <div class="grid grid-cols-4 gap-space gap-2 items-start min-w-max">
+        <div :for={semantic <- @matrix_semantics} class="contents">
+          <.accordion
+            :for={variant <- @matrix_variants}
+            class={DemoScales.join_matrix_modifiers("accordion", semantic.modifier, variant.modifier)}
+            value="item-1"
+            items={styling_matrix_items(semantic.label)}
+          >
+            <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+          </.accordion>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  defp styling_matrix_items(label) do
+    Corex.Content.new([
+      %{
+        value: "item-1",
+        label: label,
+        content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
+      }
+    ])
+  end
+
   def styling_size_example(assigns) do
     ~H"""
     <.accordion class="accordion accordion--sm" value="item-1" items={styling_items()}>
@@ -1015,23 +1414,6 @@ defmodule E2eWeb.Demos.AccordionDemo do
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     <.accordion class="accordion accordion--xl" value="item-1" items={styling_items()}>
-      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
-    </.accordion>
-    """
-  end
-
-  def styling_text_example(assigns) do
-    ~H"""
-    <.accordion class="accordion accordion--text-sm" value="item-1" items={styling_items()}>
-      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
-    </.accordion>
-    <.accordion class="accordion accordion--text-xl" value="item-1" items={styling_items()}>
-      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
-    </.accordion>
-    <.accordion class="accordion accordion--text-2xl" value="item-1" items={styling_items()}>
-      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
-    </.accordion>
-    <.accordion class="accordion accordion--text-4xl" value="item-1" items={styling_items()}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     """
@@ -1061,19 +1443,22 @@ defmodule E2eWeb.Demos.AccordionDemo do
   end
 
   def styling_max_width_example(assigns) do
+    assigns = assign(assigns, :max_width_variants, DemoScales.max_width_variants("accordion"))
+
     ~H"""
-    <.accordion class="accordion max-w-2xs" value="item-1" items={styling_items()}>
-      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
-    </.accordion>
-    <.accordion class="accordion max-w-md" value="item-1" items={styling_items()}>
-      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
-    </.accordion>
-    <.accordion class="accordion max-w-xl" value="item-1" items={styling_items()}>
-      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
-    </.accordion>
-    <.accordion class="accordion max-w-2xl" value="item-1" items={styling_items()}>
-      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
-    </.accordion>
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <.accordion
+          id={"accordion-style-max-#{variant.id}"}
+          class={DemoScales.join_modifiers("accordion", variant.modifier)}
+          value="item-1"
+          items={styling_items()}
+        >
+          <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+        </.accordion>
+      </div>
+    </div>
     """
   end
 
@@ -1123,6 +1508,55 @@ defmodule E2eWeb.Demos.AccordionDemo do
     """
   end
 
+  def styling_variant_code do
+    ~S"""
+    <.accordion class="accordion" value="item-1" items={Corex.Content.new([
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])}>
+      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+    </.accordion>
+    <.accordion class="accordion accordion--variant-solid" value="item-1" items={Corex.Content.new([
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])}>
+      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+    </.accordion>
+    <.accordion class="accordion accordion--variant-ghost" value="item-1" items={Corex.Content.new([
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])}>
+      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+    </.accordion>
+    <.accordion class="accordion accordion--variant-outline" value="item-1" items={Corex.Content.new([
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])}>
+      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+    </.accordion>
+    """
+  end
+
+  def styling_variant_matrix_code do
+    for semantic <- DemoScales.styling_semantic_axis_steps("accordion"),
+        variant <- DemoScales.styling_variant_axis_steps("accordion") do
+      class = DemoScales.join_matrix_modifiers("accordion", semantic.modifier, variant.modifier)
+
+      """
+      <.accordion class="#{class}" value="item-1" items={Corex.Content.new([
+        %{value: "item-1", label: "#{semantic.label}", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."}
+      ])}>
+        <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+      </.accordion>
+      """
+    end
+    |> DemoScales.join_code()
+  end
+
   def styling_size_code do
     ~S"""
     <.accordion class="accordion accordion--sm" value="item-1" items={Corex.Content.new([
@@ -1147,39 +1581,6 @@ defmodule E2eWeb.Demos.AccordionDemo do
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     <.accordion class="accordion accordion--xl" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
-    ])}>
-      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
-    </.accordion>
-    """
-  end
-
-  def styling_text_code do
-    ~S"""
-    <.accordion class="accordion accordion--text-sm" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
-    ])}>
-      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
-    </.accordion>
-    <.accordion class="accordion accordion--text-xl" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
-    ])}>
-      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
-    </.accordion>
-    <.accordion class="accordion accordion--text-2xl" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
-    ])}>
-      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
-    </.accordion>
-    <.accordion class="accordion accordion--text-4xl" value="item-1" items={Corex.Content.new([
       %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
@@ -1237,35 +1638,28 @@ defmodule E2eWeb.Demos.AccordionDemo do
   end
 
   def styling_max_width_code do
+    items = styling_accordion_items_heex()
+
+    DemoScales.max_width_variants("accordion")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("accordion", modifier)
+
+      """
+      <.accordion class="#{class}" value="item-1" #{items}>
+        <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+      </.accordion>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  defp styling_accordion_items_heex do
     ~S"""
-    <.accordion class="accordion max-w-xs" value="item-1" items={Corex.Content.new([
+    items={Corex.Content.new([
       %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
-    ])}>
-      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
-    </.accordion>
-    <.accordion class="accordion max-w-sm" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
-    ])}>
-      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
-    </.accordion>
-    <.accordion class="accordion max-w-lg" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
-    ])}>
-      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
-    </.accordion>
-    <.accordion class="accordion max-w-5xl" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
-    ])}>
-      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
-    </.accordion>
+    ])}
     """
   end
 

@@ -1,6 +1,8 @@
 defmodule E2eWeb.Demos.SwitchDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.DemoScales
+
   def minimal_code do
     ~S"""
     <.switch class="switch" aria_label="Enable notifications" />
@@ -51,6 +53,79 @@ defmodule E2eWeb.Demos.SwitchDemo do
     def handle_event("patterns_checked", %{"checked" => checked}, socket) do
       {:noreply, assign(socket, :checked, checked == true or checked == "true")}
     end
+    """
+  end
+
+  def styling_variant_code do
+    ~S"""
+    <.switch class="switch" checked>
+      <:label>Subtle (default)</:label>
+    </.switch>
+    <.switch class="switch switch--variant-solid" checked>
+      <:label>Solid</:label>
+    </.switch>
+    <.switch class="switch switch--variant-ghost" checked>
+      <:label>Ghost</:label>
+    </.switch>
+    <.switch class="switch switch--variant-outline" checked>
+      <:label>Outline</:label>
+    </.switch>
+    """
+  end
+
+  def styling_variant_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
+      <.switch id="switch-style-variant-subtle" class="switch" checked>
+        <:label>Subtle (default)</:label>
+      </.switch>
+      <.switch id="switch-style-variant-solid" class="switch switch--variant-solid" checked>
+        <:label>Solid</:label>
+      </.switch>
+      <.switch id="switch-style-variant-ghost" class="switch switch--variant-ghost" checked>
+        <:label>Ghost</:label>
+      </.switch>
+      <.switch id="switch-style-variant-outline" class="switch switch--variant-outline" checked>
+        <:label>Outline</:label>
+      </.switch>
+    </div>
+    """
+  end
+
+  def styling_variant_matrix_code do
+    for semantic <- DemoScales.styling_semantic_axis_steps("switch"),
+        variant <- DemoScales.styling_variant_axis_steps("switch") do
+      class = DemoScales.join_matrix_modifiers("switch", semantic.modifier, variant.modifier)
+
+      ~s(<.switch class="#{class}" checked>
+        <:label>#{semantic.label}</:label>
+      </.switch>)
+    end
+    |> DemoScales.join_code()
+  end
+
+  def styling_variant_matrix_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("switch"))
+      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("switch"))
+
+    ~H"""
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+      <div class="grid grid-cols-4 gap-space gap-2 items-start min-w-max">
+        <div :for={semantic <- @matrix_semantics} class="contents">
+          <.switch
+            :for={variant <- @matrix_variants}
+            class={DemoScales.join_matrix_modifiers("switch", semantic.modifier, variant.modifier)}
+            checked
+          >
+            <:label>{semantic.label}</:label>
+          </.switch>
+        </div>
+      </div>
+    </div>
     """
   end
 
@@ -138,6 +213,132 @@ defmodule E2eWeb.Demos.SwitchDemo do
       <.switch id="switch-style-c-success" class="switch switch--success" checked>
         <:label>Success</:label>
       </.switch>
+    </div>
+    """
+  end
+
+  def styling_rounded_code do
+    ~S"""
+    <.switch class="switch switch--rounded-none" checked>
+      <:label>None</:label>
+    </.switch>
+    <.switch class="switch switch--rounded-sm" checked>
+      <:label>SM</:label>
+    </.switch>
+    <.switch class="switch switch--rounded-md" checked>
+      <:label>MD</:label>
+    </.switch>
+    <.switch class="switch switch--rounded-lg" checked>
+      <:label>LG</:label>
+    </.switch>
+    <.switch class="switch switch--rounded-xl" checked>
+      <:label>XL</:label>
+    </.switch>
+    <.switch class="switch switch--rounded-full" checked>
+      <:label>Full</:label>
+    </.switch>
+    """
+  end
+
+  def styling_rounded_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
+      <.switch id="switch-style-rounded-none" class="switch switch--rounded-none" checked>
+        <:label>None</:label>
+      </.switch>
+      <.switch id="switch-style-rounded-sm" class="switch switch--rounded-sm" checked>
+        <:label>SM</:label>
+      </.switch>
+      <.switch id="switch-style-rounded-md" class="switch switch--rounded-md" checked>
+        <:label>MD</:label>
+      </.switch>
+      <.switch id="switch-style-rounded-lg" class="switch switch--rounded-lg" checked>
+        <:label>LG</:label>
+      </.switch>
+      <.switch id="switch-style-rounded-xl" class="switch switch--rounded-xl" checked>
+        <:label>XL</:label>
+      </.switch>
+      <.switch id="switch-style-rounded-full" class="switch switch--rounded-full" checked>
+        <:label>Full</:label>
+      </.switch>
+    </div>
+    """
+  end
+
+  defp styling_block_label_code do
+    """
+      <:label>#{DemoScales.block_demo_label()}</:label>
+    """
+  end
+
+  def styling_width_code do
+    label = styling_block_label_code()
+
+    DemoScales.width_layout_variants("switch")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("switch", modifier)
+
+      """
+      <.switch class="#{class}" checked>
+      #{label}
+      </.switch>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_max_width_code do
+    label = styling_block_label_code()
+
+    DemoScales.max_width_variants("switch")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_block_modifiers("switch", modifier)
+
+      """
+      <.switch class="#{class}" checked>
+      #{label}
+      </.switch>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_width_example(assigns) do
+    assigns = assign(assigns, :width_variants, DemoScales.width_layout_variants("switch"))
+
+    ~H"""
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={variant <- @width_variants} class="flex flex-col gap-2">
+        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <.switch
+          id={"switch-style-width-#{variant.id}"}
+          class={DemoScales.join_modifiers("switch", variant.modifier)}
+          checked
+        >
+          <:label>{DemoScales.block_demo_label()}</:label>
+        </.switch>
+      </div>
+    </div>
+    """
+  end
+
+  def styling_max_width_example(assigns) do
+    assigns = assign(assigns, :max_width_variants, DemoScales.max_width_variants("switch"))
+
+    ~H"""
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <.switch
+          id={"switch-style-max-#{variant.id}"}
+          class={DemoScales.join_block_modifiers("switch", variant.modifier)}
+          checked
+        >
+          <:label>{DemoScales.block_demo_label()}</:label>
+        </.switch>
+      </div>
     </div>
     """
   end
@@ -951,6 +1152,50 @@ defmodule E2eWeb.Demos.SwitchDemo do
     """
   end
 
+  def form_doc_live_ecto_controlled_heex do
+    ~S"""
+    <.form for={@ecto_controlled_form} phx-change="validate_controlled" phx-submit="save_controlled">
+      <.switch
+        field={@ecto_controlled_form[:notifications]}
+        class="switch"
+        id="switch-live-form-ecto-controlled-notifications"
+        controlled
+      >
+        <:label>Enable notifications</:label>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.switch>
+      <.action type="submit" id="switch-live-form-ecto-controlled-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_doc_live_ecto_invalid_heex do
+    ~S"""
+    <.form for={@ecto_invalid_form} phx-change="validate_invalid" phx-submit="save_invalid">
+      <.switch
+        field={@ecto_invalid_form[:notifications]}
+        class="switch"
+        id="switch-live-form-ecto-invalid-notifications"
+        invalid={Corex.FormField.invalid?(@ecto_invalid_form[:notifications])}
+      >
+        <:label>Enable notifications</:label>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.switch>
+      <.action type="submit" id="switch-live-form-ecto-invalid-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
   attr(:form, :any, required: true)
 
   def form_preview_controller_phoenix(assigns) do
@@ -1035,6 +1280,66 @@ defmodule E2eWeb.Demos.SwitchDemo do
         </:error>
       </.switch>
       <.action type="submit" id="switch-live-form-ecto-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_live_ecto_controlled(assigns) do
+    ~H"""
+    <.form
+      for={@form}
+      phx-change="validate_controlled"
+      phx-submit="save_controlled"
+    >
+      <.switch
+        field={@form[:notifications]}
+        class="switch"
+        id="switch-live-form-ecto-controlled-notifications"
+        controlled
+      >
+        <:label>Enable notifications</:label>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.switch>
+      <.action
+        type="submit"
+        id="switch-live-form-ecto-controlled-submit"
+        class="button button--accent"
+      >
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_live_ecto_invalid(assigns) do
+    ~H"""
+    <.form
+      for={@form}
+      phx-change="validate_invalid"
+      phx-submit="save_invalid"
+    >
+      <.switch
+        field={@form[:notifications]}
+        class="switch"
+        id="switch-live-form-ecto-invalid-notifications"
+        invalid={Corex.FormField.invalid?(@form[:notifications])}
+      >
+        <:label>Enable notifications</:label>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.switch>
+      <.action type="submit" id="switch-live-form-ecto-invalid-submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -1131,6 +1436,144 @@ defmodule E2eWeb.Demos.SwitchDemo do
                )
              )}
         end
+      end
+    end
+    """
+  end
+
+  def form_doc_live_ecto_controlled_elixir do
+    ~S"""
+    defmodule MyAppWeb.SwitchFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        ecto_controlled_form =
+          %MyApp.Forms.Preferences{}
+          |> MyApp.Forms.Preferences.changeset_validate(%{})
+          |> Phoenix.Component.to_form(as: :preferences_ecto_controlled, id: "switch-live-form-ecto-controlled")
+
+        {:ok, assign(socket, :ecto_controlled_form, ecto_controlled_form)}
+      end
+
+      def handle_event("validate_controlled", %{"preferences_ecto_controlled" => params}, socket) do
+        validate_ecto_controlled(socket, params)
+      end
+
+      def handle_event("save_controlled", %{"preferences_ecto_controlled" => params}, socket) do
+        case MyApp.Forms.Preferences.changeset_validate(%MyApp.Forms.Preferences{}, params) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            _data = Ecto.Changeset.apply_changes(changeset)
+
+            {:noreply,
+             assign(
+               socket,
+               :ecto_controlled_form,
+               Phoenix.Component.to_form(
+                 MyApp.Forms.Preferences.changeset_validate(%MyApp.Forms.Preferences{}, params),
+                 as: :preferences_ecto_controlled,
+                 id: "switch-live-form-ecto-controlled"
+               )
+             )}
+
+          changeset ->
+            {:noreply,
+             assign(
+               socket,
+               :ecto_controlled_form,
+               Phoenix.Component.to_form(changeset,
+                 action: :insert,
+                 as: :preferences_ecto_controlled,
+                 id: "switch-live-form-ecto-controlled"
+               )
+             )}
+        end
+      end
+
+      defp validate_ecto_controlled(socket, params) do
+        changeset =
+          %MyApp.Forms.Preferences{}
+          |> MyApp.Forms.Preferences.changeset_validate(params)
+          |> Map.put(:action, :validate)
+
+        {:noreply,
+         assign(
+           socket,
+           :ecto_controlled_form,
+           Phoenix.Component.to_form(changeset,
+             action: :validate,
+             as: :preferences_ecto_controlled,
+             id: "switch-live-form-ecto-controlled"
+           )
+         )}
+      end
+    end
+    """
+  end
+
+  def form_doc_live_ecto_invalid_elixir do
+    ~S"""
+    defmodule MyAppWeb.SwitchFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        ecto_invalid_form =
+          %MyApp.Forms.Preferences{}
+          |> MyApp.Forms.Preferences.changeset_validate(%{})
+          |> Phoenix.Component.to_form(as: :preferences_ecto_invalid, id: "switch-live-form-ecto-invalid")
+
+        {:ok, assign(socket, :ecto_invalid_form, ecto_invalid_form)}
+      end
+
+      def handle_event("validate_invalid", %{"preferences_ecto_invalid" => params}, socket) do
+        validate_ecto_invalid(socket, params)
+      end
+
+      def handle_event("save_invalid", %{"preferences_ecto_invalid" => params}, socket) do
+        case MyApp.Forms.Preferences.changeset_validate(%MyApp.Forms.Preferences{}, params) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            _data = Ecto.Changeset.apply_changes(changeset)
+
+            {:noreply,
+             assign(
+               socket,
+               :ecto_invalid_form,
+               Phoenix.Component.to_form(
+                 MyApp.Forms.Preferences.changeset_validate(%MyApp.Forms.Preferences{}, params),
+                 as: :preferences_ecto_invalid,
+                 id: "switch-live-form-ecto-invalid"
+               )
+             )}
+
+          changeset ->
+            {:noreply,
+             assign(
+               socket,
+               :ecto_invalid_form,
+               Phoenix.Component.to_form(changeset,
+                 action: :insert,
+                 as: :preferences_ecto_invalid,
+                 id: "switch-live-form-ecto-invalid"
+               )
+             )}
+        end
+      end
+
+      defp validate_ecto_invalid(socket, params) do
+        changeset =
+          %MyApp.Forms.Preferences{}
+          |> MyApp.Forms.Preferences.changeset_validate(params)
+          |> Map.put(:action, :validate)
+
+        {:noreply,
+         assign(
+           socket,
+           :ecto_invalid_form,
+           Phoenix.Component.to_form(changeset,
+             action: :validate,
+             as: :preferences_ecto_invalid,
+             id: "switch-live-form-ecto-invalid"
+           )
+         )}
       end
     end
     """

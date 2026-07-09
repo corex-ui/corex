@@ -1,6 +1,8 @@
 defmodule E2eWeb.Demos.TagsInputDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.DemoScales
+
   def minimal_code do
     ~S"""
     <.tags_input class="tags-input" value={["alpha", "beta"]}>
@@ -911,11 +913,10 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     """
   end
 
-  def patterns_controlled_heex do
+  def patterns_value_heex do
     ~S"""
     <.tags_input
       class="tags-input"
-      controlled
       value={["lorem", "duis", "donec"]}
       on_value_change="tags_patterns_value_changed"
     >
@@ -925,7 +926,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     """
   end
 
-  def patterns_controlled_elixir do
+  def patterns_value_elixir do
     ~S"""
     def handle_event("tags_patterns_value_changed", %{"id" => _id, "value" => value}, socket)
         when is_list(value) do
@@ -938,7 +939,6 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     ~S"""
     <.tags_input
       class="tags-input"
-      controlled
       value={["lorem", "duis"]}
       on_value_change="tags_patterns_validated_changed"
     >
@@ -1045,6 +1045,92 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     """
   end
 
+  def styling_variant_code do
+    ~S"""
+    <.tags_input class="tags-input w-full" value={["lorem", "duis", "donec"]}>
+      <:close><.heroicon name="hero-x-mark" /></:close>
+    </.tags_input>
+    <.tags_input class="tags-input w-full tags-input--variant-solid" value={["lorem", "duis", "donec"]}>
+      <:close><.heroicon name="hero-x-mark" /></:close>
+    </.tags_input>
+    <.tags_input class="tags-input w-full tags-input--variant-ghost" value={["lorem", "duis", "donec"]}>
+      <:close><.heroicon name="hero-x-mark" /></:close>
+    </.tags_input>
+    <.tags_input class="tags-input w-full tags-input--variant-outline" value={["lorem", "duis", "donec"]}>
+      <:close><.heroicon name="hero-x-mark" /></:close>
+    </.tags_input>
+    """
+  end
+
+  def styling_variant_example(assigns) do
+    assigns = assign(assigns, :demo_tags, styling_tags_value())
+
+    ~H"""
+    <div class="flex flex-col gap-space-lg w-full items-center">
+      <.tags_input id="tags-style-variant-subtle" class="tags-input w-full" value={@demo_tags}>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.tags_input>
+      <.tags_input
+        id="tags-style-variant-solid"
+        class="tags-input w-full tags-input--variant-solid"
+        value={@demo_tags}
+      >
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.tags_input>
+      <.tags_input
+        id="tags-style-variant-ghost"
+        class="tags-input w-full tags-input--variant-ghost"
+        value={@demo_tags}
+      >
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.tags_input>
+      <.tags_input
+        id="tags-style-variant-outline"
+        class="tags-input w-full tags-input--variant-outline"
+        value={@demo_tags}
+      >
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.tags_input>
+    </div>
+    """
+  end
+
+  def styling_variant_matrix_code do
+    for semantic <- DemoScales.styling_semantic_axis_steps("tags-input"),
+        variant <- DemoScales.styling_variant_axis_steps("tags-input") do
+      class = DemoScales.join_matrix_modifiers("tags-input", semantic.modifier, variant.modifier)
+
+      ~s(<.tags_input class="#{class} w-full" value={["lorem", "duis", "donec"]}>
+      <:close><.heroicon name="hero-x-mark" /></:close>
+    </.tags_input>)
+    end
+    |> DemoScales.join_code()
+  end
+
+  def styling_variant_matrix_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:demo_tags, styling_tags_value())
+      |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("tags-input"))
+      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("tags-input"))
+
+    ~H"""
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+      <div class="grid grid-cols-4 gap-space gap-2 items-start min-w-max">
+        <div :for={semantic <- @matrix_semantics} class="contents">
+          <.tags_input
+            :for={variant <- @matrix_variants}
+            class={DemoScales.join_matrix_modifiers("tags-input", semantic.modifier, variant.modifier) <> " w-full"}
+            value={@demo_tags}
+          >
+            <:close><.heroicon name="hero-x-mark" /></:close>
+          </.tags_input>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
   def styling_trigger_heex do
     ~S"""
     <.tags_input class="tags-input w-full tags-input--trigger--accent" value={["lorem", "duis", "donec"]}>
@@ -1147,60 +1233,6 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     """
   end
 
-  def styling_text_heex do
-    ~S"""
-    <.tags_input class="tags-input w-full tags-input--text-sm" value={["lorem", "duis", "donec"]}>
-      <:close><.heroicon name="hero-x-mark" /></:close>
-    </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--text-xl" value={["lorem", "duis", "donec"]}>
-      <:close><.heroicon name="hero-x-mark" /></:close>
-    </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--text-2xl" value={["lorem", "duis", "donec"]}>
-      <:close><.heroicon name="hero-x-mark" /></:close>
-    </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--text-4xl" value={["lorem", "duis", "donec"]}>
-      <:close><.heroicon name="hero-x-mark" /></:close>
-    </.tags_input>
-    """
-  end
-
-  def styling_text_example(assigns) do
-    assigns = assign(assigns, :demo_tags, styling_tags_value())
-
-    ~H"""
-    <div class="flex flex-col gap-space-lg w-full items-center">
-      <.tags_input
-        id="tags-style-text-sm"
-        class="tags-input w-full tags-input--text-sm"
-        value={@demo_tags}
-      >
-        <:close><.heroicon name="hero-x-mark" /></:close>
-      </.tags_input>
-      <.tags_input
-        id="tags-style-text-xl"
-        class="tags-input w-full tags-input--text-xl"
-        value={@demo_tags}
-      >
-        <:close><.heroicon name="hero-x-mark" /></:close>
-      </.tags_input>
-      <.tags_input
-        id="tags-style-text-2xl"
-        class="tags-input w-full tags-input--text-2xl"
-        value={@demo_tags}
-      >
-        <:close><.heroicon name="hero-x-mark" /></:close>
-      </.tags_input>
-      <.tags_input
-        id="tags-style-text-4xl"
-        class="tags-input w-full tags-input--text-4xl"
-        value={@demo_tags}
-      >
-        <:close><.heroicon name="hero-x-mark" /></:close>
-      </.tags_input>
-    </div>
-    """
-  end
-
   def styling_radius_heex do
     ~S"""
     <.tags_input class="tags-input w-full tags-input--rounded-none" value={["lorem", "duis", "donec"]}>
@@ -1266,45 +1298,37 @@ defmodule E2eWeb.Demos.TagsInputDemo do
   end
 
   def styling_max_width_heex do
-    ~S"""
-    <.tags_input class="tags-input w-full max-w-2xs" value={["lorem", "duis", "donec"]}>
-      <:close><.heroicon name="hero-x-mark" /></:close>
-    </.tags_input>
-    <.tags_input class="tags-input w-full max-w-md" value={["lorem", "duis", "donec"]}>
-      <:close><.heroicon name="hero-x-mark" /></:close>
-    </.tags_input>
-    <.tags_input class="tags-input w-full max-w-xl" value={["lorem", "duis", "donec"]}>
-      <:close><.heroicon name="hero-x-mark" /></:close>
-    </.tags_input>
-    <.tags_input class="tags-input w-full max-w-2xl" value={["lorem", "duis", "donec"]}>
-      <:close><.heroicon name="hero-x-mark" /></:close>
-    </.tags_input>
-    <.tags_input class="tags-input w-full max-w-none" value={["lorem", "duis", "donec"]}>
-      <:close><.heroicon name="hero-x-mark" /></:close>
-    </.tags_input>
-    """
+    DemoScales.max_width_variants_from("tags-input", "6xs")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("tags-input", modifier)
+
+      """
+      <.tags_input class="#{class}" value={["lorem", "duis", "donec"]}>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.tags_input>
+      """
+    end)
+    |> DemoScales.join_code()
   end
 
   def styling_max_width_example(assigns) do
-    assigns = assign(assigns, :demo_tags, styling_tags_value())
+    assigns =
+      assigns
+      |> assign(:demo_tags, styling_tags_value())
+      |> assign(:max_width_variants, DemoScales.max_width_variants_from("tags-input", "6xs"))
 
     ~H"""
-    <div class="flex flex-col gap-space-lg w-full items-center">
-      <.tags_input id="tags-style-max-2xs" class="tags-input w-full max-w-2xs" value={@demo_tags}>
-        <:close><.heroicon name="hero-x-mark" /></:close>
-      </.tags_input>
-      <.tags_input id="tags-style-max-md" class="tags-input w-full max-w-md" value={@demo_tags}>
-        <:close><.heroicon name="hero-x-mark" /></:close>
-      </.tags_input>
-      <.tags_input id="tags-style-max-xl" class="tags-input w-full max-w-xl" value={@demo_tags}>
-        <:close><.heroicon name="hero-x-mark" /></:close>
-      </.tags_input>
-      <.tags_input id="tags-style-max-2xl" class="tags-input w-full max-w-2xl" value={@demo_tags}>
-        <:close><.heroicon name="hero-x-mark" /></:close>
-      </.tags_input>
-      <.tags_input id="tags-style-max-none" class="tags-input w-full max-w-none" value={@demo_tags}>
-        <:close><.heroicon name="hero-x-mark" /></:close>
-      </.tags_input>
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <.tags_input
+          id={"tags-style-max-#{variant.id}"}
+          class={DemoScales.join_modifiers("tags-input", variant.modifier)}
+          value={@demo_tags}
+        >
+          <:close><.heroicon name="hero-x-mark" /></:close>
+        </.tags_input>
+      </div>
     </div>
     """
   end
@@ -1453,6 +1477,74 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
       def handle_event("save", _params, socket) do
         {:noreply, socket}
+      end
+    end
+    """
+  end
+
+  def form_doc_live_ecto_invalid_heex do
+    ~S"""
+    <.form for={@ecto_invalid_form} phx-change="validate_invalid" phx-submit="save_invalid">
+      <.tags_input
+        id="tags-input-live-form-ecto-invalid-tags"
+        field={@ecto_invalid_form[:tags]}
+        class="tags-input"
+        invalid={Corex.FormField.invalid?(@ecto_invalid_form[:tags])}
+      >
+        <:label>Keywords</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" />
+          {msg}
+        </:error>
+      </.tags_input>
+      <.action type="submit" id="tags-input-live-form-ecto-invalid-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_live_ecto_invalid(assigns) do
+    ~H"""
+    <.form for={@form} phx-change="validate_invalid" phx-submit="save_invalid">
+      <.tags_input
+        id="tags-input-live-form-ecto-invalid-tags"
+        field={@form[:tags]}
+        class="tags-input"
+        invalid={Corex.FormField.invalid?(@form[:tags])}
+      >
+        <:label>Keywords</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" />
+          {msg}
+        </:error>
+      </.tags_input>
+      <.action
+        type="submit"
+        id="tags-input-live-form-ecto-invalid-submit"
+        class="button button--accent"
+      >
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_doc_live_ecto_invalid_elixir do
+    ~S"""
+    defmodule MyAppWeb.TagsInputFormLive do
+      use MyAppWeb, :live_view
+
+      def handle_event("validate_invalid", %{"tags_input_ecto_invalid" => params}, socket) do
+        validate_ecto_invalid(socket, params)
+      end
+
+      def handle_event("save_invalid", %{"tags_input_ecto_invalid" => params}, socket) do
+        save_ecto_invalid(socket, params)
       end
     end
     """

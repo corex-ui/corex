@@ -1,6 +1,8 @@
 defmodule E2eWeb.Demos.DatePickerDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.DemoScales
+
   def minimal_code do
     ~S"""
     <.date_picker>
@@ -142,7 +144,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
 
   def api_set_value_client_binding_example(assigns) do
     ~H"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action
         phx-click={Corex.DatePicker.set_value("date-picker-api-sv-client", "2024-01-15")}
         class="button button--sm"
@@ -216,7 +218,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
 
   def api_set_value_client_js_example(assigns) do
     ~H"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action
         phx-click={
           JS.dispatch("corex:date-picker:set-value",
@@ -286,7 +288,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
 
   def api_set_value_server_example(assigns) do
     ~H"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action
         phx-click="date_picker_api_set_value"
         phx-value-date="2024-01-15"
@@ -431,35 +433,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     """
   end
 
-  def patterns_controlled_code do
-    ~S"""
-    <.date_picker
-      class="date-picker"
-      controlled
-      value={@selected}
-      on_value_change="pattern_date_changed"
-      translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
-    >
-      <:label>Date</:label>
-      <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-      <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-      <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
-    </.date_picker>
-    """
-  end
-
-  def patterns_controlled_elixir do
-    ~S"""
-    def mount(_params, _session, socket) do
-      {:ok, assign(socket, :selected, nil)}
-    end
-
-    def handle_event("pattern_date_changed", %{"value" => value}, socket) do
-      {:noreply, assign(socket, :selected, value)}
-    end
-    """
-  end
-
   def form_ecto do
     ~S"""
     defmodule MyApp.Form.DatePickerForm do
@@ -514,6 +487,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
   attr(:max_selected_dates, :integer, default: nil)
   attr(:on_value_change, :string, default: nil)
   attr(:label, :string, required: true)
+  attr(:invalid, :boolean, default: false)
 
   def form_date_picker(assigns) do
     assigns =
@@ -530,6 +504,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       max_selected_dates={@max_selected_dates}
       value={@value}
       on_value_change={@on_value_change}
+      invalid={@invalid}
       translation={form_date_picker_translation(@selection_mode)}
       class="date-picker"
     >
@@ -1198,7 +1173,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       <.date_picker
         field={@form[:date]}
         value={@date_display}
-        on_value_change="date_changed_validate"
         translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
         class="date-picker"
       >
@@ -1231,26 +1205,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       end
 
       def handle_event("validate_validate", %{"date_picker_validate" => params}, socket) do
-        changeset =
-          %MyApp.Form.DatePickerForm{}
-          |> MyApp.Form.DatePickerForm.changeset_validate(params)
-          |> Map.put(:action, :validate)
-
-        {:noreply,
-         assign(
-           socket,
-           :validate_form,
-           Phoenix.Component.to_form(changeset,
-             action: :validate,
-             as: :date_picker_validate,
-             id: "date-picker-validate-form-live"
-           )
-         )}
-      end
-
-      def handle_event("date_changed_validate", %{"value" => value}, socket) do
-        params = Corex.DatePicker.cast_params("single", %{"value" => value})
-
         changeset =
           %MyApp.Form.DatePickerForm{}
           |> MyApp.Form.DatePickerForm.changeset_validate(params)
@@ -1412,7 +1366,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         selection_mode="multiple"
         max_selected_dates={3}
         value={@date_display}
-        on_value_change="date_changed_dates"
         translation={%Corex.DatePicker.Translation{open_calendar: "Select dates", close_calendar: "Select dates", input: "Dates"}}
         class="date-picker"
       >
@@ -1445,17 +1398,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       end
 
       def handle_event("validate_dates", %{"date_picker_validate_dates" => params}, socket) do
-        changeset =
-          %MyApp.Form.DatePickerForm{}
-          |> MyApp.Form.DatePickerForm.changeset_validate_dates(params)
-          |> Map.put(:action, :validate)
-
-        {:noreply, assign(socket, :validate_dates_form, Phoenix.Component.to_form(changeset, action: :validate, as: :date_picker_validate_dates, id: "date-picker-validate-dates-form-live"))}
-      end
-
-      def handle_event("date_changed_dates", %{"value" => value}, socket) do
-        params = Corex.DatePicker.cast_params("multiple", %{"value" => value})
-
         changeset =
           %MyApp.Form.DatePickerForm{}
           |> MyApp.Form.DatePickerForm.changeset_validate_dates(params)
@@ -1502,7 +1444,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         field={@form[:date_range]}
         selection_mode="range"
         value={@date_display}
-        on_value_change="date_changed_range"
         translation={%Corex.DatePicker.Translation{open_calendar: "Select date range", close_calendar: "Select date range", input: "Date range", range_start: "From", range_end: "To"}}
         class="date-picker"
       >
@@ -1535,17 +1476,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       end
 
       def handle_event("validate_range", %{"date_picker_validate_range" => params}, socket) do
-        changeset =
-          %MyApp.Form.DatePickerForm{}
-          |> MyApp.Form.DatePickerForm.changeset_validate_range(params)
-          |> Map.put(:action, :validate)
-
-        {:noreply, assign(socket, :validate_range_form, Phoenix.Component.to_form(changeset, action: :validate, as: :date_picker_validate_range, id: "date-picker-validate-range-form-live"))}
-      end
-
-      def handle_event("date_changed_range", %{"value" => value}, socket) do
-        params = Corex.DatePicker.cast_params("range", %{"value" => value})
-
         changeset =
           %MyApp.Form.DatePickerForm{}
           |> MyApp.Form.DatePickerForm.changeset_validate_range(params)
@@ -1742,6 +1672,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
   attr(:selection_mode, :string, default: "single")
   attr(:date_display, :any, default: nil)
   attr(:required_label, :boolean, default: false)
+  attr(:invalid, :boolean, default: false)
 
   defp form_preview_live_form(assigns) do
     assigns =
@@ -1764,6 +1695,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         value={@date_display}
         on_value_change={@on_value_change}
         label={@picker_label}
+        invalid={@invalid}
       />
       <.action type="submit" id={@submit_id} class="button button--accent">Submit</.action>
     </.form>
@@ -1814,9 +1746,67 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     |> Map.put(:phx_submit, "save_validate")
     |> Map.put(:submit_id, "date-picker-validate-form-live-submit")
     |> Map.put(:picker_id, "date-picker-validate-live")
-    |> Map.put(:on_value_change, "date_changed_validate")
+    |> Map.put(:on_value_change, nil)
     |> Map.put(:required_label, true)
+    |> Map.put(:invalid, false)
     |> form_preview_live_form()
+  end
+
+  def form_preview_live_validate_invalid(assigns) do
+    assigns
+    |> Map.put(:selection_mode, "single")
+    |> Map.put(:form_id, "date-picker-validate-form-live-invalid")
+    |> Map.put(:phx_change, "validate_invalid")
+    |> Map.put(:phx_submit, "save_invalid")
+    |> Map.put(:submit_id, "date-picker-validate-form-live-invalid-submit")
+    |> Map.put(:picker_id, "date-picker-validate-live-invalid")
+    |> Map.put(:on_value_change, nil)
+    |> Map.put(:required_label, true)
+    |> Map.put(:invalid, Corex.FormField.invalid?(assigns.form[:date]))
+    |> form_preview_live_form()
+  end
+
+  def form_doc_live_ecto_invalid_heex do
+    ~S"""
+    <.form for={@validate_invalid_form} id="date-picker-validate-form-live-invalid" phx-change="validate_invalid" phx-submit="save_invalid">
+      <.date_picker
+        id="date-picker-validate-live-invalid"
+        field={@validate_invalid_form[:date]}
+        selection_mode="single"
+        value={@validate_invalid_date_value}
+        invalid={Corex.FormField.invalid?(@validate_invalid_form[:date])}
+        class="date-picker"
+      >
+        <:label>Date *</:label>
+        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.date_picker>
+      <.action type="submit" id="date-picker-validate-form-live-invalid-submit" class="button button--accent">Submit</.action>
+    </.form>
+    """
+  end
+
+  def form_doc_live_ecto_invalid_elixir do
+    ~S"""
+    defmodule MyAppWeb.DatePickerFormLive do
+      use MyAppWeb, :live_view
+
+      def handle_event("validate_invalid", params, socket) do
+        nested = Map.get(params, "date_picker_validate_invalid", %{})
+        validate_ecto_invalid(socket, nested)
+      end
+
+      def handle_event("save_invalid", params, socket) do
+        nested = Map.get(params, "date_picker_validate_invalid", %{})
+        save_ecto_invalid(socket, nested)
+      end
+    end
+    """
   end
 
   def form_preview_live_ecto_multiple(assigns) do
@@ -1827,7 +1817,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     |> Map.put(:phx_submit, "save_dates")
     |> Map.put(:submit_id, "date-picker-validate-dates-form-live-submit")
     |> Map.put(:picker_id, "date-picker-validate-dates-live")
-    |> Map.put(:on_value_change, "date_changed_dates")
+    |> Map.put(:on_value_change, nil)
     |> Map.put(:required_label, true)
     |> form_preview_live_form()
   end
@@ -1840,7 +1830,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     |> Map.put(:phx_submit, "save_range")
     |> Map.put(:submit_id, "date-picker-validate-range-form-live-submit")
     |> Map.put(:picker_id, "date-picker-validate-range-live")
-    |> Map.put(:on_value_change, "date_changed_range")
+    |> Map.put(:on_value_change, nil)
     |> Map.put(:required_label, true)
     |> form_preview_live_form()
   end
@@ -1980,6 +1970,123 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
         <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
       </.date_picker>
+    </div>
+    """
+  end
+
+  def styling_variant_code do
+    ~S"""
+    <.date_picker class="date-picker" value="2024-06-15">
+      <:label>Subtle (default)</:label>
+      <:trigger><.heroicon name="hero-calendar" /></:trigger>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
+    </.date_picker>
+    <.date_picker class="date-picker date-picker--variant-solid" value="2024-06-15">
+      <:label>Solid</:label>
+      <:trigger><.heroicon name="hero-calendar" /></:trigger>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
+    </.date_picker>
+    <.date_picker class="date-picker date-picker--variant-ghost" value="2024-06-15">
+      <:label>Ghost</:label>
+      <:trigger><.heroicon name="hero-calendar" /></:trigger>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
+    </.date_picker>
+    <.date_picker class="date-picker date-picker--variant-outline" value="2024-06-15">
+      <:label>Outline</:label>
+      <:trigger><.heroicon name="hero-calendar" /></:trigger>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
+    </.date_picker>
+    """
+  end
+
+  def styling_variant_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
+      <.date_picker id="date-picker-style-variant-subtle" class="date-picker" value="2024-06-15">
+        <:label>Subtle (default)</:label>
+        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+      </.date_picker>
+      <.date_picker
+        id="date-picker-style-variant-solid"
+        class="date-picker date-picker--variant-solid"
+        value="2024-06-15"
+      >
+        <:label>Solid</:label>
+        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+      </.date_picker>
+      <.date_picker
+        id="date-picker-style-variant-ghost"
+        class="date-picker date-picker--variant-ghost"
+        value="2024-06-15"
+      >
+        <:label>Ghost</:label>
+        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+      </.date_picker>
+      <.date_picker
+        id="date-picker-style-variant-outline"
+        class="date-picker date-picker--variant-outline"
+        value="2024-06-15"
+      >
+        <:label>Outline</:label>
+        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+      </.date_picker>
+    </div>
+    """
+  end
+
+  def styling_variant_matrix_code do
+    for semantic <- DemoScales.styling_semantic_axis_steps("date-picker"),
+        variant <- DemoScales.styling_variant_axis_steps("date-picker") do
+      class = DemoScales.join_matrix_modifiers("date-picker", semantic.modifier, variant.modifier)
+
+      ~s(<.date_picker class="#{class}" value="2024-06-15">
+        <:label>#{semantic.label}</:label>
+        <:trigger><.heroicon name="hero-calendar" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
+      </.date_picker>)
+    end
+    |> DemoScales.join_code()
+  end
+
+  def styling_variant_matrix_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("date-picker"))
+      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("date-picker"))
+
+    ~H"""
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+      <div class="grid grid-cols-4 gap-space gap-2 items-start min-w-max">
+        <div :for={semantic <- @matrix_semantics} class="contents">
+          <.date_picker
+            :for={variant <- @matrix_variants}
+            class={
+              DemoScales.join_matrix_modifiers("date-picker", semantic.modifier, variant.modifier)
+            }
+            value="2024-06-15"
+          >
+            <:label>{semantic.label}</:label>
+            <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
+            <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
+            <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+          </.date_picker>
+        </div>
+      </div>
     </div>
     """
   end
@@ -2188,6 +2295,95 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
         <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
       </.date_picker>
+    </div>
+    """
+  end
+
+  defp styling_block_slots_code do
+    """
+      <:label>#{DemoScales.block_demo_label()}</:label>
+      <:trigger><.heroicon name="hero-calendar" /></:trigger>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
+    """
+  end
+
+  def styling_width_code do
+    slots = styling_block_slots_code()
+
+    DemoScales.width_layout_variants("date-picker")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("date-picker", modifier)
+
+      """
+      <.date_picker class="#{class}" value="2024-06-15">
+      #{slots}
+      </.date_picker>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_max_width_code do
+    slots = styling_block_slots_code()
+
+    DemoScales.max_width_variants("date-picker")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_block_modifiers("date-picker", modifier)
+
+      """
+      <.date_picker class="#{class}" value="2024-06-15">
+      #{slots}
+      </.date_picker>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_width_example(assigns) do
+    assigns = assign(assigns, :width_variants, DemoScales.width_layout_variants("date-picker"))
+
+    ~H"""
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={variant <- @width_variants} class="flex flex-col gap-2">
+        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <.date_picker
+          id={"date-picker-style-width-#{variant.id}"}
+          class={DemoScales.join_modifiers("date-picker", variant.modifier)}
+          value="2024-06-15"
+          focused_value="2024-06-01"
+          translation={styling_translation()}
+        >
+          <:label>{DemoScales.block_demo_label()}</:label>
+          <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
+          <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
+          <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+        </.date_picker>
+      </div>
+    </div>
+    """
+  end
+
+  def styling_max_width_example(assigns) do
+    assigns = assign(assigns, :max_width_variants, DemoScales.max_width_variants("date-picker"))
+
+    ~H"""
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <.date_picker
+          id={"date-picker-style-max-#{variant.id}"}
+          class={DemoScales.join_block_modifiers("date-picker", variant.modifier)}
+          value="2024-06-15"
+          focused_value="2024-06-01"
+          translation={styling_translation()}
+        >
+          <:label>{DemoScales.block_demo_label()}</:label>
+          <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
+          <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
+          <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+        </.date_picker>
+      </div>
     </div>
     """
   end

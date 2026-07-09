@@ -1,6 +1,8 @@
 defmodule E2eWeb.Demos.ToggleGroupDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.DemoScales
+
   def anatomy_minimal_code do
     ~S"""
     <.toggle_group class="toggle-group">
@@ -59,7 +61,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
 
   def api_set_value_client_binding_heex do
     ~S"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action phx-click={Corex.ToggleGroup.set_value("toggle-group-api-cb", ["lorem"])} class="button button--sm">Lorem</.action>
       <.action phx-click={Corex.ToggleGroup.set_value("toggle-group-api-cb", ["duis"])} class="button button--sm">Duis</.action>
       <.action phx-click={Corex.ToggleGroup.set_value("toggle-group-api-cb", ["donec"])} class="button button--sm">Donec</.action>
@@ -78,7 +80,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
 
     ~H"""
     <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
-      <div class="layout__row">
+      <div class="flex flex-wrap items-center gap-space">
         <.action
           phx-click={Corex.ToggleGroup.set_value("toggle-group-api-cb", ["lorem"])}
           class="button button--sm"
@@ -115,7 +117,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
 
   def api_set_value_client_js_heex do
     ~S"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action
         class="button button--sm"
         phx-click={
@@ -187,7 +189,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
 
     ~H"""
     <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
-      <div class="layout__row">
+      <div class="flex flex-wrap items-center gap-space">
         <.action
           class="button button--sm"
           phx-click={
@@ -236,7 +238,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
 
   def api_set_value_server_heex do
     ~S"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action phx-click="tg_api_lorem" class="button button--sm">Lorem</.action>
       <.action phx-click="tg_api_duis" class="button button--sm">Duis</.action>
       <.action phx-click="tg_api_donec" class="button button--sm">Donec</.action>
@@ -275,7 +277,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
 
     ~H"""
     <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
-      <div class="layout__row">
+      <div class="flex flex-wrap items-center gap-space">
         <.action phx-click="tg_api_lorem" class="button button--sm">Lorem</.action>
         <.action phx-click="tg_api_duis" class="button button--sm">Duis</.action>
         <.action phx-click="tg_api_donec" class="button button--sm">Donec</.action>
@@ -424,6 +426,110 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
         <:item value="duis">Duis</:item>
         <:item value="donec">Donec</:item>
       </.toggle_group>
+    </div>
+    """
+  end
+
+  def styling_variant_code do
+    ~S"""
+    <.toggle_group class="toggle-group" value={["lorem"]}>
+      <:item value="lorem">Lorem</:item>
+      <:item value="duis">Duis</:item>
+      <:item value="donec">Donec</:item>
+    </.toggle_group>
+    <.toggle_group class="toggle-group toggle-group--variant-solid" value={["lorem"]}>
+      <:item value="lorem">Lorem</:item>
+      <:item value="duis">Duis</:item>
+      <:item value="donec">Donec</:item>
+    </.toggle_group>
+    <.toggle_group class="toggle-group toggle-group--variant-ghost" value={["lorem"]}>
+      <:item value="lorem">Lorem</:item>
+      <:item value="duis">Duis</:item>
+      <:item value="donec">Donec</:item>
+    </.toggle_group>
+    <.toggle_group class="toggle-group toggle-group--variant-outline" value={["lorem"]}>
+      <:item value="lorem">Lorem</:item>
+      <:item value="duis">Duis</:item>
+      <:item value="donec">Donec</:item>
+    </.toggle_group>
+    """
+  end
+
+  def styling_variant_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-6 w-full max-w-4xl">
+      <.toggle_group id="tg-style-variant-subtle" class="toggle-group" value={["lorem"]}>
+        <:item value="lorem">Lorem</:item>
+        <:item value="duis">Duis</:item>
+        <:item value="donec">Donec</:item>
+      </.toggle_group>
+      <.toggle_group
+        id="tg-style-variant-solid"
+        class="toggle-group toggle-group--variant-solid"
+        value={["lorem"]}
+      >
+        <:item value="lorem">Lorem</:item>
+        <:item value="duis">Duis</:item>
+        <:item value="donec">Donec</:item>
+      </.toggle_group>
+      <.toggle_group
+        id="tg-style-variant-ghost"
+        class="toggle-group toggle-group--variant-ghost"
+        value={["lorem"]}
+      >
+        <:item value="lorem">Lorem</:item>
+        <:item value="duis">Duis</:item>
+        <:item value="donec">Donec</:item>
+      </.toggle_group>
+      <.toggle_group
+        id="tg-style-variant-outline"
+        class="toggle-group toggle-group--variant-outline"
+        value={["lorem"]}
+      >
+        <:item value="lorem">Lorem</:item>
+        <:item value="duis">Duis</:item>
+        <:item value="donec">Donec</:item>
+      </.toggle_group>
+    </div>
+    """
+  end
+
+  def styling_variant_matrix_code do
+    for semantic <- DemoScales.styling_semantic_axis_steps("toggle-group"),
+        variant <- DemoScales.styling_variant_axis_steps("toggle-group") do
+      class =
+        DemoScales.join_matrix_modifiers("toggle-group", semantic.modifier, variant.modifier)
+
+      ~s(<.toggle_group class="#{class}" value={["lorem"]}>
+        <:item value="lorem">#{semantic.label}</:item>
+      </.toggle_group>)
+    end
+    |> DemoScales.join_code()
+  end
+
+  def styling_variant_matrix_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("toggle-group"))
+      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("toggle-group"))
+
+    ~H"""
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+      <div class="grid grid-cols-4 gap-space gap-2 items-start min-w-max">
+        <div :for={semantic <- @matrix_semantics} class="contents">
+          <.toggle_group
+            :for={variant <- @matrix_variants}
+            class={
+              DemoScales.join_matrix_modifiers("toggle-group", semantic.modifier, variant.modifier)
+            }
+            value={["lorem"]}
+          >
+            <:item value="lorem">{semantic.label}</:item>
+          </.toggle_group>
+        </div>
+      </div>
     </div>
     """
   end
@@ -582,6 +688,88 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
         <:item value="duis">Full</:item>
         <:item value="donec">Full</:item>
       </.toggle_group>
+    </div>
+    """
+  end
+
+  defp styling_items_code do
+    """
+      <:item value="lorem">Lorem</:item>
+      <:item value="duis">Duis</:item>
+      <:item value="donec">Donec</:item>
+    """
+  end
+
+  def styling_width_code do
+    items = styling_items_code()
+
+    DemoScales.width_layout_variants("toggle-group")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("toggle-group", modifier)
+
+      """
+      <.toggle_group class="#{class}" value={["lorem"]}>
+      #{items}
+      </.toggle_group>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_max_width_code do
+    items = styling_items_code()
+
+    DemoScales.max_width_variants("toggle-group")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("toggle-group", modifier)
+
+      """
+      <.toggle_group class="#{class}" value={["lorem"]}>
+      #{items}
+      </.toggle_group>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_width_example(assigns) do
+    assigns = assign(assigns, :width_variants, DemoScales.width_layout_variants("toggle-group"))
+
+    ~H"""
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={variant <- @width_variants} class="flex flex-col gap-2">
+        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <.toggle_group
+          id={"toggle-group-style-width-#{variant.id}"}
+          class={DemoScales.join_modifiers("toggle-group", variant.modifier)}
+          value={["lorem"]}
+        >
+          <:item value="lorem">Lorem</:item>
+          <:item value="duis">Duis</:item>
+          <:item value="donec">Donec</:item>
+        </.toggle_group>
+      </div>
+    </div>
+    """
+  end
+
+  def styling_max_width_example(assigns) do
+    assigns = assign(assigns, :max_width_variants, DemoScales.max_width_variants("toggle-group"))
+
+    ~H"""
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <.toggle_group
+          id={"toggle-group-style-max-#{variant.id}"}
+          class={DemoScales.join_modifiers("toggle-group", variant.modifier)}
+          value={["lorem"]}
+        >
+          <:item value="lorem">Lorem</:item>
+          <:item value="duis">Duis</:item>
+          <:item value="donec">Donec</:item>
+        </.toggle_group>
+      </div>
     </div>
     """
   end

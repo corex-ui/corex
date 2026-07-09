@@ -76,16 +76,12 @@ If a label ever fails an audit, the answer is almost always to switch a theme, s
 
 ## A thin `site.css`
 
-The setup is small enough to fit in a paragraph. Run `mix corex.design` once. Files land under `assets/corex/`. In `app.css`, import the Corex base, the theme files you want to expose, the typography, the layout, and one file per component you render. Point Tailwind at the copied directory. Set `data-theme` and `data-mode` on `<html>`. Set `class="typo layout"` on `<body>`. That is the whole story.
+The setup is small enough to fit in a paragraph. Add the `corex_design` dependency and run `mix corex.design.build`. Files land under `assets/corex/`. In `app.css`, import the Corex base, the theme files you want to expose, and the generated `components.css` entry (built from the `components:` list in config). Point Tailwind at the generated directory. Set `data-theme` and `data-mode` on `<html>`. Set `class="typo layout"` on `<body>`. That is the whole story.
 
 ```css
 @import "../corex/main.css";
 @import "../corex/theme/neo.css";
-@import "../corex/components/typo.css";
-@import "../corex/components/layout.css";
-@import "../corex/components/accordion.css";
-@import "../corex/components/combobox.css";
-@import "../corex/components/button.css";
+@import "../corex/components.css";
 ```
 
 If your `app.css` still loads daisyUI from stock `phx.new`, remove it. Two token systems fighting for the same utility names is the most reliable way to make both unhappy.

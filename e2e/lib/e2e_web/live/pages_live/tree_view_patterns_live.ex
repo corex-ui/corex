@@ -137,36 +137,30 @@ defmodule E2eWeb.TreeViewPatternsLive do
           </:preview>
         </.demo_section>
 
-        <section class="flex flex-col gap-4 items-start">
-          <.tabs
-            id="tabs-tree-view-patterns-redirect"
-            class="tabs max-w-6xl [&>[data-scope=tabs][data-part=root]>[data-scope=tabs][data-part=list]]:place-self-end"
-            value="preview"
-          >
-            <:trigger value="preview" class="button--sm">Preview</:trigger>
-            <:trigger value="heex" class="button--sm">Heex</:trigger>
-            <:content value="preview" class="items-center shadow-sm p-ui-padding">
-              <h3 class="font-medium">Redirect (navigation)</h3>
-              <.tree_view
-                id={@id_redirect}
-                class="tree-view"
-                redirect
-                on_selection_change="patterns_tree_redirect_nav"
-                expanded_value={@redirect_expanded}
-                value={@redirect_value}
-                items={@redirect_items}
-              >
-                <:label>Navigate</:label>
-                <:branch_indicator :let={_row}>
-                  <.heroicon name="hero-chevron-right" />
-                </:branch_indicator>
-              </.tree_view>
-            </:content>
-            <:content value="heex" class="items-center bg-stone-100 p-0">
-              <.code class="code max-w-none w-full" language={:heex} code={@redirect_heex} />
-            </:content>
-          </.tabs>
-        </section>
+        <.demo_section
+          id="patterns-tree-redirect-section"
+          tabs_id="tabs-tree-view-patterns-redirect"
+          title={~t"Redirect (navigation)"}
+          trigger_class="button--sm"
+          code={@redirect_heex}
+        >
+          <:preview>
+            <.tree_view
+              id={@id_redirect}
+              class="tree-view"
+              redirect
+              on_selection_change="patterns_tree_redirect_nav"
+              expanded_value={@redirect_expanded}
+              value={@redirect_value}
+              items={@redirect_items}
+            >
+              <:label>Navigate</:label>
+              <:branch_indicator :let={_row}>
+                <.heroicon name="hero-chevron-right" />
+              </:branch_indicator>
+            </.tree_view>
+          </:preview>
+        </.demo_section>
       </.demo_page>
     </Layouts.app>
     """

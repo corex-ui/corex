@@ -1,14 +1,15 @@
 defmodule E2eWeb.App.Footer do
   use E2eWeb, :html
+  alias E2eWeb.App.Shell
   import E2eWeb.LocaleSwitcher
 
   attr :path, :string, default: ""
 
   def footer(assigns) do
     ~H"""
-    <footer class="layout__footer">
-      <div class="layout__footer__content gap-2 justify-center md:justify-between">
-        <div class="layout__row">
+    <footer class={Shell.footer() <> " shell-footer"}>
+      <div class={Shell.footer_content() <> " gap-2 justify-center md:justify-between"}>
+        <div class={Shell.row()}>
           <.navigate class="ui-link ui-link--sm ui-link--accent" to="https://netoum.com" external>
             {~t"Open source by Netoum"}
             <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
@@ -22,7 +23,7 @@ defmodule E2eWeb.App.Footer do
             <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
           </.navigate>
         </div>
-        <div class="layout__row gap-2 flex-wrap justify-center md:justify-end items-center max-w-full min-w-0">
+        <div class={Shell.row() <> " gap-2 flex-wrap justify-center md:justify-end items-center max-w-full min-w-0"}>
           <.locale_switcher path={@path} />
           <.navigate
             class="button button--sm button--circle"

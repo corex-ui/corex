@@ -642,12 +642,14 @@ defmodule E2eWeb.TetrexLive do
                 </span>
                 <span
                   :if={@source == :session && is_binary(@game_id)}
-                  class="badge badge--ghost"
+                  class="badge badge--variant-ghost"
                   aria-live="polite"
                 >
                   {watchers_label(@watchers_count)}
                 </span>
-                <span :if={@live_action == :replay} class="badge badge--ghost">{~t"Replay"}</span>
+                <span :if={@live_action == :replay} class="badge badge--variant-ghost">
+                  {~t"Replay"}
+                </span>
               </div>
               <.navigate to={~p"/showcases/tetrex"} class="link link--accent text-sm shrink-0">
                 {~t"Home"}

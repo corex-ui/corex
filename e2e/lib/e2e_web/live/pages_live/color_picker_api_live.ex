@@ -62,7 +62,7 @@ defmodule E2eWeb.ColorPickerApiLive do
           ]}
         >
           <:preview>
-            <div class="layout__row mb-4">
+            <div class="flex flex-wrap items-center gap-space mb-4">
               <.action phx-click="cp_api_s_value" phx-value-color="#ff0000" class="button button--sm">
                 Set red
               </.action>

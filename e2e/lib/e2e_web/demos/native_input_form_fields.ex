@@ -9,7 +9,7 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
 
   def anatomy_all_fields(assigns) do
     ~H"""
-    <div class="layout__row flex flex-col gap-8" dir={@dir}>
+    <div class="flex flex-col gap-8" dir={@dir}>
       <div class="flex flex-col gap-3">
         <p class="typo typo--sm font-medium">Text</p>
         <.native_input

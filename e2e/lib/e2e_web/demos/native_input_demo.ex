@@ -1,6 +1,8 @@
 defmodule E2eWeb.Demos.NativeInputDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.DemoScales
+
   import E2eWeb.Demos.NativeInputFormFields
 
   def tag_options do
@@ -89,12 +91,41 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     %{id: "full", label: "Full", modifier: "native-input--rounded-full"}
   ]
 
-  @styling_max_width_variants [
-    %{id: "2xs", label: "2xs", modifier: "max-w-2xs"},
-    %{id: "md", label: "MD", modifier: "max-w-md"},
-    %{id: "xl", label: "XL", modifier: "max-w-xl"},
-    %{id: "2xl", label: "2XL", modifier: "max-w-2xl"}
-  ]
+  def styling_max_width_code do
+    DemoScales.max_width_variants("native-input")
+    |> Enum.map(fn %{id: id, label: label, modifier: modifier} ->
+      input_class = styling_width_input_class(modifier)
+
+      """
+      <div class="flex flex-col gap-3 pb-8 last:pb-0">
+        <p class="typo typo--sm font-medium">#{label}</p>
+        <.anatomy_all_fields
+          id_prefix="native-input-style-max-width-#{id}"
+          input_class="#{input_class}"
+        />
+      </div>
+      """
+    end)
+    |> then(fn blocks ->
+      """
+      <div class="w-full max-h-[70vh] overflow-y-auto scrollbar scrollbar--sm">
+      #{Enum.join(blocks, "\n")}
+      </div>
+      """
+    end)
+  end
+
+  def styling_max_width_example(assigns) do
+    assigns = assign(assigns, :variants, DemoScales.max_width_variants("native-input"))
+
+    ~H"""
+    <.styling_modifier_preview
+      id_prefix="native-input-style-max-width"
+      variants={@variants}
+      width_modifiers
+    />
+    """
+  end
 
   attr(:id_prefix, :string, required: true)
   attr(:variants, :list, required: true)
@@ -140,7 +171,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     |> Enum.join(" ")
   end
 
-  defp styling_variant_code(id_prefix, modifier, width_modifiers \\ false) do
+  defp styling_modifier_code(id_prefix, modifier, width_modifiers \\ false) do
     input_class =
       if width_modifiers,
         do: styling_width_input_class(modifier),
@@ -218,7 +249,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
 
   def anatomy_text_code do
     ~S"""
-    <div class="layout__row flex flex-col gap-4">
+    <div class="flex flex-col gap-4">
       <.native_input type="text" name="user[name]" class="native-input">
         <:label>Text</:label>
         <:icon><.heroicon name="hero-pencil-square" class="icon" /></:icon>
@@ -283,7 +314,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="layout__row flex flex-col gap-4">
+    <div class="flex flex-col gap-4">
       <.native_input type="text" id="text-with-icon" name="user[name]" class="native-input">
         <:label>Text</:label>
         <:icon><.heroicon name="hero-pencil-square" class="icon" /></:icon>
@@ -364,7 +395,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
 
   def anatomy_date_time_code do
     ~S"""
-    <div class="layout__row flex flex-col gap-4">
+    <div class="flex flex-col gap-4">
       <.native_input type="date" name="user[date]" class="native-input">
         <:label>Date</:label>
       </.native_input>
@@ -388,7 +419,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="layout__row flex flex-col gap-4">
+    <div class="flex flex-col gap-4">
       <.native_input type="date" id="date" name="user[date]" class="native-input">
         <:label>Date</:label>
       </.native_input>
@@ -410,7 +441,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
 
   def anatomy_multiple_code do
     ~S"""
-    <div class="layout__row flex flex-col gap-4">
+    <div class="flex flex-col gap-4">
       <.native_input
         type="select"
         multiple
@@ -435,7 +466,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="layout__row flex flex-col gap-4">
+    <div class="flex flex-col gap-4">
       <.native_input
         type="select"
         multiple
@@ -475,7 +506,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="layout__row flex flex-col gap-4">
+    <div class="flex flex-col gap-4">
       <.native_input type="checkbox" id="checkbox" name="user[agree]" class="native-input">
         <:label>I agree</:label>
       </.native_input>
@@ -514,7 +545,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
   end
 
   def styling_color_code do
-    styling_variant_code("native-input-style-color", "native-input--accent")
+    styling_modifier_code("native-input-style-color", "native-input--accent")
   end
 
   def styling_color_example(assigns) do
@@ -528,8 +559,105 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     """
   end
 
+  def styling_variant_code do
+    ~S"""
+    <.native_input type="text" name="user[name]" class="native-input">
+      <:label>Subtle (default)</:label>
+    </.native_input>
+    <.native_input type="text" name="user[name]" class="native-input native-input--variant-solid">
+      <:label>Solid</:label>
+    </.native_input>
+    <.native_input type="text" name="user[name]" class="native-input native-input--variant-ghost">
+      <:label>Ghost</:label>
+    </.native_input>
+    <.native_input type="text" name="user[name]" class="native-input native-input--variant-outline">
+      <:label>Outline</:label>
+    </.native_input>
+    """
+  end
+
+  def styling_variant_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-4 max-w-md">
+      <.native_input
+        id="native-input-style-variant-subtle"
+        type="text"
+        name="user[name]"
+        class="native-input"
+      >
+        <:label>Subtle (default)</:label>
+      </.native_input>
+      <.native_input
+        id="native-input-style-variant-solid"
+        type="text"
+        name="user[name]"
+        class="native-input native-input--variant-solid"
+      >
+        <:label>Solid</:label>
+      </.native_input>
+      <.native_input
+        id="native-input-style-variant-ghost"
+        type="text"
+        name="user[name]"
+        class="native-input native-input--variant-ghost"
+      >
+        <:label>Ghost</:label>
+      </.native_input>
+      <.native_input
+        id="native-input-style-variant-outline"
+        type="text"
+        name="user[name]"
+        class="native-input native-input--variant-outline"
+      >
+        <:label>Outline</:label>
+      </.native_input>
+    </div>
+    """
+  end
+
+  def styling_variant_matrix_code do
+    for semantic <- DemoScales.styling_semantic_axis_steps("native-input"),
+        variant <- DemoScales.styling_variant_axis_steps("native-input") do
+      class =
+        DemoScales.join_matrix_modifiers("native-input", semantic.modifier, variant.modifier)
+
+      ~s(<.native_input type="text" name="user[name]" class="#{class}">
+        <:label>#{semantic.label}</:label>
+      </.native_input>)
+    end
+    |> DemoScales.join_code()
+  end
+
+  def styling_variant_matrix_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("native-input"))
+      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("native-input"))
+
+    ~H"""
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+      <div class="grid grid-cols-4 gap-space gap-2 items-start min-w-max">
+        <div :for={semantic <- @matrix_semantics} class="contents">
+          <.native_input
+            :for={variant <- @matrix_variants}
+            type="text"
+            name="user[name]"
+            class={
+              DemoScales.join_matrix_modifiers("native-input", semantic.modifier, variant.modifier)
+            }
+          >
+            <:label>{semantic.label}</:label>
+          </.native_input>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
   def styling_size_code do
-    styling_variant_code("native-input-style-size", "native-input--lg")
+    styling_modifier_code("native-input-style-size", "native-input--lg")
   end
 
   def styling_size_example(assigns) do
@@ -544,7 +672,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
   end
 
   def styling_rounded_code do
-    styling_variant_code("native-input-style-rounded", "native-input--rounded-lg")
+    styling_modifier_code("native-input-style-rounded", "native-input--rounded-lg")
   end
 
   def styling_rounded_example(assigns) do
@@ -554,22 +682,6 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     <.styling_modifier_preview
       id_prefix="native-input-style-rounded"
       variants={@variants}
-    />
-    """
-  end
-
-  def styling_max_width_code do
-    styling_variant_code("native-input-style-max-width", "max-w-md", true)
-  end
-
-  def styling_max_width_example(assigns) do
-    assigns = assign(assigns, :variants, @styling_max_width_variants)
-
-    ~H"""
-    <.styling_modifier_preview
-      id_prefix="native-input-style-max-width"
-      variants={@variants}
-      width_modifiers
     />
     """
   end

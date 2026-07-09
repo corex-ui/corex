@@ -4,6 +4,7 @@ defmodule E2eWeb.DataTableStyleLive do
   import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
 
   alias E2eWeb.DataTablePatternState, as: PState
+  alias E2eWeb.DemoScales
 
   @style_sort_columns [:id, :name, :role, :status]
 
@@ -31,13 +32,6 @@ defmodule E2eWeb.DataTableStyleLive do
     {"data-table--xl", "data-table-styling-size-xl"}
   ]
 
-  @width_variants [
-    {"max-w-2xs", "data-table-styling-max-w-2xs"},
-    {"max-w-md", "data-table-styling-max-w-md"},
-    {"max-w-xl", "data-table-styling-max-w-xl"},
-    {"max-w-2xl", "data-table-styling-max-w-2xl"}
-  ]
-
   @impl true
   def mount(_params, _session, socket) do
     {:ok,
@@ -51,7 +45,7 @@ defmodule E2eWeb.DataTableStyleLive do
      |> assign(:style_selected, [])
      |> assign(:color_variants, @color_variants)
      |> assign(:size_variants, @size_variants)
-     |> assign(:width_variants, @width_variants)}
+     |> assign(:max_width_variants, DemoScales.max_width_variants("data-table"))}
   end
 
   @impl true
@@ -143,16 +137,18 @@ defmodule E2eWeb.DataTableStyleLive do
           code_tabs={E2eWeb.Demos.DataTableDemo.styling_max_width_code_tabs()}
         >
           <:preview>
-            <div class="flex flex-col gap-4 w-full">
-              <.style_table
-                :for={{width, id} <- @width_variants}
-                id={id}
-                class={"data-table #{width}"}
-                rows={@style_rows}
-                sort_by={@sort_by}
-                sort_order={@sort_order}
-                selected={@style_selected}
-              />
+            <div class={DemoScales.preview_scroll_class()}>
+              <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+                <p class="typo typo--sm font-medium">{variant.label}</p>
+                <.style_table
+                  id={"data-table-styling-max-w-#{variant.id}"}
+                  class={DemoScales.join_modifiers("data-table", variant.modifier)}
+                  rows={@style_rows}
+                  sort_by={@sort_by}
+                  sort_order={@sort_order}
+                  selected={@style_selected}
+                />
+              </div>
             </div>
           </:preview>
         </.demo_section>

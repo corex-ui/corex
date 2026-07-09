@@ -1,6 +1,8 @@
 defmodule E2eWeb.Demos.MenuDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.DemoScales
+
   def demo_leaf_items do
     [
       %Corex.Tree.Item{value: "menu", label: "Menu"},
@@ -265,7 +267,7 @@ defmodule E2eWeb.Demos.MenuDemo do
 
   def api_client_binding_code do
     ~S"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action phx-click={Corex.Menu.set_open("menu-api", true)} class="button button--sm">Open</.action>
       <.action phx-click={Corex.Menu.set_open("menu-api", false)} class="button button--sm">Close</.action>
     </div>
@@ -287,7 +289,7 @@ defmodule E2eWeb.Demos.MenuDemo do
 
   def api_client_binding_example(assigns) do
     ~H"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action phx-click={Corex.Menu.set_open("menu-api", true)} class="button button--sm">
         Open
       </.action>
@@ -309,7 +311,7 @@ defmodule E2eWeb.Demos.MenuDemo do
 
   def api_client_js_heex do
     ~S"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <button type="button" data-menu-api-open class="button button--sm">Open</button>
       <button type="button" data-menu-api-close class="button button--sm">Close</button>
     </div>
@@ -360,7 +362,7 @@ defmodule E2eWeb.Demos.MenuDemo do
   def api_client_js_example(assigns) do
     ~H"""
     <div id="menu-api-js-demo" phx-update="ignore" phx-hook=".MenuApiJsDemo">
-      <div class="layout__row">
+      <div class="flex flex-wrap items-center gap-space">
         <button type="button" data-menu-api-open class="button button--sm">Open</button>
         <button type="button" data-menu-api-close class="button button--sm">Close</button>
       </div>
@@ -396,7 +398,7 @@ defmodule E2eWeb.Demos.MenuDemo do
 
   def api_server_heex do
     ~S"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action phx-click="menu_api_server_open" class="button button--sm">Open</.action>
       <.action phx-click="menu_api_server_close" class="button button--sm">Close</.action>
     </div>
@@ -430,7 +432,7 @@ defmodule E2eWeb.Demos.MenuDemo do
 
   def api_server_example(assigns) do
     ~H"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action phx-click="menu_api_server_open" class="button button--sm">Open</.action>
       <.action phx-click="menu_api_server_close" class="button button--sm">Close</.action>
     </div>
@@ -745,6 +747,112 @@ defmodule E2eWeb.Demos.MenuDemo do
     """
   end
 
+  def styling_variant_code do
+    items = styling_items_attr()
+
+    """
+    <.menu class="menu" value="menu" #{items}>
+      <:trigger>Subtle (default)</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    <.menu class="menu menu--variant-solid" value="menu" #{items}>
+      <:trigger>Solid</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    <.menu class="menu menu--variant-ghost" value="menu" #{items}>
+      <:trigger>Ghost</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    <.menu class="menu menu--variant-outline" value="menu" #{items}>
+      <:trigger>Outline</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    """
+  end
+
+  def styling_variant_example(assigns) do
+    assigns = assign(assigns, :items, demo_leaf_items())
+
+    ~H"""
+    <div class="flex flex-col gap-4 max-w-md">
+      <.menu id="menu-style-variant-subtle" class="menu w-full" items={@items} value="menu">
+        <:trigger>Subtle (default)</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+      <.menu
+        id="menu-style-variant-solid"
+        class="menu menu--variant-solid w-full"
+        items={@items}
+        value="menu"
+      >
+        <:trigger>Solid</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+      <.menu
+        id="menu-style-variant-ghost"
+        class="menu menu--variant-ghost w-full"
+        items={@items}
+        value="menu"
+      >
+        <:trigger>Ghost</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+      <.menu
+        id="menu-style-variant-outline"
+        class="menu menu--variant-outline w-full"
+        items={@items}
+        value="menu"
+      >
+        <:trigger>Outline</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+    </div>
+    """
+  end
+
+  def styling_variant_matrix_code do
+    items = styling_items_attr()
+
+    for semantic <- DemoScales.styling_semantic_axis_steps("menu"),
+        variant <- DemoScales.styling_variant_axis_steps("menu") do
+      class = DemoScales.join_matrix_modifiers("menu", semantic.modifier, variant.modifier)
+
+      """
+      <.menu class="#{class}" value="menu" #{items}>
+        <:trigger>#{semantic.label}</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+      """
+    end
+    |> DemoScales.join_code()
+  end
+
+  def styling_variant_matrix_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:items, demo_leaf_items())
+      |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("menu"))
+      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("menu"))
+
+    ~H"""
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+      <div class="grid grid-cols-4 gap-space gap-2 items-start min-w-max">
+        <div :for={semantic <- @matrix_semantics} class="contents">
+          <.menu
+            :for={variant <- @matrix_variants}
+            class={DemoScales.join_matrix_modifiers("menu", semantic.modifier, variant.modifier) <> " w-full"}
+            items={@items}
+            value="menu"
+          >
+            <:trigger>{semantic.label}</:trigger>
+            <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+          </.menu>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
   def styling_size_code do
     items = styling_items_attr()
 
@@ -787,6 +895,70 @@ defmodule E2eWeb.Demos.MenuDemo do
       </.menu>
       <.menu id="menu-style-size-xl" class="menu menu--xl w-full" items={@items}>
         <:trigger>XL</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+    </div>
+    """
+  end
+
+  def styling_rounded_code do
+    items = styling_items_attr()
+
+    """
+    <.menu class="menu menu--rounded-none" #{items}>
+      <:trigger>None</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    <.menu class="menu menu--rounded-sm" #{items}>
+      <:trigger>SM</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    <.menu class="menu menu--rounded-md" #{items}>
+      <:trigger>MD</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    <.menu class="menu menu--rounded-lg" #{items}>
+      <:trigger>LG</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    <.menu class="menu menu--rounded-xl" #{items}>
+      <:trigger>XL</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    <.menu class="menu menu--rounded-full" #{items}>
+      <:trigger>Full</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    """
+  end
+
+  def styling_rounded_example(assigns) do
+    assigns = assign(assigns, :items, demo_leaf_items())
+
+    ~H"""
+    <div class="flex flex-col gap-4 max-w-md">
+      <.menu id="menu-style-rounded-none" class="menu menu--rounded-none w-full" items={@items}>
+        <:trigger>None</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+      <.menu id="menu-style-rounded-sm" class="menu menu--rounded-sm w-full" items={@items}>
+        <:trigger>SM</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+      <.menu id="menu-style-rounded-md" class="menu menu--rounded-md w-full" items={@items}>
+        <:trigger>MD</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+      <.menu id="menu-style-rounded-lg" class="menu menu--rounded-lg w-full" items={@items}>
+        <:trigger>LG</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+      <.menu id="menu-style-rounded-xl" class="menu menu--rounded-xl w-full" items={@items}>
+        <:trigger>XL</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+      <.menu id="menu-style-rounded-full" class="menu menu--rounded-full w-full" items={@items}>
+        <:trigger>Full</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
       </.menu>
     </div>

@@ -203,9 +203,9 @@
     overflow: hidden;
   }
 
-  .navigation.tree-view.layout__aside-tree
+  .navigation.tree-view.aside-nav-tree
     [data-scope="tree-view"][data-part="branch-text"],
-  .navigation.tree-view.layout__aside-tree
+  .navigation.tree-view.aside-nav-tree
     [data-scope="tree-view"][data-part="item-text"],
   .navigation.tree-view [data-scope="tree-view"][data-part="branch-text"],
   .navigation.tree-view [data-scope="tree-view"][data-part="item-text"] {

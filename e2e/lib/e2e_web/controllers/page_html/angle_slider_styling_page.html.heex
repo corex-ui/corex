@@ -12,12 +12,47 @@
   >
     <.demo_section
       id="angle-slider-styling-color"
-      title={~t"Color"}
+      title={~t"Semantic"}
       code={E2eWeb.Demos.AngleSliderDemo.styling_color_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="angle-slider" axis={:semantic} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.AngleSliderDemo.styling_color_example />
       </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="angle-slider-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.AngleSliderDemo.styling_variant_code()}
+    >
+      <:description>
+        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
+          <p>
+            Variant modifiers control angle-slider surface treatment. Default is subtle; use <code class="text-sm">angle-slider--variant-solid</code>, <code class="text-sm">angle-slider--variant-ghost</code>, or
+            <code class="text-sm">angle-slider--variant-outline</code>
+            to change it.
+          </p>
+        </div>
+      </:description>
+      <:preview><E2eWeb.Demos.AngleSliderDemo.styling_variant_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="angle-slider-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.AngleSliderDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
+          <p>
+            Combine semantic palette and variant treatment on the same host, for example <code class="text-sm">angle-slider angle-slider--accent angle-slider--variant-solid</code>.
+          </p>
+        </div>
+      </:description>
+      <:preview><E2eWeb.Demos.AngleSliderDemo.styling_variant_matrix_example /></:preview>
     </.demo_section>
 
     <.demo_section
@@ -25,8 +60,31 @@
       title={~t"Size"}
       code={E2eWeb.Demos.AngleSliderDemo.styling_size_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="angle-slider" axis={:size} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.AngleSliderDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="angle-slider-styling-states"
+      title={~t"States"}
+      code={E2eWeb.Demos.AngleSliderDemo.styling_states_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.AngleSliderDemo.styling_states_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="angle-slider-styling-markers"
+      title={~t"Markers"}
+      code={E2eWeb.Demos.AngleSliderDemo.styling_markers_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.AngleSliderDemo.styling_markers_example />
       </:preview>
     </.demo_section>
   </.demo_page>

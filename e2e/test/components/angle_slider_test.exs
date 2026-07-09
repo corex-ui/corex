@@ -128,14 +128,6 @@ defmodule E2eWeb.AngleSliderTest do
     end
   end
 
-  describe "controlled" do
-    feature "controlled doc page host is interactive", %{session: session} do
-      session
-      |> ComponentBehaviorSpec.visit_ready(AngleSlider, :angle_slider, :controlled)
-      |> AngleSlider.wait_controlled_angle_slider_ready()
-    end
-  end
-
   describe "a11y (post-interaction, scoped, theme and mode matrix)" do
     @moduletag :angle_slider_a11y_interactive
     @moduletag :slow

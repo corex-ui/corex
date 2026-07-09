@@ -4,6 +4,7 @@ defmodule E2eWeb.Demos.CarouselDemo do
   alias Corex.Image
 
   alias E2eWeb.Demos.DocExamples
+  alias E2eWeb.DemoScales
 
   @gallery_items_attr "items={#{DocExamples.code_carousel_gallery_items()}}"
   @posts_items_attr "items={#{DocExamples.code_carousel_posts()}}"
@@ -421,6 +422,102 @@ defmodule E2eWeb.Demos.CarouselDemo do
     """
   end
 
+  def styling_variant_code do
+    """
+    <.carousel id="carousel-style-variant-subtle" #{@gallery_items_attr} class="carousel w-full max-w-xs">
+    #{@styling_carousel_triggers}
+    </.carousel>
+    <.carousel id="carousel-style-variant-solid" #{@gallery_items_attr} class="carousel carousel--variant-solid w-full max-w-xs">
+    #{@styling_carousel_triggers}
+    </.carousel>
+    <.carousel id="carousel-style-variant-ghost" #{@gallery_items_attr} class="carousel carousel--variant-ghost w-full max-w-xs">
+    #{@styling_carousel_triggers}
+    </.carousel>
+    <.carousel id="carousel-style-variant-outline" #{@gallery_items_attr} class="carousel carousel--variant-outline w-full max-w-xs">
+    #{@styling_carousel_triggers}
+    </.carousel>
+    """
+  end
+
+  def styling_variant_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-wrap gap-4 items-end justify-center">
+      <.carousel
+        id="carousel-style-variant-subtle"
+        items={gallery_images()}
+        class="carousel w-full max-w-xs"
+      >
+        <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
+      </.carousel>
+      <.carousel
+        id="carousel-style-variant-solid"
+        items={gallery_images()}
+        class="carousel carousel--variant-solid w-full max-w-xs"
+      >
+        <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
+      </.carousel>
+      <.carousel
+        id="carousel-style-variant-ghost"
+        items={gallery_images()}
+        class="carousel carousel--variant-ghost w-full max-w-xs"
+      >
+        <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
+      </.carousel>
+      <.carousel
+        id="carousel-style-variant-outline"
+        items={gallery_images()}
+        class="carousel carousel--variant-outline w-full max-w-xs"
+      >
+        <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
+      </.carousel>
+    </div>
+    """
+  end
+
+  def styling_variant_matrix_code do
+    for semantic <- DemoScales.styling_semantic_axis_steps("carousel"),
+        variant <- DemoScales.styling_variant_axis_steps("carousel") do
+      class = DemoScales.join_matrix_modifiers("carousel", semantic.modifier, variant.modifier)
+
+      """
+      <.carousel #{@gallery_items_attr} class="#{class} w-full max-w-xs">
+      #{@styling_carousel_triggers}
+      </.carousel>
+      """
+    end
+    |> DemoScales.join_code()
+  end
+
+  def styling_variant_matrix_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("carousel"))
+      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("carousel"))
+
+    ~H"""
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+      <div class="grid grid-cols-4 gap-space gap-2 items-end min-w-max">
+        <div :for={semantic <- @matrix_semantics} class="contents">
+          <.carousel
+            :for={variant <- @matrix_variants}
+            items={gallery_images()}
+            class={DemoScales.join_matrix_modifiers("carousel", semantic.modifier, variant.modifier) <> " w-full max-w-xs"}
+          >
+            <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
+            <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
+          </.carousel>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
   def styling_size_code do
     """
     <.carousel id="carousel-style-sm" #{@gallery_items_attr} class="carousel carousel--sm w-full max-w-3xs">
@@ -566,6 +663,41 @@ defmodule E2eWeb.Demos.CarouselDemo do
         <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
         <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
       </.carousel>
+    </div>
+    """
+  end
+
+  def styling_max_width_code do
+    DemoScales.max_width_variants_from("carousel", "sm")
+    |> Enum.map(fn %{id: id, modifier: modifier} ->
+      class = DemoScales.join_modifiers("carousel", modifier)
+
+      """
+      <.carousel id="carousel-style-max-#{id}" #{@gallery_items_attr} class="#{class}">
+      #{@styling_carousel_triggers}
+      </.carousel>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_max_width_example(assigns) do
+    assigns =
+      assign(assigns, :max_width_variants, DemoScales.max_width_variants_from("carousel", "sm"))
+
+    ~H"""
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <.carousel
+          id={"carousel-style-max-#{variant.id}"}
+          items={gallery_images()}
+          class={DemoScales.join_modifiers("carousel", variant.modifier)}
+        >
+          <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
+          <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
+        </.carousel>
+      </div>
     </div>
     """
   end

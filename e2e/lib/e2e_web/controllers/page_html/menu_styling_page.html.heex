@@ -3,16 +3,53 @@
     path={@path}
     id="menu-styling-page"
     title={~t"Menu · Style"}
-    subtitle={~t"Semantic colors and density via modifier classes on the menu root."}
+    subtitle={
+      ~t"Semantic colors, density, and corner radius via modifier classes on the menu root."
+    }
   >
     <.demo_section
       id="menu-styling-color"
-      title={~t"Color"}
+      title={~t"Semantic"}
       code={E2eWeb.Demos.MenuDemo.styling_color_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="menu" axis={:semantic} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.MenuDemo.styling_color_example />
       </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="menu-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.MenuDemo.styling_variant_code()}
+    >
+      <:description>
+        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
+          <p>
+            Variant modifiers control menu surface treatment. Default is subtle; use <code class="text-sm">menu--variant-solid</code>, <code class="text-sm">menu--variant-ghost</code>, or
+            <code class="text-sm">menu--variant-outline</code>
+            to change it.
+          </p>
+        </div>
+      </:description>
+      <:preview><E2eWeb.Demos.MenuDemo.styling_variant_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="menu-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.MenuDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
+          <p>
+            Combine semantic palette and variant treatment on the same host, for example <code class="text-sm">menu menu--accent menu--variant-solid</code>.
+          </p>
+        </div>
+      </:description>
+      <:preview><E2eWeb.Demos.MenuDemo.styling_variant_matrix_example /></:preview>
     </.demo_section>
 
     <.demo_section
@@ -20,8 +57,24 @@
       title={~t"Size"}
       code={E2eWeb.Demos.MenuDemo.styling_size_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="menu" axis={:size} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.MenuDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="menu-styling-rounded"
+      title={~t"Rounded"}
+      code={E2eWeb.Demos.MenuDemo.styling_rounded_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="menu" axis={:radius} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.MenuDemo.styling_rounded_example />
       </:preview>
     </.demo_section>
   </.demo_page>

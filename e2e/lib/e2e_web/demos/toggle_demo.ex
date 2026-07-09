@@ -1,6 +1,8 @@
 defmodule E2eWeb.Demos.ToggleDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.DemoScales
+
   import E2eWeb.ModeToggle
 
   def minimal_code do
@@ -122,6 +124,62 @@ defmodule E2eWeb.Demos.ToggleDemo do
     """
   end
 
+  def styling_variant_code do
+    ~S"""
+    <.toggle class="toggle">Subtle (default)</.toggle>
+    <.toggle class="toggle toggle--variant-solid">Solid</.toggle>
+    <.toggle class="toggle toggle--variant-ghost">Ghost</.toggle>
+    <.toggle class="toggle toggle--variant-outline">Outline</.toggle>
+    """
+  end
+
+  def styling_variant_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-wrap gap-4 items-center w-full max-w-4xl">
+      <.toggle id="toggle-style-variant-subtle" class="toggle">Subtle (default)</.toggle>
+      <.toggle id="toggle-style-variant-solid" class="toggle toggle--variant-solid">Solid</.toggle>
+      <.toggle id="toggle-style-variant-ghost" class="toggle toggle--variant-ghost">Ghost</.toggle>
+      <.toggle id="toggle-style-variant-outline" class="toggle toggle--variant-outline">
+        Outline
+      </.toggle>
+    </div>
+    """
+  end
+
+  def styling_variant_matrix_code do
+    for semantic <- DemoScales.styling_semantic_axis_steps("toggle"),
+        variant <- DemoScales.styling_variant_axis_steps("toggle") do
+      class = DemoScales.join_matrix_modifiers("toggle", semantic.modifier, variant.modifier)
+
+      ~s(<.toggle class="#{class}">#{semantic.label}</.toggle>)
+    end
+    |> DemoScales.join_code()
+  end
+
+  def styling_variant_matrix_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("toggle"))
+      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("toggle"))
+
+    ~H"""
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+      <div class="grid grid-cols-4 gap-space gap-2 items-center min-w-max">
+        <div :for={semantic <- @matrix_semantics} class="contents">
+          <.toggle
+            :for={variant <- @matrix_variants}
+            class={DemoScales.join_matrix_modifiers("toggle", semantic.modifier, variant.modifier)}
+          >
+            {semantic.label}
+          </.toggle>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
   def styling_size_code do
     ~S"""
     <.toggle class="toggle toggle--sm" pressed>SM</.toggle>
@@ -170,6 +228,72 @@ defmodule E2eWeb.Demos.ToggleDemo do
       <.toggle id="toggle-style-radius-full" class="toggle toggle--rounded-full" pressed>
         Full
       </.toggle>
+    </div>
+    """
+  end
+
+  def styling_width_code do
+    label = DemoScales.block_demo_label()
+
+    DemoScales.width_layout_variants("toggle")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("toggle", modifier)
+
+      """
+      <.toggle class="#{class}" pressed>#{label}</.toggle>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_max_width_code do
+    label = DemoScales.block_demo_label()
+
+    DemoScales.max_width_variants("toggle")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_block_modifiers("toggle", modifier)
+
+      """
+      <.toggle class="#{class}" pressed>#{label}</.toggle>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_width_example(assigns) do
+    assigns = assign(assigns, :width_variants, DemoScales.width_layout_variants("toggle"))
+
+    ~H"""
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={variant <- @width_variants} class="flex flex-col gap-2">
+        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <.toggle
+          id={"toggle-style-width-#{variant.id}"}
+          class={DemoScales.join_modifiers("toggle", variant.modifier)}
+          pressed
+        >
+          {DemoScales.block_demo_label()}
+        </.toggle>
+      </div>
+    </div>
+    """
+  end
+
+  def styling_max_width_example(assigns) do
+    assigns = assign(assigns, :max_width_variants, DemoScales.max_width_variants("toggle"))
+
+    ~H"""
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <.toggle
+          id={"toggle-style-max-#{variant.id}"}
+          class={DemoScales.join_block_modifiers("toggle", variant.modifier)}
+          pressed
+        >
+          {DemoScales.block_demo_label()}
+        </.toggle>
+      </div>
     </div>
     """
   end

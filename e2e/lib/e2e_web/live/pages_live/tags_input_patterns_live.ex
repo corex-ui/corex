@@ -7,8 +7,8 @@ defmodule E2eWeb.TagsInputPatternsLive do
   def mount(_params, _session, socket) do
     socket =
       socket
-      |> assign(:patterns_heex, E2eWeb.Demos.TagsInputDemo.patterns_controlled_heex())
-      |> assign(:patterns_elixir, E2eWeb.Demos.TagsInputDemo.patterns_controlled_elixir())
+      |> assign(:patterns_heex, E2eWeb.Demos.TagsInputDemo.patterns_value_heex())
+      |> assign(:patterns_elixir, E2eWeb.Demos.TagsInputDemo.patterns_value_elixir())
       |> assign(:patterns_validation_heex, E2eWeb.Demos.TagsInputDemo.patterns_validation_heex())
       |> assign(
         :patterns_validation_elixir,
@@ -43,11 +43,11 @@ defmodule E2eWeb.TagsInputPatternsLive do
         path={@path}
         id="tags-input-patterns-page"
         title="Tags Input · Patterns"
-        subtitle="Controlled tag list and allow-list validation (both use controlled mode)."
+        subtitle="LiveView-driven tag list and allow-list validation."
       >
         <.demo_section
-          id="tags-input-patterns-controlled-section"
-          title="Controlled"
+          id="tags-input-patterns-value-section"
+          title="Value"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @patterns_heex},
             %{value: "elixir", label: "Elixir", language: :elixir, code: @patterns_elixir}
@@ -55,9 +55,8 @@ defmodule E2eWeb.TagsInputPatternsLive do
         >
           <:preview>
             <.tags_input
-              id="tags-input-patterns-controlled"
+              id="tags-input-patterns-value"
               class="tags-input"
-              controlled
               value={@tags}
               on_value_change="tags_patterns_value_changed"
             >
@@ -79,7 +78,6 @@ defmodule E2eWeb.TagsInputPatternsLive do
             <.tags_input
               id="tags-input-patterns-validation"
               class="tags-input"
-              controlled
               value={@tags_validated}
               on_value_change="tags_patterns_validated_changed"
             >

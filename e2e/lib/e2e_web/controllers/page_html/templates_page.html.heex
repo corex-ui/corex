@@ -1,6 +1,9 @@
 <Layouts.marketing flash={@flash} mode={@mode} theme={@theme} path={@path}>
-  <div class="layout__article w-full items-stretch">
-    <section class="layout__section w-full min-w-0 max-w-none" aria-labelledby="templates-heading">
+  <div class="mx-auto flex w-full min-w-0 max-w-none flex-col items-stretch gap-size-lg">
+    <section
+      class="my-size-lg flex w-full min-w-0 max-w-none flex-col items-start justify-center gap-space-xl"
+      aria-labelledby="templates-heading"
+    >
       <.layout_heading class="layout-heading max-w-3xl w-full">
         <:title>
           <span id="templates-heading">{~t"Templates"}</span>
@@ -57,7 +60,7 @@
             </.navigate>
             <.navigate
               to="https://github.com/corex-ui/soonex"
-              class="button button--ghost rounded-full"
+              class="button button--variant-ghost rounded-full"
               external
             >
               {~t"GitHub"}
@@ -108,7 +111,7 @@
             </.navigate>
             <.navigate
               to="https://github.com/corex-ui/soonex_i18n"
-              class="button button--ghost rounded-full"
+              class="button button--variant-ghost rounded-full"
               external
             >
               {~t"GitHub"}

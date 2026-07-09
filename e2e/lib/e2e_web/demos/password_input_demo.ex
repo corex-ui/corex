@@ -1,6 +1,8 @@
 defmodule E2eWeb.Demos.PasswordInputDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.DemoScales
+
   def minimal_code do
     ~S"""
     <.password_input class="password-input">
@@ -1101,6 +1103,421 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
         end
       end
     end
+    """
+  end
+
+  def styling_color_code do
+    icons = styling_visibility_icons_code()
+
+    """
+    <.password_input name="user[password]" class="password-input">
+      <:label>Default</:label>
+    #{icons}
+    </.password_input>
+    <.password_input name="user[password]" class="password-input password-input--accent">
+      <:label>Accent</:label>
+    #{icons}
+    </.password_input>
+    <.password_input name="user[password]" class="password-input password-input--brand">
+      <:label>Brand</:label>
+    #{icons}
+    </.password_input>
+    <.password_input name="user[password]" class="password-input password-input--alert">
+      <:label>Alert</:label>
+    #{icons}
+    </.password_input>
+    <.password_input name="user[password]" class="password-input password-input--info">
+      <:label>Info</:label>
+    #{icons}
+    </.password_input>
+    <.password_input name="user[password]" class="password-input password-input--success">
+      <:label>Success</:label>
+    #{icons}
+    </.password_input>
+    """
+  end
+
+  def styling_color_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-4 max-w-md">
+      <.password_input
+        id="password-input-style-color-default"
+        name="user[password]"
+        class="password-input w-full"
+      >
+        <:label>Default</:label>
+        <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+        <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+      </.password_input>
+      <.password_input
+        id="password-input-style-color-accent"
+        name="user[password]"
+        class="password-input password-input--accent w-full"
+      >
+        <:label>Accent</:label>
+        <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+        <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+      </.password_input>
+      <.password_input
+        id="password-input-style-color-brand"
+        name="user[password]"
+        class="password-input password-input--brand w-full"
+      >
+        <:label>Brand</:label>
+        <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+        <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+      </.password_input>
+      <.password_input
+        id="password-input-style-color-alert"
+        name="user[password]"
+        class="password-input password-input--alert w-full"
+      >
+        <:label>Alert</:label>
+        <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+        <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+      </.password_input>
+      <.password_input
+        id="password-input-style-color-info"
+        name="user[password]"
+        class="password-input password-input--info w-full"
+      >
+        <:label>Info</:label>
+        <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+        <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+      </.password_input>
+      <.password_input
+        id="password-input-style-color-success"
+        name="user[password]"
+        class="password-input password-input--success w-full"
+      >
+        <:label>Success</:label>
+        <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+        <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+      </.password_input>
+    </div>
+    """
+  end
+
+  def styling_variant_code do
+    icons = styling_visibility_icons_code()
+
+    """
+    <.password_input name="user[password]" class="password-input">
+      <:label>Subtle (default)</:label>
+    #{icons}
+    </.password_input>
+    <.password_input name="user[password]" class="password-input password-input--variant-solid">
+      <:label>Solid</:label>
+    #{icons}
+    </.password_input>
+    <.password_input name="user[password]" class="password-input password-input--variant-ghost">
+      <:label>Ghost</:label>
+    #{icons}
+    </.password_input>
+    <.password_input name="user[password]" class="password-input password-input--variant-outline">
+      <:label>Outline</:label>
+    #{icons}
+    </.password_input>
+    """
+  end
+
+  def styling_variant_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-4 max-w-md">
+      <.password_input
+        id="password-input-style-variant-subtle"
+        name="user[password]"
+        class="password-input"
+      >
+        <:label>Subtle (default)</:label>
+        <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+        <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+      </.password_input>
+      <.password_input
+        id="password-input-style-variant-solid"
+        name="user[password]"
+        class="password-input password-input--variant-solid"
+      >
+        <:label>Solid</:label>
+        <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+        <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+      </.password_input>
+      <.password_input
+        id="password-input-style-variant-ghost"
+        name="user[password]"
+        class="password-input password-input--variant-ghost"
+      >
+        <:label>Ghost</:label>
+        <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+        <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+      </.password_input>
+      <.password_input
+        id="password-input-style-variant-outline"
+        name="user[password]"
+        class="password-input password-input--variant-outline"
+      >
+        <:label>Outline</:label>
+        <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+        <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+      </.password_input>
+    </div>
+    """
+  end
+
+  def styling_variant_matrix_code do
+    icons = styling_visibility_icons_code()
+
+    for semantic <- DemoScales.styling_semantic_axis_steps("password-input"),
+        variant <- DemoScales.styling_variant_axis_steps("password-input") do
+      class =
+        DemoScales.join_matrix_modifiers("password-input", semantic.modifier, variant.modifier)
+
+      """
+      <.password_input name="user[password]" class="#{class}">
+        <:label>#{semantic.label}</:label>
+      #{icons}
+      </.password_input>
+      """
+    end
+    |> DemoScales.join_code()
+  end
+
+  def styling_variant_matrix_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("password-input"))
+      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("password-input"))
+
+    ~H"""
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+      <div class="grid grid-cols-4 gap-space gap-2 items-start min-w-max">
+        <div :for={semantic <- @matrix_semantics} class="contents">
+          <.password_input
+            :for={variant <- @matrix_variants}
+            name="user[password]"
+            class={
+              DemoScales.join_matrix_modifiers("password-input", semantic.modifier, variant.modifier)
+            }
+          >
+            <:label>{semantic.label}</:label>
+            <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+            <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+          </.password_input>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  def styling_size_code do
+    icons = styling_visibility_icons_code()
+
+    """
+    <.password_input name="user[password]" class="password-input password-input--sm">
+      <:label>SM</:label>
+    #{icons}
+    </.password_input>
+    <.password_input name="user[password]" class="password-input password-input--md">
+      <:label>MD</:label>
+    #{icons}
+    </.password_input>
+    <.password_input name="user[password]" class="password-input password-input--lg">
+      <:label>LG</:label>
+    #{icons}
+    </.password_input>
+    <.password_input name="user[password]" class="password-input password-input--xl">
+      <:label>XL</:label>
+    #{icons}
+    </.password_input>
+    """
+  end
+
+  def styling_size_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-4 max-w-md">
+      <.password_input
+        id="password-input-style-sm"
+        name="user[password]"
+        class="password-input password-input--sm w-full"
+      >
+        <:label>SM</:label>
+        <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+        <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+      </.password_input>
+      <.password_input
+        id="password-input-style-md"
+        name="user[password]"
+        class="password-input password-input--md w-full"
+      >
+        <:label>MD</:label>
+        <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+        <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+      </.password_input>
+      <.password_input
+        id="password-input-style-lg"
+        name="user[password]"
+        class="password-input password-input--lg w-full"
+      >
+        <:label>LG</:label>
+        <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+        <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+      </.password_input>
+      <.password_input
+        id="password-input-style-xl"
+        name="user[password]"
+        class="password-input password-input--xl w-full"
+      >
+        <:label>XL</:label>
+        <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+        <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+      </.password_input>
+    </div>
+    """
+  end
+
+  def styling_rounded_code do
+    icons = styling_visibility_icons_code()
+
+    """
+    <.password_input name="user[password]" class="password-input password-input--rounded-none">
+      <:label>None</:label>
+    #{icons}
+    </.password_input>
+    <.password_input name="user[password]" class="password-input password-input--rounded-sm">
+      <:label>SM</:label>
+    #{icons}
+    </.password_input>
+    <.password_input name="user[password]" class="password-input password-input--rounded-md">
+      <:label>MD</:label>
+    #{icons}
+    </.password_input>
+    <.password_input name="user[password]" class="password-input password-input--rounded-lg">
+      <:label>LG</:label>
+    #{icons}
+    </.password_input>
+    <.password_input name="user[password]" class="password-input password-input--rounded-xl">
+      <:label>XL</:label>
+    #{icons}
+    </.password_input>
+    <.password_input name="user[password]" class="password-input password-input--rounded-full">
+      <:label>Full</:label>
+    #{icons}
+    </.password_input>
+    """
+  end
+
+  def styling_rounded_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-4 max-w-md">
+      <.password_input
+        id="password-input-style-rounded-none"
+        name="user[password]"
+        class="password-input password-input--rounded-none w-full"
+      >
+        <:label>None</:label>
+        <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+        <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+      </.password_input>
+      <.password_input
+        id="password-input-style-rounded-sm"
+        name="user[password]"
+        class="password-input password-input--rounded-sm w-full"
+      >
+        <:label>SM</:label>
+        <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+        <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+      </.password_input>
+      <.password_input
+        id="password-input-style-rounded-md"
+        name="user[password]"
+        class="password-input password-input--rounded-md w-full"
+      >
+        <:label>MD</:label>
+        <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+        <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+      </.password_input>
+      <.password_input
+        id="password-input-style-rounded-lg"
+        name="user[password]"
+        class="password-input password-input--rounded-lg w-full"
+      >
+        <:label>LG</:label>
+        <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+        <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+      </.password_input>
+      <.password_input
+        id="password-input-style-rounded-xl"
+        name="user[password]"
+        class="password-input password-input--rounded-xl w-full"
+      >
+        <:label>XL</:label>
+        <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+        <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+      </.password_input>
+      <.password_input
+        id="password-input-style-rounded-full"
+        name="user[password]"
+        class="password-input password-input--rounded-full w-full"
+      >
+        <:label>Full</:label>
+        <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+        <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+      </.password_input>
+    </div>
+    """
+  end
+
+  def styling_max_width_code do
+    icons = styling_visibility_icons_code()
+
+    DemoScales.max_width_variants("password-input")
+    |> Enum.map(fn %{label: label, modifier: modifier} ->
+      class = DemoScales.join_block_modifiers("password-input", modifier)
+
+      """
+      <.password_input name="user[password]" class="#{class}">
+        <:label>#{label}</:label>
+      #{icons}
+      </.password_input>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_max_width_example(assigns) do
+    assigns =
+      assign(assigns, :max_width_variants, DemoScales.max_width_variants("password-input"))
+
+    ~H"""
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <.password_input
+          id={"password-input-style-max-#{variant.id}"}
+          name="user[password]"
+          class={DemoScales.join_block_modifiers("password-input", variant.modifier)}
+        >
+          <:label>{variant.label}</:label>
+          <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+          <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+        </.password_input>
+      </div>
+    </div>
+    """
+  end
+
+  defp styling_visibility_icons_code do
+    """
+      <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+      <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
     """
   end
 end

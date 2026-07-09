@@ -76,16 +76,12 @@ CSS يأتي بعد ذلك، على صفحة تتحرك أصلاً. الحركة
 
 ## `site.css` رفيع
 
-الإعداد صغير بما يكفي لفقرة. شغّل `mix corex.design` مرة. الملفات تحت `assets/corex/`. في `app.css`، استورد قاعدة Corex، ملفات الثيم التي تريد إظهارها، الطباعة، التخطيط، وملفاً لكل مكوّن ترسمه. وجّه Tailwind للمجلد المنسوخ. ضع `data-theme` و`data-mode` على `<html>`. ضع `class="typo layout"` على `<body>`. هذه القصة كلها.
+الإعداد صغير بما يكفي لفقرة. أضف تبعية `corex_design` وشغّل `mix corex.design.build`. الملفات تحت `assets/corex/`. في `app.css`، استورد قاعدة Corex، ملفات الثيم التي تريد إظهارها، الطباعة، التخطيط، وملفاً لكل مكوّن ترسمه. وجّه Tailwind للمجلد المُولَّد. ضع `data-theme` و`data-mode` على `<html>`. ضع `class="typo layout"` على `<body>`. هذه القصة كلها.
 
 ```css
 @import "../corex/main.css";
 @import "../corex/theme/neo.css";
-@import "../corex/components/typo.css";
-@import "../corex/components/layout.css";
-@import "../corex/components/accordion.css";
-@import "../corex/components/combobox.css";
-@import "../corex/components/button.css";
+@import "../corex/components.css";
 ```
 
 إن كان `app.css` ما زال يحمّل daisyUI من `phx.new` الافتراضي، أزله. نظاما token يتقاتلان على نفس أسماء الأدوات هو الطريقة الأكثر موثوقية لجعل الاثنين غير سعداء.

@@ -61,7 +61,7 @@ defmodule E2eWeb.ListingPage do
           {~t"Live demo"}
           <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
         </.navigate>
-        <.navigate to={@github_to} class="button button--sm button--ghost" external>
+        <.navigate to={@github_to} class="button button--sm button--variant-ghost" external>
           {~t"GitHub"}
           <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
         </.navigate>

@@ -1,6 +1,8 @@
 defmodule E2eWeb.Demos.RadioGroupDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.DemoScales
+
   @styling_items_heex ~S"""
   items={[
     %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
@@ -1283,6 +1285,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
         field={@form[:choice]}
         class="radio-group"
         items={items()}
+        controlled
       >
         <:label>Choose one</:label>
         <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
@@ -1389,6 +1392,109 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     """
   end
 
+  def styling_variant_code do
+    """
+    <.radio_group name="rg-style-variant-subtle" class="radio-group" value="lorem" #{@styling_items_heex}>
+      #{@styling_item_control_heex}
+    </.radio_group>
+    <.radio_group name="rg-style-variant-solid" class="radio-group radio-group--variant-solid" value="lorem" #{@styling_items_heex}>
+      #{@styling_item_control_heex}
+    </.radio_group>
+    <.radio_group name="rg-style-variant-ghost" class="radio-group radio-group--variant-ghost" value="lorem" #{@styling_items_heex}>
+      #{@styling_item_control_heex}
+    </.radio_group>
+    <.radio_group name="rg-style-variant-outline" class="radio-group radio-group--variant-outline" value="lorem" #{@styling_items_heex}>
+      #{@styling_item_control_heex}
+    </.radio_group>
+    """
+  end
+
+  def styling_variant_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-6 w-full max-w-md">
+      <.radio_group
+        id="radio-group-style-variant-subtle"
+        name="rg-style-variant-subtle"
+        class="radio-group"
+        value="lorem"
+        items={styling_items()}
+      >
+        <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+      </.radio_group>
+      <.radio_group
+        id="radio-group-style-variant-solid"
+        name="rg-style-variant-solid"
+        class="radio-group radio-group--variant-solid"
+        value="lorem"
+        items={styling_items()}
+      >
+        <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+      </.radio_group>
+      <.radio_group
+        id="radio-group-style-variant-ghost"
+        name="rg-style-variant-ghost"
+        class="radio-group radio-group--variant-ghost"
+        value="lorem"
+        items={styling_items()}
+      >
+        <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+      </.radio_group>
+      <.radio_group
+        id="radio-group-style-variant-outline"
+        name="rg-style-variant-outline"
+        class="radio-group radio-group--variant-outline"
+        value="lorem"
+        items={styling_items()}
+      >
+        <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+      </.radio_group>
+    </div>
+    """
+  end
+
+  def styling_variant_matrix_code do
+    for semantic <- DemoScales.styling_semantic_axis_steps("radio-group"),
+        variant <- DemoScales.styling_variant_axis_steps("radio-group") do
+      class = DemoScales.join_matrix_modifiers("radio-group", semantic.modifier, variant.modifier)
+
+      """
+      <.radio_group name="rg-style-matrix-#{semantic.label}-#{variant.label}" class="#{class}" value="lorem" #{@styling_items_heex}>
+        #{@styling_item_control_heex}
+      </.radio_group>
+      """
+    end
+    |> DemoScales.join_code()
+  end
+
+  def styling_variant_matrix_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("radio-group"))
+      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("radio-group"))
+
+    ~H"""
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+      <div class="grid grid-cols-4 gap-space gap-2 items-start min-w-max">
+        <div :for={semantic <- @matrix_semantics} class="contents">
+          <.radio_group
+            :for={variant <- @matrix_variants}
+            name={"rg-style-matrix-#{semantic.label}-#{variant.label}"}
+            class={
+              DemoScales.join_matrix_modifiers("radio-group", semantic.modifier, variant.modifier)
+            }
+            value="lorem"
+            items={styling_items()}
+          >
+            <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+          </.radio_group>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
   def styling_size_code do
     """
     <.radio_group name="rg-style-sm" class="radio-group radio-group--sm" value="lorem" #{@styling_items_heex}>
@@ -1450,62 +1556,158 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
   end
 
   def styling_max_width_code do
+    DemoScales.max_width_variants("radio-group")
+    |> Enum.map(fn %{id: id, modifier: modifier} ->
+      class = DemoScales.join_modifiers("radio-group", modifier)
+
+      """
+      <.radio_group name="rg-style-max-#{id}" class="#{class}" value="lorem" #{@styling_items_heex}>
+        #{@styling_item_control_heex}
+      </.radio_group>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_width_code do
+    DemoScales.width_layout_variants("radio-group")
+    |> Enum.map(fn %{id: id, modifier: modifier} ->
+      class = DemoScales.join_modifiers("radio-group", modifier)
+
+      """
+      <.radio_group name="rg-style-width-#{id}" class="#{class}" value="lorem" #{@styling_items_heex}>
+        #{@styling_item_control_heex}
+      </.radio_group>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_max_width_example(assigns) do
+    assigns = assign(assigns, :max_width_variants, DemoScales.max_width_variants("radio-group"))
+
+    ~H"""
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <.radio_group
+          id={"radio-group-style-max-#{variant.id}"}
+          name={"rg-style-max-#{variant.id}"}
+          class={DemoScales.join_modifiers("radio-group", variant.modifier)}
+          value="lorem"
+          items={styling_items()}
+        >
+          <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+        </.radio_group>
+      </div>
+    </div>
     """
-    <.radio_group name="rg-style-max-2xs" class="radio-group max-w-2xs" value="lorem" #{@styling_items_heex}>
+  end
+
+  def styling_width_example(assigns) do
+    assigns = assign(assigns, :width_variants, DemoScales.width_layout_variants("radio-group"))
+
+    ~H"""
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={variant <- @width_variants} class="flex flex-col gap-2">
+        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <.radio_group
+          id={"radio-group-style-width-#{variant.id}"}
+          name={"rg-style-width-#{variant.id}"}
+          class={DemoScales.join_modifiers("radio-group", variant.modifier)}
+          value="lorem"
+          items={styling_items()}
+        >
+          <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+        </.radio_group>
+      </div>
+    </div>
+    """
+  end
+
+  def styling_rounded_code do
+    """
+    <.radio_group name="rg-style-rounded-none" class="radio-group radio-group--rounded-none" value="lorem" #{@styling_items_heex}>
       #{@styling_item_control_heex}
     </.radio_group>
-    <.radio_group name="rg-style-max-md" class="radio-group max-w-md" value="lorem" #{@styling_items_heex}>
+    <.radio_group name="rg-style-rounded-sm" class="radio-group radio-group--rounded-sm" value="lorem" #{@styling_items_heex}>
       #{@styling_item_control_heex}
     </.radio_group>
-    <.radio_group name="rg-style-max-xl" class="radio-group max-w-xl" value="lorem" #{@styling_items_heex}>
+    <.radio_group name="rg-style-rounded-md" class="radio-group radio-group--rounded-md" value="lorem" #{@styling_items_heex}>
       #{@styling_item_control_heex}
     </.radio_group>
-    <.radio_group name="rg-style-max-2xl" class="radio-group max-w-2xl" value="lorem" #{@styling_items_heex}>
+    <.radio_group name="rg-style-rounded-lg" class="radio-group radio-group--rounded-lg" value="lorem" #{@styling_items_heex}>
+      #{@styling_item_control_heex}
+    </.radio_group>
+    <.radio_group name="rg-style-rounded-xl" class="radio-group radio-group--rounded-xl" value="lorem" #{@styling_items_heex}>
+      #{@styling_item_control_heex}
+    </.radio_group>
+    <.radio_group name="rg-style-rounded-full" class="radio-group radio-group--rounded-full" value="lorem" #{@styling_items_heex}>
       #{@styling_item_control_heex}
     </.radio_group>
     """
   end
 
-  def styling_max_width_example(assigns) do
+  def styling_rounded_example(assigns) do
     _ = assigns
 
     ~H"""
-    <.radio_group
-      id="radio-group-style-max-2xs"
-      name="rg-style-max-2xs"
-      class="radio-group max-w-2xs"
-      value="lorem"
-      items={styling_items()}
-    >
-      <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
-    </.radio_group>
-    <.radio_group
-      id="radio-group-style-max-md"
-      name="rg-style-max-md"
-      class="radio-group max-w-md"
-      value="lorem"
-      items={styling_items()}
-    >
-      <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
-    </.radio_group>
-    <.radio_group
-      id="radio-group-style-max-xl"
-      name="rg-style-max-xl"
-      class="radio-group max-w-xl"
-      value="lorem"
-      items={styling_items()}
-    >
-      <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
-    </.radio_group>
-    <.radio_group
-      id="radio-group-style-max-2xl"
-      name="rg-style-max-2xl"
-      class="radio-group max-w-2xl"
-      value="lorem"
-      items={styling_items()}
-    >
-      <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
-    </.radio_group>
+    <div class="flex flex-col gap-4 max-w-md">
+      <.radio_group
+        id="radio-group-style-rounded-none"
+        name="rg-style-rounded-none"
+        class="radio-group radio-group--rounded-none"
+        value="lorem"
+        items={styling_items()}
+      >
+        <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+      </.radio_group>
+      <.radio_group
+        id="radio-group-style-rounded-sm"
+        name="rg-style-rounded-sm"
+        class="radio-group radio-group--rounded-sm"
+        value="lorem"
+        items={styling_items()}
+      >
+        <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+      </.radio_group>
+      <.radio_group
+        id="radio-group-style-rounded-md"
+        name="rg-style-rounded-md"
+        class="radio-group radio-group--rounded-md"
+        value="lorem"
+        items={styling_items()}
+      >
+        <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+      </.radio_group>
+      <.radio_group
+        id="radio-group-style-rounded-lg"
+        name="rg-style-rounded-lg"
+        class="radio-group radio-group--rounded-lg"
+        value="lorem"
+        items={styling_items()}
+      >
+        <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+      </.radio_group>
+      <.radio_group
+        id="radio-group-style-rounded-xl"
+        name="rg-style-rounded-xl"
+        class="radio-group radio-group--rounded-xl"
+        value="lorem"
+        items={styling_items()}
+      >
+        <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+      </.radio_group>
+      <.radio_group
+        id="radio-group-style-rounded-full"
+        name="rg-style-rounded-full"
+        class="radio-group radio-group--rounded-full"
+        value="lorem"
+        items={styling_items()}
+      >
+        <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+      </.radio_group>
+    </div>
     """
   end
 
@@ -1641,6 +1843,146 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
                )
              )}
         end
+      end
+    end
+    """
+  end
+
+  def form_doc_live_ecto_controlled_heex do
+    ~S"""
+    <.form for={@ecto_controlled_form} phx-change="validate_controlled" phx-submit="save_controlled">
+      <.radio_group
+        id="radio-group-live-form-ecto-controlled-choice"
+        field={@ecto_controlled_form[:choice]}
+        class="radio-group"
+        items={items()}
+        controlled
+      >
+        <:label>Choose one</:label>
+        <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.radio_group>
+      <.action type="submit" id="radio-group-live-form-ecto-controlled-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_doc_live_ecto_invalid_heex do
+    ~S"""
+    <.form for={@ecto_invalid_form} phx-change="validate_invalid" phx-submit="save_invalid">
+      <.radio_group
+        id="radio-group-live-form-ecto-invalid-choice"
+        field={@ecto_invalid_form[:choice]}
+        class="radio-group"
+        items={items()}
+        invalid={Corex.FormField.invalid?(@ecto_invalid_form[:choice])}
+      >
+        <:label>Choose one</:label>
+        <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.radio_group>
+      <.action type="submit" id="radio-group-live-form-ecto-invalid-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_live_ecto_controlled(assigns) do
+    ~H"""
+    <.form for={@form} phx-change="validate_controlled" phx-submit="save_controlled">
+      <.radio_group
+        id="radio-group-live-form-ecto-controlled-choice"
+        field={@form[:choice]}
+        class="radio-group"
+        items={items()}
+        controlled
+      >
+        <:label>Choose one</:label>
+        <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.radio_group>
+      <.action
+        type="submit"
+        id="radio-group-live-form-ecto-controlled-submit"
+        class="button button--accent"
+      >
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_live_ecto_invalid(assigns) do
+    ~H"""
+    <.form for={@form} phx-change="validate_invalid" phx-submit="save_invalid">
+      <.radio_group
+        id="radio-group-live-form-ecto-invalid-choice"
+        field={@form[:choice]}
+        class="radio-group"
+        items={items()}
+        invalid={Corex.FormField.invalid?(@form[:choice])}
+      >
+        <:label>Choose one</:label>
+        <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.radio_group>
+      <.action
+        type="submit"
+        id="radio-group-live-form-ecto-invalid-submit"
+        class="button button--accent"
+      >
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_doc_live_ecto_controlled_elixir do
+    ~S"""
+    defmodule MyAppWeb.RadioGroupFormLive do
+      use MyAppWeb, :live_view
+
+      def handle_event("validate_controlled", %{"radio_group_ecto_controlled" => params}, socket) do
+        validate_ecto_controlled(socket, params)
+      end
+
+      def handle_event("save_controlled", %{"radio_group_ecto_controlled" => params}, socket) do
+        save_ecto_controlled(socket, params)
+      end
+    end
+    """
+  end
+
+  def form_doc_live_ecto_invalid_elixir do
+    ~S"""
+    defmodule MyAppWeb.RadioGroupFormLive do
+      use MyAppWeb, :live_view
+
+      def handle_event("validate_invalid", %{"radio_group_ecto_invalid" => params}, socket) do
+        validate_ecto_invalid(socket, params)
+      end
+
+      def handle_event("save_invalid", %{"radio_group_ecto_invalid" => params}, socket) do
+        save_ecto_invalid(socket, params)
       end
     end
     """

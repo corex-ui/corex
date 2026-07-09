@@ -149,7 +149,7 @@ defmodule E2eWeb.ListboxPlayLive do
           />
 
           <.toggle_group
-            class="toggle-group toggle-group--sm max-w-6xs"
+            class="toggle-group toggle-group--sm max-w-3xs"
             id="selection_mode"
             on_value_change="control_changed"
             multiple={false}
@@ -161,7 +161,7 @@ defmodule E2eWeb.ListboxPlayLive do
           </.toggle_group>
 
           <.toggle_group
-            class="toggle-group toggle-group--sm max-w-7xs"
+            class="toggle-group toggle-group--sm max-w-3xs"
             id="orientation"
             on_value_change="control_changed"
             multiple={false}

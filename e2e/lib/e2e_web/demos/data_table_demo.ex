@@ -1,6 +1,8 @@
 defmodule E2eWeb.Demos.DataTableDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.DemoScales
+
   @anatomy_rows [
     %{id: 1, name: "Alice", role: "Admin", email: "alice@example.com"},
     %{id: 2, name: "Bob", role: "User", email: "bob@example.com"},
@@ -132,7 +134,10 @@ defmodule E2eWeb.Demos.DataTableDemo do
   end
 
   def styling_max_width_code_tabs do
-    styling_code_tabs("data-table-styling-max-w-md", "data-table max-w-md")
+    styling_code_tabs(
+      "data-table-styling-max-w-md",
+      DemoScales.join_modifiers("data-table", DemoScales.tailwind_max_width("md"))
+    )
   end
 
   def styling_code_tabs(table_id, class) do

@@ -1,0 +1,86 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  path={@path}
+>
+  <.demo_page
+    path={@path}
+    id="floating-panel-styling-page"
+    title={~t"Floating Panel · Style"}
+    subtitle={
+      ~t"Semantic colors, density, and corner radius via modifier classes on the floating panel root."
+    }
+  >
+    <.demo_section
+      id="floating-panel-styling-color"
+      title={~t"Semantic"}
+      code={E2eWeb.Demos.FloatingPanelDemo.styling_color_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="floating-panel" axis={:semantic} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.FloatingPanelDemo.styling_color_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="floating-panel-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.FloatingPanelDemo.styling_variant_code()}
+    >
+      <:description>
+        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
+          <p>
+            Variant modifiers control floating-panel surface treatment. Default is subtle; use <code class="text-sm">floating-panel--variant-solid</code>, <code class="text-sm">floating-panel--variant-ghost</code>, or
+            <code class="text-sm">floating-panel--variant-outline</code>
+            to change it.
+          </p>
+        </div>
+      </:description>
+      <:preview><E2eWeb.Demos.FloatingPanelDemo.styling_variant_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="floating-panel-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.FloatingPanelDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
+          <p>
+            Combine semantic palette and variant treatment on the same host, for example <code class="text-sm">floating-panel floating-panel--accent floating-panel--variant-solid</code>.
+          </p>
+        </div>
+      </:description>
+      <:preview><E2eWeb.Demos.FloatingPanelDemo.styling_variant_matrix_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="floating-panel-styling-size"
+      title={~t"Size"}
+      code={E2eWeb.Demos.FloatingPanelDemo.styling_size_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="floating-panel" axis={:size} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.FloatingPanelDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="floating-panel-styling-rounded"
+      title={~t"Rounded"}
+      code={E2eWeb.Demos.FloatingPanelDemo.styling_rounded_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="floating-panel" axis={:radius} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.FloatingPanelDemo.styling_rounded_example />
+      </:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>

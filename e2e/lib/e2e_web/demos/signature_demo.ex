@@ -1,6 +1,8 @@
 defmodule E2eWeb.Demos.SignatureDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.DemoScales
+
   def minimal_code do
     ~S"""
     <.signature_pad class="signature-pad">
@@ -48,7 +50,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
 
   def api_clear_client_binding_heex do
     ~S"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action phx-click={Corex.SignaturePad.clear("signature-api-cb")} class="button button--sm">
         Clear
       </.action>
@@ -65,7 +67,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     _ = assigns
 
     ~H"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action phx-click={Corex.SignaturePad.clear("signature-api-cb")} class="button button--sm">
         Clear
       </.action>
@@ -80,7 +82,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
 
   def api_clear_client_js_heex do
     ~S"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <button
         type="button"
         class="button button--sm"
@@ -126,7 +128,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
 
     ~H"""
     <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
-      <div class="layout__row">
+      <div class="flex flex-wrap items-center gap-space">
         <button
           type="button"
           class="button button--sm"
@@ -145,7 +147,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
 
   def api_clear_server_heex do
     ~S"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action phx-click="signature_api_clear" class="button button--sm">
         Clear
       </.action>
@@ -171,7 +173,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
 
     ~H"""
     <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
-      <div class="layout__row">
+      <div class="flex flex-wrap items-center gap-space">
         <.action phx-click="signature_api_clear" class="button button--sm">
           Clear
         </.action>
@@ -952,6 +954,110 @@ defmodule E2eWeb.Demos.SignatureDemo do
     """
   end
 
+  def styling_variant_code do
+    ~S"""
+    <.signature_pad class="signature-pad" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad signature-pad--variant-solid" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad signature-pad--variant-ghost" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad signature-pad--variant-outline" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    """
+  end
+
+  def styling_variant_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-4 items-start w-full max-w-xl">
+      <.signature_pad
+        id="signature-style-variant-subtle"
+        class="signature-pad"
+        drawing_fill="var(--color-ink)"
+      >
+        <:label>Sign here</:label>
+        <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+      </.signature_pad>
+      <.signature_pad
+        id="signature-style-variant-solid"
+        class="signature-pad signature-pad--variant-solid"
+        drawing_fill="var(--color-ink)"
+      >
+        <:label>Sign here</:label>
+        <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+      </.signature_pad>
+      <.signature_pad
+        id="signature-style-variant-ghost"
+        class="signature-pad signature-pad--variant-ghost"
+        drawing_fill="var(--color-ink)"
+      >
+        <:label>Sign here</:label>
+        <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+      </.signature_pad>
+      <.signature_pad
+        id="signature-style-variant-outline"
+        class="signature-pad signature-pad--variant-outline"
+        drawing_fill="var(--color-ink)"
+      >
+        <:label>Sign here</:label>
+        <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+      </.signature_pad>
+    </div>
+    """
+  end
+
+  def styling_variant_matrix_code do
+    for semantic <- DemoScales.styling_semantic_axis_steps("signature-pad"),
+        variant <- DemoScales.styling_variant_axis_steps("signature-pad") do
+      class =
+        DemoScales.join_matrix_modifiers("signature-pad", semantic.modifier, variant.modifier)
+
+      """
+      <.signature_pad class="#{class}" drawing_fill="var(--color-ink)">
+        <:label>Sign here</:label>
+        <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+      </.signature_pad>
+      """
+    end
+    |> DemoScales.join_code()
+  end
+
+  def styling_variant_matrix_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("signature-pad"))
+      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("signature-pad"))
+
+    ~H"""
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+      <div class="grid grid-cols-4 gap-space gap-2 items-start min-w-max">
+        <div :for={semantic <- @matrix_semantics} class="contents">
+          <.signature_pad
+            :for={variant <- @matrix_variants}
+            class={
+              DemoScales.join_matrix_modifiers("signature-pad", semantic.modifier, variant.modifier)
+            }
+            drawing_fill="var(--color-ink)"
+          >
+            <:label>{semantic.label}</:label>
+            <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+          </.signature_pad>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
   def styling_size_code do
     ~S"""
     <.signature_pad class="signature-pad signature-pad--sm" drawing_fill="var(--color-ink)">
@@ -1013,62 +1119,37 @@ defmodule E2eWeb.Demos.SignatureDemo do
   end
 
   def styling_max_width_code do
-    ~S"""
-    <.signature_pad class="signature-pad max-w-2xs" drawing_fill="var(--color-ink)">
-      <:label>Sign here</:label>
-      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
-    </.signature_pad>
-    <.signature_pad class="signature-pad max-w-md" drawing_fill="var(--color-ink)">
-      <:label>Sign here</:label>
-      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
-    </.signature_pad>
-    <.signature_pad class="signature-pad max-w-xl" drawing_fill="var(--color-ink)">
-      <:label>Sign here</:label>
-      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
-    </.signature_pad>
-    <.signature_pad class="signature-pad max-w-2xl" drawing_fill="var(--color-ink)">
-      <:label>Sign here</:label>
-      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
-    </.signature_pad>
-    """
+    DemoScales.max_width_variants("signature-pad")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("signature-pad", modifier)
+
+      """
+      <.signature_pad class="#{class}" drawing_fill="var(--color-ink)">
+        <:label>Sign here</:label>
+        <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+      </.signature_pad>
+      """
+    end)
+    |> DemoScales.join_code()
   end
 
   def styling_max_width_example(assigns) do
-    _ = assigns
+    assigns = assign(assigns, :max_width_variants, DemoScales.max_width_variants("signature-pad"))
 
     ~H"""
-    <.signature_pad
-      id="signature-style-max-2xs"
-      class="signature-pad max-w-2xs"
-      drawing_fill="var(--color-ink)"
-    >
-      <:label>Sign here</:label>
-      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
-    </.signature_pad>
-    <.signature_pad
-      id="signature-style-max-md"
-      class="signature-pad max-w-md"
-      drawing_fill="var(--color-ink)"
-    >
-      <:label>Sign here</:label>
-      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
-    </.signature_pad>
-    <.signature_pad
-      id="signature-style-max-xl"
-      class="signature-pad max-w-xl"
-      drawing_fill="var(--color-ink)"
-    >
-      <:label>Sign here</:label>
-      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
-    </.signature_pad>
-    <.signature_pad
-      id="signature-style-max-2xl"
-      class="signature-pad max-w-2xl"
-      drawing_fill="var(--color-ink)"
-    >
-      <:label>Sign here</:label>
-      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
-    </.signature_pad>
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <.signature_pad
+          id={"signature-style-max-#{variant.id}"}
+          class={DemoScales.join_modifiers("signature-pad", variant.modifier)}
+          drawing_fill="var(--color-ink)"
+        >
+          <:label>Sign here</:label>
+          <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+        </.signature_pad>
+      </div>
+    </div>
     """
   end
 

@@ -1,6 +1,7 @@
 defmodule E2eWeb.App.Header do
   use E2eWeb, :html
   import E2eWeb.App.Aside
+  alias E2eWeb.App.Shell
   import E2eWeb.App.MainNav
   import E2eWeb.{ModeToggle, ThemeToggle, Helpers}
 
@@ -22,24 +23,24 @@ defmodule E2eWeb.App.Header do
       |> assign(:components_menu, components_menu)
 
     ~H"""
-    <header class="layout__header">
-      <div class="layout__header__content">
-        <div class="layout__row">
+    <header class={Shell.header()}>
+      <div class={Shell.header_content()}>
+        <div class={Shell.row()}>
           <.dialog id="menu-dialog" animation="instant" class="dialog dialog--side lg:hidden">
             <:trigger
-              class="button button--sm button--circle button--ghost"
+              class="button button--sm button--circle button--variant-ghost"
               aria_label={~t"Open menu"}
             >
               <.heroicon name="hero-bars-3" />
             </:trigger>
 
             <:content>
-              <div class="layout__header">
-                <div class="layout__header__content">
-                  <div class="layout__row">
+              <div class={Shell.header()}>
+                <div class={Shell.header_content()}>
+                  <div class={Shell.row()}>
                     <.action
                       phx-click={Corex.Dialog.set_open("menu-dialog", false)}
-                      class="button button--sm button--circle button--ghost"
+                      class="button button--sm button--circle button--variant-ghost"
                       aria_label={~t"Close menu"}
                     >
                       <.heroicon name="hero-x-mark" />
@@ -114,7 +115,7 @@ defmodule E2eWeb.App.Header do
 
           <.header_main_nav path={@path} orientation={:horizontal} placement={:header} />
         </div>
-        <div class="hidden lg:flex layout__row gap-2 sm:gap-4 shrink-0">
+        <div class={"hidden lg:flex #{Shell.row()} gap-2 sm:gap-4 shrink-0"}>
           <.theme_toggle id="theme-select" theme={@theme} />
           <.mode_toggle id="mode-switcher" mode={@mode} />
         </div>

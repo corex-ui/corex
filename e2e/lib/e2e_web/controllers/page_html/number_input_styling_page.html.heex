@@ -9,17 +9,52 @@
     id="number-input-styling-page"
     title={~t"Number Input · Style"}
     subtitle={
-      ~t"Semantic colors, density, and width via modifier classes and Tailwind max-w-* on the number input root."
+      ~t"Semantic colors, density, and corner radius via modifier classes and Tailwind max-w-* on the number input root."
     }
   >
     <.demo_section
       id="number-input-styling-color"
-      title={~t"Color"}
+      title={~t"Semantic"}
       code={E2eWeb.Demos.NumberInputDemo.styling_color_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="number-input" axis={:semantic} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.NumberInputDemo.styling_color_example />
       </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="number-input-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.NumberInputDemo.styling_variant_code()}
+    >
+      <:description>
+        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
+          <p>
+            Variant modifiers control number-input surface treatment. Default is subtle; use <code class="text-sm">number-input--variant-solid</code>, <code class="text-sm">number-input--variant-ghost</code>, or
+            <code class="text-sm">number-input--variant-outline</code>
+            to change it.
+          </p>
+        </div>
+      </:description>
+      <:preview><E2eWeb.Demos.NumberInputDemo.styling_variant_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="number-input-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.NumberInputDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
+          <p>
+            Combine semantic palette and variant treatment on the same host, for example <code class="text-sm">number-input number-input--accent number-input--variant-solid</code>.
+          </p>
+        </div>
+      </:description>
+      <:preview><E2eWeb.Demos.NumberInputDemo.styling_variant_matrix_example /></:preview>
     </.demo_section>
 
     <.demo_section
@@ -27,8 +62,24 @@
       title={~t"Size"}
       code={E2eWeb.Demos.NumberInputDemo.styling_size_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="number-input" axis={:size} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.NumberInputDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="number-input-styling-rounded"
+      title={~t"Rounded"}
+      code={E2eWeb.Demos.NumberInputDemo.styling_rounded_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="number-input" axis={:radius} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.NumberInputDemo.styling_rounded_example />
       </:preview>
     </.demo_section>
 
@@ -37,6 +88,9 @@
       title={~t"Max width"}
       code={E2eWeb.Demos.NumberInputDemo.styling_max_width_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="number-input" axis={:max_width} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.NumberInputDemo.styling_max_width_example />
       </:preview>

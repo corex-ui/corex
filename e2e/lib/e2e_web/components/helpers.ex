@@ -340,7 +340,7 @@ defmodule E2eWeb.Helpers do
           playground_to: ~p"/date-picker/playground",
           api_to: ~p"/date-picker/api",
           events_to: ~p"/date-picker/events",
-          patterns_to: ~p"/date-picker/patterns",
+          pattern: false,
           style_to: ~p"/date-picker/style",
           forms: [
             doc_form_menu_item(~t"Controller Form", ~p"/date-picker/form"),
@@ -383,6 +383,8 @@ defmodule E2eWeb.Helpers do
           api_to: ~p"/file-upload/api",
           events_to: ~p"/file-upload/events",
           pattern: false,
+          style: true,
+          style_to: ~p"/file-upload/style",
           forms: [
             doc_form_menu_item(~t"Controller Form", ~p"/file-upload/form")
           ]
@@ -395,6 +397,7 @@ defmodule E2eWeb.Helpers do
           api: false,
           event: false,
           pattern: false,
+          style: false,
           forms: [
             doc_form_menu_item(~t"Live Form", ~p"/file-upload-live/form")
           ]
@@ -406,7 +409,9 @@ defmodule E2eWeb.Helpers do
           playground_to: ~p"/floating-panel/playground",
           api_to: ~p"/floating-panel/api",
           events_to: ~p"/floating-panel/events",
-          pattern: false
+          pattern: false,
+          style: true,
+          style_to: ~p"/floating-panel/style"
         },
         %{
           label: ~t"Layout heading",
@@ -500,6 +505,8 @@ defmodule E2eWeb.Helpers do
           api_to: ~p"/password-input/api",
           events_to: ~p"/password-input/events",
           pattern: false,
+          style: true,
+          style_to: ~p"/password-input/style",
           forms: [
             doc_form_menu_item(~t"Controller Form", ~p"/password-input/form"),
             doc_form_menu_item(~t"Live Form", ~p"/password-input/live-form")

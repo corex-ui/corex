@@ -37,7 +37,7 @@ defmodule E2eWeb.AngleSliderControlledLive do
         <:subtitle>Controlled</:subtitle>
       </.layout_heading>
       <h3>Client Api</h3>
-      <div class="layout__row">
+      <div class="flex flex-wrap items-center gap-space">
         <.action
           phx-click={Corex.AngleSlider.set_value("my-angle-slider", 0)}
           class="button button--sm"
@@ -64,7 +64,7 @@ defmodule E2eWeb.AngleSliderControlledLive do
         </.action>
       </div>
       <h3>Server Api</h3>
-      <div class="layout__row">
+      <div class="flex flex-wrap items-center gap-space">
         <.action phx-click="set_value" value="0" class="button button--sm">
           Set to 0°
         </.action>
@@ -78,7 +78,7 @@ defmodule E2eWeb.AngleSliderControlledLive do
           Set to 270°
         </.action>
       </div>
-      <p class="layout__row">
+      <p class="flex flex-wrap items-center gap-space">
         Current value: <code>{@angle}</code>°
       </p>
       <.angle_slider

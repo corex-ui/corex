@@ -1,6 +1,8 @@
 defmodule E2eWeb.Demos.ListboxDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.DemoScales
+
   def items_minimal do
     Corex.List.new([
       %{label: "France", value: "fra"},
@@ -814,6 +816,118 @@ defmodule E2eWeb.Demos.ListboxDemo do
     """
   end
 
+  def styling_variant_code do
+    items = styling_items_attr()
+    value = styling_value_attr()
+
+    """
+    <.listbox class="listbox" #{items} #{value}>
+      <:label>Subtle (default)</:label>
+      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+    </.listbox>
+    <.listbox class="listbox listbox--variant-solid" #{items} #{value}>
+      <:label>Solid</:label>
+      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+    </.listbox>
+    <.listbox class="listbox listbox--variant-ghost" #{items} #{value}>
+      <:label>Ghost</:label>
+      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+    </.listbox>
+    <.listbox class="listbox listbox--variant-outline" #{items} #{value}>
+      <:label>Outline</:label>
+      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+    </.listbox>
+    """
+  end
+
+  def styling_variant_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:items, items_minimal())
+      |> assign(:value, ["fra"])
+
+    ~H"""
+    <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
+      <.listbox id="listbox-style-variant-subtle" class="listbox" items={@items} value={@value}>
+        <:label>Subtle (default)</:label>
+        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+      </.listbox>
+      <.listbox
+        id="listbox-style-variant-solid"
+        class="listbox listbox--variant-solid"
+        items={@items}
+        value={@value}
+      >
+        <:label>Solid</:label>
+        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+      </.listbox>
+      <.listbox
+        id="listbox-style-variant-ghost"
+        class="listbox listbox--variant-ghost"
+        items={@items}
+        value={@value}
+      >
+        <:label>Ghost</:label>
+        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+      </.listbox>
+      <.listbox
+        id="listbox-style-variant-outline"
+        class="listbox listbox--variant-outline"
+        items={@items}
+        value={@value}
+      >
+        <:label>Outline</:label>
+        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+      </.listbox>
+    </div>
+    """
+  end
+
+  def styling_variant_matrix_code do
+    items = styling_items_attr()
+    value = styling_value_attr()
+
+    for semantic <- DemoScales.styling_semantic_axis_steps("listbox"),
+        variant <- DemoScales.styling_variant_axis_steps("listbox") do
+      class = DemoScales.join_matrix_modifiers("listbox", semantic.modifier, variant.modifier)
+
+      """
+      <.listbox class="#{class}" #{items} #{value}>
+        <:label>#{semantic.label}</:label>
+        <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+      </.listbox>
+      """
+    end
+    |> DemoScales.join_code()
+  end
+
+  def styling_variant_matrix_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:items, items_minimal())
+      |> assign(:value, ["fra"])
+      |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("listbox"))
+      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("listbox"))
+
+    ~H"""
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+      <div class="grid grid-cols-4 gap-space gap-2 items-start min-w-max">
+        <div :for={semantic <- @matrix_semantics} class="contents">
+          <.listbox
+            :for={variant <- @matrix_variants}
+            class={DemoScales.join_matrix_modifiers("listbox", semantic.modifier, variant.modifier)}
+            items={@items}
+            value={@value}
+          >
+            <:label>{semantic.label}</:label>
+            <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+          </.listbox>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
   def styling_size_code do
     items = styling_items_attr()
 
@@ -871,20 +985,17 @@ defmodule E2eWeb.Demos.ListboxDemo do
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     """
 
-    """
-    <.listbox class="listbox max-w-2xs" #{items} #{value}>
-    #{slots}
-    </.listbox>
-    <.listbox class="listbox max-w-md" #{items} #{value}>
-    #{slots}
-    </.listbox>
-    <.listbox class="listbox max-w-xl" #{items} #{value}>
-    #{slots}
-    </.listbox>
-    <.listbox class="listbox max-w-2xl" #{items} #{value}>
-    #{slots}
-    </.listbox>
-    """
+    DemoScales.max_width_variants("listbox")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("listbox", modifier)
+
+      """
+      <.listbox class="#{class}" #{items} #{value}>
+      #{slots}
+      </.listbox>
+      """
+    end)
+    |> DemoScales.join_code()
   end
 
   def styling_max_width_example(assigns) do
@@ -892,43 +1003,76 @@ defmodule E2eWeb.Demos.ListboxDemo do
       assigns
       |> assign(:items, items_minimal())
       |> assign(:value, ["fra"])
+      |> assign(:max_width_variants, DemoScales.max_width_variants("listbox"))
 
     ~H"""
-    <div class="flex flex-col gap-4 w-full items-start">
-      <.listbox
-        id="listbox-style-max-2xs"
-        class="listbox max-w-2xs"
-        items={@items}
-        value={@value}
-      >
-        <:label>2xs</:label>
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <.listbox
+          id={"listbox-style-max-#{variant.id}"}
+          class={DemoScales.join_modifiers("listbox", variant.modifier)}
+          items={@items}
+          value={@value}
+        >
+          <:label>{variant.label}</:label>
+          <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+        </.listbox>
+      </div>
+    </div>
+    """
+  end
+
+  def styling_rounded_code do
+    items = styling_items_attr()
+
+    """
+    <.listbox class="listbox listbox--rounded-none" #{items}>
+      <:label>None</:label>
+      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+    </.listbox>
+    <.listbox class="listbox listbox--rounded-md" #{items}>
+      <:label>MD</:label>
+      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+    </.listbox>
+    <.listbox class="listbox listbox--rounded-lg" #{items}>
+      <:label>LG</:label>
+      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+    </.listbox>
+    <.listbox class="listbox listbox--rounded-xl" #{items}>
+      <:label>XL</:label>
+      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+    </.listbox>
+    <.listbox class="listbox listbox--rounded-full" #{items}>
+      <:label>Full</:label>
+      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+    </.listbox>
+    """
+  end
+
+  def styling_rounded_example(assigns) do
+    assigns = assign(assigns, :items, items_minimal())
+
+    ~H"""
+    <div class="flex flex-col gap-4 w-full max-w-md">
+      <.listbox id="listbox-style-rounded-none" class="listbox listbox--rounded-none" items={@items}>
+        <:label>None</:label>
         <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
       </.listbox>
-      <.listbox
-        id="listbox-style-max-md"
-        class="listbox max-w-md"
-        items={@items}
-        value={@value}
-      >
+      <.listbox id="listbox-style-rounded-md" class="listbox listbox--rounded-md" items={@items}>
         <:label>MD</:label>
         <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
       </.listbox>
-      <.listbox
-        id="listbox-style-max-xl"
-        class="listbox max-w-xl"
-        items={@items}
-        value={@value}
-      >
+      <.listbox id="listbox-style-rounded-lg" class="listbox listbox--rounded-lg" items={@items}>
+        <:label>LG</:label>
+        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+      </.listbox>
+      <.listbox id="listbox-style-rounded-xl" class="listbox listbox--rounded-xl" items={@items}>
         <:label>XL</:label>
         <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
       </.listbox>
-      <.listbox
-        id="listbox-style-max-2xl"
-        class="listbox max-w-2xl"
-        items={@items}
-        value={@value}
-      >
-        <:label>2XL</:label>
+      <.listbox id="listbox-style-rounded-full" class="listbox listbox--rounded-full" items={@items}>
+        <:label>Full</:label>
         <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
       </.listbox>
     </div>

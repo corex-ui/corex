@@ -19,7 +19,10 @@ defmodule E2eWeb.ComboboxApiLive do
       set_value_binding: Demo.api_set_value_client_binding_code(),
       set_value_server_heex: Demo.api_set_value_server_heex(),
       set_value_server_elixir: Demo.api_set_value_server_elixir(),
-      set_value_js: Demo.api_set_value_client_js()
+      set_value_js: Demo.api_set_value_client_js(),
+      set_open_binding: Demo.api_set_open_client_binding_code(),
+      set_open_server_heex: Demo.api_set_open_server_heex(),
+      set_open_server_elixir: Demo.api_set_open_server_elixir()
     }
   end
 
@@ -29,6 +32,14 @@ defmodule E2eWeb.ComboboxApiLive do
 
   def handle_event("combobox_api_clear", _params, socket) do
     {:noreply, Corex.Combobox.set_value(socket, "combobox-api-sv-server", [])}
+  end
+
+  def handle_event("combobox_api_open", _params, socket) do
+    {:noreply, Corex.Combobox.set_open(socket, "combobox-api-open-server", true)}
+  end
+
+  def handle_event("combobox_api_close", _params, socket) do
+    {:noreply, Corex.Combobox.set_open(socket, "combobox-api-open-server", false)}
   end
 
   def render(assigns) do
@@ -147,6 +158,70 @@ defmodule E2eWeb.ComboboxApiLive do
             </div>
             <.combobox
               id="combobox-api-sv-js"
+              class="combobox"
+              placeholder={~t"Select"}
+              items={Corex.List.new(Demo.items_minimal())}
+            >
+              <:empty>No results</:empty>
+              <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+            </.combobox>
+          </:preview>
+        </.demo_section>
+
+        <.demo_section
+          id="combobox-api-set-open-binding"
+          title={~t"Set Open (Client Binding)"}
+          code_tabs={[
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @codes.set_open_binding}
+          ]}
+        >
+          <:preview>
+            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+              <.action
+                phx-click={Corex.Combobox.set_open("combobox-api-open-client", true)}
+                class="button button--sm"
+              >
+                Open
+              </.action>
+              <.action
+                phx-click={Corex.Combobox.set_open("combobox-api-open-client", false)}
+                class="button button--sm"
+              >
+                Close
+              </.action>
+            </div>
+            <.combobox
+              id="combobox-api-open-client"
+              class="combobox"
+              placeholder={~t"Select"}
+              items={Corex.List.new(Demo.items_minimal())}
+            >
+              <:empty>No results</:empty>
+              <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+            </.combobox>
+          </:preview>
+        </.demo_section>
+
+        <.demo_section
+          id="combobox-api-set-open-server"
+          title={~t"Set Open (Server)"}
+          code_tabs={[
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @codes.set_open_server_heex},
+            %{
+              value: "elixir",
+              label: ~t"Elixir",
+              language: :elixir,
+              code: @codes.set_open_server_elixir
+            }
+          ]}
+        >
+          <:preview>
+            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+              <.action phx-click="combobox_api_open" class="button button--sm">Open</.action>
+              <.action phx-click="combobox_api_close" class="button button--sm">Close</.action>
+            </div>
+            <.combobox
+              id="combobox-api-open-server"
               class="combobox"
               placeholder={~t"Select"}
               items={Corex.List.new(Demo.items_minimal())}

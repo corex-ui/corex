@@ -9,6 +9,8 @@ defmodule E2eWeb.SwitchFormLive do
 
   @phoenix_form_id "switch-live-form-phoenix"
   @ecto_form_id "switch-live-form-ecto"
+  @ecto_controlled_form_id "switch-live-form-ecto-controlled"
+  @ecto_invalid_form_id "switch-live-form-ecto-invalid"
 
   @impl true
   def mount(_params, _session, socket) do
@@ -20,6 +22,10 @@ defmodule E2eWeb.SwitchFormLive do
      |> assign(:live_phoenix_elixir, SwitchDemo.form_doc_live_phoenix_elixir())
      |> assign(:live_ecto_heex, SwitchDemo.form_doc_live_ecto_heex())
      |> assign(:live_ecto_elixir, SwitchDemo.form_doc_live_ecto_elixir())
+     |> assign(:live_ecto_controlled_heex, SwitchDemo.form_doc_live_ecto_controlled_heex())
+     |> assign(:live_ecto_controlled_elixir, SwitchDemo.form_doc_live_ecto_controlled_elixir())
+     |> assign(:live_ecto_invalid_heex, SwitchDemo.form_doc_live_ecto_invalid_heex())
+     |> assign(:live_ecto_invalid_elixir, SwitchDemo.form_doc_live_ecto_invalid_elixir())
      |> assign_forms()}
   end
 
@@ -35,9 +41,21 @@ defmodule E2eWeb.SwitchFormLive do
       |> Preferences.changeset_validate(%{})
       |> Phoenix.Component.to_form(as: :preferences_ecto, id: @ecto_form_id)
 
+    ecto_controlled_form =
+      %Preferences{}
+      |> Preferences.changeset_validate(%{})
+      |> Phoenix.Component.to_form(as: :preferences_ecto_controlled, id: @ecto_controlled_form_id)
+
+    ecto_invalid_form =
+      %Preferences{}
+      |> Preferences.changeset_validate(%{})
+      |> Phoenix.Component.to_form(as: :preferences_ecto_invalid, id: @ecto_invalid_form_id)
+
     socket
     |> assign(:phoenix_form, phoenix_form)
     |> assign(:ecto_form, ecto_form)
+    |> assign(:ecto_controlled_form, ecto_controlled_form)
+    |> assign(:ecto_invalid_form, ecto_invalid_form)
   end
 
   @impl true
@@ -60,21 +78,7 @@ defmodule E2eWeb.SwitchFormLive do
 
   @impl true
   def handle_event("validate", %{"preferences_ecto" => params}, socket) do
-    changeset =
-      %Preferences{}
-      |> Preferences.changeset_validate(params)
-      |> Map.put(:action, :validate)
-
-    {:noreply,
-     assign(
-       socket,
-       :ecto_form,
-       Phoenix.Component.to_form(changeset,
-         action: :validate,
-         as: :preferences_ecto,
-         id: @ecto_form_id
-       )
-     )}
+    validate_ecto(socket, params)
   end
 
   @impl true
@@ -108,6 +112,136 @@ defmodule E2eWeb.SwitchFormLive do
            )
          )}
     end
+  end
+
+  @impl true
+  def handle_event("validate_controlled", %{"preferences_ecto_controlled" => params}, socket) do
+    validate_ecto_controlled(socket, params)
+  end
+
+  @impl true
+  def handle_event("save_controlled", %{"preferences_ecto_controlled" => params}, socket) do
+    case Preferences.changeset_validate(%Preferences{}, params) do
+      %Ecto.Changeset{valid?: true} = changeset ->
+        data = Ecto.Changeset.apply_changes(changeset)
+        message = "Submitted: notifications=#{data.notifications}"
+
+        {:noreply,
+         socket
+         |> Toast.create("layout-toast", "Submitted", message, :info, duration: 5000)
+         |> assign(
+           :ecto_controlled_form,
+           Phoenix.Component.to_form(
+             Preferences.changeset_validate(%Preferences{}, params),
+             as: :preferences_ecto_controlled,
+             id: @ecto_controlled_form_id
+           )
+         )}
+
+      %Ecto.Changeset{} = changeset ->
+        {:noreply,
+         assign(
+           socket,
+           :ecto_controlled_form,
+           Phoenix.Component.to_form(changeset,
+             action: :insert,
+             as: :preferences_ecto_controlled,
+             id: @ecto_controlled_form_id
+           )
+         )}
+    end
+  end
+
+  @impl true
+  def handle_event("validate_invalid", %{"preferences_ecto_invalid" => params}, socket) do
+    validate_ecto_invalid(socket, params)
+  end
+
+  @impl true
+  def handle_event("save_invalid", %{"preferences_ecto_invalid" => params}, socket) do
+    case Preferences.changeset_validate(%Preferences{}, params) do
+      %Ecto.Changeset{valid?: true} = changeset ->
+        data = Ecto.Changeset.apply_changes(changeset)
+        message = "Submitted: notifications=#{data.notifications}"
+
+        {:noreply,
+         socket
+         |> Toast.create("layout-toast", "Submitted", message, :info, duration: 5000)
+         |> assign(
+           :ecto_invalid_form,
+           Phoenix.Component.to_form(
+             Preferences.changeset_validate(%Preferences{}, params),
+             as: :preferences_ecto_invalid,
+             id: @ecto_invalid_form_id
+           )
+         )}
+
+      %Ecto.Changeset{} = changeset ->
+        {:noreply,
+         assign(
+           socket,
+           :ecto_invalid_form,
+           Phoenix.Component.to_form(changeset,
+             action: :insert,
+             as: :preferences_ecto_invalid,
+             id: @ecto_invalid_form_id
+           )
+         )}
+    end
+  end
+
+  defp validate_ecto(socket, params) do
+    changeset =
+      %Preferences{}
+      |> Preferences.changeset_validate(params)
+      |> Map.put(:action, :validate)
+
+    {:noreply,
+     assign(
+       socket,
+       :ecto_form,
+       Phoenix.Component.to_form(changeset,
+         action: :validate,
+         as: :preferences_ecto,
+         id: @ecto_form_id
+       )
+     )}
+  end
+
+  defp validate_ecto_controlled(socket, params) do
+    changeset =
+      %Preferences{}
+      |> Preferences.changeset_validate(params)
+      |> Map.put(:action, :validate)
+
+    {:noreply,
+     assign(
+       socket,
+       :ecto_controlled_form,
+       Phoenix.Component.to_form(changeset,
+         action: :validate,
+         as: :preferences_ecto_controlled,
+         id: @ecto_controlled_form_id
+       )
+     )}
+  end
+
+  defp validate_ecto_invalid(socket, params) do
+    changeset =
+      %Preferences{}
+      |> Preferences.changeset_validate(params)
+      |> Map.put(:action, :validate)
+
+    {:noreply,
+     assign(
+       socket,
+       :ecto_invalid_form,
+       Phoenix.Component.to_form(changeset,
+         action: :validate,
+         as: :preferences_ecto_invalid,
+         id: @ecto_invalid_form_id
+       )
+     )}
   end
 
   @impl true
@@ -148,6 +282,54 @@ defmodule E2eWeb.SwitchFormLive do
         >
           <:preview>
             <SwitchDemo.form_preview_live_ecto form={@ecto_form} />
+          </:preview>
+        </.demo_section>
+
+        <.demo_section
+          id="switch-live-form-ecto-controlled-section"
+          title={~t"Phoenix Form + Ecto + Controlled"}
+          code_tabs={[
+            %{
+              value: "heex",
+              label: ~t"Heex",
+              language: :heex,
+              code: @live_ecto_controlled_heex
+            },
+            %{
+              value: "elixir",
+              label: ~t"Elixir",
+              language: :elixir,
+              code: @live_ecto_controlled_elixir
+            },
+            %{value: "ecto", label: ~t"Ecto", language: :elixir, code: @form_ecto}
+          ]}
+        >
+          <:preview>
+            <SwitchDemo.form_preview_live_ecto_controlled form={@ecto_controlled_form} />
+          </:preview>
+        </.demo_section>
+
+        <.demo_section
+          id="switch-live-form-ecto-invalid-section"
+          title={~t"Phoenix Form + Ecto + Invalid"}
+          code_tabs={[
+            %{
+              value: "heex",
+              label: ~t"Heex",
+              language: :heex,
+              code: @live_ecto_invalid_heex
+            },
+            %{
+              value: "elixir",
+              label: ~t"Elixir",
+              language: :elixir,
+              code: @live_ecto_invalid_elixir
+            },
+            %{value: "ecto", label: ~t"Ecto", language: :elixir, code: @form_ecto}
+          ]}
+        >
+          <:preview>
+            <SwitchDemo.form_preview_live_ecto_invalid form={@ecto_invalid_form} />
           </:preview>
         </.demo_section>
       </.demo_page>

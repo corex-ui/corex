@@ -1,6 +1,8 @@
 defmodule E2eWeb.Demos.EditableDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.DemoScales
+
   def minimal_code do
     ~S"""
     <.editable value="Click to edit" class="editable">
@@ -140,6 +142,112 @@ defmodule E2eWeb.Demos.EditableDemo do
     """
   end
 
+  def styling_variant_code do
+    slots = styling_slots_code()
+
+    """
+    <.editable class="editable" value="Subtle (default)">
+    #{slots}
+    </.editable>
+    <.editable class="editable editable--variant-solid" value="Solid">
+    #{slots}
+    </.editable>
+    <.editable class="editable editable--variant-ghost" value="Ghost">
+    #{slots}
+    </.editable>
+    <.editable class="editable editable--variant-outline" value="Outline">
+    #{slots}
+    </.editable>
+    """
+  end
+
+  def styling_variant_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-wrap gap-6 items-start">
+      <.editable id="editable-style-variant-subtle" class="editable" value="Subtle (default)">
+        <:label>Label</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+      <.editable
+        id="editable-style-variant-solid"
+        class="editable editable--variant-solid"
+        value="Solid"
+      >
+        <:label>Label</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+      <.editable
+        id="editable-style-variant-ghost"
+        class="editable editable--variant-ghost"
+        value="Ghost"
+      >
+        <:label>Label</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+      <.editable
+        id="editable-style-variant-outline"
+        class="editable editable--variant-outline"
+        value="Outline"
+      >
+        <:label>Label</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+    </div>
+    """
+  end
+
+  def styling_variant_matrix_code do
+    slots = styling_slots_code()
+
+    for semantic <- DemoScales.styling_semantic_axis_steps("editable"),
+        variant <- DemoScales.styling_variant_axis_steps("editable") do
+      class = DemoScales.join_matrix_modifiers("editable", semantic.modifier, variant.modifier)
+
+      """
+      <.editable class="#{class}" value="#{semantic.label}">
+      #{slots}
+      </.editable>
+      """
+    end
+    |> DemoScales.join_code()
+  end
+
+  def styling_variant_matrix_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("editable"))
+      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("editable"))
+
+    ~H"""
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+      <div class="grid grid-cols-4 gap-space gap-2 items-start min-w-max">
+        <div :for={semantic <- @matrix_semantics} class="contents">
+          <.editable
+            :for={variant <- @matrix_variants}
+            class={DemoScales.join_matrix_modifiers("editable", semantic.modifier, variant.modifier)}
+            value={semantic.label}
+          >
+            <:label>Label</:label>
+            <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+            <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+            <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+          </.editable>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
   def styling_size_code do
     slots = styling_slots_code()
 
@@ -265,58 +373,82 @@ defmodule E2eWeb.Demos.EditableDemo do
   def styling_max_width_code do
     slots = styling_slots_code()
 
-    """
-    <.editable class="editable max-w-2xs" value="2xs">
-    #{slots}
-    </.editable>
-    <.editable class="editable max-w-md" value="MD">
-    #{slots}
-    </.editable>
-    <.editable class="editable max-w-xl" value="XL">
-    #{slots}
-    </.editable>
-    <.editable class="editable max-w-2xl" value="2XL">
-    #{slots}
-    </.editable>
-    """
+    DemoScales.max_width_variants("editable")
+    |> Enum.map(fn %{id: id, modifier: modifier} ->
+      class = DemoScales.join_modifiers("editable", modifier)
+
+      """
+      <.editable class="#{class}" value="#{id}">
+      #{slots}
+      </.editable>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_width_code do
+    slots = styling_slots_code()
+
+    DemoScales.width_layout_variants("editable")
+    |> Enum.map(fn %{id: id, modifier: modifier} ->
+      class = DemoScales.join_modifiers("editable", modifier)
+
+      """
+      <.editable class="#{class}" value="#{id}">
+      #{slots}
+      </.editable>
+      """
+    end)
+    |> DemoScales.join_code()
   end
 
   def styling_max_width_example(assigns) do
-    _ = assigns
+    assigns = assign(assigns, :max_width_variants, DemoScales.max_width_variants("editable"))
 
     ~H"""
-    <div class="flex flex-col gap-4 items-start">
-      <.editable id="editable-style-max-2xs" class="editable max-w-2xs" value="2xs">
-        <:label>Label</:label>
-        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
-        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
-        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
-      </.editable>
-      <.editable id="editable-style-max-md" class="editable max-w-md" value="MD">
-        <:label>Label</:label>
-        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
-        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
-        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
-      </.editable>
-      <.editable id="editable-style-max-xl" class="editable max-w-xl" value="XL">
-        <:label>Label</:label>
-        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
-        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
-        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
-      </.editable>
-      <.editable id="editable-style-max-2xl" class="editable max-w-2xl" value="2XL">
-        <:label>Label</:label>
-        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
-        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
-        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
-      </.editable>
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <.editable
+          id={"editable-style-max-#{variant.id}"}
+          class={DemoScales.join_modifiers("editable", variant.modifier)}
+          value={variant.label}
+        >
+          <:label>Label</:label>
+          <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+          <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+          <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+        </.editable>
+      </div>
+    </div>
+    """
+  end
+
+  def styling_width_example(assigns) do
+    assigns = assign(assigns, :width_variants, DemoScales.width_layout_variants("editable"))
+
+    ~H"""
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={variant <- @width_variants} class="flex flex-col gap-2">
+        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <.editable
+          id={"editable-style-width-#{variant.id}"}
+          class={DemoScales.join_modifiers("editable", variant.modifier)}
+          value={variant.label}
+        >
+          <:label>Label</:label>
+          <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+          <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+          <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+        </.editable>
+      </div>
     </div>
     """
   end
 
   def api_set_value_client_binding_heex do
     ~S"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action phx-click={Corex.Editable.set_value("editable-api-cb", "Alpha")} class="button button--sm">Alpha</.action>
       <.action phx-click={Corex.Editable.set_value("editable-api-cb", "Beta")} class="button button--sm">Beta</.action>
     </div>
@@ -358,7 +490,7 @@ defmodule E2eWeb.Demos.EditableDemo do
 
   def api_set_value_client_js_heex do
     ~S"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <button
         type="button"
         class="button button--sm"
@@ -399,7 +531,7 @@ defmodule E2eWeb.Demos.EditableDemo do
 
     ~H"""
     <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
-      <div class="layout__row">
+      <div class="flex flex-wrap items-center gap-space">
         <button
           type="button"
           class="button button--sm"
@@ -420,7 +552,7 @@ defmodule E2eWeb.Demos.EditableDemo do
 
   def api_set_value_server_heex do
     ~S"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action phx-click="editable_api_alpha" class="button button--sm">Alpha</.action>
       <.action phx-click="editable_api_beta" class="button button--sm">Beta</.action>
     </div>
@@ -450,7 +582,7 @@ defmodule E2eWeb.Demos.EditableDemo do
 
     ~H"""
     <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
-      <div class="layout__row">
+      <div class="flex flex-wrap items-center gap-space">
         <.action phx-click="editable_api_alpha" class="button button--sm">Alpha</.action>
         <.action phx-click="editable_api_beta" class="button button--sm">Beta</.action>
       </div>

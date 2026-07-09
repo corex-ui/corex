@@ -1,6 +1,7 @@
 defmodule E2eWeb.Demos.AvatarDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.DemoScales
   alias Phoenix.LiveView.JS
 
   def events_server_heex do
@@ -25,7 +26,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
   def minimal_code do
     ~S"""
-    <div class="layout__row gap-2">
+    <div class="flex flex-wrap items-center gap-space gap-2">
       <.avatar src="" class="avatar">
         <:fallback>JD</:fallback>
       </.avatar>
@@ -43,7 +44,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
     _ = assigns
 
     ~H"""
-    <div class="layout__row gap-2">
+    <div class="flex flex-wrap items-center gap-space gap-2">
       <.avatar id="avatar-fallback" src="" class="avatar">
         <:fallback>JD</:fallback>
       </.avatar>
@@ -101,7 +102,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
     _ = assigns
 
     ~H"""
-    <div class="layout__row gap-4 items-center">
+    <div class="flex flex-wrap items-center gap-space gap-4 items-center">
       <.avatar id="avatar-anatomy-value-empty" src="" class="avatar">
         <:value :let={src}>
           {if src, do: "IMG", else: " - "}
@@ -132,7 +133,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
         </.avatar>
       </div>
       <div class="flex flex-col gap-2 items-center w-full">
-        <div class="layout__row gap-4 items-center">
+        <div class="flex flex-wrap items-center gap-space gap-4 items-center">
           <.avatar src="" class="avatar">
             <:value :let={src}>
               {if src, do: "IMG", else: " - "}
@@ -169,19 +170,19 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
     ~H"""
     <div class="flex flex-wrap gap-4 items-end justify-center">
-      <.avatar id="avatar-style-accent" src="" class="avatar avatar--accent">
+      <.avatar id="avatar-style-accent" class="avatar avatar--accent">
         <:fallback>A</:fallback>
       </.avatar>
-      <.avatar id="avatar-style-brand" src="" class="avatar avatar--brand">
+      <.avatar id="avatar-style-brand" class="avatar avatar--brand">
         <:fallback>B</:fallback>
       </.avatar>
-      <.avatar id="avatar-style-alert" src="" class="avatar avatar--alert">
+      <.avatar id="avatar-style-alert" class="avatar avatar--alert">
         <:fallback>C</:fallback>
       </.avatar>
-      <.avatar id="avatar-style-info" src="" class="avatar avatar--info">
+      <.avatar id="avatar-style-info" class="avatar avatar--info">
         <:fallback>D</:fallback>
       </.avatar>
-      <.avatar id="avatar-style-success" src="" class="avatar avatar--success">
+      <.avatar id="avatar-style-success" class="avatar avatar--success">
         <:fallback>E</:fallback>
       </.avatar>
     </div>
@@ -190,10 +191,10 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
   def styling_color_code do
     ~S"""
-    <.avatar src="" class="avatar avatar--accent">
+    <.avatar class="avatar avatar--accent">
       <:fallback>A</:fallback>
     </.avatar>
-    <.avatar src="" class="avatar avatar--brand">
+    <.avatar class="avatar avatar--brand">
       <:fallback>B</:fallback>
     </.avatar>
     """
@@ -240,6 +241,79 @@ defmodule E2eWeb.Demos.AvatarDemo do
     """
   end
 
+  def styling_variant_code do
+    ~S"""
+    <.avatar class="avatar">
+      <:fallback>A</:fallback>
+    </.avatar>
+    <.avatar class="avatar avatar--variant-solid">
+      <:fallback>B</:fallback>
+    </.avatar>
+    <.avatar class="avatar avatar--variant-ghost">
+      <:fallback>C</:fallback>
+    </.avatar>
+    <.avatar class="avatar avatar--variant-outline">
+      <:fallback>D</:fallback>
+    </.avatar>
+    """
+  end
+
+  def styling_variant_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-wrap gap-4 items-end justify-center">
+      <.avatar id="avatar-style-variant-subtle" class="avatar">
+        <:fallback>A</:fallback>
+      </.avatar>
+      <.avatar id="avatar-style-variant-solid" class="avatar avatar--variant-solid">
+        <:fallback>B</:fallback>
+      </.avatar>
+      <.avatar id="avatar-style-variant-ghost" class="avatar avatar--variant-ghost">
+        <:fallback>C</:fallback>
+      </.avatar>
+      <.avatar id="avatar-style-variant-outline" class="avatar avatar--variant-outline">
+        <:fallback>D</:fallback>
+      </.avatar>
+    </div>
+    """
+  end
+
+  def styling_variant_matrix_code do
+    for semantic <- DemoScales.styling_semantic_axis_steps("avatar"),
+        variant <- DemoScales.styling_variant_axis_steps("avatar") do
+      class = DemoScales.join_matrix_modifiers("avatar", semantic.modifier, variant.modifier)
+
+      letter = String.first(semantic.label)
+      ~s(<.avatar class="#{class}">
+        <:fallback>#{letter}</:fallback>
+      </.avatar>)
+    end
+    |> DemoScales.join_code()
+  end
+
+  def styling_variant_matrix_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("avatar"))
+      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("avatar"))
+
+    ~H"""
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+      <div class="grid grid-cols-4 gap-space gap-2 items-end min-w-max">
+        <div :for={semantic <- @matrix_semantics} class="contents">
+          <.avatar
+            :for={variant <- @matrix_variants}
+            class={DemoScales.join_matrix_modifiers("avatar", semantic.modifier, variant.modifier)}
+          >
+            <:fallback>{String.first(semantic.label)}</:fallback>
+          </.avatar>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
   def styling_size_code do
     ~S"""
     <.avatar src="https://corex-ui.com/images/avatar.png" class="avatar avatar--sm">
@@ -257,62 +331,28 @@ defmodule E2eWeb.Demos.AvatarDemo do
     """
   end
 
-  @styling_rounded_src "https://corex-ui.com/images/avatar.png"
-
   def styling_rounded_example(assigns) do
-    assigns = assign(assigns, :rounded_src, @styling_rounded_src)
-
     ~H"""
     <div class="flex flex-wrap gap-4 items-end justify-center">
-      <.avatar id="avatar-style-rounded-default" src={@rounded_src} alt="" class="avatar">
-        <:fallback>MD</:fallback>
+      <.avatar id="avatar-style-rounded-default" class="avatar">
+        <:fallback>●</:fallback>
       </.avatar>
-      <.avatar
-        id="avatar-style-rounded-none"
-        src={@rounded_src}
-        alt=""
-        class="avatar avatar--rounded-none"
-      >
+      <.avatar id="avatar-style-rounded-none" class="avatar avatar--rounded-none">
         <:fallback>0</:fallback>
       </.avatar>
-      <.avatar
-        id="avatar-style-rounded-sm"
-        src={@rounded_src}
-        alt=""
-        class="avatar avatar--rounded-sm"
-      >
+      <.avatar id="avatar-style-rounded-sm" class="avatar avatar--rounded-sm">
         <:fallback>SM</:fallback>
       </.avatar>
-      <.avatar
-        id="avatar-style-rounded-md"
-        src={@rounded_src}
-        alt=""
-        class="avatar avatar--rounded-md"
-      >
+      <.avatar id="avatar-style-rounded-md" class="avatar avatar--rounded-md">
         <:fallback>MD</:fallback>
       </.avatar>
-      <.avatar
-        id="avatar-style-rounded-lg"
-        src={@rounded_src}
-        alt=""
-        class="avatar avatar--rounded-lg"
-      >
+      <.avatar id="avatar-style-rounded-lg" class="avatar avatar--rounded-lg">
         <:fallback>LG</:fallback>
       </.avatar>
-      <.avatar
-        id="avatar-style-rounded-xl"
-        src={@rounded_src}
-        alt=""
-        class="avatar avatar--rounded-xl"
-      >
+      <.avatar id="avatar-style-rounded-xl" class="avatar avatar--rounded-xl">
         <:fallback>XL</:fallback>
       </.avatar>
-      <.avatar
-        id="avatar-style-rounded-full"
-        src={@rounded_src}
-        alt=""
-        class="avatar avatar--rounded-full"
-      >
+      <.avatar id="avatar-style-rounded-full" class="avatar avatar--rounded-full">
         <:fallback>●</:fallback>
       </.avatar>
     </div>
@@ -320,26 +360,26 @@ defmodule E2eWeb.Demos.AvatarDemo do
   end
 
   def styling_rounded_code do
-    """
-    <.avatar src="#{@styling_rounded_src}" alt="" class="avatar">
-      <:fallback>MD</:fallback>
+    ~S"""
+    <.avatar class="avatar">
+      <:fallback>●</:fallback>
     </.avatar>
-    <.avatar src="#{@styling_rounded_src}" alt="" class="avatar avatar--rounded-none">
+    <.avatar class="avatar avatar--rounded-none">
       <:fallback>0</:fallback>
     </.avatar>
-    <.avatar src="#{@styling_rounded_src}" alt="" class="avatar avatar--rounded-sm">
+    <.avatar class="avatar avatar--rounded-sm">
       <:fallback>SM</:fallback>
     </.avatar>
-    <.avatar src="#{@styling_rounded_src}" alt="" class="avatar avatar--rounded-md">
+    <.avatar class="avatar avatar--rounded-md">
       <:fallback>MD</:fallback>
     </.avatar>
-    <.avatar src="#{@styling_rounded_src}" alt="" class="avatar avatar--rounded-lg">
+    <.avatar class="avatar avatar--rounded-lg">
       <:fallback>LG</:fallback>
     </.avatar>
-    <.avatar src="#{@styling_rounded_src}" alt="" class="avatar avatar--rounded-xl">
+    <.avatar class="avatar avatar--rounded-xl">
       <:fallback>XL</:fallback>
     </.avatar>
-    <.avatar src="#{@styling_rounded_src}" alt="" class="avatar avatar--rounded-full">
+    <.avatar class="avatar avatar--rounded-full">
       <:fallback>●</:fallback>
     </.avatar>
     """

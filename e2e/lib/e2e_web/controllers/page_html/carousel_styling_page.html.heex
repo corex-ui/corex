@@ -14,12 +14,47 @@
   >
     <.demo_section
       id="carousel-styling-color"
-      title={~t"Color"}
+      title={~t"Semantic"}
       code={E2eWeb.Demos.CarouselDemo.styling_color_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="carousel" axis={:semantic} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.CarouselDemo.styling_color_example />
       </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="carousel-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.CarouselDemo.styling_variant_code()}
+    >
+      <:description>
+        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
+          <p>
+            Variant modifiers control carousel surface treatment. Default is subtle; use <code class="text-sm">carousel--variant-solid</code>, <code class="text-sm">carousel--variant-ghost</code>, or
+            <code class="text-sm">carousel--variant-outline</code>
+            to change it.
+          </p>
+        </div>
+      </:description>
+      <:preview><E2eWeb.Demos.CarouselDemo.styling_variant_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="carousel-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.CarouselDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
+          <p>
+            Combine semantic palette and variant treatment on the same host, for example <code class="text-sm">carousel carousel--accent carousel--variant-solid</code>.
+          </p>
+        </div>
+      </:description>
+      <:preview><E2eWeb.Demos.CarouselDemo.styling_variant_matrix_example /></:preview>
     </.demo_section>
 
     <.demo_section
@@ -27,6 +62,9 @@
       title={~t"Size"}
       code={E2eWeb.Demos.CarouselDemo.styling_size_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="carousel" axis={:size} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.CarouselDemo.styling_size_example />
       </:preview>
@@ -34,11 +72,27 @@
 
     <.demo_section
       id="carousel-styling-radius"
-      title={~t"Radius"}
+      title={~t"Rounded"}
       code={E2eWeb.Demos.CarouselDemo.styling_radius_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="carousel" axis={:radius} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.CarouselDemo.styling_radius_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="carousel-styling-max-width"
+      title={~t"Max width"}
+      code={E2eWeb.Demos.CarouselDemo.styling_max_width_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="carousel" axis={:max_width} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.CarouselDemo.styling_max_width_example />
       </:preview>
     </.demo_section>
   </.demo_page>

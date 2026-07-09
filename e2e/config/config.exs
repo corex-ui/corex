@@ -76,14 +76,12 @@ config :esbuild,
     }
   ]
 
-config :designex,
-  version: "1.0.2",
-  commit: "1da4b31",
-  cd: Path.expand("../assets", __DIR__),
-  dir: "corex",
-  corex: [
-    build_args: ~w(--dir=design --script=build.mjs --tokens=tokens)
-  ]
+config :corex_design,
+  output: "assets/corex",
+  default_theme: :neo,
+  default_mode: :light,
+  themes: nil,
+  scales: []
 
 config :tailwind,
   version: "4.1.12",

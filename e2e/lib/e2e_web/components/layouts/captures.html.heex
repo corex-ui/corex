@@ -69,16 +69,16 @@
       })();
     </script>
   </head>
-  <body class="typo layout">
+  <body class={Shell.body()}>
     <.navigate to="#main-content" class="link link--skip">{~t"Skip to content"}</.navigate>
     <.toast_group id="layout-toast" class="toast" phx-update="ignore" flash={@flash}>
       <:loading>
         <.heroicon name="hero-arrow-path" class="icon" />
       </:loading>
     </.toast_group>
-    <header class="layout__header">
-      <div class="layout__header__content">
-        <div class="layout__row gap-mini-gap">
+    <header class={Shell.header()}>
+      <div class={Shell.header_content()}>
+        <div class="flex flex-wrap items-center gap-space gap-mini-gap">
           <a
             href="/"
             target="_blank"
@@ -93,22 +93,22 @@
             Corex
           </a>
         </div>
-        <div class="layout__row">
+        <div class="flex flex-wrap items-center gap-space">
           <.theme_toggle theme={assigns[:theme] || "neo"} />
           <.mode_toggle mode={@mode} />
         </div>
       </div>
     </header>
-    <main id="main-content" class="layout__main">
-      <div class="layout__content">
-        <div class="layout__article">
+    <main id="main-content" class={Shell.main()}>
+      <div class={Shell.content()}>
+        <div class={Shell.article()}>
           {@inner_content}
         </div>
       </div>
     </main>
-    <footer class="layout__footer">
-      <div class="layout__footer__content gap-2 justify-center md:justify-between">
-        <div class="layout__row">
+    <footer class={Shell.footer()}>
+      <div class={Shell.footer_content() <> " gap-2 justify-center md:justify-between"}>
+        <div class="flex flex-wrap items-center gap-space">
           <a class="link link--sm link--success" href="https://netoum.com" target="_blank">
             Open source by Netoum
             <svg
@@ -150,7 +150,7 @@
             </svg>
           </a>
         </div>
-        <div class="layout__row gap-2">
+        <div class="flex flex-wrap items-center gap-space gap-2">
           <a
             href="https://github.com/corex-ui/corex"
             target="_blank"

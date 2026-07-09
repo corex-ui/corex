@@ -9,34 +9,75 @@
     id="dialog-styling-page"
     title={~t"Dialog · Style"}
     subtitle={
-      ~t"Size, type scale, corner radius, and edge (side) layout via modifier classes on the dialog."
+      ~t"Semantic colors, size, type scale, corner radius, and edge (side) layout via modifier classes on the dialog."
     }
   >
+    <.demo_section
+      id="dialog-styling-color"
+      title={~t"Semantic"}
+      code={E2eWeb.Demos.DialogDemo.styling_color_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="dialog" axis={:semantic} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.DialogDemo.styling_color_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="dialog-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.DialogDemo.styling_variant_code()}
+    >
+      <:description>
+        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
+          <p>
+            Variant modifiers control dialog surface treatment. Default is subtle; use <code class="text-sm">dialog--variant-solid</code>, <code class="text-sm">dialog--variant-ghost</code>, or
+            <code class="text-sm">dialog--variant-outline</code>
+            to change it.
+          </p>
+        </div>
+      </:description>
+      <:preview><E2eWeb.Demos.DialogDemo.styling_variant_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="dialog-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.DialogDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
+          <p>
+            Combine semantic palette and variant treatment on the same host, for example <code class="text-sm">dialog dialog--accent dialog--variant-solid</code>.
+          </p>
+        </div>
+      </:description>
+      <:preview><E2eWeb.Demos.DialogDemo.styling_variant_matrix_example /></:preview>
+    </.demo_section>
+
     <.demo_section
       id="dialog-styling-size"
       title={~t"Size"}
       code={E2eWeb.Demos.DialogDemo.styling_size_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="dialog" axis={:size} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.DialogDemo.styling_size_example />
       </:preview>
     </.demo_section>
 
     <.demo_section
-      id="dialog-styling-text"
-      title={~t"Text"}
-      code={E2eWeb.Demos.DialogDemo.styling_text_code()}
-    >
-      <:preview>
-        <E2eWeb.Demos.DialogDemo.styling_text_example />
-      </:preview>
-    </.demo_section>
-
-    <.demo_section
       id="dialog-styling-radius"
-      title={~t"Radius"}
+      title={~t"Rounded"}
       code={E2eWeb.Demos.DialogDemo.styling_radius_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="dialog" axis={:radius} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.DialogDemo.styling_radius_example />
       </:preview>

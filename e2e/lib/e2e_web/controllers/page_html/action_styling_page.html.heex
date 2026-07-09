@@ -12,10 +12,45 @@
   >
     <.demo_section
       id="action-style-color"
-      title={~t"Color"}
+      title={~t"Semantic"}
       code={E2eWeb.Demos.ActionDemo.styling_color_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="button" axis={:semantic} />
+      </:description>
       <:preview><E2eWeb.Demos.ActionDemo.styling_color_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="action-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.ActionDemo.styling_variant_code()}
+    >
+      <:description>
+        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
+          <p>
+            Variant modifiers control button surface treatment. Default is subtle; use <code class="text-sm">button--variant-solid</code>, <code class="text-sm">button--variant-ghost</code>, or
+            <code class="text-sm">button--variant-outline</code>
+            to change it.
+          </p>
+        </div>
+      </:description>
+      <:preview><E2eWeb.Demos.ActionDemo.styling_variant_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="action-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.ActionDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
+          <p>
+            Combine semantic palette and variant treatment on the same host, for example <code class="text-sm">button button--accent button--variant-solid</code>.
+          </p>
+        </div>
+      </:description>
+      <:preview><E2eWeb.Demos.ActionDemo.styling_variant_matrix_example /></:preview>
     </.demo_section>
 
     <.demo_section
@@ -23,6 +58,9 @@
       title={~t"Size"}
       code={E2eWeb.Demos.ActionDemo.styling_size_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="button" axis={:size} />
+      </:description>
       <:preview><E2eWeb.Demos.ActionDemo.styling_size_example /></:preview>
     </.demo_section>
 
@@ -31,7 +69,36 @@
       title={~t"Rounded"}
       code={E2eWeb.Demos.ActionDemo.styling_rounded_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="button" axis={:radius} pattern="rounded-{step}" />
+      </:description>
       <:preview><E2eWeb.Demos.ActionDemo.styling_rounded_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="action-styling-width"
+      title={~t"Width"}
+      code={E2eWeb.Demos.ActionDemo.styling_width_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="button" axis={:width} />
+      </:description>
+      <:preview><E2eWeb.Demos.ActionDemo.styling_width_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="action-styling-max-width"
+      title={~t"Max width"}
+      code={E2eWeb.Demos.ActionDemo.styling_max_width_code()}
+    >
+      <:description>
+        <.demo_modifier_axis
+          name="button"
+          axis={:max_width}
+          purpose="show a capped full-width control on fit-content hosts (pair w-full with max-w-* and wide content when labels are short)"
+        />
+      </:description>
+      <:preview><E2eWeb.Demos.ActionDemo.styling_max_width_example /></:preview>
     </.demo_section>
 
     <.demo_section

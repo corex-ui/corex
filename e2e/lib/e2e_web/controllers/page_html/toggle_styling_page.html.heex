@@ -9,12 +9,47 @@
   >
     <.demo_section
       id="toggle-styling-color"
-      title={~t"Color"}
+      title={~t"Semantic"}
       code={E2eWeb.Demos.ToggleDemo.styling_color_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="toggle" axis={:semantic} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.ToggleDemo.styling_color_example />
       </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="toggle-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.ToggleDemo.styling_variant_code()}
+    >
+      <:description>
+        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
+          <p>
+            Variant modifiers control toggle surface treatment. Default is subtle; use <code class="text-sm">toggle--variant-solid</code>, <code class="text-sm">toggle--variant-ghost</code>, or
+            <code class="text-sm">toggle--variant-outline</code>
+            to change it.
+          </p>
+        </div>
+      </:description>
+      <:preview><E2eWeb.Demos.ToggleDemo.styling_variant_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="toggle-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.ToggleDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
+          <p>
+            Combine semantic palette and variant treatment on the same host, for example <code class="text-sm">toggle toggle--accent toggle--variant-solid</code>.
+          </p>
+        </div>
+      </:description>
+      <:preview><E2eWeb.Demos.ToggleDemo.styling_variant_matrix_example /></:preview>
     </.demo_section>
 
     <.demo_section
@@ -22,6 +57,9 @@
       title={~t"Size"}
       code={E2eWeb.Demos.ToggleDemo.styling_size_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="toggle" axis={:size} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.ToggleDemo.styling_size_example />
       </:preview>
@@ -29,11 +67,44 @@
 
     <.demo_section
       id="toggle-styling-radius"
-      title={~t"Radius"}
+      title={~t"Rounded"}
       code={E2eWeb.Demos.ToggleDemo.styling_radius_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="toggle" axis={:radius} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.ToggleDemo.styling_radius_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="toggle-styling-width"
+      title={~t"Width"}
+      code={E2eWeb.Demos.ToggleDemo.styling_width_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="toggle" axis={:width} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.ToggleDemo.styling_width_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="toggle-styling-max-width"
+      title={~t"Max width"}
+      code={E2eWeb.Demos.ToggleDemo.styling_max_width_code()}
+    >
+      <:description>
+        <.demo_modifier_axis
+          name="toggle"
+          axis={:max_width}
+          purpose="show a capped full-width control on fit-content hosts (pair w-full with max-w-* and wide content when labels are short)"
+        />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.ToggleDemo.styling_max_width_example />
       </:preview>
     </.demo_section>
 

@@ -39,6 +39,8 @@ defmodule E2eWeb.ComboboxPlayLive do
       dir: "ltr",
       orientation: "vertical",
       close_on_select: true,
+      allow_custom_value: false,
+      clear_on_empty: false,
       disabled_item_ids: []
     }
 
@@ -131,6 +133,12 @@ defmodule E2eWeb.ComboboxPlayLive do
   defp update_control(socket, "close_on_select", v),
     do: update(socket, :controls, &Map.put(&1, :close_on_select, v))
 
+  defp update_control(socket, "allow_custom_value", v),
+    do: update(socket, :controls, &Map.put(&1, :allow_custom_value, v))
+
+  defp update_control(socket, "clear_on_empty", v),
+    do: update(socket, :controls, &Map.put(&1, :clear_on_empty, v))
+
   defp update_control(socket, _, _), do: socket
 
   defp control_bool(v) when v in [true, "true"], do: true
@@ -154,7 +162,7 @@ defmodule E2eWeb.ComboboxPlayLive do
           />
 
           <.toggle_group
-            class="toggle-group toggle-group--sm max-w-7xs"
+            class="toggle-group toggle-group--sm max-w-3xs"
             id="orientation"
             on_value_change="control_changed"
             multiple={false}
@@ -217,6 +225,22 @@ defmodule E2eWeb.ComboboxPlayLive do
           >
             <:label>Close on select</:label>
           </.switch>
+          <.switch
+            class="switch switch--sm"
+            id="allow_custom_value"
+            checked={@controls.allow_custom_value}
+            on_checked_change="control_changed"
+          >
+            <:label>Allow custom value</:label>
+          </.switch>
+          <.switch
+            class="switch switch--sm"
+            id="clear_on_empty"
+            checked={@controls.clear_on_empty}
+            on_checked_change="control_changed"
+          >
+            <:label>Clear on empty</:label>
+          </.switch>
         </:controls>
         <:canvas>
           <.combobox
@@ -226,6 +250,8 @@ defmodule E2eWeb.ComboboxPlayLive do
             items={@items}
             value={@play_value}
             close_on_select={@controls.close_on_select}
+            allow_custom_value={@controls.allow_custom_value}
+            clear_on_empty={@controls.clear_on_empty}
             on_value_change="combobox_play_value_changed"
             disabled={@controls.disabled}
             read_only={@controls.read_only}

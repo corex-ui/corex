@@ -1,6 +1,8 @@
 defmodule E2eWeb.Demos.TimerDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.DemoScales
+
   def anatomy_minimal_code do
     ~S"""
     <.timer start_ms={60_000} class="timer" />
@@ -673,72 +675,6 @@ defmodule E2eWeb.Demos.TimerDemo do
     """
   end
 
-  def styling_text_code do
-    ~S"""
-    <.timer class="timer timer--text-sm w-full" start_ms={60_000} target_ms={0} countdown />
-    <.timer class="timer timer--text-xl w-full" start_ms={60_000} target_ms={0} countdown />
-    <.timer class="timer timer--text-2xl w-full" start_ms={60_000} target_ms={0} countdown />
-    <.timer class="timer timer--text-4xl w-full" start_ms={60_000} target_ms={0} countdown />
-    """
-  end
-
-  def styling_text_example(assigns) do
-    _ = assigns
-
-    ~H"""
-    <div class="flex flex-col gap-4 w-full max-w-md">
-      <.timer
-        id="timer-style-text-sm"
-        class="timer timer--text-sm w-full"
-        start_ms={60_000}
-        target_ms={0}
-        countdown
-      >
-        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
-      </.timer>
-      <.timer
-        id="timer-style-text-xl"
-        class="timer timer--text-xl w-full"
-        start_ms={60_000}
-        target_ms={0}
-        countdown
-      >
-        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
-      </.timer>
-      <.timer
-        id="timer-style-text-2xl"
-        class="timer timer--text-2xl w-full"
-        start_ms={60_000}
-        target_ms={0}
-        countdown
-      >
-        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
-      </.timer>
-      <.timer
-        id="timer-style-text-4xl"
-        class="timer timer--text-4xl w-full"
-        start_ms={60_000}
-        target_ms={0}
-        countdown
-      >
-        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
-      </.timer>
-    </div>
-    """
-  end
-
   def styling_radius_code do
     ~S"""
     <.timer class="timer timer--rounded-none w-full" start_ms={60_000} target_ms={0} countdown />
@@ -906,6 +842,215 @@ defmodule E2eWeb.Demos.TimerDemo do
         <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
         <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
       </.timer>
+    </div>
+    """
+  end
+
+  def styling_variant_code do
+    triggers = styling_triggers_code()
+
+    """
+    <.timer class="timer w-full max-w-xs" start_ms={60_000} target_ms={0} countdown>
+    #{triggers}
+    </.timer>
+    <.timer class="timer timer--variant-solid w-full max-w-xs" start_ms={60_000} target_ms={0} countdown>
+    #{triggers}
+    </.timer>
+    <.timer class="timer timer--variant-ghost w-full max-w-xs" start_ms={60_000} target_ms={0} countdown>
+    #{triggers}
+    </.timer>
+    <.timer class="timer timer--variant-outline w-full max-w-xs" start_ms={60_000} target_ms={0} countdown>
+    #{triggers}
+    </.timer>
+    """
+  end
+
+  def styling_variant_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
+      <.timer
+        id="timer-style-variant-subtle"
+        class="timer w-full max-w-xs"
+        start_ms={60_000}
+        target_ms={0}
+        countdown
+      >
+        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
+      </.timer>
+      <.timer
+        id="timer-style-variant-solid"
+        class="timer timer--variant-solid w-full max-w-xs"
+        start_ms={60_000}
+        target_ms={0}
+        countdown
+      >
+        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
+      </.timer>
+      <.timer
+        id="timer-style-variant-ghost"
+        class="timer timer--variant-ghost w-full max-w-xs"
+        start_ms={60_000}
+        target_ms={0}
+        countdown
+      >
+        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
+      </.timer>
+      <.timer
+        id="timer-style-variant-outline"
+        class="timer timer--variant-outline w-full max-w-xs"
+        start_ms={60_000}
+        target_ms={0}
+        countdown
+      >
+        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
+      </.timer>
+    </div>
+    """
+  end
+
+  def styling_variant_matrix_code do
+    triggers = styling_triggers_code()
+
+    for semantic <- DemoScales.styling_semantic_axis_steps("timer"),
+        variant <- DemoScales.styling_variant_axis_steps("timer") do
+      class = DemoScales.join_matrix_modifiers("timer", semantic.modifier, variant.modifier)
+
+      """
+      <.timer class="#{class} w-full max-w-xs" start_ms={60_000} target_ms={0} countdown>
+      #{triggers}
+      </.timer>
+      """
+    end
+    |> DemoScales.join_code()
+  end
+
+  def styling_variant_matrix_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("timer"))
+      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("timer"))
+
+    ~H"""
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+      <div class="grid grid-cols-4 gap-space gap-2 items-start min-w-max">
+        <div :for={semantic <- @matrix_semantics} class="contents">
+          <.timer
+            :for={variant <- @matrix_variants}
+            class={DemoScales.join_matrix_modifiers("timer", semantic.modifier, variant.modifier) <> " w-full max-w-xs"}
+            start_ms={60_000}
+            target_ms={0}
+            countdown
+          >
+            <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+            <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+            <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+            <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
+          </.timer>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  defp styling_triggers_code do
+    """
+      <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+      <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+      <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+      <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
+    """
+  end
+
+  def styling_width_code do
+    triggers = styling_triggers_code()
+
+    DemoScales.width_layout_variants("timer")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("timer", modifier)
+
+      """
+      <.timer class="#{class}" start_ms={60_000} target_ms={0} countdown>
+      #{triggers}
+      </.timer>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_max_width_code do
+    triggers = styling_triggers_code()
+
+    DemoScales.max_width_variants("timer")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_block_modifiers("timer", modifier)
+
+      """
+      <.timer class="#{class}" start_ms={60_000} target_ms={0} countdown>
+      #{triggers}
+      </.timer>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_width_example(assigns) do
+    assigns = assign(assigns, :width_variants, DemoScales.width_layout_variants("timer"))
+
+    ~H"""
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={variant <- @width_variants} class="flex flex-col gap-2">
+        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <.timer
+          id={"timer-style-width-#{variant.id}"}
+          class={DemoScales.join_modifiers("timer", variant.modifier)}
+          start_ms={60_000}
+          target_ms={0}
+          countdown
+        >
+          <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+          <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+          <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+          <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
+        </.timer>
+      </div>
+    </div>
+    """
+  end
+
+  def styling_max_width_example(assigns) do
+    assigns = assign(assigns, :max_width_variants, DemoScales.max_width_variants("timer"))
+
+    ~H"""
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <.timer
+          id={"timer-style-max-#{variant.id}"}
+          class={DemoScales.join_block_modifiers("timer", variant.modifier)}
+          start_ms={60_000}
+          target_ms={0}
+          countdown
+        >
+          <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+          <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+          <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+          <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
+        </.timer>
+      </div>
     </div>
     """
   end

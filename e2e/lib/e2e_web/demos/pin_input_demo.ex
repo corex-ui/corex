@@ -1,6 +1,8 @@
 defmodule E2eWeb.Demos.PinInputDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.DemoScales
+
   def minimal_code do
     ~S"""
     <.pin_input count={4} class="pin-input">
@@ -803,6 +805,102 @@ defmodule E2eWeb.Demos.PinInputDemo do
     """
   end
 
+  def styling_variant_code do
+    """
+    <.pin_input count={4} class="pin-input" value={["1", "2", "", ""]}>
+      <:label>Subtle (default)</:label>
+    </.pin_input>
+    <.pin_input count={4} class="pin-input pin-input--variant-solid" value={["1", "2", "", ""]}>
+      <:label>Solid</:label>
+    </.pin_input>
+    <.pin_input count={4} class="pin-input pin-input--variant-ghost" value={["1", "2", "", ""]}>
+      <:label>Ghost</:label>
+    </.pin_input>
+    <.pin_input count={4} class="pin-input pin-input--variant-outline" value={["1", "2", "", ""]}>
+      <:label>Outline</:label>
+    </.pin_input>
+    """
+  end
+
+  def styling_variant_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-wrap gap-6 items-start">
+      <.pin_input
+        id="pin-input-style-variant-subtle"
+        count={4}
+        class="pin-input"
+        value={["1", "2", "", ""]}
+      >
+        <:label>Subtle (default)</:label>
+      </.pin_input>
+      <.pin_input
+        id="pin-input-style-variant-solid"
+        count={4}
+        class="pin-input pin-input--variant-solid"
+        value={["1", "2", "", ""]}
+      >
+        <:label>Solid</:label>
+      </.pin_input>
+      <.pin_input
+        id="pin-input-style-variant-ghost"
+        count={4}
+        class="pin-input pin-input--variant-ghost"
+        value={["1", "2", "", ""]}
+      >
+        <:label>Ghost</:label>
+      </.pin_input>
+      <.pin_input
+        id="pin-input-style-variant-outline"
+        count={4}
+        class="pin-input pin-input--variant-outline"
+        value={["1", "2", "", ""]}
+      >
+        <:label>Outline</:label>
+      </.pin_input>
+    </div>
+    """
+  end
+
+  def styling_variant_matrix_code do
+    for semantic <- DemoScales.styling_semantic_axis_steps("pin-input"),
+        variant <- DemoScales.styling_variant_axis_steps("pin-input") do
+      class = DemoScales.join_matrix_modifiers("pin-input", semantic.modifier, variant.modifier)
+
+      """
+      <.pin_input count={4} class="#{class}" value={["1", "2", "", ""]}>
+        <:label>#{semantic.label}</:label>
+      </.pin_input>
+      """
+    end
+    |> DemoScales.join_code()
+  end
+
+  def styling_variant_matrix_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("pin-input"))
+      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("pin-input"))
+
+    ~H"""
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+      <div class="grid grid-cols-4 gap-space gap-2 items-start min-w-max">
+        <div :for={semantic <- @matrix_semantics} class="contents">
+          <.pin_input
+            :for={variant <- @matrix_variants}
+            count={4}
+            class={DemoScales.join_matrix_modifiers("pin-input", semantic.modifier, variant.modifier)}
+            value={["1", "2", "", ""]}
+          >
+            <:label>{semantic.label}</:label>
+          </.pin_input>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
   def styling_size_code do
     """
     <.pin_input count={4} class="pin-input pin-input--sm" value={["1", "2", "", ""]}>
@@ -926,6 +1024,84 @@ defmodule E2eWeb.Demos.PinInputDemo do
       >
         <:label>Full</:label>
       </.pin_input>
+    </div>
+    """
+  end
+
+  defp styling_label_code do
+    """
+      <:label>Code</:label>
+    """
+  end
+
+  def styling_width_code do
+    label = styling_label_code()
+
+    DemoScales.width_layout_variants("pin-input")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("pin-input", modifier)
+
+      """
+      <.pin_input count={4} class="#{class}" value={["1", "2", "", ""]}>
+      #{label}
+      </.pin_input>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_max_width_code do
+    label = styling_label_code()
+
+    DemoScales.max_width_variants("pin-input")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("pin-input", modifier)
+
+      """
+      <.pin_input count={4} class="#{class}" value={["1", "2", "", ""]}>
+      #{label}
+      </.pin_input>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_width_example(assigns) do
+    assigns = assign(assigns, :width_variants, DemoScales.width_layout_variants("pin-input"))
+
+    ~H"""
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={variant <- @width_variants} class="flex flex-col gap-2">
+        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <.pin_input
+          id={"pin-input-style-width-#{variant.id}"}
+          count={4}
+          class={DemoScales.join_modifiers("pin-input", variant.modifier)}
+          value={["1", "2", "", ""]}
+        >
+          <:label>Code</:label>
+        </.pin_input>
+      </div>
+    </div>
+    """
+  end
+
+  def styling_max_width_example(assigns) do
+    assigns = assign(assigns, :max_width_variants, DemoScales.max_width_variants("pin-input"))
+
+    ~H"""
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <.pin_input
+          id={"pin-input-style-max-#{variant.id}"}
+          count={4}
+          class={DemoScales.join_modifiers("pin-input", variant.modifier)}
+          value={["1", "2", "", ""]}
+        >
+          <:label>Code</:label>
+        </.pin_input>
+      </div>
     </div>
     """
   end

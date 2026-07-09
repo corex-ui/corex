@@ -1,6 +1,8 @@
 defmodule E2eWeb.Demos.AngleSliderDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.DemoScales
+
   import Corex.AngleSlider,
     only: [
       angle_slider: 1,
@@ -266,6 +268,103 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
 
   def styling_color_code, do: styling_modifiers_code()
 
+  def styling_variant_code do
+    ~S"""
+    <.angle_slider class="angle-slider" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
+      <:label>Subtle (default)</:label>
+    </.angle_slider>
+    <.angle_slider class="angle-slider angle-slider--variant-solid" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
+      <:label>Solid</:label>
+    </.angle_slider>
+    <.angle_slider class="angle-slider angle-slider--variant-ghost" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
+      <:label>Ghost</:label>
+    </.angle_slider>
+    <.angle_slider class="angle-slider angle-slider--variant-outline" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
+      <:label>Outline</:label>
+    </.angle_slider>
+    """
+  end
+
+  def styling_variant_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-wrap gap-4">
+      <.angle_slider
+        id="angle-slider-style-variant-subtle"
+        class="angle-slider"
+        value={90.0}
+        marker_values={[0.0, 90.0, 180.0, 270.0]}
+      >
+        <:label>Subtle (default)</:label>
+      </.angle_slider>
+      <.angle_slider
+        id="angle-slider-style-variant-solid"
+        class="angle-slider angle-slider--variant-solid"
+        value={90.0}
+        marker_values={[0.0, 90.0, 180.0, 270.0]}
+      >
+        <:label>Solid</:label>
+      </.angle_slider>
+      <.angle_slider
+        id="angle-slider-style-variant-ghost"
+        class="angle-slider angle-slider--variant-ghost"
+        value={90.0}
+        marker_values={[0.0, 90.0, 180.0, 270.0]}
+      >
+        <:label>Ghost</:label>
+      </.angle_slider>
+      <.angle_slider
+        id="angle-slider-style-variant-outline"
+        class="angle-slider angle-slider--variant-outline"
+        value={90.0}
+        marker_values={[0.0, 90.0, 180.0, 270.0]}
+      >
+        <:label>Outline</:label>
+      </.angle_slider>
+    </div>
+    """
+  end
+
+  def styling_variant_matrix_code do
+    for semantic <- DemoScales.styling_semantic_axis_steps("angle-slider"),
+        variant <- DemoScales.styling_variant_axis_steps("angle-slider") do
+      class =
+        DemoScales.join_matrix_modifiers("angle-slider", semantic.modifier, variant.modifier)
+
+      ~s(<.angle_slider class="#{class}" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
+        <:label>#{semantic.label}</:label>
+      </.angle_slider>)
+    end
+    |> DemoScales.join_code()
+  end
+
+  def styling_variant_matrix_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("angle-slider"))
+      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("angle-slider"))
+
+    ~H"""
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+      <div class="grid grid-cols-4 gap-space gap-2 items-start min-w-max">
+        <div :for={semantic <- @matrix_semantics} class="contents">
+          <.angle_slider
+            :for={variant <- @matrix_variants}
+            class={
+              DemoScales.join_matrix_modifiers("angle-slider", semantic.modifier, variant.modifier)
+            }
+            value={90.0}
+            marker_values={[0.0, 90.0, 180.0, 270.0]}
+          >
+            <:label>{semantic.label}</:label>
+          </.angle_slider>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
   def styling_size_code do
     ~S"""
     <.angle_slider class="angle-slider angle-slider--sm" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
@@ -280,6 +379,66 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     <.angle_slider class="angle-slider angle-slider--xl" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
       <:label>XL</:label>
     </.angle_slider>
+    """
+  end
+
+  def styling_width_code do
+    DemoScales.width_layout_variants("angle-slider")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("angle-slider", modifier)
+
+      """
+      <.angle_slider class="#{class}" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]} />
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_max_width_code do
+    DemoScales.max_width_variants("angle-slider")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("angle-slider", modifier)
+
+      """
+      <.angle_slider class="#{class}" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]} />
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_width_example(assigns) do
+    assigns = assign(assigns, :width_variants, DemoScales.width_layout_variants("angle-slider"))
+
+    ~H"""
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={variant <- @width_variants} class="flex flex-col gap-2">
+        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <.angle_slider
+          id={"angle-slider-style-width-#{variant.id}"}
+          class={DemoScales.join_modifiers("angle-slider", variant.modifier)}
+          value={90.0}
+          marker_values={marker_values()}
+        />
+      </div>
+    </div>
+    """
+  end
+
+  def styling_max_width_example(assigns) do
+    assigns = assign(assigns, :max_width_variants, DemoScales.max_width_variants("angle-slider"))
+
+    ~H"""
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <.angle_slider
+          id={"angle-slider-style-max-#{variant.id}"}
+          class={DemoScales.join_modifiers("angle-slider", variant.modifier)}
+          value={90.0}
+          marker_values={marker_values()}
+        />
+      </div>
+    </div>
     """
   end
 
@@ -646,7 +805,6 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     <.angle_slider
       class="angle-slider"
       marker_values={[0.0, 90.0, 180.0, 270.0]}
-      controlled
       value={@value}
       on_value_change="patterns_controlled_changed"
     >
@@ -1254,7 +1412,6 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         field={@form[:angle]}
         value={@angle_value}
         marker_values={[0, 90, 180, 270]}
-        on_value_change="angle_changed_validate"
         class="angle-slider"
       >
         <:label>Angle (0–90)</:label>
@@ -1416,6 +1573,146 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
                )
              )}
         end
+      end
+    end
+    """
+  end
+
+  def form_doc_live_ecto_controlled_heex do
+    ~S"""
+    <.form for={@validate_controlled_form} phx-change="validate_controlled" phx-submit="save_controlled">
+      <.angle_slider
+        id="angle-slider-live-form-validate-controlled-angle"
+        field={@validate_controlled_form[:angle]}
+        value={@validate_controlled_angle_value}
+        marker_values={[0, 90, 180, 270]}
+        class="angle-slider"
+      >
+        <:label>Angle (0–90)</:label>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.angle_slider>
+      <.action type="submit" id="angle-slider-live-form-validate-controlled-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_doc_live_ecto_invalid_heex do
+    ~S"""
+    <.form for={@validate_invalid_form} phx-change="validate_invalid" phx-submit="save_invalid">
+      <.angle_slider
+        id="angle-slider-live-form-validate-invalid-angle"
+        field={@validate_invalid_form[:angle]}
+        value={@validate_invalid_angle_value}
+        marker_values={[0, 90, 180, 270]}
+        invalid={Corex.FormField.invalid?(@validate_invalid_form[:angle])}
+        class="angle-slider"
+      >
+        <:label>Angle (0–90)</:label>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.angle_slider>
+      <.action type="submit" id="angle-slider-live-form-validate-invalid-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  attr(:form, :any, required: true)
+  attr(:angle_value, :float, required: true)
+
+  def form_preview_live_validate_controlled(assigns) do
+    ~H"""
+    <.form for={@form} phx-change="validate_controlled" phx-submit="save_controlled">
+      <.angle_slider
+        id="angle-slider-live-form-validate-controlled-angle"
+        field={@form[:angle]}
+        value={@angle_value}
+        marker_values={[0, 90, 180, 270]}
+        class="angle-slider"
+      >
+        <:label>Angle (0–90)</:label>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.angle_slider>
+      <.action
+        type="submit"
+        id="angle-slider-live-form-validate-controlled-submit"
+        class="button button--accent"
+      >
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  attr(:form, :any, required: true)
+  attr(:angle_value, :float, required: true)
+
+  def form_preview_live_validate_invalid(assigns) do
+    ~H"""
+    <.form for={@form} phx-change="validate_invalid" phx-submit="save_invalid">
+      <.angle_slider
+        id="angle-slider-live-form-validate-invalid-angle"
+        field={@form[:angle]}
+        value={@angle_value}
+        marker_values={[0, 90, 180, 270]}
+        invalid={Corex.FormField.invalid?(@form[:angle])}
+        class="angle-slider"
+      >
+        <:label>Angle (0–90)</:label>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.angle_slider>
+      <.action
+        type="submit"
+        id="angle-slider-live-form-validate-invalid-submit"
+        class="button button--accent"
+      >
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_doc_live_ecto_controlled_elixir do
+    ~S"""
+    defmodule MyAppWeb.AngleSliderFormLive do
+      use MyAppWeb, :live_view
+
+      def handle_event("validate_controlled", params, socket) do
+        validate_ecto_controlled(socket, Map.get(params, "angle_slider_validate_controlled", %{}))
+      end
+
+      def handle_event("save_controlled", params, socket) do
+        save_ecto_controlled(socket, Map.get(params, "angle_slider_validate_controlled", %{}))
+      end
+    end
+    """
+  end
+
+  def form_doc_live_ecto_invalid_elixir do
+    ~S"""
+    defmodule MyAppWeb.AngleSliderFormLive do
+      use MyAppWeb, :live_view
+
+      def handle_event("validate_invalid", params, socket) do
+        validate_ecto_invalid(socket, Map.get(params, "angle_slider_validate_invalid", %{}))
+      end
+
+      def handle_event("save_invalid", params, socket) do
+        save_ecto_invalid(socket, Map.get(params, "angle_slider_validate_invalid", %{}))
       end
     end
     """

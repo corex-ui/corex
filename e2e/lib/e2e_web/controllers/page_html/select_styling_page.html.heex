@@ -7,19 +7,54 @@
   <.demo_page
     path={@path}
     id="select-styling-page"
-    title={~t"Select · Styling"}
+    title={~t"Select · Style"}
     subtitle={
       ~t"Semantic colors, density, typography, radius, and width utilities via modifier classes on the select root."
     }
   >
     <.demo_section
       id="select-styling-color"
-      title={~t"Color"}
+      title={~t"Semantic"}
       code={E2eWeb.Demos.SelectDemo.styling_color_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="select" axis={:semantic} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.SelectDemo.styling_color_example />
       </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="select-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.SelectDemo.styling_variant_code()}
+    >
+      <:description>
+        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
+          <p>
+            Variant modifiers control select surface treatment. Default is subtle; use <code class="text-sm">select--variant-solid</code>, <code class="text-sm">select--variant-ghost</code>, or
+            <code class="text-sm">select--variant-outline</code>
+            to change it.
+          </p>
+        </div>
+      </:description>
+      <:preview><E2eWeb.Demos.SelectDemo.styling_variant_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="select-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.SelectDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
+          <p>
+            Combine semantic palette and variant treatment on the same host, for example <code class="text-sm">select select--accent select--variant-solid</code>.
+          </p>
+        </div>
+      </:description>
+      <:preview><E2eWeb.Demos.SelectDemo.styling_variant_matrix_example /></:preview>
     </.demo_section>
 
     <.demo_section
@@ -27,26 +62,22 @@
       title={~t"Size"}
       code={E2eWeb.Demos.SelectDemo.styling_size_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="select" axis={:size} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.SelectDemo.styling_size_example />
       </:preview>
     </.demo_section>
 
     <.demo_section
-      id="select-styling-text"
-      title={~t"Text"}
-      code={E2eWeb.Demos.SelectDemo.styling_text_code()}
-    >
-      <:preview>
-        <E2eWeb.Demos.SelectDemo.styling_text_example />
-      </:preview>
-    </.demo_section>
-
-    <.demo_section
       id="select-styling-radius"
-      title={~t"Radius"}
+      title={~t"Rounded"}
       code={E2eWeb.Demos.SelectDemo.styling_radius_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="select" axis={:radius} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.SelectDemo.styling_radius_example />
       </:preview>
@@ -54,9 +85,12 @@
 
     <.demo_section
       id="select-styling-max-width"
-      title={~t"Max Width"}
+      title={~t"Max width"}
       code={E2eWeb.Demos.SelectDemo.styling_max_width_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="select" axis={:max_width} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.SelectDemo.styling_max_width_example />
       </:preview>

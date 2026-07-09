@@ -9,12 +9,47 @@
   >
     <.demo_section
       id="toggle-group-styling-color"
-      title={~t"Color"}
+      title={~t"Semantic"}
       code={E2eWeb.Demos.ToggleGroupDemo.styling_color_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="toggle-group" axis={:semantic} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.ToggleGroupDemo.styling_color_example />
       </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="toggle-group-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.ToggleGroupDemo.styling_variant_code()}
+    >
+      <:description>
+        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
+          <p>
+            Variant modifiers control toggle-group surface treatment. Default is subtle; use <code class="text-sm">toggle-group--variant-solid</code>, <code class="text-sm">toggle-group--variant-ghost</code>, or
+            <code class="text-sm">toggle-group--variant-outline</code>
+            to change it.
+          </p>
+        </div>
+      </:description>
+      <:preview><E2eWeb.Demos.ToggleGroupDemo.styling_variant_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="toggle-group-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.ToggleGroupDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
+          <p>
+            Combine semantic palette and variant treatment on the same host, for example <code class="text-sm">toggle-group toggle-group--accent toggle-group--variant-solid</code>.
+          </p>
+        </div>
+      </:description>
+      <:preview><E2eWeb.Demos.ToggleGroupDemo.styling_variant_matrix_example /></:preview>
     </.demo_section>
 
     <.demo_section
@@ -22,6 +57,9 @@
       title={~t"Size"}
       code={E2eWeb.Demos.ToggleGroupDemo.styling_size_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="toggle-group" axis={:size} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.ToggleGroupDemo.styling_size_example />
       </:preview>
@@ -29,11 +67,40 @@
 
     <.demo_section
       id="toggle-group-styling-radius"
-      title={~t"Radius"}
+      title={~t"Rounded"}
       code={E2eWeb.Demos.ToggleGroupDemo.styling_radius_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="toggle-group" axis={:radius} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.ToggleGroupDemo.styling_radius_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="toggle-group-styling-width"
+      title={~t"Width"}
+      code={E2eWeb.Demos.ToggleGroupDemo.styling_width_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="toggle-group" axis={:width} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.ToggleGroupDemo.styling_width_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="toggle-group-styling-max-width"
+      title={~t"Max width"}
+      code={E2eWeb.Demos.ToggleGroupDemo.styling_max_width_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="toggle-group" axis={:max_width} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.ToggleGroupDemo.styling_max_width_example />
       </:preview>
     </.demo_section>
 

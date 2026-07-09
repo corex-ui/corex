@@ -12,10 +12,45 @@
   >
     <.demo_section
       id="navigate-style-color"
-      title={~t"Color"}
+      title={~t"Semantic"}
       code={E2eWeb.Demos.NavigateDemo.styling_color_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="link" axis={:semantic} />
+      </:description>
       <:preview><E2eWeb.Demos.NavigateDemo.styling_color_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="navigate-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.NavigateDemo.styling_variant_code()}
+    >
+      <:description>
+        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
+          <p>
+            Variant modifiers control link surface treatment. Default is subtle; use <code class="text-sm">link--variant-solid</code>, <code class="text-sm">link--variant-ghost</code>, or
+            <code class="text-sm">link--variant-outline</code>
+            to change it.
+          </p>
+        </div>
+      </:description>
+      <:preview><E2eWeb.Demos.NavigateDemo.styling_variant_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="navigate-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.NavigateDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
+          <p>
+            Combine semantic palette and variant treatment on the same host, for example <code class="text-sm">link link--accent link--variant-solid</code>.
+          </p>
+        </div>
+      </:description>
+      <:preview><E2eWeb.Demos.NavigateDemo.styling_variant_matrix_example /></:preview>
     </.demo_section>
 
     <.demo_section
@@ -23,6 +58,9 @@
       title={~t"Size"}
       code={E2eWeb.Demos.NavigateDemo.styling_size_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="link" axis={:size} />
+      </:description>
       <:preview><E2eWeb.Demos.NavigateDemo.styling_size_example /></:preview>
     </.demo_section>
   </.demo_page>

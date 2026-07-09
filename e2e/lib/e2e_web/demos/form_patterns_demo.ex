@@ -170,6 +170,9 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
         id="form-patterns-custom-error-terms"
       >
         <:label>Accept the terms</:label>
+        <:indicator>
+          <.heroicon name="hero-check" />
+        </:indicator>
         <:error :let={msg} class="absolute top-0 end-0">
           <.tooltip
             id="form-patterns-custom-error-terms-tip"

@@ -43,11 +43,6 @@ defmodule E2eWeb.DatePickerModel do
     wait_root_date_picker_ready(session, "date-picker-playground")
   end
 
-  def wait_patterns_page(session) do
-    assert_has(session, css("#date-picker-patterns-page", visible: :any))
-    session
-  end
-
   def open_date_picker_in_section(session, section_dom_id) do
     if not (String.match?(section_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and
               String.length(section_dom_id) > 0) do
@@ -161,20 +156,6 @@ defmodule E2eWeb.DatePickerModel do
       )
 
     Process.get(key, "")
-  end
-
-  def wait_patterns_status_contains(session, substring, opts \\ []) when is_binary(substring) do
-    if String.contains?(substring, "'") do
-      raise ArgumentError, "substring must not contain single quote"
-    end
-
-    wait_for_has(
-      session,
-      xpath("//*[@id='date-picker-patterns-status' and contains(., '#{substring}')]"),
-      opts
-    )
-
-    session
   end
 
   def date_picker_events_server_value_log_has_row?(session) do

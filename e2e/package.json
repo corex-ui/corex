@@ -1,19 +1,9 @@
 {
   "name": "e2e",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "private": true,
   "packageManager": "pnpm@10.33.0",
   "devDependencies": {
-    "@tokens-studio/sd-transforms": "^2.0.3",
-    "motion": "^12.38.0",
-    "sd-tailwindcss-transformer": "^2.0.0",
-    "style-dictionary": "^5.4.0"
+    "motion": "^12.38.0"
   }
 }

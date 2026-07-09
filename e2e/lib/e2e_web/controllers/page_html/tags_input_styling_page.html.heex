@@ -9,12 +9,47 @@
   >
     <.demo_section
       id="tags-input-styling-color"
-      title={~t"Color"}
+      title={~t"Semantic"}
       code={E2eWeb.Demos.TagsInputDemo.styling_color_heex()}
     >
+      <:description>
+        <.demo_modifier_axis name="tags-input" axis={:semantic} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.TagsInputDemo.styling_color_example />
       </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="tags-input-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.TagsInputDemo.styling_variant_code()}
+    >
+      <:description>
+        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
+          <p>
+            Variant modifiers control tags-input surface treatment. Default is subtle; use <code class="text-sm">tags-input--variant-solid</code>, <code class="text-sm">tags-input--variant-ghost</code>, or
+            <code class="text-sm">tags-input--variant-outline</code>
+            to change it.
+          </p>
+        </div>
+      </:description>
+      <:preview><E2eWeb.Demos.TagsInputDemo.styling_variant_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="tags-input-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.TagsInputDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
+          <p>
+            Combine semantic palette and variant treatment on the same host, for example <code class="text-sm">tags-input tags-input--accent tags-input--variant-solid</code>.
+          </p>
+        </div>
+      </:description>
+      <:preview><E2eWeb.Demos.TagsInputDemo.styling_variant_matrix_example /></:preview>
     </.demo_section>
 
     <.demo_section
@@ -32,26 +67,22 @@
       title={~t"Size"}
       code={E2eWeb.Demos.TagsInputDemo.styling_size_heex()}
     >
+      <:description>
+        <.demo_modifier_axis name="tags-input" axis={:size} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.TagsInputDemo.styling_size_example />
       </:preview>
     </.demo_section>
 
     <.demo_section
-      id="tags-input-styling-text"
-      title={~t"Text"}
-      code={E2eWeb.Demos.TagsInputDemo.styling_text_heex()}
-    >
-      <:preview>
-        <E2eWeb.Demos.TagsInputDemo.styling_text_example />
-      </:preview>
-    </.demo_section>
-
-    <.demo_section
       id="tags-input-styling-radius"
-      title={~t"Radius"}
+      title={~t"Rounded"}
       code={E2eWeb.Demos.TagsInputDemo.styling_radius_heex()}
     >
+      <:description>
+        <.demo_modifier_axis name="tags-input" axis={:radius} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.TagsInputDemo.styling_radius_example />
       </:preview>
@@ -62,6 +93,9 @@
       title={~t"Max width"}
       code={E2eWeb.Demos.TagsInputDemo.styling_max_width_heex()}
     >
+      <:description>
+        <.demo_modifier_axis name="tags-input" axis={:max_width} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.TagsInputDemo.styling_max_width_example />
       </:preview>

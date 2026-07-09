@@ -1,6 +1,8 @@
 defmodule E2eWeb.Demos.PaginationDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.DemoScales
+
   @anatomy_count 18
   @anatomy_page_size 6
   @count 95
@@ -81,6 +83,87 @@ defmodule E2eWeb.Demos.PaginationDemo do
     """
   end
 
+  def styling_variant_code do
+    slots = styling_pagination_slots_heex()
+
+    """
+    <.pagination class="pagination" count={50} page={3} page_size={10}>
+    #{slots}
+    </.pagination>
+    <.pagination class="pagination pagination--variant-solid" count={50} page={3} page_size={10}>
+    #{slots}
+    </.pagination>
+    <.pagination class="pagination pagination--variant-ghost" count={50} page={3} page_size={10}>
+    #{slots}
+    </.pagination>
+    <.pagination class="pagination pagination--variant-outline" count={50} page={3} page_size={10}>
+    #{slots}
+    </.pagination>
+    """
+  end
+
+  def styling_variant_example(assigns) do
+    assigns = styling_assigns(assigns)
+
+    ~H"""
+    <div class="flex flex-col gap-space-lg w-full items-center">
+      <.style_pagination id="pagination-style-variant-subtle" class="pagination" />
+      <.style_pagination
+        id="pagination-style-variant-solid"
+        class="pagination pagination--variant-solid"
+      />
+      <.style_pagination
+        id="pagination-style-variant-ghost"
+        class="pagination pagination--variant-ghost"
+      />
+      <.style_pagination
+        id="pagination-style-variant-outline"
+        class="pagination pagination--variant-outline"
+      />
+    </div>
+    """
+  end
+
+  def styling_variant_matrix_code do
+    slots = styling_pagination_slots_heex()
+
+    for semantic <- DemoScales.styling_semantic_axis_steps("pagination"),
+        variant <- DemoScales.styling_variant_axis_steps("pagination") do
+      class = DemoScales.join_matrix_modifiers("pagination", semantic.modifier, variant.modifier)
+
+      """
+      <.pagination class="#{class}" count={50} page={3} page_size={10}>
+      #{slots}
+      </.pagination>
+      """
+    end
+    |> DemoScales.join_code()
+  end
+
+  def styling_variant_matrix_example(assigns) do
+    assigns =
+      assigns
+      |> styling_assigns()
+      |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("pagination"))
+      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("pagination"))
+
+    ~H"""
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+      <div class="grid grid-cols-4 gap-space gap-2 items-center min-w-max">
+        <div :for={{semantic, semantic_index} <- Enum.with_index(@matrix_semantics)} class="contents">
+          <.style_pagination
+            :for={{variant, variant_index} <- Enum.with_index(@matrix_variants)}
+            id={"pagination-matrix-#{semantic_index}-#{variant_index}"}
+            class={
+              DemoScales.join_matrix_modifiers("pagination", semantic.modifier, variant.modifier)
+            }
+          />
+        </div>
+      </div>
+    </div>
+    """
+  end
+
   def styling_size_heex do
     ~S"""
     <.pagination class="pagination pagination--sm" count={50} page={3} page_size={10}>
@@ -115,44 +198,6 @@ defmodule E2eWeb.Demos.PaginationDemo do
       <.style_pagination id="pagination-style-size-md" class="pagination pagination--md" />
       <.style_pagination id="pagination-style-size-lg" class="pagination pagination--lg" />
       <.style_pagination id="pagination-style-size-xl" class="pagination pagination--xl" />
-    </div>
-    """
-  end
-
-  def styling_text_heex do
-    ~S"""
-    <.pagination class="pagination pagination--text-sm" count={50} page={3} page_size={10}>
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
-      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
-    </.pagination>
-    <.pagination class="pagination pagination--text-xl" count={50} page={3} page_size={10}>
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
-      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
-    </.pagination>
-    <.pagination class="pagination pagination--text-2xl" count={50} page={3} page_size={10}>
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
-      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
-    </.pagination>
-    <.pagination class="pagination pagination--text-4xl" count={50} page={3} page_size={10}>
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
-      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
-    </.pagination>
-    """
-  end
-
-  def styling_text_example(assigns) do
-    assigns = styling_assigns(assigns)
-
-    ~H"""
-    <div class="flex flex-col gap-space-lg w-full items-center">
-      <.style_pagination id="pagination-style-text-sm" class="pagination pagination--text-sm" />
-      <.style_pagination id="pagination-style-text-xl" class="pagination pagination--text-xl" />
-      <.style_pagination id="pagination-style-text-2xl" class="pagination pagination--text-2xl" />
-      <.style_pagination id="pagination-style-text-4xl" class="pagination pagination--text-4xl" />
     </div>
     """
   end
@@ -214,40 +259,80 @@ defmodule E2eWeb.Demos.PaginationDemo do
   end
 
   def styling_max_width_heex do
-    ~S"""
-    <.pagination class="pagination max-w-2xs" count={50} page={3} page_size={10}>
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
-      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
-    </.pagination>
-    <.pagination class="pagination max-w-md" count={50} page={3} page_size={10}>
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
-      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
-    </.pagination>
-    <.pagination class="pagination max-w-xl" count={50} page={3} page_size={10}>
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
-      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
-    </.pagination>
-    <.pagination class="pagination max-w-2xl" count={50} page={3} page_size={10}>
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
-      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
-    </.pagination>
-    """
+    slots = styling_pagination_slots_heex()
+
+    DemoScales.max_width_variants("pagination")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("pagination", modifier)
+
+      """
+      <.pagination class="#{class}" count={50} page={3} page_size={10}>
+      #{slots}
+      </.pagination>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_width_code do
+    slots = styling_pagination_slots_heex()
+
+    DemoScales.width_layout_variants("pagination")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("pagination", modifier)
+
+      """
+      <.pagination class="#{class}" count={50} page={3} page_size={10}>
+      #{slots}
+      </.pagination>
+      """
+    end)
+    |> DemoScales.join_code()
   end
 
   def styling_max_width_example(assigns) do
-    assigns = styling_assigns(assigns)
+    assigns =
+      assigns
+      |> styling_assigns()
+      |> assign(:max_width_variants, DemoScales.max_width_variants("pagination"))
 
     ~H"""
-    <div class="flex flex-col gap-space-lg w-full items-center">
-      <.style_pagination id="pagination-style-max-2xs" class="pagination max-w-2xs" />
-      <.style_pagination id="pagination-style-max-md" class="pagination max-w-md" />
-      <.style_pagination id="pagination-style-max-xl" class="pagination max-w-xl" />
-      <.style_pagination id="pagination-style-max-2xl" class="pagination max-w-2xl" />
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <.style_pagination
+          id={"pagination-style-max-#{variant.id}"}
+          class={DemoScales.join_modifiers("pagination", variant.modifier)}
+        />
+      </div>
     </div>
+    """
+  end
+
+  def styling_width_example(assigns) do
+    assigns =
+      assigns
+      |> styling_assigns()
+      |> assign(:width_variants, DemoScales.width_layout_variants("pagination"))
+
+    ~H"""
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={variant <- @width_variants} class="flex flex-col gap-2">
+        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <.style_pagination
+          id={"pagination-style-width-#{variant.id}"}
+          class={DemoScales.join_modifiers("pagination", variant.modifier)}
+        />
+      </div>
+    </div>
+    """
+  end
+
+  defp styling_pagination_slots_heex do
+    """
+      <:prev><.heroicon name="hero-chevron-left" /></:prev>
+      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     """
   end
 
@@ -289,7 +374,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
 
   def api_set_page_client_binding_heex do
     ~S"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action phx-click={Corex.Pagination.set_page("pagination-api-bind", 1)} class="button button--sm">1</.action>
       <.action phx-click={Corex.Pagination.set_page("pagination-api-bind", 5)} class="button button--sm">5</.action>
       <.action phx-click={Corex.Pagination.set_page("pagination-api-bind", 9)} class="button button--sm">9</.action>
@@ -307,7 +392,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
 
     ~H"""
     <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
-      <div class="layout__row">
+      <div class="flex flex-wrap items-center gap-space">
         <.action
           phx-click={Corex.Pagination.set_page("pagination-api-bind", 1)}
           class="button button--sm"

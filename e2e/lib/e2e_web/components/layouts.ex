@@ -6,6 +6,7 @@ defmodule E2eWeb.Layouts do
   use E2eWeb, :html
   import E2eWeb.SEO, only: [head: 1]
   import E2eWeb.App.{Footer, Header, Pagination, Aside}
+  alias E2eWeb.App.Shell
 
   import E2eWeb.{ModeToggle, ThemeToggle}
 
@@ -39,12 +40,12 @@ defmodule E2eWeb.Layouts do
 
     ~H"""
     <.header path={@path} theme={@theme} mode={@mode} />
-    <div class="layout__wrapper">
+    <div class={Shell.wrapper()}>
       <.aside path={@path} theme={@theme} mode={@mode} />
-      <main id="main-content" class="layout__main">
+      <main id="main-content" class={Shell.main()}>
         <.docs_pagination path={@path} />
-        <div class="layout__content">
-          <div class="layout__article">
+        <div class={Shell.content()}>
+          <div class={Shell.article()}>
             {render_slot(@inner_block)}
           </div>
         </div>
@@ -89,9 +90,9 @@ defmodule E2eWeb.Layouts do
 
     ~H"""
     <.header path={@path} theme={@theme} mode={@mode} />
-    <div class="layout__wrapper">
-      <main id="main-content" class="layout__main layout__main--blog">
-        <div class="layout__content--blog">
+    <div class={Shell.wrapper() <> " shell-blog-wrapper"}>
+      <main id="main-content" class={Shell.main() <> " shell-blog-main w-full"}>
+        <div class={Shell.content_blog() <> " shell-blog-content items-stretch"}>
           {render_slot(@inner_block)}
         </div>
         <.toast_group
@@ -123,9 +124,9 @@ defmodule E2eWeb.Layouts do
 
     ~H"""
     <.header path={@path} theme={@theme} mode={@mode} />
-    <div class="layout__wrapper">
-      <main id="main-content" class="layout__main layout__main--marketing">
-        <div class="layout__content--marketing">
+    <div class={Shell.wrapper()}>
+      <main id="main-content" class={Shell.main() <> " w-full"}>
+        <div class={Shell.content_marketing() <> " items-stretch"}>
           {render_slot(@inner_block)}
         </div>
         <.toast_group
