@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.2.0
+
+### Breaking changes
+
+- Retired `mix corex.design`, `--designex`, and vendored `installer/priv/corex_design/`
+- Default `mix corex.new` adds `{:corex_design, "~> 0.2"}` and runs `mix corex.design.build`
+- Removed `color-scope.css`; theme tokens generated under `priv/css/tokens/themes/`
+- Semantic ink tokens standardized to `--color-ink-{semantic}` (legacy `--color-{semantic}-ink` aliases remain in generated token CSS only)
+- [form_field] Controlled mode no longer applies to all inputs; limited to select, radio, switch, checkbox
+
+### Enhancements
+
+- New optional **`corex_design`** Hex package with config-driven tokens and themes
+- Design v2 token architecture and bundle layout
+- Build-time bundle filtering via `components:`, `semantics:`, `variants:` in `config :corex_design`
+- E2e style pages: file-upload, floating-panel, password-input; dialog semantic styling
+- [tabs] Disabled items support
+- [select] Controlled mode and examples
+- [combobox] Example updates
+
+### Bug fixes
+
+- [toast] Align event and listener names
+- [design] Clipboard copied feedback uses border and text only
+
+Add `corex_design`, configure `config :corex_design`, patch asset aliases, then run `mix corex.design.build`. See [update guide](guides/update.html).
+
 ## 0.1.2
 
 ### Bug fixes
@@ -35,7 +62,7 @@
 - [docs] Restore `mix corex.new` on Hexdocs
 - [mcp] Security hardening
 
-Run `mix corex.design --force` in your app to refresh `assets/corex/` (CSS and tokens).
+Run `mix corex.design.build` in your app to refresh `assets/corex/` (CSS and tokens).
 
 ## 0.1.0
 

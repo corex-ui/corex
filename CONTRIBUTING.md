@@ -89,14 +89,14 @@ Generates apps with `corex.new` and asserts install paths. Requires `mix archive
 | `assets/test/lib/` | Unit tests for `assets/lib/` helpers |
 | `assets/components/` | Zag `Component` subclasses; colocated `*.test.ts` per module (helpers + smoke); all modules in `components-contract.test.ts` and `components-smoke.test.ts` |
 | `assets/hooks/` | LiveView hooks; hook-specific logic in `hooks/<name>.ts` + `hooks/<name>.test.ts`; wiring in `hooks-wiring.test.ts` |
-| `priv/design/corex/` | Corex Design tokens and component CSS (source of truth in the package) |
+| `design/priv/css/` | Corex Design static component CSS (source in `:corex_design`) |
 | `priv/static/` | Built JS bundles (generated; run `mix assets.build`) |
 | `e2e/` | Demo LiveViews, Playwright-style tests, `doc_examples.ex` |
 | `installer/` | `corex_new` Mix installer |
 | `guides/` | Hexdocs guides |
 | `test/` | Unit tests for the library |
 
-Design CSS is copied into the installer on `mix assets.build` (`installer/priv/corex_design/`). Consumer apps get a vendored copy via `mix corex.design` into `assets/corex/` (not checked into the `:corex` library repo).
+Design CSS source lives in `design/`. Generated apps and e2e regenerate `assets/corex/` via `mix corex.design.build` from the `corex_design` dependency. After CSS changes, verify with `cd e2e && mix assets.build && mix test`.
 
 ## Pull requests
 
@@ -114,7 +114,7 @@ We use [Conventional Commits](https://www.conventionalcommits.org/) style when i
 | ----------- | ---------------- |
 | Elixir component / API | `mix test`, `mix compile`, `mix docs` |
 | TypeScript `assets/lib/` | `pnpm test` or `pnpm run check` |
-| TypeScript `assets/components/` or `assets/hooks/` | `pnpm test` + `mix assets.build` |
+| TypeScript `assets/components/` or `assets/hooks/` | `pnpm test` + `cd e2e && mix assets.build` |
 | TypeScript hook (behavior in browser) | `pnpm run check`, `mix assets.build`, relevant e2e tests |
 
 ### TypeScript test layout (`pnpm test`)
@@ -127,7 +127,7 @@ We use [Conventional Commits](https://www.conventionalcommits.org/) style when i
 | `assets/test/helpers/` | Shared DOM fixtures (`dom.ts`, `component-fixture.ts`, `component-smoke.ts`, `mock-live-socket.ts`, `expect-hook.ts`) |
 
 New shared helper → `assets/test/lib/<name>.test.ts`. New component or hook tests → `assets/test/component/<name>.test.ts` or `assets/test/hooks/<name>.test.ts`. Export small pure functions from hooks when logic is not otherwise testable.
-| Design CSS | `mix assets.build`, visual check in e2e styling pages |
+| Design CSS (`design/` source) | `cd e2e && mix assets.build && mix test` |
 | Moduledoc only | `mix docs` (fix any warnings) |
 | Installer | `cd installer && mix test` |
 | E2e LiveView / demo | `cd e2e && mix test` |
@@ -169,17 +169,17 @@ Every `attr` and `slot` should have a `doc:` (except `rest` / `:global`).
 ### Corex Design CSS
 
 - Modifiers use BEM-style classes on the host: `accordion accordion--accent accordion--lg`.
-- Implement modifiers with `@utility <component>--*` in `priv/design/corex/components/<name>.css`.
+- Implement modifiers with `@utility <component>--*` in `design/priv/css/components/<name>.css`.
 - Document Color / Size (and other axes) in the component **Style** section as modifier tables.
 
 ## Adding or changing a component (checklist)
 
 1. Zag hook under `assets/hooks/` and register in the build if new.
 2. Elixir component, Connect, anatomy, tests under `test/`.
-3. Optional design CSS under `priv/design/corex/components/`.
+3. Optional design CSS under `design/priv/css/components/`.
 4. E2e anatomy / API / events / styling / patterns pages as needed.
 5. Moduledoc + `Translation` module if user-facing strings exist.
-6. `mix assets.build`, `mix test`, `cd e2e && mix test`.
+6. E2e: `cd e2e && mix assets.build && mix test`. Root: `mix test`.
 
 ## Reporting issues
 
