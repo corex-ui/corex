@@ -53,17 +53,13 @@ defmodule E2eWeb.AccordionPlayLive do
       orientation: "vertical",
       collapsible: true,
       multiple: true,
-      dir: "ltr",
-      color: "default",
-      size: "md"
+      dir: "ltr"
     }
 
     socket =
       socket
       |> assign(:controls, controls)
       |> assign(:disabled_select_items, disabled_select_items())
-      |> assign(:accordion_color_items, accordion_color_items())
-      |> assign(:accordion_size_items, accordion_size_items())
       |> assign(:items, accordion_items(controls))
 
     {:ok, socket}
@@ -97,14 +93,6 @@ defmodule E2eWeb.AccordionPlayLive do
     socket
     |> update(:controls, &%{&1 | orientation: value})
     |> sync_items()
-  end
-
-  defp update_control(socket, "color", value) do
-    update(socket, :controls, &%{&1 | color: value})
-  end
-
-  defp update_control(socket, "size", value) do
-    update(socket, :controls, &%{&1 | size: value})
   end
 
   defp update_control(socket, "dir", value) do
@@ -162,8 +150,6 @@ defmodule E2eWeb.AccordionPlayLive do
   defp control_bool(v), do: !!v
 
   defp control_id("playground-collapsible-" <> _), do: "collapsible"
-  defp control_id("accordion-color"), do: "color"
-  defp control_id("accordion-size"), do: "size"
   defp control_id(id), do: id
 
   defp disabled_select_items do
@@ -174,28 +160,7 @@ defmodule E2eWeb.AccordionPlayLive do
     ]
   end
 
-  defp accordion_color_items do
-    [
-      %{label: ~t"Default", value: "default"},
-      %{label: ~t"Accent", value: "accent"},
-      %{label: ~t"Brand", value: "brand"},
-      %{label: ~t"Alert", value: "alert"},
-      %{label: ~t"Info", value: "info"},
-      %{label: ~t"Success", value: "success"}
-    ]
-  end
-
-  defp accordion_size_items do
-    [
-      %{label: ~t"SM", value: "sm"},
-      %{label: ~t"MD", value: "md"},
-      %{label: ~t"LG", value: "lg"},
-      %{label: ~t"XL", value: "xl"}
-    ]
-  end
-
   @impl true
-
   def render(assigns) do
     ~H"""
     <Layouts.app
@@ -266,43 +231,11 @@ defmodule E2eWeb.AccordionPlayLive do
             >
               <:label>Multiple</:label>
             </.switch>
-
-            <.select
-              id="accordion-color"
-              class="select select--sm w-4xs"
-              value={[@controls.color]}
-              deselectable={false}
-              items={@accordion_color_items}
-              on_value_change="control_changed"
-              translation={%Corex.Select.Translation{placeholder: "Color"}}
-              positioning={%Corex.Positioning{same_width: true}}
-            >
-              <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
-              <:label>Color</:label>
-            </.select>
-
-            <.select
-              id="accordion-size"
-              class="select select--sm w-4xs"
-              value={[@controls.size]}
-              deselectable={false}
-              items={@accordion_size_items}
-              on_value_change="control_changed"
-              translation={%Corex.Select.Translation{placeholder: "Size"}}
-              positioning={%Corex.Positioning{same_width: true}}
-            >
-              <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
-              <:label>Size</:label>
-            </.select>
           </:controls>
           <:canvas>
             <.accordion
               id="my-accordion"
-              class={[
-                "accordion",
-                @controls.color != "default" && "accordion--#{@controls.color}",
-                "accordion--#{@controls.size}"
-              ]}
+              class="accordion"
               value={~W(lorem duis donec)}
               items={@items}
               collapsible={@controls.multiple or @controls.collapsible}

@@ -1,4 +1,5 @@
 @import "../main.css";
+@import "./scrollbar.css";
 
 @layer components {
 
@@ -9,6 +10,7 @@
   .accordion {
     width: 100%;
     max-width: var(--container-md);
+    --accordion-scrollbar-size: calc(var(--spacing-space) * 0.6);
   }
 
 
@@ -55,6 +57,7 @@
   .accordion [data-scope="accordion"][data-part="item-trigger"] {
     @apply ui-trigger;
     width: 100%;
+    min-width: 0;
     margin-bottom: var(--spacing-space);
   }
 
@@ -66,16 +69,29 @@
   }
 
   .accordion [data-scope="accordion"][data-part="item-text"] {
-    width: 100%;
+    @apply scrollbar;
+
+    flex: 1 1 auto;
+    min-width: 0;
+    width: auto;
     display: flex;
     align-items: center;
     gap: var(--spacing-space);
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    &::-webkit-scrollbar {
+      width: var(--accordion-scrollbar-size);
+      height: var(--accordion-scrollbar-size);
+    }
   }
 
   .accordion [data-scope="accordion"][data-part="item-trigger"][data-orientation="horizontal"] [data-scope="accordion"][data-part="item-text"] {
     flex: 1 1 auto;
     min-width: 0;
     align-items: center;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
 
@@ -123,11 +139,19 @@
   }
 
   .accordion [data-scope="accordion"][data-part="item-content"] > p {
-    @apply ui-content;
+    @apply ui-content scrollbar;
+
     margin: 0;
     margin-bottom: var(--spacing-space);
     max-height: calc(var(--spacing) * 80);
-    overflow-y: auto;
+    min-width: 0;
+    overflow: auto;
+    scrollbar-gutter: stable;
+
+    &::-webkit-scrollbar {
+      width: var(--accordion-scrollbar-size);
+      height: var(--accordion-scrollbar-size);
+    }
   }
 
 
@@ -191,10 +215,12 @@
 
     &:hover {
       background-color: var(--accordion-fill-hover, var(--color-selected-hover));
+      color: var(--accordion-ink, var(--color-selected-ink));
     }
 
     &:active {
       background-color: var(--accordion-fill-active, var(--color-selected-active));
+      color: var(--accordion-ink, var(--color-selected-ink));
     }
 
     &:focus-visible {
@@ -246,6 +272,7 @@
 }
 
 @utility accordion--* {
+  --accordion-scrollbar-size: calc(--value(--spacing-space-*, [length]) * 0.6);
 
   [data-scope="accordion"][data-part="item-trigger"] {
     font-size: --value(--text-*, [length]);
@@ -275,7 +302,7 @@
 }
 
 @utility accordion--variant-solid {
-  [data-scope="accordion"][data-part="item-trigger"] {
+  [data-scope="accordion"][data-part="item-trigger"][data-state="closed"] {
     background-color: var(--accordion-fill, var(--color-ui-active));
     color: var(--accordion-ink, var(--color-ink));
     border-color: transparent;
