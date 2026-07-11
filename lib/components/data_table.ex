@@ -82,7 +82,7 @@ defmodule Corex.DataTable do
   >
     <:col :let={user} label="Name">{user.name}</:col>
     <:action :let={user}>
-      <.action class="button button--sm">Edit</.action>
+      <.action class="button ui-size-sm">Edit</.action>
     </:action>
   </.data_table>
   ```

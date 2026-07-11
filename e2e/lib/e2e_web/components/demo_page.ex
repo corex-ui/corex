@@ -32,7 +32,7 @@ defmodule E2eWeb.DemoPage do
 
   - Use **`<.demo_playground>>`** (below) for every `… · Playground` LiveView: one DOM shape (`layout_heading` + `preview` frame + sidebar + canvas). `AccordionPlayLive` is the visual reference; all play pages should render through this component. Source links live on **`demo_page`** only, not in the playground block.
   - **Control strip order (when a control exists for the component):** (1) **Direction** LTR/RTL  -  `<.playground_dir_toggle>` when the component has `dir`; (2) orientation or other `toggle_group` axes; (3) `select` controls; (4) `switch` rows. Not every page has every control; only include what the primitive supports.
-  - **Control strip sizing:** use `--sm` on sidebar controls only (not the canvas demo), e.g. `toggle-group toggle-group--sm`, `select select--sm`, `switch switch--sm`, `checkbox checkbox--sm`, `number-input number-input--sm`, `native-input native-input--sm`.
+  - **Control strip sizing:** use `ui-size-sm` on sidebar controls only (not the canvas demo), e.g. `toggle-group ui-size-sm`, `select ui-size-sm`, `switch ui-size-sm`, `checkbox ui-size-sm`, `number-input ui-size-sm`, `native-input ui-size-sm`.
 
   ## Shell contract (page types)
   ## Shell contract (page types)
@@ -87,6 +87,7 @@ defmodule E2eWeb.DemoPage do
     required: true,
     values: [
       :semantic,
+      :variant,
       :size,
       :radius,
       :text,
@@ -124,15 +125,34 @@ defmodule E2eWeb.DemoPage do
       |> assign(:purpose, purpose)
       |> assign(:options_text, Enum.join(options, ", "))
       |> assign(:intrinsic_note, intrinsic_note)
+      |> assign(:host, name)
 
     ~H"""
-    <div class={@class}>
+    <div :if={@axis == :variant} class={@class}>
+      <p>
+        Variant modifiers control {@host} surface treatment. Default is subtle (neutral fill and border; semantic roles tint text ink); add <code class="text-sm">ui-solid</code> for a filled surface.
+      </p>
+    </div>
+    <div :if={@axis != :variant} class={@class}>
       <p :if={@intrinsic_note}>{@intrinsic_note}</p>
       <p>
         Use <code class="text-sm">class="{@pattern}"</code> to {@purpose}.
       </p>
       <p>
         Available options: {@options_text}
+      </p>
+    </div>
+    """
+  end
+
+  attr :host, :string, required: true
+  attr :class, :string, default: "typo text-ink-muted flex flex-col gap-space-xs max-w-none"
+
+  def variant_matrix_description(assigns) do
+    ~H"""
+    <div class={@class}>
+      <p>
+        Combine semantic palette and variant treatment on the same host, for example <code class="text-sm">{@host} ui-accent ui-solid</code>.
       </p>
     </div>
     """
@@ -156,20 +176,24 @@ defmodule E2eWeb.DemoPage do
     {pattern, purpose, options} =
       case axis do
         :semantic ->
-          {"#{name}--{role}", "set the semantic palette of #{article} #{label}",
+          {"ui-{role}", "set the semantic palette of #{article} #{label}",
            E2eWeb.DemoScales.semantic_steps()}
 
         :size ->
-          {"#{name}--{size}", "set the size of #{article} #{label}",
+          {"ui-size-{size}", "set the size of #{article} #{label}",
            E2eWeb.DemoScales.size_steps()}
 
         :radius ->
-          {"#{name}--rounded-{step}", "set the corner radius of #{article} #{label}",
+          {"ui-rounded-{step}", "set the corner radius of #{article} #{label}",
            E2eWeb.DemoScales.radius_steps()}
 
         :text ->
-          {"#{name}--text-{size}", "set the text size of #{article} #{label}",
+          {"ui-text-{size}", "set the text size of #{article} #{label}",
            E2eWeb.DemoScales.text_steps()}
+
+        :variant ->
+          {"ui-solid", "set a filled surface on #{article} #{label} (default is subtle)",
+           ["subtle (default)", "solid"]}
 
         :width ->
           {"w-{step}",
@@ -245,7 +269,7 @@ defmodule E2eWeb.DemoPage do
       <.navigate
         :for={link <- @links}
         to={link.to}
-        class="button button--sm button--variant-ghost"
+        class="button ui-size-sm"
         external
       >
         <img :if={link.icon} src={link.icon} alt="" class="icon object-contain shrink-0" />
@@ -302,7 +326,7 @@ defmodule E2eWeb.DemoPage do
   def playground_dir_toggle(assigns) do
     ~H"""
     <.toggle_group
-      class="toggle-group toggle-group--sm max-w-3xs"
+      class="toggle-group ui-size-sm max-w-3xs"
       id={@id}
       on_value_change={@on_value_change}
       multiple={false}
@@ -342,7 +366,7 @@ defmodule E2eWeb.DemoPage do
   attr :code_class, :string, default: "code max-w-none w-full min-h-0"
 
   attr :clipboard_class, :string,
-    default: "clipboard w-fit clipboard--sm absolute top-2 right-2 z-10"
+    default: "clipboard w-fit ui-size-sm absolute top-2 right-2 z-10"
 
   slot :description
   slot :preview, required: true

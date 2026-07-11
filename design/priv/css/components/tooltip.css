@@ -1,162 +1,82 @@
 @import "../main.css";
 
 @layer components {
-  .tooltip {
-    position: relative;
-    z-index: 20;
-  }
+ .tooltip {
+ position: relative;
+ z-index: 20;
+ }
 
-  .tooltip:has([data-scope="tooltip"][data-part="content"][data-state="open"]) {
-    z-index: 50;
-  }
+ .tooltip:has([data-scope="tooltip"][data-part="content"][data-state="open"]) {
+ z-index: 50;
+ }
 
-  .tooltip[data-loading] > * {
-    @apply ui-loading;
-  }
+ .tooltip[data-loading] > * {
+ @apply ui-loading;
+ }
 
-  .tooltip [data-scope="tooltip"][data-part="positioner"] {
-    z-index: 50;
-    position: absolute;
-    left: 0;
-    top: 0;
-    visibility: hidden;
-    pointer-events: none;
-  }
+ .tooltip [data-scope="tooltip"][data-part="positioner"] {
+ z-index: 50;
+ position: absolute;
+ left: 0;
+ top: 0;
+ visibility: hidden;
+ pointer-events: none;
+ }
 
-  .tooltip [data-scope="tooltip"][data-part="positioner"]:has(
-    [data-scope="tooltip"][data-part="content"][data-state="open"]
-  ) {
-    visibility: visible;
-    pointer-events: auto;
-  }
+ .tooltip [data-scope="tooltip"][data-part="positioner"]:has(
+ [data-scope="tooltip"][data-part="content"][data-state="open"]
+ ) {
+ visibility: visible;
+ pointer-events: auto;
+ }
 
-  .tooltip [data-scope="tooltip"][data-part="content"] {
-    @apply ui-content;
+ .tooltip [data-scope="tooltip"][data-part="content"] {
+ @apply ui-content;
 
-    padding: var(--spacing-space);
-    max-width: var(--container-5xs);
-    position: relative;
-    z-index: 1;
-    background-color: var(--color-ui);
-    border: 1px solid var(--color-border);
-    box-shadow: var(--shadow-ui);
-  }
+ padding: var(--spacing-space);
+ max-width: var(--container-5xs);
+ position: relative;
+ z-index: 1;
+ color: var(--ctl-ink-text, var(--color-ink));
+ background-color: var(--color-ui);
+ border: 1px solid var(--color-border);
+ box-shadow: var(--shadow-ui);
+ }
 
-  .tooltip:not(.tooltip--variant-solid):not(.tooltip--variant-ghost):not(.tooltip--variant-outline)
-    [data-scope="tooltip"][data-part="content"] {
-    background-color: var(--color-root);
-    color: var(--color-ink);
-    border-color: var(--color-border);
-    box-shadow: var(--shadow-ui);
-  }
+ .tooltip.ui-solid [data-scope="tooltip"][data-part="content"] {
+ color: var(--ctl-ink, var(--ctl-ink-text, var(--color-ink)));
+ background-color: var(--ctl-bg, var(--color-ui));
+ border-color: var(--ctl-bd, var(--color-border));
+ }
 
-  .tooltip [data-scope="tooltip"][data-part="content"][data-state="closed"] {
-    visibility: hidden;
-    opacity: 0;
-    transition: visibility 0.15s, opacity 0.15s;
-  }
+ .tooltip [data-scope="tooltip"][data-part="content"][data-state="closed"] {
+ visibility: hidden;
+ opacity: 0;
+ transition: visibility 0.15s, opacity 0.15s;
+ }
 
-  .tooltip [data-scope="tooltip"][data-part="content"][data-state="open"] {
-    visibility: visible;
-    opacity: 1;
-    transition: visibility 0.15s, opacity 0.15s;
-  }
+ .tooltip [data-scope="tooltip"][data-part="content"][data-state="open"] {
+ visibility: visible;
+ opacity: 1;
+ transition: visibility 0.15s, opacity 0.15s;
+ }
 
-  .tooltip [data-scope="tooltip"][data-part="arrow"] {
-    --arrow-size: var(--spacing-space);
-    --arrow-background: var(--color-ui);
-    z-index: 0;
-  }
+ .tooltip [data-scope="tooltip"][data-part="arrow"] {
+ --arrow-size: var(--spacing-space);
+ --arrow-background: var(--color-ui);
+ z-index: 0;
+ }
 
-  .tooltip [data-scope="tooltip"][data-part="arrow-tip"] {
-    background: var(--arrow-background);
-    border: 1px solid var(--color-border);
-  }
-}
+ .tooltip.ui-solid [data-scope="tooltip"][data-part="arrow"] {
+ --arrow-background: var(--ctl-bg, var(--color-ui));
+ }
 
-@utility tooltip--* {
-  [data-scope="tooltip"][data-part="content"] {
-    --tooltip-fill: --value(--color-*, [color]);
-    --tooltip-fill-hover: --value(--color-*-hover, [color]);
-    --tooltip-ink: --value(--color-*-ink, [color]);
-    --tooltip-ink-text: --value(--color-ink-*, [color]);
-    --tooltip-muted: --value(--color-*-muted, [color]);
-    border-color: --value(--color-border, [color]);
-    max-width: --value(--container-*, [length]);
-    padding: --value(--spacing-space-*, [length]);
-    font-size: --value(--text-*, [length]);
-    line-height: --value(--text-*--line-height, [length]);
-  }
+ .tooltip [data-scope="tooltip"][data-part="arrow-tip"] {
+ background: var(--arrow-background);
+ border: 1px solid var(--color-border);
+ }
 
-  [data-scope="tooltip"][data-part="arrow"] {
-    --arrow-background: --value(--color-*, [color]);
-    --arrow-size: calc(--value(--spacing-space-*, [length]) * 0.25);
-  }
-
-  [data-scope="tooltip"][data-part="arrow-tip"] {
-    background: var(--arrow-background);
-    border-color: --value(--color-border, [color]);
-  }
-}
-
-@utility tooltip--rounded-* {
-  [data-scope="tooltip"][data-part="content"] {
-    border-radius: --value(--radius-*, [length]);
-  }
-}
-
-@utility tooltip--variant-solid {
-  [data-scope="tooltip"][data-part="content"] {
-    background-color: var(--tooltip-fill, var(--color-ui-active));
-    color: var(--tooltip-ink, var(--color-ink));
-    border-color: transparent;
-    box-shadow: var(--shadow-ui);
-  }
-
-  [data-scope="tooltip"][data-part="arrow"] {
-    --arrow-background: var(--tooltip-fill, var(--color-ui-active));
-  }
-}
-
-@utility tooltip--variant-subtle {
-  [data-scope="tooltip"][data-part="content"] {
-    background-color: var(--color-root);
-    color: var(--tooltip-ink-text, var(--color-ink));
-    border-color: var(--color-border);
-    box-shadow: var(--shadow-ui);
-  }
-
-  [data-scope="tooltip"][data-part="arrow"] {
-    --arrow-background: var(--color-root);
-  }
-}
-
-@utility tooltip--variant-ghost {
-  [data-scope="tooltip"][data-part="content"] {
-    background-color: transparent;
-    color: var(--tooltip-ink-text, var(--color-ink));
-    border-color: transparent;
-    box-shadow: none;
-  }
-
-  [data-scope="tooltip"][data-part="arrow"] {
-    --arrow-background: transparent;
-  }
-
-  [data-scope="tooltip"][data-part="arrow-tip"] {
-    border-color: transparent;
-  }
-}
-
-@utility tooltip--variant-outline {
-  [data-scope="tooltip"][data-part="content"] {
-    background-color: transparent;
-    color: var(--tooltip-ink-text, var(--color-ink));
-    border-color: var(--tooltip-fill, var(--color-border));
-    box-shadow: none;
-  }
-
-  [data-scope="tooltip"][data-part="arrow"] {
-    --arrow-background: transparent;
-  }
+ .tooltip.ui-solid [data-scope="tooltip"][data-part="arrow-tip"] {
+ border-color: var(--ctl-bd, var(--color-border));
+ }
 }

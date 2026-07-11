@@ -96,7 +96,7 @@ defmodule Corex.ColorPicker do
   ### set_value
 
   ```heex
-  <.action phx-click={Corex.ColorPicker.set_value("color-picker-api", "#ff0000")} class="button button--sm">
+  <.action phx-click={Corex.ColorPicker.set_value("color-picker-api", "#ff0000")} class="button ui-size-sm">
     Set red
   </.action>
   <.color_picker id="color-picker-api" value="#000000" label="Color" class="color-picker" />
@@ -239,7 +239,7 @@ defmodule Corex.ColorPicker do
           </:error>
         </.color_picker>
 
-        <.action type="submit" class="button button--accent">
+        <.action type="submit" class="button ui-accent">
           Submit
         </.action>
       </.form>
@@ -292,7 +292,7 @@ defmodule Corex.ColorPicker do
           </:error>
         </.color_picker>
 
-        <.action type="submit" class="button button--accent">
+        <.action type="submit" class="button ui-accent">
           Submit
         </.action>
       </.form>
@@ -389,7 +389,7 @@ defmodule Corex.ColorPicker do
           label="Color"
           class="color-picker"
         />
-        <.action type="submit" class="button button--accent">
+        <.action type="submit" class="button ui-accent">
           Submit
         </.action>
       </form>

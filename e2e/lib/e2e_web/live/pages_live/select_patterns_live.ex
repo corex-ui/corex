@@ -109,10 +109,10 @@ defmodule E2eWeb.SelectPatternsLive do
           <:preview>
             <div class="flex flex-col gap-3 w-full max-w-xl">
               <div class="flex flex-wrap gap-2">
-                <.action phx-click="add_item" class="button button--sm button--accent">
+                <.action phx-click="add_item" class="button ui-size-sm ui-accent">
                   <.heroicon name="hero-plus" /> Add item
                 </.action>
-                <.action phx-click="reset" class="button button--sm button--alert">
+                <.action phx-click="reset" class="button ui-size-sm ui-alert">
                   Reset
                 </.action>
               </div>

@@ -5,7 +5,7 @@ Optional config-driven token generation and static component CSS for Corex.
 ## Hard rules
 
 1. **No custom CSS in templates** — only `@import` lines and vendor-required fragments in `site.css` / `app.css`
-2. **Flat BEM modifiers** — `class="accordion accordion--accent accordion--variant-ghost accordion--lg"`
+2. **Flat BEM modifiers** — `class="accordion ui-accent ui-size-lg"`
 3. **Tailwind for layout and sizing** — `max-w-md`, `w-full`, `rounded-lg`, `text-sm`, `flex`, `gap-4`. Named width steps use the Corex container ladder (`9xs` … `9xl`), linked via semantic dimension tokens.
 4. **Never invent class names** or write `[data-scope=…]` in template CSS
 5. **`.typo` on prose** — bare semantic tags inside `.typo`
@@ -73,9 +73,9 @@ Legacy bare `var(--color-{semantic}-ink)` names remain as aliases in generated t
 ## Demo panel pattern
 
 ```heex
-<.floating_panel id="demo" class="floating-panel floating-panel--accent max-w-md">
-  <.select id="theme" class="select select--sm" … />
-  <.toggle id="mode" class="toggle toggle--sm" … />
+<.floating_panel id="demo" class="floating-panel ui-accent max-w-md">
+  <.select id="theme" class="select ui-size-sm" … />
+  <.toggle id="mode" class="toggle ui-size-sm" … />
 </.floating_panel>
 ```
 
@@ -90,7 +90,7 @@ No `class` on `<.heroicon>` inside Corex components or slots:
 ## Anti-patterns
 
 - Custom layout components instead of Tailwind (`<.stack>` with axis attrs)
-- Invented modifier names (`accordion--ghost`, `accordion--semantic-accent`) — use `accordion--variant-ghost` and flat semantic roles (`accordion--accent`)
+- Invented modifier names (`accordion--ghost`, `accordion--semantic-accent`) — use `` and flat semantic roles (`ui-accent`)
 - Overriding `--color-*` in templates — use `data-theme` / `data-mode` or rebuild tokens
 - Using `--color-ink-*` on filled semantic controls — use `--color-*-ink` instead
 - Legacy bare `var(--color-{semantic}-ink)` in hand-authored CSS — prefer `--value(--color-*-ink, …)` or `--value(--color-ink-*, …)` by surface

@@ -11,7 +11,7 @@ defmodule E2e.PaginationPlayBlog do
     },
     %{
       title: "BEM modifiers on buttons",
-      excerpt: "button button--accent button--lg — no new class names."
+      excerpt: "button ui-accent ui-size-lg — no new class names."
     },
     %{title: "Zag.js under the hood", excerpt: "Accessible behavior with Phoenix-friendly SSR."},
     %{

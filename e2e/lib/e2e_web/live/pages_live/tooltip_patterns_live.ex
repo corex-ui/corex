@@ -214,7 +214,7 @@ defmodule E2eWeb.TooltipPatternsLive do
                 <%= if item.value == "support" do %>
                   <.tooltip
                     id="tooltip-pattern-menu-support"
-                    class="tooltip tooltip--sm"
+                    class="tooltip ui-size-sm"
                     trigger_tag={:span}
                     show_arrow={false}
                   >

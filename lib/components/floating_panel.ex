@@ -8,7 +8,7 @@ defmodule Corex.FloatingPanel do
 
   ```heex
   <.floating_panel class="floating-panel">
-    <:trigger class="button button--variant-ghost button--sm">
+    <:trigger class="button ui-size-sm">
       <span data-closed>Open panel</span>
       <span data-open>Close panel</span>
     </:trigger>
@@ -36,7 +36,7 @@ defmodule Corex.FloatingPanel do
 
   Required slots: `:trigger`, `:title`, `:close_trigger`, `:content`.
 
-  Set **`class`** on **`:trigger`** to style the outer trigger button (e.g. `button button--variant-ghost button--sm`).
+  Set **`class`** on **`:trigger`** to style the outer trigger button (e.g. `button ui-size-sm`).
 
   Use **`data-open`** and **`data-closed`** on elements inside `:trigger` to swap label when the panel is open vs closed (see default rules in `floating-panel.css`). You can also target **`[data-part="trigger"][data-state="open"]`** / **`closed`** with your own selectors.
 
@@ -110,7 +110,7 @@ defmodule Corex.FloatingPanel do
   You can then use modifiers
 
   ```heex
-  <.floating_panel class="floating-panel floating-panel--accent floating-panel--lg">
+  <.floating_panel class="floating-panel ui-accent ui-size-lg">
     <:trigger>
       <span data-closed>Closed</span>
       <span data-open>Open</span>
@@ -348,7 +348,7 @@ defmodule Corex.FloatingPanel do
   ```heex
   <.action phx-click={Corex.FloatingPanel.set_open("my-floating-panel", true)}>Open</.action>
   <.floating_panel id="my-floating-panel" class="floating-panel">
-    <:trigger class="button button--variant-ghost button--sm"><span>Open</span></:trigger>
+    <:trigger class="button ui-size-sm"><span>Open</span></:trigger>
     <:title>Panel</:title>
     <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
     <:content><p>Content.</p></:content>
@@ -380,7 +380,7 @@ defmodule Corex.FloatingPanel do
   ```heex
   <.action phx-click="open_panel">Open</.action>
   <.floating_panel id="my-floating-panel" class="floating-panel">
-    <:trigger class="button button--variant-ghost button--sm"><span>Open</span></:trigger>
+    <:trigger class="button ui-size-sm"><span>Open</span></:trigger>
     <:title>Panel</:title>
     <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
     <:content><p>Content.</p></:content>

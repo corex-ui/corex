@@ -1,298 +1,110 @@
 @import "../main.css";
 
 @layer components {
-  .signature-pad {
-    width: 100%;
-    max-width: var(--container-xs);
-    gap: var(--spacing-space);
-    display: flex;
-    flex-direction: column;
-  }
+ .signature-pad {
+ width: 100%;
+ max-width: var(--container-xs);
+ gap: var(--spacing-space);
+ display: flex;
+ flex-direction: column;
+ }
 
-  .signature-pad[data-loading] [data-scope="signature-pad"][data-part="root"] {
-    @apply ui-loading;
-  }
+ .signature-pad[data-loading] [data-scope="signature-pad"][data-part="root"] {
+ @apply ui-loading;
+ }
 
-  .signature-pad [data-scope="signature-pad"][data-part="root"] {
-    @apply ui-root;
+ .signature-pad [data-scope="signature-pad"][data-part="root"] {
+ @apply ui-root;
 
-    width: 100%;
-    gap: var(--spacing-space);
-    position: relative;
-    padding-inline-end: var(--spacing-space);
-  }
+ width: 100%;
+ gap: var(--spacing-space);
+ position: relative;
+ padding-inline-end: var(--spacing-space);
+ }
 
-  .signature-pad [data-scope="signature-pad"][data-part="root"][data-readonly] {
-    @apply ui-readonly;
-  }
+ .signature-pad [data-scope="signature-pad"][data-part="root"][data-readonly] {
+ @apply ui-readonly;
+ }
 
-  .signature-pad [data-scope="signature-pad"][data-part="label"] {
-    @apply ui-label;
-  }
+ .signature-pad [data-scope="signature-pad"][data-part="label"] {
+ @apply ui-label;
+ }
 
-  .signature-pad [data-scope="signature-pad"][data-part="control"] {
-    position: relative;
-    width: 100%;
-    height: calc(var(--container-5xs) * 0.7);
-    background-color: var(--color-ui);
-    border-radius: var(--radius-md);
-    border: 1px solid var(--color-border);
-  }
+ .signature-pad [data-scope="signature-pad"][data-part="control"] {
+ position: relative;
+ width: 100%;
+ height: calc(var(--container-5xs) * 0.7);
+ background-color: var(--color-ui);
+ border-radius: var(--radius-md);
+ border: 1px solid var(--color-border);
+ }
 
-  .signature-pad [data-scope="signature-pad"][data-part="guide"] {
-    position: absolute;
-    bottom: var(--spacing-space);
-    inset-inline-start: var(--spacing-space);
-    inset-inline-end: var(--spacing-space);
-    border-bottom: 2px dashed var(--color-border);
-  }
+ .signature-pad [data-scope="signature-pad"][data-part="guide"] {
+ position: absolute;
+ bottom: var(--spacing-space);
+ inset-inline-start: var(--spacing-space);
+ inset-inline-end: var(--spacing-space);
+ border-bottom: 2px dashed var(--color-border);
+ }
 
-  .signature-pad [data-scope="signature-pad"][data-part="segment"] {
-    position: absolute;
-    top: 0;
-    inset-inline-start: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    background-color: var(--color-ui-muted);
-    border-radius: var(--radius-md);
-  }
+ .signature-pad [data-scope="signature-pad"][data-part="segment"] {
+ position: absolute;
+ top: 0;
+ inset-inline-start: 0;
+ width: 100%;
+ height: 100%;
+ pointer-events: none;
+ background-color: var(--color-ui-muted);
+ border-radius: var(--radius-md);
+ }
 
-  .signature-pad [data-scope="signature-pad"][data-part="clear-trigger"] {
-    @apply ui-trigger ui-trigger--square;
+ .signature-pad [data-scope="signature-pad"][data-part="clear-trigger"] {
+ @apply ui-trigger ui-trigger--square;
 
-    position: absolute;
-    z-index: 1;
-    top: var(--spacing-space-sm);
-    inset-inline-end: var(--spacing-space-sm);
-    min-height: calc(var(--spacing-size) * 0.6);
-    min-width: calc(var(--spacing-size) * 0.6);
-  }
+ position: absolute;
+ z-index: 1;
+ top: var(--spacing-space-sm);
+ inset-inline-end: var(--spacing-space-sm);
+ min-height: calc(var(--spacing-size) * 0.6);
+ min-width: calc(var(--spacing-size) * 0.6);
+ }
 
-  .signature-pad:not(.signature-pad--variant-solid):not(.signature-pad--variant-ghost):not(.signature-pad--variant-outline)
-    [data-scope="signature-pad"][data-part="clear-trigger"] {
-    background-color: var(--color-ui);
-    color: var(--signature-pad-ink-text, var(--color-ink));
-    border-color: var(--color-border);
+ .signature-pad [data-part="preview"] {
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ width: var(--container-5xs);
+ padding: var(--spacing-space);
+ gap: var(--spacing-space);
+ background-color: var(--color-layer);
 
-    &:hover {
-      background-color: var(--color-ui-active);
-    }
+ & img {
+ width: 100%;
+ height: var(--container-6xs);
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ overflow: hidden;
+ padding: var(--spacing-space);
+ border: 1px solid var(--color-border);
+ border-radius: var(--radius-md);
+ background-color: var(--color-root);
+ }
+ }
 
-    &:active {
-      background-color: var(--color-ui-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--signature-pad-ink-text, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-ui-muted);
-      color: var(--color-ink-muted);
-      border-color: var(--color-ui-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .signature-pad [data-part="preview"] {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: var(--container-5xs);
-    padding: var(--spacing-space);
-    gap: var(--spacing-space);
-    background-color: var(--color-layer);
-
-    & img {
-      width: 100%;
-      height: var(--container-6xs);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      padding: var(--spacing-space);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-md);
-      background-color: var(--color-root);
-    }
-  }
-
-  .signature-pad [data-scope="signature-pad"][data-part="error"] {
-    @apply ui-error;
-  }
+ .signature-pad [data-scope="signature-pad"][data-part="error"] {
+ @apply ui-error;
+ }
 }
 
 @utility signature-pad--ui {
-  max-width: var(--container-sm);
+ max-width: var(--container-sm);
 }
 
 @utility signature-pad--mini {
-  max-width: var(--container-xs);
+ max-width: var(--container-xs);
 }
 
 @utility signature-pad--micro {
-  max-width: var(--container-6xs);
-}
-
-@utility signature-pad--* {
-  & [data-scope="signature-pad"][data-part="root"] {
-    gap: --value(--spacing-space-*, [length]);
-  }
-
-  & [data-scope="signature-pad"][data-part="label"] {
-    font-size: --value(--text-*, [length]);
-    line-height: --value(--text-*--line-height, [length]);
-  }
-
-  & [data-scope="signature-pad"][data-part="control"] {
-    height: calc(--value(--spacing-size-*, [length]) * 4);
-  }
-
-  & [data-scope="signature-pad"][data-part="clear-trigger"] {
-    font-size: --value(--text-*, [length]);
-    line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-size-*, [length]);
-    min-width: --value(--spacing-size-*, [length]);
-    --signature-pad-fill: --value(--color-*, [color]);
-    --signature-pad-fill-hover: --value(--color-*-hover, [color]);
-    --signature-pad-fill-active: --value(--color-*-active, [color]);
-    --signature-pad-ink: --value(--color-*-ink, [color]);
-    --signature-pad-ink-text: --value(--color-ink-*, [color]);
-    --signature-pad-muted: --value(--color-*-muted, [color]);
-  }
-}
-
-@utility signature-pad--rounded-* {
-  & [data-scope="signature-pad"][data-part="control"] {
-    border-radius: --value(--radius-*, [length]);
-  }
-
-  & [data-scope="signature-pad"][data-part="segment"] {
-    border-radius: --value(--radius-*, [length]);
-  }
-
-  & [data-scope="signature-pad"][data-part="clear-trigger"] {
-    border-radius: --value(--radius-*, [length]);
-  }
-}
-
-@utility signature-pad--variant-solid {
-  & [data-scope="signature-pad"][data-part="clear-trigger"] {
-    background-color: var(--signature-pad-fill, var(--color-ui-active));
-    color: var(--signature-pad-ink, var(--color-ink));
-    border-color: transparent;
-
-    &:hover {
-      background-color: var(--signature-pad-fill-hover, var(--color-ui-hover));
-    }
-
-    &:active {
-      background-color: var(--signature-pad-fill-active, var(--color-ui-active));
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--signature-pad-ink, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--signature-pad-muted, var(--color-ui-muted));
-      cursor: not-allowed;
-    }
-  }
-}
-
-@utility signature-pad--variant-subtle {
-  & [data-scope="signature-pad"][data-part="clear-trigger"] {
-    background-color: var(--color-ui);
-    color: var(--signature-pad-ink-text, var(--color-ink));
-    border-color: var(--color-border);
-
-    &:hover {
-      background-color: var(--color-ui-active);
-    }
-
-    &:active {
-      background-color: var(--color-ui-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--signature-pad-ink-text, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-ui-muted);
-      color: var(--color-ink-muted);
-      border-color: var(--color-ui-muted);
-      cursor: not-allowed;
-    }
-  }
-}
-
-@utility signature-pad--variant-ghost {
-  & [data-scope="signature-pad"][data-part="clear-trigger"] {
-    background-color: transparent;
-    color: var(--signature-pad-ink-text, var(--color-ink));
-    border-color: transparent;
-
-    &:hover {
-      background-color: var(--color-ui-hover);
-    }
-
-    &:active {
-      background-color: var(--color-ui-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--signature-pad-ink-text, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: transparent;
-      color: var(--color-ink-muted);
-      cursor: not-allowed;
-    }
-  }
-}
-
-@utility signature-pad--variant-outline {
-  & [data-scope="signature-pad"][data-part="clear-trigger"] {
-    background-color: transparent;
-    color: var(--signature-pad-ink-text, var(--color-ink));
-    border-color: var(--signature-pad-fill, var(--color-border));
-
-    &:hover {
-      background-color: var(--color-ui-hover);
-    }
-
-    &:active {
-      background-color: var(--color-ui-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--signature-pad-fill, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: transparent;
-      color: var(--color-ink-muted);
-      border-color: var(--color-ui-muted);
-      cursor: not-allowed;
-    }
-  }
+ max-width: var(--container-6xs);
 }

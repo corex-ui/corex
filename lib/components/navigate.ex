@@ -44,7 +44,7 @@ defmodule Corex.Navigate do
   You can then use modifiers
 
   ```heex
-  <.navigate class="link link--accent link--lg">
+  <.navigate class="link ui-accent ui-size-lg">
   ```
 
   Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text). See the [modifier guide](modifiers.html).

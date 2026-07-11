@@ -273,11 +273,11 @@ defmodule E2eWeb.Demos.TimerDemo do
 
   def api_controls_client_binding_code do
     ~S"""
-    <.action phx-click={Corex.Timer.start("timer-api-controls-client")} class="button button--sm">Start</.action>
-    <.action phx-click={Corex.Timer.pause("timer-api-controls-client")} class="button button--sm">Pause</.action>
-    <.action phx-click={Corex.Timer.resume("timer-api-controls-client")} class="button button--sm">Resume</.action>
-    <.action phx-click={Corex.Timer.reset("timer-api-controls-client")} class="button button--sm">Reset</.action>
-    <.action phx-click={Corex.Timer.restart("timer-api-controls-client")} class="button button--sm">Restart</.action>
+    <.action phx-click={Corex.Timer.start("timer-api-controls-client")} class="button ui-size-sm">Start</.action>
+    <.action phx-click={Corex.Timer.pause("timer-api-controls-client")} class="button ui-size-sm">Pause</.action>
+    <.action phx-click={Corex.Timer.resume("timer-api-controls-client")} class="button ui-size-sm">Resume</.action>
+    <.action phx-click={Corex.Timer.reset("timer-api-controls-client")} class="button ui-size-sm">Reset</.action>
+    <.action phx-click={Corex.Timer.restart("timer-api-controls-client")} class="button ui-size-sm">Restart</.action>
     <.timer id="timer-api-controls-client" countdown start_ms={60_000} target_ms={0} auto_start={false} class="timer">
       <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
       <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
@@ -289,11 +289,11 @@ defmodule E2eWeb.Demos.TimerDemo do
 
   def api_controls_server_heex do
     ~S"""
-    <.action phx-click="api_timer_start_server" class="button button--sm">Start</.action>
-    <.action phx-click="api_timer_pause_server" class="button button--sm">Pause</.action>
-    <.action phx-click="api_timer_resume_server" class="button button--sm">Resume</.action>
-    <.action phx-click="api_timer_reset_server" class="button button--sm">Reset</.action>
-    <.action phx-click="api_timer_restart_server" class="button button--sm">Restart</.action>
+    <.action phx-click="api_timer_start_server" class="button ui-size-sm">Start</.action>
+    <.action phx-click="api_timer_pause_server" class="button ui-size-sm">Pause</.action>
+    <.action phx-click="api_timer_resume_server" class="button ui-size-sm">Resume</.action>
+    <.action phx-click="api_timer_reset_server" class="button ui-size-sm">Reset</.action>
+    <.action phx-click="api_timer_restart_server" class="button ui-size-sm">Restart</.action>
     <.timer id="timer-api-controls-server" countdown start_ms={60_000} target_ms={0} auto_start={false} class="timer">
       <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
       <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
@@ -305,11 +305,11 @@ defmodule E2eWeb.Demos.TimerDemo do
 
   def api_controls_client_js_heex do
     ~S"""
-    <.action phx-click={JS.dispatch("corex:timer:start", to: "#timer-api-controls-js", bubbles: false)} class="button button--sm">Start</.action>
-    <.action phx-click={JS.dispatch("corex:timer:pause", to: "#timer-api-controls-js", bubbles: false)} class="button button--sm">Pause</.action>
-    <.action phx-click={JS.dispatch("corex:timer:resume", to: "#timer-api-controls-js", bubbles: false)} class="button button--sm">Resume</.action>
-    <.action phx-click={JS.dispatch("corex:timer:reset", to: "#timer-api-controls-js", bubbles: false)} class="button button--sm">Reset</.action>
-    <.action phx-click={JS.dispatch("corex:timer:restart", to: "#timer-api-controls-js", bubbles: false)} class="button button--sm">Restart</.action>
+    <.action phx-click={JS.dispatch("corex:timer:start", to: "#timer-api-controls-js", bubbles: false)} class="button ui-size-sm">Start</.action>
+    <.action phx-click={JS.dispatch("corex:timer:pause", to: "#timer-api-controls-js", bubbles: false)} class="button ui-size-sm">Pause</.action>
+    <.action phx-click={JS.dispatch("corex:timer:resume", to: "#timer-api-controls-js", bubbles: false)} class="button ui-size-sm">Resume</.action>
+    <.action phx-click={JS.dispatch("corex:timer:reset", to: "#timer-api-controls-js", bubbles: false)} class="button ui-size-sm">Reset</.action>
+    <.action phx-click={JS.dispatch("corex:timer:restart", to: "#timer-api-controls-js", bubbles: false)} class="button ui-size-sm">Restart</.action>
     <.timer id="timer-api-controls-js" countdown start_ms={60_000} target_ms={0} auto_start={false} class="timer">
       <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
       <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
@@ -367,7 +367,7 @@ defmodule E2eWeb.Demos.TimerDemo do
 
   def api_state_client_binding_code do
     ~S"""
-    <.action phx-click={Corex.Timer.state("timer-api-state-client")} class="button button--sm">
+    <.action phx-click={Corex.Timer.state("timer-api-state-client")} class="button ui-size-sm">
       Read state
     </.action>
     <.timer id="timer-api-state-client" countdown start_ms={60_000} target_ms={0} auto_start={false} class="timer">
@@ -381,7 +381,7 @@ defmodule E2eWeb.Demos.TimerDemo do
 
   def api_state_server_heex do
     ~S"""
-    <.action phx-click="api_timer_state_server" class="button button--sm">
+    <.action phx-click="api_timer_state_server" class="button ui-size-sm">
       Read state
     </.action>
     <.timer id="timer-api-state-server" countdown start_ms={60_000} target_ms={0} auto_start={false} class="timer">
@@ -405,7 +405,7 @@ defmodule E2eWeb.Demos.TimerDemo do
     ~S"""
     <.action
       phx-click={JS.dispatch("corex:timer:state", to: "#timer-api-state-js", detail: %{}, bubbles: false)}
-      class="button button--sm"
+      class="button ui-size-sm"
     >
       Read state
     </.action>
@@ -442,31 +442,31 @@ defmodule E2eWeb.Demos.TimerDemo do
     <div class="flex flex-wrap gap-2 mb-4">
       <.action
         phx-click={JS.dispatch("corex:timer:start", to: "##{@id}", bubbles: false)}
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Start
       </.action>
       <.action
         phx-click={JS.dispatch("corex:timer:pause", to: "##{@id}", bubbles: false)}
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Pause
       </.action>
       <.action
         phx-click={JS.dispatch("corex:timer:resume", to: "##{@id}", bubbles: false)}
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Resume
       </.action>
       <.action
         phx-click={JS.dispatch("corex:timer:reset", to: "##{@id}", bubbles: false)}
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Reset
       </.action>
       <.action
         phx-click={JS.dispatch("corex:timer:restart", to: "##{@id}", bubbles: false)}
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Restart
       </.action>
@@ -483,11 +483,11 @@ defmodule E2eWeb.Demos.TimerDemo do
   def api_controls_client_binding_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={Corex.Timer.start(@id)} class="button button--sm">Start</.action>
-      <.action phx-click={Corex.Timer.pause(@id)} class="button button--sm">Pause</.action>
-      <.action phx-click={Corex.Timer.resume(@id)} class="button button--sm">Resume</.action>
-      <.action phx-click={Corex.Timer.reset(@id)} class="button button--sm">Reset</.action>
-      <.action phx-click={Corex.Timer.restart(@id)} class="button button--sm">Restart</.action>
+      <.action phx-click={Corex.Timer.start(@id)} class="button ui-size-sm">Start</.action>
+      <.action phx-click={Corex.Timer.pause(@id)} class="button ui-size-sm">Pause</.action>
+      <.action phx-click={Corex.Timer.resume(@id)} class="button ui-size-sm">Resume</.action>
+      <.action phx-click={Corex.Timer.reset(@id)} class="button ui-size-sm">Reset</.action>
+      <.action phx-click={Corex.Timer.restart(@id)} class="button ui-size-sm">Restart</.action>
     </div>
     <.timer id={@id} countdown start_ms={60_000} target_ms={0} auto_start={false} class="timer">
       <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
@@ -501,11 +501,11 @@ defmodule E2eWeb.Demos.TimerDemo do
   def api_controls_server_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click="api_timer_start_server" class="button button--sm">Start</.action>
-      <.action phx-click="api_timer_pause_server" class="button button--sm">Pause</.action>
-      <.action phx-click="api_timer_resume_server" class="button button--sm">Resume</.action>
-      <.action phx-click="api_timer_reset_server" class="button button--sm">Reset</.action>
-      <.action phx-click="api_timer_restart_server" class="button button--sm">Restart</.action>
+      <.action phx-click="api_timer_start_server" class="button ui-size-sm">Start</.action>
+      <.action phx-click="api_timer_pause_server" class="button ui-size-sm">Pause</.action>
+      <.action phx-click="api_timer_resume_server" class="button ui-size-sm">Resume</.action>
+      <.action phx-click="api_timer_reset_server" class="button ui-size-sm">Reset</.action>
+      <.action phx-click="api_timer_restart_server" class="button ui-size-sm">Restart</.action>
     </div>
     <.timer id={@id} countdown start_ms={60_000} target_ms={0} auto_start={false} class="timer">
       <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
@@ -519,7 +519,7 @@ defmodule E2eWeb.Demos.TimerDemo do
   def api_state_client_binding_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={Corex.Timer.state(@id)} class="button button--sm">
+      <.action phx-click={Corex.Timer.state(@id)} class="button ui-size-sm">
         Read state
       </.action>
     </div>
@@ -535,7 +535,7 @@ defmodule E2eWeb.Demos.TimerDemo do
   def api_state_server_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click="api_timer_state_server" class="button button--sm">
+      <.action phx-click="api_timer_state_server" class="button ui-size-sm">
         Read state
       </.action>
     </div>
@@ -553,7 +553,7 @@ defmodule E2eWeb.Demos.TimerDemo do
     <div class="flex flex-wrap gap-2 mb-4">
       <.action
         phx-click={JS.dispatch("corex:timer:state", to: "##{@id}", detail: %{}, bubbles: false)}
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Read state
       </.action>
@@ -589,7 +589,7 @@ defmodule E2eWeb.Demos.TimerDemo do
 
   def timer_api_remount_heex do
     ~S"""
-    <.action phx-click="timer_api_remount" class="button button--sm">Remount</.action>
+    <.action phx-click="timer_api_remount" class="button ui-size-sm">Remount</.action>
     <.timer id="timer-api-remount" countdown start_ms={45_000} target_ms={0} class="timer">
       <:start_trigger><.heroicon name="hero-play"/></:start_trigger>
       <:pause_trigger><.heroicon name="hero-pause"/></:pause_trigger>
@@ -611,10 +611,10 @@ defmodule E2eWeb.Demos.TimerDemo do
 
   def styling_size_code do
     ~S"""
-    <.timer class="timer timer--sm w-full" start_ms={60_000} target_ms={0} countdown />
-    <.timer class="timer timer--md w-full" start_ms={60_000} target_ms={0} countdown />
-    <.timer class="timer timer--lg w-full" start_ms={60_000} target_ms={0} countdown />
-    <.timer class="timer timer--xl w-full" start_ms={60_000} target_ms={0} countdown />
+    <.timer class="timer ui-size-sm w-full" start_ms={60_000} target_ms={0} countdown />
+    <.timer class="timer ui-size-md w-full" start_ms={60_000} target_ms={0} countdown />
+    <.timer class="timer ui-size-lg w-full" start_ms={60_000} target_ms={0} countdown />
+    <.timer class="timer ui-size-xl w-full" start_ms={60_000} target_ms={0} countdown />
     """
   end
 
@@ -625,7 +625,7 @@ defmodule E2eWeb.Demos.TimerDemo do
     <div class="flex flex-col gap-4 w-full max-w-md">
       <.timer
         id="timer-style-sm"
-        class="timer timer--sm w-full"
+        class="timer ui-size-sm w-full"
         start_ms={60_000}
         target_ms={0}
         countdown
@@ -637,7 +637,7 @@ defmodule E2eWeb.Demos.TimerDemo do
       </.timer>
       <.timer
         id="timer-style-md"
-        class="timer timer--md w-full"
+        class="timer ui-size-md w-full"
         start_ms={60_000}
         target_ms={0}
         countdown
@@ -649,7 +649,7 @@ defmodule E2eWeb.Demos.TimerDemo do
       </.timer>
       <.timer
         id="timer-style-lg"
-        class="timer timer--lg w-full"
+        class="timer ui-size-lg w-full"
         start_ms={60_000}
         target_ms={0}
         countdown
@@ -661,7 +661,7 @@ defmodule E2eWeb.Demos.TimerDemo do
       </.timer>
       <.timer
         id="timer-style-xl"
-        class="timer timer--xl w-full"
+        class="timer ui-size-xl w-full"
         start_ms={60_000}
         target_ms={0}
         countdown
@@ -677,11 +677,11 @@ defmodule E2eWeb.Demos.TimerDemo do
 
   def styling_radius_code do
     ~S"""
-    <.timer class="timer timer--rounded-none w-full" start_ms={60_000} target_ms={0} countdown />
-    <.timer class="timer timer--rounded-md w-full" start_ms={60_000} target_ms={0} countdown />
-    <.timer class="timer timer--rounded-lg w-full" start_ms={60_000} target_ms={0} countdown />
-    <.timer class="timer timer--rounded-xl w-full" start_ms={60_000} target_ms={0} countdown />
-    <.timer class="timer timer--rounded-full w-full" start_ms={60_000} target_ms={0} countdown />
+    <.timer class="timer ui-rounded-none w-full" start_ms={60_000} target_ms={0} countdown />
+    <.timer class="timer ui-rounded-md w-full" start_ms={60_000} target_ms={0} countdown />
+    <.timer class="timer ui-rounded-lg w-full" start_ms={60_000} target_ms={0} countdown />
+    <.timer class="timer ui-rounded-xl w-full" start_ms={60_000} target_ms={0} countdown />
+    <.timer class="timer ui-rounded-full w-full" start_ms={60_000} target_ms={0} countdown />
     """
   end
 
@@ -692,7 +692,7 @@ defmodule E2eWeb.Demos.TimerDemo do
     <div class="flex flex-col gap-4 w-full max-w-md">
       <.timer
         id="timer-style-rounded-none"
-        class="timer timer--rounded-none w-full"
+        class="timer ui-rounded-none w-full"
         start_ms={60_000}
         target_ms={0}
         countdown
@@ -704,7 +704,7 @@ defmodule E2eWeb.Demos.TimerDemo do
       </.timer>
       <.timer
         id="timer-style-rounded-md"
-        class="timer timer--rounded-md w-full"
+        class="timer ui-rounded-md w-full"
         start_ms={60_000}
         target_ms={0}
         countdown
@@ -716,7 +716,7 @@ defmodule E2eWeb.Demos.TimerDemo do
       </.timer>
       <.timer
         id="timer-style-rounded-lg"
-        class="timer timer--rounded-lg w-full"
+        class="timer ui-rounded-lg w-full"
         start_ms={60_000}
         target_ms={0}
         countdown
@@ -728,7 +728,7 @@ defmodule E2eWeb.Demos.TimerDemo do
       </.timer>
       <.timer
         id="timer-style-rounded-xl"
-        class="timer timer--rounded-xl w-full"
+        class="timer ui-rounded-xl w-full"
         start_ms={60_000}
         target_ms={0}
         countdown
@@ -740,7 +740,7 @@ defmodule E2eWeb.Demos.TimerDemo do
       </.timer>
       <.timer
         id="timer-style-rounded-full"
-        class="timer timer--rounded-full w-full"
+        class="timer ui-rounded-full w-full"
         start_ms={60_000}
         target_ms={0}
         countdown
@@ -757,11 +757,11 @@ defmodule E2eWeb.Demos.TimerDemo do
   def styling_color_code do
     ~S"""
     <.timer class="timer w-full max-w-xs" start_ms={60_000} target_ms={0} countdown />
-    <.timer class="timer timer--accent w-full max-w-xs" start_ms={60_000} target_ms={0} countdown />
-    <.timer class="timer timer--brand w-full max-w-xs" start_ms={60_000} target_ms={0} countdown />
-    <.timer class="timer timer--alert w-full max-w-xs" start_ms={60_000} target_ms={0} countdown />
-    <.timer class="timer timer--info w-full max-w-xs" start_ms={60_000} target_ms={0} countdown />
-    <.timer class="timer timer--success w-full max-w-xs" start_ms={60_000} target_ms={0} countdown />
+    <.timer class="timer ui-accent w-full max-w-xs" start_ms={60_000} target_ms={0} countdown />
+    <.timer class="timer ui-brand w-full max-w-xs" start_ms={60_000} target_ms={0} countdown />
+    <.timer class="timer ui-alert w-full max-w-xs" start_ms={60_000} target_ms={0} countdown />
+    <.timer class="timer ui-info w-full max-w-xs" start_ms={60_000} target_ms={0} countdown />
+    <.timer class="timer ui-success w-full max-w-xs" start_ms={60_000} target_ms={0} countdown />
     """
   end
 
@@ -784,7 +784,7 @@ defmodule E2eWeb.Demos.TimerDemo do
       </.timer>
       <.timer
         id="timer-c-ac"
-        class="timer timer--accent w-full max-w-xs"
+        class="timer ui-accent w-full max-w-xs"
         start_ms={60_000}
         target_ms={0}
         countdown
@@ -796,7 +796,7 @@ defmodule E2eWeb.Demos.TimerDemo do
       </.timer>
       <.timer
         id="timer-c-br"
-        class="timer timer--brand w-full max-w-xs"
+        class="timer ui-brand w-full max-w-xs"
         start_ms={60_000}
         target_ms={0}
         countdown
@@ -808,7 +808,7 @@ defmodule E2eWeb.Demos.TimerDemo do
       </.timer>
       <.timer
         id="timer-c-al"
-        class="timer timer--alert w-full max-w-xs"
+        class="timer ui-alert w-full max-w-xs"
         start_ms={60_000}
         target_ms={0}
         countdown
@@ -820,7 +820,7 @@ defmodule E2eWeb.Demos.TimerDemo do
       </.timer>
       <.timer
         id="timer-c-in"
-        class="timer timer--info w-full max-w-xs"
+        class="timer ui-info w-full max-w-xs"
         start_ms={60_000}
         target_ms={0}
         countdown
@@ -832,7 +832,7 @@ defmodule E2eWeb.Demos.TimerDemo do
       </.timer>
       <.timer
         id="timer-c-su"
-        class="timer timer--success w-full max-w-xs"
+        class="timer ui-success w-full max-w-xs"
         start_ms={60_000}
         target_ms={0}
         countdown
@@ -853,15 +853,10 @@ defmodule E2eWeb.Demos.TimerDemo do
     <.timer class="timer w-full max-w-xs" start_ms={60_000} target_ms={0} countdown>
     #{triggers}
     </.timer>
-    <.timer class="timer timer--variant-solid w-full max-w-xs" start_ms={60_000} target_ms={0} countdown>
+    <.timer class="timer ui-solid w-full max-w-xs" start_ms={60_000} target_ms={0} countdown>
     #{triggers}
     </.timer>
-    <.timer class="timer timer--variant-ghost w-full max-w-xs" start_ms={60_000} target_ms={0} countdown>
-    #{triggers}
-    </.timer>
-    <.timer class="timer timer--variant-outline w-full max-w-xs" start_ms={60_000} target_ms={0} countdown>
-    #{triggers}
-    </.timer>
+
     """
   end
 
@@ -884,31 +879,7 @@ defmodule E2eWeb.Demos.TimerDemo do
       </.timer>
       <.timer
         id="timer-style-variant-solid"
-        class="timer timer--variant-solid w-full max-w-xs"
-        start_ms={60_000}
-        target_ms={0}
-        countdown
-      >
-        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
-      </.timer>
-      <.timer
-        id="timer-style-variant-ghost"
-        class="timer timer--variant-ghost w-full max-w-xs"
-        start_ms={60_000}
-        target_ms={0}
-        countdown
-      >
-        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
-      </.timer>
-      <.timer
-        id="timer-style-variant-outline"
-        class="timer timer--variant-outline w-full max-w-xs"
+        class="timer ui-solid w-full max-w-xs"
         start_ms={60_000}
         target_ms={0}
         countdown
@@ -1013,7 +984,7 @@ defmodule E2eWeb.Demos.TimerDemo do
     ~H"""
     <div class={DemoScales.preview_scroll_class()}>
       <div :for={variant <- @width_variants} class="flex flex-col gap-2">
-        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.timer
           id={"timer-style-width-#{variant.id}"}
           class={DemoScales.join_modifiers("timer", variant.modifier)}
@@ -1037,7 +1008,7 @@ defmodule E2eWeb.Demos.TimerDemo do
     ~H"""
     <div class={DemoScales.preview_scroll_class()}>
       <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
-        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.timer
           id={"timer-style-max-#{variant.id}"}
           class={DemoScales.join_block_modifiers("timer", variant.modifier)}

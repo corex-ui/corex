@@ -41,7 +41,7 @@ defmodule E2eWeb.BlogPage do
     <header class="blog__post-hero" aria-labelledby="blog-post-heading">
       <div class="blog__inner blog__post-hero__inner">
         <div class="blog__post-toolbar">
-          <.navigate to={~p"/blog"} class="blog__back link link--accent">
+          <.navigate to={~p"/blog"} class="blog__back link ui-accent">
             <.heroicon name="hero-arrow-left" class="blog__back__icon" />
             {~t"All articles"}
           </.navigate>
@@ -54,14 +54,14 @@ defmodule E2eWeb.BlogPage do
             <.navigate
               :if={@prev}
               to={~p"/blog/#{@prev.slug}"}
-              class="button button--sm flex items-center gap-2 rounded-e-none"
+              class="button ui-size-sm flex items-center gap-2 rounded-e-none"
             >
               <.heroicon name="hero-chevron-left" class="shrink-0" title={@prev.label} />
             </.navigate>
             <.navigate
               :if={@next}
               to={~p"/blog/#{@next.slug}"}
-              class="button button--sm flex items-center gap-2 not-only:border-s-0 rounded-s-none"
+              class="button ui-size-sm flex items-center gap-2 not-only:border-s-0 rounded-s-none"
             >
               <.heroicon name="hero-chevron-right" class="shrink-0" title={@next.label} />
             </.navigate>
@@ -106,7 +106,7 @@ defmodule E2eWeb.BlogPage do
             {@post_count} {ngettext("article", "articles", @post_count)}
           </span>
           <.navigate
-            class="button button--sm button--circle"
+            class="button ui-size-sm ui-trigger--circle"
             to="/feed.xml"
             external
             aria_label={~t"RSS feed"}
@@ -162,7 +162,7 @@ defmodule E2eWeb.BlogPage do
     <%= if @tags != [] do %>
       <ul class={["m-0 flex list-none flex-wrap gap-space-sm p-0", @class]}>
         <li :for={tag <- @tags}>
-          <span class="badge badge--muted badge--sm">{tag}</span>
+          <span class="badge ui-size-sm">{tag}</span>
         </li>
       </ul>
     <% end %>

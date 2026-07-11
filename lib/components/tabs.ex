@@ -168,11 +168,11 @@ defmodule Corex.Tabs do
   @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.tabs>`). Combine axes, for example `tabs tabs--accent tabs--lg` or `tabs tabs--info tabs--variant-ghost`.
+  Stack modifiers on the host (`class` on `<.tabs>`). Combine axes, for example `tabs ui-accent ui-size-lg` or `tabs ui-info`.
 
   Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on triggers. Variant modifiers control surface treatment. Default selected triggers use a neutral selected surface with semantic text ink; add `tabs--variant-solid` for a filled selected trigger.
+  Semantic modifiers set palette variables on triggers. Variant modifiers control surface treatment. Default selected triggers use a neutral selected surface with semantic text ink; add `ui-solid` for a filled selected trigger.
 
   <!-- tabs-open -->
 
@@ -183,11 +183,11 @@ defmodule Corex.Tabs do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `tabs` |
-  | Accent | `tabs tabs--accent` |
-  | Brand | `tabs tabs--brand` |
-  | Alert | `tabs tabs--alert` |
-  | Info | `tabs tabs--info` |
-  | Success | `tabs tabs--success` |
+  | Accent | `tabs ui-accent` |
+  | Brand | `tabs ui-brand` |
+  | Alert | `tabs ui-alert` |
+  | Info | `tabs ui-info` |
+  | Success | `tabs ui-success` |
 
   ### Variant
 
@@ -195,19 +195,19 @@ defmodule Corex.Tabs do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `tabs` or `tabs tabs--accent` |
-  | Solid | `tabs tabs--accent tabs--variant-solid` |
-  | Ghost | `tabs tabs--info tabs--variant-ghost` |
-  | Outline | `tabs tabs--accent tabs--variant-outline` |
+  | Subtle (default) | `tabs` or `tabs ui-accent` |
+  | Solid | `tabs ui-accent ui-solid` |
+  | Ghost | `tabs ui-info` |
+  | Outline | `tabs ui-accent` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `tabs tabs--sm` |
-  | MD | `tabs tabs--md` |
-  | LG | `tabs tabs--lg` |
-  | XL | `tabs tabs--xl` |
+  | SM | `tabs ui-size-sm` |
+  | MD | `tabs ui-size-md` |
+  | LG | `tabs ui-size-lg` |
+  | XL | `tabs ui-size-xl` |
 
   <!-- tabs-close -->
 

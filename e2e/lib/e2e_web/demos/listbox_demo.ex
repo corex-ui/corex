@@ -210,10 +210,10 @@ defmodule E2eWeb.Demos.ListboxDemo do
     ~S"""
     <div class="flex flex-col gap-3 w-full max-w-xl">
       <div class="flex flex-wrap gap-2">
-        <.action phx-click="add_item" class="button button--sm button--accent">
+        <.action phx-click="add_item" class="button ui-size-sm ui-accent">
           <.heroicon name="hero-plus" /> Add item
         </.action>
-        <.action phx-click="reset" class="button button--sm button--alert">
+        <.action phx-click="reset" class="button ui-size-sm ui-alert">
           Reset
         </.action>
       </div>
@@ -305,10 +305,10 @@ defmodule E2eWeb.Demos.ListboxDemo do
         ~H"""
         <div class="flex flex-col gap-3 w-full max-w-xl">
             <div class="flex flex-wrap gap-2">
-              <.action phx-click="add_item" class="button button--sm button--accent">
+              <.action phx-click="add_item" class="button ui-size-sm ui-accent">
                 <.heroicon name="hero-plus" /> Add item
               </.action>
-              <.action phx-click="reset" class="button button--sm button--alert">
+              <.action phx-click="reset" class="button ui-size-sm ui-alert">
                 Reset
               </.action>
             </div>
@@ -331,18 +331,18 @@ defmodule E2eWeb.Demos.ListboxDemo do
         <.action
           phx-click="add_to_group"
           phx-value-group="Europe"
-          class="button button--sm button--accent"
+          class="button ui-size-sm ui-accent"
         >
           <.heroicon name="hero-plus" /> Add to Europe
         </.action>
         <.action
           phx-click="add_to_group"
           phx-value-group="Asia"
-          class="button button--sm button--accent"
+          class="button ui-size-sm ui-accent"
         >
           <.heroicon name="hero-plus" /> Add to Asia
         </.action>
-        <.action phx-click="reset_grouped" class="button button--sm button--alert">
+        <.action phx-click="reset_grouped" class="button ui-size-sm ui-alert">
           Reset
         </.action>
       </div>
@@ -417,18 +417,18 @@ defmodule E2eWeb.Demos.ListboxDemo do
               <.action
                 phx-click="add_to_group"
                 phx-value-group="Europe"
-                class="button button--sm button--accent"
+                class="button ui-size-sm ui-accent"
               >
                 <.heroicon name="hero-plus" /> Add to Europe
               </.action>
               <.action
                 phx-click="add_to_group"
                 phx-value-group="Asia"
-                class="button button--sm button--accent"
+                class="button ui-size-sm ui-accent"
               >
                 <.heroicon name="hero-plus" /> Add to Asia
               </.action>
-              <.action phx-click="reset_grouped" class="button button--sm button--alert">
+              <.action phx-click="reset_grouped" class="button ui-size-sm ui-alert">
                 Reset
               </.action>
             </div>
@@ -732,23 +732,23 @@ defmodule E2eWeb.Demos.ListboxDemo do
       <:label>Default</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
-    <.listbox class="listbox listbox--accent" #{items} #{value}>
+    <.listbox class="listbox ui-accent" #{items} #{value}>
       <:label>Accent</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
-    <.listbox class="listbox listbox--brand" #{items} #{value}>
+    <.listbox class="listbox ui-brand" #{items} #{value}>
       <:label>Brand</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
-    <.listbox class="listbox listbox--alert" #{items} #{value}>
+    <.listbox class="listbox ui-alert" #{items} #{value}>
       <:label>Alert</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
-    <.listbox class="listbox listbox--info" #{items} #{value}>
+    <.listbox class="listbox ui-info" #{items} #{value}>
       <:label>Info</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
-    <.listbox class="listbox listbox--success" #{items} #{value}>
+    <.listbox class="listbox ui-success" #{items} #{value}>
       <:label>Success</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
@@ -769,7 +769,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       </.listbox>
       <.listbox
         id="listbox-style-color-accent"
-        class="listbox listbox--accent"
+        class="listbox ui-accent"
         items={@items}
         value={@value}
       >
@@ -778,7 +778,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       </.listbox>
       <.listbox
         id="listbox-style-color-brand"
-        class="listbox listbox--brand"
+        class="listbox ui-brand"
         items={@items}
         value={@value}
       >
@@ -787,7 +787,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       </.listbox>
       <.listbox
         id="listbox-style-color-alert"
-        class="listbox listbox--alert"
+        class="listbox ui-alert"
         items={@items}
         value={@value}
       >
@@ -796,7 +796,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       </.listbox>
       <.listbox
         id="listbox-style-color-info"
-        class="listbox listbox--info"
+        class="listbox ui-info"
         items={@items}
         value={@value}
       >
@@ -805,7 +805,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       </.listbox>
       <.listbox
         id="listbox-style-color-success"
-        class="listbox listbox--success"
+        class="listbox ui-success"
         items={@items}
         value={@value}
       >
@@ -825,16 +825,14 @@ defmodule E2eWeb.Demos.ListboxDemo do
       <:label>Subtle (default)</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
-    <.listbox class="listbox listbox--variant-solid" #{items} #{value}>
+    <.listbox class="listbox ui-solid" #{items} #{value}>
       <:label>Solid</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
-    <.listbox class="listbox listbox--variant-ghost" #{items} #{value}>
-      <:label>Ghost</:label>
+    <.listbox class="listbox" #{items} #{value}>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
-    <.listbox class="listbox listbox--variant-outline" #{items} #{value}>
-      <:label>Outline</:label>
+    <.listbox class="listbox" #{items} #{value}>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
     """
@@ -854,29 +852,11 @@ defmodule E2eWeb.Demos.ListboxDemo do
       </.listbox>
       <.listbox
         id="listbox-style-variant-solid"
-        class="listbox listbox--variant-solid"
+        class="listbox ui-solid"
         items={@items}
         value={@value}
       >
         <:label>Solid</:label>
-        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
-      </.listbox>
-      <.listbox
-        id="listbox-style-variant-ghost"
-        class="listbox listbox--variant-ghost"
-        items={@items}
-        value={@value}
-      >
-        <:label>Ghost</:label>
-        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
-      </.listbox>
-      <.listbox
-        id="listbox-style-variant-outline"
-        class="listbox listbox--variant-outline"
-        items={@items}
-        value={@value}
-      >
-        <:label>Outline</:label>
         <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
       </.listbox>
     </div>
@@ -932,19 +912,19 @@ defmodule E2eWeb.Demos.ListboxDemo do
     items = styling_items_attr()
 
     """
-    <.listbox class="listbox listbox--sm" #{items}>
+    <.listbox class="listbox ui-size-sm" #{items}>
       <:label>SM</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
-    <.listbox class="listbox listbox--md" #{items}>
+    <.listbox class="listbox ui-size-md" #{items}>
       <:label>MD</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
-    <.listbox class="listbox listbox--lg" #{items}>
+    <.listbox class="listbox ui-size-lg" #{items}>
       <:label>LG</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
-    <.listbox class="listbox listbox--xl" #{items}>
+    <.listbox class="listbox ui-size-xl" #{items}>
       <:label>XL</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
@@ -956,19 +936,19 @@ defmodule E2eWeb.Demos.ListboxDemo do
 
     ~H"""
     <div class="flex flex-col gap-4 w-full max-w-md">
-      <.listbox id="listbox-style-size-sm" class="listbox listbox--sm" items={@items}>
+      <.listbox id="listbox-style-size-sm" class="listbox ui-size-sm" items={@items}>
         <:label>SM</:label>
         <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
       </.listbox>
-      <.listbox id="listbox-style-size-md" class="listbox listbox--md" items={@items}>
+      <.listbox id="listbox-style-size-md" class="listbox ui-size-md" items={@items}>
         <:label>MD</:label>
         <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
       </.listbox>
-      <.listbox id="listbox-style-size-lg" class="listbox listbox--lg" items={@items}>
+      <.listbox id="listbox-style-size-lg" class="listbox ui-size-lg" items={@items}>
         <:label>LG</:label>
         <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
       </.listbox>
-      <.listbox id="listbox-style-size-xl" class="listbox listbox--xl" items={@items}>
+      <.listbox id="listbox-style-size-xl" class="listbox ui-size-xl" items={@items}>
         <:label>XL</:label>
         <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
       </.listbox>
@@ -1008,7 +988,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
     ~H"""
     <div class={DemoScales.preview_scroll_class()}>
       <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
-        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.listbox
           id={"listbox-style-max-#{variant.id}"}
           class={DemoScales.join_modifiers("listbox", variant.modifier)}
@@ -1027,23 +1007,23 @@ defmodule E2eWeb.Demos.ListboxDemo do
     items = styling_items_attr()
 
     """
-    <.listbox class="listbox listbox--rounded-none" #{items}>
+    <.listbox class="listbox ui-rounded-none" #{items}>
       <:label>None</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
-    <.listbox class="listbox listbox--rounded-md" #{items}>
+    <.listbox class="listbox ui-rounded-md" #{items}>
       <:label>MD</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
-    <.listbox class="listbox listbox--rounded-lg" #{items}>
+    <.listbox class="listbox ui-rounded-lg" #{items}>
       <:label>LG</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
-    <.listbox class="listbox listbox--rounded-xl" #{items}>
+    <.listbox class="listbox ui-rounded-xl" #{items}>
       <:label>XL</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
-    <.listbox class="listbox listbox--rounded-full" #{items}>
+    <.listbox class="listbox ui-rounded-full" #{items}>
       <:label>Full</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
@@ -1055,23 +1035,23 @@ defmodule E2eWeb.Demos.ListboxDemo do
 
     ~H"""
     <div class="flex flex-col gap-4 w-full max-w-md">
-      <.listbox id="listbox-style-rounded-none" class="listbox listbox--rounded-none" items={@items}>
+      <.listbox id="listbox-style-rounded-none" class="listbox ui-rounded-none" items={@items}>
         <:label>None</:label>
         <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
       </.listbox>
-      <.listbox id="listbox-style-rounded-md" class="listbox listbox--rounded-md" items={@items}>
+      <.listbox id="listbox-style-rounded-md" class="listbox ui-rounded-md" items={@items}>
         <:label>MD</:label>
         <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
       </.listbox>
-      <.listbox id="listbox-style-rounded-lg" class="listbox listbox--rounded-lg" items={@items}>
+      <.listbox id="listbox-style-rounded-lg" class="listbox ui-rounded-lg" items={@items}>
         <:label>LG</:label>
         <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
       </.listbox>
-      <.listbox id="listbox-style-rounded-xl" class="listbox listbox--rounded-xl" items={@items}>
+      <.listbox id="listbox-style-rounded-xl" class="listbox ui-rounded-xl" items={@items}>
         <:label>XL</:label>
         <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
       </.listbox>
-      <.listbox id="listbox-style-rounded-full" class="listbox listbox--rounded-full" items={@items}>
+      <.listbox id="listbox-style-rounded-full" class="listbox ui-rounded-full" items={@items}>
         <:label>Full</:label>
         <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
       </.listbox>

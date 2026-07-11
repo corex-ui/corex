@@ -18,11 +18,11 @@
       code={E2eWeb.Demos.SignatureDemo.styling_drawing_color_code()}
     >
       <:description>
-        <.demo_modifier_axis
-          name="signature-pad"
-          axis={:semantic}
-          purpose="set the stroke color drawn on the signature pad canvas"
-        />
+        <p class="typo">
+          {gettext(
+            "Set stroke color with the drawing_fill attribute on the signature pad root (for example drawing_fill=\"var(--color-accent)\")."
+          )}
+        </p>
       </:description>
       <:preview>
         <E2eWeb.Demos.SignatureDemo.styling_drawing_color_example />
@@ -52,13 +52,7 @@
       code={E2eWeb.Demos.SignatureDemo.styling_variant_code()}
     >
       <:description>
-        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
-          <p>
-            Variant modifiers control signature-pad surface treatment. Default is subtle; use <code class="text-sm">signature-pad--variant-solid</code>, <code class="text-sm">signature-pad--variant-ghost</code>, or
-            <code class="text-sm">signature-pad--variant-outline</code>
-            to change it.
-          </p>
-        </div>
+        <.demo_modifier_axis name="signature-pad" axis={:variant} />
       </:description>
       <:preview><E2eWeb.Demos.SignatureDemo.styling_variant_example /></:preview>
     </.demo_section>
@@ -69,11 +63,7 @@
       code={E2eWeb.Demos.SignatureDemo.styling_variant_matrix_code()}
     >
       <:description>
-        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
-          <p>
-            Combine semantic palette and variant treatment on the same host, for example <code class="text-sm">signature-pad signature-pad--accent signature-pad--variant-solid</code>.
-          </p>
-        </div>
+        <.variant_matrix_description host="signature-pad" />
       </:description>
       <:preview><E2eWeb.Demos.SignatureDemo.styling_variant_matrix_example /></:preview>
     </.demo_section>

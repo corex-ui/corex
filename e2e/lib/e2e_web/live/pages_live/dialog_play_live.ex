@@ -53,7 +53,7 @@ defmodule E2eWeb.DialogPlayLive do
             value={@dir_select}
           />
           <.switch
-            class="switch switch--sm"
+            class="switch ui-size-sm"
             id="close_on_escape"
             checked={@close_on_escape}
             on_checked_change="close_on_escape_changed"
@@ -61,7 +61,7 @@ defmodule E2eWeb.DialogPlayLive do
             <:label>Close on escape</:label>
           </.switch>
           <.switch
-            class="switch switch--sm"
+            class="switch ui-size-sm"
             id="prevent_scroll"
             checked={@prevent_scroll}
             on_checked_change="prevent_scroll_changed"

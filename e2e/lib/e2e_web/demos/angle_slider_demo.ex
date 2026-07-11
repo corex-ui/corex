@@ -139,35 +139,35 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         <:label>Default</:label>
       </.angle_slider>
       <.angle_slider
-        class="angle-slider angle-slider--accent"
+        class="angle-slider ui-accent"
         value={90.0}
         marker_values={marker_values()}
       >
         <:label>Accent</:label>
       </.angle_slider>
       <.angle_slider
-        class="angle-slider angle-slider--brand"
+        class="angle-slider ui-brand"
         value={90.0}
         marker_values={marker_values()}
       >
         <:label>Brand</:label>
       </.angle_slider>
       <.angle_slider
-        class="angle-slider angle-slider--alert"
+        class="angle-slider ui-alert"
         value={90.0}
         marker_values={marker_values()}
       >
         <:label>Alert</:label>
       </.angle_slider>
       <.angle_slider
-        class="angle-slider angle-slider--info"
+        class="angle-slider ui-info"
         value={90.0}
         marker_values={marker_values()}
       >
         <:label>Info</:label>
       </.angle_slider>
       <.angle_slider
-        class="angle-slider angle-slider--success"
+        class="angle-slider ui-success"
         value={90.0}
         marker_values={marker_values()}
       >
@@ -183,28 +183,28 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     ~H"""
     <div class="flex flex-wrap items-end gap-4">
       <.angle_slider
-        class="angle-slider angle-slider--sm"
+        class="angle-slider ui-size-sm"
         value={90.0}
         marker_values={marker_values()}
       >
         <:label>SM</:label>
       </.angle_slider>
       <.angle_slider
-        class="angle-slider angle-slider--md"
+        class="angle-slider ui-size-md"
         value={90.0}
         marker_values={marker_values()}
       >
         <:label>MD</:label>
       </.angle_slider>
       <.angle_slider
-        class="angle-slider angle-slider--lg"
+        class="angle-slider ui-size-lg"
         value={90.0}
         marker_values={marker_values()}
       >
         <:label>LG</:label>
       </.angle_slider>
       <.angle_slider
-        class="angle-slider angle-slider--xl"
+        class="angle-slider ui-size-xl"
         value={90.0}
         marker_values={marker_values()}
       >
@@ -248,19 +248,19 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     <.angle_slider class="angle-slider" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
       <:label>Default</:label>
     </.angle_slider>
-    <.angle_slider class="angle-slider angle-slider--accent" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
+    <.angle_slider class="angle-slider ui-accent" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
       <:label>Accent</:label>
     </.angle_slider>
-    <.angle_slider class="angle-slider angle-slider--brand" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
+    <.angle_slider class="angle-slider ui-brand" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
       <:label>Brand</:label>
     </.angle_slider>
-    <.angle_slider class="angle-slider angle-slider--alert" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
+    <.angle_slider class="angle-slider ui-alert" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
       <:label>Alert</:label>
     </.angle_slider>
-    <.angle_slider class="angle-slider angle-slider--info" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
+    <.angle_slider class="angle-slider ui-info" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
       <:label>Info</:label>
     </.angle_slider>
-    <.angle_slider class="angle-slider angle-slider--success" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
+    <.angle_slider class="angle-slider ui-success" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
       <:label>Success</:label>
     </.angle_slider>
     """
@@ -273,14 +273,12 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     <.angle_slider class="angle-slider" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
       <:label>Subtle (default)</:label>
     </.angle_slider>
-    <.angle_slider class="angle-slider angle-slider--variant-solid" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
+    <.angle_slider class="angle-slider ui-solid" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
       <:label>Solid</:label>
     </.angle_slider>
-    <.angle_slider class="angle-slider angle-slider--variant-ghost" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
-      <:label>Ghost</:label>
+    <.angle_slider class="angle-slider" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
     </.angle_slider>
-    <.angle_slider class="angle-slider angle-slider--variant-outline" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
-      <:label>Outline</:label>
+    <.angle_slider class="angle-slider" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
     </.angle_slider>
     """
   end
@@ -300,27 +298,11 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       </.angle_slider>
       <.angle_slider
         id="angle-slider-style-variant-solid"
-        class="angle-slider angle-slider--variant-solid"
+        class="angle-slider ui-solid"
         value={90.0}
         marker_values={[0.0, 90.0, 180.0, 270.0]}
       >
         <:label>Solid</:label>
-      </.angle_slider>
-      <.angle_slider
-        id="angle-slider-style-variant-ghost"
-        class="angle-slider angle-slider--variant-ghost"
-        value={90.0}
-        marker_values={[0.0, 90.0, 180.0, 270.0]}
-      >
-        <:label>Ghost</:label>
-      </.angle_slider>
-      <.angle_slider
-        id="angle-slider-style-variant-outline"
-        class="angle-slider angle-slider--variant-outline"
-        value={90.0}
-        marker_values={[0.0, 90.0, 180.0, 270.0]}
-      >
-        <:label>Outline</:label>
       </.angle_slider>
     </div>
     """
@@ -367,16 +349,16 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
 
   def styling_size_code do
     ~S"""
-    <.angle_slider class="angle-slider angle-slider--sm" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
+    <.angle_slider class="angle-slider ui-size-sm" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
       <:label>SM</:label>
     </.angle_slider>
-    <.angle_slider class="angle-slider angle-slider--md" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
+    <.angle_slider class="angle-slider ui-size-md" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
       <:label>MD</:label>
     </.angle_slider>
-    <.angle_slider class="angle-slider angle-slider--lg" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
+    <.angle_slider class="angle-slider ui-size-lg" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
       <:label>LG</:label>
     </.angle_slider>
-    <.angle_slider class="angle-slider angle-slider--xl" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
+    <.angle_slider class="angle-slider ui-size-xl" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
       <:label>XL</:label>
     </.angle_slider>
     """
@@ -412,7 +394,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     ~H"""
     <div class={DemoScales.preview_scroll_class()}>
       <div :for={variant <- @width_variants} class="flex flex-col gap-2">
-        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.angle_slider
           id={"angle-slider-style-width-#{variant.id}"}
           class={DemoScales.join_modifiers("angle-slider", variant.modifier)}
@@ -430,7 +412,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     ~H"""
     <div class={DemoScales.preview_scroll_class()}>
       <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
-        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.angle_slider
           id={"angle-slider-style-max-#{variant.id}"}
           class={DemoScales.join_modifiers("angle-slider", variant.modifier)}
@@ -482,16 +464,16 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
   def api_set_value_client_binding_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={Corex.AngleSlider.set_value(@id, 0.0)} class="button button--sm">
+      <.action phx-click={Corex.AngleSlider.set_value(@id, 0.0)} class="button ui-size-sm">
         Set to 0°
       </.action>
-      <.action phx-click={Corex.AngleSlider.set_value(@id, 90.0)} class="button button--sm">
+      <.action phx-click={Corex.AngleSlider.set_value(@id, 90.0)} class="button ui-size-sm">
         Set to 90°
       </.action>
-      <.action phx-click={Corex.AngleSlider.set_value(@id, 180.0)} class="button button--sm">
+      <.action phx-click={Corex.AngleSlider.set_value(@id, 180.0)} class="button ui-size-sm">
         Set to 180°
       </.action>
-      <.action phx-click={Corex.AngleSlider.set_value(@id, 270.0)} class="button button--sm">
+      <.action phx-click={Corex.AngleSlider.set_value(@id, 270.0)} class="button ui-size-sm">
         Set to 270°
       </.action>
     </div>
@@ -553,7 +535,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Set to 0°
       </.action>
@@ -565,7 +547,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Set to 90°
       </.action>
@@ -577,7 +559,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Set to 180°
       </.action>
@@ -589,7 +571,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Set to 270°
       </.action>
@@ -602,10 +584,10 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
 
   def api_set_value_server_heex do
     ~S"""
-    <.action phx-click="api_set_value" value="0" class="button button--sm">Server: 0°</.action>
-    <.action phx-click="api_set_value" value="90" class="button button--sm">Server: 90°</.action>
-    <.action phx-click="api_set_value" value="180" class="button button--sm">Server: 180°</.action>
-    <.action phx-click="api_set_value" value="270" class="button button--sm">Server: 270°</.action>
+    <.action phx-click="api_set_value" value="0" class="button ui-size-sm">Server: 0°</.action>
+    <.action phx-click="api_set_value" value="90" class="button ui-size-sm">Server: 90°</.action>
+    <.action phx-click="api_set_value" value="180" class="button ui-size-sm">Server: 180°</.action>
+    <.action phx-click="api_set_value" value="270" class="button ui-size-sm">Server: 270°</.action>
     """
   end
 
@@ -626,10 +608,10 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
   def api_set_value_server_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={@event} value="0" class="button button--sm">Server: 0°</.action>
-      <.action phx-click={@event} value="90" class="button button--sm">Server: 90°</.action>
-      <.action phx-click={@event} value="180" class="button button--sm">Server: 180°</.action>
-      <.action phx-click={@event} value="270" class="button button--sm">Server: 270°</.action>
+      <.action phx-click={@event} value="0" class="button ui-size-sm">Server: 0°</.action>
+      <.action phx-click={@event} value="90" class="button ui-size-sm">Server: 90°</.action>
+      <.action phx-click={@event} value="180" class="button ui-size-sm">Server: 180°</.action>
+      <.action phx-click={@event} value="270" class="button ui-size-sm">Server: 270°</.action>
     </div>
     <.angle_slider id={@id} class="angle-slider" value={90.0} marker_values={marker_values()}>
       <:label>Angle</:label>
@@ -876,7 +858,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
           {msg}
         </:error>
       </.angle_slider>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" class="button ui-accent">Submit</.action>
     </.form>
     """
   end
@@ -916,7 +898,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
           {msg}
         </:error>
       </.angle_slider>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" class="button ui-accent">Submit</.action>
     </.form>
     """
   end
@@ -940,7 +922,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         </:error>
       </.angle_slider>
 
-      <.action type="submit" class="button button--accent">Submit</:action>
+      <.action type="submit" class="button ui-accent">Submit</:action>
     </.form>
     """
   end
@@ -1001,7 +983,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         </:error>
       </.angle_slider>
 
-      <.action type="submit" class="button button--accent">Submit</:action>
+      <.action type="submit" class="button ui-accent">Submit</:action>
     </.form>
     """
   end
@@ -1065,7 +1047,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         </:error>
       </.angle_slider>
 
-      <.action type="submit" class="button button--accent">Submit</:action>
+      <.action type="submit" class="button ui-accent">Submit</:action>
     </.form>
     """
   end
@@ -1158,7 +1140,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         </:error>
       </.angle_slider>
 
-      <.action type="submit" class="button button--accent">Submit</:action>
+      <.action type="submit" class="button ui-accent">Submit</:action>
     </.form>
     """
   end
@@ -1252,7 +1234,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       >
         <:label>Angle</:label>
       </.angle_slider>
-      <.action type="submit" class="button button--accent">Submit</:action>
+      <.action type="submit" class="button ui-accent">Submit</:action>
     </form>
     """
   end
@@ -1293,7 +1275,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       <.action
         type="submit"
         id="angle-slider-form-changeset-submit"
-        class="button button--accent"
+        class="button ui-accent"
       >
         Submit
       </.action>
@@ -1327,7 +1309,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       <.action
         type="submit"
         id="angle-slider-form-validate-submit"
-        class="button button--accent"
+        class="button ui-accent"
       >
         Submit
       </.action>
@@ -1354,7 +1336,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       >
         <:label>Angle</:label>
       </.angle_slider>
-      <.action type="submit" id="angle-slider-form-submit" class="button button--accent">
+      <.action type="submit" id="angle-slider-form-submit" class="button ui-accent">
         Submit
       </.action>
     </form>
@@ -1389,7 +1371,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       <.action
         type="submit"
         id="angle-slider-live-form-changeset-submit"
-        class="button button--accent"
+        class="button ui-accent"
       >
         Submit
       </.action>
@@ -1424,7 +1406,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       <.action
         type="submit"
         id="angle-slider-live-form-validate-submit"
-        class="button button--accent"
+        class="button ui-accent"
       >
         Submit
       </.action>
@@ -1456,7 +1438,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       >
         <:label>Angle</:label>
       </.angle_slider>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" class="button ui-accent">Submit</.action>
     </.form>
     """
   end
@@ -1480,7 +1462,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       >
         <:label>Angle</:label>
       </.angle_slider>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" class="button ui-accent">Submit</.action>
     </.form>
     """
   end
@@ -1594,7 +1576,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
           {msg}
         </:error>
       </.angle_slider>
-      <.action type="submit" id="angle-slider-live-form-validate-controlled-submit" class="button button--accent">
+      <.action type="submit" id="angle-slider-live-form-validate-controlled-submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -1618,7 +1600,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
           {msg}
         </:error>
       </.angle_slider>
-      <.action type="submit" id="angle-slider-live-form-validate-invalid-submit" class="button button--accent">
+      <.action type="submit" id="angle-slider-live-form-validate-invalid-submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -1647,7 +1629,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       <.action
         type="submit"
         id="angle-slider-live-form-validate-controlled-submit"
-        class="button button--accent"
+        class="button ui-accent"
       >
         Submit
       </.action>
@@ -1678,7 +1660,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       <.action
         type="submit"
         id="angle-slider-live-form-validate-invalid-submit"
-        class="button button--accent"
+        class="button ui-accent"
       >
         Submit
       </.action>

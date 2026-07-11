@@ -345,7 +345,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     </.tree_view>
     <.tree_view
       id="tree-styling-color-accent"
-      class="tree-view tree-view--accent max-w-xs"
+      class="tree-view ui-accent max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
       items={styling_items()}
@@ -354,7 +354,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     </.tree_view>
     <.tree_view
       id="tree-styling-color-brand"
-      class="tree-view tree-view--brand max-w-xs"
+      class="tree-view ui-brand max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
       items={styling_items()}
@@ -363,7 +363,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     </.tree_view>
     <.tree_view
       id="tree-styling-color-info"
-      class="tree-view tree-view--info max-w-xs"
+      class="tree-view ui-info max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
       items={styling_items()}
@@ -372,7 +372,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     </.tree_view>
     <.tree_view
       id="tree-styling-color-alert"
-      class="tree-view tree-view--alert max-w-xs"
+      class="tree-view ui-alert max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
       items={styling_items()}
@@ -381,7 +381,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     </.tree_view>
     <.tree_view
       id="tree-styling-color-success"
-      class="tree-view tree-view--success max-w-xs"
+      class="tree-view ui-success max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
       items={styling_items()}
@@ -398,19 +398,19 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     <.tree_view class="tree-view max-w-xs" items={#{items}}>
       <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
     </.tree_view>
-    <.tree_view class="tree-view tree-view--accent max-w-xs" items={#{items}}>
+    <.tree_view class="tree-view ui-accent max-w-xs" items={#{items}}>
       <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
     </.tree_view>
-    <.tree_view class="tree-view tree-view--brand max-w-xs" items={#{items}}>
+    <.tree_view class="tree-view ui-brand max-w-xs" items={#{items}}>
       <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
     </.tree_view>
-    <.tree_view class="tree-view tree-view--info max-w-xs" items={#{items}}>
+    <.tree_view class="tree-view ui-info max-w-xs" items={#{items}}>
       <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
     </.tree_view>
-    <.tree_view class="tree-view tree-view--alert max-w-xs" items={#{items}}>
+    <.tree_view class="tree-view ui-alert max-w-xs" items={#{items}}>
       <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
     </.tree_view>
-    <.tree_view class="tree-view tree-view--success max-w-xs" items={#{items}}>
+    <.tree_view class="tree-view ui-success max-w-xs" items={#{items}}>
       <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
     </.tree_view>
     """
@@ -420,7 +420,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     ~H"""
     <.tree_view
       id="tree-styling-size-sm"
-      class="tree-view tree-view--sm max-w-xs"
+      class="tree-view ui-size-sm max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
       items={styling_items()}
@@ -429,7 +429,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     </.tree_view>
     <.tree_view
       id="tree-styling-size-md"
-      class="tree-view tree-view--md max-w-xs"
+      class="tree-view ui-size-md max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
       items={styling_items()}
@@ -438,7 +438,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     </.tree_view>
     <.tree_view
       id="tree-styling-size-lg"
-      class="tree-view tree-view--lg max-w-xs"
+      class="tree-view ui-size-lg max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
       items={styling_items()}
@@ -447,7 +447,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     </.tree_view>
     <.tree_view
       id="tree-styling-size-xl"
-      class="tree-view tree-view--xl max-w-xs"
+      class="tree-view ui-size-xl max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
       items={styling_items()}
@@ -462,13 +462,13 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     <.tree_view class="tree-view max-w-xs" expanded_value={styling_expanded()} value={styling_value()} items={styling_items()}>
       <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
     </.tree_view>
-    <.tree_view class="tree-view tree-view--variant-solid max-w-xs" expanded_value={styling_expanded()} value={styling_value()} items={styling_items()}>
+    <.tree_view class="tree-view ui-solid max-w-xs" expanded_value={styling_expanded()} value={styling_value()} items={styling_items()}>
       <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
     </.tree_view>
-    <.tree_view class="tree-view tree-view--variant-ghost max-w-xs" expanded_value={styling_expanded()} value={styling_value()} items={styling_items()}>
+    <.tree_view class="tree-view max-w-xs" expanded_value={styling_expanded()} value={styling_value()} items={styling_items()}>
       <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
     </.tree_view>
-    <.tree_view class="tree-view tree-view--variant-outline max-w-xs" expanded_value={styling_expanded()} value={styling_value()} items={styling_items()}>
+    <.tree_view class="tree-view max-w-xs" expanded_value={styling_expanded()} value={styling_value()} items={styling_items()}>
       <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
     </.tree_view>
     """
@@ -489,25 +489,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     </.tree_view>
     <.tree_view
       id="tree-style-variant-solid"
-      class="tree-view tree-view--variant-solid max-w-xs"
-      expanded_value={styling_expanded()}
-      value={styling_value()}
-      items={styling_items()}
-    >
-      <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
-    </.tree_view>
-    <.tree_view
-      id="tree-style-variant-ghost"
-      class="tree-view tree-view--variant-ghost max-w-xs"
-      expanded_value={styling_expanded()}
-      value={styling_value()}
-      items={styling_items()}
-    >
-      <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
-    </.tree_view>
-    <.tree_view
-      id="tree-style-variant-outline"
-      class="tree-view tree-view--variant-outline max-w-xs"
+      class="tree-view ui-solid max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
       items={styling_items()}
@@ -583,16 +565,16 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     items = code_styling_items()
 
     """
-    <.tree_view class="tree-view tree-view--sm max-w-xs" items={#{items}}>
+    <.tree_view class="tree-view ui-size-sm max-w-xs" items={#{items}}>
       <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
     </.tree_view>
-    <.tree_view class="tree-view tree-view--md max-w-xs" items={#{items}}>
+    <.tree_view class="tree-view ui-size-md max-w-xs" items={#{items}}>
       <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
     </.tree_view>
-    <.tree_view class="tree-view tree-view--lg max-w-xs" items={#{items}}>
+    <.tree_view class="tree-view ui-size-lg max-w-xs" items={#{items}}>
       <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
     </.tree_view>
-    <.tree_view class="tree-view tree-view--xl max-w-xs" items={#{items}}>
+    <.tree_view class="tree-view ui-size-xl max-w-xs" items={#{items}}>
       <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
     </.tree_view>
     """
@@ -602,7 +584,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     ~H"""
     <.tree_view
       id="tree-styling-radius-none"
-      class="tree-view tree-view--rounded-none max-w-xs"
+      class="tree-view ui-rounded-none max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
       items={styling_items()}
@@ -611,7 +593,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     </.tree_view>
     <.tree_view
       id="tree-styling-radius-sm"
-      class="tree-view tree-view--rounded-sm max-w-xs"
+      class="tree-view ui-rounded-sm max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
       items={styling_items()}
@@ -620,7 +602,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     </.tree_view>
     <.tree_view
       id="tree-styling-radius-md"
-      class="tree-view tree-view--rounded-md max-w-xs"
+      class="tree-view ui-rounded-md max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
       items={styling_items()}
@@ -629,7 +611,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     </.tree_view>
     <.tree_view
       id="tree-styling-radius-lg"
-      class="tree-view tree-view--rounded-lg max-w-xs"
+      class="tree-view ui-rounded-lg max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
       items={styling_items()}
@@ -638,7 +620,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     </.tree_view>
     <.tree_view
       id="tree-styling-radius-xl"
-      class="tree-view tree-view--rounded-xl max-w-xs"
+      class="tree-view ui-rounded-xl max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
       items={styling_items()}
@@ -647,7 +629,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     </.tree_view>
     <.tree_view
       id="tree-styling-radius-full"
-      class="tree-view tree-view--rounded-full max-w-xs"
+      class="tree-view ui-rounded-full max-w-xs"
       expanded_value={styling_expanded()}
       value={styling_value()}
       items={styling_items()}
@@ -661,22 +643,22 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     items = code_styling_items()
 
     """
-    <.tree_view class="tree-view tree-view--rounded-none max-w-xs" items={#{items}}>
+    <.tree_view class="tree-view ui-rounded-none max-w-xs" items={#{items}}>
       <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
     </.tree_view>
-    <.tree_view class="tree-view tree-view--rounded-sm max-w-xs" items={#{items}}>
+    <.tree_view class="tree-view ui-rounded-sm max-w-xs" items={#{items}}>
       <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
     </.tree_view>
-    <.tree_view class="tree-view tree-view--rounded-md max-w-xs" items={#{items}}>
+    <.tree_view class="tree-view ui-rounded-md max-w-xs" items={#{items}}>
       <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
     </.tree_view>
-    <.tree_view class="tree-view tree-view--rounded-lg max-w-xs" items={#{items}}>
+    <.tree_view class="tree-view ui-rounded-lg max-w-xs" items={#{items}}>
       <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
     </.tree_view>
-    <.tree_view class="tree-view tree-view--rounded-xl max-w-xs" items={#{items}}>
+    <.tree_view class="tree-view ui-rounded-xl max-w-xs" items={#{items}}>
       <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
     </.tree_view>
-    <.tree_view class="tree-view tree-view--rounded-full max-w-xs" items={#{items}}>
+    <.tree_view class="tree-view ui-rounded-full max-w-xs" items={#{items}}>
       <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
     </.tree_view>
     """
@@ -688,7 +670,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     ~H"""
     <div class={DemoScales.preview_scroll_class()}>
       <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
-        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.tree_view
           id={"tree-styling-max-width-#{variant.id}"}
           class={DemoScales.join_modifiers("tree-view", variant.modifier)}
@@ -730,11 +712,11 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     <div class="flex flex-wrap gap-2 mb-4">
       <.action
         phx-click={Corex.TreeView.set_expanded_value(@id, api_expanded_lib())}
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Expand lib
       </.action>
-      <.action phx-click={Corex.TreeView.set_expanded_value(@id, [])} class="button button--sm">
+      <.action phx-click={Corex.TreeView.set_expanded_value(@id, [])} class="button ui-size-sm">
         Collapse all
       </.action>
     </div>
@@ -767,7 +749,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Expand lib
       </.action>
@@ -779,7 +761,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Collapse all
       </.action>
@@ -838,10 +820,10 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   def api_set_expanded_server_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={@event} value="repo-corex,repo-lib" class="button button--sm">
+      <.action phx-click={@event} value="repo-corex,repo-lib" class="button ui-size-sm">
         Expand lib
       </.action>
-      <.action phx-click={@event} value="" class="button button--sm">Collapse all</.action>
+      <.action phx-click={@event} value="" class="button ui-size-sm">Collapse all</.action>
     </div>
     <.tree_view id={@id} class="tree-view" expanded_value={[]} items={@items}>
       <:label>Corex</:label>
@@ -879,11 +861,11 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     <div class="flex flex-wrap gap-2 mb-4">
       <.action
         phx-click={Corex.TreeView.set_selected_value(@id, ["repo-lib-tree-view-ex"])}
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Select tree_view.ex
       </.action>
-      <.action phx-click={Corex.TreeView.set_selected_value(@id, [])} class="button button--sm">
+      <.action phx-click={Corex.TreeView.set_selected_value(@id, [])} class="button ui-size-sm">
         Clear
       </.action>
     </div>
@@ -916,7 +898,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Select tree_view.ex
       </.action>
@@ -928,7 +910,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Clear
       </.action>
@@ -987,10 +969,10 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   def api_set_selected_server_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={@event} value="repo-lib-tree-view-ex" class="button button--sm">
+      <.action phx-click={@event} value="repo-lib-tree-view-ex" class="button ui-size-sm">
         Select tree_view.ex
       </.action>
-      <.action phx-click={@event} value="" class="button button--sm">Clear</.action>
+      <.action phx-click={@event} value="" class="button ui-size-sm">Clear</.action>
     </div>
     <.tree_view id={@id} class="tree-view" expanded_value={["repo-corex", "repo-lib"]} items={@items}>
       <:label>Corex</:label>
@@ -1071,12 +1053,12 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   def api_expanded_client_binding_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={Corex.TreeView.expanded_value(@id)} class="button button--sm">
+      <.action phx-click={Corex.TreeView.expanded_value(@id)} class="button ui-size-sm">
         Expanded
       </.action>
       <.action
         phx-click={Corex.TreeView.expanded_value(@id, respond_to: :client)}
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Expanded (client only)
       </.action>
@@ -1172,7 +1154,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Expanded
       </.action>
@@ -1184,7 +1166,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Expanded (client only)
       </.action>
@@ -1272,8 +1254,8 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   def api_expanded_server_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={@event_expanded} class="button button--sm">Expanded</.action>
-      <.action phx-click={@event_expanded_client_only} class="button button--sm">
+      <.action phx-click={@event_expanded} class="button ui-size-sm">Expanded</.action>
+      <.action phx-click={@event_expanded_client_only} class="button ui-size-sm">
         Expanded (client only)
       </.action>
     </div>
@@ -1363,8 +1345,8 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   def api_selected_client_binding_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={Corex.TreeView.value(@id)} class="button button--sm">Selected</.action>
-      <.action phx-click={Corex.TreeView.value(@id, respond_to: :client)} class="button button--sm">
+      <.action phx-click={Corex.TreeView.value(@id)} class="button ui-size-sm">Selected</.action>
+      <.action phx-click={Corex.TreeView.value(@id, respond_to: :client)} class="button ui-size-sm">
         Selected (client only)
       </.action>
     </div>
@@ -1454,7 +1436,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     <div class="flex flex-wrap gap-2 mb-4">
       <.action
         phx-click={JS.dispatch("corex:tree-view:value", to: "##{@id}", detail: %{}, bubbles: false)}
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Selected
       </.action>
@@ -1466,7 +1448,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Selected (client only)
       </.action>
@@ -1555,8 +1537,8 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   def api_selected_server_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={@event_selected} class="button button--sm">Selected</.action>
-      <.action phx-click={@event_selected_client_only} class="button button--sm">
+      <.action phx-click={@event_selected} class="button ui-size-sm">Selected</.action>
+      <.action phx-click={@event_selected_client_only} class="button ui-size-sm">
         Selected (client only)
       </.action>
     </div>

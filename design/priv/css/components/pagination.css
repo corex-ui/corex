@@ -2,342 +2,85 @@
 
 @layer components {
 
-  .pagination {
-    width: fit-content;
-    max-width: var(--container-md);
-  }
+ .pagination {
+ width: fit-content;
+ max-width: var(--container-md);
+ }
 
-  .pagination[data-loading] [data-scope="pagination"][data-part="root"] {
-    @apply ui-loading;
-  }
+ .pagination[data-loading] [data-scope="pagination"][data-part="root"] {
+ @apply ui-loading;
+ }
 
-  .pagination [data-scope="pagination"][data-part="root"] {
-    @apply ui-root;
+ .pagination [data-scope="pagination"][data-part="root"] {
+ @apply ui-root;
 
-    width: fit-content;
-    max-width: 100%;
-  }
+ width: fit-content;
+ max-width: 100%;
+ }
 
-  .pagination [data-scope="pagination"][data-part="root"] ul {
-    @apply scrollbar scrollbar--sm;
+ .pagination [data-scope="pagination"][data-part="root"] ul {
+ @apply scrollbar scrollbar--sm;
 
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: var(--spacing-space);
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    padding-inline: var(--spacing-space);
-    overflow-x: auto;
-    width: 100%;
-    max-width: 100%;
-  }
+ display: flex;
+ flex-direction: row;
+ align-items: center;
+ gap: var(--spacing-space);
+ list-style: none;
+ margin: 0;
+ padding: 0;
+ padding-inline: var(--spacing-space);
+ overflow-x: auto;
+ width: 100%;
+ max-width: 100%;
+ }
 
-  .pagination [data-scope="pagination"][data-part="prev-trigger"],
-  .pagination [data-scope="pagination"][data-part="next-trigger"] {
-    @apply ui-trigger ui-trigger--square;
+ .pagination [data-scope="pagination"][data-part="prev-trigger"] {
+ @apply ui-trigger ui-trigger--square;
 
-    min-width: calc(var(--spacing-size-md) * 0.8);
-    min-height: calc(var(--spacing-size-md) * 0.8);
-    font-size: calc(var(--text-base) * 0.8);
-    line-height: calc(var(--text-base--line-height) * 0.8);
-    padding: 0;
-  }
+ min-width: calc(var(--spacing-size-md) * 0.8);
+ min-height: calc(var(--spacing-size-md) * 0.8);
+ font-size: calc(var(--text-base) * 0.8);
+ line-height: calc(var(--text-base--line-height) * 0.8);
+ padding: 0;
+ }
+ .pagination [data-scope="pagination"][data-part="next-trigger"] {
+ @apply ui-trigger ui-trigger--square;
 
-  .pagination [data-scope="pagination"][data-part="item"] {
-    @apply ui-item;
+ min-width: calc(var(--spacing-size-md) * 0.8);
+ min-height: calc(var(--spacing-size-md) * 0.8);
+ font-size: calc(var(--text-base) * 0.8);
+ line-height: calc(var(--text-base--line-height) * 0.8);
+ padding: 0;
+ }
 
-    width: auto;
-    max-width: none;
-    min-width: var(--spacing-size-md);
-    min-height: var(--spacing-size-md);
-    padding-inline: var(--spacing-space-sm);
-    justify-content: center;
-    border-radius: var(--radius-md);
-  }
+ .pagination [data-scope="pagination"][data-part="item"] {
+ @apply ui-item;
 
-  .pagination [data-scope="pagination"][data-part="ellipsis"] {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: var(--spacing-size-md);
-    min-height: var(--spacing-size-md);
-    color: var(--color-ink-muted);
-    pointer-events: none;
-    cursor: default;
-  }
+ width: auto;
+ max-width: none;
+ min-width: var(--spacing-size-md);
+ min-height: var(--spacing-size-md);
+ padding-inline: var(--spacing-space-sm);
+ justify-content: center;
+ border-radius: var(--radius-md);
+ }
 
-  .pagination [data-scope="pagination"][data-part="prev-trigger"][data-disabled],
-  .pagination [data-scope="pagination"][data-part="next-trigger"][data-disabled] {
-    opacity: 0.5;
-    cursor: not-allowed;
-    pointer-events: none;
-  }
+ .pagination [data-scope="pagination"][data-part="ellipsis"] {
+ display: inline-flex;
+ align-items: center;
+ justify-content: center;
+ min-width: var(--spacing-size-md);
+ min-height: var(--spacing-size-md);
+ color: var(--color-ink-muted);
+ pointer-events: none;
+ cursor: default;
+ }
 
-  .pagination:not(.pagination--variant-solid):not(.pagination--variant-ghost):not(.pagination--variant-outline)
-    [data-scope="pagination"][data-part="prev-trigger"],
-  .pagination:not(.pagination--variant-solid):not(.pagination--variant-ghost):not(.pagination--variant-outline)
-    [data-scope="pagination"][data-part="next-trigger"],
-  .pagination:not(.pagination--variant-ghost):not(.pagination--variant-outline)
-    [data-scope="pagination"][data-part="item"]:not([data-selected]):not([aria-current="page"]) {
-    background-color: var(--color-ui);
-    color: var(--pagination-ink-text, var(--color-ink));
-    border-color: var(--color-border);
+ .pagination [data-scope="pagination"][data-part="prev-trigger"][data-disabled],
+ .pagination [data-scope="pagination"][data-part="next-trigger"][data-disabled] {
+ opacity: 0.5;
+ cursor: not-allowed;
+ pointer-events: none;
+ }
 
-    &:hover {
-      background-color: var(--color-ui-active);
-    }
-
-    &:active {
-      background-color: var(--color-ui-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--pagination-ink-text, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-ui-muted);
-      color: var(--color-ink-muted);
-      border-color: var(--color-ui-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .pagination:not(.pagination--variant-solid):not(.pagination--variant-outline)
-    [data-scope="pagination"][data-part="item"][data-selected],
-  .pagination:not(.pagination--variant-solid):not(.pagination--variant-outline)
-    [data-scope="pagination"][data-part="item"][aria-current="page"] {
-    background-color: var(--color-selected);
-    color: var(--pagination-ink-text, var(--color-selected-ink));
-
-    &:hover {
-      background-color: var(--color-selected-hover);
-    }
-
-    &:active {
-      background-color: var(--color-selected-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--pagination-ink-text, var(--color-selected-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-selected-muted);
-      color: var(--pagination-ink-text, var(--color-selected-ink));
-      cursor: not-allowed;
-    }
-  }
-
-  .pagination.pagination--variant-solid
-    [data-scope="pagination"][data-part="item"][data-selected],
-  .pagination.pagination--variant-solid
-    [data-scope="pagination"][data-part="item"][aria-current="page"] {
-    background-color: var(--pagination-fill, var(--color-selected));
-    color: var(--pagination-ink, var(--color-selected-ink));
-
-    &:hover {
-      background-color: var(--pagination-fill-hover, var(--color-selected-hover));
-    }
-
-    &:active {
-      background-color: var(--pagination-fill-active, var(--color-selected-active));
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--pagination-ink, var(--color-selected-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--pagination-muted, var(--color-selected-muted));
-      color: var(--pagination-ink, var(--color-selected-ink));
-      cursor: not-allowed;
-    }
-  }
-}
-
-@utility pagination--* {
-  [data-scope="pagination"][data-part="root"] ul {
-    gap: --value(--spacing-space-*, [length]);
-  }
-
-  [data-scope="pagination"][data-part="prev-trigger"],
-  [data-scope="pagination"][data-part="next-trigger"],
-  [data-scope="pagination"][data-part="item"] {
-    --pagination-fill: --value(--color-*, [color]);
-    --pagination-fill-hover: --value(--color-*-hover, [color]);
-    --pagination-fill-active: --value(--color-*-active, [color]);
-    --pagination-ink: --value(--color-*-ink, [color]);
-    --pagination-ink-text: --value(--color-ink-*, [color]);
-    --pagination-muted: --value(--color-*-muted, [color]);
-  }
-
-  [data-scope="pagination"][data-part="prev-trigger"],
-  [data-scope="pagination"][data-part="next-trigger"] {
-    font-size: calc(--value(--text-*, [length]) * 0.8);
-    line-height: calc(--value(--text-*--line-height, [length]) * 0.8);
-    min-height: calc(--value(--spacing-size-*, [length]) * 0.8);
-    min-width: calc(--value(--spacing-size-*, [length]) * 0.8);
-  }
-
-  [data-scope="pagination"][data-part="item"] {
-    font-size: --value(--text-*, [length]);
-    line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-size-*, [length]);
-    min-width: --value(--spacing-size-*, [length]);
-    padding-inline: --value(--spacing-space-*, [length]);
-  }
-
-  [data-scope="pagination"][data-part="ellipsis"] {
-    font-size: --value(--text-*, [length]);
-    line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-size-*, [length]);
-    min-width: --value(--spacing-size-*, [length]);
-    color: --value(--color-*-ink, [color]);
-  }
-}
-
-@utility pagination--variant-solid {
-  [data-scope="pagination"][data-part="prev-trigger"],
-  [data-scope="pagination"][data-part="next-trigger"],
-  [data-scope="pagination"][data-part="item"]:not([data-selected]):not([aria-current="page"]) {
-    background-color: var(--pagination-fill, var(--color-ui-active));
-    color: var(--pagination-ink, var(--color-ink));
-    border-color: transparent;
-
-    &:hover {
-      background-color: var(--pagination-fill-hover, var(--color-ui-hover));
-    }
-
-    &:active {
-      background-color: var(--pagination-fill-active, var(--color-ui-active));
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--pagination-ink, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--pagination-muted, var(--color-ui-muted));
-      color: var(--pagination-ink, var(--color-ink-muted));
-      cursor: not-allowed;
-    }
-  }
-}
-
-@utility pagination--variant-subtle {
-  [data-scope="pagination"][data-part="prev-trigger"],
-  [data-scope="pagination"][data-part="next-trigger"],
-  [data-scope="pagination"][data-part="item"]:not([data-selected]):not([aria-current="page"]) {
-    background-color: var(--color-ui);
-    color: var(--pagination-ink-text, var(--color-ink));
-    border-color: var(--color-border);
-
-    &:hover {
-      background-color: var(--color-ui-active);
-    }
-
-    &:active {
-      background-color: var(--color-ui-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--pagination-ink-text, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-ui-muted);
-      color: var(--color-ink-muted);
-      border-color: var(--color-ui-muted);
-      cursor: not-allowed;
-    }
-  }
-}
-
-@utility pagination--variant-ghost {
-  [data-scope="pagination"][data-part="prev-trigger"],
-  [data-scope="pagination"][data-part="next-trigger"],
-  [data-scope="pagination"][data-part="item"]:not([data-selected]):not([aria-current="page"]) {
-    background-color: transparent;
-    color: var(--pagination-ink-text, var(--color-ink));
-    border-color: transparent;
-
-    &:hover {
-      background-color: var(--color-ui-hover);
-    }
-
-    &:active {
-      background-color: var(--color-ui-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--pagination-ink-text, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: transparent;
-      color: var(--color-ink-muted);
-      cursor: not-allowed;
-    }
-  }
-}
-
-@utility pagination--variant-outline {
-  [data-scope="pagination"][data-part="prev-trigger"],
-  [data-scope="pagination"][data-part="next-trigger"],
-  [data-scope="pagination"][data-part="item"]:not([data-selected]):not([aria-current="page"]) {
-    background-color: transparent;
-    color: var(--pagination-ink-text, var(--color-ink));
-    border-color: var(--pagination-fill, var(--color-border));
-
-    &:hover {
-      background-color: var(--color-ui-hover);
-    }
-
-    &:active {
-      background-color: var(--color-ui-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--pagination-fill, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: transparent;
-      color: var(--color-ink-muted);
-      border-color: var(--color-ui-muted);
-      cursor: not-allowed;
-    }
-  }
-}
-
-@utility pagination--rounded-* {
-  [data-scope="pagination"][data-part="prev-trigger"],
-  [data-scope="pagination"][data-part="next-trigger"],
-  [data-scope="pagination"][data-part="item"] {
-    border-radius: --value(--radius-*, [length]);
-  }
 }

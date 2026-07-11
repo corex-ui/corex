@@ -18,18 +18,18 @@ defmodule E2eWeb.DataTableStyleLive do
 
   @color_variants [
     {"", "data-table-styling-color-default"},
-    {"data-table--accent", "data-table-styling-color-accent"},
-    {"data-table--brand", "data-table-styling-color-brand"},
-    {"data-table--alert", "data-table-styling-color-alert"},
-    {"data-table--success", "data-table-styling-color-success"},
-    {"data-table--info", "data-table-styling-color-info"}
+    {"ui-accent", "data-table-styling-color-accent"},
+    {"ui-brand", "data-table-styling-color-brand"},
+    {"ui-alert", "data-table-styling-color-alert"},
+    {"ui-success", "data-table-styling-color-success"},
+    {"ui-info", "data-table-styling-color-info"}
   ]
 
   @size_variants [
-    {"data-table--sm", "data-table-styling-size-sm"},
-    {"data-table--md", "data-table-styling-size-md"},
-    {"data-table--lg", "data-table-styling-size-lg"},
-    {"data-table--xl", "data-table-styling-size-xl"}
+    {"ui-size-sm", "data-table-styling-size-sm"},
+    {"ui-size-md", "data-table-styling-size-md"},
+    {"ui-size-lg", "data-table-styling-size-lg"},
+    {"ui-size-xl", "data-table-styling-size-xl"}
   ]
 
   @impl true
@@ -139,7 +139,7 @@ defmodule E2eWeb.DataTableStyleLive do
           <:preview>
             <div class={DemoScales.preview_scroll_class()}>
               <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
-                <p class="typo typo--sm font-medium">{variant.label}</p>
+                <p class="typo ui-size-sm font-medium">{variant.label}</p>
                 <.style_table
                   id={"data-table-styling-max-w-#{variant.id}"}
                   class={DemoScales.join_modifiers("data-table", variant.modifier)}
@@ -191,7 +191,7 @@ defmodule E2eWeb.DataTableStyleLive do
       <:col :let={u} label="Role" name={:role}>{u.role}</:col>
       <:col :let={u} label="Status" name={:status}>{u.status}</:col>
       <:action :let={u}>
-        <.action class="button button--sm" aria-label={"Edit #{u.name}"}>
+        <.action class="button ui-size-sm" aria-label={"Edit #{u.name}"}>
           <.heroicon name="hero-pencil-square" />
         </.action>
       </:action>

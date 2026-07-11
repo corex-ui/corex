@@ -128,7 +128,7 @@ defmodule E2eWeb.CarouselPlayLive do
           />
 
           <.toggle_group
-            class="toggle-group toggle-group--sm max-w-3xs"
+            class="toggle-group ui-size-sm max-w-3xs"
             id="orientation"
             on_value_change="control_changed"
             multiple={false}
@@ -136,15 +136,15 @@ defmodule E2eWeb.CarouselPlayLive do
             value={[@controls.orientation]}
           >
             <:item value="vertical" aria_label={~t"Vertical orientation"}>
-              <.heroicon name="hero-arrows-up-down" class="icon icon--lg" />
+              <.heroicon name="hero-arrows-up-down" class="icon ui-size-lg" />
             </:item>
             <:item value="horizontal" aria_label={~t"Horizontal orientation"}>
-              <.heroicon name="hero-arrows-right-left" class="icon icon--lg" />
+              <.heroicon name="hero-arrows-right-left" class="icon ui-size-lg" />
             </:item>
           </.toggle_group>
 
           <.switch
-            class="switch switch--sm"
+            class="switch ui-size-sm"
             id="loop"
             checked={@loop}
             on_checked_change="loop_changed"
@@ -152,7 +152,7 @@ defmodule E2eWeb.CarouselPlayLive do
             <:label>Loop</:label>
           </.switch>
           <.switch
-            class="switch switch--sm"
+            class="switch ui-size-sm"
             id="autoplay"
             checked={@autoplay}
             on_checked_change="autoplay_changed"
@@ -162,7 +162,7 @@ defmodule E2eWeb.CarouselPlayLive do
 
           <.number_input
             id="carousel-playground-slides-per-page"
-            class="number-input number-input--sm w-4xs"
+            class="number-input ui-size-sm w-4xs"
             value={to_string(@slides_per_page)}
             step={1.0}
             min={1.0}
@@ -180,7 +180,7 @@ defmodule E2eWeb.CarouselPlayLive do
 
           <.number_input
             id="carousel-playground-spacing"
-            class="number-input number-input--sm w-4xs"
+            class="number-input ui-size-sm w-4xs"
             value={to_string(@spacing_px)}
             step={1.0}
             min={0.0}
@@ -198,7 +198,7 @@ defmodule E2eWeb.CarouselPlayLive do
 
           <.number_input
             id="carousel-playground-padding"
-            class="number-input number-input--sm w-4xs"
+            class="number-input ui-size-sm w-4xs"
             value={if(@padding_px, do: to_string(@padding_px), else: "")}
             step={1.0}
             min={0.0}

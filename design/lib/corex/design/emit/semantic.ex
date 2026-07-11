@@ -27,15 +27,15 @@ defmodule Corex.Design.Emit.Semantic do
 
   defp role_allowed_for_bridge?(role, allowed) do
     cond do
-      role in ~w(root layer ink ink-muted link border focus shadow ui ui-hover ui-active ui-muted selected) ->
+      role in ~w(root layer ink ink-muted link border focus shadow ui ui-hover ui-active ui-muted) ->
         true
 
-      String.starts_with?(role, "ink-") ->
-        suffix = String.replace_prefix(role, "ink-", "")
-        MapSet.member?(allowed, suffix)
+      String.ends_with?(role, "-text") ->
+        prefix = String.replace_suffix(role, "-text", "")
+        MapSet.member?(allowed, prefix)
 
-      String.ends_with?(role, "-ink") ->
-        prefix = String.replace_suffix(role, "-ink", "")
+      String.ends_with?(role, "-contrast") ->
+        prefix = String.replace_suffix(role, "-contrast", "")
         MapSet.member?(allowed, prefix)
 
       true ->
@@ -80,14 +80,7 @@ defmodule Corex.Design.Emit.Semantic do
           "  --spacing-size-sm: var(--theme-spacing-size-sm);",
           "  --spacing-size-md: var(--theme-spacing-size-md);",
           "  --spacing-size-lg: var(--theme-spacing-size-lg);",
-          "  --spacing-size-xl: var(--theme-spacing-size-xl);"
-        ] ++
-        container_bridge_decls("width") ++
-        container_bridge_decls("max-width") ++
-        container_bridge_decls("min-width") ++
-        container_bridge_decls("max-height") ++
-        container_bridge_decls("min-height") ++
-        [
+          "  --spacing-size-xl: var(--theme-spacing-size-xl);",
           "  --spacing-space: var(--spacing-space-md);",
           "  --spacing-size: var(--spacing-size-md);"
         ]

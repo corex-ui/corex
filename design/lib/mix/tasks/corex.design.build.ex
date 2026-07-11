@@ -21,6 +21,7 @@ defmodule Mix.Tasks.Corex.Design.Build do
 
     maybe_load_config!(Keyword.get(opts, :config))
     Corex.Design.Config.validate!()
+    check_contrast!()
 
     output =
       opts
@@ -33,6 +34,17 @@ defmodule Mix.Tasks.Corex.Design.Build do
     Corex.Design.Bundle.write!(output)
     Mix.shell().info("Wrote Corex design bundle to #{Path.relative_to_cwd(output)}")
     :ok
+  end
+
+  defp check_contrast! do
+    for warning <- Corex.Design.Tokens.Contrast.check!() do
+      Mix.shell().info([:yellow, "warning: ", :reset, contrast_line(warning)])
+    end
+  end
+
+  defp contrast_line(v) do
+    "contrast [#{v.theme}/#{v.mode}] #{v.fg} on #{v.bg}: " <>
+      "#{Float.round(v.ratio, 2)}:1 (target #{v.target}:1) -- #{v.label}"
   end
 
   defp maybe_load_config!(nil), do: :ok

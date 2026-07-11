@@ -1,458 +1,122 @@
 @import "../main.css";
 
 @layer components {
-  .editable {
-    width: fit-content;
-  }
-
-  .editable[data-loading] [data-scope="editable"][data-part="root"] {
-    @apply ui-loading;
-  }
-
-  .editable [data-scope="editable"][data-part="root"] {
-    @apply ui-root;
-
-    width: fit-content;
-    position: relative;
-    padding-inline-end: var(--spacing-space);
-  }
-
-  .editable [data-scope="editable"][data-part="root"][data-readonly] {
-    @apply ui-readonly;
-  }
-
-  .editable [data-scope="editable"][data-part="label"] {
-    @apply ui-label;
-  }
-
-  .editable [data-scope="editable"][data-part="control"] {
-    display: flex;
-    flex-direction: row;
-    gap: var(--spacing-space);
-    
-    width: 100%;
-    align-items: center;
-    justify-content: start;
-
-  }
-
-  .editable [data-scope="editable"][data-part="area"] {
-    display: flex;
-    
-    flex: 1 1 auto;
-    align-items: center;
-    justify-content: start;
-    gap: var(--spacing-space);
-  }
-
-  .editable [data-scope="editable"][data-part="input"] {
-    @apply ui-input;
-
-    flex: 1 1 auto;
-    width: 100%;
-    max-width: none;
-    min-width: 0;
-  }
-
-  .editable [data-scope="editable"][data-part="preview"] {
-    @apply ui-input;
-
-    flex: 1 1 auto;
-    width: 100%;
-    max-width: none;
-    min-width: 0;
-    text-wrap: nowrap;
-  }
-
-  .editable [data-part="triggers"] {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex: 0 0 auto;
-    gap: var(--spacing-space-sm);
-  }
-
-  .editable [data-scope="editable"][data-part="edit-trigger"],
-  .editable [data-scope="editable"][data-part="cancel-trigger"],
-  .editable [data-scope="editable"][data-part="submit-trigger"] {
-    @apply ui-trigger ui-trigger--square;
-
-    flex: 0 0 auto;
-    width: calc(var(--spacing-size) * 0.6);
-    min-width: calc(var(--spacing-size) * 0.6);
-    max-width: calc(var(--spacing-size) * 0.6);
-    min-height: calc(var(--spacing-size) * 0.6);
-    max-height: calc(var(--spacing-size) * 0.6);
-  }
-
-  .editable [data-scope="editable"][data-part="edit-trigger"]:not([hidden]) {
-    margin-inline: auto;
-  }
-
-  .editable [data-scope="editable"][data-part="cancel-trigger"] {
-    @apply ui-trigger--alert;
-  }
-
-  .editable [data-scope="editable"][data-part="submit-trigger"] {
-    @apply ui-trigger--success;
-  }
-
-  .editable [data-scope="editable"][data-part="error"] {
-    @apply ui-error;
-  }
-
-  .editable:not(.editable--variant-solid):not(.editable--variant-ghost):not(.editable--variant-outline)
-    [data-scope="editable"][data-part="input"],
-  .editable:not(.editable--variant-solid):not(.editable--variant-ghost):not(.editable--variant-outline)
-    [data-scope="editable"][data-part="preview"] {
-    background-color: var(--color-ui);
-    color: var(--editable-ink-text, var(--color-ink));
-    border-color: var(--color-border);
-
-    &:hover {
-      background-color: var(--color-ui-active);
-    }
-
-    &:focus,
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--editable-ink-text, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-ui-muted);
-      color: var(--color-ink-muted);
-      border-color: var(--color-ui-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .editable:not(.editable--variant-solid):not(.editable--variant-ghost):not(.editable--variant-outline)
-    [data-scope="editable"][data-part="edit-trigger"] {
-    background-color: var(--color-ui);
-    color: var(--editable-ink-text, var(--color-ink));
-    border-color: var(--color-border);
-
-    &:hover {
-      background-color: var(--color-ui-active);
-    }
-
-    &:active {
-      background-color: var(--color-ui-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--editable-ink-text, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-ui-muted);
-      color: var(--color-ink-muted);
-      border-color: var(--color-ui-muted);
-      cursor: not-allowed;
-    }
-  }
-}
-
-@utility editable--* {
-
-  [data-scope="editable"][data-part="root"] {
-    gap: --value(--spacing-space-*, [length]);
-  }
-
-  [data-scope="editable"][data-part="label"] {
-    font-size: --value(--text-*, [length]);
-    line-height: --value(--text-*--line-height, [length]);
-  }
-
-  [data-scope="editable"][data-part="edit-trigger"],
-  [data-scope="editable"][data-part="cancel-trigger"],
-  [data-scope="editable"][data-part="submit-trigger"] {
-    width: calc(--value(--spacing-size-*, [length]) * 0.6);
-    min-width: calc(--value(--spacing-size-*, [length]) * 0.6);
-    max-width: calc(--value(--spacing-size-*, [length]) * 0.6);
-    min-height: calc(--value(--spacing-size-*, [length]) * 0.6);
-    max-height: calc(--value(--spacing-size-*, [length]) * 0.6);
-    font-size: --value(--text-*, [length]);
-    line-height: --value(--text-*--line-height, [length]);
-    padding-inline: --value(--spacing-space-*, [length]);
-    gap: --value(--spacing-space-*, [length]);
-  }
-
-  [data-scope="editable"][data-part="edit-trigger"] {
-    --editable-fill: --value(--color-*, [color]);
-    --editable-fill-hover: --value(--color-*-hover, [color]);
-    --editable-fill-active: --value(--color-*-active, [color]);
-    --editable-ink: --value(--color-*-ink, [color]);
-    --editable-ink-text: --value(--color-ink-*, [color]);
-    --editable-muted: --value(--color-*-muted, [color]);
-  }
-
-  [data-scope="editable"][data-part="preview"] {
-    flex: 1 1 auto;
-    width: 100%;
-    max-width: none;
-    font-size: --value(--text-*, [length]);
-    line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-size-*, [length]);
-    --editable-fill: --value(--color-*, [color]);
-    --editable-fill-hover: --value(--color-*-hover, [color]);
-    --editable-fill-active: --value(--color-*-active, [color]);
-    --editable-ink: --value(--color-*-ink, [color]);
-    --editable-ink-text: --value(--color-ink-*, [color]);
-    --editable-muted: --value(--color-*-muted, [color]);
-  }
-
-  [data-scope="editable"][data-part="input"] {
-    flex: 1 1 auto;
-    width: 100%;
-    max-width: none;
-    font-size: --value(--text-*, [length]);
-    line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-size-*, [length]);
-    --editable-fill: --value(--color-*, [color]);
-    --editable-fill-hover: --value(--color-*-hover, [color]);
-    --editable-fill-active: --value(--color-*-active, [color]);
-    --editable-ink: --value(--color-*-ink, [color]);
-    --editable-ink-text: --value(--color-ink-*, [color]);
-    --editable-muted: --value(--color-*-muted, [color]);
-  }
-}
-
-@utility editable--variant-solid {
-  [data-scope="editable"][data-part="input"],
-  [data-scope="editable"][data-part="preview"] {
-    background-color: var(--editable-fill, var(--color-ui-active));
-    color: var(--editable-ink, var(--color-ink));
-    border-color: transparent;
-
-    &:hover {
-      background-color: var(--editable-fill-hover, var(--color-ui-hover));
-    }
-
-    &:focus,
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--editable-ink, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--editable-muted, var(--color-ui-muted));
-      color: var(--editable-ink, var(--color-ink-muted));
-      cursor: not-allowed;
-    }
-  }
-
-  [data-scope="editable"][data-part="edit-trigger"] {
-    background-color: var(--editable-fill, var(--color-ui-active));
-    color: var(--editable-ink, var(--color-ink));
-    border-color: transparent;
-
-    &:hover {
-      background-color: var(--editable-fill-hover, var(--color-ui-hover));
-    }
-
-    &:active {
-      background-color: var(--editable-fill-active, var(--color-ui-active));
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--editable-ink, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--editable-muted, var(--color-ui-muted));
-      color: var(--editable-ink, var(--color-ink-muted));
-      cursor: not-allowed;
-    }
-  }
-}
-
-@utility editable--variant-subtle {
-  [data-scope="editable"][data-part="input"],
-  [data-scope="editable"][data-part="preview"] {
-    background-color: var(--color-ui);
-    color: var(--editable-ink-text, var(--color-ink));
-    border-color: var(--color-border);
-
-    &:hover {
-      background-color: var(--color-ui-active);
-    }
-
-    &:focus,
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--editable-ink-text, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-ui-muted);
-      color: var(--color-ink-muted);
-      border-color: var(--color-ui-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  [data-scope="editable"][data-part="edit-trigger"] {
-    background-color: var(--color-ui);
-    color: var(--editable-ink-text, var(--color-ink));
-    border-color: var(--color-border);
-
-    &:hover {
-      background-color: var(--color-ui-active);
-    }
-
-    &:active {
-      background-color: var(--color-ui-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--editable-ink-text, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-ui-muted);
-      color: var(--color-ink-muted);
-      border-color: var(--color-ui-muted);
-      cursor: not-allowed;
-    }
-  }
-}
-
-@utility editable--variant-ghost {
-  [data-scope="editable"][data-part="input"],
-  [data-scope="editable"][data-part="preview"] {
-    background-color: transparent;
-    color: var(--editable-ink-text, var(--color-ink));
-    border-color: transparent;
-
-    &:hover {
-      background-color: var(--color-ui-hover);
-    }
-
-    &:focus,
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--editable-ink-text, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: transparent;
-      color: var(--color-ink-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  [data-scope="editable"][data-part="edit-trigger"] {
-    background-color: transparent;
-    color: var(--editable-ink-text, var(--color-ink));
-    border-color: transparent;
-
-    &:hover {
-      background-color: var(--color-ui-hover);
-    }
-
-    &:active {
-      background-color: var(--color-ui-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--editable-ink-text, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: transparent;
-      color: var(--color-ink-muted);
-      cursor: not-allowed;
-    }
-  }
-}
-
-@utility editable--variant-outline {
-  [data-scope="editable"][data-part="input"],
-  [data-scope="editable"][data-part="preview"] {
-    background-color: transparent;
-    color: var(--editable-ink-text, var(--color-ink));
-    border-color: var(--editable-fill, var(--color-border));
-
-    &:hover {
-      background-color: var(--color-ui-hover);
-    }
-
-    &:focus,
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--editable-fill, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: transparent;
-      color: var(--color-ink-muted);
-      border-color: var(--color-ui-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  [data-scope="editable"][data-part="edit-trigger"] {
-    background-color: transparent;
-    color: var(--editable-ink-text, var(--color-ink));
-    border-color: var(--editable-fill, var(--color-border));
-
-    &:hover {
-      background-color: var(--color-ui-hover);
-    }
-
-    &:active {
-      background-color: var(--color-ui-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--editable-fill, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: transparent;
-      color: var(--color-ink-muted);
-      border-color: var(--color-ui-muted);
-      cursor: not-allowed;
-    }
-  }
-}
-
-@utility editable--rounded-* {
-  [data-scope="editable"][data-part="input"],
-  [data-scope="editable"][data-part="preview"] {
-    border-radius: --value(--radius-*, [length]);
-  }
-
-  [data-scope="editable"][data-part="edit-trigger"],
-  [data-scope="editable"][data-part="cancel-trigger"],
-  [data-scope="editable"][data-part="submit-trigger"] {
-    border-radius: --value(--radius-*, [length]);
-  }
+ .editable {
+ width: fit-content;
+ }
+
+ .editable[data-loading] [data-scope="editable"][data-part="root"] {
+ @apply ui-loading;
+ }
+
+ .editable [data-scope="editable"][data-part="root"] {
+ @apply ui-root;
+
+ width: fit-content;
+ position: relative;
+ padding-inline-end: var(--spacing-space);
+ }
+
+ .editable [data-scope="editable"][data-part="root"][data-readonly] {
+ @apply ui-readonly;
+ }
+
+ .editable [data-scope="editable"][data-part="label"] {
+ @apply ui-label;
+ }
+
+ .editable [data-scope="editable"][data-part="control"] {
+ display: flex;
+ flex-direction: row;
+ gap: var(--spacing-space);
+ 
+ width: 100%;
+ align-items: center;
+ justify-content: start;
+
+ }
+
+ .editable [data-scope="editable"][data-part="area"] {
+ display: flex;
+ 
+ flex: 1 1 auto;
+ align-items: center;
+ justify-content: start;
+ gap: var(--spacing-space);
+ }
+
+ .editable [data-scope="editable"][data-part="input"] {
+ @apply ui-input;
+
+ flex: 1 1 auto;
+ width: 100%;
+ max-width: none;
+ min-width: 0;
+ }
+
+ .editable [data-scope="editable"][data-part="preview"] {
+ @apply ui-input;
+
+ flex: 1 1 auto;
+ width: 100%;
+ max-width: none;
+ min-width: 0;
+ text-wrap: nowrap;
+ }
+
+ .editable [data-part="triggers"] {
+ display: inline-flex;
+ align-items: center;
+ justify-content: center;
+ flex: 0 0 auto;
+ gap: var(--spacing-space-sm);
+ }
+
+ .editable [data-scope="editable"][data-part="edit-trigger"] {
+ @apply ui-trigger ui-trigger--square;
+
+ flex: 0 0 auto;
+ width: calc(var(--spacing-size) * 0.6);
+ min-width: calc(var(--spacing-size) * 0.6);
+ max-width: calc(var(--spacing-size) * 0.6);
+ min-height: calc(var(--spacing-size) * 0.6);
+ max-height: calc(var(--spacing-size) * 0.6);
+ }
+ .editable [data-scope="editable"][data-part="cancel-trigger"] {
+ @apply ui-trigger ui-trigger--square;
+
+ flex: 0 0 auto;
+ width: calc(var(--spacing-size) * 0.6);
+ min-width: calc(var(--spacing-size) * 0.6);
+ max-width: calc(var(--spacing-size) * 0.6);
+ min-height: calc(var(--spacing-size) * 0.6);
+ max-height: calc(var(--spacing-size) * 0.6);
+ }
+ .editable [data-scope="editable"][data-part="submit-trigger"] {
+ @apply ui-trigger ui-trigger--square;
+
+ flex: 0 0 auto;
+ width: calc(var(--spacing-size) * 0.6);
+ min-width: calc(var(--spacing-size) * 0.6);
+ max-width: calc(var(--spacing-size) * 0.6);
+ min-height: calc(var(--spacing-size) * 0.6);
+ max-height: calc(var(--spacing-size) * 0.6);
+ }
+
+ .editable [data-scope="editable"][data-part="edit-trigger"]:not([hidden]) {
+ margin-inline: auto;
+ }
+
+ .editable [data-scope="editable"][data-part="cancel-trigger"] {
+ @apply ui-alert;
+ }
+
+ .editable [data-scope="editable"][data-part="submit-trigger"] {
+ @apply ui-success;
+ }
+
+ .editable [data-scope="editable"][data-part="error"] {
+ @apply ui-error;
+ }
+
 }

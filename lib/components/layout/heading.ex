@@ -13,7 +13,7 @@ defmodule Corex.Layout.Heading do
     <:title>Page Title</:title>
     <:subtitle>Optional subtitle or context</:subtitle>
     <:actions>
-      <.action phx-click="save" class="button button--accent">Save</.action>
+      <.action phx-click="save" class="button ui-accent">Save</.action>
     </:actions>
   </.layout_heading>
   ```
@@ -51,7 +51,7 @@ defmodule Corex.Layout.Heading do
   ### Accent
 
   ```heex
-  <.layout_heading class="layout-heading layout-heading--accent">
+  <.layout_heading class="layout-heading ui-accent">
     <:title>Accent title</:title>
     <:subtitle>Accent subtitle</:subtitle>
   </.layout_heading>

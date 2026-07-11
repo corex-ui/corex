@@ -109,7 +109,7 @@ defmodule E2eWeb.TreeViewPatternsLive do
           id="patterns-tree-async-section"
           tabs_id="tabs-tree-view-patterns-async"
           title={~t"Async"}
-          trigger_class="button--sm"
+          trigger_class="ui-size-sm"
           code_tabs={[
             %{value: "heex", label: ~t"Heex", language: :heex, code: @async_heex},
             %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @async_elixir}
@@ -141,7 +141,7 @@ defmodule E2eWeb.TreeViewPatternsLive do
           id="patterns-tree-redirect-section"
           tabs_id="tabs-tree-view-patterns-redirect"
           title={~t"Redirect (navigation)"}
-          trigger_class="button--sm"
+          trigger_class="ui-size-sm"
           code={@redirect_heex}
         >
           <:preview>

@@ -31,13 +31,7 @@
       code={E2eWeb.Demos.RadioGroupDemo.styling_variant_code()}
     >
       <:description>
-        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
-          <p>
-            Variant modifiers control radio-group surface treatment. Default is subtle; use <code class="text-sm">radio-group--variant-solid</code>, <code class="text-sm">radio-group--variant-ghost</code>, or
-            <code class="text-sm">radio-group--variant-outline</code>
-            to change it.
-          </p>
-        </div>
+        <.demo_modifier_axis name="radio-group" axis={:variant} />
       </:description>
       <:preview><E2eWeb.Demos.RadioGroupDemo.styling_variant_example /></:preview>
     </.demo_section>
@@ -48,11 +42,7 @@
       code={E2eWeb.Demos.RadioGroupDemo.styling_variant_matrix_code()}
     >
       <:description>
-        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
-          <p>
-            Combine semantic palette and variant treatment on the same host, for example <code class="text-sm">radio-group radio-group--accent radio-group--variant-solid</code>.
-          </p>
-        </div>
+        <.variant_matrix_description host="radio-group" />
       </:description>
       <:preview><E2eWeb.Demos.RadioGroupDemo.styling_variant_matrix_example /></:preview>
     </.demo_section>

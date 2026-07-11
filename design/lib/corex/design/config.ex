@@ -104,8 +104,7 @@ defmodule Corex.Design.Config do
          {:theme, "Host Corex.Design.ThemeDefinition module (single-module setup)"},
          {:scales, "Per-axis [step: value] overrides for built-in step names; legacy semantic role list (prefer semantics:)"},
          {:components, "Component css ids to emit (nil = all shipped components)"},
-         {:semantics, "Semantic palette roles to emit (nil = all; base is always included)"},
-         {:variants, "Surface variant utilities to emit: solid, ghost, outline (nil = all; subtle is default anatomy)"}
+         {:semantics, "Semantic palette roles to emit (nil = all; base is always included)"}
        ]}
     ])
   end
@@ -173,16 +172,13 @@ defmodule Corex.Design.Config.Options do
             semantics: [
               doc: "Semantic palette roles to emit (nil = all; base is always included)"
             ],
-            variants: [
-              doc: "Surface variant utilities to emit: solid, ghost, outline (nil = all; subtle is default anatomy)"
-            ],
             theme: [
               type: :atom,
               doc: "Host Corex.Design.ThemeDefinition module"
             ]
           )
 
-  @known_keys ~w(output default_theme default_mode themes scales components semantics variants theme)a
+  @known_keys ~w(output default_theme default_mode themes scales components semantics theme)a
 
   @doc false
   def schema, do: @schema
@@ -329,8 +325,7 @@ defmodule Corex.Design.Config.Options do
 
   defp validate_filter_keys(grouped) do
     with :ok <- validate_components(Map.get(grouped, :components)),
-         :ok <- validate_semantics(Map.get(grouped, :semantics)),
-         :ok <- validate_variants(Map.get(grouped, :variants)) do
+         :ok <- validate_semantics(Map.get(grouped, :semantics)) do
       :ok
     end
   end
@@ -367,23 +362,6 @@ defmodule Corex.Design.Config.Options do
 
   defp validate_semantics(other) do
     {:error, "config :corex_design, semantics: must be a list of role atoms, got: #{inspect(other)}"}
-  end
-
-  defp validate_variants(nil), do: :ok
-
-  defp validate_variants(variants) when is_list(variants) do
-    Corex.Design.Filter.validate_variants!(
-      Enum.map(variants, fn
-        name when is_atom(name) -> Atom.to_string(name)
-        name when is_binary(name) -> name
-      end)
-    )
-
-    :ok
-  end
-
-  defp validate_variants(other) do
-    {:error, "config :corex_design, variants: must be a list of variant names, got: #{inspect(other)}"}
   end
 
   defp validate_axis_scale(:semantic, spec) when is_list(spec) do

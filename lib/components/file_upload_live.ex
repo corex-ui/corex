@@ -63,7 +63,7 @@ defmodule Corex.FileUploadLive do
         <.heroicon name="hero-x-mark" />
       </:close>
     </.file_upload_live>
-    <.action type="submit" class="button button--accent">Submit</.action>
+    <.action type="submit" class="button ui-accent">Submit</.action>
   </form>
   ```
 

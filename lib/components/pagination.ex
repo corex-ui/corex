@@ -106,7 +106,7 @@ defmodule Corex.Pagination do
   ### set_page
 
   ```heex
-  <.action phx-click={Corex.Pagination.set_page("pagination-api-bind", 5)} class="button button--sm">5</.action>
+  <.action phx-click={Corex.Pagination.set_page("pagination-api-bind", 5)} class="button ui-size-sm">5</.action>
   <.pagination id="pagination-api-bind" class="pagination" count={95} page={5} page_size={10}>
     <:prev><.heroicon name="hero-chevron-left" /></:prev>
     <:next><.heroicon name="hero-chevron-right" /></:next>

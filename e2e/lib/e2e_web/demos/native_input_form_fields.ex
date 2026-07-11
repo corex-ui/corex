@@ -11,7 +11,7 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
     ~H"""
     <div class="flex flex-col gap-8" dir={@dir}>
       <div class="flex flex-col gap-3">
-        <p class="typo typo--sm font-medium">Text</p>
+        <p class="typo ui-size-sm font-medium">Text</p>
         <.native_input
           type="text"
           id={"#{@id_prefix}-text-icon"}
@@ -138,7 +138,7 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         </.native_input>
       </div>
       <div class="flex flex-col gap-3">
-        <p class="typo typo--sm font-medium">Date & time</p>
+        <p class="typo ui-size-sm font-medium">Date & time</p>
         <.native_input
           type="date"
           id={"#{@id_prefix}-date"}
@@ -181,7 +181,7 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         </.native_input>
       </div>
       <div class="flex flex-col gap-3">
-        <p class="typo typo--sm font-medium">Multiple</p>
+        <p class="typo ui-size-sm font-medium">Multiple</p>
         <.native_input
           type="select"
           multiple
@@ -195,7 +195,7 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
         </.native_input>
       </div>
       <div class="flex flex-col gap-3">
-        <p class="typo typo--sm font-medium">Other</p>
+        <p class="typo ui-size-sm font-medium">Other</p>
         <.native_input
           type="checkbox"
           id={"#{@id_prefix}-agree"}
@@ -248,7 +248,7 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
 
     ~H"""
     <div class="flex flex-col gap-3">
-      <p class="typo typo--sm font-medium">Text</p>
+      <p class="typo ui-size-sm font-medium">Text</p>
       <.native_input
         field={@f[:name]}
         type="text"
@@ -332,7 +332,7 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
       </.native_input>
     </div>
     <div class="flex flex-col gap-3">
-      <p class="typo typo--sm font-medium">Date & time</p>
+      <p class="typo ui-size-sm font-medium">Date & time</p>
       <.native_input
         field={@f[:birth_date]}
         type="date"
@@ -370,7 +370,7 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
       </.native_input>
     </div>
     <div class="flex flex-col gap-3">
-      <p class="typo typo--sm font-medium">Multiple</p>
+      <p class="typo ui-size-sm font-medium">Multiple</p>
       <.native_input
         field={@f[:tags]}
         type="select"
@@ -385,7 +385,7 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
       </.native_input>
     </div>
     <div class="flex flex-col gap-3">
-      <p class="typo typo--sm font-medium">Other</p>
+      <p class="typo ui-size-sm font-medium">Other</p>
       <.native_input
         field={@f[:color]}
         type="color"
@@ -433,7 +433,7 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
   def form_full_fields(%{variant: :native} = assigns) do
     ~H"""
     <div class="flex flex-col gap-3">
-      <p class="typo typo--sm font-medium">Text</p>
+      <p class="typo ui-size-sm font-medium">Text</p>
       <.native_input
         type="text"
         name={"#{@name_prefix}[name]"}
@@ -509,7 +509,7 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
       </.native_input>
     </div>
     <div class="flex flex-col gap-3">
-      <p class="typo typo--sm font-medium">Date & time</p>
+      <p class="typo ui-size-sm font-medium">Date & time</p>
       <.native_input
         type="date"
         name={"#{@name_prefix}[birth_date]"}
@@ -552,7 +552,7 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
       </.native_input>
     </div>
     <div class="flex flex-col gap-3">
-      <p class="typo typo--sm font-medium">Multiple</p>
+      <p class="typo ui-size-sm font-medium">Multiple</p>
       <.native_input
         type="select"
         multiple
@@ -566,7 +566,7 @@ defmodule E2eWeb.Demos.NativeInputFormFields do
       </.native_input>
     </div>
     <div class="flex flex-col gap-3">
-      <p class="typo typo--sm font-medium">Other</p>
+      <p class="typo ui-size-sm font-medium">Other</p>
       <.native_input
         type="color"
         name={"#{@name_prefix}[color]"}

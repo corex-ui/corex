@@ -38,7 +38,7 @@ defmodule E2eWeb.AdminLive.Form do
             final_focus={"dialog:admin-delete-#{@admin.id}:trigger"}
           >
             <:trigger
-              class="button button--alert button--square"
+              class="button ui-alert ui-trigger--square"
               aria_label="Delete admin"
               title="Delete admin"
             >
@@ -51,7 +51,7 @@ defmodule E2eWeb.AdminLive.Form do
                 <.action
                   id={"admin-delete-#{@admin.id}-cancel"}
                   phx-click={Corex.Dialog.set_open("admin-delete-#{@admin.id}", false)}
-                  class="button button--sm button--variant-ghost"
+                  class="button ui-size-sm"
                 >
                   Cancel
                 </.action>
@@ -61,7 +61,7 @@ defmodule E2eWeb.AdminLive.Form do
                     Corex.Dialog.set_open("admin-delete-#{@admin.id}", false)
                     |> JS.push("delete", value: %{id: @admin.id})
                   }
-                  class="button button--sm button--alert"
+                  class="button ui-size-sm ui-alert"
                 >
                   Delete
                 </.action>
@@ -202,7 +202,7 @@ defmodule E2eWeb.AdminLive.Form do
           <.navigate to={return_path(@return_to, @admin)} type="navigate" class="button">
             Cancel
           </.navigate>
-          <.action phx-disable-with="Saving..." type="submit" class="button button--accent">
+          <.action phx-disable-with="Saving..." type="submit" class="button ui-accent">
             Save Admin
           </.action>
         </footer>

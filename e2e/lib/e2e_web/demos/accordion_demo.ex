@@ -346,16 +346,16 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def api_set_value_client_binding_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={Corex.Accordion.set_value(@id, "lorem")} class="button button--sm">
+      <.action phx-click={Corex.Accordion.set_value(@id, "lorem")} class="button ui-size-sm">
         Open Lorem
       </.action>
       <.action
         phx-click={Corex.Accordion.set_value(@id, ["lorem", "donec"])}
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Lorem and Donec
       </.action>
-      <.action phx-click={Corex.Accordion.set_value(@id, [])} class="button button--sm">
+      <.action phx-click={Corex.Accordion.set_value(@id, [])} class="button ui-size-sm">
         Close all
       </.action>
     </div>
@@ -378,7 +378,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Open Lorem
       </.action>
@@ -390,7 +390,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Lorem and Donec
       </.action>
@@ -402,7 +402,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Close all
       </.action>
@@ -418,11 +418,11 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def api_set_value_server_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={@event} value="lorem" class="button button--sm">Open Lorem</.action>
-      <.action phx-click={@event} value="lorem,donec" class="button button--sm">
+      <.action phx-click={@event} value="lorem" class="button ui-size-sm">Open Lorem</.action>
+      <.action phx-click={@event} value="lorem,donec" class="button ui-size-sm">
         Lorem and Donec
       </.action>
-      <.action phx-click={@event} value="" class="button button--sm">Close all</.action>
+      <.action phx-click={@event} value="" class="button ui-size-sm">Close all</.action>
     </div>
     <.accordion class="accordion" id={@id} items={@items}>
       <:indicator>
@@ -477,10 +477,10 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def api_value_client_binding_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={Corex.Accordion.value(@id)} class="button button--sm">Value</.action>
+      <.action phx-click={Corex.Accordion.value(@id)} class="button ui-size-sm">Value</.action>
       <.action
         phx-click={Corex.Accordion.value(@id, respond_to: :client)}
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Value (client only)
       </.action>
@@ -499,7 +499,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
     <div class="flex flex-wrap gap-2 mb-4">
       <.action
         phx-click={JS.dispatch("corex:accordion:value", to: "##{@id}", detail: %{}, bubbles: false)}
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Value
       </.action>
@@ -511,7 +511,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Value (client only)
       </.action>
@@ -528,8 +528,8 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def api_value_server_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={@event_value} class="button button--sm">Value</.action>
-      <.action phx-click={@event_value_client_only} class="button button--sm">
+      <.action phx-click={@event_value} class="button ui-size-sm">Value</.action>
+      <.action phx-click={@event_value_client_only} class="button ui-size-sm">
         Value (client only)
       </.action>
     </div>
@@ -545,8 +545,8 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def api_focused_client_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={@event_focused} class="button button--sm">Focused</.action>
-      <.action phx-click={@event_focused_client_only} class="button button--sm">
+      <.action phx-click={@event_focused} class="button ui-size-sm">Focused</.action>
+      <.action phx-click={@event_focused_client_only} class="button ui-size-sm">
         Focused (client only)
       </.action>
     </div>
@@ -562,8 +562,8 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def api_focused_client_js_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={@event_focused} class="button button--sm">Focused</.action>
-      <.action phx-click={@event_focused_client_only} class="button button--sm">
+      <.action phx-click={@event_focused} class="button ui-size-sm">Focused</.action>
+      <.action phx-click={@event_focused_client_only} class="button ui-size-sm">
         Focused (client only)
       </.action>
     </div>
@@ -579,8 +579,8 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def api_focused_server_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={@event_focused} class="button button--sm">Focused</.action>
-      <.action phx-click={@event_focused_client_only} class="button button--sm">
+      <.action phx-click={@event_focused} class="button ui-size-sm">Focused</.action>
+      <.action phx-click={@event_focused_client_only} class="button ui-size-sm">
         Focused (client only)
       </.action>
     </div>
@@ -596,9 +596,9 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def api_item_state_client_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={@event_lorem} class="button button--sm">lorem</.action>
-      <.action phx-click={@event_duis} class="button button--sm">duis</.action>
-      <.action phx-click={@event_donec} class="button button--sm">donec</.action>
+      <.action phx-click={@event_lorem} class="button ui-size-sm">lorem</.action>
+      <.action phx-click={@event_duis} class="button ui-size-sm">duis</.action>
+      <.action phx-click={@event_donec} class="button ui-size-sm">donec</.action>
     </div>
     <.accordion class="accordion" id={@id} items={@items}>
       <:indicator>
@@ -611,9 +611,9 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def api_item_state_client_js_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={@event_lorem} class="button button--sm">lorem</.action>
-      <.action phx-click={@event_duis} class="button button--sm">duis</.action>
-      <.action phx-click={@event_donec} class="button button--sm">donec</.action>
+      <.action phx-click={@event_lorem} class="button ui-size-sm">lorem</.action>
+      <.action phx-click={@event_duis} class="button ui-size-sm">duis</.action>
+      <.action phx-click={@event_donec} class="button ui-size-sm">donec</.action>
     </div>
     <.accordion class="accordion" id={@id} items={@items}>
       <:indicator>
@@ -626,9 +626,9 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def api_item_state_server_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={@event_lorem} class="button button--sm">lorem</.action>
-      <.action phx-click={@event_duis} class="button button--sm">duis</.action>
-      <.action phx-click={@event_donec} class="button button--sm">donec</.action>
+      <.action phx-click={@event_lorem} class="button ui-size-sm">lorem</.action>
+      <.action phx-click={@event_duis} class="button ui-size-sm">duis</.action>
+      <.action phx-click={@event_donec} class="button ui-size-sm">donec</.action>
     </div>
     <.accordion class="accordion" id={@id} items={@items}>
       <:indicator>
@@ -1333,19 +1333,19 @@ defmodule E2eWeb.Demos.AccordionDemo do
     <.accordion class="accordion" value="item-1" items={styling_items()}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
-    <.accordion class="accordion accordion--accent" value="item-1" items={styling_items()}>
+    <.accordion class="accordion ui-accent" value="item-1" items={styling_items()}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
-    <.accordion class="accordion accordion--brand" value="item-1" items={styling_items()}>
+    <.accordion class="accordion ui-brand" value="item-1" items={styling_items()}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
-    <.accordion class="accordion accordion--alert" value="item-1" items={styling_items()}>
+    <.accordion class="accordion ui-alert" value="item-1" items={styling_items()}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
-    <.accordion class="accordion accordion--success" value="item-1" items={styling_items()}>
+    <.accordion class="accordion ui-success" value="item-1" items={styling_items()}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
-    <.accordion class="accordion accordion--info" value="item-1" items={styling_items()}>
+    <.accordion class="accordion ui-info" value="item-1" items={styling_items()}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     """
@@ -1356,13 +1356,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
     <.accordion class="accordion" value="item-1" items={styling_items()}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
-    <.accordion class="accordion accordion--variant-solid" value="item-1" items={styling_items()}>
-      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
-    </.accordion>
-    <.accordion class="accordion accordion--variant-ghost" value="item-1" items={styling_items()}>
-      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
-    </.accordion>
-    <.accordion class="accordion accordion--variant-outline" value="item-1" items={styling_items()}>
+    <.accordion class="accordion ui-solid" value="item-1" items={styling_items()}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     """
@@ -1402,16 +1396,16 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def styling_size_example(assigns) do
     ~H"""
-    <.accordion class="accordion accordion--sm" value="item-1" items={styling_items()}>
+    <.accordion class="accordion ui-size-sm" value="item-1" items={styling_items()}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
-    <.accordion class="accordion accordion--md" value="item-1" items={styling_items()}>
+    <.accordion class="accordion ui-size-md" value="item-1" items={styling_items()}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
-    <.accordion class="accordion accordion--lg" value="item-1" items={styling_items()}>
+    <.accordion class="accordion ui-size-lg" value="item-1" items={styling_items()}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
-    <.accordion class="accordion accordion--xl" value="item-1" items={styling_items()}>
+    <.accordion class="accordion ui-size-xl" value="item-1" items={styling_items()}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     """
@@ -1419,22 +1413,22 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def styling_radius_example(assigns) do
     ~H"""
-    <.accordion class="accordion accordion--rounded-none" value="item-1" items={styling_items()}>
+    <.accordion class="accordion ui-rounded-none" value="item-1" items={styling_items()}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
-    <.accordion class="accordion accordion--rounded-sm" value="item-1" items={styling_items()}>
+    <.accordion class="accordion ui-rounded-sm" value="item-1" items={styling_items()}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
-    <.accordion class="accordion accordion--rounded-md" value="item-1" items={styling_items()}>
+    <.accordion class="accordion ui-rounded-md" value="item-1" items={styling_items()}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
-    <.accordion class="accordion accordion--rounded-lg" value="item-1" items={styling_items()}>
+    <.accordion class="accordion ui-rounded-lg" value="item-1" items={styling_items()}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
-    <.accordion class="accordion accordion--rounded-xl" value="item-1" items={styling_items()}>
+    <.accordion class="accordion ui-rounded-xl" value="item-1" items={styling_items()}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
-    <.accordion class="accordion accordion--rounded-full" value="item-1" items={styling_items()}>
+    <.accordion class="accordion ui-rounded-full" value="item-1" items={styling_items()}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     """
@@ -1446,7 +1440,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
     ~H"""
     <div class={DemoScales.preview_scroll_class()}>
       <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
-        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.accordion
           id={"accordion-style-max-#{variant.id}"}
           class={DemoScales.join_modifiers("accordion", variant.modifier)}
@@ -1468,35 +1462,35 @@ defmodule E2eWeb.Demos.AccordionDemo do
       %{label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
     </.accordion>
-    <.accordion class="accordion accordion--accent" value="item-1" items={Corex.Content.new([
+    <.accordion class="accordion ui-accent" value="item-1" items={Corex.Content.new([
       %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
-    <.accordion class="accordion accordion--brand" value="item-1" items={Corex.Content.new([
+    <.accordion class="accordion ui-brand" value="item-1" items={Corex.Content.new([
       %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
-    <.accordion class="accordion accordion--info" value="item-1" items={Corex.Content.new([
+    <.accordion class="accordion ui-info" value="item-1" items={Corex.Content.new([
       %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
-    <.accordion class="accordion accordion--alert" value="item-1" items={Corex.Content.new([
+    <.accordion class="accordion ui-alert" value="item-1" items={Corex.Content.new([
       %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
-    <.accordion class="accordion accordion--success" value="item-1" items={Corex.Content.new([
+    <.accordion class="accordion ui-success" value="item-1" items={Corex.Content.new([
       %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
@@ -1515,21 +1509,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
-    <.accordion class="accordion accordion--variant-solid" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
-    ])}>
-      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
-    </.accordion>
-    <.accordion class="accordion accordion--variant-ghost" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
-    ])}>
-      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
-    </.accordion>
-    <.accordion class="accordion accordion--variant-outline" value="item-1" items={Corex.Content.new([
+    <.accordion class="accordion ui-solid" value="item-1" items={Corex.Content.new([
       %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
@@ -1557,28 +1537,28 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def styling_size_code do
     ~S"""
-    <.accordion class="accordion accordion--sm" value="item-1" items={Corex.Content.new([
+    <.accordion class="accordion ui-size-sm" value="item-1" items={Corex.Content.new([
       %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
-    <.accordion class="accordion accordion--md" value="item-1" items={Corex.Content.new([
+    <.accordion class="accordion ui-size-md" value="item-1" items={Corex.Content.new([
       %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
-    <.accordion class="accordion accordion--lg" value="item-1" items={Corex.Content.new([
+    <.accordion class="accordion ui-size-lg" value="item-1" items={Corex.Content.new([
       %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
-    <.accordion class="accordion accordion--xl" value="item-1" items={Corex.Content.new([
+    <.accordion class="accordion ui-size-xl" value="item-1" items={Corex.Content.new([
       %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
@@ -1590,42 +1570,42 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def styling_radius_code do
     ~S"""
-    <.accordion class="accordion accordion--rounded-none" value="item-1" items={Corex.Content.new([
+    <.accordion class="accordion ui-rounded-none" value="item-1" items={Corex.Content.new([
       %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
-    <.accordion class="accordion accordion--rounded-sm" value="item-1" items={Corex.Content.new([
+    <.accordion class="accordion ui-rounded-sm" value="item-1" items={Corex.Content.new([
       %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
-    <.accordion class="accordion accordion--rounded-md" value="item-1" items={Corex.Content.new([
+    <.accordion class="accordion ui-rounded-md" value="item-1" items={Corex.Content.new([
       %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
-    <.accordion class="accordion accordion--rounded-lg" value="item-1" items={Corex.Content.new([
+    <.accordion class="accordion ui-rounded-lg" value="item-1" items={Corex.Content.new([
       %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
-    <.accordion class="accordion accordion--rounded-xl" value="item-1" items={Corex.Content.new([
+    <.accordion class="accordion ui-rounded-xl" value="item-1" items={Corex.Content.new([
       %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
-    <.accordion class="accordion accordion--rounded-full" value="item-1" items={Corex.Content.new([
+    <.accordion class="accordion ui-rounded-full" value="item-1" items={Corex.Content.new([
       %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
@@ -1762,10 +1742,10 @@ defmodule E2eWeb.Demos.AccordionDemo do
     ~S"""
     <div class="flex flex-col gap-3 w-full max-w-xl">
       <div class="flex flex-wrap gap-2">
-        <.action phx-click="add_item" class="button button--sm button--accent">
+        <.action phx-click="add_item" class="button ui-size-sm ui-accent">
           <.heroicon name="hero-plus" /> Add item
         </.action>
-        <.action phx-click="reset" class="button button--sm button--alert">
+        <.action phx-click="reset" class="button ui-size-sm ui-alert">
           Reset
         </.action>
       </div>
@@ -1853,10 +1833,10 @@ defmodule E2eWeb.Demos.AccordionDemo do
         ~H"""
         <div class="flex flex-col gap-3 w-full max-w-xl">
             <div class="flex flex-wrap gap-2">
-              <.action phx-click="add_item" class="button button--sm button--accent">
+              <.action phx-click="add_item" class="button ui-size-sm ui-accent">
                 <.heroicon name="hero-plus" /> Add item
               </.action>
-              <.action phx-click="reset" class="button button--sm button--alert">
+              <.action phx-click="reset" class="button ui-size-sm ui-alert">
                 Reset
               </.action>
             </div>

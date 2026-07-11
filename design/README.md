@@ -8,7 +8,7 @@ Add `corex_design` as a build-time dependency, configure tokens, and build:
 
 ```elixir
 # mix.exs
-{:corex_design, "~> 0.2", runtime: false, only: :dev}
+{:corex_design, "~> 0.2", runtime: false}
 ```
 
 ```elixir

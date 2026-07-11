@@ -1,416 +1,165 @@
 @import "../main.css";
 
 @layer components {
-  .select {
-    max-width: var(--container-3xs);
-    width: 100%;
-  }
-
-  .select[data-loading] [data-scope="select"][data-part="root"] {
-    @apply ui-loading;
-  }
-
-  .select [data-scope="select"][data-part="root"] {
-    @apply ui-root;
-    gap: var(--spacing-space);
-    position: relative;
-    padding-inline-end: var(--spacing-space);
-  }
-
-  .select [data-scope="select"][data-part="root"][data-readonly] {
-    @apply ui-readonly;
-  }
-
-  .select [data-scope="select"][data-part="label"] {
-    @apply ui-label;
-  }
-
-  .select [data-scope="select"][data-part="control"] {
-    display: flex;
-    width: 100%;
-    min-width: 0;
-    position: relative;
-
-    &[data-focus]:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ink);
-    }
-
-    &[data-invalid][data-focus],
-    &[data-invalid][data-focus]:focus-visible {
-      box-shadow: none;
-    }
-  }
-
-  .select [data-scope="select"][data-part="trigger"] {
-    @apply ui-trigger;
-
-    justify-content: space-between;
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-  }
-
-  .select [data-scope="select"][data-part="trigger"] > [data-part="item-text"] {
-    flex: 1 1 0%;
-    min-width: 0;
-    max-width: 100%;
-    width: auto;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    display: block;
-    text-align: start;
-  }
-
-  .select [data-scope="select"][data-part="trigger"] > .icon,
-  .select [data-scope="select"][data-part="trigger"] > [class^="hero-"] {
-    flex-shrink: 0;
-  }
-
-  .select [data-scope="select"][data-part="positioner"] {
-    position: relative;
-  }
-
-  .select [data-scope="select"][data-part="content"] {
-    @apply ui-content;
-
-    border: 1px solid var(--color-border);
-    z-index: 50;
-    padding: 0;
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    box-shadow: var(--shadow-ui);
-
-    &:focus-visible {
-      outline: none;
-    }
-
-    & [data-part="item"] {
-      border-radius: var(--radius-none) !important; 
-    }
-
-    & > [data-part="item"]:first-child {
-      border-top-left-radius: var(--radius-md) !important; 
-      border-top-right-radius: var(--radius-md) !important;
-      border-bottom-left-radius: 0 !important;              
-      border-bottom-right-radius: 0 !important;             
-    }
-
-
-    & > [data-part="item"]:last-child {
-      border-bottom-left-radius: var(--radius-md) !important; 
-      border-bottom-right-radius: var(--radius-md) !important;
-      border-top-left-radius: 0 !important;                    
-      border-top-right-radius: 0 !important;                   
-    }
-
-    
-    & > [data-part="item-group"]:last-child [data-part="item"]:last-child {
-      border-bottom-left-radius: var(--radius-md) !important; 
-      border-bottom-right-radius: var(--radius-md) !important;
-    }
-
-  }
-
-  .select [data-scope="select"][data-part="item-group"] {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .select [data-scope="select"][data-part="item-group-label"] {
-    @apply ui-label;
-    
-    background-color: var(--color-root);
-    color: var(--color-ink);
-    border-bottom: 1px solid var(--color-border);
-    border-top: 1px solid var(--color-border);
-    box-shadow: var(--shadow-ui);
-    padding-inline-start: var(--spacing-space);
-  }
-
-  .select [data-scope="select"][data-part="item"] {
-    @apply ui-item;
-  }
-
-  .select [data-scope="select"][data-part="content"] [data-part="item-text"] {
-    flex: 1 1 0%;
-    min-width: 0;
-    max-width: 100%;
-    width: auto;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    display: block;
-    text-align: start;
-  }
-
-  .select [data-scope="select"][data-part="item-indicator"] {
-    @apply ui-icon;
-  }
-
-  .select [data-scope="select"][data-part="content"] [data-part="item-indicator"] {
-    flex-shrink: 0;
-    padding-inline-end: var(--spacing-space);
-  }
-
-
-  .select [data-scope="select"][data-part="error"] {
-    @apply ui-error;
-  }
-
-  .select [data-scope="select"][data-part="error"].absolute {
-    padding-block: 0;
-    display: block;
-  }
-
-  .select:not(.select--variant-solid):not(.select--variant-ghost):not(.select--variant-outline)
-    [data-scope="select"][data-part="trigger"] {
-    background-color: var(--color-ui);
-    color: var(--select-ink-text, var(--color-ink));
-    border-color: var(--color-border);
-
-    &:hover {
-      background-color: var(--color-ui-active);
-    }
-
-    &:active {
-      background-color: var(--color-ui-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--select-ink-text, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-ui-muted);
-      color: var(--color-ink-muted);
-      border-color: var(--color-ui-muted);
-      cursor: not-allowed;
-    }
-  }
-}
-
-
-@utility select--* {
-  [data-scope="select"][data-part="root"] {
-    gap: --value(--spacing-space-*, [length]);
-  }
-
-  [data-scope="select"][data-part="label"] {
-    font-size: --value(--text-*, [length]);
-    line-height: --value(--text-*--line-height, [length]);
-  }
-
-  [data-scope="select"][data-part="control"] {
-    max-width: --value(--container-*, [length]);
-    gap: --value(--spacing-space-*, [length]);
-  }
-
-  [data-scope="select"][data-part="trigger"] {
-    font-size: --value(--text-*, [length]);
-    line-height: --value(--text-*--line-height, [length]);
-    padding-inline: --value(--spacing-space-*, [length]);
-    gap: --value(--spacing-space-*, [length]);
-    min-height: --value(--spacing-size-*, [length]);
-    --select-fill: --value(--color-*, [color]);
-    --select-fill-hover: --value(--color-*-hover, [color]);
-    --select-fill-active: --value(--color-*-active, [color]);
-    --select-ink: --value(--color-*-ink, [color]);
-    --select-ink-text: --value(--color-ink-*, [color]);
-    --select-muted: --value(--color-*-muted, [color]);
-  }
-
-  [data-scope="select"][data-part="trigger"] > [data-part="item-text"] {
-    color: inherit;
-  }
-
-  [data-scope="select"][data-part="trigger"] .icon,
-  [data-scope="select"][data-part="trigger"] [class^="hero-"] {
-    color: inherit;
-  }
-
-  [data-scope="select"][data-part="trigger"] svg {
-    fill: currentColor;
-  }
-
-  [data-scope="select"][data-part="item"] {
-    font-size: --value(--text-*, [length]);
-    line-height: --value(--text-*--line-height, [length]);
-    padding-inline: --value(--spacing-space-*, [length]);
-    gap: --value(--spacing-space-*, [length]);
-  }
-
-  [data-scope="select"][data-part="content"] [data-part="item-indicator"] {
-    padding-inline-end: --value(--spacing-space-*, [length]);
-  }
-
-  [data-scope="select"][data-part="item-group-label"] {
-    font-size: --value(--text-*, [length]);
-    line-height: --value(--text-*--line-height, [length]);
-  }
-
-  [data-scope="select"][data-part="item"][data-selected],
-  [data-scope="select"][data-part="item"][data-state="checked"] {
-    background-color: --value(--color-*, [color]);
-    color: --value(--color-*-ink, [color]);
-  }
-
-  [data-scope="select"][data-part="item"][data-selected]:hover,
-  [data-scope="select"][data-part="item"][data-state="checked"]:hover {
-    background-color: --value(--color-*-hover, [color]);
-    color: --value(--color-*-ink, [color]);
-  }
-
-  [data-scope="select"][data-part="item"][data-selected]:active,
-  [data-scope="select"][data-part="item"][data-state="checked"]:active {
-    background-color: --value(--color-*-active, [color]);
-    color: --value(--color-*-ink, [color]);
-  }
-
-  [data-scope="select"][data-part="item"][data-selected]:focus-visible,
-  [data-scope="select"][data-part="item"][data-state="checked"]:focus-visible {
-    outline: none;
-    box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
-  }
-
-  [data-scope="select"][data-part="item"][data-selected][data-highlighted],
-  [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted] {
-    outline: none;
-    box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
-    background-color: --value(--color-*-hover, [color]);
-    color: --value(--color-*-ink, [color]);
-  }
-
-  [data-scope="select"][data-part="item"][data-selected] [data-part="item-text"],
-  [data-scope="select"][data-part="item"][data-state="checked"] [data-part="item-text"] {
-    color: --value(--color-*-ink, [color]);
-  }
-}
-
-@utility select--variant-solid {
-  [data-scope="select"][data-part="trigger"] {
-    background-color: var(--select-fill, var(--color-ui-active));
-    color: var(--select-ink, var(--color-ink));
-    border-color: transparent;
-
-    &:hover {
-      background-color: var(--select-fill-hover, var(--color-ui-hover));
-    }
-
-    &:active {
-      background-color: var(--select-fill-active, var(--color-ui-active));
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--select-ink, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--select-muted, var(--color-ui-muted));
-      color: var(--select-ink, var(--color-ink-muted));
-      cursor: not-allowed;
-    }
-  }
-}
-
-@utility select--variant-subtle {
-  [data-scope="select"][data-part="trigger"] {
-    background-color: var(--color-ui);
-    color: var(--select-ink-text, var(--color-ink));
-    border-color: var(--color-border);
-
-    &:hover {
-      background-color: var(--color-ui-active);
-    }
-
-    &:active {
-      background-color: var(--color-ui-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--select-ink-text, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-ui-muted);
-      color: var(--color-ink-muted);
-      border-color: var(--color-ui-muted);
-      cursor: not-allowed;
-    }
-  }
-}
-
-@utility select--variant-ghost {
-  [data-scope="select"][data-part="trigger"] {
-    background-color: transparent;
-    color: var(--select-ink-text, var(--color-ink));
-    border-color: transparent;
-
-    &:hover {
-      background-color: var(--color-ui-hover);
-    }
-
-    &:active {
-      background-color: var(--color-ui-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--select-ink-text, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: transparent;
-      color: var(--color-ink-muted);
-      cursor: not-allowed;
-    }
-  }
-}
-
-@utility select--variant-outline {
-  [data-scope="select"][data-part="trigger"] {
-    background-color: transparent;
-    color: var(--select-ink-text, var(--color-ink));
-    border-color: var(--select-fill, var(--color-border));
-
-    &:hover {
-      background-color: var(--color-ui-hover);
-    }
-
-    &:active {
-      background-color: var(--color-ui-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--select-fill, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: transparent;
-      color: var(--color-ink-muted);
-      border-color: var(--color-ui-muted);
-      cursor: not-allowed;
-    }
-  }
-}
-
-@utility select--rounded-* {
-  [data-scope="select"][data-part="trigger"] {
-    border-radius: --value(--radius-*, [length]);
-  }
+ .select {
+ max-width: var(--container-3xs);
+ width: 100%;
+ }
+
+ .select[data-loading] [data-scope="select"][data-part="root"] {
+ @apply ui-loading;
+ }
+
+ .select [data-scope="select"][data-part="root"] {
+ @apply ui-root;
+ gap: var(--spacing-space);
+ position: relative;
+ padding-inline-end: var(--spacing-space);
+ }
+
+ .select [data-scope="select"][data-part="root"][data-readonly] {
+ @apply ui-readonly;
+ }
+
+ .select [data-scope="select"][data-part="label"] {
+ @apply ui-label;
+ }
+
+ .select [data-scope="select"][data-part="control"] {
+ display: flex;
+ width: 100%;
+ min-width: 0;
+ position: relative;
+
+ &[data-focus]:focus-visible {
+ outline: none;
+ box-shadow: inset 0 0 0 2px var(--color-ink);
+ }
+
+ &[data-invalid][data-focus],
+ &[data-invalid][data-focus]:focus-visible {
+ box-shadow: none;
+ }
+ }
+
+ .select [data-scope="select"][data-part="trigger"] {
+ @apply ui-trigger;
+
+ justify-content: space-between;
+ width: 100%;
+ min-width: 0;
+ max-width: 100%;
+ }
+
+ .select [data-scope="select"][data-part="trigger"] > [data-part="item-text"] {
+ flex: 1 1 0%;
+ min-width: 0;
+ max-width: 100%;
+ width: auto;
+ overflow: hidden;
+ text-overflow: ellipsis;
+ white-space: nowrap;
+ display: block;
+ text-align: start;
+ }
+
+ .select [data-scope="select"][data-part="trigger"] > .icon,
+ .select [data-scope="select"][data-part="trigger"] > [class^="hero-"] {
+ flex-shrink: 0;
+ }
+
+ .select [data-scope="select"][data-part="positioner"] {
+ position: relative;
+ }
+
+ .select [data-scope="select"][data-part="content"] {
+ @apply ui-content;
+
+ border: 1px solid var(--color-border);
+ z-index: 50;
+ padding: 0;
+ border-radius: var(--radius-md);
+ overflow: hidden;
+ box-shadow: var(--shadow-ui);
+
+ &:focus-visible {
+ outline: none;
+ }
+
+ & [data-part="item"] {
+ border-radius: var(--radius-none) !important; 
+ }
+
+ & > [data-part="item"]:first-child {
+ border-top-left-radius: var(--radius-md) !important; 
+ border-top-right-radius: var(--radius-md) !important;
+ border-bottom-left-radius: 0 !important; 
+ border-bottom-right-radius: 0 !important; 
+ }
+
+ & > [data-part="item"]:last-child {
+ border-bottom-left-radius: var(--radius-md) !important; 
+ border-bottom-right-radius: var(--radius-md) !important;
+ border-top-left-radius: 0 !important; 
+ border-top-right-radius: 0 !important; 
+ }
+
+ 
+ & > [data-part="item-group"]:last-child [data-part="item"]:last-child {
+ border-bottom-left-radius: var(--radius-md) !important; 
+ border-bottom-right-radius: var(--radius-md) !important;
+ }
+
+ }
+
+ .select [data-scope="select"][data-part="item-group"] {
+ display: flex;
+ flex-direction: column;
+ }
+
+ .select [data-scope="select"][data-part="item-group-label"] {
+ @apply ui-label;
+ 
+ background-color: var(--color-root);
+ color: var(--color-ink);
+ border-bottom: 1px solid var(--color-border);
+ border-top: 1px solid var(--color-border);
+ box-shadow: var(--shadow-ui);
+ padding-inline-start: var(--spacing-space);
+ }
+
+ .select [data-scope="select"][data-part="item"] {
+ @apply ui-item;
+ }
+
+ .select [data-scope="select"][data-part="content"] [data-part="item-text"] {
+ flex: 1 1 0%;
+ min-width: 0;
+ max-width: 100%;
+ width: auto;
+ overflow: hidden;
+ text-overflow: ellipsis;
+ white-space: nowrap;
+ display: block;
+ text-align: start;
+ }
+
+ .select [data-scope="select"][data-part="item-indicator"] {
+ @apply ui-icon;
+ }
+
+ .select [data-scope="select"][data-part="content"] [data-part="item-indicator"] {
+ flex-shrink: 0;
+ padding-inline-end: var(--spacing-space);
+ }
+
+ .select [data-scope="select"][data-part="error"] {
+ @apply ui-error;
+ }
+
+ .select [data-scope="select"][data-part="error"].absolute {
+ padding-block: 0;
+ display: block;
+ }
+
 }

@@ -152,11 +152,11 @@ defmodule Corex.Switch do
   @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.switch>`). Combine axes, for example `switch switch--accent switch--lg` or `switch switch--info switch--variant-solid`.
+  Stack modifiers on the host (`class` on `<.switch>`). Combine axes, for example `switch ui-accent ui-size-lg` or `switch ui-info ui-solid`.
 
   Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on the track and thumb. Variant modifiers control surface treatment. Default is subtle: unchecked uses a neutral track with semantic thumb color, checked uses selected with semantic ink text. Add `switch--variant-solid` for a filled checked track.
+  Semantic modifiers set palette variables on the track and thumb. Variant modifiers control surface treatment. Default is subtle: unchecked uses a neutral track with semantic thumb color, checked uses selected with semantic ink text. Add `ui-solid` for a filled checked track.
 
   <!-- tabs-open -->
 
@@ -167,11 +167,11 @@ defmodule Corex.Switch do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `switch` |
-  | Accent | `switch switch--accent` |
-  | Brand | `switch switch--brand` |
-  | Alert | `switch switch--alert` |
-  | Info | `switch switch--info` |
-  | Success | `switch switch--success` |
+  | Accent | `switch ui-accent` |
+  | Brand | `switch ui-brand` |
+  | Alert | `switch ui-alert` |
+  | Info | `switch ui-info` |
+  | Success | `switch ui-success` |
 
   ### Variant
 
@@ -179,19 +179,19 @@ defmodule Corex.Switch do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `switch` or `switch switch--accent` |
-  | Solid | `switch switch--accent switch--variant-solid` |
-  | Ghost | `switch switch--variant-ghost` |
-  | Outline | `switch switch--accent switch--variant-outline` |
+  | Subtle (default) | `switch` or `switch ui-accent` |
+  | Solid | `switch ui-accent ui-solid` |
+  | Ghost | `switch` |
+  | Outline | `switch ui-accent` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `switch switch--sm` |
-  | MD | `switch switch--md` |
-  | LG | `switch switch--lg` |
-  | XL | `switch switch--xl` |
+  | SM | `switch ui-size-sm` |
+  | MD | `switch ui-size-md` |
+  | LG | `switch ui-size-lg` |
+  | XL | `switch ui-size-xl` |
 
   <!-- tabs-close -->
 

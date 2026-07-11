@@ -94,10 +94,10 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
   def api_client_binding_code do
     ~S"""
     <div class="flex flex-wrap items-center gap-space">
-      <.action phx-click={Corex.Collapsible.set_open("collapsible-api", true)} class="button button--sm">
+      <.action phx-click={Corex.Collapsible.set_open("collapsible-api", true)} class="button ui-size-sm">
         Open
       </.action>
-      <.action phx-click={Corex.Collapsible.set_open("collapsible-api", false)} class="button button--sm">
+      <.action phx-click={Corex.Collapsible.set_open("collapsible-api", false)} class="button ui-size-sm">
         Close
       </.action>
     </div>
@@ -119,13 +119,13 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
     <div class="flex flex-wrap items-center gap-space">
       <.action
         phx-click={Corex.Collapsible.set_open("collapsible-api", true)}
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Open
       </.action>
       <.action
         phx-click={Corex.Collapsible.set_open("collapsible-api", false)}
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Close
       </.action>
@@ -154,7 +154,7 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Open
       </.action>
@@ -166,7 +166,7 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Close
       </.action>
@@ -219,7 +219,7 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Open
       </.action>
@@ -231,7 +231,7 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Close
       </.action>
@@ -252,8 +252,8 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
   def api_server_heex do
     ~S"""
     <div class="flex flex-wrap items-center gap-space">
-      <.action phx-click="collapsible_api_open" class="button button--sm">Open</.action>
-      <.action phx-click="collapsible_api_close" class="button button--sm">Close</.action>
+      <.action phx-click="collapsible_api_open" class="button ui-size-sm">Open</.action>
+      <.action phx-click="collapsible_api_close" class="button ui-size-sm">Close</.action>
     </div>
 
     <.collapsible id="collapsible-api-server" class="collapsible">
@@ -283,8 +283,8 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
   def api_server_example(assigns) do
     ~H"""
     <div class="flex flex-wrap items-center gap-space">
-      <.action phx-click="collapsible_api_open" class="button button--sm">Open</.action>
-      <.action phx-click="collapsible_api_close" class="button button--sm">Close</.action>
+      <.action phx-click="collapsible_api_open" class="button ui-size-sm">Open</.action>
+      <.action phx-click="collapsible_api_close" class="button ui-size-sm">Close</.action>
     </div>
 
     <.collapsible id="collapsible-api-server" class="collapsible">
@@ -355,15 +355,15 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
 
   def styling_color_code do
     ~S"""
-    <.collapsible class="collapsible collapsible--md">
+    <.collapsible class="collapsible ui-size-md">
       <:trigger>Default width</:trigger>
       <:content>Content</:content>
     </.collapsible>
-    <.collapsible class="collapsible collapsible--md collapsible--accent">
+    <.collapsible class="collapsible ui-size-md ui-accent">
       <:trigger>Accent trigger</:trigger>
       <:content>Content</:content>
     </.collapsible>
-    <.collapsible class="collapsible collapsible--md collapsible--brand">
+    <.collapsible class="collapsible ui-size-md ui-brand">
       <:trigger>Brand trigger</:trigger>
       <:content>Content</:content>
     </.collapsible>
@@ -373,20 +373,20 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
   def styling_color_example(assigns) do
     ~H"""
     <div class="flex flex-col gap-4 items-start w-full max-w-xl">
-      <.collapsible id="collapsible-style-default" class="collapsible collapsible--md">
+      <.collapsible id="collapsible-style-default" class="collapsible ui-size-md">
         <:trigger>Default width</:trigger>
         <:content>Content</:content>
       </.collapsible>
       <.collapsible
         id="collapsible-style-accent"
-        class="collapsible collapsible--md collapsible--accent"
+        class="collapsible ui-size-md ui-accent"
       >
         <:trigger>Accent trigger</:trigger>
         <:content>Content</:content>
       </.collapsible>
       <.collapsible
         id="collapsible-style-brand"
-        class="collapsible collapsible--md collapsible--brand"
+        class="collapsible ui-size-md ui-brand"
       >
         <:trigger>Brand trigger</:trigger>
         <:content>Content</:content>
@@ -397,20 +397,18 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
 
   def styling_variant_code do
     ~S"""
-    <.collapsible class="collapsible collapsible--md">
+    <.collapsible class="collapsible ui-size-md">
       <:trigger>Subtle (default)</:trigger>
       <:content>Content</:content>
     </.collapsible>
-    <.collapsible class="collapsible collapsible--variant-solid collapsible--md">
+    <.collapsible class="collapsible ui-solid ui-size-md">
       <:trigger>Solid</:trigger>
       <:content>Content</:content>
     </.collapsible>
-    <.collapsible class="collapsible collapsible--variant-ghost collapsible--md">
-      <:trigger>Ghost</:trigger>
+    <.collapsible class="collapsible ui-size-md">
       <:content>Content</:content>
     </.collapsible>
-    <.collapsible class="collapsible collapsible--variant-outline collapsible--md">
-      <:trigger>Outline</:trigger>
+    <.collapsible class="collapsible ui-size-md">
       <:content>Content</:content>
     </.collapsible>
     """
@@ -421,29 +419,15 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
 
     ~H"""
     <div class="flex flex-col gap-4 items-start w-full max-w-xl">
-      <.collapsible id="collapsible-style-variant-subtle" class="collapsible collapsible--md">
+      <.collapsible id="collapsible-style-variant-subtle" class="collapsible ui-size-md">
         <:trigger>Subtle (default)</:trigger>
         <:content>Content</:content>
       </.collapsible>
       <.collapsible
         id="collapsible-style-variant-solid"
-        class="collapsible collapsible--variant-solid collapsible--md"
+        class="collapsible ui-solid ui-size-md"
       >
         <:trigger>Solid</:trigger>
-        <:content>Content</:content>
-      </.collapsible>
-      <.collapsible
-        id="collapsible-style-variant-ghost"
-        class="collapsible collapsible--variant-ghost collapsible--md"
-      >
-        <:trigger>Ghost</:trigger>
-        <:content>Content</:content>
-      </.collapsible>
-      <.collapsible
-        id="collapsible-style-variant-outline"
-        class="collapsible collapsible--variant-outline collapsible--md"
-      >
-        <:trigger>Outline</:trigger>
         <:content>Content</:content>
       </.collapsible>
     </div>
@@ -455,7 +439,7 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
         variant <- DemoScales.styling_variant_axis_steps("collapsible") do
       class = DemoScales.join_matrix_modifiers("collapsible", semantic.modifier, variant.modifier)
 
-      ~s(<.collapsible class="#{class} collapsible--md">
+      ~s(<.collapsible class="#{class} ui-size-md">
         <:trigger>#{semantic.label}</:trigger>
         <:content>Content</:content>
       </.collapsible>)
@@ -488,19 +472,19 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
 
   def styling_size_code do
     ~S"""
-    <.collapsible class="collapsible collapsible--sm">
+    <.collapsible class="collapsible ui-size-sm">
       <:trigger>Small</:trigger>
       <:content><p>Content</p></:content>
     </.collapsible>
-    <.collapsible class="collapsible collapsible--md">
+    <.collapsible class="collapsible ui-size-md">
       <:trigger>Medium</:trigger>
       <:content><p>Content</p></:content>
     </.collapsible>
-    <.collapsible class="collapsible collapsible--lg">
+    <.collapsible class="collapsible ui-size-lg">
       <:trigger>Large</:trigger>
       <:content><p>Content</p></:content>
     </.collapsible>
-    <.collapsible class="collapsible collapsible--xl">
+    <.collapsible class="collapsible ui-size-xl">
       <:trigger>Extra large</:trigger>
       <:content><p>Content</p></:content>
     </.collapsible>
@@ -510,25 +494,25 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
   def styling_size_example(assigns) do
     ~H"""
     <div class="flex flex-col gap-4 items-start w-full">
-      <.collapsible id="collapsible-style-sm" class="collapsible collapsible--sm">
+      <.collapsible id="collapsible-style-sm" class="collapsible ui-size-sm">
         <:trigger>Small</:trigger>
         <:content>
           <p>Content</p>
         </:content>
       </.collapsible>
-      <.collapsible id="collapsible-style-md" class="collapsible collapsible--md">
+      <.collapsible id="collapsible-style-md" class="collapsible ui-size-md">
         <:trigger>Medium</:trigger>
         <:content>
           <p>Content</p>
         </:content>
       </.collapsible>
-      <.collapsible id="collapsible-style-lg" class="collapsible collapsible--lg">
+      <.collapsible id="collapsible-style-lg" class="collapsible ui-size-lg">
         <:trigger>Large</:trigger>
         <:content>
           <p>Content</p>
         </:content>
       </.collapsible>
-      <.collapsible id="collapsible-style-xl" class="collapsible collapsible--xl">
+      <.collapsible id="collapsible-style-xl" class="collapsible ui-size-xl">
         <:trigger>Extra large</:trigger>
         <:content>
           <p>Content</p>
@@ -559,7 +543,7 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
     ~H"""
     <div class={DemoScales.preview_scroll_class()}>
       <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
-        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.collapsible
           id={"collapsible-style-max-#{variant.id}"}
           class={DemoScales.join_modifiers("collapsible", variant.modifier)}

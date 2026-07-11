@@ -44,7 +44,7 @@ defmodule E2eWeb.FloatingPanelPlayLive do
       >
         <:controls>
           <.switch
-            class="switch switch--sm"
+            class="switch ui-size-sm"
             id="fp-draggable"
             checked={@draggable}
             on_checked_change="draggable_changed"
@@ -52,7 +52,7 @@ defmodule E2eWeb.FloatingPanelPlayLive do
             <:label>Draggable</:label>
           </.switch>
           <.switch
-            class="switch switch--sm"
+            class="switch ui-size-sm"
             id="fp-resizable"
             checked={@resizable}
             on_checked_change="resizable_changed"

@@ -125,11 +125,11 @@ defmodule E2eWeb.Demos.NavigateDemo do
   def styling_color_code do
     ~S"""
     <div class="flex flex-wrap items-center gap-space gap-2">
-      <.navigate to="#" class="link link--accent">Accent</.navigate>
-      <.navigate to="#" class="link link--brand">Brand</.navigate>
-      <.navigate to="#" class="link link--alert">Alert</.navigate>
-      <.navigate to="#" class="link link--info">Info</.navigate>
-      <.navigate to="#" class="link link--success">Success</.navigate>
+      <.navigate to="#" class="link ui-accent">Accent</.navigate>
+      <.navigate to="#" class="link ui-brand">Brand</.navigate>
+      <.navigate to="#" class="link ui-alert">Alert</.navigate>
+      <.navigate to="#" class="link ui-info">Info</.navigate>
+      <.navigate to="#" class="link ui-success">Success</.navigate>
     </div>
     """
   end
@@ -137,11 +137,11 @@ defmodule E2eWeb.Demos.NavigateDemo do
   def styling_color_example(assigns) do
     ~H"""
     <div class="flex flex-wrap items-center gap-space gap-2">
-      <.navigate to="#" class="link link--accent">Accent</.navigate>
-      <.navigate to="#" class="link link--brand">Brand</.navigate>
-      <.navigate to="#" class="link link--alert">Alert</.navigate>
-      <.navigate to="#" class="link link--info">Info</.navigate>
-      <.navigate to="#" class="link link--success">Success</.navigate>
+      <.navigate to="#" class="link ui-accent">Accent</.navigate>
+      <.navigate to="#" class="link ui-brand">Brand</.navigate>
+      <.navigate to="#" class="link ui-alert">Alert</.navigate>
+      <.navigate to="#" class="link ui-info">Info</.navigate>
+      <.navigate to="#" class="link ui-success">Success</.navigate>
     </div>
     """
   end
@@ -149,9 +149,7 @@ defmodule E2eWeb.Demos.NavigateDemo do
   def styling_variant_code do
     ~S"""
     <.navigate class="link" to="#">Subtle (default)</.navigate>
-    <.navigate class="link link--variant-solid" to="#">Solid</.navigate>
-    <.navigate class="link link--variant-ghost" to="#">Ghost</.navigate>
-    <.navigate class="link link--variant-outline" to="#">Outline</.navigate>
+    <.navigate class="link ui-solid" to="#">Solid</.navigate>
     """
   end
 
@@ -161,14 +159,8 @@ defmodule E2eWeb.Demos.NavigateDemo do
     ~H"""
     <div class="flex flex-wrap items-center gap-space gap-2">
       <.navigate id="navigate-style-variant-subtle" class="link" to="#">Subtle (default)</.navigate>
-      <.navigate id="navigate-style-variant-solid" class="link link--variant-solid" to="#">
+      <.navigate id="navigate-style-variant-solid" class="link ui-solid" to="#">
         Solid
-      </.navigate>
-      <.navigate id="navigate-style-variant-ghost" class="link link--variant-ghost" to="#">
-        Ghost
-      </.navigate>
-      <.navigate id="navigate-style-variant-outline" class="link link--variant-outline" to="#">
-        Outline
       </.navigate>
     </div>
     """
@@ -209,22 +201,22 @@ defmodule E2eWeb.Demos.NavigateDemo do
 
   def styling_size_code do
     ~S"""
-    <div class="flex flex-wrap items-center gap-space gap-2 items-center">
-      <.navigate to="#" class="link link--sm">Small</.navigate>
-      <.navigate to="#" class="link link--md">Medium</.navigate>
-      <.navigate to="#" class="link link--lg">Large</.navigate>
-      <.navigate to="#" class="link link--xl">XL</.navigate>
+    <div class="flex flex-wrap items-center gap-space gap-2">
+      <.navigate to="#" class="link ui-size-sm">Small</.navigate>
+      <.navigate to="#" class="link ui-size-md">Medium</.navigate>
+      <.navigate to="#" class="link ui-size-lg">Large</.navigate>
+      <.navigate to="#" class="link ui-size-xl">XL</.navigate>
     </div>
     """
   end
 
   def styling_size_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap items-center gap-space gap-2 items-center">
-      <.navigate to="#" class="link link--sm">Small</.navigate>
-      <.navigate to="#" class="link link--md">Medium</.navigate>
-      <.navigate to="#" class="link link--lg">Large</.navigate>
-      <.navigate to="#" class="link link--xl">XL</.navigate>
+    <div class="flex flex-wrap items-center gap-space gap-2">
+      <.navigate to="#" class="link ui-size-sm">Small</.navigate>
+      <.navigate to="#" class="link ui-size-md">Medium</.navigate>
+      <.navigate to="#" class="link ui-size-lg">Large</.navigate>
+      <.navigate to="#" class="link ui-size-xl">XL</.navigate>
     </div>
     """
   end

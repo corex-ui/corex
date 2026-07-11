@@ -178,7 +178,7 @@ defmodule Corex.RadioGroup do
   ### set_value
 
   ```heex
-  <.action phx-click={Corex.RadioGroup.set_value("radio-group-api-server", "duis")} class="button button--sm">
+  <.action phx-click={Corex.RadioGroup.set_value("radio-group-api-server", "duis")} class="button ui-size-sm">
     Set Duis
   </.action>
   <.radio_group

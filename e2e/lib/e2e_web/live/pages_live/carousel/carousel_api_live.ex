@@ -84,27 +84,27 @@ defmodule E2eWeb.CarouselApiLive do
         >
           <:preview>
             <div class="flex flex-wrap gap-2 mb-4">
-              <.action phx-click={Corex.Carousel.play(@id_client)} class="button button--sm">
+              <.action phx-click={Corex.Carousel.play(@id_client)} class="button ui-size-sm">
                 Play
               </.action>
-              <.action phx-click={Corex.Carousel.pause(@id_client)} class="button button--sm">
+              <.action phx-click={Corex.Carousel.pause(@id_client)} class="button ui-size-sm">
                 Pause
               </.action>
-              <.action phx-click={Corex.Carousel.scroll_next(@id_client)} class="button button--sm">
+              <.action phx-click={Corex.Carousel.scroll_next(@id_client)} class="button ui-size-sm">
                 Next
               </.action>
-              <.action phx-click={Corex.Carousel.scroll_prev(@id_client)} class="button button--sm">
+              <.action phx-click={Corex.Carousel.scroll_prev(@id_client)} class="button ui-size-sm">
                 Prev
               </.action>
               <.action
                 phx-click={Corex.Carousel.scroll_next(@id_client, true)}
-                class="button button--sm"
+                class="button ui-size-sm"
               >
                 Next (instant)
               </.action>
               <.action
                 phx-click={Corex.Carousel.scroll_prev(@id_client, true)}
-                class="button button--sm"
+                class="button ui-size-sm"
               >
                 Prev (instant)
               </.action>

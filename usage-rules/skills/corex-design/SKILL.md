@@ -23,8 +23,8 @@ No custom CSS in templates — modifiers only. `.typo layout` on body. Remove da
 ## Responsive modifiers
 
 ```heex
-<.accordion class="accordion accordion--accent accordion--sm sm:accordion--md lg:accordion--xl" … />
-<.timer class="timer timer--accent timer--lg timer--rounded-xl" … />
+<.accordion class="accordion ui-accent ui-size-sm sm:ui-size-md lg:ui-size-xl" … />
+<.timer class="timer ui-accent ui-size-lg ui-rounded-xl" … />
 ```
 
 No `class` on `<.heroicon>` inside Corex components.

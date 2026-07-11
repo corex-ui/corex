@@ -237,7 +237,7 @@ defmodule Corex.Carousel do
       Corex.Image.new("/images/star.jpg", alt: "Star"),
       Corex.Image.new("/images/winter.jpg", alt: "Winter")
     ]}
-    class="carousel carousel--accent"
+    class="carousel ui-accent"
   >
     <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
     <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -275,7 +275,7 @@ defmodule Corex.Carousel do
       Corex.Image.new("/images/star.jpg", alt: "Star"),
       Corex.Image.new("/images/winter.jpg", alt: "Winter")
     ]}
-    class="carousel carousel--sm"
+    class="carousel ui-size-sm"
   >
     <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
     <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -288,7 +288,7 @@ defmodule Corex.Carousel do
       Corex.Image.new("/images/star.jpg", alt: "Star"),
       Corex.Image.new("/images/winter.jpg", alt: "Winter")
     ]}
-    class="carousel carousel--lg"
+    class="carousel ui-size-lg"
   >
     <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
     <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -317,7 +317,7 @@ defmodule Corex.Carousel do
       Corex.Image.new("/images/star.jpg", alt: "Star"),
       Corex.Image.new("/images/winter.jpg", alt: "Winter")
     ]}
-    class="carousel carousel--rounded-md"
+    class="carousel ui-rounded-md"
   >
     <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
     <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>

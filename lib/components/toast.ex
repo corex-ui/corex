@@ -50,7 +50,7 @@ defmodule Corex.Toast do
   ```heex
   <.action
     phx-click={Corex.Toast.create("layout-toast", "Info", "Info description", :info, [])}
-    class="button button--sm"
+    class="button ui-size-sm"
   >
     Info
   </.action>

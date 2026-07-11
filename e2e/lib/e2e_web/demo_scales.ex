@@ -126,21 +126,19 @@ defmodule E2eWeb.DemoScales do
     |> then(&join_modifiers(host, &1))
   end
 
-  def styling_variant_axis_steps(host) do
+  def styling_variant_axis_steps(_host) do
     [
       %{label: "Subtle (default)", modifier: ""},
-      %{label: "Solid", modifier: "#{host}--variant-solid"},
-      %{label: "Ghost", modifier: "#{host}--variant-ghost"},
-      %{label: "Outline", modifier: "#{host}--variant-outline"}
+      %{label: "Solid", modifier: "ui-solid"}
     ]
   end
 
-  def styling_semantic_axis_steps(host) do
+  def styling_semantic_axis_steps(_host) do
     [
       %{label: "Base", modifier: ""}
       | semantic_steps()
         |> Enum.reject(&(&1 == "base"))
-        |> Enum.map(&%{label: String.capitalize(&1), modifier: "#{host}--#{&1}"})
+        |> Enum.map(&%{label: String.capitalize(&1), modifier: "ui-#{&1}"})
     ]
   end
 

@@ -20,7 +20,7 @@ defmodule E2eWeb.AdminLive.Index do
           <.navigate
             to={~p"/admins/new"}
             type="navigate"
-            class="button button--accent button--square"
+            class="button ui-accent ui-trigger--square"
             aria_label="New admin"
             title="New admin"
           >
@@ -50,7 +50,7 @@ defmodule E2eWeb.AdminLive.Index do
           <.navigate
             to={~p"/admins/#{admin}/edit"}
             type="navigate"
-            class="button button--sm button--square"
+            class="button ui-size-sm ui-trigger--square"
             aria_label={"Edit #{admin.name}"}
           >
             <.heroicon name="hero-pencil-square" />
@@ -67,7 +67,7 @@ defmodule E2eWeb.AdminLive.Index do
             final_focus={"dialog:admin-delete-#{admin.id}:trigger"}
           >
             <:trigger
-              class="button button--sm button--alert button--square"
+              class="button ui-size-sm ui-alert ui-trigger--square"
               aria_label={"Delete #{admin.name}"}
             >
               <.heroicon name="hero-trash" />
@@ -79,7 +79,7 @@ defmodule E2eWeb.AdminLive.Index do
                 <.action
                   id={"admin-delete-#{admin.id}-cancel"}
                   phx-click={Corex.Dialog.set_open("admin-delete-#{admin.id}", false)}
-                  class="button button--sm button--variant-ghost"
+                  class="button ui-size-sm"
                 >
                   Cancel
                 </.action>
@@ -89,7 +89,7 @@ defmodule E2eWeb.AdminLive.Index do
                     Corex.Dialog.set_open("admin-delete-#{admin.id}", false)
                     |> JS.push("delete", value: %{id: admin.id})
                   }
-                  class="button button--sm button--alert"
+                  class="button ui-size-sm ui-alert"
                 >
                   Delete
                 </.action>

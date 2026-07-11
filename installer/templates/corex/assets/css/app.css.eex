@@ -11,9 +11,7 @@
    The heroicons installation itself is managed by your mix.exs */
 @plugin "../vendor/heroicons";
 <%= if @design do %>
-@import "../corex/main.css";
-<%= for theme <- @themes do %>@import "../corex/theme/<%= theme %>.css";
-<% end %>@import "../corex/components.css";
+@import "../corex/corex.css";
 <% end %>
 /* Add variants based on LiveView classes */
 @custom-variant phx-click-loading (.phx-click-loading&, .phx-click-loading &);

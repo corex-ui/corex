@@ -21,7 +21,7 @@
         <.demo_modifier_axis
           name="clipboard"
           axis={:semantic}
-          purpose="set the border and text color shown after a successful copy on a clipboard"
+          purpose="set the semantic palette of the copy trigger and value field; copied feedback stays success-colored"
         />
       </:description>
       <:preview>
@@ -35,13 +35,7 @@
       code={E2eWeb.Demos.ClipboardDemo.styling_variant_code()}
     >
       <:description>
-        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
-          <p>
-            Variant modifiers control clipboard surface treatment. Default is subtle; use <code class="text-sm">clipboard--variant-solid</code>, <code class="text-sm">clipboard--variant-ghost</code>, or
-            <code class="text-sm">clipboard--variant-outline</code>
-            to change it.
-          </p>
-        </div>
+        <.demo_modifier_axis name="clipboard" axis={:variant} />
       </:description>
       <:preview><E2eWeb.Demos.ClipboardDemo.styling_variant_example /></:preview>
     </.demo_section>
@@ -52,11 +46,7 @@
       code={E2eWeb.Demos.ClipboardDemo.styling_variant_matrix_code()}
     >
       <:description>
-        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
-          <p>
-            Combine semantic palette and variant treatment on the same host, for example <code class="text-sm">clipboard clipboard--accent clipboard--variant-solid</code>.
-          </p>
-        </div>
+        <.variant_matrix_description host="clipboard" />
       </:description>
       <:preview><E2eWeb.Demos.ClipboardDemo.styling_variant_matrix_example /></:preview>
     </.demo_section>

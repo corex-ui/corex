@@ -26,8 +26,37 @@ defmodule Corex.Design.Tokens.Publish do
     Corex.Design.Emit.Semantic.write_color_bridge!(output_root)
     Corex.Design.Emit.Semantic.write_dimension_bridge!(output_root)
     Corex.Design.Emit.Semantic.remove_legacy_color_scope!(output_root)
+    write_theme_entries!(output_root)
 
     :ok
+  end
+
+  @doc false
+  def write_theme_entries!(output_root) do
+    for theme <- Theme.themes() do
+      path = Path.join([output_root, "theme", "#{theme}.css"])
+      File.mkdir_p!(Path.dirname(path))
+      Write.atomic!(path, theme_entry(theme))
+    end
+
+    :ok
+  end
+
+  defp theme_entry(theme) do
+    name = Atom.to_string(theme)
+
+    imports =
+      [
+        ~s(@import "../tokens/themes/#{name}/border.css";),
+        ~s(@import "../tokens/themes/#{name}/dimension.css";),
+        ~s(@import "../tokens/themes/#{name}/text.css";),
+        ~s(@import "../tokens/themes/#{name}/font.css";)
+      ] ++
+        Enum.map(Theme.modes(), fn mode ->
+          ~s(@import "../tokens/themes/#{name}/color/#{mode}.css";)
+        end)
+
+    Enum.join(imports, "\n") <> "\n"
   end
 
   defp write_dimension!(output_root, theme) do
@@ -94,9 +123,6 @@ defmodule Corex.Design.Tokens.Publish do
 
     runtime_vars = Enum.map(sorted, fn {role, hex} -> {"color-#{role}", hex} end)
 
-    alias_vars =
-      Enum.map(sorted, fn {role, _} -> {"theme-color-#{role}", "var(--color-#{role})"} end)
-
     path =
       Path.join([
         output_root,
@@ -107,7 +133,7 @@ defmodule Corex.Design.Tokens.Publish do
         "#{mode}.css"
       ])
 
-    Write.atomic!(path, color_block(theme, mode, runtime_vars ++ alias_vars))
+    Write.atomic!(path, color_block(theme, mode, runtime_vars))
   end
 
   defp space_steps(theme) do

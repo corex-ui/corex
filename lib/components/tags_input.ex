@@ -167,7 +167,7 @@ defmodule Corex.TagsInput do
         {msg}
       </:error>
     </.tags_input>
-    <.action type="submit" class="button button--accent">Save</.action>
+    <.action type="submit" class="button ui-accent">Save</.action>
   </.form>
   ```
 

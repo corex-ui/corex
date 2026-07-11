@@ -72,48 +72,48 @@ defmodule E2eWeb.Demos.LayoutHeadingDemo do
         <:title>Default</:title>
         <:subtitle>Neutral ink on title and subtitle.</:subtitle>
         <:actions>
-          <.action type="button" class="button button--sm">Save</.action>
-          <.action type="button" class="button button--sm button--variant-ghost">Cancel</.action>
+          <.action type="button" class="button ui-size-sm">Save</.action>
+          <.action type="button" class="button ui-size-sm">Cancel</.action>
         </:actions>
       </.layout_heading>
-      <.layout_heading class="layout-heading layout-heading--accent">
+      <.layout_heading class="layout-heading ui-accent">
         <:title>Accent</:title>
         <:subtitle>Semantic accent on title and subtitle.</:subtitle>
         <:actions>
-          <.action type="button" class="button button--sm">Save</.action>
-          <.action type="button" class="button button--sm button--variant-ghost">Cancel</.action>
+          <.action type="button" class="button ui-size-sm">Save</.action>
+          <.action type="button" class="button ui-size-sm">Cancel</.action>
         </:actions>
       </.layout_heading>
-      <.layout_heading class="layout-heading layout-heading--brand">
+      <.layout_heading class="layout-heading ui-brand">
         <:title>Brand</:title>
         <:subtitle>Semantic brand on title and subtitle.</:subtitle>
         <:actions>
-          <.action type="button" class="button button--sm">Save</.action>
-          <.action type="button" class="button button--sm button--variant-ghost">Cancel</.action>
+          <.action type="button" class="button ui-size-sm">Save</.action>
+          <.action type="button" class="button ui-size-sm">Cancel</.action>
         </:actions>
       </.layout_heading>
-      <.layout_heading class="layout-heading layout-heading--alert">
+      <.layout_heading class="layout-heading ui-alert">
         <:title>Alert</:title>
         <:subtitle>Semantic alert on title and subtitle.</:subtitle>
         <:actions>
-          <.action type="button" class="button button--sm">Save</.action>
-          <.action type="button" class="button button--sm button--variant-ghost">Cancel</.action>
+          <.action type="button" class="button ui-size-sm">Save</.action>
+          <.action type="button" class="button ui-size-sm">Cancel</.action>
         </:actions>
       </.layout_heading>
-      <.layout_heading class="layout-heading layout-heading--success">
+      <.layout_heading class="layout-heading ui-success">
         <:title>Success</:title>
         <:subtitle>Semantic success on title and subtitle.</:subtitle>
         <:actions>
-          <.action type="button" class="button button--sm">Save</.action>
-          <.action type="button" class="button button--sm button--variant-ghost">Cancel</.action>
+          <.action type="button" class="button ui-size-sm">Save</.action>
+          <.action type="button" class="button ui-size-sm">Cancel</.action>
         </:actions>
       </.layout_heading>
-      <.layout_heading class="layout-heading layout-heading--info">
+      <.layout_heading class="layout-heading ui-info">
         <:title>Info</:title>
         <:subtitle>Semantic info on title and subtitle.</:subtitle>
         <:actions>
-          <.action type="button" class="button button--sm">Save</.action>
-          <.action type="button" class="button button--sm button--variant-ghost">Cancel</.action>
+          <.action type="button" class="button ui-size-sm">Save</.action>
+          <.action type="button" class="button ui-size-sm">Cancel</.action>
         </:actions>
       </.layout_heading>
     </div>
@@ -126,48 +126,48 @@ defmodule E2eWeb.Demos.LayoutHeadingDemo do
       <:title>Default</:title>
       <:subtitle>Neutral ink on title and subtitle.</:subtitle>
       <:actions>
-        <.action type="button" class="button button--sm">Save</.action>
-        <.action type="button" class="button button--sm button--variant-ghost">Cancel</.action>
+        <.action type="button" class="button ui-size-sm">Save</.action>
+        <.action type="button" class="button ui-size-sm">Cancel</.action>
       </:actions>
     </.layout_heading>
-    <.layout_heading class="layout-heading layout-heading--accent">
+    <.layout_heading class="layout-heading ui-accent">
       <:title>Accent</:title>
       <:subtitle>Semantic accent on title and subtitle.</:subtitle>
       <:actions>
-        <.action type="button" class="button button--sm">Save</.action>
-        <.action type="button" class="button button--sm button--variant-ghost">Cancel</.action>
+        <.action type="button" class="button ui-size-sm">Save</.action>
+        <.action type="button" class="button ui-size-sm">Cancel</.action>
       </:actions>
     </.layout_heading>
-    <.layout_heading class="layout-heading layout-heading--brand">
+    <.layout_heading class="layout-heading ui-brand">
       <:title>Brand</:title>
       <:subtitle>Semantic brand on title and subtitle.</:subtitle>
       <:actions>
-        <.action type="button" class="button button--sm">Save</.action>
-        <.action type="button" class="button button--sm button--variant-ghost">Cancel</.action>
+        <.action type="button" class="button ui-size-sm">Save</.action>
+        <.action type="button" class="button ui-size-sm">Cancel</.action>
       </:actions>
     </.layout_heading>
-    <.layout_heading class="layout-heading layout-heading--alert">
+    <.layout_heading class="layout-heading ui-alert">
       <:title>Alert</:title>
       <:subtitle>Semantic alert on title and subtitle.</:subtitle>
       <:actions>
-        <.action type="button" class="button button--sm">Save</.action>
-        <.action type="button" class="button button--sm button--variant-ghost">Cancel</.action>
+        <.action type="button" class="button ui-size-sm">Save</.action>
+        <.action type="button" class="button ui-size-sm">Cancel</.action>
       </:actions>
     </.layout_heading>
-    <.layout_heading class="layout-heading layout-heading--success">
+    <.layout_heading class="layout-heading ui-success">
       <:title>Success</:title>
       <:subtitle>Semantic success on title and subtitle.</:subtitle>
       <:actions>
-        <.action type="button" class="button button--sm">Save</.action>
-        <.action type="button" class="button button--sm button--variant-ghost">Cancel</.action>
+        <.action type="button" class="button ui-size-sm">Save</.action>
+        <.action type="button" class="button ui-size-sm">Cancel</.action>
       </:actions>
     </.layout_heading>
-    <.layout_heading class="layout-heading layout-heading--info">
+    <.layout_heading class="layout-heading ui-info">
       <:title>Info</:title>
       <:subtitle>Semantic info on title and subtitle.</:subtitle>
       <:actions>
-        <.action type="button" class="button button--sm">Save</.action>
-        <.action type="button" class="button button--sm button--variant-ghost">Cancel</.action>
+        <.action type="button" class="button ui-size-sm">Save</.action>
+        <.action type="button" class="button ui-size-sm">Cancel</.action>
       </:actions>
     </.layout_heading>
     """
@@ -180,13 +180,13 @@ defmodule E2eWeb.Demos.LayoutHeadingDemo do
     ~H"""
     <div class={DemoScales.preview_scroll_class()}>
       <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
-        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.layout_heading class={DemoScales.join_modifiers("layout-heading", variant.modifier)}>
           <:title>Layout heading</:title>
           <:subtitle>{variant.label}</:subtitle>
           <:actions>
-            <.action type="button" class="button button--sm">Save</.action>
-            <.action type="button" class="button button--sm button--variant-ghost">Cancel</.action>
+            <.action type="button" class="button ui-size-sm">Save</.action>
+            <.action type="button" class="button ui-size-sm">Cancel</.action>
           </:actions>
         </.layout_heading>
       </div>
@@ -204,8 +204,8 @@ defmodule E2eWeb.Demos.LayoutHeadingDemo do
         <:title>Layout heading</:title>
         <:subtitle>#{label}</:subtitle>
         <:actions>
-          <.action type="button" class="button button--sm">Save</.action>
-          <.action type="button" class="button button--sm button--variant-ghost">Cancel</.action>
+          <.action type="button" class="button ui-size-sm">Save</.action>
+          <.action type="button" class="button ui-size-sm">Cancel</.action>
         </:actions>
       </.layout_heading>
       """

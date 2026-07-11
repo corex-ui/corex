@@ -35,13 +35,13 @@
           </ul>
 
           <div class="mt-1 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
-            <.navigate to={~p"/accordion/playground"} class="button button--brand rounded-full">
+            <.navigate to={~p"/accordion/playground"} class="button ui-brand ui-rounded-full">
               {~t"Browse components"}
               <.heroicon name="hero-arrow-right" class="icon" />
             </.navigate>
             <.navigate
               to="https://hexdocs.pm/corex/installation.html"
-              class="button button--variant-ghost rounded-full"
+              class="button ui-rounded-full"
               external
             >
               {~t"Visit Hexdocs"}
@@ -83,7 +83,7 @@
                 </div>
                 <.clipboard
                   id="hero-code-clipboard"
-                  class="clipboard clipboard--sm"
+                  class="clipboard ui-size-sm"
                   value={@hero_code}
                   input={false}
                   trigger_aria_label={~t"Copy snippet"}
@@ -98,7 +98,7 @@
                   </:copied>
                 </.clipboard>
               </div>
-              <.code id="hero-code" language={:heex} class="code code--text-xs" code={@hero_code} />
+              <.code id="hero-code" language={:heex} class="code text-xs" code={@hero_code} />
             </div>
           </div>
 
@@ -115,21 +115,21 @@
                 <button
                   type="button"
                   data-hero-accordion-value={Jason.encode!(["anatomy"])}
-                  class="button button--sm button--accent"
+                  class="button ui-size-sm ui-accent"
                 >
                   <.heroicon name="hero-chevron-right" class="icon" /> {~t"Open first"}
                 </button>
                 <button
                   type="button"
                   data-hero-accordion-value={Jason.encode!(["anatomy", "machine"])}
-                  class="button button--sm"
+                  class="button ui-size-sm"
                 >
                   <.heroicon name="hero-square-3-stack-3d" class="icon" /> {~t"Open all"}
                 </button>
                 <button
                   type="button"
                   data-hero-accordion-value={Jason.encode!([])}
-                  class="button button--sm"
+                  class="button ui-size-sm"
                 >
                   <.heroicon name="hero-x-mark" class="icon" /> {~t"Close all"}
                 </button>
@@ -263,13 +263,13 @@
         </.clipboard>
 
         <div class="home__cta__actions">
-          <.navigate to={~p"/accordion/playground"} class="button button--brand rounded-full">
+          <.navigate to={~p"/accordion/playground"} class="button ui-brand ui-rounded-full">
             {~t"Browse components"}
             <.heroicon name="hero-arrow-right" class="icon" />
           </.navigate>
           <.navigate
             to="https://github.com/corex-ui/corex"
-            class="button button--variant-ghost rounded-full"
+            class="button ui-rounded-full"
             external
           >
             {~t"Star on GitHub"}

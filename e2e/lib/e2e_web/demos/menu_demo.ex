@@ -268,8 +268,8 @@ defmodule E2eWeb.Demos.MenuDemo do
   def api_client_binding_code do
     ~S"""
     <div class="flex flex-wrap items-center gap-space">
-      <.action phx-click={Corex.Menu.set_open("menu-api", true)} class="button button--sm">Open</.action>
-      <.action phx-click={Corex.Menu.set_open("menu-api", false)} class="button button--sm">Close</.action>
+      <.action phx-click={Corex.Menu.set_open("menu-api", true)} class="button ui-size-sm">Open</.action>
+      <.action phx-click={Corex.Menu.set_open("menu-api", false)} class="button ui-size-sm">Close</.action>
     </div>
 
     <.menu
@@ -290,10 +290,10 @@ defmodule E2eWeb.Demos.MenuDemo do
   def api_client_binding_example(assigns) do
     ~H"""
     <div class="flex flex-wrap items-center gap-space">
-      <.action phx-click={Corex.Menu.set_open("menu-api", true)} class="button button--sm">
+      <.action phx-click={Corex.Menu.set_open("menu-api", true)} class="button ui-size-sm">
         Open
       </.action>
-      <.action phx-click={Corex.Menu.set_open("menu-api", false)} class="button button--sm">
+      <.action phx-click={Corex.Menu.set_open("menu-api", false)} class="button ui-size-sm">
         Close
       </.action>
     </div>
@@ -312,8 +312,8 @@ defmodule E2eWeb.Demos.MenuDemo do
   def api_client_js_heex do
     ~S"""
     <div class="flex flex-wrap items-center gap-space">
-      <button type="button" data-menu-api-open class="button button--sm">Open</button>
-      <button type="button" data-menu-api-close class="button button--sm">Close</button>
+      <button type="button" data-menu-api-open class="button ui-size-sm">Open</button>
+      <button type="button" data-menu-api-close class="button ui-size-sm">Close</button>
     </div>
 
     <.menu
@@ -363,8 +363,8 @@ defmodule E2eWeb.Demos.MenuDemo do
     ~H"""
     <div id="menu-api-js-demo" phx-update="ignore" phx-hook=".MenuApiJsDemo">
       <div class="flex flex-wrap items-center gap-space">
-        <button type="button" data-menu-api-open class="button button--sm">Open</button>
-        <button type="button" data-menu-api-close class="button button--sm">Close</button>
+        <button type="button" data-menu-api-open class="button ui-size-sm">Open</button>
+        <button type="button" data-menu-api-close class="button ui-size-sm">Close</button>
       </div>
 
       <.menu
@@ -399,8 +399,8 @@ defmodule E2eWeb.Demos.MenuDemo do
   def api_server_heex do
     ~S"""
     <div class="flex flex-wrap items-center gap-space">
-      <.action phx-click="menu_api_server_open" class="button button--sm">Open</.action>
-      <.action phx-click="menu_api_server_close" class="button button--sm">Close</.action>
+      <.action phx-click="menu_api_server_open" class="button ui-size-sm">Open</.action>
+      <.action phx-click="menu_api_server_close" class="button ui-size-sm">Close</.action>
     </div>
 
     <.menu
@@ -433,8 +433,8 @@ defmodule E2eWeb.Demos.MenuDemo do
   def api_server_example(assigns) do
     ~H"""
     <div class="flex flex-wrap items-center gap-space">
-      <.action phx-click="menu_api_server_open" class="button button--sm">Open</.action>
-      <.action phx-click="menu_api_server_close" class="button button--sm">Close</.action>
+      <.action phx-click="menu_api_server_open" class="button ui-size-sm">Open</.action>
+      <.action phx-click="menu_api_server_close" class="button ui-size-sm">Close</.action>
     </div>
 
     <.menu
@@ -686,23 +686,23 @@ defmodule E2eWeb.Demos.MenuDemo do
       <:trigger>Default</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
-    <.menu class="menu menu--accent" value="menu" #{items}>
+    <.menu class="menu ui-accent" value="menu" #{items}>
       <:trigger>Accent</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
-    <.menu class="menu menu--brand" value="menu" #{items}>
+    <.menu class="menu ui-brand" value="menu" #{items}>
       <:trigger>Brand</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
-    <.menu class="menu menu--alert" value="menu" #{items}>
+    <.menu class="menu ui-alert" value="menu" #{items}>
       <:trigger>Alert</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
-    <.menu class="menu menu--info" value="menu" #{items}>
+    <.menu class="menu ui-info" value="menu" #{items}>
       <:trigger>Info</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
-    <.menu class="menu menu--success" value="menu" #{items}>
+    <.menu class="menu ui-success" value="menu" #{items}>
       <:trigger>Success</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
@@ -718,25 +718,25 @@ defmodule E2eWeb.Demos.MenuDemo do
         <:trigger>Default</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
       </.menu>
-      <.menu id="menu-style-color-accent" class="menu menu--accent w-full" items={@items} value="menu">
+      <.menu id="menu-style-color-accent" class="menu ui-accent w-full" items={@items} value="menu">
         <:trigger>Accent</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
       </.menu>
-      <.menu id="menu-style-color-brand" class="menu menu--brand w-full" items={@items} value="menu">
+      <.menu id="menu-style-color-brand" class="menu ui-brand w-full" items={@items} value="menu">
         <:trigger>Brand</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
       </.menu>
-      <.menu id="menu-style-color-alert" class="menu menu--alert w-full" items={@items} value="menu">
+      <.menu id="menu-style-color-alert" class="menu ui-alert w-full" items={@items} value="menu">
         <:trigger>Alert</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
       </.menu>
-      <.menu id="menu-style-color-info" class="menu menu--info w-full" items={@items} value="menu">
+      <.menu id="menu-style-color-info" class="menu ui-info w-full" items={@items} value="menu">
         <:trigger>Info</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
       </.menu>
       <.menu
         id="menu-style-color-success"
-        class="menu menu--success w-full"
+        class="menu ui-success w-full"
         items={@items}
         value="menu"
       >
@@ -755,16 +755,14 @@ defmodule E2eWeb.Demos.MenuDemo do
       <:trigger>Subtle (default)</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
-    <.menu class="menu menu--variant-solid" value="menu" #{items}>
+    <.menu class="menu ui-solid" value="menu" #{items}>
       <:trigger>Solid</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
-    <.menu class="menu menu--variant-ghost" value="menu" #{items}>
-      <:trigger>Ghost</:trigger>
+    <.menu class="menu" value="menu" #{items}>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
-    <.menu class="menu menu--variant-outline" value="menu" #{items}>
-      <:trigger>Outline</:trigger>
+    <.menu class="menu" value="menu" #{items}>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
     """
@@ -781,29 +779,11 @@ defmodule E2eWeb.Demos.MenuDemo do
       </.menu>
       <.menu
         id="menu-style-variant-solid"
-        class="menu menu--variant-solid w-full"
+        class="menu ui-solid w-full"
         items={@items}
         value="menu"
       >
         <:trigger>Solid</:trigger>
-        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
-      </.menu>
-      <.menu
-        id="menu-style-variant-ghost"
-        class="menu menu--variant-ghost w-full"
-        items={@items}
-        value="menu"
-      >
-        <:trigger>Ghost</:trigger>
-        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
-      </.menu>
-      <.menu
-        id="menu-style-variant-outline"
-        class="menu menu--variant-outline w-full"
-        items={@items}
-        value="menu"
-      >
-        <:trigger>Outline</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
       </.menu>
     </div>
@@ -857,19 +837,19 @@ defmodule E2eWeb.Demos.MenuDemo do
     items = styling_items_attr()
 
     """
-    <.menu class="menu menu--sm" #{items}>
+    <.menu class="menu ui-size-sm" #{items}>
       <:trigger>SM</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
-    <.menu class="menu menu--md" #{items}>
+    <.menu class="menu ui-size-md" #{items}>
       <:trigger>MD</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
-    <.menu class="menu menu--lg" #{items}>
+    <.menu class="menu ui-size-lg" #{items}>
       <:trigger>LG</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
-    <.menu class="menu menu--xl" #{items}>
+    <.menu class="menu ui-size-xl" #{items}>
       <:trigger>XL</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
@@ -881,19 +861,19 @@ defmodule E2eWeb.Demos.MenuDemo do
 
     ~H"""
     <div class="flex flex-col gap-4 max-w-md">
-      <.menu id="menu-style-size-sm" class="menu menu--sm w-full" items={@items}>
+      <.menu id="menu-style-size-sm" class="menu ui-size-sm w-full" items={@items}>
         <:trigger>SM</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
       </.menu>
-      <.menu id="menu-style-size-md" class="menu menu--md w-full" items={@items}>
+      <.menu id="menu-style-size-md" class="menu ui-size-md w-full" items={@items}>
         <:trigger>MD</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
       </.menu>
-      <.menu id="menu-style-size-lg" class="menu menu--lg w-full" items={@items}>
+      <.menu id="menu-style-size-lg" class="menu ui-size-lg w-full" items={@items}>
         <:trigger>LG</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
       </.menu>
-      <.menu id="menu-style-size-xl" class="menu menu--xl w-full" items={@items}>
+      <.menu id="menu-style-size-xl" class="menu ui-size-xl w-full" items={@items}>
         <:trigger>XL</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
       </.menu>
@@ -905,27 +885,27 @@ defmodule E2eWeb.Demos.MenuDemo do
     items = styling_items_attr()
 
     """
-    <.menu class="menu menu--rounded-none" #{items}>
+    <.menu class="menu ui-rounded-none" #{items}>
       <:trigger>None</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
-    <.menu class="menu menu--rounded-sm" #{items}>
+    <.menu class="menu ui-rounded-sm" #{items}>
       <:trigger>SM</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
-    <.menu class="menu menu--rounded-md" #{items}>
+    <.menu class="menu ui-rounded-md" #{items}>
       <:trigger>MD</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
-    <.menu class="menu menu--rounded-lg" #{items}>
+    <.menu class="menu ui-rounded-lg" #{items}>
       <:trigger>LG</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
-    <.menu class="menu menu--rounded-xl" #{items}>
+    <.menu class="menu ui-rounded-xl" #{items}>
       <:trigger>XL</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
-    <.menu class="menu menu--rounded-full" #{items}>
+    <.menu class="menu ui-rounded-full" #{items}>
       <:trigger>Full</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
@@ -937,27 +917,27 @@ defmodule E2eWeb.Demos.MenuDemo do
 
     ~H"""
     <div class="flex flex-col gap-4 max-w-md">
-      <.menu id="menu-style-rounded-none" class="menu menu--rounded-none w-full" items={@items}>
+      <.menu id="menu-style-rounded-none" class="menu ui-rounded-none w-full" items={@items}>
         <:trigger>None</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
       </.menu>
-      <.menu id="menu-style-rounded-sm" class="menu menu--rounded-sm w-full" items={@items}>
+      <.menu id="menu-style-rounded-sm" class="menu ui-rounded-sm w-full" items={@items}>
         <:trigger>SM</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
       </.menu>
-      <.menu id="menu-style-rounded-md" class="menu menu--rounded-md w-full" items={@items}>
+      <.menu id="menu-style-rounded-md" class="menu ui-rounded-md w-full" items={@items}>
         <:trigger>MD</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
       </.menu>
-      <.menu id="menu-style-rounded-lg" class="menu menu--rounded-lg w-full" items={@items}>
+      <.menu id="menu-style-rounded-lg" class="menu ui-rounded-lg w-full" items={@items}>
         <:trigger>LG</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
       </.menu>
-      <.menu id="menu-style-rounded-xl" class="menu menu--rounded-xl w-full" items={@items}>
+      <.menu id="menu-style-rounded-xl" class="menu ui-rounded-xl w-full" items={@items}>
         <:trigger>XL</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
       </.menu>
-      <.menu id="menu-style-rounded-full" class="menu menu--rounded-full w-full" items={@items}>
+      <.menu id="menu-style-rounded-full" class="menu ui-rounded-full w-full" items={@items}>
         <:trigger>Full</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
       </.menu>

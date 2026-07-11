@@ -44,7 +44,7 @@ Custom slots with `meta:`:
 ```heex
 <.accordion
   id="faq"
-  class="accordion accordion--accent accordion--sm sm:accordion--md lg:accordion--xl"
+  class="accordion ui-accent ui-size-sm sm:ui-size-md lg:ui-size-xl"
   items={
     Corex.Content.new([
       %{value: "q1", label: "Question?", content: "Answer.", meta: %{icon: "hero-chat-bubble-left-right"}}

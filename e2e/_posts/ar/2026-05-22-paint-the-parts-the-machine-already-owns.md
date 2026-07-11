@@ -34,11 +34,11 @@ CSS يأتي بعد ذلك، على صفحة تتحرك أصلاً. الحركة
 
 الأدوات أسماء classes قصيرة تجمع الرموز في أنماط: `ui-input` كل ما يحتاجه الإدخال. `ui-trigger` كل ما يحتاجه المحفّز. `ui-item` كل ما يحتاجه صف القائمة. `ui-content` السطح الذي تجلس عليه اللوحة العائمة. نادراً ما تكتب هذه classes يدوياً. CSS المكوّن يستخدمها داخل قواعد `@apply` ويستهدف `data-part` الصحيح.
 
-المعدّلات كيف تضبط نسخة واحدة دون تفريع النظام كله. تعيش على class الجذر. الزر هو `button`. زر accent هو `button button--accent`. زر كبير مستدير هو `button button--accent button--lg button--rounded-lg`. نظام المعدّلات له أربعة محاور (لون، حجم، radius، نوع)، وتربط مباشرة بمتغيرات CSS تحت الغطاء.
+المعدّلات كيف تضبط نسخة واحدة دون تفريع النظام كله. تعيش على class الجذر. الزر هو `button`. زر accent هو `button ui-accent`. زر كبير مستدير هو `button ui-accent ui-size-lg ui-rounded-lg`. نظام المعدّلات له أربعة محاور (لون، حجم، radius، نوع)، وتربط مباشرة بمتغيرات CSS تحت الغطاء.
 
 ```heex
 <.accordion
-  class="accordion accordion--accent accordion--lg accordion--rounded-lg"
+  class="accordion ui-accent ui-size-lg ui-rounded-lg"
   id="faq"
   items={@topics}
 />
@@ -72,7 +72,7 @@ CSS يأتي بعد ذلك، على صفحة تتحرك أصلاً. الحركة
 
 أنت لا تطلب من اللوحة أن تكون جميلة في وضعين. تطلب أن تجتاز تدقيقاً في وضعين، وخط الأنابيب يقوم بالعمل.
 
-إن فشلت تسمية في تدقيق، الجواب غالباً تبديل ثيم، أو وضع، أو معدّل (`button--accent` مقابل `button--muted`)، قبل أي override. الرموز هي المصدر. الـ overrides هي العرض.
+إن فشلت تسمية في تدقيق، الجواب غالباً تبديل ثيم، أو وضع، أو معدّل (`ui-accent` مقابل neutral subtle الافتراضي)، قبل أي override. الرموز هي المصدر. الـ overrides هي العرض.
 
 ## `site.css` رفيع
 

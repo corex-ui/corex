@@ -32,7 +32,7 @@ defmodule Corex.Checkbox do
 
   ```heex
   <.checkbox
-    class="checkbox checkbox--accent"
+    class="checkbox ui-accent"
     invalid
     checked
     errors={["Required"]}
@@ -80,13 +80,13 @@ defmodule Corex.Checkbox do
   ### set_checked
 
   ```heex
-  <.action phx-click={Corex.Checkbox.set_checked("checkbox-api-bind", true)} class="button button--sm">
+  <.action phx-click={Corex.Checkbox.set_checked("checkbox-api-bind", true)} class="button ui-size-sm">
     Set checked
   </.action>
-  <.action phx-click={Corex.Checkbox.set_checked("checkbox-api-bind", false)} class="button button--sm">
+  <.action phx-click={Corex.Checkbox.set_checked("checkbox-api-bind", false)} class="button ui-size-sm">
     Set unchecked
   </.action>
-  <.action phx-click={Corex.Checkbox.toggle_checked("checkbox-api-bind")} class="button button--sm">
+  <.action phx-click={Corex.Checkbox.toggle_checked("checkbox-api-bind")} class="button ui-size-sm">
     Toggle
   </.action>
   <.checkbox id="checkbox-api-bind" class="checkbox">
@@ -275,11 +275,11 @@ defmodule Corex.Checkbox do
   @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.checkbox>`). Combine axes, for example `checkbox checkbox--accent checkbox--lg` or `checkbox checkbox--info checkbox--variant-solid`.
+  Stack modifiers on the host (`class` on `<.checkbox>`). Combine axes, for example `checkbox ui-accent ui-size-lg` or `checkbox ui-info ui-solid`.
 
   Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on the control. Variant modifiers control surface treatment. Default is subtle: unchecked uses a neutral surface, checked uses selected with semantic ink text. Add `checkbox--variant-solid` for a filled checked state.
+  Semantic modifiers set palette variables on the control. Variant modifiers control surface treatment. Default is subtle: unchecked uses a neutral surface, checked uses selected with semantic ink text. Add `ui-solid` for a filled checked state.
 
   <!-- tabs-open -->
 
@@ -290,11 +290,11 @@ defmodule Corex.Checkbox do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `checkbox` |
-  | Accent | `checkbox checkbox--accent` |
-  | Brand | `checkbox checkbox--brand` |
-  | Alert | `checkbox checkbox--alert` |
-  | Info | `checkbox checkbox--info` |
-  | Success | `checkbox checkbox--success` |
+  | Accent | `checkbox ui-accent` |
+  | Brand | `checkbox ui-brand` |
+  | Alert | `checkbox ui-alert` |
+  | Info | `checkbox ui-info` |
+  | Success | `checkbox ui-success` |
 
   ### Variant
 
@@ -302,10 +302,10 @@ defmodule Corex.Checkbox do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `checkbox` or `checkbox checkbox--accent` |
-  | Solid | `checkbox checkbox--accent checkbox--variant-solid` |
-  | Ghost | `checkbox checkbox--variant-ghost` |
-  | Outline | `checkbox checkbox--accent checkbox--variant-outline` |
+  | Subtle (default) | `checkbox` or `checkbox ui-accent` |
+  | Solid | `checkbox ui-accent ui-solid` |
+  | Ghost | `checkbox` |
+  | Outline | `checkbox ui-accent` |
 
   ```heex
   <.checkbox class="checkbox" checked>
@@ -317,7 +317,7 @@ defmodule Corex.Checkbox do
           <.heroicon name="hero-minus" />
         </:indeterminate>
       </.checkbox>
-      <.checkbox class="checkbox checkbox--accent" checked>
+      <.checkbox class="checkbox ui-accent" checked>
         <:label>Accent</:label>
         <:indicator>
           <.heroicon name="hero-check" />
@@ -326,7 +326,7 @@ defmodule Corex.Checkbox do
           <.heroicon name="hero-minus" />
         </:indeterminate>
       </.checkbox>
-      <.checkbox class="checkbox checkbox--brand" checked>
+      <.checkbox class="checkbox ui-brand" checked>
         <:label>Brand</:label>
         <:indicator>
           <.heroicon name="hero-check" />
@@ -335,7 +335,7 @@ defmodule Corex.Checkbox do
           <.heroicon name="hero-minus" />
         </:indeterminate>
       </.checkbox>
-      <.checkbox class="checkbox checkbox--alert" checked>
+      <.checkbox class="checkbox ui-alert" checked>
         <:label>Alert</:label>
         <:indicator>
           <.heroicon name="hero-check" />
@@ -344,7 +344,7 @@ defmodule Corex.Checkbox do
           <.heroicon name="hero-minus" />
         </:indeterminate>
       </.checkbox>
-      <.checkbox class="checkbox checkbox--info" checked>
+      <.checkbox class="checkbox ui-info" checked>
         <:label>Info</:label>
         <:indicator>
           <.heroicon name="hero-check" />
@@ -353,7 +353,7 @@ defmodule Corex.Checkbox do
           <.heroicon name="hero-minus" />
         </:indeterminate>
       </.checkbox>
-      <.checkbox class="checkbox checkbox--success" checked>
+      <.checkbox class="checkbox ui-success" checked>
         <:label>Success</:label>
         <:indicator>
           <.heroicon name="hero-check" />
@@ -368,13 +368,13 @@ defmodule Corex.Checkbox do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `checkbox checkbox--sm` |
+  | SM | `checkbox ui-size-sm` |
   | Default | `checkbox` |
-  | LG | `checkbox checkbox--lg` |
-  | XL | `checkbox checkbox--xl` |
+  | LG | `checkbox ui-size-lg` |
+  | XL | `checkbox ui-size-xl` |
 
   ```heex
-  <.checkbox class="checkbox checkbox--sm">
+  <.checkbox class="checkbox ui-size-sm">
         <:label>Small</:label>
         <:indicator>
           <.heroicon name="hero-check" />
@@ -386,13 +386,13 @@ defmodule Corex.Checkbox do
           <.heroicon name="hero-check" />
         </:indicator>
       </.checkbox>
-      <.checkbox class="checkbox checkbox--lg">
+      <.checkbox class="checkbox ui-size-lg">
         <:label>Large</:label>
         <:indicator>
           <.heroicon name="hero-check" />
         </:indicator>
       </.checkbox>
-      <.checkbox class="checkbox checkbox--xl">
+      <.checkbox class="checkbox ui-size-xl">
         <:label>XLarge</:label>
         <:indicator>
           <.heroicon name="hero-check" />
@@ -405,7 +405,7 @@ defmodule Corex.Checkbox do
   Invalid styles the label and control border. Checked indicators keep their semantic fill color.
 
   ```heex
-  <.checkbox class="checkbox checkbox--accent" invalid checked errors={["Required"]}>
+  <.checkbox class="checkbox ui-accent" invalid checked errors={["Required"]}>
     <:label>Subscribe</:label>
     <:indicator>
       <.heroicon name="hero-check" />
@@ -449,7 +449,7 @@ defmodule Corex.Checkbox do
           </:error>
         </.checkbox>
 
-        <.action type="submit" class="button button--accent">
+        <.action type="submit" class="button ui-accent">
           Submit
         </.action>
       </.form>
@@ -541,7 +541,7 @@ defmodule Corex.Checkbox do
           </:error>
         </.checkbox>
 
-        <.action type="submit" class="button button--accent">
+        <.action type="submit" class="button ui-accent">
           Submit
         </.action>
       </.form>
@@ -629,7 +629,7 @@ defmodule Corex.Checkbox do
             <.heroicon name="hero-check" />
           </:indicator>
         </.checkbox>
-        <.action type="submit" class="button button--accent">Submit</.action>
+        <.action type="submit" class="button ui-accent">Submit</.action>
       </form>
   ```
 
@@ -655,7 +655,7 @@ defmodule Corex.Checkbox do
           </:error>
         </.checkbox>
 
-        <.action type="submit" class="button button--accent">
+        <.action type="submit" class="button ui-accent">
           Submit
         </.action>
       </.form>
@@ -742,7 +742,7 @@ defmodule Corex.Checkbox do
           </:error>
         </.checkbox>
 
-        <.action type="submit" class="button button--accent">
+        <.action type="submit" class="button ui-accent">
           Submit
         </.action>
       </.form>
@@ -840,7 +840,7 @@ defmodule Corex.Checkbox do
           </:error>
         </.checkbox>
 
-        <.action type="submit" class="button button--accent">
+        <.action type="submit" class="button ui-accent">
           Submit
         </.action>
       </.form>
@@ -938,7 +938,7 @@ defmodule Corex.Checkbox do
           </:error>
         </.checkbox>
 
-        <.action type="submit" class="button button--accent">
+        <.action type="submit" class="button ui-accent">
           Submit
         </.action>
       </.form>

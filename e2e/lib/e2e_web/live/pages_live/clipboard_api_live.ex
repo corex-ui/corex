@@ -69,10 +69,10 @@ defmodule E2eWeb.ClipboardApiLive do
         >
           <:preview>
             <div class="flex flex-wrap gap-2 mb-4">
-              <.action phx-click="clipboard_api_server_copy" class="button button--sm">
+              <.action phx-click="clipboard_api_server_copy" class="button ui-size-sm">
                 Push copy
               </.action>
-              <.action phx-click="clipboard_api_server_set" class="button button--sm">
+              <.action phx-click="clipboard_api_server_set" class="button ui-size-sm">
                 Push set value
               </.action>
             </div>

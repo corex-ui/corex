@@ -29,13 +29,7 @@
       code={E2eWeb.Demos.AvatarDemo.styling_variant_code()}
     >
       <:description>
-        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
-          <p>
-            Variant modifiers control avatar fallback surface treatment. Default is solid; use <code class="text-sm">avatar--variant-subtle</code>, <code class="text-sm">avatar--variant-ghost</code>, or
-            <code class="text-sm">avatar--variant-outline</code>
-            to change it.
-          </p>
-        </div>
+        <.demo_modifier_axis name="avatar" axis={:variant} />
       </:description>
       <:preview><E2eWeb.Demos.AvatarDemo.styling_variant_example /></:preview>
     </.demo_section>
@@ -46,11 +40,7 @@
       code={E2eWeb.Demos.AvatarDemo.styling_variant_matrix_code()}
     >
       <:description>
-        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
-          <p>
-            Combine semantic palette and variant treatment on the same host, for example <code class="text-sm">avatar avatar--accent avatar--variant-outline</code>.
-          </p>
-        </div>
+        <.variant_matrix_description host="avatar" />
       </:description>
       <:preview><E2eWeb.Demos.AvatarDemo.styling_variant_matrix_example /></:preview>
     </.demo_section>

@@ -70,7 +70,7 @@ defmodule Corex.Design.Theme.Presets.Leo do
       },
       roles:
         Shared.dark_roles(20, %{
-          accent: 56,
+          accent: 50,
           alert: 48,
           brand: 48,
           info: 48,

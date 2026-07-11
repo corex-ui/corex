@@ -162,7 +162,7 @@ defmodule E2eWeb.ComboboxPlayLive do
           />
 
           <.toggle_group
-            class="toggle-group toggle-group--sm max-w-3xs"
+            class="toggle-group ui-size-sm max-w-3xs"
             id="orientation"
             on_value_change="control_changed"
             multiple={false}
@@ -170,16 +170,16 @@ defmodule E2eWeb.ComboboxPlayLive do
             value={[@controls.orientation]}
           >
             <:item value="vertical" aria_label={~t"Vertical orientation"}>
-              <.heroicon name="hero-arrows-up-down" class="icon icon--lg" />
+              <.heroicon name="hero-arrows-up-down" class="icon ui-size-lg" />
             </:item>
             <:item value="horizontal" aria_label={~t"Horizontal orientation"}>
-              <.heroicon name="hero-arrows-right-left" class="icon icon--lg" />
+              <.heroicon name="hero-arrows-right-left" class="icon ui-size-lg" />
             </:item>
           </.toggle_group>
 
           <.select
             id="combobox-playground-disabled-items"
-            class="select select--sm w-4xs"
+            class="select ui-size-sm w-4xs"
             positioning={%Corex.Positioning{same_width: true}}
             multiple
             deselectable={true}
@@ -194,7 +194,7 @@ defmodule E2eWeb.ComboboxPlayLive do
           </.select>
 
           <.switch
-            class="switch switch--sm"
+            class="switch ui-size-sm"
             id="disabled"
             checked={@controls.disabled}
             on_checked_change="control_changed"
@@ -202,7 +202,7 @@ defmodule E2eWeb.ComboboxPlayLive do
             <:label>Disabled</:label>
           </.switch>
           <.switch
-            class="switch switch--sm"
+            class="switch ui-size-sm"
             id="read_only"
             checked={@controls.read_only}
             on_checked_change="control_changed"
@@ -210,7 +210,7 @@ defmodule E2eWeb.ComboboxPlayLive do
             <:label>Read only</:label>
           </.switch>
           <.switch
-            class="switch switch--sm"
+            class="switch ui-size-sm"
             id="invalid"
             checked={@controls.invalid}
             on_checked_change="control_changed"
@@ -218,7 +218,7 @@ defmodule E2eWeb.ComboboxPlayLive do
             <:label>Invalid</:label>
           </.switch>
           <.switch
-            class="switch switch--sm"
+            class="switch ui-size-sm"
             id="close_on_select"
             checked={@controls.close_on_select}
             on_checked_change="control_changed"
@@ -226,7 +226,7 @@ defmodule E2eWeb.ComboboxPlayLive do
             <:label>Close on select</:label>
           </.switch>
           <.switch
-            class="switch switch--sm"
+            class="switch ui-size-sm"
             id="allow_custom_value"
             checked={@controls.allow_custom_value}
             on_checked_change="control_changed"
@@ -234,7 +234,7 @@ defmodule E2eWeb.ComboboxPlayLive do
             <:label>Allow custom value</:label>
           </.switch>
           <.switch
-            class="switch switch--sm"
+            class="switch ui-size-sm"
             id="clear_on_empty"
             checked={@controls.clear_on_empty}
             on_checked_change="control_changed"

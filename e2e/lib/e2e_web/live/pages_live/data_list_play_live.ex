@@ -56,7 +56,7 @@ defmodule E2eWeb.DataListPlayLive do
             value={[@controls.dir]}
           />
           <.toggle_group
-            class="toggle-group toggle-group--sm max-w-3xs"
+            class="toggle-group ui-size-sm max-w-3xs"
             id="orientation"
             on_value_change="control_changed"
             multiple={false}
@@ -64,10 +64,10 @@ defmodule E2eWeb.DataListPlayLive do
             value={[@controls.orientation]}
           >
             <:item value="vertical" aria_label="Vertical orientation">
-              <.heroicon name="hero-arrows-up-down" class="icon icon--lg" />
+              <.heroicon name="hero-arrows-up-down" class="icon ui-size-lg" />
             </:item>
             <:item value="horizontal" aria_label="Horizontal orientation">
-              <.heroicon name="hero-arrows-right-left" class="icon icon--lg" />
+              <.heroicon name="hero-arrows-right-left" class="icon ui-size-lg" />
             </:item>
           </.toggle_group>
         </:controls>

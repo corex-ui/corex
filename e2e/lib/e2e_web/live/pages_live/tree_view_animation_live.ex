@@ -87,7 +87,7 @@ defmodule E2eWeb.TreeViewAnimationLive do
           <:controls>
             <.select
               id="tree-view-animation-easing"
-              class="select select--sm select--mini-sm lg:w-full"
+              class="select ui-size-sm select--mini-sm lg:w-full"
               value={@easing}
               items={@easing_items}
               on_value_change="easing_changed"
@@ -99,7 +99,7 @@ defmodule E2eWeb.TreeViewAnimationLive do
 
             <.number_input
               id="tree-view-animation-duration"
-              class="number-input number-input--sm lg:w-full"
+              class="number-input ui-size-sm lg:w-full"
               value={@duration}
               step={0.1}
               min={0.0}
@@ -116,7 +116,7 @@ defmodule E2eWeb.TreeViewAnimationLive do
 
             <.number_input
               id="tree-view-animation-opacity-start"
-              class="number-input number-input--sm lg:w-full"
+              class="number-input ui-size-sm lg:w-full"
               step={0.1}
               min={0.0}
               max={1.0}
@@ -134,7 +134,7 @@ defmodule E2eWeb.TreeViewAnimationLive do
 
             <.number_input
               id="tree-view-animation-opacity-end"
-              class="number-input number-input--sm lg:w-full"
+              class="number-input ui-size-sm lg:w-full"
               step={0.1}
               min={0.0}
               max={1.0}
@@ -152,7 +152,7 @@ defmodule E2eWeb.TreeViewAnimationLive do
 
             <.switch
               id="tree-view-animation-block-interaction"
-              class="switch switch--sm w-full"
+              class="switch ui-size-sm w-full"
               checked={@animation_options.block_interaction}
               on_checked_change="block_interaction_changed"
             >
@@ -177,7 +177,7 @@ defmodule E2eWeb.TreeViewAnimationLive do
         <.demo_section
           id="tree-view-animation-instant"
           title="Instant"
-          trigger_class="button--sm"
+          trigger_class="ui-size-sm"
           code={@instant_heex}
         >
           <:preview>
@@ -197,7 +197,7 @@ defmodule E2eWeb.TreeViewAnimationLive do
         <.demo_section
           id="tree-view-animation-custom"
           title="Custom (Motion)"
-          trigger_class="button--sm"
+          trigger_class="ui-size-sm"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @custom_heex},
             %{value: "js", label: "Javascript", language: :js, code: @custom_js}

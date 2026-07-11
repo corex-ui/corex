@@ -89,8 +89,8 @@ defmodule E2eWeb.DataListPatternsLive do
         >
           <:preview>
             <div class="flex flex-wrap gap-4">
-              <.action phx-click="stream_add" class="button button--accent">Add row</.action>
-              <.action phx-click="stream_reset" class="button button--alert">Reset</.action>
+              <.action phx-click="stream_add" class="button ui-accent">Add row</.action>
+              <.action phx-click="stream_reset" class="button ui-alert">Reset</.action>
             </div>
             <.data_list
               id={@id_stream}

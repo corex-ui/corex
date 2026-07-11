@@ -91,13 +91,13 @@ defmodule E2eWeb.DialogPatternsLive do
                   <.action
                     id="patterns-dialog-alert-cancel"
                     phx-click={Corex.Dialog.set_open(@id_alert, false)}
-                    class="button button--sm button--variant-ghost"
+                    class="button ui-size-sm"
                   >
                     Cancel
                   </.action>
                   <.action
                     phx-click={Corex.Dialog.set_open(@id_alert, false)}
-                    class="button button--sm button--alert"
+                    class="button ui-size-sm ui-alert"
                   >
                     Delete
                   </.action>

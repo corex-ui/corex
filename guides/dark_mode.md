@@ -156,7 +156,7 @@ def mode_toggle(assigns) do
   ~H"""
   <.toggle
     id="mode-switcher"
-    class="toggle toggle--sm"
+    class="toggle ui-size-sm"
     data-toggle-dual-label
     pressed={@mode == "dark"}
     on_pressed_change_client="phx:set-mode"

@@ -49,7 +49,6 @@ defmodule Corex.Design.Tokens.Colors do
       |> put_flat_token(palette, :shadow, map_get(mode_map, :shadow, nil), surface_tokens, cache)
     end)
     |> Map.merge(decorative_ink_tokens(palette, role_tokens, mode))
-    |> then(&Map.merge(&1, selected_tokens(&1)))
   end
 
   defp surface_tokens(acc, palette, surface, cache) do
@@ -150,7 +149,7 @@ defmodule Corex.Design.Tokens.Colors do
   defp ink_token_key("muted"), do: "ink-muted"
   defp ink_token_key(:link), do: "link"
   defp ink_token_key("link"), do: "link"
-  defp ink_token_key(role) when role in @component_roles, do: "#{role}-ink"
+  defp ink_token_key(role) when role in @component_roles, do: "#{role}-contrast"
   defp ink_token_key(role) when is_atom(role), do: ink_token_key(Atom.to_string(role))
   defp ink_token_key(_), do: nil
 
@@ -220,22 +219,12 @@ defmodule Corex.Design.Tokens.Colors do
     |> Map.new(fn role ->
       seed = Map.fetch!(palette, role)
       {hex, _} = PaletteGen.contrast_fg(seed, ui_bg, ink_ratio(mode))
-      {"ink-#{role}", hex}
+      {"#{role}-text", hex}
     end)
   end
 
   defp semantic_role_set do
     Corex.Design.Filter.semantics() |> MapSet.new()
-  end
-
-  defp selected_tokens(tokens) do
-    %{
-      "selected" => Map.fetch!(tokens, "ui-active"),
-      "selected-ink" => Map.fetch!(tokens, "ink"),
-      "selected-hover" => Map.fetch!(tokens, "ui-hover"),
-      "selected-active" => Map.fetch!(tokens, "ui-active"),
-      "selected-muted" => Map.fetch!(tokens, "ui-muted")
-    }
   end
 
   defp merge_auto_on(on, roles, mode) do

@@ -46,15 +46,17 @@ defmodule Corex.Design.BuildSmokeTest do
     assert File.exists?(neo_dim)
     assert File.read!(neo_light) =~ "--color-ui:"
     assert File.read!(neo_light) =~ "--color-accent:"
-    assert File.read!(neo_light) =~ "--theme-color-ui: var(--color-ui)"
-    assert File.read!(neo_light) =~ "--theme-color-accent-muted: var(--color-accent-muted)"
-    refute File.read!(neo_light) =~ "--theme-color-base:"
-    refute File.read!(neo_light) =~ "--theme-color-on-page:"
-    refute File.read!(neo_light) =~ "--theme-color-surface-page:"
+    refute File.read!(neo_light) =~ "--theme-color-ui:"
+    refute File.read!(neo_light) =~ "--theme-color-accent:"
     refute File.exists?(Path.join(output, "tokens/semantic/color-scope.css"))
     assert File.read!(Path.join(output, "tokens/semantic/color.css")) =~ "@theme inline"
     refute File.read!(Path.join(output, "tokens.css")) =~ "color-scope"
     assert File.read!(neo_dim) =~ "--theme-spacing-space-md:"
+
+    neo_entry = Path.join(output, "theme/neo.css")
+
+    assert File.read!(neo_entry) =~ ~s(@import "../tokens/themes/neo/color/light.css";)
+    assert File.read!(neo_entry) =~ ~s(@import "../tokens/themes/neo/color/dark.css";)
   end
 end
 
@@ -74,7 +76,7 @@ defmodule Corex.Design.TokenLayerTest do
 
     assert File.exists?(neo_light)
     assert File.read!(neo_light) =~ "--color-ink:"
-    assert File.read!(neo_light) =~ "--theme-color-accent: var(--color-accent)"
+    refute File.read!(neo_light) =~ "--theme-color-accent:"
     refute File.exists?(color_scope)
     assert File.read!(color_bridge) =~ "@theme inline"
     refute File.read!(Path.join(root, "tokens.css")) =~ "color-scope"
@@ -91,9 +93,10 @@ defmodule Corex.Design.ColorTokenNamesTest do
     assert Map.has_key?(tokens, "ink")
     assert Map.has_key?(tokens, "root")
     assert Map.has_key?(tokens, "layer")
-    assert Map.has_key?(tokens, "accent-ink")
-    assert Map.has_key?(tokens, "ink-accent")
-    assert Map.has_key?(tokens, "selected")
+    assert Map.has_key?(tokens, "accent-contrast")
+    assert Map.has_key?(tokens, "accent-text")
+
+    refute Map.has_key?(tokens, "selected")
 
     refute Map.has_key?(tokens, "base")
     refute Map.has_key?(tokens, "on-page")
@@ -142,23 +145,24 @@ defmodule Corex.Design.InkTokenCssTest do
     utilities = File.read!(Path.join(root, "utilities.css"))
     button = File.read!(Path.join(root, "components/button.css"))
 
-    assert utilities =~ "background-color: --value(--color-*, [color])"
-    assert utilities =~ "color: --value(--color-*-ink, [color])"
-    assert button =~ "--button-ink: --value(--color-*-ink, [color])"
+    assert utilities =~ "@utility ui-accent"
+    assert utilities =~ "--ctl-fill-hover: var(--color-accent-hover)"
+    assert utilities =~ "--ctl-fill-ink: var(--color-accent-contrast"
+    refute button =~ "@utility button--accent"
   end
 
-  test "neutral-surface recipes keep decorative ink wildcard" do
+  test "component recipes avoid per-component palette utilities" do
     root =
       :corex_design
       |> :code.priv_dir()
       |> List.to_string()
       |> Path.join("css/components")
 
-    date_picker = File.read!(Path.join(root, "date-picker.css"))
-    clipboard = File.read!(Path.join(root, "clipboard.css"))
+    button = File.read!(Path.join(root, "button.css"))
+    accordion = File.read!(Path.join(root, "accordion.css"))
 
-    assert date_picker =~ "color: --value(--color-ink-*, [color])"
-    assert clipboard =~ "color: --value(--color-ink-*, [color])"
+    refute button =~ "@utility button--accent"
+    refute accordion =~ "@utility accordion--accent"
   end
 end
 
@@ -325,9 +329,8 @@ defmodule Corex.Design.DimensionBridgeTest do
 
     assert css =~ "--container-9xs: var(--theme-container-9xs);"
     assert css =~ "--container-9xl: var(--theme-container-9xl);"
-    assert css =~ "--max-width-5xs: var(--container-5xs);"
-    assert css =~ "--min-height-9xl: var(--container-9xl);"
-    assert css =~ "--width-7xs: var(--container-7xs);"
+    refute css =~ "--max-width-5xs:"
+    refute css =~ "--width-7xs:"
   end
 
   test "every container token referenced in component css is bridged" do
@@ -461,23 +464,19 @@ defmodule Corex.Design.BundleFilterTest do
     refute neo_light =~ "--color-alert:"
 
     button = File.read!(Path.join(output, "components/button.css"))
-    assert button =~ "@utility button--accent"
     refute button =~ "@utility button--brand"
+
+    utilities = File.read!(Path.join(output, "utilities.css"))
+    assert utilities =~ "@utility ui-accent"
+    refute utilities =~ "@utility ui-brand"
   end
 
-  test "variants filter removes ghost and outline utilities from button" do
-    output =
-      build!(
-        [variants: ~w(solid), components: ~w(button)],
-        "_build/test_bundle_variants"
-      )
+  test "corex.css entry imports bundle layers" do
+    output = build!([], "_build/test_bundle_all")
 
-    button = File.read!(Path.join(output, "components/button.css"))
-    assert button =~ "button--variant-solid"
-    refute button =~ "button--variant-ghost"
-    refute button =~ "button--variant-outline"
-    refute button =~ "button--variant-subtle"
-    refute button =~ "variant-ghost"
-    refute button =~ "variant-outline"
+    entry = File.read!(Path.join(output, "corex.css"))
+    assert entry =~ ~s(@import "./main.css";)
+    assert entry =~ ~s(@import "./utilities.css";)
+    assert entry =~ ~s(@import "./components.css";)
   end
 end

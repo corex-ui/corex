@@ -40,41 +40,41 @@ defmodule E2eWeb.AngleSliderControlledLive do
       <div class="flex flex-wrap items-center gap-space">
         <.action
           phx-click={Corex.AngleSlider.set_value("my-angle-slider", 0)}
-          class="button button--sm"
+          class="button ui-size-sm"
         >
           Set to 0°
         </.action>
         <.action
           phx-click={Corex.AngleSlider.set_value("my-angle-slider", 90)}
-          class="button button--sm"
+          class="button ui-size-sm"
         >
           Set to 90°
         </.action>
         <.action
           phx-click={Corex.AngleSlider.set_value("my-angle-slider", 180)}
-          class="button button--sm"
+          class="button ui-size-sm"
         >
           Set to 180°
         </.action>
         <.action
           phx-click={Corex.AngleSlider.set_value("my-angle-slider", 270)}
-          class="button button--sm"
+          class="button ui-size-sm"
         >
           Set to 270°
         </.action>
       </div>
       <h3>Server Api</h3>
       <div class="flex flex-wrap items-center gap-space">
-        <.action phx-click="set_value" value="0" class="button button--sm">
+        <.action phx-click="set_value" value="0" class="button ui-size-sm">
           Set to 0°
         </.action>
-        <.action phx-click="set_value" value="90" class="button button--sm">
+        <.action phx-click="set_value" value="90" class="button ui-size-sm">
           Set to 90°
         </.action>
-        <.action phx-click="set_value" value="180" class="button button--sm">
+        <.action phx-click="set_value" value="180" class="button ui-size-sm">
           Set to 180°
         </.action>
-        <.action phx-click="set_value" value="270" class="button button--sm">
+        <.action phx-click="set_value" value="270" class="button ui-size-sm">
           Set to 270°
         </.action>
       </div>

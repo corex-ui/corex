@@ -236,7 +236,7 @@ defmodule Corex.Menu do
   ### set_open
 
   ```heex
-  <.action phx-click={Corex.Menu.set_open("menu-api", true)} class="button button--sm">
+  <.action phx-click={Corex.Menu.set_open("menu-api", true)} class="button ui-size-sm">
     Open Menu
   </.action>
   ```

@@ -149,9 +149,9 @@ defmodule E2eWeb.Demos.TabsDemo do
 
   def api_set_value_client_binding_heex do
     ~S"""
-    <.action phx-click={Corex.Tabs.set_value("tabs-api-cb", "lorem")} class="button button--sm">Lorem</.action>
-    <.action phx-click={Corex.Tabs.set_value("tabs-api-cb", "duis")} class="button button--sm">Duis</.action>
-    <.action phx-click={Corex.Tabs.set_value("tabs-api-cb", nil)} class="button button--sm">Close all</.action>
+    <.action phx-click={Corex.Tabs.set_value("tabs-api-cb", "lorem")} class="button ui-size-sm">Lorem</.action>
+    <.action phx-click={Corex.Tabs.set_value("tabs-api-cb", "duis")} class="button ui-size-sm">Duis</.action>
+    <.action phx-click={Corex.Tabs.set_value("tabs-api-cb", nil)} class="button ui-size-sm">Close all</.action>
     <.tabs id="tabs-api-cb" class="tabs" value="lorem" items={Corex.Content.new([
       %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
@@ -166,13 +166,13 @@ defmodule E2eWeb.Demos.TabsDemo do
     ~H"""
     <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
       <div class="flex flex-wrap items-center gap-space">
-        <.action phx-click={Corex.Tabs.set_value("tabs-api-cb", "lorem")} class="button button--sm">
+        <.action phx-click={Corex.Tabs.set_value("tabs-api-cb", "lorem")} class="button ui-size-sm">
           Lorem
         </.action>
-        <.action phx-click={Corex.Tabs.set_value("tabs-api-cb", "duis")} class="button button--sm">
+        <.action phx-click={Corex.Tabs.set_value("tabs-api-cb", "duis")} class="button ui-size-sm">
           Duis
         </.action>
-        <.action phx-click={Corex.Tabs.set_value("tabs-api-cb", nil)} class="button button--sm">
+        <.action phx-click={Corex.Tabs.set_value("tabs-api-cb", nil)} class="button ui-size-sm">
           Close all
         </.action>
       </div>
@@ -190,7 +190,7 @@ defmodule E2eWeb.Demos.TabsDemo do
     ~S"""
     <button
       type="button"
-      class="button button--sm"
+      class="button ui-size-sm"
       onclick="document.getElementById('tabs-api-cjs')?.dispatchEvent(new CustomEvent('corex:tabs:set-value', {bubbles: false, detail: { value: 'lorem' } }))"
     >
       Lorem (client JS)
@@ -229,7 +229,7 @@ defmodule E2eWeb.Demos.TabsDemo do
       <div class="flex flex-wrap items-center gap-space">
         <button
           type="button"
-          class="button button--sm"
+          class="button ui-size-sm"
           onclick="document.getElementById('tabs-api-cjs')?.dispatchEvent(new CustomEvent('corex:tabs:set-value', {bubbles: false, detail: { value: 'lorem' } }))"
         >
           Lorem (client JS)
@@ -247,9 +247,9 @@ defmodule E2eWeb.Demos.TabsDemo do
 
   def api_set_value_server_heex do
     ~S"""
-    <.action phx-click="tabs_api_lorem" class="button button--sm">Lorem</.action>
-    <.action phx-click="tabs_api_duis" class="button button--sm">Duis</.action>
-    <.action phx-click="tabs_api_close" class="button button--sm">Close all</.action>
+    <.action phx-click="tabs_api_lorem" class="button ui-size-sm">Lorem</.action>
+    <.action phx-click="tabs_api_duis" class="button ui-size-sm">Duis</.action>
+    <.action phx-click="tabs_api_close" class="button ui-size-sm">Close all</.action>
     <.tabs id="tabs-api-srv" class="tabs" value="lorem" items={Corex.Content.new([
       %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
@@ -280,9 +280,9 @@ defmodule E2eWeb.Demos.TabsDemo do
     ~H"""
     <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
       <div class="flex flex-wrap items-center gap-space">
-        <.action phx-click="tabs_api_lorem" class="button button--sm">Lorem</.action>
-        <.action phx-click="tabs_api_duis" class="button button--sm">Duis</.action>
-        <.action phx-click="tabs_api_close" class="button button--sm">Close all</.action>
+        <.action phx-click="tabs_api_lorem" class="button ui-size-sm">Lorem</.action>
+        <.action phx-click="tabs_api_duis" class="button ui-size-sm">Duis</.action>
+        <.action phx-click="tabs_api_close" class="button ui-size-sm">Close all</.action>
       </div>
       <.tabs
         id="tabs-api-srv"
@@ -370,27 +370,27 @@ defmodule E2eWeb.Demos.TabsDemo do
       %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])} />
-    <.tabs class="tabs tabs--accent" value="lorem" items={Corex.Content.new([
+    <.tabs class="tabs ui-accent" value="lorem" items={Corex.Content.new([
       %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])} />
-    <.tabs class="tabs tabs--brand" value="lorem" items={Corex.Content.new([
+    <.tabs class="tabs ui-brand" value="lorem" items={Corex.Content.new([
       %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])} />
-    <.tabs class="tabs tabs--alert" value="lorem" items={Corex.Content.new([
+    <.tabs class="tabs ui-alert" value="lorem" items={Corex.Content.new([
       %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])} />
-    <.tabs class="tabs tabs--info" value="lorem" items={Corex.Content.new([
+    <.tabs class="tabs ui-info" value="lorem" items={Corex.Content.new([
       %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])} />
-    <.tabs class="tabs tabs--success" value="lorem" items={Corex.Content.new([
+    <.tabs class="tabs ui-success" value="lorem" items={Corex.Content.new([
       %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
@@ -411,31 +411,31 @@ defmodule E2eWeb.Demos.TabsDemo do
       />
       <.tabs
         id="tabs-style-color-accent"
-        class="tabs tabs--accent"
+        class="tabs ui-accent"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
       <.tabs
         id="tabs-style-color-brand"
-        class="tabs tabs--brand"
+        class="tabs ui-brand"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
       <.tabs
         id="tabs-style-color-alert"
-        class="tabs tabs--alert"
+        class="tabs ui-alert"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
       <.tabs
         id="tabs-style-color-info"
-        class="tabs tabs--info"
+        class="tabs ui-info"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
       <.tabs
         id="tabs-style-color-success"
-        class="tabs tabs--success"
+        class="tabs ui-success"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
@@ -450,17 +450,7 @@ defmodule E2eWeb.Demos.TabsDemo do
       %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])} />
-    <.tabs class="tabs tabs--variant-solid" value="lorem" items={Corex.Content.new([
-      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
-    ])} />
-    <.tabs class="tabs tabs--variant-ghost" value="lorem" items={Corex.Content.new([
-      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
-    ])} />
-    <.tabs class="tabs tabs--variant-outline" value="lorem" items={Corex.Content.new([
+    <.tabs class="tabs ui-solid" value="lorem" items={Corex.Content.new([
       %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
@@ -481,19 +471,7 @@ defmodule E2eWeb.Demos.TabsDemo do
       />
       <.tabs
         id="tabs-style-variant-solid"
-        class="tabs tabs--variant-solid"
-        value="lorem"
-        items={E2eWeb.Demos.TabsDemo.basic_items()}
-      />
-      <.tabs
-        id="tabs-style-variant-ghost"
-        class="tabs tabs--variant-ghost"
-        value="lorem"
-        items={E2eWeb.Demos.TabsDemo.basic_items()}
-      />
-      <.tabs
-        id="tabs-style-variant-outline"
-        class="tabs tabs--variant-outline"
+        class="tabs ui-solid"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
@@ -540,22 +518,22 @@ defmodule E2eWeb.Demos.TabsDemo do
 
   def styling_size_code do
     ~S"""
-    <.tabs class="tabs tabs--sm" value="lorem" items={Corex.Content.new([
+    <.tabs class="tabs ui-size-sm" value="lorem" items={Corex.Content.new([
       %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])} />
-    <.tabs class="tabs tabs--md" value="lorem" items={Corex.Content.new([
+    <.tabs class="tabs ui-size-md" value="lorem" items={Corex.Content.new([
       %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])} />
-    <.tabs class="tabs tabs--lg" value="lorem" items={Corex.Content.new([
+    <.tabs class="tabs ui-size-lg" value="lorem" items={Corex.Content.new([
       %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])} />
-    <.tabs class="tabs tabs--xl" value="lorem" items={Corex.Content.new([
+    <.tabs class="tabs ui-size-xl" value="lorem" items={Corex.Content.new([
       %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
@@ -570,25 +548,25 @@ defmodule E2eWeb.Demos.TabsDemo do
     <div class="flex flex-col gap-4">
       <.tabs
         id="tabs-style-sm"
-        class="tabs tabs--sm"
+        class="tabs ui-size-sm"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
       <.tabs
         id="tabs-style-md"
-        class="tabs tabs--md"
+        class="tabs ui-size-md"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
       <.tabs
         id="tabs-style-lg"
-        class="tabs tabs--lg"
+        class="tabs ui-size-lg"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
       <.tabs
         id="tabs-style-xl"
-        class="tabs tabs--xl"
+        class="tabs ui-size-xl"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
@@ -598,27 +576,27 @@ defmodule E2eWeb.Demos.TabsDemo do
 
   def styling_radius_code do
     ~S"""
-    <.tabs class="tabs tabs--rounded-none" value="lorem" items={Corex.Content.new([
+    <.tabs class="tabs ui-rounded-none" value="lorem" items={Corex.Content.new([
       %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])} />
-    <.tabs class="tabs tabs--rounded-md" value="lorem" items={Corex.Content.new([
+    <.tabs class="tabs ui-rounded-md" value="lorem" items={Corex.Content.new([
       %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])} />
-    <.tabs class="tabs tabs--rounded-lg" value="lorem" items={Corex.Content.new([
+    <.tabs class="tabs ui-rounded-lg" value="lorem" items={Corex.Content.new([
       %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])} />
-    <.tabs class="tabs tabs--rounded-xl" value="lorem" items={Corex.Content.new([
+    <.tabs class="tabs ui-rounded-xl" value="lorem" items={Corex.Content.new([
       %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])} />
-    <.tabs class="tabs tabs--rounded-full" value="lorem" items={Corex.Content.new([
+    <.tabs class="tabs ui-rounded-full" value="lorem" items={Corex.Content.new([
       %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
@@ -633,31 +611,31 @@ defmodule E2eWeb.Demos.TabsDemo do
     <div class="flex flex-col gap-4">
       <.tabs
         id="tabs-style-rounded-none"
-        class="tabs tabs--rounded-none"
+        class="tabs ui-rounded-none"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
       <.tabs
         id="tabs-style-rounded-md"
-        class="tabs tabs--rounded-md"
+        class="tabs ui-rounded-md"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
       <.tabs
         id="tabs-style-rounded-lg"
-        class="tabs tabs--rounded-lg"
+        class="tabs ui-rounded-lg"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
       <.tabs
         id="tabs-style-rounded-xl"
-        class="tabs tabs--rounded-xl"
+        class="tabs ui-rounded-xl"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
       <.tabs
         id="tabs-style-rounded-full"
-        class="tabs tabs--rounded-full"
+        class="tabs ui-rounded-full"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
@@ -685,7 +663,7 @@ defmodule E2eWeb.Demos.TabsDemo do
     ~H"""
     <div class={DemoScales.preview_scroll_class()}>
       <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
-        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.tabs
           id={"tabs-style-max-#{variant.id}"}
           class={DemoScales.join_modifiers("tabs", variant.modifier)}

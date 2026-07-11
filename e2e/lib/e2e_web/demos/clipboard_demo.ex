@@ -88,7 +88,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
 
   def events_server_heex do
     ~S"""
-    <.action phx-click={Corex.Clipboard.copy("clipboard-events")} class="button button--sm">
+    <.action phx-click={Corex.Clipboard.copy("clipboard-events")} class="button ui-size-sm">
       Copy
     </.action>
 
@@ -121,13 +121,13 @@ defmodule E2eWeb.Demos.ClipboardDemo do
   def api_client_binding_code do
     ~S"""
     <div class="flex flex-wrap items-center gap-space">
-      <.action phx-click={Corex.Clipboard.set_value("clipboard-api", "Hello, World!")} class="button button--sm">
+      <.action phx-click={Corex.Clipboard.set_value("clipboard-api", "Hello, World!")} class="button ui-size-sm">
         Set to "Hello, World!"
       </.action>
-      <.action phx-click={Corex.Clipboard.set_value("clipboard-api", "info@netoum.com")} class="button button--sm">
+      <.action phx-click={Corex.Clipboard.set_value("clipboard-api", "info@netoum.com")} class="button ui-size-sm">
         Set to "info@netoum.com"
       </.action>
-      <.action phx-click={Corex.Clipboard.copy("clipboard-api")} class="button button--sm">
+      <.action phx-click={Corex.Clipboard.copy("clipboard-api")} class="button ui-size-sm">
         Copy
       </.action>
     </div>
@@ -154,17 +154,17 @@ defmodule E2eWeb.Demos.ClipboardDemo do
     <div class="flex flex-wrap items-center gap-space">
       <.action
         phx-click={Corex.Clipboard.set_value("clipboard-api", "Hello, World!")}
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Set to "Hello, World!"
       </.action>
       <.action
         phx-click={Corex.Clipboard.set_value("clipboard-api", "info@netoum.com")}
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Set to "info@netoum.com"
       </.action>
-      <.action phx-click={Corex.Clipboard.copy("clipboard-api")} class="button button--sm">
+      <.action phx-click={Corex.Clipboard.copy("clipboard-api")} class="button ui-size-sm">
         Copy
       </.action>
     </div>
@@ -217,8 +217,8 @@ defmodule E2eWeb.Demos.ClipboardDemo do
 
   def api_server_preview_heex do
     ~S"""
-    <.action phx-click="clipboard_api_server_copy" class="button button--sm">Push copy</.action>
-    <.action phx-click="clipboard_api_server_set" class="button button--sm">Push set value</.action>
+    <.action phx-click="clipboard_api_server_copy" class="button ui-size-sm">Push copy</.action>
+    <.action phx-click="clipboard_api_server_set" class="button ui-size-sm">Push set value</.action>
     <.clipboard id="clipboard-api-server" class="clipboard" value="server-push@example.com">
       <:copy><.heroicon name="hero-clipboard" /></:copy>
       <:copied><.heroicon name="hero-check" /></:copied>
@@ -229,7 +229,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
   def api_dispatch_heex do
     ~S"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={Corex.Clipboard.copy("clipboard-api-dispatch")} class="button button--sm">
+      <.action phx-click={Corex.Clipboard.copy("clipboard-api-dispatch")} class="button ui-size-sm">
         Copy
       </.action>
     </div>
@@ -263,7 +263,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
 
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={Corex.Clipboard.copy("clipboard-api-dispatch")} class="button button--sm">
+      <.action phx-click={Corex.Clipboard.copy("clipboard-api-dispatch")} class="button ui-size-sm">
         Copy
       </.action>
     </div>
@@ -290,11 +290,11 @@ defmodule E2eWeb.Demos.ClipboardDemo do
       <:copy><.heroicon name="hero-clipboard" /></:copy>
       <:copied><.heroicon name="hero-check" /></:copied>
     </.clipboard>
-    <.clipboard class="clipboard clipboard--accent" value="accent@example.com">
+    <.clipboard class="clipboard ui-accent" value="accent@example.com">
       <:copy><.heroicon name="hero-clipboard" /></:copy>
       <:copied><.heroicon name="hero-check" /></:copied>
     </.clipboard>
-    <.clipboard class="clipboard clipboard--brand" value="brand@example.com">
+    <.clipboard class="clipboard ui-brand" value="brand@example.com">
       <:copy><.heroicon name="hero-clipboard" /></:copy>
       <:copied><.heroicon name="hero-check" /></:copied>
     </.clipboard>
@@ -316,7 +316,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
       </.clipboard>
       <.clipboard
         id="clipboard-style-semantic-accent"
-        class="clipboard clipboard--accent"
+        class="clipboard ui-accent"
         value="accent@example.com"
         input_aria_label="Accent copied feedback"
         trigger_aria_label="Copy accent"
@@ -326,7 +326,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
       </.clipboard>
       <.clipboard
         id="clipboard-style-semantic-brand"
-        class="clipboard clipboard--brand"
+        class="clipboard ui-brand"
         value="brand@example.com"
         input_aria_label="Brand copied feedback"
         trigger_aria_label="Copy brand"
@@ -336,7 +336,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
       </.clipboard>
       <.clipboard
         id="clipboard-style-semantic-alert"
-        class="clipboard clipboard--alert"
+        class="clipboard ui-alert"
         value="alert@example.com"
         input_aria_label="Alert copied feedback"
         trigger_aria_label="Copy alert"
@@ -346,7 +346,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
       </.clipboard>
       <.clipboard
         id="clipboard-style-semantic-info"
-        class="clipboard clipboard--info"
+        class="clipboard ui-info"
         value="info@example.com"
         input_aria_label="Info copied feedback"
         trigger_aria_label="Copy info"
@@ -356,7 +356,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
       </.clipboard>
       <.clipboard
         id="clipboard-style-semantic-success"
-        class="clipboard clipboard--success"
+        class="clipboard ui-success"
         value="success@example.com"
         input_aria_label="Success copied feedback"
         trigger_aria_label="Copy success"
@@ -374,15 +374,15 @@ defmodule E2eWeb.Demos.ClipboardDemo do
       <:copy><.heroicon name="hero-clipboard" /></:copy>
       <:copied><.heroicon name="hero-check" /></:copied>
     </.clipboard>
-    <.clipboard class="clipboard clipboard--variant-solid" value="solid@example.com">
+    <.clipboard class="clipboard ui-solid" value="solid@example.com">
       <:copy><.heroicon name="hero-clipboard" /></:copy>
       <:copied><.heroicon name="hero-check" /></:copied>
     </.clipboard>
-    <.clipboard class="clipboard clipboard--variant-ghost" value="ghost@example.com">
+    <.clipboard class="clipboard" value="ghost@example.com">
       <:copy><.heroicon name="hero-clipboard" /></:copy>
       <:copied><.heroicon name="hero-check" /></:copied>
     </.clipboard>
-    <.clipboard class="clipboard clipboard--variant-outline" value="outline@example.com">
+    <.clipboard class="clipboard" value="outline@example.com">
       <:copy><.heroicon name="hero-clipboard" /></:copy>
       <:copied><.heroicon name="hero-check" /></:copied>
     </.clipboard>
@@ -406,30 +406,10 @@ defmodule E2eWeb.Demos.ClipboardDemo do
       </.clipboard>
       <.clipboard
         id="clipboard-style-variant-solid"
-        class="clipboard clipboard--variant-solid"
+        class="clipboard ui-solid"
         value="solid@example.com"
         input_aria_label="Solid copied feedback"
         trigger_aria_label="Copy solid"
-      >
-        <:copy><.heroicon name="hero-clipboard" /></:copy>
-        <:copied><.heroicon name="hero-check" /></:copied>
-      </.clipboard>
-      <.clipboard
-        id="clipboard-style-variant-ghost"
-        class="clipboard clipboard--variant-ghost"
-        value="ghost@example.com"
-        input_aria_label="Ghost copied feedback"
-        trigger_aria_label="Copy ghost"
-      >
-        <:copy><.heroicon name="hero-clipboard" /></:copy>
-        <:copied><.heroicon name="hero-check" /></:copied>
-      </.clipboard>
-      <.clipboard
-        id="clipboard-style-variant-outline"
-        class="clipboard clipboard--variant-outline"
-        value="outline@example.com"
-        input_aria_label="Outline copied feedback"
-        trigger_aria_label="Copy outline"
       >
         <:copy><.heroicon name="hero-clipboard" /></:copy>
         <:copied><.heroicon name="hero-check" /></:copied>
@@ -479,7 +459,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
 
   def styling_size_code do
     ~S"""
-    <.clipboard class="clipboard clipboard--sm" value="small@example.com">
+    <.clipboard class="clipboard ui-size-sm" value="small@example.com">
       <:copy><.heroicon name="hero-clipboard" /></:copy>
       <:copied><.heroicon name="hero-check" /></:copied>
     </.clipboard>
@@ -487,11 +467,11 @@ defmodule E2eWeb.Demos.ClipboardDemo do
       <:copy><.heroicon name="hero-clipboard" /></:copy>
       <:copied><.heroicon name="hero-check" /></:copied>
     </.clipboard>
-    <.clipboard class="clipboard clipboard--lg" value="large@example.com">
+    <.clipboard class="clipboard ui-size-lg" value="large@example.com">
       <:copy><.heroicon name="hero-clipboard" /></:copy>
       <:copied><.heroicon name="hero-check" /></:copied>
     </.clipboard>
-    <.clipboard class="clipboard clipboard--xl" value="xlarge@example.com">
+    <.clipboard class="clipboard ui-size-xl" value="xlarge@example.com">
       <:copy><.heroicon name="hero-clipboard" /></:copy>
       <:copied><.heroicon name="hero-check" /></:copied>
     </.clipboard>
@@ -503,7 +483,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
     <div class="flex flex-wrap gap-6 items-start">
       <.clipboard
         id="clipboard-style-sm"
-        class="clipboard clipboard--sm"
+        class="clipboard ui-size-sm"
         value="small@example.com"
         input_aria_label="Value to copy (sm)"
       >
@@ -521,7 +501,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
       </.clipboard>
       <.clipboard
         id="clipboard-style-lg"
-        class="clipboard clipboard--lg"
+        class="clipboard ui-size-lg"
         value="large@example.com"
         input_aria_label="Value to copy (lg)"
       >
@@ -530,7 +510,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
       </.clipboard>
       <.clipboard
         id="clipboard-style-xl"
-        class="clipboard clipboard--xl"
+        class="clipboard ui-size-xl"
         value="xlarge@example.com"
         input_aria_label="Value to copy (xl)"
       >
@@ -543,27 +523,27 @@ defmodule E2eWeb.Demos.ClipboardDemo do
 
   def styling_rounded_code do
     ~S"""
-    <.clipboard class="clipboard clipboard--rounded-none" value="none@example.com">
+    <.clipboard class="clipboard ui-rounded-none" value="none@example.com">
       <:copy><.heroicon name="hero-clipboard" /></:copy>
       <:copied><.heroicon name="hero-check" /></:copied>
     </.clipboard>
-    <.clipboard class="clipboard clipboard--rounded-sm" value="sm@example.com">
+    <.clipboard class="clipboard ui-rounded-sm" value="sm@example.com">
       <:copy><.heroicon name="hero-clipboard" /></:copy>
       <:copied><.heroicon name="hero-check" /></:copied>
     </.clipboard>
-    <.clipboard class="clipboard clipboard--rounded-md" value="md@example.com">
+    <.clipboard class="clipboard ui-rounded-md" value="md@example.com">
       <:copy><.heroicon name="hero-clipboard" /></:copy>
       <:copied><.heroicon name="hero-check" /></:copied>
     </.clipboard>
-    <.clipboard class="clipboard clipboard--rounded-lg" value="lg@example.com">
+    <.clipboard class="clipboard ui-rounded-lg" value="lg@example.com">
       <:copy><.heroicon name="hero-clipboard" /></:copy>
       <:copied><.heroicon name="hero-check" /></:copied>
     </.clipboard>
-    <.clipboard class="clipboard clipboard--rounded-xl" value="xl@example.com">
+    <.clipboard class="clipboard ui-rounded-xl" value="xl@example.com">
       <:copy><.heroicon name="hero-clipboard" /></:copy>
       <:copied><.heroicon name="hero-check" /></:copied>
     </.clipboard>
-    <.clipboard class="clipboard clipboard--rounded-full" value="full@example.com">
+    <.clipboard class="clipboard ui-rounded-full" value="full@example.com">
       <:copy><.heroicon name="hero-clipboard" /></:copy>
       <:copied><.heroicon name="hero-check" /></:copied>
     </.clipboard>
@@ -575,7 +555,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
     <div class="flex flex-wrap gap-6 items-start">
       <.clipboard
         id="clipboard-style-rounded-none"
-        class="clipboard clipboard--rounded-none"
+        class="clipboard ui-rounded-none"
         value="none@example.com"
         input_aria_label="Value to copy (rounded none)"
         trigger_aria_label="Copy rounded none"
@@ -585,7 +565,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
       </.clipboard>
       <.clipboard
         id="clipboard-style-rounded-sm"
-        class="clipboard clipboard--rounded-sm"
+        class="clipboard ui-rounded-sm"
         value="sm@example.com"
         input_aria_label="Value to copy (rounded sm)"
         trigger_aria_label="Copy rounded sm"
@@ -595,7 +575,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
       </.clipboard>
       <.clipboard
         id="clipboard-style-rounded-md"
-        class="clipboard clipboard--rounded-md"
+        class="clipboard ui-rounded-md"
         value="md@example.com"
         input_aria_label="Value to copy (rounded md)"
         trigger_aria_label="Copy rounded md"
@@ -605,7 +585,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
       </.clipboard>
       <.clipboard
         id="clipboard-style-rounded-lg"
-        class="clipboard clipboard--rounded-lg"
+        class="clipboard ui-rounded-lg"
         value="lg@example.com"
         input_aria_label="Value to copy (rounded lg)"
         trigger_aria_label="Copy rounded lg"
@@ -615,7 +595,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
       </.clipboard>
       <.clipboard
         id="clipboard-style-rounded-xl"
-        class="clipboard clipboard--rounded-xl"
+        class="clipboard ui-rounded-xl"
         value="xl@example.com"
         input_aria_label="Value to copy (rounded xl)"
         trigger_aria_label="Copy rounded xl"
@@ -625,7 +605,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
       </.clipboard>
       <.clipboard
         id="clipboard-style-rounded-full"
-        class="clipboard clipboard--rounded-full"
+        class="clipboard ui-rounded-full"
         value="full@example.com"
         input_aria_label="Value to copy (rounded full)"
         trigger_aria_label="Copy rounded full"
@@ -684,7 +664,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
     ~H"""
     <div class={DemoScales.preview_scroll_class()}>
       <div :for={variant <- @width_variants} class="flex flex-col gap-2">
-        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.clipboard
           id={"clipboard-style-width-#{variant.id}"}
           class={DemoScales.join_modifiers("clipboard", variant.modifier)}
@@ -706,7 +686,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
     ~H"""
     <div class={DemoScales.preview_scroll_class()}>
       <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
-        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.clipboard
           id={"clipboard-style-max-#{variant.id}"}
           class={DemoScales.join_block_modifiers("clipboard", variant.modifier)}

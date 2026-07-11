@@ -80,10 +80,10 @@ defmodule E2eWeb.Demos.DialogDemo do
       <:content>
         <p>Are you sure you want to continue?</p>
         <div class="flex flex-wrap justify-end gap-2 mt-4">
-          <.action phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)} class="button button--sm button--variant-ghost">
+          <.action phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)} class="button ui-size-sm">
             Cancel
           </.action>
-          <.action phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)} class="button button--sm">
+          <.action phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)} class="button ui-size-sm">
             Continue
           </.action>
         </div>
@@ -108,13 +108,13 @@ defmodule E2eWeb.Demos.DialogDemo do
         <div class="flex flex-wrap justify-end gap-2 mt-4">
           <.action
             phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)}
-            class="button button--sm button--variant-ghost"
+            class="button ui-size-sm"
           >
             Cancel
           </.action>
           <.action
             phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)}
-            class="button button--sm"
+            class="button ui-size-sm"
           >
             Continue
           </.action>
@@ -130,7 +130,7 @@ defmodule E2eWeb.Demos.DialogDemo do
   def api_client_binding_code do
     ~S"""
     <div class="flex flex-wrap items-center gap-space">
-      <.action phx-click={Corex.Dialog.set_open("dialog-api", true)} class="button button--sm">
+      <.action phx-click={Corex.Dialog.set_open("dialog-api", true)} class="button ui-size-sm">
         Open
       </.action>
     </div>
@@ -142,7 +142,7 @@ defmodule E2eWeb.Demos.DialogDemo do
       <:content>
         <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
         <div class="flex flex-wrap justify-end gap-2 mt-4">
-          <.action phx-click={Corex.Dialog.set_open("dialog-api", false)} class="button button--sm">
+          <.action phx-click={Corex.Dialog.set_open("dialog-api", false)} class="button ui-size-sm">
             Close
           </.action>
         </div>
@@ -157,7 +157,7 @@ defmodule E2eWeb.Demos.DialogDemo do
   def api_client_binding_example(assigns) do
     ~H"""
     <div class="flex flex-wrap items-center gap-space">
-      <.action phx-click={Corex.Dialog.set_open("dialog-api", true)} class="button button--sm">
+      <.action phx-click={Corex.Dialog.set_open("dialog-api", true)} class="button ui-size-sm">
         Open
       </.action>
     </div>
@@ -171,7 +171,7 @@ defmodule E2eWeb.Demos.DialogDemo do
           Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
         </p>
         <div class="flex flex-wrap justify-end gap-2 mt-4">
-          <.action phx-click={Corex.Dialog.set_open("dialog-api", false)} class="button button--sm">
+          <.action phx-click={Corex.Dialog.set_open("dialog-api", false)} class="button ui-size-sm">
             Close
           </.action>
         </div>
@@ -194,7 +194,7 @@ defmodule E2eWeb.Demos.DialogDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Open
       </.action>
@@ -215,7 +215,7 @@ defmodule E2eWeb.Demos.DialogDemo do
                 bubbles: false
               )
             }
-            class="button button--sm"
+            class="button ui-size-sm"
           >
             Close
           </.action>
@@ -263,7 +263,7 @@ defmodule E2eWeb.Demos.DialogDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Open
       </.action>
@@ -286,7 +286,7 @@ defmodule E2eWeb.Demos.DialogDemo do
                 bubbles: false
               )
             }
-            class="button button--sm"
+            class="button ui-size-sm"
           >
             Close
           </.action>
@@ -302,7 +302,7 @@ defmodule E2eWeb.Demos.DialogDemo do
   def api_server_heex do
     ~S"""
     <div class="flex flex-wrap items-center gap-space">
-      <.action phx-click="dialog_api_open" class="button button--sm">Open</.action>
+      <.action phx-click="dialog_api_open" class="button ui-size-sm">Open</.action>
     </div>
 
     <.dialog id="dialog-api-server" class="dialog">
@@ -312,7 +312,7 @@ defmodule E2eWeb.Demos.DialogDemo do
       <:content>
         <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
         <div class="flex flex-wrap justify-end gap-2 mt-4">
-          <.action phx-click="dialog_api_close" class="button button--sm">Close</.action>
+          <.action phx-click="dialog_api_close" class="button ui-size-sm">Close</.action>
         </div>
       </:content>
       <:close_trigger>
@@ -337,7 +337,7 @@ defmodule E2eWeb.Demos.DialogDemo do
   def api_server_example(assigns) do
     ~H"""
     <div class="flex flex-wrap items-center gap-space">
-      <.action phx-click="dialog_api_open" class="button button--sm">Open</.action>
+      <.action phx-click="dialog_api_open" class="button ui-size-sm">Open</.action>
     </div>
 
     <.dialog id="dialog-api-server" class="dialog">
@@ -349,7 +349,7 @@ defmodule E2eWeb.Demos.DialogDemo do
           Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
         </p>
         <div class="flex flex-wrap justify-end gap-2 mt-4">
-          <.action phx-click="dialog_api_close" class="button button--sm">Close</.action>
+          <.action phx-click="dialog_api_close" class="button ui-size-sm">Close</.action>
         </div>
       </:content>
       <:close_trigger>
@@ -465,35 +465,35 @@ defmodule E2eWeb.Demos.DialogDemo do
       <:content><p>#{style_dialog_body()}</p></:content>
       <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
     </.dialog>
-    <.dialog class="dialog dialog--accent" modal>
+    <.dialog class="dialog ui-accent" modal>
       <:trigger>Open accent</:trigger>
       <:title>#{style_dialog_title()}</:title>
       <:description>#{style_dialog_description()}</:description>
       <:content><p>#{style_dialog_body()}</p></:content>
       <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
     </.dialog>
-    <.dialog class="dialog dialog--brand" modal>
+    <.dialog class="dialog ui-brand" modal>
       <:trigger>Open brand</:trigger>
       <:title>#{style_dialog_title()}</:title>
       <:description>#{style_dialog_description()}</:description>
       <:content><p>#{style_dialog_body()}</p></:content>
       <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
     </.dialog>
-    <.dialog class="dialog dialog--alert" modal>
+    <.dialog class="dialog ui-alert" modal>
       <:trigger>Open alert</:trigger>
       <:title>#{style_dialog_title()}</:title>
       <:description>#{style_dialog_description()}</:description>
       <:content><p>#{style_dialog_body()}</p></:content>
       <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
     </.dialog>
-    <.dialog class="dialog dialog--info" modal>
+    <.dialog class="dialog ui-info" modal>
       <:trigger>Open info</:trigger>
       <:title>#{style_dialog_title()}</:title>
       <:description>#{style_dialog_description()}</:description>
       <:content><p>#{style_dialog_body()}</p></:content>
       <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
     </.dialog>
-    <.dialog class="dialog dialog--success" modal>
+    <.dialog class="dialog ui-success" modal>
       <:trigger>Open success</:trigger>
       <:title>#{style_dialog_title()}</:title>
       <:description>#{style_dialog_description()}</:description>
@@ -515,7 +515,7 @@ defmodule E2eWeb.Demos.DialogDemo do
         </:content>
         <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
       </.dialog>
-      <.dialog id="dialog-style-color-accent" class="dialog dialog--accent" modal>
+      <.dialog id="dialog-style-color-accent" class="dialog ui-accent" modal>
         <:trigger>Open accent</:trigger>
         <:title>{style_dialog_title()}</:title>
         <:description>{style_dialog_description()}</:description>
@@ -524,7 +524,7 @@ defmodule E2eWeb.Demos.DialogDemo do
         </:content>
         <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
       </.dialog>
-      <.dialog id="dialog-style-color-brand" class="dialog dialog--brand" modal>
+      <.dialog id="dialog-style-color-brand" class="dialog ui-brand" modal>
         <:trigger>Open brand</:trigger>
         <:title>{style_dialog_title()}</:title>
         <:description>{style_dialog_description()}</:description>
@@ -533,7 +533,7 @@ defmodule E2eWeb.Demos.DialogDemo do
         </:content>
         <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
       </.dialog>
-      <.dialog id="dialog-style-color-alert" class="dialog dialog--alert" modal>
+      <.dialog id="dialog-style-color-alert" class="dialog ui-alert" modal>
         <:trigger>Open alert</:trigger>
         <:title>{style_dialog_title()}</:title>
         <:description>{style_dialog_description()}</:description>
@@ -542,7 +542,7 @@ defmodule E2eWeb.Demos.DialogDemo do
         </:content>
         <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
       </.dialog>
-      <.dialog id="dialog-style-color-info" class="dialog dialog--info" modal>
+      <.dialog id="dialog-style-color-info" class="dialog ui-info" modal>
         <:trigger>Open info</:trigger>
         <:title>{style_dialog_title()}</:title>
         <:description>{style_dialog_description()}</:description>
@@ -551,7 +551,7 @@ defmodule E2eWeb.Demos.DialogDemo do
         </:content>
         <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
       </.dialog>
-      <.dialog id="dialog-style-color-success" class="dialog dialog--success" modal>
+      <.dialog id="dialog-style-color-success" class="dialog ui-success" modal>
         <:trigger>Open success</:trigger>
         <:title>{style_dialog_title()}</:title>
         <:description>{style_dialog_description()}</:description>
@@ -573,22 +573,20 @@ defmodule E2eWeb.Demos.DialogDemo do
       <:content><p>#{style_dialog_body()}</p></:content>
       <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
     </.dialog>
-    <.dialog class="dialog dialog--variant-solid" modal>
+    <.dialog class="dialog ui-solid" modal>
       <:trigger>Solid</:trigger>
       <:title>#{style_dialog_title()}</:title>
       <:description>#{style_dialog_description()}</:description>
       <:content><p>#{style_dialog_body()}</p></:content>
       <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
     </.dialog>
-    <.dialog class="dialog dialog--variant-ghost" modal>
-      <:trigger>Ghost</:trigger>
+    <.dialog class="dialog" modal>
       <:title>#{style_dialog_title()}</:title>
       <:description>#{style_dialog_description()}</:description>
       <:content><p>#{style_dialog_body()}</p></:content>
       <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
     </.dialog>
-    <.dialog class="dialog dialog--variant-outline" modal>
-      <:trigger>Outline</:trigger>
+    <.dialog class="dialog" modal>
       <:title>#{style_dialog_title()}</:title>
       <:description>#{style_dialog_description()}</:description>
       <:content><p>#{style_dialog_body()}</p></:content>
@@ -611,26 +609,8 @@ defmodule E2eWeb.Demos.DialogDemo do
         </:content>
         <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
       </.dialog>
-      <.dialog id="dialog-style-variant-solid" class="dialog dialog--variant-solid" modal>
+      <.dialog id="dialog-style-variant-solid" class="dialog ui-solid" modal>
         <:trigger>Solid</:trigger>
-        <:title>{style_dialog_title()}</:title>
-        <:description>{style_dialog_description()}</:description>
-        <:content>
-          <p>{style_dialog_body()}</p>
-        </:content>
-        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
-      </.dialog>
-      <.dialog id="dialog-style-variant-ghost" class="dialog dialog--variant-ghost" modal>
-        <:trigger>Ghost</:trigger>
-        <:title>{style_dialog_title()}</:title>
-        <:description>{style_dialog_description()}</:description>
-        <:content>
-          <p>{style_dialog_body()}</p>
-        </:content>
-        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
-      </.dialog>
-      <.dialog id="dialog-style-variant-outline" class="dialog dialog--variant-outline" modal>
-        <:trigger>Outline</:trigger>
         <:title>{style_dialog_title()}</:title>
         <:description>{style_dialog_description()}</:description>
         <:content>
@@ -691,28 +671,28 @@ defmodule E2eWeb.Demos.DialogDemo do
 
   def styling_size_code do
     """
-    <.dialog class="dialog dialog--sm" modal>
+    <.dialog class="dialog ui-size-sm" modal>
       <:trigger>Open (sm)</:trigger>
       <:title>#{style_dialog_title()}</:title>
       <:description>#{style_dialog_description()}</:description>
       <:content><p>#{style_dialog_body()}</p></:content>
       <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
     </.dialog>
-    <.dialog class="dialog dialog--md" modal>
+    <.dialog class="dialog ui-size-md" modal>
       <:trigger>Open (md)</:trigger>
       <:title>#{style_dialog_title()}</:title>
       <:description>#{style_dialog_description()}</:description>
       <:content><p>#{style_dialog_body()}</p></:content>
       <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
     </.dialog>
-    <.dialog class="dialog dialog--lg" modal>
+    <.dialog class="dialog ui-size-lg" modal>
       <:trigger>Open (lg)</:trigger>
       <:title>#{style_dialog_title()}</:title>
       <:description>#{style_dialog_description()}</:description>
       <:content><p>#{style_dialog_body()}</p></:content>
       <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
     </.dialog>
-    <.dialog class="dialog dialog--xl" modal>
+    <.dialog class="dialog ui-size-xl" modal>
       <:trigger>Open (xl)</:trigger>
       <:title>#{style_dialog_title()}</:title>
       <:description>#{style_dialog_description()}</:description>
@@ -725,7 +705,7 @@ defmodule E2eWeb.Demos.DialogDemo do
   def styling_size_example(assigns) do
     ~H"""
     <div class="flex flex-col gap-4 items-start w-full max-w-2xl">
-      <.dialog id="dialog-style-sm" class="dialog dialog--sm" modal>
+      <.dialog id="dialog-style-sm" class="dialog ui-size-sm" modal>
         <:trigger>Open (sm)</:trigger>
         <:title>{style_dialog_title()}</:title>
         <:description>{style_dialog_description()}</:description>
@@ -734,7 +714,7 @@ defmodule E2eWeb.Demos.DialogDemo do
         </:content>
         <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
       </.dialog>
-      <.dialog id="dialog-style-md" class="dialog dialog--md" modal>
+      <.dialog id="dialog-style-md" class="dialog ui-size-md" modal>
         <:trigger>Open (md)</:trigger>
         <:title>{style_dialog_title()}</:title>
         <:description>{style_dialog_description()}</:description>
@@ -743,7 +723,7 @@ defmodule E2eWeb.Demos.DialogDemo do
         </:content>
         <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
       </.dialog>
-      <.dialog id="dialog-style-lg" class="dialog dialog--lg" modal>
+      <.dialog id="dialog-style-lg" class="dialog ui-size-lg" modal>
         <:trigger>Open (lg)</:trigger>
         <:title>{style_dialog_title()}</:title>
         <:description>{style_dialog_description()}</:description>
@@ -752,7 +732,7 @@ defmodule E2eWeb.Demos.DialogDemo do
         </:content>
         <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
       </.dialog>
-      <.dialog id="dialog-style-xl" class="dialog dialog--xl" modal>
+      <.dialog id="dialog-style-xl" class="dialog ui-size-xl" modal>
         <:trigger>Open (xl)</:trigger>
         <:title>{style_dialog_title()}</:title>
         <:description>{style_dialog_description()}</:description>
@@ -767,42 +747,42 @@ defmodule E2eWeb.Demos.DialogDemo do
 
   def styling_radius_code do
     """
-    <.dialog class="dialog dialog--rounded-none" modal>
+    <.dialog class="dialog ui-rounded-none" modal>
       <:trigger>Open (rounded-none)</:trigger>
       <:title>#{style_dialog_title()}</:title>
       <:description>#{style_dialog_description()}</:description>
       <:content><p>#{style_dialog_body()}</p></:content>
       <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
     </.dialog>
-    <.dialog class="dialog dialog--rounded-sm" modal>
+    <.dialog class="dialog ui-rounded-sm" modal>
       <:trigger>Open (rounded-sm)</:trigger>
       <:title>#{style_dialog_title()}</:title>
       <:description>#{style_dialog_description()}</:description>
       <:content><p>#{style_dialog_body()}</p></:content>
       <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
     </.dialog>
-    <.dialog class="dialog dialog--rounded-md" modal>
+    <.dialog class="dialog ui-rounded-md" modal>
       <:trigger>Open (rounded-md)</:trigger>
       <:title>#{style_dialog_title()}</:title>
       <:description>#{style_dialog_description()}</:description>
       <:content><p>#{style_dialog_body()}</p></:content>
       <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
     </.dialog>
-    <.dialog class="dialog dialog--rounded-lg" modal>
+    <.dialog class="dialog ui-rounded-lg" modal>
       <:trigger>Open (rounded-lg)</:trigger>
       <:title>#{style_dialog_title()}</:title>
       <:description>#{style_dialog_description()}</:description>
       <:content><p>#{style_dialog_body()}</p></:content>
       <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
     </.dialog>
-    <.dialog class="dialog dialog--rounded-xl" modal>
+    <.dialog class="dialog ui-rounded-xl" modal>
       <:trigger>Open (rounded-xl)</:trigger>
       <:title>#{style_dialog_title()}</:title>
       <:description>#{style_dialog_description()}</:description>
       <:content><p>#{style_dialog_body()}</p></:content>
       <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
     </.dialog>
-    <.dialog class="dialog dialog--rounded-full" modal>
+    <.dialog class="dialog ui-rounded-full" modal>
       <:trigger>Open (rounded-full)</:trigger>
       <:title>#{style_dialog_title()}</:title>
       <:description>#{style_dialog_description()}</:description>
@@ -815,7 +795,7 @@ defmodule E2eWeb.Demos.DialogDemo do
   def styling_radius_example(assigns) do
     ~H"""
     <div class="flex flex-col gap-4 items-start w-full max-w-2xl">
-      <.dialog id="dialog-style-rounded-none" class="dialog dialog--rounded-none" modal>
+      <.dialog id="dialog-style-rounded-none" class="dialog ui-rounded-none" modal>
         <:trigger>Open (rounded-none)</:trigger>
         <:title>{style_dialog_title()}</:title>
         <:description>{style_dialog_description()}</:description>
@@ -824,7 +804,7 @@ defmodule E2eWeb.Demos.DialogDemo do
         </:content>
         <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
       </.dialog>
-      <.dialog id="dialog-style-rounded-sm" class="dialog dialog--rounded-sm" modal>
+      <.dialog id="dialog-style-rounded-sm" class="dialog ui-rounded-sm" modal>
         <:trigger>Open (rounded-sm)</:trigger>
         <:title>{style_dialog_title()}</:title>
         <:description>{style_dialog_description()}</:description>
@@ -833,7 +813,7 @@ defmodule E2eWeb.Demos.DialogDemo do
         </:content>
         <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
       </.dialog>
-      <.dialog id="dialog-style-rounded-md" class="dialog dialog--rounded-md" modal>
+      <.dialog id="dialog-style-rounded-md" class="dialog ui-rounded-md" modal>
         <:trigger>Open (rounded-md)</:trigger>
         <:title>{style_dialog_title()}</:title>
         <:description>{style_dialog_description()}</:description>
@@ -842,7 +822,7 @@ defmodule E2eWeb.Demos.DialogDemo do
         </:content>
         <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
       </.dialog>
-      <.dialog id="dialog-style-rounded-lg" class="dialog dialog--rounded-lg" modal>
+      <.dialog id="dialog-style-rounded-lg" class="dialog ui-rounded-lg" modal>
         <:trigger>Open (rounded-lg)</:trigger>
         <:title>{style_dialog_title()}</:title>
         <:description>{style_dialog_description()}</:description>
@@ -851,7 +831,7 @@ defmodule E2eWeb.Demos.DialogDemo do
         </:content>
         <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
       </.dialog>
-      <.dialog id="dialog-style-rounded-xl" class="dialog dialog--rounded-xl" modal>
+      <.dialog id="dialog-style-rounded-xl" class="dialog ui-rounded-xl" modal>
         <:trigger>Open (rounded-xl)</:trigger>
         <:title>{style_dialog_title()}</:title>
         <:description>{style_dialog_description()}</:description>
@@ -860,7 +840,7 @@ defmodule E2eWeb.Demos.DialogDemo do
         </:content>
         <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
       </.dialog>
-      <.dialog id="dialog-style-rounded-full" class="dialog dialog--rounded-full" modal>
+      <.dialog id="dialog-style-rounded-full" class="dialog ui-rounded-full" modal>
         <:trigger>Open (rounded-full)</:trigger>
         <:title>{style_dialog_title()}</:title>
         <:description>{style_dialog_description()}</:description>
@@ -1033,10 +1013,10 @@ defmodule E2eWeb.Demos.DialogDemo do
       <:description>This action cannot be undone.</:description>
       <:content>
         <div class="flex flex-wrap justify-end gap-2 mt-4">
-          <.action id="patterns-dialog-alert-cancel" phx-click={Corex.Dialog.set_open("patterns-dialog-alert", false)} class="button button--sm button--variant-ghost">
+          <.action id="patterns-dialog-alert-cancel" phx-click={Corex.Dialog.set_open("patterns-dialog-alert", false)} class="button ui-size-sm">
             Cancel
           </.action>
-          <.action phx-click={Corex.Dialog.set_open("patterns-dialog-alert", false)} class="button button--sm button--alert">
+          <.action phx-click={Corex.Dialog.set_open("patterns-dialog-alert", false)} class="button ui-size-sm ui-alert">
             Delete
           </.action>
         </div>
@@ -1061,10 +1041,10 @@ defmodule E2eWeb.Demos.DialogDemo do
       <:description>This action cannot be undone.</:description>
       <:content>
         <div class="flex flex-wrap justify-end gap-2 mt-4">
-          <.action id="patterns-dialog-alert-cancel" phx-click={Corex.Dialog.set_open("patterns-dialog-alert", false)} class="button button--sm button--variant-ghost">
+          <.action id="patterns-dialog-alert-cancel" phx-click={Corex.Dialog.set_open("patterns-dialog-alert", false)} class="button ui-size-sm">
             Cancel
           </.action>
-          <.action phx-click={Corex.Dialog.set_open("patterns-dialog-alert", false)} class="button button--sm button--alert">
+          <.action phx-click={Corex.Dialog.set_open("patterns-dialog-alert", false)} class="button ui-size-sm ui-alert">
             Delete
           </.action>
         </div>

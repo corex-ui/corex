@@ -1,141 +1,50 @@
 @import "../main.css";
 
 @layer components {
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    cursor: unset;
-    width: fit-content;
-    max-width: 100%;
-    font-size: calc(var(--text-base) * 0.8);
-    line-height: var(--text-base--line-height);
-    font-weight: var(--font-weight-normal);
-    border-radius: var(--radius-full);
-    border: 1px solid transparent;
-    padding: var(--spacing-space);
-    gap: var(--spacing-space);
-    height: calc(var(--spacing-size) * 0.8);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: normal;
-    --badge-fill: var(--color-ui);
-    --badge-fill-hover: var(--color-ui-hover);
-    --badge-fill-active: var(--color-ui-active);
-    --badge-ink: var(--color-ink);
-    --badge-ink-text: var(--color-ink);
-    --badge-muted: var(--color-ui-muted);
+ .badge {
+ display: inline-flex;
+ align-items: center;
+ justify-content: center;
+ text-align: center;
+ cursor: unset;
+ width: fit-content;
+ max-width: 100%;
+ font-size: calc(var(--text-base) * 0.8);
+ line-height: var(--text-base--line-height);
+ font-weight: var(--font-weight-normal);
+ border-radius: var(--radius-full);
+ border: 1px solid transparent;
+ padding: var(--spacing-space);
+ gap: var(--spacing-space);
+ height: calc(var(--spacing-size) * 0.8);
+ overflow: hidden;
+ text-overflow: ellipsis;
+ white-space: normal;
+ --badge-fill: var(--color-ui);
+ --badge-fill-hover: var(--color-ui-hover);
+ --badge-fill-active: var(--color-ui-active);
+ --badge-ink: var(--color-ink);
+ --badge-ink-text: var(--color-ink);
+ --badge-muted: var(--color-ui-muted);
 
-    & svg {
-      @apply ui-icon;
+ & svg {
+ @apply ui-icon;
 
-      padding: 0;
-    }
-  }
+ padding: 0;
+ }
+ }
 
-  .badge:not(.badge--variant-subtle):not(.badge--variant-ghost):not(.badge--variant-outline) {
-    background-color: var(--badge-fill, var(--color-ui-active));
-    color: var(--badge-ink, var(--color-ink));
-    border-color: transparent;
+ .badge.badge--square,
+ .badge.badge--circle {
+ display: inline-flex;
+ aspect-ratio: 1 / 1;
+ justify-content: center;
+ align-items: center;
+ width: auto;
+ padding: 0;
+ }
 
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--badge-muted, var(--color-ui-muted));
-      color: var(--badge-ink, var(--color-ink-muted));
-      cursor: not-allowed;
-    }
-  }
-
-  .badge.badge--square,
-  .badge.badge--circle {
-    display: inline-flex;
-    aspect-ratio: 1 / 1;
-    justify-content: center;
-    align-items: center;
-    width: auto;
-    padding: 0;
-  }
-
-  .badge.badge--circle {
-    border-radius: var(--radius-full);
-  }
-}
-
-@utility badge--* {
-  font-size: calc(--value(--text-*, [length]) * 0.8);
-  line-height: calc(--value(--text-*--line-height, [length]) * 0.8);
-  height: calc(--value(--spacing-*, [length]) * 0.8);
-  --badge-fill: --value(--color-*, [color]);
-  --badge-fill-hover: --value(--color-*-hover, [color]);
-  --badge-fill-active: --value(--color-*-active, [color]);
-  --badge-ink: --value(--color-*-ink, [color]);
-  --badge-ink-text: --value(--color-ink-*, [color]);
-  --badge-muted: --value(--color-*-muted, [color]);
-
-  padding-inline: --value(--spacing-space-*, [length]);
-  gap: --value(--spacing-space-*, [length]);
-}
-
-@utility badge--variant-solid {
-  background-color: var(--badge-fill, var(--color-ui-active));
-  color: var(--badge-ink, var(--color-ink));
-  border-color: transparent;
-
-  &:disabled,
-  &[data-disabled],
-  &[disabled] {
-    background-color: var(--badge-muted, var(--color-ui-muted));
-    color: var(--badge-ink, var(--color-ink-muted));
-    cursor: not-allowed;
-  }
-}
-
-@utility badge--variant-subtle {
-  background-color: var(--color-ui);
-  color: var(--badge-ink-text, var(--color-ink));
-  border-color: var(--color-border);
-
-  &:disabled,
-  &[data-disabled],
-  &[disabled] {
-    background-color: var(--color-ui-muted);
-    color: var(--color-ink-muted);
-    border-color: var(--color-ui-muted);
-    cursor: not-allowed;
-  }
-}
-
-@utility badge--variant-ghost {
-  background-color: transparent;
-  color: var(--badge-ink-text, var(--color-ink));
-  border-color: transparent;
-
-  &:disabled,
-  &[data-disabled],
-  &[disabled] {
-    background-color: transparent;
-    color: var(--color-ink-muted);
-    cursor: not-allowed;
-  }
-}
-
-@utility badge--variant-outline {
-  background-color: transparent;
-  color: var(--badge-ink-text, var(--color-ink));
-  border-color: var(--badge-fill, var(--color-border));
-
-  &:disabled,
-  &[data-disabled],
-  &[disabled] {
-    background-color: transparent;
-    color: var(--color-ink-muted);
-    border-color: var(--color-ui-muted);
-    cursor: not-allowed;
-  }
-}
-
-@utility badge--rounded-* {
-  border-radius: --value(--radius-*, [length]);
+ .badge.badge--circle {
+ border-radius: var(--radius-full);
+ }
 }

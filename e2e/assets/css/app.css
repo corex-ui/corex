@@ -8,14 +8,7 @@
 @source "../js";
 @source "../../lib/e2e_web";
 
-@import "../corex/main.css";
-
-@import "../corex/theme/neo.css";
-@import "../corex/theme/uno.css";
-@import "../corex/theme/leo.css";
-@import "../corex/theme/duo.css";
-
-@import "../corex/components.css";
+@import "../corex/corex.css";
 
 @import "./navigation.css";
 

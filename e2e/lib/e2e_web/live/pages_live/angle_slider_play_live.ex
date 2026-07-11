@@ -111,7 +111,7 @@ defmodule E2eWeb.AngleSliderPlayLive do
           />
 
           <.toggle_group
-            class="toggle-group toggle-group--sm max-w-3xs"
+            class="toggle-group ui-size-sm max-w-3xs"
             id="orientation"
             on_value_change="control_changed"
             multiple={false}
@@ -119,15 +119,15 @@ defmodule E2eWeb.AngleSliderPlayLive do
             value={[@controls.orientation]}
           >
             <:item value="vertical" aria_label="Vertical orientation">
-              <.heroicon name="hero-arrows-up-down" class="icon icon--lg" />
+              <.heroicon name="hero-arrows-up-down" class="icon ui-size-lg" />
             </:item>
             <:item value="horizontal" aria_label="Horizontal orientation">
-              <.heroicon name="hero-arrows-right-left" class="icon icon--lg" />
+              <.heroicon name="hero-arrows-right-left" class="icon ui-size-lg" />
             </:item>
           </.toggle_group>
 
           <.switch
-            class="switch switch--sm"
+            class="switch ui-size-sm"
             id="disabled"
             checked={@controls.disabled}
             on_checked_change="control_changed"
@@ -136,7 +136,7 @@ defmodule E2eWeb.AngleSliderPlayLive do
           </.switch>
 
           <.switch
-            class="switch switch--sm"
+            class="switch ui-size-sm"
             id="read_only"
             checked={@controls.read_only}
             on_checked_change="control_changed"
@@ -145,7 +145,7 @@ defmodule E2eWeb.AngleSliderPlayLive do
           </.switch>
 
           <.switch
-            class="switch switch--sm"
+            class="switch ui-size-sm"
             id="invalid"
             checked={@controls.invalid}
             on_checked_change="control_changed"
@@ -154,7 +154,7 @@ defmodule E2eWeb.AngleSliderPlayLive do
           </.switch>
 
           <.switch
-            class="switch switch--sm"
+            class="switch ui-size-sm"
             id="show_markers"
             checked={@controls.show_markers}
             on_checked_change="control_changed"
@@ -164,7 +164,7 @@ defmodule E2eWeb.AngleSliderPlayLive do
 
           <.number_input
             id="angle-slider-step"
-            class="number-input number-input--sm w-4xs"
+            class="number-input ui-size-sm w-4xs"
             value={to_string(@controls.step)}
             step={0.5}
             min={0.5}
@@ -182,7 +182,7 @@ defmodule E2eWeb.AngleSliderPlayLive do
 
           <.select
             id="value_text_as"
-            class="select select--sm w-4xs"
+            class="select ui-size-sm w-4xs"
             value={[@controls.value_text_as]}
             deselectable={false}
             items={[

@@ -1,267 +1,32 @@
 @import "../main.css";
 
 @layer components {
-  .toggle[data-loading] [data-scope="toggle"][data-part="root"] {
-    @apply ui-loading;
-  }
+ .toggle[data-loading] [data-scope="toggle"][data-part="root"] {
+ @apply ui-loading;
+ }
 
-  .toggle [data-scope="toggle"][data-part="root"] {
-    @apply ui-trigger;
+ .toggle [data-scope="toggle"][data-part="root"] {
+ @apply ui-trigger;
 
-    width: fit-content;
-  }
+ width: fit-content;
+ }
 
-  .toggle [data-scope="toggle"][data-part="indicator"] {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
+ .toggle [data-scope="toggle"][data-part="indicator"] {
+ display: inline-flex;
+ align-items: center;
+ justify-content: center;
+ }
 
-  .toggle[data-toggle-dual-label]
-    [data-scope="toggle"][data-part="root"][data-state="off"]
-    > span[data-pressed] {
-    display: none;
-  }
+ .toggle[data-toggle-dual-label]
+ [data-scope="toggle"][data-part="root"][data-state="off"]
+ > span[data-pressed] {
+ display: none;
+ }
 
-  .toggle[data-toggle-dual-label]
-    [data-scope="toggle"][data-part="root"][data-state="on"]
-    > span:not([data-scope]):not([data-pressed]) {
-    display: none;
-  }
+ .toggle[data-toggle-dual-label]
+ [data-scope="toggle"][data-part="root"][data-state="on"]
+ > span:not([data-scope]):not([data-pressed]) {
+ display: none;
+ }
 
-  .toggle:not(.toggle--variant-ghost):not(.toggle--variant-outline)
-    [data-scope="toggle"][data-part="root"][data-state="off"] {
-    background-color: var(--color-ui);
-    color: var(--toggle-ink-text, var(--color-ink));
-    border-color: var(--color-border);
-
-    &:hover {
-      background-color: var(--color-ui-active);
-    }
-
-    &:active {
-      background-color: var(--color-ui-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--toggle-ink-text, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-ui-muted);
-      color: var(--color-ink-muted);
-      border-color: var(--color-ui-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .toggle:not(.toggle--variant-solid):not(.toggle--variant-outline)
-    [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background-color: var(--color-selected);
-    color: var(--toggle-ink-text, var(--color-selected-ink));
-
-    &:hover {
-      background-color: var(--color-selected-hover);
-    }
-
-    &:active {
-      background-color: var(--color-selected-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--toggle-ink-text, var(--color-selected-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-selected-muted);
-      color: var(--toggle-ink-text, var(--color-selected-ink));
-      cursor: not-allowed;
-    }
-  }
-
-  .toggle:not(.toggle--variant-solid):not(.toggle--variant-outline)
-    [data-scope="toggle"][data-part="root"][data-state="on"]
-    [data-scope="toggle"][data-part="indicator"]
-    > * {
-    color: inherit;
-  }
-
-  .toggle.toggle--variant-solid [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background-color: var(--toggle-fill, var(--color-selected));
-    color: var(--toggle-ink, var(--color-selected-ink));
-
-    &:hover {
-      background-color: var(--toggle-fill-hover, var(--color-selected-hover));
-    }
-
-    &:active {
-      background-color: var(--toggle-fill-active, var(--color-selected-active));
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--toggle-ink, var(--color-selected-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--toggle-muted, var(--color-selected-muted));
-      color: var(--toggle-ink, var(--color-selected-ink));
-      cursor: not-allowed;
-    }
-  }
-
-  .toggle.toggle--variant-solid
-    [data-scope="toggle"][data-part="root"][data-state="on"]
-    [data-scope="toggle"][data-part="indicator"]
-    > * {
-    color: inherit;
-  }
-}
-
-@utility toggle--* {
-  [data-scope="toggle"][data-part="root"] {
-    font-size: --value(--text-*, [length]);
-    line-height: --value(--text-*--line-height, [length]);
-    padding-inline: --value(--spacing-space-*, [length]);
-    gap: --value(--spacing-space-*, [length]);
-    min-height: --value(--spacing-size-*, [length]);
-    --toggle-fill: --value(--color-*, [color]);
-    --toggle-fill-hover: --value(--color-*-hover, [color]);
-    --toggle-fill-active: --value(--color-*-active, [color]);
-    --toggle-ink: --value(--color-*-ink, [color]);
-    --toggle-ink-text: --value(--color-ink-*, [color]);
-    --toggle-muted: --value(--color-*-muted, [color]);
-  }
-}
-
-@utility toggle--variant-solid {
-  [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background-color: var(--toggle-fill, var(--color-selected));
-    color: var(--toggle-ink, var(--color-selected-ink));
-    border-color: transparent;
-
-    &:hover {
-      background-color: var(--toggle-fill-hover, var(--color-selected-hover));
-    }
-
-    &:active {
-      background-color: var(--toggle-fill-active, var(--color-selected-active));
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--toggle-ink, var(--color-selected-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--toggle-muted, var(--color-selected-muted));
-      color: var(--toggle-ink, var(--color-selected-ink));
-      cursor: not-allowed;
-    }
-  }
-}
-
-@utility toggle--variant-subtle {
-  [data-scope="toggle"][data-part="root"][data-state="off"] {
-    background-color: var(--color-ui);
-    color: var(--toggle-ink-text, var(--color-ink));
-    border-color: var(--color-border);
-
-    &:hover {
-      background-color: var(--color-ui-active);
-    }
-
-    &:active {
-      background-color: var(--color-ui-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--toggle-ink-text, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-ui-muted);
-      color: var(--color-ink-muted);
-      border-color: var(--color-ui-muted);
-      cursor: not-allowed;
-    }
-  }
-}
-
-@utility toggle--variant-ghost {
-  [data-scope="toggle"][data-part="root"][data-state="off"] {
-    background-color: transparent;
-    color: var(--toggle-ink-text, var(--color-ink));
-    border-color: transparent;
-
-    &:hover {
-      background-color: var(--color-ui-hover);
-    }
-
-    &:active {
-      background-color: var(--color-ui-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--toggle-ink-text, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: transparent;
-      color: var(--color-ink-muted);
-      cursor: not-allowed;
-    }
-  }
-}
-
-@utility toggle--variant-outline {
-  [data-scope="toggle"][data-part="root"][data-state="off"] {
-    background-color: transparent;
-    color: var(--toggle-ink-text, var(--color-ink));
-    border-color: var(--toggle-fill, var(--color-border));
-
-    &:hover {
-      background-color: var(--color-ui-hover);
-    }
-
-    &:active {
-      background-color: var(--color-ui-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--toggle-fill, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: transparent;
-      color: var(--color-ink-muted);
-      border-color: var(--color-ui-muted);
-      cursor: not-allowed;
-    }
-  }
-}
-
-@utility toggle--rounded-* {
-  [data-scope="toggle"][data-part="root"] {
-    border-radius: --value(--radius-*, [length]);
-  }
 }

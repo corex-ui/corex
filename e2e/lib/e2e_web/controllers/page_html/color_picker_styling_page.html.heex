@@ -31,13 +31,7 @@
       code={E2eWeb.Demos.ColorPickerDemo.styling_variant_code()}
     >
       <:description>
-        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
-          <p>
-            Variant modifiers control color-picker surface treatment. Default is subtle; use <code class="text-sm">color-picker--variant-solid</code>, <code class="text-sm">color-picker--variant-ghost</code>, or
-            <code class="text-sm">color-picker--variant-outline</code>
-            to change it.
-          </p>
-        </div>
+        <.demo_modifier_axis name="color-picker" axis={:variant} />
       </:description>
       <:preview><E2eWeb.Demos.ColorPickerDemo.styling_variant_example /></:preview>
     </.demo_section>
@@ -48,11 +42,7 @@
       code={E2eWeb.Demos.ColorPickerDemo.styling_variant_matrix_code()}
     >
       <:description>
-        <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
-          <p>
-            Combine semantic palette and variant treatment on the same host, for example <code class="text-sm">color-picker color-picker--accent color-picker--variant-solid</code>.
-          </p>
-        </div>
+        <.variant_matrix_description host="color-picker" />
       </:description>
       <:preview><E2eWeb.Demos.ColorPickerDemo.styling_variant_matrix_example /></:preview>
     </.demo_section>

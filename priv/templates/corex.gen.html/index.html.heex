@@ -15,7 +15,7 @@
       <.navigate
         to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/new"}
         type="href"
-        class="button button--accent"
+        class="button ui-accent"
       >
         <.heroicon name="hero-plus" /> New <%= schema.human_singular %>
       </.navigate>
@@ -36,7 +36,7 @@
       </div>
       <.link
         href={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}/edit"}
-        class="button button--sm"
+        class="button ui-size-sm"
         aria-label={"Edit #{<%= schema.singular %>.<%= schema.attrs |> Keyword.keys() |> List.first() %>}"}
       >
         <.heroicon name="hero-pencil-square" />
@@ -53,7 +53,7 @@
         final_focus={"dialog:<%= schema.singular %>-delete-#{<%= schema.singular %>.<%= primary_key %>}:trigger"}
       >
         <:trigger
-          class="button button--sm button--alert button--square"
+          class="button ui-size-sm ui-alert ui-trigger--square"
           aria_label={"Delete #{<%= schema.singular %>.<%= schema.attrs |> Keyword.keys() |> List.first() %>}"}
         >
           <.heroicon name="hero-trash" />
@@ -65,7 +65,7 @@
             <.action
               id={"<%= schema.singular %>-delete-#{<%= schema.singular %>.<%= primary_key %>}-cancel"}
               phx-click={Corex.Dialog.set_open("<%= schema.singular %>-delete-#{<%= schema.singular %>.<%= primary_key %>}", false)}
-              class="button button--sm button--variant-ghost"
+              class="button ui-size-sm"
             >
               Cancel
             </.action>
@@ -73,7 +73,7 @@
               id={"<%= schema.singular %>-delete-#{<%= schema.singular %>.<%= primary_key %>}-confirm"}
               to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}"}
               method="delete"
-              class="button button--sm button--alert"
+              class="button ui-size-sm ui-alert"
             >
               Delete
             </.navigate>

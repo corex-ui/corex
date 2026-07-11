@@ -32,7 +32,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
             <.navigate
               to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{@<%= schema.singular %>}/edit?return_to=show"}
               type="navigate"
-              class="button button--accent button--square"
+              class="button ui-accent ui-trigger--square"
               aria_label="Edit <%= schema.human_singular %>"
               title="Edit <%= schema.human_singular %>"
             >
@@ -49,7 +49,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
               final_focus={"dialog:<%= schema.singular %>-delete-#{@<%= schema.singular %>.<%= primary_key %>}:trigger"}
             >
               <:trigger
-                class="button button--alert button--square"
+                class="button ui-alert ui-trigger--square"
                 aria_label="Delete <%= schema.human_singular %>"
                 title="Delete <%= schema.human_singular %>"
               >
@@ -62,7 +62,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
                   <.action
                     id={"<%= schema.singular %>-delete-#{@<%= schema.singular %>.<%= primary_key %>}-cancel"}
                     phx-click={Corex.Dialog.set_open("<%= schema.singular %>-delete-#{@<%= schema.singular %>.<%= primary_key %>}", false)}
-                    class="button button--sm button--variant-ghost"
+                    class="button ui-size-sm"
                   >
                     Cancel
                   </.action>
@@ -72,7 +72,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
                       Corex.Dialog.set_open("<%= schema.singular %>-delete-#{@<%= schema.singular %>.<%= primary_key %>}", false)
                       |> JS.push("delete", value: %{<%= primary_key %>: @<%= schema.singular %>.<%= primary_key %>})
                     }
-                    class="button button--sm button--alert"
+                    class="button ui-size-sm ui-alert"
                   >
                     Delete
                   </.action>

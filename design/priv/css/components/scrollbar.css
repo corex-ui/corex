@@ -1,35 +1,35 @@
 @import "../main.css";
 
 @utility scrollbar {
-  &::-webkit-scrollbar {
-    width: calc(var(--spacing-space) * 0.6);
-    height: calc(var(--spacing-space) * 0.6);
-  }
+ &::-webkit-scrollbar {
+ width: calc(var(--spacing-space) * 0.6);
+ height: calc(var(--spacing-space) * 0.6);
+ }
 
-  &::-webkit-scrollbar-track {
-    background: var(--color-ui);
-  }
+ &::-webkit-scrollbar-track {
+ background: var(--color-ui);
+ }
 
-  &::-webkit-scrollbar-thumb {
-    background: var(--color-border);
-  }
+ &::-webkit-scrollbar-thumb {
+ background: var(--color-border);
+ }
 
-  &::-webkit-scrollbar-corner {
-    background: var(--color-border);
-  }
+ &::-webkit-scrollbar-corner {
+ background: var(--color-border);
+ }
 }
 
 @utility scrollbar--* {
-  &::-webkit-scrollbar {
-    width: calc(--value(--spacing-space-*, [length]) * 0.6);
-    height: calc(--value(--spacing-space-*, [length]) * 0.6);
-  }
+ &::-webkit-scrollbar {
+ width: calc(--value(--spacing-space-*, [length]) * 0.6);
+ height: calc(--value(--spacing-space-*, [length]) * 0.6);
+ }
 
-  &::-webkit-scrollbar-thumb {
-    background: --value(--color-*, [color]);
-  }
+ &::-webkit-scrollbar-thumb {
+ background: --value(--color-*, [color]);
+ }
 
-  &::-webkit-scrollbar-corner {
-    background: --value(--color-*, [color]);
-  }
+ &::-webkit-scrollbar-corner {
+ background: --value(--color-*, [color]);
+ }
 }

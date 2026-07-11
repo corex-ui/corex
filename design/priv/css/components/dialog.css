@@ -1,417 +1,177 @@
 @import "../main.css";
 
 @layer components {
-  .dialog[data-loading] > * {
-    @apply ui-loading;
-  }
-
-  .dialog [data-scope="dialog"][data-part="trigger"] {
-    @apply ui-trigger;
-  }
-
-  .dialog:not(.dialog--variant-solid):not(.dialog--variant-ghost):not(.dialog--variant-outline)
-    [data-scope="dialog"][data-part="trigger"] {
-    background-color: var(--color-ui);
-    color: var(--dialog-ink-text, var(--color-ink));
-    border-color: var(--color-border);
-
-    &:hover {
-      background-color: var(--color-ui-active);
-    }
-
-    &:active {
-      background-color: var(--color-ui-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--dialog-ink-text, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-ui-muted);
-      color: var(--color-ink-muted);
-      border-color: var(--color-ui-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  .dialog:not(.dialog--variant-solid):not(.dialog--variant-ghost):not(.dialog--variant-outline)
-    [data-scope="dialog"][data-part="content"] {
-    background-color: var(--color-root);
-    color: var(--color-ink);
-    border-color: var(--color-border);
-    box-shadow: var(--shadow-md);
-  }
-
-  .dialog [data-scope="dialog"][data-part="close-trigger"] {
-    @apply ui-trigger ui-trigger--square ui-trigger--sm;
-
-    flex-shrink: 0;
-    height: fit-content;
-    margin-inline-start: auto;
-  }
-
-  .dialog [data-scope="dialog"][data-part="backdrop"] {
-    position: fixed;
-    inset: 0;
-    width: 100vw;
-    height: 100vh;
-    background: color-mix(in srgb, var(--color-ui) 95%, transparent);
-    z-index: 10;
-  }
-
-  .dialog [data-scope="dialog"][data-part="positioner"] {
-    position: fixed;
-    inset: 0;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10;
-  }
-
-  .dialog [data-scope="dialog"][data-part="content"] {
-    @apply ui-content;
-
-    max-width: var(--container-md);
-    padding: var(--spacing-space);
-    text-align: start;
-  }
-
-  .dialog [data-scope="dialog"][data-part="positioner"][data-state="closed"] {
-    pointer-events: none;
-  }
-
-  .dialog[data-animation="js"] [data-scope="dialog"][data-part="backdrop"][data-state="closed"],
-  .dialog[data-animation="custom"] [data-scope="dialog"][data-part="backdrop"][data-state="closed"],
-  .dialog[data-animation="js"] [data-scope="dialog"][data-part="content"][data-state="closed"],
-  .dialog[data-animation="custom"] [data-scope="dialog"][data-part="content"][data-state="closed"] {
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  .dialog [data-scope="dialog"][data-part="header"] {
-    display: flex;
-    align-items: center;
-  }
-
-  .dialog [data-scope="dialog"][data-part="header"] [data-scope="dialog"][data-part="title"] {
-    flex: 1 1 0%;
-    min-width: 0;
-  }
-
-  .dialog [data-part="row"] {
-    display: inline-flex;
-    flex-direction: row;
-    justify-content: space-between;
-  }
-
-  .dialog [data-scope="dialog"][data-part="title"],
-  .dialog [data-scope="dialog"][data-part="description"] {
-    margin-block: 0;
-    text-align: start;
-  }
-
-  .dialog.dialog--side [data-scope="dialog"][data-part="content"] {
-    height: 100%;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    max-width: var(--container-3xs);
-    padding: var(--spacing-space);
-    border-radius: var(--radius-none);
-    border: 0;
-  }
-
-  .dialog.dialog--side [data-scope="dialog"][data-part="header"] {
-    padding: var(--spacing-space);
-    padding-bottom: 0;
-    flex-shrink: 0;
-  }
-
-  .dialog.dialog--side [data-scope="dialog"][data-part="description"] {
-    padding-inline: var(--spacing-space);
-    padding-bottom: var(--spacing-space);
-  }
-
-  .dialog.dialog--rounded-full [data-scope="dialog"][data-part="content"] {
-    border-radius: var(--radius-xl);
-  }
-
-  .dialog.dialog--side [data-scope="dialog"][data-part="positioner"] {
-    align-items: stretch;
-    justify-content: flex-start;
-    height: 100vh;
-  }
-
-  .dialog [data-scope="dialog"][data-part="content"][data-has-nested] {
-    transform: scale(calc(1 - var(--nested-layer-count) * 0.05));
-    transition: transform 0.2s ease-in-out;
-  }
-
-  .dialog [data-scope="dialog"][data-part="content"][data-nested] {
-    border: 2px solid var(--color-border-accent);
-  }
-
-  .dialog [data-scope="dialog"][data-part="backdrop"][data-has-nested] {
-    opacity: calc(0.4 + var(--nested-layer-count) * 0.1);
-  }
-
-  .dialog.dialog--accent [data-scope="dialog"][data-part="title"] {
-    color: var(--color-ink-accent);
-  }
-
-  .dialog.dialog--brand [data-scope="dialog"][data-part="title"] {
-    color: var(--color-ink-brand);
-  }
-
-  .dialog.dialog--alert [data-scope="dialog"][data-part="title"] {
-    color: var(--color-ink-alert);
-  }
-
-  .dialog.dialog--info [data-scope="dialog"][data-part="title"] {
-    color: var(--color-ink-info);
-  }
-
-  .dialog.dialog--success [data-scope="dialog"][data-part="title"] {
-    color: var(--color-ink-success);
-  }
-
-  .dialog.dialog--accent [data-scope="dialog"][data-part="close-trigger"] {
-    background-color: var(--color-accent);
-    color: var(--color-accent-ink);
-    border-color: var(--color-accent);
-  }
-
-  .dialog.dialog--brand [data-scope="dialog"][data-part="close-trigger"] {
-    background-color: var(--color-brand);
-    color: var(--color-brand-ink);
-    border-color: var(--color-brand);
-  }
-
-  .dialog.dialog--alert [data-scope="dialog"][data-part="close-trigger"] {
-    background-color: var(--color-alert);
-    color: var(--color-alert-ink);
-    border-color: var(--color-alert);
-  }
-
-  .dialog.dialog--info [data-scope="dialog"][data-part="close-trigger"] {
-    background-color: var(--color-info);
-    color: var(--color-info-ink);
-    border-color: var(--color-info);
-  }
-
-  .dialog.dialog--success [data-scope="dialog"][data-part="close-trigger"] {
-    background-color: var(--color-success);
-    color: var(--color-success-ink);
-    border-color: var(--color-success);
-  }
-}
-
-@utility dialog--* {
-  & [data-scope="dialog"][data-part="trigger"] {
-    font-size: --value(--text-*, [length]);
-    line-height: --value(--text-*--line-height, [length]);
-    padding-inline: --value(--spacing-space-*, [length]);
-    gap: --value(--spacing-space-*, [length]);
-    min-height: --value(--spacing-size-*, [length]);
-    --dialog-fill: --value(--color-*, [color]);
-    --dialog-fill-hover: --value(--color-*-hover, [color]);
-    --dialog-fill-active: --value(--color-*-active, [color]);
-    --dialog-ink: --value(--color-*-ink, [color]);
-    --dialog-ink-text: --value(--color-ink-*, [color]);
-    --dialog-muted: --value(--color-*-muted, [color]);
-  }
-
-  & [data-scope="dialog"][data-part="content"] {
-    padding: --value(--spacing-space-*, [length]);
-    max-width: --value(--container-*, [length]);
-    --dialog-panel-fill: --value(--color-*, [color]);
-    --dialog-panel-fill-hover: --value(--color-*-hover, [color]);
-    --dialog-panel-ink: --value(--color-*-ink, [color]);
-    --dialog-panel-ink-text: --value(--color-ink-*, [color]);
-    --dialog-panel-muted: --value(--color-*-muted, [color]);
-  }
-
-  & [data-scope="dialog"][data-part="header"] {
-    padding: --value(--spacing-space-*, [length]);
-    gap: --value(--spacing-space-*, [length]);
-  }
-
-  & [data-scope="dialog"][data-part="description"] {
-    padding-inline: --value(--spacing-space-*, [length]);
-    padding-bottom: --value(--spacing-space-*, [length]);
-  }
-
-  & [data-scope="dialog"][data-part="title"],
-  & [data-scope="dialog"][data-part="description"],
-  & [data-scope="dialog"][data-part="content"] p {
-    font-size: --value(--text-*, [length]);
-    line-height: --value(--text-*--line-height, [length]);
-  }
-}
-
-@utility dialog--rounded-* {
-  & [data-scope="dialog"][data-part="content"] {
-    border-radius: --value(--radius-*, [length]);
-  }
-
-  & [data-scope="dialog"][data-part="close-trigger"] {
-    border-radius: --value(--radius-*, [length]);
-  }
-
-  & [data-scope="dialog"][data-part="trigger"] {
-    border-radius: --value(--radius-*, [length]);
-  }
-}
-
-@utility dialog--variant-solid {
-  & [data-scope="dialog"][data-part="trigger"] {
-    background-color: var(--dialog-fill, var(--color-ui-active));
-    color: var(--dialog-ink, var(--color-ink));
-    border-color: transparent;
-
-    &:hover {
-      background-color: var(--dialog-fill-hover, var(--color-ui-hover));
-    }
-
-    &:active {
-      background-color: var(--dialog-fill-active, var(--color-ui-active));
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--dialog-ink, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--dialog-muted, var(--color-ui-muted));
-      color: var(--dialog-ink, var(--color-ink-muted));
-      cursor: not-allowed;
-    }
-  }
-
-  & [data-scope="dialog"][data-part="content"] {
-    background-color: var(--dialog-panel-fill, var(--color-ui-active));
-    color: var(--dialog-panel-ink, var(--color-ink));
-    border-color: transparent;
-    box-shadow: var(--shadow-md);
-  }
-}
-
-@utility dialog--variant-subtle {
-  & [data-scope="dialog"][data-part="trigger"] {
-    background-color: var(--color-ui);
-    color: var(--dialog-ink-text, var(--color-ink));
-    border-color: var(--color-border);
-
-    &:hover {
-      background-color: var(--color-ui-active);
-    }
-
-    &:active {
-      background-color: var(--color-ui-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--dialog-ink-text, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-ui-muted);
-      color: var(--color-ink-muted);
-      border-color: var(--color-ui-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  & [data-scope="dialog"][data-part="content"] {
-    background-color: var(--color-root);
-    color: var(--color-ink);
-    border-color: var(--color-border);
-    box-shadow: var(--shadow-md);
-  }
-}
-
-@utility dialog--variant-ghost {
-  & [data-scope="dialog"][data-part="trigger"] {
-    background-color: transparent;
-    color: var(--dialog-ink-text, var(--color-ink));
-    border-color: transparent;
-
-    &:hover {
-      background-color: var(--color-ui-hover);
-    }
-
-    &:active {
-      background-color: var(--color-ui-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--dialog-ink-text, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: transparent;
-      color: var(--color-ink-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  & [data-scope="dialog"][data-part="content"] {
-    background-color: transparent;
-    color: var(--dialog-panel-ink-text, var(--color-ink));
-    border-color: transparent;
-    box-shadow: none;
-  }
-}
-
-@utility dialog--variant-outline {
-  & [data-scope="dialog"][data-part="trigger"] {
-    background-color: transparent;
-    color: var(--dialog-ink-text, var(--color-ink));
-    border-color: var(--dialog-fill, var(--color-border));
-
-    &:hover {
-      background-color: var(--color-ui-hover);
-    }
-
-    &:active {
-      background-color: var(--color-ui-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--dialog-fill, var(--color-ink));
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: transparent;
-      color: var(--color-ink-muted);
-      border-color: var(--color-ui-muted);
-      cursor: not-allowed;
-    }
-  }
-
-  & [data-scope="dialog"][data-part="content"] {
-    background-color: transparent;
-    color: var(--dialog-panel-ink-text, var(--color-ink));
-    border-color: var(--dialog-panel-fill, var(--color-border));
-    box-shadow: none;
-  }
+ .dialog[data-loading] > * {
+ @apply ui-loading;
+ }
+
+ .dialog [data-scope="dialog"][data-part="trigger"] {
+ @apply ui-trigger;
+ }
+
+ .dialog [data-scope="dialog"][data-part="close-trigger"] {
+ @apply ui-trigger ui-trigger--square ui-size-sm;
+
+ flex-shrink: 0;
+ height: fit-content;
+ margin-inline-start: auto;
+ }
+
+ .dialog [data-scope="dialog"][data-part="backdrop"] {
+ position: fixed;
+ inset: 0;
+ width: 100vw;
+ height: 100vh;
+ background: color-mix(in srgb, var(--color-ui) 95%, transparent);
+ z-index: 10;
+ }
+
+ .dialog [data-scope="dialog"][data-part="positioner"] {
+ position: fixed;
+ inset: 0;
+ width: 100vw;
+ height: 100vh;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ z-index: 10;
+ }
+
+ .dialog [data-scope="dialog"][data-part="content"] {
+ @apply ui-content;
+
+ max-width: var(--container-md);
+ padding: var(--spacing-space);
+ text-align: start;
+ }
+
+ .dialog [data-scope="dialog"][data-part="positioner"][data-state="closed"] {
+ pointer-events: none;
+ }
+
+ .dialog[data-animation="js"] [data-scope="dialog"][data-part="backdrop"][data-state="closed"],
+ .dialog[data-animation="custom"] [data-scope="dialog"][data-part="backdrop"][data-state="closed"],
+ .dialog[data-animation="js"] [data-scope="dialog"][data-part="content"][data-state="closed"],
+ .dialog[data-animation="custom"] [data-scope="dialog"][data-part="content"][data-state="closed"] {
+ opacity: 0;
+ pointer-events: none;
+ }
+
+ .dialog [data-scope="dialog"][data-part="header"] {
+ display: flex;
+ align-items: center;
+ }
+
+ .dialog [data-scope="dialog"][data-part="header"] [data-scope="dialog"][data-part="title"] {
+ flex: 1 1 0%;
+ min-width: 0;
+ }
+
+ .dialog [data-part="row"] {
+ display: inline-flex;
+ flex-direction: row;
+ justify-content: space-between;
+ }
+
+ .dialog [data-scope="dialog"][data-part="title"],
+ .dialog [data-scope="dialog"][data-part="description"] {
+ margin-block: 0;
+ text-align: start;
+ }
+
+ .dialog.dialog--side [data-scope="dialog"][data-part="content"] {
+ height: 100%;
+ overflow: hidden;
+ display: flex;
+ flex-direction: column;
+ width: 100%;
+ max-width: var(--container-3xs);
+ padding: var(--spacing-space);
+ border-radius: var(--radius-none);
+ border: 0;
+ }
+
+ .dialog.dialog--side [data-scope="dialog"][data-part="header"] {
+ padding: var(--spacing-space);
+ padding-bottom: 0;
+ flex-shrink: 0;
+ }
+
+ .dialog.dialog--side [data-scope="dialog"][data-part="description"] {
+ padding-inline: var(--spacing-space);
+ padding-bottom: var(--spacing-space);
+ }
+
+ .dialog.dialog--rounded-full [data-scope="dialog"][data-part="content"] {
+ border-radius: var(--radius-xl);
+ }
+
+ .dialog.dialog--side [data-scope="dialog"][data-part="positioner"] {
+ align-items: stretch;
+ justify-content: flex-start;
+ height: 100vh;
+ }
+
+ .dialog [data-scope="dialog"][data-part="content"][data-has-nested] {
+ transform: scale(calc(1 - var(--nested-layer-count) * 0.05));
+ transition: transform 0.2s ease-in-out;
+ }
+
+ .dialog [data-scope="dialog"][data-part="content"][data-nested] {
+ border: 2px solid var(--color-border-accent);
+ }
+
+ .dialog [data-scope="dialog"][data-part="backdrop"][data-has-nested] {
+ opacity: calc(0.4 + var(--nested-layer-count) * 0.1);
+ }
+
+ .dialog.dialog--accent [data-scope="dialog"][data-part="title"] {
+ color: var(--color-ink-accent);
+ }
+
+ .dialog.dialog--brand [data-scope="dialog"][data-part="title"] {
+ color: var(--color-ink-brand);
+ }
+
+ .dialog.dialog--alert [data-scope="dialog"][data-part="title"] {
+ color: var(--color-ink-alert);
+ }
+
+ .dialog.dialog--info [data-scope="dialog"][data-part="title"] {
+ color: var(--color-ink-info);
+ }
+
+ .dialog.dialog--success [data-scope="dialog"][data-part="title"] {
+ color: var(--color-ink-success);
+ }
+
+ .dialog.dialog--accent [data-scope="dialog"][data-part="close-trigger"] {
+ background-color: var(--color-accent);
+ color: var(--color-accent-ink);
+ border-color: var(--color-accent);
+ }
+
+ .dialog.dialog--brand [data-scope="dialog"][data-part="close-trigger"] {
+ background-color: var(--color-brand);
+ color: var(--color-brand-ink);
+ border-color: var(--color-brand);
+ }
+
+ .dialog.dialog--alert [data-scope="dialog"][data-part="close-trigger"] {
+ background-color: var(--color-alert);
+ color: var(--color-alert-ink);
+ border-color: var(--color-alert);
+ }
+
+ .dialog.dialog--info [data-scope="dialog"][data-part="close-trigger"] {
+ background-color: var(--color-info);
+ color: var(--color-info-ink);
+ border-color: var(--color-info);
+ }
+
+ .dialog.dialog--success [data-scope="dialog"][data-part="close-trigger"] {
+ background-color: var(--color-success);
+ color: var(--color-success-ink);
+ border-color: var(--color-success);
+ }
 }

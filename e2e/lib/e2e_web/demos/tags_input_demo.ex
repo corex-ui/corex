@@ -244,7 +244,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
           {msg}
         </:error>
       </.tags_input>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -283,7 +283,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
           {msg}
         </:error>
       </.tags_input>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -306,7 +306,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
           {msg}
         </:error>
       </.tags_input>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -361,7 +361,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
         <:label>Keywords</:label>
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" class="button ui-accent">
         Submit
       </.action>
     </form>
@@ -398,7 +398,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
           {msg}
         </:error>
       </.tags_input>
-      <.action type="submit" id="tags-input-changeset-submit" class="button button--accent">
+      <.action type="submit" id="tags-input-changeset-submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -424,7 +424,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
         <:label>Keywords</:label>
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
-      <.action type="submit" id="tags-input-native-submit" class="button button--accent">
+      <.action type="submit" id="tags-input-native-submit" class="button ui-accent">
         Submit
       </.action>
     </form>
@@ -447,7 +447,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
           {msg}
         </:error>
       </.tags_input>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -505,7 +505,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
           {msg}
         </:error>
       </.tags_input>
-      <.action type="submit" id="tags-input-live-changeset-submit" class="button button--accent">
+      <.action type="submit" id="tags-input-live-changeset-submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -514,7 +514,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def api_set_value_client_binding_code do
     ~S"""
-    <.action phx-click={Corex.TagsInput.set_value("tags-api-set-client", ["lorem", "duis"])} class="button button--sm">
+    <.action phx-click={Corex.TagsInput.set_value("tags-api-set-client", ["lorem", "duis"])} class="button ui-size-sm">
       Set lorem and duis
     </.action>
     <.tags_input class="tags-input" value={["donec"]}>
@@ -526,7 +526,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def api_set_value_server_heex do
     ~S"""
-    <.action phx-click="api_tags_set_value_server" class="button button--sm">
+    <.action phx-click="api_tags_set_value_server" class="button ui-size-sm">
       Set lorem and duis
     </.action>
     <.tags_input class="tags-input" value={["donec"]}>
@@ -552,7 +552,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
         detail: %{value: ["lorem", "duis"]},
         bubbles: false
       )}
-      class="button button--sm"
+      class="button ui-size-sm"
     >
       Set lorem and duis
     </.action>
@@ -598,7 +598,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Set lorem and duis
       </.action>
@@ -615,7 +615,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click="api_tags_set_value_server" class="button button--sm">
+      <.action phx-click="api_tags_set_value_server" class="button ui-size-sm">
         Set lorem and duis
       </.action>
     </div>
@@ -628,7 +628,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def api_add_value_client_binding_code do
     ~S"""
-    <.action phx-click={Corex.TagsInput.add_value("tags-api-add-client", "duis")} class="button button--sm">
+    <.action phx-click={Corex.TagsInput.add_value("tags-api-add-client", "duis")} class="button ui-size-sm">
       Add duis
     </.action>
     <.tags_input class="tags-input" value={["lorem", "donec"]}>
@@ -640,7 +640,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def api_add_value_server_heex do
     ~S"""
-    <.action phx-click="api_tags_add_value_server" class="button button--sm">
+    <.action phx-click="api_tags_add_value_server" class="button ui-size-sm">
       Add duis
     </.action>
     <.tags_input class="tags-input" value={["lorem", "donec"]}>
@@ -666,7 +666,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
         detail: %{value: "duis"},
         bubbles: false
       )}
-      class="button button--sm"
+      class="button ui-size-sm"
     >
       Add duis
     </.action>
@@ -704,7 +704,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
   def api_add_value_client_binding_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={Corex.TagsInput.add_value(@id, "duis")} class="button button--sm">
+      <.action phx-click={Corex.TagsInput.add_value(@id, "duis")} class="button ui-size-sm">
         Add duis
       </.action>
     </div>
@@ -720,7 +720,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click="api_tags_add_value_server" class="button button--sm">
+      <.action phx-click="api_tags_add_value_server" class="button ui-size-sm">
         Add duis
       </.action>
     </div>
@@ -742,7 +742,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Add duis
       </.action>
@@ -756,10 +756,10 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def api_clear_client_binding_code do
     ~S"""
-    <.action phx-click={Corex.TagsInput.clear_value("tags-api-clear-client")} class="button button--sm">
+    <.action phx-click={Corex.TagsInput.clear_value("tags-api-clear-client")} class="button ui-size-sm">
       Clear all
     </.action>
-    <.action phx-click={Corex.TagsInput.remove_value("tags-api-clear-client", "lorem")} class="button button--sm">
+    <.action phx-click={Corex.TagsInput.remove_value("tags-api-clear-client", "lorem")} class="button ui-size-sm">
       Clear lorem
     </.action>
     <.tags_input class="tags-input" value={["lorem", "duis", "donec"]}>
@@ -771,10 +771,10 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def api_clear_server_heex do
     ~S"""
-    <.action phx-click="api_tags_clear_all_server" class="button button--sm">
+    <.action phx-click="api_tags_clear_all_server" class="button ui-size-sm">
       Clear all
     </.action>
-    <.action phx-click="api_tags_clear_lorem_server" class="button button--sm">
+    <.action phx-click="api_tags_clear_lorem_server" class="button ui-size-sm">
       Clear lorem
     </.action>
     <.tags_input class="tags-input" value={["lorem", "duis", "donec"]}>
@@ -800,7 +800,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     ~S"""
     <.action
       phx-click={JS.dispatch("corex:tags-input:clear-value", to: "#tags-api-clear-js", bubbles: false)}
-      class="button button--sm"
+      class="button ui-size-sm"
     >
       Clear all
     </.action>
@@ -810,7 +810,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
         detail: %{value: "lorem"},
         bubbles: false
       )}
-      class="button button--sm"
+      class="button ui-size-sm"
     >
       Clear lorem
     </.action>
@@ -840,7 +840,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     <div class="flex flex-wrap gap-2 mb-4">
       <.action
         phx-click={Corex.TagsInput.set_value(@id, ["lorem", "duis"])}
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Set lorem and duis
       </.action>
@@ -855,10 +855,10 @@ defmodule E2eWeb.Demos.TagsInputDemo do
   def api_clear_client_binding_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={Corex.TagsInput.clear_value(@id)} class="button button--sm">
+      <.action phx-click={Corex.TagsInput.clear_value(@id)} class="button ui-size-sm">
         Clear all
       </.action>
-      <.action phx-click={Corex.TagsInput.remove_value(@id, "lorem")} class="button button--sm">
+      <.action phx-click={Corex.TagsInput.remove_value(@id, "lorem")} class="button ui-size-sm">
         Clear lorem
       </.action>
     </div>
@@ -874,7 +874,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     <div class="flex flex-wrap gap-2 mb-4">
       <.action
         phx-click={JS.dispatch("corex:tags-input:clear-value", to: "##{@id}", bubbles: false)}
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Clear all
       </.action>
@@ -886,7 +886,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Clear lorem
       </.action>
@@ -903,8 +903,8 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click="api_tags_clear_all_server" class="button button--sm">Clear all</.action>
-      <.action phx-click="api_tags_clear_lorem_server" class="button button--sm">Clear lorem</.action>
+      <.action phx-click="api_tags_clear_all_server" class="button ui-size-sm">Clear all</.action>
+      <.action phx-click="api_tags_clear_lorem_server" class="button ui-size-sm">Clear lorem</.action>
     </div>
     <.tags_input id="tags-api-clear-server" class="tags-input" value={["lorem", "duis", "donec"]}>
       <:label>Tags</:label>
@@ -970,22 +970,19 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     <.tags_input class="tags-input w-full" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--muted" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full ui-accent" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--accent" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full ui-brand" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--brand" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full ui-alert" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--alert" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full ui-success" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--success" value={["lorem", "duis", "donec"]}>
-      <:close><.heroicon name="hero-x-mark" /></:close>
-    </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--info" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full ui-info" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
     """
@@ -1000,43 +997,36 @@ defmodule E2eWeb.Demos.TagsInputDemo do
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
       <.tags_input
-        id="tags-style-color-muted"
-        class="tags-input w-full tags-input--muted"
-        value={@demo_tags}
-      >
-        <:close><.heroicon name="hero-x-mark" /></:close>
-      </.tags_input>
-      <.tags_input
         id="tags-style-color-accent"
-        class="tags-input w-full tags-input--accent"
+        class="tags-input w-full ui-accent"
         value={@demo_tags}
       >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
       <.tags_input
         id="tags-style-color-brand"
-        class="tags-input w-full tags-input--brand"
+        class="tags-input w-full ui-brand"
         value={@demo_tags}
       >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
       <.tags_input
         id="tags-style-color-alert"
-        class="tags-input w-full tags-input--alert"
+        class="tags-input w-full ui-alert"
         value={@demo_tags}
       >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
       <.tags_input
         id="tags-style-color-success"
-        class="tags-input w-full tags-input--success"
+        class="tags-input w-full ui-success"
         value={@demo_tags}
       >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
       <.tags_input
         id="tags-style-color-info"
-        class="tags-input w-full tags-input--info"
+        class="tags-input w-full ui-info"
         value={@demo_tags}
       >
         <:close><.heroicon name="hero-x-mark" /></:close>
@@ -1050,13 +1040,13 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     <.tags_input class="tags-input w-full" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--variant-solid" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full ui-solid" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--variant-ghost" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--variant-outline" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
     """
@@ -1072,21 +1062,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
       </.tags_input>
       <.tags_input
         id="tags-style-variant-solid"
-        class="tags-input w-full tags-input--variant-solid"
-        value={@demo_tags}
-      >
-        <:close><.heroicon name="hero-x-mark" /></:close>
-      </.tags_input>
-      <.tags_input
-        id="tags-style-variant-ghost"
-        class="tags-input w-full tags-input--variant-ghost"
-        value={@demo_tags}
-      >
-        <:close><.heroicon name="hero-x-mark" /></:close>
-      </.tags_input>
-      <.tags_input
-        id="tags-style-variant-outline"
-        class="tags-input w-full tags-input--variant-outline"
+        class="tags-input w-full ui-solid"
         value={@demo_tags}
       >
         <:close><.heroicon name="hero-x-mark" /></:close>
@@ -1133,19 +1109,19 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def styling_trigger_heex do
     ~S"""
-    <.tags_input class="tags-input w-full tags-input--trigger--accent" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full ui-accent" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--trigger--brand" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full ui-brand" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--trigger--alert" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full ui-alert" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--trigger--success" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full ui-success" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--trigger--info" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full ui-info" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
     """
@@ -1158,35 +1134,35 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     <div class="flex flex-col gap-space-lg w-full items-center">
       <.tags_input
         id="tags-style-trigger-accent"
-        class="tags-input w-full tags-input--trigger--accent"
+        class="tags-input w-full ui-accent"
         value={@demo_tags}
       >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
       <.tags_input
         id="tags-style-trigger-brand"
-        class="tags-input w-full tags-input--trigger--brand"
+        class="tags-input w-full ui-brand"
         value={@demo_tags}
       >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
       <.tags_input
         id="tags-style-trigger-alert"
-        class="tags-input w-full tags-input--trigger--alert"
+        class="tags-input w-full ui-alert"
         value={@demo_tags}
       >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
       <.tags_input
         id="tags-style-trigger-success"
-        class="tags-input w-full tags-input--trigger--success"
+        class="tags-input w-full ui-success"
         value={@demo_tags}
       >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
       <.tags_input
         id="tags-style-trigger-info"
-        class="tags-input w-full tags-input--trigger--info"
+        class="tags-input w-full ui-info"
         value={@demo_tags}
       >
         <:close><.heroicon name="hero-x-mark" /></:close>
@@ -1197,16 +1173,16 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def styling_size_heex do
     ~S"""
-    <.tags_input class="tags-input w-full tags-input--sm" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full ui-size-sm" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--md" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full ui-size-md" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--lg" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full ui-size-lg" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--xl" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full ui-size-xl" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
     """
@@ -1217,16 +1193,16 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
     ~H"""
     <div class="flex flex-col gap-space-lg w-full items-center">
-      <.tags_input id="tags-style-size-sm" class="tags-input w-full tags-input--sm" value={@demo_tags}>
+      <.tags_input id="tags-style-size-sm" class="tags-input w-full ui-size-sm" value={@demo_tags}>
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
-      <.tags_input id="tags-style-size-md" class="tags-input w-full tags-input--md" value={@demo_tags}>
+      <.tags_input id="tags-style-size-md" class="tags-input w-full ui-size-md" value={@demo_tags}>
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
-      <.tags_input id="tags-style-size-lg" class="tags-input w-full tags-input--lg" value={@demo_tags}>
+      <.tags_input id="tags-style-size-lg" class="tags-input w-full ui-size-lg" value={@demo_tags}>
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
-      <.tags_input id="tags-style-size-xl" class="tags-input w-full tags-input--xl" value={@demo_tags}>
+      <.tags_input id="tags-style-size-xl" class="tags-input w-full ui-size-xl" value={@demo_tags}>
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
     </div>
@@ -1235,19 +1211,19 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def styling_radius_heex do
     ~S"""
-    <.tags_input class="tags-input w-full tags-input--rounded-none" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full ui-rounded-none" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--rounded-sm" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full ui-rounded-sm" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--rounded-md" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full ui-rounded-md" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--rounded-lg" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full ui-rounded-lg" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full tags-input--rounded-xl" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full ui-rounded-xl" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
     """
@@ -1260,35 +1236,35 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     <div class="flex flex-col gap-space-lg w-full items-center">
       <.tags_input
         id="tags-style-radius-none"
-        class="tags-input w-full tags-input--rounded-none"
+        class="tags-input w-full ui-rounded-none"
         value={@demo_tags}
       >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
       <.tags_input
         id="tags-style-radius-sm"
-        class="tags-input w-full tags-input--rounded-sm"
+        class="tags-input w-full ui-rounded-sm"
         value={@demo_tags}
       >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
       <.tags_input
         id="tags-style-radius-md"
-        class="tags-input w-full tags-input--rounded-md"
+        class="tags-input w-full ui-rounded-md"
         value={@demo_tags}
       >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
       <.tags_input
         id="tags-style-radius-lg"
-        class="tags-input w-full tags-input--rounded-lg"
+        class="tags-input w-full ui-rounded-lg"
         value={@demo_tags}
       >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
       <.tags_input
         id="tags-style-radius-xl"
-        class="tags-input w-full tags-input--rounded-xl"
+        class="tags-input w-full ui-rounded-xl"
         value={@demo_tags}
       >
         <:close><.heroicon name="hero-x-mark" /></:close>
@@ -1320,7 +1296,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     ~H"""
     <div class={DemoScales.preview_scroll_class()}>
       <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
-        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.tags_input
           id={"tags-style-max-#{variant.id}"}
           class={DemoScales.join_modifiers("tags-input", variant.modifier)}
@@ -1347,7 +1323,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
         <:label>Keywords</:label>
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -1371,7 +1347,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
           {msg}
         </:error>
       </.tags_input>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -1387,7 +1363,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
         <:label>Keywords</:label>
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
-      <.action type="submit" id="tags-input-live-form-phoenix-submit" class="button button--accent">
+      <.action type="submit" id="tags-input-live-form-phoenix-submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -1498,7 +1474,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
           {msg}
         </:error>
       </.tags_input>
-      <.action type="submit" id="tags-input-live-form-ecto-invalid-submit" class="button button--accent">
+      <.action type="submit" id="tags-input-live-form-ecto-invalid-submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -1526,7 +1502,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
       <.action
         type="submit"
         id="tags-input-live-form-ecto-invalid-submit"
-        class="button button--accent"
+        class="button ui-accent"
       >
         Submit
       </.action>

@@ -363,6 +363,53 @@ jobs:
           mix compile --force
           mix test --only integration
 
+  design-tests:
+    name: Design tests (OTP ${{ matrix.otp }} | Elixir ${{ matrix.elixir }})
+    runs-on: ubuntu-24.04
+    env:
+      MIX_ENV: test
+
+    strategy:
+      matrix:
+        include:
+          - elixir: 1.17.3
+            otp: 26.2.5.2
+          - elixir: 1.18.4
+            otp: 27.3
+          - elixir: 1.18.4
+            otp: 28.0.1
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+
+      - name: Set up Elixir
+        uses: erlef/setup-beam@3580539ceec3dc05b0ed51e9e10b08eb7a7c2bb4
+        with:
+          elixir-version: ${{ matrix.elixir }}
+          otp-version: ${{ matrix.otp }}
+
+      - name: Restore design dependencies cache
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306
+        with:
+          path: |
+            design/deps
+            design/_build
+          key: deps-design-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('design/mix.lock') }}
+          restore-keys: |
+            deps-design-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}
+
+      - name: Install design dependencies
+        working-directory: design
+        run: mix deps.get
+
+      - name: Compile design (warnings as errors)
+        working-directory: design
+        run: mix compile --warnings-as-errors
+
+      - name: Run design tests
+        working-directory: design
+        run: mix test
+
   integration-tests:
     name: Integration tests (OTP ${{ matrix.otp }} | Elixir ${{ matrix.elixir }}${{ matrix.phx_new_suffix }})
     runs-on: ubuntu-24.04

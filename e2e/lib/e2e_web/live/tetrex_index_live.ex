@@ -91,7 +91,7 @@ defmodule E2eWeb.TetrexIndexLive do
                   {~t"Play on the board, watch live games, or replay top scores from the leaderboard."}
                 </p>
               </div>
-              <.navigate to={~p"/showcases/tetrex/new"} class="button button--accent shrink-0">
+              <.navigate to={~p"/showcases/tetrex/new"} class="button ui-accent shrink-0">
                 {~t"New game"}
               </.navigate>
             </div>
@@ -194,7 +194,7 @@ defmodule E2eWeb.TetrexIndexLive do
     ~H"""
     <.editable
       id={"tetrex-player-#{@row.id}"}
-      class="editable editable--sm"
+      class="editable ui-size-sm"
       value={@row.player_name}
       placeholder={~t"Name"}
       on_value_change="tetrex_player_name_changed"

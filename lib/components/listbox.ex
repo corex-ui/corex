@@ -105,7 +105,7 @@ defmodule Corex.Listbox do
   ### set_value
 
   ```heex
-  <.action phx-click={Corex.Listbox.set_value("listbox-api-sv-client", ["bel"])} class="button button--sm">
+  <.action phx-click={Corex.Listbox.set_value("listbox-api-sv-client", ["bel"])} class="button ui-size-sm">
     Belgium
   </.action>
   <.listbox id="listbox-api-sv-client" class="listbox" items={
@@ -129,7 +129,7 @@ defmodule Corex.Listbox do
   ### value
 
   ```heex
-  <.action phx-click={Corex.Listbox.value("listbox-api-val-client")} class="button button--sm">
+  <.action phx-click={Corex.Listbox.value("listbox-api-val-client")} class="button ui-size-sm">
     Read selection
   </.action>
   ```

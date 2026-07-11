@@ -1,17 +1,17 @@
 @import "../main.css";
 
 @layer components {
-  .icon {
-    @apply ui-icon;
-    font-size: var(--text-base);
+ .icon {
+ @apply ui-icon;
+ font-size: var(--text-base);
 
-  }
+ }
 }
 
 @utility icon--* {
-  font-size: --value(--text-*, [length]);
-  line-height: --value(--text-*--line-height, [length]);
-  height: --value(--spacing-*, [length]) !important;
-  width: --value(--spacing-*, [length]) !important;
-  color: --value(--color-ink-*, [color]);
+ font-size: --value(--text-*, [length]);
+ line-height: --value(--text-*--line-height, [length]);
+ height: --value(--spacing-*, [length]) !important;
+ width: --value(--spacing-*, [length]) !important;
+ color: --value(--color-ink-*, [color]);
 }

@@ -92,7 +92,7 @@ defmodule E2eWeb.DatePickerPlayLive do
           />
 
           <.switch
-            class="switch switch--sm"
+            class="switch ui-size-sm"
             id="disabled"
             checked={@controls.disabled}
             on_checked_change="control_changed"
@@ -100,7 +100,7 @@ defmodule E2eWeb.DatePickerPlayLive do
             <:label>Disabled</:label>
           </.switch>
           <.switch
-            class="switch switch--sm"
+            class="switch ui-size-sm"
             id="read_only"
             checked={@controls.read_only}
             on_checked_change="control_changed"
@@ -108,7 +108,7 @@ defmodule E2eWeb.DatePickerPlayLive do
             <:label>Read only</:label>
           </.switch>
           <.switch
-            class="switch switch--sm"
+            class="switch ui-size-sm"
             id="invalid"
             checked={@controls.invalid}
             on_checked_change="control_changed"
@@ -117,7 +117,7 @@ defmodule E2eWeb.DatePickerPlayLive do
           </.switch>
 
           <.select
-            class="select select--sm w-4xs"
+            class="select ui-size-sm w-4xs"
             id="locale"
             value={[@controls.locale]}
             deselectable={false}
@@ -130,7 +130,7 @@ defmodule E2eWeb.DatePickerPlayLive do
           </.select>
 
           <.select
-            class="select select--sm w-4xs"
+            class="select ui-size-sm w-4xs"
             id="selection_mode"
             value={[@controls.selection_mode]}
             deselectable={false}
@@ -148,7 +148,7 @@ defmodule E2eWeb.DatePickerPlayLive do
 
           <.select
             :if={@controls.selection_mode == "multiple"}
-            class="select select--sm w-4xs"
+            class="select ui-size-sm w-4xs"
             id="max_selected_dates"
             value={[
               if @controls.max_selected_dates == nil do

@@ -117,7 +117,7 @@ defmodule Corex.Editable do
   You can then use modifiers
 
   ```heex
-  <.editable class="editable editable--accent editable--lg" value="">
+  <.editable class="editable ui-accent ui-size-lg" value="">
     <:label>Label</:label>
     <:edit_trigger>Edit</:edit_trigger>
     <:submit_trigger>Save</:submit_trigger>

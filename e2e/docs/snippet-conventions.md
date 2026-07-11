@@ -7,13 +7,13 @@ User-facing strings (`*_code`, `*_heex`, `events_*`, `api_*`) must be copy-paste
 On the host, use the base class plus Corex BEM modifiers only:
 
 ```heex
-<.checkbox class="checkbox checkbox--accent" />
-<.carousel class="carousel carousel--accent carousel--rounded-xl" />
+<.checkbox class="checkbox ui-accent" />
+<.carousel class="carousel ui-accent ui-rounded-xl" />
 ```
 
 Omit `id` on the component in snippets unless the example is API or client-event wiring (`getElementById`, `Corex.Component.set_*`). E2e previews keep `id` in `*_example` for tests only.
 
-Allowed on related primitives in slots when needed: `class="icon"` on `<.heroicon>`, `class="button button--sm"` on `<.action>`.
+Allowed on related primitives in slots when needed: `class="icon"` on `<.heroicon>`, `class="button ui-size-sm"` on `<.action>`.
 
 ## Forbidden in snippets
 

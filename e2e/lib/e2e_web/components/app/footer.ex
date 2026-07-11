@@ -26,7 +26,7 @@ defmodule E2eWeb.App.Footer do
         <div class={Shell.row() <> " gap-2 flex-wrap justify-center md:justify-end items-center max-w-full min-w-0"}>
           <.locale_switcher path={@path} />
           <.navigate
-            class="button button--sm button--circle"
+            class="button ui-size-sm ui-trigger--circle"
             to="https://github.com/corex-ui/corex"
             external
           >
@@ -49,7 +49,7 @@ defmodule E2eWeb.App.Footer do
           </.navigate>
 
           <.navigate
-            class="button button--sm button--circle"
+            class="button ui-size-sm ui-trigger--circle"
             to="https://hexdocs.pm/corex"
             external
           >
@@ -107,7 +107,7 @@ defmodule E2eWeb.App.Footer do
             </svg>
           </.navigate>
 
-          <.navigate class="button button--sm button--circle" to="/feed.xml" external>
+          <.navigate class="button ui-size-sm ui-trigger--circle" to="/feed.xml" external>
             <span class="sr-only">{~t"Corex Blog RSS"}</span>
             <.heroicon name="hero-rss" />
           </.navigate>

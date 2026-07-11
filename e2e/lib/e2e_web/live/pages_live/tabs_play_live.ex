@@ -121,7 +121,7 @@ defmodule E2eWeb.TabsPlayLive do
         <:controls>
           <.playground_dir_toggle id="dir" on_value_change="control_changed" value={[@dir]} />
           <.switch
-            class="switch switch--sm"
+            class="switch ui-size-sm"
             id="playground-tabs-vertical"
             checked={@vertical}
             on_checked_change="vertical_changed"
@@ -130,7 +130,7 @@ defmodule E2eWeb.TabsPlayLive do
           </.switch>
           <.select
             id="playground-disabled-items"
-            class="select select--sm w-4xs"
+            class="select ui-size-sm w-4xs"
             multiple
             deselectable={true}
             close_on_select={false}

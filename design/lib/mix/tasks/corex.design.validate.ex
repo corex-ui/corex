@@ -7,6 +7,17 @@ defmodule Mix.Tasks.Corex.Design.Validate do
   def run(_argv) do
     Mix.Task.run("app.start")
     Corex.Design.Config.validate!()
+
+    for warning <- Corex.Design.Tokens.Contrast.check!() do
+      Mix.shell().info([
+        :yellow,
+        "warning: ",
+        :reset,
+        "contrast [#{warning.theme}/#{warning.mode}] #{warning.fg} on #{warning.bg}: " <>
+          "#{Float.round(warning.ratio, 2)}:1 (target #{warning.target}:1) -- #{warning.label}"
+      ])
+    end
+
     Mix.shell().info("Corex design config is valid")
     :ok
   end

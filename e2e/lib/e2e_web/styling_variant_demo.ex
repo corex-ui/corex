@@ -31,9 +31,8 @@ defmodule E2eWeb.StylingVariantDemo do
     ~H"""
     <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
       <p>
-        Variant modifiers control {@host} surface treatment. Default is subtle; use <code class="text-sm">{@host}--variant-solid</code>, <code class="text-sm">{@host}--variant-ghost</code>, or
-        <code class="text-sm">{@host}--variant-outline</code>
-        to change it.
+        Variant modifiers control {@host} surface treatment. Default is subtle; add <code class="text-sm">ui-solid</code>
+        for a filled surface.
       </p>
     </div>
     """
@@ -45,7 +44,7 @@ defmodule E2eWeb.StylingVariantDemo do
     ~H"""
     <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
       <p>
-        Combine semantic palette and variant treatment on the same host, for example <code class="text-sm">{@host} {@host}--accent {@host}--variant-solid</code>.
+        Combine semantic palette and variant treatment on the same host, for example <code class="text-sm">{@host} ui-accent ui-solid</code>.
       </p>
     </div>
     """

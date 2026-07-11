@@ -641,11 +641,11 @@ defmodule Corex.Accordion do
   @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.accordion>`). Combine axes, for example `accordion accordion--accent accordion--lg` or `accordion accordion--info accordion--variant-ghost`.
+  Stack modifiers on the host (`class` on `<.accordion>`). Combine axes, for example `accordion ui-accent ui-size-lg` or `accordion ui-info`.
 
   Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-none`, `--rounded-sm`, `--rounded-md`, `--rounded-lg`, `--rounded-xl`, `--rounded-full`), **Max width** (`max-w-*`). See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on triggers. Variant modifiers control surface treatment. Default open triggers use a neutral selected surface with semantic text ink; add `accordion--variant-solid` for a filled open trigger.
+  Semantic modifiers set palette variables on triggers. Variant modifiers control surface treatment. Default open triggers use a neutral selected surface with semantic text ink; add `ui-solid` for a filled open trigger.
 
   <!-- tabs-open -->
 
@@ -656,11 +656,11 @@ defmodule Corex.Accordion do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `accordion` |
-  | Accent | `accordion accordion--accent` |
-  | Brand | `accordion accordion--brand` |
-  | Alert | `accordion accordion--alert` |
-  | Info | `accordion accordion--info` |
-  | Success | `accordion accordion--success` |
+  | Accent | `accordion ui-accent` |
+  | Brand | `accordion ui-brand` |
+  | Alert | `accordion ui-alert` |
+  | Info | `accordion ui-info` |
+  | Success | `accordion ui-success` |
 
   ### Variant
 
@@ -668,10 +668,10 @@ defmodule Corex.Accordion do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `accordion` or `accordion accordion--accent` |
-  | Solid | `accordion accordion--accent accordion--variant-solid` |
-  | Ghost | `accordion accordion--info accordion--variant-ghost` |
-  | Outline | `accordion accordion--accent accordion--variant-outline` |
+  | Subtle (default) | `accordion` or `accordion ui-accent` |
+  | Solid | `accordion ui-accent ui-solid` |
+  | Ghost | `accordion ui-info` |
+  | Outline | `accordion ui-accent` |
 
   ### Size
 
@@ -680,10 +680,10 @@ defmodule Corex.Accordion do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `accordion` |
-  | SM | `accordion accordion--sm` |
-  | MD | `accordion accordion--md` |
-  | LG | `accordion accordion--lg` |
-  | XL | `accordion accordion--xl` |
+  | SM | `accordion ui-size-sm` |
+  | MD | `accordion ui-size-md` |
+  | LG | `accordion ui-size-lg` |
+  | XL | `accordion ui-size-xl` |
 
   ### Rounded
 
@@ -692,12 +692,12 @@ defmodule Corex.Accordion do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `accordion` |
-  | None | `accordion accordion--rounded-none` |
-  | SM | `accordion accordion--rounded-sm` |
-  | MD | `accordion accordion--rounded-md` |
-  | LG | `accordion accordion--rounded-lg` |
-  | XL | `accordion accordion--rounded-xl` |
-  | Full | `accordion accordion--rounded-full` |
+  | None | `accordion ui-rounded-none` |
+  | SM | `accordion ui-rounded-sm` |
+  | MD | `accordion ui-rounded-md` |
+  | LG | `accordion ui-rounded-lg` |
+  | XL | `accordion ui-rounded-xl` |
+  | Full | `accordion ui-rounded-full` |
 
   ### Max width
 

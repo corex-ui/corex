@@ -7,7 +7,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
   def events_server_heex do
     ~S"""
     <form phx-change="avatar_events_changed">
-      <.native_input type="url" name="avatar_src" value="https://corex-ui.com/images/avatar.png" class="native-input native-input--sm w-full">
+      <.native_input type="url" name="avatar_src" value="https://corex-ui.com/images/avatar.png" class="native-input ui-size-sm w-full">
         <:label>Image URL</:label>
       </.native_input>
     </form>
@@ -102,7 +102,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap items-center gap-space gap-4 items-center">
+    <div class="flex flex-wrap items-center gap-space gap-4">
       <.avatar id="avatar-anatomy-value-empty" src="" class="avatar">
         <:value :let={src}>
           {if src, do: "IMG", else: " - "}
@@ -133,7 +133,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
         </.avatar>
       </div>
       <div class="flex flex-col gap-2 items-center w-full">
-        <div class="flex flex-wrap items-center gap-space gap-4 items-center">
+        <div class="flex flex-wrap items-center gap-space gap-4">
           <.avatar src="" class="avatar">
             <:value :let={src}>
               {if src, do: "IMG", else: " - "}
@@ -170,19 +170,19 @@ defmodule E2eWeb.Demos.AvatarDemo do
     <.avatar class="avatar">
       <:fallback>Default</:fallback>
     </.avatar>
-    <.avatar class="avatar avatar--accent">
+    <.avatar class="avatar ui-accent">
       <:fallback>Accent</:fallback>
     </.avatar>
-    <.avatar class="avatar avatar--brand">
+    <.avatar class="avatar ui-brand">
       <:fallback>Brand</:fallback>
     </.avatar>
-    <.avatar class="avatar avatar--alert">
+    <.avatar class="avatar ui-alert">
       <:fallback>Alert</:fallback>
     </.avatar>
-    <.avatar class="avatar avatar--info">
+    <.avatar class="avatar ui-info">
       <:fallback>Info</:fallback>
     </.avatar>
-    <.avatar class="avatar avatar--success">
+    <.avatar class="avatar ui-success">
       <:fallback>Success</:fallback>
     </.avatar>
     """
@@ -196,19 +196,19 @@ defmodule E2eWeb.Demos.AvatarDemo do
       <.avatar id="avatar-style-default" class="avatar">
         <:fallback>Default</:fallback>
       </.avatar>
-      <.avatar id="avatar-style-accent" class="avatar avatar--accent">
+      <.avatar id="avatar-style-accent" class="avatar ui-accent">
         <:fallback>Accent</:fallback>
       </.avatar>
-      <.avatar id="avatar-style-brand" class="avatar avatar--brand">
+      <.avatar id="avatar-style-brand" class="avatar ui-brand">
         <:fallback>Brand</:fallback>
       </.avatar>
-      <.avatar id="avatar-style-alert" class="avatar avatar--alert">
+      <.avatar id="avatar-style-alert" class="avatar ui-alert">
         <:fallback>Alert</:fallback>
       </.avatar>
-      <.avatar id="avatar-style-info" class="avatar avatar--info">
+      <.avatar id="avatar-style-info" class="avatar ui-info">
         <:fallback>Info</:fallback>
       </.avatar>
-      <.avatar id="avatar-style-success" class="avatar avatar--success">
+      <.avatar id="avatar-style-success" class="avatar ui-success">
         <:fallback>Success</:fallback>
       </.avatar>
     </div>
@@ -220,16 +220,16 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
     ~H"""
     <div class="flex flex-wrap items-end gap-2 gap-space">
-      <.avatar id="avatar-style-sm" class="avatar avatar--sm">
+      <.avatar id="avatar-style-sm" class="avatar ui-size-sm">
         <:fallback>Small</:fallback>
       </.avatar>
-      <.avatar id="avatar-style-md" class="avatar avatar--md">
+      <.avatar id="avatar-style-md" class="avatar ui-size-md">
         <:fallback>Medium</:fallback>
       </.avatar>
-      <.avatar id="avatar-style-lg" class="avatar avatar--lg">
+      <.avatar id="avatar-style-lg" class="avatar ui-size-lg">
         <:fallback>Large</:fallback>
       </.avatar>
-      <.avatar id="avatar-style-xl" class="avatar avatar--xl">
+      <.avatar id="avatar-style-xl" class="avatar ui-size-xl">
         <:fallback>XL</:fallback>
       </.avatar>
     </div>
@@ -239,16 +239,10 @@ defmodule E2eWeb.Demos.AvatarDemo do
   def styling_variant_code do
     ~S"""
     <.avatar class="avatar">
-      <:fallback>Solid (default)</:fallback>
+      <:fallback>Subtle (default)</:fallback>
     </.avatar>
-    <.avatar class="avatar avatar--variant-subtle">
-      <:fallback>Subtle</:fallback>
-    </.avatar>
-    <.avatar class="avatar avatar--variant-ghost">
-      <:fallback>Ghost</:fallback>
-    </.avatar>
-    <.avatar class="avatar avatar--variant-outline">
-      <:fallback>Outline</:fallback>
+    <.avatar class="avatar ui-solid">
+      <:fallback>Solid</:fallback>
     </.avatar>
     """
   end
@@ -258,17 +252,11 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
     ~H"""
     <div class="flex flex-wrap items-center gap-space gap-2">
-      <.avatar id="avatar-style-variant-solid" class="avatar">
-        <:fallback>Solid (default)</:fallback>
+      <.avatar id="avatar-style-variant-subtle" class="avatar">
+        <:fallback>Subtle (default)</:fallback>
       </.avatar>
-      <.avatar id="avatar-style-variant-subtle" class="avatar avatar--variant-subtle">
-        <:fallback>Subtle</:fallback>
-      </.avatar>
-      <.avatar id="avatar-style-variant-ghost" class="avatar avatar--variant-ghost">
-        <:fallback>Ghost</:fallback>
-      </.avatar>
-      <.avatar id="avatar-style-variant-outline" class="avatar avatar--variant-outline">
-        <:fallback>Outline</:fallback>
+      <.avatar id="avatar-style-variant-solid" class="avatar ui-solid">
+        <:fallback>Solid</:fallback>
       </.avatar>
     </div>
     """
@@ -308,16 +296,16 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
   def styling_size_code do
     ~S"""
-    <.avatar class="avatar avatar--sm">
+    <.avatar class="avatar ui-size-sm">
       <:fallback>Small</:fallback>
     </.avatar>
-    <.avatar class="avatar avatar--md">
+    <.avatar class="avatar ui-size-md">
       <:fallback>Medium</:fallback>
     </.avatar>
-    <.avatar class="avatar avatar--lg">
+    <.avatar class="avatar ui-size-lg">
       <:fallback>Large</:fallback>
     </.avatar>
-    <.avatar class="avatar avatar--xl">
+    <.avatar class="avatar ui-size-xl">
       <:fallback>XL</:fallback>
     </.avatar>
     """
@@ -326,22 +314,22 @@ defmodule E2eWeb.Demos.AvatarDemo do
   def styling_rounded_example(assigns) do
     ~H"""
     <div class="flex flex-wrap items-end gap-2 gap-space">
-      <.avatar id="avatar-style-rounded-none" class="avatar avatar--rounded-none">
+      <.avatar id="avatar-style-rounded-none" class="avatar ui-rounded-none">
         <:fallback>None</:fallback>
       </.avatar>
-      <.avatar id="avatar-style-rounded-sm" class="avatar avatar--rounded-sm">
+      <.avatar id="avatar-style-rounded-sm" class="avatar ui-rounded-sm">
         <:fallback>SM</:fallback>
       </.avatar>
-      <.avatar id="avatar-style-rounded-md" class="avatar avatar--rounded-md">
+      <.avatar id="avatar-style-rounded-md" class="avatar ui-rounded-md">
         <:fallback>MD</:fallback>
       </.avatar>
-      <.avatar id="avatar-style-rounded-lg" class="avatar avatar--rounded-lg">
+      <.avatar id="avatar-style-rounded-lg" class="avatar ui-rounded-lg">
         <:fallback>LG</:fallback>
       </.avatar>
-      <.avatar id="avatar-style-rounded-xl" class="avatar avatar--rounded-xl">
+      <.avatar id="avatar-style-rounded-xl" class="avatar ui-rounded-xl">
         <:fallback>XL</:fallback>
       </.avatar>
-      <.avatar id="avatar-style-rounded-full" class="avatar avatar--rounded-full">
+      <.avatar id="avatar-style-rounded-full" class="avatar ui-rounded-full">
         <:fallback>Full</:fallback>
       </.avatar>
     </div>
@@ -350,22 +338,22 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
   def styling_rounded_code do
     ~S"""
-    <.avatar class="avatar avatar--rounded-none">
+    <.avatar class="avatar ui-rounded-none">
       <:fallback>None</:fallback>
     </.avatar>
-    <.avatar class="avatar avatar--rounded-sm">
+    <.avatar class="avatar ui-rounded-sm">
       <:fallback>SM</:fallback>
     </.avatar>
-    <.avatar class="avatar avatar--rounded-md">
+    <.avatar class="avatar ui-rounded-md">
       <:fallback>MD</:fallback>
     </.avatar>
-    <.avatar class="avatar avatar--rounded-lg">
+    <.avatar class="avatar ui-rounded-lg">
       <:fallback>LG</:fallback>
     </.avatar>
-    <.avatar class="avatar avatar--rounded-xl">
+    <.avatar class="avatar ui-rounded-xl">
       <:fallback>XL</:fallback>
     </.avatar>
-    <.avatar class="avatar avatar--rounded-full">
+    <.avatar class="avatar ui-rounded-full">
       <:fallback>Full</:fallback>
     </.avatar>
     """
@@ -373,10 +361,8 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
   defp styling_variant_axis_steps do
     [
-      %{label: "Solid (default)", modifier: ""},
-      %{label: "Subtle", modifier: "avatar--variant-subtle"},
-      %{label: "Ghost", modifier: "avatar--variant-ghost"},
-      %{label: "Outline", modifier: "avatar--variant-outline"}
+      %{label: "Subtle (default)", modifier: ""},
+      %{label: "Solid", modifier: "ui-solid"}
     ]
   end
 
@@ -476,7 +462,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Set primary
       </.action>
@@ -488,7 +474,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Set alternate
       </.action>
@@ -502,10 +488,10 @@ defmodule E2eWeb.Demos.AvatarDemo do
   def api_set_src_server_heex do
     ~S"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click="api_set_src_server" phx-value-url="https://corex-ui.com/images/avatar.png" class="button button--sm">
+      <.action phx-click="api_set_src_server" phx-value-url="https://corex-ui.com/images/avatar.png" class="button ui-size-sm">
         Set primary
       </.action>
-      <.action phx-click="api_set_src_server" phx-value-url="https://corex-ui.com/pwa-192x192.png" class="button button--sm">
+      <.action phx-click="api_set_src_server" phx-value-url="https://corex-ui.com/pwa-192x192.png" class="button ui-size-sm">
         Set alternate
       </.action>
     </div>
@@ -534,10 +520,10 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={@event} phx-value-url={@src_primary} class="button button--sm">
+      <.action phx-click={@event} phx-value-url={@src_primary} class="button ui-size-sm">
         Set primary
       </.action>
-      <.action phx-click={@event} phx-value-url={@src_alt} class="button button--sm">
+      <.action phx-click={@event} phx-value-url={@src_alt} class="button ui-size-sm">
         Set alternate
       </.action>
     </div>
@@ -549,7 +535,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
   def api_loaded_client_binding_code do
     ~S"""
-    <.action phx-click={Corex.Avatar.loaded("api-loaded-bind", respond_to: :both)} class="button button--sm">
+    <.action phx-click={Corex.Avatar.loaded("api-loaded-bind", respond_to: :both)} class="button ui-size-sm">
       Status
     </.action>
     <.avatar id="api-loaded-bind" class="avatar" src="https://corex-ui.com/images/avatar.png" alt="">
@@ -564,7 +550,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
     ~H"""
     <.action
       phx-click={Corex.Avatar.loaded("api-loaded-bind", respond_to: :both)}
-      class="button button--sm"
+      class="button ui-size-sm"
     >
       Status
     </.action>
@@ -589,7 +575,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
           bubbles: false
         )
       }
-      class="button button--sm"
+      class="button ui-size-sm"
     >
       Status
     </.action>
@@ -633,7 +619,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
           bubbles: false
         )
       }
-      class="button button--sm"
+      class="button ui-size-sm"
     >
       Status
     </.action>
@@ -645,7 +631,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
   def api_loaded_server_heex do
     ~S"""
-    <.action phx-click="api_loaded_server" class="button button--sm">Status</.action>
+    <.action phx-click="api_loaded_server" class="button ui-size-sm">Status</.action>
     <.avatar id="api-loaded-server" class="avatar" src="https://corex-ui.com/images/avatar.png" alt="">
       <:fallback>?</:fallback>
     </.avatar>
@@ -676,7 +662,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
       )
 
     ~H"""
-    <.action phx-click={@event_loaded} class="button button--sm">Status</.action>
+    <.action phx-click={@event_loaded} class="button ui-size-sm">Status</.action>
     <.avatar id={@id} class="avatar" src={@loaded_demo_src} alt="">
       <:fallback>?</:fallback>
     </.avatar>

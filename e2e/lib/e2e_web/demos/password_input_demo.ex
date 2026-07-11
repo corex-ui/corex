@@ -44,16 +44,16 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
   def api_binding_heex do
     ~S"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={Corex.PasswordInput.set_visible("password-input-api-binding", true)} class="button button--sm">
+      <.action phx-click={Corex.PasswordInput.set_visible("password-input-api-binding", true)} class="button ui-size-sm">
         Show
       </.action>
-      <.action phx-click={Corex.PasswordInput.set_visible("password-input-api-binding", false)} class="button button--sm">
+      <.action phx-click={Corex.PasswordInput.set_visible("password-input-api-binding", false)} class="button ui-size-sm">
         Hide
       </.action>
-      <.action phx-click={Corex.PasswordInput.toggle_visible("password-input-api-binding")} class="button button--sm">
+      <.action phx-click={Corex.PasswordInput.toggle_visible("password-input-api-binding")} class="button ui-size-sm">
         Toggle
       </.action>
-      <.action phx-click={Corex.PasswordInput.focus("password-input-api-binding")} class="button button--sm">
+      <.action phx-click={Corex.PasswordInput.focus("password-input-api-binding")} class="button ui-size-sm">
         Focus
       </.action>
     </div>
@@ -82,16 +82,16 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
 
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={Corex.PasswordInput.set_visible(@id, true)} class="button button--sm">
+      <.action phx-click={Corex.PasswordInput.set_visible(@id, true)} class="button ui-size-sm">
         Show
       </.action>
-      <.action phx-click={Corex.PasswordInput.set_visible(@id, false)} class="button button--sm">
+      <.action phx-click={Corex.PasswordInput.set_visible(@id, false)} class="button ui-size-sm">
         Hide
       </.action>
-      <.action phx-click={Corex.PasswordInput.toggle_visible(@id)} class="button button--sm">
+      <.action phx-click={Corex.PasswordInput.toggle_visible(@id)} class="button ui-size-sm">
         Toggle
       </.action>
-      <.action phx-click={Corex.PasswordInput.focus(@id)} class="button button--sm">
+      <.action phx-click={Corex.PasswordInput.focus(@id)} class="button ui-size-sm">
         Focus
       </.action>
     </div>
@@ -119,7 +119,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Show
       </.action>
@@ -131,19 +131,19 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Hide
       </.action>
       <.action
         phx-click={JS.dispatch("corex:password-input:toggle-visible", to: "#password-input-api-client", bubbles: false)}
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Toggle
       </.action>
       <.action
         phx-click={JS.dispatch("corex:password-input:focus", to: "#password-input-api-client", bubbles: false)}
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Focus
       </.action>
@@ -197,7 +197,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Show
       </.action>
@@ -209,19 +209,19 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
             bubbles: false
           )
         }
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Hide
       </.action>
       <.action
         phx-click={JS.dispatch("corex:password-input:toggle-visible", to: "##{@id}", bubbles: false)}
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Toggle
       </.action>
       <.action
         phx-click={JS.dispatch("corex:password-input:focus", to: "##{@id}", bubbles: false)}
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Focus
       </.action>
@@ -242,16 +242,16 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
   def api_server_heex do
     ~S"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click="api_password_show" phx-value-id="password-input-api-server" class="button button--sm">
+      <.action phx-click="api_password_show" phx-value-id="password-input-api-server" class="button ui-size-sm">
         Show
       </.action>
-      <.action phx-click="api_password_hide" phx-value-id="password-input-api-server" class="button button--sm">
+      <.action phx-click="api_password_hide" phx-value-id="password-input-api-server" class="button ui-size-sm">
         Hide
       </.action>
-      <.action phx-click="api_password_toggle_visible" phx-value-id="password-input-api-server" class="button button--sm">
+      <.action phx-click="api_password_toggle_visible" phx-value-id="password-input-api-server" class="button ui-size-sm">
         Toggle
       </.action>
-      <.action phx-click="api_password_focus" phx-value-id="password-input-api-server" class="button button--sm">
+      <.action phx-click="api_password_focus" phx-value-id="password-input-api-server" class="button ui-size-sm">
         Focus
       </.action>
     </div>
@@ -291,16 +291,16 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
 
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click="api_password_show" phx-value-id={@id} class="button button--sm">
+      <.action phx-click="api_password_show" phx-value-id={@id} class="button ui-size-sm">
         Show
       </.action>
-      <.action phx-click="api_password_hide" phx-value-id={@id} class="button button--sm">
+      <.action phx-click="api_password_hide" phx-value-id={@id} class="button ui-size-sm">
         Hide
       </.action>
-      <.action phx-click="api_password_toggle_visible" phx-value-id={@id} class="button button--sm">
+      <.action phx-click="api_password_toggle_visible" phx-value-id={@id} class="button ui-size-sm">
         Toggle
       </.action>
-      <.action phx-click="api_password_focus" phx-value-id={@id} class="button button--sm">
+      <.action phx-click="api_password_focus" phx-value-id={@id} class="button ui-size-sm">
         Focus
       </.action>
     </div>
@@ -444,7 +444,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
           {msg}
         </:error>
       </.password_input>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -484,7 +484,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
           {msg}
         </:error>
       </.password_input>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -508,7 +508,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
         </:error>
       </.password_input>
 
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -569,7 +569,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
         </:error>
       </.password_input>
 
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -630,7 +630,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
         <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
       </.password_input>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" class="button ui-accent">Submit</.action>
     </form>
     """
   end
@@ -668,7 +668,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
         </:error>
       </.password_input>
 
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -743,7 +743,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
         </:error>
       </.password_input>
 
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -829,7 +829,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       <.action
         type="submit"
         id="password-input-changeset-submit"
-        class="button button--accent"
+        class="button ui-accent"
       >
         Submit
       </.action>
@@ -860,7 +860,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       <.action
         type="submit"
         id="password-input-validate-submit"
-        class="button button--accent"
+        class="button ui-accent"
       >
         Submit
       </.action>
@@ -891,7 +891,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       <.action
         type="submit"
         id="password-input-controller-submit"
-        class="button button--accent"
+        class="button ui-accent"
       >
         Submit
       </.action>
@@ -920,7 +920,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
         </:error>
       </.password_input>
 
-      <.action type="submit" id="password-input-form-live-submit" class="button button--accent">
+      <.action type="submit" id="password-input-form-live-submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -951,7 +951,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       <.action
         type="submit"
         id="password-input-form-live-strict-submit"
-        class="button button--accent"
+        class="button ui-accent"
       >
         Submit
       </.action>
@@ -974,7 +974,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
         <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
       </.password_input>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -1005,7 +1005,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       <.action
         type="submit"
         id="password-input-live-form-phoenix-submit"
-        class="button button--accent"
+        class="button ui-accent"
       >
         Submit
       </.action>
@@ -1114,23 +1114,23 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       <:label>Default</:label>
     #{icons}
     </.password_input>
-    <.password_input name="user[password]" class="password-input password-input--accent">
+    <.password_input name="user[password]" class="password-input ui-accent">
       <:label>Accent</:label>
     #{icons}
     </.password_input>
-    <.password_input name="user[password]" class="password-input password-input--brand">
+    <.password_input name="user[password]" class="password-input ui-brand">
       <:label>Brand</:label>
     #{icons}
     </.password_input>
-    <.password_input name="user[password]" class="password-input password-input--alert">
+    <.password_input name="user[password]" class="password-input ui-alert">
       <:label>Alert</:label>
     #{icons}
     </.password_input>
-    <.password_input name="user[password]" class="password-input password-input--info">
+    <.password_input name="user[password]" class="password-input ui-info">
       <:label>Info</:label>
     #{icons}
     </.password_input>
-    <.password_input name="user[password]" class="password-input password-input--success">
+    <.password_input name="user[password]" class="password-input ui-success">
       <:label>Success</:label>
     #{icons}
     </.password_input>
@@ -1154,7 +1154,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       <.password_input
         id="password-input-style-color-accent"
         name="user[password]"
-        class="password-input password-input--accent w-full"
+        class="password-input ui-accent w-full"
       >
         <:label>Accent</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
@@ -1163,7 +1163,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       <.password_input
         id="password-input-style-color-brand"
         name="user[password]"
-        class="password-input password-input--brand w-full"
+        class="password-input ui-brand w-full"
       >
         <:label>Brand</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
@@ -1172,7 +1172,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       <.password_input
         id="password-input-style-color-alert"
         name="user[password]"
-        class="password-input password-input--alert w-full"
+        class="password-input ui-alert w-full"
       >
         <:label>Alert</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
@@ -1181,7 +1181,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       <.password_input
         id="password-input-style-color-info"
         name="user[password]"
-        class="password-input password-input--info w-full"
+        class="password-input ui-info w-full"
       >
         <:label>Info</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
@@ -1190,7 +1190,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       <.password_input
         id="password-input-style-color-success"
         name="user[password]"
-        class="password-input password-input--success w-full"
+        class="password-input ui-success w-full"
       >
         <:label>Success</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
@@ -1208,16 +1208,14 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       <:label>Subtle (default)</:label>
     #{icons}
     </.password_input>
-    <.password_input name="user[password]" class="password-input password-input--variant-solid">
+    <.password_input name="user[password]" class="password-input ui-solid">
       <:label>Solid</:label>
     #{icons}
     </.password_input>
-    <.password_input name="user[password]" class="password-input password-input--variant-ghost">
-      <:label>Ghost</:label>
+    <.password_input name="user[password]" class="password-input">
     #{icons}
     </.password_input>
-    <.password_input name="user[password]" class="password-input password-input--variant-outline">
-      <:label>Outline</:label>
+    <.password_input name="user[password]" class="password-input">
     #{icons}
     </.password_input>
     """
@@ -1240,27 +1238,9 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       <.password_input
         id="password-input-style-variant-solid"
         name="user[password]"
-        class="password-input password-input--variant-solid"
+        class="password-input ui-solid"
       >
         <:label>Solid</:label>
-        <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
-        <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
-      </.password_input>
-      <.password_input
-        id="password-input-style-variant-ghost"
-        name="user[password]"
-        class="password-input password-input--variant-ghost"
-      >
-        <:label>Ghost</:label>
-        <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
-        <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
-      </.password_input>
-      <.password_input
-        id="password-input-style-variant-outline"
-        name="user[password]"
-        class="password-input password-input--variant-outline"
-      >
-        <:label>Outline</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
         <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
       </.password_input>
@@ -1317,19 +1297,19 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     icons = styling_visibility_icons_code()
 
     """
-    <.password_input name="user[password]" class="password-input password-input--sm">
+    <.password_input name="user[password]" class="password-input ui-size-sm">
       <:label>SM</:label>
     #{icons}
     </.password_input>
-    <.password_input name="user[password]" class="password-input password-input--md">
+    <.password_input name="user[password]" class="password-input ui-size-md">
       <:label>MD</:label>
     #{icons}
     </.password_input>
-    <.password_input name="user[password]" class="password-input password-input--lg">
+    <.password_input name="user[password]" class="password-input ui-size-lg">
       <:label>LG</:label>
     #{icons}
     </.password_input>
-    <.password_input name="user[password]" class="password-input password-input--xl">
+    <.password_input name="user[password]" class="password-input ui-size-xl">
       <:label>XL</:label>
     #{icons}
     </.password_input>
@@ -1344,7 +1324,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       <.password_input
         id="password-input-style-sm"
         name="user[password]"
-        class="password-input password-input--sm w-full"
+        class="password-input ui-size-sm w-full"
       >
         <:label>SM</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
@@ -1353,7 +1333,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       <.password_input
         id="password-input-style-md"
         name="user[password]"
-        class="password-input password-input--md w-full"
+        class="password-input ui-size-md w-full"
       >
         <:label>MD</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
@@ -1362,7 +1342,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       <.password_input
         id="password-input-style-lg"
         name="user[password]"
-        class="password-input password-input--lg w-full"
+        class="password-input ui-size-lg w-full"
       >
         <:label>LG</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
@@ -1371,7 +1351,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       <.password_input
         id="password-input-style-xl"
         name="user[password]"
-        class="password-input password-input--xl w-full"
+        class="password-input ui-size-xl w-full"
       >
         <:label>XL</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
@@ -1385,27 +1365,27 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     icons = styling_visibility_icons_code()
 
     """
-    <.password_input name="user[password]" class="password-input password-input--rounded-none">
+    <.password_input name="user[password]" class="password-input ui-rounded-none">
       <:label>None</:label>
     #{icons}
     </.password_input>
-    <.password_input name="user[password]" class="password-input password-input--rounded-sm">
+    <.password_input name="user[password]" class="password-input ui-rounded-sm">
       <:label>SM</:label>
     #{icons}
     </.password_input>
-    <.password_input name="user[password]" class="password-input password-input--rounded-md">
+    <.password_input name="user[password]" class="password-input ui-rounded-md">
       <:label>MD</:label>
     #{icons}
     </.password_input>
-    <.password_input name="user[password]" class="password-input password-input--rounded-lg">
+    <.password_input name="user[password]" class="password-input ui-rounded-lg">
       <:label>LG</:label>
     #{icons}
     </.password_input>
-    <.password_input name="user[password]" class="password-input password-input--rounded-xl">
+    <.password_input name="user[password]" class="password-input ui-rounded-xl">
       <:label>XL</:label>
     #{icons}
     </.password_input>
-    <.password_input name="user[password]" class="password-input password-input--rounded-full">
+    <.password_input name="user[password]" class="password-input ui-rounded-full">
       <:label>Full</:label>
     #{icons}
     </.password_input>
@@ -1420,7 +1400,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       <.password_input
         id="password-input-style-rounded-none"
         name="user[password]"
-        class="password-input password-input--rounded-none w-full"
+        class="password-input ui-rounded-none w-full"
       >
         <:label>None</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
@@ -1429,7 +1409,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       <.password_input
         id="password-input-style-rounded-sm"
         name="user[password]"
-        class="password-input password-input--rounded-sm w-full"
+        class="password-input ui-rounded-sm w-full"
       >
         <:label>SM</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
@@ -1438,7 +1418,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       <.password_input
         id="password-input-style-rounded-md"
         name="user[password]"
-        class="password-input password-input--rounded-md w-full"
+        class="password-input ui-rounded-md w-full"
       >
         <:label>MD</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
@@ -1447,7 +1427,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       <.password_input
         id="password-input-style-rounded-lg"
         name="user[password]"
-        class="password-input password-input--rounded-lg w-full"
+        class="password-input ui-rounded-lg w-full"
       >
         <:label>LG</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
@@ -1456,7 +1436,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       <.password_input
         id="password-input-style-rounded-xl"
         name="user[password]"
-        class="password-input password-input--rounded-xl w-full"
+        class="password-input ui-rounded-xl w-full"
       >
         <:label>XL</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
@@ -1465,7 +1445,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       <.password_input
         id="password-input-style-rounded-full"
         name="user[password]"
-        class="password-input password-input--rounded-full w-full"
+        class="password-input ui-rounded-full w-full"
       >
         <:label>Full</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
@@ -1499,7 +1479,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     ~H"""
     <div class={DemoScales.preview_scroll_class()}>
       <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
-        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.password_input
           id={"password-input-style-max-#{variant.id}"}
           name="user[password]"

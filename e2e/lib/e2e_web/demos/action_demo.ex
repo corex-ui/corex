@@ -33,10 +33,10 @@ defmodule E2eWeb.Demos.ActionDemo do
 
   def anatomy_icon_only_code do
     ~S"""
-    <.action class="button button--square" aria_label="Square icon button">
+    <.action class="button ui-trigger--square" aria_label="Square icon button">
       <.heroicon name="hero-arrow-right" />
     </.action>
-    <.action class="button button--circle" aria_label="Circle icon button">
+    <.action class="button ui-trigger--circle" aria_label="Circle icon button">
       <.heroicon name="hero-arrow-right" />
     </.action>
     """
@@ -45,10 +45,10 @@ defmodule E2eWeb.Demos.ActionDemo do
   def anatomy_icon_only_example(assigns) do
     ~H"""
     <div class="flex flex-wrap items-center gap-space gap-2">
-      <.action class="button button--square" aria_label="Square icon button">
+      <.action class="button ui-trigger--square" aria_label="Square icon button">
         <.heroicon name="hero-arrow-right" />
       </.action>
-      <.action class="button button--circle" aria_label="Circle icon button">
+      <.action class="button ui-trigger--circle" aria_label="Circle icon button">
         <.heroicon name="hero-arrow-right" />
       </.action>
     </div>
@@ -59,8 +59,8 @@ defmodule E2eWeb.Demos.ActionDemo do
     ~S"""
     <.form for={%{}} as={:demo} phx-submit="noop">
       <.action class="button" type="button">Button</.action>
-      <.action class="button button--accent" type="submit">Submit</.action>
-      <.action class="button button--variant-ghost" type="reset">Reset</.action>
+      <.action class="button ui-accent" type="submit">Submit</.action>
+      <.action class="button" type="reset">Reset</.action>
     </.form>
     """
   end
@@ -74,8 +74,8 @@ defmodule E2eWeb.Demos.ActionDemo do
       class="flex flex-wrap items-center gap-space gap-2"
     >
       <.action class="button" type="button">Button</.action>
-      <.action class="button button--accent" type="submit">Submit</.action>
-      <.action class="button button--variant-ghost" type="reset">Reset</.action>
+      <.action class="button ui-accent" type="submit">Submit</.action>
+      <.action class="button" type="reset">Reset</.action>
     </.form>
     """
   end
@@ -88,7 +88,7 @@ defmodule E2eWeb.Demos.ActionDemo do
           duration: 5000
         )
       }
-      class="button button--sm"
+      class="button ui-size-sm"
     >
       Show toast
     </.action>
@@ -107,7 +107,7 @@ defmodule E2eWeb.Demos.ActionDemo do
           duration: 5000
         )
       }
-      class="button button--sm"
+      class="button ui-size-sm"
     >
       Show toast
     </.action>
@@ -118,7 +118,7 @@ defmodule E2eWeb.Demos.ActionDemo do
     ~S"""
     <.action
       phx-click={Corex.Dialog.set_open("action-patterns-dialog", true)}
-      class="button button--sm"
+      class="button ui-size-sm"
     >
       Open dialog
     </.action>
@@ -140,7 +140,7 @@ defmodule E2eWeb.Demos.ActionDemo do
     ~H"""
     <.action
       phx-click={Corex.Dialog.set_open("action-patterns-dialog", true)}
-      class="button button--sm"
+      class="button ui-size-sm"
     >
       Open dialog
     </.action>
@@ -161,11 +161,11 @@ defmodule E2eWeb.Demos.ActionDemo do
   def styling_color_code do
     ~S"""
     <.action class="button">Default</.action>
-    <.action class="button button--accent">Accent</.action>
-    <.action class="button button--brand">Brand</.action>
-    <.action class="button button--alert">Alert</.action>
-    <.action class="button button--info">Info</.action>
-    <.action class="button button--success">Success</.action>
+    <.action class="button ui-accent">Accent</.action>
+    <.action class="button ui-brand">Brand</.action>
+    <.action class="button ui-alert">Alert</.action>
+    <.action class="button ui-info">Info</.action>
+    <.action class="button ui-success">Success</.action>
     """
   end
 
@@ -173,11 +173,11 @@ defmodule E2eWeb.Demos.ActionDemo do
     ~H"""
     <div class="flex flex-wrap items-center gap-space gap-2">
       <.action class="button">Default</.action>
-      <.action class="button button--accent">Accent</.action>
-      <.action class="button button--brand">Brand</.action>
-      <.action class="button button--alert">Alert</.action>
-      <.action class="button button--info">Info</.action>
-      <.action class="button button--success">Success</.action>
+      <.action class="button ui-accent">Accent</.action>
+      <.action class="button ui-brand">Brand</.action>
+      <.action class="button ui-alert">Alert</.action>
+      <.action class="button ui-info">Info</.action>
+      <.action class="button ui-success">Success</.action>
     </div>
     """
   end
@@ -185,9 +185,7 @@ defmodule E2eWeb.Demos.ActionDemo do
   def styling_variant_code do
     ~S"""
     <.action class="button">Subtle (default)</.action>
-    <.action class="button button--variant-solid">Solid</.action>
-    <.action class="button button--variant-ghost">Ghost</.action>
-    <.action class="button button--variant-outline">Outline</.action>
+    <.action class="button ui-solid">Solid</.action>
     """
   end
 
@@ -195,9 +193,7 @@ defmodule E2eWeb.Demos.ActionDemo do
     ~H"""
     <div class="flex flex-wrap items-center gap-space gap-2">
       <.action class="button">Subtle (default)</.action>
-      <.action class="button button--variant-solid">Solid</.action>
-      <.action class="button button--variant-ghost">Ghost</.action>
-      <.action class="button button--variant-outline">Outline</.action>
+      <.action class="button ui-solid">Solid</.action>
     </div>
     """
   end
@@ -234,44 +230,44 @@ defmodule E2eWeb.Demos.ActionDemo do
 
   def styling_size_code do
     ~S"""
-    <.action class="button button--sm">Small</.action>
+    <.action class="button ui-size-sm">Small</.action>
     <.action class="button">Medium</.action>
-    <.action class="button button--lg">Large</.action>
-    <.action class="button button--xl">XL</.action>
+    <.action class="button ui-size-lg">Large</.action>
+    <.action class="button ui-size-xl">XL</.action>
     """
   end
 
   def styling_size_example(assigns) do
     ~H"""
     <div class="flex flex-wrap items-end gap-2 gap-space">
-      <.action class="button button--sm">Small</.action>
+      <.action class="button ui-size-sm">Small</.action>
       <.action class="button">Medium</.action>
-      <.action class="button button--lg">Large</.action>
-      <.action class="button button--xl">XLarge</.action>
+      <.action class="button ui-size-lg">Large</.action>
+      <.action class="button ui-size-xl">XLarge</.action>
     </div>
     """
   end
 
   def styling_rounded_code do
     ~S"""
-    <.action class="button rounded-none">None</.action>
-    <.action class="button rounded-sm">SM</.action>
-    <.action class="button rounded-md">MD</.action>
-    <.action class="button rounded-lg">LG</.action>
-    <.action class="button rounded-xl">XL</.action>
-    <.action class="button rounded-full">Full</.action>
+    <.action class="button ui-rounded-none">None</.action>
+    <.action class="button ui-rounded-sm">SM</.action>
+    <.action class="button ui-rounded-md">MD</.action>
+    <.action class="button ui-rounded-lg">LG</.action>
+    <.action class="button ui-rounded-xl">XL</.action>
+    <.action class="button ui-rounded-full">Full</.action>
     """
   end
 
   def styling_rounded_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap items-center gap-space gap-2 items-center flex-wrap">
-      <.action class="button rounded-none">None</.action>
-      <.action class="button rounded-sm">SM</.action>
-      <.action class="button rounded-md">MD</.action>
-      <.action class="button rounded-lg">LG</.action>
-      <.action class="button rounded-xl">XL</.action>
-      <.action class="button rounded-full">Full</.action>
+    <div class="flex flex-wrap items-center gap-space gap-2">
+      <.action class="button ui-rounded-none">None</.action>
+      <.action class="button ui-rounded-sm">SM</.action>
+      <.action class="button ui-rounded-md">MD</.action>
+      <.action class="button ui-rounded-lg">LG</.action>
+      <.action class="button ui-rounded-xl">XL</.action>
+      <.action class="button ui-rounded-full">Full</.action>
     </div>
     """
   end
@@ -310,7 +306,7 @@ defmodule E2eWeb.Demos.ActionDemo do
     ~H"""
     <div class={DemoScales.preview_scroll_class()}>
       <div :for={variant <- @width_variants} class="flex flex-col gap-2">
-        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.action class={DemoScales.join_modifiers("button", variant.modifier)}>
           {DemoScales.block_demo_label()}
         </.action>
@@ -325,7 +321,7 @@ defmodule E2eWeb.Demos.ActionDemo do
     ~H"""
     <div class={DemoScales.preview_scroll_class()}>
       <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
-        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.action class={DemoScales.join_block_modifiers("button", variant.modifier)}>
           {DemoScales.block_demo_label()}
         </.action>
@@ -336,10 +332,10 @@ defmodule E2eWeb.Demos.ActionDemo do
 
   def styling_shape_code do
     ~S"""
-    <.action class="button button--square" aria_label="Square button">
+    <.action class="button ui-trigger--square" aria_label="Square button">
       <.heroicon name="hero-arrow-right" />
     </.action>
-    <.action class="button button--circle" aria_label="Circle button">
+    <.action class="button ui-trigger--circle" aria_label="Circle button">
       <.heroicon name="hero-arrow-right" />
     </.action>
     """
@@ -347,15 +343,15 @@ defmodule E2eWeb.Demos.ActionDemo do
 
   def styling_shape_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap items-center gap-space gap-2 items-center">
-      <.action class="button button--square" aria_label="Square button">
+    <div class="flex flex-wrap items-center gap-space gap-2">
+      <.action class="button ui-trigger--square" aria_label="Square button">
         <.heroicon name="hero-arrow-right" />
       </.action>
-      <.action class="button button--circle" aria_label="Circle button">
+      <.action class="button ui-trigger--circle" aria_label="Circle button">
         <.heroicon name="hero-arrow-right" />
       </.action>
-      <.action class="button button--square" aria_label="Square letter">B</.action>
-      <.action class="button button--circle" aria_label="Circle letter">B</.action>
+      <.action class="button ui-trigger--square" aria_label="Square letter">B</.action>
+      <.action class="button ui-trigger--circle" aria_label="Circle letter">B</.action>
     </div>
     """
   end
@@ -363,8 +359,8 @@ defmodule E2eWeb.Demos.ActionDemo do
   def styling_disabled_code do
     ~S"""
     <.action class="button" disabled>Disabled</.action>
-    <.action class="button button--accent" disabled>Disabled</.action>
-    <.action class="button button--square" aria_label="Disabled" disabled>
+    <.action class="button ui-accent" disabled>Disabled</.action>
+    <.action class="button ui-trigger--square" aria_label="Disabled" disabled>
       <.heroicon name="hero-arrow-right" />
     </.action>
     """
@@ -372,10 +368,10 @@ defmodule E2eWeb.Demos.ActionDemo do
 
   def styling_disabled_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap items-center gap-space gap-2 items-center">
+    <div class="flex flex-wrap items-center gap-space gap-2">
       <.action class="button" disabled>Disabled</.action>
-      <.action class="button button--accent" disabled>Disabled</.action>
-      <.action class="button button--square" aria_label="Disabled" disabled>
+      <.action class="button ui-accent" disabled>Disabled</.action>
+      <.action class="button ui-trigger--square" aria_label="Disabled" disabled>
         <.heroicon name="hero-arrow-right" />
       </.action>
     </div>

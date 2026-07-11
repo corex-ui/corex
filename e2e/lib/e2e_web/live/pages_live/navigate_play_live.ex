@@ -30,7 +30,7 @@ defmodule E2eWeb.NavigatePlayLive do
       >
         <:controls>
           <.switch
-            class="switch switch--sm"
+            class="switch ui-size-sm"
             id="external"
             checked={@external}
             on_checked_change="external_changed"
@@ -39,7 +39,7 @@ defmodule E2eWeb.NavigatePlayLive do
           </.switch>
         </:controls>
         <:canvas>
-          <div class="flex flex-wrap items-center gap-space gap-2 items-center">
+          <div class="flex flex-wrap items-center gap-space gap-2">
             <.navigate
               to={if(@external, do: "https://example.com", else: "#")}
               class="link"

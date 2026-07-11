@@ -67,13 +67,13 @@ defmodule E2eWeb.ComboboxApiLive do
             <div class="flex flex-wrap gap-2 items-center w-full justify-center">
               <.action
                 phx-click={Corex.Combobox.set_value("combobox-api-sv-client", ["bel"])}
-                class="button button--sm"
+                class="button ui-size-sm"
               >
                 Belgium
               </.action>
               <.action
                 phx-click={Corex.Combobox.set_value("combobox-api-sv-client", [])}
-                class="button button--sm"
+                class="button ui-size-sm"
               >
                 Clear
               </.action>
@@ -105,8 +105,8 @@ defmodule E2eWeb.ComboboxApiLive do
         >
           <:preview>
             <div class="flex flex-wrap gap-2 items-center w-full justify-center">
-              <.action phx-click="combobox_api_set_value" class="button button--sm">Belgium</.action>
-              <.action phx-click="combobox_api_clear" class="button button--sm">Clear</.action>
+              <.action phx-click="combobox_api_set_value" class="button ui-size-sm">Belgium</.action>
+              <.action phx-click="combobox_api_clear" class="button ui-size-sm">Clear</.action>
             </div>
             <.combobox
               id="combobox-api-sv-server"
@@ -131,7 +131,7 @@ defmodule E2eWeb.ComboboxApiLive do
             <div class="flex flex-wrap gap-2 items-center w-full justify-center">
               <.action
                 type="button"
-                class="button button--sm"
+                class="button ui-size-sm"
                 phx-click={
                   JS.dispatch("corex:combobox:set-value",
                     to: "#combobox-api-sv-js",
@@ -144,7 +144,7 @@ defmodule E2eWeb.ComboboxApiLive do
               </.action>
               <.action
                 type="button"
-                class="button button--sm"
+                class="button ui-size-sm"
                 phx-click={
                   JS.dispatch("corex:combobox:set-value",
                     to: "#combobox-api-sv-js",
@@ -179,13 +179,13 @@ defmodule E2eWeb.ComboboxApiLive do
             <div class="flex flex-wrap gap-2 items-center w-full justify-center">
               <.action
                 phx-click={Corex.Combobox.set_open("combobox-api-open-client", true)}
-                class="button button--sm"
+                class="button ui-size-sm"
               >
                 Open
               </.action>
               <.action
                 phx-click={Corex.Combobox.set_open("combobox-api-open-client", false)}
-                class="button button--sm"
+                class="button ui-size-sm"
               >
                 Close
               </.action>
@@ -217,8 +217,8 @@ defmodule E2eWeb.ComboboxApiLive do
         >
           <:preview>
             <div class="flex flex-wrap gap-2 items-center w-full justify-center">
-              <.action phx-click="combobox_api_open" class="button button--sm">Open</.action>
-              <.action phx-click="combobox_api_close" class="button button--sm">Close</.action>
+              <.action phx-click="combobox_api_open" class="button ui-size-sm">Open</.action>
+              <.action phx-click="combobox_api_close" class="button ui-size-sm">Close</.action>
             </div>
             <.combobox
               id="combobox-api-open-server"

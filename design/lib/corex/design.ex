@@ -24,8 +24,7 @@ defmodule Corex.Design do
       themes: nil,
       scales: [],
       components: nil,
-      semantics: nil,
-      variants: nil
+      semantics: nil
     }
   end
 

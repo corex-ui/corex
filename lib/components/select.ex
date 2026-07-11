@@ -376,7 +376,7 @@ defmodule Corex.Select do
   ### set_value
 
   ```heex
-  <.action phx-click={Corex.Select.set_value("select-api-bind", ["fra"])} class="button button--sm">France</.action>
+  <.action phx-click={Corex.Select.set_value("select-api-bind", ["fra"])} class="button ui-size-sm">France</.action>
   <.select id="select-api-bind" class="select" items={
     Corex.List.new([
       %{label: "France", value: "fra"},
@@ -487,11 +487,11 @@ defmodule Corex.Select do
   @import "../corex/components.css";
   ```
 
-  Stack modifiers on `<.select class="select ...">`. Combine axes, for example `select select--accent select--lg` or `select select--info select--variant-solid`.
+  Stack modifiers on `<.select class="select ...">`. Combine axes, for example `select ui-accent ui-size-lg` or `select ui-info ui-solid`.
 
   Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on the trigger. Variant modifiers control trigger surface treatment. Default is subtle; add `select--variant-solid` for a filled trigger. Selected menu items still use the semantic palette.
+  Semantic modifiers set palette variables on the trigger. Variant modifiers control trigger surface treatment. Default is subtle; add `ui-solid` for a filled trigger. Selected menu items still use the semantic palette.
 
   <!-- tabs-open -->
 
@@ -502,11 +502,11 @@ defmodule Corex.Select do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `select` |
-  | Accent | `select select--accent` |
-  | Brand | `select select--brand` |
-  | Alert | `select select--alert` |
-  | Success | `select select--success` |
-  | Info | `select select--info` |
+  | Accent | `select ui-accent` |
+  | Brand | `select ui-brand` |
+  | Alert | `select ui-alert` |
+  | Success | `select ui-success` |
+  | Info | `select ui-info` |
 
   ### Variant
 
@@ -514,30 +514,30 @@ defmodule Corex.Select do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `select` or `select select--accent` |
-  | Solid | `select select--accent select--variant-solid` |
-  | Ghost | `select select--variant-ghost` |
-  | Outline | `select select--accent select--variant-outline` |
+  | Subtle (default) | `select` or `select ui-accent` |
+  | Solid | `select ui-accent ui-solid` |
+  | Ghost | `select` |
+  | Outline | `select ui-accent` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `select select--sm` |
-  | MD | `select select--md` |
-  | LG | `select select--lg` |
-  | XL | `select select--xl` |
+  | SM | `select ui-size-sm` |
+  | MD | `select ui-size-md` |
+  | LG | `select ui-size-lg` |
+  | XL | `select ui-size-xl` |
 
   ### Rounded
 
   | Modifier | Classes |
   | -------- | ------- |
-  | None | `select select--rounded-none` |
-  | SM | `select select--rounded-sm` |
-  | MD | `select select--rounded-md` |
-  | LG | `select select--rounded-lg` |
-  | XL | `select select--rounded-xl` |
-  | Full | `select select--rounded-full` |
+  | None | `select ui-rounded-none` |
+  | SM | `select ui-rounded-sm` |
+  | MD | `select ui-rounded-md` |
+  | LG | `select ui-rounded-lg` |
+  | XL | `select ui-rounded-xl` |
+  | Full | `select ui-rounded-full` |
 
   ### Max width
 

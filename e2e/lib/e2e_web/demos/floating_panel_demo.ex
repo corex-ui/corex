@@ -6,7 +6,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
   def anatomy_basic_code do
     ~S"""
     <.floating_panel class="floating-panel">
-      <:trigger class="button button--variant-ghost button--sm">
+      <:trigger class="button ui-size-sm">
         <span data-closed>Open panel</span>
         <span data-open>Close panel</span>
       </:trigger>
@@ -36,10 +36,10 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
   def api_client_binding_code do
     """
     <div class="flex flex-wrap items-center gap-space">
-      <.action phx-click={Corex.FloatingPanel.set_open("floating-panel-api-bind", true)} class="button button--sm">
+      <.action phx-click={Corex.FloatingPanel.set_open("floating-panel-api-bind", true)} class="button ui-size-sm">
         Open
       </.action>
-      <.action phx-click={Corex.FloatingPanel.set_open("floating-panel-api-bind", false)} class="button button--sm">
+      <.action phx-click={Corex.FloatingPanel.set_open("floating-panel-api-bind", false)} class="button ui-size-sm">
         Close
       </.action>
     </div>
@@ -53,13 +53,13 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     <div class="flex flex-wrap items-center gap-space">
       <.action
         phx-click={Corex.FloatingPanel.set_open("floating-panel-api-bind", true)}
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Open
       </.action>
       <.action
         phx-click={Corex.FloatingPanel.set_open("floating-panel-api-bind", false)}
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Close
       </.action>
@@ -75,10 +75,10 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
   def api_client_js_heex do
     ~S"""
     <div class="flex flex-wrap items-center gap-space">
-      <button type="button" id="floating-panel-api-js-open" class="button button--sm">
+      <button type="button" id="floating-panel-api-js-open" class="button ui-size-sm">
         Open
       </button>
-      <button type="button" id="floating-panel-api-js-close" class="button button--sm">
+      <button type="button" id="floating-panel-api-js-close" class="button ui-size-sm">
         Close
       </button>
     </div>
@@ -159,10 +159,10 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
   def api_client_js_example(assigns) do
     ~H"""
     <div class="flex flex-wrap items-center gap-space">
-      <button type="button" id="floating-panel-api-js-open" class="button button--sm">
+      <button type="button" id="floating-panel-api-js-open" class="button ui-size-sm">
         Open
       </button>
-      <button type="button" id="floating-panel-api-js-close" class="button button--sm">
+      <button type="button" id="floating-panel-api-js-close" class="button ui-size-sm">
         Close
       </button>
     </div>
@@ -201,10 +201,10 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
   def api_server_heex do
     """
     <div class="flex flex-wrap items-center gap-space">
-      <.action phx-click="floating_panel_api_server_open" class="button button--sm">
+      <.action phx-click="floating_panel_api_server_open" class="button ui-size-sm">
         Open
       </.action>
-      <.action phx-click="floating_panel_api_server_close" class="button button--sm">
+      <.action phx-click="floating_panel_api_server_close" class="button ui-size-sm">
         Close
       </.action>
     </div>
@@ -228,10 +228,10 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
   def api_server_example(assigns) do
     ~H"""
     <div class="flex flex-wrap items-center gap-space">
-      <.action phx-click="floating_panel_api_server_open" class="button button--sm">
+      <.action phx-click="floating_panel_api_server_open" class="button ui-size-sm">
         Open
       </.action>
-      <.action phx-click="floating_panel_api_server_close" class="button button--sm">
+      <.action phx-click="floating_panel_api_server_close" class="button ui-size-sm">
         Close
       </.action>
     </div>
@@ -268,10 +268,10 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     """
     <div class="flex flex-col gap-space">
       <div class="flex flex-wrap gap-2">
-        <button type="button" class="button button--sm">
+        <button type="button" class="button ui-size-sm">
           Open
         </button>
-        <button type="button" class="button button--sm">
+        <button type="button" class="button ui-size-sm">
           Close
         </button>
       </div>
@@ -297,10 +297,10 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     ~H"""
     <div class="flex flex-col gap-space">
       <div class="flex flex-wrap gap-2">
-        <button type="button" id="floating-panel-anatomy-no-trigger-open" class="button button--sm">
+        <button type="button" id="floating-panel-anatomy-no-trigger-open" class="button ui-size-sm">
           Open
         </button>
-        <button type="button" id="floating-panel-anatomy-no-trigger-close" class="button button--sm">
+        <button type="button" id="floating-panel-anatomy-no-trigger-close" class="button ui-size-sm">
           Close
         </button>
       </div>
@@ -331,7 +331,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         class="floating-panel"
         positioning={%Corex.Positioning{placement: "top-start", gutter: 20, flip: true}}
       >
-        <:trigger class="button button--variant-ghost button--sm">
+        <:trigger class="button ui-size-sm">
           <span data-closed>Open anchored panel</span>
           <span data-open>Close anchored panel</span>
         </:trigger>
@@ -358,7 +358,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         class="floating-panel"
         positioning={%Corex.Positioning{placement: "top-start", gutter: 20, flip: true}}
       >
-        <:trigger class="button button--variant-ghost button--sm">
+        <:trigger class="button ui-size-sm">
           <span data-closed>Open anchored panel</span>
           <span data-open>Close anchored panel</span>
         </:trigger>
@@ -385,7 +385,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
       size={%{width: 380, height: 220}}
       min_size={%{width: 280, height: 160}}
     >
-      <:trigger class="button button--variant-ghost button--sm">
+      <:trigger class="button ui-size-sm">
         <span data-closed>Open sized panel</span>
         <span data-open>Close sized panel</span>
       </:trigger>
@@ -411,7 +411,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
       size={%{width: 380, height: 220}}
       min_size={%{width: 280, height: 160}}
     >
-      <:trigger class="button button--variant-ghost button--sm">
+      <:trigger class="button ui-size-sm">
         <span data-closed>Open sized panel</span>
         <span data-open>Close sized panel</span>
       </:trigger>
@@ -607,37 +607,37 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
   def styling_color_code do
     """
     <.floating_panel class="floating-panel">
-      <:trigger class="button button--variant-ghost button--sm">Default</:trigger>
+      <:trigger class="button ui-size-sm">Default</:trigger>
       <:title>Notes</:title>
       #{styling_panel_controls_code()}
       <:content><p>Drag, resize, and minimize this panel while you work.</p></:content>
     </.floating_panel>
-    <.floating_panel class="floating-panel floating-panel--accent">
-      <:trigger class="button button--variant-ghost button--sm">Accent</:trigger>
+    <.floating_panel class="floating-panel ui-accent">
+      <:trigger class="button ui-size-sm">Accent</:trigger>
       <:title>Notes</:title>
       #{styling_panel_controls_code()}
       <:content><p>Drag, resize, and minimize this panel while you work.</p></:content>
     </.floating_panel>
-    <.floating_panel class="floating-panel floating-panel--brand">
-      <:trigger class="button button--variant-ghost button--sm">Brand</:trigger>
+    <.floating_panel class="floating-panel ui-brand">
+      <:trigger class="button ui-size-sm">Brand</:trigger>
       <:title>Notes</:title>
       #{styling_panel_controls_code()}
       <:content><p>Drag, resize, and minimize this panel while you work.</p></:content>
     </.floating_panel>
-    <.floating_panel class="floating-panel floating-panel--alert">
-      <:trigger class="button button--variant-ghost button--sm">Alert</:trigger>
+    <.floating_panel class="floating-panel ui-alert">
+      <:trigger class="button ui-size-sm">Alert</:trigger>
       <:title>Notes</:title>
       #{styling_panel_controls_code()}
       <:content><p>Drag, resize, and minimize this panel while you work.</p></:content>
     </.floating_panel>
-    <.floating_panel class="floating-panel floating-panel--info">
-      <:trigger class="button button--variant-ghost button--sm">Info</:trigger>
+    <.floating_panel class="floating-panel ui-info">
+      <:trigger class="button ui-size-sm">Info</:trigger>
       <:title>Notes</:title>
       #{styling_panel_controls_code()}
       <:content><p>Drag, resize, and minimize this panel while you work.</p></:content>
     </.floating_panel>
-    <.floating_panel class="floating-panel floating-panel--success">
-      <:trigger class="button button--variant-ghost button--sm">Success</:trigger>
+    <.floating_panel class="floating-panel ui-success">
+      <:trigger class="button ui-size-sm">Success</:trigger>
       <:title>Notes</:title>
       #{styling_panel_controls_code()}
       <:content><p>Drag, resize, and minimize this panel while you work.</p></:content>
@@ -651,7 +651,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     ~H"""
     <div class="flex flex-col gap-4 items-start w-full max-w-md">
       <.floating_panel id="floating-panel-style-color-default" class="floating-panel">
-        <:trigger class="button button--variant-ghost button--sm">Default</:trigger>
+        <:trigger class="button ui-size-sm">Default</:trigger>
         <:title>Notes</:title>
         <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
         <:maximize_trigger>
@@ -665,9 +665,9 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
       </.floating_panel>
       <.floating_panel
         id="floating-panel-style-color-accent"
-        class="floating-panel floating-panel--accent"
+        class="floating-panel ui-accent"
       >
-        <:trigger class="button button--variant-ghost button--sm">Accent</:trigger>
+        <:trigger class="button ui-size-sm">Accent</:trigger>
         <:title>Notes</:title>
         <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
         <:maximize_trigger>
@@ -681,9 +681,9 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
       </.floating_panel>
       <.floating_panel
         id="floating-panel-style-color-brand"
-        class="floating-panel floating-panel--brand"
+        class="floating-panel ui-brand"
       >
-        <:trigger class="button button--variant-ghost button--sm">Brand</:trigger>
+        <:trigger class="button ui-size-sm">Brand</:trigger>
         <:title>Notes</:title>
         <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
         <:maximize_trigger>
@@ -697,9 +697,9 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
       </.floating_panel>
       <.floating_panel
         id="floating-panel-style-color-alert"
-        class="floating-panel floating-panel--alert"
+        class="floating-panel ui-alert"
       >
-        <:trigger class="button button--variant-ghost button--sm">Alert</:trigger>
+        <:trigger class="button ui-size-sm">Alert</:trigger>
         <:title>Notes</:title>
         <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
         <:maximize_trigger>
@@ -713,9 +713,9 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
       </.floating_panel>
       <.floating_panel
         id="floating-panel-style-color-info"
-        class="floating-panel floating-panel--info"
+        class="floating-panel ui-info"
       >
-        <:trigger class="button button--variant-ghost button--sm">Info</:trigger>
+        <:trigger class="button ui-size-sm">Info</:trigger>
         <:title>Notes</:title>
         <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
         <:maximize_trigger>
@@ -729,9 +729,9 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
       </.floating_panel>
       <.floating_panel
         id="floating-panel-style-color-success"
-        class="floating-panel floating-panel--success"
+        class="floating-panel ui-success"
       >
-        <:trigger class="button button--variant-ghost button--sm">Success</:trigger>
+        <:trigger class="button ui-size-sm">Success</:trigger>
         <:title>Notes</:title>
         <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
         <:maximize_trigger>
@@ -750,25 +750,23 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
   def styling_variant_code do
     """
     <.floating_panel class="floating-panel">
-      <:trigger class="button button--variant-ghost button--sm">Subtle (default)</:trigger>
+      <:trigger class="button ui-size-sm">Subtle (default)</:trigger>
       <:title>Notes</:title>
       #{styling_panel_controls_code()}
       <:content><p>Drag, resize, and minimize this panel while you work.</p></:content>
     </.floating_panel>
-    <.floating_panel class="floating-panel floating-panel--variant-solid">
-      <:trigger class="button button--variant-ghost button--sm">Solid</:trigger>
+    <.floating_panel class="floating-panel ui-solid">
+      <:trigger class="button ui-size-sm">Solid</:trigger>
       <:title>Notes</:title>
       #{styling_panel_controls_code()}
       <:content><p>Drag, resize, and minimize this panel while you work.</p></:content>
     </.floating_panel>
-    <.floating_panel class="floating-panel floating-panel--variant-ghost">
-      <:trigger class="button button--variant-ghost button--sm">Ghost</:trigger>
+    <.floating_panel class="floating-panel">
       <:title>Notes</:title>
       #{styling_panel_controls_code()}
       <:content><p>Drag, resize, and minimize this panel while you work.</p></:content>
     </.floating_panel>
-    <.floating_panel class="floating-panel floating-panel--variant-outline">
-      <:trigger class="button button--variant-ghost button--sm">Outline</:trigger>
+    <.floating_panel class="floating-panel">
       <:title>Notes</:title>
       #{styling_panel_controls_code()}
       <:content><p>Drag, resize, and minimize this panel while you work.</p></:content>
@@ -782,7 +780,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     ~H"""
     <div class="flex flex-col gap-4 items-start w-full max-w-2xl">
       <.floating_panel id="floating-panel-style-variant-subtle" class="floating-panel">
-        <:trigger class="button button--variant-ghost button--sm">Subtle (default)</:trigger>
+        <:trigger class="button ui-size-sm">Subtle (default)</:trigger>
         <:title>Notes</:title>
         <:minimize_trigger><.heroicon name="hero-minus" class="icon" /></:minimize_trigger>
         <:maximize_trigger>
@@ -796,41 +794,9 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
       </.floating_panel>
       <.floating_panel
         id="floating-panel-style-variant-solid"
-        class="floating-panel floating-panel--variant-solid"
+        class="floating-panel ui-solid"
       >
-        <:trigger class="button button--variant-ghost button--sm">Solid</:trigger>
-        <:title>Notes</:title>
-        <:minimize_trigger><.heroicon name="hero-minus" class="icon" /></:minimize_trigger>
-        <:maximize_trigger>
-          <.heroicon name="hero-arrows-pointing-out" class="icon" />
-        </:maximize_trigger>
-        <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
-        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
-        <:content>
-          <p>Drag, resize, and minimize this panel while you work.</p>
-        </:content>
-      </.floating_panel>
-      <.floating_panel
-        id="floating-panel-style-variant-ghost"
-        class="floating-panel floating-panel--variant-ghost"
-      >
-        <:trigger class="button button--variant-ghost button--sm">Ghost</:trigger>
-        <:title>Notes</:title>
-        <:minimize_trigger><.heroicon name="hero-minus" class="icon" /></:minimize_trigger>
-        <:maximize_trigger>
-          <.heroicon name="hero-arrows-pointing-out" class="icon" />
-        </:maximize_trigger>
-        <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
-        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
-        <:content>
-          <p>Drag, resize, and minimize this panel while you work.</p>
-        </:content>
-      </.floating_panel>
-      <.floating_panel
-        id="floating-panel-style-variant-outline"
-        class="floating-panel floating-panel--variant-outline"
-      >
-        <:trigger class="button button--variant-ghost button--sm">Outline</:trigger>
+        <:trigger class="button ui-size-sm">Solid</:trigger>
         <:title>Notes</:title>
         <:minimize_trigger><.heroicon name="hero-minus" class="icon" /></:minimize_trigger>
         <:maximize_trigger>
@@ -854,7 +820,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
 
       """
       <.floating_panel class="#{class}">
-        <:trigger class="button button--variant-ghost button--sm">#{semantic.label}</:trigger>
+        <:trigger class="button ui-size-sm">#{semantic.label}</:trigger>
         <:title>Notes</:title>
         #{styling_panel_controls_code()}
         <:content><p>Drag, resize, and minimize this panel while you work.</p></:content>
@@ -880,7 +846,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
               DemoScales.join_matrix_modifiers("floating-panel", semantic.modifier, variant.modifier)
             }
           >
-            <:trigger class="button button--variant-ghost button--sm">{semantic.label}</:trigger>
+            <:trigger class="button ui-size-sm">{semantic.label}</:trigger>
             <:title>Notes</:title>
             <:minimize_trigger><.heroicon name="hero-minus" class="icon" /></:minimize_trigger>
             <:maximize_trigger>
@@ -906,7 +872,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
 
       """
       <.floating_panel class="floating-panel floating-panel--#{size}">
-        <:trigger class="button button--variant-ghost button--sm">#{label}</:trigger>
+        <:trigger class="button ui-size-sm">#{label}</:trigger>
         <:title>#{label}</:title>
         #{styling_panel_controls_code()}
         <:content><p>Panel density scales with floating-panel--#{size}.</p></:content>
@@ -921,8 +887,8 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
 
     ~H"""
     <div class="flex flex-col gap-4 items-start w-full max-w-md">
-      <.floating_panel id="floating-panel-style-sm" class="floating-panel floating-panel--sm">
-        <:trigger class="button button--variant-ghost button--sm">SM</:trigger>
+      <.floating_panel id="floating-panel-style-sm" class="floating-panel ui-size-sm">
+        <:trigger class="button ui-size-sm">SM</:trigger>
         <:title>SM</:title>
         <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
         <:maximize_trigger>
@@ -931,11 +897,11 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
         <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
         <:content>
-          <p>Panel density scales with floating-panel--sm.</p>
+          <p>Panel density scales with ui-size-sm.</p>
         </:content>
       </.floating_panel>
-      <.floating_panel id="floating-panel-style-md" class="floating-panel floating-panel--md">
-        <:trigger class="button button--variant-ghost button--sm">MD</:trigger>
+      <.floating_panel id="floating-panel-style-md" class="floating-panel ui-size-md">
+        <:trigger class="button ui-size-sm">MD</:trigger>
         <:title>MD</:title>
         <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
         <:maximize_trigger>
@@ -944,11 +910,11 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
         <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
         <:content>
-          <p>Panel density scales with floating-panel--md.</p>
+          <p>Panel density scales with ui-size-md.</p>
         </:content>
       </.floating_panel>
-      <.floating_panel id="floating-panel-style-lg" class="floating-panel floating-panel--lg">
-        <:trigger class="button button--variant-ghost button--sm">LG</:trigger>
+      <.floating_panel id="floating-panel-style-lg" class="floating-panel ui-size-lg">
+        <:trigger class="button ui-size-sm">LG</:trigger>
         <:title>LG</:title>
         <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
         <:maximize_trigger>
@@ -957,11 +923,11 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
         <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
         <:content>
-          <p>Panel density scales with floating-panel--lg.</p>
+          <p>Panel density scales with ui-size-lg.</p>
         </:content>
       </.floating_panel>
-      <.floating_panel id="floating-panel-style-xl" class="floating-panel floating-panel--xl">
-        <:trigger class="button button--variant-ghost button--sm">XL</:trigger>
+      <.floating_panel id="floating-panel-style-xl" class="floating-panel ui-size-xl">
+        <:trigger class="button ui-size-sm">XL</:trigger>
         <:title>XL</:title>
         <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
         <:maximize_trigger>
@@ -970,7 +936,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
         <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
         <:content>
-          <p>Panel density scales with floating-panel--xl.</p>
+          <p>Panel density scales with ui-size-xl.</p>
         </:content>
       </.floating_panel>
     </div>
@@ -987,11 +953,11 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
           {"full", "Full"}
         ] do
       """
-      <.floating_panel class="floating-panel floating-panel--rounded-#{suffix}">
-        <:trigger class="button button--variant-ghost button--sm">#{label}</:trigger>
+      <.floating_panel class="floating-panel ui-rounded-#{suffix}">
+        <:trigger class="button ui-size-sm">#{label}</:trigger>
         <:title>#{label}</:title>
         #{styling_panel_controls_code()}
-        <:content><p>Corner radius via floating-panel--rounded-#{suffix}.</p></:content>
+        <:content><p>Corner radius via ui-rounded-#{suffix}.</p></:content>
       </.floating_panel>
       """
     end
@@ -1005,9 +971,9 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     <div class="flex flex-col gap-4 items-start w-full max-w-md">
       <.floating_panel
         id="floating-panel-style-rounded-none"
-        class="floating-panel floating-panel--rounded-none"
+        class="floating-panel ui-rounded-none"
       >
-        <:trigger class="button button--variant-ghost button--sm">None</:trigger>
+        <:trigger class="button ui-size-sm">None</:trigger>
         <:title>None</:title>
         <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
         <:maximize_trigger>
@@ -1016,14 +982,14 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
         <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
         <:content>
-          <p>Corner radius via floating-panel--rounded-none.</p>
+          <p>Corner radius via ui-rounded-none.</p>
         </:content>
       </.floating_panel>
       <.floating_panel
         id="floating-panel-style-rounded-sm"
-        class="floating-panel floating-panel--rounded-sm"
+        class="floating-panel ui-rounded-sm"
       >
-        <:trigger class="button button--variant-ghost button--sm">SM</:trigger>
+        <:trigger class="button ui-size-sm">SM</:trigger>
         <:title>SM</:title>
         <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
         <:maximize_trigger>
@@ -1032,14 +998,14 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
         <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
         <:content>
-          <p>Corner radius via floating-panel--rounded-sm.</p>
+          <p>Corner radius via ui-rounded-sm.</p>
         </:content>
       </.floating_panel>
       <.floating_panel
         id="floating-panel-style-rounded-md"
-        class="floating-panel floating-panel--rounded-md"
+        class="floating-panel ui-rounded-md"
       >
-        <:trigger class="button button--variant-ghost button--sm">MD</:trigger>
+        <:trigger class="button ui-size-sm">MD</:trigger>
         <:title>MD</:title>
         <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
         <:maximize_trigger>
@@ -1048,14 +1014,14 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
         <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
         <:content>
-          <p>Corner radius via floating-panel--rounded-md.</p>
+          <p>Corner radius via ui-rounded-md.</p>
         </:content>
       </.floating_panel>
       <.floating_panel
         id="floating-panel-style-rounded-lg"
-        class="floating-panel floating-panel--rounded-lg"
+        class="floating-panel ui-rounded-lg"
       >
-        <:trigger class="button button--variant-ghost button--sm">LG</:trigger>
+        <:trigger class="button ui-size-sm">LG</:trigger>
         <:title>LG</:title>
         <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
         <:maximize_trigger>
@@ -1064,14 +1030,14 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
         <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
         <:content>
-          <p>Corner radius via floating-panel--rounded-lg.</p>
+          <p>Corner radius via ui-rounded-lg.</p>
         </:content>
       </.floating_panel>
       <.floating_panel
         id="floating-panel-style-rounded-xl"
-        class="floating-panel floating-panel--rounded-xl"
+        class="floating-panel ui-rounded-xl"
       >
-        <:trigger class="button button--variant-ghost button--sm">XL</:trigger>
+        <:trigger class="button ui-size-sm">XL</:trigger>
         <:title>XL</:title>
         <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
         <:maximize_trigger>
@@ -1080,14 +1046,14 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
         <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
         <:content>
-          <p>Corner radius via floating-panel--rounded-xl.</p>
+          <p>Corner radius via ui-rounded-xl.</p>
         </:content>
       </.floating_panel>
       <.floating_panel
         id="floating-panel-style-rounded-full"
-        class="floating-panel floating-panel--rounded-full"
+        class="floating-panel ui-rounded-full"
       >
-        <:trigger class="button button--variant-ghost button--sm">Full</:trigger>
+        <:trigger class="button ui-size-sm">Full</:trigger>
         <:title>Full</:title>
         <:minimize_trigger><.heroicon name="hero-arrow-down-left" class="icon" /></:minimize_trigger>
         <:maximize_trigger>
@@ -1096,7 +1062,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
         <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
         <:content>
-          <p>Corner radius via floating-panel--rounded-full.</p>
+          <p>Corner radius via ui-rounded-full.</p>
         </:content>
       </.floating_panel>
     </div>

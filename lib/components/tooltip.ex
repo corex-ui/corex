@@ -114,7 +114,7 @@ defmodule Corex.Tooltip do
 
   ```heex
   <.menu_item disabled value="support">
-    <.tooltip class="tooltip tooltip--sm" trigger_tag={:span}>
+    <.tooltip class="tooltip ui-size-sm" trigger_tag={:span}>
       <:trigger focusable={false}>Support</:trigger>
       <:content>Coming soon</:content>
     </.tooltip>

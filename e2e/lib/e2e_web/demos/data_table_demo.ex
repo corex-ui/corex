@@ -51,7 +51,7 @@ defmodule E2eWeb.Demos.DataTableDemo do
       <:col :let={row} label="Role">{row.role}</:col>
       <:col :let={row} label="Email">{row.email}</:col>
       <:action :let={row}>
-        <.action class="button button--sm" aria-label={"Edit #{row.name}"}>
+        <.action class="button ui-size-sm" aria-label={"Edit #{row.name}"}>
           <.heroicon name="hero-pencil-square" />
         </.action>
       </:action>
@@ -73,7 +73,7 @@ defmodule E2eWeb.Demos.DataTableDemo do
       <:col :let={row} label="Role">{row.role}</:col>
       <:col :let={row} label="Email">{row.email}</:col>
       <:action :let={row}>
-        <.action class="button button--sm" aria-label={"Edit #{row.name}"}>
+        <.action class="button ui-size-sm" aria-label={"Edit #{row.name}"}>
           <.heroicon name="hero-pencil-square" />
         </.action>
       </:action>
@@ -125,12 +125,12 @@ defmodule E2eWeb.Demos.DataTableDemo do
   def styling_color_code_tabs do
     styling_code_tabs(
       "data-table-styling-color-accent",
-      "data-table data-table--accent max-w-none"
+      "data-table ui-accent max-w-none"
     )
   end
 
   def styling_size_code_tabs do
-    styling_code_tabs("data-table-styling-size-lg", "data-table data-table--lg max-w-none")
+    styling_code_tabs("data-table-styling-size-lg", "data-table ui-size-lg max-w-none")
   end
 
   def styling_max_width_code_tabs do
@@ -242,7 +242,7 @@ defmodule E2eWeb.Demos.DataTableDemo do
       <:col :let={u} label="Role" name={:role}>{u.role}</:col>
       <:col :let={u} label="Status" name={:status}>{u.status}</:col>
       <:action :let={u}>
-        <.action class="button button--sm" aria-label={"Edit #{u.name}"}>
+        <.action class="button ui-size-sm" aria-label={"Edit #{u.name}"}>
           <.heroicon name="hero-pencil-square" />
         </.action>
       </:action>
@@ -264,7 +264,7 @@ defmodule E2eWeb.Demos.DataTableDemo do
       <:col :let={row} label="ID">{row.id}</:col>
       <:col :let={row} label="Name">{row.name}</:col>
       <:action :let={row}>
-        <.action class="button button--sm" aria-label={"Edit #{row.name}"}>
+        <.action class="button ui-size-sm" aria-label={"Edit #{row.name}"}>
           <.heroicon name="hero-pencil-square" />
         </.action>
       </:action>
@@ -305,7 +305,7 @@ defmodule E2eWeb.Demos.DataTableDemo do
         <.action
           phx-click="pattern_stream_delete"
           phx-value-dom_id={dom_id}
-          class="button button--sm button--alert"
+          class="button ui-size-sm ui-alert"
           aria-label={"Delete #{row.name}"}
         >
           <.heroicon name="hero-trash" />
@@ -511,7 +511,7 @@ defmodule E2eWeb.Demos.DataTableDemo do
       <:col :let={row} label="Role" name={:role}>{row.role}</:col>
       <:col :let={row} label="Status" name={:status}>{row.status}</:col>
       <:action :let={row}>
-        <.action class="button button--sm" aria-label={"Edit #{row.name}"}>
+        <.action class="button ui-size-sm" aria-label={"Edit #{row.name}"}>
           <.heroicon name="hero-pencil-square" />
         </.action>
       </:action>

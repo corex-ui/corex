@@ -176,7 +176,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           {msg}
         </:error>
       </.file_upload>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" class="button ui-accent">Submit</.action>
     </.form>
     """
   end
@@ -211,7 +211,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           {msg}
         </:error>
       </.file_upload>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -232,7 +232,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           {msg}
         </:error>
       </.file_upload>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" class="button ui-accent">Submit</.action>
     </.form>
     """
   end
@@ -258,7 +258,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           {msg}
         </:error>
       </.file_upload>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" class="button ui-accent">Submit</.action>
     </.form>
     """
   end
@@ -281,7 +281,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           <.heroicon name="hero-x-mark" />
         </:close>
       </.file_upload>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" class="button ui-accent">Submit</.action>
     </form>
     """
   end
@@ -322,7 +322,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           {msg}
         </:error>
       </.file_upload>
-      <.action type="submit" id="file-upload-cs-submit" class="button button--accent">
+      <.action type="submit" id="file-upload-cs-submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -351,7 +351,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           {msg}
         </:error>
       </.file_upload>
-      <.action type="submit" id="file-upload-val-submit" class="button button--accent">
+      <.action type="submit" id="file-upload-val-submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -376,7 +376,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           <.heroicon name="hero-x-mark" />
         </:close>
       </.file_upload>
-      <.action type="submit" id="file-upload-native-submit" class="button button--accent">
+      <.action type="submit" id="file-upload-native-submit" class="button ui-accent">
         Submit
       </.action>
     </form>
@@ -385,7 +385,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def api_open_phoenix_binding_heex do
     ~S"""
-    <.action phx-click={Corex.FileUpload.open_file_picker("file-upload-api-phx")} class="button button--sm">
+    <.action phx-click={Corex.FileUpload.open_file_picker("file-upload-api-phx")} class="button ui-size-sm">
       Open picker
     </.action>
     <.file_upload name="demo[]" class="file-upload" max_files={3}>
@@ -399,7 +399,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def api_open_server_heex do
     ~S"""
-    <.action phx-click="api_fu_open_server" phx-value-id="file-upload-api-server" class="button button--sm">
+    <.action phx-click="api_fu_open_server" phx-value-id="file-upload-api-server" class="button ui-size-sm">
       Open picker
     </.action>
     <.file_upload name="demo[]" class="file-upload" max_files={3}>
@@ -437,7 +437,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     <div class="flex flex-wrap gap-2 mb-4 items-center w-full justify-center">
       <.action
         phx-click={Corex.FileUpload.open_file_picker("file-upload-api-phx")}
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Open picker
       </.action>
@@ -459,7 +459,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       <.action
         phx-click="api_fu_open_server"
         phx-value-id="file-upload-api-server"
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Open picker
       </.action>
@@ -480,7 +480,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     <div class="flex flex-wrap gap-2 mb-4 items-center w-full justify-center">
       <.action
         type="button"
-        class="button button--sm"
+        class="button ui-size-sm"
         phx-click={JS.dispatch("corex:file-upload:open", to: "#file-upload-api-js", bubbles: false)}
       >
         Open picker (JS)
@@ -555,7 +555,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           <.heroicon name="hero-x-mark" />
         </:close>
       </.file_upload_live>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" class="button ui-accent">Submit</.action>
     </form>
     """
   end
@@ -645,7 +645,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           <.heroicon name="hero-x-mark" />
         </:close>
       </.file_upload>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" class="button ui-accent">Submit</.action>
     </.form>
     """
   end
@@ -673,7 +673,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           <.heroicon name="hero-x-mark" />
         </:close>
       </.file_upload>
-      <.action type="submit" id="file-upload-live-phoenix-submit" class="button button--accent">
+      <.action type="submit" id="file-upload-live-phoenix-submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -701,7 +701,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           {msg}
         </:error>
       </.file_upload>
-      <.action type="submit" id="file-upload-live-ecto-submit" class="button button--accent">
+      <.action type="submit" id="file-upload-live-ecto-submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -800,23 +800,23 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       <:label>Default</:label>
     #{close}
     </.file_upload>
-    <.file_upload name="document" class="file-upload file-upload--accent">
+    <.file_upload name="document" class="file-upload ui-accent">
       <:label>Accent</:label>
     #{close}
     </.file_upload>
-    <.file_upload name="document" class="file-upload file-upload--brand">
+    <.file_upload name="document" class="file-upload ui-brand">
       <:label>Brand</:label>
     #{close}
     </.file_upload>
-    <.file_upload name="document" class="file-upload file-upload--alert">
+    <.file_upload name="document" class="file-upload ui-alert">
       <:label>Alert</:label>
     #{close}
     </.file_upload>
-    <.file_upload name="document" class="file-upload file-upload--info">
+    <.file_upload name="document" class="file-upload ui-info">
       <:label>Info</:label>
     #{close}
     </.file_upload>
-    <.file_upload name="document" class="file-upload file-upload--success">
+    <.file_upload name="document" class="file-upload ui-success">
       <:label>Success</:label>
     #{close}
     </.file_upload>
@@ -835,7 +835,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       <.file_upload
         id="file-upload-style-color-accent"
         name="document"
-        class="file-upload file-upload--accent w-full"
+        class="file-upload ui-accent w-full"
       >
         <:label>Accent</:label>
         <:close><.heroicon name="hero-x-mark" /></:close>
@@ -843,7 +843,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       <.file_upload
         id="file-upload-style-color-brand"
         name="document"
-        class="file-upload file-upload--brand w-full"
+        class="file-upload ui-brand w-full"
       >
         <:label>Brand</:label>
         <:close><.heroicon name="hero-x-mark" /></:close>
@@ -851,7 +851,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       <.file_upload
         id="file-upload-style-color-alert"
         name="document"
-        class="file-upload file-upload--alert w-full"
+        class="file-upload ui-alert w-full"
       >
         <:label>Alert</:label>
         <:close><.heroicon name="hero-x-mark" /></:close>
@@ -859,7 +859,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       <.file_upload
         id="file-upload-style-color-info"
         name="document"
-        class="file-upload file-upload--info w-full"
+        class="file-upload ui-info w-full"
       >
         <:label>Info</:label>
         <:close><.heroicon name="hero-x-mark" /></:close>
@@ -867,7 +867,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       <.file_upload
         id="file-upload-style-color-success"
         name="document"
-        class="file-upload file-upload--success w-full"
+        class="file-upload ui-success w-full"
       >
         <:label>Success</:label>
         <:close><.heroicon name="hero-x-mark" /></:close>
@@ -884,16 +884,14 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       <:label>Subtle (default)</:label>
     #{close}
     </.file_upload>
-    <.file_upload name="document" class="file-upload file-upload--variant-solid">
+    <.file_upload name="document" class="file-upload ui-solid">
       <:label>Solid</:label>
     #{close}
     </.file_upload>
-    <.file_upload name="document" class="file-upload file-upload--variant-ghost">
-      <:label>Ghost</:label>
+    <.file_upload name="document" class="file-upload">
     #{close}
     </.file_upload>
-    <.file_upload name="document" class="file-upload file-upload--variant-outline">
-      <:label>Outline</:label>
+    <.file_upload name="document" class="file-upload">
     #{close}
     </.file_upload>
     """
@@ -911,25 +909,9 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       <.file_upload
         id="file-upload-style-variant-solid"
         name="document"
-        class="file-upload file-upload--variant-solid w-full"
+        class="file-upload ui-solid w-full"
       >
         <:label>Solid</:label>
-        <:close><.heroicon name="hero-x-mark" /></:close>
-      </.file_upload>
-      <.file_upload
-        id="file-upload-style-variant-ghost"
-        name="document"
-        class="file-upload file-upload--variant-ghost w-full"
-      >
-        <:label>Ghost</:label>
-        <:close><.heroicon name="hero-x-mark" /></:close>
-      </.file_upload>
-      <.file_upload
-        id="file-upload-style-variant-outline"
-        name="document"
-        class="file-upload file-upload--variant-outline w-full"
-      >
-        <:label>Outline</:label>
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.file_upload>
     </div>
@@ -981,19 +963,19 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     close = styling_close_code()
 
     """
-    <.file_upload name="document" class="file-upload file-upload--sm">
+    <.file_upload name="document" class="file-upload ui-size-sm">
       <:label>SM</:label>
     #{close}
     </.file_upload>
-    <.file_upload name="document" class="file-upload file-upload--md">
+    <.file_upload name="document" class="file-upload ui-size-md">
       <:label>MD</:label>
     #{close}
     </.file_upload>
-    <.file_upload name="document" class="file-upload file-upload--lg">
+    <.file_upload name="document" class="file-upload ui-size-lg">
       <:label>LG</:label>
     #{close}
     </.file_upload>
-    <.file_upload name="document" class="file-upload file-upload--xl">
+    <.file_upload name="document" class="file-upload ui-size-xl">
       <:label>XL</:label>
     #{close}
     </.file_upload>
@@ -1008,7 +990,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       <.file_upload
         id="file-upload-style-sm"
         name="document"
-        class="file-upload file-upload--sm w-full"
+        class="file-upload ui-size-sm w-full"
       >
         <:label>SM</:label>
         <:close><.heroicon name="hero-x-mark" /></:close>
@@ -1016,7 +998,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       <.file_upload
         id="file-upload-style-md"
         name="document"
-        class="file-upload file-upload--md w-full"
+        class="file-upload ui-size-md w-full"
       >
         <:label>MD</:label>
         <:close><.heroicon name="hero-x-mark" /></:close>
@@ -1024,7 +1006,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       <.file_upload
         id="file-upload-style-lg"
         name="document"
-        class="file-upload file-upload--lg w-full"
+        class="file-upload ui-size-lg w-full"
       >
         <:label>LG</:label>
         <:close><.heroicon name="hero-x-mark" /></:close>
@@ -1032,7 +1014,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       <.file_upload
         id="file-upload-style-xl"
         name="document"
-        class="file-upload file-upload--xl w-full"
+        class="file-upload ui-size-xl w-full"
       >
         <:label>XL</:label>
         <:close><.heroicon name="hero-x-mark" /></:close>
@@ -1045,27 +1027,27 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     close = styling_close_code()
 
     """
-    <.file_upload name="document" class="file-upload file-upload--rounded-none">
+    <.file_upload name="document" class="file-upload ui-rounded-none">
       <:label>None</:label>
     #{close}
     </.file_upload>
-    <.file_upload name="document" class="file-upload file-upload--rounded-sm">
+    <.file_upload name="document" class="file-upload ui-rounded-sm">
       <:label>SM</:label>
     #{close}
     </.file_upload>
-    <.file_upload name="document" class="file-upload file-upload--rounded-md">
+    <.file_upload name="document" class="file-upload ui-rounded-md">
       <:label>MD</:label>
     #{close}
     </.file_upload>
-    <.file_upload name="document" class="file-upload file-upload--rounded-lg">
+    <.file_upload name="document" class="file-upload ui-rounded-lg">
       <:label>LG</:label>
     #{close}
     </.file_upload>
-    <.file_upload name="document" class="file-upload file-upload--rounded-xl">
+    <.file_upload name="document" class="file-upload ui-rounded-xl">
       <:label>XL</:label>
     #{close}
     </.file_upload>
-    <.file_upload name="document" class="file-upload file-upload--rounded-full">
+    <.file_upload name="document" class="file-upload ui-rounded-full">
       <:label>Full</:label>
     #{close}
     </.file_upload>
@@ -1080,7 +1062,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       <.file_upload
         id="file-upload-style-rounded-none"
         name="document"
-        class="file-upload file-upload--rounded-none w-full"
+        class="file-upload ui-rounded-none w-full"
       >
         <:label>None</:label>
         <:close><.heroicon name="hero-x-mark" /></:close>
@@ -1088,7 +1070,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       <.file_upload
         id="file-upload-style-rounded-sm"
         name="document"
-        class="file-upload file-upload--rounded-sm w-full"
+        class="file-upload ui-rounded-sm w-full"
       >
         <:label>SM</:label>
         <:close><.heroicon name="hero-x-mark" /></:close>
@@ -1096,7 +1078,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       <.file_upload
         id="file-upload-style-rounded-md"
         name="document"
-        class="file-upload file-upload--rounded-md w-full"
+        class="file-upload ui-rounded-md w-full"
       >
         <:label>MD</:label>
         <:close><.heroicon name="hero-x-mark" /></:close>
@@ -1104,7 +1086,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       <.file_upload
         id="file-upload-style-rounded-lg"
         name="document"
-        class="file-upload file-upload--rounded-lg w-full"
+        class="file-upload ui-rounded-lg w-full"
       >
         <:label>LG</:label>
         <:close><.heroicon name="hero-x-mark" /></:close>
@@ -1112,7 +1094,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       <.file_upload
         id="file-upload-style-rounded-xl"
         name="document"
-        class="file-upload file-upload--rounded-xl w-full"
+        class="file-upload ui-rounded-xl w-full"
       >
         <:label>XL</:label>
         <:close><.heroicon name="hero-x-mark" /></:close>
@@ -1120,7 +1102,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       <.file_upload
         id="file-upload-style-rounded-full"
         name="document"
-        class="file-upload file-upload--rounded-full w-full"
+        class="file-upload ui-rounded-full w-full"
       >
         <:label>Full</:label>
         <:close><.heroicon name="hero-x-mark" /></:close>
@@ -1152,7 +1134,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     ~H"""
     <div class={DemoScales.preview_scroll_class()}>
       <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
-        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.file_upload
           id={"file-upload-style-max-#{variant.id}"}
           name="document"

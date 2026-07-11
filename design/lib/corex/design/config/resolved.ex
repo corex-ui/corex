@@ -43,7 +43,6 @@ defmodule Corex.Design.Config.Resolved do
       scales: normalize_scales(Map.get(config, :scales, [])),
       components: Map.get(config, :components),
       semantics: Map.get(config, :semantics),
-      variants: Map.get(config, :variants)
     ]
   end
 

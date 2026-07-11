@@ -32,6 +32,7 @@ defmodule Corex.Design.Bundle do
     Publish.write_theme_tokens!(output_dir)
     CssFilter.apply!(output_dir, component_ids)
     Components.write_entry!(output_dir, component_ids)
+    write_corex_entry!(output_dir)
 
     Write.atomic!(
       Path.join(output_dir, "GENERATED"),
@@ -67,5 +68,23 @@ defmodule Corex.Design.Bundle do
   defp copy_file!(source, dest) do
     File.mkdir_p!(Path.dirname(dest))
     File.cp!(source, dest)
+  end
+
+  defp write_corex_entry!(output_dir) do
+    imports =
+      [
+        ~s(@import "./main.css";),
+        ~s(@import "./tokens.css";),
+        ~s(@import "./utilities.css";)
+      ] ++
+        Enum.map(Theme.themes(), fn theme ->
+          ~s(@import "./theme/#{theme}.css";)
+        end) ++
+        [~s(@import "./components.css";)]
+
+    Write.atomic!(
+      Path.join(output_dir, "corex.css"),
+      @header <> Enum.join(imports, "\n") <> "\n"
+    )
   end
 end

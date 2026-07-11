@@ -54,7 +54,7 @@ defmodule E2eWeb.Demos.CodeDemo do
     ~S"""
     <div class="relative w-full">
       <.clipboard
-        class="clipboard "
+        class="clipboard"
         value={\"\"\"
     def hello(name) do
       "Hello, #{name}!"
@@ -166,7 +166,7 @@ defmodule E2eWeb.Demos.CodeDemo do
 
     DemoScales.text_steps()
     |> Enum.map(fn step ->
-      modifier = if step == "md", do: "code", else: "code code--text-#{step}"
+      modifier = if step == "md", do: "code", else: "code text-#{step}"
       ~s|<.code class="#{modifier}" language={:elixir} code={#{c}} />|
     end)
     |> DemoScales.join_code()
@@ -181,9 +181,9 @@ defmodule E2eWeb.Demos.CodeDemo do
     ~H"""
     <div class={DemoScales.preview_scroll_class()}>
       <div :for={step <- @text_steps} class="flex flex-col gap-2">
-        <p class="typo typo--sm font-medium">{step}</p>
+        <p class="typo ui-size-sm font-medium">{step}</p>
         <.code
-          class={if step == "md", do: "code", else: "code code--text-#{step}"}
+          class={if step == "md", do: "code", else: "code text-#{step}"}
           language={:elixir}
           code={@styling_snippet}
         />
@@ -212,7 +212,7 @@ defmodule E2eWeb.Demos.CodeDemo do
     ~H"""
     <div class={DemoScales.preview_scroll_class()}>
       <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
-        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.code
           class={DemoScales.join_modifiers("code", variant.modifier)}
           language={:elixir}
@@ -228,7 +228,7 @@ defmodule E2eWeb.Demos.CodeDemo do
 
     DemoScales.radius_steps()
     |> Enum.map(fn step ->
-      ~s|<.code class="code code--rounded-#{step}" language={:elixir} code={#{c}} />|
+      ~s|<.code class="code ui-rounded-#{step}" language={:elixir} code={#{c}} />|
     end)
     |> DemoScales.join_code()
   end
@@ -242,8 +242,8 @@ defmodule E2eWeb.Demos.CodeDemo do
     ~H"""
     <div class={DemoScales.preview_scroll_class()}>
       <div :for={step <- @radius_steps} class="flex flex-col gap-2">
-        <p class="typo typo--sm font-medium">{step}</p>
-        <.code class={"code code--rounded-#{step}"} language={:elixir} code={@styling_snippet} />
+        <p class="typo ui-size-sm font-medium">{step}</p>
+        <.code class={"code ui-rounded-#{step}"} language={:elixir} code={@styling_snippet} />
       </div>
     </div>
     """

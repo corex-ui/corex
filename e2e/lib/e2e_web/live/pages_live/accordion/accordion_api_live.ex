@@ -226,19 +226,19 @@ defmodule E2eWeb.AccordionApiLive do
             <div class="flex flex-wrap gap-2 mb-4">
               <.action
                 phx-click={Corex.Accordion.set_value(@id_sv_client, "lorem")}
-                class="button button--sm"
+                class="button ui-size-sm"
               >
                 Open Lorem
               </.action>
               <.action
                 phx-click={Corex.Accordion.set_value(@id_sv_client, ["lorem", "donec"])}
-                class="button button--sm"
+                class="button ui-size-sm"
               >
                 Lorem and Donec
               </.action>
               <.action
                 phx-click={Corex.Accordion.set_value(@id_sv_client, [])}
-                class="button button--sm"
+                class="button ui-size-sm"
               >
                 Close all
               </.action>

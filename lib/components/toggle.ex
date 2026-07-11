@@ -159,11 +159,11 @@ defmodule Corex.Toggle do
   @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.toggle>`). Combine axes, for example `toggle toggle--accent toggle--lg` or `toggle toggle--info toggle--variant-solid`.
+  Stack modifiers on the host (`class` on `<.toggle>`). Combine axes, for example `toggle ui-accent ui-size-lg` or `toggle ui-info ui-solid`.
 
   Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on the root trigger. Variant modifiers control surface treatment. Default is subtle: off uses a neutral surface, on uses selected with semantic ink text. Add `toggle--variant-solid` for a filled on state.
+  Semantic modifiers set palette variables on the root trigger. Variant modifiers control surface treatment. Default is subtle: off uses a neutral surface, on uses selected with semantic ink text. Add `ui-solid` for a filled on state.
 
   <!-- tabs-open -->
 
@@ -174,11 +174,11 @@ defmodule Corex.Toggle do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `toggle` |
-  | Accent | `toggle toggle--accent` |
-  | Brand | `toggle toggle--brand` |
-  | Alert | `toggle toggle--alert` |
-  | Info | `toggle toggle--info` |
-  | Success | `toggle toggle--success` |
+  | Accent | `toggle ui-accent` |
+  | Brand | `toggle ui-brand` |
+  | Alert | `toggle ui-alert` |
+  | Info | `toggle ui-info` |
+  | Success | `toggle ui-success` |
 
   ### Variant
 
@@ -186,30 +186,30 @@ defmodule Corex.Toggle do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `toggle` or `toggle toggle--accent` |
-  | Solid | `toggle toggle--accent toggle--variant-solid` |
-  | Ghost | `toggle toggle--variant-ghost` |
-  | Outline | `toggle toggle--accent toggle--variant-outline` |
+  | Subtle (default) | `toggle` or `toggle ui-accent` |
+  | Solid | `toggle ui-accent ui-solid` |
+  | Ghost | `toggle` |
+  | Outline | `toggle ui-accent` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `toggle toggle--sm` |
-  | MD | `toggle toggle--md` |
-  | LG | `toggle toggle--lg` |
-  | XL | `toggle toggle--xl` |
+  | SM | `toggle ui-size-sm` |
+  | MD | `toggle ui-size-md` |
+  | LG | `toggle ui-size-lg` |
+  | XL | `toggle ui-size-xl` |
 
   ### Rounded
 
   | Modifier | Classes |
   | -------- | ------- |
-  | None | `toggle toggle--rounded-none` |
-  | SM | `toggle toggle--rounded-sm` |
-  | MD | `toggle toggle--rounded-md` |
-  | LG | `toggle toggle--rounded-lg` |
-  | XL | `toggle toggle--rounded-xl` |
-  | Full | `toggle toggle--rounded-full` |
+  | None | `toggle ui-rounded-none` |
+  | SM | `toggle ui-rounded-sm` |
+  | MD | `toggle ui-rounded-md` |
+  | LG | `toggle ui-rounded-lg` |
+  | XL | `toggle ui-rounded-xl` |
+  | Full | `toggle ui-rounded-full` |
 
   <!-- tabs-close -->
 

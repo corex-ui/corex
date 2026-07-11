@@ -1,166 +1,70 @@
 @import "../main.css";
 
 @layer components {
-  .link {
-    @apply ui-link;
+ .link {
+ @apply ui-link;
 
-    color: var(--color-link);
-    overflow: visible;
-    --link-fill: var(--color-ui);
-    --link-fill-hover: var(--color-ui-hover);
-    --link-fill-active: var(--color-ui-active);
-    --link-ink: var(--color-ink);
-    --link-ink-text: var(--color-ink);
-    --link-muted: var(--color-ui-muted);
-  }
+ overflow: visible;
+ --link-fill: var(--color-ui);
+ --link-fill-hover: var(--color-ui-hover);
+ --link-fill-active: var(--color-ui-active);
+ --link-ink: var(--color-ink);
+ --link-ink-text: var(--color-ink);
+ --link-muted: var(--color-ui-muted);
+ }
 
-  .link:not(.link--variant-solid):not(.link--variant-ghost):not(.link--variant-outline) {
-    text-decoration-line: underline;
-    text-underline-offset: 0.15em;
-    text-decoration-thickness: from-font;
-    background-color: transparent;
-    border-color: transparent;
-  }
+ .link:not(.ui-solid) {
+ color: var(--ctl-ink-text, var(--color-link));
+ background-color: transparent;
+ border-color: transparent;
+ }
 
-  .link.link--skip {
-    position: fixed;
-    inset-inline-start: var(--spacing-space-4);
-    inset-block-start: -9999px;
-    z-index: 10000;
-    max-width: min(100vw - var(--spacing-space-8), var(--container-xs));
-    padding-block: var(--spacing-space-3);
-    padding-inline: var(--spacing-space-4);
-    margin: 0;
-    overflow: visible;
-    background: var(--color-layer);
-    color: var(--color-ink);
-    border: 1px solid var(--color-border);
-    box-shadow: 0 4px 24px rgb(0 0 0 / 0.12);
-    transition: inset-block-start 0.15s ease;
-    text-decoration-line: none;
-  }
+ .link.ui-solid {
+ color: var(--ctl-ink, var(--ctl-ink-text, var(--color-ink)));
+ background-color: var(--ctl-bg, var(--color-ui));
+ border: 1px solid var(--ctl-bd, var(--color-border));
+ text-decoration-line: none;
+ }
 
-  .link.link--skip:focus,
-  .link.link--skip:focus-visible {
-    inset-block-start: var(--spacing-space-4);
-  }
+ .link.ui-solid:hover {
+ background-color: var(--ctl-bg-hover, var(--color-ui-hover));
+ }
 
-  @media (prefers-reduced-motion: reduce) {
-    .link.link--skip {
-      transition: none;
-    }
-  }
-}
+ .link.ui-solid:active {
+ background-color: var(--ctl-bg-active, var(--color-ui-active));
+ }
 
-@utility link--* {
-  --link-fill: --value(--color-*, [color]);
-  --link-fill-hover: --value(--color-*-hover, [color]);
-  --link-fill-active: --value(--color-*-active, [color]);
-  --link-ink: --value(--color-*-ink, [color]);
-  --link-ink-text: --value(--color-ink-*, [color]);
-  --link-muted: --value(--color-*-muted, [color]);
-  color: --value(--color-ink-*, [color]);
-  font-size: --value(--text-*, [length]);
-  line-height: --value(--text-*--line-height, [length]);
-  padding-inline: --value(--spacing-space-*, [length]);
-  gap: --value(--spacing-space-*, [length]);
-}
+ .link.ui-solid:focus-visible {
+ outline: none;
+ box-shadow: inset 0 0 0 2px var(--ctl-ring, var(--color-ink));
+ }
 
-@utility link--variant-subtle {
-  text-decoration-line: underline;
-  text-underline-offset: 0.15em;
-  text-decoration-thickness: from-font;
-  background-color: transparent;
-  border-color: transparent;
-}
+ .link.link--skip {
+ position: fixed;
+ inset-inline-start: var(--spacing-space-4);
+ inset-block-start: -9999px;
+ z-index: 10000;
+ max-width: min(100vw - var(--spacing-space-8), var(--container-xs));
+ padding-block: var(--spacing-space-3);
+ padding-inline: var(--spacing-space-4);
+ margin: 0;
+ overflow: visible;
+ background: var(--color-layer);
+ color: var(--color-ink);
+ border: 1px solid var(--color-border);
+ box-shadow: 0 4px 24px rgb(0 0 0 / 0.12);
+ transition: inset-block-start 0.15s ease;
+ text-decoration-line: none;
+ }
 
-@utility link--variant-solid {
-  text-decoration-line: none;
-  background-color: var(--link-fill, var(--color-ui-active));
-  color: var(--link-ink, var(--color-ink));
-  border: 1px solid transparent;
-  border-radius: var(--radius-full);
+ .link.link--skip:focus,
+ .link.link--skip:focus-visible {
+ inset-block-start: var(--spacing-space-4);
+ }
 
-  &:hover {
-    background-color: var(--link-fill-hover, var(--color-ui-hover));
-    text-decoration-thickness: from-font;
-  }
-
-  &:active {
-    background-color: var(--link-fill-active, var(--color-ui-active));
-  }
-
-  &:focus-visible {
-    outline: none;
-    box-shadow: inset 0 0 0 2px var(--link-ink, var(--color-ink));
-  }
-
-  &:disabled,
-  &[data-disabled],
-  &[disabled] {
-    background-color: var(--link-muted, var(--color-ui-muted));
-    color: var(--link-ink, var(--color-ink-muted));
-    cursor: not-allowed;
-  }
-}
-
-@utility link--variant-ghost {
-  text-decoration-line: none;
-  background-color: transparent;
-  color: var(--link-ink-text, var(--color-ink));
-  border: 1px solid transparent;
-  border-radius: var(--radius-md);
-
-  &:hover {
-    background-color: var(--color-ui-hover);
-    text-decoration-thickness: from-font;
-  }
-
-  &:active {
-    background-color: var(--color-ui-active);
-  }
-
-  &:focus-visible {
-    outline: none;
-    box-shadow: inset 0 0 0 2px var(--link-ink-text, var(--color-ink));
-  }
-
-  &:disabled,
-  &[data-disabled],
-  &[disabled] {
-    background-color: transparent;
-    color: var(--color-ink-muted);
-    cursor: not-allowed;
-  }
-}
-
-@utility link--variant-outline {
-  text-decoration-line: none;
-  background-color: transparent;
-  color: var(--link-ink-text, var(--color-ink));
-  border: 1px solid var(--link-fill, var(--color-border));
-  border-radius: var(--radius-full);
-
-  &:hover {
-    background-color: var(--color-ui-hover);
-    text-decoration-thickness: from-font;
-  }
-
-  &:active {
-    background-color: var(--color-ui-active);
-  }
-
-  &:focus-visible {
-    outline: none;
-    box-shadow: inset 0 0 0 2px var(--link-fill, var(--color-ink));
-  }
-
-  &:disabled,
-  &[data-disabled],
-  &[disabled] {
-    background-color: transparent;
-    color: var(--color-ink-muted);
-    border-color: var(--color-ui-muted);
-    cursor: not-allowed;
-  }
+ @media (prefers-reduced-motion: reduce) {
+ .link.link--skip {
+ transition: none;
+ }
+ }
 }

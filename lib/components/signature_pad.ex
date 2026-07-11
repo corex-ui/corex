@@ -257,7 +257,7 @@ defmodule Corex.SignaturePad do
 
   ```heex
   <.signature_pad
-    class="signature-pad signature-pad--accent signature-pad--lg signature-pad--rounded-xl"
+    class="signature-pad ui-accent ui-size-lg ui-rounded-xl"
     drawing_fill="var(--color-ink)"
   >
   ```

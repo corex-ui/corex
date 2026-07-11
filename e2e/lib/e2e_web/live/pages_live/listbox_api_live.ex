@@ -70,13 +70,13 @@ defmodule E2eWeb.ListboxApiLive do
             <div class="flex flex-wrap gap-2 items-center w-full justify-center">
               <.action
                 phx-click={Corex.Listbox.set_value("listbox-api-sv-client", ["bel"])}
-                class="button button--sm"
+                class="button ui-size-sm"
               >
                 Belgium
               </.action>
               <.action
                 phx-click={Corex.Listbox.set_value("listbox-api-sv-client", [])}
-                class="button button--sm"
+                class="button ui-size-sm"
               >
                 Clear
               </.action>
@@ -103,7 +103,7 @@ defmodule E2eWeb.ListboxApiLive do
         >
           <:preview>
             <div class="flex flex-wrap gap-2 items-center w-full justify-center">
-              <.action phx-click="listbox_api_set_value" class="button button--sm">Belgium</.action>
+              <.action phx-click="listbox_api_set_value" class="button ui-size-sm">Belgium</.action>
             </div>
             <.listbox id="listbox-api-sv-server" class="listbox" items={Demo.items_minimal()}>
               <:label>Choose a country</:label>
@@ -122,7 +122,7 @@ defmodule E2eWeb.ListboxApiLive do
           <:preview>
             <.action
               type="button"
-              class="button button--sm"
+              class="button ui-size-sm"
               phx-click={
                 JS.dispatch("corex:listbox:set-value",
                   to: "#listbox-api-sv-js",
@@ -151,7 +151,7 @@ defmodule E2eWeb.ListboxApiLive do
             <div class="flex flex-wrap gap-2 items-center w-full justify-center">
               <.action
                 phx-click={Corex.Listbox.value("listbox-api-val-client")}
-                class="button button--sm"
+                class="button ui-size-sm"
               >
                 Read selection
               </.action>
@@ -178,7 +178,7 @@ defmodule E2eWeb.ListboxApiLive do
         >
           <:preview>
             <div class="flex flex-wrap gap-2 items-center w-full justify-center">
-              <.action phx-click="listbox_api_value_server" class="button button--sm">
+              <.action phx-click="listbox_api_value_server" class="button ui-size-sm">
                 Read selection
               </.action>
             </div>

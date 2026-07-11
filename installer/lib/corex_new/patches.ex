@@ -416,7 +416,6 @@ defmodule Corex.New.Patches do
           scales: [],
           components: #{inspect(installer_components(opts))},
           semantics: nil,
-          variants: nil
 
         """
 

@@ -28,7 +28,7 @@ defmodule E2eWeb.App.Header do
         <div class={Shell.row()}>
           <.dialog id="menu-dialog" animation="instant" class="dialog dialog--side lg:hidden">
             <:trigger
-              class="button button--sm button--circle button--variant-ghost"
+              class="button ui-size-sm ui-trigger--circle"
               aria_label={~t"Open menu"}
             >
               <.heroicon name="hero-bars-3" />
@@ -40,7 +40,7 @@ defmodule E2eWeb.App.Header do
                   <div class={Shell.row()}>
                     <.action
                       phx-click={Corex.Dialog.set_open("menu-dialog", false)}
-                      class="button button--sm button--circle button--variant-ghost"
+                      class="button ui-size-sm ui-trigger--circle"
                       aria_label={~t"Close menu"}
                     >
                       <.heroicon name="hero-x-mark" />

@@ -393,7 +393,7 @@ Repeat the `for` block for each page that should exist under every locale.
 ```heex
 <.select
   id="corex-language-switch"
-  class="select select--sm max-w-6xs"
+  class="select ui-size-sm max-w-6xs"
   dir={MyApp.Locale.dir(@locale)}
   items={MyApp.Locale.language_select_items(MyApp.Locale.current_path(@page))}
   value={MyApp.Locale.language_select_value(MyApp.Locale.current_path(@page), @locale)}

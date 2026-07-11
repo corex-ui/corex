@@ -129,7 +129,7 @@ defmodule E2eWeb.TreeViewPlayLive do
           />
 
           <.toggle_group
-            class="toggle-group toggle-group--sm max-w-3xs"
+            class="toggle-group ui-size-sm max-w-3xs"
             id="selection_mode"
             on_value_change="control_changed"
             multiple={false}
@@ -142,7 +142,7 @@ defmodule E2eWeb.TreeViewPlayLive do
 
           <.select
             id="playground-disabled-items"
-            class="select select--sm w-4xs"
+            class="select ui-size-sm w-4xs"
             multiple
             deselectable={true}
             close_on_select={false}
@@ -158,7 +158,7 @@ defmodule E2eWeb.TreeViewPlayLive do
 
           <.select
             id="playground-disabled-branches"
-            class="select select--sm w-4xs"
+            class="select ui-size-sm w-4xs"
             multiple
             deselectable={true}
             close_on_select={false}

@@ -25,8 +25,31 @@ defmodule Corex.Design.Tokens.PaletteGen do
 
     case p.stops do
       [%{color: %Color.SRGB{} = c, achieved: a}] -> {Color.to_hex(c), a}
-      [%{color: :unreachable}] -> {seed_hex, r}
-      _ -> {seed_hex, r}
+      [%{color: :unreachable}] -> best_contrast_fg(seed_hex, bg_hex)
+      _ -> best_contrast_fg(seed_hex, bg_hex)
+    end
+  end
+
+  @doc """
+  When a target ratio is unreachable, returns the foreground from the seed's
+  tonal scale with the highest achievable WCAG contrast against `bg_hex`,
+  alongside its true achieved ratio. Never fabricates a ratio.
+  """
+  def best_contrast_fg(seed_hex, bg_hex) do
+    seed_hex
+    |> tonal_scale()
+    |> Map.fetch!(:stops)
+    |> Enum.map(fn {_label, color} -> any_color_to_hex(color) end)
+    |> Enum.map(fn hex -> {hex, Color.Contrast.wcag_ratio(hex, bg_hex)} end)
+    |> Enum.max_by(fn {_hex, achieved} -> achieved end)
+  end
+
+  defp any_color_to_hex(%Color.SRGB{} = color), do: Color.to_hex(color)
+
+  defp any_color_to_hex(color) do
+    case Color.convert(color, Color.SRGB) do
+      {:ok, srgb} -> Color.to_hex(srgb)
+      {:error, reason} -> raise ArgumentError, "invalid palette color: #{inspect(reason)}"
     end
   end
 

@@ -2,7 +2,7 @@
 
 Corex components work without any bundled CSS. You style them with your own rules, usually by targeting `data-scope` and `data-part` on the rendered markup (each component’s Hexdocs page lists those selectors).
 
-**Corex Design** is optional: token-based CSS, ready-made themes, and modifier classes such as `button--accent` or `dialog--lg`. Generated apps with `--design` (the default) add the `corex_design` Hex package and build CSS into `assets/corex/`.
+**Corex Design** is optional: token-based CSS, ready-made themes, and modifier classes such as `ui-accent` or `ui-size-lg`. Generated apps with `--design` (the default) add the `corex_design` Hex package and build CSS into `assets/corex/`.
 
 ## Commands
 
@@ -84,7 +84,7 @@ Example:
 ```heex
 <.accordion
   id="faq"
-  class="accordion accordion--accent accordion--lg accordion--rounded-lg"
+  class="accordion ui-accent ui-size-lg ui-rounded-lg"
   items={Corex.Content.new([
     [value: "lorem", label: "Lorem", content: "Lorem panel content."],
     [value: "duis", label: "Duis", content: "Duis panel content."],
@@ -97,12 +97,12 @@ Common modifier axes (not every component has every axis—check that component�
 
 | Axis | Examples | Effect |
 |------|----------|--------|
-| Semantic | `button--accent`, `timer--success` | Palette CSS variables on the host |
-| Variant | `button--variant-solid`, `accordion--variant-ghost` | Surface treatment (solid, subtle default, ghost, outline) |
-| Size | `button--sm`, `dialog--lg` | Spacing, control height, and font size |
-| Radius | `accordion--rounded-xl` | Corner radius |
+| Semantic | `ui-accent`, `timer--success` | Palette CSS variables on the host |
+| Variant | `ui-solid`, `` | Surface treatment (solid, subtle default, ghost, outline) |
+| Size | `ui-size-sm`, `ui-size-lg` | Spacing, control height, and font size |
+| Radius | `ui-rounded-xl` | Corner radius |
 
-Semantic and variant axes combine: `button button--accent button--variant-outline`. Semantic sets palette variables; variant controls fill, border, and transparency.
+Semantic and variant axes combine: `button ui-accent`. Semantic sets palette variables; variant controls fill, border, and transparency.
 
 See the [modifier guide](modifiers.html) for the full axis system. Stack modifiers on the root `class` attribute. Do not invent new class names; use only modifiers defined for that component in `assets/corex/components/<name>.css`.
 
@@ -123,7 +123,7 @@ Component styles build on shared utilities in `assets/corex/utilities.css` (pull
 | `ui-link` | Link-styled controls |
 | `ui-root` | Vertical/horizontal stacks |
 
-Example: `button.css` applies `ui-trigger` to `.button`; `button--accent` maps to token colors via `@utility button--*`.
+Example: `button.css` applies `ui-trigger` to `.button`; `ui-accent` maps to token colors via `@utility button--*`.
 
 ## Tokens and themes
 

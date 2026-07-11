@@ -137,7 +137,7 @@ defmodule Corex.Combobox do
   | [`set_open/3`](#set_open/3) | Open or close menu (server) | `socket` |
 
   ```heex
-  <.action phx-click={Corex.Combobox.set_value("combobox-api", ["fra"])} class="button button--sm">France</.action>
+  <.action phx-click={Corex.Combobox.set_value("combobox-api", ["fra"])} class="button ui-size-sm">France</.action>
   ```
 
   ## Events
@@ -243,7 +243,7 @@ defmodule Corex.Combobox do
   You can then use modifiers
 
   ```heex
-  <.combobox class="combobox combobox--accent combobox--lg" items={Corex.List.new([])}>
+  <.combobox class="combobox ui-accent ui-size-lg" items={Corex.List.new([])}>
     <:empty>No results</:empty>
     <:trigger>
       <.heroicon name="hero-chevron-down" />
