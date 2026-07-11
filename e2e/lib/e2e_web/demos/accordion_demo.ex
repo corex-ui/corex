@@ -1375,18 +1375,16 @@ defmodule E2eWeb.Demos.AccordionDemo do
       |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("accordion"))
 
     ~H"""
-    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
-      <div class="grid grid-cols-4 gap-space gap-2 items-start min-w-max">
-        <div :for={semantic <- @matrix_semantics} class="contents">
-          <.accordion
-            :for={variant <- @matrix_variants}
-            class={DemoScales.join_matrix_modifiers("accordion", semantic.modifier, variant.modifier)}
-            value="item-1"
-            items={styling_matrix_items(semantic.label)}
-          >
-            <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
-          </.accordion>
-        </div>
+    <div class="w-full grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2 gap-space items-start">
+      <div :for={semantic <- @matrix_semantics} class="contents">
+        <.accordion
+          :for={variant <- @matrix_variants}
+          class={DemoScales.join_matrix_modifiers("accordion", semantic.modifier, variant.modifier)}
+          value="item-1"
+          items={styling_matrix_items(semantic.label)}
+        >
+          <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+        </.accordion>
       </div>
     </div>
     """

@@ -132,6 +132,20 @@
     background-color: var(--angle-slider-ink, var(--color-selected-ink));
   }
 
+  .angle-slider.angle-slider--variant-solid
+    [data-scope="angle-slider"][data-part="marker"][data-state="under-value"] {
+    --marker-color: var(--angle-slider-ink-text, var(--color-ink));
+  }
+
+  .angle-slider.angle-slider--variant-solid
+    [data-scope="angle-slider"][data-part="marker"][data-state="over-value"] {
+    --marker-color: color-mix(
+      in srgb,
+      var(--angle-slider-ink-text, var(--color-ink)) 50%,
+      transparent
+    );
+  }
+
   .angle-slider.angle-slider--variant-ghost
     [data-scope="angle-slider"][data-part="control"] {
     background-color: transparent;
@@ -418,24 +432,6 @@
     line-height: --value(--text-*--line-height, [length]);
     --size: --value(--spacing-size-*, [length]);
     --thumb-size: calc(--value(--spacing-size-*, [length]) * 0.5);
-    --angle-slider-fill: --value(--color-*, [color]);
-    --angle-slider-fill-hover: --value(--color-*-hover, [color]);
-    --angle-slider-fill-active: --value(--color-*-active, [color]);
-    --angle-slider-ink: --value(--color-*-ink, [color]);
-    --angle-slider-ink-text: --value(--color-ink-*, [color]);
-    --angle-slider-muted: --value(--color-*-muted, [color]);
-  }
-
-  [data-scope="angle-slider"][data-part="marker"] {
-    --marker-color: --value(--color-*-muted, [color]);
-  }
-
-  [data-scope="angle-slider"][data-part="marker"][data-state="under-value"] {
-    --marker-color: --value(--color-ink, [color]);
-  }
-
-  [data-scope="angle-slider"][data-part="marker"][data-state="over-value"] {
-    --marker-color: --value(--color-*-muted, [color]);
   }
 
   [data-scope="angle-slider"][data-part="value-text"] [data-part="value"] {
@@ -459,6 +455,63 @@
   [data-scope="angle-slider"][data-part="thumb"]::before {
     background-color: var(--angle-slider-ink, var(--color-selected-ink));
   }
+
+  [data-scope="angle-slider"][data-part="marker"][data-state="under-value"] {
+    --marker-color: var(--angle-slider-ink-text, var(--color-ink));
+  }
+
+  [data-scope="angle-slider"][data-part="marker"][data-state="over-value"] {
+    --marker-color: color-mix(
+      in srgb,
+      var(--angle-slider-ink-text, var(--color-ink)) 50%,
+      transparent
+    );
+  }
+}
+
+@utility angle-slider--accent {
+  --angle-slider-fill: var(--color-accent);
+  --angle-slider-fill-hover: var(--color-accent-hover);
+  --angle-slider-fill-active: var(--color-accent-active);
+  --angle-slider-ink: var(--color-accent-ink);
+  --angle-slider-ink-text: var(--color-ink-accent);
+  --angle-slider-muted: var(--color-accent-muted);
+}
+
+@utility angle-slider--brand {
+  --angle-slider-fill: var(--color-brand);
+  --angle-slider-fill-hover: var(--color-brand-hover);
+  --angle-slider-fill-active: var(--color-brand-active);
+  --angle-slider-ink: var(--color-brand-ink);
+  --angle-slider-ink-text: var(--color-ink-brand);
+  --angle-slider-muted: var(--color-brand-muted);
+}
+
+@utility angle-slider--alert {
+  --angle-slider-fill: var(--color-alert);
+  --angle-slider-fill-hover: var(--color-alert-hover);
+  --angle-slider-fill-active: var(--color-alert-active);
+  --angle-slider-ink: var(--color-alert-ink);
+  --angle-slider-ink-text: var(--color-ink-alert);
+  --angle-slider-muted: var(--color-alert-muted);
+}
+
+@utility angle-slider--info {
+  --angle-slider-fill: var(--color-info);
+  --angle-slider-fill-hover: var(--color-info-hover);
+  --angle-slider-fill-active: var(--color-info-active);
+  --angle-slider-ink: var(--color-info-ink);
+  --angle-slider-ink-text: var(--color-ink-info);
+  --angle-slider-muted: var(--color-info-muted);
+}
+
+@utility angle-slider--success {
+  --angle-slider-fill: var(--color-success);
+  --angle-slider-fill-hover: var(--color-success-hover);
+  --angle-slider-fill-active: var(--color-success-active);
+  --angle-slider-ink: var(--color-success-ink);
+  --angle-slider-ink-text: var(--color-ink-success);
+  --angle-slider-muted: var(--color-success-muted);
 }
 
 @utility angle-slider--variant-subtle {

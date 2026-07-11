@@ -219,16 +219,14 @@ defmodule E2eWeb.Demos.ActionDemo do
       |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("button"))
 
     ~H"""
-    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
-      <div class="grid grid-cols-4 gap-space gap-2 items-center min-w-max">
-        <div :for={semantic <- @matrix_semantics} class="contents">
-          <.action
-            :for={variant <- @matrix_variants}
-            class={DemoScales.join_matrix_modifiers("button", semantic.modifier, variant.modifier)}
-          >
-            {semantic.label}
-          </.action>
-        </div>
+    <div class="w-full grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2 gap-space items-center">
+      <div :for={semantic <- @matrix_semantics} class="contents">
+        <.action
+          :for={variant <- @matrix_variants}
+          class={DemoScales.join_matrix_modifiers("button", semantic.modifier, variant.modifier)}
+        >
+          {semantic.label}
+        </.action>
       </div>
     </div>
     """
@@ -245,7 +243,7 @@ defmodule E2eWeb.Demos.ActionDemo do
 
   def styling_size_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap items-center gap-space gap-2 items-center">
+    <div class="flex flex-wrap items-end gap-2 gap-space">
       <.action class="button button--sm">Small</.action>
       <.action class="button">Medium</.action>
       <.action class="button button--lg">Large</.action>

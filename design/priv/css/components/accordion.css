@@ -209,34 +209,6 @@
     color: inherit;
   }
 
-  .accordion.accordion--variant-solid [data-scope="accordion"][data-part="item-trigger"][data-state="open"] {
-    background-color: var(--accordion-fill, var(--color-selected));
-    color: var(--accordion-ink, var(--color-selected-ink));
-
-    &:hover {
-      background-color: var(--accordion-fill-hover, var(--color-selected-hover));
-      color: var(--accordion-ink, var(--color-selected-ink));
-    }
-
-    &:active {
-      background-color: var(--accordion-fill-active, var(--color-selected-active));
-      color: var(--accordion-ink, var(--color-selected-ink));
-    }
-
-    &:focus-visible {
-      box-shadow: inset 0 0 0 2px var(--accordion-ink, var(--color-selected-ink));
-      outline: none;
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--accordion-muted, var(--color-selected-muted));
-      color: var(--accordion-ink, var(--color-selected-ink));
-      cursor: not-allowed;
-    }
-  }
-
   .accordion.accordion--variant-solid [data-scope="accordion"][data-part="item-trigger"][data-state="open"] [data-scope="accordion"][data-part="item-text"] > *,
   .accordion.accordion--variant-solid [data-scope="accordion"][data-part="item-trigger"][data-state="open"] [data-scope="accordion"][data-part="item-indicator"] > * {
     color: inherit;
@@ -281,12 +253,6 @@
     gap: --value(--spacing-space-*, [length]);
     margin-bottom: --value(--spacing-space-*, [length]);
     min-height: --value(--spacing-size-*, [length]);
-    --accordion-fill: --value(--color-*, [color]);
-    --accordion-fill-hover: --value(--color-*-hover, [color]);
-    --accordion-fill-active: --value(--color-*-active, [color]);
-    --accordion-ink: --value(--color-*-ink, [color]);
-    --accordion-ink-text: --value(--color-ink-*, [color]);
-    --accordion-muted: --value(--color-*-muted, [color]);
   }
 
   [data-scope="accordion"][data-part="item-text"] {
@@ -309,10 +275,12 @@
 
     &:hover {
       background-color: var(--accordion-fill-hover, var(--color-ui-hover));
+      color: var(--accordion-ink, var(--color-ink));
     }
 
     &:active {
       background-color: var(--accordion-fill-active, var(--color-ui-active));
+      color: var(--accordion-ink, var(--color-ink));
     }
 
     &:focus-visible {
@@ -328,6 +296,80 @@
       cursor: not-allowed;
     }
   }
+
+  [data-scope="accordion"][data-part="item-trigger"][data-state="open"] {
+    background-color: var(--accordion-fill, var(--color-selected));
+    color: var(--accordion-ink, var(--color-selected-ink));
+    border-color: transparent;
+
+    &:hover {
+      background-color: var(--accordion-fill-hover, var(--color-selected-hover));
+      color: var(--accordion-ink, var(--color-selected-ink));
+    }
+
+    &:active {
+      background-color: var(--accordion-fill-active, var(--color-selected-active));
+      color: var(--accordion-ink, var(--color-selected-ink));
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--accordion-ink, var(--color-selected-ink));
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: var(--accordion-muted, var(--color-selected-muted));
+      color: var(--accordion-ink, var(--color-selected-ink));
+      cursor: not-allowed;
+    }
+  }
+}
+
+@utility accordion--accent {
+  --accordion-fill: var(--color-accent);
+  --accordion-fill-hover: var(--color-accent-hover);
+  --accordion-fill-active: var(--color-accent-active);
+  --accordion-ink: var(--color-accent-ink);
+  --accordion-ink-text: var(--color-ink-accent);
+  --accordion-muted: var(--color-accent-muted);
+}
+
+@utility accordion--brand {
+  --accordion-fill: var(--color-brand);
+  --accordion-fill-hover: var(--color-brand-hover);
+  --accordion-fill-active: var(--color-brand-active);
+  --accordion-ink: var(--color-brand-ink);
+  --accordion-ink-text: var(--color-ink-brand);
+  --accordion-muted: var(--color-brand-muted);
+}
+
+@utility accordion--alert {
+  --accordion-fill: var(--color-alert);
+  --accordion-fill-hover: var(--color-alert-hover);
+  --accordion-fill-active: var(--color-alert-active);
+  --accordion-ink: var(--color-alert-ink);
+  --accordion-ink-text: var(--color-ink-alert);
+  --accordion-muted: var(--color-alert-muted);
+}
+
+@utility accordion--info {
+  --accordion-fill: var(--color-info);
+  --accordion-fill-hover: var(--color-info-hover);
+  --accordion-fill-active: var(--color-info-active);
+  --accordion-ink: var(--color-info-ink);
+  --accordion-ink-text: var(--color-ink-info);
+  --accordion-muted: var(--color-info-muted);
+}
+
+@utility accordion--success {
+  --accordion-fill: var(--color-success);
+  --accordion-fill-hover: var(--color-success-hover);
+  --accordion-fill-active: var(--color-success-active);
+  --accordion-ink: var(--color-success-ink);
+  --accordion-ink-text: var(--color-ink-success);
+  --accordion-muted: var(--color-success-muted);
 }
 
 @utility accordion--variant-subtle {

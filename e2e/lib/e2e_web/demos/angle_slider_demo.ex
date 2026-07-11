@@ -181,7 +181,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
 
   def styling_size_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-4">
+    <div class="flex flex-wrap items-end gap-4">
       <.angle_slider
         class="angle-slider angle-slider--sm"
         value={90.0}

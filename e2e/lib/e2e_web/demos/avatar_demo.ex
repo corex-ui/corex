@@ -165,38 +165,53 @@ defmodule E2eWeb.Demos.AvatarDemo do
     """
   end
 
+  def styling_color_code do
+    ~S"""
+    <.avatar class="avatar">
+      <:fallback>Default</:fallback>
+    </.avatar>
+    <.avatar class="avatar avatar--accent">
+      <:fallback>Accent</:fallback>
+    </.avatar>
+    <.avatar class="avatar avatar--brand">
+      <:fallback>Brand</:fallback>
+    </.avatar>
+    <.avatar class="avatar avatar--alert">
+      <:fallback>Alert</:fallback>
+    </.avatar>
+    <.avatar class="avatar avatar--info">
+      <:fallback>Info</:fallback>
+    </.avatar>
+    <.avatar class="avatar avatar--success">
+      <:fallback>Success</:fallback>
+    </.avatar>
+    """
+  end
+
   def styling_color_example(assigns) do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-4 items-end justify-center">
+    <div class="flex flex-wrap items-center gap-space gap-2">
+      <.avatar id="avatar-style-default" class="avatar">
+        <:fallback>Default</:fallback>
+      </.avatar>
       <.avatar id="avatar-style-accent" class="avatar avatar--accent">
-        <:fallback>A</:fallback>
+        <:fallback>Accent</:fallback>
       </.avatar>
       <.avatar id="avatar-style-brand" class="avatar avatar--brand">
-        <:fallback>B</:fallback>
+        <:fallback>Brand</:fallback>
       </.avatar>
       <.avatar id="avatar-style-alert" class="avatar avatar--alert">
-        <:fallback>C</:fallback>
+        <:fallback>Alert</:fallback>
       </.avatar>
       <.avatar id="avatar-style-info" class="avatar avatar--info">
-        <:fallback>D</:fallback>
+        <:fallback>Info</:fallback>
       </.avatar>
       <.avatar id="avatar-style-success" class="avatar avatar--success">
-        <:fallback>E</:fallback>
+        <:fallback>Success</:fallback>
       </.avatar>
     </div>
-    """
-  end
-
-  def styling_color_code do
-    ~S"""
-    <.avatar class="avatar avatar--accent">
-      <:fallback>A</:fallback>
-    </.avatar>
-    <.avatar class="avatar avatar--brand">
-      <:fallback>B</:fallback>
-    </.avatar>
     """
   end
 
@@ -204,37 +219,17 @@ defmodule E2eWeb.Demos.AvatarDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-4 items-end justify-center">
-      <.avatar
-        id="avatar-style-sm"
-        src="https://corex-ui.com/images/avatar.png"
-        alt=""
-        class="avatar avatar--sm"
-      >
-        <:fallback>SM</:fallback>
+    <div class="flex flex-wrap items-end gap-2 gap-space">
+      <.avatar id="avatar-style-sm" class="avatar avatar--sm">
+        <:fallback>Small</:fallback>
       </.avatar>
-      <.avatar
-        id="avatar-style-md"
-        src="https://corex-ui.com/images/avatar.png"
-        alt=""
-        class="avatar avatar--md"
-      >
-        <:fallback>MD</:fallback>
+      <.avatar id="avatar-style-md" class="avatar avatar--md">
+        <:fallback>Medium</:fallback>
       </.avatar>
-      <.avatar
-        id="avatar-style-lg"
-        src="https://corex-ui.com/images/avatar.png"
-        alt=""
-        class="avatar avatar--lg"
-      >
-        <:fallback>LG</:fallback>
+      <.avatar id="avatar-style-lg" class="avatar avatar--lg">
+        <:fallback>Large</:fallback>
       </.avatar>
-      <.avatar
-        id="avatar-style-xl"
-        src="https://corex-ui.com/images/avatar.png"
-        alt=""
-        class="avatar avatar--xl"
-      >
+      <.avatar id="avatar-style-xl" class="avatar avatar--xl">
         <:fallback>XL</:fallback>
       </.avatar>
     </div>
@@ -244,16 +239,16 @@ defmodule E2eWeb.Demos.AvatarDemo do
   def styling_variant_code do
     ~S"""
     <.avatar class="avatar">
-      <:fallback>A</:fallback>
+      <:fallback>Solid (default)</:fallback>
     </.avatar>
-    <.avatar class="avatar avatar--variant-solid">
-      <:fallback>B</:fallback>
+    <.avatar class="avatar avatar--variant-subtle">
+      <:fallback>Subtle</:fallback>
     </.avatar>
     <.avatar class="avatar avatar--variant-ghost">
-      <:fallback>C</:fallback>
+      <:fallback>Ghost</:fallback>
     </.avatar>
     <.avatar class="avatar avatar--variant-outline">
-      <:fallback>D</:fallback>
+      <:fallback>Outline</:fallback>
     </.avatar>
     """
   end
@@ -262,18 +257,18 @@ defmodule E2eWeb.Demos.AvatarDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-4 items-end justify-center">
-      <.avatar id="avatar-style-variant-subtle" class="avatar">
-        <:fallback>A</:fallback>
+    <div class="flex flex-wrap items-center gap-space gap-2">
+      <.avatar id="avatar-style-variant-solid" class="avatar">
+        <:fallback>Solid (default)</:fallback>
       </.avatar>
-      <.avatar id="avatar-style-variant-solid" class="avatar avatar--variant-solid">
-        <:fallback>B</:fallback>
+      <.avatar id="avatar-style-variant-subtle" class="avatar avatar--variant-subtle">
+        <:fallback>Subtle</:fallback>
       </.avatar>
       <.avatar id="avatar-style-variant-ghost" class="avatar avatar--variant-ghost">
-        <:fallback>C</:fallback>
+        <:fallback>Ghost</:fallback>
       </.avatar>
       <.avatar id="avatar-style-variant-outline" class="avatar avatar--variant-outline">
-        <:fallback>D</:fallback>
+        <:fallback>Outline</:fallback>
       </.avatar>
     </div>
     """
@@ -281,12 +276,11 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
   def styling_variant_matrix_code do
     for semantic <- DemoScales.styling_semantic_axis_steps("avatar"),
-        variant <- DemoScales.styling_variant_axis_steps("avatar") do
+        variant <- styling_variant_axis_steps() do
       class = DemoScales.join_matrix_modifiers("avatar", semantic.modifier, variant.modifier)
 
-      letter = String.first(semantic.label)
       ~s(<.avatar class="#{class}">
-        <:fallback>#{letter}</:fallback>
+        <:fallback>#{semantic.label}</:fallback>
       </.avatar>)
     end
     |> DemoScales.join_code()
@@ -296,19 +290,17 @@ defmodule E2eWeb.Demos.AvatarDemo do
     assigns =
       assigns
       |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("avatar"))
-      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("avatar"))
+      |> assign(:matrix_variants, styling_variant_axis_steps())
 
     ~H"""
-    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
-      <div class="grid grid-cols-4 gap-space gap-2 items-end min-w-max">
-        <div :for={semantic <- @matrix_semantics} class="contents">
-          <.avatar
-            :for={variant <- @matrix_variants}
-            class={DemoScales.join_matrix_modifiers("avatar", semantic.modifier, variant.modifier)}
-          >
-            <:fallback>{String.first(semantic.label)}</:fallback>
-          </.avatar>
-        </div>
+    <div class="w-full grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2 gap-space items-end">
+      <div :for={semantic <- @matrix_semantics} class="contents">
+        <.avatar
+          :for={variant <- @matrix_variants}
+          class={DemoScales.join_matrix_modifiers("avatar", semantic.modifier, variant.modifier)}
+        >
+          <:fallback>{semantic.label}</:fallback>
+        </.avatar>
       </div>
     </div>
     """
@@ -316,16 +308,16 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
   def styling_size_code do
     ~S"""
-    <.avatar src="https://corex-ui.com/images/avatar.png" class="avatar avatar--sm">
-      <:fallback>SM</:fallback>
+    <.avatar class="avatar avatar--sm">
+      <:fallback>Small</:fallback>
     </.avatar>
-    <.avatar src="https://corex-ui.com/images/avatar.png" class="avatar avatar--md">
-      <:fallback>MD</:fallback>
+    <.avatar class="avatar avatar--md">
+      <:fallback>Medium</:fallback>
     </.avatar>
-    <.avatar src="https://corex-ui.com/images/avatar.png" class="avatar avatar--lg">
-      <:fallback>LG</:fallback>
+    <.avatar class="avatar avatar--lg">
+      <:fallback>Large</:fallback>
     </.avatar>
-    <.avatar src="https://corex-ui.com/images/avatar.png" class="avatar avatar--xl">
+    <.avatar class="avatar avatar--xl">
       <:fallback>XL</:fallback>
     </.avatar>
     """
@@ -333,12 +325,9 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
   def styling_rounded_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-4 items-end justify-center">
-      <.avatar id="avatar-style-rounded-default" class="avatar">
-        <:fallback>●</:fallback>
-      </.avatar>
+    <div class="flex flex-wrap items-end gap-2 gap-space">
       <.avatar id="avatar-style-rounded-none" class="avatar avatar--rounded-none">
-        <:fallback>0</:fallback>
+        <:fallback>None</:fallback>
       </.avatar>
       <.avatar id="avatar-style-rounded-sm" class="avatar avatar--rounded-sm">
         <:fallback>SM</:fallback>
@@ -353,7 +342,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
         <:fallback>XL</:fallback>
       </.avatar>
       <.avatar id="avatar-style-rounded-full" class="avatar avatar--rounded-full">
-        <:fallback>●</:fallback>
+        <:fallback>Full</:fallback>
       </.avatar>
     </div>
     """
@@ -361,11 +350,8 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
   def styling_rounded_code do
     ~S"""
-    <.avatar class="avatar">
-      <:fallback>●</:fallback>
-    </.avatar>
     <.avatar class="avatar avatar--rounded-none">
-      <:fallback>0</:fallback>
+      <:fallback>None</:fallback>
     </.avatar>
     <.avatar class="avatar avatar--rounded-sm">
       <:fallback>SM</:fallback>
@@ -380,9 +366,18 @@ defmodule E2eWeb.Demos.AvatarDemo do
       <:fallback>XL</:fallback>
     </.avatar>
     <.avatar class="avatar avatar--rounded-full">
-      <:fallback>●</:fallback>
+      <:fallback>Full</:fallback>
     </.avatar>
     """
+  end
+
+  defp styling_variant_axis_steps do
+    [
+      %{label: "Solid (default)", modifier: ""},
+      %{label: "Subtle", modifier: "avatar--variant-subtle"},
+      %{label: "Ghost", modifier: "avatar--variant-ghost"},
+      %{label: "Outline", modifier: "avatar--variant-outline"}
+    ]
   end
 
   def api_set_src_client_binding_code do

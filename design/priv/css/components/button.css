@@ -52,12 +52,6 @@
   padding: --value(--spacing-space-*, [length]);
   gap: --value(--spacing-space-*, [length]);
   min-height: --value(--spacing-size-*, [length]);
-  --button-fill: --value(--color-*, [color]);
-  --button-fill-hover: --value(--color-*-hover, [color]);
-  --button-fill-active: --value(--color-*-active, [color]);
-  --button-ink: --value(--color-*-ink, [color]);
-  --button-ink-text: --value(--color-ink-*, [color]);
-  --button-muted: --value(--color-*-muted, [color]);
 }
 
 @utility button--variant-solid {
@@ -67,10 +61,12 @@
 
   &:hover {
     background-color: var(--button-fill-hover, var(--color-ui-hover));
+    color: var(--button-ink, var(--color-ink));
   }
 
   &:active {
     background-color: var(--button-fill-active, var(--color-ui-active));
+    color: var(--button-ink, var(--color-ink));
   }
 
   &:focus-visible {
@@ -85,6 +81,51 @@
     color: var(--button-ink, var(--color-ink-muted));
     cursor: not-allowed;
   }
+}
+
+@utility button--accent {
+  --button-fill: var(--color-accent);
+  --button-fill-hover: var(--color-accent-hover);
+  --button-fill-active: var(--color-accent-active);
+  --button-ink: var(--color-accent-ink);
+  --button-ink-text: var(--color-ink-accent);
+  --button-muted: var(--color-accent-muted);
+}
+
+@utility button--brand {
+  --button-fill: var(--color-brand);
+  --button-fill-hover: var(--color-brand-hover);
+  --button-fill-active: var(--color-brand-active);
+  --button-ink: var(--color-brand-ink);
+  --button-ink-text: var(--color-ink-brand);
+  --button-muted: var(--color-brand-muted);
+}
+
+@utility button--alert {
+  --button-fill: var(--color-alert);
+  --button-fill-hover: var(--color-alert-hover);
+  --button-fill-active: var(--color-alert-active);
+  --button-ink: var(--color-alert-ink);
+  --button-ink-text: var(--color-ink-alert);
+  --button-muted: var(--color-alert-muted);
+}
+
+@utility button--info {
+  --button-fill: var(--color-info);
+  --button-fill-hover: var(--color-info-hover);
+  --button-fill-active: var(--color-info-active);
+  --button-ink: var(--color-info-ink);
+  --button-ink-text: var(--color-ink-info);
+  --button-muted: var(--color-info-muted);
+}
+
+@utility button--success {
+  --button-fill: var(--color-success);
+  --button-fill-hover: var(--color-success-hover);
+  --button-fill-active: var(--color-success-active);
+  --button-ink: var(--color-success-ink);
+  --button-ink-text: var(--color-ink-success);
+  --button-muted: var(--color-success-muted);
 }
 
 @utility button--variant-subtle {

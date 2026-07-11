@@ -1,6 +1,15 @@
 @import "../main.css";
 
 @layer components {
+  .avatar {
+    --avatar-fill: var(--color-ui-active);
+    --avatar-fill-hover: var(--color-ui-hover);
+    --avatar-fill-active: var(--color-ui-active);
+    --avatar-ink: var(--color-ink);
+    --avatar-ink-text: var(--color-ink);
+    --avatar-muted: var(--color-ui-muted);
+  }
+
   .avatar[data-loading] [data-scope="avatar"][data-part="root"] {
     @apply ui-loading;
   }
@@ -34,12 +43,6 @@
     border-radius: inherit;
     border: 1px solid var(--color-border);
     gap: var(--spacing-space);
-    --avatar-fill: var(--color-ui);
-    --avatar-fill-hover: var(--color-ui-hover);
-    --avatar-fill-active: var(--color-ui-active);
-    --avatar-ink: var(--color-ink);
-    --avatar-ink-text: var(--color-ink);
-    --avatar-muted: var(--color-ui-muted);
   }
 
   .avatar:not(.avatar--variant-subtle):not(.avatar--variant-ghost):not(.avatar--variant-outline)
@@ -47,6 +50,27 @@
     background-color: var(--avatar-fill, var(--color-ui-active));
     color: var(--avatar-ink, var(--color-ink));
     border-color: transparent;
+  }
+
+  .avatar.avatar--variant-subtle
+    [data-scope="avatar"][data-part="fallback"] {
+    background-color: var(--color-ui);
+    color: var(--avatar-ink-text, var(--color-ink));
+    border-color: var(--color-border);
+  }
+
+  .avatar.avatar--variant-ghost
+    [data-scope="avatar"][data-part="fallback"] {
+    background-color: transparent;
+    color: var(--avatar-ink-text, var(--color-ink));
+    border-color: transparent;
+  }
+
+  .avatar.avatar--variant-outline
+    [data-scope="avatar"][data-part="fallback"] {
+    background-color: transparent;
+    color: var(--avatar-ink-text, var(--color-ink));
+    border-color: var(--avatar-fill, var(--color-border));
   }
 
   .avatar [data-scope="avatar"][data-part="image"] {
@@ -92,15 +116,49 @@
   }
 }
 
-@utility avatar--* {
-  & [data-scope="avatar"][data-part="fallback"] {
-    --avatar-fill: --value(--color-*, [color]);
-    --avatar-fill-hover: --value(--color-*-hover, [color]);
-    --avatar-fill-active: --value(--color-*-active, [color]);
-    --avatar-ink: --value(--color-*-ink, [color]);
-    --avatar-ink-text: --value(--color-ink-*, [color]);
-    --avatar-muted: --value(--color-*-muted, [color]);
-  }
+@utility avatar--accent {
+  --avatar-fill: var(--color-accent);
+  --avatar-fill-hover: var(--color-accent-hover);
+  --avatar-fill-active: var(--color-accent-active);
+  --avatar-ink: var(--color-accent-ink);
+  --avatar-ink-text: var(--color-ink-accent);
+  --avatar-muted: var(--color-accent-muted);
+}
+
+@utility avatar--brand {
+  --avatar-fill: var(--color-brand);
+  --avatar-fill-hover: var(--color-brand-hover);
+  --avatar-fill-active: var(--color-brand-active);
+  --avatar-ink: var(--color-brand-ink);
+  --avatar-ink-text: var(--color-ink-brand);
+  --avatar-muted: var(--color-brand-muted);
+}
+
+@utility avatar--alert {
+  --avatar-fill: var(--color-alert);
+  --avatar-fill-hover: var(--color-alert-hover);
+  --avatar-fill-active: var(--color-alert-active);
+  --avatar-ink: var(--color-alert-ink);
+  --avatar-ink-text: var(--color-ink-alert);
+  --avatar-muted: var(--color-alert-muted);
+}
+
+@utility avatar--info {
+  --avatar-fill: var(--color-info);
+  --avatar-fill-hover: var(--color-info-hover);
+  --avatar-fill-active: var(--color-info-active);
+  --avatar-ink: var(--color-info-ink);
+  --avatar-ink-text: var(--color-ink-info);
+  --avatar-muted: var(--color-info-muted);
+}
+
+@utility avatar--success {
+  --avatar-fill: var(--color-success);
+  --avatar-fill-hover: var(--color-success-hover);
+  --avatar-fill-active: var(--color-success-active);
+  --avatar-ink: var(--color-success-ink);
+  --avatar-ink-text: var(--color-ink-success);
+  --avatar-muted: var(--color-success-muted);
 }
 
 @utility avatar--sm {
