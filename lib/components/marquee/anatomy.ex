@@ -16,7 +16,6 @@ defmodule Corex.Marquee.Anatomy do
       :on_complete,
       :on_complete_client,
       items_count: 0,
-      content_count: 2,
       side: "end",
       speed: 50,
       spacing: "1rem",
@@ -35,7 +34,6 @@ defmodule Corex.Marquee.Anatomy do
             id: String.t(),
             duration: number(),
             items_count: non_neg_integer(),
-            content_count: non_neg_integer(),
             side: String.t(),
             speed: number(),
             spacing: String.t(),
@@ -48,6 +46,9 @@ defmodule Corex.Marquee.Anatomy do
             dir: String.t(),
             orientation: String.t()
           }
+
+    @ignored_attrs ["data-loading"]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Root do

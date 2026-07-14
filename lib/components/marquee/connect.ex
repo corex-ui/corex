@@ -12,7 +12,7 @@ defmodule Corex.Marquee.Connect do
 
   @spec ignore_hook(String.t()) :: JS.t()
   def ignore_hook(id) when is_binary(id) do
-    JS.ignore_attributes(["data-loading"], to: Selectors.css_id(id))
+    JS.ignore_attributes(Props.ignored_attrs(), to: Selectors.css_id(id))
   end
 
   @spec props(Props.t()) :: map()
@@ -33,7 +33,6 @@ defmodule Corex.Marquee.Connect do
       "id" => assigns.id,
       "data-aria-label" => Map.get(assigns, :aria_label) || "Marquee: #{assigns.id}",
       "data-duration" => to_string(assigns.duration),
-      "data-content-count" => to_string(assigns.content_count),
       "data-side" => assigns.side,
       "data-speed" => to_string(assigns.speed),
       "data-spacing" => assigns.spacing,

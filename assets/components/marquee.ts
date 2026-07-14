@@ -14,22 +14,34 @@ export class Marquee extends Component<Props, Api> {
     return this.zagConnect(connect);
   }
 
+  init = (): void => {
+    this.machine.subscribe(() => {
+      (this as { api: Api }).api = this.initApi();
+      this.render();
+    });
+    try {
+      this.machine.start();
+      (this as { api: Api }).api = this.initApi();
+      this.render();
+    } finally {
+      this.el.removeAttribute("data-loading");
+    }
+  };
+
   buildDom(): void {
-    const ssrPreview = this.el.querySelector('[data-part="ssr-preview"]');
-    if (ssrPreview) ssrPreview.remove();
     const templateEl = this.el.querySelector<HTMLTemplateElement>(
       'template[data-part="items-template"]'
     );
-    if (!templateEl) return;
-
-    this.items = Array.from(templateEl.content.children).map(
-      (el) => el.cloneNode(true) as HTMLElement
-    );
-    templateEl.remove();
-
-    if (this.el.querySelector('[data-scope="marquee"][data-part="root"]')) {
-      return;
+    if (templateEl) {
+      this.items = Array.from(templateEl.content.children).map(
+        (el) => el.cloneNode(true) as HTMLElement
+      );
+      templateEl.remove();
     }
+    if (!this.items) return;
+
+    const existingRoot = this.el.querySelector('[data-scope="marquee"][data-part="root"]');
+    if (existingRoot) existingRoot.remove();
 
     const root = document.createElement("div");
     root.setAttribute("data-scope", "marquee");
@@ -57,14 +69,22 @@ export class Marquee extends Component<Props, Api> {
     content.id = `marquee:${this.el.id}:content:0`;
     content.style.cssText = "display:flex;flex-direction:row;flex-shrink:0";
     viewport.appendChild(content);
-
-    this.items.forEach((itemEl) => {
-      content.appendChild(itemEl.cloneNode(true) as HTMLElement);
-    });
+    this.fillContent(content);
 
     const edgeEnd = document.createElement("div");
     root.appendChild(edgeEnd);
     this.spreadProps(edgeEnd, this.api.getEdgeProps({ side: "end" }));
+
+    const ssrPreview = this.el.querySelector('[data-part="ssr-preview"]');
+    if (ssrPreview) ssrPreview.remove();
+  }
+
+  ensureDom(): void {
+    if (!this.items) return;
+    if (!this.el.querySelector('[data-scope="marquee"][data-part="root"]')) {
+      this.buildDom();
+    }
+    this.render();
   }
 
   render(): void {
@@ -73,6 +93,7 @@ export class Marquee extends Component<Props, Api> {
     const root = this.el.querySelector<HTMLElement>('[data-scope="marquee"][data-part="root"]');
     if (!root) return;
     this.spreadProps(root, this.api.getRootProps());
+    this.applyExplicitDuration(root);
 
     const edgeStart = root.querySelector<HTMLElement>('[data-part="edge"][data-side="start"]');
     if (edgeStart) this.spreadProps(edgeStart, this.api.getEdgeProps({ side: "start" }));
@@ -81,27 +102,23 @@ export class Marquee extends Component<Props, Api> {
     if (!viewport) return;
     this.spreadProps(viewport, this.api.getViewportProps());
 
-    // Sync content count exactly like the official Zag example
     const existingContents = Array.from(
       viewport.querySelectorAll<HTMLElement>(':scope > [data-part="content"]')
     );
 
-    // Remove excess
     while (existingContents.length > this.api.contentCount) {
       const el = existingContents.pop();
       if (el) viewport.removeChild(el);
     }
 
-    // Add missing or update existing
     Array.from({ length: this.api.contentCount }).forEach((_, i) => {
       let contentEl = existingContents[i];
       if (!contentEl) {
         contentEl = document.createElement("div");
         viewport.appendChild(contentEl);
-        this.items!.forEach((itemEl) => {
-          const clone = itemEl.cloneNode(true) as HTMLElement;
-          contentEl.appendChild(clone);
-        });
+        this.fillContent(contentEl);
+      } else if (contentEl.querySelectorAll('[data-part="item"]').length === 0) {
+        this.fillContent(contentEl);
       }
       this.spreadProps(contentEl, this.api.getContentProps({ index: i }));
       contentEl.querySelectorAll<HTMLElement>('[data-part="item"]').forEach((itemEl) => {
@@ -111,5 +128,19 @@ export class Marquee extends Component<Props, Api> {
 
     const edgeEnd = root.querySelector<HTMLElement>('[data-part="edge"][data-side="end"]');
     if (edgeEnd) this.spreadProps(edgeEnd, this.api.getEdgeProps({ side: "end" }));
+  }
+
+  private fillContent(contentEl: HTMLElement): void {
+    if (!this.items) return;
+    this.items.forEach((itemEl) => {
+      contentEl.appendChild(itemEl.cloneNode(true) as HTMLElement);
+    });
+  }
+
+  private applyExplicitDuration(root: HTMLElement): void {
+    const explicit = this.el.dataset.duration;
+    if (explicit !== undefined && explicit !== "") {
+      root.style.setProperty("--marquee-duration", `${explicit}s`);
+    }
   }
 }

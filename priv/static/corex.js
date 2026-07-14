@@ -27941,6 +27941,19 @@ ${err}`);
         constructor() {
           super(...arguments);
           __publicField(this, "items", null);
+          __publicField(this, "init", () => {
+            this.machine.subscribe(() => {
+              this.api = this.initApi();
+              this.render();
+            });
+            try {
+              this.machine.start();
+              this.api = this.initApi();
+              this.render();
+            } finally {
+              this.el.removeAttribute("data-loading");
+            }
+          });
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
@@ -27950,19 +27963,18 @@ ${err}`);
           return this.zagConnect(connect16);
         }
         buildDom() {
-          const ssrPreview = this.el.querySelector('[data-part="ssr-preview"]');
-          if (ssrPreview) ssrPreview.remove();
           const templateEl = this.el.querySelector(
             'template[data-part="items-template"]'
           );
-          if (!templateEl) return;
-          this.items = Array.from(templateEl.content.children).map(
-            (el) => el.cloneNode(true)
-          );
-          templateEl.remove();
-          if (this.el.querySelector('[data-scope="marquee"][data-part="root"]')) {
-            return;
+          if (templateEl) {
+            this.items = Array.from(templateEl.content.children).map(
+              (el) => el.cloneNode(true)
+            );
+            templateEl.remove();
           }
+          if (!this.items) return;
+          const existingRoot = this.el.querySelector('[data-scope="marquee"][data-part="root"]');
+          if (existingRoot) existingRoot.remove();
           const root = document.createElement("div");
           root.setAttribute("data-scope", "marquee");
           root.setAttribute("data-part", "root");
@@ -27985,18 +27997,26 @@ ${err}`);
           content.id = `marquee:${this.el.id}:content:0`;
           content.style.cssText = "display:flex;flex-direction:row;flex-shrink:0";
           viewport.appendChild(content);
-          this.items.forEach((itemEl) => {
-            content.appendChild(itemEl.cloneNode(true));
-          });
+          this.fillContent(content);
           const edgeEnd = document.createElement("div");
           root.appendChild(edgeEnd);
           this.spreadProps(edgeEnd, this.api.getEdgeProps({ side: "end" }));
+          const ssrPreview = this.el.querySelector('[data-part="ssr-preview"]');
+          if (ssrPreview) ssrPreview.remove();
+        }
+        ensureDom() {
+          if (!this.items) return;
+          if (!this.el.querySelector('[data-scope="marquee"][data-part="root"]')) {
+            this.buildDom();
+          }
+          this.render();
         }
         render() {
           if (!this.items) return;
           const root = this.el.querySelector('[data-scope="marquee"][data-part="root"]');
           if (!root) return;
           this.spreadProps(root, this.api.getRootProps());
+          this.applyExplicitDuration(root);
           const edgeStart = root.querySelector('[data-part="edge"][data-side="start"]');
           if (edgeStart) this.spreadProps(edgeStart, this.api.getEdgeProps({ side: "start" }));
           const viewport = root.querySelector('[data-part="viewport"]');
@@ -28014,10 +28034,9 @@ ${err}`);
             if (!contentEl) {
               contentEl = document.createElement("div");
               viewport.appendChild(contentEl);
-              this.items.forEach((itemEl) => {
-                const clone = itemEl.cloneNode(true);
-                contentEl.appendChild(clone);
-              });
+              this.fillContent(contentEl);
+            } else if (contentEl.querySelectorAll('[data-part="item"]').length === 0) {
+              this.fillContent(contentEl);
             }
             this.spreadProps(contentEl, this.api.getContentProps({ index: i2 }));
             contentEl.querySelectorAll('[data-part="item"]').forEach((itemEl) => {
@@ -28026,6 +28045,18 @@ ${err}`);
           });
           const edgeEnd = root.querySelector('[data-part="edge"][data-side="end"]');
           if (edgeEnd) this.spreadProps(edgeEnd, this.api.getEdgeProps({ side: "end" }));
+        }
+        fillContent(contentEl) {
+          if (!this.items) return;
+          this.items.forEach((itemEl) => {
+            contentEl.appendChild(itemEl.cloneNode(true));
+          });
+        }
+        applyExplicitDuration(root) {
+          const explicit = this.el.dataset.duration;
+          if (explicit !== void 0 && explicit !== "") {
+            root.style.setProperty("--marquee-duration", `${explicit}s`);
+          }
         }
       };
       MarqueeHook = {
@@ -28103,8 +28134,10 @@ ${err}`);
           );
         },
         updated() {
-          var _a4;
-          (_a4 = this.marquee) == null ? void 0 : _a4.updateProps(readMarqueeProps(this.el));
+          const zag = this.marquee;
+          if (!zag) return;
+          zag.updateProps(readMarqueeProps(this.el));
+          zag.ensureDom();
         },
         destroyed() {
           var _a4;

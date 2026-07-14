@@ -410,20 +410,32 @@ var Marquee = class extends Component {
   initApi() {
     return this.zagConnect(connect);
   }
+  init = () => {
+    this.machine.subscribe(() => {
+      this.api = this.initApi();
+      this.render();
+    });
+    try {
+      this.machine.start();
+      this.api = this.initApi();
+      this.render();
+    } finally {
+      this.el.removeAttribute("data-loading");
+    }
+  };
   buildDom() {
-    const ssrPreview = this.el.querySelector('[data-part="ssr-preview"]');
-    if (ssrPreview) ssrPreview.remove();
     const templateEl = this.el.querySelector(
       'template[data-part="items-template"]'
     );
-    if (!templateEl) return;
-    this.items = Array.from(templateEl.content.children).map(
-      (el) => el.cloneNode(true)
-    );
-    templateEl.remove();
-    if (this.el.querySelector('[data-scope="marquee"][data-part="root"]')) {
-      return;
+    if (templateEl) {
+      this.items = Array.from(templateEl.content.children).map(
+        (el) => el.cloneNode(true)
+      );
+      templateEl.remove();
     }
+    if (!this.items) return;
+    const existingRoot = this.el.querySelector('[data-scope="marquee"][data-part="root"]');
+    if (existingRoot) existingRoot.remove();
     const root = document.createElement("div");
     root.setAttribute("data-scope", "marquee");
     root.setAttribute("data-part", "root");
@@ -446,18 +458,26 @@ var Marquee = class extends Component {
     content.id = `marquee:${this.el.id}:content:0`;
     content.style.cssText = "display:flex;flex-direction:row;flex-shrink:0";
     viewport.appendChild(content);
-    this.items.forEach((itemEl) => {
-      content.appendChild(itemEl.cloneNode(true));
-    });
+    this.fillContent(content);
     const edgeEnd = document.createElement("div");
     root.appendChild(edgeEnd);
     this.spreadProps(edgeEnd, this.api.getEdgeProps({ side: "end" }));
+    const ssrPreview = this.el.querySelector('[data-part="ssr-preview"]');
+    if (ssrPreview) ssrPreview.remove();
+  }
+  ensureDom() {
+    if (!this.items) return;
+    if (!this.el.querySelector('[data-scope="marquee"][data-part="root"]')) {
+      this.buildDom();
+    }
+    this.render();
   }
   render() {
     if (!this.items) return;
     const root = this.el.querySelector('[data-scope="marquee"][data-part="root"]');
     if (!root) return;
     this.spreadProps(root, this.api.getRootProps());
+    this.applyExplicitDuration(root);
     const edgeStart = root.querySelector('[data-part="edge"][data-side="start"]');
     if (edgeStart) this.spreadProps(edgeStart, this.api.getEdgeProps({ side: "start" }));
     const viewport = root.querySelector('[data-part="viewport"]');
@@ -475,10 +495,9 @@ var Marquee = class extends Component {
       if (!contentEl) {
         contentEl = document.createElement("div");
         viewport.appendChild(contentEl);
-        this.items.forEach((itemEl) => {
-          const clone = itemEl.cloneNode(true);
-          contentEl.appendChild(clone);
-        });
+        this.fillContent(contentEl);
+      } else if (contentEl.querySelectorAll('[data-part="item"]').length === 0) {
+        this.fillContent(contentEl);
       }
       this.spreadProps(contentEl, this.api.getContentProps({ index: i }));
       contentEl.querySelectorAll('[data-part="item"]').forEach((itemEl) => {
@@ -487,6 +506,18 @@ var Marquee = class extends Component {
     });
     const edgeEnd = root.querySelector('[data-part="edge"][data-side="end"]');
     if (edgeEnd) this.spreadProps(edgeEnd, this.api.getEdgeProps({ side: "end" }));
+  }
+  fillContent(contentEl) {
+    if (!this.items) return;
+    this.items.forEach((itemEl) => {
+      contentEl.appendChild(itemEl.cloneNode(true));
+    });
+  }
+  applyExplicitDuration(root) {
+    const explicit = this.el.dataset.duration;
+    if (explicit !== void 0 && explicit !== "") {
+      root.style.setProperty("--marquee-duration", `${explicit}s`);
+    }
   }
 };
 
@@ -584,7 +615,10 @@ var MarqueeHook = {
     );
   },
   updated() {
-    this.marquee?.updateProps(readMarqueeProps(this.el));
+    const zag = this.marquee;
+    if (!zag) return;
+    zag.updateProps(readMarqueeProps(this.el));
+    zag.ensureDom();
   },
   destroyed() {
     if (this.onPause) this.el.removeEventListener("corex:marquee:pause", this.onPause);
