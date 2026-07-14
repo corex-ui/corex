@@ -1,23 +1,23 @@
 defmodule Corex.MCP.Tools.Installation do
   @moduledoc false
 
-  @valid_scenarios ~W(new_project existing_project all)
+  @valid_scenarios ~W(new_project existing_project tableau_new all)
 
   def tools do
     [
       %{
         name: "installation_guide",
         description: """
-        Return copy-paste steps and commands for installing Corex in a new Phoenix app (mix corex.new) or an existing app (deps, Esbuild ESM, JS hooks, layout, use Corex). Read-only; does not run shell commands.
+        Return copy-paste steps and commands for installing Corex: a new Phoenix app (mix corex.new), an existing Phoenix app (deps, Esbuild ESM, JS hooks, layout, use Corex), or a new Tableau site (mix corex.tableau.new). Read-only; does not run shell commands.
         """,
         inputSchema: %{
           type: "object",
           properties: %{
             scenario: %{
               type: "string",
-              enum: ["new_project", "existing_project", "all"],
+              enum: ["new_project", "existing_project", "tableau_new", "all"],
               description:
-                "new_project: archives and generator only; existing_project: minimal manual steps plus optional MCP plug; all: both (default)."
+                "new_project: archives and generator only; existing_project: minimal manual steps plus optional MCP plug; tableau_new: Tableau archives and mix corex.tableau.new; all: every scenario (default)."
             }
           }
         },
@@ -37,6 +37,7 @@ defmodule Corex.MCP.Tools.Installation do
       case scenario do
         "new_project" -> Map.put(new_project_section(), :scenario, scenario)
         "existing_project" -> Map.put(existing_project_section(), :scenario, scenario)
+        "tableau_new" -> Map.put(tableau_new_section(), :scenario, scenario)
         "all" -> full_guide()
       end
 
@@ -54,9 +55,11 @@ defmodule Corex.MCP.Tools.Installation do
       scenario: "all",
       new_project: new_project_section(),
       existing_project: existing_project_section(),
+      tableau_new: tableau_new_section(),
       reference_urls: %{
         hexdocs_corex: "https://hexdocs.pm/corex",
         manual_installation: "https://hexdocs.pm/corex/manual_installation.html",
+        tableau: "https://hexdocs.pm/corex/tableau.html",
         repository: "https://github.com/corex-ui/corex"
       }
     }
@@ -82,6 +85,36 @@ defmodule Corex.MCP.Tools.Installation do
         "corex.new runs mix phx.new --no-install with forwarded Phoenix flags, then renders Corex-owned files from templates directly into the generated app. No Igniter.",
       mix_help: "mix help corex.new",
       task_module: "Mix.Tasks.Corex.New"
+    }
+  end
+
+  defp tableau_new_section do
+    %{
+      intent: "Create a new Tableau static site with Corex preconfigured.",
+      prerequisites: [
+        "Install the tableau_new archive once per machine.",
+        "Install the corex_new archive for mix corex.tableau.new."
+      ],
+      commands: [
+        %{step: 1, run: "mix archive.install hex tableau_new"},
+        %{step: 2, run: "mix archive.install hex corex_new"},
+        %{step: 3, run: "mix corex.tableau.new my_site"}
+      ],
+      optional_flags: [
+        "--mode",
+        "--theme",
+        "--mcp",
+        "--dev ../corex"
+      ],
+      update_generator: %{
+        command: "mix local.corex",
+        note: "Updates the corex_new archive before generating a site."
+      },
+      pipeline:
+        "corex.tableau.new runs mix tableau.new with HEEx + Esbuild + Tailwind, then installs Corex (design, ESM, hooks, Blog link + sample post). Not the Soonex marketing landing.",
+      mix_help: "mix help corex.tableau.new",
+      task_module: "Mix.Tasks.Corex.Tableau.New",
+      guide: "https://hexdocs.pm/corex/tableau.html"
     }
   end
 

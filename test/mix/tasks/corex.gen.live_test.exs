@@ -48,13 +48,14 @@ defmodule Mix.Tasks.Corex.Gen.LiveTest do
 
     assert Enum.any?(
              inputs,
-             &(&1 =~ "<.select" and &1 =~ "multiple" and &1 =~ "deselectable" and
-                 &1 =~ ~S(<:label>Roles</:label>))
+             &(&1 =~ "<.select" and &1 =~ "controlled" and &1 =~ "multiple" and
+                 &1 =~ "deselectable" and &1 =~ ~S(<:label>Roles</:label>))
            )
 
     assert Enum.any?(
              inputs,
-             &(&1 =~ "select" and &1 =~ ~S(placeholder: "Choose a value") and
+             &(&1 =~ "select" and &1 =~ "controlled" and
+                 &1 =~ ~S(placeholder: "Choose a value") and
                  &1 =~ ~S(<:label>Status</:label>))
            )
 

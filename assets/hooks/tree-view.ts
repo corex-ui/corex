@@ -2,7 +2,7 @@ import type { Hook } from "phoenix_live_view";
 import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import type { ExpandedChangeDetails, SelectionChangeDetails } from "@zag-js/tree-view";
 import { TreeView, type TreeNode } from "../components/tree-view";
-import { getString, getBoolean, getStringList, getDir, canPushEvent } from "../lib/util";
+import { getString, getBoolean, getStringList, getDir, canPushEvent, safeParseJson } from "../lib/util";
 import {
   contentDatasetValue,
   prepareJsHeightInitialState,
@@ -45,10 +45,12 @@ export function readSelectedAttr(el: HTMLElement): string {
 
 export function parseRootNode(el: HTMLElement): TreeNode {
   const raw = el.dataset.tree;
+  const empty: TreeNode = { value: "", name: "", children: [] };
   if (raw == null || raw === "") {
-    throw new Error("TreeView: missing data-tree");
+    console.error("TreeView: missing data-tree");
+    return empty;
   }
-  return JSON.parse(raw) as TreeNode;
+  return safeParseJson<TreeNode>(raw, empty);
 }
 
 const BRANCH_CONTENT_SELECTOR = '[data-scope="tree-view"][data-part="branch-content"]';

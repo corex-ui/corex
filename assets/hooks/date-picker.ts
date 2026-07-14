@@ -293,7 +293,7 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
         "date_picker_set_value",
         (payload: { date_picker_id?: string; value: string }) => {
           const targetId = payload.date_picker_id;
-          if (targetId && targetId !== el.id) return;
+          if (!targetId || targetId !== el.id) return;
           datePickerInstance.api.setValue([datePicker.parse(payload.value)]);
         }
       )

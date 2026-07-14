@@ -333,7 +333,7 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
       const st = getToastStore(detail.groupId || this.groupId);
       if (!st) return;
       try {
-        st.create(buildCreateOptions(detail, true));
+        st.create(buildCreateOptions(detail, false));
       } catch (error) {
         console.error("Failed to create toast:", error);
       }

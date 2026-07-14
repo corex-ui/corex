@@ -1,22 +1,22 @@
 import {
   stripZagSubmitNames
-} from "./chunks/chunk-BRLTIGVO.mjs";
+} from "./chunks/chunk-YJPGDO7P.mjs";
 import {
   bindArrayFieldSubmitIntent,
   isFormFieldUsed,
   syncArrayHiddenInputsForPhoenix
-} from "./chunks/chunk-YVULSJ7W.mjs";
+} from "./chunks/chunk-IKLCQZIF.mjs";
 import {
   queueLiveViewFormInputSync
 } from "./chunks/chunk-ASQD2R2U.mjs";
 import {
   getJsonStringList,
   readFormFieldServerPaths
-} from "./chunks/chunk-S4GKLIQE.mjs";
+} from "./chunks/chunk-XL4XUS2C.mjs";
 import {
   idMatches,
   readPayloadId
-} from "./chunks/chunk-2WCNJX5P.mjs";
+} from "./chunks/chunk-LNVRIZ4K.mjs";
 import {
   Component,
   VanillaMachine,
@@ -34,7 +34,7 @@ import {
   isModifierKey,
   query,
   trackPointerMove
-} from "./chunks/chunk-2GQRP3FN.mjs";
+} from "./chunks/chunk-YGZLYEUJ.mjs";
 
 // ../node_modules/.pnpm/@zag-js+signature-pad@1.40.0/node_modules/@zag-js/signature-pad/dist/signature-pad.anatomy.mjs
 var anatomy = createAnatomy("signature-pad").parts(
@@ -725,6 +725,7 @@ var SignaturePadHook = {
           fieldTouched: true
         });
         details.getDataUrl("image/png").then((url) => {
+          if (hook.destroyed) return;
           signaturePad.imageURL = url;
           const eventName = getString(el, "onDrawEnd");
           if (eventName && this.liveSocket.main.isConnected()) {
@@ -814,6 +815,7 @@ var SignaturePadHook = {
     }
   },
   destroyed() {
+    this.destroyed = true;
     this.unbindSubmitIntent?.();
     if (this.onClear) {
       this.el.removeEventListener("corex:signature-pad:clear", this.onClear);

@@ -207,24 +207,26 @@ export function readUpdatedServerNumber(
   const step = numberInputStep(el);
   const base: NumberServerValuePatch = { step };
 
-  if (getBoolean(el, "controlled")) {
-    const raw = getString(el, "value");
-    if (raw === undefined || raw === "") {
-      return base;
-    }
-
-    if (raw === lastServerValue) {
-      return base;
-    }
-
-    return {
-      ...base,
-      value: formatDisplayValue(raw, step),
-      nextServerValue: raw,
-    };
+  const sync = getBoolean(el, "controlled") || getBoolean(el, "formField");
+  if (!sync) {
+    return base;
   }
 
-  return base;
+  const raw =
+    getString(el, "value") ?? (getBoolean(el, "formField") ? getString(el, "defaultValue") : undefined);
+  if (raw === undefined || raw === "") {
+    return base;
+  }
+
+  if (raw === lastServerValue) {
+    return base;
+  }
+
+  return {
+    ...base,
+    value: formatDisplayValue(raw, step),
+    nextServerValue: raw,
+  };
 }
 
 export function mountNumberBinding(el: HTMLElement): NumZag {

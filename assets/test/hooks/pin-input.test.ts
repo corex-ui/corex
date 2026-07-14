@@ -5,7 +5,6 @@ import {
   parseValueWithEmpties,
   readDefaultValueList,
   readPinValueList,
-  readUpdatedPinValue,
 } from "../../hooks/pin-input";
 
 describe("parseValueWithEmpties", () => {
@@ -29,17 +28,6 @@ describe("readDefaultValueList", () => {
   it("reads JSON default value list", () => {
     const node = el({ defaultValue: '["1","2"]', count: 4 });
     expect(readDefaultValueList(node, 4)).toEqual(["1", "2", "", ""]);
-  });
-});
-
-describe("readUpdatedPinValue", () => {
-  it("returns empty when uncontrolled including form field", () => {
-    const node = el({ formField: true, defaultValue: '["3"]', count: 4 });
-    expect(readUpdatedPinValue(node, 4)).toEqual({});
-  });
-
-  it("returns empty patch when neither controlled nor value dataset", () => {
-    expect(readUpdatedPinValue(el({ count: 4 }), 4)).toEqual({});
   });
 });
 

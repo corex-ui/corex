@@ -211,9 +211,13 @@ describe("readNumberControlledZagUpdate", () => {
     });
   });
 
-  it("returns step only when form field without controlled", () => {
+  it("syncs value when form field without controlled", () => {
     const node = el({ formField: true, value: "7", step: 1 });
-    expect(readNumberControlledZagUpdate(node)).toEqual({ step: 1 });
+    expect(readNumberControlledZagUpdate(node)).toEqual({
+      value: "7",
+      step: 1,
+      nextServerValue: "7",
+    });
   });
 
   it("returns step only when uncontrolled", () => {

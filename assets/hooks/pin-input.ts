@@ -53,10 +53,6 @@ function padStringListBinding(
   return { defaultValue: padToCount(binding.defaultValue, count) };
 }
 
-export function readUpdatedPinValue(_el: HTMLElement, _count: number): Record<string, never> {
-  return {};
-}
-
 export function syncPinInputFormForPhoenix(
   el: HTMLElement,
   values: ReadonlyArray<string>,

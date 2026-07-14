@@ -40,18 +40,18 @@ defmodule <%= @web_module %>.Layouts do
     <header class="sticky top-0 z-10 flex h-size-lg items-center border-b border-border bg-layer">
       <div class="mx-auto flex min-h-size-lg w-full flex-wrap items-center justify-between gap-space px-space-xl py-space-lg">
         <div class="flex flex-wrap items-center gap-space">
-          <.navigate to={~p"/"} class="link link--lg link--brand uppercase font-black">
+          <.navigate to={~p"/"} class="link ui-brand ui-size-lg uppercase font-black">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 136 136" class="icon icon--lg">
               <path
                 d="M70.573 1.67C33.94 1.67 4.243 31.367 4.243 68c0 36.634 29.697 66.33 66.33 66.33s66.33-29.696 66.33-66.33c0-36.633-29.697-66.33-66.33-66.33m.05 102.736c-20.117 0-36.427-16.308-36.427-36.427 0-20.118 16.31-36.427 36.427-36.427 17.055 0 31.37 11.723 35.333 27.55H89.845c-3.365-7.255-10.713-12.301-19.222-12.301-11.678 0-21.179 9.501-21.179 21.18s9.501 21.178 21.18 21.178c8.539 0 15.907-5.08 19.256-12.377h16.095c-3.939 15.864-18.269 27.624-35.352 27.624"
-                fill="var(--color-ink-brand)"
+                fill="currentColor"
               >
               </path>
             </svg>
             Corex
           </.navigate>
         </div>
-<%= if @mode or @theme do %>        <div class="flex flex-wrap items-center gap-space">
+<%= if @mode or @theme do %>        <div class="flex shrink-0 items-center gap-space">
 <%= if @theme do %>          <.theme_toggle theme={@theme} />
 <% end %><%= if @mode do %>          <.mode_toggle mode={@mode} />
 <% end %>        </div>
@@ -68,31 +68,31 @@ defmodule <%= @web_module %>.Layouts do
       <div class="mx-auto flex min-h-size-lg w-full flex-wrap items-center justify-between gap-space px-space-xl py-space-lg">
         <div class="flex flex-wrap items-center gap-space">
           <.navigate
-            class="button button--sm button--circle text-ink-brand"
+            class="button ui-size-sm ui-trigger--circle ui-brand"
             external
             to="https://github.com/corex-ui/corex"
 <%= if @lang do %>            aria_label={~t"Corex on GitHub"}
 <% else %>            aria_label="Corex on GitHub"
 <% end %>
           >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 102 102" fill="none" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 102 102" fill="none" aria-hidden="true" class="icon">
               <path
                 fill-rule="evenodd"
                 clip-rule="evenodd"
                 d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z"
-                fill="var(--color-ink-brand)"
+                fill="currentColor"
               />
             </svg>
           </.navigate>
           <.navigate
-            class="button button--sm button--circle"
+            class="button ui-size-sm ui-trigger--circle"
             external
             to="https://hexdocs.pm/corex"
 <%= if @lang do %>            aria_label={~t"Corex documentation on HexDocs"}
 <% else %>            aria_label="Corex documentation on HexDocs"
 <% end %>
           >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 114 100" fill="none" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 114 100" fill="none" aria-hidden="true" class="icon">
               <path d="M47.7086 28.06H65.1941C66.3521 28.06 67.3942 28.4064 68.4364 28.8683L84.1849 0.923785C82.9112 0.346419 81.5216 0 80.0162 0H32.8865C31.1495 0 29.5283 0.461893 28.1388 1.2702L44.2347 28.8683C45.2769 28.2909 46.4348 28.06 47.7086 28.06Z" fill="#FFCC1D" />
               <path d="M71.2156 31.5242L79.9005 46.5357C80.4794 47.575 80.8268 48.8452 80.8268 49.9999L113.019 50.0001C113.019 48.3834 112.44 46.7667 111.629 45.381L88.1221 4.61897C87.1957 3.00234 85.8061 1.73214 84.185 0.923828L68.4316 28.8608C69.5896 29.5536 70.5208 30.3695 71.2156 31.5242Z" fill="#57CC99" />
               <path d="M80.827 50C80.827 51.1547 80.4796 52.4249 79.9006 53.4642L71.2158 68.4757C70.6368 69.515 69.7104 70.4387 68.784 71.0161L84.8799 98.6142C86.1537 97.8059 87.3117 96.6511 88.1222 95.3809L111.745 54.6189C112.556 53.2332 113.019 51.6166 113.019 50H80.827Z" fill="#1597E5" />
@@ -134,7 +134,7 @@ defmodule <%= @web_module %>.Layouts do
     ~H"""
     <.toggle
       id="mode-switcher"
-      class="toggle toggle--sm"
+      class="toggle ui-size-sm shrink-0"
       data-toggle-dual-label
       pressed={@mode == "dark"}
       on_pressed_change_client="phx:set-mode"
@@ -163,7 +163,7 @@ defmodule <%= @web_module %>.Layouts do
     ~H"""
     <.select
       id="theme-select"
-      class="select select--sm"
+      class="select ui-size-sm w-auto"
       items={[
         %{value: "neo", label: "Neo"},
         %{value: "uno", label: "Uno"},
@@ -217,7 +217,7 @@ defmodule <%= @web_module %>.Layouts do
     ~H"""
     <.select
       id="corex-language-switch"
-      class="select select--sm max-w-6xs"
+      class="select ui-size-sm max-w-6xs"
       items={@items}
       value={@value}
       redirect

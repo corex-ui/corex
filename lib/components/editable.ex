@@ -19,7 +19,7 @@ defmodule Corex.Editable do
 
   ## API
 
-  Requires a stable `id` on `<.editable>`.
+  Pass a stable `id` when using [`set_value/2`](#set_value/2) or [`set_value/3`](#set_value/3). Otherwise an id is generated automatically.
 
   | Function | Action | Returns |
   | -------- | ------ | ------- |

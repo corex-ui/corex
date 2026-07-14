@@ -811,6 +811,8 @@ defmodule Corex.New.PatchesTest do
         body = File.read!("config/config.exs")
         assert body =~ "config :corex_design"
         assert body =~ ~s(output: "assets/corex")
+        assert body =~ ~r/semantics: nil\n\nimport_config/
+        refute body =~ ~r/semantics: nil,\n/
 
         Patches.patch_config_exs(File.cwd!(), otp_app: :my_app, design: true)
         body2 = File.read!("config/config.exs")

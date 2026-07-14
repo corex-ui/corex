@@ -21,7 +21,7 @@ defmodule E2eWeb.AngleSliderControlledLive do
       end
 
     socket = assign(socket, :angle, angle)
-    {:noreply, Corex.AngleSlider.set_value(socket, "my-angle-slider", angle)}
+    {:noreply, Corex.AngleSlider.set_value(socket, "controlled-angle-slider", angle)}
   end
 
   def render(assigns) do
@@ -39,25 +39,25 @@ defmodule E2eWeb.AngleSliderControlledLive do
       <h3>Client Api</h3>
       <div class="flex flex-wrap items-center gap-space">
         <.action
-          phx-click={Corex.AngleSlider.set_value("my-angle-slider", 0)}
+          phx-click={Corex.AngleSlider.set_value("controlled-angle-slider", 0)}
           class="button ui-size-sm"
         >
           Set to 0°
         </.action>
         <.action
-          phx-click={Corex.AngleSlider.set_value("my-angle-slider", 90)}
+          phx-click={Corex.AngleSlider.set_value("controlled-angle-slider", 90)}
           class="button ui-size-sm"
         >
           Set to 90°
         </.action>
         <.action
-          phx-click={Corex.AngleSlider.set_value("my-angle-slider", 180)}
+          phx-click={Corex.AngleSlider.set_value("controlled-angle-slider", 180)}
           class="button ui-size-sm"
         >
           Set to 180°
         </.action>
         <.action
-          phx-click={Corex.AngleSlider.set_value("my-angle-slider", 270)}
+          phx-click={Corex.AngleSlider.set_value("controlled-angle-slider", 270)}
           class="button ui-size-sm"
         >
           Set to 270°
@@ -82,7 +82,7 @@ defmodule E2eWeb.AngleSliderControlledLive do
         Current value: <code>{@angle}</code>°
       </p>
       <.angle_slider
-        id="my-angle-slider"
+        id="controlled-angle-slider"
         class="angle-slider"
         marker_values={[0, 90, 180, 270]}
         value={@angle}

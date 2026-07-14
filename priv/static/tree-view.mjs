@@ -6,10 +6,10 @@ import {
   prepareJsHeightInitialState,
   runHeightOpenTransition,
   stripHiddenFromProps
-} from "./chunks/chunk-SBA2GV3P.mjs";
+} from "./chunks/chunk-Z5W52KDP.mjs";
 import {
   TreeCollection
-} from "./chunks/chunk-FVGYE2AE.mjs";
+} from "./chunks/chunk-4E7EICYJ.mjs";
 import {
   performRedirect,
   readDomItemRedirect
@@ -24,7 +24,7 @@ import {
   notifyChange,
   parseRespondTo,
   readPayloadId
-} from "./chunks/chunk-2WCNJX5P.mjs";
+} from "./chunks/chunk-LNVRIZ4K.mjs";
 import {
   Component,
   VanillaMachine,
@@ -57,10 +57,11 @@ import {
   partition,
   raf,
   remove,
+  safeParseJson,
   setElementValue,
   toArray,
   uniq
-} from "./chunks/chunk-2GQRP3FN.mjs";
+} from "./chunks/chunk-YGZLYEUJ.mjs";
 
 // ../node_modules/.pnpm/@zag-js+tree-view@1.40.0/node_modules/@zag-js/tree-view/dist/tree-view.anatomy.mjs
 var anatomy = createAnatomy("tree-view").parts(
@@ -1449,10 +1450,12 @@ function readSelectedAttr(el) {
 }
 function parseRootNode(el) {
   const raw = el.dataset.tree;
+  const empty = { value: "", name: "", children: [] };
   if (raw == null || raw === "") {
-    throw new Error("TreeView: missing data-tree");
+    console.error("TreeView: missing data-tree");
+    return empty;
   }
-  return JSON.parse(raw);
+  return safeParseJson(raw, empty);
 }
 var BRANCH_CONTENT_SELECTOR = '[data-scope="tree-view"][data-part="branch-content"]';
 function readTreeViewInteractionProps(el) {

@@ -1,14 +1,14 @@
 import {
   syncCheckableHiddenInput
-} from "./chunks/chunk-KGTC4ZGG.mjs";
+} from "./chunks/chunk-YWUM4WUV.mjs";
 import {
   isFocusVisible,
   trackFocusVisible
-} from "./chunks/chunk-VDUSDBJS.mjs";
+} from "./chunks/chunk-JF64R7HW.mjs";
 import {
   mountCheckedBinding,
   readUpdatedServerChecked
-} from "./chunks/chunk-S4GKLIQE.mjs";
+} from "./chunks/chunk-XL4XUS2C.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -19,7 +19,7 @@ import {
   notifyChange,
   readPayloadChecked,
   readPayloadId
-} from "./chunks/chunk-2WCNJX5P.mjs";
+} from "./chunks/chunk-LNVRIZ4K.mjs";
 import {
   Component,
   VanillaMachine,
@@ -38,7 +38,7 @@ import {
   trackFormControl,
   trackPress,
   visuallyHiddenStyle
-} from "./chunks/chunk-2GQRP3FN.mjs";
+} from "./chunks/chunk-YGZLYEUJ.mjs";
 
 // ../node_modules/.pnpm/@zag-js+switch@1.40.0/node_modules/@zag-js/switch/dist/switch.anatomy.mjs
 var anatomy = createAnatomy("switch").parts("root", "label", "control", "thumb");

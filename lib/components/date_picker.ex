@@ -102,7 +102,7 @@ defmodule Corex.DatePicker do
 
   ### With Ecto changeset
 
-  Use `field={@form[:birth_date]}` inside `<.form for={@form}>`. The component resyncs from the server value on patch without `controlled`.
+  Use `field={@form[:birth_date]}` inside `<.form for={@form}>`. The component resyncs from the server value on patch.
 
   First create your schema and changeset:
 
@@ -195,7 +195,6 @@ defmodule Corex.DatePicker do
   ```heex
   <.date_picker
     class="date-picker"
-    controlled
     value={@date_value}
     on_value_change="date_changed"
   >
@@ -230,31 +229,7 @@ defmodule Corex.DatePicker do
 
   ## Patterns
 
-  <!-- tabs-open -->
-
-  ### Controlled
-
-  Set `controlled`, bind `value`, and handle `on_value_change`. Pass ISO-8601 strings or `Date.to_iso8601/1` for a `Date` assign.
-
-  ```heex
-  <.date_picker
-    class="date-picker"
-    controlled
-    value={@due && Date.to_iso8601(@due)}
-    on_value_change="date_changed"
-  >
-    <:label>Due</:label>
-    <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-    <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-    <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
-  </.date_picker>
-  ```
-
-  ```elixir
-  assign(socket, :due, ~D[2024-01-15])
-  ```
-
-  <!-- tabs-close -->
+  Pass `value` for the initial selection on mount (ISO-8601 strings or `Date.to_iso8601/1`). The machine owns updates after that unless you use [`set_value/2`](#set_value/2) or form `field`.
 
   ## Style
 

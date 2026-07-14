@@ -1,37 +1,37 @@
 import {
   stripZagSubmitNames
-} from "./chunks/chunk-BRLTIGVO.mjs";
+} from "./chunks/chunk-YJPGDO7P.mjs";
 import {
   createLiveRegion
 } from "./chunks/chunk-7BZGUIUZ.mjs";
 import {
   getPlacement,
   getPlacementStyles
-} from "./chunks/chunk-RK6266HP.mjs";
+} from "./chunks/chunk-DVA7SQMW.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-WJDVLJMP.mjs";
-import "./chunks/chunk-B5L2AGOH.mjs";
+} from "./chunks/chunk-MOSXJRWI.mjs";
+import "./chunks/chunk-26XTEIHY.mjs";
 import {
   syncArrayHiddenInputsForPhoenix
-} from "./chunks/chunk-YVULSJ7W.mjs";
+} from "./chunks/chunk-IKLCQZIF.mjs";
 import {
   queueLiveViewFormInputSync,
   reapplyLiveViewValueInputUsage
 } from "./chunks/chunk-ASQD2R2U.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-CNPBJL2G.mjs";
+} from "./chunks/chunk-QU36267Q.mjs";
 import {
   itemValue,
   zagListCollectionConfig
-} from "./chunks/chunk-NICWUGGL.mjs";
+} from "./chunks/chunk-AIFPYOT7.mjs";
 import {
   ListCollection,
   createSelectedItemMap,
   deriveSelectionState,
   resolveSelectedItems
-} from "./chunks/chunk-FVGYE2AE.mjs";
+} from "./chunks/chunk-4E7EICYJ.mjs";
 import {
   performRedirect,
   readDomItemRedirect
@@ -40,10 +40,10 @@ import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunks/chunk-VDUSDBJS.mjs";
+} from "./chunks/chunk-JF64R7HW.mjs";
 import {
   mountStringListBinding
-} from "./chunks/chunk-S4GKLIQE.mjs";
+} from "./chunks/chunk-XL4XUS2C.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -52,7 +52,7 @@ import {
   idMatches,
   notifyChange,
   readPayloadId
-} from "./chunks/chunk-2WCNJX5P.mjs";
+} from "./chunks/chunk-LNVRIZ4K.mjs";
 import {
   Component,
   VanillaMachine,
@@ -84,11 +84,12 @@ import {
   query,
   raf,
   remove,
+  safeParseJson,
   scrollIntoView,
   setCaretToEnd,
   setup,
   templatesContentRoot
-} from "./chunks/chunk-2GQRP3FN.mjs";
+} from "./chunks/chunk-YGZLYEUJ.mjs";
 
 // ../node_modules/.pnpm/@zag-js+combobox@1.40.0/node_modules/@zag-js/combobox/dist/combobox.anatomy.mjs
 var anatomy = createAnatomy("combobox").parts(
@@ -2119,7 +2120,7 @@ var ComboboxHook = {
       hook.fieldTouched = true;
     };
     const itemsJson = el.getAttribute("data-items") ?? "[]";
-    const allItems = JSON.parse(itemsJson);
+    const allItems = safeParseJson(itemsJson, []);
     const hasGroups = allItems.some((item) => Boolean(item.group));
     const defaultValues = getStringList(el, "defaultValue") ?? [];
     if (defaultValues.length > 0) {
@@ -2168,7 +2169,7 @@ var ComboboxHook = {
     const newItemsJson = this.el.getAttribute("data-items") ?? "[]";
     if (newItemsJson !== this.lastItemsJson) {
       this.lastItemsJson = newItemsJson;
-      const newCollection = JSON.parse(newItemsJson);
+      const newCollection = safeParseJson(newItemsJson, []);
       const hasGroups = newCollection.some((item) => Boolean(item.group));
       this.combobox.hasGroups = hasGroups;
       this.combobox.setAllOptions(newCollection);

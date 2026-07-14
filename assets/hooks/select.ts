@@ -4,7 +4,7 @@ import { collection } from "@zag-js/select";
 import { Select } from "../components/select";
 import type { Props, ValueChangeDetails } from "@zag-js/select";
 
-import { getString, getBoolean, canPushEvent, getDir } from "../lib/util";
+import { getString, getBoolean, canPushEvent, getDir, safeParseJson } from "../lib/util";
 import { readStringListControlledZagProps, readUpdatedServerStringList } from "../lib/read-props";
 import { readPositioningOptions } from "../lib/positioning";
 import { performRedirect, readDomItemRedirect } from "../lib/redirect";
@@ -201,7 +201,7 @@ const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
 
-    const allItems = JSON.parse(el.dataset.items || "[]") as SelectItem[];
+    const allItems = safeParseJson<SelectItem[]>(el.dataset.items || "[]", []);
     const hasGroups = allItems.some((item: SelectItem) => Boolean(item.group));
     const onValueChange = createSelectOnValueChange(
       () => this.el,
@@ -253,7 +253,7 @@ const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
   updated(this: object & HookInterface<HTMLElement> & SelectHookState) {
     if (!this.select) return;
 
-    const newItems = JSON.parse(this.el.dataset.items || "[]") as SelectItem[];
+    const newItems = safeParseJson<SelectItem[]>(this.el.dataset.items || "[]", []);
     const hasGroups = newItems.some((item: SelectItem) => Boolean(item.group));
 
     this.select.hasGroups = hasGroups;

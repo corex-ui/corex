@@ -1,27 +1,27 @@
 import {
   getPlacement,
   getPlacementStyles
-} from "./chunks/chunk-RK6266HP.mjs";
+} from "./chunks/chunk-DVA7SQMW.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-WJDVLJMP.mjs";
-import "./chunks/chunk-B5L2AGOH.mjs";
+} from "./chunks/chunk-MOSXJRWI.mjs";
+import "./chunks/chunk-26XTEIHY.mjs";
 import {
   notifyPhoenixFormChange
 } from "./chunks/chunk-ASQD2R2U.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-CNPBJL2G.mjs";
+} from "./chunks/chunk-QU36267Q.mjs";
 import {
   itemValue,
   zagListCollectionConfig
-} from "./chunks/chunk-NICWUGGL.mjs";
+} from "./chunks/chunk-AIFPYOT7.mjs";
 import {
   ListCollection,
   createSelectedItemMap,
   deriveSelectionState,
   resolveSelectedItems
-} from "./chunks/chunk-FVGYE2AE.mjs";
+} from "./chunks/chunk-4E7EICYJ.mjs";
 import {
   performRedirect,
   readDomItemRedirect
@@ -30,11 +30,11 @@ import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunks/chunk-VDUSDBJS.mjs";
+} from "./chunks/chunk-JF64R7HW.mjs";
 import {
   readStringListControlledZagProps,
   readUpdatedServerStringList
-} from "./chunks/chunk-S4GKLIQE.mjs";
+} from "./chunks/chunk-XL4XUS2C.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -43,7 +43,7 @@ import {
   idMatches,
   notifyChange,
   readPayloadId
-} from "./chunks/chunk-2WCNJX5P.mjs";
+} from "./chunks/chunk-LNVRIZ4K.mjs";
 import {
   Component,
   VanillaMachine,
@@ -71,11 +71,12 @@ import {
   markAsInternalChangeEvent,
   observeAttributes,
   raf,
+  safeParseJson,
   scrollIntoView,
   syncInputFormAssociation,
   trackFormControl,
   visuallyHiddenStyle
-} from "./chunks/chunk-2GQRP3FN.mjs";
+} from "./chunks/chunk-YGZLYEUJ.mjs";
 
 // ../node_modules/.pnpm/@zag-js+select@1.40.0/node_modules/@zag-js/select/dist/select.anatomy.mjs
 var anatomy = createAnatomy("select").parts(
@@ -1531,7 +1532,7 @@ var SelectHook = {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
-    const allItems = JSON.parse(el.dataset.items || "[]");
+    const allItems = safeParseJson(el.dataset.items || "[]", []);
     const hasGroups = allItems.some((item) => Boolean(item.group));
     const onValueChange = createSelectOnValueChange(
       () => this.el,
@@ -1573,7 +1574,7 @@ var SelectHook = {
   },
   updated() {
     if (!this.select) return;
-    const newItems = JSON.parse(this.el.dataset.items || "[]");
+    const newItems = safeParseJson(this.el.dataset.items || "[]", []);
     const hasGroups = newItems.some((item) => Boolean(item.group));
     this.select.hasGroups = hasGroups;
     this.select.setOptions(newItems);

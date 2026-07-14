@@ -14,7 +14,9 @@ defmodule Corex.MCP.Tools.InstallationTest do
     assert decoded["scenario"] == "all"
     assert is_map(decoded["new_project"])
     assert is_map(decoded["existing_project"])
+    assert is_map(decoded["tableau_new"])
     assert decoded["new_project"]["commands"]
+    assert decoded["tableau_new"]["commands"]
     assert is_list(decoded["existing_project"]["minimal_steps"])
     assert length(decoded["existing_project"]["minimal_steps"]) >= 7
 
@@ -33,6 +35,25 @@ defmodule Corex.MCP.Tools.InstallationTest do
     assert decoded["scenario"] == "new_project"
     assert decoded["intent"]
     refute Map.has_key?(decoded, "existing_project")
+  end
+
+  test "installation_guide tableau_new is scoped" do
+    json =
+      case Installation.installation_guide(%{"scenario" => "tableau_new"}) do
+        {:ok, j} -> j
+        other -> flunk("expected {:ok, json}, got #{inspect(other)}")
+      end
+
+    decoded = Corex.Json.decode!(json)
+    assert decoded["scenario"] == "tableau_new"
+    assert decoded["intent"]
+    assert decoded["task_module"] == "Mix.Tasks.Corex.Tableau.New"
+    refute Map.has_key?(decoded, "new_project")
+    refute Map.has_key?(decoded, "existing_project")
+
+    runs = Enum.map(decoded["commands"], & &1["run"])
+    assert Enum.any?(runs, &(&1 =~ "tableau_new"))
+    assert Enum.any?(runs, &(&1 =~ "corex.tableau.new"))
   end
 
   test "installation_guide existing_project is scoped" do
@@ -69,5 +90,8 @@ defmodule Corex.MCP.Tools.InstallationTest do
   test "tools/0 includes installation_guide" do
     names = for t <- Installation.tools(), do: t.name
     assert "installation_guide" in names
+
+    guide = Enum.find(Installation.tools(), &(&1.name == "installation_guide"))
+    assert "tableau_new" in guide.inputSchema.properties.scenario.enum
   end
 end

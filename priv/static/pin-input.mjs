@@ -1,22 +1,22 @@
 import {
   syncHiddenInputValue
-} from "./chunks/chunk-YV3G4M5K.mjs";
+} from "./chunks/chunk-YFTSYDFS.mjs";
 import {
   setValueAtIndex
 } from "./chunks/chunk-PE34YET2.mjs";
 import {
   stripZagSubmitNames
-} from "./chunks/chunk-BRLTIGVO.mjs";
+} from "./chunks/chunk-YJPGDO7P.mjs";
 import {
   syncArrayHiddenInputsForPhoenix
-} from "./chunks/chunk-YVULSJ7W.mjs";
+} from "./chunks/chunk-IKLCQZIF.mjs";
 import {
   notifyPhoenixFormChange
 } from "./chunks/chunk-ASQD2R2U.mjs";
 import {
   getJsonStringList,
   mountStringListBinding
-} from "./chunks/chunk-S4GKLIQE.mjs";
+} from "./chunks/chunk-XL4XUS2C.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -27,7 +27,7 @@ import {
   notifyChange,
   parseRespondTo,
   readPayloadId
-} from "./chunks/chunk-2WCNJX5P.mjs";
+} from "./chunks/chunk-LNVRIZ4K.mjs";
 import {
   Component,
   VanillaMachine,
@@ -52,7 +52,7 @@ import {
   raf,
   setup,
   visuallyHiddenStyle
-} from "./chunks/chunk-2GQRP3FN.mjs";
+} from "./chunks/chunk-YGZLYEUJ.mjs";
 
 // ../node_modules/.pnpm/@zag-js+pin-input@1.40.0/node_modules/@zag-js/pin-input/dist/pin-input.anatomy.mjs
 var anatomy = createAnatomy("pinInput").parts("root", "label", "input", "control");
@@ -691,9 +691,6 @@ function padStringListBinding(el, count) {
   }
   return { defaultValue: padToCount(binding.defaultValue, count) };
 }
-function readUpdatedPinValue(_el, _count) {
-  return {};
-}
 function syncPinInputFormForPhoenix(el, values, onTouched, opts = {}) {
   const submitName = getString(el, "submitName");
   const count = getNumber(el, "count") ?? 0;
@@ -869,6 +866,5 @@ export {
   parseValueWithEmpties,
   readDefaultValueList,
   readPinValueList,
-  readUpdatedPinValue,
   syncPinInputFormForPhoenix
 };

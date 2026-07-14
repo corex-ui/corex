@@ -1,7 +1,7 @@
 import {
   idMatches,
   readPayloadId
-} from "./chunks/chunk-2WCNJX5P.mjs";
+} from "./chunks/chunk-LNVRIZ4K.mjs";
 import {
   Component,
   VanillaMachine,
@@ -12,7 +12,7 @@ import {
   getDir,
   getNumber,
   getString
-} from "./chunks/chunk-2GQRP3FN.mjs";
+} from "./chunks/chunk-YGZLYEUJ.mjs";
 
 // ../node_modules/.pnpm/@zag-js+marquee@1.40.0/node_modules/@zag-js/marquee/dist/marquee.anatomy.mjs
 var anatomy = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");
@@ -403,6 +403,7 @@ function calculateDuration(options) {
 // components/marquee.ts
 var Marquee = class extends Component {
   items = null;
+  unsubscribe;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, props);
@@ -411,17 +412,23 @@ var Marquee = class extends Component {
     return this.zagConnect(connect);
   }
   init = () => {
-    this.machine.subscribe(() => {
-      this.api = this.initApi();
-      this.render();
-    });
     try {
       this.machine.start();
       this.api = this.initApi();
       this.render();
+      this.unsubscribe = this.machine.subscribe(() => {
+        this.api = this.initApi();
+        this.render();
+      });
     } finally {
       this.el.removeAttribute("data-loading");
     }
+  };
+  destroy = () => {
+    this.unsubscribe?.();
+    this.unsubscribe = void 0;
+    this.el.removeAttribute("data-loading");
+    this.machine.stop();
   };
   buildDom() {
     const templateEl = this.el.querySelector(

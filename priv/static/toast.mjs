@@ -1,10 +1,10 @@
 import {
   setRafTimeout
-} from "./chunks/chunk-GFGOJ2RY.mjs";
+} from "./chunks/chunk-5HFWMYJG.mjs";
 import {
   trackDismissableBranch
-} from "./chunks/chunk-WJDVLJMP.mjs";
-import "./chunks/chunk-B5L2AGOH.mjs";
+} from "./chunks/chunk-MOSXJRWI.mjs";
+import "./chunks/chunk-26XTEIHY.mjs";
 import {
   AnimationFrame,
   Component,
@@ -29,7 +29,7 @@ import {
   setup,
   uuid,
   warn
-} from "./chunks/chunk-2GQRP3FN.mjs";
+} from "./chunks/chunk-YGZLYEUJ.mjs";
 
 // ../node_modules/.pnpm/@zag-js+toast@1.40.0/node_modules/@zag-js/toast/dist/toast.anatomy.mjs
 var anatomy = createAnatomy("toast").parts(
@@ -1634,7 +1634,7 @@ var ToastHook = {
       const st = getToastStore(detail.groupId || this.groupId);
       if (!st) return;
       try {
-        st.create(buildCreateOptions(detail, true));
+        st.create(buildCreateOptions(detail, false));
       } catch (error) {
         console.error("Failed to create toast:", error);
       }

@@ -95,7 +95,7 @@ defmodule Corex.DataTable do
 
   ### Sortable
 
-  Set `sort_by`, `sort_order`, `on_sort`; give each sortable column a `name`. Delegate sorting to [`Corex.DataTable.Sort`](Corex.DataTable.Sort.html). Pass `:sort_columns` when you want an explicit whitelist; otherwise allowed columns are inferred from row map keys. LiveView minimum:
+  Set `sort_by`, `sort_order`, `on_sort`; give each sortable column a `name`. Delegate sorting to [`Corex.DataTable.Sort`](Corex.DataTable.Sort.html). Pass `:sort_columns` when you want an explicit whitelist; otherwise allowed columns are inferred from row map keys. Sort triggers send `phx-value-sort_by` and `phx-value-table_id` (the table `id`) with the `on_sort` event. LiveView minimum:
 
   ```elixir
   # mount
@@ -119,6 +119,15 @@ defmodule Corex.DataTable do
       <.heroicon name={%{asc: "hero-chevron-up", desc: "hero-chevron-down", none: "hero-chevron-up-down"}[direction]} />
     </:sort_icon>
   </.data_table>
+  ```
+
+  When several tables share one `on_sort` handler, use [`Corex.DataTable.Sort.handle_sort_for/3`](Corex.DataTable.Sort.html#handle_sort_for/3). It reads `table_id` from the event params (`phx-value-table_id`) and keeps `%{sort_by, sort_order}` under `:data_table_sort` keyed by that id. Pair with [`sorted_rows/3`](Corex.DataTable.Sort.html#sorted_rows/3) when rendering each table:
+
+  ```elixir
+  def handle_event("sort", params, socket) do
+    {:noreply,
+     Corex.DataTable.Sort.handle_sort_for(socket, params, sort_columns: [:id, :name])}
+  end
   ```
 
   ### Selectable

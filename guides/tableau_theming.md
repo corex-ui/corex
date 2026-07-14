@@ -15,7 +15,7 @@ For Phoenix apps with `Plugs.Theme` and cookies, see [Theming](theming.html).
 
 ## How it works
 
-1. **Config** lists allowed theme names; CSS must `@import` each theme file you expose.
+1. **Config** lists allowed theme names (`site_name` + `themes`); `default_theme` is `List.first(themes)`, not an OTP key.
 2. **`head_script/0`** runs in `<head>` and sets `data-theme` from `localStorage` before paint.
 3. **`theme.js`** syncs the picker after hydration and listens for `corex:set-theme`.
 4. **`<.select id="theme-switcher">`** dispatches `corex:set-theme` on change.
@@ -29,11 +29,10 @@ In `config/config.exs`:
 ```elixir
 config :my_app,
   site_name: "MyApp",
-  themes: ~w(neo uno duo leo),
-  default_theme: "neo"
+  themes: ~w(neo uno duo leo)
 ```
 
-Only list themes you import in CSS. The first entry in `themes` is the fallback when nothing is stored.
+Do not set an OTP `default_theme`. The first entry in `themes` is the fallback when nothing is stored (`List.first(themes)`).
 
 ### Elixir
 
@@ -45,11 +44,9 @@ defmodule MyApp.Config do
 
   def site_name, do: Application.get_env(@app, :site_name, "MyApp")
 
-  def themes, do: Application.get_env(@app, :themes, ["neo"])
+  def themes, do: Application.get_env(@app, :themes, ~w(neo uno duo leo))
 
-  def default_theme do
-    Application.get_env(@app, :default_theme) || List.first(themes()) || "neo"
-  end
+  def default_theme, do: themes() |> List.first()
 end
 ```
 
@@ -97,17 +94,15 @@ end
 
 ### CSS
 
-Add `select` to `components:` in `config :corex_design`, then import the generated entry in `assets/css/site.css` (after the [Tableau](tableau.html) baseline imports):
+The [Tableau](tableau.html) baseline already imports Corex Design (themes included):
 
 ```css
-@import "../corex/components.css";
-
-@import "../corex/theme/uno.css";
-@import "../corex/theme/duo.css";
-@import "../corex/theme/leo.css";
+@import "tailwindcss";
+@plugin "../vendor/heroicons";
+@import "../corex/corex.css";
 ```
 
-Skip extra `@import`s if you only ship `neo`.
+`corex.css` pulls in all four theme files. Only list themes in config that you want the picker to expose. Add `select` to `components:` in `config :corex_design` when you use the theme switcher.
 
 ### Layout
 

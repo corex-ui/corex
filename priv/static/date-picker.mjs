@@ -1,6 +1,6 @@
 import {
   memo
-} from "./chunks/chunk-HWSJUKAB.mjs";
+} from "./chunks/chunk-KCVHCORZ.mjs";
 import {
   clampValue,
   isValueWithinRange
@@ -11,27 +11,27 @@ import {
 import {
   getPlacement,
   getPlacementStyles
-} from "./chunks/chunk-RK6266HP.mjs";
+} from "./chunks/chunk-DVA7SQMW.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-WJDVLJMP.mjs";
-import "./chunks/chunk-B5L2AGOH.mjs";
+} from "./chunks/chunk-MOSXJRWI.mjs";
+import "./chunks/chunk-26XTEIHY.mjs";
 import {
   syncArrayHiddenInputsForPhoenix
-} from "./chunks/chunk-YVULSJ7W.mjs";
+} from "./chunks/chunk-IKLCQZIF.mjs";
 import {
   notifyPhoenixFormChange
 } from "./chunks/chunk-ASQD2R2U.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-CNPBJL2G.mjs";
+} from "./chunks/chunk-QU36267Q.mjs";
 import {
   mountStringListBinding,
   readDatasetStringList
-} from "./chunks/chunk-S4GKLIQE.mjs";
+} from "./chunks/chunk-XL4XUS2C.mjs";
 import {
   notifyChange
-} from "./chunks/chunk-2WCNJX5P.mjs";
+} from "./chunks/chunk-LNVRIZ4K.mjs";
 import {
   Component,
   VanillaMachine,
@@ -55,7 +55,7 @@ import {
   raf,
   restoreTextSelection,
   setElementValue
-} from "./chunks/chunk-2GQRP3FN.mjs";
+} from "./chunks/chunk-YGZLYEUJ.mjs";
 
 // ../node_modules/.pnpm/@zag-js+date-picker@1.40.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-picker/dist/date-picker.anatomy.mjs
 var anatomy = createAnatomy("date-picker").parts(
@@ -4619,7 +4619,7 @@ var DatePickerHook = {
         "date_picker_set_value",
         (payload) => {
           const targetId = payload.date_picker_id;
-          if (targetId && targetId !== el.id) return;
+          if (!targetId || targetId !== el.id) return;
           datePickerInstance.api.setValue([parse(payload.value)]);
         }
       )

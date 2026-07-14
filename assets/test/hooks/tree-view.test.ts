@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { el } from "../helpers/dom";
 import { parseRootNode, readExpandedAttr, readSelectedAttr } from "../../hooks/tree-view";
 
@@ -9,8 +9,14 @@ describe("parseRootNode", () => {
     expect(parseRootNode(node)).toEqual({ value: "root", name: "Root" });
   });
 
-  it("throws when data-tree missing", () => {
-    expect(() => parseRootNode(document.createElement("div"))).toThrow(/missing data-tree/);
+  it("returns empty tree when data-tree missing", () => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    expect(parseRootNode(document.createElement("div"))).toEqual({
+      value: "",
+      name: "",
+      children: [],
+    });
+    errorSpy.mockRestore();
   });
 });
 

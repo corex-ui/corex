@@ -4,6 +4,7 @@ import { Component } from "../lib/core";
 
 export class Marquee extends Component<Props, Api> {
   private items: HTMLElement[] | null = null;
+  private unsubscribe: (() => void) | undefined;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props: Props): VanillaMachine<any> {
@@ -15,17 +16,24 @@ export class Marquee extends Component<Props, Api> {
   }
 
   init = (): void => {
-    this.machine.subscribe(() => {
-      (this as { api: Api }).api = this.initApi();
-      this.render();
-    });
     try {
       this.machine.start();
       (this as { api: Api }).api = this.initApi();
       this.render();
+      this.unsubscribe = this.machine.subscribe(() => {
+        (this as { api: Api }).api = this.initApi();
+        this.render();
+      });
     } finally {
       this.el.removeAttribute("data-loading");
     }
+  };
+
+  destroy = (): void => {
+    this.unsubscribe?.();
+    this.unsubscribe = undefined;
+    this.el.removeAttribute("data-loading");
+    this.machine.stop();
   };
 
   buildDom(): void {

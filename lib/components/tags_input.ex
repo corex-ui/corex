@@ -100,29 +100,7 @@ defmodule Corex.TagsInput do
 
   ## Patterns
 
-  <!-- tabs-open -->
-
-  ### Controlled
-
-  ```heex
-  <.tags_input
-    class="tags-input"
-    controlled
-    value={@tags}
-    on_value_change="tags_changed"
-  >
-    <:label>Keywords</:label>
-    <:close><.heroicon name="hero-x-mark" /></:close>
-  </.tags_input>
-  ```
-
-  ```elixir
-  def handle_event("tags_changed", %{"value" => value}, socket) do
-    {:noreply, assign(socket, :tags, value)}
-  end
-  ```
-
-  <!-- tabs-close -->
+  Pass `value` for the initial tag list on mount. The machine owns updates after that unless you use [`set_value/2`](#set_value/2) or form `field`.
 
   ## Form
 
@@ -142,7 +120,7 @@ defmodule Corex.TagsInput do
 
   The `delimiter` attribute only controls how **new** tags are split when typing or pasting in the control (default `,`). It does not affect form submission.
 
-  In LiveView, rebuild the form from the changeset on `phx-change` so validation stays in sync. Do not use `controlled` on form examples; use `field={@form[:tags]}` only.
+  In LiveView, rebuild the form from the changeset on `phx-change` so validation stays in sync. Use `field={@form[:tags]}` only.
 
   ```elixir
   embedded_schema do

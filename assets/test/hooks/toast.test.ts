@@ -148,7 +148,7 @@ describe("Toast hook lifecycle", () => {
     callHookDestroyed(Toast, hook);
   });
 
-  it("corex:toast:create renders trusted action triggers", async () => {
+  it("corex:toast:create rejects trusted exec_js actions", async () => {
     const el = document.createElement("div");
     el.id = groupId;
     document.body.appendChild(el);
@@ -181,13 +181,15 @@ describe("Toast hook lifecycle", () => {
     );
 
     await vi.waitFor(() => {
-      const action = el.querySelector<HTMLElement>(
-        '[data-scope="toast"][data-part="action-trigger"]'
-      );
-      expect(action).toBeTruthy();
-      expect(action!.hidden).toBe(false);
-      expect(action!.textContent).toBe("Same page");
+      const title = el.querySelector('[data-scope="toast"][data-part="title"]');
+      expect(title?.textContent).toBe("Saved");
     });
+
+    const action = el.querySelector<HTMLElement>(
+      '[data-scope="toast"][data-part="action-trigger"]'
+    );
+    expect(action?.hidden).toBe(true);
+    expect(action?.textContent ?? "").toBe("");
 
     document.body.removeChild(el);
     callHookDestroyed(Toast, hook);

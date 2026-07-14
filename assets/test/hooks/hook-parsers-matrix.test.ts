@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { el } from "../helpers/dom";
 import { hasKey } from "../helpers/matrix";
 import { parseSize, parsePoint } from "../../hooks/floating-panel";
@@ -94,9 +94,11 @@ describe("parseRootNode matrix", () => {
     expect(parseRootNode(node).name).toBe("Root");
   });
 
-  it.each([{}, { tree: "" }] as const)("throws when tree missing %#", (dataset) => {
+  it.each([{}, { tree: "" }] as const)("returns empty tree when tree missing %#", (dataset) => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     const node = el(dataset as Record<string, string>);
-    expect(() => parseRootNode(node)).toThrow(/missing data-tree/);
+    expect(parseRootNode(node)).toEqual({ value: "", name: "", children: [] });
+    errorSpy.mockRestore();
   });
 });
 

@@ -8,7 +8,7 @@ import {
   notifyChange,
   parseRespondTo,
   readPayloadId
-} from "./chunks/chunk-2WCNJX5P.mjs";
+} from "./chunks/chunk-LNVRIZ4K.mjs";
 import {
   Component,
   VanillaMachine,
@@ -18,7 +18,7 @@ import {
   getString,
   observeAttributes,
   observeChildren
-} from "./chunks/chunk-2GQRP3FN.mjs";
+} from "./chunks/chunk-YGZLYEUJ.mjs";
 
 // ../node_modules/.pnpm/@zag-js+avatar@1.40.0/node_modules/@zag-js/avatar/dist/avatar.anatomy.mjs
 var anatomy = createAnatomy("avatar").parts("root", "image", "fallback");

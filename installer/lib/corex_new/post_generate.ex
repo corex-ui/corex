@@ -75,22 +75,19 @@ defmodule Corex.New.PostGenerate do
   end
 
   defp build_design_assets!(project_path) do
-    Mix.shell().info([:green, "* building ", :reset, "Corex design → assets/corex/"])
+    Mix.shell().info([:green, "* building ", :reset, "Corex design -> assets/corex/"])
 
-    {output, exit_code} =
+    {_streamed, exit_code} =
       System.cmd(
         "mix",
         ["corex.design.build"],
         cd: project_path,
-        stderr_to_stdout: true
+        stderr_to_stdout: true,
+        into: PhxWrapper.mix_cmd_into()
       )
 
     if exit_code != 0 do
-      Mix.raise("""
-      Failed to build Corex design assets:
-
-      #{output}
-      """)
+      Mix.raise("Failed to build Corex design assets (exit #{exit_code})")
     end
 
     :ok

@@ -13,6 +13,11 @@ defmodule Corex.DocParityTest do
     dialog
     action
     navigate
+    editable
+    toggle
+    tooltip
+    radio_group
+    collapsible
   )
 
   test "anatomy minimal snippets match e2e demo code for core components" do

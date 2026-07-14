@@ -5,17 +5,17 @@ import {
   itemValue,
   machine,
   zagListCollectionConfig
-} from "./chunks/chunk-NICWUGGL.mjs";
-import "./chunks/chunk-FVGYE2AE.mjs";
+} from "./chunks/chunk-AIFPYOT7.mjs";
+import "./chunks/chunk-4E7EICYJ.mjs";
 import {
   performRedirect,
   readDomItemRedirect
 } from "./chunks/chunk-HZLPIQBD.mjs";
-import "./chunks/chunk-VDUSDBJS.mjs";
+import "./chunks/chunk-JF64R7HW.mjs";
 import {
   readStringListControlledZagProps,
   readStringListControlledZagUpdate
-} from "./chunks/chunk-S4GKLIQE.mjs";
+} from "./chunks/chunk-XL4XUS2C.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -26,15 +26,16 @@ import {
   notifyChange,
   parseRespondTo,
   readPayloadId
-} from "./chunks/chunk-2WCNJX5P.mjs";
+} from "./chunks/chunk-LNVRIZ4K.mjs";
 import {
   Component,
   VanillaMachine,
   canPushEvent,
   getBoolean,
   getDir,
-  getString
-} from "./chunks/chunk-2GQRP3FN.mjs";
+  getString,
+  safeParseJson
+} from "./chunks/chunk-YGZLYEUJ.mjs";
 
 // components/listbox.ts
 var Listbox = class extends Component {
@@ -160,7 +161,7 @@ function listboxZagPropsBase(el, liveSocket, pushEvent) {
 var ListboxHook = {
   mounted() {
     const el = this.el;
-    const allItems = JSON.parse(el.dataset.items ?? "[]");
+    const allItems = safeParseJson(el.dataset.items ?? "[]", []);
     const hasGroups = allItems.some((item) => Boolean(item.group));
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
@@ -207,7 +208,7 @@ var ListboxHook = {
   },
   updated() {
     if (!this.listbox) return;
-    const newItems = JSON.parse(this.el.dataset.items ?? "[]");
+    const newItems = safeParseJson(this.el.dataset.items ?? "[]", []);
     const hasGroups = newItems.some((item) => Boolean(item.group));
     this.listbox.hasGroups = hasGroups;
     this.listbox.setOptions(newItems);

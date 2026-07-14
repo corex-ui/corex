@@ -1,0 +1,90 @@
+import Config
+
+config :tableau, :reloader,
+  patterns: [
+    ~r"^lib/.*.ex",
+    ~r"^(_posts|_pages|_data)/.*.(md|yaml|yml)",
+    ~r"^assets/.*.(css|js)"
+  ]
+
+config :web_dev_utils, :reload_log, true
+
+config :<%= @otp_app %>,
+  site_name: "<%= @app_module %>",
+  themes: ~w(<%= Enum.join(@themes, " ") %>)
+
+config :<%= @otp_app %>, :mcp_enabled, false
+config :<%= @otp_app %>, :mcp_port, 4004
+
+config :esbuild,
+  version: "0.25.5",
+  default: [
+    args: ~w(js/site.js --bundle --format=esm --splitting --target=es2022 --outdir=../_site/js),
+    cd: Path.expand("../assets", __DIR__),
+    env: %{
+      "NODE_PATH" =>
+        Enum.join([
+          Path.expand("../deps", __DIR__),
+          Path.expand("../node_modules", __DIR__)
+        ], ":")
+    }
+  ]
+
+config :tailwind,
+  version: "4.1.0",
+  default: [
+    args: ~w(
+    --input=assets/css/site.css
+    --output=_site/css/site.css
+    )
+  ]
+
+if Mix.env() == :dev do
+  config :tableau, :assets,
+    tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]},
+    esbuild: {Esbuild, :install_and_run, [:default, ~w(--watch)]}
+end
+
+config :tableau, :config,
+  url: "http://localhost:4999",
+  include_dir: Path.expand("../extra", __DIR__),
+  converters: [md: <%= @app_module %>.MDExConverter],
+  markdown: [
+    mdex: [
+      extension: [
+        table: true,
+        header_ids: "",
+        tasklist: true,
+        strikethrough: true,
+        autolink: true,
+        footnotes: true
+      ],
+      render: [unsafe: true],
+      syntax_highlight: nil
+    ]
+  ]
+
+config :tableau, Tableau.PageExtension, enabled: true
+config :tableau, Tableau.PostExtension, enabled: true
+config :tableau, Tableau.DataExtension, enabled: true
+config :tableau, Tableau.SitemapExtension, enabled: true
+
+config :tableau, Tableau.RSSExtension,
+  enabled: true,
+  title: "<%= @app_module %>",
+  description: "A Tableau static site powered by Corex."
+<%= if @design do %>
+config :corex_design,
+  output: "assets/corex",
+  default_theme: :neo,
+  default_mode: :light,
+  themes: nil,
+  scales: [],
+  components: <%= inspect(@components) %>,
+  semantics: nil
+<% end %>
+config :phoenix, json_library: Jason
+
+config :elixir, :time_zone_database, Tz.TimeZoneDatabase
+
+import_config "<%= "\#{config_env()}.exs" %>"

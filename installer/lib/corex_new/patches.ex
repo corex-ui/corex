@@ -415,14 +415,14 @@ defmodule Corex.New.Patches do
           themes: nil,
           scales: [],
           components: #{inspect(installer_components(opts))},
-          semantics: nil,
+          semantics: nil
 
         """
 
         marker = "import_config \"#{"#"}{config_env()}.exs\""
 
         if String.contains?(content, marker) do
-          String.replace(content, marker, String.trim_trailing(block) <> "\n" <> marker,
+          String.replace(content, marker, String.trim_trailing(block) <> "\n\n" <> marker,
             global: false
           )
         else

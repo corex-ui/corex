@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { el } from "../helpers/dom";
 import {
   canPushEvent,
@@ -11,6 +11,7 @@ import {
   getNumber,
   getString,
   getStringList,
+  safeParseJson,
   templatesContentRoot,
 } from "../../lib/util";
 
@@ -183,5 +184,22 @@ describe("getDir", () => {
 
   it("defaults to ltr", () => {
     expect(getDir(el({}))).toBe("ltr");
+  });
+});
+
+describe("safeParseJson", () => {
+  it("parses valid JSON", () => {
+    expect(safeParseJson('{"a":1}', {})).toEqual({ a: 1 });
+  });
+
+  it("returns fallback on invalid JSON", () => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    expect(safeParseJson("{", [])).toEqual([]);
+    errorSpy.mockRestore();
+  });
+
+  it("returns fallback for empty input", () => {
+    expect(safeParseJson("", [])).toEqual([]);
+    expect(safeParseJson(null, { x: 1 })).toEqual({ x: 1 });
   });
 });

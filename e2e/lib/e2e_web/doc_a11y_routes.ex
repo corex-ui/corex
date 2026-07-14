@@ -86,6 +86,7 @@ defmodule E2eWeb.DocA11yRoutes do
     {"/en/date-picker/events", "#date-picker-events-page"},
     {"/en/date-picker/form", "#date-picker-form-page"},
     {"/en/date-picker/live-form", "#date-picker-form-live-page"},
+    {"/en/date-picker/style", "#date-picker-styling-page"},
     {"/en/dialog/playground", "#dialog-playground"},
     {"/en/dialog/anatomy", "#dialog-anatomy-page"},
     {"/en/dialog/api", "#dialog-api-page"},
@@ -122,14 +123,17 @@ defmodule E2eWeb.DocA11yRoutes do
     {"/en/listbox/api", "#listbox-api-page"},
     {"/en/listbox/events", "#listbox-events-page"},
     {"/en/listbox/patterns", "#listbox-patterns-stream"},
+    {"/en/listbox/style", "#listbox-styling-page"},
     {"/en/marquee/anatomy", "#marquee-anatomy-page"},
     {"/en/marquee/api", "#marquee-api-page"},
     {"/en/marquee/events", "#marquee-events-page"},
+    {"/en/marquee/style", "#marquee-styling-page"},
     {"/en/menu/playground", "#menu-playground-page"},
     {"/en/menu/anatomy", "#menu-anatomy-page"},
     {"/en/menu/api", "#menu-api-page"},
     {"/en/menu/events", "#menu-events-page"},
     {"/en/menu/patterns", "#menu-patterns-page"},
+    {"/en/menu/style", "#menu-styling-page"},
     {"/en/native-input/anatomy", "#native-input-anatomy-page"},
     {"/en/native-input/playground", "#native-input-playground"},
     {"/en/native-input/style", "#native-input-styling-page"},
@@ -170,6 +174,7 @@ defmodule E2eWeb.DocA11yRoutes do
     {"/en/radio-group/api", "#radio-group-api-page"},
     {"/en/radio-group/events", "#radio-group-events-page"},
     {"/en/radio-group/patterns", "#radio-group-patterns-page"},
+    {"/en/radio-group/style", "#radio-group-styling-page"},
     {"/en/radio-group/form", "#radio-group-form-page"},
     {"/en/radio-group/live-form", "#radio-group-form-live-page"},
     {"/en/select/playground", "#select-playground"},
@@ -241,7 +246,7 @@ defmodule E2eWeb.DocA11yRoutes do
     {"/en/tree-view/patterns", "#tree-view-patterns-page"},
     {"/en/tree-view/animation", "#tree-view-animation-page"},
     {"/en/tree-view/style", "#tree-view-styling-page"},
-    {"/en/angle-slider/controlled", "#my-angle-slider"}
+    {"/en/angle-slider/controlled", "#controlled-angle-slider"}
   ]
 
   def all, do: @routes

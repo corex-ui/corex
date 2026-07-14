@@ -2,7 +2,7 @@ defmodule Corex.AngleSlider do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Angle Slider](https://zagjs.com/components/react/angle-slider).
 
-  WAI-ARIA circular angle control. Use `angle_slider/1` with an optional label slot, marks, and controlled or uncontrolled mode.
+  WAI-ARIA circular angle control. Use `angle_slider/1` with an optional label slot and marks.
 
   ## Anatomy
 
@@ -22,40 +22,6 @@ defmodule Corex.AngleSlider do
   <.angle_slider class="angle-slider" marker_values={[0, 90, 180, 270]}>
     <:label>Angle</:label>
   </.angle_slider>
-  ```
-
-  ### Controlled
-
-  In controlled mode, use `on_value_change` and `on_value_change_client` so the thumb moves
-  during drag. Use `on_value_change_end` and `on_value_change_end_client` if you only need
-  to react when the user releases.
-
-  ```elixir
-  defmodule MyAppWeb.AngleSliderLive do
-    use MyAppWeb, :live_view
-
-    def mount(_params, _session, socket) do
-      {:ok, assign(socket, :value, 0)}
-    end
-
-    def handle_event("angle_changed", %{"value" => value}, socket) do
-      {:noreply, assign(socket, :value, value)}
-    end
-
-    def render(assigns) do
-      ~H"""
-      <.angle_slider
-        id="angle"
-        controlled
-        value={@value}
-        on_value_change="angle_changed"
-        marker_values={[0, 90, 180, 270]}
-        class="angle-slider">
-        <:label>Angle</:label>
-      </.angle_slider>
-      """
-    end
-  end
   ```
 
   <!-- tabs-close -->
@@ -272,22 +238,22 @@ defmodule Corex.AngleSlider do
 
   attr(:on_value_change, :string,
     default: nil,
-    doc: "Server event when value changes (uncontrolled)"
+    doc: "Server event when value changes during drag"
   )
 
   attr(:on_value_change_client, :string,
     default: nil,
-    doc: "Client event when value changes (uncontrolled)"
+    doc: "Client event when value changes during drag"
   )
 
   attr(:on_value_change_end, :string,
     default: nil,
-    doc: "Server event when value change ends (controlled)"
+    doc: "Server event when the user releases the thumb"
   )
 
   attr(:on_value_change_end_client, :string,
     default: nil,
-    doc: "Client event when value change ends (controlled)"
+    doc: "Client event when the user releases the thumb"
   )
 
   attr(:marker_values, :list,

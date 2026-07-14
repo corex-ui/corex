@@ -25,8 +25,8 @@ describe.each([
 });
 
 describe.each([
-  ["empty id matches", "hook-1", "", true],
-  ["null id matches", "hook-1", null, true],
+  ["empty id does not match", "hook-1", "", false],
+  ["null id does not match", "hook-1", null, false],
   ["equal ids", "hook-1", "hook-1", true],
   ["different ids", "hook-1", "hook-2", false],
 ] as const)("idMatches %s", (_label, elId, payloadId, expected) => {

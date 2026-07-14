@@ -4,7 +4,7 @@ import {
 import {
   readStringControlledZagProps,
   readStringControlledZagUpdate
-} from "./chunks/chunk-S4GKLIQE.mjs";
+} from "./chunks/chunk-XL4XUS2C.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -13,7 +13,7 @@ import {
   idMatches,
   notifyChange,
   readPayloadId
-} from "./chunks/chunk-2WCNJX5P.mjs";
+} from "./chunks/chunk-LNVRIZ4K.mjs";
 import {
   Component,
   VanillaMachine,
@@ -42,7 +42,7 @@ import {
   raf,
   resizeObserverBorderBox,
   setup
-} from "./chunks/chunk-2GQRP3FN.mjs";
+} from "./chunks/chunk-YGZLYEUJ.mjs";
 
 // ../node_modules/.pnpm/@zag-js+tabs@1.40.0/node_modules/@zag-js/tabs/dist/tabs.anatomy.mjs
 var anatomy = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");

@@ -1,0 +1,68 @@
+defmodule <%= @app_module %>.Theme do
+  use Phoenix.Component
+  use Corex
+
+  def themes, do: <%= @app_module %>.Config.themes()
+
+  def default_theme, do: <%= @app_module %>.Config.default_theme()
+
+  def head_script do
+    themes_json = Jason.encode!(themes())
+    default_theme_json = Jason.encode!(default_theme())
+
+    Phoenix.HTML.raw("""
+    <script>
+      try {
+        const themes = #{themes_json};
+        const dt = #{default_theme_json};
+        const t = localStorage.getItem("data-theme");
+        const theme = themes.includes(t) ? t : dt;
+        document.documentElement.setAttribute("data-theme", theme);
+      } catch (_) {}
+    </script>
+    """)
+  end
+
+  def current(assigns) do
+    list = themes()
+    d = default_theme()
+
+    case Map.get(assigns, :theme) do
+      t when is_binary(t) ->
+        if(t in list, do: t, else: d)
+
+      _ ->
+        d
+    end
+  end
+
+  def select_items do
+    themes()
+    |> Enum.map(fn t -> %{value: t, label: String.capitalize(t)} end)
+    |> Corex.List.new()
+  end
+
+  attr :theme, :string, required: true
+
+  def theme_toggle(assigns) do
+    ~H"""
+    <.select
+      id="theme-select"
+      class="select ui-size-sm w-auto"
+      items={select_items()}
+      value={[@theme]}
+      positioning={%Corex.Positioning{same_width: false}}
+      on_value_change_client="phx:set-theme"
+    >
+      <:label class="sr-only">Theme</:label>
+      <:item :let={item}>{item.label}</:item>
+      <:trigger>
+        <.heroicon name="hero-swatch" class="icon" />
+      </:trigger>
+      <:item_indicator>
+        <.heroicon name="hero-check" class="icon" />
+      </:item_indicator>
+    </.select>
+    """
+  end
+end

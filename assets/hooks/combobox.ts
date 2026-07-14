@@ -16,6 +16,7 @@ import {
   getDir,
   canPushEvent,
   getBooleanValue,
+  safeParseJson,
 } from "../lib/util";
 import { mountStringListBinding } from "../lib/read-props";
 import { performRedirect, readDomItemRedirect } from "../lib/redirect";
@@ -263,7 +264,7 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
     };
 
     const itemsJson = el.getAttribute("data-items") ?? "[]";
-    const allItems = JSON.parse(itemsJson);
+    const allItems = safeParseJson<Array<{ group?: unknown }>>(itemsJson, []);
     const hasGroups = allItems.some((item: { group?: unknown }) => Boolean(item.group));
 
     const defaultValues = getStringList(el, "defaultValue") ?? [];
@@ -323,7 +324,7 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
     const newItemsJson = this.el.getAttribute("data-items") ?? "[]";
     if (newItemsJson !== this.lastItemsJson) {
       this.lastItemsJson = newItemsJson;
-      const newCollection = JSON.parse(newItemsJson);
+      const newCollection = safeParseJson<Array<{ group?: unknown }>>(newItemsJson, []);
       const hasGroups = newCollection.some((item: { group?: unknown }) => Boolean(item.group));
       this.combobox.hasGroups = hasGroups;
       this.combobox.setAllOptions(newCollection);
