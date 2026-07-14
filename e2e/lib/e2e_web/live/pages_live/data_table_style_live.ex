@@ -37,11 +37,8 @@ defmodule E2eWeb.DataTableStyleLive do
     {:ok,
      socket
      |> assign(:style_rows, @list_users)
-     |> Corex.DataTable.Sort.assign_for_sort(:style_rows,
-       default_sort_by: :id,
-       default_sort_order: :asc,
-       sort_columns: @style_sort_columns
-     )
+     |> assign(:data_table_sort, %{})
+     |> assign(:sort_columns, @style_sort_columns)
      |> assign(:style_selected, [])
      |> assign(:color_variants, @color_variants)
      |> assign(:size_variants, @size_variants)
@@ -50,7 +47,8 @@ defmodule E2eWeb.DataTableStyleLive do
 
   @impl true
   def handle_event("style_sort", params, socket) do
-    {:noreply, Corex.DataTable.Sort.handle_sort(socket, params, :style_rows)}
+    {:noreply,
+     Corex.DataTable.Sort.handle_sort_for(socket, params, sort_columns: @style_sort_columns)}
   end
 
   def handle_event("style_select", %{"id" => checkbox_id} = params, socket) do
@@ -88,7 +86,7 @@ defmodule E2eWeb.DataTableStyleLive do
         path={@path}
         id="data-table-styling-page"
         title="Data Table · Style"
-        subtitle="Semantic ink on column headers, size scale on headers and cells, and host max-width utilities. Tables include sort, selection, and actions."
+        subtitle="Semantic ink on column headers and selection checkboxes, size scale on headers, cells, and checkboxes, and host max-width utilities. Tables include sort, selection, and actions."
         heading_class="layout-heading"
       >
         <.demo_section
@@ -103,8 +101,7 @@ defmodule E2eWeb.DataTableStyleLive do
                 id={id}
                 class={"data-table max-w-none #{modifier}"}
                 rows={@style_rows}
-                sort_by={@sort_by}
-                sort_order={@sort_order}
+                data_table_sort={@data_table_sort}
                 selected={@style_selected}
               />
             </div>
@@ -123,8 +120,7 @@ defmodule E2eWeb.DataTableStyleLive do
                 id={id}
                 class={"data-table max-w-none #{modifier}"}
                 rows={@style_rows}
-                sort_by={@sort_by}
-                sort_order={@sort_order}
+                data_table_sort={@data_table_sort}
                 selected={@style_selected}
               />
             </div>
@@ -144,8 +140,7 @@ defmodule E2eWeb.DataTableStyleLive do
                   id={"data-table-styling-max-w-#{variant.id}"}
                   class={DemoScales.join_modifiers("data-table", variant.modifier)}
                   rows={@style_rows}
-                  sort_by={@sort_by}
-                  sort_order={@sort_order}
+                  data_table_sort={@data_table_sort}
                   selected={@style_selected}
                 />
               </div>
@@ -160,16 +155,24 @@ defmodule E2eWeb.DataTableStyleLive do
   attr :id, :string, required: true
   attr :class, :string, required: true
   attr :rows, :list, required: true
-  attr :sort_by, :atom, required: true
-  attr :sort_order, :atom, required: true
+  attr :data_table_sort, :map, required: true
   attr :selected, :list, required: true
 
   defp style_table(assigns) do
+    state =
+      Corex.DataTable.Sort.sort_state(assigns, assigns.id, %{sort_by: :id, sort_order: :asc})
+
+    assigns =
+      assigns
+      |> assign(:sort_by, state.sort_by)
+      |> assign(:sort_order, state.sort_order)
+      |> assign(:sorted_rows, Corex.DataTable.Sort.sorted_rows(assigns.rows, state))
+
     ~H"""
     <.data_table
       id={@id}
       class={@class}
-      rows={@rows}
+      rows={@sorted_rows}
       row_id={&"#{@id}-#{&1.id}"}
       sort_by={@sort_by}
       sort_order={@sort_order}

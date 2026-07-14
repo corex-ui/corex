@@ -60,6 +60,39 @@
  margin-bottom: var(--spacing-space);
  }
 
+ .accordion.ui-solid [data-scope="accordion"][data-part="item-trigger"][data-state="closed"] {
+ background-color: var(--color-ui);
+ color: var(--ctl-ink-text, var(--color-ink));
+ border-color: var(--color-border);
+ }
+
+ .accordion.ui-solid [data-scope="accordion"][data-part="item-trigger"][data-state="closed"]:hover {
+ background-color: var(--color-ui-hover);
+ }
+
+ .accordion.ui-solid [data-scope="accordion"][data-part="item-trigger"][data-state="closed"]:active {
+ background-color: var(--color-ui-active);
+ }
+
+ .accordion.ui-solid [data-scope="accordion"][data-part="item-trigger"][data-state="open"] {
+ background-color: var(--ctl-fill, var(--color-ui-active));
+ color: var(--ctl-fill-ink, var(--color-ink));
+ border-color: transparent;
+ }
+
+ .accordion.ui-solid [data-scope="accordion"][data-part="item-trigger"][data-state="open"]:hover {
+ background-color: var(--ctl-fill-hover, var(--color-ui-hover));
+ }
+
+ .accordion.ui-solid [data-scope="accordion"][data-part="item-trigger"][data-state="open"]:active {
+ background-color: var(--ctl-fill-active, var(--color-ui-active));
+ }
+
+ .accordion.ui-solid [data-scope="accordion"][data-part="item-trigger"][data-state="open"]:focus-visible {
+ box-shadow: inset 0 0 0 2px var(--ctl-fill-ink, var(--color-ink));
+ outline: none;
+ }
+
  .accordion [data-scope="accordion"][data-part="item-trigger"][data-orientation="horizontal"] {
  box-sizing: border-box;
  height: 100%;

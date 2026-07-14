@@ -35,6 +35,39 @@
  border-radius: var(--ctl-radius, var(--radius-md));
  }
 
+ .collapsible.ui-solid [data-scope="collapsible"][data-part="trigger"][data-state="closed"] {
+ background-color: var(--color-ui);
+ color: var(--ctl-ink-text, var(--color-ink));
+ border-color: var(--color-border);
+ }
+
+ .collapsible.ui-solid [data-scope="collapsible"][data-part="trigger"][data-state="closed"]:hover {
+ background-color: var(--color-ui-hover);
+ }
+
+ .collapsible.ui-solid [data-scope="collapsible"][data-part="trigger"][data-state="closed"]:active {
+ background-color: var(--color-ui-active);
+ }
+
+ .collapsible.ui-solid [data-scope="collapsible"][data-part="trigger"][data-state="open"] {
+ background-color: var(--ctl-fill, var(--color-ui-active));
+ color: var(--ctl-fill-ink, var(--color-ink));
+ border-color: transparent;
+ }
+
+ .collapsible.ui-solid [data-scope="collapsible"][data-part="trigger"][data-state="open"]:hover {
+ background-color: var(--ctl-fill-hover, var(--color-ui-hover));
+ }
+
+ .collapsible.ui-solid [data-scope="collapsible"][data-part="trigger"][data-state="open"]:active {
+ background-color: var(--ctl-fill-active, var(--color-ui-active));
+ }
+
+ .collapsible.ui-solid [data-scope="collapsible"][data-part="trigger"][data-state="open"]:focus-visible {
+ box-shadow: inset 0 0 0 2px var(--ctl-fill-ink, var(--color-ink));
+ outline: none;
+ }
+
  .collapsible
  [data-scope="collapsible"][data-part="root"][data-orientation="horizontal"]
  [data-scope="collapsible"][data-part="trigger"] {

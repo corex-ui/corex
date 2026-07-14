@@ -31,27 +31,30 @@
 
  .color-picker [data-scope="color-picker"][data-part="control"] {
  display: flex;
- flex-flow: row wrap;
+ flex-flow: row nowrap;
  align-items: center;
  width: fit-content;
  max-width: fit-content;
  padding: 0;
  overflow: hidden;
- gap: var(--spacing-space);
+ gap: 0;
  justify-content: flex-start;
  border-radius: var(--ctl-radius, var(--radius-md));
  }
 
  .color-picker [data-scope="color-picker"][data-part="trigger"] {
- @apply ui-trigger ui-trigger--square;
+ @apply ui-trigger;
 
- min-width: var(--spacing-size);
+ min-width: var(--ctl-size, var(--spacing-size));
  padding: 0;
  aspect-ratio: 1 / 1;
  width: auto;
  position: relative;
  overflow: hidden;
- border-radius: var(--ctl-radius, var(--radius-md));
+ border-start-end-radius: 0;
+ border-end-end-radius: 0;
+ border-start-start-radius: var(--ctl-radius, var(--radius-md));
+ border-end-start-radius: var(--ctl-radius, var(--radius-md));
  background-color: transparent;
 
  & [data-scope="color-picker"][data-part="swatch"] {
@@ -92,6 +95,8 @@
  [data-scope="color-picker"][data-part="channel-input"][data-channel="hex"] {
  width: calc(var(--spacing-size) * 2.5);
  flex: 0 0 auto;
+ border-radius: 0;
+ border-inline-start: none;
  }
 
  .color-picker
@@ -101,6 +106,11 @@
  flex: 0 0 auto;
  padding: 0;
  padding-inline: calc(var(--spacing-space) * 0.5);
+ border-inline-start: none;
+ border-start-start-radius: 0;
+ border-end-start-radius: 0;
+ border-start-end-radius: var(--ctl-radius, var(--radius-md));
+ border-end-end-radius: var(--ctl-radius, var(--radius-md));
  }
 
  .color-picker

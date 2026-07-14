@@ -20,6 +20,7 @@ defmodule E2eWeb.StylePageExpectations do
     {"dialog_styling_page.html.heex", "dialog"},
     {"editable_styling_page.html.heex", "editable"},
     {"file_upload_styling_page.html.heex", "file-upload"},
+    {"file_upload_live_styling_page.html.heex", "file-upload"},
     {"floating_panel_styling_page.html.heex", "floating-panel"},
     {"layout_heading_styling_page.html.heex", "layout-heading"},
     {"listbox_styling_page.html.heex", "listbox"},

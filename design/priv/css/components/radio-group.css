@@ -75,6 +75,39 @@
  }
  }
 
+ .radio-group.ui-solid [data-scope="radio-group"][data-part="item-control"][data-state="unchecked"] {
+ background-color: var(--color-ui);
+ color: var(--ctl-ink-text, var(--color-ink));
+ border-color: var(--color-border);
+ }
+
+ .radio-group.ui-solid [data-scope="radio-group"][data-part="item-control"][data-state="unchecked"]:hover {
+ background-color: var(--color-ui-hover);
+ }
+
+ .radio-group.ui-solid [data-scope="radio-group"][data-part="item-control"][data-state="unchecked"]:active {
+ background-color: var(--color-ui-active);
+ }
+
+ .radio-group.ui-solid [data-scope="radio-group"][data-part="item-control"][data-state="checked"] {
+ background-color: var(--ctl-fill, var(--color-ui-active));
+ color: var(--ctl-fill-ink, var(--color-ink));
+ border-color: transparent;
+ }
+
+ .radio-group.ui-solid [data-scope="radio-group"][data-part="item-control"][data-state="checked"]:hover {
+ background-color: var(--ctl-fill-hover, var(--color-ui-hover));
+ }
+
+ .radio-group.ui-solid [data-scope="radio-group"][data-part="item-control"][data-state="checked"]:active {
+ background-color: var(--ctl-fill-active, var(--color-ui-active));
+ }
+
+ .radio-group.ui-solid [data-scope="radio-group"][data-part="item-control"][data-state="checked"]:focus-visible {
+ box-shadow: inset 0 0 0 2px var(--ctl-fill-ink, var(--color-ink));
+ outline: none;
+ }
+
  [data-scope="radio-group"][data-part="item-control"] .data-checked {
  display: none !important;
  }

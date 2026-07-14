@@ -1028,6 +1028,8 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   end
 
   def styling_variant_example(assigns) do
+    assigns = assign(assigns, :presets, @presets)
+
     ~H"""
     <div class="flex flex-wrap gap-6 items-start w-full">
       <.color_picker

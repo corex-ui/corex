@@ -344,6 +344,7 @@ defmodule E2eWeb.Router do
     get("/file-upload/style", PageController, :file_upload_styling_page)
     get("/file-upload/form", PageController, :file_upload_form_page)
     post("/file-upload/form", PageController, :file_upload_form_submit)
+    get("/file-upload-live/style", PageController, :file_upload_live_styling_page)
     get("/floating-panel/anatomy", PageController, :floating_panel_page)
     get("/floating-panel/style", PageController, :floating_panel_styling_page)
     get("/listbox/anatomy", PageController, :listbox_page)

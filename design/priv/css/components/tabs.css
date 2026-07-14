@@ -108,6 +108,40 @@
  @apply ui-item;
  width: fit-content;
  max-width: none;
+ border-radius: var(--ctl-radius, var(--radius-none));
+ }
+
+ .tabs.ui-solid [data-scope="tabs"][data-part="trigger"]:not([data-selected]) {
+ background-color: var(--color-ui);
+ color: var(--ctl-ink-text, var(--color-ink));
+ border-color: var(--color-border);
+ }
+
+ .tabs.ui-solid [data-scope="tabs"][data-part="trigger"]:not([data-selected]):hover {
+ background-color: var(--color-ui-hover);
+ }
+
+ .tabs.ui-solid [data-scope="tabs"][data-part="trigger"]:not([data-selected]):active {
+ background-color: var(--color-ui-active);
+ }
+
+ .tabs.ui-solid [data-scope="tabs"][data-part="trigger"][data-selected] {
+ background-color: var(--ctl-fill, var(--color-ui-active));
+ color: var(--ctl-fill-ink, var(--color-ink));
+ border-color: transparent;
+ }
+
+ .tabs.ui-solid [data-scope="tabs"][data-part="trigger"][data-selected]:hover {
+ background-color: var(--ctl-fill-hover, var(--color-ui-hover));
+ }
+
+ .tabs.ui-solid [data-scope="tabs"][data-part="trigger"][data-selected]:active {
+ background-color: var(--ctl-fill-active, var(--color-ui-active));
+ }
+
+ .tabs.ui-solid [data-scope="tabs"][data-part="trigger"][data-selected]:focus-visible {
+ box-shadow: inset 0 0 0 2px var(--ctl-fill-ink, var(--color-ink));
+ outline: none;
  }
 
  .tabs

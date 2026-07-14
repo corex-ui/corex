@@ -28,9 +28,6 @@
  background-origin: content-box;
  background-attachment: local;
  background-position: 0 0;
- --code-fill: var(--color-ui);
- --code-ink: var(--color-ink);
- --code-ink-text: var(--color-ink);
 
  & code[data-part="content"] {
  padding-inline-end: var(--spacing-space-xl);
@@ -53,9 +50,6 @@
  border: 1px solid var(--color-border);
  border-radius: var(--radius-md);
  user-select: all;
- --code-fill: var(--color-ui);
- --code-ink: var(--color-ink);
- --code-ink-text: var(--color-ink);
  }
 
  code.code > span[data-part="content"] {
@@ -135,7 +129,7 @@
  [data-mode="dark"] .code .k, [data-mode="dark"] .code .kd, [data-mode="dark"] .code .kr, [data-mode="dark"] .code .kc, [data-mode="dark"] .code .kn, [data-mode="dark"] .code .kp { color: #569cd6; font-weight: bold; }
  [data-mode="dark"] .code .kt { color: #4ec9b0; }
  [data-mode="dark"] .code .m, [data-mode="dark"] .code .mb, [data-mode="dark"] .code .mf, [data-mode="dark"] .code .mh, [data-mode="dark"] .code .mi, [data-mode="dark"] .code .mo { color: #b5cea8; }
- [data-mode="dark"] .code .na { color: #9cdcfe; }
+ [data-mode="dark"] .code .na { color: #f48771; }
  [data-mode="dark"] .code .nb { color: #4ec9b0; }
  [data-mode="dark"] .code .nc, [data-mode="dark"] .code .nn { color: #4ec9b0; font-weight: bold; }
  [data-mode="dark"] .code .nd { color: #c586c0; }
@@ -144,14 +138,14 @@
  [data-mode="dark"] .code .ni { color: #808080; font-weight: bold; }
  [data-mode="dark"] .code .nl { color: #c8c8c8; }
  [data-mode="dark"] .code .no { color: #4fc1ff; }
- [data-mode="dark"] .code .nt { color: #569cd6; font-weight: bold; }
+ [data-mode="dark"] .code .nt { color: #ce9178; font-weight: bold; }
  [data-mode="dark"] .code .nv, [data-mode="dark"] .code .vc, [data-mode="dark"] .code .vg, [data-mode="dark"] .code .vi, [data-mode="dark"] .code .vm { color: #9cdcfe; }
  [data-mode="dark"] .code .o { color: #d4d4d4; }
  [data-mode="dark"] .code .ow { color: #569cd6; font-weight: bold; }
  [data-mode="dark"] .code .s, [data-mode="dark"] .code .s1, [data-mode="dark"] .code .s2, [data-mode="dark"] .code .sa, [data-mode="dark"] .code .sb, [data-mode="dark"] .code .sc, [data-mode="dark"] .code .sh, [data-mode="dark"] .code .sx { color: #ce9178; }
  [data-mode="dark"] .code .sd { color: #ce9178; font-style: italic; }
- [data-mode="dark"] .code .se { color: #d7ba7d; font-weight: bold; }
- [data-mode="dark"] .code .si { color: #d7ba7d; font-weight: bold; }
+ [data-mode="dark"] .code .se { color: #f48771; font-weight: bold; }
+ [data-mode="dark"] .code .si { color: #d16969; font-weight: bold; }
  [data-mode="dark"] .code .sr { color: #d16969; }
  [data-mode="dark"] .code .ss { color: #9cdcfe; }
 }

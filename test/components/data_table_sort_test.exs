@@ -148,6 +148,36 @@ defmodule Corex.DataTable.SortTest do
     end
   end
 
+  describe "handle_sort_for/3" do
+    test "isolates sort state per table id" do
+      socket =
+        %Phoenix.LiveView.Socket{}
+        |> assign(:data_table_sort, %{})
+        |> Sort.handle_sort_for(%{"sort_by" => "name", "table_id" => "a"},
+          sort_columns: [:id, :name]
+        )
+        |> Sort.handle_sort_for(%{"sort_by" => "id", "table_id" => "b"},
+          sort_columns: [:id, :name]
+        )
+
+      assert Sort.sort_state(socket, "a") == %{sort_by: :name, sort_order: :asc}
+      assert Sort.sort_state(socket, "b") == %{sort_by: :id, sort_order: :asc}
+
+      socket =
+        Sort.handle_sort_for(socket, %{"sort_by" => "name", "table_id" => "a"},
+          sort_columns: [:id, :name]
+        )
+
+      assert Sort.sort_state(socket, "a") == %{sort_by: :name, sort_order: :desc}
+      assert Sort.sort_state(socket, "b") == %{sort_by: :id, sort_order: :asc}
+    end
+
+    test "sorted_rows/2 applies per-table state" do
+      state = %{sort_by: :name, sort_order: :asc}
+      assert Enum.map(Sort.sorted_rows(rows(), state), & &1.name) == ["a", "b"]
+    end
+  end
+
   describe "parse_sort_by/2" do
     test "rejects when sort_columns is nil" do
       assert Sort.parse_sort_by("id", nil) == :error

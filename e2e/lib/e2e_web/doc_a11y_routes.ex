@@ -109,6 +109,7 @@ defmodule E2eWeb.DocA11yRoutes do
     {"/en/file-upload-live/playground", "#file-upload-live-playground"},
     {"/en/file-upload-live/anatomy", "#file-upload-live-anatomy-page"},
     {"/en/file-upload-live/form", "#file-upload-form-live-page"},
+    {"/en/file-upload-live/style", "#file-upload-live-styling-page"},
     {"/en/floating-panel/playground", "#floating-panel-play-page"},
     {"/en/floating-panel/anatomy", "#floating-panel-anatomy-page"},
     {"/en/floating-panel/api", "#floating-panel-api-page"},

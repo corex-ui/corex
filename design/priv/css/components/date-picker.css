@@ -41,9 +41,9 @@
  padding: 0;
  width: fit-content;
  overflow: hidden;
- gap: var(--spacing-space);
+ gap: 0;
  justify-content: flex-start;
- border-radius: var(--radius-md);
+ border-radius: var(--ctl-radius, var(--radius-md));
  }
 
  .date-picker [data-scope="date-picker"][data-part="trigger"] {
@@ -52,9 +52,16 @@
  padding: 0;
  aspect-ratio: 1 / 1;
  width: auto;
- min-height: var(--spacing-size);
- max-height: var(--spacing-size);
+ min-width: var(--ctl-size, var(--spacing-size));
+ min-height: var(--ctl-size, var(--spacing-size));
+ max-height: var(--ctl-size, var(--spacing-size));
  position: relative;
+ border-inline-start: none;
+ border-start-start-radius: 0;
+ border-end-start-radius: 0;
+ border-start-end-radius: var(--ctl-radius, var(--radius-md));
+ border-end-end-radius: var(--ctl-radius, var(--radius-md));
+ flex-shrink: 0;
  }
 
  
@@ -65,6 +72,20 @@
  max-width: calc(var(--spacing-size) * 3);
  min-width: 0;
  flex: 0 0 auto;
+ }
+
+ .date-picker
+ [data-scope="date-picker"][data-part="control"]
+ > [data-scope="date-picker"][data-part="input"] {
+ border-start-end-radius: 0;
+ border-end-end-radius: 0;
+ }
+
+ .date-picker
+ .date-picker__control-inputs--range
+ [data-scope="date-picker"][data-part="input"]:last-of-type {
+ border-start-end-radius: 0;
+ border-end-end-radius: 0;
  }
 
  .date-picker .date-picker__control-inputs--range {
@@ -113,6 +134,19 @@
  z-index: 30;
  box-sizing: border-box;
  overflow: hidden;
+ --ctl-bg: var(--color-ui);
+ --ctl-ink: var(--color-ink);
+ --ctl-bd: var(--color-border);
+ --ctl-bg-hover: var(--color-ui-hover);
+ --ctl-bg-active: var(--color-ui-active);
+ --ctl-ring: var(--color-ink);
+ --ctl-bg-muted: var(--color-ui-muted);
+ --ctl-ink-muted: var(--color-ink-muted);
+ --ctl-sel-bg: var(--ctl-fill, var(--color-ui-active));
+ --ctl-sel-ink: var(--ctl-fill-ink, var(--color-ink));
+ --ctl-sel-bg-hover: var(--ctl-fill-hover, var(--color-ui-hover));
+ --ctl-sel-bg-active: var(--ctl-fill-active, var(--color-ui-active));
+ --ctl-sel-ring: var(--ctl-fill-ink, var(--color-ink));
  }
 
  .date-picker [data-scope="date-picker"][data-part="day-view"],
@@ -199,6 +233,31 @@
  overflow: hidden;
  text-overflow: ellipsis;
  white-space: nowrap;
+ color: var(--color-ink);
+ background-color: transparent;
+ border-color: transparent;
+ }
+
+ .date-picker
+ [data-scope="date-picker"][data-part="table-cell-trigger"]:hover {
+ background-color: var(--color-ui-hover);
+ color: var(--color-ink);
+ }
+
+ .date-picker
+ [data-scope="date-picker"][data-part="table-cell-trigger"][data-selected],
+ .date-picker
+ [data-scope="date-picker"][data-part="table-cell-trigger"][data-in-range] {
+ background-color: var(--ctl-fill, var(--color-ui-active));
+ color: var(--ctl-fill-ink, var(--color-ink));
+ }
+
+ .date-picker
+ [data-scope="date-picker"][data-part="table-cell-trigger"][data-selected]:hover,
+ .date-picker
+ [data-scope="date-picker"][data-part="table-cell-trigger"][data-in-range]:hover {
+ background-color: var(--ctl-fill-hover, var(--color-ui-hover));
+ color: var(--ctl-fill-ink, var(--color-ink));
  }
 
  .date-picker
@@ -222,6 +281,7 @@
  text-decoration: underline;
  text-underline-offset: calc(var(--spacing-space) * 0.85);
  position: relative;
+ color: var(--ctl-ink-text, var(--color-ink));
  }
 
  .date-picker

@@ -127,6 +127,8 @@ defmodule Corex.Editable do
 
   Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
+  Host width utilities (`w-*`, `max-w-*`, `w-full`) set the track the field fills. Preview and input share that width so entering edit mode stays stable (same pattern as clipboard).
+
   Semantic modifiers set palette variables on the input, preview, and edit trigger. Variant modifiers control field surface treatment. Default is subtle; add `editable ui-solid` for a filled field. Cancel and submit triggers keep their alert and success styling.
 
   <!-- tabs-open -->

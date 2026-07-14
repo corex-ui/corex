@@ -62,7 +62,40 @@
  min-height: var(--spacing-size-md);
  padding-inline: var(--spacing-space-sm);
  justify-content: center;
- border-radius: var(--radius-md);
+ border-radius: var(--ctl-radius, var(--radius-md));
+ }
+
+ .pagination.ui-solid [data-scope="pagination"][data-part="item"]:not([data-selected]) {
+ background-color: var(--color-ui);
+ color: var(--ctl-ink-text, var(--color-ink));
+ border-color: var(--color-border);
+ }
+
+ .pagination.ui-solid [data-scope="pagination"][data-part="item"]:not([data-selected]):hover {
+ background-color: var(--color-ui-hover);
+ }
+
+ .pagination.ui-solid [data-scope="pagination"][data-part="item"]:not([data-selected]):active {
+ background-color: var(--color-ui-active);
+ }
+
+ .pagination.ui-solid [data-scope="pagination"][data-part="item"][data-selected] {
+ background-color: var(--ctl-fill, var(--color-ui-active));
+ color: var(--ctl-fill-ink, var(--color-ink));
+ border-color: transparent;
+ }
+
+ .pagination.ui-solid [data-scope="pagination"][data-part="item"][data-selected]:hover {
+ background-color: var(--ctl-fill-hover, var(--color-ui-hover));
+ }
+
+ .pagination.ui-solid [data-scope="pagination"][data-part="item"][data-selected]:active {
+ background-color: var(--ctl-fill-active, var(--color-ui-active));
+ }
+
+ .pagination.ui-solid [data-scope="pagination"][data-part="item"][data-selected]:focus-visible {
+ box-shadow: inset 0 0 0 2px var(--ctl-fill-ink, var(--color-ink));
+ outline: none;
  }
 
  .pagination [data-scope="pagination"][data-part="ellipsis"] {

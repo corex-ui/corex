@@ -19,7 +19,7 @@ defmodule E2eWeb.DocPageMatrix do
     dialog: [:anatomy, :api, :events, :patterns],
     editable: [:anatomy, :api, :events],
     file_upload: [:anatomy, :api, :events, :style],
-    file_upload_live: [:anatomy, :form, :playground],
+    file_upload_live: [:anatomy, :form, :playground, :style],
     floating_panel: [:anatomy, :api, :events, :style],
     layout_heading: [:anatomy, :style],
     listbox: [:anatomy, :api, :events, :patterns],

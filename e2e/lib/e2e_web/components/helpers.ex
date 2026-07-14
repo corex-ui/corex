@@ -397,7 +397,8 @@ defmodule E2eWeb.Helpers do
           api: false,
           event: false,
           pattern: false,
-          style: false,
+          style: true,
+          style_to: ~p"/file-upload-live/style",
           forms: [
             doc_form_menu_item(~t"Live Form", ~p"/file-upload-live/form")
           ]

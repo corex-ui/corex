@@ -8,7 +8,7 @@
  max-width: var(--container-md);
  overflow: hidden;
  border: 1px solid var(--color-border);
- border-radius: var(--radius-md);
+ border-radius: var(--ctl-radius, var(--radius-md));
  background-color: var(--color-border);
  color: var(--color-ink);
  }
@@ -23,7 +23,7 @@
  line-height: var(--text-base--line-height);
  background-color: var(--color-border);
  color: var(--color-ink);
- border-radius: var(--radius-md);
+ border-radius: var(--ctl-radius, var(--radius-md));
  overflow: auto;
  gap: 1px;
  }
@@ -48,9 +48,11 @@
  gap: var(--spacing-space);
  background-color: var(--color-layer);
  color: var(--color-ink);
- --data-list-fill: var(--color-ui);
- --data-list-ink: var(--color-ink);
- --data-list-ink-text: var(--color-ink);
+ }
+
+ .data-list.ui-solid [data-scope="data-list"][data-part="item"] {
+ background-color: var(--ctl-bg, var(--ctl-fill, var(--color-ui-active)));
+ color: var(--ctl-ink, var(--ctl-fill-ink, var(--color-ink)));
  }
 
  .data-list
@@ -67,6 +69,11 @@
  flex-shrink: 0;
  gap: var(--spacing-space);
  width: 100%;
+ color: var(--ctl-ink-text, var(--color-ink));
+ }
+
+ .data-list.ui-solid [data-scope="data-list"][data-part="label"] {
+ color: var(--ctl-ink, var(--ctl-fill-ink, var(--color-ink)));
  }
 
  .data-list [data-scope="data-list"][data-part="label"] .icon,
@@ -88,6 +95,11 @@
  margin: 0;
  min-width: 0;
  flex: 1 1 auto;
+ color: var(--color-ink);
+ }
+
+ .data-list.ui-solid [data-scope="data-list"][data-part="content"] {
+ color: var(--ctl-ink, var(--ctl-fill-ink, var(--color-ink)));
  }
 
  .data-list
