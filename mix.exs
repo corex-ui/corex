@@ -71,7 +71,8 @@ defmodule Corex.MixProject do
       {:excoveralls, "~> 0.18", only: :test},
       {:bandit, "~> 1.0", only: :dev},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
-      {:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false}
+      {:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false},
+      {:tidewave, "~> 0.5.5", only: :dev}
     ]
   end
 
