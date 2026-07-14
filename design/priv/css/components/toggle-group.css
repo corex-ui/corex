@@ -33,6 +33,39 @@
  gap: var(--spacing-space-sm);
  }
 
+ .toggle-group.ui-solid [data-scope="toggle-group"][data-part="item"][data-state="off"] {
+ background-color: var(--color-ui);
+ color: var(--ctl-ink-text, var(--color-ink));
+ border-color: var(--color-border);
+ }
+
+ .toggle-group.ui-solid [data-scope="toggle-group"][data-part="item"][data-state="off"]:hover {
+ background-color: var(--color-ui-hover);
+ }
+
+ .toggle-group.ui-solid [data-scope="toggle-group"][data-part="item"][data-state="off"]:active {
+ background-color: var(--color-ui-active);
+ }
+
+ .toggle-group.ui-solid [data-scope="toggle-group"][data-part="item"][data-state="on"] {
+ background-color: var(--ctl-fill, var(--color-ui-active));
+ color: var(--ctl-fill-ink, var(--color-ink));
+ border-color: transparent;
+ }
+
+ .toggle-group.ui-solid [data-scope="toggle-group"][data-part="item"][data-state="on"]:hover {
+ background-color: var(--ctl-fill-hover, var(--color-ui-hover));
+ }
+
+ .toggle-group.ui-solid [data-scope="toggle-group"][data-part="item"][data-state="on"]:active {
+ background-color: var(--ctl-fill-active, var(--color-ui-active));
+ }
+
+ .toggle-group.ui-solid [data-scope="toggle-group"][data-part="item"][data-state="on"]:focus-visible {
+ box-shadow: inset 0 0 0 2px var(--ctl-fill-ink, var(--color-ink));
+ outline: none;
+ }
+
  .toggle-group [data-scope="toggle-group"][data-part="item"][data-state="on"] .icon.state-on {
  display: block !important;
  }
