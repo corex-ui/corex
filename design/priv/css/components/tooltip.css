@@ -3,11 +3,6 @@
 @layer components {
  .tooltip {
  position: relative;
- z-index: 20;
- }
-
- .tooltip:has([data-scope="tooltip"][data-part="content"][data-state="open"]) {
- z-index: 50;
  }
 
  .tooltip[data-loading] > * {
