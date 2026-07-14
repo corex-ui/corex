@@ -276,16 +276,11 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     <.angle_slider class="angle-slider ui-solid" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
       <:label>Solid</:label>
     </.angle_slider>
-    <.angle_slider class="angle-slider" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
-    </.angle_slider>
-    <.angle_slider class="angle-slider" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
-    </.angle_slider>
+
     """
   end
 
   def styling_variant_example(assigns) do
-    _ = assigns
-
     ~H"""
     <div class="flex flex-wrap gap-4">
       <.angle_slider

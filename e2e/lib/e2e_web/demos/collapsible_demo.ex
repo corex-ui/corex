@@ -405,18 +405,11 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
       <:trigger>Solid</:trigger>
       <:content>Content</:content>
     </.collapsible>
-    <.collapsible class="collapsible ui-size-md">
-      <:content>Content</:content>
-    </.collapsible>
-    <.collapsible class="collapsible ui-size-md">
-      <:content>Content</:content>
-    </.collapsible>
+
     """
   end
 
   def styling_variant_example(assigns) do
-    _ = assigns
-
     ~H"""
     <div class="flex flex-col gap-4 items-start w-full max-w-xl">
       <.collapsible id="collapsible-style-variant-subtle" class="collapsible ui-size-md">

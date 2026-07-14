@@ -352,9 +352,7 @@ defmodule E2eWeb.DemoPage do
     default:
       "tabs w-full max-w-none [&>[data-scope=tabs][data-part=root]>[data-scope=tabs][data-part=list]]:place-self-end"
 
-  attr :tabs_shell_class, :string,
-    default:
-      "w-full [&_[data-scope=tabs][data-part=content]_pre.code]:border-0 [&_[data-scope=tabs][data-part=content]_pre.code]:rounded-none [&_[data-scope=tabs][data-part=content]_pre.code]:shadow-none"
+  attr :tabs_shell_class, :string, default: "w-full"
 
   attr :preview_class, :string,
     default: "flex flex-col items-center justify-center py-space-xl p-space bg-root gap-space"

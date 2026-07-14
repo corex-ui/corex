@@ -64,16 +64,11 @@ defmodule E2eWeb.Demos.SwitchDemo do
     <.switch class="switch ui-solid" checked>
       <:label>Solid</:label>
     </.switch>
-    <.switch class="switch" checked>
-    </.switch>
-    <.switch class="switch" checked>
-    </.switch>
+
     """
   end
 
   def styling_variant_example(assigns) do
-    _ = assigns
-
     ~H"""
     <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
       <.switch id="switch-style-variant-subtle" class="switch" checked>

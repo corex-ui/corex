@@ -58,8 +58,8 @@
  .pin-input [data-scope="pin-input"][data-part="input"] {
  @apply ui-input;
 
- height: var(--spacing-size);
- width: var(--spacing-size);
+ height: var(--ctl-size, var(--spacing-size));
+ width: var(--ctl-size, var(--spacing-size));
  flex-shrink: 0;
  text-align: center;
  padding-inline: 0;

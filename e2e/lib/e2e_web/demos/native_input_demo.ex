@@ -567,16 +567,11 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     <.native_input type="text" name="user[name]" class="native-input ui-solid">
       <:label>Solid</:label>
     </.native_input>
-    <.native_input type="text" name="user[name]" class="native-input">
-    </.native_input>
-    <.native_input type="text" name="user[name]" class="native-input">
-    </.native_input>
+
     """
   end
 
   def styling_variant_example(assigns) do
-    _ = assigns
-
     ~H"""
     <div class="flex flex-col gap-4 max-w-md">
       <.native_input

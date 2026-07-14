@@ -50,9 +50,11 @@
 
  flex-shrink: 0;
  margin-inline-start: auto;
- height: calc(var(--spacing-size) * 0.6);
- width: calc(var(--spacing-size) * 0.6);
- padding: calc(var(--spacing-space) * 0.25);
+ min-height: unset;
+ min-width: unset;
+ height: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ width: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ padding: calc(var(--ctl-space, var(--spacing-space)) * 0.25);
 
  &:disabled,
  &[data-disabled],

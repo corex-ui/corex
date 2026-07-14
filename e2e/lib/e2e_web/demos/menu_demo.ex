@@ -759,12 +759,7 @@ defmodule E2eWeb.Demos.MenuDemo do
       <:trigger>Solid</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
-    <.menu class="menu" value="menu" #{items}>
-      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
-    </.menu>
-    <.menu class="menu" value="menu" #{items}>
-      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
-    </.menu>
+
     """
   end
 

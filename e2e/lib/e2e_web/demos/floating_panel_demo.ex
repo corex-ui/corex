@@ -761,16 +761,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
       #{styling_panel_controls_code()}
       <:content><p>Drag, resize, and minimize this panel while you work.</p></:content>
     </.floating_panel>
-    <.floating_panel class="floating-panel">
-      <:title>Notes</:title>
-      #{styling_panel_controls_code()}
-      <:content><p>Drag, resize, and minimize this panel while you work.</p></:content>
-    </.floating_panel>
-    <.floating_panel class="floating-panel">
-      <:title>Notes</:title>
-      #{styling_panel_controls_code()}
-      <:content><p>Drag, resize, and minimize this panel while you work.</p></:content>
-    </.floating_panel>
+
     """
   end
 

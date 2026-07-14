@@ -184,12 +184,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       <:label>Solid</:label>
     #{triggers}
     </.number_input>
-    <.number_input class="number-input" value="1">
-    #{triggers}
-    </.number_input>
-    <.number_input class="number-input" value="1">
-    #{triggers}
-    </.number_input>
+
     """
   end
 

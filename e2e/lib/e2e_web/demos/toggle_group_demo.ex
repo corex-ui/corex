@@ -442,22 +442,11 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
       <:item value="duis">Duis</:item>
       <:item value="donec">Donec</:item>
     </.toggle_group>
-    <.toggle_group class="toggle-group" value={["lorem"]}>
-      <:item value="lorem">Lorem</:item>
-      <:item value="duis">Duis</:item>
-      <:item value="donec">Donec</:item>
-    </.toggle_group>
-    <.toggle_group class="toggle-group" value={["lorem"]}>
-      <:item value="lorem">Lorem</:item>
-      <:item value="duis">Duis</:item>
-      <:item value="donec">Donec</:item>
-    </.toggle_group>
+
     """
   end
 
   def styling_variant_example(assigns) do
-    _ = assigns
-
     ~H"""
     <div class="flex flex-col gap-6 w-full max-w-4xl">
       <.toggle_group id="tg-style-variant-subtle" class="toggle-group" value={["lorem"]}>

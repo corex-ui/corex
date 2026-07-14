@@ -61,6 +61,28 @@ defmodule Corex.Design.Emit.Semantic do
   end
 
   @doc false
+  def write_border_bridge!(output_root) do
+    static = [
+      "  --radius-none: 0px;",
+      "  --radius-full: 9999px;"
+    ]
+
+    themed =
+      Scales.steps(:radius)
+      |> Enum.reject(&(&1 in ~w(none full)))
+      |> Enum.map(fn step ->
+        "  --radius-#{step}: var(--theme-radius-#{step});"
+      end)
+
+    path = Path.join([output_root, "tokens", "semantic", "border.css"])
+
+    Write.atomic!(
+      path,
+      @header <> "@theme inline {\n" <> Enum.join(static ++ themed, "\n") <> "\n}\n"
+    )
+  end
+
+  @doc false
   def write_dimension_bridge!(output_root) do
     static =
       [

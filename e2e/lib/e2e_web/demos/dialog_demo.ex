@@ -580,18 +580,7 @@ defmodule E2eWeb.Demos.DialogDemo do
       <:content><p>#{style_dialog_body()}</p></:content>
       <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
     </.dialog>
-    <.dialog class="dialog" modal>
-      <:title>#{style_dialog_title()}</:title>
-      <:description>#{style_dialog_description()}</:description>
-      <:content><p>#{style_dialog_body()}</p></:content>
-      <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
-    </.dialog>
-    <.dialog class="dialog" modal>
-      <:title>#{style_dialog_title()}</:title>
-      <:description>#{style_dialog_description()}</:description>
-      <:content><p>#{style_dialog_body()}</p></:content>
-      <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
-    </.dialog>
+
     """
   end
 

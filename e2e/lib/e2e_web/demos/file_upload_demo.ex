@@ -888,12 +888,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       <:label>Solid</:label>
     #{close}
     </.file_upload>
-    <.file_upload name="document" class="file-upload">
-    #{close}
-    </.file_upload>
-    <.file_upload name="document" class="file-upload">
-    #{close}
-    </.file_upload>
+
     """
   end
 

@@ -26,7 +26,7 @@
  height: var(--ctl-size, var(--spacing-size));
  aspect-ratio: 1 / 1;
  max-width: 100%;
- border-radius: var(--radius-full);
+ border-radius: var(--ctl-radius, var(--radius-full));
  overflow: hidden;
  }
 

@@ -964,20 +964,11 @@ defmodule E2eWeb.Demos.SignatureDemo do
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
     </.signature_pad>
-    <.signature_pad class="signature-pad" drawing_fill="var(--color-ink)">
-      <:label>Sign here</:label>
-      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
-    </.signature_pad>
-    <.signature_pad class="signature-pad" drawing_fill="var(--color-ink)">
-      <:label>Sign here</:label>
-      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
-    </.signature_pad>
+
     """
   end
 
   def styling_variant_example(assigns) do
-    _ = assigns
-
     ~H"""
     <div class="flex flex-col gap-4 items-start w-full max-w-xl">
       <.signature_pad

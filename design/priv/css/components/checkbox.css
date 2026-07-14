@@ -104,9 +104,10 @@
  .checkbox [data-scope="checkbox"][data-part="control"] {
  @apply ui-trigger ui-trigger--square;
 
- height: calc(var(--spacing-size) * 0.6);
- width: calc(var(--spacing-size) * 0.6);
- padding: var(--spacing-space);
+ min-height: unset;
+ min-width: unset;
+ height: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ width: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
 
  &:disabled,
  &[data-disabled],

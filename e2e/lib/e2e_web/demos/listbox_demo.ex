@@ -829,12 +829,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       <:label>Solid</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
-    <.listbox class="listbox" #{items} #{value}>
-      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
-    </.listbox>
-    <.listbox class="listbox" #{items} #{value}>
-      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
-    </.listbox>
+
     """
   end
 

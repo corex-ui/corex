@@ -1043,18 +1043,11 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     <.tags_input class="tags-input w-full ui-solid" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
-    <.tags_input class="tags-input w-full" value={["lorem", "duis", "donec"]}>
-      <:close><.heroicon name="hero-x-mark" /></:close>
-    </.tags_input>
-    <.tags_input class="tags-input w-full" value={["lorem", "duis", "donec"]}>
-      <:close><.heroicon name="hero-x-mark" /></:close>
-    </.tags_input>
+
     """
   end
 
   def styling_variant_example(assigns) do
-    assigns = assign(assigns, :demo_tags, styling_tags_value())
-
     ~H"""
     <div class="flex flex-col gap-space-lg w-full items-center">
       <.tags_input id="tags-style-variant-subtle" class="tags-input w-full" value={@demo_tags}>

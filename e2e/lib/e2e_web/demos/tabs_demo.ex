@@ -459,8 +459,6 @@ defmodule E2eWeb.Demos.TabsDemo do
   end
 
   def styling_variant_example(assigns) do
-    _ = assigns
-
     ~H"""
     <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
       <.tabs

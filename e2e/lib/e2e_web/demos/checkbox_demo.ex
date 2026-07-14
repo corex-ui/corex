@@ -228,28 +228,11 @@ defmodule E2eWeb.Demos.CheckboxDemo do
         <.heroicon name="hero-minus" />
       </:indeterminate>
     </.checkbox>
-    <.checkbox class="checkbox" checked>
-      <:indicator>
-        <.heroicon name="hero-check" />
-      </:indicator>
-      <:indeterminate>
-        <.heroicon name="hero-minus" />
-      </:indeterminate>
-    </.checkbox>
-    <.checkbox class="checkbox" checked>
-      <:indicator>
-        <.heroicon name="hero-check" />
-      </:indicator>
-      <:indeterminate>
-        <.heroicon name="hero-minus" />
-      </:indeterminate>
-    </.checkbox>
+
     """
   end
 
   def styling_variant_example(assigns) do
-    _ = assigns
-
     ~H"""
     <div class="flex flex-wrap gap-6 items-start">
       <.checkbox id="checkbox-style-variant-subtle" class="checkbox" checked>
@@ -352,7 +335,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def styling_size_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start">
+    <div class="flex flex-wrap gap-6 items-end">
       <.checkbox id="checkbox-style-sm" class="checkbox ui-size-sm">
         <:label>Small</:label>
         <:indicator>

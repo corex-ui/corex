@@ -132,8 +132,6 @@ defmodule E2eWeb.Demos.ToggleDemo do
   end
 
   def styling_variant_example(assigns) do
-    _ = assigns
-
     ~H"""
     <div class="flex flex-wrap gap-4 items-center w-full max-w-4xl">
       <.toggle id="toggle-style-variant-subtle" class="toggle">Subtle (default)</.toggle>

@@ -154,8 +154,6 @@ defmodule E2eWeb.Demos.NavigateDemo do
   end
 
   def styling_variant_example(assigns) do
-    _ = assigns
-
     ~H"""
     <div class="flex flex-wrap items-center gap-space gap-2">
       <.navigate id="navigate-style-variant-subtle" class="link" to="#">Subtle (default)</.navigate>

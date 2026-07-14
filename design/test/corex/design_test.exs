@@ -246,6 +246,31 @@ defmodule Corex.Design.ScalesTest do
     border = Path.join(output, "tokens/themes/neo/border.css")
     assert File.read!(border) =~ "--theme-radius-md: 0.625rem;"
   end
+
+  test "semantic border bridge emits runtime radius tokens" do
+    original = CorexDesign.TestConfig.snapshot()
+    on_exit(fn -> CorexDesign.TestConfig.restore(original) end)
+
+    CorexDesign.TestConfig.put(
+      output: "_build/test_border_bridge",
+      default_theme: :neo,
+      default_mode: :light,
+      themes: nil
+    )
+
+    output = Path.expand("_build/test_border_bridge", File.cwd!())
+    File.rm_rf!(output)
+
+    Mix.Task.reenable("corex.design.build")
+    Mix.Task.run("corex.design.build", ["--output", output])
+
+    border = Path.join(output, "tokens/semantic/border.css")
+    css = File.read!(border)
+
+    assert css =~ "--radius-full: 9999px;"
+    assert css =~ "--radius-md: var(--theme-radius-md);"
+    assert css =~ "--radius-none: 0px;"
+  end
 end
 
 defmodule Corex.Design.ComponentLayoutTest do

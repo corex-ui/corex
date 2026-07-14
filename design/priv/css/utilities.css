@@ -326,6 +326,8 @@
   padding: 0;
   justify-content: center;
   width: auto;
+  border-radius: var(--radius-sm);
+  --ctl-radius: var(--radius-sm);
 }
 
 @utility ui-trigger--circle {

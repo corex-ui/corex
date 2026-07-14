@@ -76,31 +76,31 @@
  @apply ui-trigger ui-trigger--square;
 
  flex: 0 0 auto;
- width: calc(var(--spacing-size) * 0.6);
- min-width: calc(var(--spacing-size) * 0.6);
- max-width: calc(var(--spacing-size) * 0.6);
- min-height: calc(var(--spacing-size) * 0.6);
- max-height: calc(var(--spacing-size) * 0.6);
+ width: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ min-width: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ max-width: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ min-height: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ max-height: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
  }
  .editable [data-scope="editable"][data-part="cancel-trigger"] {
  @apply ui-trigger ui-trigger--square;
 
  flex: 0 0 auto;
- width: calc(var(--spacing-size) * 0.6);
- min-width: calc(var(--spacing-size) * 0.6);
- max-width: calc(var(--spacing-size) * 0.6);
- min-height: calc(var(--spacing-size) * 0.6);
- max-height: calc(var(--spacing-size) * 0.6);
+ width: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ min-width: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ max-width: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ min-height: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ max-height: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
  }
  .editable [data-scope="editable"][data-part="submit-trigger"] {
  @apply ui-trigger ui-trigger--square;
 
  flex: 0 0 auto;
- width: calc(var(--spacing-size) * 0.6);
- min-width: calc(var(--spacing-size) * 0.6);
- max-width: calc(var(--spacing-size) * 0.6);
- min-height: calc(var(--spacing-size) * 0.6);
- max-height: calc(var(--spacing-size) * 0.6);
+ width: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ min-width: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ max-width: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ min-height: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ max-height: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
  }
 
  .editable [data-scope="editable"][data-part="edit-trigger"]:not([hidden]) {

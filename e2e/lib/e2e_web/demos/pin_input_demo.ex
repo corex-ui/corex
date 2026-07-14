@@ -813,10 +813,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
     <.pin_input count={4} class="pin-input ui-solid" value={["1", "2", "", ""]}>
       <:label>Solid</:label>
     </.pin_input>
-    <.pin_input count={4} class="pin-input" value={["1", "2", "", ""]}>
-    </.pin_input>
-    <.pin_input count={4} class="pin-input" value={["1", "2", "", ""]}>
-    </.pin_input>
+
     """
   end
 

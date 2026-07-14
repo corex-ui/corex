@@ -1212,12 +1212,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       <:label>Solid</:label>
     #{icons}
     </.password_input>
-    <.password_input name="user[password]" class="password-input">
-    #{icons}
-    </.password_input>
-    <.password_input name="user[password]" class="password-input">
-    #{icons}
-    </.password_input>
+
     """
   end
 

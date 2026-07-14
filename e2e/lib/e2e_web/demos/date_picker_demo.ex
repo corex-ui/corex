@@ -1988,22 +1988,11 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
       <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     </.date_picker>
-    <.date_picker class="date-picker" value="2024-06-15">
-      <:trigger><.heroicon name="hero-calendar" /></:trigger>
-      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
-      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
-    </.date_picker>
-    <.date_picker class="date-picker" value="2024-06-15">
-      <:trigger><.heroicon name="hero-calendar" /></:trigger>
-      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
-      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
-    </.date_picker>
+
     """
   end
 
   def styling_variant_example(assigns) do
-    _ = assigns
-
     ~H"""
     <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
       <.date_picker id="date-picker-style-variant-subtle" class="date-picker" value="2024-06-15">

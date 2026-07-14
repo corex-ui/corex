@@ -6,8 +6,8 @@
  }
 
  .switch [data-scope="switch"][data-part="root"] {
- --switch-track-width: calc(var(--spacing-size) * 0.8);
- --switch-track-height: calc(var(--spacing-size) * 0.5 * 0.8);
+ --switch-track-width: calc(var(--ctl-size, var(--spacing-size)) * 0.8);
+ --switch-track-height: calc(var(--ctl-size, var(--spacing-size)) * 0.5 * 0.8);
  --switch-track-diff: calc(
  var(--switch-track-width) - var(--switch-track-height)
  );
@@ -17,8 +17,8 @@
  align-items: center;
  position: relative;
  width: fit-content;
- gap: var(--spacing-space);
- padding-inline-end: var(--spacing-space);
+ gap: var(--ctl-space, var(--spacing-space));
+ padding-inline-end: var(--ctl-space, var(--spacing-space));
  }
 
  .switch [data-scope="switch"][data-part="root"][data-readonly] {
@@ -33,7 +33,7 @@
  box-sizing: content-box;
  border-radius: var(--radius-4xl);
  border: 1px solid var(--color-border);
- padding: calc(var(--spacing-space) * 0.3);
+ padding: calc(var(--ctl-space, var(--spacing-space)) * 0.3);
  width: var(--switch-track-width);
  height: var(--switch-track-height);
  transition-property:

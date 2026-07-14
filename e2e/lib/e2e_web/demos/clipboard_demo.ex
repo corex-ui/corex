@@ -378,20 +378,11 @@ defmodule E2eWeb.Demos.ClipboardDemo do
       <:copy><.heroicon name="hero-clipboard" /></:copy>
       <:copied><.heroicon name="hero-check" /></:copied>
     </.clipboard>
-    <.clipboard class="clipboard" value="ghost@example.com">
-      <:copy><.heroicon name="hero-clipboard" /></:copy>
-      <:copied><.heroicon name="hero-check" /></:copied>
-    </.clipboard>
-    <.clipboard class="clipboard" value="outline@example.com">
-      <:copy><.heroicon name="hero-clipboard" /></:copy>
-      <:copied><.heroicon name="hero-check" /></:copied>
-    </.clipboard>
+
     """
   end
 
   def styling_variant_example(assigns) do
-    _ = assigns
-
     ~H"""
     <div class="flex flex-wrap gap-6 items-start">
       <.clipboard

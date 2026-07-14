@@ -39,10 +39,10 @@
  flex-wrap: wrap;
  align-items: center;
  gap: var(--spacing-space);
- min-height: var(--spacing-size);
- padding: var(--spacing-space);
+ min-height: var(--ctl-size, var(--spacing-size));
+ padding: var(--ctl-space, var(--spacing-space));
  border: 1px solid var(--color-border);
- border-radius: var(--radius-md);
+ border-radius: var(--ctl-radius, var(--radius-md));
  background: var(--color-layer);
  }
 
@@ -112,8 +112,8 @@
  .tags-input [data-scope="tags-input"][data-part="item-delete-trigger"] {
  @apply ui-trigger ui-trigger--square;
 
- min-height: calc(var(--spacing-size) * 0.6);
- min-width: calc(var(--spacing-size) * 0.6);
+ min-height: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ min-width: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
  }
 
  .tags-input [data-scope="tags-input"][data-part="item-input"][hidden] {

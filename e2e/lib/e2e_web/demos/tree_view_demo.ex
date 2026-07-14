@@ -465,12 +465,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     <.tree_view class="tree-view ui-solid max-w-xs" expanded_value={styling_expanded()} value={styling_value()} items={styling_items()}>
       <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
     </.tree_view>
-    <.tree_view class="tree-view max-w-xs" expanded_value={styling_expanded()} value={styling_value()} items={styling_items()}>
-      <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
-    </.tree_view>
-    <.tree_view class="tree-view max-w-xs" expanded_value={styling_expanded()} value={styling_value()} items={styling_items()}>
-      <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
-    </.tree_view>
+
     """
   end
 

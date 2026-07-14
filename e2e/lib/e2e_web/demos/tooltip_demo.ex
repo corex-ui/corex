@@ -640,8 +640,6 @@ defmodule E2eWeb.Demos.TooltipDemo do
   end
 
   def styling_variant_example(assigns) do
-    _ = assigns
-
     ~H"""
     <div class="flex flex-wrap gap-2">
       <.tooltip class="tooltip">
