@@ -114,7 +114,7 @@ defmodule E2eWeb.TetrexIndexLive do
                 <.player_name_cell row={row} />
               </:col>
               <:col :let={row} label={~t"Score"}>
-                <span class="font-display tabular-nums text-ink-accent">{row.score_label}</span>
+                <span class="font-display tabular-nums text-accent-text">{row.score_label}</span>
               </:col>
               <:col :let={row} label={~t"Ended"}>{row.ended_label}</:col>
               <:action :let={row}>

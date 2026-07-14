@@ -102,7 +102,7 @@
  }
 
  .toast [data-scope="toast"][data-part="root"][data-type="error"] [data-scope="toast"][data-part="title"] {
- color: var(--color-ink-alert);
+ color: var(--color-alert-text);
  }
 
  .toast [data-scope="toast"][data-part="root"][data-type="error"] [data-scope="toast"][data-part="progressbar"] {
@@ -112,7 +112,7 @@
  }
 
  .toast [data-scope="toast"][data-part="root"][data-type="info"] [data-scope="toast"][data-part="title"] {
- color: var(--color-ink-info);
+ color: var(--color-info-text);
  }
 
  .toast [data-scope="toast"][data-part="root"][data-type="info"] [data-scope="toast"][data-part="progressbar"] {
@@ -122,7 +122,7 @@
  }
 
  .toast [data-scope="toast"][data-part="root"][data-type="success"] [data-scope="toast"][data-part="title"] {
- color: var(--color-ink-success);
+ color: var(--color-success-text);
  }
 
  .toast [data-scope="toast"][data-part="root"][data-type="success"] [data-scope="toast"][data-part="progressbar"] {

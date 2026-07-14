@@ -39,7 +39,7 @@ defmodule E2eWeb.NavigatePlayLive do
           </.switch>
         </:controls>
         <:canvas>
-          <div class="flex flex-wrap items-center gap-space gap-2">
+          <div class="flex flex-wrap items-center gap-space">
             <.navigate
               to={if(@external, do: "https://example.com", else: "#")}
               class="link"

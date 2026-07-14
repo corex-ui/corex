@@ -430,7 +430,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
 
     ~H"""
     <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
-      <div class="grid grid-cols-4 gap-space gap-2 items-start min-w-max">
+      <div class="grid grid-cols-4 gap-space items-start min-w-max">
         <div :for={semantic <- @matrix_semantics} class="contents">
           <.clipboard
             :for={variant <- @matrix_variants}

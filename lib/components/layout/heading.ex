@@ -42,9 +42,9 @@ defmodule Corex.Layout.Heading do
 
   ## Style
 
-  Use `class="layout-heading"` on the host, plus optional `layout-heading--*` modifiers for semantic ink on the title and subtitle.
+  Use `class="layout-heading"` on the host, plus optional `ui-*` modifiers for semantic ink on the title and subtitle.
 
-  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text). No variant axis (typography layout only). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Size** (`ui-size-sm` … `ui-size-xl`). No variant axis (typography layout only). See the [modifier guide](modifiers.html).
 
   <!-- tabs-open -->
 

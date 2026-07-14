@@ -298,11 +298,11 @@ defmodule Corex.RadioGroup do
   @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.radio_group>`). Combine axes, for example `radio-group radio-group--accent radio-group--lg` or `radio-group radio-group--info radio-group--variant-solid`.
+  Stack modifiers on the host (`class` on `<.radio_group>`). Combine axes, for example `radio-group radio-group ui-accent radio-group ui-size-lg` or `radio-group radio-group ui-info radio-group ui-solid`.
 
-  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on item controls. Variant modifiers control surface treatment. Default is subtle: unchecked uses a neutral surface, checked uses selected with semantic ink text. Add `radio-group--variant-solid` for a filled checked state.
+  Semantic modifiers set palette variables on item controls. Variant modifiers control surface treatment. Default is subtle: unchecked uses a neutral surface, checked uses selected with semantic ink text. Add `radio-group ui-solid` for a filled checked state.
 
   <!-- tabs-open -->
 
@@ -313,11 +313,11 @@ defmodule Corex.RadioGroup do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `radio-group` |
-  | Accent | `radio-group radio-group--accent` |
-  | Brand | `radio-group radio-group--brand` |
-  | Alert | `radio-group radio-group--alert` |
-  | Info | `radio-group radio-group--info` |
-  | Success | `radio-group radio-group--success` |
+  | Accent | `radio-group radio-group ui-accent` |
+  | Brand | `radio-group radio-group ui-brand` |
+  | Alert | `radio-group radio-group ui-alert` |
+  | Info | `radio-group radio-group ui-info` |
+  | Success | `radio-group radio-group ui-success` |
 
   ### Variant
 
@@ -325,19 +325,17 @@ defmodule Corex.RadioGroup do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `radio-group` or `radio-group radio-group--accent` |
-  | Solid | `radio-group radio-group--accent radio-group--variant-solid` |
-  | Ghost | `radio-group radio-group--variant-ghost` |
-  | Outline | `radio-group radio-group--accent radio-group--variant-outline` |
+  | Subtle (default) | `radio-group` or `radio-group radio-group ui-accent` |
+  | Solid | `radio-group radio-group ui-accent radio-group ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `radio-group radio-group--sm` |
-  | MD | `radio-group radio-group--md` |
-  | LG | `radio-group radio-group--lg` |
-  | XL | `radio-group radio-group--xl` |
+  | SM | `radio-group radio-group ui-size-sm` |
+  | MD | `radio-group radio-group ui-size-md` |
+  | LG | `radio-group radio-group ui-size-lg` |
+  | XL | `radio-group radio-group ui-size-xl` |
 
   <!-- tabs-close -->
 

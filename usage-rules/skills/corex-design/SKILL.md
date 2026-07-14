@@ -1,10 +1,10 @@
 ---
 name: corex-design
 description: >-
-  Load when styling with button--accent timer--rounded-xl accordion--sm
-  sm:accordion--md responsive modifiers, editing site.css app.css @import
-  @source "../corex", data-theme data-mode on html, typo layout on body, or
-  when tempted to add custom BEM CSS in templates. Never invent class names.
+  Load when styling with ui-accent ui-solid ui-size-lg ui-rounded-xl
+  modifiers, editing site.css app.css @import @source "../corex",
+  data-theme data-mode on html, typo layout on body, or when tempted to
+  add custom BEM CSS in templates. Never invent class names.
 ---
 
 # Corex Design

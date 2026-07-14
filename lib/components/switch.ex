@@ -154,7 +154,7 @@ defmodule Corex.Switch do
 
   Stack modifiers on the host (`class` on `<.switch>`). Combine axes, for example `switch ui-accent ui-size-lg` or `switch ui-info ui-solid`.
 
-  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
   Semantic modifiers set palette variables on the track and thumb. Variant modifiers control surface treatment. Default is subtle: unchecked uses a neutral track with semantic thumb color, checked uses selected with semantic ink text. Add `ui-solid` for a filled checked track.
 
@@ -181,8 +181,6 @@ defmodule Corex.Switch do
   | -------- | ------- |
   | Subtle (default) | `switch` or `switch ui-accent` |
   | Solid | `switch ui-accent ui-solid` |
-  | Ghost | `switch` |
-  | Outline | `switch ui-accent` |
 
   ### Size
 

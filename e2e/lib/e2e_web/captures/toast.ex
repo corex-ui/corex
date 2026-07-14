@@ -32,7 +32,7 @@ defmodule CorexWeb.Toast do
 
   defp render_buttons(assigns) do
     ~H"""
-    <div class="flex flex-wrap items-center gap-space gap-2">
+    <div class="flex flex-wrap items-center gap-space">
       <.action
         phx-click={
           Toast.create(

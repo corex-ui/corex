@@ -10,12 +10,12 @@ defmodule E2eWeb.App.Footer do
     <footer class={Shell.footer() <> " shell-footer"}>
       <div class={Shell.footer_content() <> " gap-2 justify-center md:justify-between"}>
         <div class={Shell.row()}>
-          <.navigate class="ui-link ui-link--sm ui-link--accent" to="https://netoum.com" external>
+          <.navigate class="link ui-accent ui-size-sm" to="https://netoum.com" external>
             {~t"Open source by Netoum"}
             <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
           </.navigate>
           <.navigate
-            class="ui-link ui-link--sm ui-link--accent"
+            class="link ui-accent ui-size-sm"
             to="https://github.com/sponsors/corex-ui"
             external
           >
@@ -38,6 +38,7 @@ defmodule E2eWeb.App.Footer do
               viewBox="0 0 102 102"
               stroke-width="1.5"
               stroke="currentColor"
+              class="icon"
             >
               <path
                 fill-rule="evenodd"
@@ -59,6 +60,7 @@ defmodule E2eWeb.App.Footer do
               viewBox="0 0 114 100"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
+              class="icon"
             >
               <g id="Group">
                 <g id="Group_2">

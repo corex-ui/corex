@@ -125,9 +125,9 @@ defmodule Corex.Editable do
   </.editable>
   ```
 
-  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on the input, preview, and edit trigger. Variant modifiers control field surface treatment. Default is subtle; add `editable--variant-solid` for a filled field. Cancel and submit triggers keep their alert and success styling.
+  Semantic modifiers set palette variables on the input, preview, and edit trigger. Variant modifiers control field surface treatment. Default is subtle; add `editable ui-solid` for a filled field. Cancel and submit triggers keep their alert and success styling.
 
   <!-- tabs-open -->
 
@@ -138,11 +138,11 @@ defmodule Corex.Editable do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `editable` |
-  | Accent | `editable editable--accent` |
-  | Brand | `editable editable--brand` |
-  | Alert | `editable editable--alert` |
-  | Info | `editable editable--info` |
-  | Success | `editable editable--success` |
+  | Accent | `editable editable ui-accent` |
+  | Brand | `editable editable ui-brand` |
+  | Alert | `editable editable ui-alert` |
+  | Info | `editable editable ui-info` |
+  | Success | `editable editable ui-success` |
 
   ### Variant
 
@@ -150,19 +150,17 @@ defmodule Corex.Editable do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `editable` or `editable editable--accent` |
-  | Solid | `editable editable--accent editable--variant-solid` |
-  | Ghost | `editable editable--variant-ghost` |
-  | Outline | `editable editable--accent editable--variant-outline` |
+  | Subtle (default) | `editable` or `editable editable ui-accent` |
+  | Solid | `editable editable ui-accent editable ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `editable editable--sm` |
-  | MD | `editable editable--md` |
-  | LG | `editable editable--lg` |
-  | XL | `editable editable--xl` |
+  | SM | `editable editable ui-size-sm` |
+  | MD | `editable editable ui-size-md` |
+  | LG | `editable editable ui-size-lg` |
+  | XL | `editable editable ui-size-xl` |
 
   <!-- tabs-close -->
 

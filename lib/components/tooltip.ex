@@ -142,9 +142,9 @@ defmodule Corex.Tooltip do
 
   Stack modifiers on the host (`class` on `<.tooltip>`).
 
-  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on the content panel. Variant modifiers control tooltip panel surface treatment. Default is subtle; add `tooltip--variant-solid` for a filled panel.
+  Semantic modifiers set palette variables on the content panel. Variant modifiers control tooltip panel surface treatment. Default is subtle; add `tooltip ui-solid` for a filled panel.
 
   <!-- tabs-open -->
 
@@ -153,11 +153,11 @@ defmodule Corex.Tooltip do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `tooltip` |
-  | Accent | `tooltip tooltip--accent` |
-  | Brand | `tooltip tooltip--brand` |
-  | Alert | `tooltip tooltip--alert` |
-  | Info | `tooltip tooltip--info` |
-  | Success | `tooltip tooltip--success` |
+  | Accent | `tooltip tooltip ui-accent` |
+  | Brand | `tooltip tooltip ui-brand` |
+  | Alert | `tooltip tooltip ui-alert` |
+  | Info | `tooltip tooltip ui-info` |
+  | Success | `tooltip tooltip ui-success` |
 
   ### Variant
 
@@ -165,19 +165,17 @@ defmodule Corex.Tooltip do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `tooltip` or `tooltip tooltip--accent` |
-  | Solid | `tooltip tooltip--accent tooltip--variant-solid` |
-  | Ghost | `tooltip tooltip--variant-ghost` |
-  | Outline | `tooltip tooltip--accent tooltip--variant-outline` |
+  | Subtle (default) | `tooltip` or `tooltip tooltip ui-accent` |
+  | Solid | `tooltip tooltip ui-accent tooltip ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `tooltip tooltip--sm` |
-  | MD | `tooltip tooltip--md` |
-  | LG | `tooltip tooltip--lg` |
-  | XL | `tooltip tooltip--xl` |
+  | SM | `tooltip tooltip ui-size-sm` |
+  | MD | `tooltip tooltip ui-size-md` |
+  | LG | `tooltip tooltip ui-size-lg` |
+  | XL | `tooltip tooltip ui-size-xl` |
 
   <!-- tabs-close -->
 

@@ -367,9 +367,9 @@ defmodule Corex.TreeView do
 
   Stack modifiers on the host (`class` on `<.tree_view>`).
 
-  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
-  Variant modifiers control unselected item and closed branch control surface treatment. Selected/checked states keep semantic fill. Default is subtle; add `tree-view--variant-solid` for filled rows.
+  Variant modifiers control unselected item and closed branch control surface treatment. Selected/checked states keep semantic fill. Default is subtle; add `tree-view ui-solid` for filled rows.
 
   <!-- tabs-open -->
 
@@ -378,11 +378,11 @@ defmodule Corex.TreeView do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `tree-view` |
-  | Accent | `tree-view tree-view--accent` |
-  | Brand | `tree-view tree-view--brand` |
-  | Alert | `tree-view tree-view--alert` |
-  | Info | `tree-view tree-view--info` |
-  | Success | `tree-view tree-view--success` |
+  | Accent | `tree-view tree-view ui-accent` |
+  | Brand | `tree-view tree-view ui-brand` |
+  | Alert | `tree-view tree-view ui-alert` |
+  | Info | `tree-view tree-view ui-info` |
+  | Success | `tree-view tree-view ui-success` |
 
   ### Variant
 
@@ -390,19 +390,17 @@ defmodule Corex.TreeView do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `tree-view` or `tree-view tree-view--accent` |
-  | Solid | `tree-view tree-view--accent tree-view--variant-solid` |
-  | Ghost | `tree-view tree-view--variant-ghost` |
-  | Outline | `tree-view tree-view--accent tree-view--variant-outline` |
+  | Subtle (default) | `tree-view` or `tree-view tree-view ui-accent` |
+  | Solid | `tree-view tree-view ui-accent tree-view ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `tree-view tree-view--sm` |
-  | MD | `tree-view tree-view--md` |
-  | LG | `tree-view tree-view--lg` |
-  | XL | `tree-view tree-view--xl` |
+  | SM | `tree-view tree-view ui-size-sm` |
+  | MD | `tree-view tree-view ui-size-md` |
+  | LG | `tree-view tree-view ui-size-lg` |
+  | XL | `tree-view tree-view ui-size-xl` |
 
   <!-- tabs-close -->
 

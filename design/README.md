@@ -55,11 +55,12 @@ Generated apps from `mix corex.new` include the `corex_design` dependency and ru
 
 ## Modifiers
 
-Component CSS uses flat BEM modifiers only:
+Component CSS uses shared host modifiers:
 
-- **Semantic**: `accordion--accent`, `button--brand`
-- **Size**: `button--lg`, `accordion--sm`
-- **Radius**: `button--rounded-lg`, `dialog--rounded-xl`
+- **Semantic**: `ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`
+- **Variant**: subtle (default) or `ui-solid`
+- **Size**: `ui-size-sm` … `ui-size-xl`
+- **Radius**: `ui-rounded-lg`, `ui-rounded-xl`, …
 
 Use Tailwind utilities for layout and sizing (`max-w-md`, `flex`, `gap-4`).
 

@@ -23,7 +23,7 @@
 
 - New optional **`corex_design`** Hex package with config-driven tokens and themes
 - Design v2 token architecture and bundle layout
-- Build-time bundle filtering via `components:`, `semantics:`, `variants:` in `config :corex_design`
+- Build-time bundle filtering via `components:` and `semantics:` in `config :corex_design`
 - E2e style pages: file-upload, floating-panel, password-input; dialog semantic styling
 - [tabs] Disabled items support
 - [select] Controlled mode and examples

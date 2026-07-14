@@ -135,11 +135,11 @@ defmodule Corex.AngleSlider do
   @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.angle_slider>`). Combine axes, for example `angle-slider angle-slider--accent angle-slider--lg` or `angle-slider angle-slider--info angle-slider--variant-solid`.
+  Stack modifiers on the host (`class` on `<.angle_slider>`). Combine axes, for example `angle-slider angle-slider ui-accent angle-slider ui-size-lg` or `angle-slider angle-slider ui-info angle-slider ui-solid`.
 
-  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on the control and thumb handle. Variant modifiers control surface treatment. Default is subtle: a neutral control ring with semantic thumb color. Add `angle-slider--variant-solid` for a filled control and matching handle.
+  Semantic modifiers set palette variables on the control and thumb handle. Variant modifiers control surface treatment. Default is subtle: a neutral control ring with semantic thumb color. Add `angle-slider ui-solid` for a filled control and matching handle.
 
   <!-- tabs-open -->
 
@@ -150,11 +150,11 @@ defmodule Corex.AngleSlider do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `angle-slider` |
-  | Accent | `angle-slider angle-slider--accent` |
-  | Brand | `angle-slider angle-slider--brand` |
-  | Alert | `angle-slider angle-slider--alert` |
-  | Info | `angle-slider angle-slider--info` |
-  | Success | `angle-slider angle-slider--success` |
+  | Accent | `angle-slider angle-slider ui-accent` |
+  | Brand | `angle-slider angle-slider ui-brand` |
+  | Alert | `angle-slider angle-slider ui-alert` |
+  | Info | `angle-slider angle-slider ui-info` |
+  | Success | `angle-slider angle-slider ui-success` |
 
   ### Variant
 
@@ -162,19 +162,17 @@ defmodule Corex.AngleSlider do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `angle-slider` or `angle-slider angle-slider--accent` |
-  | Solid | `angle-slider angle-slider--accent angle-slider--variant-solid` |
-  | Ghost | `angle-slider angle-slider--variant-ghost` |
-  | Outline | `angle-slider angle-slider--accent angle-slider--variant-outline` |
+  | Subtle (default) | `angle-slider` or `angle-slider angle-slider ui-accent` |
+  | Solid | `angle-slider angle-slider ui-accent angle-slider ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `angle-slider angle-slider--sm` |
-  | MD | `angle-slider angle-slider--md` |
-  | LG | `angle-slider angle-slider--lg` |
-  | XL | `angle-slider angle-slider--xl` |
+  | SM | `angle-slider angle-slider ui-size-sm` |
+  | MD | `angle-slider angle-slider ui-size-md` |
+  | LG | `angle-slider angle-slider ui-size-lg` |
+  | XL | `angle-slider angle-slider ui-size-xl` |
 
   <!-- tabs-close -->
 

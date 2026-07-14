@@ -10,7 +10,7 @@
             id="home-hero-heading"
             class="m-0 text-balance text-[clamp(var(--text-4xl),4.5vw+1rem,var(--text-7xl))] font-bold leading-[1.05] tracking-[-0.025em] text-ink"
           >
-            {~t"The Phoenix UI with a"} <span class="text-ink-brand">{~t"real API"}</span>.
+            {~t"The Phoenix UI with a"} <span class="text-brand-text">{~t"real API"}</span>.
           </h1>
 
           <p class="m-0 max-w-xl text-pretty text-lg leading-[var(--text-lg--line-height)] text-ink-muted">
@@ -27,7 +27,7 @@
               :for={bullet <- @hero_bullets}
               class="flex items-start gap-2 text-pretty text-start text-sm leading-[var(--text-sm--line-height)] text-ink-muted"
             >
-              <.heroicon name="hero-check" class="mt-[0.2em] size-3 shrink-0 text-ink-brand" />
+              <.heroicon name="hero-check" class="mt-[0.2em] size-3 shrink-0 text-brand-text" />
               <span>
                 <strong class="font-semibold text-ink">{bullet.title}</strong> {bullet.body}
               </span>
@@ -220,7 +220,7 @@
 
       <.marquee
         id="home-stack-marquee"
-        class="marquee marquee--on-layer home__stack__marquee"
+        class="marquee home__stack__marquee"
         duration={28}
         spacing="0px"
         pause_on_interaction

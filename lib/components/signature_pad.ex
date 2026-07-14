@@ -262,16 +262,16 @@ defmodule Corex.SignaturePad do
   >
   ```
 
-  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
   | Modifier | Applies to |
   | -------- | ---------- |
-  | `signature-pad--{accent,brand,alert,success,info}` | Clear trigger palette variables |
-  | `signature-pad--variant-{solid,subtle,ghost,outline}` | Clear trigger surface treatment |
-  | `signature-pad--{sm,md,lg,xl}` | Label, control height, clear trigger |
-  | `signature-pad--rounded-{none,sm,md,lg,xl,full}` | Control, pad surface, clear trigger |
+  | `signature-pad ui-{accent,brand,alert,success,info}` | Clear trigger palette variables |
+  | `signature-pad ui-solid` | Filled clear trigger |
+  | `signature-pad ui-size-{sm,md,lg,xl}` | Label, control height, clear trigger |
+  | `signature-pad ui-rounded-{none,sm,md,lg,xl,full}` | Control, pad surface, clear trigger |
 
-  Default clear trigger treatment is subtle. Add `signature-pad--variant-solid` for a filled clear button.
+  Default clear trigger treatment is subtle. Add `signature-pad ui-solid` for a filled clear button.
 
   The guide line (`data-part="guide"`) is not themed by semantic modifiers.
 

@@ -39,7 +39,7 @@
  overflow: hidden;
  gap: var(--spacing-space);
  justify-content: flex-start;
- border-radius: var(--radius-md);
+ border-radius: var(--ctl-radius, var(--radius-md));
  }
 
  .color-picker [data-scope="color-picker"][data-part="trigger"] {
@@ -51,7 +51,7 @@
  width: auto;
  position: relative;
  overflow: hidden;
- border-radius: var(--radius-md);
+ border-radius: var(--ctl-radius, var(--radius-md));
  background-color: transparent;
 
  & [data-scope="color-picker"][data-part="swatch"] {
@@ -350,11 +350,11 @@
  @apply ui-error;
  }
 
- .color-picker.color-picker--rounded-full [data-scope="color-picker"][data-part="content"] {
+ .color-picker.ui-rounded-full [data-scope="color-picker"][data-part="content"] {
  border-radius: var(--radius-xl);
  }
 
- .color-picker.color-picker--rounded-full [data-scope="color-picker"][data-part="area"] {
+ .color-picker.ui-rounded-full [data-scope="color-picker"][data-part="area"] {
  border-radius: var(--radius-lg);
  }
 

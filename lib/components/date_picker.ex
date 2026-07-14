@@ -276,11 +276,11 @@ defmodule Corex.DatePicker do
   @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.date_picker>`). Combine axes, for example `date-picker date-picker--accent date-picker--lg` or `date-picker date-picker--info date-picker--variant-solid`.
+  Stack modifiers on the host (`class` on `<.date_picker>`). Combine axes, for example `date-picker date-picker ui-accent date-picker ui-size-lg` or `date-picker date-picker ui-info date-picker ui-solid`.
 
-  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on the input and calendar trigger. Variant modifiers control field surface treatment. Default is subtle; add `date-picker--variant-solid` for a filled control.
+  Semantic modifiers set palette variables on the input and calendar trigger. Variant modifiers control field surface treatment. Default is subtle; add `date-picker ui-solid` for a filled control.
 
   <!-- tabs-open -->
 
@@ -291,11 +291,11 @@ defmodule Corex.DatePicker do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `date-picker` |
-  | Accent | `date-picker date-picker--accent` |
-  | Brand | `date-picker date-picker--brand` |
-  | Alert | `date-picker date-picker--alert` |
-  | Info | `date-picker date-picker--info` |
-  | Success | `date-picker date-picker--success` |
+  | Accent | `date-picker date-picker ui-accent` |
+  | Brand | `date-picker date-picker ui-brand` |
+  | Alert | `date-picker date-picker ui-alert` |
+  | Info | `date-picker date-picker ui-info` |
+  | Success | `date-picker date-picker ui-success` |
 
   ### Variant
 
@@ -303,19 +303,17 @@ defmodule Corex.DatePicker do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `date-picker` or `date-picker date-picker--accent` |
-  | Solid | `date-picker date-picker--accent date-picker--variant-solid` |
-  | Ghost | `date-picker date-picker--variant-ghost` |
-  | Outline | `date-picker date-picker--accent date-picker--variant-outline` |
+  | Subtle (default) | `date-picker` or `date-picker date-picker ui-accent` |
+  | Solid | `date-picker date-picker ui-accent date-picker ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `date-picker date-picker--sm` |
-  | MD | `date-picker date-picker--md` |
-  | LG | `date-picker date-picker--lg` |
-  | XL | `date-picker date-picker--xl` |
+  | SM | `date-picker date-picker ui-size-sm` |
+  | MD | `date-picker date-picker ui-size-md` |
+  | LG | `date-picker date-picker ui-size-lg` |
+  | XL | `date-picker date-picker ui-size-xl` |
 
   <!-- tabs-close -->
 

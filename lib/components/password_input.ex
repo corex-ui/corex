@@ -197,11 +197,11 @@ defmodule Corex.PasswordInput do
   @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.password_input>`). Combine axes, for example `password-input password-input--accent password-input--lg` or `password-input password-input--info password-input--variant-solid`.
+  Stack modifiers on the host (`class` on `<.password_input>`). Combine axes, for example `password-input password-input ui-accent password-input ui-size-lg` or `password-input password-input ui-info password-input ui-solid`.
 
-  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on the input and visibility trigger. Variant modifiers control field surface treatment. Default is subtle; add `password-input--variant-solid` for a filled control.
+  Semantic modifiers set palette variables on the input and visibility trigger. Variant modifiers control field surface treatment. Default is subtle; add `password-input ui-solid` for a filled control.
 
   <!-- tabs-open -->
 
@@ -212,11 +212,11 @@ defmodule Corex.PasswordInput do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `password-input` |
-  | Accent | `password-input password-input--accent` |
-  | Brand | `password-input password-input--brand` |
-  | Alert | `password-input password-input--alert` |
-  | Info | `password-input password-input--info` |
-  | Success | `password-input password-input--success` |
+  | Accent | `password-input password-input ui-accent` |
+  | Brand | `password-input password-input ui-brand` |
+  | Alert | `password-input password-input ui-alert` |
+  | Info | `password-input password-input ui-info` |
+  | Success | `password-input password-input ui-success` |
 
   ### Variant
 
@@ -224,19 +224,17 @@ defmodule Corex.PasswordInput do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `password-input` or `password-input password-input--accent` |
-  | Solid | `password-input password-input--accent password-input--variant-solid` |
-  | Ghost | `password-input password-input--variant-ghost` |
-  | Outline | `password-input password-input--accent password-input--variant-outline` |
+  | Subtle (default) | `password-input` or `password-input password-input ui-accent` |
+  | Solid | `password-input password-input ui-accent password-input ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `password-input password-input--sm` |
-  | MD | `password-input password-input--md` |
-  | LG | `password-input password-input--lg` |
-  | XL | `password-input password-input--xl` |
+  | SM | `password-input password-input ui-size-sm` |
+  | MD | `password-input password-input ui-size-md` |
+  | LG | `password-input password-input ui-size-lg` |
+  | XL | `password-input password-input ui-size-xl` |
 
   <!-- tabs-close -->
 

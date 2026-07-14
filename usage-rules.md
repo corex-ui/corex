@@ -2,7 +2,7 @@
 
 ## Understanding Corex
 
-Corex is an accessible, unstyled Phoenix component library powered by Zag.js state machines. Every component exposes a **server API** (LiveView/socket helpers) and a **client API** (JS commands). Corex Design is optional token-based CSS with modifier classes such as `button--accent`.
+Corex is an accessible, unstyled Phoenix component library powered by Zag.js state machines. Every component exposes a **server API** (LiveView/socket helpers) and a **client API** (JS commands). Corex Design is optional token-based CSS with shared modifier classes such as `ui-accent` and `ui-solid`.
 
 Read documentation and call Corex MCP tools **before** guessing attrs, slots, or install steps.
 

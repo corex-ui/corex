@@ -228,7 +228,7 @@ defmodule Corex.Collapsible do
 
   Stack modifiers on the host (`class` on `<.collapsible>`). Combine axes, for example `collapsible ui-accent ui-size-lg` or `collapsible ui-info`.
 
-  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
   Semantic modifiers set palette variables on triggers. Variant modifiers control surface treatment. Default open triggers use a neutral selected surface with semantic text ink; add `ui-solid` for a filled open trigger.
 
@@ -255,8 +255,6 @@ defmodule Corex.Collapsible do
   | -------- | ------- |
   | Subtle (default) | `collapsible ui-size-md` or `collapsible ui-size-md ui-accent` |
   | Solid | `collapsible ui-size-md ui-accent ui-solid` |
-  | Ghost | `collapsible ui-size-md ui-info` |
-  | Outline | `collapsible ui-size-md ui-accent` |
 
   ### Size
 

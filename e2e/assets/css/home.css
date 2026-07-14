@@ -29,11 +29,11 @@
     font-weight: var(--font-weight-semibold);
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--color-ink-brand);
+    color: var(--color-brand-text);
   }
 
   .home__display__accent {
-    color: var(--color-ink-brand);
+    color: var(--color-brand-text);
   }
 
   .home__lede {
@@ -103,7 +103,7 @@
   }
 
   .home__numbers__value__suffix {
-    color: var(--color-ink-brand);
+    color: var(--color-brand-text);
   }
 
   .home__numbers__label {

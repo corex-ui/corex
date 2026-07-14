@@ -135,7 +135,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
 
     ~H"""
     <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
-      <div class="grid grid-cols-4 gap-space gap-2 items-center min-w-max">
+      <div class="grid grid-cols-4 gap-space items-center min-w-max">
         <div :for={{semantic, semantic_index} <- Enum.with_index(@matrix_semantics)} class="contents">
           <.style_pagination
             :for={{variant, variant_index} <- Enum.with_index(@matrix_variants)}

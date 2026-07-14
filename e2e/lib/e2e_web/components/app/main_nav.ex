@@ -21,7 +21,7 @@ defmodule E2eWeb.App.MainNav do
         :horizontal -> "hidden md:flex items-center gap-4 lg:gap-6 min-w-0"
       end
 
-    link_class = "ui-link ui-link--md font-medium text-ink hover:text-link no-underline"
+    link_class = "link ui-size-md font-medium text-ink hover:text-link no-underline"
     aria_label = nav_aria_label(assigns.placement)
 
     assigns =

@@ -26,7 +26,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
   def minimal_code do
     ~S"""
-    <div class="flex flex-wrap items-center gap-space gap-2">
+    <div class="flex flex-wrap items-center gap-space">
       <.avatar src="" class="avatar">
         <:fallback>JD</:fallback>
       </.avatar>
@@ -44,7 +44,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap items-center gap-space gap-2">
+    <div class="flex flex-wrap items-center gap-space">
       <.avatar id="avatar-fallback" src="" class="avatar">
         <:fallback>JD</:fallback>
       </.avatar>
@@ -192,7 +192,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap items-center gap-space gap-2">
+    <div class="flex flex-wrap items-center gap-space">
       <.avatar id="avatar-style-default" class="avatar">
         <:fallback>DF</:fallback>
       </.avatar>
@@ -219,7 +219,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap items-end gap-2 gap-space">
+    <div class="flex flex-wrap items-end gap-space">
       <.avatar id="avatar-style-sm" class="avatar ui-size-sm">
         <:fallback>Sm</:fallback>
       </.avatar>
@@ -249,7 +249,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
   def styling_variant_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap items-center gap-space gap-2">
+    <div class="flex flex-wrap items-center gap-space">
       <.avatar id="avatar-style-variant-subtle" class="avatar">
         <:fallback>Su</:fallback>
       </.avatar>
@@ -279,7 +279,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
       |> assign(:matrix_variants, styling_variant_axis_steps())
 
     ~H"""
-    <div class="w-full grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2 gap-space items-end">
+    <div class="w-full grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-space items-end">
       <div :for={semantic <- @matrix_semantics} class="contents">
         <.avatar
           :for={variant <- @matrix_variants}
@@ -311,7 +311,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
   def styling_rounded_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap items-end gap-2 gap-space">
+    <div class="flex flex-wrap items-end gap-space">
       <.avatar id="avatar-style-rounded-none" class="avatar ui-rounded-none">
         <:fallback>No</:fallback>
       </.avatar>

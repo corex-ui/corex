@@ -103,7 +103,7 @@ defmodule Corex.Marquee do
 
   Stack modifiers on the host (`class` on `<.marquee>`).
 
-  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text). No variant axis (animation surface only). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
   <!-- tabs-open -->
 
@@ -112,20 +112,20 @@ defmodule Corex.Marquee do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `marquee` |
-  | Accent | `marquee marquee--accent` |
-  | Brand | `marquee marquee--brand` |
-  | Alert | `marquee marquee--alert` |
-  | Info | `marquee marquee--info` |
-  | Success | `marquee marquee--success` |
+  | Accent | `marquee marquee ui-accent` |
+  | Brand | `marquee marquee ui-brand` |
+  | Alert | `marquee marquee ui-alert` |
+  | Info | `marquee marquee ui-info` |
+  | Success | `marquee marquee ui-success` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `marquee marquee--sm` |
-  | MD | `marquee marquee--md` |
-  | LG | `marquee marquee--lg` |
-  | XL | `marquee marquee--xl` |
+  | SM | `marquee marquee ui-size-sm` |
+  | MD | `marquee marquee ui-size-md` |
+  | LG | `marquee marquee ui-size-lg` |
+  | XL | `marquee marquee ui-size-xl` |
 
   <!-- tabs-close -->
 

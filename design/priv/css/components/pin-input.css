@@ -32,7 +32,7 @@
  }
 
  .pin-input [data-scope="pin-input"][data-part="label"][data-invalid] {
- color: var(--color-ink-alert);
+ color: var(--color-alert-text);
  }
 
  .pin-input [data-scope="pin-input"][data-part="label"][data-disabled] {
@@ -40,7 +40,7 @@
  }
 
  .pin-input [data-scope="pin-input"][data-part="label"][data-complete] {
- color: var(--color-ink-success);
+ color: var(--color-success-text);
  }
 
  .pin-input [data-scope="pin-input"][data-part="label"][data-readonly] {

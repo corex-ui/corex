@@ -102,7 +102,7 @@
  padding-bottom: var(--spacing-space);
  }
 
- .dialog.dialog--rounded-full [data-scope="dialog"][data-part="content"] {
+ .dialog.ui-rounded-full [data-scope="dialog"][data-part="content"] {
  border-radius: var(--radius-xl);
  }
 
@@ -118,60 +118,14 @@
  }
 
  .dialog [data-scope="dialog"][data-part="content"][data-nested] {
- border: 2px solid var(--color-border-accent);
+ border: 2px solid var(--ctl-fill, var(--color-accent));
  }
 
  .dialog [data-scope="dialog"][data-part="backdrop"][data-has-nested] {
  opacity: calc(0.4 + var(--nested-layer-count) * 0.1);
  }
 
- .dialog.dialog--accent [data-scope="dialog"][data-part="title"] {
- color: var(--color-ink-accent);
- }
-
- .dialog.dialog--brand [data-scope="dialog"][data-part="title"] {
- color: var(--color-ink-brand);
- }
-
- .dialog.dialog--alert [data-scope="dialog"][data-part="title"] {
- color: var(--color-ink-alert);
- }
-
- .dialog.dialog--info [data-scope="dialog"][data-part="title"] {
- color: var(--color-ink-info);
- }
-
- .dialog.dialog--success [data-scope="dialog"][data-part="title"] {
- color: var(--color-ink-success);
- }
-
- .dialog.dialog--accent [data-scope="dialog"][data-part="close-trigger"] {
- background-color: var(--color-accent);
- color: var(--color-accent-ink);
- border-color: var(--color-accent);
- }
-
- .dialog.dialog--brand [data-scope="dialog"][data-part="close-trigger"] {
- background-color: var(--color-brand);
- color: var(--color-brand-ink);
- border-color: var(--color-brand);
- }
-
- .dialog.dialog--alert [data-scope="dialog"][data-part="close-trigger"] {
- background-color: var(--color-alert);
- color: var(--color-alert-ink);
- border-color: var(--color-alert);
- }
-
- .dialog.dialog--info [data-scope="dialog"][data-part="close-trigger"] {
- background-color: var(--color-info);
- color: var(--color-info-ink);
- border-color: var(--color-info);
- }
-
- .dialog.dialog--success [data-scope="dialog"][data-part="close-trigger"] {
- background-color: var(--color-success);
- color: var(--color-success-ink);
- border-color: var(--color-success);
+ .dialog [data-scope="dialog"][data-part="title"] {
+ color: var(--ctl-ink-text, var(--color-ink));
  }
 }

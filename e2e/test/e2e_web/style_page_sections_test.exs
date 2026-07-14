@@ -42,4 +42,27 @@ defmodule E2eWeb.StylePageSectionsTest do
     refute source =~ "data-table-styling-width"
     refute source =~ "axis={:width}"
   end
+
+  test "variant style pages use DemoScales subtle and solid only" do
+    steps = E2eWeb.DemoScales.styling_variant_axis_steps("checkbox")
+    assert Enum.map(steps, & &1.modifier) == ["", "ui-solid"]
+
+    for {relative_path, _layout_id} <- StylePageExpectations.style_pages() do
+      source = StylePageExpectations.read_page(relative_path)
+
+      if source =~ "axis={:variant}" do
+        assert source =~ "styling_variant",
+               "expected styling_variant helpers on #{relative_path}"
+
+        refute source =~ "Ghost",
+               "variant axis on #{relative_path} must not mention Ghost"
+
+        refute source =~ "Outline",
+               "variant axis on #{relative_path} must not mention Outline"
+
+        refute source =~ "variant-ghost",
+               "variant axis on #{relative_path} must not mention variant-ghost"
+      end
+    end
+  end
 end

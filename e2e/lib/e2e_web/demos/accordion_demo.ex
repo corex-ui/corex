@@ -1369,7 +1369,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
       |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("accordion"))
 
     ~H"""
-    <div class="w-full grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2 gap-space items-start">
+    <div class="w-full grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-space items-start">
       <div :for={semantic <- @matrix_semantics} class="contents">
         <.accordion
           :for={variant <- @matrix_variants}

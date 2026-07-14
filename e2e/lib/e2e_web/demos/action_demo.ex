@@ -44,7 +44,7 @@ defmodule E2eWeb.Demos.ActionDemo do
 
   def anatomy_icon_only_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap items-center gap-space gap-2">
+    <div class="flex flex-wrap items-center gap-space">
       <.action class="button ui-trigger--square" aria_label="Square icon button">
         <.heroicon name="hero-arrow-right" />
       </.action>
@@ -71,7 +71,7 @@ defmodule E2eWeb.Demos.ActionDemo do
       for={%{}}
       as={:action_type_demo}
       phx-submit="noop"
-      class="flex flex-wrap items-center gap-space gap-2"
+      class="flex flex-wrap items-center gap-space"
     >
       <.action class="button" type="button">Button</.action>
       <.action class="button ui-accent" type="submit">Submit</.action>
@@ -171,7 +171,7 @@ defmodule E2eWeb.Demos.ActionDemo do
 
   def styling_color_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap items-center gap-space gap-2">
+    <div class="flex flex-wrap items-center gap-space">
       <.action class="button">Default</.action>
       <.action class="button ui-accent">Accent</.action>
       <.action class="button ui-brand">Brand</.action>
@@ -191,7 +191,7 @@ defmodule E2eWeb.Demos.ActionDemo do
 
   def styling_variant_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap items-center gap-space gap-2">
+    <div class="flex flex-wrap items-center gap-space">
       <.action class="button">Subtle (default)</.action>
       <.action class="button ui-solid">Solid</.action>
     </div>
@@ -215,7 +215,7 @@ defmodule E2eWeb.Demos.ActionDemo do
       |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("button"))
 
     ~H"""
-    <div class="w-full grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2 gap-space items-center">
+    <div class="w-full grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-space items-center">
       <div :for={semantic <- @matrix_semantics} class="contents">
         <.action
           :for={variant <- @matrix_variants}
@@ -239,7 +239,7 @@ defmodule E2eWeb.Demos.ActionDemo do
 
   def styling_size_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap items-end gap-2 gap-space">
+    <div class="flex flex-wrap items-end gap-space">
       <.action class="button ui-size-sm">Small</.action>
       <.action class="button">Medium</.action>
       <.action class="button ui-size-lg">Large</.action>
@@ -261,7 +261,7 @@ defmodule E2eWeb.Demos.ActionDemo do
 
   def styling_rounded_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap items-center gap-space gap-2">
+    <div class="flex flex-wrap items-center gap-space">
       <.action class="button ui-rounded-none">None</.action>
       <.action class="button ui-rounded-sm">SM</.action>
       <.action class="button ui-rounded-md">MD</.action>
@@ -343,7 +343,7 @@ defmodule E2eWeb.Demos.ActionDemo do
 
   def styling_shape_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap items-center gap-space gap-2">
+    <div class="flex flex-wrap items-center gap-space">
       <.action class="button ui-trigger--square" aria_label="Square button">
         <.heroicon name="hero-arrow-right" />
       </.action>
@@ -368,7 +368,7 @@ defmodule E2eWeb.Demos.ActionDemo do
 
   def styling_disabled_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap items-center gap-space gap-2">
+    <div class="flex flex-wrap items-center gap-space">
       <.action class="button" disabled>Disabled</.action>
       <.action class="button ui-accent" disabled>Disabled</.action>
       <.action class="button ui-trigger--square" aria_label="Disabled" disabled>

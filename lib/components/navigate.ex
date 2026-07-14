@@ -47,16 +47,14 @@ defmodule Corex.Navigate do
   <.navigate class="link ui-accent ui-size-lg">
   ```
 
-  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`). See the [modifier guide](modifiers.html).
 
-  Variant modifiers control link surface treatment. Default is subtle (underline). Solid and outline use pill radii; ghost removes underline and adds hover background.
+  Variant modifiers control link surface treatment. Default is subtle (underline). Add `ui-solid` for a pill fill.
 
   | Variant | Treatment |
   | ------- | --------- |
   | Subtle (default) | Underline |
   | Solid | Pill fill |
-  | Ghost | No underline, hover background |
-  | Outline | Bordered pill |
 
   """
 

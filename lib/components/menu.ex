@@ -319,9 +319,9 @@ defmodule Corex.Menu do
   @import "../corex/components.css";
   ```
 
-  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on triggers and selected items. Variant modifiers control trigger and content panel surface treatment. Default is subtle; add `menu--variant-solid` for a filled trigger or panel.
+  Semantic modifiers set palette variables on triggers and selected items. Variant modifiers control trigger and content panel surface treatment. Default is subtle; add `menu ui-solid` for a filled trigger or panel.
 
   <!-- tabs-open -->
 
@@ -330,11 +330,11 @@ defmodule Corex.Menu do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `menu` |
-  | Accent | `menu menu--accent` |
-  | Brand | `menu menu--brand` |
-  | Alert | `menu menu--alert` |
-  | Info | `menu menu--info` |
-  | Success | `menu menu--success` |
+  | Accent | `menu menu ui-accent` |
+  | Brand | `menu menu ui-brand` |
+  | Alert | `menu menu ui-alert` |
+  | Info | `menu menu ui-info` |
+  | Success | `menu menu ui-success` |
 
   ### Variant
 
@@ -342,19 +342,17 @@ defmodule Corex.Menu do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `menu` or `menu menu--accent` |
-  | Solid | `menu menu--accent menu--variant-solid` |
-  | Ghost | `menu menu--variant-ghost` |
-  | Outline | `menu menu--accent menu--variant-outline` |
+  | Subtle (default) | `menu` or `menu menu ui-accent` |
+  | Solid | `menu menu ui-accent menu ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `menu menu--sm` |
-  | MD | `menu menu--md` |
-  | LG | `menu menu--lg` |
-  | XL | `menu menu--xl` |
+  | SM | `menu menu ui-size-sm` |
+  | MD | `menu menu ui-size-md` |
+  | LG | `menu menu ui-size-lg` |
+  | XL | `menu menu ui-size-xl` |
 
   <!-- tabs-close -->
 

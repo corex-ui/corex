@@ -198,9 +198,9 @@ defmodule Corex.Carousel do
 
   Stack modifiers on the host (`class` on `<.carousel>`).
 
-  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on nav triggers. Variant modifiers control prev/next/autoplay trigger surface treatment. Default is subtle; add `carousel--variant-solid` for filled nav controls.
+  Semantic modifiers set palette variables on nav triggers. Variant modifiers control prev/next/autoplay trigger surface treatment. Default is subtle; add `carousel ui-solid` for filled nav controls.
 
   <!-- tabs-open -->
 
@@ -209,11 +209,11 @@ defmodule Corex.Carousel do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `carousel` |
-  | Accent | `carousel carousel--accent` |
-  | Brand | `carousel carousel--brand` |
-  | Alert | `carousel carousel--alert` |
-  | Info | `carousel carousel--info` |
-  | Success | `carousel carousel--success` |
+  | Accent | `carousel carousel ui-accent` |
+  | Brand | `carousel carousel ui-brand` |
+  | Alert | `carousel carousel ui-alert` |
+  | Info | `carousel carousel ui-info` |
+  | Success | `carousel carousel ui-success` |
 
   ```heex
   <.carousel
@@ -250,10 +250,8 @@ defmodule Corex.Carousel do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `carousel` or `carousel carousel--accent` |
-  | Solid | `carousel carousel--accent carousel--variant-solid` |
-  | Ghost | `carousel carousel--variant-ghost` |
-  | Outline | `carousel carousel--accent carousel--variant-outline` |
+  | Subtle (default) | `carousel` or `carousel carousel ui-accent` |
+  | Solid | `carousel carousel ui-accent carousel ui-solid` |
 
   ### Size
 
@@ -261,10 +259,10 @@ defmodule Corex.Carousel do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `carousel carousel--sm` |
-  | MD | `carousel carousel--md` |
-  | LG | `carousel carousel--lg` |
-  | XL | `carousel carousel--xl` |
+  | SM | `carousel carousel ui-size-sm` |
+  | MD | `carousel carousel ui-size-md` |
+  | LG | `carousel carousel ui-size-lg` |
+  | XL | `carousel carousel ui-size-xl` |
 
   ```heex
   <.carousel
@@ -301,12 +299,12 @@ defmodule Corex.Carousel do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | None | `carousel carousel--rounded-none` |
-  | SM | `carousel carousel--rounded-sm` |
-  | MD | `carousel carousel--rounded-md` |
-  | LG | `carousel carousel--rounded-lg` |
-  | XL | `carousel carousel--rounded-xl` |
-  | Full | `carousel carousel--rounded-full` |
+  | None | `carousel carousel ui-rounded-none` |
+  | SM | `carousel carousel ui-rounded-sm` |
+  | MD | `carousel carousel ui-rounded-md` |
+  | LG | `carousel carousel ui-rounded-lg` |
+  | XL | `carousel carousel ui-rounded-xl` |
+  | Full | `carousel carousel ui-rounded-full` |
 
   ```heex
   <.carousel

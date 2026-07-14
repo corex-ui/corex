@@ -134,9 +134,9 @@ defmodule Corex.Avatar do
 
   Stack modifiers on the host (`class` on `<.avatar>`).
 
-  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on the fallback surface. Variant modifiers control fallback surface treatment. Default is solid; add `avatar--variant-subtle` for a neutral fallback chip.
+  Semantic modifiers set palette variables on the fallback surface. Variant modifiers control fallback surface treatment. Default is solid; add `avatar` for a neutral fallback chip.
 
   <!-- tabs-open -->
 
@@ -145,11 +145,11 @@ defmodule Corex.Avatar do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `avatar` |
-  | Accent | `avatar avatar--accent` |
-  | Brand | `avatar avatar--brand` |
-  | Alert | `avatar avatar--alert` |
-  | Info | `avatar avatar--info` |
-  | Success | `avatar avatar--success` |
+  | Accent | `avatar avatar ui-accent` |
+  | Brand | `avatar avatar ui-brand` |
+  | Alert | `avatar avatar ui-alert` |
+  | Info | `avatar avatar ui-info` |
+  | Success | `avatar avatar ui-success` |
 
   ### Variant
 
@@ -157,19 +157,17 @@ defmodule Corex.Avatar do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Solid (default) | `avatar` or `avatar avatar--accent` |
-  | Subtle | `avatar avatar--accent avatar--variant-subtle` |
-  | Ghost | `avatar avatar--variant-ghost` |
-  | Outline | `avatar avatar--accent avatar--variant-outline` |
+  | Solid (default) | `avatar` or `avatar avatar ui-accent` |
+  | Subtle | `avatar avatar ui-accent avatar` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `avatar avatar--sm` |
-  | MD | `avatar avatar--md` |
-  | LG | `avatar avatar--lg` |
-  | XL | `avatar avatar--xl` |
+  | SM | `avatar avatar ui-size-sm` |
+  | MD | `avatar avatar ui-size-md` |
+  | LG | `avatar avatar ui-size-lg` |
+  | XL | `avatar avatar ui-size-xl` |
 
   ### Radius
 
@@ -178,12 +176,12 @@ defmodule Corex.Avatar do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `avatar` |
-  | None | `avatar avatar--rounded-none` |
-  | SM | `avatar avatar--rounded-sm` |
-  | MD | `avatar avatar--rounded-md` |
-  | LG | `avatar avatar--rounded-lg` |
-  | XL | `avatar avatar--rounded-xl` |
-  | Full | `avatar avatar--rounded-full` |
+  | None | `avatar avatar ui-rounded-none` |
+  | SM | `avatar avatar ui-rounded-sm` |
+  | MD | `avatar avatar ui-rounded-md` |
+  | LG | `avatar avatar ui-rounded-lg` |
+  | XL | `avatar avatar ui-rounded-xl` |
+  | Full | `avatar avatar ui-rounded-full` |
 
   <!-- tabs-close -->
 

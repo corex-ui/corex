@@ -82,9 +82,9 @@ defmodule Corex.DataList do
   [data-scope="data-list"][data-part="empty"] {}
   ```
 
-  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
-  Variant modifiers control item row surface treatment. Default is subtle; add `data-list--variant-solid` for filled rows.
+  Variant modifiers control item row surface treatment. Default is subtle; add `data-list ui-solid` for filled rows.
   '''
 
   @doc type: :component

@@ -67,7 +67,7 @@ defmodule E2eWeb.Demos.DataListDemo do
         <.heroicon name={item.meta.icon} /> {item.label}
       </:label>
       <:content :let={item}>
-        <span class="tag tag--blue">{item.content}</span>
+        <span class="badge ui-info">{item.content}</span>
       </:content>
     </.data_list>
     """
@@ -131,9 +131,14 @@ defmodule E2eWeb.Demos.DataListDemo do
     _ = assigns
 
     ~H"""
-    <.data_list class="data-list" items={styling_items()} />
-    <.data_list class="data-list ui-solid" items={styling_items()} />
-    
+    <div class="flex flex-col gap-space-lg w-full max-w-md">
+      <.data_list id="data-list-style-variant-subtle" class="data-list" items={styling_items()} />
+      <.data_list
+        id="data-list-style-variant-solid"
+        class="data-list ui-solid"
+        items={styling_items()}
+      />
+    </div>
     """
   end
 
@@ -157,7 +162,7 @@ defmodule E2eWeb.Demos.DataListDemo do
 
     ~H"""
     <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
-      <div class="grid grid-cols-4 gap-space gap-2 items-start min-w-max">
+      <div class="grid grid-cols-4 gap-space items-start min-w-max">
         <div :for={semantic <- @matrix_semantics} class="contents">
           <.data_list
             :for={variant <- @matrix_variants}

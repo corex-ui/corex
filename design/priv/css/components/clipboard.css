@@ -44,7 +44,7 @@
  }
 
  .clipboard [data-scope="clipboard"][data-part="input"][data-copied] {
- color: var(--color-ink-success);
+ color: var(--color-success-text);
  border-color: var(--color-success);
  }
 
@@ -65,7 +65,7 @@
  }
 
  .clipboard [data-scope="clipboard"][data-part="trigger"][data-copied] {
- color: var(--color-ink-success);
+ color: var(--color-success-text);
  border-color: var(--color-success);
  outline: none;
  }

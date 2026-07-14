@@ -792,7 +792,7 @@ defmodule E2eWeb.TetrexLive do
       aria-live="polite"
     >
       <p class="font-display text-lg uppercase tracking-widest text-alert m-0">{~t"Game over"}</p>
-      <p class="font-display text-2xl tabular-nums text-ink-accent m-0 leading-tight">
+      <p class="font-display text-2xl tabular-nums text-accent-text m-0 leading-tight">
         {String.pad_leading(Integer.to_string(@score), 6, "0")}
       </p>
       <p :if={@show_replay_link} class="text-ink-muted text-sm m-0 max-w-xs">
@@ -945,7 +945,7 @@ defmodule E2eWeb.TetrexLive do
           </p>
           <p
             id="tetrex-score"
-            class="font-display text-base md:text-xl tabular-nums text-ink-accent m-0 leading-none md:leading-tight"
+            class="font-display text-base md:text-xl tabular-nums text-accent-text m-0 leading-none md:leading-tight"
           >
             {String.pad_leading(Integer.to_string(@score), 6, "0")}
           </p>

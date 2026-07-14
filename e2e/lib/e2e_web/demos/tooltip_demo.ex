@@ -54,7 +54,7 @@ defmodule E2eWeb.Demos.TooltipDemo do
 
   def anatomy_placement_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap items-center gap-space gap-2">
+    <div class="flex flex-wrap items-center gap-space">
       <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "bottom"}}>
         <:trigger>Bottom</:trigger>
         <:content>Tooltip below</:content>
@@ -675,7 +675,7 @@ defmodule E2eWeb.Demos.TooltipDemo do
 
     ~H"""
     <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
-      <div class="grid grid-cols-4 gap-space gap-2 items-start min-w-max">
+      <div class="grid grid-cols-4 gap-space items-start min-w-max">
         <div :for={semantic <- @matrix_semantics} class="contents">
           <.tooltip
             :for={variant <- @matrix_variants}

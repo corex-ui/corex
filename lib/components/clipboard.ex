@@ -116,9 +116,9 @@ defmodule Corex.Clipboard do
   @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.clipboard>`). Combine axes, for example `clipboard clipboard--accent clipboard--lg` or `clipboard clipboard--info clipboard--variant-solid`.
+  Stack modifiers on the host (`class` on `<.clipboard>`). Combine axes, for example `clipboard clipboard ui-accent clipboard ui-size-lg` or `clipboard clipboard ui-info clipboard ui-solid`.
 
-  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
   Semantic modifiers set palette variables on the trigger. Variant modifiers control trigger surface treatment. Default is subtle. Copied feedback tints the input and trigger border and text only (surface stays on the UI tokens). Default copied palette is success; add a semantic modifier to override.
 
@@ -131,11 +131,11 @@ defmodule Corex.Clipboard do
   | Modifier | Classes |
   | -------- | ------- |
   | Default (success on copy) | `clipboard` |
-  | Accent | `clipboard clipboard--accent` |
-  | Brand | `clipboard clipboard--brand` |
-  | Alert | `clipboard clipboard--alert` |
-  | Info | `clipboard clipboard--info` |
-  | Success | `clipboard clipboard--success` |
+  | Accent | `clipboard clipboard ui-accent` |
+  | Brand | `clipboard clipboard ui-brand` |
+  | Alert | `clipboard clipboard ui-alert` |
+  | Info | `clipboard clipboard ui-info` |
+  | Success | `clipboard clipboard ui-success` |
 
   ### Variant
 
@@ -143,19 +143,17 @@ defmodule Corex.Clipboard do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `clipboard` or `clipboard clipboard--accent` |
-  | Solid | `clipboard clipboard--accent clipboard--variant-solid` |
-  | Ghost | `clipboard clipboard--variant-ghost` |
-  | Outline | `clipboard clipboard--accent clipboard--variant-outline` |
+  | Subtle (default) | `clipboard` or `clipboard clipboard ui-accent` |
+  | Solid | `clipboard clipboard ui-accent clipboard ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `clipboard clipboard--sm` |
-  | MD | `clipboard clipboard--md` |
-  | LG | `clipboard clipboard--lg` |
-  | XL | `clipboard clipboard--xl` |
+  | SM | `clipboard clipboard ui-size-sm` |
+  | MD | `clipboard clipboard ui-size-md` |
+  | LG | `clipboard clipboard ui-size-lg` |
+  | XL | `clipboard clipboard ui-size-xl` |
 
   <!-- tabs-close -->
 

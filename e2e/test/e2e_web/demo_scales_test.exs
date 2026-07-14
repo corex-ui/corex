@@ -54,7 +54,14 @@ defmodule E2eWeb.DemoScalesTest do
     assert DemoScales.tailwind_max_width("5xs") == "max-w-5xs"
     assert DemoScales.tailwind_width("md") == "w-md"
     assert DemoScales.tailwind_width("6xs") == "w-6xs"
-    assert DemoScales.bem_max_width("code", "sm") == "code--max-w-sm"
+    assert DemoScales.tailwind_max_width("none") == "max-w-none"
+  end
+
+  test "styling_variant_axis_steps is subtle default plus ui-solid only" do
+    steps = DemoScales.styling_variant_axis_steps("button")
+
+    assert Enum.map(steps, & &1.modifier) == ["", "ui-solid"]
+    assert Enum.map(steps, & &1.label) == ["Subtle (default)", "Solid"]
   end
 
   test "join_block_modifiers prepends w-full for fit max-width demos" do

@@ -291,12 +291,12 @@ defmodule Corex.DataTable do
 
   Modifier classes on the root:
 
-  - `data-table--sm|md|lg|xl` — font size on header and body cells; cell padding
-  - `data-table--accent|brand|alert|success|info` — header ink (`--color-ink-*`) on column titles only
+  - `data-table ui-size-sm|md|lg|xl` — font size on header and body cells; cell padding
+  - `data-table ui-accent|brand|alert|success|info` — header ink (`--color-ink-*`) on column titles only
 
-  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
-  Variant modifiers control sort trigger surface treatment. Default is subtle; add `data-table--variant-solid` for filled sort controls.
+  Variant modifiers control sort trigger surface treatment. Default is subtle; add `data-table ui-solid` for filled sort controls.
 
   Default host caps use `max-width` and `max-height` at `--container-md`. Override on the host with the same container scale as width, e.g. `max-w-none`, `max-h-none`, `max-h-2xs`, `min-h-md`, or `h-full` in a sized parent.
 

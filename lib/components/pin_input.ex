@@ -93,11 +93,11 @@ defmodule Corex.PinInput do
   @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.pin_input>`). Combine axes, for example `pin-input pin-input--accent pin-input--lg` or `pin-input pin-input--info pin-input--variant-solid`.
+  Stack modifiers on the host (`class` on `<.pin_input>`). Combine axes, for example `pin-input pin-input ui-accent pin-input ui-size-lg` or `pin-input pin-input ui-info pin-input ui-solid`.
 
-  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on each cell input. Variant modifiers control input surface treatment. Default is subtle; add `pin-input--variant-solid` for filled cells. Complete and invalid states keep their dedicated styling.
+  Semantic modifiers set palette variables on each cell input. Variant modifiers control input surface treatment. Default is subtle; add `pin-input ui-solid` for filled cells. Complete and invalid states keep their dedicated styling.
 
   <!-- tabs-open -->
 
@@ -108,11 +108,11 @@ defmodule Corex.PinInput do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `pin-input` |
-  | Accent | `pin-input pin-input--accent` |
-  | Brand | `pin-input pin-input--brand` |
-  | Alert | `pin-input pin-input--alert` |
-  | Info | `pin-input pin-input--info` |
-  | Success | `pin-input pin-input--success` |
+  | Accent | `pin-input pin-input ui-accent` |
+  | Brand | `pin-input pin-input ui-brand` |
+  | Alert | `pin-input pin-input ui-alert` |
+  | Info | `pin-input pin-input ui-info` |
+  | Success | `pin-input pin-input ui-success` |
 
   ### Variant
 
@@ -120,30 +120,28 @@ defmodule Corex.PinInput do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `pin-input` or `pin-input pin-input--accent` |
-  | Solid | `pin-input pin-input--accent pin-input--variant-solid` |
-  | Ghost | `pin-input pin-input--variant-ghost` |
-  | Outline | `pin-input pin-input--accent pin-input--variant-outline` |
+  | Subtle (default) | `pin-input` or `pin-input pin-input ui-accent` |
+  | Solid | `pin-input pin-input ui-accent pin-input ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `pin-input pin-input--sm` |
-  | MD | `pin-input pin-input--md` |
-  | LG | `pin-input pin-input--lg` |
-  | XL | `pin-input pin-input--xl` |
+  | SM | `pin-input pin-input ui-size-sm` |
+  | MD | `pin-input pin-input ui-size-md` |
+  | LG | `pin-input pin-input ui-size-lg` |
+  | XL | `pin-input pin-input ui-size-xl` |
 
   ### Radius
 
   | Modifier | Classes |
   | -------- | ------- |
-  | None | `pin-input pin-input--rounded-none` |
-  | SM | `pin-input pin-input--rounded-sm` |
-  | MD | `pin-input pin-input--rounded-md` |
-  | LG | `pin-input pin-input--rounded-lg` |
-  | XL | `pin-input pin-input--rounded-xl` |
-  | Full | `pin-input pin-input--rounded-full` |
+  | None | `pin-input pin-input ui-rounded-none` |
+  | SM | `pin-input pin-input ui-rounded-sm` |
+  | MD | `pin-input pin-input ui-rounded-md` |
+  | LG | `pin-input pin-input ui-rounded-lg` |
+  | XL | `pin-input pin-input ui-rounded-xl` |
+  | Full | `pin-input pin-input ui-rounded-full` |
 
   <!-- tabs-close -->
 

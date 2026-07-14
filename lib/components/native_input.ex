@@ -114,9 +114,9 @@ defmodule Corex.NativeInput do
   @import "../corex/components.css";
   ```
 
-  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on the input. Variant modifiers control input surface treatment. Default is subtle; add `native-input--variant-solid` for a filled field. Checkbox and radio inputs keep their dedicated styling.
+  Semantic modifiers set palette variables on the input. Variant modifiers control input surface treatment. Default is subtle; add `native-input ui-solid` for a filled field. Checkbox and radio inputs keep their dedicated styling.
 
   <!-- tabs-open -->
 
@@ -127,11 +127,11 @@ defmodule Corex.NativeInput do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `native-input` |
-  | Accent | `native-input native-input--accent` |
-  | Brand | `native-input native-input--brand` |
-  | Alert | `native-input native-input--alert` |
-  | Info | `native-input native-input--info` |
-  | Success | `native-input native-input--success` |
+  | Accent | `native-input native-input ui-accent` |
+  | Brand | `native-input native-input ui-brand` |
+  | Alert | `native-input native-input ui-alert` |
+  | Info | `native-input native-input ui-info` |
+  | Success | `native-input native-input ui-success` |
 
   ### Variant
 
@@ -139,19 +139,17 @@ defmodule Corex.NativeInput do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `native-input` or `native-input native-input--accent` |
-  | Solid | `native-input native-input--accent native-input--variant-solid` |
-  | Ghost | `native-input native-input--variant-ghost` |
-  | Outline | `native-input native-input--accent native-input--variant-outline` |
+  | Subtle (default) | `native-input` or `native-input native-input ui-accent` |
+  | Solid | `native-input native-input ui-accent native-input ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `native-input native-input--sm` |
-  | MD | `native-input native-input--md` |
-  | LG | `native-input native-input--lg` |
-  | XL | `native-input native-input--xl` |
+  | SM | `native-input native-input ui-size-sm` |
+  | MD | `native-input native-input ui-size-md` |
+  | LG | `native-input native-input ui-size-lg` |
+  | XL | `native-input native-input ui-size-xl` |
 
   <!-- tabs-close -->
   '''

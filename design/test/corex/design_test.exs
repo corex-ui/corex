@@ -164,6 +164,53 @@ defmodule Corex.Design.InkTokenCssTest do
     refute button =~ "@utility button--accent"
     refute accordion =~ "@utility accordion--accent"
   end
+
+  test "shipped css avoids removed ink token names" do
+    root =
+      :corex_design
+      |> :code.priv_dir()
+      |> List.to_string()
+      |> Path.join("css")
+
+    files =
+      Path.wildcard(Path.join(root, "**/*.css"))
+      |> Enum.reject(&String.contains?(&1, "/themes/"))
+
+    assert files != []
+
+    for file <- files do
+      css = File.read!(file)
+      refute css =~ "--color-ink-accent", Path.basename(file)
+      refute css =~ "--color-accent-ink", Path.basename(file)
+      refute css =~ "--color-ink-brand", Path.basename(file)
+      refute css =~ "--color-brand-ink", Path.basename(file)
+      refute css =~ "--color-border-accent", Path.basename(file)
+    end
+  end
+
+  test "dialog and color-picker use ui-* not legacy semantic or radius BEM" do
+    root =
+      :corex_design
+      |> :code.priv_dir()
+      |> List.to_string()
+      |> Path.join("css/components")
+
+    dialog = File.read!(Path.join(root, "dialog.css"))
+    color_picker = File.read!(Path.join(root, "color-picker.css"))
+    utilities = File.read!(Path.join(Path.dirname(root), "utilities.css"))
+
+    refute dialog =~ ".dialog.dialog--accent"
+    refute dialog =~ ".dialog.dialog--rounded-full"
+    assert dialog =~ ".dialog.ui-rounded-full" or dialog =~ "var(--ctl-ink-text"
+    assert dialog =~ "var(--ctl-ink-text"
+
+    refute color_picker =~ ".color-picker.color-picker--rounded-full"
+    assert color_picker =~ ".color-picker.ui-rounded-full"
+
+    assert utilities =~ "@utility ui-solid"
+    assert File.read!(Path.join(root, "angle-slider.css")) =~ ".angle-slider.ui-solid"
+    assert File.read!(Path.join(root, "button.css")) =~ ":not(.ui-solid)"
+  end
 end
 
 defmodule Corex.Design.ScalesTest do

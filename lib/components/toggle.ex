@@ -161,7 +161,7 @@ defmodule Corex.Toggle do
 
   Stack modifiers on the host (`class` on `<.toggle>`). Combine axes, for example `toggle ui-accent ui-size-lg` or `toggle ui-info ui-solid`.
 
-  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
   Semantic modifiers set palette variables on the root trigger. Variant modifiers control surface treatment. Default is subtle: off uses a neutral surface, on uses selected with semantic ink text. Add `ui-solid` for a filled on state.
 
@@ -188,8 +188,6 @@ defmodule Corex.Toggle do
   | -------- | ------- |
   | Subtle (default) | `toggle` or `toggle ui-accent` |
   | Solid | `toggle ui-accent ui-solid` |
-  | Ghost | `toggle` |
-  | Outline | `toggle ui-accent` |
 
   ### Size
 

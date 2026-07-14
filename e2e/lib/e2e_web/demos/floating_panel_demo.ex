@@ -829,7 +829,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
 
     ~H"""
     <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
-      <div class="grid grid-cols-4 gap-space gap-2 items-start min-w-max">
+      <div class="grid grid-cols-4 gap-space items-start min-w-max">
         <div :for={semantic <- @matrix_semantics} class="contents">
           <.floating_panel
             :for={variant <- @matrix_variants}
@@ -862,11 +862,11 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
       label = String.upcase(size)
 
       """
-      <.floating_panel class="floating-panel floating-panel--#{size}">
+      <.floating_panel class="floating-panel ui-size-#{size}">
         <:trigger class="button ui-size-sm">#{label}</:trigger>
         <:title>#{label}</:title>
         #{styling_panel_controls_code()}
-        <:content><p>Panel density scales with floating-panel--#{size}.</p></:content>
+        <:content><p>Panel density scales with ui-size-#{size}.</p></:content>
       </.floating_panel>
       """
     end)

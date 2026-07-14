@@ -257,11 +257,11 @@ defmodule Corex.Pagination do
   @import "../corex/components.css";
   ```
 
-  Stack modifiers on `<.pagination class="pagination ...">`. Combine axes, for example `pagination pagination--accent pagination--lg` or `pagination pagination--info pagination--variant-solid`.
+  Stack modifiers on `<.pagination class="pagination ...">`. Combine axes, for example `pagination pagination ui-accent pagination ui-size-lg` or `pagination pagination ui-info pagination ui-solid`.
 
-  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on item triggers. Variant modifiers control surface treatment. Default is subtle: unselected items use a neutral surface, the active page uses selected with semantic ink text. Add `pagination--variant-solid` for filled active and nav triggers.
+  Semantic modifiers set palette variables on item triggers. Variant modifiers control surface treatment. Default is subtle: unselected items use a neutral surface, the active page uses selected with semantic ink text. Add `pagination ui-solid` for filled active and nav triggers.
 
   <!-- tabs-open -->
 
@@ -272,11 +272,11 @@ defmodule Corex.Pagination do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `pagination` |
-  | Accent | `pagination pagination--accent` |
-  | Brand | `pagination pagination--brand` |
-  | Alert | `pagination pagination--alert` |
-  | Success | `pagination pagination--success` |
-  | Info | `pagination pagination--info` |
+  | Accent | `pagination pagination ui-accent` |
+  | Brand | `pagination pagination ui-brand` |
+  | Alert | `pagination pagination ui-alert` |
+  | Success | `pagination pagination ui-success` |
+  | Info | `pagination pagination ui-info` |
 
   ### Variant
 
@@ -284,32 +284,30 @@ defmodule Corex.Pagination do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `pagination` or `pagination pagination--accent` |
-  | Solid | `pagination pagination--accent pagination--variant-solid` |
-  | Ghost | `pagination pagination--variant-ghost` |
-  | Outline | `pagination pagination--accent pagination--variant-outline` |
+  | Subtle (default) | `pagination` or `pagination pagination ui-accent` |
+  | Solid | `pagination pagination ui-accent pagination ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `pagination` |
-  | SM | `pagination pagination--sm` |
-  | MD | `pagination pagination--md` |
-  | LG | `pagination pagination--lg` |
-  | XL | `pagination pagination--xl` |
+  | SM | `pagination pagination ui-size-sm` |
+  | MD | `pagination pagination ui-size-md` |
+  | LG | `pagination pagination ui-size-lg` |
+  | XL | `pagination pagination ui-size-xl` |
 
   ### Rounded
 
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `pagination` |
-  | None | `pagination pagination--rounded-none` |
-  | SM | `pagination pagination--rounded-sm` |
-  | MD | `pagination pagination--rounded-md` |
-  | LG | `pagination pagination--rounded-lg` |
-  | XL | `pagination pagination--rounded-xl` |
-  | Full | `pagination pagination--rounded-full` |
+  | None | `pagination pagination ui-rounded-none` |
+  | SM | `pagination pagination ui-rounded-sm` |
+  | MD | `pagination pagination ui-rounded-md` |
+  | LG | `pagination pagination ui-rounded-lg` |
+  | XL | `pagination pagination ui-rounded-xl` |
+  | Full | `pagination pagination ui-rounded-full` |
 
   ### Max width
 

@@ -57,7 +57,7 @@ defmodule E2eWeb.Demos.NavigateDemo do
 
   def patterns_href_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap items-center gap-space gap-2">
+    <div class="flex flex-wrap items-center gap-space">
       <.navigate to="#" class="link">Default href</.navigate>
       <.navigate to="#" class="link" type="href">Explicit href</.navigate>
     </div>
@@ -111,7 +111,7 @@ defmodule E2eWeb.Demos.NavigateDemo do
 
   def patterns_external_and_download_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap items-center gap-space gap-2">
+    <div class="flex flex-wrap items-center gap-space">
       <.navigate to="https://example.com" class="link" external>
         External Link <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
       </.navigate>
@@ -124,7 +124,7 @@ defmodule E2eWeb.Demos.NavigateDemo do
 
   def styling_color_code do
     ~S"""
-    <div class="flex flex-wrap items-center gap-space gap-2">
+    <div class="flex flex-wrap items-center gap-space">
       <.navigate to="#" class="link ui-accent">Accent</.navigate>
       <.navigate to="#" class="link ui-brand">Brand</.navigate>
       <.navigate to="#" class="link ui-alert">Alert</.navigate>
@@ -136,7 +136,7 @@ defmodule E2eWeb.Demos.NavigateDemo do
 
   def styling_color_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap items-center gap-space gap-2">
+    <div class="flex flex-wrap items-center gap-space">
       <.navigate to="#" class="link ui-accent">Accent</.navigate>
       <.navigate to="#" class="link ui-brand">Brand</.navigate>
       <.navigate to="#" class="link ui-alert">Alert</.navigate>
@@ -155,7 +155,7 @@ defmodule E2eWeb.Demos.NavigateDemo do
 
   def styling_variant_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap items-center gap-space gap-2">
+    <div class="flex flex-wrap items-center gap-space">
       <.navigate id="navigate-style-variant-subtle" class="link" to="#">Subtle (default)</.navigate>
       <.navigate id="navigate-style-variant-solid" class="link ui-solid" to="#">
         Solid
@@ -182,7 +182,7 @@ defmodule E2eWeb.Demos.NavigateDemo do
 
     ~H"""
     <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
-      <div class="grid grid-cols-4 gap-space gap-2 items-center min-w-max">
+      <div class="grid grid-cols-4 gap-space items-center min-w-max">
         <div :for={semantic <- @matrix_semantics} class="contents">
           <.navigate
             :for={variant <- @matrix_variants}
@@ -199,7 +199,7 @@ defmodule E2eWeb.Demos.NavigateDemo do
 
   def styling_size_code do
     ~S"""
-    <div class="flex flex-wrap items-center gap-space gap-2">
+    <div class="flex flex-wrap items-center gap-space">
       <.navigate to="#" class="link ui-size-sm">Small</.navigate>
       <.navigate to="#" class="link ui-size-md">Medium</.navigate>
       <.navigate to="#" class="link ui-size-lg">Large</.navigate>
@@ -210,7 +210,7 @@ defmodule E2eWeb.Demos.NavigateDemo do
 
   def styling_size_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap items-center gap-space gap-2">
+    <div class="flex flex-wrap items-center gap-space">
       <.navigate to="#" class="link ui-size-sm">Small</.navigate>
       <.navigate to="#" class="link ui-size-md">Medium</.navigate>
       <.navigate to="#" class="link ui-size-lg">Large</.navigate>

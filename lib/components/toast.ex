@@ -97,9 +97,9 @@ defmodule Corex.Toast do
 
   Stack modifiers on the group host (`class` on `<.toast_group>`).
 
-  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on action triggers and content panels. Variant modifiers control action trigger and toast panel surface treatment. Default is subtle; add `toast--variant-solid` for filled action buttons or panels.
+  Semantic modifiers set palette variables on action triggers and content panels. Variant modifiers control action trigger and toast panel surface treatment. Default is subtle; add `toast ui-solid` for filled action buttons or panels.
 
   <!-- tabs-open -->
 
@@ -108,11 +108,11 @@ defmodule Corex.Toast do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `toast` |
-  | Accent | `toast toast--accent` |
-  | Brand | `toast toast--brand` |
-  | Alert | `toast toast--alert` |
-  | Info | `toast toast--info` |
-  | Success | `toast toast--success` |
+  | Accent | `toast toast ui-accent` |
+  | Brand | `toast toast ui-brand` |
+  | Alert | `toast toast ui-alert` |
+  | Info | `toast toast ui-info` |
+  | Success | `toast toast ui-success` |
 
   ### Variant
 
@@ -120,10 +120,8 @@ defmodule Corex.Toast do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `toast` or `toast toast--accent` |
-  | Solid | `toast toast--accent toast--variant-solid` |
-  | Ghost | `toast toast--variant-ghost` |
-  | Outline | `toast toast--accent toast--variant-outline` |
+  | Subtle (default) | `toast` or `toast toast ui-accent` |
+  | Solid | `toast toast ui-accent toast ui-solid` |
 
   <!-- tabs-close -->
 

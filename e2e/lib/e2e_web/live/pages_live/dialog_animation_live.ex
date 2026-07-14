@@ -97,7 +97,7 @@ defmodule E2eWeb.DialogAnimationLive do
           <:controls>
             <.select
               id="dialog-animation-easing"
-              class="select ui-size-sm select--mini-sm lg:w-full"
+              class="select ui-size-sm lg:w-full"
               value={@easing}
               items={@easing_items}
               on_value_change="easing_changed"

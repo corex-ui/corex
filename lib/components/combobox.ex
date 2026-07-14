@@ -251,9 +251,9 @@ defmodule Corex.Combobox do
   </.combobox>
   ```
 
-  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on the input and triggers. Variant modifiers control field surface treatment. Default is subtle; add `combobox--variant-solid` for a filled control.
+  Semantic modifiers set palette variables on the input and triggers. Variant modifiers control field surface treatment. Default is subtle; add `combobox ui-solid` for a filled control.
 
   <!-- tabs-open -->
 
@@ -264,11 +264,11 @@ defmodule Corex.Combobox do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `combobox` |
-  | Accent | `combobox combobox--accent` |
-  | Brand | `combobox combobox--brand` |
-  | Alert | `combobox combobox--alert` |
-  | Info | `combobox combobox--info` |
-  | Success | `combobox combobox--success` |
+  | Accent | `combobox combobox ui-accent` |
+  | Brand | `combobox combobox ui-brand` |
+  | Alert | `combobox combobox ui-alert` |
+  | Info | `combobox combobox ui-info` |
+  | Success | `combobox combobox ui-success` |
 
   ### Variant
 
@@ -276,19 +276,17 @@ defmodule Corex.Combobox do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `combobox` or `combobox combobox--accent` |
-  | Solid | `combobox combobox--accent combobox--variant-solid` |
-  | Ghost | `combobox combobox--variant-ghost` |
-  | Outline | `combobox combobox--accent combobox--variant-outline` |
+  | Subtle (default) | `combobox` or `combobox combobox ui-accent` |
+  | Solid | `combobox combobox ui-accent combobox ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `combobox combobox--sm` |
-  | MD | `combobox combobox--md` |
-  | LG | `combobox combobox--lg` |
-  | XL | `combobox combobox--xl` |
+  | SM | `combobox combobox ui-size-sm` |
+  | MD | `combobox combobox ui-size-md` |
+  | LG | `combobox combobox ui-size-lg` |
+  | XL | `combobox combobox ui-size-xl` |
 
   <!-- tabs-close -->
 

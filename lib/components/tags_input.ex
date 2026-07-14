@@ -187,11 +187,11 @@ defmodule Corex.TagsInput do
   @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.tags_input>`). Combine axes, for example `tags-input tags-input--accent tags-input--lg` or `tags-input tags-input--info tags-input--variant-solid`.
+  Stack modifiers on the host (`class` on `<.tags_input>`). Combine axes, for example `tags-input tags-input ui-accent tags-input ui-size-lg` or `tags-input tags-input ui-info tags-input ui-solid`.
 
-  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on the input and tag chips. Variant modifiers control input surface treatment. Default is subtle; add `tags-input--variant-solid` for a filled typing field.
+  Semantic modifiers set palette variables on the input and tag chips. Variant modifiers control input surface treatment. Default is subtle; add `tags-input ui-solid` for a filled typing field.
 
   <!-- tabs-open -->
 
@@ -202,11 +202,11 @@ defmodule Corex.TagsInput do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `tags-input` |
-  | Accent | `tags-input tags-input--accent` |
-  | Brand | `tags-input tags-input--brand` |
-  | Alert | `tags-input tags-input--alert` |
-  | Info | `tags-input tags-input--info` |
-  | Success | `tags-input tags-input--success` |
+  | Accent | `tags-input tags-input ui-accent` |
+  | Brand | `tags-input tags-input ui-brand` |
+  | Alert | `tags-input tags-input ui-alert` |
+  | Info | `tags-input tags-input ui-info` |
+  | Success | `tags-input tags-input ui-success` |
 
   ### Variant
 
@@ -214,19 +214,17 @@ defmodule Corex.TagsInput do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `tags-input` or `tags-input tags-input--accent` |
-  | Solid | `tags-input tags-input--accent tags-input--variant-solid` |
-  | Ghost | `tags-input tags-input--variant-ghost` |
-  | Outline | `tags-input tags-input--accent tags-input--variant-outline` |
+  | Subtle (default) | `tags-input` or `tags-input tags-input ui-accent` |
+  | Solid | `tags-input tags-input ui-accent tags-input ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `tags-input tags-input--sm` |
-  | MD | `tags-input tags-input--md` |
-  | LG | `tags-input tags-input--lg` |
-  | XL | `tags-input tags-input--xl` |
+  | SM | `tags-input tags-input ui-size-sm` |
+  | MD | `tags-input tags-input ui-size-md` |
+  | LG | `tags-input tags-input ui-size-lg` |
+  | XL | `tags-input tags-input ui-size-xl` |
 
   <!-- tabs-close -->
 

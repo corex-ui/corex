@@ -170,9 +170,9 @@ defmodule Corex.Timer do
   @import "../corex/components.css";
   ```
 
-  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on action triggers. Variant modifiers control action trigger surface treatment. Default is subtle; add `timer--variant-solid` for filled play/pause controls.
+  Semantic modifiers set palette variables on action triggers. Variant modifiers control action trigger surface treatment. Default is subtle; add `timer ui-solid` for filled play/pause controls.
 
   <!-- tabs-open -->
 
@@ -181,11 +181,11 @@ defmodule Corex.Timer do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `timer` |
-  | Accent | `timer timer--accent` |
-  | Brand | `timer timer--brand` |
-  | Alert | `timer timer--alert` |
-  | Info | `timer timer--info` |
-  | Success | `timer timer--success` |
+  | Accent | `timer timer ui-accent` |
+  | Brand | `timer timer ui-brand` |
+  | Alert | `timer timer ui-alert` |
+  | Info | `timer timer ui-info` |
+  | Success | `timer timer ui-success` |
 
   ### Variant
 
@@ -193,19 +193,17 @@ defmodule Corex.Timer do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `timer` or `timer timer--accent` |
-  | Solid | `timer timer--accent timer--variant-solid` |
-  | Ghost | `timer timer--variant-ghost` |
-  | Outline | `timer timer--accent timer--variant-outline` |
+  | Subtle (default) | `timer` or `timer timer ui-accent` |
+  | Solid | `timer timer ui-accent timer ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `timer timer--sm` |
-  | MD | `timer timer--md` |
-  | LG | `timer timer--lg` |
-  | XL | `timer timer--xl` |
+  | SM | `timer timer ui-size-sm` |
+  | MD | `timer timer ui-size-md` |
+  | LG | `timer timer ui-size-lg` |
+  | XL | `timer timer ui-size-xl` |
 
   <!-- tabs-close -->
 

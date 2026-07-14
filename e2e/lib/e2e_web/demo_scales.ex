@@ -21,7 +21,6 @@ defmodule E2eWeb.DemoScales do
   def tailwind_width(step), do: TailwindSizingLiterals.width(step)
   def tailwind_max_height(step), do: TailwindSizingLiterals.max_height(step)
   def tailwind_min_height(step), do: TailwindSizingLiterals.min_height(step)
-  def bem_max_width(component, step), do: "#{component}--max-w-#{step}"
 
   def preview_scroll_class do
     "w-full max-h-[70vh] overflow-y-auto scrollbar scrollbar--sm flex flex-col gap-space-lg"

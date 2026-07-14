@@ -39,11 +39,11 @@ defmodule Corex.ColorPicker do
   @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.color_picker>`). Combine axes, for example `color-picker color-picker--accent color-picker--lg` or `color-picker color-picker--info color-picker--variant-solid`.
+  Stack modifiers on the host (`class` on `<.color_picker>`). Combine axes, for example `color-picker color-picker ui-accent color-picker ui-size-lg` or `color-picker color-picker ui-info color-picker ui-solid`.
 
-  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on the swatch trigger and channel inputs. Variant modifiers control field surface treatment. Default is subtle; add `color-picker--variant-solid` for a filled control.
+  Semantic modifiers set palette variables on the swatch trigger and channel inputs. Variant modifiers control field surface treatment. Default is subtle; add `color-picker ui-solid` for a filled control.
 
   <!-- tabs-open -->
 
@@ -54,11 +54,11 @@ defmodule Corex.ColorPicker do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `color-picker` |
-  | Accent | `color-picker color-picker--accent` |
-  | Brand | `color-picker color-picker--brand` |
-  | Alert | `color-picker color-picker--alert` |
-  | Info | `color-picker color-picker--info` |
-  | Success | `color-picker color-picker--success` |
+  | Accent | `color-picker color-picker ui-accent` |
+  | Brand | `color-picker color-picker ui-brand` |
+  | Alert | `color-picker color-picker ui-alert` |
+  | Info | `color-picker color-picker ui-info` |
+  | Success | `color-picker color-picker ui-success` |
 
   ### Variant
 
@@ -66,19 +66,17 @@ defmodule Corex.ColorPicker do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `color-picker` or `color-picker color-picker--accent` |
-  | Solid | `color-picker color-picker--accent color-picker--variant-solid` |
-  | Ghost | `color-picker color-picker--variant-ghost` |
-  | Outline | `color-picker color-picker--accent color-picker--variant-outline` |
+  | Subtle (default) | `color-picker` or `color-picker color-picker ui-accent` |
+  | Solid | `color-picker color-picker ui-accent color-picker ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `color-picker color-picker--sm` |
-  | MD | `color-picker color-picker--md` |
-  | LG | `color-picker color-picker--lg` |
-  | XL | `color-picker color-picker--xl` |
+  | SM | `color-picker color-picker ui-size-sm` |
+  | MD | `color-picker color-picker ui-size-md` |
+  | LG | `color-picker color-picker ui-size-lg` |
+  | XL | `color-picker color-picker ui-size-xl` |
 
   <!-- tabs-close -->
 

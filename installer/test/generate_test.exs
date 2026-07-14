@@ -40,7 +40,7 @@ defmodule Corex.New.GenerateTest do
       mix_exs = File.read!("mix.exs")
       assert mix_exs =~ ~r/\{:corex_design,/
       assert File.read!("config/config.exs") =~ "config :corex_design"
-      assert File.read!(Path.join("assets/css", "app.css")) =~ "../corex/main.css"
+      assert File.read!(Path.join("assets/css", "app.css")) =~ "../corex/corex.css"
     end)
   end
 
@@ -183,9 +183,11 @@ defmodule Corex.New.GenerateTest do
                )
 
       css = File.read!(Path.join("assets/css", "app.css"))
-      assert css =~ "theme/neo.css"
-      assert css =~ "theme/duo.css"
-      refute css =~ "theme/leo.css"
+      assert css =~ "../corex/corex.css"
+      config = File.read!("config/config.exs")
+      assert config =~ "neo"
+      assert config =~ "duo"
+      refute config =~ ~r/themes:.*leo/
     end)
   end
 
@@ -214,8 +216,10 @@ defmodule Corex.New.GenerateTest do
                )
 
       css = File.read!(Path.join("assets/css", "app.css"))
-      assert css =~ "theme/neo.css"
-      assert css =~ "theme/leo.css"
+      assert css =~ "../corex/corex.css"
+      config = File.read!("config/config.exs")
+      assert config =~ "neo"
+      assert config =~ "leo"
     end)
   end
 end

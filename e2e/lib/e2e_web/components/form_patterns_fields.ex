@@ -27,7 +27,7 @@ defmodule E2eWeb.FormPatternsFields do
           positioning={%Corex.Positioning{placement: "top-end"}}
         >
           <:trigger>
-            <.heroicon name="hero-exclamation-circle" class="icon text-ink-alert" />
+            <.heroicon name="hero-exclamation-circle" class="icon text-alert-text" />
           </:trigger>
           <:content>{msg}</:content>
         </.tooltip>
@@ -57,7 +57,7 @@ defmodule E2eWeb.FormPatternsFields do
           positioning={%Corex.Positioning{placement: "top-end"}}
         >
           <:trigger>
-            <.heroicon name="hero-exclamation-circle" class="icon text-ink-alert" />
+            <.heroicon name="hero-exclamation-circle" class="icon text-alert-text" />
           </:trigger>
           <:content>{msg}</:content>
         </.tooltip>
@@ -80,7 +80,7 @@ defmodule E2eWeb.FormPatternsFields do
           positioning={%Corex.Positioning{placement: "top-end"}}
         >
           <:trigger>
-            <.heroicon name="hero-exclamation-circle" class="icon text-ink-alert" />
+            <.heroicon name="hero-exclamation-circle" class="icon text-alert-text" />
           </:trigger>
           <:content>{msg}</:content>
         </.tooltip>
@@ -106,7 +106,7 @@ defmodule E2eWeb.FormPatternsFields do
           positioning={%Corex.Positioning{placement: "top-end"}}
         >
           <:trigger>
-            <.heroicon name="hero-exclamation-circle" class="icon text-ink-alert" />
+            <.heroicon name="hero-exclamation-circle" class="icon text-alert-text" />
           </:trigger>
           <:content>{msg}</:content>
         </.tooltip>
@@ -126,7 +126,7 @@ defmodule E2eWeb.FormPatternsFields do
           positioning={%Corex.Positioning{placement: "top-end"}}
         >
           <:trigger>
-            <.heroicon name="hero-exclamation-circle" class="icon text-ink-alert" />
+            <.heroicon name="hero-exclamation-circle" class="icon text-alert-text" />
           </:trigger>
           <:content>{msg}</:content>
         </.tooltip>
@@ -145,7 +145,7 @@ defmodule E2eWeb.FormPatternsFields do
           positioning={%Corex.Positioning{placement: "top-end"}}
         >
           <:trigger>
-            <.heroicon name="hero-exclamation-circle" class="icon text-ink-alert" />
+            <.heroicon name="hero-exclamation-circle" class="icon text-alert-text" />
           </:trigger>
           <:content>{msg}</:content>
         </.tooltip>

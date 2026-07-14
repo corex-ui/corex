@@ -170,7 +170,7 @@ defmodule Corex.Tabs do
 
   Stack modifiers on the host (`class` on `<.tabs>`). Combine axes, for example `tabs ui-accent ui-size-lg` or `tabs ui-info`.
 
-  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
   Semantic modifiers set palette variables on triggers. Variant modifiers control surface treatment. Default selected triggers use a neutral selected surface with semantic text ink; add `ui-solid` for a filled selected trigger.
 
@@ -197,8 +197,6 @@ defmodule Corex.Tabs do
   | -------- | ------- |
   | Subtle (default) | `tabs` or `tabs ui-accent` |
   | Solid | `tabs ui-accent ui-solid` |
-  | Ghost | `tabs ui-info` |
-  | Outline | `tabs ui-accent` |
 
   ### Size
 

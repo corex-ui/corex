@@ -489,7 +489,7 @@ defmodule Corex.Select do
 
   Stack modifiers on `<.select class="select ...">`. Combine axes, for example `select ui-accent ui-size-lg` or `select ui-info ui-solid`.
 
-  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
   Semantic modifiers set palette variables on the trigger. Variant modifiers control trigger surface treatment. Default is subtle; add `ui-solid` for a filled trigger. Selected menu items still use the semantic palette.
 
@@ -516,8 +516,6 @@ defmodule Corex.Select do
   | -------- | ------- |
   | Subtle (default) | `select` or `select ui-accent` |
   | Solid | `select ui-accent ui-solid` |
-  | Ghost | `select` |
-  | Outline | `select ui-accent` |
 
   ### Size
 

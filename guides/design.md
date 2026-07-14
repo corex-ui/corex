@@ -38,13 +38,11 @@ In `config/config.exs`, optional keys trim the generated tree:
 | Key | Default | Effect |
 |-----|---------|--------|
 | `components` | `nil` (all) | Emit only listed component recipe files |
-| `semantics` | `nil` (all) | Emit only listed palette roles (`base` always included) |
-| `variants` | `nil` (all) | Keep `solid`, `ghost`, `outline` utilities (`subtle` is default anatomy) |
+| `semantics` | `nil` (all) | Emit only listed palette roles (`base` always included); trims unused `ui-{role}` utilities |
 
 ```elixir
 components: ~w(button dialog accordion typo layout-heading)a,
-semantics: ~w(accent brand alert)a,
-variants: ~w(solid ghost outline)a
+semantics: ~w(accent brand alert)a
 ```
 
 Legacy `scales: [semantic: ...]` is still read when `semantics:` is omitted; prefer `semantics:` for new apps.
@@ -73,10 +71,10 @@ For Esbuild, hooks, and `use Corex`, follow [Manual installation](manual_install
 
 ## Modifier classes
 
-Each styled component has a **root class** with the same name as the component (`accordion`, `button`, `dialog`, …). Modifiers follow:
+Each styled component has a **root class** with the same name as the component (`accordion`, `button`, `dialog`, …). Stack shared modifier classes on the host:
 
 ```text
-<root> <root>--<modifier> …
+<root> ui-<role> ui-solid ui-size-<step> ui-rounded-<step>
 ```
 
 Example:
@@ -93,18 +91,18 @@ Example:
 />
 ```
 
-Common modifier axes (not every component has every axis—check that component’s Hexdocs **Corex Design** section):
+Common modifier axes (not every component has every axis—check that component’s Hexdocs **Style** section):
 
 | Axis | Examples | Effect |
 |------|----------|--------|
-| Semantic | `ui-accent`, `timer--success` | Palette CSS variables on the host |
-| Variant | `ui-solid`, `` | Surface treatment (solid, subtle default, ghost, outline) |
+| Semantic | `ui-accent`, `ui-success` | Palette CSS variables on the host |
+| Variant | `ui-solid` (subtle is default) | Surface treatment |
 | Size | `ui-size-sm`, `ui-size-lg` | Spacing, control height, and font size |
 | Radius | `ui-rounded-xl` | Corner radius |
 
-Semantic and variant axes combine: `button ui-accent`. Semantic sets palette variables; variant controls fill, border, and transparency.
+Semantic and variant axes combine: `button ui-accent ui-solid`. Semantic sets palette variables; `ui-solid` applies filled surface treatment.
 
-See the [modifier guide](modifiers.html) for the full axis system. Stack modifiers on the root `class` attribute. Do not invent new class names; use only modifiers defined for that component in `assets/corex/components/<name>.css`.
+See the [modifier guide](modifiers.html) for the full axis system. Stack modifiers on the root `class` attribute. Do not invent new class names; use only shared `ui-*` modifiers and component-specific layout classes documented for that component.
 
 ## Shared utilities
 
@@ -113,8 +111,7 @@ Component styles build on shared utilities in `assets/corex/utilities.css` (pull
 | Utility | Used for |
 |---------|----------|
 | `ui-trigger` | Buttons, triggers, icon controls (hover, focus, disabled, open state) |
-| `ui-trigger--square` / `ui-trigger--circle` / `ui-trigger--ghost` | Icon-only and subtle triggers |
-| `ui-trigger--*` | Size and color variants (`sm`, `accent`, …) |
+| `ui-trigger--square` / `ui-trigger--circle` | Icon-only triggers |
 | `ui-input` | Text fields, combobox input, similar controls |
 | `ui-item` | Menu, listbox, select options |
 | `ui-content` | Popovers, panels, floating surfaces |
@@ -123,7 +120,7 @@ Component styles build on shared utilities in `assets/corex/utilities.css` (pull
 | `ui-link` | Link-styled controls |
 | `ui-root` | Vertical/horizontal stacks |
 
-Example: `button.css` applies `ui-trigger` to `.button`; `ui-accent` maps to token colors via `@utility button--*`.
+Example: `button.css` applies `ui-trigger` to `.button`; host classes like `ui-accent` and `ui-solid` set shared `--ctl-*` variables from `utilities.css`.
 
 ## Tokens and themes
 

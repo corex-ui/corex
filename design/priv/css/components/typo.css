@@ -128,7 +128,7 @@
 
  .typo mark {
  background: var(--color-success);
- color: var(--color-ink-success);
+ color: var(--color-success-contrast);
  padding: 0.1em 0.25em;
  border-radius: 0.25em;
  }

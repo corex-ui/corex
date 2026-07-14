@@ -158,7 +158,7 @@ defmodule E2eWeb.Demos.ToggleDemo do
 
     ~H"""
     <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
-      <div class="grid grid-cols-4 gap-space gap-2 items-center min-w-max">
+      <div class="grid grid-cols-4 gap-space items-center min-w-max">
         <div :for={semantic <- @matrix_semantics} class="contents">
           <.toggle
             :for={variant <- @matrix_variants}

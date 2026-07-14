@@ -304,9 +304,9 @@ defmodule Corex.Listbox do
   @import "../corex/components.css";
   ```
 
-  Axes: **Semantic** (`--accent`, `--brand`, `--alert`, `--info`, `--success`), **Variant** (`--variant-solid`, `--variant-subtle`, `--variant-ghost`, `--variant-outline`), **Size** (`--sm`, `--md`, `--lg`, `--xl`, also scales text), **Radius** (`--rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
-  Variant modifiers control unselected item surface treatment. Selected items keep semantic fill. Default is subtle; add `listbox--variant-solid` for filled rows.
+  Variant modifiers control unselected item surface treatment. Selected items keep semantic fill. Default is subtle; add `listbox ui-solid` for filled rows.
 
   <!-- tabs-open -->
 
@@ -315,11 +315,11 @@ defmodule Corex.Listbox do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `listbox` |
-  | Accent | `listbox listbox--accent` |
-  | Brand | `listbox listbox--brand` |
-  | Alert | `listbox listbox--alert` |
-  | Info | `listbox listbox--info` |
-  | Success | `listbox listbox--success` |
+  | Accent | `listbox listbox ui-accent` |
+  | Brand | `listbox listbox ui-brand` |
+  | Alert | `listbox listbox ui-alert` |
+  | Info | `listbox listbox ui-info` |
+  | Success | `listbox listbox ui-success` |
 
   ### Variant
 
@@ -327,19 +327,17 @@ defmodule Corex.Listbox do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `listbox` or `listbox listbox--accent` |
-  | Solid | `listbox listbox--accent listbox--variant-solid` |
-  | Ghost | `listbox listbox--variant-ghost` |
-  | Outline | `listbox listbox--accent listbox--variant-outline` |
+  | Subtle (default) | `listbox` or `listbox listbox ui-accent` |
+  | Solid | `listbox listbox ui-accent listbox ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `listbox listbox--sm` |
-  | MD | `listbox listbox--md` |
-  | LG | `listbox listbox--lg` |
-  | XL | `listbox listbox--xl` |
+  | SM | `listbox listbox ui-size-sm` |
+  | MD | `listbox listbox ui-size-md` |
+  | LG | `listbox listbox ui-size-lg` |
+  | XL | `listbox listbox ui-size-xl` |
 
   <!-- tabs-close -->
 
