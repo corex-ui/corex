@@ -318,6 +318,31 @@ defmodule Corex.Design.ScalesTest do
     assert css =~ "--radius-md: var(--theme-radius-md);"
     assert css =~ "--radius-none: 0px;"
   end
+
+  test "font bridge maps theme font families and weights" do
+    Application.ensure_all_started(:corex_design)
+
+    CorexDesign.TestConfig.put(
+      output: "_build/test_font_bridge",
+      default_theme: :neo,
+      default_mode: :light,
+      themes: nil
+    )
+
+    output = Path.expand("_build/test_font_bridge", File.cwd!())
+    File.rm_rf!(output)
+
+    Mix.Task.reenable("corex.design.build")
+    Mix.Task.run("corex.design.build", ["--output", output])
+
+    font = Path.join(output, "tokens/semantic/font.css")
+    css = File.read!(font)
+
+    assert css =~ "--font-sans: var(--theme-font-sans);"
+    assert css =~ "--font-display: var(--theme-font-display);"
+    assert css =~ "--font-mono: var(--theme-font-mono);"
+    assert css =~ "--font-weight-bold: var(--theme-font-weight-bold);"
+  end
 end
 
 defmodule Corex.Design.ComponentLayoutTest do

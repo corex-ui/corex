@@ -115,6 +115,29 @@ defmodule Corex.Design.Emit.Semantic do
     )
   end
 
+  @doc false
+  def write_font_bridge!(output_root) do
+    families =
+      Enum.map(~w(sans serif mono code display), fn family ->
+        "  --font-#{family}: var(--theme-font-#{family});"
+      end)
+
+    weights =
+      Enum.map(
+        ~w(thin extralight light normal medium semibold bold extrabold black),
+        fn weight ->
+          "  --font-weight-#{weight}: var(--theme-font-weight-#{weight});"
+        end
+      )
+
+    path = Path.join([output_root, "tokens", "semantic", "font.css"])
+
+    Write.atomic!(
+      path,
+      @header <> "@theme inline {\n" <> Enum.join(families ++ weights, "\n") <> "\n}\n"
+    )
+  end
+
   defp container_bridge_decls("container") do
     Enum.map(Scales.master_ladder_strings(), fn step ->
       "  --container-#{step}: var(--theme-container-#{step});"

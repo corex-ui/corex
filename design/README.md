@@ -113,4 +113,21 @@ Semantic ink for text and rings on neutral surfaces uses `--color-ink-{semantic}
 
 Theme color values are generated into `priv/css/tokens/themes/{theme}/color/{mode}.css` as runtime `--color-*` custom properties on `[data-theme][data-mode]`. Set both attributes on `<html>`. A single generated `tokens/semantic/color.css` registers the Tailwind `@theme inline` bridge. Deprecated `--theme-color-*` names alias back to `--color-*` for one release.
 
+## Fonts (optional)
+
+Corex Design does not ship `@font-face` files. Theme CSS only sets font stacks (`--theme-font-*`); the generated `tokens/semantic/font.css` bridge maps them to `--font-sans`, `--font-display`, `--font-mono`, `--font-code`, and `--font-weight-*` used by `.typo` and components.
+
+- **neo** uses system stacks only; no web font import is required.
+- **uno**, **duo**, and **leo** (or a theme picker that exposes all four) need web fonts loaded by the app.
+
+Place a Google Fonts (or self-hosted) import **before** Tailwind and Corex imports in `app.css`:
+
+```css
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300..900;1,300..900&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:ital,wght@0,400..800;1,400..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Work+Sans:ital,wght@0,300..900;1,300..900&display=swap');
+@import "tailwindcss";
+@import "../corex/corex.css";
+```
+
+That URL covers DM Sans and JetBrains Mono (uno), Work Sans and Playfair Display (duo), and IBM Plex Sans/Mono (leo).
+
 Maintainers regenerate theme token files with `mix bundle.build` in this package (updates `priv/css/tokens/themes/`). Verify component CSS in e2e with `cd e2e && mix assets.build`.

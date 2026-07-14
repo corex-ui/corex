@@ -65,6 +65,22 @@ Legacy `scales: [semantic: ...]` is still read when `semantics:` is omitted; pre
 
 Use a `data-theme` value that matches a theme file you imported (`neo`, `uno`, `duo`, `leo`). See [Theming](theming.html) and [Dark mode](dark_mode.html) for pickers and persistence.
 
+### Fonts (optional)
+
+Corex Design does not ship `@font-face` files. Theme CSS sets stacks (`--theme-font-*`); `tokens/semantic/font.css` maps them to `--font-*` used by `.typo` and components.
+
+- **neo** uses system fonts; no web font import is required.
+- For **uno**, **duo**, **leo**, or a picker that switches among all four themes, load web fonts in `app.css` **before** Tailwind / Corex:
+
+```css
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300..900;1,300..900&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:ital,wght@0,400..800;1,400..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Work+Sans:ital,wght@0,300..900;1,300..900&display=swap');
+@import "../corex/main.css";
+@import "../corex/theme/neo.css";
+@import "../corex/components.css";
+```
+
+That import covers DM Sans and JetBrains Mono (uno), Work Sans and Playfair Display (duo), and IBM Plex Sans/Mono (leo). Self-hosting the same families is fine.
+
 If `app.css` still loads **daisyUI** from stock `phx.new`, remove it when using Corex Design—the two token systems conflict.
 
 For Esbuild, hooks, and `use Corex`, follow [Manual installation](manual_installation.html).

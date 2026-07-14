@@ -26,6 +26,7 @@ defmodule Corex.Design.Tokens.Publish do
     Corex.Design.Emit.Semantic.write_color_bridge!(output_root)
     Corex.Design.Emit.Semantic.write_border_bridge!(output_root)
     Corex.Design.Emit.Semantic.write_dimension_bridge!(output_root)
+    Corex.Design.Emit.Semantic.write_font_bridge!(output_root)
     Corex.Design.Emit.Semantic.remove_legacy_color_scope!(output_root)
     write_theme_entries!(output_root)
 
