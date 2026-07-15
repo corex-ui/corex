@@ -4,7 +4,7 @@ Provides the `mix corex.new` installer as a Mix archive.
 
 It runs `mix phx.new` with forwarded Phoenix flags (always with `--no-install`),
 then writes Corex-owned layouts, HEEx, plugs, hooks, and asset stubs using EEx
-scaffolds, and copies the bundled design snapshot into `assets/corex/`. LiveView, HTML, esbuild, and full Phoenix assets stay enabled  -  there are no `--no-live` / `--no-html` / `--no-esbuild` / `--no-assets` switches here.
+scaffolds, and adds the `corex_design` dependency plus token config for generated CSS in `assets/corex/`. LiveView, HTML, esbuild, and full Phoenix assets stay enabled  -  there are no `--no-live` / `--no-html` / `--no-esbuild` / `--no-assets` switches here.
 
 To install from Hex, run:
 

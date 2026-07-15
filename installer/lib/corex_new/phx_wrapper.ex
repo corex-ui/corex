@@ -131,7 +131,7 @@ defmodule Corex.New.PhxWrapper do
     end
   end
 
-  defp mix_cmd_into do
+  def mix_cmd_into do
     if Application.get_env(:corex_new, :silent_mix_output, false) do
       ""
     else

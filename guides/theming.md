@@ -119,7 +119,7 @@ def theme_toggle(assigns) do
   ~H"""
   <.select
     id="theme-select"
-    class="select select--sm"
+    class="select ui-size-sm"
     items={[
       %{value: "neo", label: "Neo"},
       %{value: "uno", label: "Uno"},
@@ -169,8 +169,10 @@ end
 @import "../corex/theme/uno.css";
 @import "../corex/theme/duo.css";
 @import "../corex/theme/leo.css";
-@import "../corex/components/select.css";
+@import "../corex/components.css";
 ```
+
+Include `select` in `components:` when you use a theme picker.
 
 ## Related
 

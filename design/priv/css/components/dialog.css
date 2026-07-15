@@ -1,0 +1,131 @@
+@import "../main.css";
+
+@layer components {
+ .dialog[data-loading] > * {
+ @apply ui-loading;
+ }
+
+ .dialog [data-scope="dialog"][data-part="trigger"] {
+ @apply ui-trigger;
+ }
+
+ .dialog [data-scope="dialog"][data-part="close-trigger"] {
+ @apply ui-trigger ui-trigger--square ui-size-sm;
+
+ flex-shrink: 0;
+ height: fit-content;
+ margin-inline-start: auto;
+ }
+
+ .dialog [data-scope="dialog"][data-part="backdrop"] {
+ position: fixed;
+ inset: 0;
+ width: 100vw;
+ height: 100vh;
+ background: color-mix(in srgb, var(--color-ui) 95%, transparent);
+ z-index: 10;
+ }
+
+ .dialog [data-scope="dialog"][data-part="positioner"] {
+ position: fixed;
+ inset: 0;
+ width: 100vw;
+ height: 100vh;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ z-index: 10;
+ }
+
+ .dialog [data-scope="dialog"][data-part="content"] {
+ @apply ui-content;
+
+ max-width: var(--container-md);
+ padding: var(--spacing-space);
+ text-align: start;
+ }
+
+ .dialog [data-scope="dialog"][data-part="positioner"][data-state="closed"] {
+ pointer-events: none;
+ }
+
+ .dialog[data-animation="js"] [data-scope="dialog"][data-part="backdrop"][data-state="closed"],
+ .dialog[data-animation="custom"] [data-scope="dialog"][data-part="backdrop"][data-state="closed"],
+ .dialog[data-animation="js"] [data-scope="dialog"][data-part="content"][data-state="closed"],
+ .dialog[data-animation="custom"] [data-scope="dialog"][data-part="content"][data-state="closed"] {
+ opacity: 0;
+ pointer-events: none;
+ }
+
+ .dialog [data-scope="dialog"][data-part="header"] {
+ display: flex;
+ align-items: center;
+ }
+
+ .dialog [data-scope="dialog"][data-part="header"] [data-scope="dialog"][data-part="title"] {
+ flex: 1 1 0%;
+ min-width: 0;
+ }
+
+ .dialog [data-part="row"] {
+ display: inline-flex;
+ flex-direction: row;
+ justify-content: space-between;
+ }
+
+ .dialog [data-scope="dialog"][data-part="title"],
+ .dialog [data-scope="dialog"][data-part="description"] {
+ margin-block: 0;
+ text-align: start;
+ }
+
+ .dialog.dialog--side [data-scope="dialog"][data-part="content"] {
+ height: 100%;
+ overflow: hidden;
+ display: flex;
+ flex-direction: column;
+ width: 100%;
+ max-width: var(--container-3xs);
+ padding: var(--spacing-space);
+ border-radius: var(--radius-none);
+ border: 0;
+ }
+
+ .dialog.dialog--side [data-scope="dialog"][data-part="header"] {
+ padding: var(--spacing-space);
+ padding-bottom: 0;
+ flex-shrink: 0;
+ }
+
+ .dialog.dialog--side [data-scope="dialog"][data-part="description"] {
+ padding-inline: var(--spacing-space);
+ padding-bottom: var(--spacing-space);
+ }
+
+ .dialog.ui-rounded-full [data-scope="dialog"][data-part="content"] {
+ border-radius: var(--radius-xl);
+ }
+
+ .dialog.dialog--side [data-scope="dialog"][data-part="positioner"] {
+ align-items: stretch;
+ justify-content: flex-start;
+ height: 100vh;
+ }
+
+ .dialog [data-scope="dialog"][data-part="content"][data-has-nested] {
+ transform: scale(calc(1 - var(--nested-layer-count) * 0.05));
+ transition: transform 0.2s ease-in-out;
+ }
+
+ .dialog [data-scope="dialog"][data-part="content"][data-nested] {
+ border: 2px solid var(--ctl-fill, var(--color-accent));
+ }
+
+ .dialog [data-scope="dialog"][data-part="backdrop"][data-has-nested] {
+ opacity: calc(0.4 + var(--nested-layer-count) * 0.1);
+ }
+
+ .dialog [data-scope="dialog"][data-part="title"] {
+ color: var(--ctl-ink-text, var(--color-ink));
+ }
+}

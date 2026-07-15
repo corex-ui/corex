@@ -1,0 +1,20 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+[data-theme="neo"] {
+  --theme-font-sans: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --theme-font-serif: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+  --theme-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  --theme-font-code: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  --theme-font-display: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --theme-font-weight-normal: 400;
+  --theme-font-weight-black: 900;
+  --theme-font-weight-light: 300;
+  --theme-font-weight-semibold: 600;
+  --theme-font-weight-medium: 500;
+  --theme-font-weight-bold: 700;
+  --theme-font-weight-thin: 100;
+  --theme-font-weight-extralight: 200;
+  --theme-font-weight-extrabold: 800;
+}

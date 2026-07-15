@@ -1,0 +1,70 @@
+@import "../main.css";
+
+@layer components {
+ .link {
+ @apply ui-link;
+
+ overflow: visible;
+ --link-fill: var(--color-ui);
+ --link-fill-hover: var(--color-ui-hover);
+ --link-fill-active: var(--color-ui-active);
+ --link-ink: var(--color-ink);
+ --link-ink-text: var(--color-ink);
+ --link-muted: var(--color-ui-muted);
+ }
+
+ .link:not(.ui-solid) {
+ color: var(--ctl-ink-text, var(--color-link));
+ background-color: transparent;
+ border-color: transparent;
+ }
+
+ .link.ui-solid {
+ color: var(--ctl-ink, var(--ctl-ink-text, var(--color-ink)));
+ background-color: var(--ctl-bg, var(--color-ui));
+ border: 1px solid var(--ctl-bd, var(--color-border));
+ text-decoration-line: none;
+ }
+
+ .link.ui-solid:hover {
+ background-color: var(--ctl-bg-hover, var(--color-ui-hover));
+ }
+
+ .link.ui-solid:active {
+ background-color: var(--ctl-bg-active, var(--color-ui-active));
+ }
+
+ .link.ui-solid:focus-visible {
+ outline: none;
+ box-shadow: inset 0 0 0 2px var(--ctl-ring, var(--color-ink));
+ }
+
+ .link.link--skip {
+ position: fixed;
+ inset-inline-start: var(--spacing-space-4);
+ inset-block-start: -9999px;
+ z-index: 10000;
+ max-width: min(100vw - var(--spacing-space-8), var(--container-xs));
+ padding-block: var(--spacing-space-3);
+ padding-inline: var(--spacing-space-4);
+ margin: 0;
+ overflow: visible;
+ background: var(--color-layer);
+ color: var(--color-ink);
+ border: 1px solid var(--color-border);
+ box-shadow: 0 4px 24px rgb(0 0 0 / 0.12);
+ transition: inset-block-start 0.15s ease;
+ text-decoration-line: none;
+ }
+
+ .link.link--skip:focus,
+ .link.link--skip:focus-visible {
+ inset-block-start: var(--spacing-space-4);
+ }
+
+ @media (prefers-reduced-motion: reduce) {
+ .link.link--skip {
+ transition: none;
+ }
+ }
+}

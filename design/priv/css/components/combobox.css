@@ -1,0 +1,191 @@
+@import "../main.css";
+@import "./scrollbar.css";
+
+@layer components {
+ .combobox {
+ width: 100%;
+ max-width: var(--container-3xs);
+ }
+
+ .combobox[data-orientation="horizontal"] {
+ max-width: var(--container-md);
+ }
+
+ .combobox[data-loading] [data-scope="combobox"][data-part="root"] {
+ @apply ui-loading;
+ }
+
+ .combobox [data-scope="combobox"][data-part="root"] {
+ @apply ui-root;
+
+ gap: var(--spacing-space);
+ width: 100%;
+ position: relative;
+ padding-inline-end: var(--spacing-space);
+ }
+
+ .combobox [data-scope="combobox"][data-part="label"] {
+ @apply ui-label;
+ }
+
+ .combobox [data-scope="combobox"][data-part="empty"] {
+ @apply ui-label;
+
+ list-style: none;
+ padding-inline: var(--spacing-space);
+ padding-block: var(--spacing-space);
+ }
+
+ .combobox [data-scope="combobox"][data-part="control"] {
+ display: flex;
+ position: relative;
+ }
+
+ .combobox [data-scope="combobox"][data-part="input"] {
+ @apply ui-input;
+
+ flex: 1;
+ padding-inline: var(--spacing-space);
+ border-end-end-radius: 0;
+ border-start-end-radius: 0;
+
+ &::placeholder {
+ color: var(--color-ink);
+ }
+ }
+
+ .combobox [data-scope="combobox"][data-part="input"][data-invalid] {
+ border-inline-end-color: var(--color-alert);
+ }
+
+ .combobox
+ [data-scope="combobox"][data-part="input"][data-invalid]
+ ~ [data-scope="combobox"][data-part="clear-trigger"],
+ .combobox
+ [data-scope="combobox"][data-part="input"][data-invalid]
+ ~ [data-scope="combobox"][data-part="trigger"] {
+ border-color: var(--color-alert);
+ box-shadow: none;
+ }
+
+ .combobox [data-scope="combobox"][data-part="trigger"] {
+ @apply ui-trigger;
+
+ aspect-ratio: 1 / 1;
+ padding: 0;
+ justify-content: center;
+ width: auto;
+ min-width: var(--ctl-size, var(--spacing-size));
+ border-inline-start: none;
+ border-start-start-radius: 0;
+ border-end-start-radius: 0;
+ border-start-end-radius: var(--ctl-radius, var(--radius-md));
+ border-end-end-radius: var(--ctl-radius, var(--radius-md));
+ flex-shrink: 0;
+ }
+
+ .combobox [data-scope="combobox"][data-part="clear-trigger"] {
+ @apply ui-trigger ui-trigger--square;
+
+ border-inline-start: none;
+ border-radius: 0;
+ flex-shrink: 0;
+ }
+
+ .combobox [data-scope="combobox"][data-part="positioner"] {
+ position: relative;
+ z-index: 50;
+ }
+
+ .combobox [data-scope="combobox"][data-part="content"] {
+ @apply ui-content scrollbar scrollbar--sm;
+
+ z-index: 50;
+ max-height: calc(var(--spacing) * 96);
+ overflow: auto;
+ padding: 0;
+ border-radius: var(--radius-md);
+ box-shadow: var(--shadow-ui);
+ }
+
+ .combobox [data-scope="combobox"][data-part="item-group"] {
+ display: flex;
+ flex-direction: column;
+ min-height: fit-content;
+ }
+
+ .combobox [data-scope="combobox"][data-part="list"] {
+ min-height: fit-content;
+ display: flex;
+ flex-direction: column;
+ }
+
+ .combobox [data-scope="combobox"][data-part="item-group-label"] {
+ display: flex;
+ align-items: center;
+ font-size: var(--text-base);
+ line-height: var(--text-base--line-height);
+ text-align: start;
+ padding-inline: var(--spacing-space);
+ min-height: var(--spacing-size);
+ background-color: var(--color-root);
+ color: var(--color-ink);
+ border-bottom: 1px solid var(--color-border);
+ }
+
+ .combobox [data-scope="combobox"][data-part="item"] {
+ @apply ui-item;
+ }
+
+ .combobox [data-scope="combobox"][data-part="content"] [data-part="item-text"] {
+ flex: 1 1 0%;
+ min-width: 0;
+ max-width: 100%;
+ width: auto;
+ overflow: hidden;
+ text-overflow: ellipsis;
+ white-space: nowrap;
+ display: flex;
+ flex-direction: row;
+ align-items: center;
+ gap: var(--spacing-space);
+ text-align: start;
+ }
+
+ .combobox [data-scope="combobox"][data-part="item-indicator"] {
+ @apply ui-icon;
+ }
+
+ .combobox [data-scope="combobox"][data-part="content"] [data-part="item-indicator"] {
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ flex: 0 0 auto;
+ flex-shrink: 0;
+ min-width: 1em;
+ min-height: 1em;
+ margin-inline-start: auto;
+ padding-inline-end: var(--spacing-space);
+ }
+
+ .combobox
+ [data-scope="combobox"][data-part="content"]
+ [data-scope="combobox"][data-part="item-indicator"][hidden] {
+ display: flex !important;
+ visibility: hidden;
+ }
+
+ .combobox [data-scope="combobox"][data-part="error"] {
+ @apply ui-error;
+ }
+
+ .combobox [data-scope="combobox"][data-part="error"].absolute {
+ padding-block: 0;
+ display: block;
+ }
+
+ .combobox [data-scope="combobox"][data-part="root"][data-readonly] {
+ @apply ui-readonly;
+ }
+
+}

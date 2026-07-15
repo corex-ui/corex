@@ -1,0 +1,105 @@
+@import "../main.css";
+
+@layer components {
+ .number-input {
+ width: 100%;
+ max-width: var(--container-5xs);
+ min-width: 0;
+ box-sizing: border-box;
+ }
+
+ .number-input[data-loading] [data-scope="number-input"][data-part="root"] {
+ @apply ui-loading;
+ }
+
+ .number-input [data-scope="number-input"][data-part="root"] {
+ @apply ui-root;
+
+ width: 100%;
+ min-width: 0;
+ gap: var(--spacing-space);
+ position: relative;
+ padding-inline-end: var(--spacing-space);
+ }
+
+ .number-input [data-scope="number-input"][data-part="root"][data-readonly] {
+ @apply ui-readonly;
+ }
+
+ .number-input [data-scope="number-input"][data-part="label"] {
+ @apply ui-label;
+ }
+
+ .number-input [data-scope="number-input"][data-part="control"] {
+ display: flex;
+ flex-flow: row nowrap;
+ align-items: stretch;
+ position: relative;
+ width: 100%;
+ }
+
+ .number-input [data-scope="number-input"][data-part="input"] {
+ @apply ui-input;
+
+ flex: 1;
+ min-width: 0;
+ min-height: var(--spacing-size);
+ max-height: var(--spacing-size);
+ box-sizing: border-box;
+ border-inline-end: 0;
+ border-end-end-radius: 0;
+ border-start-end-radius: 0;
+ }
+
+ .number-input [data-part="trigger-group"] {
+ display: flex;
+ flex-direction: column;
+ flex-shrink: 0;
+ gap: 0;
+ width: var(--spacing-size);
+ min-height: var(--spacing-size);
+ height: var(--spacing-size);
+ max-height: var(--spacing-size);
+ box-sizing: border-box;
+ }
+
+ .number-input [data-scope="number-input"][data-part="increment-trigger"] {
+ @apply ui-trigger ui-trigger--square;
+
+ flex: 1;
+ min-height: 0;
+ border-start-start-radius: 0;
+ border-end-start-radius: 0;
+ margin: 0;
+ padding: 0;
+ width: fit-content;
+ padding-inline: var(--spacing-space);
+ }
+ .number-input [data-scope="number-input"][data-part="decrement-trigger"] {
+ @apply ui-trigger ui-trigger--square;
+
+ flex: 1;
+ min-height: 0;
+ border-start-start-radius: 0;
+ border-end-start-radius: 0;
+ margin: 0;
+ padding: 0;
+ width: fit-content;
+ padding-inline: var(--spacing-space);
+ }
+
+ .number-input [data-scope="number-input"][data-part="increment-trigger"] {
+ border-end-end-radius: 0;
+ border-block-end: 0;
+ }
+
+ .number-input [data-scope="number-input"][data-part="decrement-trigger"] {
+ border-start-end-radius: 0;
+ border-block-start: 0;
+ }
+
+ .number-input [data-scope="number-input"][data-part="error"] {
+ @apply ui-error;
+ }
+
+}

@@ -4,16 +4,6 @@ defmodule Corex.New.CliTest do
   alias Corex.New.Cli
 
   describe "validate_corex_flags!/1" do
-    test "allows designex when design is true" do
-      assert :ok == Cli.validate_corex_flags!(designex: true, design: true)
-    end
-
-    test "rejects designex when design is false" do
-      assert_raise Mix.Error, fn ->
-        Cli.validate_corex_flags!(designex: true, design: false)
-      end
-    end
-
     test "rejects empty --dev path" do
       assert_raise Mix.Error, fn ->
         Cli.validate_corex_flags!(dev: "   ")
@@ -85,13 +75,13 @@ defmodule Corex.New.CliTest do
   end
 
   describe "maybe_auto_enable_design notifications" do
-    test "notifies and enables design for designex" do
-      opts = Cli.maybe_auto_enable_design(designex: true)
+    test "notifies and enables design for mode" do
+      opts = Cli.maybe_auto_enable_design(mode: true)
       assert Keyword.fetch!(opts, :design) == true
 
       assert_received {:mix_shell, :info,
                        [
-                         "* Corex: enabling --design because --mode/--theme/--designex was set; pass --no-design to opt out."
+                         "* Corex: enabling --design because --mode/--theme was set; pass --no-design to opt out."
                        ]}
     end
 

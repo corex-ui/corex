@@ -1,0 +1,20 @@
+{
+  "name": "@corex/design",
+  "version": "0.2.0",
+  "description": "Corex Design CSS bundle (tokens, themes, component recipes)",
+  "license": "MIT",
+  "files": ["dist"],
+  "exports": {
+    "./main.css": "./dist/main.css",
+    "./utilities.css": "./dist/utilities.css",
+    "./tokens.css": "./dist/tokens.css",
+    "./theme/*.css": "./dist/theme/*.css",
+    "./components/*.css": "./dist/components/*.css",
+    "./tokens/*": "./dist/tokens/*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/corex-ui/corex.git",
+    "directory": "design"
+  }
+}

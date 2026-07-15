@@ -1,2 +1,6 @@
+packages:
+  - design
+  - e2e
+
 allowBuilds:
   esbuild: false

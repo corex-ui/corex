@@ -1,0 +1,110 @@
+@import "../main.css";
+
+@layer components {
+ .signature-pad {
+ width: 100%;
+ max-width: var(--container-xs);
+ gap: var(--spacing-space);
+ display: flex;
+ flex-direction: column;
+ }
+
+ .signature-pad[data-loading] [data-scope="signature-pad"][data-part="root"] {
+ @apply ui-loading;
+ }
+
+ .signature-pad [data-scope="signature-pad"][data-part="root"] {
+ @apply ui-root;
+
+ width: 100%;
+ gap: var(--spacing-space);
+ position: relative;
+ padding-inline-end: var(--spacing-space);
+ }
+
+ .signature-pad [data-scope="signature-pad"][data-part="root"][data-readonly] {
+ @apply ui-readonly;
+ }
+
+ .signature-pad [data-scope="signature-pad"][data-part="label"] {
+ @apply ui-label;
+ }
+
+ .signature-pad [data-scope="signature-pad"][data-part="control"] {
+ position: relative;
+ width: 100%;
+ height: calc(var(--container-5xs) * 0.7);
+ background-color: var(--color-ui);
+ border-radius: var(--radius-md);
+ border: 1px solid var(--color-border);
+ }
+
+ .signature-pad [data-scope="signature-pad"][data-part="guide"] {
+ position: absolute;
+ bottom: var(--spacing-space);
+ inset-inline-start: var(--spacing-space);
+ inset-inline-end: var(--spacing-space);
+ border-bottom: 2px dashed var(--color-border);
+ }
+
+ .signature-pad [data-scope="signature-pad"][data-part="segment"] {
+ position: absolute;
+ top: 0;
+ inset-inline-start: 0;
+ width: 100%;
+ height: 100%;
+ pointer-events: none;
+ background-color: var(--color-ui-muted);
+ border-radius: var(--radius-md);
+ }
+
+ .signature-pad [data-scope="signature-pad"][data-part="clear-trigger"] {
+ @apply ui-trigger ui-trigger--square;
+
+ position: absolute;
+ z-index: 1;
+ top: var(--spacing-space-sm);
+ inset-inline-end: var(--spacing-space-sm);
+ min-height: calc(var(--spacing-size) * 0.6);
+ min-width: calc(var(--spacing-size) * 0.6);
+ }
+
+ .signature-pad [data-part="preview"] {
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ width: var(--container-5xs);
+ padding: var(--spacing-space);
+ gap: var(--spacing-space);
+ background-color: var(--color-layer);
+
+ & img {
+ width: 100%;
+ height: var(--container-6xs);
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ overflow: hidden;
+ padding: var(--spacing-space);
+ border: 1px solid var(--color-border);
+ border-radius: var(--radius-md);
+ background-color: var(--color-root);
+ }
+ }
+
+ .signature-pad [data-scope="signature-pad"][data-part="error"] {
+ @apply ui-error;
+ }
+}
+
+@utility signature-pad--ui {
+ max-width: var(--container-sm);
+}
+
+@utility signature-pad--mini {
+ max-width: var(--container-xs);
+}
+
+@utility signature-pad--micro {
+ max-width: var(--container-6xs);
+}

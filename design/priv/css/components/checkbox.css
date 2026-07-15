@@ -1,0 +1,214 @@
+@import "../main.css";
+
+@layer components {
+ .checkbox {
+ display: flex;
+ flex-direction: column;
+ width: 100%;
+ gap: var(--spacing-space);
+ }
+ .checkbox[data-orientation="horizontal"] {
+ max-width: fit-content;
+ }
+ .checkbox[data-orientation="vertical"] {
+ max-width: var(--container-5xs);
+ }
+
+ .checkbox[data-loading] [data-scope="checkbox"][data-part="root"] {
+ @apply ui-loading;
+ }
+
+ .checkbox [data-scope="checkbox"][data-part="root"] {
+ @apply ui-root;
+
+ gap: var(--spacing-space); 
+ position: relative;
+ padding-inline-end: var(--spacing-space);
+ }
+
+ .checkbox [data-scope="checkbox"][data-part="root"][data-orientation="vertical"] {
+ flex-direction: column-reverse ;
+ }
+
+ .checkbox [data-scope="checkbox"][data-part="root"][data-readonly] {
+ @apply ui-readonly;
+ }
+
+ .checkbox [data-scope="checkbox"][data-part="root"][data-loading],
+ [data-scope="checkbox"][data-part="root"][data-loading] {
+ pointer-events: none;
+ min-height: calc(var(--spacing-size) + var(--spacing-space-lg));
+ align-items: center;
+ }
+
+ .checkbox
+ [data-scope="checkbox"][data-part="root"][data-loading]:not(:has([data-part="label"])),
+ [data-scope="checkbox"][data-part="root"][data-loading]:not(:has([data-part="label"])) {
+ min-height: var(--spacing-size);
+ justify-content: center;
+ align-items: center;
+ }
+
+ .checkbox
+ [data-scope="checkbox"][data-part="root"][data-loading]
+ [data-scope="checkbox"][data-part="control"],
+ [data-scope="checkbox"][data-part="root"][data-loading]
+ [data-scope="checkbox"][data-part="control"] {
+ border-color: var(--color-border);
+ background-color: var(--color-ui-active);
+ animation: corex-skeleton 1.4s ease-in-out infinite;
+ }
+
+ .checkbox
+ [data-scope="checkbox"][data-part="root"][data-loading]
+ [data-scope="checkbox"][data-part="indicator"],
+ [data-scope="checkbox"][data-part="root"][data-loading]
+ [data-scope="checkbox"][data-part="indicator"] {
+ opacity: 0.35;
+ }
+
+ .checkbox
+ [data-scope="checkbox"][data-part="root"][data-loading]
+ [data-scope="checkbox"][data-part="label"],
+ [data-scope="checkbox"][data-part="root"][data-loading]
+ [data-scope="checkbox"][data-part="label"] {
+ @apply ui-label;
+
+ height: 1em;
+ min-height: 1em;
+ max-height: 1em;
+ width: var(--container-xs);
+ max-width: min(var(--container-xs), 70%);
+ min-width: 0;
+ flex: 1 1 0;
+ border-radius: var(--radius-sm);
+ background-color: var(--color-ui-active);
+ animation: corex-skeleton 1.4s ease-in-out infinite;
+ }
+
+ .checkbox [data-scope="checkbox"][data-part="label"] {
+ @apply ui-label;
+ cursor: pointer;
+ }
+
+ .checkbox [data-scope="checkbox"][data-part="label"][data-invalid] {
+ color: var(--color-ink);
+ }
+
+ .checkbox[data-disabled] [data-scope="checkbox"][data-part="label"],
+ .checkbox:has([data-scope="checkbox"][data-part="root"][data-disabled])
+ [data-scope="checkbox"][data-part="label"] {
+ cursor: not-allowed;
+ }
+
+ .checkbox [data-scope="checkbox"][data-part="control"] {
+ @apply ui-trigger ui-trigger--square;
+
+ min-height: unset;
+ min-width: unset;
+ height: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ width: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+
+ &:disabled,
+ &[data-disabled],
+ &[disabled] {
+ color: var(--color-ink-muted);
+ background-color: var(--color-ui-muted);
+ cursor: not-allowed;
+ }
+
+ &[data-invalid] {
+ border-color: var(--color-alert);
+ box-shadow: none;
+ }
+
+ &[data-invalid]:focus-visible,
+ &[data-invalid][data-focus] {
+ box-shadow: none;
+ }
+
+ &[data-required]:not([data-invalid]) {
+ border-color: var(--color-alert);
+ }
+ }
+
+ .checkbox.ui-solid [data-scope="checkbox"][data-part="control"][data-state="unchecked"] {
+ background-color: var(--color-ui);
+ color: var(--ctl-ink-text, var(--color-ink));
+ border-color: var(--color-border);
+ }
+
+ .checkbox.ui-solid [data-scope="checkbox"][data-part="control"][data-state="unchecked"]:hover {
+ background-color: var(--color-ui-hover);
+ }
+
+ .checkbox.ui-solid [data-scope="checkbox"][data-part="control"][data-state="unchecked"]:active {
+ background-color: var(--color-ui-active);
+ }
+
+ .checkbox.ui-solid [data-scope="checkbox"][data-part="control"][data-state="checked"],
+ .checkbox.ui-solid [data-scope="checkbox"][data-part="control"][data-state="indeterminate"] {
+ background-color: var(--ctl-fill, var(--color-ui-active));
+ color: var(--ctl-fill-ink, var(--color-ink));
+ border-color: transparent;
+ }
+
+ .checkbox.ui-solid [data-scope="checkbox"][data-part="control"][data-state="checked"]:hover,
+ .checkbox.ui-solid [data-scope="checkbox"][data-part="control"][data-state="indeterminate"]:hover {
+ background-color: var(--ctl-fill-hover, var(--color-ui-hover));
+ }
+
+ .checkbox.ui-solid [data-scope="checkbox"][data-part="control"][data-state="checked"]:active,
+ .checkbox.ui-solid [data-scope="checkbox"][data-part="control"][data-state="indeterminate"]:active {
+ background-color: var(--ctl-fill-active, var(--color-ui-active));
+ }
+
+ .checkbox.ui-solid [data-scope="checkbox"][data-part="control"][data-state="checked"]:focus-visible,
+ .checkbox.ui-solid [data-scope="checkbox"][data-part="control"][data-state="indeterminate"]:focus-visible {
+ box-shadow: inset 0 0 0 2px var(--ctl-fill-ink, var(--color-ink));
+ outline: none;
+ }
+
+ .checkbox
+ [data-scope="checkbox"][data-part="control"]
+ [data-part="indeterminate"],
+ .checkbox [data-scope="checkbox"][data-part="control"] [data-part="indicator"] {
+ display: none !important;
+ }
+
+ .checkbox
+ [data-scope="checkbox"][data-part="control"][data-state="checked"]
+ [data-part="indicator"] {
+ display: flex !important;
+ 
+ & .icon,
+ & [class^="hero-"],
+ & svg,
+ & img {
+ @apply ui-icon;
+ }
+ }
+
+ .checkbox
+ [data-scope="checkbox"][data-part="control"][data-state="indeterminate"]
+ [data-part="indeterminate"] {
+
+ display: flex !important;
+ 
+
+ & .icon,
+ & [class^="hero-"],
+ & svg,
+ & img {
+ @apply ui-icon;
+ }
+ }
+ .checkbox [data-scope="checkbox"][data-part="error"] {
+ @apply ui-error;
+ }
+
+ .checkbox [data-scope="checkbox"][data-part="error"].absolute {
+ padding-block: 0;
+ display: block;
+ }
+}

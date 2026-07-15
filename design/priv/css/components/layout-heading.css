@@ -1,0 +1,66 @@
+@import "../main.css";
+
+@layer components {
+
+ .layout-heading {
+ width: 100%;
+ }
+
+ .layout-heading [data-scope="layout-heading"][data-part="root"] {
+ display: flex;
+ flex-wrap: wrap;
+ align-items: flex-start;
+ justify-content: space-between;
+ gap: var(--spacing-size);
+ width: 100%;
+ padding: var(--spacing-space);
+ }
+
+ .layout-heading [data-scope="layout-heading"][data-part="content"] {
+ display: flex;
+ flex-direction: column;
+ gap: var(--spacing-space);
+ }
+
+ .layout-heading h1,
+ .layout-heading h2,
+ .layout-heading p[data-scope="layout-heading"][data-part="subtitle"] {
+ margin: 0;
+ }
+
+ .layout-heading [data-scope="layout-heading"][data-part="title"] {
+ color: var(--color-ink);
+ }
+
+ .layout-heading [data-scope="layout-heading"][data-part="subtitle"] {
+ color: var(--color-ink-muted);
+ }
+
+ .layout-heading [data-scope="layout-heading"][data-part="actions"] {
+ display: flex;
+ flex-wrap: wrap;
+ align-items: center;
+ gap: var(--spacing-space);
+ padding: 0;
+ align-items: start;
+ }
+}
+
+@utility layout-heading--* {
+ [data-scope="layout-heading"][data-part="root"] {
+ gap: --value(--spacing-space-*, [length]);
+ padding: --value(--spacing-space-*, [length]);
+ }
+
+ [data-scope="layout-heading"][data-part="title"] {
+ font-size: --value(--text-*, [length]);
+ line-height: --value(--text-*--line-height, [length]);
+ color: --value(--color-ink, [color]);
+ }
+
+ [data-scope="layout-heading"][data-part="subtitle"] {
+ font-size: --value(--text-*, [length]);
+ line-height: --value(--text-*--line-height, [length]);
+ color: --value(--color-ink-muted, [color]);
+ }
+}

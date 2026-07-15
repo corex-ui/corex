@@ -156,7 +156,7 @@ def mode_toggle(assigns) do
   ~H"""
   <.toggle
     id="mode-switcher"
-    class="toggle toggle--sm"
+    class="toggle ui-size-sm"
     data-toggle-dual-label
     pressed={@mode == "dark"}
     on_pressed_change_client="phx:set-mode"
@@ -212,10 +212,10 @@ If you use `mix corex.new --lang`, `on_mount MyAppWeb.Hooks.Layout` may already 
 ```css
 @import "../corex/main.css";
 @import "../corex/theme/neo.css";
-@import "../corex/components/typo.css";
-@import "../corex/components/layout.css";
-@import "../corex/components/toggle.css";
+@import "../corex/components.css";
 ```
+
+Include `toggle` in `components:` when you use a mode switcher.
 
 Corex Design themes define `[data-mode=dark]` overrides. Custom CSS can target `[data-mode="dark"]` the same way.
 
