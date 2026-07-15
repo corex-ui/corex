@@ -1,14 +1,17 @@
 import {
   syncCheckableHiddenInput
-} from "./chunks/chunk-YWUM4WUV.mjs";
+} from "./chunks/chunk-MM3X6GKK.mjs";
 import {
   isFocusVisible,
   trackFocusVisible
-} from "./chunks/chunk-JF64R7HW.mjs";
+} from "./chunks/chunk-YUSIPE4B.mjs";
 import {
   mountCheckedBinding,
   readUpdatedServerChecked
-} from "./chunks/chunk-XL4XUS2C.mjs";
+} from "./chunks/chunk-BGER3KYP.mjs";
+import {
+  snapshotDataset
+} from "./chunks/chunk-TKOH2OAC.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -39,7 +42,7 @@ import {
   trackFormControl,
   trackPress,
   visuallyHiddenStyle
-} from "./chunks/chunk-YGZLYEUJ.mjs";
+} from "./chunks/chunk-6AOEC32Q.mjs";
 
 // ../node_modules/.pnpm/@zag-js+checkbox@1.40.0/node_modules/@zag-js/checkbox/dist/checkbox.anatomy.mjs
 var anatomy = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
@@ -386,11 +389,9 @@ var CheckboxHook = {
           '[data-scope="checkbox"][data-part="hidden-input"]'
         );
         if (input) {
-          queueMicrotask(() => {
-            input.checked = details.checked === true;
-            input.dispatchEvent(new Event("input", { bubbles: true }));
-            input.dispatchEvent(new Event("change", { bubbles: true }));
-          });
+          input.checked = details.checked === true;
+          input.dispatchEvent(new Event("input", { bubbles: true }));
+          input.dispatchEvent(new Event("change", { bubbles: true }));
         }
       }
     });
@@ -409,6 +410,13 @@ var CheckboxHook = {
     this.handleRegistry = registry;
     registry.add("checkbox_set_checked", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
+      const checked = readPayloadChecked(payload);
+      if (typeof checked === "boolean") zagCheckbox.api.setChecked(checked);
+    });
+    registry.add("checkbox_set_checked_many", (payload) => {
+      if (!payload || typeof payload !== "object") return;
+      const ids = payload.ids;
+      if (!Array.isArray(ids) || !ids.includes(el.id)) return;
       const checked = readPayloadChecked(payload);
       if (typeof checked === "boolean") zagCheckbox.api.setChecked(checked);
     });
@@ -457,21 +465,29 @@ var CheckboxHook = {
       );
     });
   },
+  beforeUpdate() {
+    this.beforeAttrs = snapshotDataset(this.el, ["checked"]);
+  },
   updated() {
     const zagCheckbox = this.checkbox;
     if (!zagCheckbox) return;
-    zagCheckbox.updateProps({
-      id: this.el.id,
-      ...readUpdatedServerChecked(this.el),
-      disabled: getBoolean(this.el, "disabled"),
-      name: getString(this.el, "name"),
-      form: getString(this.el, "form"),
-      value: getString(this.el, "value"),
-      dir: getDir(this.el),
-      invalid: getBoolean(this.el, "invalid"),
-      required: getBoolean(this.el, "required"),
-      readOnly: getBoolean(this.el, "readonly")
-    });
+    try {
+      const checkedPatch = readUpdatedServerChecked(this.el, this.beforeAttrs);
+      zagCheckbox.updateProps({
+        id: this.el.id,
+        ..."checked" in checkedPatch ? { checked: checkedPatch.checked } : {},
+        disabled: getBoolean(this.el, "disabled"),
+        name: getString(this.el, "name"),
+        form: getString(this.el, "form"),
+        value: getString(this.el, "value"),
+        dir: getDir(this.el),
+        invalid: getBoolean(this.el, "invalid"),
+        required: getBoolean(this.el, "required"),
+        readOnly: getBoolean(this.el, "readonly")
+      });
+    } finally {
+      this.beforeAttrs = void 0;
+    }
   },
   destroyed() {
     this.domRegistry?.teardown();

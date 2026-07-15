@@ -10,6 +10,7 @@ export type NotifyPhoenixFormChangeOptions = {
   onTouched?: () => void;
   change?: boolean;
   markUsed?: boolean;
+  force?: boolean;
 };
 
 export function notifyPhoenixFormChange(
@@ -17,11 +18,21 @@ export function notifyPhoenixFormChange(
   value: string,
   options: NotifyPhoenixFormChangeOptions = {}
 ): void {
-  if (String(input.value) === String(value)) {
+  const next = String(value);
+  const unchanged = String(input.value) === next;
+
+  if (!unchanged) {
+    input.value = next;
+  }
+
+  if (input.getAttribute("value") !== next) {
+    input.setAttribute("value", next);
+  }
+
+  if (unchanged && options.force !== true) {
     return;
   }
 
-  input.value = value;
   options.onTouched?.();
   if (options.markUsed === false) {
     return;
@@ -33,12 +44,18 @@ export function notifyPhoenixFormChange(
   }
 }
 
+export function syncLiveViewFormInput(
+  input: HTMLInputElement,
+  getValue: () => string,
+  onTouched?: () => void
+): void {
+  notifyPhoenixFormChange(input, getValue(), { onTouched });
+}
+
 export function queueLiveViewFormInputSync(
   input: HTMLInputElement,
   getValue: () => string,
   onTouched?: () => void
 ): void {
-  queueMicrotask(() => {
-    notifyPhoenixFormChange(input, getValue(), { onTouched });
-  });
+  syncLiveViewFormInput(input, getValue, onTouched);
 }

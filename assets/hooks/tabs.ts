@@ -5,6 +5,7 @@ import type { ValueChangeDetails, FocusChangeDetails, Props } from "@zag-js/tabs
 import type { Orientation } from "@zag-js/types";
 
 import { getString, getDir, canPushEvent } from "../lib/util";
+import { snapshotDataset, type DatasetSnapshot } from "../lib/controlled-attr-snapshot";
 import { readStringControlledZagProps, readStringControlledZagUpdate } from "../lib/read-props";
 import { idMatches, readPayloadId, notifyChange } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
@@ -35,6 +36,7 @@ type TabsHookState = {
   tabs?: Tabs;
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
+  beforeAttrs?: DatasetSnapshot;
 };
 
 const TabsHook: Hook<object & TabsHookState, HTMLElement> = {
@@ -106,12 +108,20 @@ const TabsHook: Hook<object & TabsHookState, HTMLElement> = {
     });
   },
 
+  beforeUpdate(this: object & HookInterface<HTMLElement> & TabsHookState) {
+    this.beforeAttrs = snapshotDataset(this.el, ["value"]);
+  },
+
   updated(this: object & HookInterface<HTMLElement> & TabsHookState) {
-    this.tabs?.updateProps({
-      id: this.el.id,
-      ...readStringControlledZagUpdate(this.el, "value", "defaultValue"),
-      ...readTabsLayoutProps(this.el),
-    } as Props);
+    try {
+      this.tabs?.updateProps({
+        id: this.el.id,
+        ...readStringControlledZagUpdate(this.el, "value", "defaultValue", this.beforeAttrs),
+        ...readTabsLayoutProps(this.el),
+      } as Props);
+    } finally {
+      this.beforeAttrs = undefined;
+    }
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & TabsHookState) {

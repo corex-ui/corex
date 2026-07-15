@@ -1,12 +1,12 @@
 import {
   notifyPhoenixFormChange,
   reapplyLiveViewValueInputUsage
-} from "./chunk-ASQD2R2U.mjs";
+} from "./chunk-DOKFN6DA.mjs";
 import {
   associateInputWithFormIfOutside,
   getBoolean,
   getString
-} from "./chunk-YGZLYEUJ.mjs";
+} from "./chunk-6AOEC32Q.mjs";
 
 // lib/form-array-submit.ts
 function isFormFieldUsed(el, userTouched = false) {
@@ -17,9 +17,13 @@ function padValues(values, fixedLength) {
   while (out.length < fixedLength) out.push("");
   return out.slice(0, fixedLength);
 }
-function createArrayInput(scope, submitName, hostEl, value, empty) {
+function arrayInputId(scope, hostId, index) {
+  return index === "empty" ? `${scope}:${hostId}:array-input-empty` : `${scope}:${hostId}:array-input-${index}`;
+}
+function createArrayInput(scope, submitName, hostEl, value, empty, index) {
   const input = document.createElement("input");
   input.type = "hidden";
+  input.id = arrayInputId(scope, hostEl.id, index);
   input.setAttribute("data-scope", scope);
   input.setAttribute("data-part", "array-input");
   if (empty) input.setAttribute("data-empty", "true");
@@ -36,7 +40,14 @@ function syncArrayInputsInPlace(container, scope, submitName, hostEl, values, fi
   );
   if (values.length === 0) {
     existing.forEach((node) => node.remove());
-    const empty = createArrayInput(scope, fieldTouched ? submitName : void 0, hostEl, "", true);
+    const empty = createArrayInput(
+      scope,
+      fieldTouched ? submitName : void 0,
+      hostEl,
+      "",
+      true,
+      "empty"
+    );
     container.appendChild(empty);
     return empty;
   }
@@ -44,7 +55,7 @@ function syncArrayInputsInPlace(container, scope, submitName, hostEl, values, fi
   emptyNodes.forEach((n) => n.remove());
   let valueNodes = existing.filter((n) => !n.hasAttribute("data-empty"));
   while (valueNodes.length < values.length) {
-    const input = createArrayInput(scope, submitName, hostEl, "", false);
+    const input = createArrayInput(scope, submitName, hostEl, "", false, valueNodes.length);
     container.appendChild(input);
     valueNodes = Array.from(
       container.querySelectorAll(
@@ -58,6 +69,7 @@ function syncArrayInputsInPlace(container, scope, submitName, hostEl, values, fi
     valueNodes = valueNodes.slice(0, -1);
   }
   valueNodes.forEach((input, index) => {
+    input.id = arrayInputId(scope, hostEl.id, index);
     input.value = values[index] ?? "";
   });
   return valueNodes[valueNodes.length - 1] ?? null;
@@ -69,18 +81,10 @@ function syncArrayHiddenInputsForPhoenix(el, values, options = {}) {
   const fixedLength = options.fixedLength;
   const normalized = fixedLength !== void 0 ? padValues(values, fixedLength) : values.map((v) => String(v));
   const fieldTouched = isFormFieldUsed(el, options.fieldTouched === true);
-  let container = el.querySelector(
+  const container = el.querySelector(
     `[data-scope="${scope}"][data-part="array-inputs"]`
   );
-  if (!container) {
-    const root = el.querySelector(`[data-scope="${scope}"][data-part="root"]`) ?? el;
-    container = document.createElement("div");
-    container.setAttribute("data-scope", scope);
-    container.setAttribute("data-part", "array-inputs");
-    container.setAttribute("phx-update", "ignore");
-    container.id = `${scope}:${el.id}:array-inputs`;
-    root.prepend(container);
-  }
+  if (!container) return;
   const notifyInput = syncArrayInputsInPlace(
     container,
     scope,
@@ -96,9 +100,10 @@ function syncArrayHiddenInputsForPhoenix(el, values, options = {}) {
   }
   const notifyLiveView = options.notifyLiveView ?? false;
   if (!notifyLiveView || !notifyInput) return;
-  queueMicrotask(() => {
-    options.onTouched?.();
-    notifyPhoenixFormChange(notifyInput, notifyInput.value, { onTouched: void 0 });
+  options.onTouched?.();
+  notifyPhoenixFormChange(notifyInput, notifyInput.value, {
+    onTouched: void 0,
+    force: true
   });
 }
 function bindArrayFieldSubmitIntent(hostEl, onPrepareSubmit) {

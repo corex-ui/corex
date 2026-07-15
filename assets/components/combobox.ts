@@ -10,7 +10,7 @@ import {
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 import { stripZagSubmitNames } from "../lib/form-field-array-submit";
-import { getString } from "../lib/util";
+import { getString, getStringList } from "../lib/util";
 import { itemValue, zagListCollectionConfig } from "../lib/list-collection";
 import { templatesContentRoot } from "../lib/util";
 
@@ -454,8 +454,7 @@ export class Combobox extends Component<Props, Api> {
   private hiddenInputValue(): string {
     let values = (this.api.value ?? []).map(String);
     if (values.length === 0) {
-      const fallback = this.el.dataset.defaultValue;
-      if (fallback) values = fallback.split(",").filter(Boolean);
+      values = getStringList(this.el, "defaultValue") ?? [];
     }
     const multiple = this.el.hasAttribute("data-multiple");
     return values.length === 0 ? "" : multiple ? values.join(",") : (values[0] ?? "");

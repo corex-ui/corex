@@ -1,4 +1,4 @@
-import { syncArrayHiddenInputsForPhoenix } from "./form-array-submit";
+import { setArrayValues } from "./phoenix-form-bridge";
 
 export function syncTagsArrayInputsForPhoenix(
   el: HTMLElement,
@@ -6,7 +6,7 @@ export function syncTagsArrayInputsForPhoenix(
   onTouched?: () => void,
   opts: { notifyLiveView?: boolean; fieldTouched?: boolean } = {}
 ): void {
-  syncArrayHiddenInputsForPhoenix(el, values, {
+  setArrayValues(el, values, {
     onTouched,
     scope: "tags-input",
     notifyLiveView: opts.notifyLiveView,

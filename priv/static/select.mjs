@@ -1,27 +1,27 @@
 import {
   getPlacement,
   getPlacementStyles
-} from "./chunks/chunk-DVA7SQMW.mjs";
+} from "./chunks/chunk-MHRYIVD2.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-MOSXJRWI.mjs";
-import "./chunks/chunk-26XTEIHY.mjs";
+} from "./chunks/chunk-CBUVYVIR.mjs";
+import "./chunks/chunk-ZSA4KI2Y.mjs";
 import {
   notifyPhoenixFormChange
-} from "./chunks/chunk-ASQD2R2U.mjs";
+} from "./chunks/chunk-DOKFN6DA.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-QU36267Q.mjs";
+} from "./chunks/chunk-C4KEB3WL.mjs";
 import {
   itemValue,
   zagListCollectionConfig
-} from "./chunks/chunk-AIFPYOT7.mjs";
+} from "./chunks/chunk-DDT7N35T.mjs";
 import {
   ListCollection,
   createSelectedItemMap,
   deriveSelectionState,
   resolveSelectedItems
-} from "./chunks/chunk-4E7EICYJ.mjs";
+} from "./chunks/chunk-SGRHPBNS.mjs";
 import {
   performRedirect,
   readDomItemRedirect
@@ -30,11 +30,14 @@ import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunks/chunk-JF64R7HW.mjs";
+} from "./chunks/chunk-YUSIPE4B.mjs";
 import {
   readStringListControlledZagProps,
   readUpdatedServerStringList
-} from "./chunks/chunk-XL4XUS2C.mjs";
+} from "./chunks/chunk-BGER3KYP.mjs";
+import {
+  snapshotDataset
+} from "./chunks/chunk-TKOH2OAC.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -76,7 +79,7 @@ import {
   syncInputFormAssociation,
   trackFormControl,
   visuallyHiddenStyle
-} from "./chunks/chunk-YGZLYEUJ.mjs";
+} from "./chunks/chunk-6AOEC32Q.mjs";
 
 // ../node_modules/.pnpm/@zag-js+select@1.40.0/node_modules/@zag-js/select/dist/select.anatomy.mjs
 var anatomy = createAnatomy("select").parts(
@@ -1550,7 +1553,7 @@ var SelectHook = {
     selectComponent.setOptions(allItems);
     selectComponent.init();
     this.select = selectComponent;
-    this.lastServerValue = getString(el, "value") ?? "";
+    this.lastItemsJson = el.dataset.items || "[]";
     this.handlers = [];
     const domRegistry = createDomEventRegistry(el);
     this.domRegistry = domRegistry;
@@ -1572,24 +1575,33 @@ var SelectHook = {
       selectComponent.api.setOpen(payload.open);
     });
   },
+  beforeUpdate() {
+    this.beforeAttrs = snapshotDataset(this.el, ["value"]);
+  },
   updated() {
     if (!this.select) return;
-    const newItems = safeParseJson(this.el.dataset.items || "[]", []);
-    const hasGroups = newItems.some((item) => Boolean(item.group));
-    this.select.hasGroups = hasGroups;
-    this.select.setOptions(newItems);
-    const valuePatch = readUpdatedServerStringList(this.el, this.lastServerValue);
-    if ("nextServerValue" in valuePatch) {
-      this.lastServerValue = valuePatch.nextServerValue;
+    try {
+      const newItemsJson = this.el.dataset.items || "[]";
+      if (newItemsJson !== this.lastItemsJson) {
+        this.lastItemsJson = newItemsJson;
+        const newItems = safeParseJson(newItemsJson, []);
+        const hasGroups = newItems.some((item) => Boolean(item.group));
+        this.select.hasGroups = hasGroups;
+        this.select.setOptions(newItems);
+      }
+      const valuePatch = readUpdatedServerStringList(this.el, this.beforeAttrs);
+      if (valuePatch.value !== void 0) {
+        syncControlledValueInputFromServer(this.el, valuePatch.value);
+      }
+      this.select.updateProps({
+        ...selectLayoutProps(this.el),
+        collection: this.select.getCollection(),
+        ...valuePatch.value !== void 0 ? { value: valuePatch.value } : {}
+      });
+      reapplySelectInteractiveState(this.el);
+    } finally {
+      this.beforeAttrs = void 0;
     }
-    if (valuePatch.value !== void 0) {
-      syncControlledValueInputFromServer(this.el, valuePatch.value);
-    }
-    this.select.updateProps({
-      ...selectLayoutProps(this.el),
-      ...valuePatch.value !== void 0 ? { value: valuePatch.value } : {}
-    });
-    reapplySelectInteractiveState(this.el);
   },
   destroyed() {
     if (this.handlers) {

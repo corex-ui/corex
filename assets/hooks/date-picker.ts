@@ -11,13 +11,16 @@ import type { Direction } from "@zag-js/types";
 import * as datePicker from "@zag-js/date-picker";
 
 import { getString, getBoolean, getNumber, canPushEvent } from "../lib/util";
-import { syncArrayHiddenInputsForPhoenix } from "../lib/form-array-submit";
 import { mountStringListBinding, readDatasetStringList } from "../lib/read-props";
-import { notifyPhoenixFormChange } from "../lib/live-view-form-input";
+import { setArrayValues, setScalarValue } from "../lib/phoenix-form-bridge";
 import { readPositioningOptions } from "../lib/positioning";
 import { notifyChange } from "../lib/respond-to";
 
 type DateLike = { year: number; month: number; day: number };
+
+function sameStringList(a: ReadonlyArray<string>, b: ReadonlyArray<string>): boolean {
+  return a.length === b.length && a.every((v, i) => v === b[i]);
+}
 
 function isDateLike(d: unknown): d is DateLike {
   return (
@@ -111,14 +114,10 @@ export function syncDatePickerValueInput(
   );
   if (!hiddenInput) return;
 
-  if (hiddenInput.value !== isoStr) {
-    hiddenInput.value = isoStr;
-  }
-
   if (notifyForm) {
-    notifyPhoenixFormChange(hiddenInput, isoStr);
+    setScalarValue(hiddenInput, isoStr);
   } else {
-    notifyPhoenixFormChange(hiddenInput, isoStr, { markUsed: false });
+    setScalarValue(hiddenInput, isoStr, { markUsed: false });
   }
 }
 
@@ -145,13 +144,14 @@ type DatePickerHookState = {
   datePicker?: DatePicker;
   handlers?: Array<CallbackRef>;
   onSetValue?: (event: Event) => void;
+  fieldTouched?: boolean;
 };
 
 const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & DatePickerHookState) {
     const el = this.el;
     const hook = this as object & HookInterface<HTMLElement> & DatePickerHookState;
-    hook.allowFormNotify = false;
+    hook.fieldTouched = false;
     const pushEvent = this.pushEvent.bind(this);
     const liveSocket = this.liveSocket;
     const canPush = () => canPushEvent(this.liveSocket);
@@ -161,15 +161,16 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
     const parseList = (v: string[] | undefined) =>
       v ? v.map((x) => datePicker.parse(x)) : undefined;
     const parseOne = (v: string | undefined) => (v ? datePicker.parse(v) : undefined);
+    const valueBinding = mountStringListBinding(el);
+    const initialIsoList = "value" in valueBinding ? valueBinding.value : valueBinding.defaultValue;
 
     const datePickerInstance = new DatePicker(el, {
       id: el.id,
       ...(() => {
-        const binding = mountStringListBinding(el);
-        if ("value" in binding) {
-          return { value: parseList(binding.value) };
+        if ("value" in valueBinding) {
+          return { value: parseList(valueBinding.value) };
         }
-        return { defaultValue: parseList(binding.defaultValue) };
+        return { defaultValue: parseList(valueBinding.defaultValue) };
       })(),
       defaultFocusedValue: parseOne(getString(el, "focusedValue")),
       defaultView: getString<"day" | "month" | "year">(el, "defaultView"),
@@ -198,17 +199,21 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
 
       onValueChange: (details: ValueChangeDetails) => {
         const isoList = isoListFromValues(details.value);
+        const isMountEcho = hook.fieldTouched !== true && sameStringList(isoList, initialIsoList);
+        if (!isMountEcho) {
+          hook.fieldTouched = true;
+        }
 
         const submitName = getString(el, "submitName");
         if (submitName) {
-          syncArrayHiddenInputsForPhoenix(el, isoList, {
+          setArrayValues(el, isoList, {
             scope: "date-picker",
             submitName,
-            notifyLiveView: hook.allowFormNotify === true,
+            notifyLiveView: !isMountEcho,
           });
         } else {
           const isoStr = isoList.length > 0 ? isoList.join(",") : "";
-          syncDatePickerValueInput(el, isoStr, hook.allowFormNotify === true);
+          syncDatePickerValueInput(el, isoStr, !isMountEcho);
         }
 
         notifyChange({
@@ -266,25 +271,21 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
     datePickerInstance.init();
     this.datePicker = datePickerInstance;
 
-    queueMicrotask(() => {
-      const submitName = getString(el, "submitName");
-      const isoList = applyServerIsoToZagIfNeeded(
-        datePickerInstance,
-        resolveIsoListForFormSync(el, datePickerInstance.api.value)
-      );
+    const submitName = getString(el, "submitName");
+    const isoList = applyServerIsoToZagIfNeeded(
+      datePickerInstance,
+      resolveIsoListForFormSync(el, datePickerInstance.api.value)
+    );
 
-      if (submitName) {
-        syncArrayHiddenInputsForPhoenix(el, isoList, {
-          scope: "date-picker",
-          submitName,
-          notifyLiveView: false,
-        });
-      } else {
-        syncDatePickerValueInput(el, isoList.length > 0 ? isoList.join(",") : "", false);
-      }
-
-      hook.allowFormNotify = true;
-    });
+    if (submitName) {
+      setArrayValues(el, isoList, {
+        scope: "date-picker",
+        submitName,
+        notifyLiveView: false,
+      });
+    } else {
+      syncDatePickerValueInput(el, isoList.length > 0 ? isoList.join(",") : "", false);
+    }
 
     this.handlers = [];
 
@@ -337,6 +338,21 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
       positioning: readPositioningOptions(el),
       ...resolveZagDatePickerTranslations(el),
     } as Props);
+
+    if (!zag) return;
+
+    const submitName = getString(el, "submitName");
+    const isoList = isoListFromValues(zag.api.value);
+    if (submitName) {
+      setArrayValues(el, isoList, {
+        scope: "date-picker",
+        submitName,
+        notifyLiveView: false,
+      });
+    } else {
+      syncDatePickerValueInput(el, isoList.length > 0 ? isoList.join(",") : "", false);
+    }
+    zag.render();
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & DatePickerHookState) {

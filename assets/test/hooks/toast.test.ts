@@ -129,6 +129,7 @@ describe("Toast hook lifecycle", () => {
       new CustomEvent("corex:toast:create", {
         detail: {
           id: "dom-toast",
+          groupId,
           title: "Hello",
           action: {
             label: '<img src=x onerror="window.__toastDomXss=1">',
@@ -143,6 +144,39 @@ describe("Toast hook lifecycle", () => {
       '[data-scope="toast"][data-part="action-trigger"]'
     );
     expect(action).toBeNull();
+
+    document.body.removeChild(el);
+    callHookDestroyed(Toast, hook);
+  });
+
+  it("ignores create when groupId is missing or mismatched", async () => {
+    const el = document.createElement("div");
+    el.id = groupId;
+    document.body.appendChild(el);
+
+    const { hook } = mockHookContext(el, {
+      connected: false,
+      overrides: {
+        groupId: "",
+        handlers: [] as CallbackRef[],
+        domListeners: [] as Array<{ el: HTMLElement; name: string; fn: EventListener }>,
+      },
+    });
+
+    callHookMounted(Toast, hook);
+    const createHandler = hook.handleEvent.mock.calls.find(
+      ([event]) => event === "toast-create"
+    )?.[1];
+    expect(createHandler).toBeDefined();
+
+    createHandler!({ id: "t1", title: "No group" });
+    createHandler!({ id: "t2", title: "Wrong group", groupId: "other" });
+    expect(el.querySelector('[data-scope="toast"][data-part="title"]')).toBeNull();
+
+    createHandler!({ id: "t3", title: "Ok", groupId });
+    await vi.waitFor(() => {
+      expect(el.querySelector('[data-scope="toast"][data-part="title"]')?.textContent).toBe("Ok");
+    });
 
     document.body.removeChild(el);
     callHookDestroyed(Toast, hook);
@@ -169,6 +203,7 @@ describe("Toast hook lifecycle", () => {
       new CustomEvent("corex:toast:create", {
         detail: {
           id: "binding-toast",
+          groupId,
           title: "Saved",
           description: "With action",
           type: "success",

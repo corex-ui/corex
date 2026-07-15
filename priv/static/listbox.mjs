@@ -5,17 +5,20 @@ import {
   itemValue,
   machine,
   zagListCollectionConfig
-} from "./chunks/chunk-AIFPYOT7.mjs";
-import "./chunks/chunk-4E7EICYJ.mjs";
+} from "./chunks/chunk-DDT7N35T.mjs";
+import "./chunks/chunk-SGRHPBNS.mjs";
 import {
   performRedirect,
   readDomItemRedirect
 } from "./chunks/chunk-HZLPIQBD.mjs";
-import "./chunks/chunk-JF64R7HW.mjs";
+import "./chunks/chunk-YUSIPE4B.mjs";
 import {
   readStringListControlledZagProps,
   readStringListControlledZagUpdate
-} from "./chunks/chunk-XL4XUS2C.mjs";
+} from "./chunks/chunk-BGER3KYP.mjs";
+import {
+  snapshotDataset
+} from "./chunks/chunk-TKOH2OAC.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -35,7 +38,7 @@ import {
   getDir,
   getString,
   safeParseJson
-} from "./chunks/chunk-YGZLYEUJ.mjs";
+} from "./chunks/chunk-6AOEC32Q.mjs";
 
 // components/listbox.ts
 var Listbox = class extends Component {
@@ -174,6 +177,7 @@ var ListboxHook = {
     zag.setOptions(allItems);
     zag.init();
     this.listbox = zag;
+    this.lastItemsJson = el.dataset.items ?? "[]";
     const emitValue = (respondTo) => {
       const value = zag.api.value;
       emitResponse({
@@ -206,17 +210,28 @@ var ListboxHook = {
       emitValue(parseRespondTo(payload));
     });
   },
+  beforeUpdate() {
+    this.beforeAttrs = snapshotDataset(this.el, ["value"]);
+  },
   updated() {
     if (!this.listbox) return;
-    const newItems = safeParseJson(this.el.dataset.items ?? "[]", []);
-    const hasGroups = newItems.some((item) => Boolean(item.group));
-    this.listbox.hasGroups = hasGroups;
-    this.listbox.setOptions(newItems);
-    this.listbox.updateProps({
-      ...listboxZagPropsBase(this.el, this.liveSocket, this.pushEvent.bind(this)),
-      collection: this.listbox.getCollection(),
-      ...readStringListControlledZagUpdate(this.el, "value", "defaultValue")
-    });
+    try {
+      const newItemsJson = this.el.dataset.items ?? "[]";
+      if (newItemsJson !== this.lastItemsJson) {
+        this.lastItemsJson = newItemsJson;
+        const newItems = safeParseJson(newItemsJson, []);
+        const hasGroups = newItems.some((item) => Boolean(item.group));
+        this.listbox.hasGroups = hasGroups;
+        this.listbox.setOptions(newItems);
+      }
+      this.listbox.updateProps({
+        ...listboxZagPropsBase(this.el, this.liveSocket, this.pushEvent.bind(this)),
+        collection: this.listbox.getCollection(),
+        ...readStringListControlledZagUpdate(this.el, "value", "defaultValue", this.beforeAttrs)
+      });
+    } finally {
+      this.beforeAttrs = void 0;
+    }
   },
   destroyed() {
     this.domRegistry?.teardown();

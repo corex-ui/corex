@@ -1,18 +1,20 @@
 import {
   stripZagSubmitNames
-} from "./chunks/chunk-YJPGDO7P.mjs";
+} from "./chunks/chunk-OZ2OVCG5.mjs";
+import {
+  setArrayValues,
+  syncFormInput
+} from "./chunks/chunk-2H6YHTHG.mjs";
 import {
   bindArrayFieldSubmitIntent,
-  isFormFieldUsed,
-  syncArrayHiddenInputsForPhoenix
-} from "./chunks/chunk-IKLCQZIF.mjs";
-import {
-  queueLiveViewFormInputSync
-} from "./chunks/chunk-ASQD2R2U.mjs";
+  isFormFieldUsed
+} from "./chunks/chunk-3BEM4I52.mjs";
+import "./chunks/chunk-DOKFN6DA.mjs";
 import {
   getJsonStringList,
   readFormFieldServerPaths
-} from "./chunks/chunk-XL4XUS2C.mjs";
+} from "./chunks/chunk-BGER3KYP.mjs";
+import "./chunks/chunk-TKOH2OAC.mjs";
 import {
   idMatches,
   readPayloadId
@@ -34,7 +36,7 @@ import {
   isModifierKey,
   query,
   trackPointerMove
-} from "./chunks/chunk-YGZLYEUJ.mjs";
+} from "./chunks/chunk-6AOEC32Q.mjs";
 
 // ../node_modules/.pnpm/@zag-js+signature-pad@1.40.0/node_modules/@zag-js/signature-pad/dist/signature-pad.anatomy.mjs
 var anatomy = createAnatomy("signature-pad").parts(
@@ -678,7 +680,7 @@ function syncSignatureFormForPhoenix(el, paths, opts) {
   const submitName = getString(el, "submitName");
   const fieldTouched = opts.fieldTouched === true;
   if (submitName) {
-    syncArrayHiddenInputsForPhoenix(el, paths, {
+    setArrayValues(el, paths, {
       onTouched: opts.onPadTouched,
       scope: "signature-pad",
       submitName,
@@ -695,11 +697,7 @@ function syncSignatureFormForPhoenix(el, paths, opts) {
     input.value = paths.length > 0 ? paths.join("\n") : "";
     return;
   }
-  queueLiveViewFormInputSync(
-    input,
-    () => paths.length > 0 ? paths.join("\n") : "",
-    opts.onPadTouched
-  );
+  syncFormInput(input, () => paths.length > 0 ? paths.join("\n") : "", opts.onPadTouched);
 }
 var SignaturePadHook = {
   mounted() {
@@ -760,11 +758,9 @@ var SignaturePadHook = {
         fieldTouched: isFormFieldUsed(el, hook.padTouched || opts.fieldTouched === true)
       });
     };
-    queueMicrotask(() => {
-      if (!hook.padTouched) {
-        syncForm(defaultPaths, { notifyLiveView: false, fieldTouched: false });
-      }
-    });
+    if (!hook.padTouched) {
+      syncForm(defaultPaths, { notifyLiveView: false, fieldTouched: false });
+    }
     hook.unbindSubmitIntent = bindArrayFieldSubmitIntent(el, () => {
       hook.padTouched = true;
       const paths = signaturePad.api.paths ?? [];

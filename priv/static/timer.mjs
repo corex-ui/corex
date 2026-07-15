@@ -1,10 +1,10 @@
 import {
   memo
-} from "./chunks/chunk-KCVHCORZ.mjs";
+} from "./chunks/chunk-NB7M3GJN.mjs";
 import {
   setRafInterval,
   setRafTimeout
-} from "./chunks/chunk-5HFWMYJG.mjs";
+} from "./chunks/chunk-6MIECCPA.mjs";
 import {
   clampValue
 } from "./chunks/chunk-PE34YET2.mjs";
@@ -30,7 +30,7 @@ import {
   getString,
   getStringList,
   match
-} from "./chunks/chunk-YGZLYEUJ.mjs";
+} from "./chunks/chunk-6AOEC32Q.mjs";
 
 // ../node_modules/.pnpm/@zag-js+timer@1.40.0/node_modules/@zag-js/timer/dist/timer.anatomy.mjs
 var anatomy = createAnatomy("timer").parts(
@@ -517,17 +517,16 @@ function parseTimerTranslations(el) {
   }
   return void 0;
 }
-function buildTimerProps(el, pushEvent, canPush) {
+function readIdentityRaw(el) {
   return {
-    id: el.id,
-    countdown: getBoolean(el, "countdown"),
-    startMs: getNumber(el, "startMs"),
-    targetMs: getNumber(el, "targetMs"),
-    autoStart: getBoolean(el, "autoStart"),
-    interval: getNumber(el, "interval"),
-    dir: getDir(el),
-    orientation: getString(el, "orientation"),
-    translations: parseTimerTranslations(el),
+    startMs: el.dataset.startMs,
+    targetMs: el.dataset.targetMs,
+    countdown: el.dataset.countdown,
+    interval: el.dataset.interval
+  };
+}
+function buildTimerCallbacks(el, pushEvent, canPush) {
+  return {
     onTick: (details) => {
       const eventName = getString(el, "onTick");
       if (eventName && canPush()) {
@@ -570,11 +569,30 @@ function buildTimerProps(el, pushEvent, canPush) {
     }
   };
 }
+function buildTimerProps(el, pushEvent, canPush) {
+  return {
+    id: el.id,
+    countdown: getBoolean(el, "countdown"),
+    startMs: getNumber(el, "startMs"),
+    targetMs: getNumber(el, "targetMs"),
+    autoStart: getBoolean(el, "autoStart"),
+    interval: getNumber(el, "interval"),
+    dir: getDir(el),
+    orientation: getString(el, "orientation"),
+    translations: parseTimerTranslations(el),
+    ...buildTimerCallbacks(el, pushEvent, canPush)
+  };
+}
 var TimerHook = {
   mounted() {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
+    const identity = readIdentityRaw(el);
+    this.lastStartMsRaw = identity.startMs;
+    this.lastTargetMsRaw = identity.targetMs;
+    this.lastCountdownRaw = identity.countdown;
+    this.lastIntervalRaw = identity.interval;
     const zag = new Timer(el, buildTimerProps(el, pushEvent, canPush));
     zag.init();
     this.timer = zag;
@@ -642,7 +660,32 @@ var TimerHook = {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
-    this.timer?.updateProps(buildTimerProps(el, pushEvent, canPush));
+    const patch = {
+      id: el.id,
+      translations: parseTimerTranslations(el),
+      ...buildTimerCallbacks(el, pushEvent, canPush)
+    };
+    const startMsRaw = el.dataset.startMs;
+    if (startMsRaw !== this.lastStartMsRaw) {
+      patch.startMs = getNumber(el, "startMs");
+      this.lastStartMsRaw = startMsRaw;
+    }
+    const targetMsRaw = el.dataset.targetMs;
+    if (targetMsRaw !== this.lastTargetMsRaw) {
+      patch.targetMs = getNumber(el, "targetMs");
+      this.lastTargetMsRaw = targetMsRaw;
+    }
+    const countdownRaw = el.dataset.countdown;
+    if (countdownRaw !== this.lastCountdownRaw) {
+      patch.countdown = getBoolean(el, "countdown");
+      this.lastCountdownRaw = countdownRaw;
+    }
+    const intervalRaw = el.dataset.interval;
+    if (intervalRaw !== this.lastIntervalRaw) {
+      patch.interval = getNumber(el, "interval");
+      this.lastIntervalRaw = intervalRaw;
+    }
+    this.timer?.updateProps(patch);
   },
   destroyed() {
     this.domRegistry?.teardown();

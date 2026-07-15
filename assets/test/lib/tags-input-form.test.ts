@@ -23,7 +23,7 @@ describe("syncTagsArrayInputsForPhoenix", () => {
     const root = el({ submitName: "post[tags][]" });
     root.innerHTML = `
       <div data-scope="tags-input" data-part="root">
-        <div data-scope="tags-input" data-part="array-inputs" phx-update="ignore"></div>
+        <div data-scope="tags-input" data-part="array-inputs"></div>
       </div>
     `;
 
@@ -42,7 +42,7 @@ describe("syncTagsArrayInputsForPhoenix", () => {
     const root = el({ submitName: "post[tags][]" });
     root.innerHTML = `
       <div data-scope="tags-input" data-part="root">
-        <div data-scope="tags-input" data-part="array-inputs" phx-update="ignore"></div>
+        <div data-scope="tags-input" data-part="array-inputs"></div>
       </div>
     `;
 
@@ -59,7 +59,7 @@ describe("syncTagsArrayInputsForPhoenix", () => {
     const root = el({ submitName: "post[tags][]", fieldUsed: true });
     root.innerHTML = `
       <div data-scope="tags-input" data-part="root">
-        <div data-scope="tags-input" data-part="array-inputs" phx-update="ignore"></div>
+        <div data-scope="tags-input" data-part="array-inputs"></div>
       </div>
     `;
 
@@ -73,14 +73,14 @@ describe("syncTagsArrayInputsForPhoenix", () => {
 
   it("does not set form attribute when the hook is inside a form element", () => {
     const root = el({ submitName: "post[tags][]", form: "post-form" });
-    const form = document.createElement("form");
-    form.id = "post-form";
-    form.innerHTML = `
+    root.innerHTML = `
       <div data-scope="tags-input" data-part="root">
-        <div data-scope="tags-input" data-part="array-inputs" phx-update="ignore"></div>
+        <div data-scope="tags-input" data-part="array-inputs"></div>
       </div>
     `;
-    form.prepend(root);
+    const form = document.createElement("form");
+    form.id = "post-form";
+    form.appendChild(root);
     document.body.appendChild(form);
 
     syncTagsArrayInputsForPhoenix(root, ["alpha"]);
@@ -109,7 +109,7 @@ describe("syncTagsInputFormForPhoenix", () => {
     const root = el({ submitName: "post[tags][]" });
     root.innerHTML = `
       <div data-scope="tags-input" data-part="root">
-        <div data-scope="tags-input" data-part="array-inputs" phx-update="ignore"></div>
+        <div data-scope="tags-input" data-part="array-inputs"></div>
       </div>
     `;
 

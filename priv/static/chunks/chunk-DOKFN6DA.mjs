@@ -6,10 +6,17 @@ function reapplyLiveViewValueInputUsage(input) {
   p.phxPrivate[PHX_HAS_FOCUSED] = true;
 }
 function notifyPhoenixFormChange(input, value, options = {}) {
-  if (String(input.value) === String(value)) {
+  const next = String(value);
+  const unchanged = String(input.value) === next;
+  if (!unchanged) {
+    input.value = next;
+  }
+  if (input.getAttribute("value") !== next) {
+    input.setAttribute("value", next);
+  }
+  if (unchanged && options.force !== true) {
     return;
   }
-  input.value = value;
   options.onTouched?.();
   if (options.markUsed === false) {
     return;
@@ -20,14 +27,12 @@ function notifyPhoenixFormChange(input, value, options = {}) {
     input.dispatchEvent(new Event("change", { bubbles: true }));
   }
 }
-function queueLiveViewFormInputSync(input, getValue, onTouched) {
-  queueMicrotask(() => {
-    notifyPhoenixFormChange(input, getValue(), { onTouched });
-  });
+function syncLiveViewFormInput(input, getValue, onTouched) {
+  notifyPhoenixFormChange(input, getValue(), { onTouched });
 }
 
 export {
   reapplyLiveViewValueInputUsage,
   notifyPhoenixFormChange,
-  queueLiveViewFormInputSync
+  syncLiveViewFormInput
 };

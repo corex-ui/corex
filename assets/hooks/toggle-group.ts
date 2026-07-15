@@ -5,6 +5,7 @@ import type { ValueChangeDetails, Props } from "@zag-js/toggle-group";
 import type { Orientation } from "@zag-js/types";
 
 import { getString, getBoolean, getStringList, getDir, canPushEvent } from "../lib/util";
+import { snapshotDataset, type DatasetSnapshot } from "../lib/controlled-attr-snapshot";
 import { readStringListControlledZagUpdate } from "../lib/read-props";
 import { idMatches, notifyChange, readPayloadId } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
@@ -14,6 +15,7 @@ type ToggleGroupHookState = {
   toggleGroup?: ToggleGroup;
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
+  beforeAttrs?: DatasetSnapshot;
 };
 
 export function valueChangePayload(
@@ -94,17 +96,25 @@ const ToggleGroupHook: Hook<object & ToggleGroupHookState, HTMLElement> = {
     });
   },
 
+  beforeUpdate(this: object & HookInterface<HTMLElement> & ToggleGroupHookState) {
+    this.beforeAttrs = snapshotDataset(this.el, ["value"]);
+  },
+
   updated(this: object & HookInterface<HTMLElement> & ToggleGroupHookState) {
-    this.toggleGroup?.updateProps({
-      ...readStringListControlledZagUpdate(this.el, "value", "defaultValue"),
-      deselectable: getBoolean(this.el, "deselectable"),
-      loopFocus: getBoolean(this.el, "loopFocus"),
-      rovingFocus: getBoolean(this.el, "rovingFocus"),
-      disabled: getBoolean(this.el, "disabled"),
-      multiple: getBoolean(this.el, "multiple"),
-      orientation: getString<Orientation>(this.el, "orientation"),
-      dir: getDir(this.el),
-    });
+    try {
+      this.toggleGroup?.updateProps({
+        ...readStringListControlledZagUpdate(this.el, "value", "defaultValue", this.beforeAttrs),
+        deselectable: getBoolean(this.el, "deselectable"),
+        loopFocus: getBoolean(this.el, "loopFocus"),
+        rovingFocus: getBoolean(this.el, "rovingFocus"),
+        disabled: getBoolean(this.el, "disabled"),
+        multiple: getBoolean(this.el, "multiple"),
+        orientation: getString<Orientation>(this.el, "orientation"),
+        dir: getDir(this.el),
+      });
+    } finally {
+      this.beforeAttrs = undefined;
+    }
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & ToggleGroupHookState) {

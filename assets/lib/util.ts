@@ -38,13 +38,25 @@ export const getString = <T extends string>(
  */
 export const getStringList = (element: HTMLElement, attrName: string): string[] | undefined => {
   const value = element.dataset[attrName];
-  if (typeof value === "string") {
-    return value
-      .split(",")
-      .map((v) => v.trim())
-      .filter((v) => v.length > 0);
+  if (typeof value !== "string") return undefined;
+
+  const trimmed = value.trim();
+  if (trimmed.startsWith("[")) {
+    try {
+      const parsed = JSON.parse(trimmed) as unknown;
+      if (Array.isArray(parsed) && parsed.every((item) => typeof item === "string")) {
+        return parsed as string[];
+      }
+      return [];
+    } catch {
+      return [];
+    }
   }
-  return undefined;
+
+  return trimmed
+    .split(",")
+    .map((v) => v.trim())
+    .filter((v) => v.length > 0);
 };
 /**
  * Extract a number data attribute with optional validation
