@@ -1,6 +1,6 @@
 # Usage rules and agent skills
 
-Corex ships eight agent skills that sync into your project via [usage_rules](https://github.com/ash-project/usage_rules). For live component attrs and slots, also set up [Corex MCP](mcp.html).
+Corex ships eight agent skills that sync into your project via [usage_rules](https://github.com/ash-project/usage_rules). For live component attrs and slots, also set up [Corex MCP](https://hexdocs.pm/corex_mcp/MCP.html) (`corex_mcp`).
 
 ## Setup
 
@@ -73,6 +73,6 @@ mix usage_rules.search_docs "accordion set_value" -p corex
 
 ## See also
 
-- [MCP](mcp.html)
+- [MCP](https://hexdocs.pm/corex_mcp/MCP.html)
 - [Installation](installation.html)
 - [Design](design.html)
