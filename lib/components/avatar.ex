@@ -129,32 +129,59 @@ defmodule Corex.Avatar do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/avatar.css";
+  @import "../corex/components.css";
   ```
 
   Stack modifiers on the host (`class` on `<.avatar>`).
 
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on the fallback surface. Variant modifiers control fallback surface treatment. Default is subtle; add `ui-solid` for a filled fallback chip.
+
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
 
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `avatar` |
-  | Accent | `avatar avatar--accent` |
-  | Brand | `avatar avatar--brand` |
-  | Alert | `avatar avatar--alert` |
-  | Info | `avatar avatar--info` |
-  | Success | `avatar avatar--success` |
+  | Accent | `avatar ui-accent` |
+  | Brand | `avatar ui-brand` |
+  | Alert | `avatar ui-alert` |
+  | Info | `avatar ui-info` |
+  | Success | `avatar ui-success` |
+
+  ### Variant
+
+  Visual treatment of `[data-part="fallback"]`.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `avatar` or `avatar ui-accent` |
+  | Solid | `avatar ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `avatar avatar--sm` |
-  | MD | `avatar avatar--md` |
-  | LG | `avatar avatar--lg` |
-  | XL | `avatar avatar--xl` |
+  | SM | `avatar ui-size-sm` |
+  | MD | `avatar ui-size-md` |
+  | LG | `avatar ui-size-lg` |
+  | XL | `avatar ui-size-xl` |
+
+  ### Radius
+
+  Default is a circle (`rounded-full`). Override with `ui-rounded-*`.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `avatar` |
+  | None | `avatar ui-rounded-none` |
+  | SM | `avatar ui-rounded-sm` |
+  | MD | `avatar ui-rounded-md` |
+  | LG | `avatar ui-rounded-lg` |
+  | XL | `avatar ui-rounded-xl` |
+  | Full | `avatar ui-rounded-full` |
 
   <!-- tabs-close -->
 

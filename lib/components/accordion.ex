@@ -638,25 +638,38 @@ defmodule Corex.Accordion do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/accordion.css";
+  @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.accordion>`). Combine axes, for example `accordion accordion--accent accordion--lg`.
+  Stack modifiers on the host (`class` on `<.accordion>`). Combine axes, for example `accordion ui-accent ui-size-lg` or `accordion ui-info`.
+
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on triggers. Variant modifiers control surface treatment. Default open triggers use a neutral selected surface with semantic text ink; add `ui-solid` for a filled open trigger.
 
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
 
-  Semantic palette on the open item trigger (from design tokens).
+  Palette variables for trigger ink and fill. Does not change open trigger treatment by itself.
 
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `accordion` |
-  | Accent | `accordion accordion--accent` |
-  | Brand | `accordion accordion--brand` |
-  | Alert | `accordion accordion--alert` |
-  | Info | `accordion accordion--info` |
-  | Success | `accordion accordion--success` |
+  | Accent | `accordion ui-accent` |
+  | Brand | `accordion ui-brand` |
+  | Alert | `accordion ui-alert` |
+  | Info | `accordion ui-info` |
+  | Success | `accordion ui-success` |
+
+  ### Variant
+
+  Visual treatment of item triggers. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `accordion` or `accordion ui-accent` |
+  | Solid | `accordion ui-accent ui-solid` |
 
   ### Size
 
@@ -665,22 +678,10 @@ defmodule Corex.Accordion do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `accordion` |
-  | SM | `accordion accordion--sm` |
-  | MD | `accordion accordion--md` |
-  | LG | `accordion accordion--lg` |
-  | XL | `accordion accordion--xl` |
-
-  ### Text
-
-  Font size on trigger and content.
-
-  | Modifier | Classes |
-  | -------- | ------- |
-  | Default | `accordion` |
-  | SM | `accordion accordion--text-sm` |
-  | XL | `accordion accordion--text-xl` |
-  | 2XL | `accordion accordion--text-2xl` |
-  | 4XL | `accordion accordion--text-4xl` |
+  | SM | `accordion ui-size-sm` |
+  | MD | `accordion ui-size-md` |
+  | LG | `accordion ui-size-lg` |
+  | XL | `accordion ui-size-xl` |
 
   ### Rounded
 
@@ -689,12 +690,12 @@ defmodule Corex.Accordion do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `accordion` |
-  | None | `accordion accordion--rounded-none` |
-  | SM | `accordion accordion--rounded-sm` |
-  | MD | `accordion accordion--rounded-md` |
-  | LG | `accordion accordion--rounded-lg` |
-  | XL | `accordion accordion--rounded-xl` |
-  | Full | `accordion accordion--rounded-full` |
+  | None | `accordion ui-rounded-none` |
+  | SM | `accordion ui-rounded-sm` |
+  | MD | `accordion ui-rounded-md` |
+  | LG | `accordion ui-rounded-lg` |
+  | XL | `accordion ui-rounded-xl` |
+  | Full | `accordion ui-rounded-full` |
 
   ### Max width
 

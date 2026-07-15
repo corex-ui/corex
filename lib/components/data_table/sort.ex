@@ -145,6 +145,65 @@ defmodule Corex.DataTable.Sort do
   end
 
   @doc """
+  Like [`handle_sort/3`](#handle_sort/3), but keeps sort state per table `id`.
+
+  Expects `"table_id"` and `"sort_by"` in `params` (sent by [`data_table/1`](Corex.DataTable.html#data_table/1)).
+  Stores `%{sort_by, sort_order}` under `:data_table_sort` keyed by table id. Does not mutate rows;
+  use [`sorted_rows/3`](#sorted_rows/3) when rendering each table.
+  """
+  def handle_sort_for(socket, params, opts \\ [])
+
+  def handle_sort_for(socket, %{"sort_by" => sort_by_param, "table_id" => table_id}, opts)
+      when is_binary(table_id) do
+    sort_columns = Keyword.get(opts, :sort_columns, socket.assigns[:sort_columns])
+
+    case parse_sort_by(sort_by_param, sort_columns) do
+      {:ok, sort_by} ->
+        sorts = socket.assigns[:data_table_sort] || %{}
+        current = Map.get(sorts, table_id, %{sort_by: nil, sort_order: :asc})
+
+        {sort_by, sort_order} =
+          if current.sort_by == sort_by do
+            {sort_by, toggle_sort_order(current.sort_order)}
+          else
+            {sort_by, :asc}
+          end
+
+        assign(
+          socket,
+          :data_table_sort,
+          Map.put(sorts, table_id, %{sort_by: sort_by, sort_order: sort_order})
+        )
+
+      :error ->
+        socket
+    end
+  end
+
+  def handle_sort_for(socket, _params, _opts), do: socket
+
+  @doc """
+  Returns `%{sort_by: atom | nil, sort_order: :asc | :desc}` for a table id from `:data_table_sort`.
+  """
+  def sort_state(assigns_or_socket, table_id, default \\ %{sort_by: nil, sort_order: :asc})
+
+  def sort_state(%Phoenix.LiveView.Socket{} = socket, table_id, default) do
+    sort_state(socket.assigns, table_id, default)
+  end
+
+  def sort_state(%{} = assigns, table_id, default) when is_binary(table_id) do
+    Map.get(assigns[:data_table_sort] || %{}, table_id, default)
+  end
+
+  @doc """
+  Sorts `rows` by `sort_by` / `sort_order` without touching the socket.
+  """
+  def sorted_rows(rows, sort_by, sort_order), do: sort_rows(rows, sort_by, sort_order)
+
+  def sorted_rows(rows, %{sort_by: sort_by, sort_order: sort_order}),
+    do: sort_rows(rows, sort_by, sort_order)
+
+  @doc """
   Parses a `"sort_by"` param from a LiveView event against an optional column whitelist.
 
   Returns `{:ok, atom}` when the param is a safe existing atom and is allowed, or `:error` otherwise.

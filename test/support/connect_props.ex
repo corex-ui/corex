@@ -57,7 +57,20 @@ defmodule Test.Support.ConnectProps do
         on_value_change: nil,
         on_value_change_client: nil,
         filter: true,
-        redirect: false
+        redirect: false,
+        allow_custom_value: false,
+        selection_behavior: "replace",
+        clear_on_empty: false,
+        open_on_click: nil,
+        open_on_change: nil,
+        open_on_key_press: nil,
+        composite: nil,
+        disable_layer: nil,
+        on_highlight_change: nil,
+        on_highlight_change_client: nil,
+        on_select: nil,
+        on_select_client: nil,
+        translation: nil
       },
       Map.new(overrides)
     )

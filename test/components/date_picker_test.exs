@@ -24,8 +24,6 @@ defmodule Corex.DatePickerTest do
             ~H"""
             <DatePicker.date_picker
               id="dp-open"
-              open
-              controlled
               value="2024-06-15"
               invalid
               errors={["Invalid date"]}
@@ -59,7 +57,6 @@ defmodule Corex.DatePickerTest do
               id="dp1"
               name="dp_name"
               value={["2025-01-01", "2025-01-02"]}
-              controlled={true}
               locale="fr-FR"
               time_zone="Europe/Paris"
               disabled={true}
@@ -308,21 +305,6 @@ defmodule Corex.DatePickerTest do
       refute result["data-positioning"]
     end
 
-    test "props/1 returns props when controlled" do
-      assigns = %{
-        id: "test-dp",
-        controlled: true,
-        value: "2025-02-22",
-        locale: "en",
-        time_zone: "UTC",
-        dir: "ltr"
-      }
-
-      result = Connect.props(Map.merge(default_props(), assigns))
-      assert result["data-default-value"] == nil
-      assert result["data-value"] == "2025-02-22"
-    end
-
     test "props/1 returns props when form_field" do
       result =
         Connect.props(
@@ -337,10 +319,10 @@ defmodule Corex.DatePickerTest do
           })
         )
 
-      assert result["data-controlled"] == ""
       assert result["data-form-field"] == "true"
-      assert result["data-value"] == "1990-01-15"
-      assert result["data-default-value"] == nil
+      assert result["data-default-value"] == "1990-01-15"
+      assert result["data-value"] == nil
+      refute Map.has_key?(result, "data-controlled")
     end
 
     test "props/1 includes client event attribute names when set" do

@@ -21,6 +21,10 @@ defmodule Corex.Combobox.Translation do
 
   use Corex.Translation,
     map_merge: true,
+    camel_keys: [
+      trigger: "triggerLabel",
+      clear_selection: "clearTriggerLabel"
+    ],
     fields: [
       placeholder: "Select",
       empty: "No results",

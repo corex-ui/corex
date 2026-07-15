@@ -153,32 +153,47 @@ defmodule Corex.NumberInput do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/number-input.css";
+  @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.number_input>`).
+  Stack modifiers on the host (`class` on `<.number_input>`). Combine axes, for example `number-input ui-accent ui-size-lg` or `number-input ui-info ui-solid`.
+
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on the input and stepper triggers. Variant modifiers control field surface treatment. Default is subtle; add `number-input ui-solid` for a filled control.
 
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
+
+  Palette variables for number input ink and fill. Does not change surface treatment by itself.
 
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `number-input` |
-  | Accent | `number-input number-input--accent` |
-  | Brand | `number-input number-input--brand` |
-  | Alert | `number-input number-input--alert` |
-  | Info | `number-input number-input--info` |
-  | Success | `number-input number-input--success` |
+  | Accent | `number-input ui-accent` |
+  | Brand | `number-input ui-brand` |
+  | Alert | `number-input ui-alert` |
+  | Info | `number-input ui-info` |
+  | Success | `number-input ui-success` |
+
+  ### Variant
+
+  Visual treatment of the input and stepper trigger surfaces. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `number-input` or `number-input ui-accent` |
+  | Solid | `number-input ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `number-input number-input--sm` |
-  | MD | `number-input number-input--md` |
-  | LG | `number-input number-input--lg` |
-  | XL | `number-input number-input--xl` |
+  | SM | `number-input ui-size-sm` |
+  | MD | `number-input ui-size-md` |
+  | LG | `number-input ui-size-lg` |
+  | XL | `number-input ui-size-xl` |
 
   <!-- tabs-close -->
 

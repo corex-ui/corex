@@ -98,9 +98,7 @@ defmodule Corex.Tabs.Anatomy do
       "aria-selected",
       "aria-disabled",
       "aria-controls",
-      "disabled",
       "tabindex",
-      "data-disabled",
       "data-selected",
       "data-state",
       "data-focus",
@@ -160,7 +158,6 @@ defmodule Corex.Tabs.Anatomy do
     @ignored_attrs [
       "hidden",
       "data-state",
-      "data-disabled",
       "data-focus",
       "data-orientation",
       "dir",

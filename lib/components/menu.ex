@@ -236,7 +236,7 @@ defmodule Corex.Menu do
   ### set_open
 
   ```heex
-  <.action phx-click={Corex.Menu.set_open("menu-api", true)} class="button button--sm">
+  <.action phx-click={Corex.Menu.set_open("menu-api", true)} class="button ui-size-sm">
     Open Menu
   </.action>
   ```
@@ -308,6 +308,53 @@ defmodule Corex.Menu do
   | ----- | ---- | -------------- |
   | `on_select_client="menu-selected"` | Item selected | `id`, `value` |
   | `on_open_change_client="menu-open-changed"` | Open state changes | `id`, `open` |
+
+  ## Style
+
+  Import `menu.css` and stack modifiers on the host (`class` on `<.menu>`).
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components.css";
+  ```
+
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on triggers and selected items. Variant modifiers control trigger and content panel surface treatment. Default is subtle; add `menu ui-solid` for a filled trigger or panel.
+
+  <!-- tabs-open -->
+
+  ### Semantic
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `menu` |
+  | Accent | `menu ui-accent` |
+  | Brand | `menu ui-brand` |
+  | Alert | `menu ui-alert` |
+  | Info | `menu ui-info` |
+  | Success | `menu ui-success` |
+
+  ### Variant
+
+  Visual treatment of the trigger and content panel. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `menu` or `menu ui-accent` |
+  | Solid | `menu ui-accent ui-solid` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `menu ui-size-sm` |
+  | MD | `menu ui-size-md` |
+  | LG | `menu ui-size-lg` |
+  | XL | `menu ui-size-xl` |
+
+  <!-- tabs-close -->
 
   '''
 

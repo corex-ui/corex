@@ -62,7 +62,7 @@ defmodule Corex.FileUpload do
         {msg}
       </:error>
     </.file_upload>
-    <.action type="submit" class="button button--accent w-full">Submit</.action>
+    <.action type="submit" class="button ui-accent w-full">Submit</.action>
   </.form>
   ```
 

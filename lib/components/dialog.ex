@@ -48,10 +48,10 @@ defmodule Corex.Dialog do
     <:content>
       <p>Are you sure you want to continue?</p>
       <div class="flex flex-wrap justify-end gap-2 mt-4">
-        <.action phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)} class="button button--sm button--ghost">
+        <.action phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)} class="button ui-size-sm">
           Cancel
         </.action>
-        <.action phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)} class="button button--sm">
+        <.action phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)} class="button ui-size-sm">
           Continue
         </.action>
       </div>
@@ -78,7 +78,7 @@ defmodule Corex.Dialog do
   ### set_open
 
   ```heex
-  <.action phx-click={Corex.Dialog.set_open("dialog-api", true)} class="button button--sm">
+  <.action phx-click={Corex.Dialog.set_open("dialog-api", true)} class="button ui-size-sm">
     Open Dialog
   </.action>
   <.dialog id="dialog-api" class="dialog">
@@ -87,7 +87,7 @@ defmodule Corex.Dialog do
     <:description>Dialog description.</:description>
     <:content>
       <p>Dialog content</p>
-      <.action phx-click={Corex.Dialog.set_open("dialog-api", false)} class="button button--sm">
+      <.action phx-click={Corex.Dialog.set_open("dialog-api", false)} class="button ui-size-sm">
         Close
       </.action>
     </:content>
@@ -275,10 +275,10 @@ defmodule Corex.Dialog do
     <:description>This action cannot be undone.</:description>
     <:content>
       <div class="flex flex-wrap justify-end gap-2 mt-4">
-        <.action id="delete-item-alert-cancel" phx-click={Corex.Dialog.set_open("delete-item-alert", false)} class="button button--sm button--ghost">
+        <.action id="delete-item-alert-cancel" phx-click={Corex.Dialog.set_open("delete-item-alert", false)} class="button ui-size-sm">
           Cancel
         </.action>
-        <.action phx-click={Corex.Dialog.set_open("delete-item-alert", false)} class="button button--sm button--alert">
+        <.action phx-click={Corex.Dialog.set_open("delete-item-alert", false)} class="button ui-size-sm ui-alert">
           Delete
         </.action>
       </div>
@@ -298,6 +298,10 @@ defmodule Corex.Dialog do
 
   Stack modifiers on the host (`class` on `<.dialog>`).
 
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on the trigger and title. Variant modifiers control trigger and content panel surface treatment. Default is subtle; add `ui-solid` for a filled trigger or panel.
+
   When `prevent_scroll` is enabled, Zag sets `--scrollbar-width` on the document root. Fixed or sticky app chrome can compensate with `calc(... + var(--scrollbar-width, 0px))` at the app level; Corex does not apply this globally.
 
   <!-- tabs-open -->
@@ -316,7 +320,7 @@ defmodule Corex.Dialog do
   ### Small
 
   ```heex
-  <.dialog class="dialog dialog--sm">
+  <.dialog class="dialog ui-size-sm">
     <:trigger>Open</:trigger>
     <:title>Small</:title>
     <:content><p>Compact dialog.</p></:content>
@@ -327,7 +331,7 @@ defmodule Corex.Dialog do
   ### Large
 
   ```heex
-  <.dialog class="dialog dialog--lg">
+  <.dialog class="dialog ui-size-lg">
     <:trigger>Open</:trigger>
     <:title>Large</:title>
     <:content><p>Spacious dialog.</p></:content>
@@ -335,21 +339,10 @@ defmodule Corex.Dialog do
   </.dialog>
   ```
 
-  ### Text
-
-  ```heex
-  <.dialog class="dialog dialog--text-xl">
-    <:trigger>Open</:trigger>
-    <:title>Larger type</:title>
-    <:content><p>Title, description, and body scale with the modifier.</p></:content>
-    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
-  </.dialog>
-  ```
-
   ### Radius
 
   ```heex
-  <.dialog class="dialog dialog--rounded-xl">
+  <.dialog class="dialog ui-rounded-xl">
     <:trigger>Open</:trigger>
     <:title>Rounded panel</:title>
     <:content><p>Corner radius on the content panel and close trigger.</p></:content>

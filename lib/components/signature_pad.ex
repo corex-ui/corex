@@ -242,12 +242,12 @@ defmodule Corex.SignaturePad do
   ```
 
   If you wish to use the default Corex styling, you can use the class `signature-pad` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+  This requires the `corex_design` dependency and `mix corex.design.build`; import the component css file.
 
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/signature-pad.css";
+  @import "../corex/components.css";
   ```
 
   Drawing stroke color is set with the `drawing_fill` attribute (a CSS color value such as
@@ -257,18 +257,23 @@ defmodule Corex.SignaturePad do
 
   ```heex
   <.signature_pad
-    class="signature-pad signature-pad--accent signature-pad--lg signature-pad--rounded-xl"
+    class="signature-pad ui-accent ui-size-lg ui-rounded-xl"
     drawing_fill="var(--color-ink)"
   >
   ```
 
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+
   | Modifier | Applies to |
   | -------- | ---------- |
-  | `signature-pad--{accent,brand,alert,success,info}` | Clear trigger only |
-  | `signature-pad--{sm,md,lg,xl}` | Label, control height, clear trigger |
-  | `signature-pad--rounded-{none,sm,md,lg,xl,full}` | Control, pad surface, clear trigger |
+  | `signature-pad ui-{accent,brand,alert,success,info}` | Clear trigger palette variables |
+  | `signature-pad ui-solid` | Filled clear trigger |
+  | `signature-pad ui-size-{sm,md,lg,xl}` | Label, control height, clear trigger |
+  | `signature-pad ui-rounded-{none,sm,md,lg,xl,full}` | Control, pad surface, clear trigger |
 
-  The guide line (`data-part="guide"`) is not themed by color modifiers.
+  Default clear trigger treatment is subtle. Add `signature-pad ui-solid` for a filled clear button.
+
+  The guide line (`data-part="guide"`) is not themed by semantic modifiers.
 
   '''
 

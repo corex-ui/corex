@@ -75,6 +75,8 @@ defmodule Corex.Code do
   With Corex Design, syntax highlighting styles are included in
   `code.css`. Nothing else is required.
 
+  Axes: **Size** (`text-sm` … `text-xl`, or `ui-size-*`), **Radius** (`ui-rounded-*`), **Max width** (`code--max-w-*` / `max-w-*`). See the [modifier guide](modifiers.html).
+
   Without Corex Design, run `mix corex.code` to generate the Makeup stylesheet and
   import it in your CSS:
 

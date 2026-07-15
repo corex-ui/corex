@@ -106,13 +106,52 @@ defmodule Corex.NativeInput do
   The root has `data-no-icon` when no icon is shown (icon slot empty or type is textarea/date/time), so the input uses full-width padding. Use the class `native-input` for default Corex styling.
 
   If you wish to use the default Corex styling, you can use the class `native-input` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+  This requires the `corex_design` dependency and `mix corex.design.build`; import the component css file.
 
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/native-input.css";
+  @import "../corex/components.css";
   ```
+
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on the input. Variant modifiers control input surface treatment. Default is subtle; add `native-input ui-solid` for a filled field. Checkbox and radio inputs keep their dedicated styling.
+
+  <!-- tabs-open -->
+
+  ### Semantic
+
+  Palette variables for native input ink and fill. Does not change surface treatment by itself.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `native-input` |
+  | Accent | `native-input ui-accent` |
+  | Brand | `native-input ui-brand` |
+  | Alert | `native-input ui-alert` |
+  | Info | `native-input ui-info` |
+  | Success | `native-input ui-success` |
+
+  ### Variant
+
+  Visual treatment of the input surface. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `native-input` or `native-input ui-accent` |
+  | Solid | `native-input ui-accent ui-solid` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `native-input ui-size-sm` |
+  | MD | `native-input ui-size-md` |
+  | LG | `native-input ui-size-lg` |
+  | XL | `native-input ui-size-xl` |
+
+  <!-- tabs-close -->
   '''
 
   @doc type: :component

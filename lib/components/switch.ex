@@ -149,32 +149,47 @@ defmodule Corex.Switch do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/switch.css";
+  @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.switch>`).
+  Stack modifiers on the host (`class` on `<.switch>`). Combine axes, for example `switch ui-accent ui-size-lg` or `switch ui-info ui-solid`.
+
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on the track and thumb. Variant modifiers control surface treatment. Default is subtle: unchecked uses a neutral track with semantic thumb color, checked uses selected with semantic ink text. Add `ui-solid` for a filled checked track.
 
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
+
+  Palette variables for track fill and thumb ink. Does not change surface treatment by itself.
 
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `switch` |
-  | Accent | `switch switch--accent` |
-  | Brand | `switch switch--brand` |
-  | Alert | `switch switch--alert` |
-  | Info | `switch switch--info` |
-  | Success | `switch switch--success` |
+  | Accent | `switch ui-accent` |
+  | Brand | `switch ui-brand` |
+  | Alert | `switch ui-alert` |
+  | Info | `switch ui-info` |
+  | Success | `switch ui-success` |
+
+  ### Variant
+
+  Visual treatment of the track and thumb. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `switch` or `switch ui-accent` |
+  | Solid | `switch ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `switch switch--sm` |
-  | MD | `switch switch--md` |
-  | LG | `switch switch--lg` |
-  | XL | `switch switch--xl` |
+  | SM | `switch ui-size-sm` |
+  | MD | `switch ui-size-md` |
+  | LG | `switch ui-size-lg` |
+  | XL | `switch ui-size-xl` |
 
   <!-- tabs-close -->
 

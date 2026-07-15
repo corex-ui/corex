@@ -376,7 +376,7 @@ defmodule Corex.Select do
   ### set_value
 
   ```heex
-  <.action phx-click={Corex.Select.set_value("select-api-bind", ["fra"])} class="button button--sm">France</.action>
+  <.action phx-click={Corex.Select.set_value("select-api-bind", ["fra"])} class="button ui-size-sm">France</.action>
   <.select id="select-api-bind" class="select" items={
     Corex.List.new([
       %{label: "France", value: "fra"},
@@ -484,54 +484,58 @@ defmodule Corex.Select do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/select.css";
+  @import "../corex/components.css";
   ```
 
-  Stack modifiers on `<.select class="select ...">`.
+  Stack modifiers on `<.select class="select ...">`. Combine axes, for example `select ui-accent ui-size-lg` or `select ui-info ui-solid`.
+
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on the trigger. Variant modifiers control trigger surface treatment. Default is subtle; add `ui-solid` for a filled trigger. Selected menu items still use the semantic palette.
 
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
 
-  Color modifiers apply theme ink to the trigger label and chevron, and to selected menu items.
+  Palette variables for select ink and fill. Does not change surface treatment by itself.
 
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `select` |
-  | Accent | `select select--accent` |
-  | Brand | `select select--brand` |
-  | Alert | `select select--alert` |
-  | Success | `select select--success` |
-  | Info | `select select--info` |
+  | Accent | `select ui-accent` |
+  | Brand | `select ui-brand` |
+  | Alert | `select ui-alert` |
+  | Success | `select ui-success` |
+  | Info | `select ui-info` |
+
+  ### Variant
+
+  Visual treatment of the trigger surface. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `select` or `select ui-accent` |
+  | Solid | `select ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `select select--sm` |
-  | MD | `select select--md` |
-  | LG | `select select--lg` |
-  | XL | `select select--xl` |
-
-  ### Text
-
-  | Modifier | Classes |
-  | -------- | ------- |
-  | SM | `select select--text-sm` |
-  | XL | `select select--text-xl` |
-  | 2XL | `select select--text-2xl` |
-  | 4XL | `select select--text-4xl` |
+  | SM | `select ui-size-sm` |
+  | MD | `select ui-size-md` |
+  | LG | `select ui-size-lg` |
+  | XL | `select ui-size-xl` |
 
   ### Rounded
 
   | Modifier | Classes |
   | -------- | ------- |
-  | None | `select select--rounded-none` |
-  | SM | `select select--rounded-sm` |
-  | MD | `select select--rounded-md` |
-  | LG | `select select--rounded-lg` |
-  | XL | `select select--rounded-xl` |
-  | Full | `select select--rounded-full` |
+  | None | `select ui-rounded-none` |
+  | SM | `select ui-rounded-sm` |
+  | MD | `select ui-rounded-md` |
+  | LG | `select ui-rounded-lg` |
+  | XL | `select ui-rounded-xl` |
+  | Full | `select ui-rounded-full` |
 
   ### Max width
 
@@ -584,6 +588,9 @@ defmodule Corex.Select do
   )
 
   attr(:controlled, :boolean, default: false, doc: "Whether the select is controlled")
+
+  attr(:form_field, :boolean, default: false)
+  attr(:field_used, :boolean, default: false)
 
   attr(:value, :list, default: [], doc: "The value of the select")
   attr(:disabled, :boolean, default: false, doc: "Whether the select is disabled")
@@ -761,6 +768,7 @@ defmodule Corex.Select do
         if(array_form_submit, do: Corex.FormField.list_submit_name(assigns.name), else: nil)
       )
       |> assign(:value_input_name, if(array_form_submit, do: nil, else: assigns.name))
+      |> then(fn a -> assign(a, :connect_props, select_connect_props(a)) end)
 
     ~H"""
     <div 
@@ -769,17 +777,7 @@ defmodule Corex.Select do
     data-loading
     phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])} 
     {@rest}
-    {Connect.props(%Props{
-      id: @id, items: @items, controlled: @controlled, form_field: @form_field, placeholder: @translation.placeholder, value: @value,
-      disabled: @disabled, close_on_select: @close_on_select, dir: @dir, orientation: @orientation, loop_focus: @loop_focus,
-      multiple: @multiple, invalid: @invalid, name: @name, form: @form, read_only: @read_only,
-      required: @required, on_value_change: @on_value_change, on_value_change_client: @on_value_change_client,
-      redirect: @redirect,
-      positioning: @positioning,
-      deselectable: @deselectable,
-      update_trigger: @update_trigger,
-      hidden_select_name: @hidden_select_name
-    })}>
+    {@connect_props}>
       <div phx-mounted={Connect.ignore_root(%Root{id: @id, invalid: @invalid, read_only: @read_only, orientation: @orientation, dir: @dir})} {Connect.root(%Root{id: @id, invalid: @invalid, read_only: @read_only, orientation: @orientation, dir: @dir})}>
 
       <input
@@ -1033,5 +1031,38 @@ defmodule Corex.Select do
           labels -> Enum.join(labels, ", ")
         end
     end
+  end
+
+  defp select_connect_props(assigns) do
+    props = %Props{
+      id: assigns.id,
+      items: assigns.items,
+      controlled: assigns.controlled,
+      form_field: assigns[:form_field] == true,
+      placeholder: assigns.translation.placeholder,
+      value: assigns.value,
+      disabled: assigns.disabled,
+      close_on_select: assigns.close_on_select,
+      dir: assigns.dir,
+      orientation: assigns.orientation,
+      loop_focus: assigns.loop_focus,
+      multiple: assigns.multiple,
+      invalid: assigns.invalid,
+      name: assigns.name,
+      form: assigns.form,
+      read_only: assigns.read_only,
+      required: assigns.required,
+      on_value_change: assigns.on_value_change,
+      on_value_change_client: assigns.on_value_change_client,
+      redirect: assigns.redirect,
+      positioning: assigns.positioning,
+      deselectable: Map.get(assigns, :deselectable, false),
+      update_trigger: Map.get(assigns, :update_trigger, true),
+      hidden_select_name: Map.get(assigns, :hidden_select_name)
+    }
+
+    props
+    |> Connect.props()
+    |> Corex.FormField.put_form_field_attrs(assigns)
   end
 end

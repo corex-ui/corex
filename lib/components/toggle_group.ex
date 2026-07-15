@@ -171,43 +171,58 @@ defmodule Corex.ToggleGroup do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/toggle-group.css";
+  @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.toggle_group>`).
+  Stack modifiers on the host (`class` on `<.toggle_group>`). Combine axes, for example `toggle-group ui-accent ui-size-lg` or `toggle-group ui-info ui-solid`.
+
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on item triggers. Variant modifiers control surface treatment. Default is subtle: off uses a neutral surface, on uses selected with semantic ink text. Add `ui-solid` for a filled on state.
 
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
+
+  Palette variables for item ink and fill. Does not change surface treatment by itself.
 
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `toggle-group` |
-  | Accent | `toggle-group toggle-group--accent` |
-  | Brand | `toggle-group toggle-group--brand` |
-  | Alert | `toggle-group toggle-group--alert` |
-  | Info | `toggle-group toggle-group--info` |
-  | Success | `toggle-group toggle-group--success` |
+  | Accent | `toggle-group ui-accent` |
+  | Brand | `toggle-group ui-brand` |
+  | Alert | `toggle-group ui-alert` |
+  | Info | `toggle-group ui-info` |
+  | Success | `toggle-group ui-success` |
+
+  ### Variant
+
+  Visual treatment of item triggers. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `toggle-group` or `toggle-group ui-accent` |
+  | Solid | `toggle-group ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `toggle-group toggle-group--sm` |
-  | MD | `toggle-group toggle-group--md` |
-  | LG | `toggle-group toggle-group--lg` |
-  | XL | `toggle-group toggle-group--xl` |
+  | SM | `toggle-group ui-size-sm` |
+  | MD | `toggle-group ui-size-md` |
+  | LG | `toggle-group ui-size-lg` |
+  | XL | `toggle-group ui-size-xl` |
 
   ### Rounded
 
   | Modifier | Classes |
   | -------- | ------- |
-  | None | `toggle-group toggle-group--rounded-none` |
-  | SM | `toggle-group toggle-group--rounded-sm` |
-  | MD | `toggle-group toggle-group--rounded-md` |
-  | LG | `toggle-group toggle-group--rounded-lg` |
-  | XL | `toggle-group toggle-group--rounded-xl` |
-  | Full | `toggle-group toggle-group--rounded-full` |
+  | None | `toggle-group ui-rounded-none` |
+  | SM | `toggle-group ui-rounded-sm` |
+  | MD | `toggle-group ui-rounded-md` |
+  | LG | `toggle-group ui-rounded-lg` |
+  | XL | `toggle-group ui-rounded-xl` |
+  | Full | `toggle-group ui-rounded-full` |
 
   <!-- tabs-close -->
 

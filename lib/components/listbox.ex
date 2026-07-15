@@ -105,7 +105,7 @@ defmodule Corex.Listbox do
   ### set_value
 
   ```heex
-  <.action phx-click={Corex.Listbox.set_value("listbox-api-sv-client", ["bel"])} class="button button--sm">
+  <.action phx-click={Corex.Listbox.set_value("listbox-api-sv-client", ["bel"])} class="button ui-size-sm">
     Belgium
   </.action>
   <.listbox id="listbox-api-sv-client" class="listbox" items={
@@ -129,7 +129,7 @@ defmodule Corex.Listbox do
   ### value
 
   ```heex
-  <.action phx-click={Corex.Listbox.value("listbox-api-val-client")} class="button button--sm">
+  <.action phx-click={Corex.Listbox.value("listbox-api-val-client")} class="button ui-size-sm">
     Read selection
   </.action>
   ```
@@ -293,6 +293,54 @@ defmodule Corex.Listbox do
   ```
 
   <!-- tabs-close -->
+
+  ## Style
+
+  Import `listbox.css` and stack modifiers on the host (`class` on `<.listbox>`). Use Tailwind `max-w-*` on the root for width caps.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components.css";
+  ```
+
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+
+  Variant modifiers control unselected item surface treatment. Selected items keep semantic fill. Default is subtle; add `listbox ui-solid` for filled rows.
+
+  <!-- tabs-open -->
+
+  ### Semantic
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `listbox` |
+  | Accent | `listbox ui-accent` |
+  | Brand | `listbox ui-brand` |
+  | Alert | `listbox ui-alert` |
+  | Info | `listbox ui-info` |
+  | Success | `listbox ui-success` |
+
+  ### Variant
+
+  Visual treatment of unselected items.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `listbox` or `listbox ui-accent` |
+  | Solid | `listbox ui-accent ui-solid` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `listbox ui-size-sm` |
+  | MD | `listbox ui-size-md` |
+  | LG | `listbox ui-size-lg` |
+  | XL | `listbox ui-size-xl` |
+
+  <!-- tabs-close -->
+
   '''
 
   @doc type: :component

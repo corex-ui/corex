@@ -21,6 +21,7 @@ defmodule Corex.Combobox.Connect do
     Trigger
   }
 
+  alias Corex.Combobox.Translation, as: ComboboxTranslation
   alias Phoenix.LiveView.JS
 
   alias Corex.FormField
@@ -29,36 +30,26 @@ defmodule Corex.Combobox.Connect do
     only: [
       get_boolean: 1,
       validate_value!: 1,
-      joined_csv_values: 1
+      joined_csv_values: 1,
+      maybe_put: 3
     ]
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
     vlist = validate_value!(assigns.value)
-    form_field = Map.get(assigns, :form_field, false)
-    controlled = Map.get(assigns, :controlled, false)
-    zag_controlled = form_field || controlled
 
     joined =
-      if form_field do
+      if Map.get(assigns, :form_field, false) do
         FormField.dataset_default_json(vlist)
       else
         joined_csv_values(vlist)
       end
 
-    {value_str, default_value_str} =
-      if zag_controlled do
-        {joined, nil}
-      else
-        {nil, joined}
-      end
-
     base = %{
       "id" => assigns.id,
       "data-items" => Corex.Dataset.encode_json(assigns.items),
-      "data-controlled" => get_boolean(zag_controlled),
-      "data-value" => value_str,
-      "data-default-value" => default_value_str,
+      "data-value" => nil,
+      "data-default-value" => joined,
       "data-placeholder" => assigns.placeholder,
       "data-close-on-select" => get_boolean(assigns.close_on_select),
       "data-always-submit-on-enter" => get_boolean(assigns.always_submit_on_enter),
@@ -78,14 +69,59 @@ defmodule Corex.Combobox.Connect do
       "data-on-input-value-change-client" => assigns.on_input_value_change_client,
       "data-on-value-change" => assigns.on_value_change,
       "data-on-value-change-client" => assigns.on_value_change_client,
+      "data-on-highlight-change" => assigns.on_highlight_change,
+      "data-on-highlight-change-client" => assigns.on_highlight_change_client,
+      "data-on-select" => assigns.on_select,
+      "data-on-select-client" => assigns.on_select_client,
       "data-filter" => get_boolean(assigns.filter),
-      "data-redirect" => get_boolean(assigns.redirect)
+      "data-redirect" => get_boolean(assigns.redirect),
+      "data-allow-custom-value" => get_boolean(assigns.allow_custom_value),
+      "data-selection-behavior" => assigns.selection_behavior,
+      "data-clear-on-empty" => get_boolean(assigns.clear_on_empty),
+      "data-translation" => translation_json(assigns)
     }
 
     base
     |> Map.merge(Corex.Positioning.to_dataset(assigns.positioning))
     |> maybe_put_submit_name(Map.get(assigns, :submit_name))
-    |> FormField.put_form_field_attrs(assigns)
+    |> maybe_put_optional_boolean("data-open-on-click", Map.get(assigns, :open_on_click))
+    |> maybe_put_optional_boolean("data-open-on-change", Map.get(assigns, :open_on_change))
+    |> maybe_put_optional_boolean("data-open-on-key-press", Map.get(assigns, :open_on_key_press))
+    |> maybe_put_optional_boolean("data-composite", Map.get(assigns, :composite))
+    |> maybe_put_optional_boolean("data-disable-layer", Map.get(assigns, :disable_layer))
+    |> maybe_put_name_form(assigns)
+  end
+
+  defp maybe_put_optional_boolean(attrs, _key, nil), do: attrs
+
+  defp maybe_put_optional_boolean(attrs, key, value) when is_boolean(value),
+    do: Map.put(attrs, key, get_boolean(value))
+
+  defp maybe_put_name_form(attrs, assigns) do
+    if Map.get(assigns, :form_field, false) do
+      attrs
+    else
+      attrs
+      |> maybe_put("data-name", Map.get(assigns, :name))
+      |> maybe_put("data-form", Map.get(assigns, :form))
+    end
+  end
+
+  defp translation_json(assigns) do
+    case Map.get(assigns, :translation) do
+      %ComboboxTranslation{} = t ->
+        t
+        |> ComboboxTranslation.to_camel_map()
+        |> Enum.reject(fn {_, v} -> v in [nil, ""] end)
+        |> Map.new()
+        |> then(fn
+          m when map_size(m) == 0 -> nil
+          m -> Corex.Dataset.encode_json(m)
+        end)
+
+      _ ->
+        nil
+    end
   end
 
   defp maybe_put_submit_name(attrs, nil), do: attrs

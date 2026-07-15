@@ -352,6 +352,32 @@ defmodule Corex.RadioGroupTest do
 
       result = Connect.props(assigns)
       assert result["data-value"] == "opt-1"
+      assert result["data-default-value"] == nil
+      assert result["data-controlled"] == ""
+    end
+
+    test "returns props when form_field" do
+      assigns = %{
+        id: "test-radio",
+        value: "opt-1",
+        form_field: true,
+        controlled: false,
+        dir: "ltr",
+        orientation: "vertical",
+        disabled: false,
+        invalid: false,
+        read_only: false,
+        name: "user[choice]",
+        form: nil,
+        required: false,
+        on_value_change: nil,
+        on_value_change_client: nil
+      }
+
+      result = Connect.props(assigns)
+      assert result["data-default-value"] == "opt-1"
+      assert result["data-value"] == nil
+      assert result["data-form-field"] == "true"
     end
 
     test "returns props when uncontrolled" do

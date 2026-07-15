@@ -172,22 +172,11 @@ defmodule Corex.TagsInput.Connect do
   end
 
   defp base_hook_props(assigns, value) do
-    form_field = Map.get(assigns, :form_field, false)
-    controlled = Map.get(assigns, :controlled, false)
-    zag_controlled = form_field || controlled
     encoded = tags_json(value)
 
-    {tags_attr, default_tags_attr} =
-      if zag_controlled do
-        {encoded, nil}
-      else
-        {if(controlled, do: encoded), if(!controlled, do: encoded)}
-      end
-
     %{
-      "data-controlled" => get_boolean(zag_controlled),
-      "data-tags" => tags_attr,
-      "data-default-tags" => default_tags_attr,
+      "data-tags" => nil,
+      "data-default-tags" => encoded,
       "data-disabled" => get_boolean(assigns.disabled),
       "data-readonly" => get_boolean(assigns.read_only),
       "data-invalid" => get_boolean(assigns.invalid),

@@ -5,14 +5,15 @@ defmodule Corex.MarqueeTest do
   alias Corex.Marquee.Connect
 
   describe "marquee/1" do
-    test "renders" do
+    test "renders shell with ssr-preview and items template" do
       html = render_component(&CorexTest.ComponentHelpers.render_marquee/1, [])
-      assert html =~ ~r/data-scope="marquee"/
+      assert html =~ ~r/data-part="ssr-preview"/
       assert html =~ ~r/data-part="items-template"/
-      assert html =~ ~r/data-part="root"/
-      assert html =~ ~r/data-part="viewport"/
       assert html =~ ~r/data-loading/
       assert html =~ ~r/phx-mounted/
+      refute html =~ ~r/data-part="root"/
+      refute html =~ ~r/data-part="viewport"/
+      refute html =~ ~r/data-part="content"/
     end
   end
 
@@ -67,7 +68,6 @@ defmodule Corex.MarqueeTest do
         id: "test",
         side: "top",
         duration: 20,
-        content_count: 2,
         speed: 10,
         spacing: "20px",
         auto_fill: true,

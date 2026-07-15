@@ -156,43 +156,58 @@ defmodule Corex.Toggle do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/toggle.css";
+  @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.toggle>`).
+  Stack modifiers on the host (`class` on `<.toggle>`). Combine axes, for example `toggle ui-accent ui-size-lg` or `toggle ui-info ui-solid`.
+
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on the root trigger. Variant modifiers control surface treatment. Default is subtle: off uses a neutral surface, on uses selected with semantic ink text. Add `ui-solid` for a filled on state.
 
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
+
+  Palette variables for toggle ink and fill. Does not change surface treatment by itself.
 
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `toggle` |
-  | Accent | `toggle toggle--accent` |
-  | Brand | `toggle toggle--brand` |
-  | Alert | `toggle toggle--alert` |
-  | Info | `toggle toggle--info` |
-  | Success | `toggle toggle--success` |
+  | Accent | `toggle ui-accent` |
+  | Brand | `toggle ui-brand` |
+  | Alert | `toggle ui-alert` |
+  | Info | `toggle ui-info` |
+  | Success | `toggle ui-success` |
+
+  ### Variant
+
+  Visual treatment of the root trigger. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `toggle` or `toggle ui-accent` |
+  | Solid | `toggle ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `toggle toggle--sm` |
-  | MD | `toggle toggle--md` |
-  | LG | `toggle toggle--lg` |
-  | XL | `toggle toggle--xl` |
+  | SM | `toggle ui-size-sm` |
+  | MD | `toggle ui-size-md` |
+  | LG | `toggle ui-size-lg` |
+  | XL | `toggle ui-size-xl` |
 
   ### Rounded
 
   | Modifier | Classes |
   | -------- | ------- |
-  | None | `toggle toggle--rounded-none` |
-  | SM | `toggle toggle--rounded-sm` |
-  | MD | `toggle toggle--rounded-md` |
-  | LG | `toggle toggle--rounded-lg` |
-  | XL | `toggle toggle--rounded-xl` |
-  | Full | `toggle toggle--rounded-full` |
+  | None | `toggle ui-rounded-none` |
+  | SM | `toggle ui-rounded-sm` |
+  | MD | `toggle ui-rounded-md` |
+  | LG | `toggle ui-rounded-lg` |
+  | XL | `toggle ui-rounded-xl` |
+  | Full | `toggle ui-rounded-full` |
 
   <!-- tabs-close -->
 

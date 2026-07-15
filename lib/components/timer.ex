@@ -160,6 +160,53 @@ defmodule Corex.Timer do
 
   <!-- tabs-close -->
 
+  ## Style
+
+  Import `timer.css` and stack modifiers on the host (`class` on `<.timer>`). Use Tailwind `max-w-*` on the root for width caps.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components.css";
+  ```
+
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on action triggers. Variant modifiers control action trigger surface treatment. Default is subtle; add `timer ui-solid` for filled play/pause controls.
+
+  <!-- tabs-open -->
+
+  ### Semantic
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `timer` |
+  | Accent | `timer ui-accent` |
+  | Brand | `timer ui-brand` |
+  | Alert | `timer ui-alert` |
+  | Info | `timer ui-info` |
+  | Success | `timer ui-success` |
+
+  ### Variant
+
+  Visual treatment of `[data-part="action-trigger"]` only. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `timer` or `timer ui-accent` |
+  | Solid | `timer ui-accent ui-solid` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `timer ui-size-sm` |
+  | MD | `timer ui-size-md` |
+  | LG | `timer ui-size-lg` |
+  | XL | `timer ui-size-xl` |
+
+  <!-- tabs-close -->
+
   '''
 
   @doc type: :component
