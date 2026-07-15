@@ -1,0 +1,19 @@
+[
+  exit: false,
+  format: "txt",
+  ignore_files: [],
+  ignore: [
+    "Traversal.FileModule",
+    "DOS.StringToAtom",
+    "RCE.EEx",
+    "CI.System",
+    "Config"
+  ],
+  out: nil,
+  private: false,
+  router: "lib/corex/mcp/router.ex",
+  skip: false,
+  threshold: :low,
+  verbose: false,
+  version: false
+]

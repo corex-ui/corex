@@ -1,0 +1,9 @@
+/_build/
+/deps/
+/cover/
+/doc/
+/.fetch
+erl_crash.dump
+*.ez
+corex_mcp-*.tar
+/tmp/

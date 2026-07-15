@@ -85,6 +85,7 @@ defmodule E2e.MixProject do
       {:bandit, "~> 1.11"},
       {:corex, path: ".."},
       {:corex_design, path: "../design", runtime: false, only: [:dev, :test]},
+      {:corex_mcp, path: "../mcp", only: [:dev, :test]},
       {:makeup, "~> 1.2"},
       {:makeup_elixir, "~> 1.0.1 or ~> 1.1"},
       {:makeup_html, "~> 0.2"},

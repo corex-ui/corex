@@ -66,6 +66,18 @@ mix phx.server
 
 Visit [http://localhost:4000](http://localhost:4000).
 
+Do not expect one local command to run the entire monorepo suite. Prefer profiles:
+
+| Profile | Command | Use when |
+| ------- | ------- | -------- |
+| Library | `mix test` (repo root) | Component/unit changes |
+| E2e fast (PR-shaped) | `cd e2e && mix test --exclude a11y --exclude slow` | Conn/LiveView + Wallaby without DocA11y axe |
+| E2e full | `cd e2e && mix test` | Hook/a11y changes; matches main CI |
+| Doc smoke only | `cd e2e && mix test --only doc_smoke` | Doc route / demo render regressions |
+| Integration | see below | Installer / greenfield changes |
+
+Tags: `:wallaby` (browser), `:a11y` (axe), `:doc_smoke` (route GET/LiveView), `:slow` (theme matrices).
+
 ### Installer (`installer/`)
 
 ```bash
@@ -77,6 +89,13 @@ mix test
 ### Integration tests (`integration_test/`)
 
 Generates apps with `corex.new` and asserts install paths. Requires `mix archive.install hex phx_new` and a built local `corex_new` archive (see [`.github/workflows/elixir.yml`](.github/workflows/elixir.yml)).
+
+```bash
+cd integration_test
+mix test --exclude extended          # PR-shaped greenfield
+mix test --only database             # DB-backed gens only
+mix test --only extended             # Extra gens (main CI)
+```
 
 ## Repository layout
 
@@ -90,6 +109,7 @@ Generates apps with `corex.new` and asserts install paths. Requires `mix archive
 | `assets/components/` | Zag `Component` subclasses; colocated `*.test.ts` per module (helpers + smoke); all modules in `components-contract.test.ts` and `components-smoke.test.ts` |
 | `assets/hooks/` | LiveView hooks; hook-specific logic in `hooks/<name>.ts` + `hooks/<name>.test.ts`; wiring in `hooks-wiring.test.ts` |
 | `design/priv/css/` | Corex Design static component CSS (source in `:corex_design`) |
+| `mcp/` | Corex MCP Hex package (`:corex_mcp`) |
 | `priv/static/` | Built JS bundles (generated; run `mix assets.build`) |
 | `e2e/` | Demo LiveViews, Playwright-style tests, `doc_examples.ex` |
 | `installer/` | `corex_new` Mix installer |

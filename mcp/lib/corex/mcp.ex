@@ -1,15 +1,27 @@
 defmodule Corex.MCP do
-  @moduledoc false
+  @moduledoc """
+  Dev-only Plug that mounts the Corex [Model Context Protocol](https://modelcontextprotocol.io)
+  HTTP endpoint for AI tooling.
+
+  Ships as the Hex package [`corex_mcp`](https://hex.pm/packages/corex_mcp). Add it to your app
+  with `only: :dev`, then mount after `Plug.Static` and before the code reloader:
+
+      if Mix.env() in [:dev, :test] do
+        plug Corex.MCP
+      end
+
+  The endpoint is at `/corex/mcp`. Never enable this plug in `:prod` (initialization raises unless
+  you pass `force: true`).
+
+  See the [MCP guide](mcp.html) for tools, security, Cursor/Claude config, and Tableau Bandit wiring.
+  """
   @behaviour Plug
 
   require Logger
 
   alias Corex.MCP.{Config, Server}
 
-  @doc """
-  Returns the project root for MCP path relativization.
-  """
-  def root, do: Application.get_env(:corex, :mcp_root, File.cwd!())
+  def root, do: Application.get_env(:corex_mcp, :mcp_root, File.cwd!())
 
   @impl true
   def init(opts) when is_list(opts) do
@@ -48,7 +60,7 @@ defmodule Corex.MCP do
   def call(conn, _config), do: conn
 
   defp maybe_silence_mcp_server_logs do
-    if Application.get_env(:corex, :debug) do
+    if Application.get_env(:corex_mcp, :debug) || Application.get_env(:corex, :debug) do
       :ok
     else
       Logger.put_module_level(Server, :none)
