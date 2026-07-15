@@ -265,9 +265,48 @@ defmodule Corex.DataTable.Sort do
   defp sort_rows(rows, sort_by, sort_order) do
     Enum.sort_by(rows, &Map.get(&1, sort_by), fn a, b ->
       case sort_order do
-        :asc -> a <= b
-        :desc -> a >= b
+        :asc -> compare_sort_values(a, b) != :gt
+        :desc -> compare_sort_values(a, b) != :lt
       end
     end)
+  end
+
+  defp compare_sort_values(nil, nil), do: :eq
+  defp compare_sort_values(nil, _), do: :lt
+  defp compare_sort_values(_, nil), do: :gt
+
+  defp compare_sort_values(a, b) when is_number(a) and is_number(b) do
+    cond do
+      a < b -> :lt
+      a > b -> :gt
+      true -> :eq
+    end
+  end
+
+  defp compare_sort_values(a, b) when is_binary(a) and is_binary(b) do
+    cond do
+      a < b -> :lt
+      a > b -> :gt
+      true -> :eq
+    end
+  end
+
+  defp compare_sort_values(a, b) when is_atom(a) and is_atom(b) do
+    cond do
+      a < b -> :lt
+      a > b -> :gt
+      true -> :eq
+    end
+  end
+
+  defp compare_sort_values(a, b) do
+    sa = inspect(a)
+    sb = inspect(b)
+
+    cond do
+      sa < sb -> :lt
+      sa > sb -> :gt
+      true -> :eq
+    end
   end
 end

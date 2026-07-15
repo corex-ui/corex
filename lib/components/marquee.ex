@@ -1,7 +1,6 @@
 defmodule Corex.Marquee do
   @moduledoc ~S'''
-  Phoenix implementation of [Zag.js Marquee](https://zagjs.com/components/react/marquee).
-
+  Marquee / ticker for Phoenix LiveView. Behavior follows [Zag.js Marquee](https://zagjs.com/components/react/marquee).
   ## Anatomy
 
   <!-- tabs-open -->
@@ -96,9 +95,7 @@ defmodule Corex.Marquee do
   ```
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   Stack modifiers on the host (`class` on `<.marquee>`).

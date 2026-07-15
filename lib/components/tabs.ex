@@ -1,7 +1,6 @@
 defmodule Corex.Tabs do
   @moduledoc ~S'''
-  Phoenix implementation of [Zag.js Tabs](https://zagjs.com/components/react/tabs).
-
+  Tabs for Phoenix LiveView. Behavior follows [Zag.js Tabs](https://zagjs.com/components/react/tabs).
   ## Anatomy
 
   <!-- tabs-open -->
@@ -163,9 +162,7 @@ defmodule Corex.Tabs do
   ```
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   Stack modifiers on the host (`class` on `<.tabs>`). Combine axes, for example `tabs ui-accent ui-size-lg` or `tabs ui-info`.

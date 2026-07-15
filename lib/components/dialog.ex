@@ -1,7 +1,6 @@
 defmodule Corex.Dialog do
   @moduledoc ~S'''
-  Phoenix implementation of [Zag.js Dialog](https://zagjs.com/components/react/dialog).
-
+  Modal dialog for Phoenix LiveView. Behavior follows [Zag.js Dialog](https://zagjs.com/components/react/dialog).
   ## Anatomy
 
   <!-- tabs-open -->

@@ -26,4 +26,15 @@ defmodule Corex.UrlTest do
       refute Url.allowed_href?(123)
     end
   end
+
+  describe "put_data_to/2" do
+    test "puts data-to when href is allowed" do
+      assert Url.put_data_to(%{"id" => "x"}, "/items") == %{"id" => "x", "data-to" => "/items"}
+    end
+
+    test "leaves map unchanged when href is disallowed" do
+      assert Url.put_data_to(%{"id" => "x"}, "javascript:alert(1)") == %{"id" => "x"}
+      assert Url.put_data_to(%{"id" => "x"}, nil) == %{"id" => "x"}
+    end
+  end
 end

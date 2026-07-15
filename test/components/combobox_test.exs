@@ -53,7 +53,7 @@ defmodule Corex.ComboboxTest do
       result =
         render_component(&CorexTest.ComponentHelpers.render_combobox_default_multiple/1, [])
 
-      assert result =~ ~r/data-default-value="m1"/
+      assert result =~ ~r/data-default-value="\[&quot;m1&quot;\]"/
       assert result =~ ~r/data-multiple/
     end
 
@@ -117,7 +117,7 @@ defmodule Corex.ComboboxTest do
 
       html =
         render_component(
-          fn _assigns ->
+          fn assigns ->
             ~H"""
             <Corex.Combobox.combobox field={@field} items={[%{value: "fra", label: "France"}]}>
               <:trigger>v</:trigger>
@@ -155,7 +155,8 @@ defmodule Corex.ComboboxTest do
           %{field: field}
         )
 
-      assert html =~ ~r/data-default-value="\[\]"/
+      refute html =~ ~r/\bdata-default-value=/
+      assert html =~ ~r/data-part="hidden-input"[^>]*value=""/
       assert html =~ ~r/data-part="clear-trigger"/
       assert html =~ ~r/<button hidden[^>]*data-part="clear-trigger"/
     end
@@ -176,7 +177,7 @@ defmodule Corex.ComboboxTest do
 
       html =
         render_component(
-          fn _assigns ->
+          fn assigns ->
             ~H"""
             <Corex.Combobox.combobox field={@field} items={[%{value: "fra", label: "France"}]}>
               <:trigger>v</:trigger>
@@ -221,7 +222,7 @@ defmodule Corex.ComboboxTest do
 
       html =
         render_component(
-          fn _assigns ->
+          fn assigns ->
             ~H"""
             <Corex.Combobox.combobox field={@field} items={[%{value: "eur", label: "Euro"}]}>
               <:trigger>v</:trigger>
@@ -257,7 +258,7 @@ defmodule Corex.ComboboxTest do
 
       html =
         render_component(
-          fn _assigns ->
+          fn assigns ->
             ~H"""
             <Corex.Combobox.combobox field={@field} items={[%{value: "fra", label: "France"}]}>
               <:trigger>v</:trigger>
@@ -286,7 +287,7 @@ defmodule Corex.ComboboxTest do
 
       html =
         render_component(
-          fn _assigns ->
+          fn assigns ->
             ~H"""
             <Corex.Combobox.combobox multiple={true} field={@field} items={[%{value: "fra", label: "France"}, %{value: "bel", label: "Belgium"}]}>
               <:trigger>v</:trigger>
@@ -297,6 +298,61 @@ defmodule Corex.ComboboxTest do
         )
 
       assert html =~ ~r/data-default-value="\[\&quot;fra\&quot;,\&quot;bel\&quot;\]"/
+    end
+
+    test "multiple form field omits submit name on empty sentinel when unused" do
+      import Ecto.Changeset
+
+      cs =
+        {%{}, %{country: {:array, :string}}}
+        |> cast(%{}, [:country])
+        |> Map.put(:action, :validate)
+
+      form = to_form(cs, as: :user, id: "user-form", action: :validate)
+      assigns = %{field: form[:country]}
+
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <Corex.Combobox.combobox multiple={true} field={@field} items={[%{value: "fra", label: "France"}]}>
+              <:trigger>v</:trigger>
+            </Corex.Combobox.combobox>
+            """
+          end,
+          assigns
+        )
+
+      assert html =~ ~r/data-part="array-input"[^>]*data-empty/
+      refute html =~ ~r/name="user\[country\]\[\]"[^>]*data-empty/
+    end
+
+    test "multiple form field names empty sentinel when field is used" do
+      import Ecto.Changeset
+
+      cs =
+        {%{}, %{country: {:array, :string}}}
+        |> cast(%{"country" => [""]}, [:country])
+        |> Map.put(:action, :validate)
+
+      form = to_form(cs, as: :user, id: "user-form", action: :validate)
+      field = form[:country]
+      assert used_input?(field)
+
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <Corex.Combobox.combobox multiple={true} field={@field} items={[%{value: "fra", label: "France"}]}>
+              <:trigger>v</:trigger>
+            </Corex.Combobox.combobox>
+            """
+          end,
+          %{field: field}
+        )
+
+      assert html =~ "data-field-used"
+      assert html =~ ~r/data-empty[^>]*name="user\[country\]\[\]"/
     end
   end
 
@@ -397,6 +453,18 @@ defmodule Corex.ComboboxTest do
       result = Connect.item(assigns)
       assert result["id"] == "combobox:test-combobox:option:a"
     end
+
+    test "omits data-to for disallowed href" do
+      result =
+        Connect.item(%{
+          id: "test-combobox",
+          value: "a",
+          dir: "ltr",
+          to: "javascript:alert(1)"
+        })
+
+      refute Map.has_key?(result, "data-to")
+    end
   end
 
   describe "Connect.content/1" do
@@ -417,7 +485,7 @@ defmodule Corex.ComboboxTest do
       }
 
       result = Connect.props(Map.merge(ConnectProps.default_combobox(), assigns))
-      assert result["data-default-value"] == "a"
+      assert result["data-default-value"] == ~s(["a"])
       assert result["data-value"] == nil
       assert result["data-controlled"] == nil
     end

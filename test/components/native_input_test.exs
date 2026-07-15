@@ -31,6 +31,7 @@ defmodule Corex.NativeInputTest do
     test "renders textarea" do
       result =
         render_component(&Corex.NativeInput.native_input/1,
+          id: "ni-test",
           type: "textarea",
           name: "user[bio]",
           value: "Hello"
@@ -42,6 +43,7 @@ defmodule Corex.NativeInputTest do
     test "renders checkbox" do
       result =
         render_component(&Corex.NativeInput.native_input/1,
+          id: "ni-test",
           type: "checkbox",
           name: "user[agree]",
           value: true
@@ -53,6 +55,7 @@ defmodule Corex.NativeInputTest do
     test "renders select with options" do
       result =
         render_component(&Corex.NativeInput.native_input/1,
+          id: "ni-test",
           type: "select",
           name: "user[role]",
           options: [Admin: "admin", User: "user"],
@@ -65,6 +68,7 @@ defmodule Corex.NativeInputTest do
     test "renders radio with options" do
       result =
         render_component(&Corex.NativeInput.native_input/1,
+          id: "ni-test",
           type: "radio",
           name: "user[size]",
           options: [Small: "s", Medium: "m", Large: "l"],
@@ -90,7 +94,7 @@ defmodule Corex.NativeInputTest do
         render_component(
           fn assigns ->
             ~H"""
-            <Corex.NativeInput.native_input
+            <Corex.NativeInput.native_input id="ni-test"
               type="radio"
               field={@field}
               options={[Small: "s", Medium: "m", Large: "l"]}
@@ -159,7 +163,7 @@ defmodule Corex.NativeInputTest do
         render_component(
           fn _assigns ->
             ~H"""
-            <Corex.NativeInput.native_input type="email" name="email">
+            <Corex.NativeInput.native_input id="ni-test" type="email" name="email">
               <:icon>Icon Content</:icon>
             </Corex.NativeInput.native_input>
             """
@@ -185,7 +189,9 @@ defmodule Corex.NativeInputTest do
             {"hidden", [type: "hidden", name: "h", value: "x"]},
             {"password", [type: "password", name: "p", value: "secret"]}
           ] do
-        result = render_component(&Corex.NativeInput.native_input/1, attrs)
+        result =
+          render_component(&Corex.NativeInput.native_input/1, Keyword.put(attrs, :id, "ni-test"))
+
         assert find_in_html(result, ~s(input[type=#{type}])) != []
       end
     end
@@ -193,6 +199,7 @@ defmodule Corex.NativeInputTest do
     test "renders errors without :error slot" do
       result =
         render_component(&Corex.NativeInput.native_input/1,
+          id: "ni-test",
           type: "text",
           name: "user[name]",
           errors: ["can't be blank"]
@@ -207,7 +214,7 @@ defmodule Corex.NativeInputTest do
         render_component(
           fn assigns ->
             ~H"""
-            <Corex.NativeInput.native_input type="checkbox" name="user[agree]" invalid>
+            <Corex.NativeInput.native_input id="ni-test" type="checkbox" name="user[agree]" invalid>
               <:label>I agree</:label>
             </Corex.NativeInput.native_input>
             """
@@ -223,6 +230,7 @@ defmodule Corex.NativeInputTest do
     test "renders checkbox errors without error slot" do
       result =
         render_component(&Corex.NativeInput.native_input/1,
+          id: "ni-test",
           type: "checkbox",
           name: "user[agree]",
           errors: ["must accept"]
@@ -234,6 +242,7 @@ defmodule Corex.NativeInputTest do
     test "renders select errors without error slot" do
       result =
         render_component(&Corex.NativeInput.native_input/1,
+          id: "ni-test",
           type: "select",
           name: "user[role]",
           options: [Admin: "admin"],
@@ -246,6 +255,7 @@ defmodule Corex.NativeInputTest do
     test "renders radio without value and errors without error slot" do
       result =
         render_component(&Corex.NativeInput.native_input/1,
+          id: "ni-test",
           type: "radio",
           name: "user[size]",
           options: [Small: "s", Large: "l"],
@@ -262,7 +272,7 @@ defmodule Corex.NativeInputTest do
         render_component(
           fn assigns ->
             ~H"""
-            <Corex.NativeInput.native_input type="checkbox" name="user[agree]" errors={["required"]}>
+            <Corex.NativeInput.native_input id="ni-test" type="checkbox" name="user[agree]" errors={["required"]}>
               <:label>I agree</:label>
               <:error :let={msg}>Error: {msg}</:error>
             </Corex.NativeInput.native_input>
@@ -279,7 +289,7 @@ defmodule Corex.NativeInputTest do
         render_component(
           fn assigns ->
             ~H"""
-            <Corex.NativeInput.native_input
+            <Corex.NativeInput.native_input id="ni-test"
               type="select"
               name="user[role]"
               options={[Admin: "admin"]}
@@ -304,7 +314,7 @@ defmodule Corex.NativeInputTest do
         render_component(
           fn assigns ->
             ~H"""
-            <Corex.NativeInput.native_input
+            <Corex.NativeInput.native_input id="ni-test"
               type="radio"
               name="user[size]"
               options={[Small: "s", Large: "l"]}
@@ -330,7 +340,7 @@ defmodule Corex.NativeInputTest do
         render_component(
           fn assigns ->
             ~H"""
-            <Corex.NativeInput.native_input type="textarea" name="user[bio]" value="Hi" invalid errors={["too short"]}>
+            <Corex.NativeInput.native_input id="ni-test" type="textarea" name="user[bio]" value="Hi" invalid errors={["too short"]}>
               <:label class="label-class">Bio</:label>
               <:error :let={msg} class="err-class">{msg}</:error>
             </Corex.NativeInput.native_input>
@@ -350,7 +360,7 @@ defmodule Corex.NativeInputTest do
         render_component(
           fn assigns ->
             ~H"""
-            <Corex.NativeInput.native_input type="tel" name="user[phone]" value="+1">
+            <Corex.NativeInput.native_input id="ni-test" type="tel" name="user[phone]" value="+1">
               <:label class="phone-label">Phone</:label>
             </Corex.NativeInput.native_input>
             """
@@ -376,7 +386,7 @@ defmodule Corex.NativeInputTest do
         render_component(
           fn assigns ->
             ~H"""
-            <Corex.NativeInput.native_input type="email" field={@field} class="native-input">
+            <Corex.NativeInput.native_input id="ni-test" type="email" field={@field} class="native-input">
               <:label>Email</:label>
               <:error :let={msg}>{msg}</:error>
             </Corex.NativeInput.native_input>

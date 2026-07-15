@@ -20,6 +20,17 @@ defmodule Corex.Checkbox.Api do
     })
   end
 
+  def set_checked_many(socket, checkbox_ids, checked)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_list(checkbox_ids) and
+             is_boolean(checked) do
+    ids = Enum.filter(checkbox_ids, &is_binary/1)
+
+    RespondTo.push_event(socket, "checkbox_set_checked_many", %{
+      "ids" => ids,
+      "checked" => checked
+    })
+  end
+
   def toggle_checked(checkbox_id) when is_binary(checkbox_id) do
     JS.dispatch("corex:checkbox:toggle-checked",
       to: "##{checkbox_id}",

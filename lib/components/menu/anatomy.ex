@@ -110,6 +110,7 @@ defmodule Corex.Menu.Anatomy do
     defstruct [
       :id,
       :value,
+      :to,
       disabled: false,
       dir: "ltr",
       orientation: "vertical",
@@ -122,6 +123,7 @@ defmodule Corex.Menu.Anatomy do
     @type t :: %__MODULE__{
             id: String.t(),
             value: String.t() | nil,
+            to: String.t() | nil,
             disabled: boolean(),
             dir: String.t(),
             orientation: String.t(),
@@ -136,6 +138,7 @@ defmodule Corex.Menu.Anatomy do
       "tabindex",
       "aria-disabled",
       "data-disabled",
+      "data-to",
       "dir",
       "data-orientation",
       "data-state",

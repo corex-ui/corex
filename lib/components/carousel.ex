@@ -1,7 +1,6 @@
 defmodule Corex.Carousel do
   @moduledoc ~S'''
-  Phoenix implementation of [Zag.js Carousel](https://zagjs.com/components/react/carousel).
-
+  Carousel for Phoenix LiveView. Behavior follows [Zag.js Carousel](https://zagjs.com/components/react/carousel).
   ## Anatomy
 
   | Goal | API |
@@ -191,9 +190,7 @@ defmodule Corex.Carousel do
   ```
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   Stack modifiers on the host (`class` on `<.carousel>`).

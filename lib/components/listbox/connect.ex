@@ -16,24 +16,25 @@ defmodule Corex.Listbox.Connect do
 
   alias Phoenix.LiveView.JS
 
+  alias Corex.ValueBinding
+
   import Corex.Helpers,
     only: [
       validate_value!: 1,
-      get_boolean: 1,
-      joined_csv_values: 1,
-      controlled_dataset_values: 2
+      get_boolean: 1
     ]
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
-    joined = (assigns.value || []) |> validate_value!() |> joined_csv_values()
+    vlist = (assigns.value || []) |> validate_value!()
+    {value_str, default_value_str} = ValueBinding.list_pair(vlist, assigns.controlled)
 
-    {value_str, default_value_str} =
-      controlled_dataset_values(assigns.controlled, joined)
+    items_json =
+      Map.get(assigns, :items_json) || Corex.Dataset.encode_json(assigns.items)
 
     %{
       "id" => assigns.id,
-      "data-items" => Corex.Dataset.encode_json(assigns.items),
+      "data-items" => items_json,
       "data-value" => value_str,
       "data-default-value" => default_value_str,
       "data-controlled" => get_boolean(assigns.controlled),
@@ -148,21 +149,7 @@ defmodule Corex.Listbox.Connect do
       "id" => "listbox:#{assigns.id}:item:#{assigns.value}"
     }
 
-    base = if Map.get(assigns, :to), do: Map.put(base, "data-to", assigns.to), else: base
-
-    base =
-      case Map.get(assigns, :redirect) do
-        false ->
-          Map.put(base, "data-redirect", "false")
-
-        mode when mode in [:href, :patch, :navigate] ->
-          Map.put(base, "data-redirect", Atom.to_string(mode))
-
-        _ ->
-          base
-      end
-
-    if Map.get(assigns, :new_tab), do: Map.put(base, "data-new-tab", ""), else: base
+    Corex.Connect.ItemNav.put_item_nav_attrs(base, assigns)
   end
 
   def ignore_item(assigns) do

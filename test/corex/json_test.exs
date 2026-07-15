@@ -4,8 +4,8 @@ defmodule Corex.JsonTest do
   alias Corex.Json
 
   describe "encoder/0" do
-    test "is Jason" do
-      assert Json.encoder() == Jason
+    test "is Corex.Json" do
+      assert Json.encoder() == Corex.Json
     end
   end
 
@@ -40,6 +40,12 @@ defmodule Corex.JsonTest do
 
     test "decode! returns term" do
       assert Json.decode!("{\"a\":1}") == %{"a" => 1}
+    end
+
+    test "round-trips nil as JSON null" do
+      encoded = Json.encode!(%{a: nil})
+      assert encoded == "{\"a\":null}"
+      assert Json.decode!(encoded) == %{"a" => nil}
     end
   end
 end

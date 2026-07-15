@@ -392,6 +392,25 @@ defmodule Corex.MenuTest do
       assert result["disabled"]
       assert result["data-disabled"] == ""
     end
+
+    test "emits data-to / data-redirect / data-new-tab" do
+      result =
+        Connect.item(%{
+          id: "test-menu",
+          value: "item-1",
+          to: "/docs",
+          dir: "ltr",
+          disabled: false,
+          nested_menu_id: nil,
+          has_nested: false,
+          redirect: :navigate,
+          new_tab: true
+        })
+
+      assert result["data-to"] == "/docs"
+      assert result["data-redirect"] == "navigate"
+      assert result["data-new-tab"] == ""
+    end
   end
 
   describe "Connect.separator/1" do

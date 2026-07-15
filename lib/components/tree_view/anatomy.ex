@@ -8,6 +8,7 @@ defmodule Corex.TreeView.Anatomy do
     defstruct [
       :id,
       :tree,
+      tree_json: nil,
       value: [],
       expanded_value: [],
       selection_mode: "single",
@@ -25,6 +26,7 @@ defmodule Corex.TreeView.Anatomy do
     @type t :: %__MODULE__{
             id: String.t(),
             tree: map() | nil,
+            tree_json: String.t() | nil,
             value: list(String.t()),
             expanded_value: list(String.t()),
             selection_mode: String.t(),

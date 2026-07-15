@@ -3,6 +3,7 @@ defmodule Corex.PinInput.Connect do
   alias Corex.FormField
   alias Corex.PinInput.Anatomy.{Control, HiddenInput, Input, Label, Props, Root}
   alias Corex.Selectors
+  alias Corex.ValueBinding
   import Corex.Helpers, only: [validate_value!: 1, get_boolean: 1]
 
   alias Phoenix.LiveView.JS
@@ -20,13 +21,14 @@ defmodule Corex.PinInput.Connect do
     value_list = if is_list(assigns.value), do: validate_value!(assigns.value), else: []
     count = assigns.count
     padded = padded_value_list(value_list, count)
-    json = FormField.dataset_default_json(padded)
+    controlled = Map.get(assigns, :controlled, false)
 
-    default_value_str = FormField.default_value_dataset(assigns, json)
+    {value_str, default_value_str} = ValueBinding.list_pair(padded, controlled)
 
     %{
       "id" => assigns.id,
-      "data-value" => nil,
+      "data-controlled" => get_boolean(controlled),
+      "data-value" => value_str,
       "data-default-value" => default_value_str,
       "data-count" => to_string(assigns.count),
       "data-disabled" => get_boolean(assigns.disabled),
@@ -113,7 +115,11 @@ defmodule Corex.PinInput.Connect do
     %{
       "data-scope" => "pin-input",
       "data-part" => "hidden-input",
-      "type" => "hidden",
+      "type" => "text",
+      "hidden" => "true",
+      "aria-hidden" => "true",
+      "autocomplete" => "off",
+      "tabindex" => "-1",
       "name" => assigns.name,
       "value" => assigns.value,
       "id" => "pin-input:#{assigns.id}:hidden-input"

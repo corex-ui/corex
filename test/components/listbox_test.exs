@@ -141,6 +141,19 @@ defmodule Corex.ListboxTest do
       assert result["data-redirect"] == "patch"
       assert result["data-new-tab"] == ""
     end
+
+    test "omits data-to for disallowed href" do
+      assigns = %{
+        id: "lb",
+        value: "p",
+        dir: "ltr",
+        orientation: "vertical",
+        to: "javascript:alert(1)"
+      }
+
+      result = Connect.item(assigns)
+      refute Map.has_key?(result, "data-to")
+    end
   end
 
   describe "Connect.item_text/1" do
@@ -188,7 +201,7 @@ defmodule Corex.ListboxTest do
       }
 
       result = Connect.props(assigns)
-      assert result["data-value"] == "a"
+      assert result["data-value"] == ~s(["a"])
       assert result["data-controlled"] == ""
     end
 
@@ -212,7 +225,7 @@ defmodule Corex.ListboxTest do
       }
 
       result = Connect.props(assigns)
-      assert result["data-default-value"] == "a"
+      assert result["data-default-value"] == ~s(["a"])
       assert result["data-value"] == nil
     end
   end

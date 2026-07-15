@@ -123,6 +123,55 @@ defmodule Corex.DatePickerTest do
 
       assert html2 =~ "data-scope=\"date-picker\""
     end
+
+    test "multiple form field omits submit name on empty sentinel when unused" do
+      import Ecto.Changeset
+
+      cs =
+        {%{}, %{dates: {:array, :string}}}
+        |> cast(%{}, [:dates])
+        |> Map.put(:action, :validate)
+
+      form = to_form(cs, as: :user, id: "user-form", action: :validate)
+
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <Corex.DatePicker.date_picker field={@form[:dates]} selection_mode="multiple" />
+            """
+          end,
+          %{form: form}
+        )
+
+      assert html =~ ~r/data-part="array-input"[^>]*data-empty/
+      refute html =~ ~r/name="user\[dates\]\[\]"[^>]*data-empty/
+    end
+
+    test "multiple form field names empty sentinel when field is used" do
+      import Ecto.Changeset
+
+      cs =
+        {%{}, %{dates: {:array, :string}}}
+        |> cast(%{"dates" => [""]}, [:dates])
+        |> Map.put(:action, :validate)
+
+      form = to_form(cs, as: :user, id: "user-form", action: :validate)
+      assert used_input?(form[:dates])
+
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <Corex.DatePicker.date_picker field={@form[:dates]} selection_mode="multiple" />
+            """
+          end,
+          %{form: form}
+        )
+
+      assert html =~ "data-field-used"
+      assert html =~ ~r/data-empty[^>]*name="user\[dates\]\[\]"/
+    end
   end
 
   describe "format_value/2" do
@@ -190,7 +239,7 @@ defmodule Corex.DatePickerTest do
   describe "Connect" do
     test "root/1 returns root attributes" do
       result = Connect.root(%{id: "test-dp", dir: "ltr"})
-      assert result["id"] == "date-picker:test-dp"
+      assert result["id"] == "datepicker:test-dp"
       assert result["data-part"] == "root"
       assert result["data-state"] == "closed"
     end
@@ -198,18 +247,19 @@ defmodule Corex.DatePickerTest do
     test "label/1 returns label attributes" do
       result = Connect.label(%{id: "test-dp", dir: "ltr"})
       assert result["data-part"] == "label"
-      assert result["htmlFor"] == "date-picker:test-dp:input:0"
+      assert result["htmlFor"] == "datepicker:test-dp:input:0"
     end
 
     test "control/1 returns control attributes" do
       result = Connect.control(%{id: "test-dp", dir: "ltr"})
       assert result["data-part"] == "control"
+      assert result["id"] == "datepicker:test-dp:control"
     end
 
     test "input/1 returns input attributes" do
       result = Connect.input(%{id: "test-dp", dir: "ltr"})
       assert result["data-part"] == "input"
-      assert result["id"] == "date-picker:test-dp:input:0"
+      assert result["id"] == "datepicker:test-dp:input:0"
     end
 
     test "trigger/1 returns trigger attributes" do

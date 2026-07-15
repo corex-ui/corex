@@ -1,5 +1,21 @@
 defmodule Corex do
-  @moduledoc false
+  @moduledoc """
+  Import Corex function components into your Phoenix web layer.
+
+      # lib/my_app_web.ex (inside html_helpers)
+      use Corex
+
+  Options:
+
+  - `only:` list of component atoms (for example `[:accordion, :dialog]`)
+  - `except:` list of component atoms to skip
+  - `prefix:` string prefix for wrappers (for example `prefix: "ui"` → `<.ui_accordion>`)
+
+      use Corex, only: [:accordion, :select], prefix: "ui"
+
+  Guides: [Installation](installation.html), [Manual installation](manual_installation.html),
+  [Forms](forms.html), [Design](design.html), [MCP](MCP.html).
+  """
 
   @components %{
     accordion:

@@ -23,9 +23,7 @@ defmodule Corex.Action do
   Import tokens and `button.css`, then set `class="button"` on `<.action>`.
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   Stack modifiers on the host. Combine axes, for example `button ui-accent ui-size-lg` or `button ui-info`.

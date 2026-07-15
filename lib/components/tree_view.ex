@@ -1,7 +1,6 @@
 defmodule Corex.TreeView do
   @moduledoc ~S'''
-  Phoenix implementation of the [Zag.js Tree View](https://zagjs.com/components/react/tree-view).
-
+  Tree view for Phoenix LiveView. Behavior follows [Zag.js Tree View](https://zagjs.com/components/react/tree-view).
   ## Anatomy
 
   Render from a list with `Corex.Tree.new/1`.
@@ -360,9 +359,7 @@ defmodule Corex.TreeView do
   ```
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   Stack modifiers on the host (`class` on `<.tree_view>`).
@@ -570,6 +567,7 @@ defmodule Corex.TreeView do
       {Connect.props(%Props{
         id: @id,
         tree: @tree,
+        tree_json: @tree_json,
         value: @value,
         expanded_value: @expanded_value,
         selection_mode: @selection_mode,
@@ -1277,6 +1275,10 @@ defmodule Corex.TreeView do
   defp validate_items(assigns), do: assigns
 
   defp put_tree(assigns) do
-    assign(assigns, :tree, items_to_tree(assigns.id, assigns.items))
+    tree = items_to_tree(assigns.id, assigns.items)
+
+    assigns
+    |> assign(:tree, tree)
+    |> assign(:tree_json, Corex.Dataset.encode_json(tree))
   end
 end

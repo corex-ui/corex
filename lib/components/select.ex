@@ -1,7 +1,6 @@
 defmodule Corex.Select do
   @moduledoc ~S'''
-  Phoenix implementation of [Zag.js Select](https://zagjs.com/components/react/select).
-
+  Select for Phoenix LiveView forms and navigation. Behavior follows [Zag.js Select](https://zagjs.com/components/react/select).
   ## Anatomy
 
   <!-- tabs-open -->
@@ -209,7 +208,7 @@ defmodule Corex.Select do
 
   When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `<.form for={@form}>`.
 
-  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:field])}` when you want alert borders after validation.
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. With `field={@form[:…]}`, pass `auto_invalid` for alert borders from visible errors, or `invalid={true}` to force the alert state.
 
   ### Multiple selection and `{:array, :string}` fields
 
@@ -482,14 +481,12 @@ defmodule Corex.Select do
   ```
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   Stack modifiers on `<.select class="select ...">`. Combine axes, for example `select ui-accent ui-size-lg` or `select ui-info ui-solid`.
 
-  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`), **Max height** (`ui-max-height-*` on the host; clamps content). See the [modifier guide](modifiers.html).
 
   Semantic modifiers set palette variables on the trigger. Variant modifiers control trigger surface treatment. Default is subtle; add `ui-solid` for a filled trigger. Selected menu items still use the semantic palette.
 
@@ -525,6 +522,10 @@ defmodule Corex.Select do
   | MD | `select ui-size-md` |
   | LG | `select ui-size-lg` |
   | XL | `select ui-size-xl` |
+
+  ### Max height
+
+  Opt-in clamp on the dropdown content. Example: `select ui-max-height-xs`.
 
   ### Rounded
 
@@ -589,8 +590,8 @@ defmodule Corex.Select do
 
   attr(:controlled, :boolean, default: false, doc: "Whether the select is controlled")
 
-  attr(:form_field, :boolean, default: false)
-  attr(:field_used, :boolean, default: false)
+  attr(:form_field, :boolean, default: false, doc: false)
+  attr(:field_used, :boolean, default: false, doc: false)
 
   attr(:value, :list, default: [], doc: "The value of the select")
   attr(:disabled, :boolean, default: false, doc: "Whether the select is disabled")
@@ -616,7 +617,13 @@ defmodule Corex.Select do
       "Allow multiple selection. With field and form, submits name[] list params for Ecto {:array, :string}"
   )
 
-  attr(:invalid, :boolean, default: false, doc: "Whether the select is invalid")
+  attr(:invalid, :boolean, default: nil, doc: "Whether the select is invalid")
+
+  attr(:auto_invalid, :boolean,
+    default: false,
+    doc: "When true with `field`, set invalid from visible changeset errors"
+  )
+
   attr(:name, :string, doc: "The name of the select")
   attr(:form, :string, doc: "The id of the form of the select")
   attr(:read_only, :boolean, default: false, doc: "Whether the select is read only")
@@ -722,11 +729,10 @@ defmodule Corex.Select do
 
     assigns =
       assigns
-      |> assign_new(:id, fn -> "select-#{System.unique_integer([:positive])}" end)
+      |> Corex.FormField.require_id!("Corex component (select)")
       |> assign(:items, items)
-      |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:name, fn -> nil end)
       |> assign_new(:form, fn -> nil end)
-      |> assign_new(:form_field, fn -> false end)
 
     value_list = get_value(assigns[:value])
 
@@ -739,6 +745,9 @@ defmodule Corex.Select do
     grouped_items =
       group_by_group(items)
       |> Enum.sort_by(fn {group, _items} -> group || "" end, :asc)
+
+    sorted_items =
+      Enum.flat_map(grouped_items, fn {_group, group_items} -> group_items end)
 
     has_groups = has_groups?(items)
 
@@ -756,6 +765,8 @@ defmodule Corex.Select do
     assigns =
       assigns
       |> assign(:grouped_items, grouped_items)
+      |> assign(:sorted_items, sorted_items)
+      |> assign(:items_json, Corex.Dataset.encode_json(sorted_items))
       |> assign(:has_groups, has_groups)
       |> assign(:options, options)
       |> assign(:options_with_prompt, options_with_prompt)
@@ -1036,7 +1047,8 @@ defmodule Corex.Select do
   defp select_connect_props(assigns) do
     props = %Props{
       id: assigns.id,
-      items: assigns.items,
+      items: Map.get(assigns, :sorted_items) || assigns.items,
+      items_json: Map.get(assigns, :items_json),
       controlled: assigns.controlled,
       form_field: assigns[:form_field] == true,
       placeholder: assigns.translation.placeholder,
