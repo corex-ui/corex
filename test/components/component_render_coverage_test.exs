@@ -81,12 +81,13 @@ defmodule Corex.ComponentRenderCoverageTest do
             {"range", [type: "range", name: "r", value: "50"]},
             {"datetime-local", [type: "datetime-local", name: "dt", value: "2020-01-01T00:00"]}
           ] do
-        html = render_component(&NativeInput.native_input/1, attrs)
+        html = render_component(&NativeInput.native_input/1, Keyword.put(attrs, :id, "ni-cov"))
         assert html =~ type
       end
 
       error_html =
         render_component(&NativeInput.native_input/1,
+          id: "ni-cov",
           type: "text",
           name: "user[x]",
           errors: ["bad"]

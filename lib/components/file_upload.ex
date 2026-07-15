@@ -1,7 +1,6 @@
 defmodule Corex.FileUpload do
   @moduledoc ~S'''
-  Phoenix implementation of [Zag.js File Upload](https://zagjs.com/components/react/file-upload).
-
+  File upload for Phoenix LiveView. Behavior follows [Zag.js File Upload](https://zagjs.com/components/react/file-upload).
   Use `multipart` on the parent form and read `%Plug.Upload{}` from params in a **controller** action, as in [Phoenix file uploads](https://hexdocs.pm/phoenix/file_uploads.html).
 
   LiveView `phx-submit` cannot transport raw multipart file bytes over the WebSocket; use a controller route for classic `Plug.Upload`, or [`allow_upload/3`](https://hexdocs.pm/phoenix_live_view/uploads.html) for LiveView-native uploads with [`Corex.FileUploadLive`](Corex.FileUploadLive.html) (`<.file_upload_live>`). Do not combine this Zag component with [`live_file_input`](https://hexdocs.pm/phoenix_live_view/Phoenix.Component.html#live_file_input/1) on the same file control.
@@ -138,7 +137,13 @@ defmodule Corex.FileUpload do
   )
 
   attr(:disabled, :boolean, default: false, doc: "Whether the file upload is disabled")
-  attr(:invalid, :boolean, default: false, doc: "Whether the file upload is invalid")
+  attr(:invalid, :boolean, default: nil, doc: "Whether the file upload is invalid")
+
+  attr(:auto_invalid, :boolean,
+    default: false,
+    doc: "When true with `field`, set invalid from visible changeset errors"
+  )
+
   attr(:read_only, :boolean, default: false, doc: "Whether the file upload is read-only")
   attr(:required, :boolean, default: false, doc: "Whether at least one file is required")
   attr(:name, :string, doc: "The name attribute of the hidden file input")
@@ -267,7 +272,7 @@ defmodule Corex.FileUpload do
 
     assigns =
       assigns
-      |> assign_new(:id, fn -> "file-upload-#{System.unique_integer([:positive])}" end)
+      |> Corex.FormField.require_id!("Corex component (file-upload)")
       |> assign_new(:form_field, fn -> false end)
       |> assign_new(:name, fn -> nil end)
       |> assign_new(:form, fn -> nil end)
@@ -318,7 +323,6 @@ defmodule Corex.FileUpload do
       <template
         id={"#{@id}-item-close-template"}
         data-file-upload-item-close-template
-        phx-update="ignore"
       >
         {render_slot(@close)}
       </template>

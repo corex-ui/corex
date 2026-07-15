@@ -1,7 +1,6 @@
 defmodule Corex.Switch do
   @moduledoc ~S'''
-  Phoenix implementation of [Zag.js Switch](https://zagjs.com/components/react/switch).
-
+  Switch for Phoenix LiveView forms. Behavior follows [Zag.js Switch](https://zagjs.com/components/react/switch).
   ## Anatomy
 
   <!-- tabs-open -->
@@ -119,7 +118,7 @@ defmodule Corex.Switch do
 
   Set the form `id` in `to_form/2` and use `<.form for={@form}>`. Use `field={@form[:notifications]}` so the switch name matches the form. For Ecto validation in LiveView, add `phx-change` on the form so params stay in sync.
 
-  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:notifications])}` when you want alert borders after validation.
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. With `field={@form[:…]}`, pass `auto_invalid` for alert borders from visible errors, or `invalid={true}` to force the alert state.
 
   ```heex
   <.form for={@form} phx-change="validate">
@@ -147,9 +146,7 @@ defmodule Corex.Switch do
   ```
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   Stack modifiers on the host (`class` on `<.switch>`). Combine axes, for example `switch ui-accent ui-size-lg` or `switch ui-info ui-solid`.
@@ -264,8 +261,13 @@ defmodule Corex.Switch do
   )
 
   attr(:invalid, :boolean,
-    default: false,
+    default: nil,
     doc: "Whether the switch has validation errors"
+  )
+
+  attr(:auto_invalid, :boolean,
+    default: false,
+    doc: "When true with `field`, set invalid from visible changeset errors"
   )
 
   attr(:required, :boolean,
@@ -322,8 +324,8 @@ defmodule Corex.Switch do
   def switch(assigns) do
     assigns =
       assigns
-      |> assign_new(:id, fn -> "switch-#{System.unique_integer([:positive])}" end)
-      |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
+      |> Corex.FormField.require_id!("Corex component (switch)")
+      |> assign_new(:name, fn -> nil end)
       |> assign_new(:form, fn -> nil end)
       |> assign_new(:form_field, fn -> false end)
       |> assign(:checked, CheckableHelpers.normalize_checked(assigns.checked))

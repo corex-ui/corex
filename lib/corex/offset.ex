@@ -3,9 +3,8 @@ defmodule Corex.Offset do
   Main-axis and cross-axis offset for floating UI placement.
 
   Set on [`Corex.Positioning`](Corex.Positioning.html) as `offset:` when you need
-  extra nudging beyond `gutter` / `shift`. Values are serialized to
-  `data-position-offset-main-axis` and `data-position-offset-cross-axis` for
-  Zag.js popovers. Axes follow the active `placement` (for `bottom`, main axis is vertical).
+  extra nudging beyond `gutter` / `shift`. Axes follow the active `placement`
+  (for `bottom`, main axis is vertical).
 
   Use the same `positioning` attribute on any component that anchors a floating layer
   (select, combobox, menu, tooltip, date picker, color picker, and others).

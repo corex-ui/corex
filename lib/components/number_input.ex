@@ -1,7 +1,6 @@
 defmodule Corex.NumberInput do
   @moduledoc ~S'''
-  Phoenix implementation of [Zag.js Number Input](https://zagjs.com/components/react/number-input).
-
+  Number input for Phoenix LiveView forms. Behavior follows [Zag.js Number Input](https://zagjs.com/components/react/number-input).
   ## Anatomy
 
   <!-- tabs-open -->
@@ -121,7 +120,7 @@ defmodule Corex.NumberInput do
 
   Use `field={f[:value]}` inside `<.form>`. With a form field, increment and decrement stay local; the hidden input updates for submit.
 
-  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:value])}` when you want alert borders after validation.
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. With `field={@form[:…]}`, pass `auto_invalid` for alert borders from visible errors, or `invalid={true}` to force the alert state.
 
   ```heex
   <.form for={@form} phx-change="validate">
@@ -151,9 +150,7 @@ defmodule Corex.NumberInput do
   ```
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   Stack modifiers on the host (`class` on `<.number_input>`). Combine axes, for example `number-input ui-accent ui-size-lg` or `number-input ui-info ui-solid`.
@@ -233,7 +230,13 @@ defmodule Corex.NumberInput do
   attr(:step, :float, default: 1.0)
   attr(:disabled, :boolean, default: false)
   attr(:read_only, :boolean, default: false)
-  attr(:invalid, :boolean, default: false)
+  attr(:invalid, :boolean, default: nil)
+
+  attr(:auto_invalid, :boolean,
+    default: false,
+    doc: "When true with `field`, set invalid from visible changeset errors"
+  )
+
   attr(:required, :boolean, default: false)
   attr(:allow_mouse_wheel, :boolean, default: false)
 
@@ -286,7 +289,7 @@ defmodule Corex.NumberInput do
 
     assigns =
       assigns
-      |> assign_new(:id, fn -> "number-input-#{System.unique_integer([:positive])}" end)
+      |> Corex.FormField.require_id!("Corex component (number-input)")
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign_new(:orientation, fn -> "horizontal" end)
       |> assign_new(:form_field, fn -> false end)

@@ -4,7 +4,6 @@ defmodule Corex.RadioGroupTest do
 
   import Corex.RadioGroup
 
-  alias Corex.FormField
   alias Corex.RadioGroup
   alias Corex.RadioGroup.Connect
 
@@ -26,7 +25,7 @@ defmodule Corex.RadioGroupTest do
       field={@field}
       class="radio-group"
       items={[{"a", "A"}]}
-      invalid={FormField.invalid?(@field)}
+      auto_invalid
     >
       <:error :let={msg}>{msg}</:error>
     </.radio_group>
@@ -289,7 +288,8 @@ defmodule Corex.RadioGroupTest do
       result = Connect.value_input(assigns)
       assert result["id"] == "radio-group:test-radio:value-input"
       assert result["data-part"] == "value-input"
-      assert result["type"] == "hidden"
+      assert result["type"] == "text"
+      assert result["hidden"] == "true"
       refute Map.has_key?(result, "name")
       refute Map.has_key?(result, "form")
     end
@@ -309,14 +309,14 @@ defmodule Corex.RadioGroupTest do
       html = render_component(&radio_group_form_field_with_errors/1, %{field: field})
 
       assert html =~
-               ~r/<input\b(?=[^>]*\btype="hidden")(?=[^>]*\bname="user\[choice\]")(?=[^>]*\bdata-part="value-input")/
+               ~r/<input\b(?=[^>]*\btype="text")(?=[^>]*\bname="user\[choice\]")(?=[^>]*\bdata-part="value-input")/
 
       assert html =~ ~r/data-part="error"/
       assert html =~ "blank"
-      refute html =~ ~S(phx-hook="RadioGroup" data-invalid)
+      refute html =~ ~r/\bdata-invalid=""/
     end
 
-    test "sets data-invalid only when invalid is passed explicitly" do
+    test "sets data-invalid when auto_invalid and field has visible errors" do
       changeset =
         {%{}, %{choice: :string}}
         |> Ecto.Changeset.cast(%{"choice" => ""}, [:choice])
@@ -329,6 +329,26 @@ defmodule Corex.RadioGroupTest do
       html = render_component(&radio_group_form_field_with_invalid_styling/1, %{field: field})
 
       assert html =~ ~S(data-invalid="")
+    end
+
+    test "keeps unused field errors hidden after sibling unused params" do
+      changeset =
+        {%{}, %{choice: :string, name: :string}}
+        |> Ecto.Changeset.cast(%{"_unused_choice" => "", "name" => "Ada"}, [:choice, :name])
+        |> Ecto.Changeset.validate_required([:choice])
+        |> Map.put(:action, :validate)
+
+      form = Phoenix.Component.to_form(changeset, as: :user, action: :validate)
+      field = form[:choice]
+      refute Phoenix.Component.used_input?(field)
+
+      html = render_component(&radio_group_form_field_with_errors/1, %{field: field})
+
+      assert html =~
+               ~r/<input\b(?=[^>]*\btype="text")(?=[^>]*\bname="user\[choice\]")(?=[^>]*\bdata-part="value-input")/
+
+      refute html =~ ~r/data-part="error"/
+      refute html =~ "data-field-used"
     end
   end
 

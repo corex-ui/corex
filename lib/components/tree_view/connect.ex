@@ -25,8 +25,7 @@ defmodule Corex.TreeView.Connect do
   import Corex.Helpers,
     only: [
       validate_value!: 1,
-      get_boolean: 1,
-      joined_csv_values: 1
+      get_boolean: 1
     ]
 
   defp depth_style(index_path) when is_list(index_path), do: "--depth: #{length(index_path)}"
@@ -55,13 +54,21 @@ defmodule Corex.TreeView.Connect do
     animation_options = Map.get(assigns, :animation_options, %Height{})
 
     default_expanded_str =
-      (assigns.expanded_value || []) |> validate_value!() |> joined_csv_values()
+      (assigns.expanded_value || [])
+      |> validate_value!()
+      |> Corex.ValueBinding.encode_list()
 
-    default_selected_str = (assigns.value || []) |> validate_value!() |> joined_csv_values()
+    default_selected_str =
+      (assigns.value || [])
+      |> validate_value!()
+      |> Corex.ValueBinding.encode_list()
+
+    tree_json =
+      Map.get(assigns, :tree_json) || Corex.Dataset.encode_json(assigns.tree)
 
     base = %{
       "id" => assigns.id,
-      "data-tree" => Corex.Dataset.encode_json(assigns.tree),
+      "data-tree" => tree_json,
       "data-animation" => animation,
       "data-redirect" => get_boolean(assigns.redirect),
       "data-default-expanded-value" => default_expanded_str,
@@ -144,22 +151,14 @@ defmodule Corex.TreeView.Connect do
     }
 
     base = if Map.get(assigns, :name), do: Map.put(base, "data-name", assigns.name), else: base
-    base = if Map.get(assigns, :to), do: Map.put(base, "data-to", assigns.to), else: base
 
     base =
-      case assigns.redirect do
-        false ->
-          Map.put(base, "data-redirect", "false")
+      base
+      |> Corex.Connect.ItemNav.put_item_nav_attrs(assigns)
+      |> then(fn attrs ->
+        if Map.get(assigns, :selected), do: Map.put(attrs, "data-selected", ""), else: attrs
+      end)
 
-        mode when mode in [:href, :patch, :navigate] ->
-          Map.put(base, "data-redirect", Atom.to_string(mode))
-
-        _ ->
-          base
-      end
-
-    base = if assigns.new_tab, do: Map.put(base, "data-new-tab", ""), else: base
-    base = if Map.get(assigns, :selected), do: Map.put(base, "data-selected", ""), else: base
     if Map.get(assigns, :focused), do: Map.put(base, "data-focus", ""), else: base
   end
 

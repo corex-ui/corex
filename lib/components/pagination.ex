@@ -1,7 +1,6 @@
 defmodule Corex.Pagination do
   @moduledoc ~S'''
-  Phoenix implementation of [Zag.js Pagination](https://zagjs.com/components/react/pagination).
-
+  Pagination for Phoenix LiveView. Behavior follows [Zag.js Pagination](https://zagjs.com/components/react/pagination).
   Pagination and [Carousel](`Corex.Carousel`) both use **1-based** `page` (first page is `1`). Page numbers and ellipses are rendered on the server so the control is complete before the hook runs.
 
   ## Anatomy
@@ -252,9 +251,7 @@ defmodule Corex.Pagination do
   ```
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   Stack modifiers on `<.pagination class="pagination ...">`. Combine axes, for example `pagination ui-accent ui-size-lg` or `pagination ui-info ui-solid`.

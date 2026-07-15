@@ -1,7 +1,6 @@
 defmodule Corex.PasswordInput do
   @moduledoc ~S'''
-  Phoenix implementation of [Zag.js Password Input](https://zagjs.com/components/react/password-input).
-
+  Password input for Phoenix LiveView forms. Behavior follows [Zag.js Password Input](https://zagjs.com/components/react/password-input).
   ## Anatomy
   <!-- tabs-open -->
 
@@ -35,7 +34,7 @@ defmodule Corex.PasswordInput do
 
   When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `<.form for={@form}>`.
 
-  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:password])}` when you want alert borders after validation.
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. With `field={@form[:…]}`, pass `auto_invalid` for alert borders from visible errors, or `invalid={true}` to force the alert state.
 
   ### Controller
 
@@ -192,9 +191,7 @@ defmodule Corex.PasswordInput do
   ```
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   Stack modifiers on the host (`class` on `<.password_input>`). Combine axes, for example `password-input ui-accent ui-size-lg` or `password-input ui-info ui-solid`.
@@ -265,7 +262,13 @@ defmodule Corex.PasswordInput do
   attr(:value, :string, default: nil)
   attr(:visible, :boolean, default: false)
   attr(:disabled, :boolean, default: false)
-  attr(:invalid, :boolean, default: false)
+  attr(:invalid, :boolean, default: nil)
+
+  attr(:auto_invalid, :boolean,
+    default: false,
+    doc: "When true with `field`, set invalid from visible changeset errors"
+  )
+
   attr(:read_only, :boolean, default: false)
   attr(:required, :boolean, default: false)
   attr(:ignore_password_managers, :boolean, default: true)
@@ -324,7 +327,7 @@ defmodule Corex.PasswordInput do
 
     assigns =
       assigns
-      |> assign_new(:id, fn -> "password-input-#{System.unique_integer([:positive])}" end)
+      |> Corex.FormField.require_id!("Corex component (password-input)")
       |> assign_new(:name, fn -> nil end)
       |> assign_new(:form, fn -> nil end)
       |> assign_new(:form_field, fn -> false end)

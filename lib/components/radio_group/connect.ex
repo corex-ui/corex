@@ -189,9 +189,10 @@ defmodule Corex.RadioGroup.Connect do
     orientation = Map.get(assigns, :orientation, "vertical")
 
     %{
-      "type" => "hidden",
+      "type" => "text",
       "hidden" => "true",
       "aria-hidden" => "true",
+      "autocomplete" => "off",
       "tabindex" => "-1",
       "data-scope" => "radio-group",
       "data-part" => "value-input",

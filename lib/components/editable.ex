@@ -1,7 +1,6 @@
 defmodule Corex.Editable do
   @moduledoc ~S'''
-  Phoenix implementation of [Zag.js Editable](https://zagjs.com/components/react/editable).
-
+  Inline editable text for Phoenix LiveView forms. Behavior follows [Zag.js Editable](https://zagjs.com/components/react/editable).
   ## Anatomy
 
   ### Basic
@@ -71,7 +70,7 @@ defmodule Corex.Editable do
 
   Use `field={f[:name]}` inside `<.form>` for changeset-backed forms.
 
-  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:name])}` when you want alert borders after validation.
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. With `field={@form[:…]}`, pass `auto_invalid` for alert borders from visible errors, or `invalid={true}` to force the alert state.
 
   ```heex
   <.form for={@form} phx-change="validate">
@@ -109,9 +108,7 @@ defmodule Corex.Editable do
   This requires the `corex_design` dependency and `mix corex.design.build`; import the component css file.
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   You can then use modifiers
@@ -202,7 +199,13 @@ defmodule Corex.Editable do
   attr(:disabled, :boolean, default: false, doc: "Whether the editable is disabled")
   attr(:read_only, :boolean, default: false, doc: "Whether the editable is read-only")
   attr(:required, :boolean, default: false, doc: "Whether the input is required")
-  attr(:invalid, :boolean, default: false, doc: "Whether the editable is in invalid state")
+  attr(:invalid, :boolean, default: nil, doc: "Whether the editable is in invalid state")
+
+  attr(:auto_invalid, :boolean,
+    default: false,
+    doc: "When true with `field`, set invalid from visible changeset errors"
+  )
+
   attr(:name, :string, default: nil, doc: "The name attribute for form submission")
   attr(:form, :string, default: nil, doc: "The id of the form this input belongs to")
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"], doc: "Text direction")
@@ -277,7 +280,7 @@ defmodule Corex.Editable do
 
     assigns =
       assigns
-      |> assign_new(:id, fn -> "editable-#{System.unique_integer([:positive])}" end)
+      |> Corex.FormField.require_id!("Corex component (editable)")
       |> assign_new(:form_field, fn -> false end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign_new(:orientation, fn -> "horizontal" end)

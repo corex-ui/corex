@@ -1,7 +1,6 @@
 defmodule Corex.Accordion do
   @moduledoc ~S'''
-  Phoenix implementation of the [Zag.js Accordion](https://zagjs.com/components/react/accordion).
-
+  Expandable panels for Phoenix LiveView. Behavior follows [Zag.js Accordion](https://zagjs.com/components/react/accordion).
   ## Anatomy
 
   <!-- tabs-open -->
@@ -636,14 +635,12 @@ defmodule Corex.Accordion do
   ```
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   Stack modifiers on the host (`class` on `<.accordion>`). Combine axes, for example `accordion ui-accent ui-size-lg` or `accordion ui-info`.
 
-  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`), **Max height** (`ui-max-height-*` on the host; clamps content). See the [modifier guide](modifiers.html).
 
   Semantic modifiers set palette variables on triggers. Variant modifiers control surface treatment. Default open triggers use a neutral selected surface with semantic text ink; add `ui-solid` for a filled open trigger.
 
@@ -682,6 +679,10 @@ defmodule Corex.Accordion do
   | MD | `accordion ui-size-md` |
   | LG | `accordion ui-size-lg` |
   | XL | `accordion ui-size-xl` |
+
+  ### Max height
+
+  Opt-in clamp on `item-content`. Example: `accordion ui-max-height-sm`.
 
   ### Rounded
 

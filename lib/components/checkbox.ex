@@ -1,6 +1,6 @@
 defmodule Corex.Checkbox do
   @moduledoc ~S'''
-    Phoenix implementation of [Zag.js Checkbox](https://zagjs.com/components/react/checkbox).
+  Checkbox for Phoenix LiveView forms. Behavior follows [Zag.js Checkbox](https://zagjs.com/components/react/checkbox).
 
   ## Anatomy
 
@@ -270,9 +270,7 @@ defmodule Corex.Checkbox do
   ```
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   Stack modifiers on the host (`class` on `<.checkbox>`). Combine axes, for example `checkbox ui-accent ui-size-lg` or `checkbox ui-info ui-solid`.
@@ -421,7 +419,7 @@ defmodule Corex.Checkbox do
 
   Set the form `id` in `to_form/2` and use `<.form for={@form}>`. Use `field={@form[:terms]}` so the checkbox name matches the form. For Ecto validation in LiveView, add `phx-change` on the form so params stay in sync.
 
-  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:terms])}` when you want alert borders after validation.
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. With `field={@form[:…]}`, pass `auto_invalid` for alert borders from visible errors, or `invalid={true}` to force the alert state.
 
   <!-- tabs-open -->
 
@@ -911,7 +909,7 @@ defmodule Corex.Checkbox do
 
   ### LiveView · Ecto + Invalid
 
-  Pass `invalid={Corex.FormField.invalid?(@form[:terms])}` for alert borders after validation. Error messages still render through the `:error` slot.
+  With `field={@form[:terms]}`, pass `auto_invalid` for alert borders from visible errors. Error messages still render through the `:error` slot.
 
   #### Heex
 
@@ -924,7 +922,7 @@ defmodule Corex.Checkbox do
         <.checkbox
           field={@ecto_invalid_form[:terms]}
           class="checkbox"
-          invalid={Corex.FormField.invalid?(@ecto_invalid_form[:terms])}
+          auto_invalid
         >
           <:label>Accept terms</:label>
           <:indicator>
@@ -1088,8 +1086,13 @@ defmodule Corex.Checkbox do
   )
 
   attr(:invalid, :boolean,
-    default: false,
+    default: nil,
     doc: "Whether the checkbox has validation errors"
+  )
+
+  attr(:auto_invalid, :boolean,
+    default: false,
+    doc: "When true with `field`, set invalid from visible changeset errors"
   )
 
   attr(:required, :boolean,
@@ -1149,11 +1152,12 @@ defmodule Corex.Checkbox do
   def checkbox(assigns) do
     assigns =
       assigns
-      |> assign_new(:id, fn -> "checkbox-#{System.unique_integer([:positive])}" end)
-      |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
+      |> Corex.FormField.require_id!("Corex component (checkbox)")
+      |> assign_new(:name, fn -> nil end)
       |> assign_new(:form, fn -> nil end)
       |> assign_new(:form_field, fn -> false end)
       |> assign(:checked, CheckableHelpers.normalize_checked(assigns.checked))
+      |> assign_checkbox_part_attrs()
 
     ~H"""
     <div
@@ -1162,60 +1166,43 @@ defmodule Corex.Checkbox do
       data-loading 
       phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}     
       {@rest}
-      {Connect.props(%Props{
-        id: @id,
-        controlled: @controlled,
-        checked: @checked,
-        form_field: @form_field,
-        name: @name,
-        form: @form,
-        dir: @dir,
-        orientation: @orientation,
-        read_only: @read_only,
-        invalid: @invalid,
-        required: @required,
-        on_checked_change: @on_checked_change,
-        on_checked_change_client: @on_checked_change_client,
-        label: @aria_label,
-        disabled: @disabled,
-        value: @value
-      })}
+      {@connect_props}
     >
       <input type="hidden" name={@name} value="false" disabled={@disabled} />
 
-      <label phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation, read_only: @read_only})} {Connect.root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation, read_only: @read_only})}>
+      <label phx-mounted={@root_ignore} {@root_attrs}>
       <input
-        phx-mounted={Connect.ignore_hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value, controlled: @controlled})}
-        {Connect.hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value, controlled: @controlled})}
+        phx-mounted={@hidden_input_ignore}
+        {@hidden_input_attrs}
       />
-      <div phx-mounted={Connect.ignore_control(%Control{id: @id, dir: @dir, checked: @checked, orientation: @orientation})} {Connect.control(%Control{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
+      <div phx-mounted={@control_ignore} {@control_attrs}>
           <span
             :if={@indicator != []}
-            phx-mounted={Connect.ignore_indicator(%Indicator{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
-            {Connect.indicator(%Indicator{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
+            phx-mounted={@indicator_ignore}
+            {@indicator_attrs}
           >
           {render_slot(@indicator)}
           </span>
           <span
             :if={@indeterminate != []}
-            phx-mounted={Connect.ignore_indeterminate(%Indeterminate{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
-            {Connect.indeterminate(%Indeterminate{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
+            phx-mounted={@indeterminate_ignore}
+            {@indeterminate_attrs}
           >
           {render_slot(@indeterminate)}
           </span>
       </div>
       <span
         :if={@label != []}
-        phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
-        {Connect.label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
+        phx-mounted={@label_ignore}
+        {@label_attrs}
       >
       {render_slot(@label)}
       </span>
       <span
         :if={@label == [] && @aria_label}
         class="sr-only"
-        phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
-        {Connect.label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
+        phx-mounted={@label_ignore}
+        {@label_attrs}
       >
       {@aria_label}
       </span>
@@ -1231,6 +1218,89 @@ defmodule Corex.Checkbox do
       </div>
     </div>
     """
+  end
+
+  defp assign_checkbox_part_attrs(assigns) do
+    root = %Root{
+      id: assigns.id,
+      dir: assigns.dir,
+      checked: assigns.checked,
+      orientation: assigns.orientation,
+      read_only: assigns.read_only
+    }
+
+    hidden = %HiddenInput{
+      id: assigns.id,
+      name: assigns.name,
+      checked: assigns.checked,
+      disabled: assigns.disabled,
+      required: assigns.required,
+      invalid: assigns.invalid,
+      value: assigns.value,
+      controlled: assigns.controlled
+    }
+
+    control = %Control{
+      id: assigns.id,
+      dir: assigns.dir,
+      checked: assigns.checked,
+      orientation: assigns.orientation
+    }
+
+    indicator = %Indicator{
+      id: assigns.id,
+      dir: assigns.dir,
+      checked: assigns.checked,
+      orientation: assigns.orientation
+    }
+
+    indeterminate = %Indeterminate{
+      id: assigns.id,
+      dir: assigns.dir,
+      checked: assigns.checked,
+      orientation: assigns.orientation
+    }
+
+    label = %Label{
+      id: assigns.id,
+      dir: assigns.dir,
+      checked: assigns.checked,
+      orientation: assigns.orientation
+    }
+
+    props = %Props{
+      id: assigns.id,
+      controlled: assigns.controlled,
+      checked: assigns.checked,
+      form_field: assigns.form_field,
+      name: assigns.name,
+      form: assigns.form,
+      dir: assigns.dir,
+      orientation: assigns.orientation,
+      read_only: assigns.read_only,
+      invalid: assigns.invalid,
+      required: assigns.required,
+      on_checked_change: assigns.on_checked_change,
+      on_checked_change_client: assigns.on_checked_change_client,
+      label: assigns.aria_label,
+      disabled: assigns.disabled,
+      value: assigns.value
+    }
+
+    assigns
+    |> assign(:connect_props, Connect.props(props))
+    |> assign(:root_attrs, Connect.root(root))
+    |> assign(:root_ignore, Connect.ignore_root(root))
+    |> assign(:hidden_input_attrs, Connect.hidden_input(hidden))
+    |> assign(:hidden_input_ignore, Connect.ignore_hidden_input(hidden))
+    |> assign(:control_attrs, Connect.control(control))
+    |> assign(:control_ignore, Connect.ignore_control(control))
+    |> assign(:indicator_attrs, Connect.indicator(indicator))
+    |> assign(:indicator_ignore, Connect.ignore_indicator(indicator))
+    |> assign(:indeterminate_attrs, Connect.indeterminate(indeterminate))
+    |> assign(:indeterminate_ignore, Connect.ignore_indeterminate(indeterminate))
+    |> assign(:label_attrs, Connect.label(label))
+    |> assign(:label_ignore, Connect.ignore_label(label))
   end
 
   @doc type: :component
@@ -1324,6 +1394,19 @@ defmodule Corex.Checkbox do
   """)
 
   defdelegate set_checked(socket, checkbox_id, checked), to: Api
+
+  api_doc(~S"""
+  Set checked state for many checkboxes from `handle_event`. Pushes `checkbox_set_checked_many` (no reply event).
+
+  ```elixir
+  def handle_event("select_all", _, socket) do
+    ids = ["row-1", "row-2", "row-3"]
+    {:noreply, Corex.Checkbox.set_checked_many(socket, ids, true)}
+  end
+  ```
+  """)
+
+  defdelegate set_checked_many(socket, checkbox_ids, checked), to: Api
 
   api_doc(~S"""
   Toggle checked state from a control (`phx-click`).

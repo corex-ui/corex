@@ -3,44 +3,28 @@ defmodule Corex.DocParityTest do
 
   alias Corex.DocParity
 
-  @parity_components ~W(
-    checkbox
-    switch
-    select
-    combobox
-    accordion
-    tabs
-    dialog
-    action
-    navigate
-    editable
-    toggle
-    tooltip
-    radio_group
-    collapsible
-  )
+  test "anatomy and form snippets match e2e demos for all components" do
+    results = DocParity.run(sections: [:anatomy, :form])
 
-  test "anatomy minimal snippets match e2e demo code for core components" do
-    results =
-      DocParity.run(sections: [:anatomy], components: @parity_components)
-
-    failures =
-      results
-      |> DocParity.failures()
-      |> Enum.filter(fn r -> String.contains?(r.section, "minimal") end)
-
-    assert failures == [],
+    assert DocParity.failures(results) == [],
            DocParity.report(results)
   end
 
   test "registered snippets contain no ellipsis placeholders" do
-    results = DocParity.run(sections: [:anatomy, :form], components: @parity_components)
+    results = DocParity.run(sections: [:anatomy, :form])
 
     ellipsis =
       Enum.filter(results, &(&1.status == :ellipsis))
 
     assert ellipsis == [],
            "ellipsis in snippets:\n#{DocParity.report(ellipsis)}"
+  end
+
+  test "component Style docs prefer corex.css umbrella import" do
+    results = DocParity.css_style_results()
+
+    assert DocParity.failures(results) == [],
+           DocParity.report(results)
   end
 
   @tag :parity_report

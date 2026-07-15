@@ -1,7 +1,6 @@
 defmodule Corex.Toggle do
   @moduledoc ~S'''
-  Phoenix implementation of [Zag.js Toggle](https://zagjs.com/components/react/toggle).
-
+  Toggle button for Phoenix LiveView. Behavior follows [Zag.js Toggle](https://zagjs.com/components/react/toggle).
   ## Anatomy
 
   <!-- tabs-open -->
@@ -154,9 +153,7 @@ defmodule Corex.Toggle do
   ```
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   Stack modifiers on the host (`class` on `<.toggle>`). Combine axes, for example `toggle ui-accent ui-size-lg` or `toggle ui-info ui-solid`.

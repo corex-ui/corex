@@ -30,6 +30,59 @@ defmodule Corex.FormFieldTest do
     )
   end
 
+  test "require_id! keeps assigns when id is present" do
+    assigns = %{id: "user_name"}
+    assert FormField.require_id!(assigns, "native_input") == assigns
+  end
+
+  test "require_id! raises when id is missing" do
+    assert_raise ArgumentError,
+                 ~r/requires a stable :id \(or :field\)/,
+                 fn ->
+                   FormField.require_id!(%{}, "native_input")
+                 end
+  end
+
+  test "require_id! raises when id is empty" do
+    assert_raise ArgumentError,
+                 ~r/requires a stable :id \(or :field\)/,
+                 fn ->
+                   FormField.require_id!(%{id: ""}, "select")
+                 end
+  end
+
+  test "assign_ids uses stable FormField.id across renders" do
+    form = to_form(%{"name" => "Ada"}, as: :user)
+    field = form[:name]
+
+    first =
+      render_component(
+        fn assigns ->
+          assigns = FormField.assign_ids(assigns, assigns.field)
+
+          ~H"""
+          {@id}|{@name}
+          """
+        end,
+        %{field: field}
+      )
+
+    second =
+      render_component(
+        fn assigns ->
+          assigns = FormField.assign_ids(assigns, assigns.field)
+
+          ~H"""
+          {@id}|{@name}
+          """
+        end,
+        %{field: field}
+      )
+
+    assert first == second
+    assert first == "user_name|user[name]"
+  end
+
   test "assign_errors shows errors only when used_input?" do
     field = name_field(%{"name" => ""}, :validate)
 
@@ -44,13 +97,23 @@ defmodule Corex.FormFieldTest do
     assert render_errors(field) == ""
   end
 
-  test "assign_form_field does not set invalid from visible errors" do
+  test "assign_form_field leaves invalid false by default with visible errors" do
     field = name_field(%{"name" => ""}, :validate)
 
-    result = FormField.assign_form_field(%{invalid: false, __changed__: %{}}, field)
+    result = FormField.assign_form_field(%{invalid: nil, __changed__: %{}}, field)
 
     assert result.errors != []
     assert result.invalid == false
+  end
+
+  test "assign_form_field sets invalid from visible errors when auto_invalid" do
+    field = name_field(%{"name" => ""}, :validate)
+
+    result =
+      FormField.assign_form_field(%{invalid: nil, auto_invalid: true, __changed__: %{}}, field)
+
+    assert result.errors != []
+    assert result.invalid == true
   end
 
   test "invalid? is true when field has visible errors" do
@@ -63,7 +126,7 @@ defmodule Corex.FormFieldTest do
   test "assign_form_field keeps invalid false when errors are hidden" do
     field = name_field(%{}, :validate)
 
-    result = FormField.assign_form_field(%{invalid: false, __changed__: %{}}, field)
+    result = FormField.assign_form_field(%{invalid: nil, __changed__: %{}}, field)
 
     assert result.errors == []
     assert result.invalid == false
@@ -78,6 +141,28 @@ defmodule Corex.FormFieldTest do
     assert result.invalid == true
   end
 
+  test "assign_form_field respects invalid false opt-out with visible errors" do
+    field = name_field(%{"name" => ""}, :validate)
+
+    result = FormField.assign_form_field(%{invalid: false, __changed__: %{}}, field)
+
+    assert result.errors != []
+    assert result.invalid == false
+  end
+
+  test "assign_form_field explicit invalid wins over auto_invalid" do
+    field = name_field(%{"name" => ""}, :validate)
+
+    result =
+      FormField.assign_form_field(
+        %{invalid: false, auto_invalid: true, __changed__: %{}},
+        field
+      )
+
+    assert result.errors != []
+    assert result.invalid == false
+  end
+
   test "assign_errors does not show all errors on insert action alone" do
     field = name_field(%{}, :insert)
 
@@ -90,16 +175,10 @@ defmodule Corex.FormFieldTest do
     assert FormField.list_submit_name(nil) == nil
   end
 
-  test "unused_input_name for nested form fields" do
-    assert FormField.unused_input_name("admin[tags]") == "admin[_unused_tags]"
-    assert FormField.unused_input_name("admin[signature]") == "admin[_unused_signature]"
-    assert FormField.unused_input_name(nil) == nil
-  end
-
   test "assign_form_field sets field_used from used_input?" do
     field = name_field(%{"name" => ""}, :validate)
 
-    result = FormField.assign_form_field(%{invalid: false, __changed__: %{}}, field)
+    result = FormField.assign_form_field(%{invalid: nil, __changed__: %{}}, field)
 
     assert result.field_used == true
     assert result.errors != []

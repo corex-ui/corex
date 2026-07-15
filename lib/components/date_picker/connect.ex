@@ -23,6 +23,17 @@ defmodule Corex.DatePicker.Connect do
 
   import Corex.Helpers, only: [get_boolean: 1]
 
+  defp zag_root_id(id), do: "datepicker:#{id}"
+  defp zag_label_id(id, index \\ 0), do: "datepicker:#{id}:label:#{index}"
+  defp zag_control_id(id), do: "datepicker:#{id}:control"
+  defp zag_input_id(id, index), do: "datepicker:#{id}:input:#{index}"
+  defp zag_trigger_id(id), do: "datepicker:#{id}:trigger"
+  defp zag_positioner_id(id), do: "datepicker:#{id}:positioner"
+  defp zag_content_id(id), do: "datepicker:#{id}:content"
+  defp zag_prev_id(id, view), do: "datepicker:#{id}:prev:#{view}"
+  defp zag_next_id(id, view), do: "datepicker:#{id}:next:#{view}"
+  defp zag_view_trigger_id(id, view), do: "datepicker:#{id}:view:#{view}"
+
   @spec props(Props.t()) :: map()
   def props(assigns) do
     default_raw = default_value_for_props(assigns)
@@ -76,16 +87,11 @@ defmodule Corex.DatePicker.Connect do
 
   defp default_value_for_props(assigns) do
     array_mode = assigns.selection_mode in ["multiple", "range"]
-    form_field = Map.get(assigns, :form_field, false)
 
-    if array_mode && form_field do
-      iso_list = iso_values_from_assigns(assigns.value)
-
-      if form_field do
-        FormField.dataset_default_json(iso_list)
-      else
-        Corex.Helpers.joined_csv_values(iso_list)
-      end
+    if array_mode do
+      assigns.value
+      |> iso_values_from_assigns()
+      |> Corex.ValueBinding.encode_list()
     else
       assigns.value
     end
@@ -96,10 +102,16 @@ defmodule Corex.DatePicker.Connect do
   defp iso_values_from_assigns(value) when is_list(value), do: Enum.map(value, &to_string/1)
 
   defp iso_values_from_assigns(value) when is_binary(value) do
-    value
-    |> String.split(",")
-    |> Enum.map(&String.trim/1)
-    |> Enum.reject(&(&1 == ""))
+    case Corex.Json.decode(value) do
+      {:ok, list} when is_list(list) ->
+        Enum.map(list, &to_string/1)
+
+      _ ->
+        value
+        |> String.split(",")
+        |> Enum.map(&String.trim/1)
+        |> Enum.reject(&(&1 == ""))
+    end
   end
 
   defp iso_values_from_assigns(_), do: []
@@ -134,7 +146,7 @@ defmodule Corex.DatePicker.Connect do
       "data-scope" => "date-picker",
       "data-part" => "root",
       "dir" => assigns.dir,
-      "id" => "date-picker:#{assigns.id}",
+      "id" => zag_root_id(assigns.id),
       "data-state" => "closed",
       "data-readonly" => get_boolean(Map.get(assigns, :read_only, false))
     }
@@ -142,7 +154,7 @@ defmodule Corex.DatePicker.Connect do
 
   def ignore_root(%Root{} = assigns) do
     JS.ignore_attributes(Root.ignored_attrs(),
-      to: Selectors.css_id("date-picker:#{assigns.id}")
+      to: Selectors.css_id(zag_root_id(assigns.id))
     )
   end
 
@@ -152,15 +164,15 @@ defmodule Corex.DatePicker.Connect do
       "data-scope" => "date-picker",
       "data-part" => "label",
       "dir" => assigns.dir,
-      "id" => "date-picker:#{assigns.id}:label:0",
-      "htmlFor" => "date-picker:#{assigns.id}:input:0",
+      "id" => zag_label_id(assigns.id),
+      "htmlFor" => zag_input_id(assigns.id, 0),
       "data-state" => "closed"
     }
   end
 
   def ignore_label(%Label{} = assigns) do
     JS.ignore_attributes(Label.ignored_attrs(),
-      to: Selectors.css_id("date-picker:#{assigns.id}:label:0")
+      to: Selectors.css_id(zag_label_id(assigns.id))
     )
   end
 
@@ -170,13 +182,13 @@ defmodule Corex.DatePicker.Connect do
       "data-scope" => "date-picker",
       "data-part" => "control",
       "dir" => assigns.dir,
-      "id" => "date-picker:#{assigns.id}:control"
+      "id" => zag_control_id(assigns.id)
     }
   end
 
   def ignore_control(%Control{} = assigns) do
     JS.ignore_attributes(Control.ignored_attrs(),
-      to: Selectors.css_id("date-picker:#{assigns.id}:control")
+      to: Selectors.css_id(zag_control_id(assigns.id))
     )
   end
 
@@ -188,7 +200,7 @@ defmodule Corex.DatePicker.Connect do
       "data-scope" => "date-picker",
       "data-part" => "input",
       "dir" => assigns.dir,
-      "id" => "date-picker:#{assigns.id}:input:#{i}"
+      "id" => zag_input_id(assigns.id, i)
     }
   end
 
@@ -196,7 +208,7 @@ defmodule Corex.DatePicker.Connect do
     i = input_index(assigns)
 
     JS.ignore_attributes(Input.ignored_attrs(),
-      to: Selectors.css_id("date-picker:#{assigns.id}:input:#{i}")
+      to: Selectors.css_id(zag_input_id(assigns.id, i))
     )
   end
 
@@ -215,13 +227,13 @@ defmodule Corex.DatePicker.Connect do
       "data-scope" => "date-picker",
       "data-part" => "trigger",
       "dir" => assigns.dir,
-      "id" => "date-picker:#{assigns.id}:trigger"
+      "id" => zag_trigger_id(assigns.id)
     }
   end
 
   def ignore_trigger(%Trigger{} = assigns) do
     JS.ignore_attributes(Trigger.ignored_attrs(),
-      to: Selectors.css_id("date-picker:#{assigns.id}:trigger")
+      to: Selectors.css_id(zag_trigger_id(assigns.id))
     )
   end
 
@@ -233,7 +245,7 @@ defmodule Corex.DatePicker.Connect do
       "data-scope" => "date-picker",
       "data-part" => "positioner",
       "dir" => assigns.dir,
-      "id" => "date-picker:#{assigns.id}:positioner",
+      "id" => zag_positioner_id(assigns.id),
       "style" => positioner_initial_floating_style(positioning)
     }
   end
@@ -273,7 +285,7 @@ defmodule Corex.DatePicker.Connect do
 
   def ignore_positioner(%Positioner{} = assigns) do
     JS.ignore_attributes(Positioner.ignored_attrs(),
-      to: Selectors.css_id("date-picker:#{assigns.id}:positioner")
+      to: Selectors.css_id(zag_positioner_id(assigns.id))
     )
   end
 
@@ -283,7 +295,7 @@ defmodule Corex.DatePicker.Connect do
       "data-scope" => "date-picker",
       "data-part" => "content",
       "dir" => assigns.dir,
-      "id" => "date-picker:#{assigns.id}:content",
+      "id" => zag_content_id(assigns.id),
       "hidden" => true,
       "data-state" => "closed"
     }
@@ -291,12 +303,8 @@ defmodule Corex.DatePicker.Connect do
 
   def ignore_content(%Content{} = assigns) do
     JS.ignore_attributes(Content.ignored_attrs(),
-      to: Selectors.css_id("date-picker:#{assigns.id}:content")
+      to: Selectors.css_id(zag_content_id(assigns.id))
     )
-  end
-
-  defp nav_id(id, view, part) do
-    "date-picker:#{id}:view:#{view}:#{part}"
   end
 
   @spec view_prev(%{id: String.t(), view: String.t(), dir: String.t()}) :: map()
@@ -306,13 +314,13 @@ defmodule Corex.DatePicker.Connect do
       "data-part" => "prev-trigger",
       "type" => "button",
       "dir" => dir,
-      "id" => nav_id(id, view, "prev")
+      "id" => zag_prev_id(id, view)
     }
   end
 
   def ignore_view_prev(%{id: id, view: view}) do
     JS.ignore_attributes(ViewNav.ignored_attrs(),
-      to: Selectors.css_id(nav_id(id, view, "prev"))
+      to: Selectors.css_id(zag_prev_id(id, view))
     )
   end
 
@@ -323,13 +331,13 @@ defmodule Corex.DatePicker.Connect do
       "data-part" => "next-trigger",
       "type" => "button",
       "dir" => dir,
-      "id" => nav_id(id, view, "next")
+      "id" => zag_next_id(id, view)
     }
   end
 
   def ignore_view_next(%{id: id, view: view}) do
     JS.ignore_attributes(ViewNav.ignored_attrs(),
-      to: Selectors.css_id(nav_id(id, view, "next"))
+      to: Selectors.css_id(zag_next_id(id, view))
     )
   end
 
@@ -340,13 +348,13 @@ defmodule Corex.DatePicker.Connect do
       "data-part" => "view-trigger",
       "type" => "button",
       "dir" => dir,
-      "id" => nav_id(id, view, "view-trigger")
+      "id" => zag_view_trigger_id(id, view)
     }
   end
 
   def ignore_view_trigger(%{id: id, view: view}) do
     JS.ignore_attributes(ViewNav.ignored_attrs(),
-      to: Selectors.css_id(nav_id(id, view, "view-trigger"))
+      to: Selectors.css_id(zag_view_trigger_id(id, view))
     )
   end
 
@@ -356,17 +364,17 @@ defmodule Corex.DatePicker.Connect do
       "data-scope" => "date-picker",
       "data-part" => "decade",
       "dir" => assigns.dir,
-      "id" => "date-picker:#{assigns.id}:decade"
+      "id" => "datepicker:#{assigns.id}:decade"
     }
   end
 
   def ignore_decade(%Decade{} = assigns) do
     JS.ignore_attributes(Decade.ignored_attrs(),
-      to: Selectors.css_id("date-picker:#{assigns.id}:decade")
+      to: Selectors.css_id("datepicker:#{assigns.id}:decade")
     )
   end
 
-  defp error_dom_id(id, index), do: "date-picker:#{id}:error:#{index}"
+  defp error_dom_id(id, index), do: "datepicker:#{id}:error:#{index}"
 
   @spec error(Error.t()) :: map()
   def error(assigns) do

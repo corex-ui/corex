@@ -1,7 +1,6 @@
 defmodule Corex.Listbox do
   @moduledoc ~S'''
-  Phoenix implementation of [Zag.js Listbox](https://zagjs.com/components/react/listbox).
-
+  Listbox for Phoenix LiveView forms. Behavior follows [Zag.js Listbox](https://zagjs.com/components/react/listbox).
   Pass `items={Corex.List.new([...])}`. With `redirect`, use per-item `:to` and `:redirect` (`:href` | `:patch` | `:navigate` | `false`); Zag runs single-select when `redirect` is true.
 
   ## Anatomy
@@ -299,12 +298,10 @@ defmodule Corex.Listbox do
   Import `listbox.css` and stack modifiers on the host (`class` on `<.listbox>`). Use Tailwind `max-w-*` on the root for width caps.
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
-  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`), **Max height** (`ui-max-height-*` on the host; clamps content). See the [modifier guide](modifiers.html).
 
   Variant modifiers control unselected item surface treatment. Selected items keep semantic fill. Default is subtle; add `listbox ui-solid` for filled rows.
 
@@ -338,6 +335,10 @@ defmodule Corex.Listbox do
   | MD | `listbox ui-size-md` |
   | LG | `listbox ui-size-lg` |
   | XL | `listbox ui-size-xl` |
+
+  ### Max height
+
+  Opt-in clamp on the list content. Example: `listbox ui-max-height-sm`.
 
   <!-- tabs-close -->
 
@@ -452,6 +453,7 @@ defmodule Corex.Listbox do
       |> assign_new(:id, fn -> "listbox-#{System.unique_integer([:positive])}" end)
       |> assign(:value, validate_value!(assigns[:value] || []))
       |> assign(:items, items)
+      |> assign(:items_json, Corex.Dataset.encode_json(items))
       |> assign(:has_groups, has_groups)
       |> assign(:groups, groups)
 
@@ -465,6 +467,7 @@ defmodule Corex.Listbox do
       {Connect.props(%Props{
         id: @id,
         items: @items,
+        items_json: @items_json,
         value: @value,
         controlled: @controlled,
         disabled: @disabled,

@@ -1,8 +1,25 @@
 defmodule Corex.Animation do
   @moduledoc """
-  Namespace for Web Animations API tuning.
+  Web Animations tuning for Corex components when `animation` is `js`.
 
-  - `Corex.Animation.Scale`  -  dialog: opacity and scale.
-  - `Corex.Animation.Height`  -  accordion and tree-view: opacity and height.
+  ### Dialog (scale)
+
+      <.dialog
+        id="confirm"
+        animation={:js}
+        animation_config={%Corex.Animation.Scale{duration: 0.2}}
+        ...
+      >
+
+  ### Accordion / tree-view (height)
+
+      <.accordion
+        id="faq"
+        animation={:js}
+        animation_config={%Corex.Animation.Height{duration: 0.25}}
+        ...
+      >
+
+  See `Corex.Animation.Scale` and `Corex.Animation.Height` for fields.
   """
 end

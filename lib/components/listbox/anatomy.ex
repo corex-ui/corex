@@ -8,6 +8,7 @@ defmodule Corex.Listbox.Anatomy do
     defstruct [
       :id,
       items: [],
+      items_json: nil,
       value: [],
       controlled: false,
       disabled: false,
@@ -26,6 +27,7 @@ defmodule Corex.Listbox.Anatomy do
     @type t :: %__MODULE__{
             id: String.t(),
             items: list(map()),
+            items_json: String.t() | nil,
             value: list(String.t()),
             controlled: boolean(),
             disabled: boolean(),

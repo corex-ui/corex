@@ -1,7 +1,6 @@
 defmodule Corex.Menu do
   @moduledoc ~S'''
-  Phoenix implementation of [Zag.js Menu](https://zagjs.com/components/react/menu).
-
+  Menu for Phoenix LiveView. Behavior follows [Zag.js Menu](https://zagjs.com/components/react/menu).
   ## Anatomy
 
   <!-- tabs-open -->
@@ -314,12 +313,10 @@ defmodule Corex.Menu do
   Import `menu.css` and stack modifiers on the host (`class` on `<.menu>`).
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
-  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`), **Max height** (`ui-max-height-*` on the host; clamps content). See the [modifier guide](modifiers.html).
 
   Semantic modifiers set palette variables on triggers and selected items. Variant modifiers control trigger and content panel surface treatment. Default is subtle; add `menu ui-solid` for a filled trigger or panel.
 
@@ -353,6 +350,10 @@ defmodule Corex.Menu do
   | MD | `menu ui-size-md` |
   | LG | `menu ui-size-lg` |
   | XL | `menu ui-size-xl` |
+
+  ### Max height
+
+  Opt-in clamp on the menu content. Example: `menu ui-max-height-xs`.
 
   <!-- tabs-close -->
 
@@ -518,8 +519,11 @@ defmodule Corex.Menu do
       |> Corex.Tree.validate_items_assigns!(component: "menu")
       |> assign_menu_entries()
 
-    group_entries = Enum.filter(assigns.menu_entries, &match?({:group, _, _, _}, &1))
-    item_entries = Enum.filter(assigns.menu_entries, &match?({:item, _}, &1))
+    menu_entries =
+      with_item_structs(assigns.menu_entries, assigns.id, assigns.dir, assigns.orientation)
+
+    group_entries = Enum.filter(menu_entries, &match?({:group, _, _, _}, &1))
+    item_entries = Enum.filter(menu_entries, &match?({:item, _, _}, &1))
 
     assigns =
       assigns
@@ -584,9 +588,9 @@ defmodule Corex.Menu do
                 {group_label}
               </div>
               <div
-                :for={item <- group_items}
-                phx-mounted={Connect.ignore_item(menu_item_struct(@id, @dir, @orientation, item))}
-                {Connect.item(menu_item_struct(@id, @dir, @orientation, item))}
+                :for={{item, item_struct} <- group_items}
+                phx-mounted={Connect.ignore_item(item_struct)}
+                {Connect.item(item_struct)}
               >
                 <div :if={@item != []} data-scope="menu" data-part="item-text">
                   {render_slot(@item, item)}
@@ -626,9 +630,9 @@ defmodule Corex.Menu do
             </div>
 
             <div
-              :for={{:item, item} <- @menu_item_entries}
-              phx-mounted={Connect.ignore_item(menu_item_struct(@id, @dir, @orientation, item))}
-              {Connect.item(menu_item_struct(@id, @dir, @orientation, item))}
+              :for={{:item, item, item_struct} <- @menu_item_entries}
+              phx-mounted={Connect.ignore_item(item_struct)}
+              {Connect.item(item_struct)}
             >
               <div :if={@item != []} data-scope="menu" data-part="item-text">
                 {render_slot(@item, item)}
@@ -693,9 +697,14 @@ defmodule Corex.Menu do
     base_id = String.replace_prefix(assigns.menu_id, "menu:", "")
     nested_id = "#{base_id}:#{assigns.item.value}"
     children = List.wrap(assigns.item.children)
-    entries = build_menu_entries(children)
+
+    entries =
+      children
+      |> build_menu_entries()
+      |> with_item_structs(nested_id, assigns.dir, assigns.orientation)
+
     group_entries = Enum.filter(entries, &match?({:group, _, _, _}, &1))
-    item_entries = Enum.filter(entries, &match?({:item, _}, &1))
+    item_entries = Enum.filter(entries, &match?({:item, _, _}, &1))
 
     assigns =
       assigns
@@ -742,9 +751,9 @@ defmodule Corex.Menu do
                 {group_label}
               </div>
               <div
-                :for={nitem <- group_items}
-                phx-mounted={Connect.ignore_item(menu_item_struct(@nested_id, @dir, @orientation, nitem))}
-                {Connect.item(menu_item_struct(@nested_id, @dir, @orientation, nitem))}
+                :for={{nitem, item_struct} <- group_items}
+                phx-mounted={Connect.ignore_item(item_struct)}
+                {Connect.item(item_struct)}
               >
                 <div :if={@item_slot != []} data-scope="menu" data-part="item-text">
                   {render_slot(@item_slot, nitem)}
@@ -784,9 +793,9 @@ defmodule Corex.Menu do
             </div>
 
             <div
-              :for={{:item, nitem} <- @nested_item_entries}
-              phx-mounted={Connect.ignore_item(menu_item_struct(@nested_id, @dir, @orientation, nitem))}
-              {Connect.item(menu_item_struct(@nested_id, @dir, @orientation, nitem))}
+              :for={{:item, nitem, item_struct} <- @nested_item_entries}
+              phx-mounted={Connect.ignore_item(item_struct)}
+              {Connect.item(item_struct)}
             >
               <div :if={@item_slot != []} data-scope="menu" data-part="item-text">
                 {render_slot(@item_slot, nitem)}
@@ -834,6 +843,7 @@ defmodule Corex.Menu do
     %Item{
       id: menu_id,
       value: item.value,
+      to: Map.get(item, :to),
       disabled: item.disabled,
       dir: dir,
       orientation: orientation,
@@ -846,6 +856,21 @@ defmodule Corex.Menu do
       redirect: Map.get(item, :redirect),
       new_tab: Map.get(item, :new_tab, false)
     }
+  end
+
+  defp with_item_structs(entries, menu_id, dir, orientation) when is_list(entries) do
+    Enum.map(entries, fn
+      {:group, group_id, group_label, group_items} ->
+        structs =
+          Enum.map(group_items, fn item ->
+            {item, menu_item_struct(menu_id, dir, orientation, item)}
+          end)
+
+        {:group, group_id, group_label, structs}
+
+      {:item, item} ->
+        {:item, item, menu_item_struct(menu_id, dir, orientation, item)}
+    end)
   end
 
   defp assign_menu_entries(%{items: nil} = assigns) do

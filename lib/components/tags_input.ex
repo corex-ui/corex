@@ -1,7 +1,6 @@
 defmodule Corex.TagsInput do
   @moduledoc ~S'''
-  Phoenix implementation of [Zag.js Tags Input](https://zagjs.com/components/react/tags-input).
-
+  Tags input for Phoenix LiveView forms. Behavior follows [Zag.js Tags Input](https://zagjs.com/components/react/tags-input).
   ## Anatomy
 
   <!-- tabs-open -->
@@ -104,7 +103,7 @@ defmodule Corex.TagsInput do
 
   ## Form
 
-  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:tags])}` when you want alert borders after validation.
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. With `field={@form[:…]}`, pass `auto_invalid` for alert borders from visible errors, or `invalid={true}` to force the alert state.
 
   With `field={f[:tags]}`, each tag is submitted as its own request param (`post[tags][]`), so Phoenix receives a **list**:
 
@@ -160,9 +159,7 @@ defmodule Corex.TagsInput do
   ```
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   Stack modifiers on the host (`class` on `<.tags_input>`). Combine axes, for example `tags-input ui-accent ui-size-lg` or `tags-input ui-info ui-solid`.
@@ -215,6 +212,8 @@ defmodule Corex.TagsInput do
 
   import Corex.Helpers, only: [validate_value!: 1]
 
+  alias Corex.Selectors
+
   alias Corex.TagsInput.Anatomy.{
     Control,
     HiddenInput,
@@ -244,7 +243,13 @@ defmodule Corex.TagsInput do
 
   attr(:disabled, :boolean, default: false)
   attr(:read_only, :boolean, default: false)
-  attr(:invalid, :boolean, default: false)
+  attr(:invalid, :boolean, default: nil)
+
+  attr(:auto_invalid, :boolean,
+    default: false,
+    doc: "When true with `field`, set invalid from visible changeset errors"
+  )
+
   attr(:required, :boolean, default: false)
   attr(:name, :string, default: nil)
   attr(:form, :string, default: nil)
@@ -337,7 +342,7 @@ defmodule Corex.TagsInput do
   defp tags_input_render(assigns, form_field, field_used) do
     assigns =
       assigns
-      |> assign_new(:id, fn -> "tags-input-#{System.unique_integer([:positive])}" end)
+      |> Corex.FormField.require_id!("Corex component (tags-input)")
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign(:value_list, validate_value!(assigns.value))
       |> normalize_tags_input_translation()
@@ -399,25 +404,36 @@ defmodule Corex.TagsInput do
           :if={@submit_name}
           data-scope="tags-input"
           data-part="array-inputs"
-          phx-update="ignore"
           id={"tags-input:#{@id}:array-inputs"}
         >
           <input
-            :for={tag <- @value_list}
+            :for={{tag, index} <- Enum.with_index(@value_list)}
             type="hidden"
+            id={"tags-input:#{@id}:array-input-#{index}"}
             data-scope="tags-input"
             data-part="array-input"
             name={@submit_name}
             value={tag}
+            phx-mounted={
+              JS.ignore_attributes(["value", "name"],
+                to: Selectors.css_id("tags-input:#{@id}:array-input-#{index}")
+              )
+            }
           />
           <input
             :if={@value_list == []}
             type="hidden"
+            id={"tags-input:#{@id}:array-input-empty"}
             data-scope="tags-input"
             data-part="array-input"
             data-empty
             name={@empty_array_name}
             value=""
+            phx-mounted={
+              JS.ignore_attributes(["value", "name"],
+                to: Selectors.css_id("tags-input:#{@id}:array-input-empty")
+              )
+            }
           />
         </div>
         <label
@@ -473,6 +489,7 @@ defmodule Corex.TagsInput do
                   {Connect.ssr_item_text(%SsrItemText{root_id: @id, index: index})}
                 >{tag}</span>
                 <button
+                  phx-update="ignore"
                   phx-mounted={
                     Connect.ignore_ssr_item_delete_trigger(%SsrItemDeleteTrigger{
                       root_id: @id,
@@ -539,7 +556,12 @@ defmodule Corex.TagsInput do
       >
         {render_slot(@error, msg)}
       </div>
-      <div style="display: none;" data-templates="tags-input">
+      <div
+        id={"tags-input:#{@id}:templates"}
+        style="display: none;"
+        data-templates="tags-input"
+        phx-update="ignore"
+      >
         <span
           data-scope="tags-input"
           data-part="item"
