@@ -1,5 +1,7 @@
 # Corex Design
 
+Package: [corex_design](https://hexdocs.pm/corex_design). This guide is published on **corex** Hexdocs (full app wiring). The design package docs cover install, config, and build.
+
 Corex components work without any bundled CSS. You style them with your own rules, usually by targeting `data-scope` and `data-part` on the rendered markup (each component’s Hexdocs page lists those selectors).
 
 **Corex Design** is optional: token-based CSS, ready-made themes, and modifier classes such as `ui-accent` or `ui-size-lg`. Generated apps with `--design` (the default) add the `corex_design` Hex package and build CSS into `assets/corex/`.
@@ -11,6 +13,7 @@ Corex components work without any bundled CSS. You style them with your own rule
 | New app **with** design (default) | `mix corex.new my_app` |
 | New app **without** design | `mix corex.new my_app --no-design` |
 | Regenerate design assets | `mix corex.design.build` |
+| List valid config values (`components`, `semantics`, themes, …) | `mix corex.design.options` |
 | Build app assets (includes design) | `mix assets.build` |
 
 `mix corex.new` adds `{:corex_design, ...}`, `config :corex_design` in `config/config.exs`, patches `assets.build` / `assets.deploy` to run `corex.design.build`, and adds `/assets/corex/` to `.gitignore`. Output lands in `assets/corex/` (generated; do not commit it).
@@ -39,19 +42,29 @@ Layered imports still work when you need finer control:
 
 ## Bundle filtering
 
-In `config/config.exs`, optional keys trim the generated tree:
+In `config/config.exs`, keys under `config :corex_design` control the **build-time** CSS tree (not the runtime picker):
 
 | Key | Default | Effect |
 |-----|---------|--------|
 | `components` | `nil` (all) | Emit only listed component recipe files |
 | `semantics` | `nil` (all) | Emit only listed palette roles (`base` always included); trims unused `ui-{role}` utilities |
+| `themes` | `nil` (all presets) | Emit only listed theme CSS (`neo`, `uno`, `duo`, `leo`) |
+| `default_theme` | `:neo` | Build default theme id (compile-time; picker default is separate) |
+| `default_mode` | `:light` | Build default mode (`:light` / `:dark`) |
+
+Run `mix corex.design.options` to print allowed values and your current resolved config.
 
 ```elixir
 components: ~w(button dialog accordion typo layout-heading)a,
-semantics: ~w(accent brand alert)a
+semantics: ~w(accent brand alert)a,
+themes: ~w(neo uno)a,
+default_theme: :neo,
+default_mode: :light
 ```
 
 Legacy `scales: [semantic: ...]` is still read when `semantics:` is omitted; prefer `semantics:` for new apps.
+
+Runtime pickers use `config :my_app, :themes` (and cookies / localStorage). Keep that list a subset of what you emit here. See [Theming](theming.html), [Dark mode](dark_mode.html), and [Configuration](configuration.html).
 
 4. Point Tailwind at the generated tree (Phoenix 1.8+ example):
 
@@ -124,33 +137,11 @@ Semantic and variant axes combine: `button ui-accent ui-solid`. Semantic sets pa
 
 See the [modifier guide](modifiers.html) for the full axis system. Stack modifiers on the root `class` attribute. Do not invent new class names; use only shared `ui-*` modifiers and component-specific layout classes documented for that component.
 
-## Shared utilities
-
-Component styles build on shared utilities in `assets/corex/utilities.css` (pulled in via `main.css`). You rarely add these classes yourself—they are composed inside component CSS—but they explain how parts look:
-
-| Utility | Used for |
-|---------|----------|
-| `ui-trigger` | Buttons, triggers, icon controls (hover, focus, disabled, open state) |
-| `ui-trigger--square` / `ui-trigger--circle` | Icon-only triggers |
-| `ui-input` | Text fields, combobox input, similar controls |
-| `ui-item` | Menu, listbox, select options |
-| `ui-content` | Popovers, panels, floating surfaces |
-| `ui-label` | Field labels |
-| `ui-icon` | Heroicons inside components |
-| `ui-link` | Link-styled controls |
-| `ui-root` | Vertical/horizontal stacks |
-
-Example: `button.css` applies `ui-trigger` to `.button`; host classes like `ui-accent` and `ui-solid` set shared `--ctl-*` variables from `utilities.css`.
-
 ## Tokens and themes
 
-`main.css` loads semantic tokens (`--color-ink`, `--spacing-space`, `--text-base`, `--radius-md`, …). Theme files under `assets/corex/theme/` import generated token CSS from `assets/corex/tokens/themes/` and switch palettes when `data-theme` and `data-mode` are both set on `<html>`.
+After `mix corex.design.build`, CSS and tokens live under `assets/corex/`. Theme files switch palettes when both `data-theme` and `data-mode` are set on `<html>`.
 
-Runtime colors live as `--color-*` hex values on `[data-theme][data-mode]`. Tailwind utilities use a single `@theme inline` bridge in `tokens/semantic/color.css`.
-
-Semantic ink for text and focus rings on neutral surfaces uses `--color-ink-{semantic}` (recipe wildcard `--color-ink-*`). Semantic borders without fill use `--color-{semantic}`. Filled semantic controls pair `background-color: --color-{semantic}` with on-fill contrast ink (wildcard `--color-*-ink` / `{role}-contrast` where exposed).
-
-Tailwind utilities such as `text-ink`, `bg-layer`, `gap-space-lg`, and `rounded-xl` map to the same tokens. Prefer **modifier classes** on Corex components and **semantic utilities** in layout markup; avoid overriding CSS variables in templates.
+Prefer **modifier classes** on Corex components and Tailwind utilities that map to the same tokens (`text-ink`, `bg-layer`, `gap-space-lg`, `rounded-xl`) in layout markup. Avoid overriding CSS variables in templates.
 
 ## Icons
 

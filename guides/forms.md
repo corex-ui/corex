@@ -140,7 +140,6 @@ end
   <.checkbox
     field={@form[:terms]}
     class="checkbox"
-    invalid={Corex.FormField.invalid?(@form[:terms])}
   >
     <:label>Accept terms</:label>
     <:indicator>
@@ -156,7 +155,6 @@ end
     field={@form[:country]}
     class="select"
     controlled
-    invalid={Corex.FormField.invalid?(@form[:country])}
     items={Corex.List.new([
       %{label: "France", value: "fra"},
       %{label: "Belgium", value: "bel"},
@@ -257,13 +255,13 @@ In LiveView, call `changeset_validate/2` inside `handle_event("validate", ...)` 
 
 ## Error messages and `invalid` styling
 
-[`Corex.FormField`](Corex.FormField.html) wires `id`, `name`, `form`, and errors into components that accept `field={...}`. It does **not** set `invalid` from changeset errors automatically.
+Pass `field={@form[:name]}` so the component picks up ids, names, and errors.
 
 - **Messages** render through the `:error` slot when the field has errors and was used (`used_input?/1`).
-- **Alert borders** (`data-invalid`) are opt-in: pass `invalid` when you want visible invalid styling.
+- **Alert borders** (`data-invalid`) stay off by default. Pass `auto_invalid` to derive them from visible errors, `invalid={true}` to force, or `invalid={false}` to suppress when `auto_invalid` is also set. For a custom `invalid={...}` expression, use [`Corex.FormField.invalid?/1`](Corex.FormField.html#invalid?/1).
 
 ```heex
-<.checkbox field={@form[:terms]} class="checkbox" invalid={Corex.FormField.invalid?(@form[:terms])}>
+<.checkbox field={@form[:terms]} auto_invalid class="checkbox">
   <:label>Accept terms</:label>
   <:indicator>
     <.heroicon name="hero-check" />
@@ -276,9 +274,9 @@ In LiveView, call `changeset_validate/2` inside `handle_event("validate", ...)` 
 
 <.select
   field={@form[:country]}
+  auto_invalid
   class="select"
   controlled
-  invalid={Corex.FormField.invalid?(@form[:country])}
   items={Corex.List.new([
     %{label: "France", value: "fra"},
     %{label: "Belgium", value: "bel"},
@@ -294,11 +292,17 @@ In LiveView, call `changeset_validate/2` inside `handle_event("validate", ...)` 
 </.select>
 ```
 
-Use `Corex.FormField.invalid?/1` on LiveView forms with `phx-change` so borders appear after the user interacts with a field, not on the initial empty render. Static demos without a changeset can pass `invalid` directly on the component.
+Static demos without a changeset can pass `invalid` directly on the component.
+
+## LiveView used-input tracking
+
+Corex form hooks sync values into named inputs and notify LiveView so `used_input?/1` and `_unused_*` omission stay correct. Use `phoenix_live_view` `~> 1.1`.
+
+Pass `field={@form[:name]}` (or an explicit stable `id`) so morphdom patches keep the same input nodes across LiveView updates. Without a stable id, remounts can drop client-side used state until the next interaction. Form components raise at render time when neither `field` nor a non-empty `id` is provided (including styling demos and Hexdocs samples you copy into LiveView).
 
 ## Custom error presentation
 
-Keep `invalid` off the control if you only want a custom affordance (for example a tooltip) without `data-invalid` on the host.
+Omit `auto_invalid` (the default) if you only want a custom affordance (for example a tooltip) without `data-invalid` on the host.
 
 ```heex
 <.select field={@form[:country]} class="select relative" controlled>

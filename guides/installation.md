@@ -15,6 +15,15 @@
 - **Truly unstyled.** Bring your own CSS or opt into Corex Design tokens, themes and modes.
 - **Accessible by default.** Keyboard, focus and ARIA wired in by Zag.js state machines.
 
+## Packages
+
+| Package | Kind | Purpose | `mix corex.new` |
+|---------|------|---------|-----------------|
+| [`corex`](https://hex.pm/packages/corex) | Hex dep | Unstyled Phoenix components, hooks, LiveView API | Always |
+| [`corex_design`](https://hex.pm/packages/corex_design) | Hex dep (`runtime: false`) | Config-driven tokens, themes, and component CSS ([Design](design.html)) | On by default; `--no-design` to skip |
+| [`corex_mcp`](https://hex.pm/packages/corex_mcp) | Hex dep (`only: :dev`) | Dev MCP server for AI component and design discovery ([MCP](MCP.html)); never enable in `:prod` | On by default; `--no-mcp` to skip |
+| [`corex_new`](https://hex.pm/packages/corex_new) | Mix archive | Greenfield generator (`mix corex.new`) | Install once with `mix archive.install hex corex_new` |
+
 ## New Corex application
 
 Install the archives once:
@@ -30,15 +39,15 @@ Generate an application:
 mix corex.new my_app
 ```
 
-By default Corex Design will be installed. You can use `--no-design` to opt out.
-
-By default the installer adds **`plug Corex.MCP`** in `:dev` and `:test` only (see [MCP](mcp.html)); never enable it in `:prod`. Use **`--no-mcp`** if you do not want it.
+Design and MCP are on by default. Pass `--no-design` or `--no-mcp` to skip either package.
 
 If you want the full feature set:
 
 ```bash
 mix corex.new my_app --mode --theme --lang
 ```
+
+Corex encodes JSON with OTP `:json` (OTP 27+). On OTP 26, add `{:json_polyfill, "~> 0.2 or ~> 1.0"}` to your app (the installer adds it when you pass `--lang`).
 
 Run **`mix help corex.new`** or see **`Mix.Tasks.Corex.New`** in Hexdocs for every Corex-only flag.
 
@@ -62,12 +71,6 @@ Add Corex to a Phoenix app you already have in the [manual installation guide](m
 />
 ```
 
-If you are using Corex Design, import the generated component entry (include `accordion` in `components:` config):
-
-```css
-@import "../corex/components.css";
-```
-
 ### API
 
 Every Corex component exposes JS commands for client-side control and matching `socket` helpers for server-side control. You need an `id` on the component.
@@ -84,11 +87,13 @@ Each component documents **API** and **Events** on its Hexdocs page (helpers, `o
 
 Corex is open source. If you rely on it in production or want to help sustain development, consider [becoming a sponsor on GitHub](https://github.com/sponsors/corex-ui).
 
-- [MCP](mcp.html) Corex MCP for AI tooling in development.
-- [Dark mode](dark_mode.html) light/dark wiring after `--mode`.
-- [Theming](theming.html) theme picker after `--theme`.
-- [Localize](localize.html) locales and routes after `--lang`.
-- [Production](production.html) prod build and run.
-- [Design](design.html) optional Corex Design System (tokens, themes, modifiers).
-- [Manual installation](manual_installation.html) add Corex to an existing Phoenix app.
-- [Tableau](tableau.html) Corex on static Tableau sites; optional [Tableau Theming](tableau_theming.html), [Tableau Mode](tableau_mode.html), [Tableau Localize](tableau_localize.html).
+## Next steps
+
+- [Forms](forms.html) `field`, validation, and `auto_invalid`
+- [Manual installation](manual_installation.html) add Corex (and optional theme / mode / locale wiring) to an existing app
+- [Theming](theming.html) / [Dark mode](dark_mode.html) / [Localize](localize.html) picker UI after install or `--theme` / `--mode` / `--lang`
+- [Design](design.html) tokens, themes, and modifiers ([corex_design](https://hexdocs.pm/corex_design))
+- [MCP](MCP.html) / [corex_mcp](https://hexdocs.pm/corex_mcp) AI tooling in development
+- [Updating Corex](update.html) migrate to 0.2.x
+- [Production](production.html) prod build and run
+- [Tableau](tableau.html) Corex on static Tableau sites

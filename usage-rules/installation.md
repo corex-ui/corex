@@ -9,12 +9,12 @@ mix corex.new my_app
 mix corex.new my_app --mode --theme --lang
 ```
 
-Defaults: Corex Design, MCP in `:dev`/`:test` only.
+Defaults: Corex Design, `corex_mcp` + MCP plug in `:dev`/`:test` only.
 
 | Flag | Effect |
 |------|--------|
 | `--no-design` | Skip corex_design dependency and design CSS |
-| `--no-mcp` | Skip MCP plug |
+| `--no-mcp` | Skip `corex_mcp` dep and MCP plug |
 | `--mode` / `--theme` / `--lang` | Mode, theme, localization |
 
 Run `mix help corex.new`. Update generator: `mix local.corex`.
@@ -118,7 +118,11 @@ When using mode/theme/lang pickers, include `toggle` and `select` in `components
 ## MCP (dev only)
 
 ```elixir
-if Mix.env() == :dev do
+{:corex_mcp, "~> 0.2", only: :dev}
+```
+
+```elixir
+if Mix.env() in [:dev, :test] do
   plug Corex.MCP
 end
 ```
