@@ -53,27 +53,27 @@ defmodule E2eWeb.ListingPage do
       <p :if={@description} class="blog__card__excerpt">{@description}</p>
       <ul :if={@tags != []} class="m-0 flex list-none flex-wrap gap-space-sm p-0 blog__card__tags">
         <li :for={tag <- @tags}>
-          <span class="badge badge--muted badge--sm">{tag}</span>
+          <span class="badge ui-size-sm">{tag}</span>
         </li>
       </ul>
       <div :if={@template_card?} class="mt-auto flex flex-wrap gap-space-sm pt-space-sm">
-        <.navigate to={@demo_to} class="button button--sm button--brand" external>
+        <.navigate to={@demo_to} class="button ui-size-sm ui-brand" external>
           {~t"Live demo"}
           <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
         </.navigate>
-        <.navigate to={@github_to} class="button button--sm button--ghost" external>
+        <.navigate to={@github_to} class="button ui-size-sm" external>
           {~t"GitHub"}
           <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
         </.navigate>
       </div>
       <div :if={@play_card?} class="mt-auto flex flex-wrap gap-space-sm pt-space-sm">
-        <.navigate to={@play_to} class="button button--sm button--brand">
+        <.navigate to={@play_to} class="button ui-size-sm ui-brand">
           {@play_label || ~t"Play"}
           <.heroicon name="hero-arrow-right" class="icon" />
         </.navigate>
       </div>
       <div :if={@site_card?} class="mt-auto flex flex-wrap gap-space-sm pt-space-sm">
-        <.navigate to={@site_to} class="button button--sm button--brand" external>
+        <.navigate to={@site_to} class="button ui-size-sm ui-brand" external>
           {@site_label || ~t"View Site"}
           <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
         </.navigate>

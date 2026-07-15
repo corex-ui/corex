@@ -3,16 +3,43 @@
     path={@path}
     id="menu-styling-page"
     title={~t"Menu · Style"}
-    subtitle={~t"Semantic colors and density via modifier classes on the menu root."}
+    subtitle={
+      ~t"Semantic colors, density, and corner radius via modifier classes on the menu root."
+    }
   >
     <.demo_section
       id="menu-styling-color"
-      title={~t"Color"}
+      title={~t"Semantic"}
       code={E2eWeb.Demos.MenuDemo.styling_color_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="menu" axis={:semantic} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.MenuDemo.styling_color_example />
       </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="menu-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.MenuDemo.styling_variant_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="menu" axis={:variant} />
+      </:description>
+      <:preview><E2eWeb.Demos.MenuDemo.styling_variant_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="menu-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.MenuDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <.variant_matrix_description host="menu" />
+      </:description>
+      <:preview><E2eWeb.Demos.MenuDemo.styling_variant_matrix_example /></:preview>
     </.demo_section>
 
     <.demo_section
@@ -20,8 +47,24 @@
       title={~t"Size"}
       code={E2eWeb.Demos.MenuDemo.styling_size_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="menu" axis={:size} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.MenuDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="menu-styling-rounded"
+      title={~t"Rounded"}
+      code={E2eWeb.Demos.MenuDemo.styling_rounded_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="menu" axis={:radius} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.MenuDemo.styling_rounded_example />
       </:preview>
     </.demo_section>
   </.demo_page>

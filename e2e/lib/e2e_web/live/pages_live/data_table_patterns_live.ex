@@ -293,7 +293,7 @@ defmodule E2eWeb.DataTablePatternsLive do
               <:col :let={row} label="ID">{row.id}</:col>
               <:col :let={row} label="Name">{row.name}</:col>
               <:action :let={row}>
-                <.action class="button button--sm" aria-label={"Edit #{row.name}"}>
+                <.action class="button ui-size-sm" aria-label={"Edit #{row.name}"}>
                   <.heroicon name="hero-pencil-square" />
                 </.action>
               </:action>
@@ -322,10 +322,10 @@ defmodule E2eWeb.DataTablePatternsLive do
           <:preview>
             <div class="flex flex-col gap-4 w-full">
               <div class="flex gap-2 flex-wrap">
-                <.action phx-click="pattern_stream_add" class="button button--sm button--accent">
+                <.action phx-click="pattern_stream_add" class="button ui-size-sm ui-accent">
                   <.heroicon name="hero-plus" /> Add item
                 </.action>
-                <.action phx-click="pattern_stream_reset" class="button button--sm">
+                <.action phx-click="pattern_stream_reset" class="button ui-size-sm">
                   <.heroicon name="hero-arrow-path" /> Reset
                 </.action>
               </div>
@@ -344,7 +344,7 @@ defmodule E2eWeb.DataTablePatternsLive do
                   <.action
                     phx-click="pattern_stream_delete"
                     phx-value-dom_id={dom_id}
-                    class="button button--sm button--alert"
+                    class="button ui-size-sm ui-alert"
                     aria-label={"Delete #{row.name}"}
                   >
                     <.heroicon name="hero-trash" />
@@ -394,7 +394,7 @@ defmodule E2eWeb.DataTablePatternsLive do
         >
           <:preview>
             <div class="flex flex-col gap-3 w-full">
-              <.action phx-click="pattern_check_selected" class="button button--sm">
+              <.action phx-click="pattern_check_selected" class="button ui-size-sm">
                 Check selected
               </.action>
               <.data_table
@@ -428,7 +428,7 @@ defmodule E2eWeb.DataTablePatternsLive do
         >
           <:preview>
             <div class="flex flex-col gap-3 w-full">
-              <.action phx-click="pattern_full_check" class="button button--sm">
+              <.action phx-click="pattern_full_check" class="button ui-size-sm">
                 Check selected
               </.action>
               <.data_table
@@ -463,7 +463,7 @@ defmodule E2eWeb.DataTablePatternsLive do
                 <:col :let={u} label="Role" name={:role}>{u.role}</:col>
                 <:col :let={u} label="Status" name={:status}>{u.status}</:col>
                 <:action :let={u}>
-                  <.action class="button button--sm" aria-label={"Edit #{u.name}"}>
+                  <.action class="button ui-size-sm" aria-label={"Edit #{u.name}"}>
                     <.heroicon name="hero-pencil-square" />
                   </.action>
                 </:action>

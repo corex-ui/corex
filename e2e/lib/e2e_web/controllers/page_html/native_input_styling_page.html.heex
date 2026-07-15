@@ -24,12 +24,37 @@
 
     <.demo_section
       id="native-input-styling-color"
-      title={~t"Color"}
+      title={~t"Semantic"}
       code={E2eWeb.Demos.NativeInputDemo.styling_color_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="native-input" axis={:semantic} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.NativeInputDemo.styling_color_example />
       </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="native-input-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.NativeInputDemo.styling_variant_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="native-input" axis={:variant} />
+      </:description>
+      <:preview><E2eWeb.Demos.NativeInputDemo.styling_variant_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="native-input-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.NativeInputDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <.variant_matrix_description host="native-input" />
+      </:description>
+      <:preview><E2eWeb.Demos.NativeInputDemo.styling_variant_matrix_example /></:preview>
     </.demo_section>
 
     <.demo_section
@@ -37,6 +62,9 @@
       title={~t"Size"}
       code={E2eWeb.Demos.NativeInputDemo.styling_size_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="native-input" axis={:size} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.NativeInputDemo.styling_size_example />
       </:preview>
@@ -44,9 +72,12 @@
 
     <.demo_section
       id="native-input-styling-rounded"
-      title={~t"Radius"}
+      title={~t"Rounded"}
       code={E2eWeb.Demos.NativeInputDemo.styling_rounded_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="native-input" axis={:radius} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.NativeInputDemo.styling_rounded_example />
       </:preview>
@@ -57,6 +88,9 @@
       title={~t"Max width"}
       code={E2eWeb.Demos.NativeInputDemo.styling_max_width_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="native-input" axis={:max_width} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.NativeInputDemo.styling_max_width_example />
       </:preview>

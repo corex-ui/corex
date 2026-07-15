@@ -14,9 +14,12 @@
   >
     <.demo_section
       id="layout-heading-styling-color"
-      title={~t"Color"}
+      title={~t"Semantic"}
       code={E2eWeb.Demos.LayoutHeadingDemo.styling_color_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="layout-heading" axis={:semantic} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.LayoutHeadingDemo.styling_color_example />
       </:preview>
@@ -24,9 +27,12 @@
 
     <.demo_section
       id="layout-heading-styling-max-width"
-      title={~t"Max Width"}
+      title={~t"Max width"}
       code={E2eWeb.Demos.LayoutHeadingDemo.styling_max_width_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="layout-heading" axis={:max_width} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.LayoutHeadingDemo.styling_max_width_example />
       </:preview>

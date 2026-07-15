@@ -61,7 +61,7 @@ defmodule E2eWeb.ClipboardPlayLive do
           />
 
           <.toggle_group
-            class="toggle-group toggle-group--sm max-w-7xs"
+            class="toggle-group ui-size-sm max-w-3xs"
             id="orientation"
             on_value_change="control_changed"
             multiple={false}
@@ -69,10 +69,10 @@ defmodule E2eWeb.ClipboardPlayLive do
             value={[@controls.orientation]}
           >
             <:item value="vertical" aria_label="Vertical orientation">
-              <.heroicon name="hero-arrows-up-down" class="icon icon--lg" />
+              <.heroicon name="hero-arrows-up-down" class="icon ui-size-lg" />
             </:item>
             <:item value="horizontal" aria_label="Horizontal orientation">
-              <.heroicon name="hero-arrows-right-left" class="icon icon--lg" />
+              <.heroicon name="hero-arrows-right-left" class="icon ui-size-lg" />
             </:item>
           </.toggle_group>
 
@@ -87,7 +87,7 @@ defmodule E2eWeb.ClipboardPlayLive do
               id="clipboard-play-value"
               name="clipboard_value"
               value={@clipboard_value}
-              class="native-input native-input--sm w-full"
+              class="native-input ui-size-sm w-full"
             >
               <:label>Value to copy</:label>
             </.native_input>

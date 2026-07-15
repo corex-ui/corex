@@ -83,7 +83,7 @@ defmodule E2eWeb.AccordionAnimationLive do
           <:controls>
             <.select
               id="accordion-animation-easing"
-              class="select select--sm select--mini-sm lg:w-full"
+              class="select ui-size-sm lg:w-full"
               value={@easing}
               items={@easing_items}
               on_value_change="easing_changed"
@@ -95,7 +95,7 @@ defmodule E2eWeb.AccordionAnimationLive do
 
             <.number_input
               id="accordion-animation-duration"
-              class="number-input number-input--sm lg:w-full"
+              class="number-input ui-size-sm lg:w-full"
               value={@duration}
               step={0.1}
               min={0.0}
@@ -112,7 +112,7 @@ defmodule E2eWeb.AccordionAnimationLive do
 
             <.number_input
               id="accordion-animation-opacity-start"
-              class="number-input number-input--sm lg:w-full"
+              class="number-input ui-size-sm lg:w-full"
               step={0.1}
               min={0.0}
               max={1.0}
@@ -130,7 +130,7 @@ defmodule E2eWeb.AccordionAnimationLive do
 
             <.number_input
               id="accordion-animation-opacity-end"
-              class="number-input number-input--sm lg:w-full"
+              class="number-input ui-size-sm lg:w-full"
               step={0.1}
               min={0.0}
               max={1.0}
@@ -148,7 +148,7 @@ defmodule E2eWeb.AccordionAnimationLive do
 
             <.switch
               id="accordion-animation-block-interaction"
-              class="switch switch--sm w-full"
+              class="switch ui-size-sm w-full"
               checked={@animation_options.block_interaction}
               on_checked_change="block_interaction_changed"
             >
@@ -174,7 +174,7 @@ defmodule E2eWeb.AccordionAnimationLive do
         <.demo_section
           id="accordion-animation-instant"
           title={~t"Instant"}
-          trigger_class="button--sm"
+          trigger_class="ui-size-sm"
           code={@instant_heex}
         >
           <:preview>
@@ -189,7 +189,7 @@ defmodule E2eWeb.AccordionAnimationLive do
         <.demo_section
           id="accordion-animation-custom"
           title={~t"Custom (Motion)"}
-          trigger_class="button--sm"
+          trigger_class="ui-size-sm"
           code_tabs={[
             %{value: "heex", label: ~t"Heex", language: :heex, code: @custom_heex},
             %{value: "js", label: ~t"Javascript", language: :js, code: @custom_js}

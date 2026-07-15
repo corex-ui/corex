@@ -18,6 +18,12 @@ defmodule E2eWeb.ComboboxEventsLive do
   @open_server_elixir E2eWeb.Demos.ComboboxDemo.events_open_server_elixir()
   @open_client_heex E2eWeb.Demos.ComboboxDemo.events_open_client_heex()
   @open_client_js E2eWeb.Demos.ComboboxDemo.events_open_client_js()
+  @input_server_heex E2eWeb.Demos.ComboboxDemo.events_input_server_heex()
+  @input_server_elixir E2eWeb.Demos.ComboboxDemo.events_input_server_elixir()
+  @highlight_server_heex E2eWeb.Demos.ComboboxDemo.events_highlight_server_heex()
+  @highlight_server_elixir E2eWeb.Demos.ComboboxDemo.events_highlight_server_elixir()
+  @select_server_heex E2eWeb.Demos.ComboboxDemo.events_select_server_heex()
+  @select_server_elixir E2eWeb.Demos.ComboboxDemo.events_select_server_elixir()
 
   def mount(_params, _session, socket) do
     socket =
@@ -32,10 +38,19 @@ defmodule E2eWeb.ComboboxEventsLive do
       |> assign(:open_server_elixir, @open_server_elixir)
       |> assign(:open_client_heex, @open_client_heex)
       |> assign(:open_client_js, @open_client_js)
+      |> assign(:input_server_heex, @input_server_heex)
+      |> assign(:input_server_elixir, @input_server_elixir)
+      |> assign(:highlight_server_heex, @highlight_server_heex)
+      |> assign(:highlight_server_elixir, @highlight_server_elixir)
+      |> assign(:select_server_heex, @select_server_heex)
+      |> assign(:select_server_elixir, @select_server_elixir)
       |> stream(:server_logs, [])
       |> stream(:client_logs, [])
       |> stream(:open_server_logs, [])
       |> stream(:open_client_logs, [])
+      |> stream(:input_server_logs, [])
+      |> stream(:highlight_server_logs, [])
+      |> stream(:select_server_logs, [])
 
     {:ok, socket}
   end
@@ -58,6 +73,21 @@ defmodule E2eWeb.ComboboxEventsLive do
   def handle_event("combobox_open_client_changed", %{"id" => id, "payload" => payload}, socket) do
     log = new_log("client-open", id, inspect(payload))
     {:noreply, stream_insert(socket, :open_client_logs, log, at: 0)}
+  end
+
+  def handle_event("combobox_input_changed", params, socket) do
+    log = new_log("server-input", params["id"] || "", inspect(params))
+    {:noreply, stream_insert(socket, :input_server_logs, log, at: 0)}
+  end
+
+  def handle_event("combobox_highlight_changed", params, socket) do
+    log = new_log("server-highlight", params["id"] || "", inspect(params))
+    {:noreply, stream_insert(socket, :highlight_server_logs, log, at: 0)}
+  end
+
+  def handle_event("combobox_selected", params, socket) do
+    log = new_log("server-select", params["id"] || "", inspect(params))
+    {:noreply, stream_insert(socket, :select_server_logs, log, at: 0)}
   end
 
   defp new_log(source, dom_id, value) do
@@ -268,6 +298,118 @@ defmodule E2eWeb.ComboboxEventsLive do
                 id="combobox-events-open-log-client"
                 class="data-table max-w-3xl"
                 rows={@streams.open_client_logs}
+              >
+                <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
+                <:col :let={{_dom_id, row}} label="Source">{row.source}</:col>
+                <:col :let={{_dom_id, row}} label="Value">{row.value}</:col>
+                <:empty>
+                  <p>No event yet.</p>
+                </:empty>
+              </.data_table>
+            </div>
+          </:preview>
+        </.demo_section>
+
+        <.demo_section
+          id="combobox-events-input-server-doc"
+          title={~t"On Input Value Change (Server)"}
+          code_tabs={[
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @input_server_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @input_server_elixir}
+          ]}
+        >
+          <:preview>
+            <div class="flex flex-col gap-4 items-center w-full">
+              <.combobox
+                id="combobox-events-input-server-field"
+                class="combobox"
+                placeholder={~t"Select"}
+                filter={false}
+                items={@items}
+                on_input_value_change="combobox_input_changed"
+              >
+                <:empty>No results</:empty>
+                <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+              </.combobox>
+
+              <.data_table
+                id="combobox-events-input-log-server"
+                class="data-table max-w-3xl"
+                rows={@streams.input_server_logs}
+              >
+                <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
+                <:col :let={{_dom_id, row}} label="Source">{row.source}</:col>
+                <:col :let={{_dom_id, row}} label="Value">{row.value}</:col>
+                <:empty>
+                  <p>No event yet.</p>
+                </:empty>
+              </.data_table>
+            </div>
+          </:preview>
+        </.demo_section>
+
+        <.demo_section
+          id="combobox-events-highlight-server-doc"
+          title={~t"On Highlight Change (Server)"}
+          code_tabs={[
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @highlight_server_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @highlight_server_elixir}
+          ]}
+        >
+          <:preview>
+            <div class="flex flex-col gap-4 items-center w-full">
+              <.combobox
+                id="combobox-events-highlight-server-field"
+                class="combobox"
+                placeholder={~t"Select"}
+                items={@items}
+                on_highlight_change="combobox_highlight_changed"
+              >
+                <:empty>No results</:empty>
+                <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+              </.combobox>
+
+              <.data_table
+                id="combobox-events-highlight-log-server"
+                class="data-table max-w-3xl"
+                rows={@streams.highlight_server_logs}
+              >
+                <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
+                <:col :let={{_dom_id, row}} label="Source">{row.source}</:col>
+                <:col :let={{_dom_id, row}} label="Value">{row.value}</:col>
+                <:empty>
+                  <p>No event yet.</p>
+                </:empty>
+              </.data_table>
+            </div>
+          </:preview>
+        </.demo_section>
+
+        <.demo_section
+          id="combobox-events-select-server-doc"
+          title={~t"On Select (Server)"}
+          code_tabs={[
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @select_server_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @select_server_elixir}
+          ]}
+        >
+          <:preview>
+            <div class="flex flex-col gap-4 items-center w-full">
+              <.combobox
+                id="combobox-events-select-server-field"
+                class="combobox"
+                placeholder={~t"Select"}
+                items={@items}
+                on_select="combobox_selected"
+              >
+                <:empty>No results</:empty>
+                <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+              </.combobox>
+
+              <.data_table
+                id="combobox-events-select-log-server"
+                class="data-table max-w-3xl"
+                rows={@streams.select_server_logs}
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
                 <:col :let={{_dom_id, row}} label="Source">{row.source}</:col>

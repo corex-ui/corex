@@ -20,7 +20,7 @@ defmodule CorexWeb.Action do
               ]
             },
             square_icon_only: %{
-              class: "button button--square",
+              class: "button ui-trigger--square",
               aria_label: "Button text",
               inner_block: [
                 %{
@@ -30,44 +30,44 @@ defmodule CorexWeb.Action do
               ]
             },
             square_letter: %{
-              class: "button button--square",
+              class: "button ui-trigger--square",
               aria_label: "Button text",
               inner_block: [%{inner_block: "B"}]
             },
             color_accent: %{
-              class: "button button--accent",
+              class: "button ui-accent",
               inner_block: [%{inner_block: "Text"}]
             },
             color_brand: %{
-              class: "button button--brand",
+              class: "button ui-brand",
               inner_block: [%{inner_block: "Text"}]
             },
             color_alert: %{
-              class: "button button--alert",
+              class: "button ui-alert",
               inner_block: [%{inner_block: "Text"}]
             },
             color_info: %{
-              class: "button button--info",
+              class: "button ui-info",
               inner_block: [%{inner_block: "Text"}]
             },
             color_success: %{
-              class: "button button--success",
+              class: "button ui-success",
               inner_block: [%{inner_block: "Text"}]
             },
             size_sm: %{
-              class: "button button--sm",
+              class: "button ui-size-sm",
               inner_block: [%{inner_block: "Button SM"}]
             },
             size_lg: %{
-              class: "button button--lg",
+              class: "button ui-size-lg",
               inner_block: [%{inner_block: "Button LG"}]
             },
             size_xl: %{
-              class: "button button--xl",
+              class: "button ui-size-xl",
               inner_block: [%{inner_block: "Button XL"}]
             },
             shape_square_icon: %{
-              class: "button button--square",
+              class: "button ui-trigger--square",
               aria_label: "Square button",
               inner_block: [
                 %{
@@ -77,12 +77,12 @@ defmodule CorexWeb.Action do
               ]
             },
             shape_square_letter: %{
-              class: "button button--square",
+              class: "button ui-trigger--square",
               aria_label: "Square button",
               inner_block: [%{inner_block: "B"}]
             },
             shape_circle_icon: %{
-              class: "button button--circle",
+              class: "button ui-trigger--circle",
               aria_label: "Circle button",
               inner_block: [
                 %{
@@ -92,7 +92,7 @@ defmodule CorexWeb.Action do
               ]
             },
             shape_circle_letter: %{
-              class: "button button--circle",
+              class: "button ui-trigger--circle",
               aria_label: "Circle button",
               inner_block: [%{inner_block: "B"}]
             },
@@ -102,7 +102,7 @@ defmodule CorexWeb.Action do
               inner_block: [%{inner_block: "Text"}]
             },
             disabled_accent: %{
-              class: "button button--accent",
+              class: "button ui-accent",
               disabled: true,
               inner_block: [%{inner_block: "Text"}]
             }

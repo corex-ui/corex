@@ -55,47 +55,47 @@ defmodule CorexWeb.Navigate do
               ]
             },
             color_accent: %{
-              class: "link link--accent",
+              class: "link ui-accent",
               to: "#",
               inner_block: [%{inner_block: "Internal Link"}]
             },
             color_brand: %{
-              class: "link link--brand",
+              class: "link ui-brand",
               to: "#",
               inner_block: [%{inner_block: "Internal Link"}]
             },
             color_alert: %{
-              class: "link link--alert",
+              class: "link ui-alert",
               to: "#",
               inner_block: [%{inner_block: "Internal Link"}]
             },
             color_info: %{
-              class: "link link--info",
+              class: "link ui-info",
               to: "#",
               inner_block: [%{inner_block: "Internal Link"}]
             },
             color_success: %{
-              class: "link link--success",
+              class: "link ui-success",
               to: "#",
               inner_block: [%{inner_block: "Internal Link"}]
             },
             size_sm: %{
-              class: "link link--sm",
+              class: "link ui-size-sm",
               to: "#",
               inner_block: [%{inner_block: "Internal Link"}]
             },
             size_md: %{
-              class: "link link--md",
+              class: "link ui-size-md",
               to: "#",
               inner_block: [%{inner_block: "Internal Link"}]
             },
             size_lg: %{
-              class: "link link--lg",
+              class: "link ui-size-lg",
               to: "#",
               inner_block: [%{inner_block: "Internal Link"}]
             },
             size_xl: %{
-              class: "link link--xl",
+              class: "link ui-size-xl",
               to: "#",
               inner_block: [%{inner_block: "Internal Link"}]
             }

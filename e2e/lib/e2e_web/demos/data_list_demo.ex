@@ -1,6 +1,8 @@
 defmodule E2eWeb.Demos.DataListDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.DemoScales
+
   def items_basic, do: E2eWeb.Demos.DocExamples.content_items()
 
   def items_with_meta, do: E2eWeb.Demos.DocExamples.content_items_with_meta()
@@ -65,7 +67,7 @@ defmodule E2eWeb.Demos.DataListDemo do
         <.heroicon name={item.meta.icon} /> {item.label}
       </:label>
       <:content :let={item}>
-        <span class="tag tag--blue">{item.content}</span>
+        <span class="badge ui-info">{item.content}</span>
       </:content>
     </.data_list>
     """
@@ -108,19 +110,75 @@ defmodule E2eWeb.Demos.DataListDemo do
 
   def styling_items, do: items_basic()
 
-  def styling_text_example(assigns) do
+  def styling_size_example(assigns) do
     ~H"""
-    <.data_list class="data-list data-list--sm" items={styling_items()} />
-    <.data_list class="data-list data-list--md" items={styling_items()} />
-    <.data_list class="data-list data-list--lg" items={styling_items()} />
-    <.data_list class="data-list data-list--xl" items={styling_items()} />
+    <.data_list class="data-list ui-size-sm" items={styling_items()} />
+    <.data_list class="data-list ui-size-md" items={styling_items()} />
+    <.data_list class="data-list ui-size-lg" items={styling_items()} />
+    <.data_list class="data-list ui-size-xl" items={styling_items()} />
     """
   end
 
-  def styling_text_code do
+  def styling_variant_code do
+    ~S"""
+    <.data_list class="data-list" items={styling_items()} />
+    <.data_list class="data-list ui-solid" items={styling_items()} />
+    
+    """
+  end
+
+  def styling_variant_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-space-lg w-full max-w-md">
+      <.data_list id="data-list-style-variant-subtle" class="data-list" items={styling_items()} />
+      <.data_list
+        id="data-list-style-variant-solid"
+        class="data-list ui-solid"
+        items={styling_items()}
+      />
+    </div>
+    """
+  end
+
+  def styling_variant_matrix_code do
+    for semantic <- DemoScales.styling_semantic_axis_steps("data-list"),
+        variant <- DemoScales.styling_variant_axis_steps("data-list") do
+      class = DemoScales.join_matrix_modifiers("data-list", semantic.modifier, variant.modifier)
+
+      """
+      <.data_list class="#{class}" items={styling_items()} />
+      """
+    end
+    |> DemoScales.join_code()
+  end
+
+  def styling_variant_matrix_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("data-list"))
+      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("data-list"))
+
+    ~H"""
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+      <div class="grid grid-cols-4 gap-space items-start min-w-max">
+        <div :for={semantic <- @matrix_semantics} class="contents">
+          <.data_list
+            :for={variant <- @matrix_variants}
+            class={DemoScales.join_matrix_modifiers("data-list", semantic.modifier, variant.modifier)}
+            items={styling_items()}
+          />
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  def styling_size_code do
     ~S"""
     <.data_list
-      class="data-list data-list--sm"
+      class="data-list ui-size-sm"
       items={
         Corex.Content.new([
           %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
@@ -130,7 +188,7 @@ defmodule E2eWeb.Demos.DataListDemo do
       }
     />
     <.data_list
-      class="data-list data-list--md"
+      class="data-list ui-size-md"
       items={
         Corex.Content.new([
           %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
@@ -140,7 +198,7 @@ defmodule E2eWeb.Demos.DataListDemo do
       }
     />
     <.data_list
-      class="data-list data-list--lg"
+      class="data-list ui-size-lg"
       items={
         Corex.Content.new([
           %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
@@ -150,7 +208,7 @@ defmodule E2eWeb.Demos.DataListDemo do
       }
     />
     <.data_list
-      class="data-list data-list--xl"
+      class="data-list ui-size-xl"
       items={
         Corex.Content.new([
           %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
@@ -165,11 +223,11 @@ defmodule E2eWeb.Demos.DataListDemo do
   def styling_color_example(assigns) do
     ~H"""
     <.data_list class="data-list" items={styling_items()} />
-    <.data_list class="data-list data-list--accent" items={styling_items()} />
-    <.data_list class="data-list data-list--brand" items={styling_items()} />
-    <.data_list class="data-list data-list--alert" items={styling_items()} />
-    <.data_list class="data-list data-list--success" items={styling_items()} />
-    <.data_list class="data-list data-list--info" items={styling_items()} />
+    <.data_list class="data-list ui-accent" items={styling_items()} />
+    <.data_list class="data-list ui-brand" items={styling_items()} />
+    <.data_list class="data-list ui-alert" items={styling_items()} />
+    <.data_list class="data-list ui-success" items={styling_items()} />
+    <.data_list class="data-list ui-info" items={styling_items()} />
     """
   end
 
@@ -186,7 +244,7 @@ defmodule E2eWeb.Demos.DataListDemo do
       }
     />
     <.data_list
-      class="data-list data-list--accent"
+      class="data-list ui-accent"
       items={
         Corex.Content.new([
           %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
@@ -196,7 +254,7 @@ defmodule E2eWeb.Demos.DataListDemo do
       }
     />
     <.data_list
-      class="data-list data-list--brand"
+      class="data-list ui-brand"
       items={
         Corex.Content.new([
           %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
@@ -206,7 +264,7 @@ defmodule E2eWeb.Demos.DataListDemo do
       }
     />
     <.data_list
-      class="data-list data-list--alert"
+      class="data-list ui-alert"
       items={
         Corex.Content.new([
           %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
@@ -216,7 +274,7 @@ defmodule E2eWeb.Demos.DataListDemo do
       }
     />
     <.data_list
-      class="data-list data-list--success"
+      class="data-list ui-success"
       items={
         Corex.Content.new([
           %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
@@ -226,7 +284,7 @@ defmodule E2eWeb.Demos.DataListDemo do
       }
     />
     <.data_list
-      class="data-list data-list--info"
+      class="data-list ui-info"
       items={
         Corex.Content.new([
           %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
@@ -239,18 +297,66 @@ defmodule E2eWeb.Demos.DataListDemo do
   end
 
   def styling_max_width_example(assigns) do
+    assigns = assign(assigns, :max_width_variants, DemoScales.max_width_variants("data-list"))
+
     ~H"""
-    <.data_list class="data-list max-w-2xs" items={styling_items()} />
-    <.data_list class="data-list max-w-md" items={styling_items()} />
-    <.data_list class="data-list max-w-xl" items={styling_items()} />
-    <.data_list class="data-list max-w-2xl" items={styling_items()} />
+    <div {DemoScales.preview_scroll_attrs()}>
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
+        <.data_list
+          id={"data-list-style-max-#{variant.id}"}
+          class={DemoScales.join_modifiers("data-list", variant.modifier)}
+          items={styling_items()}
+        />
+      </div>
+    </div>
     """
   end
 
   def styling_max_width_code do
+    items = styling_data_list_items_heex()
+
+    DemoScales.max_width_variants("data-list")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("data-list", modifier)
+
+      """
+      <.data_list
+        class="#{class}"
+        #{items}
+      />
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  defp styling_data_list_items_heex do
+    ~S"""
+    items={
+      Corex.Content.new([
+        %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
+        %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."},
+        %{label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a."}
+      ])
+    }
+    """
+  end
+
+  def styling_rounded_example(assigns) do
+    ~H"""
+    <.data_list class="data-list ui-rounded-none" items={styling_items()} />
+    <.data_list class="data-list ui-rounded-sm" items={styling_items()} />
+    <.data_list class="data-list ui-rounded-md" items={styling_items()} />
+    <.data_list class="data-list ui-rounded-lg" items={styling_items()} />
+    <.data_list class="data-list ui-rounded-xl" items={styling_items()} />
+    <.data_list class="data-list ui-rounded-full" items={styling_items()} />
+    """
+  end
+
+  def styling_rounded_code do
     ~S"""
     <.data_list
-      class="data-list max-w-2xs"
+      class="data-list ui-rounded-none"
       items={
         Corex.Content.new([
           %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
@@ -260,7 +366,7 @@ defmodule E2eWeb.Demos.DataListDemo do
       }
     />
     <.data_list
-      class="data-list max-w-md"
+      class="data-list ui-rounded-md"
       items={
         Corex.Content.new([
           %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
@@ -270,17 +376,7 @@ defmodule E2eWeb.Demos.DataListDemo do
       }
     />
     <.data_list
-      class="data-list max-w-xl"
-      items={
-        Corex.Content.new([
-          %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
-          %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."},
-          %{label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a."}
-        ])
-      }
-    />
-    <.data_list
-      class="data-list max-w-2xl"
+      class="data-list ui-rounded-full"
       items={
         Corex.Content.new([
           %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
@@ -294,8 +390,8 @@ defmodule E2eWeb.Demos.DataListDemo do
 
   def patterns_stream_demo_heex do
     ~S"""
-    <.action phx-click="stream_add" class="button button--accent">Add row</.action>
-    <.action phx-click="stream_reset" class="button button--alert">Reset</.action>
+    <.action phx-click="stream_add" class="button ui-accent">Add row</.action>
+    <.action phx-click="stream_reset" class="button ui-alert">Reset</.action>
     <.data_list class="data-list" items={Corex.Content.new(@items_list)}>
       <:empty>
         <p>No items</p>

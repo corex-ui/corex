@@ -19,7 +19,7 @@ defmodule E2eWeb.LocaleSwitcher do
     ~H"""
     <.select
       id="locale-select"
-      class="select select--sm w-4xs"
+      class="select ui-size-sm w-4xs"
       items={@items}
       value={@value}
       redirect

@@ -54,11 +54,11 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
         <:error :let={msg} class="absolute top-0 end-0">
           <.tooltip
             id="form-patterns-custom-error-country-tip"
-            class="tooltip tooltip--sm"
+            class="tooltip ui-size-sm"
             positioning={%Corex.Positioning{placement: "top-end"}}
           >
             <:trigger>
-              <.heroicon name="hero-exclamation-circle" class="icon text-ink-alert" />
+              <.heroicon name="hero-exclamation-circle" class="icon text-alert-text" />
             </:trigger>
             <:content>{msg}</:content>
           </.tooltip>
@@ -84,11 +84,11 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
         <:error :let={msg} class="absolute top-0 end-0">
           <.tooltip
             id="form-patterns-custom-error-currency-tip"
-            class="tooltip tooltip--sm"
+            class="tooltip ui-size-sm"
             positioning={%Corex.Positioning{placement: "top-end"}}
           >
             <:trigger>
-              <.heroicon name="hero-exclamation-circle" class="icon text-ink-alert" />
+              <.heroicon name="hero-exclamation-circle" class="icon text-alert-text" />
             </:trigger>
             <:content>{msg}</:content>
           </.tooltip>
@@ -107,11 +107,11 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
         <:error :let={msg} class="absolute top-0 end-0">
           <.tooltip
             id="form-patterns-custom-error-tags-tip"
-            class="tooltip tooltip--sm"
+            class="tooltip ui-size-sm"
             positioning={%Corex.Positioning{placement: "top-end"}}
           >
             <:trigger>
-              <.heroicon name="hero-exclamation-circle" class="icon text-ink-alert" />
+              <.heroicon name="hero-exclamation-circle" class="icon text-alert-text" />
             </:trigger>
             <:content>{msg}</:content>
           </.tooltip>
@@ -133,11 +133,11 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
         <:error :let={msg} class="absolute top-0 end-0">
           <.tooltip
             id="form-patterns-custom-error-password-tip"
-            class="tooltip tooltip--sm"
+            class="tooltip ui-size-sm"
             positioning={%Corex.Positioning{placement: "top-end"}}
           >
             <:trigger>
-              <.heroicon name="hero-exclamation-circle" class="icon text-ink-alert" />
+              <.heroicon name="hero-exclamation-circle" class="icon text-alert-text" />
             </:trigger>
             <:content>{msg}</:content>
           </.tooltip>
@@ -153,11 +153,11 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
         <:error :let={msg} class="absolute top-0 end-0">
           <.tooltip
             id="form-patterns-custom-error-notifications-tip"
-            class="tooltip tooltip--sm"
+            class="tooltip ui-size-sm"
             positioning={%Corex.Positioning{placement: "top-end"}}
           >
             <:trigger>
-              <.heroicon name="hero-exclamation-circle" class="icon text-ink-alert" />
+              <.heroicon name="hero-exclamation-circle" class="icon text-alert-text" />
             </:trigger>
             <:content>{msg}</:content>
           </.tooltip>
@@ -170,21 +170,24 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
         id="form-patterns-custom-error-terms"
       >
         <:label>Accept the terms</:label>
+        <:indicator>
+          <.heroicon name="hero-check" />
+        </:indicator>
         <:error :let={msg} class="absolute top-0 end-0">
           <.tooltip
             id="form-patterns-custom-error-terms-tip"
-            class="tooltip tooltip--sm"
+            class="tooltip ui-size-sm"
             positioning={%Corex.Positioning{placement: "top-end"}}
           >
             <:trigger>
-              <.heroicon name="hero-exclamation-circle" class="icon text-ink-alert" />
+              <.heroicon name="hero-exclamation-circle" class="icon text-alert-text" />
             </:trigger>
             <:content>{msg}</:content>
           </.tooltip>
         </:error>
       </.checkbox>
 
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -334,7 +337,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
         </:error>
       </.checkbox>
 
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -382,7 +385,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
       class="flex flex-col gap-space-lg max-w-xs"
     >
       <FormPatternsFields.custom_fields form={@form} prefix="form-patterns-custom-error" />
-      <.action type="submit" id="form-patterns-custom-error-submit" class="button button--accent">
+      <.action type="submit" id="form-patterns-custom-error-submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -401,7 +404,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
       class="flex flex-col gap-space-lg max-w-xs"
     >
       <FormPatternsFields.invalid_fields form={@form} prefix="form-patterns-invalid-on-error" />
-      <.action type="submit" id="form-patterns-invalid-on-error-submit" class="button button--accent">
+      <.action type="submit" id="form-patterns-invalid-on-error-submit" class="button ui-accent">
         Submit
       </.action>
     </.form>

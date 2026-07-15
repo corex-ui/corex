@@ -356,7 +356,7 @@ defmodule E2eWeb.PageController do
 
     ecto_form =
       %E2e.Form.SelectForm{}
-      |> E2e.Form.SelectForm.changeset_validate(%{})
+      |> E2e.Form.SelectForm.changeset(%{})
       |> Phoenix.Component.to_form(as: :select_ecto, id: "select-form-ecto")
 
     conn
@@ -373,7 +373,7 @@ defmodule E2eWeb.PageController do
   def select_form_submit(conn, %{"select_ecto" => select_params}) do
     changeset =
       %E2e.Form.SelectForm{}
-      |> E2e.Form.SelectForm.changeset_validate(select_params)
+      |> E2e.Form.SelectForm.changeset(select_params)
 
     if changeset.valid? do
       data = Ecto.Changeset.apply_changes(changeset)
@@ -1165,6 +1165,10 @@ defmodule E2eWeb.PageController do
     render(conn, :floating_panel_page)
   end
 
+  def floating_panel_styling_page(conn, _params) do
+    render(conn, :floating_panel_styling_page)
+  end
+
   def listbox_page(conn, _params) do
     render(conn, :listbox_page)
   end
@@ -1277,6 +1281,14 @@ defmodule E2eWeb.PageController do
 
   def file_upload_page(conn, _params) do
     render(conn, :file_upload_page)
+  end
+
+  def file_upload_styling_page(conn, _params) do
+    render(conn, :file_upload_styling_page)
+  end
+
+  def file_upload_live_styling_page(conn, _params) do
+    render(conn, :file_upload_live_styling_page)
   end
 
   defp assign_file_upload_form_docs(conn, scroll_to) do
@@ -1458,6 +1470,10 @@ defmodule E2eWeb.PageController do
 
   def password_input_page(conn, _params) do
     render(conn, :password_input_page)
+  end
+
+  def password_input_styling_page(conn, _params) do
+    render(conn, :password_input_styling_page)
   end
 
   defp assign_password_input_form_docs(conn, scroll_to) do

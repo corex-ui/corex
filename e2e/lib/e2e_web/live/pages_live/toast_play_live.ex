@@ -175,7 +175,7 @@ defmodule E2eWeb.ToastPlayLive do
               <.native_input
                 field={@form[:title]}
                 type="text"
-                class="native-input native-input--sm w-full"
+                class="native-input ui-size-sm w-full"
                 required
               >
                 <:label>Title</:label>
@@ -183,13 +183,13 @@ defmodule E2eWeb.ToastPlayLive do
               <.native_input
                 field={@form[:message]}
                 type="text"
-                class="native-input native-input--sm w-full"
+                class="native-input ui-size-sm w-full"
                 required
               >
                 <:label>Message</:label>
               </.native_input>
               <.select
-                class="select select--sm w-full"
+                class="select ui-size-sm w-full"
                 field={@form[:type]}
                 items={@type_items}
               >
@@ -201,7 +201,7 @@ defmodule E2eWeb.ToastPlayLive do
               <.number_input
                 id="toast-playground-duration"
                 field={@form[:duration]}
-                class="number-input number-input--sm w-full"
+                class="number-input ui-size-sm w-full"
                 min={0.0}
                 step={1.0}
                 required
@@ -214,11 +214,11 @@ defmodule E2eWeb.ToastPlayLive do
                   <.heroicon name="hero-chevron-up" class="icon" />
                 </:increment_trigger>
               </.number_input>
-              <.switch field={@form[:loading]} class="switch switch--sm">
+              <.switch field={@form[:loading]} class="switch ui-size-sm">
                 <:label>Loading</:label>
               </.switch>
               <footer class="flex w-full justify-end">
-                <.action type="submit" class="button button--sm button--accent">Create toast</.action>
+                <.action type="submit" class="button ui-size-sm ui-accent">Create toast</.action>
               </footer>
             </.form>
           </div>

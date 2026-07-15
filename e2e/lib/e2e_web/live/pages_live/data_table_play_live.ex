@@ -61,7 +61,7 @@ defmodule E2eWeb.DataTablePlayLive do
             <:col :let={row} label="Role">{row.role}</:col>
             <:col :let={row} label="Email">{row.email}</:col>
             <:action :let={row}>
-              <.action class="button button--sm" aria-label={"Edit #{row.name}"}>
+              <.action class="button ui-size-sm" aria-label={"Edit #{row.name}"}>
                 <.heroicon name="hero-pencil-square" />
               </.action>
             </:action>

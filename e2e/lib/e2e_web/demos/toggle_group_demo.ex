@@ -1,6 +1,8 @@
 defmodule E2eWeb.Demos.ToggleGroupDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.DemoScales
+
   def anatomy_minimal_code do
     ~S"""
     <.toggle_group class="toggle-group">
@@ -59,11 +61,11 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
 
   def api_set_value_client_binding_heex do
     ~S"""
-    <div class="layout__row">
-      <.action phx-click={Corex.ToggleGroup.set_value("toggle-group-api-cb", ["lorem"])} class="button button--sm">Lorem</.action>
-      <.action phx-click={Corex.ToggleGroup.set_value("toggle-group-api-cb", ["duis"])} class="button button--sm">Duis</.action>
-      <.action phx-click={Corex.ToggleGroup.set_value("toggle-group-api-cb", ["donec"])} class="button button--sm">Donec</.action>
-      <.action phx-click={Corex.ToggleGroup.set_value("toggle-group-api-cb", [])} class="button button--sm">Clear</.action>
+    <div class="flex flex-wrap items-center gap-space">
+      <.action phx-click={Corex.ToggleGroup.set_value("toggle-group-api-cb", ["lorem"])} class="button ui-size-sm">Lorem</.action>
+      <.action phx-click={Corex.ToggleGroup.set_value("toggle-group-api-cb", ["duis"])} class="button ui-size-sm">Duis</.action>
+      <.action phx-click={Corex.ToggleGroup.set_value("toggle-group-api-cb", ["donec"])} class="button ui-size-sm">Donec</.action>
+      <.action phx-click={Corex.ToggleGroup.set_value("toggle-group-api-cb", [])} class="button ui-size-sm">Clear</.action>
     </div>
     <.toggle_group id="toggle-group-api-cb" class="toggle-group" multiple value={["lorem"]}>
       <:item value="lorem">Lorem</:item>
@@ -78,28 +80,28 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
 
     ~H"""
     <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
-      <div class="layout__row">
+      <div class="flex flex-wrap items-center gap-space">
         <.action
           phx-click={Corex.ToggleGroup.set_value("toggle-group-api-cb", ["lorem"])}
-          class="button button--sm"
+          class="button ui-size-sm"
         >
           Lorem
         </.action>
         <.action
           phx-click={Corex.ToggleGroup.set_value("toggle-group-api-cb", ["duis"])}
-          class="button button--sm"
+          class="button ui-size-sm"
         >
           Duis
         </.action>
         <.action
           phx-click={Corex.ToggleGroup.set_value("toggle-group-api-cb", ["donec"])}
-          class="button button--sm"
+          class="button ui-size-sm"
         >
           Donec
         </.action>
         <.action
           phx-click={Corex.ToggleGroup.set_value("toggle-group-api-cb", [])}
-          class="button button--sm"
+          class="button ui-size-sm"
         >
           Clear
         </.action>
@@ -115,9 +117,9 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
 
   def api_set_value_client_js_heex do
     ~S"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <.action
-        class="button button--sm"
+        class="button ui-size-sm"
         phx-click={
           Phoenix.LiveView.JS.dispatch("corex:toggle-group:set-value",
             to: "#toggle-group-api-cjs",
@@ -129,7 +131,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
         Lorem
       </.action>
       <.action
-        class="button button--sm"
+        class="button ui-size-sm"
         phx-click={
           Phoenix.LiveView.JS.dispatch("corex:toggle-group:set-value",
             to: "#toggle-group-api-cjs",
@@ -141,7 +143,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
         Duis
       </.action>
       <.action
-        class="button button--sm"
+        class="button ui-size-sm"
         phx-click={
           Phoenix.LiveView.JS.dispatch("corex:toggle-group:set-value",
             to: "#toggle-group-api-cjs",
@@ -187,9 +189,9 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
 
     ~H"""
     <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
-      <div class="layout__row">
+      <div class="flex flex-wrap items-center gap-space">
         <.action
-          class="button button--sm"
+          class="button ui-size-sm"
           phx-click={
             Phoenix.LiveView.JS.dispatch("corex:toggle-group:set-value",
               to: "#toggle-group-api-cjs",
@@ -201,7 +203,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
           Lorem
         </.action>
         <.action
-          class="button button--sm"
+          class="button ui-size-sm"
           phx-click={
             Phoenix.LiveView.JS.dispatch("corex:toggle-group:set-value",
               to: "#toggle-group-api-cjs",
@@ -213,7 +215,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
           Duis
         </.action>
         <.action
-          class="button button--sm"
+          class="button ui-size-sm"
           phx-click={
             Phoenix.LiveView.JS.dispatch("corex:toggle-group:set-value",
               to: "#toggle-group-api-cjs",
@@ -236,11 +238,11 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
 
   def api_set_value_server_heex do
     ~S"""
-    <div class="layout__row">
-      <.action phx-click="tg_api_lorem" class="button button--sm">Lorem</.action>
-      <.action phx-click="tg_api_duis" class="button button--sm">Duis</.action>
-      <.action phx-click="tg_api_donec" class="button button--sm">Donec</.action>
-      <.action phx-click="tg_api_clear" class="button button--sm">Clear</.action>
+    <div class="flex flex-wrap items-center gap-space">
+      <.action phx-click="tg_api_lorem" class="button ui-size-sm">Lorem</.action>
+      <.action phx-click="tg_api_duis" class="button ui-size-sm">Duis</.action>
+      <.action phx-click="tg_api_donec" class="button ui-size-sm">Donec</.action>
+      <.action phx-click="tg_api_clear" class="button ui-size-sm">Clear</.action>
     </div>
     <.toggle_group id="toggle-group-api-srv" class="toggle-group" multiple value={["lorem"]}>
       <:item value="lorem">Lorem</:item>
@@ -275,11 +277,11 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
 
     ~H"""
     <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
-      <div class="layout__row">
-        <.action phx-click="tg_api_lorem" class="button button--sm">Lorem</.action>
-        <.action phx-click="tg_api_duis" class="button button--sm">Duis</.action>
-        <.action phx-click="tg_api_donec" class="button button--sm">Donec</.action>
-        <.action phx-click="tg_api_clear" class="button button--sm">Clear</.action>
+      <div class="flex flex-wrap items-center gap-space">
+        <.action phx-click="tg_api_lorem" class="button ui-size-sm">Lorem</.action>
+        <.action phx-click="tg_api_duis" class="button ui-size-sm">Duis</.action>
+        <.action phx-click="tg_api_donec" class="button ui-size-sm">Donec</.action>
+        <.action phx-click="tg_api_clear" class="button ui-size-sm">Clear</.action>
       </div>
       <.toggle_group id="toggle-group-api-srv" class="toggle-group" multiple value={["lorem"]}>
         <:item value="lorem">Lorem</:item>
@@ -353,27 +355,27 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
       <:item value="duis">Duis</:item>
       <:item value="donec">Donec</:item>
     </.toggle_group>
-    <.toggle_group class="toggle-group toggle-group--accent" value={["lorem"]}>
+    <.toggle_group class="toggle-group ui-accent" value={["lorem"]}>
       <:item value="lorem">Lorem</:item>
       <:item value="duis">Duis</:item>
       <:item value="donec">Donec</:item>
     </.toggle_group>
-    <.toggle_group class="toggle-group toggle-group--brand" value={["lorem"]}>
+    <.toggle_group class="toggle-group ui-brand" value={["lorem"]}>
       <:item value="lorem">Lorem</:item>
       <:item value="duis">Duis</:item>
       <:item value="donec">Donec</:item>
     </.toggle_group>
-    <.toggle_group class="toggle-group toggle-group--alert" value={["lorem"]}>
+    <.toggle_group class="toggle-group ui-alert" value={["lorem"]}>
       <:item value="lorem">Lorem</:item>
       <:item value="duis">Duis</:item>
       <:item value="donec">Donec</:item>
     </.toggle_group>
-    <.toggle_group class="toggle-group toggle-group--success" value={["lorem"]}>
+    <.toggle_group class="toggle-group ui-success" value={["lorem"]}>
       <:item value="lorem">Lorem</:item>
       <:item value="duis">Duis</:item>
       <:item value="donec">Donec</:item>
     </.toggle_group>
-    <.toggle_group class="toggle-group toggle-group--info" value={["lorem"]}>
+    <.toggle_group class="toggle-group ui-info" value={["lorem"]}>
       <:item value="lorem">Lorem</:item>
       <:item value="duis">Duis</:item>
       <:item value="donec">Donec</:item>
@@ -393,33 +395,33 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
       </.toggle_group>
       <.toggle_group
         id="tg-style-c-accent"
-        class="toggle-group toggle-group--accent"
+        class="toggle-group ui-accent"
         value={["lorem"]}
       >
         <:item value="lorem">Lorem</:item>
         <:item value="duis">Duis</:item>
         <:item value="donec">Donec</:item>
       </.toggle_group>
-      <.toggle_group id="tg-style-c-brand" class="toggle-group toggle-group--brand" value={["lorem"]}>
+      <.toggle_group id="tg-style-c-brand" class="toggle-group ui-brand" value={["lorem"]}>
         <:item value="lorem">Lorem</:item>
         <:item value="duis">Duis</:item>
         <:item value="donec">Donec</:item>
       </.toggle_group>
-      <.toggle_group id="tg-style-c-alert" class="toggle-group toggle-group--alert" value={["lorem"]}>
+      <.toggle_group id="tg-style-c-alert" class="toggle-group ui-alert" value={["lorem"]}>
         <:item value="lorem">Lorem</:item>
         <:item value="duis">Duis</:item>
         <:item value="donec">Donec</:item>
       </.toggle_group>
       <.toggle_group
         id="tg-style-c-success"
-        class="toggle-group toggle-group--success"
+        class="toggle-group ui-success"
         value={["lorem"]}
       >
         <:item value="lorem">Lorem</:item>
         <:item value="duis">Duis</:item>
         <:item value="donec">Donec</:item>
       </.toggle_group>
-      <.toggle_group id="tg-style-c-info" class="toggle-group toggle-group--info" value={["lorem"]}>
+      <.toggle_group id="tg-style-c-info" class="toggle-group ui-info" value={["lorem"]}>
         <:item value="lorem">Lorem</:item>
         <:item value="duis">Duis</:item>
         <:item value="donec">Donec</:item>
@@ -428,24 +430,99 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
     """
   end
 
+  def styling_variant_code do
+    ~S"""
+    <.toggle_group class="toggle-group" value={["lorem"]}>
+      <:item value="lorem">Lorem</:item>
+      <:item value="duis">Duis</:item>
+      <:item value="donec">Donec</:item>
+    </.toggle_group>
+    <.toggle_group class="toggle-group ui-solid" value={["lorem"]}>
+      <:item value="lorem">Lorem</:item>
+      <:item value="duis">Duis</:item>
+      <:item value="donec">Donec</:item>
+    </.toggle_group>
+
+    """
+  end
+
+  def styling_variant_example(assigns) do
+    ~H"""
+    <div class="flex flex-col gap-6 w-full max-w-4xl">
+      <.toggle_group id="tg-style-variant-subtle" class="toggle-group" value={["lorem"]}>
+        <:item value="lorem">Lorem</:item>
+        <:item value="duis">Duis</:item>
+        <:item value="donec">Donec</:item>
+      </.toggle_group>
+      <.toggle_group
+        id="tg-style-variant-solid"
+        class="toggle-group ui-solid"
+        value={["lorem"]}
+      >
+        <:item value="lorem">Lorem</:item>
+        <:item value="duis">Duis</:item>
+        <:item value="donec">Donec</:item>
+      </.toggle_group>
+    </div>
+    """
+  end
+
+  def styling_variant_matrix_code do
+    for semantic <- DemoScales.styling_semantic_axis_steps("toggle-group"),
+        variant <- DemoScales.styling_variant_axis_steps("toggle-group") do
+      class =
+        DemoScales.join_matrix_modifiers("toggle-group", semantic.modifier, variant.modifier)
+
+      ~s(<.toggle_group class="#{class}" value={["lorem"]}>
+        <:item value="lorem">#{semantic.label}</:item>
+      </.toggle_group>)
+    end
+    |> DemoScales.join_code()
+  end
+
+  def styling_variant_matrix_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("toggle-group"))
+      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("toggle-group"))
+
+    ~H"""
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+      <div class="grid grid-cols-4 gap-space items-start min-w-max">
+        <div :for={semantic <- @matrix_semantics} class="contents">
+          <.toggle_group
+            :for={variant <- @matrix_variants}
+            class={
+              DemoScales.join_matrix_modifiers("toggle-group", semantic.modifier, variant.modifier)
+            }
+            value={["lorem"]}
+          >
+            <:item value="lorem">{semantic.label}</:item>
+          </.toggle_group>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
   def styling_size_code do
     ~S"""
-    <.toggle_group class="toggle-group toggle-group--sm" value={["lorem"]}>
+    <.toggle_group class="toggle-group ui-size-sm" value={["lorem"]}>
       <:item value="lorem">SM</:item>
       <:item value="duis">SM</:item>
       <:item value="donec">SM</:item>
     </.toggle_group>
-    <.toggle_group class="toggle-group toggle-group--md" value={["lorem"]}>
+    <.toggle_group class="toggle-group ui-size-md" value={["lorem"]}>
       <:item value="lorem">MD</:item>
       <:item value="duis">MD</:item>
       <:item value="donec">MD</:item>
     </.toggle_group>
-    <.toggle_group class="toggle-group toggle-group--lg" value={["lorem"]}>
+    <.toggle_group class="toggle-group ui-size-lg" value={["lorem"]}>
       <:item value="lorem">LG</:item>
       <:item value="duis">LG</:item>
       <:item value="donec">LG</:item>
     </.toggle_group>
-    <.toggle_group class="toggle-group toggle-group--xl" value={["lorem"]}>
+    <.toggle_group class="toggle-group ui-size-xl" value={["lorem"]}>
       <:item value="lorem">XL</:item>
       <:item value="duis">XL</:item>
       <:item value="donec">XL</:item>
@@ -458,22 +535,22 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
 
     ~H"""
     <div class="flex flex-col gap-6 w-full max-w-4xl">
-      <.toggle_group id="tg-style-sm" class="toggle-group toggle-group--sm" value={["lorem"]}>
+      <.toggle_group id="tg-style-sm" class="toggle-group ui-size-sm" value={["lorem"]}>
         <:item value="lorem">SM</:item>
         <:item value="duis">SM</:item>
         <:item value="donec">SM</:item>
       </.toggle_group>
-      <.toggle_group id="tg-style-md" class="toggle-group toggle-group--md" value={["lorem"]}>
+      <.toggle_group id="tg-style-md" class="toggle-group ui-size-md" value={["lorem"]}>
         <:item value="lorem">MD</:item>
         <:item value="duis">MD</:item>
         <:item value="donec">MD</:item>
       </.toggle_group>
-      <.toggle_group id="tg-style-lg" class="toggle-group toggle-group--lg" value={["lorem"]}>
+      <.toggle_group id="tg-style-lg" class="toggle-group ui-size-lg" value={["lorem"]}>
         <:item value="lorem">LG</:item>
         <:item value="duis">LG</:item>
         <:item value="donec">LG</:item>
       </.toggle_group>
-      <.toggle_group id="tg-style-xl" class="toggle-group toggle-group--xl" value={["lorem"]}>
+      <.toggle_group id="tg-style-xl" class="toggle-group ui-size-xl" value={["lorem"]}>
         <:item value="lorem">XL</:item>
         <:item value="duis">XL</:item>
         <:item value="donec">XL</:item>
@@ -485,35 +562,35 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
   def styling_radius_code do
     ~S"""
     <.toggle_group
-      class="toggle-group toggle-group--rounded-none"
+      class="toggle-group ui-rounded-none"
       value={["lorem"]}
     >
       <:item value="lorem">None</:item>
       <:item value="duis">None</:item>
       <:item value="donec">None</:item>
     </.toggle_group>
-    <.toggle_group class="toggle-group toggle-group--rounded-sm" value={["lorem"]}>
+    <.toggle_group class="toggle-group ui-rounded-sm" value={["lorem"]}>
       <:item value="lorem">SM</:item>
       <:item value="duis">SM</:item>
       <:item value="donec">SM</:item>
     </.toggle_group>
-    <.toggle_group class="toggle-group toggle-group--rounded-md" value={["lorem"]}>
+    <.toggle_group class="toggle-group ui-rounded-md" value={["lorem"]}>
       <:item value="lorem">MD</:item>
       <:item value="duis">MD</:item>
       <:item value="donec">MD</:item>
     </.toggle_group>
-    <.toggle_group class="toggle-group toggle-group--rounded-lg" value={["lorem"]}>
+    <.toggle_group class="toggle-group ui-rounded-lg" value={["lorem"]}>
       <:item value="lorem">LG</:item>
       <:item value="duis">LG</:item>
       <:item value="donec">LG</:item>
     </.toggle_group>
-    <.toggle_group class="toggle-group toggle-group--rounded-xl" value={["lorem"]}>
+    <.toggle_group class="toggle-group ui-rounded-xl" value={["lorem"]}>
       <:item value="lorem">XL</:item>
       <:item value="duis">XL</:item>
       <:item value="donec">XL</:item>
     </.toggle_group>
     <.toggle_group
-      class="toggle-group toggle-group--rounded-full"
+      class="toggle-group ui-rounded-full"
       value={["lorem"]}
     >
       <:item value="lorem">Full</:item>
@@ -530,7 +607,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
     <div class="flex flex-col gap-6 w-full max-w-4xl">
       <.toggle_group
         id="tg-style-radius-none"
-        class="toggle-group toggle-group--rounded-none"
+        class="toggle-group ui-rounded-none"
         value={["lorem"]}
       >
         <:item value="lorem">None</:item>
@@ -539,7 +616,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
       </.toggle_group>
       <.toggle_group
         id="tg-style-radius-sm"
-        class="toggle-group toggle-group--rounded-sm"
+        class="toggle-group ui-rounded-sm"
         value={["lorem"]}
       >
         <:item value="lorem">SM</:item>
@@ -548,7 +625,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
       </.toggle_group>
       <.toggle_group
         id="tg-style-radius-md"
-        class="toggle-group toggle-group--rounded-md"
+        class="toggle-group ui-rounded-md"
         value={["lorem"]}
       >
         <:item value="lorem">MD</:item>
@@ -557,7 +634,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
       </.toggle_group>
       <.toggle_group
         id="tg-style-radius-lg"
-        class="toggle-group toggle-group--rounded-lg"
+        class="toggle-group ui-rounded-lg"
         value={["lorem"]}
       >
         <:item value="lorem">LG</:item>
@@ -566,7 +643,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
       </.toggle_group>
       <.toggle_group
         id="tg-style-radius-xl"
-        class="toggle-group toggle-group--rounded-xl"
+        class="toggle-group ui-rounded-xl"
         value={["lorem"]}
       >
         <:item value="lorem">XL</:item>
@@ -575,13 +652,95 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
       </.toggle_group>
       <.toggle_group
         id="tg-style-radius-full"
-        class="toggle-group toggle-group--rounded-full"
+        class="toggle-group ui-rounded-full"
         value={["lorem"]}
       >
         <:item value="lorem">Full</:item>
         <:item value="duis">Full</:item>
         <:item value="donec">Full</:item>
       </.toggle_group>
+    </div>
+    """
+  end
+
+  defp styling_items_code do
+    """
+      <:item value="lorem">Lorem</:item>
+      <:item value="duis">Duis</:item>
+      <:item value="donec">Donec</:item>
+    """
+  end
+
+  def styling_width_code do
+    items = styling_items_code()
+
+    DemoScales.width_layout_variants("toggle-group")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("toggle-group", modifier)
+
+      """
+      <.toggle_group class="#{class}" value={["lorem"]}>
+      #{items}
+      </.toggle_group>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_max_width_code do
+    items = styling_items_code()
+
+    DemoScales.max_width_variants("toggle-group")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("toggle-group", modifier)
+
+      """
+      <.toggle_group class="#{class}" value={["lorem"]}>
+      #{items}
+      </.toggle_group>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_width_example(assigns) do
+    assigns = assign(assigns, :width_variants, DemoScales.width_layout_variants("toggle-group"))
+
+    ~H"""
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={variant <- @width_variants} class="flex flex-col gap-2">
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
+        <.toggle_group
+          id={"toggle-group-style-width-#{variant.id}"}
+          class={DemoScales.join_modifiers("toggle-group", variant.modifier)}
+          value={["lorem"]}
+        >
+          <:item value="lorem">Lorem</:item>
+          <:item value="duis">Duis</:item>
+          <:item value="donec">Donec</:item>
+        </.toggle_group>
+      </div>
+    </div>
+    """
+  end
+
+  def styling_max_width_example(assigns) do
+    assigns = assign(assigns, :max_width_variants, DemoScales.max_width_variants("toggle-group"))
+
+    ~H"""
+    <div class={DemoScales.preview_scroll_class()}>
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
+        <.toggle_group
+          id={"toggle-group-style-max-#{variant.id}"}
+          class={DemoScales.join_modifiers("toggle-group", variant.modifier)}
+          value={["lorem"]}
+        >
+          <:item value="lorem">Lorem</:item>
+          <:item value="duis">Duis</:item>
+          <:item value="donec">Donec</:item>
+        </.toggle_group>
+      </div>
     </div>
     """
   end
@@ -594,7 +753,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
       <:item value="donec">Donec</:item>
     </.toggle_group>
     <.toggle_group
-      class="toggle-group toggle-group--accent"
+      class="toggle-group ui-accent"
       disabled
       value={["donec"]}
     >
@@ -617,7 +776,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
       </.toggle_group>
       <.toggle_group
         id="tg-style-disabled-accent"
-        class="toggle-group toggle-group--accent"
+        class="toggle-group ui-accent"
         disabled
         value={["donec"]}
       >

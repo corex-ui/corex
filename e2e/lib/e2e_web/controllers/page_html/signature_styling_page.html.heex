@@ -14,9 +14,16 @@
   >
     <.demo_section
       id="signature-styling-drawing-color"
-      title={~t"Drawing color"}
+      title={~t"Drawing"}
       code={E2eWeb.Demos.SignatureDemo.styling_drawing_color_code()}
     >
+      <:description>
+        <p class="typo">
+          {gettext(
+            "Set stroke color with the drawing_fill attribute on the signature pad root (for example drawing_fill=\"var(--color-accent)\")."
+          )}
+        </p>
+      </:description>
       <:preview>
         <E2eWeb.Demos.SignatureDemo.styling_drawing_color_example />
       </:preview>
@@ -24,12 +31,41 @@
 
     <.demo_section
       id="signature-styling-trigger-color"
-      title={~t"Trigger color"}
+      title={~t"Trigger"}
       code={E2eWeb.Demos.SignatureDemo.styling_trigger_color_code()}
     >
+      <:description>
+        <.demo_modifier_axis
+          name="signature-pad"
+          axis={:semantic}
+          purpose="set the semantic palette of the clear and undo triggers on a signature pad"
+        />
+      </:description>
       <:preview>
         <E2eWeb.Demos.SignatureDemo.styling_trigger_color_example />
       </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="signature-pad-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.SignatureDemo.styling_variant_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="signature-pad" axis={:variant} />
+      </:description>
+      <:preview><E2eWeb.Demos.SignatureDemo.styling_variant_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="signature-pad-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.SignatureDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <.variant_matrix_description host="signature-pad" />
+      </:description>
+      <:preview><E2eWeb.Demos.SignatureDemo.styling_variant_matrix_example /></:preview>
     </.demo_section>
 
     <.demo_section
@@ -37,6 +73,9 @@
       title={~t"Size"}
       code={E2eWeb.Demos.SignatureDemo.styling_size_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="signature-pad" axis={:size} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.SignatureDemo.styling_size_example />
       </:preview>
@@ -44,9 +83,12 @@
 
     <.demo_section
       id="signature-styling-max-width"
-      title={~t"Max Width"}
+      title={~t"Max width"}
       code={E2eWeb.Demos.SignatureDemo.styling_max_width_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="signature-pad" axis={:max_width} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.SignatureDemo.styling_max_width_example />
       </:preview>
@@ -57,6 +99,9 @@
       title={~t"Rounded"}
       code={E2eWeb.Demos.SignatureDemo.styling_rounded_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="signature-pad" axis={:radius} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.SignatureDemo.styling_rounded_example />
       </:preview>

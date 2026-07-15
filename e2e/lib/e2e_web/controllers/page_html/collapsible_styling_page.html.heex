@@ -7,17 +7,42 @@
   <.demo_page
     path={@path}
     id="collapsible-styling-page"
-    title={~t"Collapsible · Styling"}
+    title={~t"Collapsible · Style"}
     subtitle={~t"Density and trigger colors via modifier classes on the collapsible root."}
   >
     <.demo_section
       id="collapsible-styling-color"
-      title={~t"Color"}
+      title={~t"Semantic"}
       code={E2eWeb.Demos.CollapsibleDemo.styling_color_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="collapsible" axis={:semantic} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.CollapsibleDemo.styling_color_example />
       </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="collapsible-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.CollapsibleDemo.styling_variant_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="collapsible" axis={:variant} />
+      </:description>
+      <:preview><E2eWeb.Demos.CollapsibleDemo.styling_variant_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="collapsible-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.CollapsibleDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <.variant_matrix_description host="collapsible" />
+      </:description>
+      <:preview><E2eWeb.Demos.CollapsibleDemo.styling_variant_matrix_example /></:preview>
     </.demo_section>
 
     <.demo_section
@@ -25,8 +50,24 @@
       title={~t"Size"}
       code={E2eWeb.Demos.CollapsibleDemo.styling_size_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="collapsible" axis={:size} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.CollapsibleDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="collapsible-styling-max-width"
+      title={~t"Max width"}
+      code={E2eWeb.Demos.CollapsibleDemo.styling_max_width_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="collapsible" axis={:max_width} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.CollapsibleDemo.styling_max_width_example />
       </:preview>
     </.demo_section>
   </.demo_page>

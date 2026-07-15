@@ -7,17 +7,44 @@
   <.demo_page
     path={@path}
     id="checkbox-styling-page"
-    title={~t"Checkbox · Styling"}
-    subtitle={~t"Semantic colors and density via modifier classes on the checkbox root."}
+    title={~t"Checkbox · Style"}
+    subtitle={
+      ~t"Semantic colors, density, and corner radius via modifier classes on the checkbox root."
+    }
   >
     <.demo_section
       id="checkbox-styling-color"
-      title={~t"Color"}
+      title={~t"Semantic"}
       code={E2eWeb.Demos.CheckboxDemo.styling_color_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="checkbox" axis={:semantic} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.CheckboxDemo.styling_color_example />
       </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="checkbox-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.CheckboxDemo.styling_variant_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="checkbox" axis={:variant} />
+      </:description>
+      <:preview><E2eWeb.Demos.CheckboxDemo.styling_variant_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="checkbox-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.CheckboxDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <.variant_matrix_description host="checkbox" />
+      </:description>
+      <:preview><E2eWeb.Demos.CheckboxDemo.styling_variant_matrix_example /></:preview>
     </.demo_section>
 
     <.demo_section
@@ -25,8 +52,37 @@
       title={~t"Size"}
       code={E2eWeb.Demos.CheckboxDemo.styling_size_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="checkbox" axis={:size} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.CheckboxDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="checkbox-styling-rounded"
+      title={~t"Rounded"}
+      code={E2eWeb.Demos.CheckboxDemo.styling_rounded_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="checkbox" axis={:radius} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.CheckboxDemo.styling_rounded_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="checkbox-styling-max-width"
+      title={~t"Max width"}
+      code={E2eWeb.Demos.CheckboxDemo.styling_max_width_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="checkbox" axis={:max_width} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.CheckboxDemo.styling_max_width_example />
       </:preview>
     </.demo_section>
   </.demo_page>

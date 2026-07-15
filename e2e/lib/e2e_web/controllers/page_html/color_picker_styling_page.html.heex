@@ -9,17 +9,42 @@
     id="color-picker-styling-page"
     title={~t"Color Picker · Style"}
     subtitle={
-      ~t"Semantic colors on the control-row inputs and density via modifier classes on the color picker root."
+      ~t"Semantic colors on the control-row inputs, density, and corner radius via modifier classes on the color picker root."
     }
   >
     <.demo_section
       id="color-picker-styling-color"
-      title={~t"Color"}
+      title={~t"Semantic"}
       code={E2eWeb.Demos.ColorPickerDemo.styling_color_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="color-picker" axis={:semantic} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.ColorPickerDemo.styling_color_example />
       </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="color-picker-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.ColorPickerDemo.styling_variant_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="color-picker" axis={:variant} />
+      </:description>
+      <:preview><E2eWeb.Demos.ColorPickerDemo.styling_variant_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="color-picker-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.ColorPickerDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <.variant_matrix_description host="color-picker" />
+      </:description>
+      <:preview><E2eWeb.Demos.ColorPickerDemo.styling_variant_matrix_example /></:preview>
     </.demo_section>
 
     <.demo_section
@@ -27,8 +52,54 @@
       title={~t"Size"}
       code={E2eWeb.Demos.ColorPickerDemo.styling_size_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="color-picker" axis={:size} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.ColorPickerDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="color-picker-styling-rounded"
+      title={~t"Rounded"}
+      code={E2eWeb.Demos.ColorPickerDemo.styling_rounded_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="color-picker" axis={:radius} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.ColorPickerDemo.styling_rounded_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="color-picker-styling-width"
+      title={~t"Width"}
+      code={E2eWeb.Demos.ColorPickerDemo.styling_width_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="color-picker" axis={:width} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.ColorPickerDemo.styling_width_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="color-picker-styling-max-width"
+      title={~t"Max width"}
+      code={E2eWeb.Demos.ColorPickerDemo.styling_max_width_code()}
+    >
+      <:description>
+        <.demo_modifier_axis
+          name="color-picker"
+          axis={:max_width}
+          purpose="show a capped full-width control on fit-content hosts (pair w-full with max-w-* and wide content when labels are short)"
+        />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.ColorPickerDemo.styling_max_width_example />
       </:preview>
     </.demo_section>
   </.demo_page>

@@ -39,8 +39,8 @@ defmodule E2eWeb.PaginationModel do
   @style_sections ~W(
     pagination-styling-color
     pagination-styling-size
-    pagination-styling-text
     pagination-styling-radius
+    pagination-styling-width
     pagination-styling-max-width
   )
 

@@ -41,7 +41,7 @@ defmodule E2eWeb.PinInputPlayLive do
       <.demo_playground path={@path} title="Pin Input · Playground" heading_class="layout-heading">
         <:controls>
           <.switch
-            class="switch switch--sm"
+            class="switch ui-size-sm"
             id="disabled"
             checked={@controls.disabled}
             on_checked_change="control_changed"
@@ -49,7 +49,7 @@ defmodule E2eWeb.PinInputPlayLive do
             <:label>Disabled</:label>
           </.switch>
           <.switch
-            class="switch switch--sm"
+            class="switch ui-size-sm"
             id="read_only"
             checked={@controls.read_only}
             on_checked_change="control_changed"
@@ -57,7 +57,7 @@ defmodule E2eWeb.PinInputPlayLive do
             <:label>Read only</:label>
           </.switch>
           <.switch
-            class="switch switch--sm"
+            class="switch ui-size-sm"
             id="invalid"
             checked={@controls.invalid}
             on_checked_change="control_changed"

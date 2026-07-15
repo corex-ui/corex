@@ -1,0 +1,89 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  path={@path}
+>
+  <.demo_page
+    path={@path}
+    id="file-upload-styling-page"
+    title={~t"File Upload · Style"}
+    subtitle={
+      ~t"Semantic colors, density, corner radius, and max width via modifier classes on the file upload root."
+    }
+  >
+    <.demo_section
+      id="file-upload-styling-color"
+      title={~t"Semantic"}
+      code={E2eWeb.Demos.FileUploadDemo.styling_color_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="file-upload" axis={:semantic} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.FileUploadDemo.styling_color_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="file-upload-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.FileUploadDemo.styling_variant_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="file-upload" axis={:variant} />
+      </:description>
+      <:preview><E2eWeb.Demos.FileUploadDemo.styling_variant_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="file-upload-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.FileUploadDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <.variant_matrix_description host="file-upload" />
+      </:description>
+      <:preview><E2eWeb.Demos.FileUploadDemo.styling_variant_matrix_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="file-upload-styling-size"
+      title={~t"Size"}
+      code={E2eWeb.Demos.FileUploadDemo.styling_size_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="file-upload" axis={:size} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.FileUploadDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="file-upload-styling-rounded"
+      title={~t"Rounded"}
+      code={E2eWeb.Demos.FileUploadDemo.styling_rounded_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="file-upload" axis={:radius} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.FileUploadDemo.styling_rounded_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="file-upload-styling-max-width"
+      title={~t"Max width"}
+      code={E2eWeb.Demos.FileUploadDemo.styling_max_width_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="file-upload" axis={:max_width} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.FileUploadDemo.styling_max_width_example />
+      </:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>

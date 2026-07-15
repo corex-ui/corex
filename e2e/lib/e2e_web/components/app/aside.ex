@@ -1,5 +1,6 @@
 defmodule E2eWeb.App.Aside do
   use E2eWeb, :html
+  alias E2eWeb.App.Shell
   import E2eWeb.{Helpers}
 
   attr(:kind, :atom, required: true)
@@ -23,7 +24,7 @@ defmodule E2eWeb.App.Aside do
         id={@tip_id}
         trigger_tag={:span}
         positioning={%Corex.Positioning{placement: "top"}}
-        class="tooltip tooltip--sm"
+        class="tooltip ui-size-sm"
         close_on_click={false}
       >
         <:trigger>
@@ -134,7 +135,7 @@ defmodule E2eWeb.App.Aside do
   attr(:components_menu, :list, required: true)
   attr(:form_tree_id, :string, required: true)
   attr(:components_tree_id, :string, required: true)
-  attr(:tree_class, :string, default: "tree-view navigation max-w-xs layout__aside-tree")
+  attr(:tree_class, :string, default: "tree-view navigation max-w-xs aside-nav-tree")
 
   def aside_nav_tree_views(assigns) do
     assigns =
@@ -203,7 +204,7 @@ defmodule E2eWeb.App.Aside do
     ~H"""
     <aside
       id="layout-aside-nav"
-      class="layout__side hidden lg:flex scrollbar scrollbar--sm w-full max-w-2xs overflow-y-auto py-size gap-size"
+      class={Shell.side()}
       aria-label="Documentation navigation"
       phx-hook="AsideNavScroll"
     >

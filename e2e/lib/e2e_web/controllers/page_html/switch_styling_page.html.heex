@@ -8,16 +8,41 @@
     path={@path}
     id="switch-styling-page"
     title={~t"Switch · Style"}
-    subtitle={~t"Semantic colors and density (sm–xl) via modifier classes on the root."}
+    subtitle={~t"Semantic colors, density, and corner radius via modifier classes on the root."}
   >
     <.demo_section
       id="switch-styling-color"
-      title={~t"Color"}
+      title={~t"Semantic"}
       code={E2eWeb.Demos.SwitchDemo.styling_color_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="switch" axis={:semantic} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.SwitchDemo.styling_color_example />
       </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="switch-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.SwitchDemo.styling_variant_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="switch" axis={:variant} />
+      </:description>
+      <:preview><E2eWeb.Demos.SwitchDemo.styling_variant_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="switch-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.SwitchDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <.variant_matrix_description host="switch" />
+      </:description>
+      <:preview><E2eWeb.Demos.SwitchDemo.styling_variant_matrix_example /></:preview>
     </.demo_section>
 
     <.demo_section
@@ -25,8 +50,54 @@
       title={~t"Size"}
       code={E2eWeb.Demos.SwitchDemo.styling_size_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="switch" axis={:size} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.SwitchDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="switch-styling-rounded"
+      title={~t"Rounded"}
+      code={E2eWeb.Demos.SwitchDemo.styling_rounded_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="switch" axis={:radius} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.SwitchDemo.styling_rounded_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="switch-styling-width"
+      title={~t"Width"}
+      code={E2eWeb.Demos.SwitchDemo.styling_width_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="switch" axis={:width} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.SwitchDemo.styling_width_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="switch-styling-max-width"
+      title={~t"Max width"}
+      code={E2eWeb.Demos.SwitchDemo.styling_max_width_code()}
+    >
+      <:description>
+        <.demo_modifier_axis
+          name="switch"
+          axis={:max_width}
+          purpose="show a capped full-width control on fit-content hosts (pair w-full with max-w-* and wide content when labels are short)"
+        />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.SwitchDemo.styling_max_width_example />
       </:preview>
     </.demo_section>
   </.demo_page>

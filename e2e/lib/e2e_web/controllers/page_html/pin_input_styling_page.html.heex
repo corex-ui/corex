@@ -9,12 +9,37 @@
   >
     <.demo_section
       id="pin-input-styling-color"
-      title={~t"Color"}
+      title={~t"Semantic"}
       code={E2eWeb.Demos.PinInputDemo.styling_color_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="pin-input" axis={:semantic} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.PinInputDemo.styling_color_example />
       </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="pin-input-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.PinInputDemo.styling_variant_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="pin-input" axis={:variant} />
+      </:description>
+      <:preview><E2eWeb.Demos.PinInputDemo.styling_variant_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="pin-input-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.PinInputDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <.variant_matrix_description host="pin-input" />
+      </:description>
+      <:preview><E2eWeb.Demos.PinInputDemo.styling_variant_matrix_example /></:preview>
     </.demo_section>
 
     <.demo_section
@@ -22,6 +47,9 @@
       title={~t"Size"}
       code={E2eWeb.Demos.PinInputDemo.styling_size_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="pin-input" axis={:size} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.PinInputDemo.styling_size_example />
       </:preview>
@@ -29,11 +57,27 @@
 
     <.demo_section
       id="pin-input-styling-radius"
-      title={~t"Radius"}
+      title={~t"Rounded"}
       code={E2eWeb.Demos.PinInputDemo.styling_radius_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="pin-input" axis={:radius} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.PinInputDemo.styling_radius_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="pin-input-styling-width"
+      title={~t"Width"}
+      code={E2eWeb.Demos.PinInputDemo.styling_width_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="pin-input" axis={:width} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.PinInputDemo.styling_width_example />
       </:preview>
     </.demo_section>
 

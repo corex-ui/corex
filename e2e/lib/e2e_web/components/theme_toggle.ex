@@ -16,7 +16,7 @@ defmodule E2eWeb.ThemeToggle do
     ~H"""
     <.select
       id={@id}
-      class="select select--sm w-4xs"
+      class="select ui-size-sm w-4xs"
       items={[
         %{value: "neo", label: "Neo"},
         %{value: "uno", label: "Uno"},

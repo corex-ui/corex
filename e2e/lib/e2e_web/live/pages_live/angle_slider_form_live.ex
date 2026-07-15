@@ -19,6 +19,8 @@ defmodule E2eWeb.AngleSliderFormLive do
      |> assign(:live_phoenix_elixir, AngleSliderDemo.form_doc_live_phoenix_elixir())
      |> assign(:live_ecto_heex, AngleSliderDemo.form_doc_live_ecto_heex())
      |> assign(:live_ecto_elixir, AngleSliderDemo.form_doc_live_ecto_elixir())
+     |> assign(:live_ecto_invalid_heex, AngleSliderDemo.form_doc_live_ecto_invalid_heex())
+     |> assign(:live_ecto_invalid_elixir, AngleSliderDemo.form_doc_live_ecto_invalid_elixir())
      |> assign_forms()}
   end
 
@@ -37,9 +39,18 @@ defmodule E2eWeb.AngleSliderFormLive do
         id: "angle-slider-validate-form-live"
       )
 
+    validate_invalid_form =
+      %AngleSliderForm{}
+      |> AngleSliderForm.changeset_validate(%{})
+      |> Phoenix.Component.to_form(
+        as: :angle_slider_validate_invalid,
+        id: "angle-slider-validate-form-live-invalid"
+      )
+
     socket
     |> assign(:phoenix_form, phoenix_form)
     |> assign(:validate_form, validate_form)
+    |> assign(:validate_invalid_form, validate_invalid_form)
   end
 
   @impl true
@@ -62,52 +73,67 @@ defmodule E2eWeb.AngleSliderFormLive do
 
   @impl true
   def handle_event("validate_validate", params, socket) do
-    rparams = Map.get(params, "angle_slider_validate", %{})
-
-    changeset =
-      %AngleSliderForm{}
-      |> AngleSliderForm.changeset_validate(rparams)
-      |> Map.put(:action, :validate)
-
-    {:noreply,
-     socket
-     |> assign(
-       :validate_form,
-       Phoenix.Component.to_form(changeset,
-         action: :validate,
-         as: :angle_slider_validate,
-         id: "angle-slider-validate-form-live"
-       )
-     )}
+    validate_ecto(
+      socket,
+      Map.get(params, "angle_slider_validate", %{}),
+      :validate_form,
+      :angle_slider_validate,
+      "angle-slider-validate-form-live"
+    )
+    |> then(&{:noreply, &1})
   end
 
-  @impl true
-  def handle_event("angle_changed_validate", %{"value" => value}, socket) do
-    angle = parse_float(value)
-    params = %{"angle" => to_string(angle)}
-
-    changeset =
-      %AngleSliderForm{}
-      |> AngleSliderForm.changeset_validate(params)
-      |> Map.put(:action, :validate)
-
+  def handle_event("validate_invalid", params, socket) do
     {:noreply,
-     socket
-     |> assign(
-       :validate_form,
-       Phoenix.Component.to_form(changeset,
-         action: :validate,
-         as: :angle_slider_validate,
-         id: "angle-slider-validate-form-live"
-       )
+     validate_ecto(
+       socket,
+       Map.get(params, "angle_slider_validate_invalid", %{}),
+       :validate_invalid_form,
+       :angle_slider_validate_invalid,
+       "angle-slider-validate-form-live-invalid"
      )}
   end
 
   @impl true
   def handle_event("save_validate", params, socket) do
-    rparams = Map.get(params, "angle_slider_validate", %{})
+    save_ecto(
+      socket,
+      Map.get(params, "angle_slider_validate", %{}),
+      :validate_form,
+      :angle_slider_validate,
+      "angle-slider-validate-form-live"
+    )
+  end
 
-    case AngleSliderForm.changeset_validate(%AngleSliderForm{}, rparams) do
+  def handle_event("save_invalid", params, socket) do
+    save_ecto(
+      socket,
+      Map.get(params, "angle_slider_validate_invalid", %{}),
+      :validate_invalid_form,
+      :angle_slider_validate_invalid,
+      "angle-slider-validate-form-live-invalid"
+    )
+  end
+
+  defp validate_ecto(socket, params, form_key, form_as, form_id) do
+    changeset =
+      %AngleSliderForm{}
+      |> AngleSliderForm.changeset_validate(params)
+      |> Map.put(:action, :validate)
+
+    assign(
+      socket,
+      form_key,
+      Phoenix.Component.to_form(changeset,
+        action: :validate,
+        as: form_as,
+        id: form_id
+      )
+    )
+  end
+
+  defp save_ecto(socket, params, form_key, form_as, form_id) do
+    case AngleSliderForm.changeset_validate(%AngleSliderForm{}, params) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
         message = "Submitted: angle=#{data.angle}"
@@ -116,42 +142,34 @@ defmodule E2eWeb.AngleSliderFormLive do
          socket
          |> Toast.create("layout-toast", "Submitted", message, :info, duration: 5000)
          |> assign(
-           :validate_form,
+           form_key,
            Phoenix.Component.to_form(
-             AngleSliderForm.changeset_validate(%AngleSliderForm{}, rparams),
-             as: :angle_slider_validate,
-             id: "angle-slider-validate-form-live"
+             AngleSliderForm.changeset_validate(%AngleSliderForm{}, params),
+             as: form_as,
+             id: form_id
            )
          )}
 
       %Ecto.Changeset{} = changeset ->
         {:noreply,
-         socket
-         |> assign(
-           :validate_form,
+         assign(
+           socket,
+           form_key,
            Phoenix.Component.to_form(changeset,
              action: :insert,
-             as: :angle_slider_validate,
-             id: "angle-slider-validate-form-live"
+             as: form_as,
+             id: form_id
            )
          )}
     end
   end
 
-  defp parse_float(value) when is_number(value), do: value * 1.0
-
-  defp parse_float(value) when is_binary(value) do
-    case Float.parse(value) do
-      {num, _} -> num
-      :error -> 0.0
-    end
-  end
-
-  defp parse_float(_), do: 0.0
-
   @impl true
   def render(assigns) do
-    assigns = assign(assigns, :validate_angle_value, get_angle_from_form(assigns.validate_form))
+    assigns =
+      assigns
+      |> assign(:validate_angle_value, get_angle_from_form(assigns.validate_form))
+      |> assign(:validate_invalid_angle_value, get_angle_from_form(assigns.validate_invalid_form))
 
     ~H"""
     <Layouts.app
@@ -191,6 +209,33 @@ defmodule E2eWeb.AngleSliderFormLive do
             <AngleSliderDemo.form_preview_live_validate
               form={@validate_form}
               angle_value={@validate_angle_value}
+            />
+          </:preview>
+        </.demo_section>
+
+        <.demo_section
+          id="angle-slider-live-form-ecto-invalid-section"
+          title={~t"Phoenix Form + Ecto + Invalid"}
+          code_tabs={[
+            %{
+              value: "heex",
+              label: ~t"Heex",
+              language: :heex,
+              code: @live_ecto_invalid_heex
+            },
+            %{
+              value: "elixir",
+              label: ~t"Elixir",
+              language: :elixir,
+              code: @live_ecto_invalid_elixir
+            },
+            %{value: "ecto", label: ~t"Ecto", language: :elixir, code: @form_ecto}
+          ]}
+        >
+          <:preview>
+            <AngleSliderDemo.form_preview_live_validate_invalid
+              form={@validate_invalid_form}
+              angle_value={@validate_invalid_angle_value}
             />
           </:preview>
         </.demo_section>

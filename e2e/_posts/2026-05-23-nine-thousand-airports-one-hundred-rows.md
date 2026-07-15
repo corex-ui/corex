@@ -35,7 +35,7 @@ The whole switch is a single attribute on the component and a single event handl
 ```heex
 <.combobox
   id="airport-combobox"
-  class="combobox combobox--accent combobox--lg"
+  class="combobox ui-accent ui-size-lg"
   placeholder="Search airports…"
   items={@items}
   filter={false}

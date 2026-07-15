@@ -134,7 +134,7 @@ defmodule E2eWeb.MenuPlayLive do
 
           <.select
             id="menu-playground-disabled-items"
-            class="select select--sm w-4xs"
+            class="select ui-size-sm w-4xs"
             positioning={%Corex.Positioning{same_width: true}}
             multiple
             deselectable={true}
@@ -149,7 +149,7 @@ defmodule E2eWeb.MenuPlayLive do
           </.select>
 
           <.switch
-            class="switch switch--sm"
+            class="switch ui-size-sm"
             id="menu-playground-disabled"
             checked={@controls.disabled}
             on_checked_change="control_changed"
@@ -158,7 +158,7 @@ defmodule E2eWeb.MenuPlayLive do
           </.switch>
 
           <.switch
-            class="switch switch--sm"
+            class="switch ui-size-sm"
             id="close_on_select"
             checked={@controls.close_on_select}
             on_checked_change="control_changed"
@@ -167,7 +167,7 @@ defmodule E2eWeb.MenuPlayLive do
           </.switch>
 
           <.switch
-            class="switch switch--sm"
+            class="switch ui-size-sm"
             id="loop_focus"
             checked={@controls.loop_focus}
             on_checked_change="control_changed"

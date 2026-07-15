@@ -1,6 +1,8 @@
 defmodule E2eWeb.Demos.TooltipDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.DemoScales
+
   def anatomy_minimal_code do
     ~S"""
     <.tooltip class="tooltip" show_arrow={false}>
@@ -52,7 +54,7 @@ defmodule E2eWeb.Demos.TooltipDemo do
 
   def anatomy_placement_example(assigns) do
     ~H"""
-    <div class="layout__row gap-2">
+    <div class="flex flex-wrap items-center gap-space">
       <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "bottom"}}>
         <:trigger>Bottom</:trigger>
         <:content>Tooltip below</:content>
@@ -75,7 +77,7 @@ defmodule E2eWeb.Demos.TooltipDemo do
 
   def anatomy_positioning_code do
     ~S"""
-    <div class="layout__row flex-wrap gap-2">
+    <div class="flex-wrap gap-2">
       <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "top", gutter: 4}}>
         <:trigger>Gutter 4</:trigger>
         <:content>Tight gap between trigger and tooltip</:content>
@@ -100,7 +102,7 @@ defmodule E2eWeb.Demos.TooltipDemo do
     _ = assigns
 
     ~H"""
-    <div class="layout__row flex-wrap gap-2">
+    <div class="flex-wrap gap-2">
       <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "top", gutter: 4}}>
         <:trigger>Gutter 4</:trigger>
         <:content>Tight gap between trigger and tooltip</:content>
@@ -291,7 +293,7 @@ defmodule E2eWeb.Demos.TooltipDemo do
         <%= if item.value == "support" do %>
           <.tooltip
             id="tooltip-pattern-menu-support"
-            class="tooltip tooltip--sm"
+            class="tooltip ui-size-sm"
             trigger_tag={:span}
             show_arrow={false}
           >
@@ -318,9 +320,9 @@ defmodule E2eWeb.Demos.TooltipDemo do
 
   def api_set_open_client_binding_heex do
     ~S"""
-    <div class="layout__row">
-      <.action phx-click={Corex.Tooltip.set_open("tooltip-api-cb", true)} class="button button--sm">Open</.action>
-      <.action phx-click={Corex.Tooltip.set_open("tooltip-api-cb", false)} class="button button--sm">Close</.action>
+    <div class="flex flex-wrap items-center gap-space">
+      <.action phx-click={Corex.Tooltip.set_open("tooltip-api-cb", true)} class="button ui-size-sm">Open</.action>
+      <.action phx-click={Corex.Tooltip.set_open("tooltip-api-cb", false)} class="button ui-size-sm">Close</.action>
     </div>
     <.tooltip id="tooltip-api-cb" class="tooltip">
       <:trigger>Hover or focus</:trigger>
@@ -334,11 +336,11 @@ defmodule E2eWeb.Demos.TooltipDemo do
 
     ~H"""
     <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
-      <div class="layout__row">
-        <.action phx-click={Corex.Tooltip.set_open("tooltip-api-cb", true)} class="button button--sm">
+      <div class="flex flex-wrap items-center gap-space">
+        <.action phx-click={Corex.Tooltip.set_open("tooltip-api-cb", true)} class="button ui-size-sm">
           Open
         </.action>
-        <.action phx-click={Corex.Tooltip.set_open("tooltip-api-cb", false)} class="button button--sm">
+        <.action phx-click={Corex.Tooltip.set_open("tooltip-api-cb", false)} class="button ui-size-sm">
           Close
         </.action>
       </div>
@@ -352,17 +354,17 @@ defmodule E2eWeb.Demos.TooltipDemo do
 
   def api_set_open_client_js_heex do
     ~S"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <button
         type="button"
-        class="button button--sm"
+        class="button ui-size-sm"
         onclick="document.getElementById('tooltip-api-cjs')?.dispatchEvent(new CustomEvent('corex:tooltip:set-open', {bubbles: false, detail: { open: true } }))"
       >
         Open
       </button>
       <button
         type="button"
-        class="button button--sm"
+        class="button ui-size-sm"
         onclick="document.getElementById('tooltip-api-cjs')?.dispatchEvent(new CustomEvent('corex:tooltip:set-open', {bubbles: false, detail: { open: false } }))"
       >
         Close
@@ -398,17 +400,17 @@ defmodule E2eWeb.Demos.TooltipDemo do
 
     ~H"""
     <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
-      <div class="layout__row">
+      <div class="flex flex-wrap items-center gap-space">
         <button
           type="button"
-          class="button button--sm"
+          class="button ui-size-sm"
           onclick="document.getElementById('tooltip-api-cjs')?.dispatchEvent(new CustomEvent('corex:tooltip:set-open', {bubbles: false, detail: { open: true } }))"
         >
           Open
         </button>
         <button
           type="button"
-          class="button button--sm"
+          class="button ui-size-sm"
           onclick="document.getElementById('tooltip-api-cjs')?.dispatchEvent(new CustomEvent('corex:tooltip:set-open', {bubbles: false, detail: { open: false } }))"
         >
           Close
@@ -424,9 +426,9 @@ defmodule E2eWeb.Demos.TooltipDemo do
 
   def api_set_open_server_heex do
     ~S"""
-    <div class="layout__row">
-      <.action phx-click="tooltip_api_open" class="button button--sm">Open</.action>
-      <.action phx-click="tooltip_api_close" class="button button--sm">Close</.action>
+    <div class="flex flex-wrap items-center gap-space">
+      <.action phx-click="tooltip_api_open" class="button ui-size-sm">Open</.action>
+      <.action phx-click="tooltip_api_close" class="button ui-size-sm">Close</.action>
     </div>
     <.tooltip id="tooltip-api-srv" class="tooltip">
       <:trigger>Hover or focus</:trigger>
@@ -452,9 +454,9 @@ defmodule E2eWeb.Demos.TooltipDemo do
 
     ~H"""
     <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
-      <div class="layout__row">
-        <.action phx-click="tooltip_api_open" class="button button--sm">Open</.action>
-        <.action phx-click="tooltip_api_close" class="button button--sm">Close</.action>
+      <div class="flex flex-wrap items-center gap-space">
+        <.action phx-click="tooltip_api_open" class="button ui-size-sm">Open</.action>
+        <.action phx-click="tooltip_api_close" class="button ui-size-sm">Close</.action>
       </div>
       <.tooltip id="tooltip-api-srv" class="tooltip">
         <:trigger>Hover or focus</:trigger>
@@ -481,9 +483,9 @@ defmodule E2eWeb.Demos.TooltipDemo do
 
   def patterns_set_open_heex do
     ~S"""
-    <div class="layout__row">
-      <.action phx-click={Corex.Tooltip.set_open("tooltip-patterns-set-open", true)} class="button button--sm">Open</.action>
-      <.action phx-click={Corex.Tooltip.set_open("tooltip-patterns-set-open", false)} class="button button--sm">Close</.action>
+    <div class="flex flex-wrap items-center gap-space">
+      <.action phx-click={Corex.Tooltip.set_open("tooltip-patterns-set-open", true)} class="button ui-size-sm">Open</.action>
+      <.action phx-click={Corex.Tooltip.set_open("tooltip-patterns-set-open", false)} class="button ui-size-sm">Close</.action>
     </div>
     <.tooltip class="tooltip">
       <:trigger>Hover or buttons</:trigger>
@@ -509,16 +511,16 @@ defmodule E2eWeb.Demos.TooltipDemo do
 
     ~H"""
     <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
-      <div class="layout__row">
+      <div class="flex flex-wrap items-center gap-space">
         <.action
           phx-click={Corex.Tooltip.set_open("tooltip-patterns-set-open", true)}
-          class="button button--sm"
+          class="button ui-size-sm"
         >
           Open
         </.action>
         <.action
           phx-click={Corex.Tooltip.set_open("tooltip-patterns-set-open", false)}
-          class="button button--sm"
+          class="button ui-size-sm"
         >
           Close
         </.action>
@@ -562,34 +564,30 @@ defmodule E2eWeb.Demos.TooltipDemo do
 
   def styling_color_code do
     ~S"""
-    <div class="layout__row flex-wrap gap-2">
+    <div class="flex-wrap gap-2">
       <.tooltip class="tooltip">
         <:trigger>Default</:trigger>
         <:content>Neutral surface</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--accent">
+      <.tooltip class="tooltip ui-accent">
         <:trigger>Accent</:trigger>
-        <:content>tooltip--accent</:content>
+        <:content>ui-accent</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--brand">
+      <.tooltip class="tooltip ui-brand">
         <:trigger>Brand</:trigger>
-        <:content>tooltip--brand</:content>
+        <:content>ui-brand</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--alert">
+      <.tooltip class="tooltip ui-alert">
         <:trigger>Alert</:trigger>
-        <:content>tooltip--alert</:content>
+        <:content>ui-alert</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--success">
+      <.tooltip class="tooltip ui-success">
         <:trigger>Success</:trigger>
-        <:content>tooltip--success</:content>
+        <:content>ui-success</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--info">
+      <.tooltip class="tooltip ui-info">
         <:trigger>Info</:trigger>
-        <:content>tooltip--info</:content>
-      </.tooltip>
-      <.tooltip class="tooltip tooltip--selected">
-        <:trigger>Selected</:trigger>
-        <:content>tooltip--selected</:content>
+        <:content>ui-info</:content>
       </.tooltip>
     </div>
     """
@@ -599,57 +597,117 @@ defmodule E2eWeb.Demos.TooltipDemo do
     _ = assigns
 
     ~H"""
-    <div class="layout__row flex-wrap gap-2">
+    <div class="flex-wrap gap-2">
       <.tooltip class="tooltip">
         <:trigger>Default</:trigger>
         <:content>Neutral surface</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--accent">
+      <.tooltip class="tooltip ui-accent">
         <:trigger>Accent</:trigger>
-        <:content>tooltip--accent</:content>
+        <:content>ui-accent</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--brand">
+      <.tooltip class="tooltip ui-brand">
         <:trigger>Brand</:trigger>
-        <:content>tooltip--brand</:content>
+        <:content>ui-brand</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--alert">
+      <.tooltip class="tooltip ui-alert">
         <:trigger>Alert</:trigger>
-        <:content>tooltip--alert</:content>
+        <:content>ui-alert</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--success">
+      <.tooltip class="tooltip ui-success">
         <:trigger>Success</:trigger>
-        <:content>tooltip--success</:content>
+        <:content>ui-success</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--info">
+      <.tooltip class="tooltip ui-info">
         <:trigger>Info</:trigger>
-        <:content>tooltip--info</:content>
+        <:content>ui-info</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--selected">
-        <:trigger>Selected</:trigger>
-        <:content>tooltip--selected</:content>
+    </div>
+    """
+  end
+
+  def styling_variant_code do
+    ~S"""
+    <.tooltip class="tooltip">
+      <:trigger>Subtle (default)</:trigger>
+      <:content>Subtle (default)</:content>
+    </.tooltip>
+    <.tooltip class="tooltip ui-solid">
+      <:trigger>Solid</:trigger>
+      <:content>Solid</:content>
+    </.tooltip>
+    """
+  end
+
+  def styling_variant_example(assigns) do
+    ~H"""
+    <div class="flex flex-wrap gap-2">
+      <.tooltip class="tooltip">
+        <:trigger>Subtle (default)</:trigger>
+        <:content>Subtle (default)</:content>
       </.tooltip>
+      <.tooltip class="tooltip ui-solid">
+        <:trigger>Solid</:trigger>
+        <:content>Solid</:content>
+      </.tooltip>
+    </div>
+    """
+  end
+
+  def styling_variant_matrix_code do
+    for semantic <- DemoScales.styling_semantic_axis_steps("tooltip"),
+        variant <- DemoScales.styling_variant_axis_steps("tooltip") do
+      class = DemoScales.join_matrix_modifiers("tooltip", semantic.modifier, variant.modifier)
+
+      ~s(<.tooltip class="#{class}">
+        <:trigger>#{semantic.label}</:trigger>
+        <:content>#{semantic.label}</:content>
+      </.tooltip>)
+    end
+    |> DemoScales.join_code()
+  end
+
+  def styling_variant_matrix_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("tooltip"))
+      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("tooltip"))
+
+    ~H"""
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+      <div class="grid grid-cols-4 gap-space items-start min-w-max">
+        <div :for={semantic <- @matrix_semantics} class="contents">
+          <.tooltip
+            :for={variant <- @matrix_variants}
+            class={DemoScales.join_matrix_modifiers("tooltip", semantic.modifier, variant.modifier)}
+          >
+            <:trigger>{semantic.label}</:trigger>
+            <:content>{semantic.label}</:content>
+          </.tooltip>
+        </div>
+      </div>
     </div>
     """
   end
 
   def styling_size_code do
     ~S"""
-    <div class="layout__row flex-wrap gap-2">
-      <.tooltip class="tooltip tooltip--sm">
+    <div class="flex-wrap gap-2">
+      <.tooltip class="tooltip ui-size-sm">
         <:trigger>Sm</:trigger>
-        <:content>tooltip--sm</:content>
+        <:content>ui-size-sm</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--md">
+      <.tooltip class="tooltip ui-size-md">
         <:trigger>Md</:trigger>
-        <:content>tooltip--md</:content>
+        <:content>ui-size-md</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--lg">
+      <.tooltip class="tooltip ui-size-lg">
         <:trigger>Lg</:trigger>
-        <:content>tooltip--lg</:content>
+        <:content>ui-size-lg</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--xl">
+      <.tooltip class="tooltip ui-size-xl">
         <:trigger>Xl</:trigger>
-        <:content>tooltip--xl</:content>
+        <:content>ui-size-xl</:content>
       </.tooltip>
     </div>
     """
@@ -659,70 +717,84 @@ defmodule E2eWeb.Demos.TooltipDemo do
     _ = assigns
 
     ~H"""
-    <div class="layout__row flex-wrap gap-2">
-      <.tooltip class="tooltip tooltip--sm">
+    <div class="flex-wrap gap-2">
+      <.tooltip class="tooltip ui-size-sm">
         <:trigger>Sm</:trigger>
-        <:content>tooltip--sm</:content>
+        <:content>ui-size-sm</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--md">
+      <.tooltip class="tooltip ui-size-md">
         <:trigger>Md</:trigger>
-        <:content>tooltip--md</:content>
+        <:content>ui-size-md</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--lg">
+      <.tooltip class="tooltip ui-size-lg">
         <:trigger>Lg</:trigger>
-        <:content>tooltip--lg</:content>
+        <:content>ui-size-lg</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--xl">
+      <.tooltip class="tooltip ui-size-xl">
         <:trigger>Xl</:trigger>
-        <:content>tooltip--xl</:content>
+        <:content>ui-size-xl</:content>
       </.tooltip>
     </div>
     """
   end
 
-  def styling_text_code do
+  def styling_rounded_code do
     ~S"""
-    <div class="layout__row flex-wrap gap-2">
-      <.tooltip class="tooltip tooltip--text-sm">
-        <:trigger>Text sm</:trigger>
-        <:content>tooltip--text-sm</:content>
-      </.tooltip>
-      <.tooltip class="tooltip tooltip--text-xl">
-        <:trigger>Text xl</:trigger>
-        <:content>tooltip--text-xl</:content>
-      </.tooltip>
-      <.tooltip class="tooltip tooltip--text-2xl">
-        <:trigger>Text 2xl</:trigger>
-        <:content>tooltip--text-2xl</:content>
-      </.tooltip>
-      <.tooltip class="tooltip tooltip--text-4xl">
-        <:trigger>Text 4xl</:trigger>
-        <:content>tooltip--text-4xl</:content>
-      </.tooltip>
-    </div>
+    <.tooltip class="tooltip ui-rounded-none">
+      <:trigger>None</:trigger>
+      <:content>ui-rounded-none</:content>
+    </.tooltip>
+    <.tooltip class="tooltip ui-rounded-sm">
+      <:trigger>SM</:trigger>
+      <:content>ui-rounded-sm</:content>
+    </.tooltip>
+    <.tooltip class="tooltip ui-rounded-md">
+      <:trigger>MD</:trigger>
+      <:content>ui-rounded-md</:content>
+    </.tooltip>
+    <.tooltip class="tooltip ui-rounded-lg">
+      <:trigger>LG</:trigger>
+      <:content>ui-rounded-lg</:content>
+    </.tooltip>
+    <.tooltip class="tooltip ui-rounded-xl">
+      <:trigger>XL</:trigger>
+      <:content>ui-rounded-xl</:content>
+    </.tooltip>
+    <.tooltip class="tooltip ui-rounded-full">
+      <:trigger>Full</:trigger>
+      <:content>ui-rounded-full</:content>
+    </.tooltip>
     """
   end
 
-  def styling_text_example(assigns) do
+  def styling_rounded_example(assigns) do
     _ = assigns
 
     ~H"""
-    <div class="layout__row flex-wrap gap-2">
-      <.tooltip class="tooltip tooltip--text-sm">
-        <:trigger>Text sm</:trigger>
-        <:content>tooltip--text-sm</:content>
+    <div class="flex flex-wrap gap-4 items-center">
+      <.tooltip class="tooltip ui-rounded-none">
+        <:trigger>None</:trigger>
+        <:content>ui-rounded-none</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--text-xl">
-        <:trigger>Text xl</:trigger>
-        <:content>tooltip--text-xl</:content>
+      <.tooltip class="tooltip ui-rounded-sm">
+        <:trigger>SM</:trigger>
+        <:content>ui-rounded-sm</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--text-2xl">
-        <:trigger>Text 2xl</:trigger>
-        <:content>tooltip--text-2xl</:content>
+      <.tooltip class="tooltip ui-rounded-md">
+        <:trigger>MD</:trigger>
+        <:content>ui-rounded-md</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--text-4xl">
-        <:trigger>Text 4xl</:trigger>
-        <:content>tooltip--text-4xl</:content>
+      <.tooltip class="tooltip ui-rounded-lg">
+        <:trigger>LG</:trigger>
+        <:content>ui-rounded-lg</:content>
+      </.tooltip>
+      <.tooltip class="tooltip ui-rounded-xl">
+        <:trigger>XL</:trigger>
+        <:content>ui-rounded-xl</:content>
+      </.tooltip>
+      <.tooltip class="tooltip ui-rounded-full">
+        <:trigger>Full</:trigger>
+        <:content>ui-rounded-full</:content>
       </.tooltip>
     </div>
     """

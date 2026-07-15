@@ -1,35 +1,47 @@
 <Layouts.marketing flash={@flash} mode={@mode} theme={@theme} path={@path}>
-  <section class="home__hero" aria-labelledby="home-hero-heading">
-    <div class="home__hero__stack">
-      <div class="home__hero__inner">
-        <div class="home__hero__copy">
-          <h1 id="home-hero-heading" class="home__display home__display--lg">
-            {~t"The Phoenix UI with a"} <span class="home__display__accent">{~t"real API"}</span>.
+  <section
+    class="relative isolate flex w-full flex-col overflow-hidden py-[clamp(2.5rem,5vw,4.5rem)] pb-[clamp(2rem,4vw,3.5rem)]"
+    aria-labelledby="home-hero-heading"
+  >
+    <div class="relative z-1 flex min-h-0 flex-1 flex-col">
+      <div class="mx-auto grid min-h-0 w-full max-w-7xl flex-1 grid-cols-1 items-center justify-items-center gap-8 px-[max(clamp(1rem,4vw,2rem),env(safe-area-inset-left))] lg:grid-cols-[minmax(0,1.05fr)_minmax(17.5rem,1fr)] lg:items-start lg:justify-items-stretch lg:gap-12 xl:grid-cols-[minmax(0,1fr)_minmax(22rem,1.15fr)] xl:gap-14">
+        <div class="flex w-full max-w-xl flex-col items-center gap-5 text-center lg:max-w-none lg:items-start lg:text-start">
+          <h1
+            id="home-hero-heading"
+            class="m-0 text-balance text-[clamp(var(--text-4xl),4.5vw+1rem,var(--text-7xl))] font-bold leading-[1.05] tracking-[-0.025em] text-ink"
+          >
+            {~t"The Phoenix UI with a"} <span class="text-brand-text">{~t"real API"}</span>.
           </h1>
 
-          <p class="home__lede">
+          <p class="m-0 max-w-xl text-pretty text-lg leading-[var(--text-lg--line-height)] text-ink-muted">
             {~t"Accessible, unstyled Phoenix components with a full server-and-client API, powered by"}
             <.navigate to="https://zagjs.com" class="link" external>Zag.js</.navigate>
             {~t"state machines."}
           </p>
 
-          <ul class="home__bullets" aria_label="Highlights">
-            <li :for={bullet <- @hero_bullets} class="home__bullet">
-              <.heroicon name="hero-check" class="home__bullet__icon" />
+          <ul
+            class="m-0 grid w-full max-w-xl list-none grid-cols-1 gap-2 p-0 md:grid-cols-2 md:gap-x-5"
+            aria_label="Highlights"
+          >
+            <li
+              :for={bullet <- @hero_bullets}
+              class="flex items-start gap-2 text-pretty text-start text-sm leading-[var(--text-sm--line-height)] text-ink-muted"
+            >
+              <.heroicon name="hero-check" class="mt-[0.2em] size-3 shrink-0 text-brand-text" />
               <span>
-                <strong>{bullet.title}</strong> {bullet.body}
+                <strong class="font-semibold text-ink">{bullet.title}</strong> {bullet.body}
               </span>
             </li>
           </ul>
 
-          <div class="home__hero__cta-row">
-            <.navigate to={~p"/accordion/playground"} class="button button--brand rounded-full">
+          <div class="mt-1 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
+            <.navigate to={~p"/accordion/playground"} class="button ui-brand ui-rounded-full">
               {~t"Browse components"}
               <.heroicon name="hero-arrow-right" class="icon" />
             </.navigate>
             <.navigate
               to="https://hexdocs.pm/corex/installation.html"
-              class="button button--ghost rounded-full"
+              class="button ui-rounded-full"
               external
             >
               {~t"Visit Hexdocs"}
@@ -40,13 +52,13 @@
 
         <div
           id="home-hero-interactive"
-          class="home__hero__composition"
+          class="relative flex w-full min-w-0 flex-col gap-space md:flex-row md:items-start"
           phx-hook="HomeHero"
         >
           <h2 class="sr-only">{~t"Interactive preview"}</h2>
-          <div class="home__hero__col home__hero__col--start">
-            <div class="home__card home__card--accordion">
-              <div class="home__card__label">
+          <div class="flex min-w-0 flex-1 flex-col gap-space">
+            <div class="flex flex-col gap-2 rounded-xl border border-border bg-layer p-3 shadow-md">
+              <div class="inline-flex items-center gap-2 self-start rounded-full border border-border bg-root px-2 py-1 text-xs font-medium tracking-wide text-ink-muted">
                 <.heroicon name="hero-bars-3-bottom-left" class="icon" />
                 <span>{~t"Accordion"}</span>
               </div>
@@ -63,15 +75,15 @@
               </.accordion>
             </div>
 
-            <div class="home__card home__card--code">
-              <div class="home__card__header">
-                <div class="home__card__label">
+            <div class="flex flex-col gap-2 overflow-hidden rounded-xl border border-border bg-layer p-3 shadow-md">
+              <div class="flex w-full shrink-0 items-center justify-between gap-2">
+                <div class="inline-flex items-center gap-2 rounded-full border border-border bg-root px-2 py-1 text-xs font-medium tracking-wide text-ink-muted">
                   <.heroicon name="hero-code-bracket" class="icon" />
                   <span>HEEx</span>
                 </div>
                 <.clipboard
                   id="hero-code-clipboard"
-                  class="clipboard clipboard--sm"
+                  class="clipboard ui-size-sm"
                   value={@hero_code}
                   input={false}
                   trigger_aria_label={~t"Copy snippet"}
@@ -86,56 +98,58 @@
                   </:copied>
                 </.clipboard>
               </div>
-              <.code id="hero-code" language={:heex} class="code code--text-xs" code={@hero_code} />
+              <.code id="hero-code" language={:heex} class="code text-xs" code={@hero_code} />
             </div>
           </div>
 
-          <div class="home__hero__col home__hero__col--end">
-            <div class="home__card home__card--api">
-              <div class="home__card__label">
+          <div class="flex min-w-0 flex-1 flex-col gap-space">
+            <div class="flex flex-col gap-2 rounded-xl border border-border bg-layer p-3 shadow-md">
+              <div class="inline-flex items-center gap-2 self-start rounded-full border border-border bg-root px-2 py-1 text-xs font-medium tracking-wide text-ink-muted">
                 <.heroicon name="hero-command-line" class="icon" />
                 <span>API</span>
               </div>
-              <p class="home__card__hint">{~t"Drive the accordion from anywhere."}</p>
-              <div class="home__card__actions">
+              <p class="m-0 text-xs leading-[var(--text-xs--line-height)] text-ink-muted">
+                {~t"Drive the accordion from anywhere."}
+              </p>
+              <div class="flex flex-row flex-wrap gap-space-sm">
                 <button
                   type="button"
                   data-hero-accordion-value={Jason.encode!(["anatomy"])}
-                  class="button button--sm button--accent"
+                  class="button ui-size-sm ui-accent"
                 >
                   <.heroicon name="hero-chevron-right" class="icon" /> {~t"Open first"}
                 </button>
                 <button
                   type="button"
                   data-hero-accordion-value={Jason.encode!(["anatomy", "machine"])}
-                  class="button button--sm"
+                  class="button ui-size-sm"
                 >
                   <.heroicon name="hero-square-3-stack-3d" class="icon" /> {~t"Open all"}
                 </button>
                 <button
                   type="button"
                   data-hero-accordion-value={Jason.encode!([])}
-                  class="button button--sm"
+                  class="button ui-size-sm"
                 >
                   <.heroicon name="hero-x-mark" class="icon" /> {~t"Close all"}
                 </button>
               </div>
             </div>
 
-            <div class="home__card home__card--events">
-              <div class="home__card__label">
+            <div class="flex min-h-48 flex-1 flex-col gap-2 rounded-xl border border-border bg-layer p-3 shadow-md">
+              <div class="inline-flex items-center gap-2 self-start rounded-full border border-border bg-root px-2 py-1 text-xs font-medium tracking-wide text-ink-muted">
                 <.heroicon name="hero-signal" class="icon" />
                 <span>{~t"Events"}</span>
               </div>
               <.data_table
                 id="hero-events-table"
-                class="data-table max-h-2xs home__card__events-table"
+                class="data-table max-h-2xs text-xs leading-[var(--text-xs--line-height)] [&_td]:px-2 [&_td]:py-1 [&_th]:px-2 [&_th]:py-1 rounded-md"
                 rows={[]}
               >
                 <:col :let={_row} label={~t"Time"}></:col>
                 <:col :let={_row} label={~t"Open items"}></:col>
                 <:empty>
-                  <p class="home__card__events-empty">
+                  <p class="m-0 px-2 py-3 text-center text-xs leading-[var(--text-xs--line-height)] text-ink-muted">
                     {~t"Toggle the accordion to watch events land."}
                   </p>
                 </:empty>
@@ -206,7 +220,7 @@
 
       <.marquee
         id="home-stack-marquee"
-        class="marquee marquee--on-layer home__stack__marquee"
+        class="marquee home__stack__marquee"
         duration={28}
         spacing="0px"
         pause_on_interaction
@@ -249,13 +263,13 @@
         </.clipboard>
 
         <div class="home__cta__actions">
-          <.navigate to={~p"/accordion/playground"} class="button button--brand rounded-full">
+          <.navigate to={~p"/accordion/playground"} class="button ui-brand ui-rounded-full">
             {~t"Browse components"}
             <.heroicon name="hero-arrow-right" class="icon" />
           </.navigate>
           <.navigate
             to="https://github.com/corex-ui/corex"
-            class="button button--ghost rounded-full"
+            class="button ui-rounded-full"
             external
           >
             {~t"Star on GitHub"}

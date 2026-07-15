@@ -44,7 +44,10 @@ This will:
 
 - Fetch Elixir dependencies
 - Install Tailwind and Esbuild
+- Run `mix corex.design.build` into `assets/corex/`
 - Build frontend assets
+
+`assets/corex/` is generated locally (gitignored). Edit `config :corex_design` in `config/config.exs` to customize tokens, then run `mix assets.build`.
 
 ## Run the server
 
@@ -63,14 +66,9 @@ http://localhost:4000
 Build and run in prod mode locally (same DB as dev for a quick check):
 
 ```bash
-# From the corex repo root: build Corex assets
-cd .. && mix assets.build && cd e2e
-
-# Set required prod env (use dev DB for local test)
+cd e2e
 export SECRET_KEY_BASE=$(mix phx.gen.secret)
 export DATABASE_URL="ecto://postgres:postgres@localhost/e2e_dev"
-
-# Build digested assets and run
 MIX_ENV=prod mix assets.deploy
 MIX_ENV=prod mix phx.server
 ```

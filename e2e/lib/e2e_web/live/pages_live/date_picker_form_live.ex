@@ -32,6 +32,8 @@ defmodule E2eWeb.DatePickerFormLive do
      |> assign(:live_ecto_multiple_elixir, demo.form_doc_live_ecto_multiple_elixir())
      |> assign(:live_ecto_range_heex, demo.form_doc_live_ecto_range_heex())
      |> assign(:live_ecto_range_elixir, demo.form_doc_live_ecto_range_elixir())
+     |> assign(:live_ecto_invalid_heex, demo.form_doc_live_ecto_invalid_heex())
+     |> assign(:live_ecto_invalid_elixir, demo.form_doc_live_ecto_invalid_elixir())
      |> assign_forms()}
   end
 
@@ -68,6 +70,14 @@ defmodule E2eWeb.DatePickerFormLive do
         &DatePickerForm.changeset_validate_range/2,
         :date_picker_validate_range,
         "date-picker-validate-range-form-live"
+      )
+    )
+    |> assign(
+      :validate_invalid_form,
+      ecto_form(
+        &DatePickerForm.changeset_validate/2,
+        :date_picker_validate_invalid,
+        "date-picker-validate-form-live-invalid"
       )
     )
   end
@@ -152,19 +162,6 @@ defmodule E2eWeb.DatePickerFormLive do
      )}
   end
 
-  def handle_event("date_changed_validate", %{"value" => value}, socket) do
-    {:noreply,
-     validate_ecto(
-       socket,
-       DatePicker.cast_params("single", %{"value" => value}),
-       "single",
-       &DatePickerForm.changeset_validate/2,
-       :validate_form,
-       :date_picker_validate,
-       "date-picker-validate-form-live"
-     )}
-  end
-
   def handle_event("save_validate", params, socket) do
     nested = Map.get(params, "date_picker_validate", %{})
 
@@ -187,19 +184,6 @@ defmodule E2eWeb.DatePickerFormLive do
      validate_ecto(
        socket,
        nested,
-       "multiple",
-       &DatePickerForm.changeset_validate_dates/2,
-       :validate_dates_form,
-       :date_picker_validate_dates,
-       "date-picker-validate-dates-form-live"
-     )}
-  end
-
-  def handle_event("date_changed_dates", %{"value" => value}, socket) do
-    {:noreply,
-     validate_ecto(
-       socket,
-       DatePicker.cast_params("multiple", %{"value" => value}),
        "multiple",
        &DatePickerForm.changeset_validate_dates/2,
        :validate_dates_form,
@@ -238,19 +222,6 @@ defmodule E2eWeb.DatePickerFormLive do
      )}
   end
 
-  def handle_event("date_changed_range", %{"value" => value}, socket) do
-    {:noreply,
-     validate_ecto(
-       socket,
-       DatePicker.cast_params("range", %{"value" => value}),
-       "range",
-       &DatePickerForm.changeset_validate_range/2,
-       :validate_range_form,
-       :date_picker_validate_range,
-       "date-picker-validate-range-form-live"
-     )}
-  end
-
   def handle_event("save_range", params, socket) do
     nested = Map.get(params, "date_picker_validate_range", %{})
 
@@ -263,6 +234,36 @@ defmodule E2eWeb.DatePickerFormLive do
        :validate_range_form,
        :date_picker_validate_range,
        "date-picker-validate-range-form-live"
+     )}
+  end
+
+  def handle_event("validate_invalid", params, socket) do
+    nested = Map.get(params, "date_picker_validate_invalid", %{})
+
+    {:noreply,
+     validate_ecto(
+       socket,
+       nested,
+       "single",
+       &DatePickerForm.changeset_validate/2,
+       :validate_invalid_form,
+       :date_picker_validate_invalid,
+       "date-picker-validate-form-live-invalid"
+     )}
+  end
+
+  def handle_event("save_invalid", params, socket) do
+    nested = Map.get(params, "date_picker_validate_invalid", %{})
+
+    {:noreply,
+     save_ecto(
+       socket,
+       nested,
+       "single",
+       &DatePickerForm.changeset_validate/2,
+       :validate_invalid_form,
+       :date_picker_validate_invalid,
+       "date-picker-validate-form-live-invalid"
      )}
   end
 
@@ -331,6 +332,10 @@ defmodule E2eWeb.DatePickerFormLive do
       |> assign(
         :validate_range_value,
         date_display_value(assigns.validate_range_form, :date_range, "range")
+      )
+      |> assign(
+        :validate_invalid_date_value,
+        date_display_value(assigns.validate_invalid_form, :date, "single")
       )
 
     ~H"""
@@ -407,6 +412,28 @@ defmodule E2eWeb.DatePickerFormLive do
             <DatePickerDemo.form_preview_live_validate
               form={@validate_form}
               date_display={@validate_date_value}
+            />
+          </:preview>
+        </.demo_section>
+
+        <.demo_section
+          id="date-picker-live-form-ecto-invalid-section"
+          title={~t"Phoenix Form + Ecto + Invalid"}
+          code_tabs={[
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_ecto_invalid_heex},
+            %{
+              value: "elixir",
+              label: ~t"Elixir",
+              language: :elixir,
+              code: @live_ecto_invalid_elixir
+            },
+            %{value: "ecto", label: ~t"Ecto", language: :elixir, code: @form_ecto}
+          ]}
+        >
+          <:preview>
+            <DatePickerDemo.form_preview_live_validate_invalid
+              form={@validate_invalid_form}
+              date_display={@validate_invalid_date_value}
             />
           </:preview>
         </.demo_section>

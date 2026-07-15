@@ -14,12 +14,37 @@
   >
     <.demo_section
       id="tree-view-styling-color"
-      title={~t"Color"}
+      title={~t"Semantic"}
       code={E2eWeb.Demos.TreeViewDemo.styling_color_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="tree-view" axis={:semantic} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.TreeViewDemo.styling_color_example />
       </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="tree-view-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.TreeViewDemo.styling_variant_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="tree-view" axis={:variant} />
+      </:description>
+      <:preview><E2eWeb.Demos.TreeViewDemo.styling_variant_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="tree-view-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.TreeViewDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <.variant_matrix_description host="tree-view" />
+      </:description>
+      <:preview><E2eWeb.Demos.TreeViewDemo.styling_variant_matrix_example /></:preview>
     </.demo_section>
 
     <.demo_section
@@ -27,26 +52,22 @@
       title={~t"Size"}
       code={E2eWeb.Demos.TreeViewDemo.styling_size_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="tree-view" axis={:size} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.TreeViewDemo.styling_size_example />
       </:preview>
     </.demo_section>
 
     <.demo_section
-      id="tree-view-styling-text"
-      title={~t"Text"}
-      code={E2eWeb.Demos.TreeViewDemo.styling_text_code()}
-    >
-      <:preview>
-        <E2eWeb.Demos.TreeViewDemo.styling_text_example />
-      </:preview>
-    </.demo_section>
-
-    <.demo_section
       id="tree-view-styling-radius"
-      title={~t"Radius"}
+      title={~t"Rounded"}
       code={E2eWeb.Demos.TreeViewDemo.styling_radius_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="tree-view" axis={:radius} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.TreeViewDemo.styling_radius_example />
       </:preview>
@@ -54,9 +75,12 @@
 
     <.demo_section
       id="tree-view-styling-max-width"
-      title={~t"Max Width"}
+      title={~t"Max width"}
       code={E2eWeb.Demos.TreeViewDemo.styling_max_width_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="tree-view" axis={:max_width} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.TreeViewDemo.styling_max_width_example />
       </:preview>

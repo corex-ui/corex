@@ -57,7 +57,7 @@ defmodule E2eWeb.AvatarPlayLive do
               id="avatar-play-src"
               name="avatar_src"
               value={@avatar_src}
-              class="native-input native-input--sm w-full"
+              class="native-input ui-size-sm w-full"
             >
               <:label>Image URL</:label>
             </.native_input>
@@ -67,7 +67,7 @@ defmodule E2eWeb.AvatarPlayLive do
               id="avatar-play-alt"
               name="avatar_alt"
               value={@avatar_alt}
-              class="native-input native-input--sm w-full"
+              class="native-input ui-size-sm w-full"
             >
               <:label>Alt text</:label>
             </.native_input>
@@ -77,7 +77,7 @@ defmodule E2eWeb.AvatarPlayLive do
               id="avatar-play-fallback"
               name="avatar_fallback"
               value={@avatar_fallback}
-              class="native-input native-input--sm w-full"
+              class="native-input ui-size-sm w-full"
             >
               <:label>Fallback text</:label>
             </.native_input>

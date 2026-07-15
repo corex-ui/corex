@@ -134,10 +134,10 @@ defmodule E2eWeb.ListboxPatternsLive do
         >
           <:preview>
             <div class="flex flex-wrap gap-2 items-center w-full justify-center">
-              <.action phx-click="add_item" class="button button--sm button--accent">
+              <.action phx-click="add_item" class="button ui-size-sm ui-accent">
                 <.heroicon name="hero-plus" /> Add item
               </.action>
-              <.action phx-click="reset" class="button button--sm button--alert">
+              <.action phx-click="reset" class="button ui-size-sm ui-alert">
                 Reset
               </.action>
             </div>
@@ -172,18 +172,18 @@ defmodule E2eWeb.ListboxPatternsLive do
               <.action
                 phx-click="add_to_group"
                 phx-value-group="Europe"
-                class="button button--sm button--accent"
+                class="button ui-size-sm ui-accent"
               >
                 <.heroicon name="hero-plus" /> Add to Europe
               </.action>
               <.action
                 phx-click="add_to_group"
                 phx-value-group="Asia"
-                class="button button--sm button--accent"
+                class="button ui-size-sm ui-accent"
               >
                 <.heroicon name="hero-plus" /> Add to Asia
               </.action>
-              <.action phx-click="reset_grouped" class="button button--sm button--alert">
+              <.action phx-click="reset_grouped" class="button ui-size-sm ui-alert">
                 Reset
               </.action>
             </div>
