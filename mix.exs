@@ -22,7 +22,7 @@ defmodule Corex.MixProject do
       aliases: aliases(),
       name: "Corex",
       description:
-        "Accessible and unstyled UI components library written in Elixir and TypeScript that integrates Zag.js state machines into the Phoenix Framework.",
+        "Accessible Phoenix UI components with Zag.js hooks, plus an optional Corex Design Hex package for token-driven CSS and shared ui-* modifiers.",
       package: package(),
       source_url: "https://github.com/corex-ui/corex",
       homepage_url: "https://corex.gigalixirapp.com/en",

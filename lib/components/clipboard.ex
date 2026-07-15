@@ -116,7 +116,7 @@ defmodule Corex.Clipboard do
   @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.clipboard>`). Combine axes, for example `clipboard clipboard ui-accent clipboard ui-size-lg` or `clipboard clipboard ui-info clipboard ui-solid`.
+  Stack modifiers on the host (`class` on `<.clipboard>`). Combine axes, for example `clipboard ui-accent ui-size-lg` or `clipboard ui-info ui-solid`.
 
   Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
@@ -131,11 +131,11 @@ defmodule Corex.Clipboard do
   | Modifier | Classes |
   | -------- | ------- |
   | Default (success on copy) | `clipboard` |
-  | Accent | `clipboard clipboard ui-accent` |
-  | Brand | `clipboard clipboard ui-brand` |
-  | Alert | `clipboard clipboard ui-alert` |
-  | Info | `clipboard clipboard ui-info` |
-  | Success | `clipboard clipboard ui-success` |
+  | Accent | `clipboard ui-accent` |
+  | Brand | `clipboard ui-brand` |
+  | Alert | `clipboard ui-alert` |
+  | Info | `clipboard ui-info` |
+  | Success | `clipboard ui-success` |
 
   ### Variant
 
@@ -143,17 +143,17 @@ defmodule Corex.Clipboard do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `clipboard` or `clipboard clipboard ui-accent` |
-  | Solid | `clipboard clipboard ui-accent clipboard ui-solid` |
+  | Subtle (default) | `clipboard` or `clipboard ui-accent` |
+  | Solid | `clipboard ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `clipboard clipboard ui-size-sm` |
-  | MD | `clipboard clipboard ui-size-md` |
-  | LG | `clipboard clipboard ui-size-lg` |
-  | XL | `clipboard clipboard ui-size-xl` |
+  | SM | `clipboard ui-size-sm` |
+  | MD | `clipboard ui-size-md` |
+  | LG | `clipboard ui-size-lg` |
+  | XL | `clipboard ui-size-xl` |
 
   <!-- tabs-close -->
 

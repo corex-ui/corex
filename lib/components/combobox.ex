@@ -264,11 +264,11 @@ defmodule Corex.Combobox do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `combobox` |
-  | Accent | `combobox combobox ui-accent` |
-  | Brand | `combobox combobox ui-brand` |
-  | Alert | `combobox combobox ui-alert` |
-  | Info | `combobox combobox ui-info` |
-  | Success | `combobox combobox ui-success` |
+  | Accent | `combobox ui-accent` |
+  | Brand | `combobox ui-brand` |
+  | Alert | `combobox ui-alert` |
+  | Info | `combobox ui-info` |
+  | Success | `combobox ui-success` |
 
   ### Variant
 
@@ -276,17 +276,17 @@ defmodule Corex.Combobox do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `combobox` or `combobox combobox ui-accent` |
-  | Solid | `combobox combobox ui-accent combobox ui-solid` |
+  | Subtle (default) | `combobox` or `combobox ui-accent` |
+  | Solid | `combobox ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `combobox combobox ui-size-sm` |
-  | MD | `combobox combobox ui-size-md` |
-  | LG | `combobox combobox ui-size-lg` |
-  | XL | `combobox combobox ui-size-xl` |
+  | SM | `combobox ui-size-sm` |
+  | MD | `combobox ui-size-md` |
+  | LG | `combobox ui-size-lg` |
+  | XL | `combobox ui-size-xl` |
 
   <!-- tabs-close -->
 

@@ -140,11 +140,11 @@ defmodule Corex.Editable do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `editable` |
-  | Accent | `editable editable ui-accent` |
-  | Brand | `editable editable ui-brand` |
-  | Alert | `editable editable ui-alert` |
-  | Info | `editable editable ui-info` |
-  | Success | `editable editable ui-success` |
+  | Accent | `editable ui-accent` |
+  | Brand | `editable ui-brand` |
+  | Alert | `editable ui-alert` |
+  | Info | `editable ui-info` |
+  | Success | `editable ui-success` |
 
   ### Variant
 
@@ -152,17 +152,17 @@ defmodule Corex.Editable do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `editable` or `editable editable ui-accent` |
-  | Solid | `editable editable ui-accent editable ui-solid` |
+  | Subtle (default) | `editable` or `editable ui-accent` |
+  | Solid | `editable ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `editable editable ui-size-sm` |
-  | MD | `editable editable ui-size-md` |
-  | LG | `editable editable ui-size-lg` |
-  | XL | `editable editable ui-size-xl` |
+  | SM | `editable ui-size-sm` |
+  | MD | `editable ui-size-md` |
+  | LG | `editable ui-size-lg` |
+  | XL | `editable ui-size-xl` |
 
   <!-- tabs-close -->
 

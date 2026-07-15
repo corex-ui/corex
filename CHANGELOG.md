@@ -2,22 +2,21 @@
 
 ## 0.2.0
 
-### Breaking changes (design simplification)
+### Breaking changes
 
 - **Shared modifier classes** replace per-component BEM modifiers: `ui-accent`, `ui-solid`, `ui-size-lg`, `ui-rounded-xl` (stack on any component host)
 - **Removed variants:** `ghost` and `outline`; only subtle (default) and `ui-solid`
-- **Removed per-component palette/variant/size utilities** from component CSS (~2,300 lines); modifiers live once in `utilities.css`
+- **Removed per-component palette/variant/size utilities** from component CSS; modifiers live once in `utilities.css`
 - **Token renames:** `{role}-ink` → `{role}-contrast`, `ink-{role}` → `{role}-text`; removed `selected-*` and `--theme-color-*` aliases
-- **Single bundle import:** `@import "../corex/corex.css"` replaces separate main/theme/components imports
-- **Removed** `config :corex_design, variants:`; semantics filter now trims `ui-{role}` utilities in `utilities.css`
-
-### Breaking changes (prior 0.2.0)
-
-- Retired `mix corex.design`, `--designex`, and vendored `installer/priv/corex_design/`
-- Default `mix corex.new` adds `{:corex_design, "~> 0.2"}` and runs `mix corex.design.build`
-- Removed `color-scope.css`; theme tokens generated under `priv/css/tokens/themes/`
-- Semantic ink tokens standardized to `--color-ink-{semantic}` (legacy `--color-{semantic}-ink` aliases remain in generated token CSS only)
+- **Single bundle import:** `@import "../corex/corex.css"` replaces separate main/theme/components imports (layered imports remain optional)
+- **Removed** `config :corex_design, variants:`; filter with `components:` and `semantics:` only
+- **Design packaging:** retired `mix corex.design`, `--designex`, and vendored `installer/priv/corex_design/`; apps depend on Hex **`corex_design`** and run `mix corex.design.build`
+- Default `mix corex.new` adds `{:corex_design, "~> 0.2"}` and runs the design build
+- Generated Design CSS under `assets/corex/` is gitignored (installer adds `/assets/corex/` when design is on)
+- Removed `color-scope.css`; theme tokens generate under `priv/css/tokens/themes/`
 - [form_field] Controlled mode no longer applies to all inputs; limited to select, radio, switch, checkbox
+
+See the [update guide](guides/update.html) for the 0.1 → 0.2 class and config migration.
 
 ### Enhancements
 
@@ -34,7 +33,7 @@
 - [toast] Align event and listener names
 - [design] Clipboard copied feedback uses border and text only
 
-Add `corex_design`, configure `config :corex_design`, patch asset aliases, then run `mix corex.design.build`. See [update guide](guides/update.html).
+Add `corex_design`, configure `config :corex_design`, patch asset aliases, then run `mix corex.design.build`.
 
 ## 0.1.2
 

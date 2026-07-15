@@ -82,9 +82,9 @@ defmodule Corex.ComboboxTest do
           %{}
         )
 
-      assert html =~ ~s/data-allow-custom-value/
-      assert html =~ ~s/data-selection-behavior="preserve"/
-      assert html =~ ~s/data-clear-on-empty/
+      assert html =~ ~S/data-allow-custom-value/
+      assert html =~ ~S/data-selection-behavior="preserve"/
+      assert html =~ ~S/data-clear-on-empty/
     end
 
     test "Connect.props with filter false sets data-filter to nil" do

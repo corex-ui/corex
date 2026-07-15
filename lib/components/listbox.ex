@@ -315,11 +315,11 @@ defmodule Corex.Listbox do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `listbox` |
-  | Accent | `listbox listbox ui-accent` |
-  | Brand | `listbox listbox ui-brand` |
-  | Alert | `listbox listbox ui-alert` |
-  | Info | `listbox listbox ui-info` |
-  | Success | `listbox listbox ui-success` |
+  | Accent | `listbox ui-accent` |
+  | Brand | `listbox ui-brand` |
+  | Alert | `listbox ui-alert` |
+  | Info | `listbox ui-info` |
+  | Success | `listbox ui-success` |
 
   ### Variant
 
@@ -327,17 +327,17 @@ defmodule Corex.Listbox do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `listbox` or `listbox listbox ui-accent` |
-  | Solid | `listbox listbox ui-accent listbox ui-solid` |
+  | Subtle (default) | `listbox` or `listbox ui-accent` |
+  | Solid | `listbox ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `listbox listbox ui-size-sm` |
-  | MD | `listbox listbox ui-size-md` |
-  | LG | `listbox listbox ui-size-lg` |
-  | XL | `listbox listbox ui-size-xl` |
+  | SM | `listbox ui-size-sm` |
+  | MD | `listbox ui-size-md` |
+  | LG | `listbox ui-size-lg` |
+  | XL | `listbox ui-size-xl` |
 
   <!-- tabs-close -->
 

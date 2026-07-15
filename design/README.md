@@ -19,31 +19,31 @@ config :corex_design,
   themes: nil,
   scales: [],
   components: nil,
-  semantics: nil,
-  variants: nil
+  semantics: nil
 ```
 
-`mix corex.design.build` writes `assets/corex/components.css`, a generated entry that `@import`s only the component recipes declared in `components:` (plus transitive deps such as `scrollbar` for `combobox`). Import that single file from `app.css`:
+`mix corex.design.build` writes `assets/corex/` including `corex.css` (umbrella entry) and `components.css` (filtered recipes). Prefer the single import from `app.css`:
 
 ```css
-@import "../corex/main.css";
-@import "../corex/theme/neo.css";
-@import "../corex/components.css";
+@import "../corex/corex.css";
+@source "../corex";
 ```
+
+Layered imports (`main.css` + `theme/neo.css` + `components.css`) are still valid when you need finer control.
 
 ### Bundle filtering
 
 | Key | Default | Effect |
 |-----|---------|--------|
 | `components` | `nil` (all) | Emit only listed `components/<id>.css` files |
-| `semantics` | `nil` (all) | Emit only listed role color/ink tokens; trim semantic BEM utilities (`base` always included) |
-| `variants` | `nil` (all) | Keep only `solid`, `ghost`, `outline` variant utilities (`subtle` is default anatomy) |
+| `semantics` | `nil` (all) | Emit only listed palette roles; trim unused `ui-{role}` utilities (`base` always included) |
 
 ```elixir
 components: ~w(button dialog accordion typo layout-heading)a,
-semantics: ~w(accent brand alert)a,
-variants: ~w(solid ghost outline)a
+semantics: ~w(accent brand alert)a
 ```
+
+`variants:` was removed in 0.2. Surface treatment is subtle (default) or `ui-solid` only.
 
 Legacy `scales: [semantic: ...]` is still read when `semantics:` is omitted; prefer `semantics:` for new apps.
 
@@ -51,7 +51,7 @@ Legacy `scales: [semantic: ...]` is still read when `semantics:` is omitted; pre
 mix corex.design.build
 ```
 
-Generated apps from `mix corex.new` include the `corex_design` dependency and run `mix corex.design.build` into `assets/corex/`.
+Generated apps from `mix corex.new` include the `corex_design` dependency, ignore `/assets/corex/` in `.gitignore`, and run `mix corex.design.build` into `assets/corex/`. Do not commit the generated tree.
 
 ## Modifiers
 
@@ -85,7 +85,7 @@ scales: [
 
 `scales:` overrides numeric step values for built-in size, space, text, radius, and weight axes. Prefer top-level `semantics:` to filter palette roles (see Bundle filtering above). Legacy `scales: [semantic: ...]` is an alias when `semantics:` is omitted.
 
-These axes drive emitted theme CSS (`--theme-spacing-*`, `--theme-text-*`, `--theme-radius-*`, `--theme-font-weight-*`) and BEM size/radius modifiers.
+These axes drive emitted theme CSS (`--theme-spacing-*`, `--theme-text-*`, `--theme-radius-*`, `--theme-font-weight-*`) and shared size/radius modifiers.
 
 ### Per-theme multipliers (presets)
 
@@ -107,11 +107,11 @@ If you override `scales: [text: ...]`, line-height tokens (`text_leading`) stay 
 
 Token colors are generated with the [`color`](https://hex.pm/packages/color) hex package (OKLCH tonal scales and WCAG contrast solving).
 
-Semantic ink for text and rings on neutral surfaces uses `--color-ink-{semantic}` (recipe wildcard `--color-ink-*`). Filled controls pair `--color-{semantic}` backgrounds with `--color-{semantic}-ink` text (wildcard `--color-*-ink`). Legacy bare `--color-{semantic}-ink` names remain as aliases in generated theme CSS only.
+Semantic ink for text and rings on neutral surfaces uses `--color-ink-{semantic}` (recipe wildcard `--color-ink-*`). Filled controls pair `--color-{semantic}` backgrounds with `--color-{semantic}-ink` text (wildcard `--color-*-ink`). Prefer `{role}-contrast` / `{role}-text` naming in new token work where exposed.
 
 ## Token layers
 
-Theme color values are generated into `priv/css/tokens/themes/{theme}/color/{mode}.css` as runtime `--color-*` custom properties on `[data-theme][data-mode]`. Set both attributes on `<html>`. A single generated `tokens/semantic/color.css` registers the Tailwind `@theme inline` bridge. Deprecated `--theme-color-*` names alias back to `--color-*` for one release.
+Theme color values are generated into `priv/css/tokens/themes/{theme}/color/{mode}.css` as runtime `--color-*` custom properties on `[data-theme][data-mode]`. Set both attributes on `<html>`. A single generated `tokens/semantic/color.css` registers the Tailwind `@theme inline` bridge.
 
 ## Fonts (optional)
 

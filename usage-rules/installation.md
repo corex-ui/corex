@@ -26,7 +26,7 @@ Replace `my_app` with your OTP app name.
 ### 1. Dependency
 
 ```elixir
-{:corex, "~> 0.1.0"}
+{:corex, "~> 0.2.0"}
 ```
 
 ### 2. Esbuild ESM splitting
@@ -96,11 +96,13 @@ mix compile && mix assets.build
 
 ## Design assets
 
-Add `{:corex_design, "~> 0.2", runtime: false, only: :dev}`, configure `config :corex_design`, then:
+Add `{:corex_design, "~> 0.2", runtime: false, only: :dev}`, configure `config :corex_design`, add `/assets/corex/` to `.gitignore`, then:
 
 ```sh
 mix corex.design.build
 ```
+
+Do not commit `assets/corex/`. If already tracked: `git rm -r --cached assets/corex` after adding the ignore rule.
 
 When using mode/theme/lang pickers, include `toggle` and `select` in `components:` in `config :corex_design` so they appear in the generated `components.css` entry.
 

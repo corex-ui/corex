@@ -14,9 +14,7 @@ description: >-
 No custom CSS in templates — modifiers only. `.typo layout` on body. Remove daisyUI.
 
 ```css
-@import "../corex/main.css";
-@import "../corex/theme/neo.css";
-@import "../corex/components.css";
+@import "../corex/corex.css";
 @source "../corex";
 ```
 

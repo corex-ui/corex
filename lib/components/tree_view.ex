@@ -378,11 +378,11 @@ defmodule Corex.TreeView do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `tree-view` |
-  | Accent | `tree-view tree-view ui-accent` |
-  | Brand | `tree-view tree-view ui-brand` |
-  | Alert | `tree-view tree-view ui-alert` |
-  | Info | `tree-view tree-view ui-info` |
-  | Success | `tree-view tree-view ui-success` |
+  | Accent | `tree-view ui-accent` |
+  | Brand | `tree-view ui-brand` |
+  | Alert | `tree-view ui-alert` |
+  | Info | `tree-view ui-info` |
+  | Success | `tree-view ui-success` |
 
   ### Variant
 
@@ -390,17 +390,17 @@ defmodule Corex.TreeView do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `tree-view` or `tree-view tree-view ui-accent` |
-  | Solid | `tree-view tree-view ui-accent tree-view ui-solid` |
+  | Subtle (default) | `tree-view` or `tree-view ui-accent` |
+  | Solid | `tree-view ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `tree-view tree-view ui-size-sm` |
-  | MD | `tree-view tree-view ui-size-md` |
-  | LG | `tree-view tree-view ui-size-lg` |
-  | XL | `tree-view tree-view ui-size-xl` |
+  | SM | `tree-view ui-size-sm` |
+  | MD | `tree-view ui-size-md` |
+  | LG | `tree-view ui-size-lg` |
+  | XL | `tree-view ui-size-xl` |
 
   <!-- tabs-close -->
 

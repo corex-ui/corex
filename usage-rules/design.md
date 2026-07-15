@@ -5,20 +5,18 @@ Optional config-driven token generation and static component CSS for Corex.
 ## Hard rules
 
 1. **No custom CSS in templates** — only `@import` lines and vendor-required fragments in `site.css` / `app.css`
-2. **Flat BEM modifiers** — `class="accordion ui-accent ui-size-lg"`
+2. **Shared `ui-*` modifiers** — `class="accordion ui-accent ui-size-lg"`
 3. **Tailwind for layout and sizing** — `max-w-md`, `w-full`, `rounded-lg`, `text-sm`, `flex`, `gap-4`. Named width steps use the Corex container ladder (`9xs` … `9xl`), linked via semantic dimension tokens.
 4. **Never invent class names** or write `[data-scope=…]` in template CSS
 5. **`.typo` on prose** — bare semantic tags inside `.typo`
-6. **`corex_design` dependency** — default for `mix corex.new`; generates CSS into `assets/corex/`
+6. **`corex_design` dependency** — default for `mix corex.new`; generates CSS into `assets/corex/` (gitignored; rebuild with `mix corex.design.build`)
 
 ## Setup
 
 `mix corex.new` adds the dependency, config, and build aliases. For existing apps, see `corex:installation`.
 
 ```css
-@import "../corex/main.css";
-@import "../corex/theme/neo.css";
-@import "../corex/components.css";
+@import "../corex/corex.css";
 @source "../corex";
 ```
 
@@ -39,8 +37,7 @@ config :corex_design,
   themes: nil,
   scales: [],
   components: nil,
-  semantics: nil,
-  variants: nil
+  semantics: nil
 ```
 
 ```bash
@@ -51,12 +48,12 @@ mix corex.design.build
 
 | Axis | Examples | Notes |
 |------|----------|-------|
-| Semantic | `--accent`, `--brand`, `--success` | palette CSS variables on the host |
-| Variant | `--variant-solid`, `--variant-ghost`, `--variant-outline` | surface treatment; subtle is default |
-| Size | `--sm`, `--md`, `--lg`, `--xl` | padding, control height, and font size |
-| Radius | `--rounded-sm`, `--rounded-xl` | corner radius on roundable surfaces |
+| Semantic | `ui-accent`, `ui-brand`, `ui-success` | palette roles on the host |
+| Variant | `ui-solid` | surface treatment; subtle is default (no class) |
+| Size | `ui-size-sm`, `ui-size-md`, `ui-size-lg`, `ui-size-xl` | padding, control height, and font size |
+| Radius | `ui-rounded-sm`, `ui-rounded-xl` | corner radius on roundable surfaces |
 
-Size scales text; there is no separate `--text-*` modifier axis. See the [modifier guide](modifiers.html). Use Tailwind `w-*` and `max-w-*` with the container ladder on layout components; each component also has an intrinsic default width in its CSS.
+Size scales text; there is no separate text modifier axis. See the [modifier guide](modifiers.html). Use Tailwind `w-*` and `max-w-*` with the container ladder on layout components; each component also has an intrinsic default width in its CSS.
 
 ## Semantic ink tokens
 
@@ -64,11 +61,9 @@ Use `--color-ink-{semantic}` (wildcard `--color-ink-*` in recipe utilities) for 
 
 Use `--color-{semantic}` for borders without fill.
 
-**Filled** semantic controls pair `background-color: --color-{semantic}` with `color: --color-{semantic}-ink` (wildcard `--color-*-ink` in recipe utilities).
+**Filled** semantic controls pair `background-color: --color-{semantic}` with `color: --color-{semantic}-ink` (wildcard `--color-*-ink` in recipe utilities). Prefer `{role}-contrast` / `{role}-text` naming in new token work where the design package exposes those names.
 
-Do not use `--color-ink-*` for text on a matching semantic fill; contrast is solved on `--color-*-ink` tokens.
-
-Legacy bare `var(--color-{semantic}-ink)` names remain as aliases in generated theme CSS only.
+Do not use `--color-ink-*` for text on a matching semantic fill; contrast is solved on fill/ink pair tokens.
 
 ## Demo panel pattern
 
@@ -90,12 +85,12 @@ No `class` on `<.heroicon>` inside Corex components or slots:
 ## Anti-patterns
 
 - Custom layout components instead of Tailwind (`<.stack>` with axis attrs)
-- Invented modifier names (`accordion--ghost`, `accordion--semantic-accent`) — use `` and flat semantic roles (`ui-accent`)
+- Invented modifier names (`accordion--ghost`, `accordion--accent`) — use shared `ui-*` roles (`ui-accent`, `ui-solid`)
 - Overriding `--color-*` in templates — use `data-theme` / `data-mode` or rebuild tokens
-- Using `--color-ink-*` on filled semantic controls — use `--color-*-ink` instead
-- Legacy bare `var(--color-{semantic}-ink)` in hand-authored CSS — prefer `--value(--color-*-ink, …)` or `--value(--color-ink-*, …)` by surface
+- Using `--color-ink-*` on filled semantic controls — use on-fill contrast tokens instead
+- Documenting or configuring `variants:` — removed in 0.2; only subtle + `ui-solid`
 
 ## References
 
 - https://hexdocs.pm/corex/design.html
-- `design/README.md` in the Corex repository
+- https://hexdocs.pm/corex/modifiers.html

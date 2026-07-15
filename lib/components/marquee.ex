@@ -112,20 +112,20 @@ defmodule Corex.Marquee do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `marquee` |
-  | Accent | `marquee marquee ui-accent` |
-  | Brand | `marquee marquee ui-brand` |
-  | Alert | `marquee marquee ui-alert` |
-  | Info | `marquee marquee ui-info` |
-  | Success | `marquee marquee ui-success` |
+  | Accent | `marquee ui-accent` |
+  | Brand | `marquee ui-brand` |
+  | Alert | `marquee ui-alert` |
+  | Info | `marquee ui-info` |
+  | Success | `marquee ui-success` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `marquee marquee ui-size-sm` |
-  | MD | `marquee marquee ui-size-md` |
-  | LG | `marquee marquee ui-size-lg` |
-  | XL | `marquee marquee ui-size-xl` |
+  | SM | `marquee ui-size-sm` |
+  | MD | `marquee ui-size-md` |
+  | LG | `marquee ui-size-lg` |
+  | XL | `marquee ui-size-xl` |
 
   <!-- tabs-close -->
 

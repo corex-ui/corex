@@ -1,6 +1,7 @@
 defmodule Corex.New.Tableau.Generate do
   @moduledoc false
 
+  alias Corex.New.Patches
   alias Corex.New.Tableau.Templates
 
   @default_themes ["neo", "uno", "duo", "leo"]
@@ -20,6 +21,7 @@ defmodule Corex.New.Tableau.Generate do
     write_sample_post(install_dir, assigns)
     write_extra_dir(install_dir)
     write_formatter(install_dir)
+    Patches.patch_gitignore(install_dir, opts)
 
     :ok
   end

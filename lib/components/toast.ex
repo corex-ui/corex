@@ -108,11 +108,11 @@ defmodule Corex.Toast do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `toast` |
-  | Accent | `toast toast ui-accent` |
-  | Brand | `toast toast ui-brand` |
-  | Alert | `toast toast ui-alert` |
-  | Info | `toast toast ui-info` |
-  | Success | `toast toast ui-success` |
+  | Accent | `toast ui-accent` |
+  | Brand | `toast ui-brand` |
+  | Alert | `toast ui-alert` |
+  | Info | `toast ui-info` |
+  | Success | `toast ui-success` |
 
   ### Variant
 
@@ -120,8 +120,8 @@ defmodule Corex.Toast do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `toast` or `toast toast ui-accent` |
-  | Solid | `toast toast ui-accent toast ui-solid` |
+  | Subtle (default) | `toast` or `toast ui-accent` |
+  | Solid | `toast ui-accent ui-solid` |
 
   <!-- tabs-close -->
 

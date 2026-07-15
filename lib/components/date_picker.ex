@@ -251,7 +251,7 @@ defmodule Corex.DatePicker do
   @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.date_picker>`). Combine axes, for example `date-picker date-picker ui-accent date-picker ui-size-lg` or `date-picker date-picker ui-info date-picker ui-solid`.
+  Stack modifiers on the host (`class` on `<.date_picker>`). Combine axes, for example `date-picker ui-accent ui-size-lg` or `date-picker ui-info ui-solid`.
 
   Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
@@ -266,11 +266,11 @@ defmodule Corex.DatePicker do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `date-picker` |
-  | Accent | `date-picker date-picker ui-accent` |
-  | Brand | `date-picker date-picker ui-brand` |
-  | Alert | `date-picker date-picker ui-alert` |
-  | Info | `date-picker date-picker ui-info` |
-  | Success | `date-picker date-picker ui-success` |
+  | Accent | `date-picker ui-accent` |
+  | Brand | `date-picker ui-brand` |
+  | Alert | `date-picker ui-alert` |
+  | Info | `date-picker ui-info` |
+  | Success | `date-picker ui-success` |
 
   ### Variant
 
@@ -278,17 +278,17 @@ defmodule Corex.DatePicker do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `date-picker` or `date-picker date-picker ui-accent` |
-  | Solid | `date-picker date-picker ui-accent date-picker ui-solid` |
+  | Subtle (default) | `date-picker` or `date-picker ui-accent` |
+  | Solid | `date-picker ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `date-picker date-picker ui-size-sm` |
-  | MD | `date-picker date-picker ui-size-md` |
-  | LG | `date-picker date-picker ui-size-lg` |
-  | XL | `date-picker date-picker ui-size-xl` |
+  | SM | `date-picker ui-size-sm` |
+  | MD | `date-picker ui-size-md` |
+  | LG | `date-picker ui-size-lg` |
+  | XL | `date-picker ui-size-xl` |
 
   <!-- tabs-close -->
 

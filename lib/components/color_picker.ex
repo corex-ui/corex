@@ -39,7 +39,7 @@ defmodule Corex.ColorPicker do
   @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.color_picker>`). Combine axes, for example `color-picker color-picker ui-accent color-picker ui-size-lg` or `color-picker color-picker ui-info color-picker ui-solid`.
+  Stack modifiers on the host (`class` on `<.color_picker>`). Combine axes, for example `color-picker ui-accent ui-size-lg` or `color-picker ui-info ui-solid`.
 
   Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
@@ -54,11 +54,11 @@ defmodule Corex.ColorPicker do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `color-picker` |
-  | Accent | `color-picker color-picker ui-accent` |
-  | Brand | `color-picker color-picker ui-brand` |
-  | Alert | `color-picker color-picker ui-alert` |
-  | Info | `color-picker color-picker ui-info` |
-  | Success | `color-picker color-picker ui-success` |
+  | Accent | `color-picker ui-accent` |
+  | Brand | `color-picker ui-brand` |
+  | Alert | `color-picker ui-alert` |
+  | Info | `color-picker ui-info` |
+  | Success | `color-picker ui-success` |
 
   ### Variant
 
@@ -66,17 +66,17 @@ defmodule Corex.ColorPicker do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `color-picker` or `color-picker color-picker ui-accent` |
-  | Solid | `color-picker color-picker ui-accent color-picker ui-solid` |
+  | Subtle (default) | `color-picker` or `color-picker ui-accent` |
+  | Solid | `color-picker ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `color-picker color-picker ui-size-sm` |
-  | MD | `color-picker color-picker ui-size-md` |
-  | LG | `color-picker color-picker ui-size-lg` |
-  | XL | `color-picker color-picker ui-size-xl` |
+  | SM | `color-picker ui-size-sm` |
+  | MD | `color-picker ui-size-md` |
+  | LG | `color-picker ui-size-lg` |
+  | XL | `color-picker ui-size-xl` |
 
   <!-- tabs-close -->
 

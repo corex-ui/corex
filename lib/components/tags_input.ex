@@ -165,7 +165,7 @@ defmodule Corex.TagsInput do
   @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.tags_input>`). Combine axes, for example `tags-input tags-input ui-accent tags-input ui-size-lg` or `tags-input tags-input ui-info tags-input ui-solid`.
+  Stack modifiers on the host (`class` on `<.tags_input>`). Combine axes, for example `tags-input ui-accent ui-size-lg` or `tags-input ui-info ui-solid`.
 
   Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
@@ -180,11 +180,11 @@ defmodule Corex.TagsInput do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `tags-input` |
-  | Accent | `tags-input tags-input ui-accent` |
-  | Brand | `tags-input tags-input ui-brand` |
-  | Alert | `tags-input tags-input ui-alert` |
-  | Info | `tags-input tags-input ui-info` |
-  | Success | `tags-input tags-input ui-success` |
+  | Accent | `tags-input ui-accent` |
+  | Brand | `tags-input ui-brand` |
+  | Alert | `tags-input ui-alert` |
+  | Info | `tags-input ui-info` |
+  | Success | `tags-input ui-success` |
 
   ### Variant
 
@@ -192,17 +192,17 @@ defmodule Corex.TagsInput do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `tags-input` or `tags-input tags-input ui-accent` |
-  | Solid | `tags-input tags-input ui-accent tags-input ui-solid` |
+  | Subtle (default) | `tags-input` or `tags-input ui-accent` |
+  | Solid | `tags-input ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `tags-input tags-input ui-size-sm` |
-  | MD | `tags-input tags-input ui-size-md` |
-  | LG | `tags-input tags-input ui-size-lg` |
-  | XL | `tags-input tags-input ui-size-xl` |
+  | SM | `tags-input ui-size-sm` |
+  | MD | `tags-input ui-size-md` |
+  | LG | `tags-input ui-size-lg` |
+  | XL | `tags-input ui-size-xl` |
 
   <!-- tabs-close -->
 

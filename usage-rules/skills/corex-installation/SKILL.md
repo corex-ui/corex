@@ -18,7 +18,7 @@ mix corex.new my_app
 
 ## Existing app — order matters
 
-1. `{:corex, "~> 0.1.0"}` and `{:corex_design, "~> 0.2", runtime: false, only: :dev}` → esbuild ESM splitting → LiveSocket + hooks → `type="module"` script → `use Corex` → `mix assets.build`
+1. `{:corex, "~> 0.2.0"}` and `{:corex_design, "~> 0.2", runtime: false, only: :dev}` → esbuild ESM splitting → LiveSocket + hooks → `type="module"` script → `use Corex` → `mix assets.build`
 
 ```javascript
 const liveSocket = new LiveSocket("/live", Socket, {
@@ -34,6 +34,8 @@ Lazy hooks: PascalCase keys (`Dialog: () => import("corex/dialog")`).
 ```sh
 mix corex.design.build
 ```
+
+Ignore `/assets/corex/` in `.gitignore` (do not commit generated CSS).
 
 Import `toggle.css` / `select.css` when using mode/theme/lang pickers.
 

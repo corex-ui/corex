@@ -13,15 +13,21 @@ Corex components work without any bundled CSS. You style them with your own rule
 | Regenerate design assets | `mix corex.design.build` |
 | Build app assets (includes design) | `mix assets.build` |
 
-`mix corex.new` adds `{:corex_design, ...}`, `config :corex_design` in `config/config.exs`, and patches `assets.build` / `assets.deploy` to run `corex.design.build`. Output lands in `assets/corex/`.
+`mix corex.new` adds `{:corex_design, ...}`, `config :corex_design` in `config/config.exs`, patches `assets.build` / `assets.deploy` to run `corex.design.build`, and adds `/assets/corex/` to `.gitignore`. Output lands in `assets/corex/` (generated; do not commit it).
 
 Related installer flags (all imply design): `--mode` (light/dark), `--theme` (neo, uno, duo, leo). See [Dark mode](dark_mode.html) and [Theming](theming.html).
 
 ## Setup in an existing app
 
 1. Add the dependency and config (see [Manual installation](manual_installation.html#6-optional-corex-design)).
+2. Add `/assets/corex/` to `.gitignore` (generated output; rebuild with `mix corex.design.build`).
+3. Import Corex Design in `assets/css/app.css`. Prefer the single umbrella entry:
 
-2. Import layers in `assets/css/app.css`. At minimum:
+```css
+@import "../corex/corex.css";
+```
+
+Layered imports still work when you need finer control:
 
 ```css
 @import "../corex/main.css";
@@ -47,13 +53,13 @@ semantics: ~w(accent brand alert)a
 
 Legacy `scales: [semantic: ...]` is still read when `semantics:` is omitted; prefer `semantics:` for new apps.
 
-3. Point Tailwind at the generated tree (Phoenix 1.8+ example):
+4. Point Tailwind at the generated tree (Phoenix 1.8+ example):
 
 ```css
 @source "../corex";
 ```
 
-4. Set theme and mode on `<html>` and base classes on `<body>`:
+5. Set theme and mode on `<html>` and base classes on `<body>`:
 
 ```heex
 <html lang="en" data-theme="neo" data-mode="light">
@@ -74,9 +80,7 @@ Corex Design does not ship `@font-face` files. Theme CSS sets stacks (`--theme-f
 
 ```css
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300..900;1,300..900&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:ital,wght@0,400..800;1,400..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Work+Sans:ital,wght@0,300..900;1,300..900&display=swap');
-@import "../corex/main.css";
-@import "../corex/theme/neo.css";
-@import "../corex/components.css";
+@import "../corex/corex.css";
 ```
 
 That import covers DM Sans and JetBrains Mono (uno), Work Sans and Playfair Display (duo), and IBM Plex Sans/Mono (leo). Self-hosting the same families is fine.
@@ -142,9 +146,9 @@ Example: `button.css` applies `ui-trigger` to `.button`; host classes like `ui-a
 
 `main.css` loads semantic tokens (`--color-ink`, `--spacing-space`, `--text-base`, `--radius-md`, …). Theme files under `assets/corex/theme/` import generated token CSS from `assets/corex/tokens/themes/` and switch palettes when `data-theme` and `data-mode` are both set on `<html>`.
 
-Runtime colors live as `--color-*` hex values on `[data-theme][data-mode]`. Tailwind utilities use a single `@theme inline` bridge in `tokens/semantic/color.css`. Deprecated `--theme-color-*` names alias to `--color-*`.
+Runtime colors live as `--color-*` hex values on `[data-theme][data-mode]`. Tailwind utilities use a single `@theme inline` bridge in `tokens/semantic/color.css`.
 
-Semantic ink for text and focus rings on neutral surfaces uses `--color-ink-{semantic}` (recipe wildcard `--color-ink-*`). Semantic borders without fill use `--color-{semantic}`. Filled semantic controls pair `background-color: --color-{semantic}` with `color: --color-{semantic}-ink` (wildcard `--color-*-ink`).
+Semantic ink for text and focus rings on neutral surfaces uses `--color-ink-{semantic}` (recipe wildcard `--color-ink-*`). Semantic borders without fill use `--color-{semantic}`. Filled semantic controls pair `background-color: --color-{semantic}` with on-fill contrast ink (wildcard `--color-*-ink` / `{role}-contrast` where exposed).
 
 Tailwind utilities such as `text-ink`, `bg-layer`, `gap-space-lg`, and `rounded-xl` map to the same tokens. Prefer **modifier classes** on Corex components and **semantic utilities** in layout markup; avoid overriding CSS variables in templates.
 

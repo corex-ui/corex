@@ -298,7 +298,7 @@ defmodule Corex.RadioGroup do
   @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.radio_group>`). Combine axes, for example `radio-group radio-group ui-accent radio-group ui-size-lg` or `radio-group radio-group ui-info radio-group ui-solid`.
+  Stack modifiers on the host (`class` on `<.radio_group>`). Combine axes, for example `radio-group ui-accent ui-size-lg` or `radio-group ui-info ui-solid`.
 
   Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
@@ -313,11 +313,11 @@ defmodule Corex.RadioGroup do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `radio-group` |
-  | Accent | `radio-group radio-group ui-accent` |
-  | Brand | `radio-group radio-group ui-brand` |
-  | Alert | `radio-group radio-group ui-alert` |
-  | Info | `radio-group radio-group ui-info` |
-  | Success | `radio-group radio-group ui-success` |
+  | Accent | `radio-group ui-accent` |
+  | Brand | `radio-group ui-brand` |
+  | Alert | `radio-group ui-alert` |
+  | Info | `radio-group ui-info` |
+  | Success | `radio-group ui-success` |
 
   ### Variant
 
@@ -325,17 +325,17 @@ defmodule Corex.RadioGroup do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `radio-group` or `radio-group radio-group ui-accent` |
-  | Solid | `radio-group radio-group ui-accent radio-group ui-solid` |
+  | Subtle (default) | `radio-group` or `radio-group ui-accent` |
+  | Solid | `radio-group ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `radio-group radio-group ui-size-sm` |
-  | MD | `radio-group radio-group ui-size-md` |
-  | LG | `radio-group radio-group ui-size-lg` |
-  | XL | `radio-group radio-group ui-size-xl` |
+  | SM | `radio-group ui-size-sm` |
+  | MD | `radio-group ui-size-md` |
+  | LG | `radio-group ui-size-lg` |
+  | XL | `radio-group ui-size-xl` |
 
   <!-- tabs-close -->
 

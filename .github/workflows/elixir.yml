@@ -199,7 +199,9 @@ jobs:
           COREX_V=$(grep '@version' mix.exs | head -1 | sed -n 's/.*"\([^"]*\)".*/\1/p')
           PKG_V=$(sed -n 's/.*"version": "\([^"]*\)".*/\1/p' package.json | head -1)
           INST_V=$(grep '@version' installer/mix.exs | head -1 | sed -n 's/.*"\([^"]*\)".*/\1/p')
-          test "$COREX_V" = "$PKG_V" && test "$COREX_V" = "$INST_V"
+          DESIGN_V=$(grep '@version' design/mix.exs | head -1 | sed -n 's/.*"\([^"]*\)".*/\1/p')
+          DESIGN_PKG_V=$(sed -n 's/.*"version": "\([^"]*\)".*/\1/p' design/package.json | head -1)
+          test "$COREX_V" = "$PKG_V" && test "$COREX_V" = "$INST_V" && test "$COREX_V" = "$DESIGN_V" && test "$COREX_V" = "$DESIGN_PKG_V"
 
       - name: Set up pnpm
         if: matrix.coveralls

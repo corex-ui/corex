@@ -93,7 +93,7 @@ defmodule Corex.PinInput do
   @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.pin_input>`). Combine axes, for example `pin-input pin-input ui-accent pin-input ui-size-lg` or `pin-input pin-input ui-info pin-input ui-solid`.
+  Stack modifiers on the host (`class` on `<.pin_input>`). Combine axes, for example `pin-input ui-accent ui-size-lg` or `pin-input ui-info ui-solid`.
 
   Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
@@ -108,11 +108,11 @@ defmodule Corex.PinInput do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `pin-input` |
-  | Accent | `pin-input pin-input ui-accent` |
-  | Brand | `pin-input pin-input ui-brand` |
-  | Alert | `pin-input pin-input ui-alert` |
-  | Info | `pin-input pin-input ui-info` |
-  | Success | `pin-input pin-input ui-success` |
+  | Accent | `pin-input ui-accent` |
+  | Brand | `pin-input ui-brand` |
+  | Alert | `pin-input ui-alert` |
+  | Info | `pin-input ui-info` |
+  | Success | `pin-input ui-success` |
 
   ### Variant
 
@@ -120,28 +120,28 @@ defmodule Corex.PinInput do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `pin-input` or `pin-input pin-input ui-accent` |
-  | Solid | `pin-input pin-input ui-accent pin-input ui-solid` |
+  | Subtle (default) | `pin-input` or `pin-input ui-accent` |
+  | Solid | `pin-input ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `pin-input pin-input ui-size-sm` |
-  | MD | `pin-input pin-input ui-size-md` |
-  | LG | `pin-input pin-input ui-size-lg` |
-  | XL | `pin-input pin-input ui-size-xl` |
+  | SM | `pin-input ui-size-sm` |
+  | MD | `pin-input ui-size-md` |
+  | LG | `pin-input ui-size-lg` |
+  | XL | `pin-input ui-size-xl` |
 
   ### Radius
 
   | Modifier | Classes |
   | -------- | ------- |
-  | None | `pin-input pin-input ui-rounded-none` |
-  | SM | `pin-input pin-input ui-rounded-sm` |
-  | MD | `pin-input pin-input ui-rounded-md` |
-  | LG | `pin-input pin-input ui-rounded-lg` |
-  | XL | `pin-input pin-input ui-rounded-xl` |
-  | Full | `pin-input pin-input ui-rounded-full` |
+  | None | `pin-input ui-rounded-none` |
+  | SM | `pin-input ui-rounded-sm` |
+  | MD | `pin-input ui-rounded-md` |
+  | LG | `pin-input ui-rounded-lg` |
+  | XL | `pin-input ui-rounded-xl` |
+  | Full | `pin-input ui-rounded-full` |
 
   <!-- tabs-close -->
 

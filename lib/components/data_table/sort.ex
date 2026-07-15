@@ -169,7 +169,11 @@ defmodule Corex.DataTable.Sort do
             {sort_by, :asc}
           end
 
-        assign(socket, :data_table_sort, Map.put(sorts, table_id, %{sort_by: sort_by, sort_order: sort_order}))
+        assign(
+          socket,
+          :data_table_sort,
+          Map.put(sorts, table_id, %{sort_by: sort_by, sort_order: sort_order})
+        )
 
       :error ->
         socket

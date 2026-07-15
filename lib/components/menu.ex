@@ -330,11 +330,11 @@ defmodule Corex.Menu do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `menu` |
-  | Accent | `menu menu ui-accent` |
-  | Brand | `menu menu ui-brand` |
-  | Alert | `menu menu ui-alert` |
-  | Info | `menu menu ui-info` |
-  | Success | `menu menu ui-success` |
+  | Accent | `menu ui-accent` |
+  | Brand | `menu ui-brand` |
+  | Alert | `menu ui-alert` |
+  | Info | `menu ui-info` |
+  | Success | `menu ui-success` |
 
   ### Variant
 
@@ -342,17 +342,17 @@ defmodule Corex.Menu do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `menu` or `menu menu ui-accent` |
-  | Solid | `menu menu ui-accent menu ui-solid` |
+  | Subtle (default) | `menu` or `menu ui-accent` |
+  | Solid | `menu ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `menu menu ui-size-sm` |
-  | MD | `menu menu ui-size-md` |
-  | LG | `menu menu ui-size-lg` |
-  | XL | `menu menu ui-size-xl` |
+  | SM | `menu ui-size-sm` |
+  | MD | `menu ui-size-md` |
+  | LG | `menu ui-size-lg` |
+  | XL | `menu ui-size-xl` |
 
   <!-- tabs-close -->
 

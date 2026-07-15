@@ -181,11 +181,11 @@ defmodule Corex.Timer do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `timer` |
-  | Accent | `timer timer ui-accent` |
-  | Brand | `timer timer ui-brand` |
-  | Alert | `timer timer ui-alert` |
-  | Info | `timer timer ui-info` |
-  | Success | `timer timer ui-success` |
+  | Accent | `timer ui-accent` |
+  | Brand | `timer ui-brand` |
+  | Alert | `timer ui-alert` |
+  | Info | `timer ui-info` |
+  | Success | `timer ui-success` |
 
   ### Variant
 
@@ -193,17 +193,17 @@ defmodule Corex.Timer do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `timer` or `timer timer ui-accent` |
-  | Solid | `timer timer ui-accent timer ui-solid` |
+  | Subtle (default) | `timer` or `timer ui-accent` |
+  | Solid | `timer ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `timer timer ui-size-sm` |
-  | MD | `timer timer ui-size-md` |
-  | LG | `timer timer ui-size-lg` |
-  | XL | `timer timer ui-size-xl` |
+  | SM | `timer ui-size-sm` |
+  | MD | `timer ui-size-md` |
+  | LG | `timer ui-size-lg` |
+  | XL | `timer ui-size-xl` |
 
   <!-- tabs-close -->
 

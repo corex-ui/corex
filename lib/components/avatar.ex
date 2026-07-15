@@ -136,7 +136,7 @@ defmodule Corex.Avatar do
 
   Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on the fallback surface. Variant modifiers control fallback surface treatment. Default is solid; add `avatar` for a neutral fallback chip.
+  Semantic modifiers set palette variables on the fallback surface. Variant modifiers control fallback surface treatment. Default is subtle; add `ui-solid` for a filled fallback chip.
 
   <!-- tabs-open -->
 
@@ -145,11 +145,11 @@ defmodule Corex.Avatar do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `avatar` |
-  | Accent | `avatar avatar ui-accent` |
-  | Brand | `avatar avatar ui-brand` |
-  | Alert | `avatar avatar ui-alert` |
-  | Info | `avatar avatar ui-info` |
-  | Success | `avatar avatar ui-success` |
+  | Accent | `avatar ui-accent` |
+  | Brand | `avatar ui-brand` |
+  | Alert | `avatar ui-alert` |
+  | Info | `avatar ui-info` |
+  | Success | `avatar ui-success` |
 
   ### Variant
 
@@ -157,31 +157,31 @@ defmodule Corex.Avatar do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Solid (default) | `avatar` or `avatar avatar ui-accent` |
-  | Subtle | `avatar avatar ui-accent avatar` |
+  | Subtle (default) | `avatar` or `avatar ui-accent` |
+  | Solid | `avatar ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `avatar avatar ui-size-sm` |
-  | MD | `avatar avatar ui-size-md` |
-  | LG | `avatar avatar ui-size-lg` |
-  | XL | `avatar avatar ui-size-xl` |
+  | SM | `avatar ui-size-sm` |
+  | MD | `avatar ui-size-md` |
+  | LG | `avatar ui-size-lg` |
+  | XL | `avatar ui-size-xl` |
 
   ### Radius
 
-  Default is a circle (`rounded-full`). Override with `avatar--rounded-*`.
+  Default is a circle (`rounded-full`). Override with `ui-rounded-*`.
 
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `avatar` |
-  | None | `avatar avatar ui-rounded-none` |
-  | SM | `avatar avatar ui-rounded-sm` |
-  | MD | `avatar avatar ui-rounded-md` |
-  | LG | `avatar avatar ui-rounded-lg` |
-  | XL | `avatar avatar ui-rounded-xl` |
-  | Full | `avatar avatar ui-rounded-full` |
+  | None | `avatar ui-rounded-none` |
+  | SM | `avatar ui-rounded-sm` |
+  | MD | `avatar ui-rounded-md` |
+  | LG | `avatar ui-rounded-lg` |
+  | XL | `avatar ui-rounded-xl` |
+  | Full | `avatar ui-rounded-full` |
 
   <!-- tabs-close -->
 

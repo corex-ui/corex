@@ -132,6 +132,21 @@ defmodule Corex.New.Patches do
   end
 
   @doc """
+  When `:design` is true, ensures `.gitignore` ignores generated Corex Design CSS
+  at `/assets/corex/`. Creates `.gitignore` when missing. Idempotent.
+  """
+  def patch_gitignore(install_dir, opts) do
+    if Keyword.get(opts, :design, false) do
+      path = Path.join(install_dir, ".gitignore")
+      content = if File.exists?(path), do: File.read!(path), else: ""
+      updated = ensure_assets_corex_ignored(content)
+      write_if_changed!(path, content, updated)
+    else
+      :ok
+    end
+  end
+
+  @doc """
   Ensures `config/config.exs` has:
     * `config :<otp_app>, themes: [...]` when `--theme`
     * `config :localize, default_locale: :en, supported_locales: [...]` when `--lang`
@@ -428,6 +443,25 @@ defmodule Corex.New.Patches do
         else
           String.trim_trailing(content) <> "\n\n" <> String.trim_trailing(block) <> "\n"
         end
+    end
+  end
+
+  defp ensure_assets_corex_ignored(content) do
+    if Regex.match?(~r{^/?assets/corex/?$}m, content) do
+      content
+    else
+      entry = "/assets/corex/\n"
+
+      cond do
+        content == "" ->
+          entry
+
+        String.ends_with?(content, "\n") ->
+          content <> "\n" <> entry
+
+        true ->
+          content <> "\n\n" <> entry
+      end
     end
   end
 

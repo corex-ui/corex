@@ -127,11 +127,11 @@ defmodule Corex.NativeInput do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `native-input` |
-  | Accent | `native-input native-input ui-accent` |
-  | Brand | `native-input native-input ui-brand` |
-  | Alert | `native-input native-input ui-alert` |
-  | Info | `native-input native-input ui-info` |
-  | Success | `native-input native-input ui-success` |
+  | Accent | `native-input ui-accent` |
+  | Brand | `native-input ui-brand` |
+  | Alert | `native-input ui-alert` |
+  | Info | `native-input ui-info` |
+  | Success | `native-input ui-success` |
 
   ### Variant
 
@@ -139,17 +139,17 @@ defmodule Corex.NativeInput do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `native-input` or `native-input native-input ui-accent` |
-  | Solid | `native-input native-input ui-accent native-input ui-solid` |
+  | Subtle (default) | `native-input` or `native-input ui-accent` |
+  | Solid | `native-input ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `native-input native-input ui-size-sm` |
-  | MD | `native-input native-input ui-size-md` |
-  | LG | `native-input native-input ui-size-lg` |
-  | XL | `native-input native-input ui-size-xl` |
+  | SM | `native-input ui-size-sm` |
+  | MD | `native-input ui-size-md` |
+  | LG | `native-input ui-size-lg` |
+  | XL | `native-input ui-size-xl` |
 
   <!-- tabs-close -->
   '''

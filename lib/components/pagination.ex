@@ -257,7 +257,7 @@ defmodule Corex.Pagination do
   @import "../corex/components.css";
   ```
 
-  Stack modifiers on `<.pagination class="pagination ...">`. Combine axes, for example `pagination pagination ui-accent pagination ui-size-lg` or `pagination pagination ui-info pagination ui-solid`.
+  Stack modifiers on `<.pagination class="pagination ...">`. Combine axes, for example `pagination ui-accent ui-size-lg` or `pagination ui-info ui-solid`.
 
   Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
@@ -272,11 +272,11 @@ defmodule Corex.Pagination do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `pagination` |
-  | Accent | `pagination pagination ui-accent` |
-  | Brand | `pagination pagination ui-brand` |
-  | Alert | `pagination pagination ui-alert` |
-  | Success | `pagination pagination ui-success` |
-  | Info | `pagination pagination ui-info` |
+  | Accent | `pagination ui-accent` |
+  | Brand | `pagination ui-brand` |
+  | Alert | `pagination ui-alert` |
+  | Success | `pagination ui-success` |
+  | Info | `pagination ui-info` |
 
   ### Variant
 
@@ -284,30 +284,30 @@ defmodule Corex.Pagination do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `pagination` or `pagination pagination ui-accent` |
-  | Solid | `pagination pagination ui-accent pagination ui-solid` |
+  | Subtle (default) | `pagination` or `pagination ui-accent` |
+  | Solid | `pagination ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `pagination` |
-  | SM | `pagination pagination ui-size-sm` |
-  | MD | `pagination pagination ui-size-md` |
-  | LG | `pagination pagination ui-size-lg` |
-  | XL | `pagination pagination ui-size-xl` |
+  | SM | `pagination ui-size-sm` |
+  | MD | `pagination ui-size-md` |
+  | LG | `pagination ui-size-lg` |
+  | XL | `pagination ui-size-xl` |
 
   ### Rounded
 
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `pagination` |
-  | None | `pagination pagination ui-rounded-none` |
-  | SM | `pagination pagination ui-rounded-sm` |
-  | MD | `pagination pagination ui-rounded-md` |
-  | LG | `pagination pagination ui-rounded-lg` |
-  | XL | `pagination pagination ui-rounded-xl` |
-  | Full | `pagination pagination ui-rounded-full` |
+  | None | `pagination ui-rounded-none` |
+  | SM | `pagination ui-rounded-sm` |
+  | MD | `pagination ui-rounded-md` |
+  | LG | `pagination ui-rounded-lg` |
+  | XL | `pagination ui-rounded-xl` |
+  | Full | `pagination ui-rounded-full` |
 
   ### Max width
 

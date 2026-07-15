@@ -821,6 +821,38 @@ defmodule Corex.New.PatchesTest do
     end
   end
 
+  describe "patch_gitignore/2" do
+    test "adds /assets/corex/ when design: true" do
+      in_tmp(:patch_gitignore_design, fn ->
+        File.write!(".gitignore", "/node_modules/\n")
+
+        Patches.patch_gitignore(File.cwd!(), design: true)
+        body = File.read!(".gitignore")
+        assert body =~ ~r{^/assets/corex/$}m
+
+        Patches.patch_gitignore(File.cwd!(), design: true)
+        body2 = File.read!(".gitignore")
+        assert Regex.scan(~r{^/?assets/corex/?$}m, body2) |> length() == 1
+      end)
+    end
+
+    test "creates .gitignore when missing and design: true" do
+      in_tmp(:patch_gitignore_create, fn ->
+        refute File.exists?(".gitignore")
+        Patches.patch_gitignore(File.cwd!(), design: true)
+        assert File.read!(".gitignore") =~ "/assets/corex/"
+      end)
+    end
+
+    test "skips when design: false" do
+      in_tmp(:patch_gitignore_no_design, fn ->
+        File.write!(".gitignore", "/node_modules/\n")
+        Patches.patch_gitignore(File.cwd!(), design: false)
+        refute File.read!(".gitignore") =~ "assets/corex"
+      end)
+    end
+  end
+
   describe "patch_gettext_backend/3" do
     test "injects locales when gettext backend exists" do
       in_tmp(:patch_gettext, fn ->

@@ -156,7 +156,7 @@ defmodule Corex.NumberInput do
   @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.number_input>`). Combine axes, for example `number-input number-input ui-accent number-input ui-size-lg` or `number-input number-input ui-info number-input ui-solid`.
+  Stack modifiers on the host (`class` on `<.number_input>`). Combine axes, for example `number-input ui-accent ui-size-lg` or `number-input ui-info ui-solid`.
 
   Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
@@ -171,11 +171,11 @@ defmodule Corex.NumberInput do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `number-input` |
-  | Accent | `number-input number-input ui-accent` |
-  | Brand | `number-input number-input ui-brand` |
-  | Alert | `number-input number-input ui-alert` |
-  | Info | `number-input number-input ui-info` |
-  | Success | `number-input number-input ui-success` |
+  | Accent | `number-input ui-accent` |
+  | Brand | `number-input ui-brand` |
+  | Alert | `number-input ui-alert` |
+  | Info | `number-input ui-info` |
+  | Success | `number-input ui-success` |
 
   ### Variant
 
@@ -183,17 +183,17 @@ defmodule Corex.NumberInput do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `number-input` or `number-input number-input ui-accent` |
-  | Solid | `number-input number-input ui-accent number-input ui-solid` |
+  | Subtle (default) | `number-input` or `number-input ui-accent` |
+  | Solid | `number-input ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `number-input number-input ui-size-sm` |
-  | MD | `number-input number-input ui-size-md` |
-  | LG | `number-input number-input ui-size-lg` |
-  | XL | `number-input number-input ui-size-xl` |
+  | SM | `number-input ui-size-sm` |
+  | MD | `number-input ui-size-md` |
+  | LG | `number-input ui-size-lg` |
+  | XL | `number-input ui-size-xl` |
 
   <!-- tabs-close -->
 

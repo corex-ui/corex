@@ -168,9 +168,9 @@ Every `attr` and `slot` should have a `doc:` (except `rest` / `:global`).
 
 ### Corex Design CSS
 
-- Modifiers use BEM-style classes on the host: `accordion accordion--accent accordion--lg`.
-- Implement modifiers with `@utility <component>--*` in `design/priv/css/components/<name>.css`.
-- Document Color / Size (and other axes) in the component **Style** section as modifier tables.
+- Modifiers use shared host classes: `accordion ui-accent ui-size-lg ui-rounded-xl`.
+- Shared `ui-*` utilities live in `design/priv/css/utilities.css`; component recipes in `design/priv/css/components/<name>.css`.
+- Document semantic / variant / size / radius axes in the component **Style** section as modifier tables.
 
 ## Adding or changing a component (checklist)
 

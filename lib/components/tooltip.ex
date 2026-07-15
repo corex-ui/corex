@@ -153,11 +153,11 @@ defmodule Corex.Tooltip do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `tooltip` |
-  | Accent | `tooltip tooltip ui-accent` |
-  | Brand | `tooltip tooltip ui-brand` |
-  | Alert | `tooltip tooltip ui-alert` |
-  | Info | `tooltip tooltip ui-info` |
-  | Success | `tooltip tooltip ui-success` |
+  | Accent | `tooltip ui-accent` |
+  | Brand | `tooltip ui-brand` |
+  | Alert | `tooltip ui-alert` |
+  | Info | `tooltip ui-info` |
+  | Success | `tooltip ui-success` |
 
   ### Variant
 
@@ -165,17 +165,17 @@ defmodule Corex.Tooltip do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `tooltip` or `tooltip tooltip ui-accent` |
-  | Solid | `tooltip tooltip ui-accent tooltip ui-solid` |
+  | Subtle (default) | `tooltip` or `tooltip ui-accent` |
+  | Solid | `tooltip ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `tooltip tooltip ui-size-sm` |
-  | MD | `tooltip tooltip ui-size-md` |
-  | LG | `tooltip tooltip ui-size-lg` |
-  | XL | `tooltip tooltip ui-size-xl` |
+  | SM | `tooltip ui-size-sm` |
+  | MD | `tooltip ui-size-md` |
+  | LG | `tooltip ui-size-lg` |
+  | XL | `tooltip ui-size-xl` |
 
   <!-- tabs-close -->
 

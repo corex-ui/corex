@@ -101,7 +101,7 @@ defmodule Corex.AngleSlider do
   @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.angle_slider>`). Combine axes, for example `angle-slider angle-slider ui-accent angle-slider ui-size-lg` or `angle-slider angle-slider ui-info angle-slider ui-solid`.
+  Stack modifiers on the host (`class` on `<.angle_slider>`). Combine axes, for example `angle-slider ui-accent ui-size-lg` or `angle-slider ui-info ui-solid`.
 
   Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
@@ -116,11 +116,11 @@ defmodule Corex.AngleSlider do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `angle-slider` |
-  | Accent | `angle-slider angle-slider ui-accent` |
-  | Brand | `angle-slider angle-slider ui-brand` |
-  | Alert | `angle-slider angle-slider ui-alert` |
-  | Info | `angle-slider angle-slider ui-info` |
-  | Success | `angle-slider angle-slider ui-success` |
+  | Accent | `angle-slider ui-accent` |
+  | Brand | `angle-slider ui-brand` |
+  | Alert | `angle-slider ui-alert` |
+  | Info | `angle-slider ui-info` |
+  | Success | `angle-slider ui-success` |
 
   ### Variant
 
@@ -128,17 +128,17 @@ defmodule Corex.AngleSlider do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `angle-slider` or `angle-slider angle-slider ui-accent` |
-  | Solid | `angle-slider angle-slider ui-accent angle-slider ui-solid` |
+  | Subtle (default) | `angle-slider` or `angle-slider ui-accent` |
+  | Solid | `angle-slider ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `angle-slider angle-slider ui-size-sm` |
-  | MD | `angle-slider angle-slider ui-size-md` |
-  | LG | `angle-slider angle-slider ui-size-lg` |
-  | XL | `angle-slider angle-slider ui-size-xl` |
+  | SM | `angle-slider ui-size-sm` |
+  | MD | `angle-slider ui-size-md` |
+  | LG | `angle-slider ui-size-lg` |
+  | XL | `angle-slider ui-size-xl` |
 
   <!-- tabs-close -->
 

@@ -197,7 +197,7 @@ defmodule Corex.PasswordInput do
   @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.password_input>`). Combine axes, for example `password-input password-input ui-accent password-input ui-size-lg` or `password-input password-input ui-info password-input ui-solid`.
+  Stack modifiers on the host (`class` on `<.password_input>`). Combine axes, for example `password-input ui-accent ui-size-lg` or `password-input ui-info ui-solid`.
 
   Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
@@ -212,11 +212,11 @@ defmodule Corex.PasswordInput do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `password-input` |
-  | Accent | `password-input password-input ui-accent` |
-  | Brand | `password-input password-input ui-brand` |
-  | Alert | `password-input password-input ui-alert` |
-  | Info | `password-input password-input ui-info` |
-  | Success | `password-input password-input ui-success` |
+  | Accent | `password-input ui-accent` |
+  | Brand | `password-input ui-brand` |
+  | Alert | `password-input ui-alert` |
+  | Info | `password-input ui-info` |
+  | Success | `password-input ui-success` |
 
   ### Variant
 
@@ -224,17 +224,17 @@ defmodule Corex.PasswordInput do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `password-input` or `password-input password-input ui-accent` |
-  | Solid | `password-input password-input ui-accent password-input ui-solid` |
+  | Subtle (default) | `password-input` or `password-input ui-accent` |
+  | Solid | `password-input ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `password-input password-input ui-size-sm` |
-  | MD | `password-input password-input ui-size-md` |
-  | LG | `password-input password-input ui-size-lg` |
-  | XL | `password-input password-input ui-size-xl` |
+  | SM | `password-input ui-size-sm` |
+  | MD | `password-input ui-size-md` |
+  | LG | `password-input ui-size-lg` |
+  | XL | `password-input ui-size-xl` |
 
   <!-- tabs-close -->
 

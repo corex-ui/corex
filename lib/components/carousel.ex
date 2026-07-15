@@ -209,11 +209,11 @@ defmodule Corex.Carousel do
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `carousel` |
-  | Accent | `carousel carousel ui-accent` |
-  | Brand | `carousel carousel ui-brand` |
-  | Alert | `carousel carousel ui-alert` |
-  | Info | `carousel carousel ui-info` |
-  | Success | `carousel carousel ui-success` |
+  | Accent | `carousel ui-accent` |
+  | Brand | `carousel ui-brand` |
+  | Alert | `carousel ui-alert` |
+  | Info | `carousel ui-info` |
+  | Success | `carousel ui-success` |
 
   ```heex
   <.carousel
@@ -250,8 +250,8 @@ defmodule Corex.Carousel do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Subtle (default) | `carousel` or `carousel carousel ui-accent` |
-  | Solid | `carousel carousel ui-accent carousel ui-solid` |
+  | Subtle (default) | `carousel` or `carousel ui-accent` |
+  | Solid | `carousel ui-accent ui-solid` |
 
   ### Size
 
@@ -259,10 +259,10 @@ defmodule Corex.Carousel do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `carousel carousel ui-size-sm` |
-  | MD | `carousel carousel ui-size-md` |
-  | LG | `carousel carousel ui-size-lg` |
-  | XL | `carousel carousel ui-size-xl` |
+  | SM | `carousel ui-size-sm` |
+  | MD | `carousel ui-size-md` |
+  | LG | `carousel ui-size-lg` |
+  | XL | `carousel ui-size-xl` |
 
   ```heex
   <.carousel
@@ -299,12 +299,12 @@ defmodule Corex.Carousel do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | None | `carousel carousel ui-rounded-none` |
-  | SM | `carousel carousel ui-rounded-sm` |
-  | MD | `carousel carousel ui-rounded-md` |
-  | LG | `carousel carousel ui-rounded-lg` |
-  | XL | `carousel carousel ui-rounded-xl` |
-  | Full | `carousel carousel ui-rounded-full` |
+  | None | `carousel ui-rounded-none` |
+  | SM | `carousel ui-rounded-sm` |
+  | MD | `carousel ui-rounded-md` |
+  | LG | `carousel ui-rounded-lg` |
+  | XL | `carousel ui-rounded-xl` |
+  | Full | `carousel ui-rounded-full` |
 
   ```heex
   <.carousel
