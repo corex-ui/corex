@@ -4,10 +4,10 @@ defmodule Mix.Tasks.Compile.CorexDesign do
   @shortdoc "Regenerates the Corex design bundle when config or the design package changes"
 
   @moduledoc """
-  Keeps the generated Corex design CSS in sync with `config :corex_design`.
+  Advanced: rebuild Design CSS on `mix compile` when `:corex_design` is in `compilers`.
 
-  Add `:corex_design` to your project's `compilers` so a config change is never
-  silently stale:
+  Most apps instead run `mix corex.design.build` from `assets.build` / `assets.deploy`
+  (see Corex Manual installation). Optional compilers setup:
 
       def project do
         [

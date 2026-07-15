@@ -1,4 +1,5 @@
 @import "../main.css";
+@import "./scrollbar.css";
 
 @layer components {
  .select {
@@ -72,6 +73,10 @@
  position: relative;
  }
 
+ .select[class*="ui-max-height-"] [data-scope="select"][data-part="content"] {
+ @apply scrollbar scrollbar--sm;
+ }
+
  .select [data-scope="select"][data-part="content"] {
  @apply ui-content;
 
@@ -79,7 +84,9 @@
  z-index: 50;
  padding: 0;
  border-radius: var(--radius-md);
+ max-height: var(--ctl-max-height, none);
  overflow: hidden;
+ overflow-y: var(--ctl-max-height-overflow, hidden);
  box-shadow: var(--shadow-ui);
 
  &:focus-visible {

@@ -228,7 +228,15 @@ defmodule Corex.Design.ScalesTest do
     export = Scales.export()
 
     assert export[:semantic] != []
-    assert Map.keys(export[:dimensions]) |> Enum.sort() == [:density, :radius, :size, :text, :weight]
+
+    assert Map.keys(export[:dimensions]) |> Enum.sort() == [
+             :density,
+             :radius,
+             :size,
+             :text,
+             :weight
+           ]
+
     refute Map.has_key?(export, :visual)
     assert export[:container][:steps] != []
     assert export[:sizing][:steps] != []

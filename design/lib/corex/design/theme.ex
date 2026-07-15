@@ -1,13 +1,5 @@
 defmodule Corex.Design.Theme do
-  @moduledoc """
-  Resolves `config :corex_design` theme keys into color and dimension inputs for the compiler.
-
-  Configure with flat keys: `default_theme`, `default_mode`, and `themes` (preset id list or catalog map).
-  When `themes` is omitted, `Corex.Design.Theme.Presets.all/0` is used.
-
-  Built-in preset ids (`neo`, `uno`, `duo`, `leo`) accept partial maps merged onto the preset.
-  Custom theme ids require a full spec. Use `merge_specs/2` for programmatic merges only.
-  """
+  @moduledoc false
 
   alias Corex.Design.Theme.Options, as: ThemeOptions
   alias Corex.Design.Theme.Presets

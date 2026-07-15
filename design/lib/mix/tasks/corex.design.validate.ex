@@ -3,6 +3,12 @@ defmodule Mix.Tasks.Corex.Design.Validate do
 
   @shortdoc "Validates Corex design host config"
 
+  @moduledoc """
+  Validates `config :corex_design` and prints contrast warnings.
+
+      $ mix corex.design.validate
+  """
+
   @impl Mix.Task
   def run(_argv) do
     Mix.Task.run("app.start")

@@ -1,10 +1,10 @@
 # Corex Design
 
-Optional config-driven token generation and static component CSS for Corex.
+Optional config-driven tokens, themes, and component CSS for [Corex](https://hex.pm/packages/corex).
 
-## Usage
+Full app wiring (html attributes, pickers, fonts, icons) lives in Corex Hexdocs: [Design](https://hexdocs.pm/corex/design.html), [Theming](https://hexdocs.pm/corex/theming.html), [Dark mode](https://hexdocs.pm/corex/dark_mode.html), [Modifiers](https://hexdocs.pm/corex/modifiers.html).
 
-Add `corex_design` as a build-time dependency, configure tokens, and build:
+## Install
 
 ```elixir
 # mix.exs
@@ -12,6 +12,7 @@ Add `corex_design` as a build-time dependency, configure tokens, and build:
 ```
 
 ```elixir
+# config/config.exs
 config :corex_design,
   output: "assets/corex",
   default_theme: :neo,
@@ -22,55 +23,52 @@ config :corex_design,
   semantics: nil
 ```
 
-`mix corex.design.build` writes `assets/corex/` including `corex.css` (umbrella entry) and `components.css` (filtered recipes). Prefer the single import from `app.css`:
+Add `/assets/corex/` to `.gitignore`. Do not commit the generated tree.
+
+Optionally rebuild on every compile:
+
+```elixir
+def project do
+  [
+    compilers: Mix.compilers() ++ [:corex_design]
+  ]
+end
+```
+
+Most apps call the build from `assets.build` / `assets.deploy` instead (see Corex [Manual installation](https://hexdocs.pm/corex/manual_installation.html)).
+
+## Build
+
+| Command | Purpose |
+|---------|---------|
+| `mix corex.design.build` | Write `assets/corex/` (`corex.css`, themes, components) |
+| `mix corex.design.options` | List allowed config values and your resolved config |
+| `mix corex.design.validate` | Validate `config :corex_design` |
 
 ```css
 @import "../corex/corex.css";
 @source "../corex";
 ```
 
-Layered imports (`main.css` + `theme/neo.css` + `components.css`) are still valid when you need finer control.
-
 ### Bundle filtering
 
 | Key | Default | Effect |
 |-----|---------|--------|
-| `components` | `nil` (all) | Emit only listed `components/<id>.css` files |
-| `semantics` | `nil` (all) | Emit only listed palette roles; trim unused `ui-{role}` utilities (`base` always included) |
+| `components` | `nil` (all) | Emit only listed component CSS |
+| `semantics` | `nil` (all) | Emit only listed palette roles (`base` always included) |
+| `themes` | `nil` (all) | Emit only listed theme CSS |
+| `default_theme` | `:neo` | Build default theme |
+| `default_mode` | `:light` | Build default mode |
 
 ```elixir
 components: ~w(button dialog accordion typo layout-heading)a,
-semantics: ~w(accent brand alert)a
+semantics: ~w(accent brand alert)a,
+themes: ~w(neo uno)a
 ```
 
-`variants:` was removed in 0.2. Surface treatment is subtle (default) or `ui-solid` only.
+Prefer top-level `semantics:` over legacy `scales: [semantic: ...]`.
 
-Legacy `scales: [semantic: ...]` is still read when `semantics:` is omitted; prefer `semantics:` for new apps.
-
-```bash
-mix corex.design.build
-```
-
-Generated apps from `mix corex.new` include the `corex_design` dependency, ignore `/assets/corex/` in `.gitignore`, and run `mix corex.design.build` into `assets/corex/`. Do not commit the generated tree.
-
-## Modifiers
-
-Component CSS uses shared host modifiers:
-
-- **Semantic**: `ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`
-- **Variant**: subtle (default) or `ui-solid`
-- **Size**: `ui-size-sm` … `ui-size-xl`
-- **Radius**: `ui-rounded-lg`, `ui-rounded-xl`, …
-
-Use Tailwind utilities for layout and sizing (`max-w-md`, `flex`, `gap-4`).
-
-See [guides/modifiers.md](guides/modifiers.md) for the full modifier reference.
-
-## Scale policy
-
-### Host-configurable (`scales:`)
-
-Override built-in step values per axis. Keys use config names; `space` maps to internal density.
+### Scales
 
 ```elixir
 scales: [
@@ -78,56 +76,18 @@ scales: [
   size: [md: 11],
   text: [md: 1.05],
   radius: [md: 0.5],
-  weight: [normal: 450],
-  semantic: ~w(accent brand alert info success)a
+  weight: [normal: 450]
 ]
 ```
 
-`scales:` overrides numeric step values for built-in size, space, text, radius, and weight axes. Prefer top-level `semantics:` to filter palette roles (see Bundle filtering above). Legacy `scales: [semantic: ...]` is an alias when `semantics:` is omitted.
+Public keys: `space`, `size`, `text`, `radius`, `weight`.
 
-These axes drive emitted theme CSS (`--theme-spacing-*`, `--theme-text-*`, `--theme-radius-*`, `--theme-font-weight-*`) and shared size/radius modifiers.
+## Modifiers
 
-### Per-theme multipliers (presets)
+Shared host classes: `ui-accent`, `ui-solid`, `ui-size-lg`, `ui-rounded-xl`, …. Full reference: [modifiers](guides/modifiers.md).
 
-Theme presets scale fixed base ladders via `dimensions` in each preset:
+## See also
 
-- `space_scale`, `size_scale`, `text_scale`, `radius_scale` multiply token axes above
-- `container_scale` scales the container width ladder
-- `shadow_scale` scales shadow blur/spread templates
-
-Font stacks are overridden per theme via preset `typography`, not via `scales:`.
-
-### Fixed utility catalogs
-
-Leading, tracking, shadows, blur, ease, animate, and breakpoints are fixed in `Corex.Design.Tokens.Scales`. They are Tailwind-adjacent namespaces, not part of the modifier model or `scales:` config.
-
-If you override `scales: [text: ...]`, line-height tokens (`text_leading`) stay tied to the default text ladder until derived in a future release.
-
-## Color generation
-
-Token colors are generated with the [`color`](https://hex.pm/packages/color) hex package (OKLCH tonal scales and WCAG contrast solving).
-
-Semantic ink for text and rings on neutral surfaces uses `--color-ink-{semantic}` (recipe wildcard `--color-ink-*`). Filled controls pair `--color-{semantic}` backgrounds with `--color-{semantic}-ink` text (wildcard `--color-*-ink`). Prefer `{role}-contrast` / `{role}-text` naming in new token work where exposed.
-
-## Token layers
-
-Theme color values are generated into `priv/css/tokens/themes/{theme}/color/{mode}.css` as runtime `--color-*` custom properties on `[data-theme][data-mode]`. Set both attributes on `<html>`. A single generated `tokens/semantic/color.css` registers the Tailwind `@theme inline` bridge.
-
-## Fonts (optional)
-
-Corex Design does not ship `@font-face` files. Theme CSS only sets font stacks (`--theme-font-*`); the generated `tokens/semantic/font.css` bridge maps them to `--font-sans`, `--font-display`, `--font-mono`, `--font-code`, and `--font-weight-*` used by `.typo` and components.
-
-- **neo** uses system stacks only; no web font import is required.
-- **uno**, **duo**, and **leo** (or a theme picker that exposes all four) need web fonts loaded by the app.
-
-Place a Google Fonts (or self-hosted) import **before** Tailwind and Corex imports in `app.css`:
-
-```css
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300..900;1,300..900&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:ital,wght@0,400..800;1,400..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Work+Sans:ital,wght@0,300..900;1,300..900&display=swap');
-@import "tailwindcss";
-@import "../corex/corex.css";
-```
-
-That URL covers DM Sans and JetBrains Mono (uno), Work Sans and Playfair Display (duo), and IBM Plex Sans/Mono (leo).
-
-Maintainers regenerate theme token files with `mix bundle.build` in this package (updates `priv/css/tokens/themes/`). Verify component CSS in e2e with `cd e2e && mix assets.build`.
+- [Corex Design guide](https://hexdocs.pm/corex/design.html)
+- [Theming](https://hexdocs.pm/corex/theming.html) / [Dark mode](https://hexdocs.pm/corex/dark_mode.html)
+- [Manual installation](https://hexdocs.pm/corex/manual_installation.html)

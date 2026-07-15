@@ -27,10 +27,7 @@ defmodule Mix.Tasks.Corex.DocParity do
     results = DocParity.run(sections: sections, components: components)
     IO.puts(DocParity.report(results))
 
-    blocking =
-      results
-      |> DocParity.failures()
-      |> Enum.filter(&(&1.status in [:drift, :ellipsis]))
+    blocking = DocParity.failures(results)
 
     if Keyword.get(opts, :fail, true) and blocking != [] do
       Mix.raise("doc parity failed (#{length(blocking)} blocking checks)")

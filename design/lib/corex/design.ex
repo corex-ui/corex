@@ -1,9 +1,14 @@
 defmodule Corex.Design do
   @moduledoc """
-  Optional config-driven token generation and static component CSS for Corex.
+  Optional config-driven tokens, themes, and component CSS for Corex.
 
-  Host configuration lives under `config :corex_design`. Run
-  `mix corex.design.build` to emit the bundle into your app's assets tree.
+  1. Add `{:corex_design, "~> 0.2", runtime: false}` and `config :corex_design` (see `Corex.Design.Config`).
+  2. Run `mix corex.design.build` (or add `:corex_design` to `compilers`).
+  3. Import `@import "../corex/corex.css"` in `app.css`.
+
+  Package docs: [corex_design](https://hexdocs.pm/corex_design). App wiring:
+  [Design](https://hexdocs.pm/corex/design.html), [Theming](https://hexdocs.pm/corex/theming.html),
+  [Dark mode](https://hexdocs.pm/corex/dark_mode.html), [Modifiers](https://hexdocs.pm/corex/modifiers.html).
   """
 
   @default_output "assets/corex"
