@@ -13,6 +13,20 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     """
   end
 
+  def invalid_code do
+    ~S"""
+    <.password_input field={@form[:password]} class="password-input">
+      <:label>Password</:label>
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
+      <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
+      <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
+    </.password_input>
+    """
+  end
+
   def minimal_example(assigns) do
     ~H"""
     <.password_input id="password-input-anatomy-basic" name="user[password]" class="password-input">
@@ -1270,9 +1284,10 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     ~H"""
     <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
       <div class="grid grid-cols-4 gap-space items-start min-w-max">
-        <div :for={semantic <- @matrix_semantics} class="contents">
+        <div :for={{semantic, semantic_index} <- Enum.with_index(@matrix_semantics)} class="contents">
           <.password_input
-            :for={variant <- @matrix_variants}
+            :for={{variant, variant_index} <- Enum.with_index(@matrix_variants)}
+            id={"password-input-matrix-#{semantic_index}-#{variant_index}"}
             name="user[password]"
             class={
               DemoScales.join_matrix_modifiers("password-input", semantic.modifier, variant.modifier)

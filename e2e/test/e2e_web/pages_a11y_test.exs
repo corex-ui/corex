@@ -2,6 +2,9 @@ defmodule E2eWeb.PagesA11yTest do
   use E2eWeb.ConnCase, async: false
   use Wallaby.Feature
 
+  @moduletag :wallaby
+  @moduletag :a11y
+
   import E2e.AccountsFixtures
 
   setup do

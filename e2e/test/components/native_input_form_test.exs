@@ -2,6 +2,8 @@ defmodule E2eWeb.NativeInputFormTest do
   use ExUnit.Case, async: false
   use Wallaby.Feature
 
+  @moduletag :wallaby
+
   alias E2eWeb.NativeInputModel, as: NativeInput
 
   feature "static native form - submit empty shows flash with name and agree", %{session: session} do

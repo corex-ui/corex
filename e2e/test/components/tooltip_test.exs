@@ -2,6 +2,8 @@ defmodule E2eWeb.TooltipTest do
   use ExUnit.Case, async: false
   use Wallaby.Feature
 
+  @moduletag :wallaby
+
   import Wallaby.Query
 
   alias E2eWeb.ComponentBehaviorSpec

@@ -126,8 +126,8 @@ defmodule E2eWeb.CheckboxFormLiveTest do
 
     controlled_html = controlled_form_html(html)
     refute controlled_html =~ "must be accepted"
-    assert controlled_html =~ ~s/data-checked="true"/
-    assert controlled_html =~ ~s/data-state="checked"/
+    assert controlled_html =~ ~S/data-checked="true"/
+    assert controlled_html =~ ~S/data-state="checked"/
   end
 
   test "ecto controlled save with accepted terms pushes toast-create", %{conn: conn} do

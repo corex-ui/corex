@@ -18,6 +18,8 @@ defmodule E2eWeb.UserController do
   end
 
   def create(conn, %{"user" => user_params}) do
+    user_params = normalize_avatar_params(user_params)
+
     case Accounts.create_user(user_params) do
       {:ok, user} ->
         conn
@@ -51,6 +53,7 @@ defmodule E2eWeb.UserController do
   def update(conn, %{"id" => id, "user" => user_params} = params) do
     user = Accounts.get_user!(id)
     return_to = if params["return_to"] == "show", do: "show", else: "index"
+    user_params = normalize_avatar_params(user_params)
 
     case Accounts.update_user(user, user_params) do
       {:ok, user} ->
@@ -66,6 +69,30 @@ defmodule E2eWeb.UserController do
         )
     end
   end
+
+  defp normalize_avatar_params(params) when is_map(params) do
+    case Map.get(params, "avatar") do
+      %Plug.Upload{filename: name} when is_binary(name) and name != "" ->
+        Map.put(params, "avatar", name)
+
+      _ ->
+        case Map.get(params, "avatar_label") do
+          label when is_binary(label) ->
+            trimmed = String.trim(label)
+
+            if trimmed != "" do
+              Map.put(params, "avatar", trimmed)
+            else
+              params
+            end
+
+          _ ->
+            params
+        end
+    end
+  end
+
+  defp normalize_avatar_params(params), do: params
 
   def delete(conn, %{"id" => id}) do
     user = Accounts.get_user!(id)

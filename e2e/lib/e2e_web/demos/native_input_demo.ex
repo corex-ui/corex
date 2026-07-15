@@ -616,9 +616,10 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     ~H"""
     <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
       <div class="grid grid-cols-4 gap-space items-start min-w-max">
-        <div :for={semantic <- @matrix_semantics} class="contents">
+        <div :for={{semantic, semantic_index} <- Enum.with_index(@matrix_semantics)} class="contents">
           <.native_input
-            :for={variant <- @matrix_variants}
+            :for={{variant, variant_index} <- Enum.with_index(@matrix_variants)}
+            id={"native-input-matrix-#{semantic_index}-#{variant_index}"}
             type="text"
             name="user[name]"
             class={

@@ -2,6 +2,8 @@ defmodule E2eWeb.CheckboxFormTest do
   use ExUnit.Case, async: false
   use Wallaby.Feature
 
+  @moduletag :wallaby
+
   alias E2eWeb.CheckboxModel, as: Checkbox
 
   describe "static controller" do

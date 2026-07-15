@@ -2,6 +2,7 @@
   :let={f}
   for={@form}
   action={@action}
+  multipart
 >
   <input :if={@return_context} type="hidden" name="return_to" value={@return_context} />
   <.native_input field={f[:name]} type="text" class="native-input max-w-none">
@@ -122,6 +123,114 @@
       {msg}
     </:error>
   </.checkbox>
+
+  <.password_input field={f[:password]} class="password-input max-w-none">
+    <:label>Password</:label>
+    <:visible_indicator>
+      <.heroicon name="hero-eye" class="icon" />
+    </:visible_indicator>
+    <:hidden_indicator>
+      <.heroicon name="hero-eye-slash" class="icon" />
+    </:hidden_indicator>
+    <:error :let={msg}>
+      <.heroicon name="hero-exclamation-circle" class="icon" />
+      {msg}
+    </:error>
+  </.password_input>
+
+  <.switch field={f[:notifications]} class="switch max-w-none">
+    <:label>Email notifications</:label>
+    <:error :let={msg}>
+      <.heroicon name="hero-exclamation-circle" class="icon" />
+      {msg}
+    </:error>
+  </.switch>
+
+  <.radio_group
+    field={f[:role]}
+    class="radio-group"
+    items={[
+      %{label: "Admin", value: "admin"},
+      %{label: "Editor", value: "editor"},
+      %{label: "Viewer", value: "viewer"}
+    ]}
+  >
+    <:label>Role</:label>
+    <:item_control>
+      <.heroicon name="hero-check" class="data-checked" />
+    </:item_control>
+    <:error :let={msg}>
+      <.heroicon name="hero-exclamation-circle" class="icon" />
+      {msg}
+    </:error>
+  </.radio_group>
+
+  <.pin_input field={f[:pin]} count={4} class="pin-input">
+    <:label>PIN</:label>
+    <:error :let={msg}>
+      <.heroicon name="hero-exclamation-circle" class="icon" />
+      {msg}
+    </:error>
+  </.pin_input>
+
+  <.color_picker
+    field={f[:accent_color]}
+    label="Accent color"
+    class="color-picker max-w-none"
+    presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
+  >
+    <:error :let={msg}>
+      <.heroicon name="hero-exclamation-circle" class="icon" />
+      {msg}
+    </:error>
+  </.color_picker>
+
+  <.angle_slider
+    field={f[:heading_angle]}
+    marker_values={[0, 90, 180, 270]}
+    class="angle-slider"
+  >
+    <:label>Heading angle</:label>
+    <:error :let={msg}>
+      <.heroicon name="hero-exclamation-circle" class="icon" />
+      {msg}
+    </:error>
+  </.angle_slider>
+
+  <.editable
+    field={f[:title]}
+    placeholder="Enter title"
+    activation_mode="dblclick"
+    select_on_focus
+    class="editable max-w-none"
+  >
+    <:label>Title</:label>
+    <:edit_trigger>
+      <.heroicon name="hero-pencil-square" class="icon" />
+    </:edit_trigger>
+    <:submit_trigger>
+      <.heroicon name="hero-check" class="icon" />
+    </:submit_trigger>
+    <:cancel_trigger>
+      <.heroicon name="hero-x-mark" class="icon" />
+    </:cancel_trigger>
+    <:error :let={msg}>
+      <.heroicon name="hero-exclamation-circle" class="icon" />
+      {msg}
+    </:error>
+  </.editable>
+
+  <.file_upload field={f[:avatar]} class="file-upload max-w-none">
+    <:label>Avatar</:label>
+    <:close>
+      <.heroicon name="hero-x-mark" />
+    </:close>
+    <:error :let={msg}>
+      <.heroicon name="hero-exclamation-circle" class="icon" />
+      {msg}
+    </:error>
+  </.file_upload>
+
   <footer class="flex w-full justify-between gap-2">
     <.navigate :if={@return_to} to={@return_to} type="navigate" class="button ui-size-sm">
       Cancel

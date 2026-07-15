@@ -248,8 +248,8 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
     end
   end
 
-  describe "Corex.Code / mix corex.code" do
-    test "mix corex.code works when Makeup is in generated app" do
+  describe "Corex.Code / mix corex.design.code" do
+    test "mix corex.design.code works when Makeup is in generated app" do
       with_installer_tmp("corex_code_makeup", fn tmp_dir ->
         {app_root_path, _} = generate_corex_app(tmp_dir, "my_app")
 
@@ -262,7 +262,7 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
         end)
 
         mix_run!(["deps.get"], app_root_path)
-        mix_run!(["corex.code"], app_root_path)
+        mix_run!(["corex.design.code"], app_root_path)
 
         assert_file(Path.join(app_root_path, "assets/css/code_highlight.css"))
       end)

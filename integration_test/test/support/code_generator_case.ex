@@ -365,6 +365,7 @@ defmodule Corex.Integration.CodeGeneratorCase do
 
     refute_file(Path.join(base, "assets/corex_design.exs"))
     assert_file(Path.join(base, "mix.exs"), ~r/\{:corex_design,/)
+    assert_file(Path.join(base, "mix.exs"), ~r/\{:corex_mcp,/)
     assert_file(Path.join(base, "mix.exs"), "corex.design.build")
     assert_file(Path.join(base, "config/config.exs"), "config :corex_design")
 
@@ -451,7 +452,11 @@ defmodule Corex.Integration.CodeGeneratorCase do
     assert_file(app_js, fn c -> assert c =~ ~r/\.\.\.corex/ end)
 
     app_css = Path.join([base, "assets", "css", "app.css"])
-    assert_file(app_css, fn c -> refute c =~ ~s(@import "../corex/main.css") end)
+
+    assert_file(app_css, fn c ->
+      refute c =~ ~s(@import "../corex/)
+      refute c =~ ~s(@import '../corex/)
+    end)
 
     home = Path.join([base, "lib", web, "controllers", "page_html", "home.html.heex"])
 

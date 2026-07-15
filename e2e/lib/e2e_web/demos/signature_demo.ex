@@ -37,6 +37,21 @@ defmodule E2eWeb.Demos.SignatureDemo do
     """
   end
 
+  def with_presets_code do
+    ~S"""
+    <.signature_pad
+      drawing_fill="blue"
+      drawing_size={3}
+      drawing_simulate_pressure
+      class="signature-pad">
+      <:label>Sign here</:label>
+      <:clear_trigger>
+        <.heroicon name="hero-x-mark" />
+      </:clear_trigger>
+    </.signature_pad>
+    """
+  end
+
   def with_label_example(assigns) do
     _ = assigns
 
@@ -1016,9 +1031,10 @@ defmodule E2eWeb.Demos.SignatureDemo do
     ~H"""
     <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
       <div class="grid grid-cols-4 gap-space items-start min-w-max">
-        <div :for={semantic <- @matrix_semantics} class="contents">
+        <div :for={{semantic, semantic_index} <- Enum.with_index(@matrix_semantics)} class="contents">
           <.signature_pad
-            :for={variant <- @matrix_variants}
+            :for={{variant, variant_index} <- Enum.with_index(@matrix_variants)}
+            id={"signature-pad-matrix-#{semantic_index}-#{variant_index}"}
             class={
               DemoScales.join_matrix_modifiers("signature-pad", semantic.modifier, variant.modifier)
             }

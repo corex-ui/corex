@@ -127,6 +127,39 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     """
   end
 
+  def anatomy_multipart_code do
+    ~S"""
+    <.form for={@form} action={~p"/file-upload/form"} method="post" multipart>
+      <input type="hidden" name="file_upload_changeset[_sent]" value="1" />
+      <.file_upload field={@form[:attachment]} class="file-upload">
+        <:label>Attachment</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.file_upload>
+      <.action type="submit" class="button ui-accent w-full">Submit</.action>
+    </.form>
+    """
+  end
+
+  def live_form_with_submit_code do
+    ~S"""
+    <form phx-change="validate" phx-submit="save">
+      <.file_upload_live upload={@uploads.attachment} field={:attachment} class="file-upload">
+        <:label>Attachment</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+      </.file_upload_live>
+      <.action type="submit" class="button ui-accent">Submit</.action>
+    </form>
+    """
+  end
+
   def form_ecto do
     ~S"""
     defmodule MyApp.Form.FileUploadForm do
@@ -939,9 +972,10 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     ~H"""
     <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
       <div class="grid grid-cols-4 gap-space items-start min-w-max">
-        <div :for={semantic <- @matrix_semantics} class="contents">
+        <div :for={{semantic, semantic_index} <- Enum.with_index(@matrix_semantics)} class="contents">
           <.file_upload
-            :for={variant <- @matrix_variants}
+            :for={{variant, variant_index} <- Enum.with_index(@matrix_variants)}
+            id={"file-upload-matrix-#{semantic_index}-#{variant_index}"}
             name="document"
             class={DemoScales.join_matrix_modifiers("file-upload", semantic.modifier, variant.modifier) <> " w-full"}
           >

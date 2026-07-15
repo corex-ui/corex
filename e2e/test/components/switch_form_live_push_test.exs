@@ -27,7 +27,7 @@ defmodule E2eWeb.SwitchFormLivePushTest do
       |> render_change(%{"preferences_ecto" => %{"notifications" => "false"}})
 
     assert html =~ "must be accepted"
-    refute html =~ ~r/\bdata-invalid=""/
+    assert html =~ ~r/\bdata-invalid=""/
   end
 
   test "ecto save when not accepted shows error markup", %{conn: conn} do
@@ -36,7 +36,7 @@ defmodule E2eWeb.SwitchFormLivePushTest do
     html = view |> form(@form_id) |> render_submit()
 
     assert html =~ "must be accepted"
-    refute html =~ ~r/\bdata-invalid=""/
+    assert html =~ ~r/\bdata-invalid=""/
     refute_push_event(view, "toast-create", %{})
   end
 
@@ -118,8 +118,8 @@ defmodule E2eWeb.SwitchFormLivePushTest do
 
     controlled_html = controlled_form_html(html)
     refute controlled_html =~ "must be accepted"
-    assert controlled_html =~ ~s/data-checked="true"/
-    assert controlled_html =~ ~s/data-state="checked"/
+    assert controlled_html =~ ~S/data-checked="true"/
+    assert controlled_html =~ ~S/data-state="checked"/
   end
 
   test "ecto controlled save with accepted notifications pushes toast-create", %{conn: conn} do

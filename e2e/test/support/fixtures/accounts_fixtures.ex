@@ -18,7 +18,15 @@ defmodule E2e.AccountsFixtures do
         terms: true,
         level: 5,
         currency: "eur",
-        tags: ["alpha", "beta"]
+        tags: ["alpha", "beta"],
+        password: "password1",
+        notifications: true,
+        role: "editor",
+        pin: "1234",
+        accent_color: "#3b82f6",
+        heading_angle: 90.0,
+        title: "some title",
+        avatar: "avatar.png"
       })
       |> E2e.Accounts.create_user()
 
@@ -39,7 +47,15 @@ defmodule E2e.AccountsFixtures do
         terms: true,
         level: 5,
         currency: "eur",
-        tags: ["alpha", "beta"]
+        tags: ["alpha", "beta"],
+        password: "password1",
+        notifications: true,
+        role: "admin",
+        pin: "1234",
+        accent_color: "#3b82f6",
+        heading_angle: 90.0,
+        title: "some title",
+        avatar: "avatar.png"
       })
       |> E2e.Accounts.create_admin()
 

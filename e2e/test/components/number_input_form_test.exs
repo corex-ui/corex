@@ -2,6 +2,8 @@ defmodule E2eWeb.NumberInputFormTest do
   use ExUnit.Case, async: false
   use Wallaby.Feature
 
+  @moduletag :wallaby
+
   alias E2eWeb.NumberInputModel, as: NumberInput
 
   feature "static form - submit empty includes default value", %{session: session} do

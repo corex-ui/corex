@@ -2,6 +2,8 @@ defmodule E2eWeb.MarqueeTest do
   use ExUnit.Case, async: false
   use Wallaby.Feature
 
+  @moduletag :wallaby
+
   alias E2eWeb.ComponentBehaviorSpec
   alias E2eWeb.MarqueeModel, as: Marquee
 

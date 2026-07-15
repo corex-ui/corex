@@ -30,7 +30,10 @@ user_attrs = %{
   terms: true,
   level: 5,
   currency: "eur",
-  tags: ["alpha", "beta"]
+  tags: ["alpha", "beta"],
+  password: "password1",
+  notifications: true,
+  role: "editor"
 }
 
 admin_attrs = %{
@@ -41,7 +44,10 @@ admin_attrs = %{
   terms: true,
   level: 5,
   currency: "eur",
-  tags: ["alpha", "beta"]
+  tags: ["alpha", "beta"],
+  password: "password1",
+  notifications: true,
+  role: "admin"
 }
 
 {:ok, _} = Accounts.create_user(user_attrs)

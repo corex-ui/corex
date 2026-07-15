@@ -31,7 +31,8 @@ defmodule E2eWeb.StylingVariantDemo do
     ~H"""
     <div class="typo text-ink-muted flex flex-col gap-space-xs max-w-none">
       <p>
-        Variant modifiers control {@host} surface treatment. Default is subtle; add <code class="text-sm">ui-solid</code>
+        Variant modifiers control {@host} surface treatment. Default is subtle; add
+        <code class="text-sm">ui-solid</code>
         for a filled surface.
       </p>
     </div>
