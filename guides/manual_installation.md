@@ -23,7 +23,7 @@ Add `corex` to your `mix.exs` deps:
 ```elixir
 def deps do
   [
-    {:corex, "~> 0.1.0"}
+    {:corex, "~> 0.2.0"}
   ]
 end
 ```
@@ -168,25 +168,59 @@ mix assets.build
 
 ## 6. Optional: Corex Design
 
-See the [Design guide](design.html) for commands, modifiers, shared utilities, and themes. Short version: install assets with:
+See the [Design guide](design.html) for commands, modifiers, shared utilities, and themes.
+
+Add the `corex_design` dependency to `mix.exs`:
+
+```elixir
+{:corex_design, "~> 0.2", runtime: false, only: :dev},
+```
+
+Add to `config/config.exs`:
+
+```elixir
+config :corex_design,
+  output: "assets/corex",
+  default_theme: :neo,
+  default_mode: :light,
+  themes: nil,
+  scales: [],
+  components: ~w(button dialog accordion typo layout-heading)a,
+  semantics: nil
+```
+
+`components:` lists the component recipes to emit. Omit the key or set `nil` for the full catalog. `semantics:` trims unused palette roles and `ui-{role}` utilities when you need a smaller bundle.
+
+Add `"corex.design.build"` to your `assets.build` and `assets.deploy` aliases in `mix.exs`.
+
+Ignore the generated output in git (rebuild with `mix corex.design.build`):
+
+```gitignore
+/assets/corex/
+```
+
+If that tree was already committed, stop tracking it without deleting files on disk:
 
 ```bash
-mix corex.design
+git rm -r --cached assets/corex
+git commit -m "Stop tracking generated Corex Design CSS"
 ```
 
-Pass `--designex` to also copy the design token sources (`assets/corex/design/`). By default `mix corex.design` **skips** any tree that already exists. Pass `--force` to overwrite  -  useful when refreshing design assets to a newer Corex version.
+Generate CSS:
 
-Then import the design layers from `assets/css/app.css`. The minimum is `main.css`, a theme, and the components you use:
+```bash
+mix deps.get
+mix corex.design.build
+```
+
+Then import from `assets/css/app.css`. Prefer the single umbrella entry:
 
 ```css
-@import "../corex/main.css";
-@import "../corex/theme/neo.css";
-@import "../corex/components/typo.css";
-@import "../corex/components/layout.css";
-@import "../corex/components/accordion.css";
+@import "../corex/corex.css";
+@source "../corex";
 ```
 
-Add `@import "../corex/components/toggle.css"` when you use `toggle` (for example a mode switcher), and `@import "../corex/components/select.css"` when you use `select` (for example theme or language pickers).
+Layered imports (`main.css` + `theme/neo.css` + `components.css`) still work if you filter themes yourself. `components.css` is generated from the `components:` list in `config :corex_design`.
 
 If your `app.css` still imports the stock **daisyUI** plugin from `phx.new`, remove or isolate it. Mixing daisyUI tokens with Corex Design tokens leads to duplicated reset rules and conflicting CSS variables.
 

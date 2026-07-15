@@ -51,7 +51,7 @@ Add `localize_web` to your `mix.exs` deps:
 ```elixir
 def deps do
   [
-    {:corex, "~> 0.1.0"},
+    {:corex, "~> 0.2.0"},
     {:localize_web, "~> 0.5"}
   ]
 end
@@ -349,7 +349,7 @@ def language_switch(assigns) do
   ~H"""
   <.select
     id="corex-language-switch"
-    class="select select--sm max-w-6xs"
+    class="select ui-size-sm max-w-6xs"
     items={@items}
     value={@value}
     redirect

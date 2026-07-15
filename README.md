@@ -15,7 +15,7 @@
 - **Truly unstyled.** Bring your own CSS or opt into Corex Design tokens, themes and modes.
 - **Accessible by default.** Keyboard, focus and ARIA wired in by Zag.js state machines.
 
-With `{:corex, "~> 0.1.0"}`, patch and minor releases stay backward compatible until 0.2.0. See [Updating Corex](https://hexdocs.pm/corex/update.html).
+With `{:corex, "~> 0.2.0"}`, follow [Updating Corex](https://hexdocs.pm/corex/update.html) when upgrading from 0.1.x (shared `ui-*` modifiers replace per-component BEM palette and size classes).
 
 ## New Corex application
 
@@ -39,7 +39,7 @@ By default the installer adds **`plug Corex.MCP`** in `:dev` and `:test` only (s
 If you want the full feature set:
 
 ```bash
-mix corex.new my_app --mode --theme --lang --designex
+mix corex.new my_app --mode --theme --lang
 ```
 
 Run **`mix help corex.new`** or see **`Mix.Tasks.Corex.New`** in Hexdocs for every Corex-only flag.
@@ -64,10 +64,10 @@ Follow the [manual installation guide](https://hexdocs.pm/corex/manual_installat
 />
 ```
 
-If you are using Corex Design import the accordion css
+If you are using Corex Design, import the generated component entry (include `accordion` in `components:` config):
 
 ```css
-@import "../corex/components/accordion.css";
+@import "../corex/components.css";
 ```
 
 ### API

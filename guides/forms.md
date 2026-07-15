@@ -69,6 +69,9 @@ end
 <.form :let={f} for={@form} action="/account/preferences" method="post">
   <.checkbox field={f[:terms]} class="checkbox">
     <:label>Accept terms</:label>
+    <:indicator>
+      <.heroicon name="hero-check" />
+    </:indicator>
     <:error :let={msg}>
       <.heroicon name="hero-exclamation-circle" class="icon" />
       {msg}
@@ -92,7 +95,7 @@ end
     </:error>
   </.select>
 
-  <.action type="submit" class="button button--accent">Submit</.action>
+  <.action type="submit" class="button ui-accent">Submit</.action>
 </.form>
 ```
 
@@ -140,6 +143,9 @@ end
     invalid={Corex.FormField.invalid?(@form[:terms])}
   >
     <:label>Accept terms</:label>
+    <:indicator>
+      <.heroicon name="hero-check" />
+    </:indicator>
     <:error :let={msg}>
       <.heroicon name="hero-exclamation-circle" class="icon" />
       {msg}
@@ -165,7 +171,7 @@ end
     </:error>
   </.select>
 
-  <.action type="submit" class="button button--accent">Save</.action>
+  <.action type="submit" class="button ui-accent">Save</.action>
 </.form>
 ```
 
@@ -179,6 +185,9 @@ Use `name` on the component when you are not using `to_form/2`. Checkbox values 
 
   <.checkbox name="user[accept_terms]" class="checkbox">
     <:label>Accept terms</:label>
+    <:indicator>
+      <.heroicon name="hero-check" />
+    </:indicator>
   </.checkbox>
 
   <.select
@@ -194,7 +203,7 @@ Use `name` on the component when you are not using `to_form/2`. Checkbox values 
     <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
   </.select>
 
-  <.action type="submit" class="button button--accent">Submit</.action>
+  <.action type="submit" class="button ui-accent">Submit</.action>
 </form>
 ```
 
@@ -256,6 +265,9 @@ In LiveView, call `changeset_validate/2` inside `handle_event("validate", ...)` 
 ```heex
 <.checkbox field={@form[:terms]} class="checkbox" invalid={Corex.FormField.invalid?(@form[:terms])}>
   <:label>Accept terms</:label>
+  <:indicator>
+    <.heroicon name="hero-check" />
+  </:indicator>
   <:error :let={msg}>
     <.heroicon name="hero-exclamation-circle" class="icon" />
     {msg}
@@ -292,7 +304,7 @@ Keep `invalid` off the control if you only want a custom affordance (for example
 <.select field={@form[:country]} class="select relative" controlled>
   <:label>Country</:label>
   <:error :let={msg} class="absolute top-0 end-0">
-    <.tooltip class="tooltip tooltip--sm" positioning={%Corex.Positioning{placement: "top-end"}}>
+    <.tooltip class="tooltip ui-size-sm" positioning={%Corex.Positioning{placement: "top-end"}}>
       <:trigger>
         <.heroicon name="hero-exclamation-circle" class="icon text-ink-alert" />
       </:trigger>

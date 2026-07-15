@@ -11,7 +11,7 @@ Never guess. Fallback: `mix usage_rules.search_docs "<id>" -p corex`.
 
 | Step | File | Action |
 |------|------|--------|
-| CSS | `assets/css/app.css` | `@import "../corex/components/<id>.css"` |
+| CSS | `assets/css/app.css` | `@import "../corex/components.css"` (list ids in `components:` config) |
 | Hook | `assets/js/app.js` | Register if component uses `phx-hook` |
 | HEEx | `lib/*_web/` | `<.<id> id="stable-id" class="<id> …">` |
 
@@ -44,7 +44,7 @@ Custom slots with `meta:`:
 ```heex
 <.accordion
   id="faq"
-  class="accordion accordion--accent accordion--sm sm:accordion--md lg:accordion--xl"
+  class="accordion ui-accent ui-size-sm sm:ui-size-md lg:ui-size-xl"
   items={
     Corex.Content.new([
       %{value: "q1", label: "Question?", content: "Answer.", meta: %{icon: "hero-chat-bubble-left-right"}}

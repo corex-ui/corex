@@ -2,7 +2,7 @@
 
 ## Understanding Corex
 
-Corex is an accessible, unstyled Phoenix component library powered by Zag.js state machines. Every component exposes a **server API** (LiveView/socket helpers) and a **client API** (JS commands). Corex Design is optional token-based CSS with modifier classes such as `button--accent`.
+Corex is an accessible, unstyled Phoenix component library powered by Zag.js state machines. Every component exposes a **server API** (LiveView/socket helpers) and a **client API** (JS commands). Corex Design is optional token-based CSS with shared modifier classes such as `ui-accent` and `ui-solid`.
 
 Read documentation and call Corex MCP tools **before** guessing attrs, slots, or install steps.
 
@@ -37,7 +37,7 @@ mix usage_rules.search_docs "on_value_change" -p corex --query-by title
 
 | Sub-rule | When to read |
 |----------|--------------|
-| `corex:installation` | `mix corex.new`, manual install, esbuild, hooks, `use Corex`, `mix corex.design` |
+| `corex:installation` | `mix corex.new`, manual install, esbuild, hooks, `use Corex`, `corex_design` |
 | `corex:components` | HEEx wiring, MCP lookup, data builders, slots, hooks |
 | `corex:design` | Modifiers, tokens, `.typo`, themes — no custom template CSS |
 | `corex:mcp` | Dev MCP plug, `.cursor/mcp.json`, tool call order |
@@ -76,4 +76,4 @@ mix archive.install hex corex_new
 mix corex.new my_app
 ```
 
-Existing app: see `corex:installation`. Design: `mix corex.design` then `corex:design`.
+Existing app: see `corex:installation`. Design: add `corex_design` and run `mix corex.design.build`, then read `corex:design`.
