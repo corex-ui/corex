@@ -396,9 +396,7 @@ jobs:
           path: |
             design/deps
             design/_build
-          key: deps-design-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('design/mix.lock') }}
-          restore-keys: |
-            deps-design-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}
+          key: deps-design-v2-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('design/mix.lock', 'design/mix.exs') }}
 
       - name: Install design dependencies
         working-directory: design

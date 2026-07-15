@@ -351,7 +351,8 @@ defmodule Corex.New.PatchesTest do
         assert body =~
                  ~r/"assets\.build":\s*\[\s*"compile",\s*"corex.design.build",\s*"tailwind my_app"/
 
-        assert body =~ ~r/"assets\.deploy":\s*\[\s*"corex.design.build",\s*"tailwind my_app --minify"/
+        assert body =~
+                 ~r/"assets\.deploy":\s*\[\s*"corex.design.build",\s*"tailwind my_app --minify"/
 
         Patches.patch_mix_exs(File.cwd!(), design: true)
         body2 = File.read!("mix.exs")

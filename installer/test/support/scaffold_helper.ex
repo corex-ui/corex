@@ -149,7 +149,6 @@ defmodule Corex.New.ScaffoldHelper do
         lang: false,
         design: true,
         tailwind: true,
-        designex: false,
         mcp: true
       ],
       overrides
