@@ -213,6 +213,7 @@ export class ToastItem<T = unknown> extends Component<ToastItemProps<T>, Api> {
   }
 
   destroy = () => {
+    this.clearSpreadPropsCleanups();
     this.machine.stop();
     this.el.remove();
   };
@@ -300,6 +301,9 @@ export class ToastGroup extends Component<GroupProps, GroupApi> {
       comp.destroy();
     }
     this.toastComponents.clear();
+    this.unsubscribe?.();
+    this.unsubscribe = undefined;
+    this.clearSpreadPropsCleanups();
     this.machine.stop();
   };
 }

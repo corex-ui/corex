@@ -1,6 +1,9 @@
 defmodule Corex.Design.ThemeDefinition do
   @moduledoc """
-  Host design configuration module for token generation.
+  Advanced: define Design config in a module instead of keyword `config :corex_design`.
+
+  Prefer plain `config :corex_design, ...` plus `mix corex.design.build` unless you
+  need a typed module. Example:
 
       defmodule MyApp.Design do
         use Corex.Design.ThemeDefinition,

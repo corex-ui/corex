@@ -2,6 +2,8 @@ defmodule E2eWeb.ComboboxFormTest do
   use E2eWeb.ConnCase, async: false
   use Wallaby.Feature
 
+  @moduletag :wallaby
+
   import Wallaby.Query
 
   alias E2eWeb.ComboboxModel, as: Combobox

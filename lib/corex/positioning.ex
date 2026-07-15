@@ -1,14 +1,16 @@
 defmodule Corex.Positioning do
   @moduledoc """
-  Positioning options for floating elements (popovers, dropdowns, etc.)
+  Positioning for floating layers (select, menu, tooltip, date picker, and others).
 
-  Maps to Zag.js `PositioningOptions` interface. Use `to_dataset/1` to merge
-  flat `data-position-*` attributes for hooks and `readPositioningOptions/1` in
-  the TypeScript client.
+      <.select
+        class="select"
+        positioning={%Corex.Positioning{placement: "bottom-start", same_width: true}}
+        items={...}
+      >
 
-  Optional fine-tuning uses [`Corex.Offset`](Corex.Offset.html) on the `offset` field.
-  Fixed pixel placement for floating panels uses [`Corex.Point`](Corex.Point.html)
-  on [`Corex.FloatingPanel`](Corex.FloatingPanel.html), not this struct.
+  Optional fine-tuning: [`Corex.Offset`](Corex.Offset.html) on `offset:`.
+  Fixed pixel placement for floating panels: [`Corex.Point`](Corex.Point.html) on
+  [`Corex.FloatingPanel`](Corex.FloatingPanel.html).
   """
 
   alias Corex.Dataset
@@ -43,6 +45,7 @@ defmodule Corex.Positioning do
           offset: Corex.Offset.t() | nil
         }
 
+  @doc false
   @spec to_dataset(t() | nil) :: %{String.t() => String.t() | nil}
   def to_dataset(nil), do: %{}
 

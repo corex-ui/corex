@@ -1,7 +1,6 @@
 defmodule Corex.Toast do
   @moduledoc ~S'''
-  Phoenix implementation of [Zag.js Toast](https://zagjs.com/components/react/toast).
-
+  Toast notifications for Phoenix LiveView. Behavior follows [Zag.js Toast](https://zagjs.com/components/react/toast).
   Replace layout flash groups with `<.toast_group>` and drive toasts from LiveView or the client API.
 
   ## Anatomy
@@ -90,9 +89,7 @@ defmodule Corex.Toast do
   ```
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   Stack modifiers on the group host (`class` on `<.toast_group>`).
@@ -133,6 +130,8 @@ defmodule Corex.Toast do
   import Corex.Api.Doc
 
   alias Corex.Flash
+  alias Corex.Toast.Anatomy.Group
+  alias Corex.Toast.Connect
   alias Corex.Toast.Payload, as: ToastPayload
   alias Corex.Toast.Translation
   alias Phoenix.LiveView.JS
@@ -272,8 +271,10 @@ defmodule Corex.Toast do
       data-flash-error-duration={@flash_error.duration}
       {@rest}
     >
-      <div data-scope="toast" data-part="group">
-
+      <div
+        phx-mounted={Connect.ignore_group(%Group{id: @id})}
+        {Connect.group(%Group{id: @id})}
+      >
       </div>
       <div :if={@loading != []} id={"#{@id}-loading-icon"} data-loading-icon-template style="display: none;">
         {render_slot(@loading)}

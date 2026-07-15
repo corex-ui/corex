@@ -11,7 +11,14 @@ defmodule E2eWeb.UserControllerTest do
     terms: true,
     level: 5,
     currency: "eur",
-    tags: ["alpha", "beta"]
+    tags: ["alpha", "beta"],
+    password: "password1",
+    notifications: true,
+    role: "editor",
+    pin: "1234",
+    accent_color: "#3b82f6",
+    heading_angle: 90.0,
+    title: "some title"
   }
   @update_attrs %{
     name: "some updated name",
@@ -21,7 +28,14 @@ defmodule E2eWeb.UserControllerTest do
     terms: true,
     level: 3,
     currency: "usd",
-    tags: ["gamma", "delta"]
+    tags: ["gamma", "delta"],
+    password: "password2",
+    notifications: true,
+    role: "viewer",
+    pin: "5678",
+    accent_color: "#00ff00",
+    heading_angle: 180.0,
+    title: "updated title"
   }
   @invalid_attrs %{
     name: nil,
@@ -31,7 +45,10 @@ defmodule E2eWeb.UserControllerTest do
     terms: nil,
     level: nil,
     currency: nil,
-    tags: nil
+    tags: nil,
+    password: nil,
+    notifications: nil,
+    role: nil
   }
 
   describe "index" do

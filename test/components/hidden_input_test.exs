@@ -16,9 +16,13 @@ defmodule Corex.HiddenInputTest do
       assert Floki.attribute(elements, "value") == ["123"]
     end
 
-    test "renders hidden input without field generates unique id" do
+    test "renders hidden input without field when id is provided" do
       result =
-        render_component(&Corex.HiddenInput.hidden_input/1, name: "user[token]", value: "abc")
+        render_component(&Corex.HiddenInput.hidden_input/1,
+          id: "user_token",
+          name: "user[token]",
+          value: "abc"
+        )
 
       elements = find_in_html(result, "input[type=hidden][name='user[token]']")
       assert [_] = elements

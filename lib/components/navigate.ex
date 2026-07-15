@@ -14,21 +14,21 @@ defmodule Corex.Navigate do
   ## Anatomy
 
   ```heex
-      <.navigate to="/about">About</.navigate>
-      <.navigate to={~p"/dashboard"} type="navigate">Dashboard</.navigate>
-      <.navigate to={~p"/items"} type="patch">Filter</.navigate>
-      <.navigate to="https://example.com" external>
-        External
-        <svg aria-label="Opens in a new window" ...>...</svg>
-      </.navigate>
-      <.navigate to="/file.pdf" download="report.pdf">
-        Download PDF
-        <svg aria-label="Download PDF, 2MB" ...>...</svg>
-      </.navigate>
-      <.navigate to="/profile" aria_label="View profile">
-        <svg aria-hidden="true" ...></svg>
-      </.navigate>
-    ```
+  <.navigate to="/about">About</.navigate>
+  <.navigate to={~p"/dashboard"} type="navigate">Dashboard</.navigate>
+  <.navigate to={~p"/items"} type="patch">Filter</.navigate>
+  <.navigate to="https://example.com" external>
+    External
+    <.heroicon name="hero-arrow-top-right-on-square" />
+  </.navigate>
+  <.navigate to="/file.pdf" download="report.pdf">
+    Download PDF
+    <.heroicon name="hero-arrow-down-tray" />
+  </.navigate>
+  <.navigate to="/profile" aria_label="View profile">
+    <.heroicon name="hero-user" />
+  </.navigate>
+  ```
 
   ## Style
 
@@ -36,9 +36,7 @@ defmodule Corex.Navigate do
   This requires the `corex_design` dependency and `mix corex.design.build`; import the component css file.
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   You can then use modifiers

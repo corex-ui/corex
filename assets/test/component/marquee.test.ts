@@ -42,9 +42,10 @@ describe("Marquee", () => {
     const root = el.querySelector<HTMLElement>('[data-scope="marquee"][data-part="root"]');
     expect(root).toBeTruthy();
     expect(root!.style.getPropertyValue("--marquee-duration")).toBe("28s");
-    expect(el.querySelectorAll(':scope > [data-scope="marquee"][data-part="root"] [data-part="content"]').length).toBe(
-      c.api.contentCount
-    );
+    expect(
+      el.querySelectorAll(':scope > [data-scope="marquee"][data-part="root"] [data-part="content"]')
+        .length
+    ).toBe(c.api.contentCount);
     expect(el.hasAttribute("data-loading")).toBe(false);
     c.destroy();
   });

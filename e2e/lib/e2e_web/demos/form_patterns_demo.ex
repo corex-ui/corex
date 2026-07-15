@@ -236,7 +236,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
         class="select max-w-none w-full"
         id="form-patterns-invalid-on-error-country"
         deselectable
-        invalid={Corex.FormField.invalid?(@form[:country])}
+        auto_invalid
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
         items={country_items()}
       >
@@ -255,7 +255,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
         class="combobox max-w-none w-full"
         id="form-patterns-invalid-on-error-currency"
         placeholder="Search currency"
-        invalid={Corex.FormField.invalid?(@form[:currency])}
+        auto_invalid
         items={currency_items()}
       >
         <:label>Preferred currency</:label>
@@ -277,7 +277,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
         field={@form[:tags]}
         class="tags-input max-w-none w-full"
         id="form-patterns-invalid-on-error-tags"
-        invalid={Corex.FormField.invalid?(@form[:tags])}
+        auto_invalid
       >
         <:label>Tags</:label>
         <:close>
@@ -293,7 +293,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
         field={@form[:password]}
         class="password-input max-w-none w-full"
         id="form-patterns-invalid-on-error-password"
-        invalid={Corex.FormField.invalid?(@form[:password])}
+        auto_invalid
       >
         <:label>Password</:label>
         <:visible_indicator>
@@ -312,7 +312,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
         field={@form[:notifications]}
         class="switch max-w-none w-full"
         id="form-patterns-invalid-on-error-notifications"
-        invalid={Corex.FormField.invalid?(@form[:notifications])}
+        auto_invalid
       >
         <:label>Email notifications</:label>
         <:error :let={msg}>
@@ -325,7 +325,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
         field={@form[:terms]}
         class="checkbox max-w-xs w-full"
         id="form-patterns-invalid-on-error-terms"
-        invalid={Corex.FormField.invalid?(@form[:terms])}
+        auto_invalid
       >
         <:label>Accept the terms</:label>
         <:indicator>

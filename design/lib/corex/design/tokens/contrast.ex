@@ -74,12 +74,7 @@ defmodule Corex.Design.Tokens.Contrast do
     end
   end
 
-  defp fetch(tokens, role) do
-    case Map.fetch(tokens, role) do
-      {:ok, hex} -> {:ok, hex}
-      :error -> :error
-    end
-  end
+  defp fetch(tokens, role), do: Map.fetch(tokens, role)
 
   defp pairs(_mode) do
     base_pairs() ++ role_pairs()

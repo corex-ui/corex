@@ -1,4 +1,4 @@
-ExUnit.start(max_cases: 1, timeout: 120_000)
+ExUnit.start(timeout: 120_000)
 
 case Application.ensure_all_started(:wallaby) do
   {:ok, _} -> :ok

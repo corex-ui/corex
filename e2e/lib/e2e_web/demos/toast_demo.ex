@@ -3,6 +3,28 @@ defmodule E2eWeb.Demos.ToastDemo do
 
   alias Phoenix.LiveView.JS
 
+  def layout_flash_code do
+    ~S"""
+    <.toast_group id="layout-toast" flash={@flash} class="toast">
+      <:loading>
+        <.heroicon name="hero-arrow-path" />
+      </:loading>
+    </.toast_group>
+    """
+  end
+
+  def flash_defaults_code do
+    ~S"""
+    <.toast_group
+      id="layout-toast"
+      class="toast"
+      flash={@flash}
+      flash_info={%{title: "Success", type: :success, duration: 5000}}
+      flash_error={%{title: "Error", type: :error, duration: :infinity}}
+    />
+    """
+  end
+
   def api_client_binding_code do
     ~S"""
     <div class="flex flex-wrap items-center gap-space">

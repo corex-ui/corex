@@ -267,8 +267,12 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
       return patch;
     };
 
+    const matchesGroup = (payload: { groupId?: string }): payload is { groupId: string } =>
+      typeof payload.groupId === "string" && payload.groupId === this.groupId;
+
     const handleDismissPayload = (payload: ToastIdPayload) => {
-      const st = getToastStore(payload.groupId || this.groupId);
+      if (!matchesGroup(payload)) return;
+      const st = getToastStore(payload.groupId);
       if (!st) return;
       try {
         st.dismiss(payload.id);
@@ -278,7 +282,8 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
     };
 
     const handleRemovePayload = (payload: ToastIdPayload) => {
-      const st = getToastStore(payload.groupId || this.groupId);
+      if (!matchesGroup(payload)) return;
+      const st = getToastStore(payload.groupId);
       if (!st) return;
       try {
         st.remove(payload.id);
@@ -291,7 +296,8 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
 
     this.handlers.push(
       this.handleEvent("toast-create", (payload: ToastCreatePayload) => {
-        const st = getToastStore(payload.groupId || this.groupId);
+        if (!matchesGroup(payload)) return;
+        const st = getToastStore(payload.groupId);
         if (!st) return;
         try {
           st.create(buildCreateOptions(payload, true));
@@ -303,8 +309,9 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
 
     this.handlers.push(
       this.handleEvent("toast-update", (payload: ToastUpdatePayload) => {
-        const st = getToastStore(payload.groupId || this.groupId);
-        if (!st || !payload.id) return;
+        if (!matchesGroup(payload) || !payload.id) return;
+        const st = getToastStore(payload.groupId);
+        if (!st) return;
         try {
           st.update(payload.id, buildUpdatePatch(payload, true));
         } catch (error) {
@@ -319,7 +326,8 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
 
     const onToastCreate = ((event: CustomEvent<ToastCreatePayload>) => {
       const { detail } = event;
-      const st = getToastStore(detail.groupId || this.groupId);
+      if (!matchesGroup(detail)) return;
+      const st = getToastStore(detail.groupId);
       if (!st) return;
       try {
         st.create(buildCreateOptions(detail, false));
@@ -330,7 +338,8 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
 
     const onCorexToastCreate = ((event: CustomEvent<ToastCreatePayload>) => {
       const { detail } = event;
-      const st = getToastStore(detail.groupId || this.groupId);
+      if (!matchesGroup(detail)) return;
+      const st = getToastStore(detail.groupId);
       if (!st) return;
       try {
         st.create(buildCreateOptions(detail, false));
@@ -341,8 +350,9 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
 
     const onToastUpdate = ((event: CustomEvent<ToastUpdatePayload>) => {
       const { detail } = event;
-      const st = getToastStore(detail.groupId || this.groupId);
-      if (!st || !detail.id) return;
+      if (!matchesGroup(detail) || !detail.id) return;
+      const st = getToastStore(detail.groupId);
+      if (!st) return;
       try {
         st.update(detail.id, buildUpdatePatch(detail, false));
       } catch (error) {

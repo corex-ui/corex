@@ -12,7 +12,7 @@ import {
   getDir,
   getNumber,
   getString
-} from "./chunks/chunk-YGZLYEUJ.mjs";
+} from "./chunks/chunk-6AOEC32Q.mjs";
 
 // ../node_modules/.pnpm/@zag-js+marquee@1.40.0/node_modules/@zag-js/marquee/dist/marquee.anatomy.mjs
 var anatomy = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");
@@ -403,7 +403,6 @@ function calculateDuration(options) {
 // components/marquee.ts
 var Marquee = class extends Component {
   items = null;
-  unsubscribe;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, props);
@@ -411,25 +410,6 @@ var Marquee = class extends Component {
   initApi() {
     return this.zagConnect(connect);
   }
-  init = () => {
-    try {
-      this.machine.start();
-      this.api = this.initApi();
-      this.render();
-      this.unsubscribe = this.machine.subscribe(() => {
-        this.api = this.initApi();
-        this.render();
-      });
-    } finally {
-      this.el.removeAttribute("data-loading");
-    }
-  };
-  destroy = () => {
-    this.unsubscribe?.();
-    this.unsubscribe = void 0;
-    this.el.removeAttribute("data-loading");
-    this.machine.stop();
-  };
   buildDom() {
     const templateEl = this.el.querySelector(
       'template[data-part="items-template"]'
@@ -625,7 +605,6 @@ var MarqueeHook = {
     const zag = this.marquee;
     if (!zag) return;
     zag.updateProps(readMarqueeProps(this.el));
-    zag.ensureDom();
   },
   destroyed() {
     if (this.onPause) this.el.removeEventListener("corex:marquee:pause", this.onPause);

@@ -1,8 +1,13 @@
 @import "../main.css";
+@import "./scrollbar.css";
 
 @layer components {
  .menu[data-loading] [data-scope="menu"][data-part="root"] {
  @apply ui-loading;
+ }
+
+ .menu[class*="ui-max-height-"] [data-scope="menu"][data-part="content"] {
+ @apply scrollbar scrollbar--sm;
  }
 
  .menu [data-scope="menu"][data-part="content"] {
@@ -12,7 +17,9 @@
  z-index: 50;
  padding: 0;
  border-radius: var(--radius-md);
+ max-height: var(--ctl-max-height, none);
  overflow: hidden;
+ overflow-y: var(--ctl-max-height-overflow, hidden);
  box-shadow: var(--shadow-ui);
 
  &:focus-visible {

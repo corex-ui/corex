@@ -21,7 +21,7 @@ Sub-rules hold depth for AGENTS.md. Skills hold short triggers + examples for Cu
 ## Non-negotiables
 
 1. **Never enable `plug Corex.MCP` in production.** Dev and test only.
-2. **Call MCP before writing HEEx.** `list_components` then `get_component` — never invent attrs, slots, or event names.
+2. **Call MCP before writing HEEx.** Add `corex_mcp`, then `list_components` → `get_component` (and design tools when styling) — never invent attrs, slots, or event names.
 3. **Every API-driven component needs a stable `id`.**
 4. **Esbuild must use ESM splitting.** `--format=esm --splitting`; load `app.js` with `type="module"`.
 5. **Do not web-search Hexdocs.** Use `mix usage_rules.search_docs -p corex`.
@@ -53,7 +53,7 @@ Include all: `"corex:all"` in AGENTS.md config.
 | Tool | Role |
 |------|------|
 | **usage_rules** | Static rules and skills from the `corex` dep |
-| **Corex MCP** | Live `list_components`, `get_component`, `installation_guide` |
+| **Corex MCP** (`corex_mcp`) | Live `list_components`, `get_component`, design tools, `installation_guide` |
 | **mix usage_rules.search_docs** | Hexdocs search |
 
 ## Agent skills

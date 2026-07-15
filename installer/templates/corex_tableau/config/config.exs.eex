@@ -84,7 +84,13 @@ config :corex_design,
   semantics: nil
 <% end %>
 config :phoenix, json_library: Jason
+<%= if @lang do %>
+config :phoenix, gettext_backend: <%= @app_module %>.Gettext
 
+config :localize,
+  default_locale: "en",
+  supported_locales: ~w(en fr ar)
+<% end %>
 config :elixir, :time_zone_database, Tz.TimeZoneDatabase
 
 import_config "<%= "\#{config_env()}.exs" %>"

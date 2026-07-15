@@ -4,13 +4,18 @@ defmodule <%= @app_module %>.RootLayout do
   use Tableau.Layout
   use Phoenix.Component
   use Corex
+<%= if @lang do %>  use <%= @app_module %>.GettextSigil
 
+  alias <%= @app_module %>.Locale
+<% end %>
   alias Phoenix.HTML
   alias Phoenix.HTML.Safe
 
   def template(assigns) do
     site_name = <%= @app_module %>.Config.site_name()
-
+<%= if @lang do %>    locale = Locale.current(assigns.page)
+    Gettext.put_locale(<%= @app_module %>.Gettext, Locale.lang(locale))
+<% end %>
     tableau_config =
       case Tableau.Config.get() do
         {:ok, %Tableau.Config{} = c} -> c
@@ -22,7 +27,21 @@ defmodule <%= @app_module %>.RootLayout do
       |> to_string()
       |> String.trim_trailing("/")
 
-    page_path = page_path_from_page(assigns.page)
+<%= if @lang do %>    page_path = Locale.current_path(assigns.page)
+    default_loc = Locale.default_locale_string()
+
+    canonical_url =
+      if assigns.page[:page_kind] == :home and page_path == "/" <> default_loc <> "/" do
+        base_url <> "/"
+      else
+        base_url <> page_path
+      end
+
+    rtl_locales =
+      Locale.locales()
+      |> Enum.filter(&(Locale.dir(&1) == "rtl"))
+      |> Enum.join(",")
+<% else %>    page_path = page_path_from_page(assigns.page)
 
     canonical_url =
       if assigns.page[:page_kind] == :home and page_path == "/" do
@@ -30,7 +49,7 @@ defmodule <%= @app_module %>.RootLayout do
       else
         base_url <> page_path
       end
-
+<% end %>
     assigns =
       assigns
       |> Map.put(:site_name, site_name)
@@ -42,13 +61,25 @@ defmodule <%= @app_module %>.RootLayout do
 <%= if @design do %>      |> Map.put(:default_theme, <%= @app_module %>.Config.default_theme())
 <% end %><%= if @theme do %>      |> Map.put(:theme, <%= @app_module %>.Theme.current(assigns))
 <% end %><%= if @mode do %>      |> Map.put(:mode, <%= @app_module %>.Mode.current(assigns))
+<% end %><%= if @lang do %>      |> Map.put(:locale, locale)
+      |> Map.put(:page_path, page_path)
+      |> Map.put(:rtl_locales, rtl_locales)
+      |> Map.put(:home_path, Locale.swap_path("/", locale))
+      |> Map.put(:blog_path, Locale.swap_path("/blog", locale))
 <% end %>
     ~H"""
     <!DOCTYPE html>
     <html
-      lang="en"
+<%= if @lang do %>      lang={Locale.lang(@locale)}
+      dir={Locale.dir(@locale)}
+      data-locale={@locale}
+      data-locales={Enum.join(Locale.locales(), ",")}
+      data-rtl-locales={@rtl_locales}
+      data-locale-selected-path={Locale.selected_path(@page, @locale)}
+      data-public-path-prefix=""
+<% else %>      lang="en"
       dir="ltr"
-<%= if @theme do %>      data-theme={@theme}
+<% end %><%= if @theme do %>      data-theme={@theme}
 <% else %><%= if @design do %>      data-theme={@default_theme}
 <% end %><% end %><%= if @mode do %>      data-mode={@mode}
 <% else %><%= if @design do %>      data-mode="light"
@@ -78,7 +109,7 @@ defmodule <%= @app_module %>.RootLayout do
         <header class="sticky top-0 z-10 flex h-size-lg items-center border-b border-border bg-layer">
           <div class="mx-auto flex min-h-size-lg w-full flex-wrap items-center justify-between gap-space px-space-xl py-space-lg">
             <div class="flex flex-wrap items-center gap-space">
-              <.navigate to="/" class="link ui-brand ui-size-lg uppercase font-black">
+              <.navigate to={<%= if @lang do %>@home_path<% else %>"/"<% end %>} class="link ui-brand ui-size-lg uppercase font-black">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 136 136" class="icon icon--lg">
                   <path
                     d="M70.573 1.67C33.94 1.67 4.243 31.367 4.243 68c0 36.634 29.697 66.33 66.33 66.33s66.33-29.696 66.33-66.33c0-36.633-29.697-66.33-66.33-66.33m.05 102.736c-20.117 0-36.427-16.308-36.427-36.427 0-20.118 16.31-36.427 36.427-36.427 17.055 0 31.37 11.723 35.333 27.55H89.845c-3.365-7.255-10.713-12.301-19.222-12.301-11.678 0-21.179 9.501-21.179 21.18s9.501 21.178 21.18 21.178c8.539 0 15.907-5.08 19.256-12.377h16.095c-3.939 15.864-18.269 27.624-35.352 27.624"
@@ -88,12 +119,32 @@ defmodule <%= @app_module %>.RootLayout do
                 </svg>
                 {@site_name}
               </.navigate>
-              <.navigate to="/blog" class="link">
-                Blog
-              </.navigate>
+              <.navigate to={<%= if @lang do %>@blog_path<% else %>"/blog"<% end %>} class="link">
+<%= if @lang do %>                {~t"Blog"}
+<% else %>                Blog
+<% end %>              </.navigate>
             </div>
-<%= if @mode or @theme do %>            <div class="flex shrink-0 items-center gap-space">
-<%= if @theme do %>              <<%= @app_module %>.Theme.theme_toggle theme={@theme} />
+<%= if @mode or @theme or @lang do %>            <div class="flex shrink-0 items-center gap-space">
+<%= if @lang do %>              <.select
+                id="corex-language-switch"
+                class="select ui-size-sm max-w-6xs"
+                dir={Locale.dir(@locale)}
+                items={Locale.language_select_items(Locale.current_path(@page))}
+                value={Locale.language_select_value(Locale.current_path(@page), @locale)}
+                redirect
+                on_value_change_client="corex:set-locale"
+                positioning={%Corex.Positioning{same_width: true}}
+              >
+                <:label class="sr-only">{~t"Language"}</:label>
+                <:item :let={item}>{item.label}</:item>
+                <:trigger>
+                  <.heroicon name="hero-language" class="icon" />
+                </:trigger>
+                <:item_indicator>
+                  <.heroicon name="hero-check" class="icon" />
+                </:item_indicator>
+              </.select>
+<% end %><%= if @theme do %>              <<%= @app_module %>.Theme.theme_toggle theme={@theme} />
 <% end %><%= if @mode do %>              <<%= @app_module %>.Mode.mode_toggle mode={@mode} />
 <% end %>            </div>
 <% end %>          </div>

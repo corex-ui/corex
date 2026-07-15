@@ -31,6 +31,28 @@ defmodule E2eWeb.Demos.CodeDemo do
     }
   end
 
+  def basic_usage_code do
+    ~S"""
+    <.code code="def hello, do: :world" />
+    """
+  end
+
+  def multiline_code do
+    ~S'''
+    <.code code={"""
+    defmodule Hello do
+      def world, do: "Hello, World!"
+    end
+    """} />
+    '''
+  end
+
+  def from_file_code do
+    ~S"""
+    <.code code={File.read!("priv/code_examples/example.ex")} language={:elixir} />
+    """
+  end
+
   def anatomy_inline_code do
     ~S"""
     <p class="text-sm">

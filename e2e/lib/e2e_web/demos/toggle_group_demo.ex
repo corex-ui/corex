@@ -13,6 +13,20 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
     """
   end
 
+  def anatomy_single_selection_code do
+    ~S"""
+    <.toggle_group
+      class="toggle-group"
+      multiple={false}
+      value={["duis"]}
+    >
+      <:item value="lorem">Lorem</:item>
+      <:item value="duis">Duis</:item>
+      <:item value="donec">Donec</:item>
+    </.toggle_group>
+    """
+  end
+
   def anatomy_minimal_example(assigns) do
     ~H"""
     <.toggle_group id="toggle-group-anatomy-minimal" class="toggle-group">

@@ -29,7 +29,7 @@ defmodule Corex.SignaturePadTest do
     test "returns root attributes" do
       assigns = %{id: "test-signature", dir: "ltr"}
       result = Connect.root(assigns)
-      assert result["id"] == "signature-pad:test-signature"
+      assert result["id"] == "signature-test-signature"
       assert result["data-scope"] == "signature-pad"
       assert result["data-part"] == "root"
     end
@@ -39,7 +39,7 @@ defmodule Corex.SignaturePadTest do
     test "returns control attributes" do
       assigns = %{id: "test-signature", dir: "ltr"}
       result = Connect.control(assigns)
-      assert result["id"] == "signature-pad:test-signature:control"
+      assert result["id"] == "signature-control-test-signature"
     end
   end
 

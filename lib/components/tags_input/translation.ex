@@ -29,6 +29,7 @@ defmodule Corex.TagsInput.Translation do
       tag_edited: "Editing tag %{tag}. Press enter to save or escape to cancel."
     ]
 
+  @doc false
   def format_tag(template, tag) when is_binary(template) and is_binary(tag) do
     String.replace(template, "%{tag}", tag)
   end

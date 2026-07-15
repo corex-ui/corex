@@ -123,7 +123,7 @@ defmodule E2eWeb.Demos.DataListDemo do
     ~S"""
     <.data_list class="data-list" items={styling_items()} />
     <.data_list class="data-list ui-solid" items={styling_items()} />
-    
+
     """
   end
 

@@ -176,6 +176,18 @@ defmodule Corex.DataTable.SortTest do
       state = %{sort_by: :name, sort_order: :asc}
       assert Enum.map(Sort.sorted_rows(rows(), state), & &1.name) == ["a", "b"]
     end
+
+    test "sorted_rows handles nil and mixed types without raising" do
+      mixed = [
+        %{id: 1, name: nil},
+        %{id: 2, name: "b"},
+        %{id: 3, name: 10},
+        %{id: 4, name: nil}
+      ]
+
+      sorted = Sort.sorted_rows(mixed, %{sort_by: :name, sort_order: :asc})
+      assert Enum.map(sorted, & &1.id) == [1, 4, 2, 3]
+    end
   end
 
   describe "parse_sort_by/2" do

@@ -82,19 +82,24 @@ defmodule Corex.SignaturePad.Connect do
   defp maybe_put_submit_name(attrs, nil), do: attrs
   defp maybe_put_submit_name(attrs, name), do: Map.put(attrs, "data-submit-name", name)
 
+  defp zag_root_id(id), do: "signature-#{id}"
+  defp zag_label_id(id), do: "signature-label-#{id}"
+  defp zag_control_id(id), do: "signature-control-#{id}"
+  defp zag_hidden_input_id(id), do: "signature-input-#{id}"
+
   @spec root(Root.t()) :: map()
   def root(assigns) do
     %{
       "data-scope" => "signature-pad",
       "data-part" => "root",
       "dir" => assigns.dir,
-      "id" => "signature-pad:#{assigns.id}"
+      "id" => zag_root_id(assigns.id)
     }
   end
 
   def ignore_root(%Root{} = assigns) do
     JS.ignore_attributes(Root.ignored_attrs(),
-      to: Selectors.css_id("signature-pad:#{assigns.id}")
+      to: Selectors.css_id(zag_root_id(assigns.id))
     )
   end
 
@@ -104,13 +109,13 @@ defmodule Corex.SignaturePad.Connect do
       "data-scope" => "signature-pad",
       "data-part" => "label",
       "dir" => assigns.dir,
-      "id" => "signature-pad:#{assigns.id}:label"
+      "id" => zag_label_id(assigns.id)
     }
   end
 
   def ignore_label(%Label{} = assigns) do
     JS.ignore_attributes(Label.ignored_attrs(),
-      to: Selectors.css_id("signature-pad:#{assigns.id}:label")
+      to: Selectors.css_id(zag_label_id(assigns.id))
     )
   end
 
@@ -120,13 +125,13 @@ defmodule Corex.SignaturePad.Connect do
       "data-scope" => "signature-pad",
       "data-part" => "control",
       "dir" => assigns.dir,
-      "id" => "signature-pad:#{assigns.id}:control"
+      "id" => zag_control_id(assigns.id)
     }
   end
 
   def ignore_control(%Control{} = assigns) do
     JS.ignore_attributes(Control.ignored_attrs(),
-      to: Selectors.css_id("signature-pad:#{assigns.id}:control")
+      to: Selectors.css_id(zag_control_id(assigns.id))
     )
   end
 
@@ -208,7 +213,7 @@ defmodule Corex.SignaturePad.Connect do
       "data-part" => "hidden-input",
       "type" => "text",
       "dir" => assigns.dir,
-      "id" => "signature-pad:#{assigns.id}:hidden-input",
+      "id" => zag_hidden_input_id(assigns.id),
       "hidden" => "true",
       "readonly" => "true",
       "autocomplete" => "off",
@@ -229,7 +234,7 @@ defmodule Corex.SignaturePad.Connect do
 
   def ignore_hidden_input(%HiddenInput{} = assigns) do
     JS.ignore_attributes(HiddenInput.ignored_attrs(),
-      to: Selectors.css_id("signature-pad:#{assigns.id}:hidden-input")
+      to: Selectors.css_id(zag_hidden_input_id(assigns.id))
     )
   end
 

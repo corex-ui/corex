@@ -22,7 +22,7 @@ defmodule Corex.MixProject do
       aliases: aliases(),
       name: "Corex",
       description:
-        "Accessible Phoenix UI components with Zag.js hooks, plus an optional Corex Design Hex package for token-driven CSS and shared ui-* modifiers.",
+        "Accessible Phoenix UI components with Zag.js hooks. Optional Hex companions: corex_design (tokens/CSS) and corex_mcp (dev MCP tools for AI agents).",
       package: package(),
       source_url: "https://github.com/corex-ui/corex",
       homepage_url: "https://corex.gigalixirapp.com/en",
@@ -47,13 +47,12 @@ defmodule Corex.MixProject do
   end
 
   defp elixirc_paths_base(:test), do: ["lib", "test/support", "test/mix"]
-  defp elixirc_paths_base(:docs), do: ["lib", "installer/lib"]
+  defp elixirc_paths_base(:docs), do: ["lib", "installer/lib", "mcp/lib", "design/lib"]
   defp elixirc_paths_base(:dev), do: ["lib", "test/mix"]
   defp elixirc_paths_base(_), do: ["lib"]
 
   defp deps do
     [
-      {:jason, "~> 1.0"},
       {:phoenix, "~> 1.8.1"},
       {:phoenix_live_view, "~> 1.1"},
       {:gettext, "~> 1.0"},
@@ -67,13 +66,23 @@ defmodule Corex.MixProject do
       {:oeditus_credo, "~> 0.6.3", only: [:dev, :test], runtime: false},
       {:floki, "~> 0.38.0", only: :test},
       {:corex_design, path: "design", runtime: false, only: :test},
+      {:color, "~> 0.11", only: [:dev, :test, :docs], runtime: false},
+      {:nimble_options, "~> 1.1", only: [:dev, :test, :docs], runtime: false},
       {:phoenix_ecto, "~> 4.0", only: :test},
       {:excoveralls, "~> 0.18", only: :test},
       {:bandit, "~> 1.0", only: :dev},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
       {:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false},
       {:tidewave, "~> 0.5.5", only: :dev}
-    ]
+    ] ++ maybe_json_polyfill()
+  end
+
+  defp maybe_json_polyfill do
+    if Code.ensure_loaded?(:json) do
+      []
+    else
+      [{:json_polyfill, "~> 0.2 or ~> 1.0", only: [:dev, :test]}]
+    end
   end
 
   defp aliases do
@@ -94,7 +103,7 @@ defmodule Corex.MixProject do
         "format --check-formatted",
         "compile --force --warnings-as-errors",
         "compile --force --warnings-as-errors --env test",
-        "corex.doc_parity --sections anatomy --components checkbox,switch,select,combobox,accordion,tabs,dialog,action,navigate",
+        "corex.doc_parity --sections anatomy,form",
         "credo --strict",
         "sobelow --exit"
       ],
@@ -157,13 +166,14 @@ defmodule Corex.MixProject do
         "guides/dark_mode.md",
         "guides/theming.md",
         "guides/localize.md",
-        "guides/MCP.md",
+        "mcp/guides/MCP.md",
         "guides/usage_rules.md",
         "guides/production.md",
         "guides/configuration.md",
         "guides/update.md"
       ],
       formatters: ["html", "epub"],
+      filter_modules: &docs_filter_modules/2,
       groups_for_modules: groups_for_modules(),
       groups_for_docs: [
         Components: &(&1[:type] == :component),
@@ -175,22 +185,25 @@ defmodule Corex.MixProject do
         {:Introduction,
          [
            "guides/installation.md",
-           "guides/manual_installation.md",
-           "guides/design.md",
-           "design/guides/modifiers.md"
+           "guides/manual_installation.md"
          ]},
         {:Guides,
          [
            "guides/forms.md",
-           "guides/MCP.md",
            "guides/usage_rules.md",
-           "guides/dark_mode.md",
-           "guides/theming.md",
            "guides/localize.md",
            "guides/production.md",
            "guides/configuration.md",
            "guides/update.md"
          ]},
+        {"Design Guides",
+         [
+           "guides/design.md",
+           "design/guides/modifiers.md",
+           "guides/theming.md",
+           "guides/dark_mode.md"
+         ]},
+        {"MCP Guides", ["mcp/guides/MCP.md"]},
         {"Tableau Guides",
          [
            "guides/tableau.md",
@@ -202,8 +215,25 @@ defmodule Corex.MixProject do
     ]
   end
 
+  defp docs_filter_modules(mod, _metadata) do
+    if MapSet.member?(docs_allowed_modules(), mod) do
+      true
+    else
+      raise "you forgot to add \"@moduledoc false\" or allowlist #{inspect(mod)} in mix.exs docs"
+    end
+  end
+
+  defp docs_allowed_modules do
+    groups_for_modules()
+    |> Enum.flat_map(fn {_group, modules} -> modules end)
+    |> MapSet.new()
+  end
+
   defp groups_for_modules do
     [
+      Overview: [
+        Corex
+      ],
       Components: [
         Corex.Accordion,
         Corex.Action,
@@ -252,13 +282,24 @@ defmodule Corex.MixProject do
       Form: [
         Corex.FormField
       ],
+      Design: [
+        Corex.Design,
+        Corex.Design.Config,
+        Corex.Design.Config.Options,
+        Corex.Design.ThemeDefinition,
+        Mix.Tasks.Corex.Design.Build,
+        Mix.Tasks.Corex.Design.Code,
+        Mix.Tasks.Corex.Design.Options,
+        Mix.Tasks.Corex.Design.Validate,
+        Mix.Tasks.Compile.CorexDesign
+      ],
+      MCP: [
+        Corex.MCP
+      ],
       Content: [
         Corex.Content,
         Corex.Content.Item,
         Corex.Image
-      ],
-      DataList: [
-        Corex.Content.Item
       ],
       List: [
         Corex.List,
@@ -283,9 +324,6 @@ defmodule Corex.MixProject do
         Corex.Animation.Scale,
         Corex.Animation.Height
       ],
-      Anatomy: [
-        Corex.Marquee.Anatomy.Content
-      ],
       DataTable: [
         Corex.DataTable.Sort,
         Corex.DataTable.Selection
@@ -307,6 +345,17 @@ defmodule Corex.MixProject do
         Corex.TagsInput.Translation,
         Corex.Timer.Translation,
         Corex.Toast.Translation
+      ],
+      Generators: [
+        Mix.Tasks.Corex,
+        Mix.Tasks.Corex.Gen.Html,
+        Mix.Tasks.Corex.Gen.Live,
+        Mix.Tasks.Corex.Heroicon
+      ],
+      Installer: [
+        Mix.Tasks.Corex.New,
+        Mix.Tasks.Corex.Tableau.New,
+        Mix.Tasks.Local.Corex
       ]
     ]
   end

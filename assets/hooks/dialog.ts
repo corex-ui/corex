@@ -4,11 +4,7 @@ import { Dialog, dialogInitialAriaLabel } from "../components/dialog";
 import type { OpenChangeDetails } from "@zag-js/dialog";
 
 import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
-import {
-  readBooleanControlledZagProps,
-  readBooleanControlledZagUpdate,
-  readControlledOrDefaultBoolean,
-} from "../lib/read-props";
+import { readBooleanControlledZagProps, readControlledOrDefaultBoolean } from "../lib/read-props";
 import { idMatches, notifyChange, readPayloadId } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
@@ -174,10 +170,6 @@ const DialogHook: Hook<object & DialogHookState, HTMLElement> = {
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & DialogHookState) {
-    this.dialog?.updateProps({
-      ...readDialogLayoutProps(this.el),
-      ...readBooleanControlledZagUpdate(this.el, "open", "defaultOpen"),
-    });
     this.domRegistry?.teardown();
     this.handleRegistry?.teardown();
     this.dialog?.destroy();

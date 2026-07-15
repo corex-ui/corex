@@ -45,7 +45,7 @@ defmodule Corex.HiddenInput do
   def hidden_input(assigns) do
     assigns =
       assigns
-      |> assign_new(:id, fn -> "hidden-input-#{System.unique_integer([:positive])}" end)
+      |> Corex.FormField.require_id!("Corex component (hidden-input)")
 
     ~H"""
     <input

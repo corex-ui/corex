@@ -1,0 +1,14 @@
+defmodule <%= @app_module %>.RootIndexPage do
+  @moduledoc false
+
+  use Tableau.Page,
+    layout: <%= @app_module %>.RootLayout,
+    permalink: "/",
+    title: "<%= @app_module %>",
+    page_kind: :home,
+    sitemap: %{priority: 1.0, changefreq: "weekly"}
+
+  use Phoenix.Component
+
+  def template(assigns), do: <%= @app_module %>.HomePage.template(assigns)
+end

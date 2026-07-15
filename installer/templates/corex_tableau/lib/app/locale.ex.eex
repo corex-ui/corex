@@ -1,0 +1,154 @@
+defmodule <%= @app_module %>.Locale do
+  @moduledoc false
+
+  alias Corex.List, as: CorexList
+  alias Corex.List.Item
+
+  def locales, do: <%= @app_module %>.Gettext.locales()
+
+  def default_locale_string, do: <%= @app_module %>.Gettext.default_locale()
+
+  def current, do: Gettext.get_locale(<%= @app_module %>.Gettext)
+
+  def current(page) when is_map(page) do
+    perm = permalink_for_current(page)
+
+    inner =
+      perm
+      |> String.replace_prefix("/", "")
+      |> String.replace_suffix("/", "")
+
+    case String.split(inner, "/", trim: true) do
+      [] ->
+        default_locale_string()
+
+      [first | _] ->
+        if first in locales(), do: first, else: default_locale_string()
+    end
+  end
+
+  defp permalink_for_current(%{permalink: perm}) when is_binary(perm), do: perm
+  defp permalink_for_current(%{"permalink" => perm}) when is_binary(perm), do: perm
+  defp permalink_for_current(_), do: "/"
+
+  def lang(locale) when is_binary(locale), do: locale
+  def lang(_), do: default_locale_string()
+
+  def dir(locale) do
+    loc = lang(locale)
+
+    with {:ok, tag} <- Localize.LanguageTag.new(loc),
+         {:ok, expanded} <- Localize.LanguageTag.add_likely_subtags(tag),
+         id <- Localize.LanguageTag.to_string(expanded),
+         {:ok, order} <-
+           Localize.Locale.get(id, [:layout, :character_order], fallback: true) do
+      case order do
+        :rtl -> "rtl"
+        _ -> "ltr"
+      end
+    else
+      _ -> "ltr"
+    end
+  end
+
+  def label(loc) when is_atom(loc), do: label(Atom.to_string(loc))
+
+  def label(loc) when is_binary(loc) do
+    case Localize.Locale.display_name(loc, locale: loc) do
+      {:ok, name} -> format_language_select_label(name)
+      _ -> String.upcase(loc)
+    end
+  end
+
+  defp format_language_select_label(name) when is_binary(name) do
+    trimmed = String.trim(name)
+
+    if trimmed == "" do
+      trimmed
+    else
+      if String.match?(trimmed, ~r/^\p{Latin}/u) do
+        trimmed
+        |> String.split(~r/\s+/u, trim: true)
+        |> Enum.map_join(" ", &titlecase_word/1)
+      else
+        trimmed
+      end
+    end
+  end
+
+  defp titlecase_word(word) do
+    case String.next_grapheme(String.downcase(word)) do
+      {first, rest} -> String.upcase(first) <> rest
+      nil -> word
+    end
+  end
+
+  def swap_path(request_path, target_locale) do
+    target = to_string(target_locale)
+    supported = locales()
+    segs = trimmed_path_segments(request_path)
+    rest = segments_after_locale_prefix(segs, supported)
+    default = default_locale_string()
+    built = prefixed_locale_path(target, rest)
+    home_default?(rest, target, default, built)
+  end
+
+  defp trimmed_path_segments(request_path) do
+    inner =
+      request_path
+      |> to_string()
+      |> String.trim()
+      |> String.replace_prefix("/", "")
+      |> String.replace_suffix("/", "")
+
+    if inner == "", do: [], else: String.split(inner, "/", trim: true)
+  end
+
+  defp segments_after_locale_prefix(segs, supported) do
+    case segs do
+      [first | tail] -> if(first in supported, do: tail, else: segs)
+      _ -> segs
+    end
+  end
+
+  defp prefixed_locale_path(target, rest) do
+    base = "/" <> target
+
+    case rest do
+      [] -> base <> "/"
+      parts -> base <> "/" <> Enum.join(parts, "/") <> "/"
+    end
+  end
+
+  defp home_default?([], target, default, _built) when target == default, do: "/"
+  defp home_default?(_rest, _target, _default, built), do: built
+
+  def current_path(%{permalink: perm}) when is_binary(perm) do
+    if String.starts_with?(perm, "/"), do: perm, else: "/" <> perm
+  end
+
+  def current_path(_), do: "/"
+
+  def language_select_items(current_path) do
+    items =
+      Enum.map(locales(), fn loc ->
+        dest = swap_path(current_path, loc)
+
+        Item.new(%{
+          value: dest,
+          to: dest,
+          label: label(loc)
+        })
+      end)
+
+    CorexList.new(items)
+  end
+
+  def language_select_value(current_path, locale) do
+    [swap_path(current_path, locale)]
+  end
+
+  def selected_path(page, locale) do
+    page |> current_path() |> swap_path(locale)
+  end
+end

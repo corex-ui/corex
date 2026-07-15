@@ -25,8 +25,16 @@ defmodule Corex.New.Tableau.GenerateTest do
       File.mkdir_p!(Path.join(install_dir, "config"))
       File.mkdir_p!(Path.join(install_dir, "lib/layouts"))
       File.mkdir_p!(Path.join(install_dir, "lib/pages"))
-      File.write!(Path.join(install_dir, "lib/layouts/root_layout.ex"), "defmodule Broken do\nend\n")
-      File.write!(Path.join(install_dir, "lib/pages/home_page.ex"), "defmodule BrokenPage do\nend\n")
+
+      File.write!(
+        Path.join(install_dir, "lib/layouts/root_layout.ex"),
+        "defmodule Broken do\nend\n"
+      )
+
+      File.write!(
+        Path.join(install_dir, "lib/pages/home_page.ex"),
+        "defmodule BrokenPage do\nend\n"
+      )
 
       assert :ok == Generate.run(install_dir, base_opts())
 
@@ -57,6 +65,7 @@ defmodule Corex.New.Tableau.GenerateTest do
       assert File.read!("lib/mix/tasks/post.ex") =~ "defmodule Mix.Tasks.MyBlog.Gen.Post"
       assert File.read!("lib/mix/tasks/post.ex") =~ "layout: MyBlog.PostLayout"
       assert File.read!("mix.exs") =~ ":tableau"
+      assert File.read!("mix.exs") =~ "corex_mcp"
       assert File.read!("config/config.exs") =~ "config :corex_design"
       assert File.read!("config/config.exs") =~ ~S[import_config "#{config_env()}.exs"]
       assert File.read!("assets/css/site.css") =~ "corex.css"
@@ -98,7 +107,7 @@ defmodule Corex.New.Tableau.GenerateTest do
     end)
   end
 
-  test "run/2 without mcp skips mcp module" do
+  test "run/2 without mcp skips mcp module and corex_mcp dep" do
     Corex.New.MixHelper.in_tmp("tableau generate no mcp", fn ->
       install_dir = File.cwd!()
       File.mkdir_p!(Path.join(install_dir, "assets/js"))
@@ -110,6 +119,7 @@ defmodule Corex.New.Tableau.GenerateTest do
 
       refute File.exists?("lib/my_blog/mcp.ex")
       refute File.read!("config/dev.exs") =~ "mcp_enabled"
+      refute File.read!("mix.exs") =~ "corex_mcp"
     end)
   end
 
@@ -124,8 +134,78 @@ defmodule Corex.New.Tableau.GenerateTest do
 
       refute File.exists?("lib/my_blog/theme.ex")
       refute File.exists?("lib/my_blog/mode.ex")
+      refute File.exists?("lib/my_blog/locale.ex")
       refute File.read!("assets/js/site.js") =~ "Select:"
       refute File.read!("assets/js/site.js") =~ "Toggle:"
+      refute File.read!("assets/js/site.js") =~ "locale.js"
+    end)
+  end
+
+  test "run/2 with lang writes Locale, Gettext, locale.js, and per-locale pages" do
+    Corex.New.MixHelper.in_tmp("tableau generate lang", fn ->
+      install_dir = File.cwd!()
+      File.mkdir_p!(Path.join(install_dir, "assets/js"))
+      File.mkdir_p!(Path.join(install_dir, "assets/css"))
+      File.mkdir_p!(Path.join(install_dir, "config"))
+
+      opts = base_opts(lang: true, design: true)
+      assert :ok == Generate.run(install_dir, opts)
+
+      assert File.exists?("lib/my_blog/locale.ex")
+      assert File.exists?("lib/my_blog/gettext.ex")
+      assert File.exists?("lib/my_blog/gettext_sigil.ex")
+      assert File.exists?("lib/my_blog/pages/root_index_page.ex")
+      assert File.exists?("assets/js/locale.js")
+      assert File.dir?("priv/gettext/en")
+      assert File.dir?("priv/gettext/fr")
+      assert File.dir?("priv/gettext/ar")
+
+      locale_ex = File.read!("lib/my_blog/locale.ex")
+      assert locale_ex =~ "def locales"
+      assert locale_ex =~ "def default_locale_string"
+      assert locale_ex =~ "def current"
+      assert locale_ex =~ "def lang"
+      assert locale_ex =~ "def dir"
+      assert locale_ex =~ "def label"
+      assert locale_ex =~ "def swap_path"
+      assert locale_ex =~ "def current_path"
+      assert locale_ex =~ "def selected_path"
+      assert locale_ex =~ "def language_select_items"
+      assert locale_ex =~ "def language_select_value"
+
+      root_layout = File.read!("lib/my_blog/layouts/root_layout.ex")
+      assert root_layout =~ "data-locale="
+      assert root_layout =~ "data-locales="
+      assert root_layout =~ "data-rtl-locales="
+      assert root_layout =~ "data-locale-selected-path="
+      assert root_layout =~ "data-public-path-prefix="
+      assert root_layout =~ "id=\"corex-language-switch\""
+      assert root_layout =~ "on_value_change_client=\"corex:set-locale\""
+
+      home_page = File.read!("lib/my_blog/pages/home_page.ex")
+      assert home_page =~ "Module.create"
+      assert home_page =~ "/\#{locale}/"
+      refute home_page =~ "permalink: \"/\""
+
+      assert File.read!("lib/my_blog/pages/root_index_page.ex") =~ "permalink: \"/\""
+      assert File.read!("lib/my_blog/pages/blog_index_page.ex") =~ "/\#{locale}/blog/"
+
+      site_js = File.read!("assets/js/site.js")
+      assert site_js =~ ~S[import "./locale.js"]
+      assert site_js =~ "Select:"
+
+      mix_exs = File.read!("mix.exs")
+      assert mix_exs =~ "gettext"
+      assert mix_exs =~ "gettext_sigils"
+      assert mix_exs =~ "localize_web"
+      assert mix_exs =~ ":localize"
+      assert mix_exs =~ "localize.download_locales"
+
+      config = File.read!("config/config.exs")
+      assert config =~ "gettext_backend: MyBlog.Gettext"
+      assert config =~ ~S[default_locale: "en"]
+      assert config =~ ~S[supported_locales: ~w(en fr ar)]
+      assert config =~ "select"
     end)
   end
 end

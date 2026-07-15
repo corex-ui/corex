@@ -125,4 +125,35 @@ describe("Menu hook lifecycle", () => {
     callHookDestroyed(MenuHook, hook);
     setOpenSpy.mockRestore();
   });
+
+  it("menu_open requires matching id and includes it in the response", () => {
+    const el = document.createElement("div");
+    el.id = "menu:menu-api-server";
+    el.setAttribute("phx-hook", "Menu");
+    document.body.appendChild(el);
+
+    const { hook } = mockHookContext(el, {
+      connected: false,
+      overrides: {
+        menu: undefined as MenuComponent | undefined,
+        handlers: [] as CallbackRef[],
+      },
+    });
+
+    callHookMounted(MenuHook, hook);
+    const openHandler = hook.handleEvent.mock.calls.find(([event]) => event === "menu_open")?.[1];
+    expect(openHandler).toBeDefined();
+
+    openHandler!({});
+    openHandler!({ id: "other-menu" });
+    expect(hook.pushEvent).not.toHaveBeenCalledWith("menu_open_response", expect.anything());
+
+    openHandler!({ id: "menu-api-server" });
+    expect(hook.pushEvent).toHaveBeenCalledWith("menu_open_response", {
+      id: "menu-api-server",
+      open: expect.any(Boolean),
+    });
+
+    callHookDestroyed(MenuHook, hook);
+  });
 });

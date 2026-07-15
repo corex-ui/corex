@@ -1,7 +1,6 @@
 defmodule Corex.Collapsible do
   @moduledoc ~S'''
-  Phoenix implementation of [Zag.js Collapsible](https://zagjs.com/components/react/collapsible).
-
+  Collapsible panel for Phoenix LiveView. Behavior follows [Zag.js Collapsible](https://zagjs.com/components/react/collapsible).
   ## Anatomy
 
   <!-- tabs-open -->
@@ -221,14 +220,12 @@ defmodule Corex.Collapsible do
   ```
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   Stack modifiers on the host (`class` on `<.collapsible>`). Combine axes, for example `collapsible ui-accent ui-size-lg` or `collapsible ui-info`.
 
-  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`), **Max height** (`ui-max-height-*` on the host; clamps content). See the [modifier guide](modifiers.html).
 
   Semantic modifiers set palette variables on triggers. Variant modifiers control surface treatment. Default open triggers use a neutral selected surface with semantic text ink; add `ui-solid` for a filled open trigger.
 
@@ -263,6 +260,10 @@ defmodule Corex.Collapsible do
   | SM | `collapsible ui-size-sm` |
   | MD | `collapsible ui-size-md` |
   | LG | `collapsible ui-size-lg` |
+
+  ### Max height
+
+  Opt-in clamp on content. Example: `collapsible ui-max-height-sm`.
 
   <!-- tabs-close -->
   '''

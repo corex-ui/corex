@@ -1,6 +1,9 @@
 import {
   readPressedControlledZagUpdate
-} from "./chunks/chunk-XL4XUS2C.mjs";
+} from "./chunks/chunk-BGER3KYP.mjs";
+import {
+  snapshotDataset
+} from "./chunks/chunk-TKOH2OAC.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -22,7 +25,7 @@ import {
   getBooleanValue,
   getDir,
   getString
-} from "./chunks/chunk-YGZLYEUJ.mjs";
+} from "./chunks/chunk-6AOEC32Q.mjs";
 
 // ../node_modules/.pnpm/@zag-js+toggle@1.40.0/node_modules/@zag-js/toggle/dist/toggle.anatomy.mjs
 var anatomy = createAnatomy("toggle", ["root", "indicator"]);
@@ -194,13 +197,21 @@ var ToggleHook = {
       });
     });
   },
+  beforeUpdate() {
+    this.beforeAttrs = snapshotDataset(this.el, ["pressed"]);
+  },
   updated() {
-    this.zagToggle?.updateProps({
-      id: this.el.id,
-      ...readPressedControlledZagUpdate(this.el),
-      disabled: getBoolean(this.el, "disabled"),
-      dir: getDir(this.el)
-    });
+    try {
+      const pressedPatch = readPressedControlledZagUpdate(this.el, this.beforeAttrs);
+      this.zagToggle?.updateProps({
+        id: this.el.id,
+        ...pressedPatch,
+        disabled: getBoolean(this.el, "disabled"),
+        dir: getDir(this.el)
+      });
+    } finally {
+      this.beforeAttrs = void 0;
+    }
   },
   destroyed() {
     this.domRegistry?.teardown();

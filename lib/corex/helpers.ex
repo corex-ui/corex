@@ -1,23 +1,27 @@
 defmodule Corex.Helpers do
   @moduledoc false
 
-  def get_boolean(true), do: ""
-  def get_boolean(false), do: nil
-  def get_boolean(nil), do: nil
+  defdelegate get_boolean(v), to: Corex.Attrs
+  defdelegate get_default_boolean(controlled, value), to: Corex.Attrs
+  defdelegate get_boolean(controlled, value), to: Corex.Attrs
+  defdelegate data_state(bool, true_val, false_val), to: Corex.Attrs
+  defdelegate maybe_put(map, key, value), to: Corex.Attrs
+  defdelegate joined_csv_values(values), to: Corex.Attrs
+  defdelegate maybe_put_data_dir(map, dir), to: Corex.Attrs
+  defdelegate maybe_put_dir(map, dir), to: Corex.Attrs
+  defdelegate maybe_put_data_dir_from(map, assigns), to: Corex.Attrs
+  defdelegate maybe_put_dir_from(map, assigns), to: Corex.Attrs
+  defdelegate respond_to_fields(opts), to: Corex.Attrs
 
-  def get_default_boolean(controlled, value) do
-    if !controlled && value, do: "", else: nil
-  end
+  defdelegate controlled_dataset_values(controlled, joined), to: Corex.ValueBinding
+  defdelegate controlled_string_value(controlled, value), to: Corex.ValueBinding
 
-  def get_boolean(controlled, value) do
-    if controlled do
-      if value, do: "", else: nil
-    else
-      nil
-    end
-  end
-
-  def data_state(bool, true_val, false_val), do: if(bool, do: true_val, else: false_val)
+  defdelegate has_groups?(items), to: Corex.List.Normalize
+  defdelegate group_by_group(items), to: Corex.List.Normalize
+  defdelegate normalize_groups(items), to: Corex.List.Normalize
+  defdelegate entry_value(entry), to: Corex.List.Normalize
+  defdelegate entry_selected?(entry, value_list), to: Corex.List.Normalize
+  defdelegate normalize_items(items), to: Corex.List.Normalize
 
   def validate_value!([]), do: []
 
@@ -107,158 +111,4 @@ defmodule Corex.Helpers do
   end
 
   def validate_content_items_required!(assigns, _component), do: assigns
-
-  def has_groups?(items) when is_list(items) do
-    Enum.any?(items, &Map.get(&1, :group))
-  end
-
-  def group_by_group(items) when is_list(items) do
-    items
-    |> Enum.group_by(&Map.get(&1, :group))
-    |> Enum.sort_by(fn {g, _} -> g || "" end)
-  end
-
-  def normalize_groups(items) when is_list(items) do
-    if has_groups?(items) do
-      items
-      |> Enum.reduce({[], MapSet.new()}, &reduce_group/2)
-      |> elem(0)
-      |> Enum.reverse()
-    else
-      []
-    end
-  end
-
-  defp reduce_group(item, {acc, seen}) do
-    g = Map.get(item, :group)
-
-    cond do
-      is_nil(g) -> {acc, seen}
-      MapSet.member?(seen, g) -> {acc, seen}
-      true -> {[g | acc], MapSet.put(seen, g)}
-    end
-  end
-
-  def entry_value(entry) when is_map(entry) do
-    entry
-    |> Map.new(fn {k, v} -> {to_string(k), v} end)
-    |> Map.get("value")
-    |> case do
-      nil -> ""
-      v -> to_string(v)
-    end
-  end
-
-  def entry_selected?(entry, value_list) when is_map(entry) and is_list(value_list) do
-    Enum.member?(value_list, entry_value(entry))
-  end
-
-  @doc """
-  Inserts `key => value` into `map` only when `value` is not nil.
-
-  Used by `Connect` modules to skip optional data attributes that should not
-  appear in the rendered HTML when they have no value.
-  """
-  @spec maybe_put(map(), term(), term()) :: map()
-  def maybe_put(map, _key, nil), do: map
-  def maybe_put(map, key, value), do: Map.put(map, key, value)
-
-  def joined_csv_values([]), do: nil
-
-  def joined_csv_values(values) when is_list(values) do
-    Enum.map_join(values, ",", &to_string/1)
-  end
-
-  def controlled_dataset_values(true, joined) when is_binary(joined), do: {joined, nil}
-  def controlled_dataset_values(false, joined) when is_binary(joined), do: {nil, joined}
-  def controlled_dataset_values(_controlled, _joined), do: {nil, nil}
-
-  def controlled_string_value(true, value) when is_binary(value), do: {value, nil}
-  def controlled_string_value(false, value) when is_binary(value), do: {nil, value}
-  def controlled_string_value(_controlled, _value), do: {nil, nil}
-
-  def maybe_put_data_dir(map, nil), do: map
-  def maybe_put_data_dir(map, dir) when dir in ["ltr", "rtl"], do: Map.put(map, "data-dir", dir)
-  def maybe_put_data_dir(map, _), do: map
-
-  def maybe_put_dir(map, nil), do: map
-  def maybe_put_dir(map, dir) when dir in ["ltr", "rtl"], do: Map.put(map, "dir", dir)
-  def maybe_put_dir(map, _), do: map
-
-  def maybe_put_data_dir_from(map, assigns) when is_map(assigns),
-    do: maybe_put_data_dir(map, Map.get(assigns, :dir))
-
-  def maybe_put_dir_from(map, assigns) when is_map(assigns),
-    do: maybe_put_dir(map, Map.get(assigns, :dir))
-
-  @spec respond_to_fields(keyword()) :: %{String.t() => String.t()}
-  def respond_to_fields(opts) when is_list(opts) do
-    case Keyword.get(opts, :respond_to, :server) do
-      :both ->
-        %{respond_to: "both"}
-
-      :server ->
-        %{respond_to: "server"}
-
-      :client ->
-        %{respond_to: "client"}
-
-      other ->
-        raise ArgumentError,
-              "invalid :respond_to, expected :both, :server, or :client, got: #{inspect(other)}"
-    end
-  end
-
-  def normalize_items(items) when is_list(items) do
-    Enum.map(items, fn
-      %Corex.List.Item{} = item ->
-        %{
-          value: item.value,
-          label: item.label,
-          disabled: item.disabled,
-          group: item.group,
-          to: item.to,
-          redirect: normalize_list_item_redirect(item.redirect),
-          new_tab: item.new_tab,
-          meta: item.meta || %{}
-        }
-
-      %{label: _} = map ->
-        map =
-          map
-          |> Map.put_new(:value, Corex.ItemBuilder.generate_id("list"))
-
-        %{
-          value: Map.fetch!(map, :value),
-          label: Map.get(map, :label),
-          disabled: !!Map.get(map, :disabled, false),
-          group: Map.get(map, :group),
-          to: Map.get(map, :to),
-          redirect: normalize_list_item_redirect(Map.get(map, :redirect)),
-          new_tab: !!Map.get(map, :new_tab, false),
-          meta: Map.get(map, :meta) || %{}
-        }
-
-      other ->
-        raise ArgumentError, """
-        Items must be Corex.List.Item or maps with :label (and optional :value).
-
-        Got:
-        #{inspect(other)}
-        """
-    end)
-  end
-
-  defp normalize_list_item_redirect(nil), do: nil
-  defp normalize_list_item_redirect(false), do: false
-  defp normalize_list_item_redirect(:href), do: :href
-  defp normalize_list_item_redirect(:patch), do: :patch
-  defp normalize_list_item_redirect(:navigate), do: :navigate
-
-  defp normalize_list_item_redirect(other),
-    do:
-      raise(
-        ArgumentError,
-        "invalid item :redirect, expected nil, false, :href, :patch, or :navigate, got: #{inspect(other)}"
-      )
 end

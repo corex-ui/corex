@@ -1,8 +1,6 @@
 defmodule E2eWeb.FormPatternsFields do
   use E2eWeb, :html
 
-  alias Corex.FormField
-
   attr(:form, :any, required: true)
   attr(:prefix, :string, required: true)
 
@@ -133,7 +131,11 @@ defmodule E2eWeb.FormPatternsFields do
       </:error>
     </.switch>
 
-    <.checkbox field={@form[:terms]} class="checkbox max-w-xs w-full relative" id={"#{@prefix}-terms"}>
+    <.checkbox
+      field={@form[:terms]}
+      class="checkbox max-w-xs w-full relative"
+      id={"#{@prefix}-terms"}
+    >
       <:label>Accept the terms</:label>
       <:indicator>
         <.heroicon name="hero-check" />
@@ -161,7 +163,7 @@ defmodule E2eWeb.FormPatternsFields do
       class="select max-w-none w-full"
       id={"#{@prefix}-country"}
       deselectable
-      invalid={FormField.invalid?(@form[:country])}
+      auto_invalid
       translation={%Corex.Select.Translation{placeholder: "Select a country"}}
       items={country_items()}
     >
@@ -180,7 +182,7 @@ defmodule E2eWeb.FormPatternsFields do
       class="combobox max-w-none w-full"
       id={"#{@prefix}-currency"}
       placeholder="Search currency"
-      invalid={FormField.invalid?(@form[:currency])}
+      auto_invalid
       items={currency_items()}
     >
       <:label>Preferred currency</:label>
@@ -202,7 +204,7 @@ defmodule E2eWeb.FormPatternsFields do
       field={@form[:tags]}
       class="tags-input max-w-none w-full"
       id={"#{@prefix}-tags"}
-      invalid={FormField.invalid?(@form[:tags])}
+      auto_invalid
     >
       <:label>Tags</:label>
       <:close>
@@ -218,7 +220,7 @@ defmodule E2eWeb.FormPatternsFields do
       field={@form[:password]}
       class="password-input max-w-none w-full"
       id={"#{@prefix}-password"}
-      invalid={FormField.invalid?(@form[:password])}
+      auto_invalid
     >
       <:label>Password</:label>
       <:visible_indicator>
@@ -237,7 +239,7 @@ defmodule E2eWeb.FormPatternsFields do
       field={@form[:notifications]}
       class="switch max-w-none w-full"
       id={"#{@prefix}-notifications"}
-      invalid={FormField.invalid?(@form[:notifications])}
+      auto_invalid
     >
       <:label>Email notifications</:label>
       <:error :let={msg}>
@@ -250,7 +252,7 @@ defmodule E2eWeb.FormPatternsFields do
       field={@form[:terms]}
       class="checkbox max-w-xs w-full"
       id={"#{@prefix}-terms"}
-      invalid={FormField.invalid?(@form[:terms])}
+      auto_invalid
     >
       <:label>Accept the terms</:label>
       <:indicator>

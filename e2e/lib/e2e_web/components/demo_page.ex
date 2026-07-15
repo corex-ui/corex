@@ -130,7 +130,9 @@ defmodule E2eWeb.DemoPage do
     ~H"""
     <div :if={@axis == :variant} class={@class}>
       <p>
-        Variant modifiers control {@host} surface treatment. Default is subtle (neutral fill and border; semantic roles tint text ink); add <code class="text-sm">ui-solid</code> for a filled surface.
+        Variant modifiers control {@host} surface treatment. Default is subtle (neutral fill and border; semantic roles tint text ink); add
+        <code class="text-sm">ui-solid</code>
+        for a filled surface.
       </p>
     </div>
     <div :if={@axis != :variant} class={@class}>

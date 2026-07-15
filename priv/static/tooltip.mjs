@@ -1,14 +1,17 @@
 import {
   getPlacement,
   getPlacementStyles
-} from "./chunks/chunk-DVA7SQMW.mjs";
+} from "./chunks/chunk-MHRYIVD2.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-QU36267Q.mjs";
+} from "./chunks/chunk-C4KEB3WL.mjs";
 import {
   isFocusVisible,
   trackFocusVisible
-} from "./chunks/chunk-JF64R7HW.mjs";
+} from "./chunks/chunk-YUSIPE4B.mjs";
+import {
+  snapshotDataset
+} from "./chunks/chunk-TKOH2OAC.mjs";
 import {
   idMatches,
   readPayloadId
@@ -32,7 +35,7 @@ import {
   isFunction,
   isLeftClick,
   queryAll
-} from "./chunks/chunk-YGZLYEUJ.mjs";
+} from "./chunks/chunk-6AOEC32Q.mjs";
 
 // ../node_modules/.pnpm/@zag-js+tooltip@1.40.0/node_modules/@zag-js/tooltip/dist/tooltip.anatomy.mjs
 var anatomy = createAnatomy("tooltip").parts("trigger", "arrow", "arrowTip", "positioner", "content");
@@ -702,6 +705,40 @@ var Tooltip = class extends Component {
   }
 };
 
+// lib/zag-live-hook.ts
+function createZagLiveHook(config) {
+  return {
+    mounted() {
+      const component = config.mount(this);
+      component.init();
+      this[config.key] = component;
+    },
+    beforeUpdate() {
+      if (config.controlledKeys) {
+        this.beforeAttrs = snapshotDataset(this.el, config.controlledKeys);
+      }
+      config.beforeUpdate?.(this);
+    },
+    updated() {
+      const component = this[config.key];
+      if (!component) return;
+      try {
+        config.update?.(this, component);
+      } finally {
+        this.beforeAttrs = void 0;
+      }
+    },
+    destroyed() {
+      const component = this[config.key];
+      if (!component) return;
+      config.destroy?.(this, component);
+      component.destroy();
+      this[config.key] = void 0;
+      this.beforeAttrs = void 0;
+    }
+  };
+}
+
 // hooks/tooltip.ts
 function createTooltipCallbacks(el, pushEvent, liveSocket) {
   const onTriggerValueChange = (details) => {
@@ -742,80 +779,56 @@ function getCloseDelay(el) {
   if (interactive && (raw === void 0 || raw === 0)) return 400;
   return raw;
 }
-var TooltipHook = {
-  mounted() {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const liveSocket = this.liveSocket;
-    const positioning = readPositioningOptions(el);
-    const callbacks = createTooltipCallbacks(el, pushEvent, liveSocket);
-    const tooltip = new Tooltip(el, {
-      id: el.id,
-      defaultOpen: getBoolean(el, "defaultOpen"),
-      disabled: getBoolean(el, "disabled"),
-      dir: getDir(el),
-      openDelay: getNumber(el, "openDelay"),
-      closeDelay: getCloseDelay(el),
-      positioning,
-      closeOnEscape: getBoolean(el, "closeOnEscape"),
-      closeOnClick: getBoolean(el, "closeOnClick"),
-      closeOnPointerDown: getBoolean(el, "closeOnPointerDown"),
-      closeOnScroll: getBoolean(el, "closeOnScroll"),
-      interactive: getBoolean(el, "interactive"),
-      ...callbacks
-    });
-    tooltip.init();
-    this.tooltip = tooltip;
-    this.onSetOpen = (event) => {
+function tooltipProps(el, hook) {
+  return {
+    id: el.id,
+    defaultOpen: getBoolean(el, "defaultOpen"),
+    disabled: getBoolean(el, "disabled"),
+    dir: getDir(el),
+    openDelay: getNumber(el, "openDelay"),
+    closeDelay: getCloseDelay(el),
+    positioning: readPositioningOptions(el),
+    closeOnEscape: getBoolean(el, "closeOnEscape"),
+    closeOnClick: getBoolean(el, "closeOnClick"),
+    closeOnPointerDown: getBoolean(el, "closeOnPointerDown"),
+    closeOnScroll: getBoolean(el, "closeOnScroll"),
+    interactive: getBoolean(el, "interactive"),
+    ...createTooltipCallbacks(el, hook.pushEvent.bind(hook), hook.liveSocket)
+  };
+}
+var TooltipHook = createZagLiveHook({
+  key: "tooltip",
+  mount(hook) {
+    const el = hook.el;
+    const tooltip = new Tooltip(el, tooltipProps(el, hook));
+    hook.onSetOpen = (event) => {
       const { open } = event.detail;
       tooltip.api.setOpen(open);
     };
-    el.addEventListener("corex:tooltip:set-open", this.onSetOpen);
-    this.handlers = [];
-    this.handlers.push(
-      this.handleEvent("tooltip_set_open", (payload) => {
+    el.addEventListener("corex:tooltip:set-open", hook.onSetOpen);
+    hook.handlers = [];
+    hook.handlers.push(
+      hook.handleEvent("tooltip_set_open", (payload) => {
         if (!idMatches(el.id, readPayloadId(payload))) return;
         tooltip.api.setOpen(payload.open);
       })
     );
+    return tooltip;
   },
-  updated() {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const liveSocket = this.liveSocket;
-    const positioning = readPositioningOptions(el);
-    const callbacks = createTooltipCallbacks(el, pushEvent, liveSocket);
-    this.tooltip?.updateProps({
-      id: el.id,
-      disabled: getBoolean(el, "disabled"),
-      dir: getDir(el),
-      openDelay: getNumber(el, "openDelay"),
-      closeDelay: getCloseDelay(el),
-      positioning,
-      closeOnEscape: getBoolean(el, "closeOnEscape"),
-      closeOnClick: getBoolean(el, "closeOnClick"),
-      closeOnPointerDown: getBoolean(el, "closeOnPointerDown"),
-      closeOnScroll: getBoolean(el, "closeOnScroll"),
-      interactive: getBoolean(el, "interactive"),
-      ...callbacks
-    });
-    queueMicrotask(() => {
-      this.tooltip?.syncDom();
-      this.tooltip?.api.reposition?.();
-    });
+  update(hook, tooltip) {
+    tooltip.updateProps(tooltipProps(hook.el, hook));
   },
-  destroyed() {
-    if (this.onSetOpen) {
-      this.el.removeEventListener("corex:tooltip:set-open", this.onSetOpen);
+  destroy(hook) {
+    if (hook.onSetOpen) {
+      hook.el.removeEventListener("corex:tooltip:set-open", hook.onSetOpen);
     }
-    if (this.handlers) {
-      for (const handler of this.handlers) {
-        this.removeHandleEvent(handler);
+    if (hook.handlers) {
+      for (const handler of hook.handlers) {
+        hook.removeHandleEvent(handler);
       }
     }
-    this.tooltip?.destroy();
   }
-};
+});
 export {
   TooltipHook as Tooltip,
   getCloseDelay

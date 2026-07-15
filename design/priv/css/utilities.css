@@ -113,6 +113,11 @@
   --ctl-radius: --value(--radius-*, [length]);
 }
 
+@utility ui-max-height-* {
+  --ctl-max-height: --value(--container-*, [length]);
+  --ctl-max-height-overflow: auto;
+}
+
 @utility ui-surface {
   color: var(--ctl-ink, var(--ctl-ink-text, var(--color-ink)));
   background-color: var(--ctl-bg, var(--color-ui));

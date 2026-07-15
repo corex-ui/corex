@@ -1,7 +1,6 @@
 defmodule Corex.RadioGroup do
   @moduledoc ~S'''
-  Phoenix implementation of [Zag.js Radio Group](https://zagjs.com/components/react/radio-group).
-
+  Radio group for Phoenix LiveView forms. Behavior follows [Zag.js Radio Group](https://zagjs.com/components/react/radio-group).
   ## Anatomy
 
   <!-- tabs-open -->
@@ -256,7 +255,7 @@ defmodule Corex.RadioGroup do
 
   Use `field={@form[:choice]}` inside `<.form>` so the hidden input name and validation align with Phoenix forms. Pass `invalid` only when you want invalid styling.
 
-  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:choice])}` when you want alert borders after validation.
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. With `field={@form[:…]}`, pass `auto_invalid` for alert borders from visible errors, or `invalid={true}` to force the alert state.
 
   ```heex
   <.form for={@form} phx-change="validate">
@@ -293,9 +292,7 @@ defmodule Corex.RadioGroup do
   ```
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   Stack modifiers on the host (`class` on `<.radio_group>`). Combine axes, for example `radio-group ui-accent ui-size-lg` or `radio-group ui-info ui-solid`.
@@ -371,7 +368,13 @@ defmodule Corex.RadioGroup do
   attr(:name, :string, default: nil)
   attr(:form, :string, default: nil)
   attr(:disabled, :boolean, default: false)
-  attr(:invalid, :boolean, default: false)
+  attr(:invalid, :boolean, default: nil)
+
+  attr(:auto_invalid, :boolean,
+    default: false,
+    doc: "When true with `field`, set invalid from visible changeset errors"
+  )
+
   attr(:required, :boolean, default: false)
   attr(:read_only, :boolean, default: false)
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
@@ -424,7 +427,7 @@ defmodule Corex.RadioGroup do
   defp do_radio_group(assigns) do
     assigns =
       assigns
-      |> assign_new(:id, fn -> "radio-group-#{System.unique_integer([:positive])}" end)
+      |> Corex.FormField.require_id!("Corex component (radio-group)")
       |> assign_new(:errors, fn -> [] end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign(:items, normalize_radio_items(assigns.items))

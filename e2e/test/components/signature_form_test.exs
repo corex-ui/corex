@@ -2,6 +2,8 @@ defmodule E2eWeb.SignatureFormTest do
   use ExUnit.Case, async: false
   use Wallaby.Feature
 
+  @moduletag :wallaby
+
   alias E2eWeb.SignatureModel, as: Signature
 
   feature "static form - submit empty/default includes signature", %{session: session} do

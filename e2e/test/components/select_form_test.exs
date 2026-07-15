@@ -2,6 +2,8 @@ defmodule E2eWeb.SelectFormTest do
   use ExUnit.Case, async: false
   use Wallaby.Feature
 
+  @moduletag :wallaby
+
   alias E2eWeb.SelectModel, as: Select
 
   feature "static form - submit without selection includes empty country", %{session: session} do

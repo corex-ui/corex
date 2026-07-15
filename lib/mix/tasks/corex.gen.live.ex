@@ -2,7 +2,17 @@ defmodule Mix.Tasks.Corex.Gen.Live do
   @shortdoc "Generates LiveView, templates, and context for a resource"
 
   @moduledoc """
-  Generates LiveView, templates, and context for a resource.
+  Generates LiveView, templates, and context for a resource, using Corex form
+  components and layout assigns.
+
+  Corex-specific behavior (vs `mix phx.gen.live`):
+
+  - Reads `config :corex, :generators` (and related layout opts) for scaffold style
+  - Passes layout assigns used by Corex apps (`flash`, and locale/mode/theme when wired)
+  - With localized routes (`path_prefixes` / `/:locale` scope), shell instructions
+    tell you to add live routes under the locale scope; see [Localize](localize.html)
+
+  For Phoenix umbrella/scopes details, see `mix help phx.gen.live`.
 
   The format is:
 

@@ -495,8 +495,10 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   end
 
   def styling_variant_matrix_code do
-    for {semantic, semantic_index} <- DemoScales.styling_semantic_axis_steps("tree-view") |> Enum.with_index(),
-        {variant, variant_index} <- DemoScales.styling_variant_axis_steps("tree-view") |> Enum.with_index() do
+    for {semantic, semantic_index} <-
+          DemoScales.styling_semantic_axis_steps("tree-view") |> Enum.with_index(),
+        {variant, variant_index} <-
+          DemoScales.styling_variant_axis_steps("tree-view") |> Enum.with_index() do
       class = DemoScales.join_matrix_modifiers("tree-view", semantic.modifier, variant.modifier)
 
       """

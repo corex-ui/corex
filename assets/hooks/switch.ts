@@ -4,6 +4,7 @@ import { Switch } from "../components/switch";
 import type { CheckedChangeDetails } from "@zag-js/switch";
 
 import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
+import { snapshotDataset, type DatasetSnapshot } from "../lib/controlled-attr-snapshot";
 import { mountCheckedBinding, readUpdatedServerChecked } from "../lib/read-props";
 import {
   checkedChangePayload,
@@ -19,6 +20,7 @@ type SwitchHookState = {
   zagSwitch?: Switch;
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
+  beforeAttrs?: DatasetSnapshot;
 };
 
 export { checkedChangePayload };
@@ -61,11 +63,9 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
         );
 
         if (input) {
-          queueMicrotask(() => {
-            input.checked = details.checked === true;
-            input.dispatchEvent(new Event("input", { bubbles: true }));
-            input.dispatchEvent(new Event("change", { bubbles: true }));
-          });
+          input.checked = details.checked === true;
+          input.dispatchEvent(new Event("input", { bubbles: true }));
+          input.dispatchEvent(new Event("change", { bubbles: true }));
         }
       },
     });
@@ -126,22 +126,32 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
     });
   },
 
+  beforeUpdate(this: object & HookInterface<HTMLElement> & SwitchHookState) {
+    this.beforeAttrs = snapshotDataset(this.el, ["checked"]);
+  },
+
   updated(this: object & HookInterface<HTMLElement> & SwitchHookState) {
     const zagSwitch = this.zagSwitch;
     if (!zagSwitch) return;
 
-    zagSwitch.updateProps({
-      id: this.el.id,
-      ...readUpdatedServerChecked(this.el),
-      disabled: getBoolean(this.el, "disabled"),
-      name: getString(this.el, "name"),
-      form: getString(this.el, "form"),
-      value: getString(this.el, "value"),
-      dir: getDir(this.el),
-      invalid: getBoolean(this.el, "invalid"),
-      required: getBoolean(this.el, "required"),
-      readOnly: getBoolean(this.el, "readonly"),
-    });
+    try {
+      const checkedPatch = readUpdatedServerChecked(this.el, this.beforeAttrs);
+
+      zagSwitch.updateProps({
+        id: this.el.id,
+        ...("checked" in checkedPatch ? { checked: checkedPatch.checked === true } : {}),
+        disabled: getBoolean(this.el, "disabled"),
+        name: getString(this.el, "name"),
+        form: getString(this.el, "form"),
+        value: getString(this.el, "value"),
+        dir: getDir(this.el),
+        invalid: getBoolean(this.el, "invalid"),
+        required: getBoolean(this.el, "required"),
+        readOnly: getBoolean(this.el, "readonly"),
+      });
+    } finally {
+      this.beforeAttrs = undefined;
+    }
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & SwitchHookState) {

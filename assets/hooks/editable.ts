@@ -7,16 +7,13 @@ import { mountStringBinding } from "../lib/read-props";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
 import { idMatches, notifyChange, readPayloadId, readPayloadValue } from "../lib/respond-to";
-import {
-  notifyPhoenixFormChange,
-  type NotifyPhoenixFormChangeOptions,
-} from "../lib/live-view-form-input";
+import { setScalarValue, type NotifyPhoenixFormChangeOptions } from "../lib/phoenix-form-bridge";
 
 type EditableHookState = {
   editable?: Editable;
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
-  allowFormNotify?: boolean;
+  fieldTouched?: boolean;
   unbindFormSubmit?: () => void;
 };
 
@@ -35,7 +32,7 @@ function syncEditableFormValue(
 ): void {
   const hidden = formValueInput(el);
   if (hidden) {
-    notifyPhoenixFormChange(hidden, value, options);
+    setScalarValue(hidden, value, options);
     return;
   }
 
@@ -44,7 +41,7 @@ function syncEditableFormValue(
     dispatchEvent: (e: Event) => boolean;
   } | null;
   if (inputEl) {
-    notifyPhoenixFormChange(inputEl as HTMLInputElement, value, options);
+    setScalarValue(inputEl as HTMLInputElement, value, options);
   }
 }
 
@@ -53,10 +50,16 @@ function notifyEditableValueChange(
   pushEvent: (name: string, payload: Record<string, unknown>) => void,
   canPush: () => boolean,
   value: string,
-  hook: EditableHookState
+  hook: EditableHookState,
+  initialValue: string
 ): void {
+  const isMountEcho = hook.fieldTouched !== true && value === initialValue;
+  if (!isMountEcho) {
+    hook.fieldTouched = true;
+  }
+
   syncEditableFormValue(el, value, {
-    markUsed: hook.allowFormNotify === true,
+    markUsed: !isMountEcho,
   });
 
   notifyChange({
@@ -104,9 +107,11 @@ const EditableHook: Hook<object & HookInterface<HTMLElement> & EditableHookState
     const activationMode = getString(el, "activationMode") as "focus" | "dblclick" | undefined;
     const selectOnFocus = getBoolean(el, "selectOnFocus");
 
-    this.allowFormNotify = false;
+    this.fieldTouched = false;
 
     const valueBinding = mountStringBinding(el, "value", "defaultValue");
+    const initialValue =
+      "value" in valueBinding ? (valueBinding.value ?? "") : (valueBinding.defaultValue ?? "");
     const zag = new Editable(el, {
       id: el.id,
       ...("value" in valueBinding
@@ -124,19 +129,16 @@ const EditableHook: Hook<object & HookInterface<HTMLElement> & EditableHookState
       ...(selectOnFocus !== undefined ? { selectOnFocus } : {}),
       defaultEdit: getBoolean(el, "defaultEdit"),
       onValueChange: (details: ValueChangeDetails) => {
-        notifyEditableValueChange(el, pushEvent, canPush, details.value, this);
+        notifyEditableValueChange(el, pushEvent, canPush, details.value, this, initialValue);
       },
       onValueCommit: (details: ValueChangeDetails) => {
-        notifyEditableValueChange(el, pushEvent, canPush, details.value, this);
+        notifyEditableValueChange(el, pushEvent, canPush, details.value, this, initialValue);
       },
     } as Props);
     zag.init();
     this.editable = zag;
 
-    queueMicrotask(() => {
-      syncEditableFormValue(el, zag.api.value, { markUsed: false });
-      this.allowFormNotify = true;
-    });
+    syncEditableFormValue(el, zag.api.value, { markUsed: false });
 
     this.unbindFormSubmit = bindFormSubmitSync(el, zag);
 

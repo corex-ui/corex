@@ -1,7 +1,6 @@
 defmodule Corex.Tooltip do
   @moduledoc ~S'''
-  Phoenix implementation of [Zag.js Tooltip](https://zagjs.com/components/react/tooltip).
-
+  Tooltip for Phoenix LiveView. Behavior follows [Zag.js Tooltip](https://zagjs.com/components/react/tooltip).
   ## Anatomy
 
   <!-- tabs-open -->
@@ -135,9 +134,7 @@ defmodule Corex.Tooltip do
   ```
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   Stack modifiers on the host (`class` on `<.tooltip>`).

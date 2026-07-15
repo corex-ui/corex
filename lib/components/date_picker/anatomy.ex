@@ -19,6 +19,7 @@ defmodule Corex.DatePicker.Anatomy do
       :placeholder,
       :positioning,
       form_field: false,
+      field_used: false,
       disabled: false,
       read_only: false,
       required: false,
@@ -50,6 +51,7 @@ defmodule Corex.DatePicker.Anatomy do
     @type t :: %__MODULE__{
             id: String.t(),
             form_field: boolean(),
+            field_used: boolean(),
             value: String.t() | nil,
             locale: String.t() | nil,
             time_zone: String.t() | nil,

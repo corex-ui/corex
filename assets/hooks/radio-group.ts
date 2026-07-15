@@ -3,6 +3,7 @@ import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook"
 import { RadioGroup } from "../components/radio-group";
 import type { Props, ValueChangeDetails } from "@zag-js/radio-group";
 import { getString, getBoolean, getDir, canPushEvent, syncInputFormAssociation } from "../lib/util";
+import { snapshotDataset, type DatasetSnapshot } from "../lib/controlled-attr-snapshot";
 import { readStringControlledZagProps, readUpdatedServerString } from "../lib/read-props";
 import {
   emitResponse,
@@ -39,7 +40,7 @@ type RadioGroupHookState = {
   radioGroup?: RadioGroup;
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
-  lastServerValue?: string;
+  beforeAttrs?: DatasetSnapshot;
 };
 
 export function valueChangePayload(
@@ -70,9 +71,6 @@ const RadioGroupHook: Hook<object & RadioGroupHookState, HTMLElement> = {
       orientation: getString<"horizontal" | "vertical">(el, "orientation"),
       onValueChange: (details: ValueChangeDetails) => {
         const selected = details.value;
-        if (isCorexFormField(el)) {
-          this.lastServerValue = selected ?? undefined;
-        }
         el.querySelectorAll<HTMLInputElement>(
           '[data-scope="radio-group"][data-part="item-hidden-input"]'
         ).forEach((input) => {
@@ -112,7 +110,6 @@ const RadioGroupHook: Hook<object & RadioGroupHookState, HTMLElement> = {
     } as Props);
     zag.init();
     this.radioGroup = zag;
-    this.lastServerValue = getString(el, "value") ?? undefined;
 
     queueMicrotask(() => {
       if (!isCorexFormField(el)) return;
@@ -181,29 +178,33 @@ const RadioGroupHook: Hook<object & RadioGroupHookState, HTMLElement> = {
     });
   },
 
+  beforeUpdate(this: object & HookInterface<HTMLElement> & RadioGroupHookState) {
+    this.beforeAttrs = snapshotDataset(this.el, ["value"]);
+  },
+
   updated(this: object & HookInterface<HTMLElement> & RadioGroupHookState) {
     const el = this.el;
     const zag = this.radioGroup;
-    const valuePatch = readUpdatedServerString(el, this.lastServerValue);
+    try {
+      const valuePatch = readUpdatedServerString(el, this.beforeAttrs);
 
-    if ("value" in valuePatch) {
-      this.lastServerValue = valuePatch.value ?? undefined;
-    }
+      zag?.updateProps({
+        id: el.id,
+        ...valuePatch,
+        name: getString(el, "name"),
+        disabled: getBoolean(el, "disabled"),
+        invalid: getBoolean(el, "invalid"),
+        required: getBoolean(el, "required"),
+        readOnly: getBoolean(el, "readonly"),
+        orientation: getString<"horizontal" | "vertical">(el, "orientation"),
+        dir: getDir(el),
+      } as Partial<Props>);
 
-    zag?.updateProps({
-      id: el.id,
-      ...valuePatch,
-      name: getString(el, "name"),
-      disabled: getBoolean(el, "disabled"),
-      invalid: getBoolean(el, "invalid"),
-      required: getBoolean(el, "required"),
-      readOnly: getBoolean(el, "readonly"),
-      orientation: getString<"horizontal" | "vertical">(el, "orientation"),
-      dir: getDir(el),
-    } as Partial<Props>);
-
-    if ("value" in valuePatch) {
-      syncRadioGroupValueInputForPhoenix(el, valuePatch.value ?? null, { markUsed: false });
+      if ("value" in valuePatch) {
+        syncRadioGroupValueInputForPhoenix(el, valuePatch.value ?? null, { markUsed: false });
+      }
+    } finally {
+      this.beforeAttrs = undefined;
     }
   },
 

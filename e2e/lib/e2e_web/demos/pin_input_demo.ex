@@ -865,9 +865,10 @@ defmodule E2eWeb.Demos.PinInputDemo do
     ~H"""
     <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
       <div class="grid grid-cols-4 gap-space items-start min-w-max">
-        <div :for={semantic <- @matrix_semantics} class="contents">
+        <div :for={{semantic, semantic_index} <- Enum.with_index(@matrix_semantics)} class="contents">
           <.pin_input
-            :for={variant <- @matrix_variants}
+            :for={{variant, variant_index} <- Enum.with_index(@matrix_variants)}
+            id={"pin-input-matrix-#{semantic_index}-#{variant_index}"}
             count={4}
             class={DemoScales.join_matrix_modifiers("pin-input", semantic.modifier, variant.modifier)}
             value={["1", "2", "", ""]}

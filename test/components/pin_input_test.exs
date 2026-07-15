@@ -162,7 +162,8 @@ defmodule Corex.PinInputTest do
       hidden =
         Connect.hidden_input(Map.merge(base, %{name: "otp", value: "12"}))
 
-      assert hidden["type"] == "hidden"
+      assert hidden["type"] == "text"
+      assert hidden["hidden"] == "true"
       assert hidden["value"] == "12"
 
       input =
@@ -247,7 +248,7 @@ defmodule Corex.PinInputTest do
         render_component(
           fn assigns ->
             ~H"""
-            <PinInput.pin_input field={@field} count={4}>
+            <PinInput.pin_input field={@field} count={4} auto_invalid>
               <:label>Code</:label>
               <:error :let={msg}>{msg}</:error>
             </PinInput.pin_input>
@@ -256,7 +257,7 @@ defmodule Corex.PinInputTest do
           %{field: field}
         )
 
-      refute html =~ ~r/\bdata-invalid=""/
+      assert html =~ ~r/\bdata-invalid=""/
       assert html =~ ~S(data-part="error")
       assert html =~ "blank"
     end

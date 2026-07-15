@@ -9,9 +9,9 @@ import { idMatches, readPayloadId } from "../lib/respond-to";
 import {
   bindArrayFieldSubmitIntent,
   isFormFieldUsed,
-  syncArrayHiddenInputsForPhoenix,
-} from "../lib/form-array-submit";
-import { queueLiveViewFormInputSync } from "../lib/live-view-form-input";
+  setArrayValues,
+  syncFormInput,
+} from "../lib/phoenix-form-bridge";
 
 export function parsePathsFromDataset(el: HTMLElement, key: "defaultPaths" | "paths"): string[] {
   const json = getJsonStringList(el, key);
@@ -53,7 +53,7 @@ function syncSignatureFormForPhoenix(
   const fieldTouched = opts.fieldTouched === true;
 
   if (submitName) {
-    syncArrayHiddenInputsForPhoenix(el, paths, {
+    setArrayValues(el, paths, {
       onTouched: opts.onPadTouched,
       scope: "signature-pad",
       submitName,
@@ -73,11 +73,7 @@ function syncSignatureFormForPhoenix(
     return;
   }
 
-  queueLiveViewFormInputSync(
-    input,
-    () => (paths.length > 0 ? paths.join("\n") : ""),
-    opts.onPadTouched
-  );
+  syncFormInput(input, () => (paths.length > 0 ? paths.join("\n") : ""), opts.onPadTouched);
 }
 
 type SignaturePadHookState = {
@@ -85,7 +81,7 @@ type SignaturePadHookState = {
   handlers?: Array<CallbackRef>;
   onClear?: (event: Event) => void;
   padTouched: boolean;
-  destroyed?: boolean;
+  padDestroyed?: boolean;
   unbindSubmitIntent?: () => void;
 };
 
@@ -117,7 +113,7 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
         });
 
         details.getDataUrl("image/png").then((url) => {
-          if (hook.destroyed) return;
+          if (hook.padDestroyed) return;
           signaturePad.imageURL = url;
 
           const eventName = getString(el, "onDrawEnd");
@@ -159,11 +155,9 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
       });
     };
 
-    queueMicrotask(() => {
-      if (!hook.padTouched) {
-        syncForm(defaultPaths, { notifyLiveView: false, fieldTouched: false });
-      }
-    });
+    if (!hook.padTouched) {
+      syncForm(defaultPaths, { notifyLiveView: false, fieldTouched: false });
+    }
 
     hook.unbindSubmitIntent = bindArrayFieldSubmitIntent(el, () => {
       hook.padTouched = true;
@@ -220,7 +214,7 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & SignaturePadHookState) {
-    this.destroyed = true;
+    this.padDestroyed = true;
     this.unbindSubmitIntent?.();
     if (this.onClear) {
       this.el.removeEventListener("corex:signature-pad:clear", this.onClear);

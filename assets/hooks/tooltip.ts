@@ -1,4 +1,3 @@
-import type { Hook } from "phoenix_live_view";
 import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
 import { Tooltip } from "../components/tooltip";
 import type {
@@ -10,6 +9,7 @@ import type {
 import { getString, getBoolean, getNumber, getDir, canPushEvent } from "../lib/util";
 import { readPositioningOptions } from "../lib/positioning";
 import { idMatches, readPayloadId } from "../lib/respond-to";
+import { createZagLiveHook } from "../lib/zag-live-hook";
 
 type TooltipHookState = {
   tooltip?: Tooltip;
@@ -65,90 +65,60 @@ export function getCloseDelay(el: HTMLElement): number | undefined {
   return raw;
 }
 
-const TooltipHook: Hook<object & TooltipHookState, HTMLElement> = {
-  mounted(this: object & HookInterface<HTMLElement> & TooltipHookState) {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const liveSocket = this.liveSocket;
+function tooltipProps(el: HTMLElement, hook: HookInterface<HTMLElement>): TooltipProps {
+  return {
+    id: el.id,
+    defaultOpen: getBoolean(el, "defaultOpen"),
+    disabled: getBoolean(el, "disabled"),
+    dir: getDir(el),
+    openDelay: getNumber(el, "openDelay"),
+    closeDelay: getCloseDelay(el),
+    positioning: readPositioningOptions(el),
+    closeOnEscape: getBoolean(el, "closeOnEscape"),
+    closeOnClick: getBoolean(el, "closeOnClick"),
+    closeOnPointerDown: getBoolean(el, "closeOnPointerDown"),
+    closeOnScroll: getBoolean(el, "closeOnScroll"),
+    interactive: getBoolean(el, "interactive"),
+    ...createTooltipCallbacks(el, hook.pushEvent.bind(hook), hook.liveSocket),
+  };
+}
 
-    const positioning = readPositioningOptions(el);
-    const callbacks = createTooltipCallbacks(el, pushEvent, liveSocket);
+const TooltipHook = createZagLiveHook<TooltipHookState, Tooltip>({
+  key: "tooltip",
+  mount(hook) {
+    const el = hook.el;
+    const tooltip = new Tooltip(el, tooltipProps(el, hook));
 
-    const tooltip = new Tooltip(el, {
-      id: el.id,
-      defaultOpen: getBoolean(el, "defaultOpen"),
-      disabled: getBoolean(el, "disabled"),
-      dir: getDir(el),
-      openDelay: getNumber(el, "openDelay"),
-      closeDelay: getCloseDelay(el),
-      positioning,
-      closeOnEscape: getBoolean(el, "closeOnEscape"),
-      closeOnClick: getBoolean(el, "closeOnClick"),
-      closeOnPointerDown: getBoolean(el, "closeOnPointerDown"),
-      closeOnScroll: getBoolean(el, "closeOnScroll"),
-      interactive: getBoolean(el, "interactive"),
-      ...callbacks,
-    });
-
-    tooltip.init();
-    this.tooltip = tooltip;
-
-    this.onSetOpen = (event: Event) => {
+    hook.onSetOpen = (event: Event) => {
       const { open } = (event as CustomEvent<{ open: boolean }>).detail;
       tooltip.api.setOpen(open);
     };
-    el.addEventListener("corex:tooltip:set-open", this.onSetOpen);
+    el.addEventListener("corex:tooltip:set-open", hook.onSetOpen);
 
-    this.handlers = [];
-
-    this.handlers.push(
-      this.handleEvent("tooltip_set_open", (payload: { tooltip_id?: string; open: boolean }) => {
+    hook.handlers = [];
+    hook.handlers.push(
+      hook.handleEvent("tooltip_set_open", (payload: { tooltip_id?: string; open: boolean }) => {
         if (!idMatches(el.id, readPayloadId(payload))) return;
         tooltip.api.setOpen(payload.open);
       })
     );
+
+    return tooltip;
   },
-
-  updated(this: object & HookInterface<HTMLElement> & TooltipHookState) {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const liveSocket = this.liveSocket;
-    const positioning = readPositioningOptions(el);
-    const callbacks = createTooltipCallbacks(el, pushEvent, liveSocket);
-
-    this.tooltip?.updateProps({
-      id: el.id,
-      disabled: getBoolean(el, "disabled"),
-      dir: getDir(el),
-      openDelay: getNumber(el, "openDelay"),
-      closeDelay: getCloseDelay(el),
-      positioning,
-      closeOnEscape: getBoolean(el, "closeOnEscape"),
-      closeOnClick: getBoolean(el, "closeOnClick"),
-      closeOnPointerDown: getBoolean(el, "closeOnPointerDown"),
-      closeOnScroll: getBoolean(el, "closeOnScroll"),
-      interactive: getBoolean(el, "interactive"),
-      ...callbacks,
-    });
-    queueMicrotask(() => {
-      this.tooltip?.syncDom();
-      this.tooltip?.api.reposition?.();
-    });
+  update(hook, tooltip) {
+    tooltip.updateProps(tooltipProps(hook.el, hook));
   },
-
-  destroyed(this: object & HookInterface<HTMLElement> & TooltipHookState) {
-    if (this.onSetOpen) {
-      this.el.removeEventListener("corex:tooltip:set-open", this.onSetOpen);
+  destroy(hook) {
+    if (hook.onSetOpen) {
+      hook.el.removeEventListener("corex:tooltip:set-open", hook.onSetOpen);
     }
 
-    if (this.handlers) {
-      for (const handler of this.handlers) {
-        this.removeHandleEvent(handler);
+    if (hook.handlers) {
+      for (const handler of hook.handlers) {
+        hook.removeHandleEvent(handler);
       }
     }
-
-    this.tooltip?.destroy();
   },
-};
+});
 
 export { TooltipHook as Tooltip };

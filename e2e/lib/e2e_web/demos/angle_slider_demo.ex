@@ -135,10 +135,16 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
   def styling_modifiers_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-4">
-      <.angle_slider class="angle-slider" value={90.0} marker_values={marker_values()}>
+      <.angle_slider
+        id="angle-slider-style-color-default"
+        class="angle-slider"
+        value={90.0}
+        marker_values={marker_values()}
+      >
         <:label>Default</:label>
       </.angle_slider>
       <.angle_slider
+        id="angle-slider-style-color-accent"
         class="angle-slider ui-accent"
         value={90.0}
         marker_values={marker_values()}
@@ -146,6 +152,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         <:label>Accent</:label>
       </.angle_slider>
       <.angle_slider
+        id="angle-slider-style-color-brand"
         class="angle-slider ui-brand"
         value={90.0}
         marker_values={marker_values()}
@@ -153,6 +160,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         <:label>Brand</:label>
       </.angle_slider>
       <.angle_slider
+        id="angle-slider-style-color-alert"
         class="angle-slider ui-alert"
         value={90.0}
         marker_values={marker_values()}
@@ -160,6 +168,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         <:label>Alert</:label>
       </.angle_slider>
       <.angle_slider
+        id="angle-slider-style-color-info"
         class="angle-slider ui-info"
         value={90.0}
         marker_values={marker_values()}
@@ -167,6 +176,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         <:label>Info</:label>
       </.angle_slider>
       <.angle_slider
+        id="angle-slider-style-color-success"
         class="angle-slider ui-success"
         value={90.0}
         marker_values={marker_values()}
@@ -183,6 +193,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     ~H"""
     <div class="flex flex-wrap items-end gap-4">
       <.angle_slider
+        id="angle-slider-style-sm"
         class="angle-slider ui-size-sm"
         value={90.0}
         marker_values={marker_values()}
@@ -190,6 +201,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         <:label>SM</:label>
       </.angle_slider>
       <.angle_slider
+        id="angle-slider-style-md"
         class="angle-slider ui-size-md"
         value={90.0}
         marker_values={marker_values()}
@@ -197,6 +209,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         <:label>MD</:label>
       </.angle_slider>
       <.angle_slider
+        id="angle-slider-style-lg"
         class="angle-slider ui-size-lg"
         value={90.0}
         marker_values={marker_values()}
@@ -204,6 +217,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         <:label>LG</:label>
       </.angle_slider>
       <.angle_slider
+        id="angle-slider-style-xl"
         class="angle-slider ui-size-xl"
         value={90.0}
         marker_values={marker_values()}
@@ -217,13 +231,31 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
   def styling_states_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-4">
-      <.angle_slider class="angle-slider" value={90.0} disabled marker_values={marker_values()}>
+      <.angle_slider
+        id="angle-slider-style-disabled"
+        class="angle-slider"
+        value={90.0}
+        disabled
+        marker_values={marker_values()}
+      >
         <:label>Disabled</:label>
       </.angle_slider>
-      <.angle_slider class="angle-slider" value={90.0} read_only marker_values={marker_values()}>
+      <.angle_slider
+        id="angle-slider-style-read-only"
+        class="angle-slider"
+        value={90.0}
+        read_only
+        marker_values={marker_values()}
+      >
         <:label>Read only</:label>
       </.angle_slider>
-      <.angle_slider class="angle-slider" value={90.0} invalid marker_values={marker_values()}>
+      <.angle_slider
+        id="angle-slider-style-invalid"
+        class="angle-slider"
+        value={90.0}
+        invalid
+        marker_values={marker_values()}
+      >
         <:label>Invalid</:label>
       </.angle_slider>
     </div>
@@ -233,10 +265,20 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
   def styling_markers_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-4">
-      <.angle_slider class="angle-slider" value={90.0} marker_values={marker_values()}>
+      <.angle_slider
+        id="angle-slider-style-markers"
+        class="angle-slider"
+        value={90.0}
+        marker_values={marker_values()}
+      >
         <:label>Markers</:label>
       </.angle_slider>
-      <.angle_slider class="angle-slider" value={90.0} marker_values={[]}>
+      <.angle_slider
+        id="angle-slider-style-no-markers"
+        class="angle-slider"
+        value={90.0}
+        marker_values={[]}
+      >
         <:label>No markers</:label>
       </.angle_slider>
     </div>
@@ -325,9 +367,10 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     ~H"""
     <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
       <div class="grid grid-cols-4 gap-space items-start min-w-max">
-        <div :for={semantic <- @matrix_semantics} class="contents">
+        <div :for={{semantic, semantic_index} <- Enum.with_index(@matrix_semantics)} class="contents">
           <.angle_slider
-            :for={variant <- @matrix_variants}
+            :for={{variant, variant_index} <- Enum.with_index(@matrix_variants)}
+            id={"angle-slider-matrix-#{semantic_index}-#{variant_index}"}
             class={
               DemoScales.join_matrix_modifiers("angle-slider", semantic.modifier, variant.modifier)
             }

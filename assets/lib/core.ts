@@ -12,13 +12,34 @@ interface ComponentInterface<Api> {
   render(): void;
 }
 
+function stableUpdatePropsKey(props: Record<string, unknown>): string {
+  const keys = Object.keys(props).sort();
+  const serializable: Record<string, unknown> = {};
+  for (const key of keys) {
+    const value = props[key];
+    if (typeof value === "function") continue;
+    if (value !== null && typeof value === "object") {
+      try {
+        serializable[key] = JSON.parse(JSON.stringify(value));
+      } catch {
+        serializable[key] = String(value);
+      }
+    } else {
+      serializable[key] = value;
+    }
+  }
+  return JSON.stringify(serializable);
+}
+
 export abstract class Component<Props, Api> implements ComponentInterface<Api> {
   el: HTMLElement;
   protected doc: Document;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   machine: VanillaMachine<any>;
   api: Api;
-  private unsubscribe: (() => void) | undefined;
+  protected unsubscribe: (() => void) | undefined;
+  private lastUpdatePropsKey: string | undefined;
+  private spreadCleanups = new Map<Element, () => void>();
 
   constructor(
     el: HTMLElement | null,
@@ -41,6 +62,7 @@ export abstract class Component<Props, Api> implements ComponentInterface<Api> {
   init = () => {
     try {
       this.machine.start();
+      this.api = this.initApi();
       this.render();
       this.unsubscribe = this.machine.subscribe(() => {
         this.api = this.initApi();
@@ -51,18 +73,30 @@ export abstract class Component<Props, Api> implements ComponentInterface<Api> {
     }
   };
 
+  protected clearSpreadPropsCleanups = () => {
+    for (const cleanup of this.spreadCleanups.values()) {
+      cleanup();
+    }
+    this.spreadCleanups.clear();
+  };
+
   destroy = () => {
     this.el.removeAttribute("data-loading");
     this.unsubscribe?.();
     this.unsubscribe = undefined;
+    this.clearSpreadPropsCleanups();
     this.machine.stop();
   };
 
   spreadProps = (el: HTMLElement | Element, props: Attrs) => {
-    spreadProps(el, props, this.machine.scope.id);
+    const cleanup = spreadProps(el, props, this.machine.scope.id);
+    this.spreadCleanups.set(el, cleanup);
   };
 
-  updateProps(props: Attrs) {
+  updateProps(props: Partial<Props>) {
+    const key = stableUpdatePropsKey(props as Record<string, unknown>);
+    if (key === this.lastUpdatePropsKey) return;
+    this.lastUpdatePropsKey = key;
     this.machine.updateProps(props);
   }
 

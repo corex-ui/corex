@@ -189,6 +189,16 @@ defmodule Corex.CheckboxTest do
     end
   end
 
+  describe "set_checked_many/3" do
+    test "pushes batch event to socket" do
+      socket = %Phoenix.LiveView.Socket{}
+      result = Checkbox.set_checked_many(socket, ["a", "b"], true)
+      events = get_in(result.private, [:live_temp, :push_events]) || []
+
+      assert ["checkbox_set_checked_many", %{"checked" => true, "ids" => ["a", "b"]}] in events
+    end
+  end
+
   describe "toggle_checked/1" do
     test "returns JS command" do
       js = Checkbox.toggle_checked("my-checkbox")

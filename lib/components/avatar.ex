@@ -1,7 +1,6 @@
 defmodule Corex.Avatar do
   @moduledoc ~S'''
-  Phoenix implementation of [Zag.js Avatar](https://zagjs.com/components/react/avatar).
-
+  Avatar image with fallback for Phoenix LiveView. Behavior follows [Zag.js Avatar](https://zagjs.com/components/react/avatar).
   ## Anatomy
 
   <!-- tabs-open -->
@@ -127,9 +126,7 @@ defmodule Corex.Avatar do
   ```
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   Stack modifiers on the host (`class` on `<.avatar>`).

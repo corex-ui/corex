@@ -1,6 +1,4 @@
 defmodule Corex.DataTable.Selection do
-  import Phoenix.Component, only: [assign: 3]
-
   @moduledoc """
   Helpers for selectable [`data_table/1`](Corex.DataTable.html#data_table/1) usage in LiveViews.
 
@@ -47,6 +45,11 @@ defmodule Corex.DataTable.Selection do
       end
   """
 
+  import Phoenix.Component, only: [assign: 3]
+
+  alias Corex.Checkable.Helpers, as: CheckableHelpers
+  alias Corex.Checkbox
+
   @doc """
   Assigns selection state for a [`data_table/1`](Corex.DataTable.html#data_table/1) instance.
 
@@ -79,6 +82,7 @@ defmodule Corex.DataTable.Selection do
   checking a row. `rows_assign` is the assign key passed to [`data_table/1`](Corex.DataTable.html#data_table/1) as `rows` (e.g. `:users`).
   """
   def handle_select(socket, %{"id" => checkbox_id, "checked" => checked}, rows_assign) do
+    checked = CheckableHelpers.native_checked(checked)
     table_id = socket.assigns.selection_table_id
     row_id_fn = socket.assigns.selection_row_id
     row_id = String.replace(checkbox_id, "#{table_id}-select-", "")
@@ -105,7 +109,7 @@ defmodule Corex.DataTable.Selection do
 
     socket
     |> assign(:selected, selected)
-    |> Corex.Checkbox.set_checked("#{table_id}-select-all", all_selected)
+    |> Checkbox.set_checked("#{table_id}-select-all", all_selected)
   end
 
   @doc """
@@ -115,10 +119,11 @@ defmodule Corex.DataTable.Selection do
   `{:noreply, Corex.DataTable.Selection.handle_select_all(socket, params, :users)}`.
 
   `params` must contain `"checked"`. Syncs all row checkboxes via
-  [`Corex.Checkbox.set_checked/3`](Corex.Checkbox.html#set_checked/3). `rows_assign` is the
+  [`Corex.Checkbox.set_checked_many/3`](Corex.Checkbox.html#set_checked_many/3). `rows_assign` is the
   assign key passed to [`data_table/1`](Corex.DataTable.html#data_table/1) as `rows`.
   """
   def handle_select_all(socket, %{"checked" => checked}, rows_assign) do
+    checked = CheckableHelpers.native_checked(checked)
     table_id = socket.assigns.selection_table_id
     row_id_fn = socket.assigns.selection_row_id
     rows = socket.assigns[rows_assign] || []
@@ -130,16 +135,11 @@ defmodule Corex.DataTable.Selection do
         []
       end
 
-    socket =
-      socket
-      |> assign(:selected, selected)
-
-    socket =
-      Enum.reduce(rows, socket, fn row, acc ->
-        Corex.Checkbox.set_checked(acc, "#{table_id}-select-#{row_id_fn.(row)}", checked)
-      end)
+    checkbox_ids = Enum.map(rows, &"#{table_id}-select-#{row_id_fn.(&1)}")
 
     socket
+    |> assign(:selected, selected)
+    |> Checkbox.set_checked_many(checkbox_ids, checked)
   end
 
   defp valid_row_ids(rows, row_id_fn) when is_function(row_id_fn, 1) do

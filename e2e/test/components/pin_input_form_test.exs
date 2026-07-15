@@ -2,6 +2,8 @@ defmodule E2eWeb.PinInputFormTest do
   use ExUnit.Case, async: false
   use Wallaby.Feature
 
+  @moduletag :wallaby
+
   alias E2eWeb.PinInputModel, as: PinInput
 
   feature "static form - submit empty includes empty pin", %{session: session} do

@@ -53,6 +53,30 @@ function itemInputIsEditing(input: HTMLElement | null): boolean {
   return !input.hidden;
 }
 
+export function stripLiveViewDomAttrs(root: HTMLElement): void {
+  const walk = (node: Element) => {
+    for (const attr of Array.from(node.attributes)) {
+      if (attr.name.startsWith("data-phx-")) {
+        node.removeAttribute(attr.name);
+      }
+    }
+    for (const child of Array.from(node.children)) {
+      walk(child);
+    }
+  };
+  walk(root);
+}
+
+export function normalizeDeleteTriggerContent(delEl: HTMLElement): void {
+  const keep =
+    delEl.querySelector(':scope > [class^="hero-"], :scope > .icon, :scope > svg') ??
+    delEl.firstElementChild;
+  if (!keep) return;
+  for (const child of Array.from(delEl.children)) {
+    if (child !== keep) delEl.removeChild(child);
+  }
+}
+
 export class TagsInput extends Component<Props, Api> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props: Props): VanillaMachine<any> {
@@ -77,10 +101,16 @@ export class TagsInput extends Component<Props, Api> {
       '[data-scope="tags-input"][data-part="item-delete-trigger"]'
     );
     if (delEl) {
-      while (delEl.childElementCount > 1) {
-        delEl.removeChild(delEl.lastElementChild!);
-      }
-      this.spreadProps(delEl, this.api.getItemDeleteTriggerProps({ index, value }));
+      normalizeDeleteTriggerContent(delEl);
+      const deleteProps = this.api.getItemDeleteTriggerProps({ index, value });
+      const onPointerDown = deleteProps.onPointerDown;
+      deleteProps.onPointerDown = (event: PointerEvent) => {
+        event.stopPropagation();
+        if (typeof onPointerDown === "function") {
+          onPointerDown(event);
+        }
+      };
+      this.spreadProps(delEl, deleteProps);
     }
     const itemInputEl = itemEl.querySelector<HTMLElement>(
       '[data-scope="tags-input"][data-part="item-input"]'
@@ -129,6 +159,7 @@ export class TagsInput extends Component<Props, Api> {
       if (!itemEl || !isItem) {
         const fresh = template.cloneNode(true) as HTMLElement;
         fresh.removeAttribute("data-template");
+        stripLiveViewDomAttrs(fresh);
         const ref = items[index] ?? mainInputEl;
         controlEl.insertBefore(fresh, ref);
         items = directItemElements(controlEl);

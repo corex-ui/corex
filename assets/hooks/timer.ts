@@ -37,6 +37,10 @@ type TimerHookState = {
   timer?: Timer;
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
+  lastStartMsRaw?: string | undefined;
+  lastTargetMsRaw?: string | undefined;
+  lastCountdownRaw?: string | undefined;
+  lastIntervalRaw?: string | undefined;
 };
 
 export function parseTimerTranslations(el: HTMLElement): Props["translations"] {
@@ -54,21 +58,21 @@ export function parseTimerTranslations(el: HTMLElement): Props["translations"] {
   return undefined;
 }
 
-function buildTimerProps(
+function readIdentityRaw(el: HTMLElement) {
+  return {
+    startMs: el.dataset.startMs,
+    targetMs: el.dataset.targetMs,
+    countdown: el.dataset.countdown,
+    interval: el.dataset.interval,
+  };
+}
+
+function buildTimerCallbacks(
   el: HTMLElement,
   pushEvent: (name: string, payload: Record<string, unknown>) => void,
   canPush: () => boolean
-): Props {
+): Pick<Props, "onTick" | "onComplete"> {
   return {
-    id: el.id,
-    countdown: getBoolean(el, "countdown"),
-    startMs: getNumber(el, "startMs"),
-    targetMs: getNumber(el, "targetMs"),
-    autoStart: getBoolean(el, "autoStart"),
-    interval: getNumber(el, "interval"),
-    dir: getDir(el),
-    orientation: getString<Orientation>(el, "orientation"),
-    translations: parseTimerTranslations(el),
     onTick: (details: TickDetails) => {
       const eventName = getString(el, "onTick");
       if (eventName && canPush()) {
@@ -111,6 +115,25 @@ function buildTimerProps(
         );
       }
     },
+  };
+}
+
+function buildTimerProps(
+  el: HTMLElement,
+  pushEvent: (name: string, payload: Record<string, unknown>) => void,
+  canPush: () => boolean
+): Props {
+  return {
+    id: el.id,
+    countdown: getBoolean(el, "countdown"),
+    startMs: getNumber(el, "startMs"),
+    targetMs: getNumber(el, "targetMs"),
+    autoStart: getBoolean(el, "autoStart"),
+    interval: getNumber(el, "interval"),
+    dir: getDir(el),
+    orientation: getString<Orientation>(el, "orientation"),
+    translations: parseTimerTranslations(el),
+    ...buildTimerCallbacks(el, pushEvent, canPush),
   } as Props;
 }
 
@@ -119,6 +142,12 @@ const TimerHook: Hook<object & TimerHookState, HTMLElement> = {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
+
+    const identity = readIdentityRaw(el);
+    this.lastStartMsRaw = identity.startMs;
+    this.lastTargetMsRaw = identity.targetMs;
+    this.lastCountdownRaw = identity.countdown;
+    this.lastIntervalRaw = identity.interval;
 
     const zag = new Timer(el, buildTimerProps(el, pushEvent, canPush));
     zag.init();
@@ -204,7 +233,37 @@ const TimerHook: Hook<object & TimerHookState, HTMLElement> = {
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
 
-    this.timer?.updateProps(buildTimerProps(el, pushEvent, canPush) as Partial<Props>);
+    const patch: Partial<Props> = {
+      id: el.id,
+      translations: parseTimerTranslations(el),
+      ...buildTimerCallbacks(el, pushEvent, canPush),
+    };
+
+    const startMsRaw = el.dataset.startMs;
+    if (startMsRaw !== this.lastStartMsRaw) {
+      patch.startMs = getNumber(el, "startMs");
+      this.lastStartMsRaw = startMsRaw;
+    }
+
+    const targetMsRaw = el.dataset.targetMs;
+    if (targetMsRaw !== this.lastTargetMsRaw) {
+      patch.targetMs = getNumber(el, "targetMs");
+      this.lastTargetMsRaw = targetMsRaw;
+    }
+
+    const countdownRaw = el.dataset.countdown;
+    if (countdownRaw !== this.lastCountdownRaw) {
+      patch.countdown = getBoolean(el, "countdown");
+      this.lastCountdownRaw = countdownRaw;
+    }
+
+    const intervalRaw = el.dataset.interval;
+    if (intervalRaw !== this.lastIntervalRaw) {
+      patch.interval = getNumber(el, "interval");
+      this.lastIntervalRaw = intervalRaw;
+    }
+
+    this.timer?.updateProps(patch);
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & TimerHookState) {

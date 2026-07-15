@@ -23,6 +23,12 @@ defmodule Corex.New.Cli do
       )
     end
 
+    if opts[:lang] == true and opts[:design] == false do
+      Mix.raise(
+        "--lang requires design. Remove `--no-design` (design will auto-enable for `--lang`)."
+      )
+    end
+
     case opts[:dev] do
       nil ->
         :ok
@@ -44,13 +50,13 @@ defmodule Corex.New.Cli do
   end
 
   @doc """
-  Auto-enable `--design` when `--mode` or `--theme` is set
-  (matching the install task behavior). `--lang` does **not** auto-enable design.
+  Auto-enable `--design` when `--mode`, `--theme`, or `--lang` is set
+  (language select needs Design CSS / Select hook).
   Prints a one-line notice unless `notify: false` is passed.
   """
   def maybe_auto_enable_design(opts, notify_opts \\ []) when is_list(opts) do
     notify? = Keyword.get(notify_opts, :notify, true)
-    needs_design? = opts[:mode] == true or opts[:theme] == true
+    needs_design? = opts[:mode] == true or opts[:theme] == true or opts[:lang] == true
 
     cond do
       not needs_design? ->
@@ -65,7 +71,7 @@ defmodule Corex.New.Cli do
       true ->
         if notify? do
           Mix.shell().info(
-            "* Corex: enabling --design because --mode/--theme was set; pass --no-design to opt out."
+            "* Corex: enabling --design because --mode/--theme/--lang was set; pass --no-design to opt out."
           )
         end
 

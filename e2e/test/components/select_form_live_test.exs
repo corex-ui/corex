@@ -130,6 +130,6 @@ defmodule E2eWeb.SelectFormLiveTest do
     invalid_html = invalid_form_html(html)
     refute invalid_html =~ "can&#39;t be blank"
     refute invalid_html =~ ~r/id="select-live-form-ecto-invalid_country"[^>]*data-invalid=""/
-    assert invalid_html =~ ~s/data-value="fra"/
+    assert invalid_html =~ ~S/data-value="fra"/
   end
 end

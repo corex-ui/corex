@@ -1,7 +1,5 @@
 defmodule Corex.Design.Axes do
-  @moduledoc """
-  Design-side axis vocabulary from resolved scales.
-  """
+  @moduledoc false
 
   alias Corex.Design.Scales
 

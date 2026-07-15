@@ -117,7 +117,6 @@ const MarqueeHook: Hook<object & MarqueeHookState, HTMLElement> = {
     const zag = this.marquee;
     if (!zag) return;
     zag.updateProps(readMarqueeProps(this.el) as Partial<Props>);
-    zag.ensureDom();
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & MarqueeHookState) {

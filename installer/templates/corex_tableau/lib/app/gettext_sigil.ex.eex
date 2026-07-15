@@ -1,0 +1,10 @@
+defmodule <%= @app_module %>.GettextSigil do
+  @moduledoc false
+
+  defmacro __using__(_opts) do
+    quote do
+      use Gettext, backend: <%= @app_module %>.Gettext
+      use GettextSigils, backend: <%= @app_module %>.Gettext
+    end
+  end
+end

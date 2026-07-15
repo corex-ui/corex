@@ -2,6 +2,8 @@ defmodule E2eWeb.SwitchFormTest do
   use ExUnit.Case, async: false
   use Wallaby.Feature
 
+  @moduletag :wallaby
+
   alias E2eWeb.SwitchModel, as: Switch
 
   feature "static form - submit unchecked shows notifications=false", %{session: session} do

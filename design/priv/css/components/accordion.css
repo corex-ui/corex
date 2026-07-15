@@ -154,6 +154,12 @@
 
  .accordion [data-scope="accordion"][data-part="item-content"] {
  overflow: hidden;
+ max-height: var(--ctl-max-height, none);
+ overflow-y: var(--ctl-max-height-overflow, hidden);
+ }
+
+ .accordion[class*="ui-max-height-"] [data-scope="accordion"][data-part="item-content"] {
+ @apply scrollbar scrollbar--sm;
  }
 
  .accordion[data-animation="js"] [data-scope="accordion"][data-part="item-content"][data-state="closed"],
@@ -169,19 +175,11 @@
  }
 
  .accordion [data-scope="accordion"][data-part="item-content"] > p {
- @apply ui-content scrollbar;
+ @apply ui-content;
 
  margin: 0;
  margin-bottom: var(--spacing-space);
- max-height: calc(var(--spacing) * 80);
  min-width: 0;
- overflow: auto;
- scrollbar-gutter: stable;
-
- &::-webkit-scrollbar {
- width: var(--accordion-scrollbar-size);
- height: var(--accordion-scrollbar-size);
- }
  }
 
  .accordion [data-scope="accordion"][data-part="root"][data-async] [data-scope="accordion"][data-part="item-text"] > *,

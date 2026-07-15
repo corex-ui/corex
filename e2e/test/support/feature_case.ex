@@ -15,6 +15,8 @@ defmodule E2eWeb.FeatureCase do
     quote do
       use ExUnit.Case, async: unquote(async)
       use Wallaby.Feature
+
+      @moduletag :wallaby
     end
   end
 

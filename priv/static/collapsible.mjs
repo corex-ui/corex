@@ -4,7 +4,10 @@ import {
 import {
   readBooleanControlledZagProps,
   readBooleanControlledZagUpdate
-} from "./chunks/chunk-XL4XUS2C.mjs";
+} from "./chunks/chunk-BGER3KYP.mjs";
+import {
+  snapshotDataset
+} from "./chunks/chunk-TKOH2OAC.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -34,7 +37,7 @@ import {
   raf,
   setAttribute,
   setStyle
-} from "./chunks/chunk-YGZLYEUJ.mjs";
+} from "./chunks/chunk-6AOEC32Q.mjs";
 
 // ../node_modules/.pnpm/@zag-js+collapsible@1.40.0/node_modules/@zag-js/collapsible/dist/collapsible.anatomy.mjs
 var anatomy = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
@@ -489,13 +492,26 @@ var CollapsibleHook = {
       emitOpen(parseRespondTo(payload));
     });
   },
+  beforeUpdate() {
+    this.beforeAttrs = snapshotDataset(this.el, ["open"]);
+  },
   updated() {
-    this.collapsible?.updateProps({
-      id: this.el.id,
-      ...readBooleanControlledZagUpdate(this.el, "open", "defaultOpen"),
-      disabled: getBoolean(this.el, "disabled"),
-      dir: getDir(this.el)
-    });
+    try {
+      const openPatch = readBooleanControlledZagUpdate(
+        this.el,
+        "open",
+        "defaultOpen",
+        this.beforeAttrs
+      );
+      this.collapsible?.updateProps({
+        id: this.el.id,
+        ...openPatch,
+        disabled: getBoolean(this.el, "disabled"),
+        dir: getDir(this.el)
+      });
+    } finally {
+      this.beforeAttrs = void 0;
+    }
   },
   destroyed() {
     this.domRegistry?.teardown();

@@ -1,136 +1,32 @@
 # Dark mode
 
+Package: [corex_design](https://hexdocs.pm/corex_design). Full guide on **corex** Hexdocs.
+
 ## Introduction
 
-You wire light/dark mode into a Phoenix + Corex app. The result is `data-mode="light"` or `data-mode="dark"` on `<html>` that drives Corex Design tokens and matches what the user chose on the last visit.
+Visitors switch light and dark appearance with a Corex `<.toggle>`. The choice updates `data-mode` on `<html>` without a server round-trip, drives Corex Design tokens, and matches what they chose on the last visit.
 
-Static Tableau sites use the same `data-mode` idea without plugs—see [Tableau Mode](tableau_mode.html).
+There is no OTP allowlist for mode (only `light` / `dark`). `config :corex_design, default_mode:` is a build-time default for generated CSS, not the runtime control. See [Configuration](configuration.html) and [Design](design.html). Static Tableau sites use the same `data-mode` idea without plugs; see [Tableau Mode](tableau_mode.html).
 
-## Before you start
+## Install first
 
-| Requirement | Notes |
-| ----------- | ----- |
-| Corex installed | [Manual installation](manual_installation.html) or `mix corex.new --mode` |
-| Corex Design (optional) | `toggle.css` and theme files with `[data-mode=dark]` variants |
-| `toggle` hook | Registered in `assets/js/app.js` |
+Wire the mode plug, bridge script, and `toggle` hook before you drop this UI into a layout:
 
-## How it works
+- New app: `mix corex.new my_app --mode`
+- Existing app: [Manual installation: optional mode wiring](manual_installation.html#optional-mode-wiring)
 
-1. **`Plugs.Mode`** reads the `phx_mode` cookie and assigns `:mode` for the first HTML byte.
-2. **`<html data-mode={...}>`** carries that value into the document.
-3. **Inline `<script>` in `<head>`** reconciles `localStorage`, `data-mode`, and `prefers-color-scheme`, then writes the cookie back.
-4. **`<.toggle on_pressed_change_client="phx:set-mode">`** updates mode without a server round-trip.
-5. **`on_mount`** copies `:mode` from the session into LiveViews.
+## Already wired?
 
-<!-- tabs-open -->
+| Piece | Expect |
+| ----- | ------ |
+| Plug | `MyAppWeb.Plugs.Mode` in the browser pipeline; assigns `:mode` |
+| Bridge | Inline `<script>` in `<head>` listens for `phx:set-mode` and writes `localStorage` / cookie / `data-mode` |
+| Hook | `Toggle` registered in `assets/js/app.js` |
+| CSS | `@import "../corex/corex.css"` and `toggle` in `components:` when you use Design |
 
-### Plug and layout
+## Mode toggle
 
-Create `lib/my_app_web/plugs/mode.ex`:
-
-```elixir
-defmodule MyAppWeb.Plugs.Mode do
-  import Plug.Conn
-
-  def init(opts), do: opts
-
-  def call(conn, _opts) do
-    mode =
-      conn.cookies["phx_mode"]
-      |> parse_mode()
-
-    conn
-    |> assign(:mode, mode)
-    |> put_session(:mode, mode)
-  end
-
-  defp parse_mode("dark"), do: "dark"
-  defp parse_mode(_), do: "light"
-end
-```
-
-In `router.ex`, mount **after** `:fetch_live_flash`:
-
-```elixir
-pipeline :browser do
-  plug :accepts, ["html"]
-  plug :fetch_session
-  plug :fetch_live_flash
-  plug MyAppWeb.Plugs.Mode
-  plug :put_root_layout, html: {MyAppWeb.Layouts, :root}
-  plug :protect_from_forgery
-  plug :put_secure_browser_headers
-end
-```
-
-In `root.html.heex`:
-
-```heex
-<!DOCTYPE html>
-<html lang="en" data-mode={assigns[:mode] || "light"}>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="csrf-token" content={get_csrf_token()} />
-    <.live_title default="MyApp" suffix=" · Phoenix Framework">
-      {assigns[:page_title]}
-    </.live_title>
-    <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />
-    <script defer phx-track-static type="module" src={~p"/assets/js/app.js"}></script>
-  </head>
-  <body class="typo layout">
-    {@inner_content}
-  </body>
-</html>
-```
-
-### Bridge script
-
-Inside `<head>`, before `</head>`:
-
-```heex
-<script>
-  (() => {
-    const getSystemMode = () =>
-      window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-
-    const setMode = (mode) => {
-      const resolved = mode === "dark" || mode === "light" ? mode : getSystemMode();
-      localStorage.setItem("phx:mode", resolved);
-      document.cookie = "phx_mode=" + resolved + "; path=/; max-age=31536000";
-      document.documentElement.setAttribute("data-mode", resolved);
-    };
-
-    setMode(
-      localStorage.getItem("phx:mode") ||
-        document.documentElement.getAttribute("data-mode") ||
-        getSystemMode()
-    );
-
-    window.addEventListener(
-      "storage",
-      (e) => e.key === "phx:mode" && e.newValue && setMode(e.newValue)
-    );
-
-    window.addEventListener("phx:set-mode", (e) => {
-      const detail = e.detail;
-      if (typeof detail?.pressed === "boolean") {
-        setMode(detail.pressed ? "dark" : "light");
-        return;
-      }
-      const value = detail?.value;
-      const mode = Array.isArray(value) && value[0] ? value[0] : "light";
-      setMode(mode);
-    });
-  })();
-</script>
-```
-
-Resolution order: `localStorage["phx:mode"]`, then `data-mode` from the server, then `prefers-color-scheme`.
-
-### Toggle
-
-In `layouts.ex`:
+In `layouts.ex` (or a dedicated component module):
 
 ```elixir
 attr :flash, :map, required: true
@@ -174,6 +70,10 @@ def mode_toggle(assigns) do
 end
 ```
 
+`on_pressed_change_client="phx:set-mode"` fires a browser event the mode bridge handles (`pressed: true` → dark, `false` → light).
+
+## Layout placement
+
 Pass `mode` into the layout from every LiveView and controller template:
 
 ```heex
@@ -182,40 +82,15 @@ Pass `mode` into the layout from every LiveView and controller template:
 </Layouts.app>
 ```
 
-### LiveView on_mount
-
-```elixir
-defmodule MyAppWeb.ModeLive do
-  def on_mount(:default, _params, session, socket) do
-    mode = session["mode"] || "light"
-    {:cont, Phoenix.Component.assign(socket, :mode, mode)}
-  end
-end
-```
-
-```elixir
-def live_view do
-  quote do
-    use Phoenix.LiveView
-    on_mount MyAppWeb.ModeLive
-    unquote(html_helpers())
-  end
-end
-```
-
-If you use `mix corex.new --lang`, `on_mount MyAppWeb.Hooks.Layout` may already assign `:mode` from the session.
-
-<!-- tabs-close -->
+With LiveViews, ensure `:mode` is on the socket (session via `Plugs.Mode`, or `on_mount` / `Hooks.Layout` when you also use `--lang`). Root `<html>` should carry `data-mode={assigns[:mode] || "light"}` so the first paint matches the plug.
 
 ## CSS
 
 ```css
-@import "../corex/main.css";
-@import "../corex/theme/neo.css";
-@import "../corex/components.css";
+@import "../corex/corex.css";
 ```
 
-Include `toggle` in `components:` when you use a mode switcher.
+`corex.css` loads utilities, themes, and components. Include `toggle` in `components:` when you use a mode switcher. For layered imports, see [Design](design.html).
 
 Corex Design themes define `[data-mode=dark]` overrides. Custom CSS can target `[data-mode="dark"]` the same way.
 
@@ -223,12 +98,15 @@ Corex Design themes define `[data-mode=dark]` overrides. Custom CSS can target `
 
 | Symptom | Check |
 | ------- | ----- |
-| Wrong mode on first paint | Bridge `<script>` is in `<head>`; `Plugs.Mode` runs in the browser pipeline |
-| Tabs drift | `storage` listener is present in the bridge script |
-| Resets every navigation | Cookie uses `path=/` |
+| Toggle does nothing | Bridge listens for `phx:set-mode`; `Toggle` hook is registered |
+| Wrong pressed state | `pressed={@mode == "dark"}` and the layout receives `:mode` |
+| Flash of wrong mode | Bridge `<script>` is in `<head>`; root `data-mode` matches the plug assign |
+| Tabs drift | Bridge `storage` listener is present (install wiring) |
 
 ## Related
 
-- [Theming](theming.html) — `data-theme`; combine both bridges in one `<script>` IIFE
-- [Tableau Mode](tableau_mode.html) — static site equivalent
-- [Installation](installation.html) — `mix corex.new --mode`
+- [Manual installation](manual_installation.html#optional-mode-wiring): plug, bridge, and pipeline
+- [Configuration](configuration.html): build vs picker vs generators
+- [Theming](theming.html): `data-theme`; combine both bridges in one `<script>` IIFE
+- [Tableau Mode](tableau_mode.html): static site equivalent
+- [Installation](installation.html): `mix corex.new --mode`

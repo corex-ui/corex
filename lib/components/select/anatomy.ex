@@ -10,6 +10,7 @@ defmodule Corex.Select.Anatomy do
     defstruct [
       :id,
       items: [],
+      items_json: nil,
       placeholder: nil,
       value: [],
       controlled: false,
@@ -37,6 +38,7 @@ defmodule Corex.Select.Anatomy do
     @type t :: %__MODULE__{
             id: String.t(),
             items: list(Tree.Item.t() | map()),
+            items_json: String.t() | nil,
             placeholder: String.t() | nil,
             value: list(String.t()),
             controlled: boolean(),
