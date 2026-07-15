@@ -23,6 +23,7 @@ defmodule Corex.MCP do
 
   def init(config) when is_map(config) do
     maybe_silence_mcp_server_logs()
+    :ok = Server.init_tools()
     config = Config.build(config)
     maybe_warn_remote_access!(config.allow_remote_access)
     config

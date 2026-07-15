@@ -7,7 +7,7 @@
   <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>
 >
 <% else %><Layouts.app flash={@flash}><% end %>
-  <article class="layout__article">
+  <article class="mx-auto flex w-full min-w-0 max-w-6xl flex-col items-center gap-size-lg text-ink rounded-md">
   <.layout_heading class="layout-heading">
     <:title>New <%= schema.human_singular %></:title>
     <:subtitle>Use this form to manage <%= schema.singular %> records in your database.</:subtitle>
