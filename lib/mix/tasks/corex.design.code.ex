@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.Corex.Code do
+defmodule Mix.Tasks.Corex.Design.Code do
   use Mix.Task
 
   @shortdoc "Generate and copy Makeup syntax highlighting stylesheet to your project"
@@ -15,14 +15,14 @@ defmodule Mix.Tasks.Corex.Code do
   ## Examples
 
       # Default path (assets/css/code_highlight.css)
-      mix corex.code
+      mix corex.design.code
 
       # Custom path and filename
-      mix corex.code assets/styles/syntax.css
+      mix corex.design.code assets/styles/syntax.css
 
       # Override if file already exists
-      mix corex.code --force
-      mix corex.code assets/css/code_highlight.css --force
+      mix corex.design.code --force
+      mix corex.design.code assets/css/code_highlight.css --force
 
   ## Import
 

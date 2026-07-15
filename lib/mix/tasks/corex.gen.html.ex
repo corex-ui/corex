@@ -2,7 +2,17 @@ defmodule Mix.Tasks.Corex.Gen.Html do
   @shortdoc "Generates context and controller for an HTML resource"
 
   @moduledoc """
-  Generates controller with view, templates, schema and context for an HTML resource.
+  Generates controller, view, templates, schema, and context for an HTML resource,
+  using Corex form components and layout assigns.
+
+  Corex-specific behavior (vs `mix phx.gen.html`):
+
+  - Reads `config :corex, :generators` (and related layout opts) for scaffold style
+  - Passes layout assigns used by Corex apps (`flash`, and locale/mode/theme when wired)
+  - With localized routes, shell instructions tell you to add routes under the
+    locale scope; see [Localize](localize.html)
+
+  For Phoenix umbrella/scopes details, see `mix help phx.gen.html`.
 
   The format is:
 

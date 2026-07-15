@@ -1,6 +1,7 @@
 defmodule Corex.Design.Tokens.Publish do
   @moduledoc false
 
+  alias Corex.Design.Emit.Semantic
   alias Corex.Design.Theme
   alias Corex.Design.Tokens.Colors
   alias Corex.Design.Tokens.Scales
@@ -23,11 +24,11 @@ defmodule Corex.Design.Tokens.Publish do
       end
     end
 
-    Corex.Design.Emit.Semantic.write_color_bridge!(output_root)
-    Corex.Design.Emit.Semantic.write_border_bridge!(output_root)
-    Corex.Design.Emit.Semantic.write_dimension_bridge!(output_root)
-    Corex.Design.Emit.Semantic.write_font_bridge!(output_root)
-    Corex.Design.Emit.Semantic.remove_legacy_color_scope!(output_root)
+    Semantic.write_color_bridge!(output_root)
+    Semantic.write_border_bridge!(output_root)
+    Semantic.write_dimension_bridge!(output_root)
+    Semantic.write_font_bridge!(output_root)
+    Semantic.remove_legacy_color_scope!(output_root)
     write_theme_entries!(output_root)
 
     :ok

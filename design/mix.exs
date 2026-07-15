@@ -23,7 +23,7 @@ defmodule CorexDesign.MixProject do
   end
 
   def cli do
-    [preferred_envs: [docs: :docs]]
+    [preferred_envs: [docs: :docs, lint: :test]]
   end
 
   def application do
@@ -43,7 +43,11 @@ defmodule CorexDesign.MixProject do
       {:color, "~> 0.11"},
       {:nimble_options, "~> 1.1"},
       {:ex_doc, "~> 0.40", only: :docs, runtime: false},
-      {:excoveralls, "~> 0.18", only: :test}
+      {:excoveralls, "~> 0.18", only: :test},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:oeditus_credo, "~> 0.6.3", only: [:dev, :test], runtime: false},
+      {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
+      {:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false}
     ] ++ maybe_json_polyfill()
   end
 
@@ -58,7 +62,14 @@ defmodule CorexDesign.MixProject do
   defp aliases do
     [
       "bundle.build": ["compile", &build_bundle/1],
-      test: ["test"]
+      test: ["test"],
+      lint: [
+        "format --check-formatted",
+        "compile --force --warnings-as-errors",
+        "compile --force --warnings-as-errors --env test",
+        "credo --strict",
+        "sobelow --exit"
+      ]
     ]
   end
 
@@ -89,10 +100,43 @@ defmodule CorexDesign.MixProject do
 
   defp docs do
     [
-      main: "Corex.Design",
+      main: "readme",
       source_url: @scm_url,
       source_ref: "v#{@version}",
-      extras: ["README.md", "guides/modifiers.md"]
+      extras: ["README.md", "guides/modifiers.md"],
+      filter_modules: &docs_filter_modules/2,
+      groups_for_modules: [
+        Design: [
+          Corex.Design,
+          Corex.Design.Config,
+          Corex.Design.Config.Options,
+          Corex.Design.ThemeDefinition,
+          Mix.Tasks.Corex.Design.Build,
+          Mix.Tasks.Corex.Design.Options,
+          Mix.Tasks.Corex.Design.Validate,
+          Mix.Tasks.Compile.CorexDesign
+        ]
+      ]
     ]
+  end
+
+  defp docs_filter_modules(mod, _metadata) do
+    allowed =
+      MapSet.new([
+        Corex.Design,
+        Corex.Design.Config,
+        Corex.Design.Config.Options,
+        Corex.Design.ThemeDefinition,
+        Mix.Tasks.Corex.Design.Build,
+        Mix.Tasks.Corex.Design.Options,
+        Mix.Tasks.Corex.Design.Validate,
+        Mix.Tasks.Compile.CorexDesign
+      ])
+
+    if MapSet.member?(allowed, mod) do
+      true
+    else
+      raise "you forgot to add \"@moduledoc false\" or allowlist #{inspect(mod)} in design/mix.exs docs"
+    end
   end
 end

@@ -127,9 +127,14 @@ defmodule Corex.Design.ComponentLayout do
     block = host_block(css, selector)
 
     cond do
-      block =~ ~r/max-width:\s*fit-content/ -> :fit_content
-      match = Regex.run(~r/max-width:\s*var\(--container-([a-z0-9]+)\)/, block) -> {:container, Enum.at(match, 1)}
-      true -> :none
+      block =~ ~r/max-width:\s*fit-content/ ->
+        :fit_content
+
+      match = Regex.run(~r/max-width:\s*var\(--container-([a-z0-9]+)\)/, block) ->
+        {:container, Enum.at(match, 1)}
+
+      true ->
+        :none
     end
   end
 

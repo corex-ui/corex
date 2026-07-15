@@ -34,6 +34,14 @@
  .listbox [data-scope="listbox"][data-part="root"] > [data-scope="listbox"][data-part="content"] {
  width: 100%;
  min-width: 0;
+ max-height: var(--ctl-max-height, none);
+ overflow-y: var(--ctl-max-height-overflow, visible);
+ }
+
+ .listbox[class*="ui-max-height-"]
+ [data-scope="listbox"][data-part="root"]
+ > [data-scope="listbox"][data-part="content"] {
+ @apply scrollbar scrollbar--sm;
  }
 
  .listbox [data-scope="listbox"][data-part="root"][data-orientation="horizontal"] {
