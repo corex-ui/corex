@@ -4,6 +4,7 @@ import { Collapsible } from "../components/collapsible";
 import type { OpenChangeDetails } from "@zag-js/collapsible";
 
 import { getBoolean, getDir, getString, canPushEvent } from "../lib/util";
+import { snapshotDataset, type DatasetSnapshot } from "../lib/controlled-attr-snapshot";
 import { readBooleanControlledZagProps, readBooleanControlledZagUpdate } from "../lib/read-props";
 import {
   emitResponse,
@@ -20,6 +21,7 @@ type CollapsibleHookState = {
   collapsible?: Collapsible;
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
+  beforeAttrs?: DatasetSnapshot;
 };
 
 export function openChangePayload(
@@ -105,13 +107,28 @@ const CollapsibleHook: Hook<object & CollapsibleHookState, HTMLElement> = {
     });
   },
 
+  beforeUpdate(this: object & HookInterface<HTMLElement> & CollapsibleHookState) {
+    this.beforeAttrs = snapshotDataset(this.el, ["open"]);
+  },
+
   updated(this: object & HookInterface<HTMLElement> & CollapsibleHookState) {
-    this.collapsible?.updateProps({
-      id: this.el.id,
-      ...readBooleanControlledZagUpdate(this.el, "open", "defaultOpen"),
-      disabled: getBoolean(this.el, "disabled"),
-      dir: getDir(this.el),
-    });
+    try {
+      const openPatch = readBooleanControlledZagUpdate(
+        this.el,
+        "open",
+        "defaultOpen",
+        this.beforeAttrs
+      );
+
+      this.collapsible?.updateProps({
+        id: this.el.id,
+        ...openPatch,
+        disabled: getBoolean(this.el, "disabled"),
+        dir: getDir(this.el),
+      });
+    } finally {
+      this.beforeAttrs = undefined;
+    }
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & CollapsibleHookState) {

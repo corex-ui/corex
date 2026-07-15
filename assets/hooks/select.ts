@@ -5,6 +5,7 @@ import { Select } from "../components/select";
 import type { Props, ValueChangeDetails } from "@zag-js/select";
 
 import { getString, getBoolean, canPushEvent, getDir, safeParseJson } from "../lib/util";
+import { snapshotDataset, type DatasetSnapshot } from "../lib/controlled-attr-snapshot";
 import { readStringListControlledZagProps, readUpdatedServerStringList } from "../lib/read-props";
 import { readPositioningOptions } from "../lib/positioning";
 import { performRedirect, readDomItemRedirect } from "../lib/redirect";
@@ -191,7 +192,8 @@ type SelectHookState = {
   handlers?: Array<CallbackRef>;
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
-  lastServerValue?: string;
+  beforeAttrs?: DatasetSnapshot;
+  lastItemsJson?: string;
   onValueChange?: (details: ValueChangeDetails) => void;
 };
 
@@ -222,7 +224,7 @@ const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
     selectComponent.init();
 
     this.select = selectComponent;
-    this.lastServerValue = getString(el, "value") ?? "";
+    this.lastItemsJson = el.dataset.items || "[]";
     this.handlers = [];
     const domRegistry = createDomEventRegistry(el);
     this.domRegistry = domRegistry;
@@ -250,31 +252,39 @@ const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
     });
   },
 
+  beforeUpdate(this: object & HookInterface<HTMLElement> & SelectHookState) {
+    this.beforeAttrs = snapshotDataset(this.el, ["value"]);
+  },
+
   updated(this: object & HookInterface<HTMLElement> & SelectHookState) {
     if (!this.select) return;
 
-    const newItems = safeParseJson<SelectItem[]>(this.el.dataset.items || "[]", []);
-    const hasGroups = newItems.some((item: SelectItem) => Boolean(item.group));
+    try {
+      const newItemsJson = this.el.dataset.items || "[]";
+      if (newItemsJson !== this.lastItemsJson) {
+        this.lastItemsJson = newItemsJson;
+        const newItems = safeParseJson<SelectItem[]>(newItemsJson, []);
+        const hasGroups = newItems.some((item: SelectItem) => Boolean(item.group));
+        this.select.hasGroups = hasGroups;
+        this.select.setOptions(newItems);
+      }
 
-    this.select.hasGroups = hasGroups;
-    this.select.setOptions(newItems);
+      const valuePatch = readUpdatedServerStringList(this.el, this.beforeAttrs);
 
-    const valuePatch = readUpdatedServerStringList(this.el, this.lastServerValue);
+      if (valuePatch.value !== undefined) {
+        syncControlledValueInputFromServer(this.el, valuePatch.value);
+      }
 
-    if ("nextServerValue" in valuePatch) {
-      this.lastServerValue = valuePatch.nextServerValue;
+      this.select.updateProps({
+        ...selectLayoutProps(this.el),
+        collection: this.select.getCollection(),
+        ...(valuePatch.value !== undefined ? { value: valuePatch.value } : {}),
+      } as Props);
+
+      reapplySelectInteractiveState(this.el);
+    } finally {
+      this.beforeAttrs = undefined;
     }
-
-    if (valuePatch.value !== undefined) {
-      syncControlledValueInputFromServer(this.el, valuePatch.value);
-    }
-
-    this.select.updateProps({
-      ...selectLayoutProps(this.el),
-      ...(valuePatch.value !== undefined ? { value: valuePatch.value } : {}),
-    } as Props);
-
-    reapplySelectInteractiveState(this.el);
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & SelectHookState) {

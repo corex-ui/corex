@@ -103,11 +103,7 @@ describe.each([
 });
 
 describe.each([
-  [
-    "controlled",
-    { controlled: true, value: 5, step: 2 },
-    { value: "5", step: 2, nextServerValue: "5" },
-  ],
+  ["controlled", { controlled: true, value: 5, step: 2 }, { value: "5", step: 2 }],
   ["uncontrolled", { defaultValue: 3, step: 1 }, { step: 1 }],
 ] as const)("readNumberControlledZagUpdate %s", (_label, dataset, expected) => {
   it("reads numbers", () => {

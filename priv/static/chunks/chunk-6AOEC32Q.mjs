@@ -18,10 +18,20 @@ var getString = (element, attrName, validValues) => {
 };
 var getStringList = (element, attrName) => {
   const value = element.dataset[attrName];
-  if (typeof value === "string") {
-    return value.split(",").map((v) => v.trim()).filter((v) => v.length > 0);
+  if (typeof value !== "string") return void 0;
+  const trimmed = value.trim();
+  if (trimmed.startsWith("[")) {
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (Array.isArray(parsed) && parsed.every((item) => typeof item === "string")) {
+        return parsed;
+      }
+      return [];
+    } catch {
+      return [];
+    }
   }
-  return void 0;
+  return trimmed.split(",").map((v) => v.trim()).filter((v) => v.length > 0);
 };
 var getNumber = (element, attrName, validValues) => {
   const raw = element.dataset[attrName];
@@ -2633,6 +2643,24 @@ function spreadProps(node, attrs, machineId) {
 }
 
 // lib/core.ts
+function stableUpdatePropsKey(props) {
+  const keys = Object.keys(props).sort();
+  const serializable = {};
+  for (const key of keys) {
+    const value = props[key];
+    if (typeof value === "function") continue;
+    if (value !== null && typeof value === "object") {
+      try {
+        serializable[key] = JSON.parse(JSON.stringify(value));
+      } catch {
+        serializable[key] = String(value);
+      }
+    } else {
+      serializable[key] = value;
+    }
+  }
+  return JSON.stringify(serializable);
+}
 var Component = class {
   el;
   doc;
@@ -2640,6 +2668,8 @@ var Component = class {
   machine;
   api;
   unsubscribe;
+  lastUpdatePropsKey;
+  spreadCleanups = /* @__PURE__ */ new Map();
   constructor(el, props, beforeInitMachine) {
     if (!el) throw new Error("Root element not found");
     this.el = el;
@@ -2651,6 +2681,7 @@ var Component = class {
   init = () => {
     try {
       this.machine.start();
+      this.api = this.initApi();
       this.render();
       this.unsubscribe = this.machine.subscribe(() => {
         this.api = this.initApi();
@@ -2660,16 +2691,27 @@ var Component = class {
       this.el.removeAttribute("data-loading");
     }
   };
+  clearSpreadPropsCleanups = () => {
+    for (const cleanup of this.spreadCleanups.values()) {
+      cleanup();
+    }
+    this.spreadCleanups.clear();
+  };
   destroy = () => {
     this.el.removeAttribute("data-loading");
     this.unsubscribe?.();
     this.unsubscribe = void 0;
+    this.clearSpreadPropsCleanups();
     this.machine.stop();
   };
   spreadProps = (el, props) => {
-    spreadProps(el, props, this.machine.scope.id);
+    const cleanup = spreadProps(el, props, this.machine.scope.id);
+    this.spreadCleanups.set(el, cleanup);
   };
   updateProps(props) {
+    const key = stableUpdatePropsKey(props);
+    if (key === this.lastUpdatePropsKey) return;
+    this.lastUpdatePropsKey = key;
     this.machine.updateProps(props);
   }
   zagConnect(connectFn) {

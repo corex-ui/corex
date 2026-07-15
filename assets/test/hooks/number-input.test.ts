@@ -55,17 +55,16 @@ describe("mountNumberBinding", () => {
 });
 
 describe("readUpdatedServerNumber", () => {
-  it("formField without controlled returns step only", () => {
+  it("formField without controlled returns step only when attrs unchanged", () => {
     const node = el({ formField: true, defaultValue: "1234", step: 1 });
-    expect(readUpdatedServerNumber(node, "1234")).toEqual({ step: 1 });
+    expect(readUpdatedServerNumber(node, { defaultValue: "1234" })).toEqual({ step: 1 });
   });
 
-  it("controlled patches when data-value changes", () => {
+  it("controlled patches when data-value changes across patch", () => {
     const node = el({ controlled: true, value: "50", step: 1 });
-    expect(readUpdatedServerNumber(node, "1234")).toEqual({
+    expect(readUpdatedServerNumber(node, { value: "1234" })).toEqual({
       step: 1,
       value: "50",
-      nextServerValue: "50",
     });
   });
 });

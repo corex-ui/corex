@@ -4,6 +4,7 @@ import { Toggle } from "../components/toggle";
 import type { Props } from "@zag-js/toggle";
 
 import { getString, getBoolean, getBooleanValue, getDir, canPushEvent } from "../lib/util";
+import { snapshotDataset, type DatasetSnapshot } from "../lib/controlled-attr-snapshot";
 import { readPressedControlledZagUpdate } from "../lib/read-props";
 import { idMatches, notifyChange, readPayloadId, readPayloadPressed } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
@@ -13,6 +14,7 @@ type ToggleHookState = {
   zagToggle?: Toggle;
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
+  beforeAttrs?: DatasetSnapshot;
 };
 
 export function pressedChangePayload(el: HTMLElement, pressed: boolean): Record<string, unknown> {
@@ -88,13 +90,23 @@ const ToggleHook: Hook<object & ToggleHookState, HTMLElement> = {
     });
   },
 
+  beforeUpdate(this: object & HookInterface<HTMLElement> & ToggleHookState) {
+    this.beforeAttrs = snapshotDataset(this.el, ["pressed"]);
+  },
+
   updated(this: object & HookInterface<HTMLElement> & ToggleHookState) {
-    this.zagToggle?.updateProps({
-      id: this.el.id,
-      ...readPressedControlledZagUpdate(this.el),
-      disabled: getBoolean(this.el, "disabled"),
-      dir: getDir(this.el),
-    } as unknown as Partial<Props>);
+    try {
+      const pressedPatch = readPressedControlledZagUpdate(this.el, this.beforeAttrs);
+
+      this.zagToggle?.updateProps({
+        id: this.el.id,
+        ...pressedPatch,
+        disabled: getBoolean(this.el, "disabled"),
+        dir: getDir(this.el),
+      } as unknown as Partial<Props>);
+    } finally {
+      this.beforeAttrs = undefined;
+    }
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & ToggleHookState) {

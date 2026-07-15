@@ -1,37 +1,37 @@
 import {
   stripZagSubmitNames
-} from "./chunks/chunk-YJPGDO7P.mjs";
+} from "./chunks/chunk-OZ2OVCG5.mjs";
 import {
   createLiveRegion
 } from "./chunks/chunk-7BZGUIUZ.mjs";
 import {
   getPlacement,
   getPlacementStyles
-} from "./chunks/chunk-DVA7SQMW.mjs";
+} from "./chunks/chunk-MHRYIVD2.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-MOSXJRWI.mjs";
-import "./chunks/chunk-26XTEIHY.mjs";
+} from "./chunks/chunk-CBUVYVIR.mjs";
 import {
-  syncArrayHiddenInputsForPhoenix
-} from "./chunks/chunk-IKLCQZIF.mjs";
-import {
-  queueLiveViewFormInputSync,
-  reapplyLiveViewValueInputUsage
-} from "./chunks/chunk-ASQD2R2U.mjs";
+  markUsed,
+  setArrayValues,
+  syncFormInput
+} from "./chunks/chunk-2H6YHTHG.mjs";
+import "./chunks/chunk-ZSA4KI2Y.mjs";
+import "./chunks/chunk-3BEM4I52.mjs";
+import "./chunks/chunk-DOKFN6DA.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-QU36267Q.mjs";
+} from "./chunks/chunk-C4KEB3WL.mjs";
 import {
   itemValue,
   zagListCollectionConfig
-} from "./chunks/chunk-AIFPYOT7.mjs";
+} from "./chunks/chunk-DDT7N35T.mjs";
 import {
   ListCollection,
   createSelectedItemMap,
   deriveSelectionState,
   resolveSelectedItems
-} from "./chunks/chunk-4E7EICYJ.mjs";
+} from "./chunks/chunk-SGRHPBNS.mjs";
 import {
   performRedirect,
   readDomItemRedirect
@@ -40,10 +40,11 @@ import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunks/chunk-JF64R7HW.mjs";
+} from "./chunks/chunk-YUSIPE4B.mjs";
 import {
   mountStringListBinding
-} from "./chunks/chunk-XL4XUS2C.mjs";
+} from "./chunks/chunk-BGER3KYP.mjs";
+import "./chunks/chunk-TKOH2OAC.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -89,7 +90,7 @@ import {
   setCaretToEnd,
   setup,
   templatesContentRoot
-} from "./chunks/chunk-YGZLYEUJ.mjs";
+} from "./chunks/chunk-6AOEC32Q.mjs";
 
 // ../node_modules/.pnpm/@zag-js+combobox@1.40.0/node_modules/@zag-js/combobox/dist/combobox.anatomy.mjs
 var anatomy = createAnatomy("combobox").parts(
@@ -1889,8 +1890,7 @@ var Combobox = class extends Component {
   hiddenInputValue() {
     let values = (this.api.value ?? []).map(String);
     if (values.length === 0) {
-      const fallback = this.el.dataset.defaultValue;
-      if (fallback) values = fallback.split(",").filter(Boolean);
+      values = getStringList(this.el, "defaultValue") ?? [];
     }
     const multiple = this.el.hasAttribute("data-multiple");
     return values.length === 0 ? "" : multiple ? values.join(",") : values[0] ?? "";
@@ -1939,7 +1939,7 @@ function formatComboboxHiddenValue(el, values) {
 function syncComboboxHiddenInputForPhoenix(el, values, onTouched) {
   const submitName = getString(el, "submitName");
   if (submitName && getBoolean(el, "multiple")) {
-    syncArrayHiddenInputsForPhoenix(el, values, {
+    setArrayValues(el, values, {
       onTouched,
       scope: "combobox",
       submitName,
@@ -1951,13 +1951,13 @@ function syncComboboxHiddenInputForPhoenix(el, values, onTouched) {
     '[data-scope="combobox"][data-part="hidden-input"]'
   );
   if (!hidden) return;
-  queueLiveViewFormInputSync(hidden, () => formatComboboxHiddenValue(el, values), onTouched);
+  syncFormInput(hidden, () => formatComboboxHiddenValue(el, values), onTouched);
 }
 function reapplyComboboxHiddenInputUsage(el) {
   const hidden = el.querySelector(
     '[data-scope="combobox"][data-part="hidden-input"]'
   );
-  if (hidden) reapplyLiveViewValueInputUsage(hidden);
+  if (hidden) markUsed(hidden);
 }
 function selectedItemLabel(items) {
   const first = items?.[0];
@@ -2125,7 +2125,7 @@ var ComboboxHook = {
     const defaultValues = getStringList(el, "defaultValue") ?? [];
     if (defaultValues.length > 0) {
       hook.fieldTouched = true;
-      queueMicrotask(() => reapplyComboboxHiddenInputUsage(el));
+      reapplyComboboxHiddenInputUsage(el);
     }
     let comboboxRef;
     const props = {
@@ -2167,8 +2167,10 @@ var ComboboxHook = {
   updated() {
     if (!this.combobox) return;
     const newItemsJson = this.el.getAttribute("data-items") ?? "[]";
+    let itemsChanged = false;
     if (newItemsJson !== this.lastItemsJson) {
       this.lastItemsJson = newItemsJson;
+      itemsChanged = true;
       const newCollection = safeParseJson(newItemsJson, []);
       const hasGroups = newCollection.some((item) => Boolean(item.group));
       this.combobox.hasGroups = hasGroups;
@@ -2191,8 +2193,10 @@ var ComboboxHook = {
     if (this.combobox.api.open) {
       this.combobox.api.reposition();
     }
-    this.combobox.renderItems();
-    this.combobox.applyItemProps();
+    if (itemsChanged) {
+      this.combobox.renderItems();
+      this.combobox.applyItemProps();
+    }
   },
   destroyed() {
     this.domRegistry?.teardown();

@@ -1,10 +1,14 @@
 import {
+  anyDatasetKeyChanged,
+  datasetKeyChanged
+} from "./chunk-TKOH2OAC.mjs";
+import {
   getBoolean,
   getCheckedState,
   getNumber,
   getString,
   getStringList
-} from "./chunk-YGZLYEUJ.mjs";
+} from "./chunk-6AOEC32Q.mjs";
 
 // lib/number-input-format.ts
 var MAX_FRACTION_DIGITS = 10;
@@ -55,8 +59,11 @@ var z = (s) => s === void 0 ? null : s;
 function readStringControlledZagProps(el, valueKey, defaultKey) {
   return mountStringBinding(el, valueKey, defaultKey);
 }
-function readStringControlledZagUpdate(el, valueKey, _defaultKey) {
+function readStringControlledZagUpdate(el, valueKey, _defaultKey, before) {
   if (!isZagValueControlled(el)) {
+    return {};
+  }
+  if (!datasetKeyChanged(before, el, valueKey)) {
     return {};
   }
   return { value: z(getString(el, valueKey)) };
@@ -84,8 +91,11 @@ function readFormFieldServerPaths(el, datasetKey = "defaultPaths") {
   if (!raw) return [];
   return raw.split("\n").map((line) => line.trim()).filter(Boolean);
 }
-function readBooleanControlledZagUpdate(el, openKey, _defaultOpenKey) {
+function readBooleanControlledZagUpdate(el, openKey, _defaultOpenKey, before) {
   if (!getBoolean(el, "controlled")) {
+    return {};
+  }
+  if (!datasetKeyChanged(before, el, openKey)) {
     return {};
   }
   return { open: getBoolean(el, openKey) };
@@ -96,15 +106,14 @@ function isZagValueControlled(el) {
 function readDatasetStringList(el, datasetKey) {
   return getJsonStringList(el, datasetKey) ?? getStringList(el, datasetKey) ?? [];
 }
-function readUpdatedServerStringList(el, lastServerValue) {
+function readUpdatedServerStringList(el, before) {
   if (!isZagValueControlled(el)) {
     return {};
   }
-  const raw = getString(el, "value") ?? "";
-  if (raw === lastServerValue) {
+  if (!datasetKeyChanged(before, el, "value")) {
     return {};
   }
-  return { value: readDatasetStringList(el, "value"), nextServerValue: raw };
+  return { value: readDatasetStringList(el, "value") };
 }
 function mountStringListBinding(el) {
   if (getBoolean(el, "controlled")) {
@@ -112,15 +121,14 @@ function mountStringListBinding(el) {
   }
   return { defaultValue: readDatasetStringList(el, "defaultValue") };
 }
-function readUpdatedServerString(el, lastServerValue) {
+function readUpdatedServerString(el, before) {
   if (!isZagValueControlled(el)) {
     return {};
   }
-  const raw = getString(el, "value");
-  if (raw === lastServerValue) {
+  if (!datasetKeyChanged(before, el, "value")) {
     return {};
   }
-  return { value: z(raw) };
+  return { value: z(getString(el, "value")) };
 }
 function mountStringBinding(el, valueKey, defaultKey) {
   if (getBoolean(el, "controlled")) {
@@ -131,8 +139,11 @@ function mountStringBinding(el, valueKey, defaultKey) {
 function isZagCheckedControlled(el) {
   return getBoolean(el, "controlled");
 }
-function readUpdatedServerChecked(el) {
+function readUpdatedServerChecked(el, before) {
   if (!isZagCheckedControlled(el)) {
+    return {};
+  }
+  if (!datasetKeyChanged(before, el, "checked")) {
     return {};
   }
   return { checked: getCheckedState(el, "checked") };
@@ -162,24 +173,23 @@ function mountTagsBinding(el) {
 function numberInputStep(el) {
   return getNumber(el, "step") ?? 1;
 }
-function readUpdatedServerNumber(el, lastServerValue) {
+function readUpdatedServerNumber(el, before) {
   const step = numberInputStep(el);
   const base = { step };
   const sync = getBoolean(el, "controlled") || getBoolean(el, "formField");
   if (!sync) {
     return base;
   }
+  if (!anyDatasetKeyChanged(before, el, ["value", "defaultValue"])) {
+    return base;
+  }
   const raw = getString(el, "value") ?? (getBoolean(el, "formField") ? getString(el, "defaultValue") : void 0);
   if (raw === void 0 || raw === "") {
     return base;
   }
-  if (raw === lastServerValue) {
-    return base;
-  }
   return {
     ...base,
-    value: formatDisplayValue(raw, step),
-    nextServerValue: raw
+    value: formatDisplayValue(raw, step)
   };
 }
 function mountNumberBinding(el) {
@@ -193,15 +203,14 @@ function mountNumberBinding(el) {
   const defaultValue = rawDefault !== void 0 && rawDefault !== "" ? formatDisplayValue(rawDefault, step) : void 0;
   return { defaultValue, step };
 }
-function readStringListControlledZagUpdate(el, _valueKey, _defaultValueKey, lastServerValue) {
-  const patch = readUpdatedServerStringList(el, lastServerValue);
-  if (!("value" in patch)) {
+function readStringListControlledZagUpdate(el, _valueKey, _defaultValueKey, before) {
+  return readUpdatedServerStringList(el, before);
+}
+function readPressedControlledZagUpdate(el, before) {
+  if (!getBoolean(el, "controlled")) {
     return {};
   }
-  return { value: patch.value };
-}
-function readPressedControlledZagUpdate(el) {
-  if (!getBoolean(el, "controlled")) {
+  if (!datasetKeyChanged(before, el, "pressed")) {
     return {};
   }
   return { pressed: getBoolean(el, "pressed") };

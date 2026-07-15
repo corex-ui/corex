@@ -25,7 +25,7 @@ import {
 } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
-import { bindArrayFieldSubmitIntent, isFormFieldUsed } from "../lib/form-array-submit";
+import { bindArrayFieldSubmitIntent, isFormFieldUsed } from "../lib/phoenix-form-bridge";
 import { syncTagsInputFormForPhoenix } from "../lib/tags-input-form";
 import { mountTagsBinding } from "../lib/read-props";
 
@@ -33,10 +33,13 @@ type TagsInputHookState = {
   tagsInput?: TagsInput;
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
-  allowFormNotify?: boolean;
   fieldTouched?: boolean;
   unbindSubmitIntent?: () => void;
 };
+
+function sameStringList(a: ReadonlyArray<string>, b: ReadonlyArray<string>): boolean {
+  return a.length === b.length && a.every((v, i) => v === b[i]);
+}
 
 export function parseJsonTags(el: HTMLElement, key: "tags" | "defaultTags"): string[] {
   const raw = el.dataset[key];
@@ -77,7 +80,6 @@ const TagsInputHook: Hook<object & TagsInputHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & TagsInputHookState) {
     const el = this.el;
     const hook = this as object & HookInterface<HTMLElement> & TagsInputHookState;
-    hook.allowFormNotify = false;
     hook.fieldTouched = false;
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
@@ -85,11 +87,13 @@ const TagsInputHook: Hook<object & TagsInputHookState, HTMLElement> = {
     const max = maxProp(el);
     const delimiter = getString(el, "delimiter");
     const placeholder = readPlaceholderFromMainInput(el);
+    const valueBinding = mountTagsBinding(el);
+    const initialValues = "value" in valueBinding ? valueBinding.value : valueBinding.defaultValue;
 
     const zag = new TagsInput(el, {
       id: el.id,
       ...resolveZagTagsInputTranslations(el),
-      ...mountTagsBinding(el),
+      ...valueBinding,
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readonly"),
       invalid: getBoolean(el, "invalid"),
@@ -109,10 +113,14 @@ const TagsInputHook: Hook<object & TagsInputHookState, HTMLElement> = {
       ...(delimiter !== undefined && delimiter !== "" ? { delimiter } : {}),
       ...(placeholder !== undefined ? { placeholder } : {}),
       onValueChange: (details: ValueChangeDetails) => {
-        hook.fieldTouched = true;
+        const isMountEcho =
+          hook.fieldTouched !== true && sameStringList(details.value, initialValues);
+        if (!isMountEcho) {
+          hook.fieldTouched = true;
+        }
         syncTagsInputFormForPhoenix(el, details.value, undefined, {
-          notifyLiveView: hook.allowFormNotify === true,
-          fieldTouched: true,
+          notifyLiveView: !isMountEcho,
+          fieldTouched: !isMountEcho,
         });
 
         notifyChange({
@@ -166,16 +174,13 @@ const TagsInputHook: Hook<object & TagsInputHookState, HTMLElement> = {
     const syncForm = (values: string[], opts: { notifyLiveView?: boolean } = {}) => {
       syncTagsInputFormForPhoenix(el, values, undefined, {
         notifyLiveView: opts.notifyLiveView,
-        fieldTouched: isFormFieldUsed(el, hook.fieldTouched === true),
+        fieldTouched: isFormFieldUsed(el, Boolean(hook.fieldTouched)),
       });
     };
 
-    queueMicrotask(() => {
-      if (!isFormFieldUsed(el, hook.fieldTouched === true)) {
-        syncForm(zag.api.value, { notifyLiveView: false });
-      }
-      hook.allowFormNotify = true;
-    });
+    if (!isFormFieldUsed(el, Boolean(hook.fieldTouched))) {
+      syncForm(zag.api.value, { notifyLiveView: false });
+    }
 
     hook.unbindSubmitIntent = bindArrayFieldSubmitIntent(el, () => {
       hook.fieldTouched = true;
@@ -263,7 +268,6 @@ const TagsInputHook: Hook<object & TagsInputHookState, HTMLElement> = {
       ...(delimiter !== undefined && delimiter !== "" ? { delimiter } : {}),
       ...(placeholder !== undefined ? { placeholder } : {}),
     } as Partial<Props>);
-
     this.tagsInput?.render();
   },
 

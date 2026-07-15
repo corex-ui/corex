@@ -1,14 +1,17 @@
 import {
   syncCheckableHiddenInput
-} from "./chunks/chunk-YWUM4WUV.mjs";
+} from "./chunks/chunk-MM3X6GKK.mjs";
 import {
   isFocusVisible,
   trackFocusVisible
-} from "./chunks/chunk-JF64R7HW.mjs";
+} from "./chunks/chunk-YUSIPE4B.mjs";
 import {
   mountCheckedBinding,
   readUpdatedServerChecked
-} from "./chunks/chunk-XL4XUS2C.mjs";
+} from "./chunks/chunk-BGER3KYP.mjs";
+import {
+  snapshotDataset
+} from "./chunks/chunk-TKOH2OAC.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -38,7 +41,7 @@ import {
   trackFormControl,
   trackPress,
   visuallyHiddenStyle
-} from "./chunks/chunk-YGZLYEUJ.mjs";
+} from "./chunks/chunk-6AOEC32Q.mjs";
 
 // ../node_modules/.pnpm/@zag-js+switch@1.40.0/node_modules/@zag-js/switch/dist/switch.anatomy.mjs
 var anatomy = createAnatomy("switch").parts("root", "label", "control", "thumb");
@@ -391,11 +394,9 @@ var SwitchHook = {
           '[data-scope="switch"][data-part="hidden-input"]'
         );
         if (input) {
-          queueMicrotask(() => {
-            input.checked = details.checked === true;
-            input.dispatchEvent(new Event("input", { bubbles: true }));
-            input.dispatchEvent(new Event("change", { bubbles: true }));
-          });
+          input.checked = details.checked === true;
+          input.dispatchEvent(new Event("input", { bubbles: true }));
+          input.dispatchEvent(new Event("change", { bubbles: true }));
         }
       }
     });
@@ -446,21 +447,29 @@ var SwitchHook = {
       });
     });
   },
+  beforeUpdate() {
+    this.beforeAttrs = snapshotDataset(this.el, ["checked"]);
+  },
   updated() {
     const zagSwitch = this.zagSwitch;
     if (!zagSwitch) return;
-    zagSwitch.updateProps({
-      id: this.el.id,
-      ...readUpdatedServerChecked(this.el),
-      disabled: getBoolean(this.el, "disabled"),
-      name: getString(this.el, "name"),
-      form: getString(this.el, "form"),
-      value: getString(this.el, "value"),
-      dir: getDir(this.el),
-      invalid: getBoolean(this.el, "invalid"),
-      required: getBoolean(this.el, "required"),
-      readOnly: getBoolean(this.el, "readonly")
-    });
+    try {
+      const checkedPatch = readUpdatedServerChecked(this.el, this.beforeAttrs);
+      zagSwitch.updateProps({
+        id: this.el.id,
+        ..."checked" in checkedPatch ? { checked: checkedPatch.checked === true } : {},
+        disabled: getBoolean(this.el, "disabled"),
+        name: getString(this.el, "name"),
+        form: getString(this.el, "form"),
+        value: getString(this.el, "value"),
+        dir: getDir(this.el),
+        invalid: getBoolean(this.el, "invalid"),
+        required: getBoolean(this.el, "required"),
+        readOnly: getBoolean(this.el, "readonly")
+      });
+    } finally {
+      this.beforeAttrs = void 0;
+    }
   },
   destroyed() {
     this.domRegistry?.teardown();

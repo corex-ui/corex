@@ -27,15 +27,23 @@ function padValues(values: ReadonlyArray<string>, fixedLength: number): string[]
   return out.slice(0, fixedLength);
 }
 
+function arrayInputId(scope: ArraySubmitScope, hostId: string, index: number | "empty"): string {
+  return index === "empty"
+    ? `${scope}:${hostId}:array-input-empty`
+    : `${scope}:${hostId}:array-input-${index}`;
+}
+
 function createArrayInput(
   scope: ArraySubmitScope,
   submitName: string | undefined,
   hostEl: HTMLElement,
   value: string,
-  empty: boolean
+  empty: boolean,
+  index: number | "empty"
 ): HTMLInputElement {
   const input = document.createElement("input");
   input.type = "hidden";
+  input.id = arrayInputId(scope, hostEl.id, index);
   input.setAttribute("data-scope", scope);
   input.setAttribute("data-part", "array-input");
   if (empty) input.setAttribute("data-empty", "true");
@@ -61,7 +69,14 @@ export function syncArrayInputsInPlace(
 
   if (values.length === 0) {
     existing.forEach((node) => node.remove());
-    const empty = createArrayInput(scope, fieldTouched ? submitName : undefined, hostEl, "", true);
+    const empty = createArrayInput(
+      scope,
+      fieldTouched ? submitName : undefined,
+      hostEl,
+      "",
+      true,
+      "empty"
+    );
     container.appendChild(empty);
     return empty;
   }
@@ -72,7 +87,7 @@ export function syncArrayInputsInPlace(
   let valueNodes = existing.filter((n) => !n.hasAttribute("data-empty"));
 
   while (valueNodes.length < values.length) {
-    const input = createArrayInput(scope, submitName, hostEl, "", false);
+    const input = createArrayInput(scope, submitName, hostEl, "", false, valueNodes.length);
     container.appendChild(input);
     valueNodes = Array.from(
       container.querySelectorAll<HTMLInputElement>(
@@ -88,6 +103,7 @@ export function syncArrayInputsInPlace(
   }
 
   valueNodes.forEach((input, index) => {
+    input.id = arrayInputId(scope, hostEl.id, index);
     input.value = values[index] ?? "";
   });
 
@@ -108,19 +124,11 @@ export function syncArrayHiddenInputsForPhoenix(
     fixedLength !== undefined ? padValues(values, fixedLength) : values.map((v) => String(v));
   const fieldTouched = isFormFieldUsed(el, options.fieldTouched === true);
 
-  let container = el.querySelector<HTMLElement>(
+  const container = el.querySelector<HTMLElement>(
     `[data-scope="${scope}"][data-part="array-inputs"]`
   );
 
-  if (!container) {
-    const root = el.querySelector<HTMLElement>(`[data-scope="${scope}"][data-part="root"]`) ?? el;
-    container = document.createElement("div");
-    container.setAttribute("data-scope", scope);
-    container.setAttribute("data-part", "array-inputs");
-    container.setAttribute("phx-update", "ignore");
-    container.id = `${scope}:${el.id}:array-inputs`;
-    root.prepend(container);
-  }
+  if (!container) return;
 
   const notifyInput = syncArrayInputsInPlace(
     container,
@@ -143,9 +151,10 @@ export function syncArrayHiddenInputsForPhoenix(
 
   if (!notifyLiveView || !notifyInput) return;
 
-  queueMicrotask(() => {
-    options.onTouched?.();
-    notifyPhoenixFormChange(notifyInput, notifyInput.value, { onTouched: undefined });
+  options.onTouched?.();
+  notifyPhoenixFormChange(notifyInput, notifyInput.value, {
+    onTouched: undefined,
+    force: true,
   });
 }
 

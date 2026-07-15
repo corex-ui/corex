@@ -306,7 +306,11 @@ export class DatePicker extends Component<Props, Api> {
     );
     const selectionMode = this.api.selectionMode;
     for (let i = 0; i < inputs.length; i += 1) {
-      this.spreadProps(inputs[i]!, this.api.getInputProps({ index: i }));
+      const inputEl = inputs[i]!;
+      this.spreadProps(inputEl, this.api.getInputProps({ index: i }));
+      if (inputEl.getAttribute("value") !== inputEl.value) {
+        inputEl.setAttribute("value", inputEl.value);
+      }
     }
     if (selectionMode === "multiple" && inputs.length > 0) {
       const input = inputs[0]!;

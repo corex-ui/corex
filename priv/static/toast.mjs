@@ -1,10 +1,10 @@
 import {
   setRafTimeout
-} from "./chunks/chunk-5HFWMYJG.mjs";
+} from "./chunks/chunk-6MIECCPA.mjs";
 import {
   trackDismissableBranch
-} from "./chunks/chunk-MOSXJRWI.mjs";
-import "./chunks/chunk-26XTEIHY.mjs";
+} from "./chunks/chunk-CBUVYVIR.mjs";
+import "./chunks/chunk-ZSA4KI2Y.mjs";
 import {
   AnimationFrame,
   Component,
@@ -29,7 +29,7 @@ import {
   setup,
   uuid,
   warn
-} from "./chunks/chunk-YGZLYEUJ.mjs";
+} from "./chunks/chunk-6AOEC32Q.mjs";
 
 // ../node_modules/.pnpm/@zag-js+toast@1.40.0/node_modules/@zag-js/toast/dist/toast.anatomy.mjs
 var anatomy = createAnatomy("toast").parts(
@@ -1299,6 +1299,7 @@ var ToastItem = class extends Component {
     }
   }
   destroy = () => {
+    this.clearSpreadPropsCleanups();
     this.machine.stop();
     this.el.remove();
   };
@@ -1366,6 +1367,9 @@ var ToastGroup = class extends Component {
       comp.destroy();
     }
     this.toastComponents.clear();
+    this.unsubscribe?.();
+    this.unsubscribe = void 0;
+    this.clearSpreadPropsCleanups();
     this.machine.stop();
   };
 };
@@ -1581,8 +1585,10 @@ var ToastHook = {
       if (pr !== void 0) patch.priority = pr;
       return patch;
     };
+    const matchesGroup = (payload) => typeof payload.groupId === "string" && payload.groupId === this.groupId;
     const handleDismissPayload = (payload) => {
-      const st = getToastStore(payload.groupId || this.groupId);
+      if (!matchesGroup(payload)) return;
+      const st = getToastStore(payload.groupId);
       if (!st) return;
       try {
         st.dismiss(payload.id);
@@ -1591,7 +1597,8 @@ var ToastHook = {
       }
     };
     const handleRemovePayload = (payload) => {
-      const st = getToastStore(payload.groupId || this.groupId);
+      if (!matchesGroup(payload)) return;
+      const st = getToastStore(payload.groupId);
       if (!st) return;
       try {
         st.remove(payload.id);
@@ -1602,7 +1609,8 @@ var ToastHook = {
     this.handlers = [];
     this.handlers.push(
       this.handleEvent("toast-create", (payload) => {
-        const st = getToastStore(payload.groupId || this.groupId);
+        if (!matchesGroup(payload)) return;
+        const st = getToastStore(payload.groupId);
         if (!st) return;
         try {
           st.create(buildCreateOptions(payload, true));
@@ -1613,8 +1621,9 @@ var ToastHook = {
     );
     this.handlers.push(
       this.handleEvent("toast-update", (payload) => {
-        const st = getToastStore(payload.groupId || this.groupId);
-        if (!st || !payload.id) return;
+        if (!matchesGroup(payload) || !payload.id) return;
+        const st = getToastStore(payload.groupId);
+        if (!st) return;
         try {
           st.update(payload.id, buildUpdatePatch(payload, true));
         } catch (error) {
@@ -1626,7 +1635,8 @@ var ToastHook = {
     this.handlers.push(this.handleEvent("toast-remove", handleRemovePayload));
     const onToastCreate = (event) => {
       const { detail } = event;
-      const st = getToastStore(detail.groupId || this.groupId);
+      if (!matchesGroup(detail)) return;
+      const st = getToastStore(detail.groupId);
       if (!st) return;
       try {
         st.create(buildCreateOptions(detail, false));
@@ -1636,8 +1646,9 @@ var ToastHook = {
     };
     const onToastUpdate = (event) => {
       const { detail } = event;
-      const st = getToastStore(detail.groupId || this.groupId);
-      if (!st || !detail.id) return;
+      if (!matchesGroup(detail) || !detail.id) return;
+      const st = getToastStore(detail.groupId);
+      if (!st) return;
       try {
         st.update(detail.id, buildUpdatePatch(detail, false));
       } catch (error) {

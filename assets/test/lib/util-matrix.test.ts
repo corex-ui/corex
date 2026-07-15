@@ -62,6 +62,8 @@ describe.each([
 describe.each([
   ["csv", { value: "a,b, c" }, ["a", "b", "c"]],
   ["empty tokens", { value: " , " }, []],
+  ["json empty", { value: "[]" }, []],
+  ["json list", { value: '["a","b"]' }, ["a", "b"]],
   ["missing", {}, undefined],
 ] as const)("getStringList %s", (_label, dataset, expected) => {
   it("reads list", () => {

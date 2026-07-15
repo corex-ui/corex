@@ -120,7 +120,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-YGZLYEUJ.mjs
+  // ../priv/static/chunks/chunk-6AOEC32Q.mjs
   function getDir(element) {
     const fromEl = element.dataset.dir;
     if (fromEl !== void 0 && DIR_VALUES.includes(fromEl)) {
@@ -1822,9 +1822,27 @@ var Corex = (() => {
       }
     };
   }
+  function stableUpdatePropsKey(props) {
+    const keys = Object.keys(props).sort();
+    const serializable = {};
+    for (const key of keys) {
+      const value = props[key];
+      if (typeof value === "function") continue;
+      if (value !== null && typeof value === "object") {
+        try {
+          serializable[key] = JSON.parse(JSON.stringify(value));
+        } catch (e2) {
+          serializable[key] = String(value);
+        }
+      } else {
+        serializable[key] = value;
+      }
+    }
+    return JSON.stringify(serializable);
+  }
   var DIR_VALUES, getString, getStringList, getNumber, getBoolean, getBooleanValue, generateId, __defProp2, __defNormalProp2, __publicField2, __defProp22, __typeError2, __defNormalProp22, __publicField22, __accessCheck, __privateGet, __privateAdd2, first, last, has, add, remove, removeAt, uniq, diff, addOrRemove, isArrayLike, isArrayEqual, isEqual, isArray, isBoolean, isObjectLike, isObject, isNumber, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop, callAll, uuid, tryCatch, toChar, hash, STATE_DELIMITER, ABSOLUTE_PREFIX, stateIndexCache, stateIdIndexCache, MachineStatus, INIT_STATE, __defProp3, __defNormalProp3, __publicField3, clamp, wrap, pipe, noop2, isObject2, MAX_Z_INDEX, dataAttr, ariaAttr, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, pageKeys, arrowKeys, addDomEvent, INTERNAL_CHANGE_EVENT, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match2, getByTypeahead, visuallyHiddenStyle, refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack, proxyStateMap, buildProxyFunction, proxyFunction, VanillaMachine, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, Component, createAnatomy, toKebabCase, isEmpty;
-  var init_chunk_YGZLYEUJ = __esm({
-    "../priv/static/chunks/chunk-YGZLYEUJ.mjs"() {
+  var init_chunk_6AOEC32Q = __esm({
+    "../priv/static/chunks/chunk-6AOEC32Q.mjs"() {
       "use strict";
       DIR_VALUES = ["ltr", "rtl"];
       getString = (element, attrName, validValues) => {
@@ -1836,10 +1854,20 @@ var Corex = (() => {
       };
       getStringList = (element, attrName) => {
         const value = element.dataset[attrName];
-        if (typeof value === "string") {
-          return value.split(",").map((v2) => v2.trim()).filter((v2) => v2.length > 0);
+        if (typeof value !== "string") return void 0;
+        const trimmed = value.trim();
+        if (trimmed.startsWith("[")) {
+          try {
+            const parsed = JSON.parse(trimmed);
+            if (Array.isArray(parsed) && parsed.every((item) => typeof item === "string")) {
+              return parsed;
+            }
+            return [];
+          } catch (e2) {
+            return [];
+          }
         }
-        return void 0;
+        return trimmed.split(",").map((v2) => v2.trim()).filter((v2) => v2.length > 0);
       };
       getNumber = (element, attrName, validValues) => {
         const raw = element.dataset[attrName];
@@ -2712,9 +2740,12 @@ var Corex = (() => {
           __publicField(this, "machine");
           __publicField(this, "api");
           __publicField(this, "unsubscribe");
+          __publicField(this, "lastUpdatePropsKey");
+          __publicField(this, "spreadCleanups", /* @__PURE__ */ new Map());
           __publicField(this, "init", () => {
             try {
               this.machine.start();
+              this.api = this.initApi();
               this.render();
               this.unsubscribe = this.machine.subscribe(() => {
                 this.api = this.initApi();
@@ -2724,15 +2755,23 @@ var Corex = (() => {
               this.el.removeAttribute("data-loading");
             }
           });
+          __publicField(this, "clearSpreadPropsCleanups", () => {
+            for (const cleanup of this.spreadCleanups.values()) {
+              cleanup();
+            }
+            this.spreadCleanups.clear();
+          });
           __publicField(this, "destroy", () => {
             var _a4;
             this.el.removeAttribute("data-loading");
             (_a4 = this.unsubscribe) == null ? void 0 : _a4.call(this);
             this.unsubscribe = void 0;
+            this.clearSpreadPropsCleanups();
             this.machine.stop();
           });
           __publicField(this, "spreadProps", (el, props) => {
-            spreadProps(el, props, this.machine.scope.id);
+            const cleanup = spreadProps(el, props, this.machine.scope.id);
+            this.spreadCleanups.set(el, cleanup);
           });
           if (!el) throw new Error("Root element not found");
           this.el = el;
@@ -2742,6 +2781,9 @@ var Corex = (() => {
           this.api = this.initApi();
         }
         updateProps(props) {
+          const key = stableUpdatePropsKey(props);
+          if (key === this.lastUpdatePropsKey) return;
+          this.lastUpdatePropsKey = key;
           this.machine.updateProps(props);
         }
         zagConnect(connectFn) {
@@ -2777,7 +2819,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-Z5W52KDP.mjs
+  // ../priv/static/chunks/chunk-4AOGROPJ.mjs
   function prefersReducedMotion() {
     return typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
@@ -3082,15 +3124,37 @@ var Corex = (() => {
     return anim;
   }
   var rootPointerBlockCount;
-  var init_chunk_Z5W52KDP = __esm({
-    "../priv/static/chunks/chunk-Z5W52KDP.mjs"() {
+  var init_chunk_4AOGROPJ = __esm({
+    "../priv/static/chunks/chunk-4AOGROPJ.mjs"() {
       "use strict";
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       rootPointerBlockCount = /* @__PURE__ */ new WeakMap();
     }
   });
 
-  // ../priv/static/chunks/chunk-XL4XUS2C.mjs
+  // ../priv/static/chunks/chunk-TKOH2OAC.mjs
+  function snapshotDataset(el, keys) {
+    const snap = {};
+    for (const key of keys) {
+      snap[key] = el.dataset[key];
+    }
+    return snap;
+  }
+  function datasetKeyChanged(before, el, key) {
+    if (before === void 0) return true;
+    return before[key] !== el.dataset[key];
+  }
+  function anyDatasetKeyChanged(before, el, keys) {
+    if (before === void 0) return true;
+    return keys.some((key) => datasetKeyChanged(before, el, key));
+  }
+  var init_chunk_TKOH2OAC = __esm({
+    "../priv/static/chunks/chunk-TKOH2OAC.mjs"() {
+      "use strict";
+    }
+  });
+
+  // ../priv/static/chunks/chunk-BGER3KYP.mjs
   function fractionDigitsForStep(step) {
     var _a4;
     if (!Number.isFinite(step) || step === Math.trunc(step)) {
@@ -3136,8 +3200,11 @@ var Corex = (() => {
   function readStringControlledZagProps(el, valueKey, defaultKey) {
     return mountStringBinding(el, valueKey, defaultKey);
   }
-  function readStringControlledZagUpdate(el, valueKey, _defaultKey) {
+  function readStringControlledZagUpdate(el, valueKey, _defaultKey, before) {
     if (!isZagValueControlled(el)) {
+      return {};
+    }
+    if (!datasetKeyChanged(before, el, valueKey)) {
       return {};
     }
     return { value: z(getString(el, valueKey)) };
@@ -3165,8 +3232,11 @@ var Corex = (() => {
     if (!raw) return [];
     return raw.split("\n").map((line) => line.trim()).filter(Boolean);
   }
-  function readBooleanControlledZagUpdate(el, openKey, _defaultOpenKey) {
+  function readBooleanControlledZagUpdate(el, openKey, _defaultOpenKey, before) {
     if (!getBoolean(el, "controlled")) {
+      return {};
+    }
+    if (!datasetKeyChanged(before, el, openKey)) {
       return {};
     }
     return { open: getBoolean(el, openKey) };
@@ -3178,16 +3248,14 @@ var Corex = (() => {
     var _a4, _b;
     return (_b = (_a4 = getJsonStringList(el, datasetKey)) != null ? _a4 : getStringList(el, datasetKey)) != null ? _b : [];
   }
-  function readUpdatedServerStringList(el, lastServerValue) {
-    var _a4;
+  function readUpdatedServerStringList(el, before) {
     if (!isZagValueControlled(el)) {
       return {};
     }
-    const raw = (_a4 = getString(el, "value")) != null ? _a4 : "";
-    if (raw === lastServerValue) {
+    if (!datasetKeyChanged(before, el, "value")) {
       return {};
     }
-    return { value: readDatasetStringList(el, "value"), nextServerValue: raw };
+    return { value: readDatasetStringList(el, "value") };
   }
   function mountStringListBinding(el) {
     if (getBoolean(el, "controlled")) {
@@ -3195,15 +3263,14 @@ var Corex = (() => {
     }
     return { defaultValue: readDatasetStringList(el, "defaultValue") };
   }
-  function readUpdatedServerString(el, lastServerValue) {
+  function readUpdatedServerString(el, before) {
     if (!isZagValueControlled(el)) {
       return {};
     }
-    const raw = getString(el, "value");
-    if (raw === lastServerValue) {
+    if (!datasetKeyChanged(before, el, "value")) {
       return {};
     }
-    return { value: z(raw) };
+    return { value: z(getString(el, "value")) };
   }
   function mountStringBinding(el, valueKey, defaultKey) {
     if (getBoolean(el, "controlled")) {
@@ -3214,8 +3281,11 @@ var Corex = (() => {
   function isZagCheckedControlled(el) {
     return getBoolean(el, "controlled");
   }
-  function readUpdatedServerChecked(el) {
+  function readUpdatedServerChecked(el, before) {
     if (!isZagCheckedControlled(el)) {
+      return {};
+    }
+    if (!datasetKeyChanged(before, el, "checked")) {
       return {};
     }
     return { checked: getCheckedState(el, "checked") };
@@ -3246,7 +3316,7 @@ var Corex = (() => {
     var _a4;
     return (_a4 = getNumber(el, "step")) != null ? _a4 : 1;
   }
-  function readUpdatedServerNumber(el, lastServerValue) {
+  function readUpdatedServerNumber(el, before) {
     var _a4;
     const step = numberInputStep(el);
     const base = { step };
@@ -3254,16 +3324,15 @@ var Corex = (() => {
     if (!sync) {
       return base;
     }
+    if (!anyDatasetKeyChanged(before, el, ["value", "defaultValue"])) {
+      return base;
+    }
     const raw = (_a4 = getString(el, "value")) != null ? _a4 : getBoolean(el, "formField") ? getString(el, "defaultValue") : void 0;
     if (raw === void 0 || raw === "") {
       return base;
     }
-    if (raw === lastServerValue) {
-      return base;
-    }
     return __spreadProps(__spreadValues({}, base), {
-      value: formatDisplayValue(raw, step),
-      nextServerValue: raw
+      value: formatDisplayValue(raw, step)
     });
   }
   function mountNumberBinding(el) {
@@ -3277,15 +3346,14 @@ var Corex = (() => {
     const defaultValue = rawDefault !== void 0 && rawDefault !== "" ? formatDisplayValue(rawDefault, step) : void 0;
     return { defaultValue, step };
   }
-  function readStringListControlledZagUpdate(el, _valueKey, _defaultValueKey, lastServerValue) {
-    const patch = readUpdatedServerStringList(el, lastServerValue);
-    if (!("value" in patch)) {
+  function readStringListControlledZagUpdate(el, _valueKey, _defaultValueKey, before) {
+    return readUpdatedServerStringList(el, before);
+  }
+  function readPressedControlledZagUpdate(el, before) {
+    if (!getBoolean(el, "controlled")) {
       return {};
     }
-    return { value: patch.value };
-  }
-  function readPressedControlledZagUpdate(el) {
-    if (!getBoolean(el, "controlled")) {
+    if (!datasetKeyChanged(before, el, "pressed")) {
       return {};
     }
     return { pressed: getBoolean(el, "pressed") };
@@ -3304,10 +3372,11 @@ var Corex = (() => {
     return (_a4 = getBoolean(el, "controlled") ? getStringList(el, valueKey) : getStringList(el, defaultValueKey)) != null ? _a4 : [];
   }
   var MAX_FRACTION_DIGITS, z;
-  var init_chunk_XL4XUS2C = __esm({
-    "../priv/static/chunks/chunk-XL4XUS2C.mjs"() {
+  var init_chunk_BGER3KYP = __esm({
+    "../priv/static/chunks/chunk-BGER3KYP.mjs"() {
       "use strict";
-      init_chunk_YGZLYEUJ();
+      init_chunk_TKOH2OAC();
+      init_chunk_6AOEC32Q();
       MAX_FRACTION_DIGITS = 10;
       z = (s2) => s2 === void 0 ? null : s2;
     }
@@ -3649,11 +3718,12 @@ var Corex = (() => {
     "../priv/static/accordion.mjs"() {
       "use strict";
       init_chunk_JDGMEOQK();
-      init_chunk_Z5W52KDP();
-      init_chunk_XL4XUS2C();
+      init_chunk_4AOGROPJ();
+      init_chunk_BGER3KYP();
+      init_chunk_TKOH2OAC();
       init_chunk_77HPO22C();
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
       parts = anatomy.build();
       getRootId = (ctx) => {
@@ -4046,7 +4116,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-YFTSYDFS.mjs
+  // ../priv/static/chunks/chunk-DH47S3VU.mjs
   function hiddenInputPropsWithoutValue(props) {
     const rest = __spreadValues({}, props);
     delete rest.defaultValue;
@@ -4060,10 +4130,10 @@ var Corex = (() => {
     inputEl.value = value;
     syncInputFormAssociation(inputEl, hostEl);
   }
-  var init_chunk_YFTSYDFS = __esm({
-    "../priv/static/chunks/chunk-YFTSYDFS.mjs"() {
+  var init_chunk_DH47S3VU = __esm({
+    "../priv/static/chunks/chunk-DH47S3VU.mjs"() {
       "use strict";
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
     }
   });
 
@@ -4449,13 +4519,14 @@ var Corex = (() => {
   var init_angle_slider = __esm({
     "../priv/static/angle-slider.mjs"() {
       "use strict";
-      init_chunk_YFTSYDFS();
+      init_chunk_DH47S3VU();
       init_chunk_QB2YSZP6();
       init_chunk_PE34YET2();
-      init_chunk_XL4XUS2C();
+      init_chunk_BGER3KYP();
+      init_chunk_TKOH2OAC();
       init_chunk_77HPO22C();
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       anatomy2 = createAnatomy("angle-slider").parts(
         "root",
         "label",
@@ -4882,7 +4953,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_77HPO22C();
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       anatomy3 = createAnatomy("avatar").parts("root", "image", "fallback");
       parts3 = anatomy3.build();
       getRootId3 = (ctx) => {
@@ -5565,7 +5636,7 @@ var Corex = (() => {
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       anatomy4 = createAnatomy("carousel").parts(
         "root",
         "itemGroup",
@@ -6319,7 +6390,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-YWUM4WUV.mjs
+  // ../priv/static/chunks/chunk-MM3X6GKK.mjs
   function hiddenInputPropsWithoutChecked(props) {
     const rest = __spreadValues({}, props);
     delete rest.defaultChecked;
@@ -6331,14 +6402,14 @@ var Corex = (() => {
     inputEl.checked = checked;
     syncInputFormAssociation(inputEl, hostEl);
   }
-  var init_chunk_YWUM4WUV = __esm({
-    "../priv/static/chunks/chunk-YWUM4WUV.mjs"() {
+  var init_chunk_MM3X6GKK = __esm({
+    "../priv/static/chunks/chunk-MM3X6GKK.mjs"() {
       "use strict";
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
     }
   });
 
-  // ../priv/static/chunks/chunk-JF64R7HW.mjs
+  // ../priv/static/chunks/chunk-YUSIPE4B.mjs
   function isValidKey(e2) {
     return !(e2.metaKey || !isMac() && e2.altKey || e2.ctrlKey || e2.key === "Control" || e2.key === "Shift" || e2.key === "Meta");
   }
@@ -6457,10 +6528,10 @@ var Corex = (() => {
     };
   }
   var nonTextInputTypes, currentModality, changeHandlers, listenerMap, hasEventBeforeFocus, hasBlurredWindowRecently, ignoreFocusEvent, FOCUS_VISIBLE_INPUT_KEYS, tearDownWindowFocusTracking;
-  var init_chunk_JF64R7HW = __esm({
-    "../priv/static/chunks/chunk-JF64R7HW.mjs"() {
+  var init_chunk_YUSIPE4B = __esm({
+    "../priv/static/chunks/chunk-YUSIPE4B.mjs"() {
       "use strict";
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       nonTextInputTypes = /* @__PURE__ */ new Set(["checkbox", "radio", "range", "color", "file", "image", "button", "submit", "reset"]);
       currentModality = null;
       changeHandlers = /* @__PURE__ */ new Set();
@@ -6630,12 +6701,13 @@ var Corex = (() => {
   var init_checkbox = __esm({
     "../priv/static/checkbox.mjs"() {
       "use strict";
-      init_chunk_YWUM4WUV();
-      init_chunk_JF64R7HW();
-      init_chunk_XL4XUS2C();
+      init_chunk_MM3X6GKK();
+      init_chunk_YUSIPE4B();
+      init_chunk_BGER3KYP();
+      init_chunk_TKOH2OAC();
       init_chunk_77HPO22C();
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       anatomy5 = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
       parts5 = anatomy5.build();
       getRootId5 = (ctx) => {
@@ -6865,11 +6937,9 @@ var Corex = (() => {
                 '[data-scope="checkbox"][data-part="hidden-input"]'
               );
               if (input) {
-                queueMicrotask(() => {
-                  input.checked = details.checked === true;
-                  input.dispatchEvent(new Event("input", { bubbles: true }));
-                  input.dispatchEvent(new Event("change", { bubbles: true }));
-                });
+                input.checked = details.checked === true;
+                input.dispatchEvent(new Event("input", { bubbles: true }));
+                input.dispatchEvent(new Event("change", { bubbles: true }));
               }
             }
           }));
@@ -6888,6 +6958,13 @@ var Corex = (() => {
           this.handleRegistry = registry;
           registry.add("checkbox_set_checked", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
+            const checked = readPayloadChecked(payload);
+            if (typeof checked === "boolean") zagCheckbox.api.setChecked(checked);
+          });
+          registry.add("checkbox_set_checked_many", (payload) => {
+            if (!payload || typeof payload !== "object") return;
+            const ids = payload.ids;
+            if (!Array.isArray(ids) || !ids.includes(el.id)) return;
             const checked = readPayloadChecked(payload);
             if (typeof checked === "boolean") zagCheckbox.api.setChecked(checked);
           });
@@ -6936,21 +7013,29 @@ var Corex = (() => {
             );
           });
         },
+        beforeUpdate() {
+          this.beforeAttrs = snapshotDataset(this.el, ["checked"]);
+        },
         updated() {
           const zagCheckbox = this.checkbox;
           if (!zagCheckbox) return;
-          zagCheckbox.updateProps(__spreadProps(__spreadValues({
-            id: this.el.id
-          }, readUpdatedServerChecked(this.el)), {
-            disabled: getBoolean(this.el, "disabled"),
-            name: getString(this.el, "name"),
-            form: getString(this.el, "form"),
-            value: getString(this.el, "value"),
-            dir: getDir(this.el),
-            invalid: getBoolean(this.el, "invalid"),
-            required: getBoolean(this.el, "required"),
-            readOnly: getBoolean(this.el, "readonly")
-          }));
+          try {
+            const checkedPatch = readUpdatedServerChecked(this.el, this.beforeAttrs);
+            zagCheckbox.updateProps(__spreadProps(__spreadValues({
+              id: this.el.id
+            }, "checked" in checkedPatch ? { checked: checkedPatch.checked } : {}), {
+              disabled: getBoolean(this.el, "disabled"),
+              name: getString(this.el, "name"),
+              form: getString(this.el, "form"),
+              value: getString(this.el, "value"),
+              dir: getDir(this.el),
+              invalid: getBoolean(this.el, "invalid"),
+              required: getBoolean(this.el, "required"),
+              readOnly: getBoolean(this.el, "readonly")
+            }));
+          } finally {
+            this.beforeAttrs = void 0;
+          }
         },
         destroyed() {
           var _a4, _b, _c;
@@ -6962,7 +7047,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-5HFWMYJG.mjs
+  // ../priv/static/chunks/chunk-6MIECCPA.mjs
   function setRafInterval(fn, intervalMs) {
     const timer = new Timer(({ now, deltaMs }) => {
       if (deltaMs >= intervalMs) {
@@ -6985,10 +7070,10 @@ var Corex = (() => {
     return () => timer.stop();
   }
   var currentTime, _tick, Timer;
-  var init_chunk_5HFWMYJG = __esm({
-    "../priv/static/chunks/chunk-5HFWMYJG.mjs"() {
+  var init_chunk_6MIECCPA = __esm({
+    "../priv/static/chunks/chunk-6MIECCPA.mjs"() {
       "use strict";
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       currentTime = () => performance.now();
       Timer = class {
         constructor(onTick) {
@@ -7166,10 +7251,10 @@ var Corex = (() => {
   var init_clipboard = __esm({
     "../priv/static/clipboard.mjs"() {
       "use strict";
-      init_chunk_5HFWMYJG();
+      init_chunk_6MIECCPA();
       init_chunk_77HPO22C();
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       anatomy6 = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");
       parts6 = anatomy6.build();
       getRootId6 = (ctx) => {
@@ -7493,10 +7578,11 @@ var Corex = (() => {
     "../priv/static/collapsible.mjs"() {
       "use strict";
       init_chunk_PE34YET2();
-      init_chunk_XL4XUS2C();
+      init_chunk_BGER3KYP();
+      init_chunk_TKOH2OAC();
       init_chunk_77HPO22C();
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       anatomy7 = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
       parts7 = anatomy7.build();
       getRootId7 = (ctx) => {
@@ -7858,14 +7944,27 @@ var Corex = (() => {
             emitOpen(parseRespondTo(payload));
           });
         },
+        beforeUpdate() {
+          this.beforeAttrs = snapshotDataset(this.el, ["open"]);
+        },
         updated() {
           var _a4;
-          (_a4 = this.collapsible) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
-            id: this.el.id
-          }, readBooleanControlledZagUpdate(this.el, "open", "defaultOpen")), {
-            disabled: getBoolean(this.el, "disabled"),
-            dir: getDir(this.el)
-          }));
+          try {
+            const openPatch = readBooleanControlledZagUpdate(
+              this.el,
+              "open",
+              "defaultOpen",
+              this.beforeAttrs
+            );
+            (_a4 = this.collapsible) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
+              id: this.el.id
+            }, openPatch), {
+              disabled: getBoolean(this.el, "disabled"),
+              dir: getDir(this.el)
+            }));
+          } finally {
+            this.beforeAttrs = void 0;
+          }
         },
         destroyed() {
           var _a4, _b, _c;
@@ -7877,7 +7976,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-YJPGDO7P.mjs
+  // ../priv/static/chunks/chunk-OZ2OVCG5.mjs
   function hasArraySubmitName(el) {
     return getString(el, "submitName") !== void 0;
   }
@@ -7890,10 +7989,10 @@ var Corex = (() => {
       node.removeAttribute("form");
     }
   }
-  var init_chunk_YJPGDO7P = __esm({
-    "../priv/static/chunks/chunk-YJPGDO7P.mjs"() {
+  var init_chunk_OZ2OVCG5 = __esm({
+    "../priv/static/chunks/chunk-OZ2OVCG5.mjs"() {
       "use strict";
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
     }
   });
 
@@ -7950,7 +8049,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-DVA7SQMW.mjs
+  // ../priv/static/chunks/chunk-MHRYIVD2.mjs
   function getPlacementDetails(placement) {
     const [side, align] = placement.split("-");
     return { side, align, hasAlign: align != null };
@@ -9314,10 +9413,10 @@ var Corex = (() => {
     };
   }
   var sides, min2, max2, round2, floor2, createCoords, oppositeSideMap, lrPlacement, rlPlacement, tbPlacement, btPlacement, MAX_RESET_COUNT, computePosition, arrow, flip, hide, originSides, offset, shift, limitShift, size, willChangeRe, containRe, isNotNone, isWebKitValue, noOffsets, SCROLLBAR_MAX, getElementRects, platform, offset2, shift2, flip2, size2, hide2, arrow2, limitShift2, computePosition2, toVar, cssVars, getSideAxis2, rectMiddleware, shiftArrowMiddleware, defaultOptions, floatingStyleProps, arrowStyleProps, ARROW_FLOATING_STYLE;
-  var init_chunk_DVA7SQMW = __esm({
-    "../priv/static/chunks/chunk-DVA7SQMW.mjs"() {
+  var init_chunk_MHRYIVD2 = __esm({
+    "../priv/static/chunks/chunk-MHRYIVD2.mjs"() {
       "use strict";
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       sides = ["top", "right", "bottom", "left"];
       min2 = Math.min;
       max2 = Math.max;
@@ -10027,7 +10126,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-26XTEIHY.mjs
+  // ../priv/static/chunks/chunk-ZSA4KI2Y.mjs
   function getWindowFrames(win) {
     const frames = {
       each(cb) {
@@ -10252,17 +10351,17 @@ var Corex = (() => {
     return el.dispatchEvent(event);
   }
   var POINTER_OUTSIDE_EVENT, FOCUS_OUTSIDE_EVENT, isPointerEvent;
-  var init_chunk_26XTEIHY = __esm({
-    "../priv/static/chunks/chunk-26XTEIHY.mjs"() {
+  var init_chunk_ZSA4KI2Y = __esm({
+    "../priv/static/chunks/chunk-ZSA4KI2Y.mjs"() {
       "use strict";
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       POINTER_OUTSIDE_EVENT = "pointerdown.outside";
       FOCUS_OUTSIDE_EVENT = "focus.outside";
       isPointerEvent = (event) => "clientY" in event;
     }
   });
 
-  // ../priv/static/chunks/chunk-MOSXJRWI.mjs
+  // ../priv/static/chunks/chunk-CBUVYVIR.mjs
   function trackEscapeKeydown(node, fn) {
     const handleKeyDown = (event) => {
       if (event.key !== "Escape") return;
@@ -10421,11 +10520,11 @@ var Corex = (() => {
     };
   }
   var LAYER_REQUEST_DISMISS_EVENT, layerStack, originalBodyPointerEvents;
-  var init_chunk_MOSXJRWI = __esm({
-    "../priv/static/chunks/chunk-MOSXJRWI.mjs"() {
+  var init_chunk_CBUVYVIR = __esm({
+    "../priv/static/chunks/chunk-CBUVYVIR.mjs"() {
       "use strict";
-      init_chunk_26XTEIHY();
-      init_chunk_YGZLYEUJ();
+      init_chunk_ZSA4KI2Y();
+      init_chunk_6AOEC32Q();
       LAYER_REQUEST_DISMISS_EVENT = "layer:request-dismiss";
       layerStack = {
         layers: [],
@@ -10549,7 +10648,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-ASQD2R2U.mjs
+  // ../priv/static/chunks/chunk-DOKFN6DA.mjs
   function reapplyLiveViewValueInputUsage(input) {
     const p2 = input;
     if (!p2.phxPrivate) p2.phxPrivate = {};
@@ -10557,10 +10656,17 @@ var Corex = (() => {
   }
   function notifyPhoenixFormChange(input, value, options = {}) {
     var _a4;
-    if (String(input.value) === String(value)) {
+    const next2 = String(value);
+    const unchanged = String(input.value) === next2;
+    if (!unchanged) {
+      input.value = next2;
+    }
+    if (input.getAttribute("value") !== next2) {
+      input.setAttribute("value", next2);
+    }
+    if (unchanged && options.force !== true) {
       return;
     }
-    input.value = value;
     (_a4 = options.onTouched) == null ? void 0 : _a4.call(options);
     if (options.markUsed === false) {
       return;
@@ -10571,20 +10677,18 @@ var Corex = (() => {
       input.dispatchEvent(new Event("change", { bubbles: true }));
     }
   }
-  function queueLiveViewFormInputSync(input, getValue, onTouched) {
-    queueMicrotask(() => {
-      notifyPhoenixFormChange(input, getValue(), { onTouched });
-    });
+  function syncLiveViewFormInput(input, getValue, onTouched) {
+    notifyPhoenixFormChange(input, getValue(), { onTouched });
   }
   var PHX_HAS_FOCUSED;
-  var init_chunk_ASQD2R2U = __esm({
-    "../priv/static/chunks/chunk-ASQD2R2U.mjs"() {
+  var init_chunk_DOKFN6DA = __esm({
+    "../priv/static/chunks/chunk-DOKFN6DA.mjs"() {
       "use strict";
       PHX_HAS_FOCUSED = "phx-has-focused";
     }
   });
 
-  // ../priv/static/chunks/chunk-IKLCQZIF.mjs
+  // ../priv/static/chunks/chunk-3BEM4I52.mjs
   function isFormFieldUsed(el, userTouched = false) {
     return userTouched || getBoolean(el, "fieldUsed") === true;
   }
@@ -10593,9 +10697,13 @@ var Corex = (() => {
     while (out.length < fixedLength) out.push("");
     return out.slice(0, fixedLength);
   }
-  function createArrayInput(scope, submitName, hostEl, value, empty) {
+  function arrayInputId(scope, hostId, index) {
+    return index === "empty" ? `${scope}:${hostId}:array-input-empty` : `${scope}:${hostId}:array-input-${index}`;
+  }
+  function createArrayInput(scope, submitName, hostEl, value, empty, index) {
     const input = document.createElement("input");
     input.type = "hidden";
+    input.id = arrayInputId(scope, hostEl.id, index);
     input.setAttribute("data-scope", scope);
     input.setAttribute("data-part", "array-input");
     if (empty) input.setAttribute("data-empty", "true");
@@ -10613,7 +10721,14 @@ var Corex = (() => {
     );
     if (values.length === 0) {
       existing.forEach((node) => node.remove());
-      const empty = createArrayInput(scope, fieldTouched ? submitName : void 0, hostEl, "", true);
+      const empty = createArrayInput(
+        scope,
+        fieldTouched ? submitName : void 0,
+        hostEl,
+        "",
+        true,
+        "empty"
+      );
       container.appendChild(empty);
       return empty;
     }
@@ -10621,7 +10736,7 @@ var Corex = (() => {
     emptyNodes.forEach((n2) => n2.remove());
     let valueNodes = existing.filter((n2) => !n2.hasAttribute("data-empty"));
     while (valueNodes.length < values.length) {
-      const input = createArrayInput(scope, submitName, hostEl, "", false);
+      const input = createArrayInput(scope, submitName, hostEl, "", false, valueNodes.length);
       container.appendChild(input);
       valueNodes = Array.from(
         container.querySelectorAll(
@@ -10636,6 +10751,7 @@ var Corex = (() => {
     }
     valueNodes.forEach((input, index) => {
       var _a5;
+      input.id = arrayInputId(scope, hostEl.id, index);
       input.value = (_a5 = values[index]) != null ? _a5 : "";
     });
     return (_a4 = valueNodes[valueNodes.length - 1]) != null ? _a4 : null;
@@ -10648,18 +10764,10 @@ var Corex = (() => {
     const fixedLength = options.fixedLength;
     const normalized = fixedLength !== void 0 ? padValues(values, fixedLength) : values.map((v2) => String(v2));
     const fieldTouched = isFormFieldUsed(el, options.fieldTouched === true);
-    let container = el.querySelector(
+    const container = el.querySelector(
       `[data-scope="${scope}"][data-part="array-inputs"]`
     );
-    if (!container) {
-      const root = (_c = el.querySelector(`[data-scope="${scope}"][data-part="root"]`)) != null ? _c : el;
-      container = document.createElement("div");
-      container.setAttribute("data-scope", scope);
-      container.setAttribute("data-part", "array-inputs");
-      container.setAttribute("phx-update", "ignore");
-      container.id = `${scope}:${el.id}:array-inputs`;
-      root.prepend(container);
-    }
+    if (!container) return;
     const notifyInput = syncArrayInputsInPlace(
       container,
       scope,
@@ -10673,12 +10781,12 @@ var Corex = (() => {
         `[data-scope="${scope}"][data-part="array-input"][name="${CSS.escape(submitName)}"]`
       ).forEach((input) => reapplyLiveViewValueInputUsage(input));
     }
-    const notifyLiveView = (_d = options.notifyLiveView) != null ? _d : false;
+    const notifyLiveView = (_c = options.notifyLiveView) != null ? _c : false;
     if (!notifyLiveView || !notifyInput) return;
-    queueMicrotask(() => {
-      var _a5;
-      (_a5 = options.onTouched) == null ? void 0 : _a5.call(options);
-      notifyPhoenixFormChange(notifyInput, notifyInput.value, { onTouched: void 0 });
+    (_d = options.onTouched) == null ? void 0 : _d.call(options);
+    notifyPhoenixFormChange(notifyInput, notifyInput.value, {
+      onTouched: void 0,
+      force: true
     });
   }
   function bindArrayFieldSubmitIntent(hostEl, onPrepareSubmit) {
@@ -10691,15 +10799,36 @@ var Corex = (() => {
     form.addEventListener("submit", handler, { capture: true });
     return () => form.removeEventListener("submit", handler, { capture: true });
   }
-  var init_chunk_IKLCQZIF = __esm({
-    "../priv/static/chunks/chunk-IKLCQZIF.mjs"() {
+  var init_chunk_3BEM4I52 = __esm({
+    "../priv/static/chunks/chunk-3BEM4I52.mjs"() {
       "use strict";
-      init_chunk_ASQD2R2U();
-      init_chunk_YGZLYEUJ();
+      init_chunk_DOKFN6DA();
+      init_chunk_6AOEC32Q();
     }
   });
 
-  // ../priv/static/chunks/chunk-QU36267Q.mjs
+  // ../priv/static/chunks/chunk-2H6YHTHG.mjs
+  function markUsed(input) {
+    reapplyLiveViewValueInputUsage(input);
+  }
+  function setScalarValue(input, value, options = {}) {
+    notifyPhoenixFormChange(input, value, options);
+  }
+  function setArrayValues(el, values, options = {}) {
+    syncArrayHiddenInputsForPhoenix(el, values, options);
+  }
+  function syncFormInput(input, getValue, onTouched) {
+    syncLiveViewFormInput(input, getValue, onTouched);
+  }
+  var init_chunk_2H6YHTHG = __esm({
+    "../priv/static/chunks/chunk-2H6YHTHG.mjs"() {
+      "use strict";
+      init_chunk_3BEM4I52();
+      init_chunk_DOKFN6DA();
+    }
+  });
+
+  // ../priv/static/chunks/chunk-C4KEB3WL.mjs
   function readFlipAttr(el) {
     const raw = el.dataset.positionFlip;
     if (raw == null) return void 0;
@@ -10744,14 +10873,14 @@ var Corex = (() => {
     if (hideWhenDetached !== void 0) options.hideWhenDetached = hideWhenDetached;
     return Object.keys(options).length > 0 ? options : void 0;
   }
-  var init_chunk_QU36267Q = __esm({
-    "../priv/static/chunks/chunk-QU36267Q.mjs"() {
+  var init_chunk_C4KEB3WL = __esm({
+    "../priv/static/chunks/chunk-C4KEB3WL.mjs"() {
       "use strict";
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
     }
   });
 
-  // ../priv/static/chunks/chunk-4E7EICYJ.mjs
+  // ../priv/static/chunks/chunk-SGRHPBNS.mjs
   function insert(items, index, ...values) {
     return [...items.slice(0, index), ...values, ...items.slice(index)];
   }
@@ -11151,10 +11280,10 @@ var Corex = (() => {
     }
   }
   var __defProp5, __defNormalProp5, __publicField5, fallback, ListCollection, match3, GridCollection, Selection, TreeCollection, fallbackMethods;
-  var init_chunk_4E7EICYJ = __esm({
-    "../priv/static/chunks/chunk-4E7EICYJ.mjs"() {
+  var init_chunk_SGRHPBNS = __esm({
+    "../priv/static/chunks/chunk-SGRHPBNS.mjs"() {
       "use strict";
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       __defProp5 = Object.defineProperty;
       __defNormalProp5 = (obj, key, value) => key in obj ? __defProp5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
       __publicField5 = (obj, key, value) => __defNormalProp5(obj, typeof key !== "symbol" ? key + "" : key, value);
@@ -12151,7 +12280,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-AIFPYOT7.mjs
+  // ../priv/static/chunks/chunk-DDT7N35T.mjs
   function connect8(service, normalize) {
     const { context, prop, scope, computed, send, refs } = service;
     const disabled = prop("disabled");
@@ -12568,12 +12697,12 @@ var Corex = (() => {
     return collection(zagListCollectionConfig(items, hasGroups));
   }
   var anatomy8, parts8, collection, gridCollection, getRootId8, getContentId2, getLabelId4, getItemId3, getItemGroupId2, getItemGroupLabelId, getContentEl2, getItemEl, guards, createMachine2, or, machine8, diff2;
-  var init_chunk_AIFPYOT7 = __esm({
-    "../priv/static/chunks/chunk-AIFPYOT7.mjs"() {
+  var init_chunk_DDT7N35T = __esm({
+    "../priv/static/chunks/chunk-DDT7N35T.mjs"() {
       "use strict";
-      init_chunk_4E7EICYJ();
-      init_chunk_JF64R7HW();
-      init_chunk_YGZLYEUJ();
+      init_chunk_SGRHPBNS();
+      init_chunk_YUSIPE4B();
+      init_chunk_6AOEC32Q();
       anatomy8 = createAnatomy("listbox").parts(
         "label",
         "input",
@@ -13520,7 +13649,7 @@ var Corex = (() => {
   function syncComboboxHiddenInputForPhoenix(el, values, onTouched) {
     const submitName = getString(el, "submitName");
     if (submitName && getBoolean(el, "multiple")) {
-      syncArrayHiddenInputsForPhoenix(el, values, {
+      setArrayValues(el, values, {
         onTouched,
         scope: "combobox",
         submitName,
@@ -13532,13 +13661,13 @@ var Corex = (() => {
       '[data-scope="combobox"][data-part="hidden-input"]'
     );
     if (!hidden) return;
-    queueLiveViewFormInputSync(hidden, () => formatComboboxHiddenValue(el, values), onTouched);
+    syncFormInput(hidden, () => formatComboboxHiddenValue(el, values), onTouched);
   }
   function reapplyComboboxHiddenInputUsage(el) {
     const hidden = el.querySelector(
       '[data-scope="combobox"][data-part="hidden-input"]'
     );
-    if (hidden) reapplyLiveViewValueInputUsage(hidden);
+    if (hidden) markUsed(hidden);
   }
   function selectedItemLabel(items) {
     const first2 = items == null ? void 0 : items[0];
@@ -13690,22 +13819,24 @@ var Corex = (() => {
   var init_combobox = __esm({
     "../priv/static/combobox.mjs"() {
       "use strict";
-      init_chunk_YJPGDO7P();
+      init_chunk_OZ2OVCG5();
       init_chunk_7BZGUIUZ();
-      init_chunk_DVA7SQMW();
-      init_chunk_MOSXJRWI();
-      init_chunk_26XTEIHY();
-      init_chunk_IKLCQZIF();
-      init_chunk_ASQD2R2U();
-      init_chunk_QU36267Q();
-      init_chunk_AIFPYOT7();
-      init_chunk_4E7EICYJ();
+      init_chunk_MHRYIVD2();
+      init_chunk_CBUVYVIR();
+      init_chunk_2H6YHTHG();
+      init_chunk_ZSA4KI2Y();
+      init_chunk_3BEM4I52();
+      init_chunk_DOKFN6DA();
+      init_chunk_C4KEB3WL();
+      init_chunk_DDT7N35T();
+      init_chunk_SGRHPBNS();
       init_chunk_HZLPIQBD();
-      init_chunk_JF64R7HW();
-      init_chunk_XL4XUS2C();
+      init_chunk_YUSIPE4B();
+      init_chunk_BGER3KYP();
+      init_chunk_TKOH2OAC();
       init_chunk_77HPO22C();
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       anatomy9 = createAnatomy("combobox").parts(
         "root",
         "clearTrigger",
@@ -15113,14 +15244,13 @@ var Corex = (() => {
           });
         }
         hiddenInputValue() {
-          var _a4, _b;
+          var _a4, _b, _c;
           let values = ((_a4 = this.api.value) != null ? _a4 : []).map(String);
           if (values.length === 0) {
-            const fallback2 = this.el.dataset.defaultValue;
-            if (fallback2) values = fallback2.split(",").filter(Boolean);
+            values = (_b = getStringList(this.el, "defaultValue")) != null ? _b : [];
           }
           const multiple = this.el.hasAttribute("data-multiple");
-          return values.length === 0 ? "" : multiple ? values.join(",") : (_b = values[0]) != null ? _b : "";
+          return values.length === 0 ? "" : multiple ? values.join(",") : (_c = values[0]) != null ? _c : "";
         }
         render() {
           const root = this.el.querySelector('[data-scope="combobox"][data-part="root"]');
@@ -15174,7 +15304,7 @@ var Corex = (() => {
           const defaultValues = (_b = getStringList(el, "defaultValue")) != null ? _b : [];
           if (defaultValues.length > 0) {
             hook.fieldTouched = true;
-            queueMicrotask(() => reapplyComboboxHiddenInputUsage(el));
+            reapplyComboboxHiddenInputUsage(el);
           }
           let comboboxRef;
           const props = __spreadValues(__spreadValues({}, buildComboboxProps(
@@ -15214,8 +15344,10 @@ var Corex = (() => {
           var _a4;
           if (!this.combobox) return;
           const newItemsJson = (_a4 = this.el.getAttribute("data-items")) != null ? _a4 : "[]";
+          let itemsChanged = false;
           if (newItemsJson !== this.lastItemsJson) {
             this.lastItemsJson = newItemsJson;
+            itemsChanged = true;
             const newCollection = safeParseJson(newItemsJson, []);
             const hasGroups = newCollection.some((item) => Boolean(item.group));
             this.combobox.hasGroups = hasGroups;
@@ -15236,8 +15368,10 @@ var Corex = (() => {
           if (this.combobox.api.open) {
             this.combobox.api.reposition();
           }
-          this.combobox.renderItems();
-          this.combobox.applyItemProps();
+          if (itemsChanged) {
+            this.combobox.renderItems();
+            this.combobox.applyItemProps();
+          }
         },
         destroyed() {
           var _a4, _b, _c;
@@ -16054,15 +16188,16 @@ var Corex = (() => {
   var init_color_picker = __esm({
     "../priv/static/color-picker.mjs"() {
       "use strict";
-      init_chunk_YFTSYDFS();
+      init_chunk_DH47S3VU();
       init_chunk_PE34YET2();
-      init_chunk_DVA7SQMW();
-      init_chunk_MOSXJRWI();
-      init_chunk_26XTEIHY();
-      init_chunk_QU36267Q();
-      init_chunk_XL4XUS2C();
+      init_chunk_MHRYIVD2();
+      init_chunk_CBUVYVIR();
+      init_chunk_ZSA4KI2Y();
+      init_chunk_C4KEB3WL();
+      init_chunk_BGER3KYP();
+      init_chunk_TKOH2OAC();
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       anatomy10 = createAnatomy("color-picker", [
         "root",
         "label",
@@ -17728,7 +17863,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-KCVHCORZ.mjs
+  // ../priv/static/chunks/chunk-NB7M3GJN.mjs
   function memo(getDeps, fn, opts) {
     let deps = [];
     let result;
@@ -17743,10 +17878,10 @@ var Corex = (() => {
       return result;
     };
   }
-  var init_chunk_KCVHCORZ = __esm({
-    "../priv/static/chunks/chunk-KCVHCORZ.mjs"() {
+  var init_chunk_NB7M3GJN = __esm({
+    "../priv/static/chunks/chunk-NB7M3GJN.mjs"() {
       "use strict";
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
     }
   });
 
@@ -19980,6 +20115,9 @@ var Corex = (() => {
       }
     }
   }
+  function sameStringList(a2, b2) {
+    return a2.length === b2.length && a2.every((v2, i2) => v2 === b2[i2]);
+  }
   function isDateLike(d2) {
     return typeof d2 === "object" && d2 !== null && "year" in d2 && "month" in d2 && "day" in d2 && typeof d2.year === "number" && typeof d2.month === "number" && typeof d2.day === "number";
   }
@@ -20034,13 +20172,10 @@ var Corex = (() => {
       '[data-scope="date-picker"][data-part="value-input"]'
     );
     if (!hiddenInput) return;
-    if (hiddenInput.value !== isoStr) {
-      hiddenInput.value = isoStr;
-    }
     if (notifyForm) {
-      notifyPhoenixFormChange(hiddenInput, isoStr);
+      setScalarValue(hiddenInput, isoStr);
     } else {
-      notifyPhoenixFormChange(hiddenInput, isoStr, { markUsed: false });
+      setScalarValue(hiddenInput, isoStr, { markUsed: false });
     }
   }
   function resolveZagDatePickerTranslations(el) {
@@ -20062,18 +20197,20 @@ var Corex = (() => {
   var init_date_picker = __esm({
     "../priv/static/date-picker.mjs"() {
       "use strict";
-      init_chunk_KCVHCORZ();
+      init_chunk_NB7M3GJN();
       init_chunk_PE34YET2();
       init_chunk_7BZGUIUZ();
-      init_chunk_DVA7SQMW();
-      init_chunk_MOSXJRWI();
-      init_chunk_26XTEIHY();
-      init_chunk_IKLCQZIF();
-      init_chunk_ASQD2R2U();
-      init_chunk_QU36267Q();
-      init_chunk_XL4XUS2C();
+      init_chunk_MHRYIVD2();
+      init_chunk_CBUVYVIR();
+      init_chunk_2H6YHTHG();
+      init_chunk_ZSA4KI2Y();
+      init_chunk_3BEM4I52();
+      init_chunk_DOKFN6DA();
+      init_chunk_C4KEB3WL();
+      init_chunk_BGER3KYP();
+      init_chunk_TKOH2OAC();
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       anatomy11 = createAnatomy("date-picker").parts(
         "clearTrigger",
         "content",
@@ -22101,7 +22238,11 @@ var Corex = (() => {
           );
           const selectionMode = this.api.selectionMode;
           for (let i2 = 0; i2 < inputs.length; i2 += 1) {
-            this.spreadProps(inputs[i2], this.api.getInputProps({ index: i2 }));
+            const inputEl = inputs[i2];
+            this.spreadProps(inputEl, this.api.getInputProps({ index: i2 }));
+            if (inputEl.getAttribute("value") !== inputEl.value) {
+              inputEl.setAttribute("value", inputEl.value);
+            }
           }
           if (selectionMode === "multiple" && inputs.length > 0) {
             const input = inputs[0];
@@ -22203,7 +22344,7 @@ var Corex = (() => {
         mounted() {
           const el = this.el;
           const hook = this;
-          hook.allowFormNotify = false;
+          hook.fieldTouched = false;
           const pushEvent = this.pushEvent.bind(this);
           const liveSocket = this.liveSocket;
           const canPush = () => canPushEvent(this.liveSocket);
@@ -22211,14 +22352,15 @@ var Corex = (() => {
           const max3 = getString(el, "max");
           const parseList = (v2) => v2 ? v2.map((x2) => parse2(x2)) : void 0;
           const parseOne = (v2) => v2 ? parse2(v2) : void 0;
+          const valueBinding = mountStringListBinding(el);
+          const initialIsoList = "value" in valueBinding ? valueBinding.value : valueBinding.defaultValue;
           const datePickerInstance = new DatePicker(el, __spreadProps(__spreadValues(__spreadProps(__spreadValues({
             id: el.id
           }, (() => {
-            const binding = mountStringListBinding(el);
-            if ("value" in binding) {
-              return { value: parseList(binding.value) };
+            if ("value" in valueBinding) {
+              return { value: parseList(valueBinding.value) };
             }
-            return { defaultValue: parseList(binding.defaultValue) };
+            return { defaultValue: parseList(valueBinding.defaultValue) };
           })()), {
             defaultFocusedValue: parseOne(getString(el, "focusedValue")),
             defaultView: getString(el, "defaultView"),
@@ -22245,17 +22387,21 @@ var Corex = (() => {
             positioning: readPositioningOptions(el)
           }), resolveZagDatePickerTranslations(el)), {
             onValueChange: (details) => {
-              const isoList = isoListFromValues(details.value);
-              const submitName = getString(el, "submitName");
-              if (submitName) {
-                syncArrayHiddenInputsForPhoenix(el, isoList, {
+              const isoList2 = isoListFromValues(details.value);
+              const isMountEcho = hook.fieldTouched !== true && sameStringList(isoList2, initialIsoList);
+              if (!isMountEcho) {
+                hook.fieldTouched = true;
+              }
+              const submitName2 = getString(el, "submitName");
+              if (submitName2) {
+                setArrayValues(el, isoList2, {
                   scope: "date-picker",
-                  submitName,
-                  notifyLiveView: hook.allowFormNotify === true
+                  submitName: submitName2,
+                  notifyLiveView: !isMountEcho
                 });
               } else {
-                const isoStr = isoList.length > 0 ? isoList.join(",") : "";
-                syncDatePickerValueInput(el, isoStr, hook.allowFormNotify === true);
+                const isoStr = isoList2.length > 0 ? isoList2.join(",") : "";
+                syncDatePickerValueInput(el, isoStr, !isMountEcho);
               }
               notifyChange({
                 el,
@@ -22263,7 +22409,7 @@ var Corex = (() => {
                 pushEvent,
                 payload: {
                   id: el.id,
-                  value: isoList.length > 0 ? isoList.join(",") : null
+                  value: isoList2.length > 0 ? isoList2.join(",") : null
                 },
                 serverEventName: getString(el, "onValueChange"),
                 clientEventName: getString(el, "onValueChangeClient")
@@ -22311,23 +22457,20 @@ var Corex = (() => {
           }));
           datePickerInstance.init();
           this.datePicker = datePickerInstance;
-          queueMicrotask(() => {
-            const submitName = getString(el, "submitName");
-            const isoList = applyServerIsoToZagIfNeeded(
-              datePickerInstance,
-              resolveIsoListForFormSync(el, datePickerInstance.api.value)
-            );
-            if (submitName) {
-              syncArrayHiddenInputsForPhoenix(el, isoList, {
-                scope: "date-picker",
-                submitName,
-                notifyLiveView: false
-              });
-            } else {
-              syncDatePickerValueInput(el, isoList.length > 0 ? isoList.join(",") : "", false);
-            }
-            hook.allowFormNotify = true;
-          });
+          const submitName = getString(el, "submitName");
+          const isoList = applyServerIsoToZagIfNeeded(
+            datePickerInstance,
+            resolveIsoListForFormSync(el, datePickerInstance.api.value)
+          );
+          if (submitName) {
+            setArrayValues(el, isoList, {
+              scope: "date-picker",
+              submitName,
+              notifyLiveView: false
+            });
+          } else {
+            syncDatePickerValueInput(el, isoList.length > 0 ? isoList.join(",") : "", false);
+          }
           this.handlers = [];
           this.handlers.push(
             this.handleEvent(
@@ -22375,6 +22518,19 @@ var Corex = (() => {
             inline: getBoolean(el, "inline"),
             positioning: readPositioningOptions(el)
           }, resolveZagDatePickerTranslations(el)));
+          if (!zag) return;
+          const submitName = getString(el, "submitName");
+          const isoList = isoListFromValues(zag.api.value);
+          if (submitName) {
+            setArrayValues(el, isoList, {
+              scope: "date-picker",
+              submitName,
+              notifyLiveView: false
+            });
+          } else {
+            syncDatePickerValueInput(el, isoList.length > 0 ? isoList.join(",") : "", false);
+          }
+          zag.render();
         },
         destroyed() {
           var _a4;
@@ -22668,13 +22824,14 @@ var Corex = (() => {
   var init_dialog = __esm({
     "../priv/static/dialog.mjs"() {
       "use strict";
-      init_chunk_Z5W52KDP();
-      init_chunk_MOSXJRWI();
-      init_chunk_26XTEIHY();
-      init_chunk_XL4XUS2C();
+      init_chunk_4AOGROPJ();
+      init_chunk_CBUVYVIR();
+      init_chunk_ZSA4KI2Y();
+      init_chunk_BGER3KYP();
+      init_chunk_TKOH2OAC();
       init_chunk_77HPO22C();
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       anatomy12 = createAnatomy("dialog").parts(
         "trigger",
         "backdrop",
@@ -23797,11 +23954,10 @@ var Corex = (() => {
           }
         },
         destroyed() {
-          var _a4, _b, _c, _d;
-          (_a4 = this.dialog) == null ? void 0 : _a4.updateProps(__spreadValues(__spreadValues({}, readDialogLayoutProps(this.el)), readBooleanControlledZagUpdate(this.el, "open", "defaultOpen")));
-          (_b = this.domRegistry) == null ? void 0 : _b.teardown();
-          (_c = this.handleRegistry) == null ? void 0 : _c.teardown();
-          (_d = this.dialog) == null ? void 0 : _d.destroy();
+          var _a4, _b, _c;
+          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
+          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.dialog) == null ? void 0 : _c.destroy();
         }
       };
     }
@@ -24051,17 +24207,21 @@ var Corex = (() => {
   function syncEditableFormValue(el, value, options = {}) {
     const hidden = formValueInput(el);
     if (hidden) {
-      notifyPhoenixFormChange(hidden, value, options);
+      setScalarValue(hidden, value, options);
       return;
     }
     const inputEl = el.querySelector('[data-scope="editable"][data-part="input"]');
     if (inputEl) {
-      notifyPhoenixFormChange(inputEl, value, options);
+      setScalarValue(inputEl, value, options);
     }
   }
-  function notifyEditableValueChange(el, pushEvent, canPush, value, hook) {
+  function notifyEditableValueChange(el, pushEvent, canPush, value, hook, initialValue) {
+    const isMountEcho = hook.fieldTouched !== true && value === initialValue;
+    if (!isMountEcho) {
+      hook.fieldTouched = true;
+    }
     syncEditableFormValue(el, value, {
-      markUsed: hook.allowFormNotify === true
+      markUsed: !isMountEcho
     });
     notifyChange({
       el,
@@ -24098,12 +24258,15 @@ var Corex = (() => {
   var init_editable = __esm({
     "../priv/static/editable.mjs"() {
       "use strict";
-      init_chunk_26XTEIHY();
-      init_chunk_ASQD2R2U();
-      init_chunk_XL4XUS2C();
+      init_chunk_2H6YHTHG();
+      init_chunk_ZSA4KI2Y();
+      init_chunk_3BEM4I52();
+      init_chunk_DOKFN6DA();
+      init_chunk_BGER3KYP();
+      init_chunk_TKOH2OAC();
       init_chunk_77HPO22C();
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       anatomy13 = createAnatomy("editable").parts(
         "root",
         "area",
@@ -24436,18 +24599,19 @@ var Corex = (() => {
       };
       EditableHook = {
         mounted() {
-          var _a4, _b;
+          var _a4, _b, _c, _d;
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
           const placeholder = getString(el, "placeholder");
           const activationMode = getString(el, "activationMode");
           const selectOnFocus = getBoolean(el, "selectOnFocus");
-          this.allowFormNotify = false;
+          this.fieldTouched = false;
           const valueBinding = mountStringBinding(el, "value", "defaultValue");
+          const initialValue = "value" in valueBinding ? (_a4 = valueBinding.value) != null ? _a4 : "" : (_b = valueBinding.defaultValue) != null ? _b : "";
           const zag = new Editable(el, __spreadProps(__spreadValues(__spreadValues(__spreadValues(__spreadProps(__spreadValues({
             id: el.id
-          }, "value" in valueBinding ? { value: (_a4 = valueBinding.value) != null ? _a4 : "" } : { defaultValue: (_b = valueBinding.defaultValue) != null ? _b : "" }), {
+          }, "value" in valueBinding ? { value: (_c = valueBinding.value) != null ? _c : "" } : { defaultValue: (_d = valueBinding.defaultValue) != null ? _d : "" }), {
             disabled: getBoolean(el, "disabled"),
             readOnly: getBoolean(el, "readonly"),
             required: getBoolean(el, "required"),
@@ -24458,18 +24622,15 @@ var Corex = (() => {
           }), placeholder !== void 0 ? { placeholder } : {}), activationMode !== void 0 ? { activationMode } : {}), selectOnFocus !== void 0 ? { selectOnFocus } : {}), {
             defaultEdit: getBoolean(el, "defaultEdit"),
             onValueChange: (details) => {
-              notifyEditableValueChange(el, pushEvent, canPush, details.value, this);
+              notifyEditableValueChange(el, pushEvent, canPush, details.value, this, initialValue);
             },
             onValueCommit: (details) => {
-              notifyEditableValueChange(el, pushEvent, canPush, details.value, this);
+              notifyEditableValueChange(el, pushEvent, canPush, details.value, this, initialValue);
             }
           }));
           zag.init();
           this.editable = zag;
-          queueMicrotask(() => {
-            syncEditableFormValue(el, zag.api.value, { markUsed: false });
-            this.allowFormNotify = true;
-          });
+          syncEditableFormValue(el, zag.api.value, { markUsed: false });
           this.unbindFormSubmit = bindFormSubmitSync(el, zag);
           const domRegistry = createDomEventRegistry(el);
           this.domRegistry = domRegistry;
@@ -25019,11 +25180,11 @@ var Corex = (() => {
   var init_file_upload = __esm({
     "../priv/static/file-upload.mjs"() {
       "use strict";
-      init_chunk_IKLCQZIF();
-      init_chunk_ASQD2R2U();
+      init_chunk_3BEM4I52();
+      init_chunk_DOKFN6DA();
       init_chunk_77HPO22C();
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       anatomy14 = createAnatomy("file-upload").parts(
         "root",
         "dropzone",
@@ -26371,10 +26532,10 @@ ${err}`);
       "use strict";
       init_chunk_QB2YSZP6();
       init_chunk_PE34YET2();
-      init_chunk_QU36267Q();
+      init_chunk_C4KEB3WL();
       init_chunk_77HPO22C();
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       anatomy15 = createAnatomy("floating-panel").parts(
         "trigger",
         "positioner",
@@ -27425,14 +27586,15 @@ ${err}`);
   var init_listbox = __esm({
     "../priv/static/listbox.mjs"() {
       "use strict";
-      init_chunk_AIFPYOT7();
-      init_chunk_4E7EICYJ();
+      init_chunk_DDT7N35T();
+      init_chunk_SGRHPBNS();
       init_chunk_HZLPIQBD();
-      init_chunk_JF64R7HW();
-      init_chunk_XL4XUS2C();
+      init_chunk_YUSIPE4B();
+      init_chunk_BGER3KYP();
+      init_chunk_TKOH2OAC();
       init_chunk_77HPO22C();
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       Listbox = class extends Component {
         constructor(el, props) {
           var _a4;
@@ -27521,7 +27683,7 @@ ${err}`);
       };
       ListboxHook = {
         mounted() {
-          var _a4;
+          var _a4, _b;
           const el = this.el;
           const allItems = safeParseJson((_a4 = el.dataset.items) != null ? _a4 : "[]", []);
           const hasGroups = allItems.some((item) => Boolean(item.group));
@@ -27534,6 +27696,7 @@ ${err}`);
           zag.setOptions(allItems);
           zag.init();
           this.listbox = zag;
+          this.lastItemsJson = (_b = el.dataset.items) != null ? _b : "[]";
           const emitValue = (respondTo) => {
             const value = zag.api.value;
             emitResponse({
@@ -27566,16 +27729,27 @@ ${err}`);
             emitValue(parseRespondTo(payload));
           });
         },
+        beforeUpdate() {
+          this.beforeAttrs = snapshotDataset(this.el, ["value"]);
+        },
         updated() {
           var _a4;
           if (!this.listbox) return;
-          const newItems = safeParseJson((_a4 = this.el.dataset.items) != null ? _a4 : "[]", []);
-          const hasGroups = newItems.some((item) => Boolean(item.group));
-          this.listbox.hasGroups = hasGroups;
-          this.listbox.setOptions(newItems);
-          this.listbox.updateProps(__spreadValues(__spreadProps(__spreadValues({}, listboxZagPropsBase(this.el, this.liveSocket, this.pushEvent.bind(this))), {
-            collection: this.listbox.getCollection()
-          }), readStringListControlledZagUpdate(this.el, "value", "defaultValue")));
+          try {
+            const newItemsJson = (_a4 = this.el.dataset.items) != null ? _a4 : "[]";
+            if (newItemsJson !== this.lastItemsJson) {
+              this.lastItemsJson = newItemsJson;
+              const newItems = safeParseJson(newItemsJson, []);
+              const hasGroups = newItems.some((item) => Boolean(item.group));
+              this.listbox.hasGroups = hasGroups;
+              this.listbox.setOptions(newItems);
+            }
+            this.listbox.updateProps(__spreadValues(__spreadProps(__spreadValues({}, listboxZagPropsBase(this.el, this.liveSocket, this.pushEvent.bind(this))), {
+              collection: this.listbox.getCollection()
+            }), readStringListControlledZagUpdate(this.el, "value", "defaultValue", this.beforeAttrs)));
+          } finally {
+            this.beforeAttrs = void 0;
+          }
         },
         destroyed() {
           var _a4, _b, _c;
@@ -27768,7 +27942,7 @@ ${err}`);
     "../priv/static/marquee.mjs"() {
       "use strict";
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       anatomy16 = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");
       parts16 = anatomy16.build();
       dom = {
@@ -28184,7 +28358,6 @@ ${err}`);
           const zag = this.marquee;
           if (!zag) return;
           zag.updateProps(readMarqueeProps(this.el));
-          zag.ensureDom();
         },
         destroyed() {
           var _a4;
@@ -28818,14 +28991,14 @@ ${err}`);
     "../priv/static/menu.mjs"() {
       "use strict";
       init_chunk_QB2YSZP6();
-      init_chunk_DVA7SQMW();
-      init_chunk_MOSXJRWI();
-      init_chunk_26XTEIHY();
-      init_chunk_QU36267Q();
+      init_chunk_MHRYIVD2();
+      init_chunk_CBUVYVIR();
+      init_chunk_ZSA4KI2Y();
+      init_chunk_C4KEB3WL();
       init_chunk_HZLPIQBD();
-      init_chunk_JF64R7HW();
+      init_chunk_YUSIPE4B();
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       anatomy17 = createAnatomy("menu").parts(
         "arrow",
         "arrowTip",
@@ -29853,8 +30026,12 @@ ${err}`);
           __publicField(this, "children", []);
           __publicField(this, "submenuTriggerUnsubs", []);
           __publicField(this, "destroy", () => {
+            var _a4;
             this.clearSubmenuTriggerSubscriptions();
+            (_a4 = this.unsubscribe) == null ? void 0 : _a4.call(this);
+            this.unsubscribe = void 0;
             this.el.removeAttribute("data-loading");
+            this.clearSpreadPropsCleanups();
             this.machine.stop();
           });
         }
@@ -30092,8 +30269,10 @@ ${err}`);
             })
           );
           this.handlers.push(
-            this.handleEvent("menu_open", () => {
+            this.handleEvent("menu_open", (payload) => {
+              if (!menuSetOpenMatches(el.id, payload)) return;
               this.pushEvent("menu_open_response", {
+                id: readPayloadId(payload),
                 open: menu.api.open
               });
             })
@@ -30103,7 +30282,6 @@ ${err}`);
           if (this.el.hasAttribute("data-nested")) return;
           if (!this.menu) return;
           syncMenuPropsFromDom(this.menu);
-          this.menu.render();
           if (this.menu.children.length > 0) {
             wireSubmenuTriggersDeep(this.menu);
           }
@@ -30644,7 +30822,7 @@ ${err}`);
     if (changed) valueInput.value = v2;
     syncInputFormAssociation(valueInput, el);
     if (notifyForm && (changed || v2 !== "")) {
-      reapplyLiveViewValueInputUsage(valueInput);
+      markUsed(valueInput);
       valueInput.dispatchEvent(new Event("input", { bubbles: true }));
       valueInput.dispatchEvent(new Event("change", { bubbles: true }));
     }
@@ -30721,14 +30899,17 @@ ${err}`);
   var init_number_input = __esm({
     "../priv/static/number-input.mjs"() {
       "use strict";
-      init_chunk_KCVHCORZ();
-      init_chunk_YFTSYDFS();
+      init_chunk_NB7M3GJN();
+      init_chunk_DH47S3VU();
       init_chunk_PE34YET2();
-      init_chunk_ASQD2R2U();
-      init_chunk_XL4XUS2C();
+      init_chunk_2H6YHTHG();
+      init_chunk_3BEM4I52();
+      init_chunk_DOKFN6DA();
+      init_chunk_BGER3KYP();
+      init_chunk_TKOH2OAC();
       init_chunk_77HPO22C();
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       anatomy18 = createAnatomy("numberInput").parts(
         "root",
         "label",
@@ -31595,21 +31776,20 @@ ${err}`);
       };
       NumberInputHook = {
         mounted() {
-          var _a4, _b, _c;
+          var _a4;
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
           const zag = new NumberInput(el, buildMachineProps(el, pushEvent, canPush));
           zag.init();
           this.numberInput = zag;
-          this.lastServerValue = (_b = (_a4 = getString(el, "value")) != null ? _a4 : getString(el, "defaultValue")) != null ? _b : "";
           const initialSubmit = submitValueForHost(el, zag.api.valueAsNumber);
-          syncNumberInputValueInput(el, (_c = zag.api.value) != null ? _c : "", true, zag.api.valueAsNumber);
+          syncNumberInputValueInput(el, (_a4 = zag.api.value) != null ? _a4 : "", true, zag.api.valueAsNumber);
           const valueInput = el.querySelector(
             '[data-scope="number-input"][data-part="value-input"]'
           );
           if (valueInput) {
-            queueLiveViewFormInputSync(valueInput, () => initialSubmit);
+            syncFormInput(valueInput, () => initialSubmit);
           }
           const emitState = (respondTo) => {
             const snapshot2 = machineState(zag.api);
@@ -31693,24 +31873,26 @@ ${err}`);
             emitState(parseRespondTo(payload));
           });
         },
+        beforeUpdate() {
+          this.beforeAttrs = snapshotDataset(this.el, ["value", "defaultValue"]);
+        },
         updated() {
+          var _a4, _b;
           const el = this.el;
           const zag = this.numberInput;
           if (!zag) return;
-          const valuePatch = readUpdatedServerNumber(el, this.lastServerValue);
-          if ("nextServerValue" in valuePatch && valuePatch.nextServerValue !== void 0) {
-            this.lastServerValue = valuePatch.nextServerValue;
-          }
-          zag.updateProps(__spreadValues(__spreadValues(__spreadValues({}, numberInputPropsForUpdate(el)), valuePatch.value !== void 0 ? { value: valuePatch.value } : {}), valuePatch.step !== void 0 ? { step: valuePatch.step } : {}));
-          queueMicrotask(() => {
-            var _a4, _b;
+          try {
+            const valuePatch = readUpdatedServerNumber(el, this.beforeAttrs);
+            zag.updateProps(__spreadValues(__spreadValues(__spreadValues({}, numberInputPropsForUpdate(el)), valuePatch.value !== void 0 ? { value: valuePatch.value } : {}), valuePatch.step !== void 0 ? { step: valuePatch.step } : {}));
             syncNumberInputValueInput(
               el,
               (_b = (_a4 = zag.api.value) != null ? _a4 : getString(el, "defaultValue")) != null ? _b : "",
               false,
               zag.api.valueAsNumber
             );
-          });
+          } finally {
+            this.beforeAttrs = void 0;
+          }
         },
         destroyed() {
           var _a4, _b, _c;
@@ -32026,11 +32208,11 @@ ${err}`);
   var init_pagination = __esm({
     "../priv/static/pagination.mjs"() {
       "use strict";
-      init_chunk_KCVHCORZ();
+      init_chunk_NB7M3GJN();
       init_chunk_HZLPIQBD();
       init_chunk_77HPO22C();
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       anatomy19 = createAnatomy("pagination").parts(
         "root",
         "item",
@@ -32531,7 +32713,7 @@ ${err}`);
       "use strict";
       init_chunk_77HPO22C();
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       anatomy20 = createAnatomy("password-input").parts(
         "root",
         "input",
@@ -33011,6 +33193,9 @@ ${err}`);
   function fill(value, count) {
     return Array.from({ length: count }).fill("").map((v2, i2) => value[i2] || v2);
   }
+  function sameStringList2(a2, b2) {
+    return a2.length === b2.length && a2.every((v2, i2) => v2 === b2[i2]);
+  }
   function parseValueWithEmpties(raw) {
     return raw.split(",").map((v2) => v2.trim());
   }
@@ -33043,7 +33228,7 @@ ${err}`);
     const submitName = getString(el, "submitName");
     const count = (_a4 = getNumber(el, "count")) != null ? _a4 : 0;
     if (submitName) {
-      syncArrayHiddenInputsForPhoenix(el, values, {
+      setArrayValues(el, values, {
         onTouched,
         scope: "pin-input",
         submitName,
@@ -33058,16 +33243,16 @@ ${err}`);
     );
     if (!hiddenInput) return;
     if (opts.notifyLiveView === false) {
-      notifyPhoenixFormChange(hiddenInput, values.join(""), { onTouched, markUsed: false });
+      setScalarValue(hiddenInput, values.join(""), { onTouched, markUsed: false });
       return;
     }
-    notifyPhoenixFormChange(hiddenInput, values.join(""), { onTouched });
+    setScalarValue(hiddenInput, values.join(""), { onTouched });
   }
   function zagNameForForm(el) {
     if (getString(el, "submitName")) return void 0;
     return getString(el, "name");
   }
-  function buildMachineProps2(el, pushEvent, canPush, allowFormNotify) {
+  function buildMachineProps2(el, pushEvent, canPush, initialValues, isFieldTouched, markFieldTouched) {
     var _a4;
     const count = (_a4 = getNumber(el, "count")) != null ? _a4 : 0;
     return __spreadProps(__spreadValues({
@@ -33088,8 +33273,12 @@ ${err}`);
       type: getString(el, "type"),
       placeholder: getString(el, "placeholder"),
       onValueChange: (details) => {
+        const isMountEcho = !isFieldTouched() && sameStringList2(details.value, initialValues);
+        if (!isMountEcho) {
+          markFieldTouched();
+        }
         syncPinInputFormForPhoenix(el, details.value, void 0, {
-          notifyLiveView: (allowFormNotify == null ? void 0 : allowFormNotify()) === true
+          notifyLiveView: !isMountEcho
         });
         notifyChange({
           el,
@@ -33124,15 +33313,17 @@ ${err}`);
   var init_pin_input = __esm({
     "../priv/static/pin-input.mjs"() {
       "use strict";
-      init_chunk_YFTSYDFS();
+      init_chunk_DH47S3VU();
       init_chunk_PE34YET2();
-      init_chunk_YJPGDO7P();
-      init_chunk_IKLCQZIF();
-      init_chunk_ASQD2R2U();
-      init_chunk_XL4XUS2C();
+      init_chunk_OZ2OVCG5();
+      init_chunk_2H6YHTHG();
+      init_chunk_3BEM4I52();
+      init_chunk_DOKFN6DA();
+      init_chunk_BGER3KYP();
+      init_chunk_TKOH2OAC();
       init_chunk_77HPO22C();
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       anatomy21 = createAnatomy("pinInput").parts("root", "label", "input", "control");
       parts21 = anatomy21.build();
       getRootId16 = (ctx) => {
@@ -33518,23 +33709,35 @@ ${err}`);
       };
       PinInputHook = {
         mounted() {
+          var _a4;
           const el = this.el;
           const hook = this;
-          hook.allowFormNotify = false;
+          hook.fieldTouched = false;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
-          const allowFormNotify = () => hook.allowFormNotify === true;
-          const zag = new PinInput(el, buildMachineProps2(el, pushEvent, canPush, allowFormNotify));
+          const count = (_a4 = getNumber(el, "count")) != null ? _a4 : 0;
+          const binding = padStringListBinding(el, count);
+          const initialValues = "value" in binding ? binding.value : binding.defaultValue;
+          const zag = new PinInput(
+            el,
+            buildMachineProps2(
+              el,
+              pushEvent,
+              canPush,
+              initialValues,
+              () => hook.fieldTouched === true,
+              () => {
+                hook.fieldTouched = true;
+              }
+            )
+          );
           try {
             zag.init();
             this.pinInput = zag;
           } finally {
             el.removeAttribute("data-loading");
           }
-          queueMicrotask(() => {
-            syncPinInputFormForPhoenix(el, zag.api.value, void 0, { notifyLiveView: false });
-            hook.allowFormNotify = true;
-          });
+          syncPinInputFormForPhoenix(el, zag.api.value, void 0, { notifyLiveView: false });
           const emitValue = (respondTo) => {
             const api = zag.api;
             const value = api.value;
@@ -33553,8 +33756,8 @@ ${err}`);
           const domRegistry = createDomEventRegistry(el);
           this.domRegistry = domRegistry;
           domRegistry.add("corex:pin-input:set-value", (event) => {
-            var _a4;
-            const v2 = (_a4 = event.detail) == null ? void 0 : _a4.value;
+            var _a5;
+            const v2 = (_a5 = event.detail) == null ? void 0 : _a5.value;
             if (Array.isArray(v2)) zag.api.setValue(v2);
           });
           domRegistry.add("corex:pin-input:clear", () => {
@@ -33859,14 +34062,15 @@ ${err}`);
   var init_radio_group = __esm({
     "../priv/static/radio-group.mjs"() {
       "use strict";
-      init_chunk_YWUM4WUV();
+      init_chunk_MM3X6GKK();
       init_chunk_PE34YET2();
-      init_chunk_ASQD2R2U();
-      init_chunk_JF64R7HW();
-      init_chunk_XL4XUS2C();
+      init_chunk_DOKFN6DA();
+      init_chunk_YUSIPE4B();
+      init_chunk_BGER3KYP();
+      init_chunk_TKOH2OAC();
       init_chunk_77HPO22C();
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       anatomy22 = createAnatomy("radio-group").parts(
         "root",
         "label",
@@ -34181,7 +34385,6 @@ ${err}`);
       };
       RadioGroupHook = {
         mounted() {
-          var _a4;
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
@@ -34198,9 +34401,6 @@ ${err}`);
             orientation: getString(el, "orientation"),
             onValueChange: (details) => {
               const selected = details.value;
-              if (isCorexFormField(el)) {
-                this.lastServerValue = selected != null ? selected : void 0;
-              }
               el.querySelectorAll(
                 '[data-scope="radio-group"][data-part="item-hidden-input"]'
               ).forEach((input) => {
@@ -34238,11 +34438,10 @@ ${err}`);
           }));
           zag.init();
           this.radioGroup = zag;
-          this.lastServerValue = (_a4 = getString(el, "value")) != null ? _a4 : void 0;
           queueMicrotask(() => {
-            var _a5;
+            var _a4;
             if (!isCorexFormField(el)) return;
-            syncRadioGroupValueInputForPhoenix(el, (_a5 = zag.api.value) != null ? _a5 : null, { markUsed: false });
+            syncRadioGroupValueInputForPhoenix(el, (_a4 = zag.api.value) != null ? _a4 : null, { markUsed: false });
           });
           const valueInput = el.querySelector(
             '[data-scope="radio-group"][data-part="value-input"]'
@@ -34294,27 +34493,31 @@ ${err}`);
             emitValue(parseRespondTo(payload));
           });
         },
+        beforeUpdate() {
+          this.beforeAttrs = snapshotDataset(this.el, ["value"]);
+        },
         updated() {
-          var _a4, _b;
+          var _a4;
           const el = this.el;
           const zag = this.radioGroup;
-          const valuePatch = readUpdatedServerString(el, this.lastServerValue);
-          if ("value" in valuePatch) {
-            this.lastServerValue = (_a4 = valuePatch.value) != null ? _a4 : void 0;
-          }
-          zag == null ? void 0 : zag.updateProps(__spreadProps(__spreadValues({
-            id: el.id
-          }, valuePatch), {
-            name: getString(el, "name"),
-            disabled: getBoolean(el, "disabled"),
-            invalid: getBoolean(el, "invalid"),
-            required: getBoolean(el, "required"),
-            readOnly: getBoolean(el, "readonly"),
-            orientation: getString(el, "orientation"),
-            dir: getDir(el)
-          }));
-          if ("value" in valuePatch) {
-            syncRadioGroupValueInputForPhoenix(el, (_b = valuePatch.value) != null ? _b : null, { markUsed: false });
+          try {
+            const valuePatch = readUpdatedServerString(el, this.beforeAttrs);
+            zag == null ? void 0 : zag.updateProps(__spreadProps(__spreadValues({
+              id: el.id
+            }, valuePatch), {
+              name: getString(el, "name"),
+              disabled: getBoolean(el, "disabled"),
+              invalid: getBoolean(el, "invalid"),
+              required: getBoolean(el, "required"),
+              readOnly: getBoolean(el, "readonly"),
+              orientation: getString(el, "orientation"),
+              dir: getDir(el)
+            }));
+            if ("value" in valuePatch) {
+              syncRadioGroupValueInputForPhoenix(el, (_a4 = valuePatch.value) != null ? _a4 : null, { markUsed: false });
+            }
+          } finally {
+            this.beforeAttrs = void 0;
           }
         },
         destroyed() {
@@ -34883,19 +35086,20 @@ ${err}`);
   var init_select = __esm({
     "../priv/static/select.mjs"() {
       "use strict";
-      init_chunk_DVA7SQMW();
-      init_chunk_MOSXJRWI();
-      init_chunk_26XTEIHY();
-      init_chunk_ASQD2R2U();
-      init_chunk_QU36267Q();
-      init_chunk_AIFPYOT7();
-      init_chunk_4E7EICYJ();
+      init_chunk_MHRYIVD2();
+      init_chunk_CBUVYVIR();
+      init_chunk_ZSA4KI2Y();
+      init_chunk_DOKFN6DA();
+      init_chunk_C4KEB3WL();
+      init_chunk_DDT7N35T();
+      init_chunk_SGRHPBNS();
       init_chunk_HZLPIQBD();
-      init_chunk_JF64R7HW();
-      init_chunk_XL4XUS2C();
+      init_chunk_YUSIPE4B();
+      init_chunk_BGER3KYP();
+      init_chunk_TKOH2OAC();
       init_chunk_77HPO22C();
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       anatomy23 = createAnatomy("select").parts(
         "label",
         "positioner",
@@ -35848,7 +36052,6 @@ ${err}`);
       };
       SelectHook = {
         mounted() {
-          var _a4;
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
@@ -35868,7 +36071,7 @@ ${err}`);
           selectComponent.setOptions(allItems);
           selectComponent.init();
           this.select = selectComponent;
-          this.lastServerValue = (_a4 = getString(el, "value")) != null ? _a4 : "";
+          this.lastItemsJson = el.dataset.items || "[]";
           this.handlers = [];
           const domRegistry = createDomEventRegistry(el);
           this.domRegistry = domRegistry;
@@ -35890,21 +36093,31 @@ ${err}`);
             selectComponent.api.setOpen(payload.open);
           });
         },
+        beforeUpdate() {
+          this.beforeAttrs = snapshotDataset(this.el, ["value"]);
+        },
         updated() {
           if (!this.select) return;
-          const newItems = safeParseJson(this.el.dataset.items || "[]", []);
-          const hasGroups = newItems.some((item) => Boolean(item.group));
-          this.select.hasGroups = hasGroups;
-          this.select.setOptions(newItems);
-          const valuePatch = readUpdatedServerStringList(this.el, this.lastServerValue);
-          if ("nextServerValue" in valuePatch) {
-            this.lastServerValue = valuePatch.nextServerValue;
+          try {
+            const newItemsJson = this.el.dataset.items || "[]";
+            if (newItemsJson !== this.lastItemsJson) {
+              this.lastItemsJson = newItemsJson;
+              const newItems = safeParseJson(newItemsJson, []);
+              const hasGroups = newItems.some((item) => Boolean(item.group));
+              this.select.hasGroups = hasGroups;
+              this.select.setOptions(newItems);
+            }
+            const valuePatch = readUpdatedServerStringList(this.el, this.beforeAttrs);
+            if (valuePatch.value !== void 0) {
+              syncControlledValueInputFromServer(this.el, valuePatch.value);
+            }
+            this.select.updateProps(__spreadValues(__spreadProps(__spreadValues({}, selectLayoutProps(this.el)), {
+              collection: this.select.getCollection()
+            }), valuePatch.value !== void 0 ? { value: valuePatch.value } : {}));
+            reapplySelectInteractiveState(this.el);
+          } finally {
+            this.beforeAttrs = void 0;
           }
-          if (valuePatch.value !== void 0) {
-            syncControlledValueInputFromServer(this.el, valuePatch.value);
-          }
-          this.select.updateProps(__spreadValues(__spreadValues({}, selectLayoutProps(this.el)), valuePatch.value !== void 0 ? { value: valuePatch.value } : {}));
-          reapplySelectInteractiveState(this.el);
         },
         destroyed() {
           var _a4, _b, _c;
@@ -36272,7 +36485,7 @@ ${err}`);
     const submitName = getString(el, "submitName");
     const fieldTouched = opts.fieldTouched === true;
     if (submitName) {
-      syncArrayHiddenInputsForPhoenix(el, paths, {
+      setArrayValues(el, paths, {
         onTouched: opts.onPadTouched,
         scope: "signature-pad",
         submitName,
@@ -36289,22 +36502,20 @@ ${err}`);
       input.value = paths.length > 0 ? paths.join("\n") : "";
       return;
     }
-    queueLiveViewFormInputSync(
-      input,
-      () => paths.length > 0 ? paths.join("\n") : "",
-      opts.onPadTouched
-    );
+    syncFormInput(input, () => paths.length > 0 ? paths.join("\n") : "", opts.onPadTouched);
   }
   var anatomy24, parts24, getRootId19, getControlId9, getLabelId14, getHiddenInputId6, getControlEl5, getSegmentEl, getDataUrl2, e, t, n, r, a, E, D, O, F, z2, average, machine24, SignaturePad, SignaturePadHook;
   var init_signature_pad = __esm({
     "../priv/static/signature-pad.mjs"() {
       "use strict";
-      init_chunk_YJPGDO7P();
-      init_chunk_IKLCQZIF();
-      init_chunk_ASQD2R2U();
-      init_chunk_XL4XUS2C();
+      init_chunk_OZ2OVCG5();
+      init_chunk_2H6YHTHG();
+      init_chunk_3BEM4I52();
+      init_chunk_DOKFN6DA();
+      init_chunk_BGER3KYP();
+      init_chunk_TKOH2OAC();
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       anatomy24 = createAnatomy("signature-pad").parts(
         "root",
         "control",
@@ -36659,11 +36870,9 @@ ${err}`);
               fieldTouched: isFormFieldUsed(el, hook.padTouched || opts.fieldTouched === true)
             });
           };
-          queueMicrotask(() => {
-            if (!hook.padTouched) {
-              syncForm(defaultPaths, { notifyLiveView: false, fieldTouched: false });
-            }
-          });
+          if (!hook.padTouched) {
+            syncForm(defaultPaths, { notifyLiveView: false, fieldTouched: false });
+          }
           hook.unbindSubmitIntent = bindArrayFieldSubmitIntent(el, () => {
             var _a4;
             hook.padTouched = true;
@@ -36849,12 +37058,13 @@ ${err}`);
   var init_switch = __esm({
     "../priv/static/switch.mjs"() {
       "use strict";
-      init_chunk_YWUM4WUV();
-      init_chunk_JF64R7HW();
-      init_chunk_XL4XUS2C();
+      init_chunk_MM3X6GKK();
+      init_chunk_YUSIPE4B();
+      init_chunk_BGER3KYP();
+      init_chunk_TKOH2OAC();
       init_chunk_77HPO22C();
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       anatomy25 = createAnatomy("switch").parts("root", "label", "control", "thumb");
       parts25 = anatomy25.build();
       getRootId20 = (ctx) => {
@@ -37095,11 +37305,9 @@ ${err}`);
                 '[data-scope="switch"][data-part="hidden-input"]'
               );
               if (input) {
-                queueMicrotask(() => {
-                  input.checked = details.checked === true;
-                  input.dispatchEvent(new Event("input", { bubbles: true }));
-                  input.dispatchEvent(new Event("change", { bubbles: true }));
-                });
+                input.checked = details.checked === true;
+                input.dispatchEvent(new Event("input", { bubbles: true }));
+                input.dispatchEvent(new Event("change", { bubbles: true }));
               }
             }
           }));
@@ -37150,21 +37358,29 @@ ${err}`);
             });
           });
         },
+        beforeUpdate() {
+          this.beforeAttrs = snapshotDataset(this.el, ["checked"]);
+        },
         updated() {
           const zagSwitch = this.zagSwitch;
           if (!zagSwitch) return;
-          zagSwitch.updateProps(__spreadProps(__spreadValues({
-            id: this.el.id
-          }, readUpdatedServerChecked(this.el)), {
-            disabled: getBoolean(this.el, "disabled"),
-            name: getString(this.el, "name"),
-            form: getString(this.el, "form"),
-            value: getString(this.el, "value"),
-            dir: getDir(this.el),
-            invalid: getBoolean(this.el, "invalid"),
-            required: getBoolean(this.el, "required"),
-            readOnly: getBoolean(this.el, "readonly")
-          }));
+          try {
+            const checkedPatch = readUpdatedServerChecked(this.el, this.beforeAttrs);
+            zagSwitch.updateProps(__spreadProps(__spreadValues({
+              id: this.el.id
+            }, "checked" in checkedPatch ? { checked: checkedPatch.checked === true } : {}), {
+              disabled: getBoolean(this.el, "disabled"),
+              name: getString(this.el, "name"),
+              form: getString(this.el, "form"),
+              value: getString(this.el, "value"),
+              dir: getDir(this.el),
+              invalid: getBoolean(this.el, "invalid"),
+              required: getBoolean(this.el, "required"),
+              readOnly: getBoolean(this.el, "readonly")
+            }));
+          } finally {
+            this.beforeAttrs = void 0;
+          }
         },
         destroyed() {
           var _a4, _b, _c;
@@ -37573,8 +37789,29 @@ ${err}`);
     if (!input) return false;
     return !input.hidden;
   }
+  function stripLiveViewDomAttrs(root) {
+    const walk = (node) => {
+      for (const attr of Array.from(node.attributes)) {
+        if (attr.name.startsWith("data-phx-")) {
+          node.removeAttribute(attr.name);
+        }
+      }
+      for (const child of Array.from(node.children)) {
+        walk(child);
+      }
+    };
+    walk(root);
+  }
+  function normalizeDeleteTriggerContent(delEl) {
+    var _a4;
+    const keep = (_a4 = delEl.querySelector(':scope > [class^="hero-"], :scope > .icon, :scope > svg')) != null ? _a4 : delEl.firstElementChild;
+    if (!keep) return;
+    for (const child of Array.from(delEl.children)) {
+      if (child !== keep) delEl.removeChild(child);
+    }
+  }
   function syncTagsArrayInputsForPhoenix(el, values, onTouched, opts = {}) {
-    syncArrayHiddenInputsForPhoenix(el, values, {
+    setArrayValues(el, values, {
       onTouched,
       scope: "tags-input",
       notifyLiveView: opts.notifyLiveView,
@@ -37583,6 +37820,9 @@ ${err}`);
   }
   function syncTagsInputFormForPhoenix(el, values, onTouched, opts = {}) {
     syncTagsArrayInputsForPhoenix(el, values, onTouched, opts);
+  }
+  function sameStringList3(a2, b2) {
+    return a2.length === b2.length && a2.every((v2, i2) => v2 === b2[i2]);
   }
   function parseJsonTags(el, key) {
     const raw = el.dataset[key];
@@ -37619,13 +37859,15 @@ ${err}`);
     "../priv/static/tags-input.mjs"() {
       "use strict";
       init_chunk_7BZGUIUZ();
-      init_chunk_26XTEIHY();
-      init_chunk_IKLCQZIF();
-      init_chunk_ASQD2R2U();
-      init_chunk_XL4XUS2C();
+      init_chunk_2H6YHTHG();
+      init_chunk_ZSA4KI2Y();
+      init_chunk_3BEM4I52();
+      init_chunk_DOKFN6DA();
+      init_chunk_BGER3KYP();
+      init_chunk_TKOH2OAC();
       init_chunk_77HPO22C();
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       anatomy26 = createAnatomy("tagsInput").parts(
         "root",
         "label",
@@ -38419,10 +38661,16 @@ ${err}`);
             '[data-scope="tags-input"][data-part="item-delete-trigger"]'
           );
           if (delEl) {
-            while (delEl.childElementCount > 1) {
-              delEl.removeChild(delEl.lastElementChild);
-            }
-            this.spreadProps(delEl, this.api.getItemDeleteTriggerProps({ index, value }));
+            normalizeDeleteTriggerContent(delEl);
+            const deleteProps = this.api.getItemDeleteTriggerProps({ index, value });
+            const onPointerDown = deleteProps.onPointerDown;
+            deleteProps.onPointerDown = (event) => {
+              event.stopPropagation();
+              if (typeof onPointerDown === "function") {
+                onPointerDown(event);
+              }
+            };
+            this.spreadProps(delEl, deleteProps);
           }
           const itemInputEl = itemEl.querySelector(
             '[data-scope="tags-input"][data-part="item-input"]'
@@ -38462,6 +38710,7 @@ ${err}`);
             if (!itemEl || !isItem) {
               const fresh = template.cloneNode(true);
               fresh.removeAttribute("data-template");
+              stripLiveViewDomAttrs(fresh);
               const ref = (_b = items[index]) != null ? _b : mainInputEl;
               controlEl.insertBefore(fresh, ref);
               items = directItemElements(controlEl);
@@ -38516,7 +38765,6 @@ ${err}`);
         mounted() {
           const el = this.el;
           const hook = this;
-          hook.allowFormNotify = false;
           hook.fieldTouched = false;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
@@ -38524,9 +38772,11 @@ ${err}`);
           const max3 = maxProp(el);
           const delimiter = getString(el, "delimiter");
           const placeholder = readPlaceholderFromMainInput(el);
+          const valueBinding = mountTagsBinding(el);
+          const initialValues = "value" in valueBinding ? valueBinding.value : valueBinding.defaultValue;
           const zag = new TagsInput(el, __spreadProps(__spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadProps(__spreadValues(__spreadProps(__spreadValues(__spreadValues({
             id: el.id
-          }, resolveZagTagsInputTranslations(el)), mountTagsBinding(el)), {
+          }, resolveZagTagsInputTranslations(el)), valueBinding), {
             disabled: getBoolean(el, "disabled"),
             readOnly: getBoolean(el, "readonly"),
             invalid: getBoolean(el, "invalid"),
@@ -38541,10 +38791,13 @@ ${err}`);
             autoFocus: getBoolean(el, "autoFocus")
           }), blur !== void 0 ? { blurBehavior: blur } : {}), max3 !== void 0 ? { max: max3 } : {}), delimiter !== void 0 && delimiter !== "" ? { delimiter } : {}), placeholder !== void 0 ? { placeholder } : {}), {
             onValueChange: (details) => {
-              hook.fieldTouched = true;
+              const isMountEcho = hook.fieldTouched !== true && sameStringList3(details.value, initialValues);
+              if (!isMountEcho) {
+                hook.fieldTouched = true;
+              }
               syncTagsInputFormForPhoenix(el, details.value, void 0, {
-                notifyLiveView: hook.allowFormNotify === true,
-                fieldTouched: true
+                notifyLiveView: !isMountEcho,
+                fieldTouched: !isMountEcho
               });
               notifyChange({
                 el,
@@ -38592,15 +38845,12 @@ ${err}`);
           const syncForm = (values, opts = {}) => {
             syncTagsInputFormForPhoenix(el, values, void 0, {
               notifyLiveView: opts.notifyLiveView,
-              fieldTouched: isFormFieldUsed(el, hook.fieldTouched === true)
+              fieldTouched: isFormFieldUsed(el, Boolean(hook.fieldTouched))
             });
           };
-          queueMicrotask(() => {
-            if (!isFormFieldUsed(el, hook.fieldTouched === true)) {
-              syncForm(zag.api.value, { notifyLiveView: false });
-            }
-            hook.allowFormNotify = true;
-          });
+          if (!isFormFieldUsed(el, Boolean(hook.fieldTouched))) {
+            syncForm(zag.api.value, { notifyLiveView: false });
+          }
           hook.unbindSubmitIntent = bindArrayFieldSubmitIntent(el, () => {
             hook.fieldTouched = true;
             syncForm(zag.api.value, { notifyLiveView: false });
@@ -38910,10 +39160,11 @@ ${err}`);
     "../priv/static/tabs.mjs"() {
       "use strict";
       init_chunk_PE34YET2();
-      init_chunk_XL4XUS2C();
+      init_chunk_BGER3KYP();
+      init_chunk_TKOH2OAC();
       init_chunk_77HPO22C();
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       anatomy27 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
       parts27 = anatomy27.build();
       getRootId22 = (ctx) => {
@@ -39254,18 +39505,18 @@ ${err}`);
       Tabs = class extends Component {
         constructor() {
           super(...arguments);
-          __publicField(this, "updateProps", (attrs) => {
-            var _a4;
-            const props = attrs;
-            const id = (_a4 = props.id) != null ? _a4 : this.el.id;
-            this.machine.updateProps(__spreadProps(__spreadValues({}, props), { id, ids: tabsDomIds(id) }));
+          __publicField(this, "updateProps", (props) => {
+            super.updateProps(this.withDomIds(props));
           });
+        }
+        withDomIds(props) {
+          var _a4;
+          const id = (_a4 = props.id) != null ? _a4 : this.el.id;
+          return __spreadProps(__spreadValues({}, props), { id, ids: tabsDomIds(id) });
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          var _a4;
-          const id = (_a4 = props.id) != null ? _a4 : this.el.id;
-          return new VanillaMachine(machine27, __spreadProps(__spreadValues({}, props), { id, ids: tabsDomIds(id) }));
+          return new VanillaMachine(machine27, this.withDomIds(props));
         }
         initApi() {
           return this.zagConnect(connect27);
@@ -39357,11 +39608,18 @@ ${err}`);
             });
           });
         },
+        beforeUpdate() {
+          this.beforeAttrs = snapshotDataset(this.el, ["value"]);
+        },
         updated() {
           var _a4;
-          (_a4 = this.tabs) == null ? void 0 : _a4.updateProps(__spreadValues(__spreadValues({
-            id: this.el.id
-          }, readStringControlledZagUpdate(this.el, "value", "defaultValue")), readTabsLayoutProps(this.el)));
+          try {
+            (_a4 = this.tabs) == null ? void 0 : _a4.updateProps(__spreadValues(__spreadValues({
+              id: this.el.id
+            }, readStringControlledZagUpdate(this.el, "value", "defaultValue", this.beforeAttrs)), readTabsLayoutProps(this.el)));
+          } finally {
+            this.beforeAttrs = void 0;
+          }
         },
         destroyed() {
           var _a4, _b, _c;
@@ -39629,17 +39887,16 @@ ${err}`);
     }
     return void 0;
   }
-  function buildTimerProps(el, pushEvent, canPush) {
+  function readIdentityRaw(el) {
     return {
-      id: el.id,
-      countdown: getBoolean(el, "countdown"),
-      startMs: getNumber(el, "startMs"),
-      targetMs: getNumber(el, "targetMs"),
-      autoStart: getBoolean(el, "autoStart"),
-      interval: getNumber(el, "interval"),
-      dir: getDir(el),
-      orientation: getString(el, "orientation"),
-      translations: parseTimerTranslations(el),
+      startMs: el.dataset.startMs,
+      targetMs: el.dataset.targetMs,
+      countdown: el.dataset.countdown,
+      interval: el.dataset.interval
+    };
+  }
+  function buildTimerCallbacks(el, pushEvent, canPush) {
+    return {
       onTick: (details) => {
         const eventName = getString(el, "onTick");
         if (eventName && canPush()) {
@@ -39682,16 +39939,29 @@ ${err}`);
       }
     };
   }
+  function buildTimerProps(el, pushEvent, canPush) {
+    return __spreadValues({
+      id: el.id,
+      countdown: getBoolean(el, "countdown"),
+      startMs: getNumber(el, "startMs"),
+      targetMs: getNumber(el, "targetMs"),
+      autoStart: getBoolean(el, "autoStart"),
+      interval: getNumber(el, "interval"),
+      dir: getDir(el),
+      orientation: getString(el, "orientation"),
+      translations: parseTimerTranslations(el)
+    }, buildTimerCallbacks(el, pushEvent, canPush));
+  }
   var anatomy28, parts28, getRootId23, getAreaId3, validActions, machine28, Timer2, TimerHook;
   var init_timer = __esm({
     "../priv/static/timer.mjs"() {
       "use strict";
-      init_chunk_KCVHCORZ();
-      init_chunk_5HFWMYJG();
+      init_chunk_NB7M3GJN();
+      init_chunk_6MIECCPA();
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       anatomy28 = createAnatomy("timer").parts(
         "root",
         "area",
@@ -39922,6 +40192,11 @@ ${err}`);
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
+          const identity2 = readIdentityRaw(el);
+          this.lastStartMsRaw = identity2.startMs;
+          this.lastTargetMsRaw = identity2.targetMs;
+          this.lastCountdownRaw = identity2.countdown;
+          this.lastIntervalRaw = identity2.interval;
           const zag = new Timer2(el, buildTimerProps(el, pushEvent, canPush));
           zag.init();
           this.timer = zag;
@@ -39990,7 +40265,31 @@ ${err}`);
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
-          (_a4 = this.timer) == null ? void 0 : _a4.updateProps(buildTimerProps(el, pushEvent, canPush));
+          const patch = __spreadValues({
+            id: el.id,
+            translations: parseTimerTranslations(el)
+          }, buildTimerCallbacks(el, pushEvent, canPush));
+          const startMsRaw = el.dataset.startMs;
+          if (startMsRaw !== this.lastStartMsRaw) {
+            patch.startMs = getNumber(el, "startMs");
+            this.lastStartMsRaw = startMsRaw;
+          }
+          const targetMsRaw = el.dataset.targetMs;
+          if (targetMsRaw !== this.lastTargetMsRaw) {
+            patch.targetMs = getNumber(el, "targetMs");
+            this.lastTargetMsRaw = targetMsRaw;
+          }
+          const countdownRaw = el.dataset.countdown;
+          if (countdownRaw !== this.lastCountdownRaw) {
+            patch.countdown = getBoolean(el, "countdown");
+            this.lastCountdownRaw = countdownRaw;
+          }
+          const intervalRaw = el.dataset.interval;
+          if (intervalRaw !== this.lastIntervalRaw) {
+            patch.interval = getNumber(el, "interval");
+            this.lastIntervalRaw = intervalRaw;
+          }
+          (_a4 = this.timer) == null ? void 0 : _a4.updateProps(patch);
         },
         destroyed() {
           var _a4, _b, _c;
@@ -40670,10 +40969,10 @@ ${err}`);
   var init_toast = __esm({
     "../priv/static/toast.mjs"() {
       "use strict";
-      init_chunk_5HFWMYJG();
-      init_chunk_MOSXJRWI();
-      init_chunk_26XTEIHY();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6MIECCPA();
+      init_chunk_CBUVYVIR();
+      init_chunk_ZSA4KI2Y();
+      init_chunk_6AOEC32Q();
       anatomy29 = createAnatomy("toast").parts(
         "group",
         "root",
@@ -41244,6 +41543,7 @@ ${err}`);
             );
           });
           __publicField(this, "destroy", () => {
+            this.clearSpreadPropsCleanups();
             this.machine.stop();
             this.el.remove();
           });
@@ -41380,10 +41680,14 @@ ${err}`);
           __publicField(this, "groupEl");
           __publicField(this, "store");
           __publicField(this, "destroy", () => {
+            var _a4;
             for (const comp of this.toastComponents.values()) {
               comp.destroy();
             }
             this.toastComponents.clear();
+            (_a4 = this.unsubscribe) == null ? void 0 : _a4.call(this);
+            this.unsubscribe = void 0;
+            this.clearSpreadPropsCleanups();
             this.machine.stop();
           });
           this.store = props.store;
@@ -41561,8 +41865,10 @@ ${err}`);
             if (pr !== void 0) patch.priority = pr;
             return patch;
           };
+          const matchesGroup = (payload) => typeof payload.groupId === "string" && payload.groupId === this.groupId;
           const handleDismissPayload = (payload) => {
-            const st = getToastStore(payload.groupId || this.groupId);
+            if (!matchesGroup(payload)) return;
+            const st = getToastStore(payload.groupId);
             if (!st) return;
             try {
               st.dismiss(payload.id);
@@ -41571,7 +41877,8 @@ ${err}`);
             }
           };
           const handleRemovePayload = (payload) => {
-            const st = getToastStore(payload.groupId || this.groupId);
+            if (!matchesGroup(payload)) return;
+            const st = getToastStore(payload.groupId);
             if (!st) return;
             try {
               st.remove(payload.id);
@@ -41582,7 +41889,8 @@ ${err}`);
           this.handlers = [];
           this.handlers.push(
             this.handleEvent("toast-create", (payload) => {
-              const st = getToastStore(payload.groupId || this.groupId);
+              if (!matchesGroup(payload)) return;
+              const st = getToastStore(payload.groupId);
               if (!st) return;
               try {
                 st.create(buildCreateOptions(payload, true));
@@ -41593,8 +41901,9 @@ ${err}`);
           );
           this.handlers.push(
             this.handleEvent("toast-update", (payload) => {
-              const st = getToastStore(payload.groupId || this.groupId);
-              if (!st || !payload.id) return;
+              if (!matchesGroup(payload) || !payload.id) return;
+              const st = getToastStore(payload.groupId);
+              if (!st) return;
               try {
                 st.update(payload.id, buildUpdatePatch(payload, true));
               } catch (error) {
@@ -41606,7 +41915,8 @@ ${err}`);
           this.handlers.push(this.handleEvent("toast-remove", handleRemovePayload));
           const onToastCreate = (event) => {
             const { detail } = event;
-            const st = getToastStore(detail.groupId || this.groupId);
+            if (!matchesGroup(detail)) return;
+            const st = getToastStore(detail.groupId);
             if (!st) return;
             try {
               st.create(buildCreateOptions(detail, false));
@@ -41616,8 +41926,9 @@ ${err}`);
           };
           const onToastUpdate = (event) => {
             const { detail } = event;
-            const st = getToastStore(detail.groupId || this.groupId);
-            if (!st || !detail.id) return;
+            if (!matchesGroup(detail) || !detail.id) return;
+            const st = getToastStore(detail.groupId);
+            if (!st) return;
             try {
               st.update(detail.id, buildUpdatePatch(detail, false));
             } catch (error) {
@@ -41848,6 +42159,41 @@ ${err}`);
       }
     };
   }
+  function createZagLiveHook(config) {
+    return {
+      mounted() {
+        const component = config.mount(this);
+        component.init();
+        this[config.key] = component;
+      },
+      beforeUpdate() {
+        var _a4;
+        if (config.controlledKeys) {
+          this.beforeAttrs = snapshotDataset(this.el, config.controlledKeys);
+        }
+        (_a4 = config.beforeUpdate) == null ? void 0 : _a4.call(config, this);
+      },
+      updated() {
+        var _a4;
+        const component = this[config.key];
+        if (!component) return;
+        try {
+          (_a4 = config.update) == null ? void 0 : _a4.call(config, this, component);
+        } finally {
+          this.beforeAttrs = void 0;
+        }
+      },
+      destroyed() {
+        var _a4;
+        const component = this[config.key];
+        if (!component) return;
+        (_a4 = config.destroy) == null ? void 0 : _a4.call(config, this, component);
+        component.destroy();
+        this[config.key] = void 0;
+        this.beforeAttrs = void 0;
+      }
+    };
+  }
   function createTooltipCallbacks(el, pushEvent, liveSocket) {
     const onTriggerValueChange = (details) => {
       var _a4;
@@ -41888,15 +42234,32 @@ ${err}`);
     if (interactive && (raw === void 0 || raw === 0)) return 400;
     return raw;
   }
+  function tooltipProps(el, hook) {
+    return __spreadValues({
+      id: el.id,
+      defaultOpen: getBoolean(el, "defaultOpen"),
+      disabled: getBoolean(el, "disabled"),
+      dir: getDir(el),
+      openDelay: getNumber(el, "openDelay"),
+      closeDelay: getCloseDelay(el),
+      positioning: readPositioningOptions(el),
+      closeOnEscape: getBoolean(el, "closeOnEscape"),
+      closeOnClick: getBoolean(el, "closeOnClick"),
+      closeOnPointerDown: getBoolean(el, "closeOnPointerDown"),
+      closeOnScroll: getBoolean(el, "closeOnScroll"),
+      interactive: getBoolean(el, "interactive")
+    }, createTooltipCallbacks(el, hook.pushEvent.bind(hook), hook.liveSocket));
+  }
   var anatomy30, parts30, getTriggerId11, getContentId11, getArrowId2, getPositionerId8, getPositionerEl8, getTriggerEls4, getActiveTriggerEl3, store, and11, not12, machine30, Tooltip, TooltipHook;
   var init_tooltip = __esm({
     "../priv/static/tooltip.mjs"() {
       "use strict";
-      init_chunk_DVA7SQMW();
-      init_chunk_QU36267Q();
-      init_chunk_JF64R7HW();
+      init_chunk_MHRYIVD2();
+      init_chunk_C4KEB3WL();
+      init_chunk_YUSIPE4B();
+      init_chunk_TKOH2OAC();
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       anatomy30 = createAnatomy("tooltip").parts("trigger", "arrow", "arrowTip", "positioner", "content");
       parts30 = anatomy30.build();
       getTriggerId11 = (scope, value) => {
@@ -42379,81 +42742,39 @@ ${err}`);
           if (arrowTipEl) this.spreadProps(arrowTipEl, this.api.getArrowTipProps());
         }
       };
-      TooltipHook = {
-        mounted() {
-          const el = this.el;
-          const pushEvent = this.pushEvent.bind(this);
-          const liveSocket = this.liveSocket;
-          const positioning = readPositioningOptions(el);
-          const callbacks = createTooltipCallbacks(el, pushEvent, liveSocket);
-          const tooltip = new Tooltip(el, __spreadValues({
-            id: el.id,
-            defaultOpen: getBoolean(el, "defaultOpen"),
-            disabled: getBoolean(el, "disabled"),
-            dir: getDir(el),
-            openDelay: getNumber(el, "openDelay"),
-            closeDelay: getCloseDelay(el),
-            positioning,
-            closeOnEscape: getBoolean(el, "closeOnEscape"),
-            closeOnClick: getBoolean(el, "closeOnClick"),
-            closeOnPointerDown: getBoolean(el, "closeOnPointerDown"),
-            closeOnScroll: getBoolean(el, "closeOnScroll"),
-            interactive: getBoolean(el, "interactive")
-          }, callbacks));
-          tooltip.init();
-          this.tooltip = tooltip;
-          this.onSetOpen = (event) => {
+      TooltipHook = createZagLiveHook({
+        key: "tooltip",
+        mount(hook) {
+          const el = hook.el;
+          const tooltip = new Tooltip(el, tooltipProps(el, hook));
+          hook.onSetOpen = (event) => {
             const { open } = event.detail;
             tooltip.api.setOpen(open);
           };
-          el.addEventListener("corex:tooltip:set-open", this.onSetOpen);
-          this.handlers = [];
-          this.handlers.push(
-            this.handleEvent("tooltip_set_open", (payload) => {
+          el.addEventListener("corex:tooltip:set-open", hook.onSetOpen);
+          hook.handlers = [];
+          hook.handlers.push(
+            hook.handleEvent("tooltip_set_open", (payload) => {
               if (!idMatches(el.id, readPayloadId(payload))) return;
               tooltip.api.setOpen(payload.open);
             })
           );
+          return tooltip;
         },
-        updated() {
-          var _a4;
-          const el = this.el;
-          const pushEvent = this.pushEvent.bind(this);
-          const liveSocket = this.liveSocket;
-          const positioning = readPositioningOptions(el);
-          const callbacks = createTooltipCallbacks(el, pushEvent, liveSocket);
-          (_a4 = this.tooltip) == null ? void 0 : _a4.updateProps(__spreadValues({
-            id: el.id,
-            disabled: getBoolean(el, "disabled"),
-            dir: getDir(el),
-            openDelay: getNumber(el, "openDelay"),
-            closeDelay: getCloseDelay(el),
-            positioning,
-            closeOnEscape: getBoolean(el, "closeOnEscape"),
-            closeOnClick: getBoolean(el, "closeOnClick"),
-            closeOnPointerDown: getBoolean(el, "closeOnPointerDown"),
-            closeOnScroll: getBoolean(el, "closeOnScroll"),
-            interactive: getBoolean(el, "interactive")
-          }, callbacks));
-          queueMicrotask(() => {
-            var _a5, _b, _c, _d;
-            (_a5 = this.tooltip) == null ? void 0 : _a5.syncDom();
-            (_d = (_b = this.tooltip) == null ? void 0 : (_c = _b.api).reposition) == null ? void 0 : _d.call(_c);
-          });
+        update(hook, tooltip) {
+          tooltip.updateProps(tooltipProps(hook.el, hook));
         },
-        destroyed() {
-          var _a4;
-          if (this.onSetOpen) {
-            this.el.removeEventListener("corex:tooltip:set-open", this.onSetOpen);
+        destroy(hook) {
+          if (hook.onSetOpen) {
+            hook.el.removeEventListener("corex:tooltip:set-open", hook.onSetOpen);
           }
-          if (this.handlers) {
-            for (const handler of this.handlers) {
-              this.removeHandleEvent(handler);
+          if (hook.handlers) {
+            for (const handler of hook.handlers) {
+              hook.removeHandleEvent(handler);
             }
           }
-          (_a4 = this.tooltip) == null ? void 0 : _a4.destroy();
         }
-      };
+      });
     }
   });
 
@@ -42507,10 +42828,11 @@ ${err}`);
   var init_toggle = __esm({
     "../priv/static/toggle.mjs"() {
       "use strict";
-      init_chunk_XL4XUS2C();
+      init_chunk_BGER3KYP();
+      init_chunk_TKOH2OAC();
       init_chunk_77HPO22C();
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       anatomy31 = createAnatomy("toggle", ["root", "indicator"]);
       parts31 = anatomy31.build();
       machine31 = createMachine({
@@ -42632,14 +42954,22 @@ ${err}`);
             });
           });
         },
+        beforeUpdate() {
+          this.beforeAttrs = snapshotDataset(this.el, ["pressed"]);
+        },
         updated() {
           var _a4;
-          (_a4 = this.zagToggle) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
-            id: this.el.id
-          }, readPressedControlledZagUpdate(this.el)), {
-            disabled: getBoolean(this.el, "disabled"),
-            dir: getDir(this.el)
-          }));
+          try {
+            const pressedPatch = readPressedControlledZagUpdate(this.el, this.beforeAttrs);
+            (_a4 = this.zagToggle) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
+              id: this.el.id
+            }, pressedPatch), {
+              disabled: getBoolean(this.el, "disabled"),
+              dir: getDir(this.el)
+            }));
+          } finally {
+            this.beforeAttrs = void 0;
+          }
         },
         destroyed() {
           var _a4, _b, _c;
@@ -42801,10 +43131,11 @@ ${err}`);
   var init_toggle_group = __esm({
     "../priv/static/toggle-group.mjs"() {
       "use strict";
-      init_chunk_XL4XUS2C();
+      init_chunk_BGER3KYP();
+      init_chunk_TKOH2OAC();
       init_chunk_77HPO22C();
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       anatomy32 = createAnatomy("toggle-group").parts("root", "item");
       parts32 = anatomy32.build();
       getRootId25 = (ctx) => {
@@ -43080,17 +43411,24 @@ ${err}`);
             });
           });
         },
+        beforeUpdate() {
+          this.beforeAttrs = snapshotDataset(this.el, ["value"]);
+        },
         updated() {
           var _a4;
-          (_a4 = this.toggleGroup) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({}, readStringListControlledZagUpdate(this.el, "value", "defaultValue")), {
-            deselectable: getBoolean(this.el, "deselectable"),
-            loopFocus: getBoolean(this.el, "loopFocus"),
-            rovingFocus: getBoolean(this.el, "rovingFocus"),
-            disabled: getBoolean(this.el, "disabled"),
-            multiple: getBoolean(this.el, "multiple"),
-            orientation: getString(this.el, "orientation"),
-            dir: getDir(this.el)
-          }));
+          try {
+            (_a4 = this.toggleGroup) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({}, readStringListControlledZagUpdate(this.el, "value", "defaultValue", this.beforeAttrs)), {
+              deselectable: getBoolean(this.el, "deselectable"),
+              loopFocus: getBoolean(this.el, "loopFocus"),
+              rovingFocus: getBoolean(this.el, "rovingFocus"),
+              disabled: getBoolean(this.el, "disabled"),
+              multiple: getBoolean(this.el, "multiple"),
+              orientation: getString(this.el, "orientation"),
+              dir: getDir(this.el)
+            }));
+          } finally {
+            this.beforeAttrs = void 0;
+          }
         },
         destroyed() {
           var _a4, _b, _c;
@@ -43718,12 +44056,12 @@ ${err}`);
     "../priv/static/tree-view.mjs"() {
       "use strict";
       init_chunk_JDGMEOQK();
-      init_chunk_Z5W52KDP();
-      init_chunk_4E7EICYJ();
+      init_chunk_4AOGROPJ();
+      init_chunk_SGRHPBNS();
       init_chunk_HZLPIQBD();
       init_chunk_77HPO22C();
       init_chunk_LNVRIZ4K();
-      init_chunk_YGZLYEUJ();
+      init_chunk_6AOEC32Q();
       anatomy33 = createAnatomy("tree-view").parts(
         "branch",
         "branchContent",
