@@ -73,7 +73,17 @@ defmodule Corex.MixProject do
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
       {:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false},
       {:tidewave, "~> 0.5.5", only: :dev}
-    ]
+    ] ++ maybe_json_polyfill()
+  end
+
+  defp maybe_json_polyfill do
+    case Integer.parse(System.otp_release()) do
+      {otp, _} when otp >= 27 ->
+        []
+
+      _ ->
+        [{:json_polyfill, "~> 0.2 or ~> 1.0", only: [:dev, :test]}]
+    end
   end
 
   defp aliases do
