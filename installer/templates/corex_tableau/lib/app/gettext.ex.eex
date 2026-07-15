@@ -1,0 +1,17 @@
+defmodule <%= @app_module %>.Gettext do
+  @moduledoc false
+
+  use Gettext.Backend,
+    otp_app: :<%= @otp_app %>,
+    default_locale: "en",
+    locales: ~w(en fr ar)
+
+  def default_locale, do: "en"
+
+  def locales do
+    case Gettext.known_locales(__MODULE__) do
+      [] -> ~w(en fr ar)
+      locales -> locales
+    end
+  end
+end

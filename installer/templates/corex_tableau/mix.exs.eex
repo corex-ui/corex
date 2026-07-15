@@ -16,7 +16,7 @@ defmodule <%= @app_module %>.MixProject do
   def application do
     [
       mod: {<%= @app_module %>.Application, []},
-      extra_applications: [:logger]
+      extra_applications: [:logger<%= if @lang do %>, :localize<% end %>]
     ]
   end
 
@@ -37,6 +37,10 @@ defmodule <%= @app_module %>.MixProject do
        depth: 1},
       {:corex, <%= @corex_dep_source %>},
 <%= if @design do %>      {:corex_design, <%= @corex_design_dep_source %>},
+<% end %><%= if @mcp do %>      {:corex_mcp, <%= @corex_mcp_dep_source %>},
+<% end %><%= if @lang do %>      {:gettext, "~> 1.0"},
+      {:gettext_sigils, "~> 0.5"},
+      {:localize_web, "~> 0.5"},
 <% end %>      {:floki, "~> 0.38"},
       {:mdex, "~> 0.4"}
     ]
@@ -44,7 +48,7 @@ defmodule <%= @app_module %>.MixProject do
 
   defp aliases do
     [
-      setup: ["deps.get"<%= if @design do %>, "corex.design.build"<% end %>],
+      setup: ["deps.get"<%= if @lang do %>, "localize.download_locales"<% end %><%= if @design do %>, "corex.design.build"<% end %>],
 <%= if @design do %>      "assets.build": [
         "corex.design.build",
         "tailwind default",

@@ -2,7 +2,10 @@ defmodule <%= @app_module %>.PostLayout do
   use Tableau.Layout, layout: <%= @app_module %>.RootLayout
   use Phoenix.Component
   use Corex
+<%= if @lang do %>  use <%= @app_module %>.GettextSigil
 
+  alias <%= @app_module %>.Locale
+<% end %>
   def template(assigns) do
     page = assigns.page
     title = page[:title] || "Post"
@@ -27,12 +30,13 @@ defmodule <%= @app_module %>.PostLayout do
       |> Map.put(:post_description, description)
       |> Map.put(:post_date_label, date_label)
       |> Map.put(:post_tags, tags)
-
+<%= if @lang do %>      |> Map.put(:blog_path, Locale.swap_path("/blog", Locale.current(page)))
+<% end %>
     ~H"""
     <article class="flex w-full max-w-3xl flex-col gap-space-lg">
       <header class="flex flex-col gap-space border-b border-border pb-space-lg">
-        <.navigate to="/blog" class="link w-fit">
-          <.heroicon name="hero-arrow-left" /> Back to blog
+        <.navigate to={<%= if @lang do %>@blog_path<% else %>"/blog"<% end %>} class="link w-fit">
+          <.heroicon name="hero-arrow-left" /><%= if @lang do %> {~t"Back to blog"}<% else %> Back to blog<% end %>
         </.navigate>
         <div :if={@post_date_label} class="text-sm text-ink-muted">{@post_date_label}</div>
         <h1 class="m-0 text-4xl font-bold tracking-tight">{@post_title}</h1>
