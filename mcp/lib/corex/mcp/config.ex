@@ -26,7 +26,7 @@ defmodule Corex.MCP.Config do
   end
 
   defp verbose_errors_from(nil),
-    do: Application.get_env(:corex, :mcp_verbose_errors, false)
+    do: Application.get_env(:corex_mcp, :mcp_verbose_errors, false)
 
   defp verbose_errors_from(value) when is_boolean(value), do: value
 end

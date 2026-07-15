@@ -1,5 +1,25 @@
 # Changelog
 
+## Unreleased
+
+### Breaking changes
+
+- **`mix corex.code` renamed to `mix corex.design.code`.** Update scripts and docs that call the old task name.
+- **Multi-value datasets use JSON** (`["a","b"]`) for `data-value` / `data-default-value` (and tree expanded/selected defaults). Comma-separated lists are no longer emitted.
+- **`FormField.assign_form_field/2` leaves `invalid` off by default.** Pass `auto_invalid` to derive alert borders from visible changeset errors (`used_input?/1`), or set `invalid={true}` / `invalid={false}` explicitly (explicit wins).
+- **`form_field` / `field_used` are no longer public attrs** on select/combobox; they remain private assigns set by `field={...}`.
+- **MCP moved to Hex package `corex_mcp`.** Add `{:corex_mcp, "~> 0.2", only: :dev}` and keep `plug Corex.MCP`. Config keys are under `config :corex_mcp` (`mcp_root`, `mcp_verbose_errors`, `debug`). Tools expanded: enriched `get_component` (attrs/slots/modifiers), plus `list_modifiers`, `get_component_style`, `list_themes`, `design_guide`.
+- **Form components require `:id` when no `:field`:** form controls no longer auto-generate random ids via `System.unique_integer`. Pass `id` explicitly, or use `field={@form[:name]}` so Phoenix `FormField.id` is used (Ecto changesets with `to_form/1` provide stable ids). Non-form components (accordion, dialog, tabs, etc.) still auto-generate ids when omitted. Random default `name-*` values on form controls were also removed (`name` defaults to `nil`).
+See the [update guide](guides/update.html) for migration notes.
+
+### Internal
+
+- **JSON via OTP `:json`:** `corex`, `corex_design`, and `corex_mcp` no longer depend on Jason. Use OTP 27+ or add `json_polyfill` on OTP 26.
+- Shared `Corex.Connect.ItemNav` for item `to` / redirect / new_tab dataset attrs.
+- Split `Corex.Helpers` into `Corex.Attrs`, `Corex.List.Normalize`, and `Corex.ValueBinding` (Helpers re-exports).
+- DocParity anatomy mapping uses explicit markers (`Corex.DocParity.Markers` and optional `# @parity anatomy:` comments on demos).
+- Demo id guard test ensures form `*_example` openings pass `id` or `field`.
+
 ## 0.1.2
 
 ### Bug fixes

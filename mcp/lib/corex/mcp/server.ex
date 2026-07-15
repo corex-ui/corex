@@ -12,7 +12,9 @@ defmodule Corex.MCP.Server do
   import Plug.Conn
 
   alias Corex.MCP.Config
+  alias Corex.MCP.Json
   alias Corex.MCP.Tools.Components, as: McpToolComponents
+  alias Corex.MCP.Tools.Design, as: McpToolDesign
   alias Corex.MCP.Tools.Installation, as: McpToolInstallation
 
   @protocol_version "2025-03-26"
@@ -26,7 +28,7 @@ defmodule Corex.MCP.Server do
   @doc "Loads tool specs and callbacks into persistent term storage."
   def init_tools do
     tools =
-      [McpToolComponents.tools(), McpToolInstallation.tools()]
+      [McpToolComponents.tools(), McpToolDesign.tools(), McpToolInstallation.tools()]
       |> Enum.flat_map(& &1)
       |> maybe_append_test_tools()
 
@@ -36,7 +38,7 @@ defmodule Corex.MCP.Server do
   end
 
   defp maybe_append_test_tools(tools) do
-    if Application.get_env(:corex, :mcp_test_raise_tool, false) do
+    if Application.get_env(:corex_mcp, :mcp_test_raise_tool, false) do
       tools ++ [test_raise_tool()]
     else
       tools
@@ -229,10 +231,10 @@ defmodule Corex.MCP.Server do
   defp verbose_errors?(%Config{verbose_errors: value}), do: value
 
   defp verbose_errors?(assigns) when is_map(assigns) do
-    Map.get(assigns, :verbose_errors, Application.get_env(:corex, :mcp_verbose_errors, false))
+    Map.get(assigns, :verbose_errors, Application.get_env(:corex_mcp, :mcp_verbose_errors, false))
   end
 
-  defp verbose_errors?(_), do: Application.get_env(:corex, :mcp_verbose_errors, false)
+  defp verbose_errors?(_), do: Application.get_env(:corex_mcp, :mcp_verbose_errors, false)
 
   defp handle_message(%{"method" => "notifications/initialized"} = message, _assigns) do
     mcp_debug("Received initialized notification")
@@ -312,7 +314,7 @@ defmodule Corex.MCP.Server do
   defp send_json(conn, data) do
     conn
     |> put_resp_content_type("application/json")
-    |> send_resp(conn.status || 200, Corex.Json.encode!(data))
+    |> send_resp(conn.status || 200, Json.encode!(data))
   end
 
   defp send_jsonrpc_error(conn, id, code, message, data \\ nil) do
@@ -322,7 +324,7 @@ defmodule Corex.MCP.Server do
 
     conn
     |> put_resp_content_type("application/json")
-    |> send_resp(200, Corex.Json.encode!(%{jsonrpc: "2.0", id: id, error: error}))
+    |> send_resp(200, Json.encode!(%{jsonrpc: "2.0", id: id, error: error}))
   end
 
   defp maybe_put_error_data(error, nil), do: error
@@ -357,7 +359,7 @@ defmodule Corex.MCP.Server do
   end
 
   defp mcp_debug(message) do
-    if Application.get_env(:corex, :debug) do
+    if Application.get_env(:corex_mcp, :debug) || Application.get_env(:corex, :debug) do
       Logger.debug(message)
     end
   end

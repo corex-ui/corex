@@ -1,6 +1,8 @@
 defmodule Corex.MCP.Tools.Installation do
   @moduledoc false
 
+  alias Corex.MCP.Json
+
   @valid_scenarios ~W(new_project existing_project tableau_new all)
 
   def tools do
@@ -47,7 +49,7 @@ defmodule Corex.MCP.Tools.Installation do
   def installation_guide(_), do: {:error, :invalid_arguments}
 
   defp encode_guide(payload) do
-    {:ok, Corex.Json.encode!(payload)}
+    {:ok, Json.encode!(payload)}
   end
 
   defp full_guide do
@@ -239,18 +241,25 @@ defmodule Corex.MCP.Tools.Installation do
       },
       %{
         step: 7,
-        title: "Optional: mount Corex MCP in dev (AI tools)",
-        edit_files: ["lib/my_app_web/endpoint.ex"],
-        note: "Served on the same port as Phoenix; never enable in prod.",
-        snippet: mcp_mount_snippet()[:plug_block]
+        title: "Optional: Corex MCP in dev (AI tools)",
+        edit_files: ["mix.exs", "lib/my_app_web/endpoint.ex"],
+        note: "Add the corex_mcp Hex package, then mount the plug. Never enable in prod.",
+        snippet: """
+        # mix.exs deps:
+            {:corex_mcp, \"~> #{corex_hex_version()}\", only: :dev}
+
+        # lib/my_app_web/endpoint.ex:
+        #{mcp_mount_snippet()[:plug_block]}
+        """
       }
     ]
   end
 
   defp mcp_mount_snippet do
     %{
+      dependency: "{:corex_mcp, \"~> #{corex_hex_version()}\", only: :dev}",
       plug_block: """
-      if Mix.env() == :dev do
+      if Mix.env() in [:dev, :test] do
         plug Corex.MCP
       end
       """,

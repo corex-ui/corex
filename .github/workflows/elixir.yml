@@ -97,6 +97,30 @@ jobs:
         env:
           MIX_ENV: test
 
+      - name: Install design dependencies
+        working-directory: design
+        run: mix deps.get
+        env:
+          MIX_ENV: test
+
+      - name: Elixir — design
+        working-directory: design
+        run: mix lint
+        env:
+          MIX_ENV: test
+
+      - name: Install mcp dependencies
+        working-directory: mcp
+        run: mix deps.get
+        env:
+          MIX_ENV: test
+
+      - name: Elixir — mcp
+        working-directory: mcp
+        run: mix lint
+        env:
+          MIX_ENV: test
+
       - name: Set up pnpm
         uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
         with:
@@ -201,7 +225,8 @@ jobs:
           INST_V=$(grep '@version' installer/mix.exs | head -1 | sed -n 's/.*"\([^"]*\)".*/\1/p')
           DESIGN_V=$(grep '@version' design/mix.exs | head -1 | sed -n 's/.*"\([^"]*\)".*/\1/p')
           DESIGN_PKG_V=$(sed -n 's/.*"version": "\([^"]*\)".*/\1/p' design/package.json | head -1)
-          test "$COREX_V" = "$PKG_V" && test "$COREX_V" = "$INST_V" && test "$COREX_V" = "$DESIGN_V" && test "$COREX_V" = "$DESIGN_PKG_V"
+          MCP_V=$(grep '@version' mcp/mix.exs | head -1 | sed -n 's/.*"\([^"]*\)".*/\1/p')
+          test "$COREX_V" = "$PKG_V" && test "$COREX_V" = "$INST_V" && test "$COREX_V" = "$DESIGN_V" && test "$COREX_V" = "$DESIGN_PKG_V" && test "$COREX_V" = "$MCP_V"
 
       - name: Set up pnpm
         if: matrix.coveralls
@@ -234,6 +259,7 @@ jobs:
     runs-on: ubuntu-24.04
 
     strategy:
+      fail-fast: false
       matrix:
         include:
           - elixir: 1.17.3
@@ -410,11 +436,63 @@ jobs:
         working-directory: design
         run: mix test
 
+  mcp-tests:
+    name: MCP tests (OTP ${{ matrix.otp }} | Elixir ${{ matrix.elixir }})
+    runs-on: ubuntu-24.04
+    env:
+      MIX_ENV: test
+
+    strategy:
+      matrix:
+        include:
+          - elixir: 1.17.3
+            otp: 26.2.5.2
+          - elixir: 1.18.4
+            otp: 27.3
+          - elixir: 1.18.4
+            otp: 28.0.1
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+
+      - name: Set up Elixir
+        uses: erlef/setup-beam@3580539ceec3dc05b0ed51e9e10b08eb7a7c2bb4
+        with:
+          elixir-version: ${{ matrix.elixir }}
+          otp-version: ${{ matrix.otp }}
+
+      - name: Restore mcp dependencies cache
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306
+        with:
+          path: |
+            mcp/deps
+            mcp/_build
+            deps
+            _build
+            design/deps
+            design/_build
+          key: deps-mcp-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('mcp/mix.lock', 'mix.lock', 'design/mix.lock') }}
+          restore-keys: |
+            deps-mcp-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}
+
+      - name: Install mcp dependencies
+        working-directory: mcp
+        run: mix deps.get
+
+      - name: Compile mcp (warnings as errors)
+        working-directory: mcp
+        run: mix compile --warnings-as-errors
+
+      - name: Run mcp tests
+        working-directory: mcp
+        run: mix test
+
   integration-tests:
     name: Integration tests (OTP ${{ matrix.otp }} | Elixir ${{ matrix.elixir }}${{ matrix.phx_new_suffix }})
     runs-on: ubuntu-24.04
 
     strategy:
+      fail-fast: false
       matrix:
         include:
           - elixir: 1.17.3
@@ -502,7 +580,7 @@ jobs:
         working-directory: integration_test
         env:
           MIX_ENV: test
-        run: mix test --timeout 1200000
+        run: mix test --exclude extended --timeout 1200000
 
       - name: Run integration tests (database)
         working-directory: integration_test
@@ -513,4 +591,10 @@ jobs:
           PGPASSWORD: postgres
           PGPORT: "5432"
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
-        run: mix test --include database --timeout 1200000
+        run: mix test --only database --timeout 1200000
+
+      - name: Run integration tests (extended)
+        working-directory: integration_test
+        env:
+          MIX_ENV: test
+        run: mix test --only extended --timeout 1200000

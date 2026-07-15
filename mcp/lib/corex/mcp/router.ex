@@ -10,7 +10,7 @@ defmodule Corex.MCP.Router do
   import Plug.Conn
   require Logger
 
-  alias Corex.Json
+  alias Corex.MCP.Json
   alias Corex.MCP.Server
 
   @remote_access_forbidden """
@@ -26,7 +26,7 @@ defmodule Corex.MCP.Router do
   @json_parser Plug.Parsers.init(
                  parsers: [:json],
                  pass: [],
-                 json_decoder: Json.encoder()
+                 json_decoder: Json
                )
 
   plug(:match)
@@ -136,7 +136,8 @@ defmodule Corex.MCP.Router do
     %{
       name: "corex",
       framework_type: "phoenix",
-      corex_version: package_version(:corex)
+      corex_version: package_version(:corex),
+      corex_mcp_version: package_version(:corex_mcp)
     }
   end
 

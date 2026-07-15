@@ -37,6 +37,10 @@ defmodule E2eWeb.CorexMcpTest do
       names = Enum.map(tools, & &1["name"])
       assert "list_components" in names
       assert "get_component" in names
+      assert "list_modifiers" in names
+      assert "get_component_style" in names
+      assert "list_themes" in names
+      assert "design_guide" in names
       assert "installation_guide" in names
 
       for tool <- tools do
@@ -116,6 +120,55 @@ defmodule E2eWeb.CorexMcpTest do
       decoded = Jason.decode!(text)
       assert is_binary(decoded["docs"])
       assert decoded["docs"] != ""
+      assert is_list(decoded["attrs"])
+      assert decoded["design_available"] == true
+      assert decoded["css_id"] == "accordion"
+    end
+
+    test "tools/call list_modifiers", %{conn: conn} do
+      body = %{
+        "jsonrpc" => "2.0",
+        "id" => 4,
+        "method" => "tools/call",
+        "params" => %{
+          "name" => "list_modifiers",
+          "arguments" => %{}
+        }
+      }
+
+      conn =
+        conn
+        |> put_req_header("content-type", "application/json")
+        |> post(@mcp_path, Jason.encode!(body))
+
+      assert response(conn, 200)
+      assert %{"result" => %{"content" => [%{"text" => text}]}} = json_response(conn, 200)
+      decoded = Jason.decode!(text)
+      assert decoded["pattern"] =~ "ui-"
+      assert "accent" in decoded["semantic"]["roles"]
+    end
+
+    test "tools/call get_component_style for accordion", %{conn: conn} do
+      body = %{
+        "jsonrpc" => "2.0",
+        "id" => 5,
+        "method" => "tools/call",
+        "params" => %{
+          "name" => "get_component_style",
+          "arguments" => %{"id" => "accordion"}
+        }
+      }
+
+      conn =
+        conn
+        |> put_req_header("content-type", "application/json")
+        |> post(@mcp_path, Jason.encode!(body))
+
+      assert response(conn, 200)
+      assert %{"result" => %{"content" => [%{"text" => text}]}} = json_response(conn, 200)
+      decoded = Jason.decode!(text)
+      assert decoded["css_id"] == "accordion"
+      assert is_list(decoded["examples"])
     end
 
     test "rejects request with Origin header", %{
