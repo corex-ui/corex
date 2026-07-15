@@ -1,0 +1,47 @@
+defmodule <%= @app_module %>.Mode do
+  use Phoenix.Component
+  use Corex
+
+  def head_script do
+    Phoenix.HTML.raw("""
+    <script>
+      try {
+        const m = localStorage.getItem("data-mode");
+        const prefersDark = matchMedia("(prefers-color-scheme: dark)").matches;
+        const mode = m === "dark" || m === "light" ? m : (prefersDark ? "dark" : "light");
+        document.documentElement.setAttribute("data-mode", mode);
+      } catch (_) {}
+    </script>
+    """)
+  end
+
+  def current(assigns) do
+    case Map.get(assigns, :mode) do
+      "dark" -> "dark"
+      _ -> "light"
+    end
+  end
+
+  attr :mode, :string, required: true
+
+  def mode_toggle(assigns) do
+    ~H"""
+    <.toggle
+      id="mode-switcher"
+      class="toggle ui-size-sm shrink-0"
+      data-toggle-dual-label
+      pressed={@mode == "dark"}
+      on_pressed_change_client="phx:set-mode"
+    >
+      <span>
+        <.heroicon name="hero-moon" />
+        <span class="sr-only">Dark mode</span>
+      </span>
+      <span data-pressed>
+        <.heroicon name="hero-sun" />
+        <span class="sr-only">Light mode</span>
+      </span>
+    </.toggle>
+    """
+  end
+end

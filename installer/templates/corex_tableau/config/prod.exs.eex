@@ -1,0 +1,4 @@
+<% _ = assigns %>
+import Config
+
+config :tableau, Tableau.PostExtension, future: false, dir: ["_posts"]

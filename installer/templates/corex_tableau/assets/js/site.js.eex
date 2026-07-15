@@ -1,0 +1,48 @@
+import {Socket} from "phoenix"
+import {LiveSocket} from "phoenix_live_view"
+<%= if @corex_js_import == "corex" do %>
+import {hooks} from "corex/hooks"
+<% else %>
+import {hooks} from <%= inspect(String.replace(@corex_js_import, "corex.mjs", "hooks.mjs")) %>
+<% end %>
+
+const csrfToken = document
+  .querySelector("meta[name='csrf-token']")
+  ?.getAttribute("content")
+
+const liveSocket = new LiveSocket("/live", Socket, {
+  longPollFallbackMs: 2500,
+  params: {_csrf_token: csrfToken},
+  hooks: {
+    ...hooks({
+<%= if @theme do %>      Select: () => import(<%= if @corex_js_import == "corex" do %>"corex/select"<% else %><%= inspect(String.replace(@corex_js_import, "corex.mjs", "select.mjs")) %><% end %>),
+<% end %><%= if @mode do %>      Toggle: () => import(<%= if @corex_js_import == "corex" do %>"corex/toggle"<% else %><%= inspect(String.replace(@corex_js_import, "corex.mjs", "toggle.mjs")) %><% end %>),
+<% end %>      Toast: () => import(<%= if @corex_js_import == "corex" do %>"corex/toast"<% else %><%= inspect(String.replace(@corex_js_import, "corex.mjs", "toast.mjs")) %><% end %>),
+    }),
+  },
+})
+
+liveSocket.connect()
+<%= if @mode do %>
+window.addEventListener("phx:set-mode", (e) => {
+  const detail = e.detail
+  let mode
+  if (typeof detail?.pressed === "boolean") {
+    mode = detail.pressed ? "dark" : "light"
+  } else {
+    const value = detail?.value
+    mode = Array.isArray(value) && value[0] ? value[0] : "light"
+  }
+  localStorage.setItem("data-mode", mode)
+  document.documentElement.setAttribute("data-mode", mode)
+})
+<% end %><%= if @theme do %>
+window.addEventListener("phx:set-theme", (e) => {
+  const value = e.detail?.value
+  const themes = <%= inspect(@themes) %>
+  const defaultTheme = "<%= @default_theme %>"
+  const theme = Array.isArray(value) && value[0] && themes.includes(value[0]) ? value[0] : defaultTheme
+  localStorage.setItem("data-theme", theme)
+  document.documentElement.setAttribute("data-theme", theme)
+})
+<% end %>

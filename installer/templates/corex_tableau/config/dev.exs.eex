@@ -1,0 +1,5 @@
+import Config
+<%= if @mcp do %>
+config :<%= @otp_app %>, :mcp_enabled, true
+<% end %>
+config :tableau, Tableau.PostExtension, future: true, dir: ["_posts", "_drafts"]

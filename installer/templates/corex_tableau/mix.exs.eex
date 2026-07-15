@@ -1,0 +1,72 @@
+defmodule <%= @app_module %>.MixProject do
+  use Mix.Project
+
+  def project do
+    [
+      app: :<%= @otp_app %>,
+      version: "0.1.0",
+      elixir: "~> 1.17",
+      start_permanent: Mix.env() == :prod,
+<%= if @design do %>      compilers: Mix.compilers() ++ [:corex_design],
+<% end %>      aliases: aliases(),
+      deps: deps()
+    ]
+  end
+
+  def application do
+    [
+      mod: {<%= @app_module %>.Application, []},
+      extra_applications: [:logger]
+    ]
+  end
+
+  defp deps do
+    [
+      {:tableau, "~> 0.30"},
+      {:jason, "~> 1.0"},
+      {:tailwind, "~> 0.3", runtime: Mix.env() == :dev},
+      {:phoenix_live_view, "~> 1.0"},
+      {:esbuild, "~> 0.10", runtime: Mix.env() == :dev},
+      {:bandit, "~> 1.0"},
+      {:heroicons,
+       github: "tailwindlabs/heroicons",
+       tag: "v2.2.0",
+       sparse: "optimized",
+       app: false,
+       compile: false,
+       depth: 1},
+      {:corex, <%= @corex_dep_source %>},
+<%= if @design do %>      {:corex_design, <%= @corex_design_dep_source %>},
+<% end %>      {:floki, "~> 0.38"},
+      {:mdex, "~> 0.4"}
+    ]
+  end
+
+  defp aliases do
+    [
+      setup: ["deps.get"<%= if @design do %>, "corex.design.build"<% end %>],
+<%= if @design do %>      "assets.build": [
+        "corex.design.build",
+        "tailwind default",
+        "esbuild default"
+      ],
+      build: [
+        "compile",
+        "corex.design.build",
+        "tableau.build",
+        "tailwind default --minify",
+        "esbuild default --minify"
+      ]
+<% else %>      "assets.build": [
+        "tailwind default",
+        "esbuild default"
+      ],
+      build: [
+        "compile",
+        "tableau.build",
+        "tailwind default --minify",
+        "esbuild default --minify"
+      ]
+<% end %>    ]
+  end
+end

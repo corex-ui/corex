@@ -1,0 +1,21 @@
+defmodule <%= @app_module %>.Config do
+  def site_name do
+    Application.get_env(:<%= @otp_app %>, :site_name, "<%= @app_module %>")
+  end
+
+  def themes do
+    Application.get_env(:<%= @otp_app %>, :themes, <%= inspect(@themes) %>)
+  end
+
+  def default_theme do
+    themes() |> List.first()
+  end
+
+  def mcp_enabled? do
+    Application.get_env(:<%= @otp_app %>, :mcp_enabled, false) == true
+  end
+
+  def mcp_port do
+    Application.get_env(:<%= @otp_app %>, :mcp_port, 4004)
+  end
+end
