@@ -400,7 +400,10 @@ jobs:
 
       - name: Install design dependencies
         working-directory: design
-        run: mix deps.get
+        run: |
+          mix deps.clean --unlock --unused
+          mix deps.get
+          mix deps.compile
 
       - name: Compile design (warnings as errors)
         working-directory: design

@@ -169,7 +169,7 @@ defmodule Corex.Design.Scales do
     }
   end
 
-  def json, do: Jason.encode!(export(), pretty: true)
+  def json, do: IO.iodata_to_binary(:json.encode(export()))
 
   defp configured_axis(axis) do
     parse_axis(axis, scales_input(), semantics_input())

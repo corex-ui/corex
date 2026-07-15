@@ -40,12 +40,19 @@ defmodule CorexDesign.MixProject do
 
   defp deps do
     [
-      {:jason, "~> 1.0"},
       {:color, "~> 0.11"},
       {:nimble_options, "~> 1.1"},
       {:ex_doc, "~> 0.40", only: :docs, runtime: false},
       {:excoveralls, "~> 0.18", only: :test}
-    ]
+    ] ++ maybe_json_polyfill()
+  end
+
+  defp maybe_json_polyfill do
+    if Code.ensure_loaded?(:json) do
+      []
+    else
+      [{:json_polyfill, "~> 0.2 or ~> 1.0"}]
+    end
   end
 
   defp aliases do
