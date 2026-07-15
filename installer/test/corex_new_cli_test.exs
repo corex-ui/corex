@@ -27,9 +27,9 @@ defmodule Corex.New.CliTest do
       assert Keyword.fetch!(opts, :design) == true
     end
 
-    test "does not enable design for lang only" do
+    test "enables design when lang is true and design unset" do
       opts = Cli.maybe_auto_enable_design([lang: true], notify: false)
-      refute Keyword.has_key?(opts, :design)
+      assert Keyword.fetch!(opts, :design) == true
     end
   end
 
@@ -72,6 +72,12 @@ defmodule Corex.New.CliTest do
         Cli.validate_corex_flags!(theme: true, design: false)
       end
     end
+
+    test "rejects lang without design when design is explicitly false" do
+      assert_raise Mix.Error, ~r/--lang requires design/, fn ->
+        Cli.validate_corex_flags!(lang: true, design: false)
+      end
+    end
   end
 
   describe "maybe_auto_enable_design notifications" do
@@ -81,7 +87,7 @@ defmodule Corex.New.CliTest do
 
       assert_received {:mix_shell, :info,
                        [
-                         "* Corex: enabling --design because --mode/--theme was set; pass --no-design to opt out."
+                         "* Corex: enabling --design because --mode/--theme/--lang was set; pass --no-design to opt out."
                        ]}
     end
 

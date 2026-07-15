@@ -15,12 +15,17 @@ defmodule Corex.New.Tableau.Generate do
     write_pages(install_dir, opts, assigns)
     write_support_modules(install_dir, opts, assigns)
     write_gen_post_task(install_dir, assigns)
-    write_assets(install_dir, assigns)
+    write_assets(install_dir, opts, assigns)
     write_config(install_dir, assigns)
     write_mix_exs(install_dir, assigns)
     write_sample_post(install_dir, assigns)
     write_extra_dir(install_dir)
     write_formatter(install_dir)
+
+    if opts[:lang] do
+      copy_gettext_catalog(install_dir)
+    end
+
     Patches.patch_gitignore(install_dir, opts)
 
     :ok
@@ -57,6 +62,7 @@ defmodule Corex.New.Tableau.Generate do
     |> Keyword.put(:default_theme, default_theme)
     |> Keyword.put_new(:mode, false)
     |> Keyword.put_new(:theme, false)
+    |> Keyword.put_new(:lang, false)
     |> Keyword.put_new(:mcp, true)
     |> Keyword.put_new(:design, true)
   end
@@ -88,6 +94,13 @@ defmodule Corex.New.Tableau.Generate do
       Templates.blog_index_page(assigns)
     )
 
+    if opts[:lang] do
+      write!(
+        Path.join([app_dir, "pages", "root_index_page.ex"]),
+        Templates.root_index_page(assigns)
+      )
+    end
+
     write!(
       Path.join([app_dir, "pages", "not_found_page.ex"]),
       Templates.not_found_page(assigns)
@@ -112,9 +125,15 @@ defmodule Corex.New.Tableau.Generate do
     if opts[:mode] do
       write!(Path.join(app_dir, "mode.ex"), Templates.mode_module(assigns))
     end
+
+    if opts[:lang] do
+      write!(Path.join(app_dir, "gettext.ex"), Templates.gettext_module(assigns))
+      write!(Path.join(app_dir, "gettext_sigil.ex"), Templates.gettext_sigil_module(assigns))
+      write!(Path.join(app_dir, "locale.ex"), Templates.locale_module(assigns))
+    end
   end
 
-  defp write_assets(install_dir, assigns) do
+  defp write_assets(install_dir, opts, assigns) do
     write!(
       Path.join([install_dir, "assets", "css", "site.css"]),
       Templates.site_css(assigns)
@@ -124,6 +143,19 @@ defmodule Corex.New.Tableau.Generate do
       Path.join([install_dir, "assets", "js", "site.js"]),
       Templates.site_js(assigns)
     )
+
+    if opts[:lang] do
+      locale_js_src =
+        Path.join([
+          Path.expand("../../../templates/corex_tableau/assets/js", __DIR__),
+          "locale.js"
+        ])
+
+      write!(
+        Path.join([install_dir, "assets", "js", "locale.js"]),
+        File.read!(locale_js_src)
+      )
+    end
 
     heroicons_src =
       Path.join([
@@ -135,6 +167,23 @@ defmodule Corex.New.Tableau.Generate do
       Path.join([install_dir, "assets", "vendor", "heroicons.js"]),
       File.read!(heroicons_src)
     )
+  end
+
+  defp copy_gettext_catalog(install_dir) do
+    src = Corex.New.Generate.bundled_gettext_catalog_root()
+    dest = Path.join(install_dir, "priv/gettext")
+
+    unless File.dir?(src) do
+      Mix.raise("""
+      Corex gettext catalog template is missing at #{src}.
+
+      Expected installer/priv/gettext with default.pot and en/fr/ar PO files.
+      """)
+    end
+
+    Mix.shell().info([:green, "* copying ", :reset, "gettext catalog → priv/gettext/"])
+    File.mkdir_p!(Path.dirname(dest))
+    File.cp_r!(src, dest)
   end
 
   defp write_config(install_dir, assigns) do
@@ -180,6 +229,7 @@ defmodule Corex.New.Tableau.Generate do
       otp_app: opts[:otp_app],
       mode: !!opts[:mode],
       theme: !!opts[:theme],
+      lang: !!opts[:lang],
       mcp: Keyword.get(opts, :mcp, true),
       design: !!opts[:design],
       themes: opts[:themes],
@@ -187,7 +237,8 @@ defmodule Corex.New.Tableau.Generate do
       components: components,
       corex_js_import: corex_js_import(install_dir, opts),
       corex_dep_source: corex_dep_source(opts),
-      corex_design_dep_source: corex_design_dep_source(opts)
+      corex_design_dep_source: corex_design_dep_source(opts),
+      corex_mcp_dep_source: corex_mcp_dep_source(opts)
     ]
   end
 
@@ -201,7 +252,7 @@ defmodule Corex.New.Tableau.Generate do
         base
       end
 
-    if Keyword.get(opts, :theme, false) do
+    if Keyword.get(opts, :theme, false) or Keyword.get(opts, :lang, false) do
       base ++ [:select]
     else
       base
@@ -293,6 +344,24 @@ defmodule Corex.New.Tableau.Generate do
 
       _ ->
         "\"~> 0.2.0\", runtime: false"
+    end
+  end
+
+  defp corex_mcp_dep_source(opts) do
+    case Keyword.get(opts, :dev) do
+      path when is_binary(path) ->
+        trimmed = String.trim(path)
+
+        if trimmed != "" do
+          Corex.New.Cli.validate_dev_path!(trimmed)
+          mcp_path = Path.join(trimmed, "mcp")
+          "[path: #{inspect(mcp_path)}, only: :dev]"
+        else
+          "\"~> 0.2.0\", only: :dev"
+        end
+
+      _ ->
+        "\"~> 0.2.0\", only: :dev"
     end
   end
 

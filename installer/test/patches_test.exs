@@ -190,10 +190,31 @@ defmodule Corex.New.PatchesTest do
         Patches.patch_mix_exs(File.cwd!(), [])
         body = File.read!("mix.exs")
         assert body =~ "{:corex,"
+        assert body =~ ~r/\{:corex_mcp,\s*"~> 0.2",\s*only:\s*:dev\}/
 
         Patches.patch_mix_exs(File.cwd!(), [])
         body2 = File.read!("mix.exs")
         assert length(String.split(body2, "{:corex,")) == 2
+        assert length(String.split(body2, "{:corex_mcp,")) == 2
+      end)
+    end
+
+    test "skips corex_mcp dep when mcp: false" do
+      in_tmp(:patch_mix_exs_no_mcp, fn ->
+        File.write!("mix.exs", @stock_mix_exs)
+        Patches.patch_mix_exs(File.cwd!(), mcp: false)
+        body = File.read!("mix.exs")
+        assert body =~ "{:corex,"
+        refute body =~ "{:corex_mcp,"
+      end)
+    end
+
+    test "uses path corex_mcp dep when --dev and mcp are on" do
+      in_tmp(:patch_mix_exs_mcp_dev, fn ->
+        File.write!("mix.exs", @stock_mix_exs)
+        Patches.patch_mix_exs(File.cwd!(), dev: "../corex", mcp: true)
+        body = File.read!("mix.exs")
+        assert body =~ ~s({:corex_mcp, [path: "../corex/mcp", only: :dev]})
       end)
     end
 
