@@ -176,6 +176,11 @@ export class ToastItem<T = unknown> extends Component<ToastItemProps<T>, Api> {
         this.parts.action.textContent = label;
       }
       const extraClasses = actionClassTokens(this.latestProps.action);
+      for (const token of [...this.parts.action.classList]) {
+        if (token.startsWith("ui-") || token === "button") {
+          this.parts.action.classList.remove(token);
+        }
+      }
       if (extraClasses.length) this.parts.action.classList.add(...extraClasses);
     } else {
       this.parts.action.hidden = true;

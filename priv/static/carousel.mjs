@@ -9,7 +9,7 @@ import {
   idMatches,
   notifyChange,
   readPayloadId
-} from "./chunks/chunk-2WCNJX5P.mjs";
+} from "./chunks/chunk-LNVRIZ4K.mjs";
 import {
   Component,
   VanillaMachine,
@@ -44,7 +44,7 @@ import {
   throttle,
   trackPointerMove,
   uniq
-} from "./chunks/chunk-2GQRP3FN.mjs";
+} from "./chunks/chunk-YGZLYEUJ.mjs";
 
 // ../node_modules/.pnpm/@zag-js+carousel@1.40.0/node_modules/@zag-js/carousel/dist/carousel.anatomy.mjs
 var anatomy = createAnatomy("carousel").parts(
@@ -1133,7 +1133,6 @@ var CarouselHook = {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
-    const controlled = getBoolean(el, "controlled");
     const slideCount = getNumber(el, "slideCount");
     if (slideCount == null || slideCount < 1) {
       return;
@@ -1141,7 +1140,7 @@ var CarouselHook = {
     const zag = new Carousel(el, {
       id: el.id,
       slideCount,
-      ...controlled ? { page: readCorexPage(el, "page") } : { defaultPage: readCorexPage(el, "defaultPage") },
+      defaultPage: readCorexPage(el, "defaultPage"),
       dir: getDir(el),
       orientation: getString(el, "orientation"),
       slidesPerPage: getNumber(el, "slidesPerPage"),
@@ -1207,11 +1206,9 @@ var CarouselHook = {
   updated() {
     const slideCount = getNumber(this.el, "slideCount");
     if (slideCount == null || slideCount < 1) return;
-    const controlled = getBoolean(this.el, "controlled");
     this.carousel?.updateProps({
       id: this.el.id,
       slideCount,
-      ...controlled ? { page: readCorexPage(this.el, "page") } : {},
       dir: getDir(this.el),
       orientation: getString(this.el, "orientation"),
       slidesPerPage: getNumber(this.el, "slidesPerPage"),

@@ -46,8 +46,8 @@ describe("buildMachineProps", () => {
 });
 
 describe("mountNumberBinding", () => {
-  it("formField uses defaultValue from canonical data-value", () => {
-    const node = el({ formField: true, value: "1234", step: 1 });
+  it("formField uses defaultValue from data-default-value", () => {
+    const node = el({ formField: true, defaultValue: "1234", step: 1 });
     const props = mountNumberBinding(node);
     expect(props.defaultValue).toBe("1,234");
     expect(props.value).toBeUndefined();
@@ -55,13 +55,13 @@ describe("mountNumberBinding", () => {
 });
 
 describe("readUpdatedServerNumber", () => {
-  it("formField skips patch when data-value unchanged", () => {
-    const node = el({ formField: true, value: "1234", step: 1 });
+  it("formField without controlled returns step only", () => {
+    const node = el({ formField: true, defaultValue: "1234", step: 1 });
     expect(readUpdatedServerNumber(node, "1234")).toEqual({ step: 1 });
   });
 
-  it("formField patches when data-value changes", () => {
-    const node = el({ formField: true, value: "50", step: 1 });
+  it("controlled patches when data-value changes", () => {
+    const node = el({ controlled: true, value: "50", step: 1 });
     expect(readUpdatedServerNumber(node, "1234")).toEqual({
       step: 1,
       value: "50",

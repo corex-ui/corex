@@ -15,7 +15,7 @@ defmodule Corex.Point do
         class="floating-panel"
         position={%Corex.Point{x: 120, y: 80}}
       >
-        <:trigger class="button button--ghost button--sm">
+        <:trigger class="button ui-size-sm">
           <span data-closed>Open panel</span>
           <span data-open>Close panel</span>
         </:trigger>

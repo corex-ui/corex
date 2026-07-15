@@ -8,7 +8,7 @@ import type {
   FormatChangeDetails,
 } from "@zag-js/color-picker";
 import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
-import { mountStringBinding, readUpdatedServerString } from "../lib/read-props";
+import { mountStringBinding } from "../lib/read-props";
 
 function readColorValueBinding(el: HTMLElement): Pick<Props, "value" | "defaultValue"> {
   const binding = mountStringBinding(el, "value", "defaultValue");
@@ -169,12 +169,8 @@ const ColorPickerHook: Hook<object & ColorPickerHookState, HTMLElement> = {
   updated(this: object & HookInterface<HTMLElement> & ColorPickerHookState) {
     const el = this.el;
     const zag = this.colorPicker;
-    const valuePatch = readUpdatedServerString(el);
-    const parsed =
-      "value" in valuePatch && valuePatch.value ? { value: parse(valuePatch.value) } : {};
 
     zag?.updateProps({
-      ...parsed,
       name: getString(el, "name"),
       closeOnSelect: getBoolean(el, "closeOnSelect"),
       openAutoFocus: getBoolean(el, "openAutoFocus"),
@@ -185,10 +181,6 @@ const ColorPickerHook: Hook<object & ColorPickerHookState, HTMLElement> = {
       dir: getDir(el),
       positioning: readPositioningOptions(el),
     } as Partial<Props>);
-
-    if ("value" in valuePatch && valuePatch.value) {
-      syncColorHiddenAndNotify(el, valuePatch.value);
-    }
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & ColorPickerHookState) {

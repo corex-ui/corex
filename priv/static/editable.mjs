@@ -1,14 +1,12 @@
 import {
   trackInteractOutside
-} from "./chunks/chunk-B5L2AGOH.mjs";
+} from "./chunks/chunk-26XTEIHY.mjs";
 import {
   notifyPhoenixFormChange
-} from "./chunks/chunk-VMKNATWC.mjs";
+} from "./chunks/chunk-ASQD2R2U.mjs";
 import {
-  mountStringBinding,
-  readEditControlledZagUpdate,
-  readUpdatedServerString
-} from "./chunks/chunk-I2HPUDHJ.mjs";
+  mountStringBinding
+} from "./chunks/chunk-XL4XUS2C.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -18,7 +16,7 @@ import {
   notifyChange,
   readPayloadId,
   readPayloadValue
-} from "./chunks/chunk-2WCNJX5P.mjs";
+} from "./chunks/chunk-LNVRIZ4K.mjs";
 import {
   Component,
   VanillaMachine,
@@ -36,7 +34,7 @@ import {
   raf,
   setElementValue,
   syncInputFormAssociation
-} from "./chunks/chunk-2GQRP3FN.mjs";
+} from "./chunks/chunk-YGZLYEUJ.mjs";
 
 // ../node_modules/.pnpm/@zag-js+editable@1.40.0/node_modules/@zag-js/editable/dist/editable.anatomy.mjs
 var anatomy = createAnatomy("editable").parts(
@@ -649,7 +647,7 @@ var EditableHook = {
       ...placeholder !== void 0 ? { placeholder } : {},
       ...activationMode !== void 0 ? { activationMode } : {},
       ...selectOnFocus !== void 0 ? { selectOnFocus } : {},
-      ...getBoolean(el, "controlled") ? { edit: getBoolean(el, "edit") } : { defaultEdit: getBoolean(el, "defaultEdit") },
+      defaultEdit: getBoolean(el, "defaultEdit"),
       onValueChange: (details) => {
         notifyEditableValueChange(el, pushEvent, canPush, details.value, this);
       },
@@ -679,9 +677,7 @@ var EditableHook = {
   },
   updated() {
     const el = this.el;
-    const valuePatch = readUpdatedServerString(el);
-    const editPatch = readEditControlledZagUpdate(el);
-    const props = {
+    this.editable?.updateProps({
       id: el.id,
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readonly"),
@@ -689,13 +685,8 @@ var EditableHook = {
       invalid: getBoolean(el, "invalid"),
       name: zagName(el),
       form: formValueInput(el) ? void 0 : getString(el, "form"),
-      dir: getDir(el),
-      ...editPatch
-    };
-    if (!this.editable?.api.editing && "value" in valuePatch) {
-      Object.assign(props, valuePatch);
-    }
-    this.editable?.updateProps(props);
+      dir: getDir(el)
+    });
   },
   destroyed() {
     this.unbindFormSubmit?.();

@@ -19,4 +19,19 @@ describe("Tabs render", () => {
     expect(el.querySelector<HTMLElement>('[data-part="trigger"]')?.dataset.value).toBe("home");
     c.destroy();
   });
+
+  it("applies disabled trigger props from data-disabled on item", () => {
+    const el = tabsTree();
+    const list = el.querySelector<HTMLElement>('[data-part="list"]');
+    const trigger = el.querySelector<HTMLElement>('[data-part="trigger"]');
+    expect(list).not.toBeNull();
+    expect(trigger).not.toBeNull();
+    list!.appendChild(trigger!);
+    trigger!.dataset.disabled = "";
+    const c = new Tabs(el, { id: el.id, defaultValue: "home" });
+    c.init();
+    expect(trigger!.hasAttribute("disabled")).toBe(true);
+    expect(trigger!.getAttribute("aria-disabled")).toBe("true");
+    c.destroy();
+  });
 });

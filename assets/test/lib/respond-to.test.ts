@@ -27,9 +27,14 @@ describe("parseRespondTo", () => {
 });
 
 describe("idMatches", () => {
-  it("matches when payload id is empty", () => {
-    expect(idMatches("carousel:1", "")).toBe(true);
-    expect(idMatches("carousel:1", undefined)).toBe(true);
+  it("does not match when payload id is empty", () => {
+    expect(idMatches("carousel:1", "")).toBe(false);
+    expect(idMatches("carousel:1", undefined)).toBe(false);
+  });
+
+  it("matches empty payload id when broadcast is opted in", () => {
+    expect(idMatches("carousel:1", "", { broadcast: true })).toBe(true);
+    expect(idMatches("carousel:1", undefined, { broadcast: true })).toBe(true);
   });
 
   it("requires equality when payload id is set", () => {

@@ -85,6 +85,8 @@ type SignaturePadHookState = {
   handlers?: Array<CallbackRef>;
   onClear?: (event: Event) => void;
   padTouched: boolean;
+  destroyed?: boolean;
+  unbindSubmitIntent?: () => void;
 };
 
 const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
@@ -115,6 +117,7 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
         });
 
         details.getDataUrl("image/png").then((url) => {
+          if (hook.destroyed) return;
           signaturePad.imageURL = url;
 
           const eventName = getString(el, "onDrawEnd");
@@ -217,6 +220,7 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & SignaturePadHookState) {
+    this.destroyed = true;
     this.unbindSubmitIntent?.();
     if (this.onClear) {
       this.el.removeEventListener("corex:signature-pad:clear", this.onClear);

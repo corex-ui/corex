@@ -17,9 +17,11 @@ export function notifyPhoenixFormChange(
   value: string,
   options: NotifyPhoenixFormChangeOptions = {}
 ): void {
-  if (String(input.value) !== String(value)) {
-    input.value = value;
+  if (String(input.value) === String(value)) {
+    return;
   }
+
+  input.value = value;
   options.onTouched?.();
   if (options.markUsed === false) {
     return;

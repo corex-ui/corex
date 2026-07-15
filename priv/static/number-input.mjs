@@ -1,9 +1,9 @@
 import {
   memo
-} from "./chunks/chunk-HWSJUKAB.mjs";
+} from "./chunks/chunk-KCVHCORZ.mjs";
 import {
   syncHiddenInputValue
-} from "./chunks/chunk-YV3G4M5K.mjs";
+} from "./chunks/chunk-YFTSYDFS.mjs";
 import {
   clampValue,
   decrementValue,
@@ -17,14 +17,14 @@ import {
 import {
   queueLiveViewFormInputSync,
   reapplyLiveViewValueInputUsage
-} from "./chunks/chunk-VMKNATWC.mjs";
+} from "./chunks/chunk-ASQD2R2U.mjs";
 import {
   formatDisplayValue,
   formatSubmitValue,
   mergeFormatOptions,
   mountNumberBinding,
   readUpdatedServerNumber
-} from "./chunks/chunk-I2HPUDHJ.mjs";
+} from "./chunks/chunk-XL4XUS2C.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -35,7 +35,7 @@ import {
   notifyChange,
   parseRespondTo,
   readPayloadId
-} from "./chunks/chunk-2WCNJX5P.mjs";
+} from "./chunks/chunk-LNVRIZ4K.mjs";
 import {
   Component,
   MAX_Z_INDEX,
@@ -65,7 +65,7 @@ import {
   setup,
   syncInputFormAssociation,
   trackFormControl
-} from "./chunks/chunk-2GQRP3FN.mjs";
+} from "./chunks/chunk-YGZLYEUJ.mjs";
 
 // ../node_modules/.pnpm/@zag-js+number-input@1.40.0/node_modules/@zag-js/number-input/dist/number-input.anatomy.mjs
 var anatomy = createAnatomy("numberInput").parts(
@@ -1502,7 +1502,7 @@ var NumberInputHook = {
     const zag = new NumberInput(el, buildMachineProps(el, pushEvent, canPush));
     zag.init();
     this.numberInput = zag;
-    this.lastServerValue = getString(el, "value") ?? getString(el, "defaultValue") ?? void 0;
+    this.lastServerValue = getString(el, "value") ?? getString(el, "defaultValue") ?? "";
     const initialSubmit = submitValueForHost(el, zag.api.valueAsNumber);
     syncNumberInputValueInput(el, zag.api.value ?? "", true, zag.api.valueAsNumber);
     const valueInput = el.querySelector(
@@ -1595,48 +1595,23 @@ var NumberInputHook = {
   updated() {
     const el = this.el;
     const zag = this.numberInput;
+    if (!zag) return;
     const valuePatch = readUpdatedServerNumber(el, this.lastServerValue);
-    if (valuePatch.nextServerValue !== void 0) {
+    if ("nextServerValue" in valuePatch && valuePatch.nextServerValue !== void 0) {
       this.lastServerValue = valuePatch.nextServerValue;
     }
-    const zagPatch = { ...valuePatch };
-    delete zagPatch.nextServerValue;
-    zag?.updateProps({
+    zag.updateProps({
       ...numberInputPropsForUpdate(el),
-      ...zagPatch
+      ...valuePatch.value !== void 0 ? { value: valuePatch.value } : {},
+      ...valuePatch.step !== void 0 ? { step: valuePatch.step } : {}
     });
     queueMicrotask(() => {
-      if (zag && "value" in zagPatch) {
-        syncNumberInputValueInput(el, String(zagPatch.value ?? ""), false, zag.api.valueAsNumber);
-      } else if (zag) {
-        syncNumberInputValueInput(
-          el,
-          zag.api.value ?? getString(el, "defaultValue") ?? "",
-          false,
-          zag.api.valueAsNumber
-        );
-      }
-      const visible = el.querySelector(
-        '[data-scope="number-input"][data-part="input"]'
+      syncNumberInputValueInput(
+        el,
+        zag.api.value ?? getString(el, "defaultValue") ?? "",
+        false,
+        zag.api.valueAsNumber
       );
-      if (visible) {
-        if (!getBoolean(el, "readonly")) {
-          visible.readOnly = false;
-          visible.removeAttribute("readonly");
-        }
-        if (!getBoolean(el, "disabled")) {
-          visible.disabled = false;
-          visible.removeAttribute("disabled");
-        }
-      }
-      const triggers = el.querySelectorAll(
-        '[data-scope="number-input"][data-part="increment-trigger"], [data-scope="number-input"][data-part="decrement-trigger"]'
-      );
-      triggers.forEach((trigger) => {
-        if (trigger.hasAttribute("data-disabled")) return;
-        trigger.disabled = false;
-        trigger.removeAttribute("disabled");
-      });
     });
   },
   destroyed() {

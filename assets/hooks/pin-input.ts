@@ -3,11 +3,7 @@ import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook"
 import { PinInput } from "../components/pin-input";
 import type { Props, ValueChangeDetails } from "@zag-js/pin-input";
 import { getString, getBoolean, getNumber, getDir, canPushEvent } from "../lib/util";
-import {
-  getJsonStringList,
-  mountStringListBinding,
-  readUpdatedServerStringList,
-} from "../lib/read-props";
+import { getJsonStringList, mountStringListBinding } from "../lib/read-props";
 import { syncArrayHiddenInputsForPhoenix } from "../lib/form-array-submit";
 import { notifyPhoenixFormChange } from "../lib/live-view-form-input";
 import {
@@ -55,15 +51,6 @@ function padStringListBinding(
     return { value: padToCount(binding.value, count) };
   }
   return { defaultValue: padToCount(binding.defaultValue, count) };
-}
-
-export function readUpdatedPinValue(
-  el: HTMLElement,
-  count: number
-): { value: string[] } | Record<string, never> {
-  const patch = readUpdatedServerStringList(el);
-  if (!("value" in patch)) return {};
-  return { value: padToCount(patch.value, count) };
 }
 
 export function syncPinInputFormForPhoenix(
@@ -246,12 +233,10 @@ const PinInputHook: Hook<object & PinInputHookState, HTMLElement> = {
     const el = this.el;
     const zag = this.pinInput;
     const count = getNumber(el, "count") ?? 0;
-    const valuePatch = readUpdatedPinValue(el, count);
 
     zag?.updateProps({
       id: el.id,
       count,
-      ...valuePatch,
       disabled: getBoolean(el, "disabled"),
       invalid: getBoolean(el, "invalid"),
       required: getBoolean(el, "required"),
@@ -266,10 +251,6 @@ const PinInputHook: Hook<object & PinInputHookState, HTMLElement> = {
       type: getString<"alphanumeric" | "numeric" | "alphabetic">(el, "type"),
       placeholder: getString(el, "placeholder"),
     } as Partial<Props>);
-
-    if ("value" in valuePatch) {
-      syncPinInputFormForPhoenix(el, valuePatch.value, undefined, { notifyLiveView: false });
-    }
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & PinInputHookState) {

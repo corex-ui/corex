@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   PHX_HAS_FOCUSED,
+  notifyPhoenixFormChange,
   queueLiveViewFormInputSync,
   reapplyLiveViewValueInputUsage,
 } from "../../lib/live-view-form-input";
@@ -42,5 +43,16 @@ describe("queueLiveViewFormInputSync", () => {
     expect(changeHandler).toHaveBeenCalledTimes(1);
 
     form.remove();
+  });
+
+  it("does not dispatch when value is unchanged", () => {
+    const input = document.createElement("input");
+    input.value = "eur";
+    const changeHandler = vi.fn();
+    input.addEventListener("change", changeHandler);
+
+    notifyPhoenixFormChange(input, "eur");
+
+    expect(changeHandler).not.toHaveBeenCalled();
   });
 });

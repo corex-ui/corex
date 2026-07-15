@@ -27,7 +27,7 @@ import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
 import { bindArrayFieldSubmitIntent, isFormFieldUsed } from "../lib/form-array-submit";
 import { syncTagsInputFormForPhoenix } from "../lib/tags-input-form";
-import { mountTagsBinding, readUpdatedServerTags } from "../lib/read-props";
+import { mountTagsBinding } from "../lib/read-props";
 
 type TagsInputHookState = {
   tagsInput?: TagsInput;
@@ -236,7 +236,6 @@ const TagsInputHook: Hook<object & TagsInputHookState, HTMLElement> = {
 
   updated(this: object & HookInterface<HTMLElement> & TagsInputHookState) {
     const el = this.el;
-    const valuePatch = readUpdatedServerTags(el);
     const blur = blurBehavior(el);
     const max = maxProp(el);
     const delimiter = getString(el, "delimiter");
@@ -245,7 +244,6 @@ const TagsInputHook: Hook<object & TagsInputHookState, HTMLElement> = {
     this.tagsInput?.updateProps({
       id: el.id,
       ...resolveZagTagsInputTranslations(el),
-      ...valuePatch,
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readonly"),
       invalid: getBoolean(el, "invalid"),
@@ -265,13 +263,6 @@ const TagsInputHook: Hook<object & TagsInputHookState, HTMLElement> = {
       ...(delimiter !== undefined && delimiter !== "" ? { delimiter } : {}),
       ...(placeholder !== undefined ? { placeholder } : {}),
     } as Partial<Props>);
-
-    if ("value" in valuePatch) {
-      syncTagsInputFormForPhoenix(el, valuePatch.value, undefined, {
-        notifyLiveView: false,
-        fieldTouched: isFormFieldUsed(el, this.fieldTouched === true),
-      });
-    }
 
     this.tagsInput?.render();
   },

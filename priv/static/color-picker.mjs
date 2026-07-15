@@ -1,6 +1,6 @@
 import {
   syncHiddenInputValue
-} from "./chunks/chunk-YV3G4M5K.mjs";
+} from "./chunks/chunk-YFTSYDFS.mjs";
 import {
   clampValue,
   getPercentValue,
@@ -12,23 +12,22 @@ import {
 import {
   getPlacement,
   getPlacementStyles
-} from "./chunks/chunk-RK6266HP.mjs";
+} from "./chunks/chunk-DVA7SQMW.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-WJDVLJMP.mjs";
-import "./chunks/chunk-B5L2AGOH.mjs";
+} from "./chunks/chunk-MOSXJRWI.mjs";
+import "./chunks/chunk-26XTEIHY.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-CNPBJL2G.mjs";
+} from "./chunks/chunk-QU36267Q.mjs";
 import {
-  mountStringBinding,
-  readUpdatedServerString
-} from "./chunks/chunk-I2HPUDHJ.mjs";
+  mountStringBinding
+} from "./chunks/chunk-XL4XUS2C.mjs";
 import {
   idMatches,
   notifyChange,
   readPayloadId
-} from "./chunks/chunk-2WCNJX5P.mjs";
+} from "./chunks/chunk-LNVRIZ4K.mjs";
 import {
   Component,
   VanillaMachine,
@@ -57,7 +56,7 @@ import {
   trackPointerMove,
   tryCatch,
   visuallyHiddenStyle
-} from "./chunks/chunk-2GQRP3FN.mjs";
+} from "./chunks/chunk-YGZLYEUJ.mjs";
 
 // ../node_modules/.pnpm/@zag-js+color-picker@1.40.0/node_modules/@zag-js/color-picker/dist/color-picker.anatomy.mjs
 var anatomy = createAnatomy("color-picker", [
@@ -2496,10 +2495,7 @@ var ColorPickerHook = {
   updated() {
     const el = this.el;
     const zag = this.colorPicker;
-    const valuePatch = readUpdatedServerString(el);
-    const parsed = "value" in valuePatch && valuePatch.value ? { value: parse(valuePatch.value) } : {};
     zag?.updateProps({
-      ...parsed,
       name: getString(el, "name"),
       closeOnSelect: getBoolean(el, "closeOnSelect"),
       openAutoFocus: getBoolean(el, "openAutoFocus"),
@@ -2510,9 +2506,6 @@ var ColorPickerHook = {
       dir: getDir(el),
       positioning: readPositioningOptions(el)
     });
-    if ("value" in valuePatch && valuePatch.value) {
-      syncColorHiddenAndNotify(el, valuePatch.value);
-    }
   },
   destroyed() {
     if (this.onSetValue) {

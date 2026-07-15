@@ -1,5 +1,13 @@
 import { getBooleanValue } from "./util";
 
+function prefersReducedMotion(): boolean {
+  return (
+    typeof window !== "undefined" &&
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+}
+
 export type CorexHeightAnimationOptions = {
   duration: number;
   easing: string;
@@ -101,16 +109,35 @@ function endRootPointerBlock(root: HTMLElement): void {
   }
 }
 
+const rootPointerBlockTimeouts = new WeakMap<HTMLElement, number>();
+
 export function pointerBlockDuringMs(
   root: HTMLElement,
   durationMs: number,
   enabled: boolean
 ): void {
   if (!enabled || durationMs <= 0) return;
+  const prev = rootPointerBlockTimeouts.get(root);
+  if (prev !== undefined) {
+    window.clearTimeout(prev);
+    rootPointerBlockTimeouts.delete(root);
+    endRootPointerBlock(root);
+  }
   beginRootPointerBlock(root);
-  window.setTimeout(() => {
+  const timeoutId = window.setTimeout(() => {
+    rootPointerBlockTimeouts.delete(root);
     endRootPointerBlock(root);
   }, durationMs);
+  rootPointerBlockTimeouts.set(root, timeoutId);
+}
+
+export function clearPointerBlock(root: HTMLElement): void {
+  const prev = rootPointerBlockTimeouts.get(root);
+  if (prev !== undefined) {
+    window.clearTimeout(prev);
+    rootPointerBlockTimeouts.delete(root);
+    endRootPointerBlock(root);
+  }
 }
 
 export type ScaleClosedStyleFeatures = Partial<{ scale: boolean }>;
@@ -281,6 +308,20 @@ export function runHeightPanelAnimation(
   targetEl.style.overflow = "hidden";
   targetEl.style.height = "auto";
   const fullHeight = `${targetEl.scrollHeight}px`;
+
+  if (prefersReducedMotion()) {
+    targetEl.style.opacity = String(toOp);
+    targetEl.style.height = isOpening ? fullHeight : "0px";
+    if (!isOpening) {
+      targetEl.style.height = "0px";
+    } else {
+      targetEl.style.removeProperty("height");
+      targetEl.style.removeProperty("overflow");
+      targetEl.style.removeProperty("opacity");
+    }
+    return targetEl.animate([], { duration: 0 });
+  }
+
   targetEl.style.height = isOpening ? "0px" : fullHeight;
 
   const fromFrame = {
@@ -335,6 +376,17 @@ export function runScaleAnimation(
   blockRoot?: HTMLElement
 ): Animation {
   targetEl.getAnimations().forEach((a) => a.cancel());
+
+  if (prefersReducedMotion()) {
+    if (isOpening) {
+      targetEl.style.removeProperty("opacity");
+      targetEl.style.removeProperty("transform");
+    } else {
+      targetEl.style.opacity = String(opts.opacityStart);
+      targetEl.style.transform = `scale(${opts.scaleStart})`;
+    }
+    return targetEl.animate([], { duration: 0 });
+  }
 
   const isBackdrop = targetEl.dataset.part === "backdrop";
   const useScale =

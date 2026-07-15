@@ -4,17 +4,14 @@ import { collection } from "@zag-js/select";
 import { Select } from "../components/select";
 import type { Props, ValueChangeDetails } from "@zag-js/select";
 
-import { getString, getBoolean, canPushEvent, getDir, getStringList } from "../lib/util";
-import { mountStringListBinding, readUpdatedServerStringList } from "../lib/read-props";
+import { getString, getBoolean, canPushEvent, getDir, safeParseJson } from "../lib/util";
+import { readStringListControlledZagProps, readUpdatedServerStringList } from "../lib/read-props";
 import { readPositioningOptions } from "../lib/positioning";
 import { performRedirect, readDomItemRedirect } from "../lib/redirect";
 import { idMatches, readPayloadId, notifyChange } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
-import {
-  queueLiveViewFormInputSync,
-  reapplyLiveViewValueInputUsage,
-} from "../lib/live-view-form-input";
+import { notifyPhoenixFormChange } from "../lib/live-view-form-input";
 import { type ValueLabelItem, zagListCollectionConfig } from "../lib/list-collection";
 
 type SelectItem = ValueLabelItem;
@@ -45,8 +42,7 @@ export function formatSelectHiddenValue(el: HTMLElement, values: ReadonlyArray<s
 
 export function syncSelectHiddenSelectForPhoenix(
   hiddenSelect: HTMLSelectElement,
-  values: ReadonlyArray<string>,
-  onTouched?: () => void
+  values: ReadonlyArray<string>
 ): void {
   const valueSet = new Set(values.map(String));
 
@@ -59,22 +55,18 @@ export function syncSelectHiddenSelectForPhoenix(
     option.selected = valueSet.has(option.value);
   });
 
-  queueMicrotask(() => {
-    onTouched?.();
-    hiddenSelect.dispatchEvent(new Event("input", { bubbles: true }));
-    hiddenSelect.dispatchEvent(new Event("change", { bubbles: true }));
-  });
+  hiddenSelect.dispatchEvent(new Event("input", { bubbles: true }));
+  hiddenSelect.dispatchEvent(new Event("change", { bubbles: true }));
 }
 
 export function syncSelectHiddenInputForPhoenix(
   el: HTMLElement,
-  values: ReadonlyArray<string>,
-  onTouched?: () => void
+  values: ReadonlyArray<string>
 ): void {
   const hiddenSelect = selectHiddenSelectForForm(el);
 
   if (hiddenSelect && getBoolean(el, "multiple")) {
-    syncSelectHiddenSelectForPhoenix(hiddenSelect, values, onTouched);
+    syncSelectHiddenSelectForPhoenix(hiddenSelect, values);
     return;
   }
 
@@ -82,20 +74,39 @@ export function syncSelectHiddenInputForPhoenix(
     '[data-scope="select"][data-part="value-input"]'
   );
   if (!valueInput) return;
-  queueLiveViewFormInputSync(valueInput, () => formatSelectHiddenValue(el, values), onTouched);
+  notifyPhoenixFormChange(valueInput, formatSelectHiddenValue(el, values));
+}
+
+export function syncControlledValueInputFromServer(
+  el: HTMLElement,
+  values: ReadonlyArray<string>
+): void {
+  if (!getBoolean(el, "controlled")) return;
+
+  const valueInput = el.querySelector<HTMLInputElement>(
+    '[data-scope="select"][data-part="value-input"]'
+  );
+  if (!valueInput?.name) return;
+
+  const next = formatSelectHiddenValue(el, values);
+  if (valueInput.value !== next) {
+    valueInput.value = next;
+  }
 }
 
 export function buildCollection(items: SelectItem[], hasGroups: boolean) {
   return collection(zagListCollectionConfig(items, hasGroups));
 }
 
-function selectZagPropsBase(
-  el: HTMLElement,
-  liveSocket: HookInterface<HTMLElement>["liveSocket"],
-  pushEvent: (name: string, payload: Record<string, unknown>) => void,
-  canPush: () => boolean,
-  markFieldTouched: () => void
-): Omit<Props, "collection" | "value" | "defaultValue"> {
+function controlledValueMatchesServer(el: HTMLElement, values: ReadonlyArray<string>): boolean {
+  return formatSelectHiddenValue(el, values) === (getString(el, "value") ?? "");
+}
+
+export { controlledValueMatchesServer };
+
+function selectLayoutProps(
+  el: HTMLElement
+): Omit<Props, "collection" | "value" | "defaultValue" | "onValueChange"> {
   const redirectOn = getBoolean(el, "redirect");
   return {
     id: el.id,
@@ -111,31 +122,55 @@ function selectZagPropsBase(
     required: getBoolean(el, "required"),
     deselectable: getBoolean(el, "deselectable"),
     positioning: readPositioningOptions(el),
-    onValueChange: (details: ValueChangeDetails) => {
-      const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
+  };
+}
 
-      if (getBoolean(el, "redirect") && firstValue) {
-        const itemEl = el.querySelector<HTMLElement>(
-          `[data-scope="select"][data-part="item"][data-value="${CSS.escape(firstValue)}"]`
-        );
-        performRedirect(readDomItemRedirect(itemEl, firstValue), { liveSocket });
-      }
+function createSelectOnValueChange(
+  getEl: () => HTMLElement,
+  liveSocket: HookInterface<HTMLElement>["liveSocket"],
+  pushEvent: (name: string, payload: Record<string, unknown>) => void,
+  canPush: () => boolean
+): (details: ValueChangeDetails) => void {
+  return (details: ValueChangeDetails) => {
+    const el = getEl();
 
-      syncSelectHiddenInputForPhoenix(el, details.value, markFieldTouched);
+    if (getBoolean(el, "controlled") && controlledValueMatchesServer(el, details.value)) {
+      return;
+    }
 
-      notifyChange({
-        el,
-        canPushServer: canPush(),
-        pushEvent,
-        payload: {
-          id: el.id,
-          value: details.value,
-          items: details.items,
-        } as Record<string, unknown>,
-        serverEventName: getString(el, "onValueChange"),
-        clientEventName: getString(el, "onValueChangeClient"),
-      });
-    },
+    const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
+
+    if (getBoolean(el, "redirect") && firstValue) {
+      const itemEl = el.querySelector<HTMLElement>(
+        `[data-scope="select"][data-part="item"][data-value="${CSS.escape(firstValue)}"]`
+      );
+      performRedirect(readDomItemRedirect(itemEl, firstValue), { liveSocket });
+    }
+
+    syncSelectHiddenInputForPhoenix(el, details.value);
+
+    notifyChange({
+      el,
+      canPushServer: canPush(),
+      pushEvent,
+      payload: {
+        id: el.id,
+        value: details.value,
+        items: details.items,
+      } as Record<string, unknown>,
+      serverEventName: getString(el, "onValueChange"),
+      clientEventName: getString(el, "onValueChangeClient"),
+    });
+  };
+}
+
+function selectZagPropsBase(
+  el: HTMLElement,
+  onValueChange: (details: ValueChangeDetails) => void
+): Omit<Props, "collection" | "value" | "defaultValue"> {
+  return {
+    ...selectLayoutProps(el),
+    onValueChange,
   };
 }
 
@@ -154,10 +189,10 @@ export function reapplySelectInteractiveState(el: HTMLElement): void {
 type SelectHookState = {
   select?: Select;
   handlers?: Array<CallbackRef>;
-  wasFocused?: boolean;
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
-  fieldTouched?: boolean;
+  lastServerValue?: string;
+  onValueChange?: (details: ValueChangeDetails) => void;
 };
 
 const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
@@ -165,36 +200,21 @@ const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
-    const hook = this as object & HookInterface<HTMLElement> & SelectHookState;
-    hook.fieldTouched = false;
-    const markFieldTouched = () => {
-      hook.fieldTouched = true;
-    };
 
-    const defaultValues = getStringList(el, "defaultValue") ?? [];
-    if (defaultValues.length > 0) {
-      hook.fieldTouched = true;
-      queueMicrotask(() => {
-        const hiddenSelect = selectHiddenSelectForForm(el);
-        if (hiddenSelect && getBoolean(el, "multiple")) {
-          syncSelectHiddenSelectForPhoenix(hiddenSelect, defaultValues);
-          return;
-        }
-
-        const valueInput = el.querySelector<HTMLInputElement>(
-          '[data-scope="select"][data-part="value-input"]'
-        );
-        if (valueInput) reapplyLiveViewValueInputUsage(valueInput);
-      });
-    }
-
-    const allItems = JSON.parse(el.dataset.items || "[]") as SelectItem[];
+    const allItems = safeParseJson<SelectItem[]>(el.dataset.items || "[]", []);
     const hasGroups = allItems.some((item: SelectItem) => Boolean(item.group));
+    const onValueChange = createSelectOnValueChange(
+      () => this.el,
+      this.liveSocket,
+      pushEvent,
+      canPush
+    );
+    this.onValueChange = onValueChange;
 
     const selectComponent = new Select(el, {
-      ...selectZagPropsBase(el, this.liveSocket, pushEvent, canPush, markFieldTouched),
+      ...selectZagPropsBase(el, onValueChange),
       collection: buildCollection(allItems, hasGroups),
-      ...mountStringListBinding(el),
+      ...readStringListControlledZagProps(el, "value", "defaultValue"),
     } as Props);
 
     selectComponent.hasGroups = hasGroups;
@@ -202,6 +222,7 @@ const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
     selectComponent.init();
 
     this.select = selectComponent;
+    this.lastServerValue = getString(el, "value") ?? "";
     this.handlers = [];
     const domRegistry = createDomEventRegistry(el);
     this.domRegistry = domRegistry;
@@ -232,46 +253,28 @@ const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
   updated(this: object & HookInterface<HTMLElement> & SelectHookState) {
     if (!this.select) return;
 
-    const valuePatch = readUpdatedServerStringList(this.el);
-
-    const newItems = JSON.parse(this.el.dataset.items || "[]") as SelectItem[];
+    const newItems = safeParseJson<SelectItem[]>(this.el.dataset.items || "[]", []);
     const hasGroups = newItems.some((item: SelectItem) => Boolean(item.group));
 
     this.select.hasGroups = hasGroups;
     this.select.setOptions(newItems);
 
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+    const valuePatch = readUpdatedServerStringList(this.el, this.lastServerValue);
+
+    if ("nextServerValue" in valuePatch) {
+      this.lastServerValue = valuePatch.nextServerValue;
+    }
+
+    if (valuePatch.value !== undefined) {
+      syncControlledValueInputFromServer(this.el, valuePatch.value);
+    }
 
     this.select.updateProps({
-      ...selectZagPropsBase(this.el, this.liveSocket, pushEvent, canPush, () => {
-        this.fieldTouched = true;
-      }),
-      collection: this.select.getCollection(),
-      ...valuePatch,
+      ...selectLayoutProps(this.el),
+      ...(valuePatch.value !== undefined ? { value: valuePatch.value } : {}),
     } as Props);
 
-    queueMicrotask(() => {
-      reapplySelectInteractiveState(this.el);
-
-      if (!("value" in valuePatch) || !this.select) return;
-
-      const values = valuePatch.value;
-      const hiddenSelect = selectHiddenSelectForForm(this.el);
-
-      if (hiddenSelect && getBoolean(this.el, "multiple")) {
-        syncSelectHiddenSelectForPhoenix(hiddenSelect, values);
-        return;
-      }
-
-      const valueInput = this.el.querySelector<HTMLInputElement>(
-        '[data-scope="select"][data-part="value-input"]'
-      );
-      if (!valueInput) return;
-      const v = formatSelectHiddenValue(this.el, values);
-      if (valueInput.value !== v) valueInput.value = v;
-      reapplyLiveViewValueInputUsage(valueInput);
-    });
+    reapplySelectInteractiveState(this.el);
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & SelectHookState) {

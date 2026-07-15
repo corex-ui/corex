@@ -3,7 +3,7 @@ import type { ListCollection } from "@zag-js/collection";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 import { itemValue, zagListCollectionConfig } from "../lib/list-collection";
-import { getString, syncInputFormAssociation } from "../lib/util";
+import { getBoolean, getString, syncInputFormAssociation } from "../lib/util";
 
 type Item = {
   value?: string;
@@ -116,7 +116,7 @@ export class Select extends Component<Props, Api> {
     if (valueInput) {
       syncInputFormAssociation(valueInput, this.el);
 
-      if (valueInput.name && !formArrayName) {
+      if (valueInput.name && !formArrayName && !getBoolean(this.el, "controlled")) {
         const valueStr = this.api.value?.length ? this.api.value.map(String).join(",") : "";
         valueInput.value = valueStr;
       }
@@ -144,6 +144,9 @@ export class Select extends Component<Props, Api> {
         });
 
         if (valueInput) valueInput.removeAttribute("name");
+      } else if (valueInput?.name) {
+        hiddenSelect.disabled = true;
+        hiddenSelect.removeAttribute("name");
       } else if (hiddenSelect.name) {
         const valueSet = new Set((this.api.value ?? []).map(String));
 

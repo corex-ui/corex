@@ -18,6 +18,7 @@ export abstract class Component<Props, Api> implements ComponentInterface<Api> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   machine: VanillaMachine<any>;
   api: Api;
+  private unsubscribe: (() => void) | undefined;
 
   constructor(
     el: HTMLElement | null,
@@ -41,17 +42,19 @@ export abstract class Component<Props, Api> implements ComponentInterface<Api> {
     try {
       this.machine.start();
       this.render();
+      this.unsubscribe = this.machine.subscribe(() => {
+        this.api = this.initApi();
+        this.render();
+      });
     } finally {
       this.el.removeAttribute("data-loading");
     }
-    this.machine.subscribe(() => {
-      this.api = this.initApi();
-      this.render();
-    });
   };
 
   destroy = () => {
     this.el.removeAttribute("data-loading");
+    this.unsubscribe?.();
+    this.unsubscribe = undefined;
     this.machine.stop();
   };
 
