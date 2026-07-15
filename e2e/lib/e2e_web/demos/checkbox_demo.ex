@@ -3,6 +3,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   alias E2eWeb.DemoScales
 
+  # @parity anatomy: "minimal"
   def minimal_code do
     ~S"""
     <.checkbox class="checkbox">
@@ -25,6 +26,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     """
   end
 
+  # @parity anatomy: "label and indicator"
   def labeled_code do
     ~S"""
     <.checkbox class="checkbox">
@@ -47,6 +49,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     """
   end
 
+  # @parity anatomy: "invalid"
   def invalid_code do
     ~S"""
     <.checkbox
@@ -284,9 +287,10 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     ~H"""
     <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
       <div class="grid grid-cols-4 gap-space items-start min-w-max">
-        <div :for={semantic <- @matrix_semantics} class="contents">
+        <div :for={{semantic, semantic_index} <- Enum.with_index(@matrix_semantics)} class="contents">
           <.checkbox
-            :for={variant <- @matrix_variants}
+            :for={{variant, variant_index} <- Enum.with_index(@matrix_variants)}
+            id={"checkbox-matrix-#{semantic_index}-#{variant_index}"}
             class={DemoScales.join_matrix_modifiers("checkbox", semantic.modifier, variant.modifier)}
             checked
           >
@@ -647,6 +651,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     """
   end
 
+  # @parity anatomy: "indeterminate"
   def indeterminate_code do
     ~S"""
     <.checkbox class="checkbox" checked={:indeterminate}>

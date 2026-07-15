@@ -2,6 +2,8 @@ defmodule E2eWeb.AccordionTest do
   use ExUnit.Case, async: false
   use Wallaby.Feature
 
+  @moduletag :wallaby
+
   import Wallaby.Query
 
   alias E2eWeb.AccordionModel, as: Accordion

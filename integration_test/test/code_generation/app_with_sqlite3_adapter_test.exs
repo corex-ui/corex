@@ -1,6 +1,8 @@
 defmodule Corex.Integration.CodeGeneration.AppWithSQLite3AdapterTest do
   use Corex.Integration.CodeGeneratorCase, async: true
 
+  @moduletag :extended
+
   describe "corex.gen.html" do
     @tag database: :sqlite3
     test "has a passing test suite" do

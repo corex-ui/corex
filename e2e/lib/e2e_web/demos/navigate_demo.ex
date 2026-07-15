@@ -5,7 +5,20 @@ defmodule E2eWeb.Demos.NavigateDemo do
 
   def anatomy_minimal_code do
     ~S"""
-    <.navigate to="#" class="link">Internal Link</.navigate>
+    <.navigate to="/about">About</.navigate>
+    <.navigate to={~p"/dashboard"} type="navigate">Dashboard</.navigate>
+    <.navigate to={~p"/items"} type="patch">Filter</.navigate>
+    <.navigate to="https://example.com" external>
+      External
+      <.heroicon name="hero-arrow-top-right-on-square" />
+    </.navigate>
+    <.navigate to="/file.pdf" download="report.pdf">
+      Download PDF
+      <.heroicon name="hero-arrow-down-tray" />
+    </.navigate>
+    <.navigate to="/profile" aria_label="View profile">
+      <.heroicon name="hero-user" />
+    </.navigate>
     """
   end
 

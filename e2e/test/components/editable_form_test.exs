@@ -2,6 +2,8 @@ defmodule E2eWeb.EditableFormTest do
   use ExUnit.Case, async: false
   use Wallaby.Feature
 
+  @moduletag :wallaby
+
   alias E2eWeb.EditableModel, as: Editable
 
   feature "static form - submit empty/default includes text", %{session: session} do

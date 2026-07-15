@@ -139,7 +139,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
     }>
       <:label>Country of residence</:label>
       <:item :let={%{item: entry}}>
-        <Flagpack.flag name={String.to_atom(entry.value)} />
+        <Flagpack.flag name={String.to_existing_atom(to_string(entry.value))} />
         {entry.label}
       </:item>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
@@ -154,7 +154,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
     <.listbox id="listbox-anatomy-extended" class="listbox" items={@items}>
       <:label>Country of residence</:label>
       <:item :let={%{item: entry}}>
-        <Flagpack.flag name={String.to_atom(entry.value)} />
+        <Flagpack.flag name={String.to_existing_atom(to_string(entry.value))} />
         {entry.label}
       </:item>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
@@ -179,7 +179,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       }
     >
       <:item :let={%{item: entry}}>
-        <Flagpack.flag name={String.to_atom(entry.value)} />
+        <Flagpack.flag name={String.to_existing_atom(to_string(entry.value))} />
         {entry.label}
       </:item>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
@@ -198,7 +198,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       items={@items}
     >
       <:item :let={%{item: entry}}>
-        <Flagpack.flag name={String.to_atom(entry.value)} />
+        <Flagpack.flag name={String.to_existing_atom(to_string(entry.value))} />
         {entry.label}
       </:item>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>

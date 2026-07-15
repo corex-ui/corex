@@ -13,7 +13,47 @@ defmodule E2eWeb.Demos.PaginationDemo do
 
   def anatomy_minimal_code do
     ~S"""
-    <.pagination class="pagination" count={18} page_size={6}>
+    <.pagination class="pagination" count={95} page_size={10}>
+      <:prev><.heroicon name="hero-chevron-left" /></:prev>
+      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+    </.pagination>
+    """
+  end
+
+  def anatomy_controlled_code do
+    ~S"""
+    <.pagination
+      class="pagination"
+      count={18}
+      page={@page}
+      page_size={4}
+      controlled
+      on_page_change="pagination_controlled_changed"
+    >
+      <:prev><.heroicon name="hero-chevron-left" /></:prev>
+      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+    </.pagination>
+    """
+  end
+
+  def translation_code do
+    ~S"""
+    <.pagination
+      class="pagination"
+      count={95}
+      page_size={10}
+      translation={%Corex.Pagination.Translation{
+        prev_trigger_label: Corex.Gettext.gettext("Previous page"),
+        next_trigger_label: Corex.Gettext.gettext("Next page"),
+        item_label:
+          Corex.Gettext.gettext("Page %{page} of %{total_pages}",
+            page: "%{page}",
+            total_pages: "%{total_pages}"
+          )
+      }}
+    >
       <:prev><.heroicon name="hero-chevron-left" /></:prev>
       <:next><.heroicon name="hero-chevron-right" /></:next>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>

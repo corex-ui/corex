@@ -13,7 +13,14 @@ defmodule E2eWeb.AdminLiveTest do
     terms: true,
     level: 5,
     currency: "eur",
-    tags: ["alpha", "beta"]
+    tags: ["alpha", "beta"],
+    password: "password1",
+    notifications: true,
+    role: "admin",
+    pin: "1234",
+    accent_color: "#3b82f6",
+    heading_angle: 90.0,
+    title: "some title"
   }
   @update_attrs %{
     name: "some updated name",
@@ -22,7 +29,14 @@ defmodule E2eWeb.AdminLiveTest do
     terms: true,
     level: 3,
     currency: "usd",
-    tags: ["gamma", "delta"]
+    tags: ["gamma", "delta"],
+    password: "password2",
+    notifications: true,
+    role: "editor",
+    pin: "5678",
+    accent_color: "#00ff00",
+    heading_angle: 180.0,
+    title: "updated title"
   }
   @invalid_attrs %{
     name: "",
@@ -32,7 +46,10 @@ defmodule E2eWeb.AdminLiveTest do
     terms: false,
     level: 1,
     currency: "",
-    tags: [""]
+    tags: [""],
+    password: "",
+    notifications: false,
+    role: ""
   }
   @invalid_attrs_edit %{
     name: "",
@@ -41,7 +58,10 @@ defmodule E2eWeb.AdminLiveTest do
     terms: false,
     level: 5,
     currency: "eur",
-    tags: ["alpha", "beta"]
+    tags: ["alpha", "beta"],
+    password: "password1",
+    notifications: false,
+    role: "admin"
   }
 
   defp create_admin(_) do
@@ -61,8 +81,9 @@ defmodule E2eWeb.AdminLiveTest do
 
         val =
           cond do
-            key == "terms" and is_boolean(v) -> if(v, do: "true", else: "false")
+            key in ["terms", "notifications"] and is_boolean(v) -> if(v, do: "true", else: "false")
             key == "level" and is_integer(v) -> Integer.to_string(v)
+            key == "heading_angle" and is_float(v) -> Float.to_string(v)
             key == "birth_date" and is_nil(v) -> ""
             true -> v
           end
@@ -260,7 +281,10 @@ defmodule E2eWeb.AdminLiveTest do
         "terms" => "false",
         "level" => "42",
         "currency" => "eur",
-        "tags" => ["alpha", "beta"]
+        "tags" => ["alpha", "beta"],
+        "password" => "password1",
+        "notifications" => "true",
+        "role" => "admin"
       }
 
       html = render_change(form_live, "validate", %{"admin" => attrs})
@@ -286,12 +310,18 @@ defmodule E2eWeb.AdminLiveTest do
             "signature" => [],
             "terms" => "false",
             "level" => "1",
+            "password" => "",
+            "notifications" => "false",
+            "role" => "",
             "_unused_country" => "",
             "_unused_currency" => "",
             "_unused_tags" => "",
             "_unused_birth_date" => "",
             "_unused_signature" => "",
-            "_unused_terms" => ""
+            "_unused_terms" => "",
+            "_unused_password" => "",
+            "_unused_notifications" => "",
+            "_unused_role" => ""
           }
         })
 
@@ -310,6 +340,9 @@ defmodule E2eWeb.AdminLiveTest do
         "signature" => [],
         "terms" => "false",
         "level" => "1",
+        "password" => "password1",
+        "notifications" => "true",
+        "role" => "admin",
         "_unused_birth_date" => "",
         "_unused_signature" => "",
         "_unused_terms" => ""
@@ -349,6 +382,45 @@ defmodule E2eWeb.AdminLiveTest do
 
       refute html =~
                ~r/<input\b(?=[^>]*\btype="hidden")(?=[^>]*\bname="admin\[(country|currency)\]")/
+
+      assert html =~
+               ~r/<input\b(?=[^>]*\btype="text")(?=[^>]*\bname="admin\[level\]")[^>]*\bdata-part="value-input"/
+
+      refute html =~
+               ~r/<input\b(?=[^>]*\btype="hidden")(?=[^>]*\bname="admin\[level\]")/
+    end
+
+    test "radio level stays unused when only name is validated", %{conn: conn} do
+      {form_live, _html} = live_ok!(conn, ~p"/admins/new")
+
+      html =
+        render_change(form_live, "validate", %{
+          "admin" => %{
+            "name" => "h",
+            "country" => "",
+            "currency" => "",
+            "tags" => [""],
+            "birth_date" => "",
+            "signature" => [],
+            "terms" => "false",
+            "level" => "",
+            "password" => "",
+            "notifications" => "false",
+            "role" => "",
+            "_unused_country" => "",
+            "_unused_currency" => "",
+            "_unused_tags" => "",
+            "_unused_birth_date" => "",
+            "_unused_signature" => "",
+            "_unused_terms" => "",
+            "_unused_level" => "",
+            "_unused_password" => "",
+            "_unused_notifications" => "",
+            "_unused_role" => ""
+          }
+        })
+
+      refute html =~ "can&#39;t be blank"
     end
   end
 
@@ -366,7 +438,10 @@ defmodule E2eWeb.AdminLiveTest do
             "birth_date" => "",
             "signature" => [""],
             "terms" => "false",
-            "level" => "1"
+            "level" => "1",
+            "password" => "",
+            "notifications" => "false",
+            "role" => ""
           }
         })
 
@@ -387,7 +462,10 @@ defmodule E2eWeb.AdminLiveTest do
             "birth_date" => "",
             "signature" => [],
             "terms" => "false",
-            "level" => "1"
+            "level" => "1",
+            "password" => "",
+            "notifications" => "false",
+            "role" => ""
           }
         })
 
@@ -415,7 +493,10 @@ defmodule E2eWeb.AdminLiveTest do
         "terms" => "true",
         "level" => "3",
         "currency" => "eur",
-        "tags" => ["alpha"]
+        "tags" => ["alpha"],
+        "password" => "password1",
+        "notifications" => "true",
+        "role" => "admin"
       }
 
       form_live

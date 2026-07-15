@@ -15,7 +15,16 @@ defmodule E2e.AccountsTest do
       terms: nil,
       level: nil,
       currency: nil,
-      tags: nil
+      tags: nil,
+      password: nil,
+      notifications: nil,
+      role: nil
+    }
+
+    @suite_attrs %{
+      password: "password1",
+      notifications: true,
+      role: "editor"
     }
 
     test "list_users/0 returns all users" do
@@ -29,16 +38,20 @@ defmodule E2e.AccountsTest do
     end
 
     test "create_user/1 with valid data creates a user" do
-      valid_attrs = %{
-        name: "some name",
-        country: "some country",
-        birth_date: "1990-01-15",
-        signature: ["M0,0L1,1Z"],
-        terms: true,
-        level: 5,
-        currency: "eur",
-        tags: ["alpha", "beta"]
-      }
+      valid_attrs =
+        Map.merge(
+          %{
+            name: "some name",
+            country: "some country",
+            birth_date: "1990-01-15",
+            signature: ["M0,0L1,1Z"],
+            terms: true,
+            level: 5,
+            currency: "eur",
+            tags: ["alpha", "beta"]
+          },
+          @suite_attrs
+        )
 
       assert {:ok, %User{} = user} = Accounts.create_user(valid_attrs)
       assert user.name == "some name"
@@ -48,6 +61,9 @@ defmodule E2e.AccountsTest do
       assert user.level == 5
       assert user.currency == "eur"
       assert user.tags == ["alpha", "beta"]
+      assert user.password == "password1"
+      assert user.notifications == true
+      assert user.role == "editor"
     end
 
     test "create_user/1 with invalid data returns error changeset" do
@@ -55,30 +71,40 @@ defmodule E2e.AccountsTest do
     end
 
     test "create_user/1 with out-of-range level returns error changeset" do
-      attrs = %{
-        name: "some name",
-        country: "some country",
-        birth_date: "1990-01-15",
-        signature: ["M0,0L1,1Z"],
-        terms: true,
-        level: 6,
-        currency: "eur"
-      }
+      attrs =
+        Map.merge(
+          %{
+            name: "some name",
+            country: "some country",
+            birth_date: "1990-01-15",
+            signature: ["M0,0L1,1Z"],
+            terms: true,
+            level: 6,
+            currency: "eur",
+            tags: ["alpha"]
+          },
+          @suite_attrs
+        )
 
       assert {:error, %Ecto.Changeset{errors: errors}} = Accounts.create_user(attrs)
       assert Keyword.has_key?(errors, :level)
     end
 
     test "create_user/1 with unsupported currency returns error changeset" do
-      attrs = %{
-        name: "some name",
-        country: "some country",
-        birth_date: "1990-01-15",
-        signature: ["M0,0L1,1Z"],
-        terms: true,
-        level: 1,
-        currency: "xxx"
-      }
+      attrs =
+        Map.merge(
+          %{
+            name: "some name",
+            country: "some country",
+            birth_date: "1990-01-15",
+            signature: ["M0,0L1,1Z"],
+            terms: true,
+            level: 1,
+            currency: "xxx",
+            tags: ["alpha"]
+          },
+          @suite_attrs
+        )
 
       assert {:error, %Ecto.Changeset{errors: errors}} = Accounts.create_user(attrs)
       assert Keyword.has_key?(errors, :currency)
@@ -93,7 +119,10 @@ defmodule E2e.AccountsTest do
         birth_date: "1995-06-20",
         terms: true,
         level: 3,
-        currency: "usd"
+        currency: "usd",
+        password: "password2",
+        notifications: true,
+        role: "viewer"
       }
 
       assert {:ok, %User{} = user} = Accounts.update_user(user, update_attrs)
@@ -135,7 +164,16 @@ defmodule E2e.AccountsTest do
       terms: nil,
       level: nil,
       currency: nil,
-      tags: nil
+      tags: nil,
+      password: nil,
+      notifications: nil,
+      role: nil
+    }
+
+    @suite_attrs %{
+      password: "password1",
+      notifications: true,
+      role: "admin"
     }
 
     test "list_admins/0 returns all admins" do
@@ -149,16 +187,20 @@ defmodule E2e.AccountsTest do
     end
 
     test "create_admin/1 with valid data creates a admin" do
-      valid_attrs = %{
-        name: "some name",
-        country: :fra,
-        birth_date: "1990-01-15",
-        signature: ["M0,0L1,1Z"],
-        terms: true,
-        level: 5,
-        currency: "eur",
-        tags: ["alpha", "beta"]
-      }
+      valid_attrs =
+        Map.merge(
+          %{
+            name: "some name",
+            country: :fra,
+            birth_date: "1990-01-15",
+            signature: ["M0,0L1,1Z"],
+            terms: true,
+            level: 5,
+            currency: "eur",
+            tags: ["alpha", "beta"]
+          },
+          @suite_attrs
+        )
 
       assert {:ok, %Admin{} = admin} = Accounts.create_admin(valid_attrs)
       assert admin.name == "some name"
@@ -168,22 +210,29 @@ defmodule E2e.AccountsTest do
       assert admin.level == 5
       assert admin.currency == "eur"
       assert admin.tags == ["alpha", "beta"]
+      assert admin.password == "password1"
+      assert admin.notifications == true
+      assert admin.role == "admin"
     end
 
     test "create_admin/1 accepts signature paths longer than 255 characters" do
       long_path = "M" <> String.duplicate("183.76,38.44 ", 20)
       assert byte_size(long_path) > 255
 
-      attrs = %{
-        name: "some name",
-        country: :fra,
-        birth_date: "1990-01-15",
-        signature: [long_path],
-        terms: true,
-        level: 1,
-        currency: "eur",
-        tags: ["alpha"]
-      }
+      attrs =
+        Map.merge(
+          %{
+            name: "some name",
+            country: :fra,
+            birth_date: "1990-01-15",
+            signature: [long_path],
+            terms: true,
+            level: 1,
+            currency: "eur",
+            tags: ["alpha"]
+          },
+          @suite_attrs
+        )
 
       assert {:ok, %Admin{} = admin} = Accounts.create_admin(attrs)
       assert hd(admin.signature) == long_path
@@ -194,30 +243,40 @@ defmodule E2e.AccountsTest do
     end
 
     test "create_admin/1 with out-of-range level returns error changeset" do
-      attrs = %{
-        name: "some name",
-        country: :fra,
-        birth_date: "1990-01-15",
-        signature: ["M0,0L1,1Z"],
-        terms: true,
-        level: 6,
-        currency: "eur"
-      }
+      attrs =
+        Map.merge(
+          %{
+            name: "some name",
+            country: :fra,
+            birth_date: "1990-01-15",
+            signature: ["M0,0L1,1Z"],
+            terms: true,
+            level: 6,
+            currency: "eur",
+            tags: ["alpha"]
+          },
+          @suite_attrs
+        )
 
       assert {:error, %Ecto.Changeset{errors: errors}} = Accounts.create_admin(attrs)
       assert Keyword.has_key?(errors, :level)
     end
 
     test "create_admin/1 with unsupported currency returns error changeset" do
-      attrs = %{
-        name: "some name",
-        country: :fra,
-        birth_date: "1990-01-15",
-        signature: ["M0,0L1,1Z"],
-        terms: true,
-        level: 1,
-        currency: "xxx"
-      }
+      attrs =
+        Map.merge(
+          %{
+            name: "some name",
+            country: :fra,
+            birth_date: "1990-01-15",
+            signature: ["M0,0L1,1Z"],
+            terms: true,
+            level: 1,
+            currency: "xxx",
+            tags: ["alpha"]
+          },
+          @suite_attrs
+        )
 
       assert {:error, %Ecto.Changeset{errors: errors}} = Accounts.create_admin(attrs)
       assert Keyword.has_key?(errors, :currency)
@@ -232,7 +291,10 @@ defmodule E2e.AccountsTest do
         birth_date: "1995-06-20",
         terms: true,
         level: 3,
-        currency: "usd"
+        currency: "usd",
+        password: "password2",
+        notifications: true,
+        role: "editor"
       }
 
       assert {:ok, %Admin{} = admin} = Accounts.update_admin(admin, update_attrs)

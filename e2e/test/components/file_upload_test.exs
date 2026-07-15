@@ -2,6 +2,8 @@ defmodule E2eWeb.FileUploadTest do
   use ExUnit.Case, async: false
   use Wallaby.Feature
 
+  @moduletag :wallaby
+
   import Wallaby.Browser
   import Wallaby.Query
 

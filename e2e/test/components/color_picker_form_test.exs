@@ -2,6 +2,8 @@ defmodule E2eWeb.ColorPickerFormTest do
   use ExUnit.Case, async: false
   use Wallaby.Feature
 
+  @moduletag :wallaby
+
   alias E2eWeb.ColorPickerModel, as: ColorPicker
 
   feature "static form - submit empty/default includes color", %{session: session} do

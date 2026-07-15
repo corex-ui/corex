@@ -11,10 +11,7 @@ defmodule E2eWeb.Demos.DataTableDemo do
 
   def anatomy_minimal_code do
     ~S"""
-    <.data_table
-      class="data-table max-w-none"
-      rows={@rows}
-    >
+    <.data_table id="basic-table" class="data-table" rows={@list_rows}>
       <:col :let={row} label="ID">{row.id}</:col>
       <:col :let={row} label="Name">{row.name}</:col>
       <:col :let={row} label="Role">{row.role}</:col>
@@ -42,20 +39,100 @@ defmodule E2eWeb.Demos.DataTableDemo do
 
   def anatomy_with_action_code do
     ~S"""
-    <.data_table
-      class="data-table max-w-none"
-      rows={@rows}
-    >
+    <.data_table id="basic-table" class="data-table" rows={@list_rows}>
       <:col :let={row} label="ID">{row.id}</:col>
       <:col :let={row} label="Name">{row.name}</:col>
       <:col :let={row} label="Role">{row.role}</:col>
       <:col :let={row} label="Email">{row.email}</:col>
       <:action :let={row}>
-        <.action class="button ui-size-sm" aria-label={"Edit #{row.name}"}>
-          <.heroicon name="hero-pencil-square" />
-        </.action>
+        <.action phx-click="edit" phx-value-id={row.id}>Edit</.action>
+        <.action phx-click="delete" phx-value-id={row.id}>Delete</.action>
       </:action>
     </.data_table>
+    """
+  end
+
+  def anatomy_streaming_code do
+    ~S"""
+    <.data_table id="my-table" class="data-table" rows={@streams.items}>
+      <:col :let={{_id, item}} label="Name">{item.name}</:col>
+    </.data_table>
+    """
+  end
+
+  def anatomy_row_click_code do
+    ~S"""
+    <p :if={@row_clicked}>Row clicked: {@row_clicked}</p>
+    <.data_table
+      id="users-table"
+      class="data-table"
+      rows={@users}
+      row_click={fn user -> JS.push("row_click", value: %{id: user.id, name: user.name}) end}
+    >
+      <:col :let={user} label="Name">{user.name}</:col>
+      <:action :let={user}>
+        <.action class="button ui-size-sm">Edit</.action>
+      </:action>
+    </.data_table>
+    """
+  end
+
+  def anatomy_sortable_code do
+    ~S"""
+    <.data_table id="users-sortable" class="data-table" rows={@users} sort_by={@sort_by} sort_order={@sort_order} on_sort="sort">
+      <:col :let={user} label="ID" name={:id}>{user.id}</:col>
+      <:col :let={user} label="Name" name={:name}>{user.name}</:col>
+      <:sort_icon :let={%{direction: direction}}>
+        <.heroicon name={%{asc: "hero-chevron-up", desc: "hero-chevron-down", none: "hero-chevron-up-down"}[direction]} />
+      </:sort_icon>
+    </.data_table>
+    """
+  end
+
+  def anatomy_selectable_code do
+    ~S"""
+    <.data_table
+      id="users-table"
+      class="data-table"
+      rows={@users}
+      row_id={&"user-#{&1.id}"}
+      selectable={true}
+      selected={@selected}
+      on_select="select"
+      on_select_all="select_all"
+      checkbox_class="checkbox"
+    >
+      <:checkbox_indicator>
+        <.heroicon name="hero-check" />
+      </:checkbox_indicator>
+      <:col :let={user} label="ID" name={:id}>{user.id}</:col>
+      <:col :let={user} label="Name" name={:name}>{user.name}</:col>
+      <:col :let={user} label="Email" name={:email}>{user.email}</:col>
+    </.data_table>
+    """
+  end
+
+  def anatomy_with_database_code do
+    ~S"""
+    <.data_table
+      id="cities-table"
+      class="data-table"
+      rows={@cities}
+      sort_by={@sort_by}
+      sort_order={@sort_order}
+      on_sort="sort"
+    >
+      <:col :let={city} label="Name" name={:name}>{city.name}</:col>
+    </.data_table>
+    <.pagination
+      id="cities-pagination"
+      class="pagination"
+      count={@total}
+      page={@page}
+      page_size={@page_size}
+      controlled
+      on_page_change="page"
+    />
     """
   end
 

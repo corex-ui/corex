@@ -1,6 +1,8 @@
 defmodule Corex.Integration.CodeGeneration.AppWithNoOptionsTest do
   use Corex.Integration.CodeGeneratorCase, async: true
 
+  @moduletag :extended
+
   @epoch {{1970, 1, 1}, {0, 0, 0}}
 
   test "newly generated app has no warnings or errors" do

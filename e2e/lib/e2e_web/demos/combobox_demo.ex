@@ -1266,9 +1266,10 @@ defmodule E2eWeb.Demos.ComboboxDemo do
     ~H"""
     <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
       <div class="grid grid-cols-4 gap-space items-start min-w-max">
-        <div :for={semantic <- @matrix_semantics} class="contents">
+        <div :for={{semantic, semantic_index} <- Enum.with_index(@matrix_semantics)} class="contents">
           <.combobox
-            :for={variant <- @matrix_variants}
+            :for={{variant, variant_index} <- Enum.with_index(@matrix_variants)}
+            id={"combobox-matrix-#{semantic_index}-#{variant_index}"}
             class={DemoScales.join_matrix_modifiers("combobox", semantic.modifier, variant.modifier)}
             placeholder={semantic.label}
             items={Corex.List.new(items_minimal())}
