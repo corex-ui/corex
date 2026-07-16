@@ -2,7 +2,14 @@ import type { Hook } from "phoenix_live_view";
 import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import type { ExpandedChangeDetails, SelectionChangeDetails } from "@zag-js/tree-view";
 import { TreeView, type TreeNode } from "../components/tree-view";
-import { getString, getBoolean, getStringList, getDir, canPushEvent, safeParseJson } from "../lib/util";
+import {
+  getString,
+  getBoolean,
+  getStringList,
+  getDir,
+  canPushEvent,
+  safeParseJson,
+} from "../lib/util";
 import {
   contentDatasetValue,
   prepareJsHeightInitialState,

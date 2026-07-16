@@ -213,7 +213,8 @@ export function readUpdatedServerNumber(
   }
 
   const raw =
-    getString(el, "value") ?? (getBoolean(el, "formField") ? getString(el, "defaultValue") : undefined);
+    getString(el, "value") ??
+    (getBoolean(el, "formField") ? getString(el, "defaultValue") : undefined);
   if (raw === undefined || raw === "") {
     return base;
   }
