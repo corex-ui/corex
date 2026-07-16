@@ -71,17 +71,17 @@ defmodule E2eWeb.Demos.DialogDemo do
 
   def actions_code do
     ~S"""
-    <.dialog class="dialog">
+    <.dialog id="dialog-anatomy-actions" class="dialog">
       <:trigger>Open Dialog</:trigger>
       <:title>Confirm</:title>
       <:description>Choose an action to continue.</:description>
       <:content>
         <p>Are you sure you want to continue?</p>
         <div class="flex flex-wrap justify-end gap-2 mt-4">
-          <.action phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)} class="button button--sm button--ghost">
+          <.action phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)} class="button ui-size-sm">
             Cancel
           </.action>
-          <.action phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)} class="button button--sm">
+          <.action phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)} class="button ui-size-sm">
             Continue
           </.action>
         </div>
@@ -106,13 +106,13 @@ defmodule E2eWeb.Demos.DialogDemo do
         <div class="flex flex-wrap justify-end gap-2 mt-4">
           <.action
             phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)}
-            class="button button--sm button--ghost"
+            class="button ui-size-sm"
           >
             Cancel
           </.action>
           <.action
             phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)}
-            class="button button--sm"
+            class="button ui-size-sm"
           >
             Continue
           </.action>

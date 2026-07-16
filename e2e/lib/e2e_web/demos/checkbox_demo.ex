@@ -5,6 +5,9 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     ~S"""
     <.checkbox class="checkbox">
       <:label>Option</:label>
+      <:indicator>
+        <.heroicon name="hero-check" />
+      </:indicator>
     </.checkbox>
     """
   end
@@ -13,6 +16,9 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     ~H"""
     <.checkbox id="checkbox-anatomy-minimal" class="checkbox">
       <:label>Option</:label>
+      <:indicator>
+        <.heroicon name="hero-check" />
+      </:indicator>
     </.checkbox>
     """
   end
@@ -42,7 +48,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
   def invalid_code do
     ~S"""
     <.checkbox
-      class="checkbox checkbox--accent"
+      class="checkbox ui-accent"
       invalid
       checked
       errors={["Required"]}
@@ -63,7 +69,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     ~H"""
     <.checkbox
       id="checkbox-anatomy-invalid"
-      class="checkbox checkbox--accent"
+      class="checkbox ui-accent"
       invalid
       checked
       errors={["Required"]}
