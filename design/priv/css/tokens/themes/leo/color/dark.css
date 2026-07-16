@@ -1,0 +1,48 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+[data-theme="leo"][data-mode="dark"] {
+  --color-accent: #67615e;
+  --color-accent-active: #554f4b;
+  --color-accent-contrast: #f8f8f8;
+  --color-accent-hover: #5c5652;
+  --color-accent-muted: #716b67;
+  --color-accent-text: #989491;
+  --color-alert: #b00d13;
+  --color-alert-active: #900004;
+  --color-alert-contrast: #fcfcfb;
+  --color-alert-hover: #9e0009;
+  --color-alert-muted: #bc201f;
+  --color-alert-text: #fb6155;
+  --color-border: #00311c;
+  --color-brand: #007051;
+  --color-brand-active: #00583e;
+  --color-brand-contrast: #f8f8f8;
+  --color-brand-hover: #006346;
+  --color-brand-muted: #047857;
+  --color-brand-text: #46a581;
+  --color-focus: #00684a;
+  --color-info: #00649b;
+  --color-info-active: #004e7b;
+  --color-info-contrast: #f8f8f8;
+  --color-info-hover: #00588a;
+  --color-info-muted: #096ba4;
+  --color-info-text: #499bd6;
+  --color-ink: #cececd;
+  --color-ink-muted: #949493;
+  --color-layer: #0d0b09;
+  --color-link: #59b692;
+  --color-root: #0d0b09;
+  --color-shadow: #181513;
+  --color-success: #006b2e;
+  --color-success-active: #00531f;
+  --color-success-contrast: #f8f8f8;
+  --color-success-hover: #005d27;
+  --color-success-muted: #007634;
+  --color-success-text: #47a761;
+  --color-ui: #161612;
+  --color-ui-active: #0b0b09;
+  --color-ui-hover: #0d0d0a;
+  --color-ui-muted: #1e1e19;
+}

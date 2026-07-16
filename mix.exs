@@ -8,7 +8,7 @@ defmodule Corex.MixProject do
     end
   end
 
-  @version "0.1.2"
+  @version "0.2.0"
   @elixir_requirement "~> 1.17"
 
   def project do
@@ -22,7 +22,7 @@ defmodule Corex.MixProject do
       aliases: aliases(),
       name: "Corex",
       description:
-        "Accessible and unstyled UI components library written in Elixir and TypeScript that integrates Zag.js state machines into the Phoenix Framework.",
+        "Accessible Phoenix UI components with Zag.js hooks, plus an optional Corex Design Hex package for token-driven CSS and shared ui-* modifiers.",
       package: package(),
       source_url: "https://github.com/corex-ui/corex",
       homepage_url: "https://corex.gigalixirapp.com/en",
@@ -66,20 +66,30 @@ defmodule Corex.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:oeditus_credo, "~> 0.6.3", only: [:dev, :test], runtime: false},
       {:floki, "~> 0.38.0", only: :test},
-      {:corex_new, path: "installer", only: [:docs, :test], runtime: false},
+      {:corex_design, path: "design", runtime: false, only: :test},
       {:phoenix_ecto, "~> 4.0", only: :test},
       {:excoveralls, "~> 0.18", only: :test},
       {:bandit, "~> 1.0", only: :dev},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
-      {:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false}
-    ]
+      {:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false},
+      {:tidewave, "~> 0.5.5", only: :dev}
+    ] ++ maybe_json_polyfill()
+  end
+
+  defp maybe_json_polyfill do
+    case Integer.parse(System.otp_release()) do
+      {otp, _} when otp >= 27 ->
+        []
+
+      _ ->
+        [{:json_polyfill, "~> 0.2 or ~> 1.0", only: [:dev, :test]}]
+    end
   end
 
   defp aliases do
     [
       docs: ["docs"],
       "assets.build": [
-        &copy_design_to_installer/1,
         "esbuild module",
         "esbuild corex_hooks",
         &clean_priv_static_chunks/1,
@@ -100,27 +110,10 @@ defmodule Corex.MixProject do
       ],
       "release.check": ["hex.audit", "lint", "test", "assets.build"],
       "pre.publish": ["release.check"],
+      "hex.build": ["hex.build"],
       tidewave:
         "run --no-halt -e 'Agent.start(fn -> Bandit.start_link(plug: Tidewave, port: 4004) end)'"
     ]
-  end
-
-  defp copy_design_to_installer(_) do
-    source = Path.join(__DIR__, "priv/design")
-    priv_dest = Path.join(__DIR__, "installer/priv/corex_design")
-
-    unless File.dir?(source) do
-      Mix.raise("Expected Corex design tree at #{source}")
-    end
-
-    File.mkdir_p!(Path.dirname(priv_dest))
-
-    if File.exists?(priv_dest) do
-      File.rm_rf!(priv_dest)
-    end
-
-    File.cp_r!(source, priv_dest)
-    :ok
   end
 
   defp clean_priv_static_chunks(_) do
@@ -165,6 +158,7 @@ defmodule Corex.MixProject do
         "guides/installation.md",
         "guides/manual_installation.md",
         "guides/design.md",
+        "design/guides/modifiers.md",
         "guides/forms.md",
         "guides/tableau.md",
         "guides/tableau_theming.md",
@@ -192,7 +186,8 @@ defmodule Corex.MixProject do
          [
            "guides/installation.md",
            "guides/manual_installation.md",
-           "guides/design.md"
+           "guides/design.md",
+           "design/guides/modifiers.md"
          ]},
         {:Guides,
          [

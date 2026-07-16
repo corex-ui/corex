@@ -37,6 +37,11 @@ defmodule Corex.Integration.CodeGeneratorCase do
     )
 
     mix_run!(["deps.get"], app_root_path)
+
+    unless "--no-design" in opts do
+      mix_run!(["corex.design.build"], app_root_path, env: [{"MIX_ENV", "dev"}])
+    end
+
     mix_run!(["compile"], app_root_path)
     mix_run!(["format"], app_root_path)
 
@@ -344,16 +349,11 @@ defmodule Corex.Integration.CodeGeneratorCase do
     app_css = Path.join([base, "assets", "css", "app.css"])
 
     assert_file(app_css, fn c ->
-      assert c =~ ~s(@import "../corex/main.css";)
-      assert c =~ ~s(@import "../corex/theme/neo.css";)
+      assert c =~ ~s(@import "../corex/corex.css";)
+      refute c =~ ~s(@import "../corex/main.css";)
+      refute c =~ ~s(@import "../corex/components.css";)
       refute c =~ "toggle-group.css"
       refute c =~ "tags-input.css"
-      assert c =~ ~s(@import "../corex/components/scrollbar.css";)
-      assert c =~ ~s(@import "../corex/components/data-list.css";)
-      assert c =~ ~s(@import "../corex/components/data-table.css";)
-      assert c =~ ~s(@import "../corex/components/select.css";)
-      assert c =~ ~s(@import "../corex/components/native-input.css";)
-      assert c =~ ~s(@import "../corex/components/checkbox.css";)
     end)
 
     assert_file(app_css, fn c ->
@@ -362,6 +362,12 @@ defmodule Corex.Integration.CodeGeneratorCase do
 
     design_dir = Path.join([base, "assets", "corex"])
     assert_dir(design_dir)
+
+    refute_file(Path.join(base, "assets/corex_design.exs"))
+    assert_file(Path.join(base, "mix.exs"), ~r/\{:corex_design,/)
+    assert_file(Path.join(base, "mix.exs"), "corex.design.build")
+    assert_file(Path.join(base, "config/config.exs"), "config :corex_design")
+
     refute_dir(Path.join(design_dir, "design"))
 
     home = Path.join([base, "lib", web, "controllers", "page_html", "home.html.heex"])
@@ -477,14 +483,14 @@ defmodule Corex.Integration.CodeGeneratorCase do
     layouts = Path.join([base, "lib", web, "components", "layouts.ex"])
 
     assert_file(layouts, fn c ->
-      assert c =~ ~r/def\s+app\b[\s\S]*?class="layout__header"/,
-             "Layouts.app missing layout__header"
+      assert c =~ ~r/def\s+app\b[\s\S]*?sticky top-0 z-10/,
+             "Layouts.app missing Tailwind header shell"
 
-      assert c =~ ~r/def\s+app\b[\s\S]*?class="layout__header__content"/,
-             "Layouts.app missing layout__header__content"
+      assert c =~ ~r/def\s+app\b[\s\S]*?border-b border-border bg-layer/,
+             "Layouts.app missing header border styling"
 
-      assert c =~ ~r/def\s+app\b[\s\S]*?class="layout__footer"/,
-             "Layouts.app missing layout__footer"
+      assert c =~ ~r/def\s+app\b[\s\S]*?border-t border-border bg-layer/,
+             "Layouts.app missing footer shell"
     end)
   end
 end

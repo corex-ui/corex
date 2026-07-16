@@ -13,10 +13,10 @@ defmodule Mix.Tasks.Corex.NewTest do
     assert_received {:mix_shell, :info, ["Corex installer v" <> _]}
   end
 
-  test "designex conflicts with --no-design" do
-    in_tmp("new designex no design", fn ->
-      assert_raise Mix.Error, ~r/--designex requires design/, fn ->
-        Mix.Tasks.Corex.New.run(["phx_blog", "--no-design", "--designex"])
+  test "mode conflicts with --no-design" do
+    in_tmp("new mode no design", fn ->
+      assert_raise Mix.Error, ~r/--mode requires design/, fn ->
+        Mix.Tasks.Corex.New.run(["phx_blog", "--no-design", "--mode"])
       end
     end)
   end
@@ -112,7 +112,7 @@ defmodule Mix.Tasks.Corex.NewTest do
           Mix.Tasks.Corex.New.run([name, "--no-install"])
         end)
 
-        assert File.dir?(Path.join(name, "assets/corex"))
+        assert File.read!(Path.join(name, "config/config.exs")) =~ "config :corex_design"
       end)
     end
   end
@@ -131,12 +131,11 @@ defmodule Mix.Tasks.Corex.NewTest do
             "--no-install",
             "--mode",
             "--theme",
-            "--lang",
-            "--designex"
+            "--lang"
           ])
         end)
 
-        assert File.dir?(Path.join(name, "assets/corex"))
+        assert File.read!(Path.join(name, "config/config.exs")) =~ "config :corex_design"
         assert [_ | _] = Path.wildcard(Path.join([name, "lib", "*_web", "plugs", "mode.ex"]))
         assert File.regular?(Path.join(name, "mix.exs"))
         assert [_ | _] = Path.wildcard(Path.join([name, "lib", "**", "layouts.ex"]))

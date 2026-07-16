@@ -15,8 +15,8 @@ defmodule Corex.New.Patches do
       |> ensure_corex_dep(opts)
       |> maybe_ensure_localize_web_dep(opts)
       |> maybe_ensure_gettext_sigils_dep(opts)
-      |> maybe_ensure_designex_dep(opts)
-      |> maybe_add_designex_aliases(opts)
+      |> maybe_ensure_design_dep(opts)
+      |> maybe_add_design_aliases(opts)
       |> maybe_ensure_json_polyfill_dep(opts)
 
     write_if_changed!(path, content, updated)
@@ -132,10 +132,25 @@ defmodule Corex.New.Patches do
   end
 
   @doc """
+  When `:design` is true, ensures `.gitignore` ignores generated Corex Design CSS
+  at `/assets/corex/`. Creates `.gitignore` when missing. Idempotent.
+  """
+  def patch_gitignore(install_dir, opts) do
+    if Keyword.get(opts, :design, false) do
+      path = Path.join(install_dir, ".gitignore")
+      content = if File.exists?(path), do: File.read!(path), else: ""
+      updated = ensure_assets_corex_ignored(content)
+      write_if_changed!(path, content, updated)
+    else
+      :ok
+    end
+  end
+
+  @doc """
   Ensures `config/config.exs` has:
     * `config :<otp_app>, themes: [...]` when `--theme`
     * `config :localize, default_locale: :en, supported_locales: [...]` when `--lang`
-    * `config :designex, ...` when `--designex`
+    * `config :corex_design` when `--design`
     * esbuild args contain `--format=esm --splitting --target=es2022`
       and `--outdir=../priv/static/assets/js`.
   Idempotent.
@@ -149,7 +164,7 @@ defmodule Corex.New.Patches do
       |> maybe_add_themes_to_app_config(opts)
       |> maybe_add_localize_config(opts)
       |> maybe_add_corex_generators_config(opts)
-      |> maybe_add_designex_config(opts)
+      |> maybe_add_design_config(opts)
       |> patch_esbuild_for_esm()
       |> patch_env_path_lists()
 
@@ -245,14 +260,14 @@ defmodule Corex.New.Patches do
     end
   end
 
-  defp maybe_ensure_designex_dep(content, opts) do
-    if Keyword.get(opts, :designex, false) do
-      if Regex.match?(~r/\{:designex\s*,/u, content) do
+  defp maybe_ensure_design_dep(content, opts) do
+    if Keyword.get(opts, :design, false) do
+      if Regex.match?(~r/\{:corex_design\s*,/u, content) do
         content
       else
         insert_before_closing_deps(
           content,
-          "      {:designex, \"~> 1.0\", runtime: Mix.env() == :dev},\n"
+          "      {:corex_design, #{corex_design_dep_source(opts)}},\n"
         )
       end
     else
@@ -280,8 +295,8 @@ defmodule Corex.New.Patches do
     end
   end
 
-  defp maybe_add_designex_aliases(content, opts) do
-    if not Keyword.get(opts, :designex, false) do
+  defp maybe_add_design_aliases(content, opts) do
+    if not Keyword.get(opts, :design, false) do
       content
     else
       if not String.contains?(content, "\"assets.build\"") do
@@ -289,21 +304,21 @@ defmodule Corex.New.Patches do
           :yellow,
           "! ",
           :reset,
-          "Could not locate assets.build alias in mix.exs. Add \"designex corex\" to assets.build and assets.deploy manually."
+          "Could not locate assets.build alias in mix.exs. Add \"corex.design.build\" to assets.build and assets.deploy manually."
         ])
 
         content
       else
         content
-        |> insert_designex_into_assets_build()
-        |> insert_designex_into_assets_deploy()
+        |> insert_design_into_assets_build()
+        |> insert_design_into_assets_deploy()
       end
     end
   end
 
-  defp insert_designex_into_assets_build(content) do
+  defp insert_design_into_assets_build(content) do
     if Regex.match?(
-         ~r/"assets\.build":\s*\[[\s\S]*?"compile"[\s\S]*?"designex corex"/u,
+         ~r/"assets\.build":\s*\[[\s\S]*?"compile"[\s\S]*?"corex.design.build"/u,
          content
        ) do
       content
@@ -312,7 +327,7 @@ defmodule Corex.New.Patches do
         Regex.replace(
           ~r/("assets\.build":\s*\[\s*"compile")\s*,/u,
           content,
-          "\\1, \"designex corex\",",
+          "\\1, \"corex.design.build\",",
           global: false
         )
 
@@ -320,7 +335,7 @@ defmodule Corex.New.Patches do
         Regex.replace(
           ~r/("assets\.build":\s*\[\s*\n\s*"compile")\s*,/u,
           content,
-          "\\1,\n        \"designex corex\",",
+          "\\1,\n        \"corex.design.build\",",
           global: false
         )
       else
@@ -329,31 +344,31 @@ defmodule Corex.New.Patches do
     end
   end
 
-  defp insert_designex_into_assets_deploy(content) do
+  defp insert_design_into_assets_deploy(content) do
     if Regex.match?(
-         ~r/"assets\.deploy":\s*\[[\s\S]*?"designex corex"/u,
+         ~r/"assets\.deploy":\s*\[[\s\S]*?"corex.design.build"/u,
          content
        ) do
       content
     else
       content
-      |> insert_designex_deploy_after_compile()
-      |> insert_designex_deploy_before_tailwind_or_esbuild()
+      |> insert_design_deploy_after_compile()
+      |> insert_design_deploy_before_tailwind_or_esbuild()
     end
   end
 
-  defp insert_designex_deploy_after_compile(content) do
+  defp insert_design_deploy_after_compile(content) do
     if Regex.match?(
-         ~r/"assets\.deploy":\s*\[[\s\S]*?"compile"[\s\S]*?"designex corex"/u,
+         ~r/"assets\.deploy":\s*\[[\s\S]*?"compile"[\s\S]*?"corex.design.build"/u,
          content
        ) do
       content
     else
       replaced =
         Regex.replace(
-          ~r/("assets\.deploy":\s*\[\s*"compile")\s*,\s*(?!\"designex corex")/u,
+          ~r/("assets\.deploy":\s*\[\s*"compile")\s*,\s*(?!\"corex.design.build")/u,
           content,
-          "\\1, \"designex corex\", ",
+          "\\1, \"corex.design.build\", ",
           global: false
         )
 
@@ -363,16 +378,16 @@ defmodule Corex.New.Patches do
         Regex.replace(
           ~r/("assets\.deploy":\s*\[\s*\n\s*"compile")\s*,(\s*\n)(\s*)("(?:tailwind|esbuild))/u,
           content,
-          "\\1,\\2\\3\"designex corex\",\\2\\3\\4",
+          "\\1,\\2\\3\"corex.design.build\",\\2\\3\\4",
           global: false
         )
       end
     end
   end
 
-  defp insert_designex_deploy_before_tailwind_or_esbuild(content) do
+  defp insert_design_deploy_before_tailwind_or_esbuild(content) do
     if Regex.match?(
-         ~r/"assets\.deploy":\s*\[[\s\S]*?"designex corex"/u,
+         ~r/"assets\.deploy":\s*\[[\s\S]*?"corex.design.build"/u,
          content
        ) do
       content
@@ -381,7 +396,7 @@ defmodule Corex.New.Patches do
         Regex.replace(
           ~r/("assets\.deploy":\s*\[\s*\n)(\s*)("(?:tailwind|esbuild))/u,
           content,
-          "\\1\\2\"designex corex\",\n\\2\\3",
+          "\\1\\2\"corex.design.build\",\n\\2\\3",
           global: false
         )
 
@@ -391,43 +406,98 @@ defmodule Corex.New.Patches do
         Regex.replace(
           ~r/("assets\.deploy":\s*\[\s*)("(?:tailwind|esbuild))/u,
           content,
-          "\\1\"designex corex\", \\2",
+          "\\1\"corex.design.build\", \\2",
           global: false
         )
       end
     end
   end
 
-  defp maybe_add_designex_config(content, opts) do
+  defp maybe_add_design_config(content, opts) do
     cond do
-      not Keyword.get(opts, :designex, false) ->
+      not Keyword.get(opts, :design, false) ->
         content
 
-      String.contains?(content, "config :designex") ->
+      String.contains?(content, "config :corex_design") ->
         content
 
       true ->
         block = """
-        config :designex,
-          version: "1.0.2",
-          commit: "1da4b31",
-          cd: Path.expand("../assets", __DIR__),
-          dir: "corex",
-          corex: [
-            build_args: ~W(--dir=design --script=build.mjs --tokens=tokens)
-          ]
+        config :corex_design,
+          output: "assets/corex",
+          default_theme: :neo,
+          default_mode: :light,
+          themes: nil,
+          scales: [],
+          components: #{inspect(installer_components(opts))},
+          semantics: nil
 
         """
 
         marker = "import_config \"#{"#"}{config_env()}.exs\""
 
         if String.contains?(content, marker) do
-          String.replace(content, marker, String.trim_trailing(block) <> "\n" <> marker,
+          String.replace(content, marker, String.trim_trailing(block) <> "\n\n" <> marker,
             global: false
           )
         else
           String.trim_trailing(content) <> "\n\n" <> String.trim_trailing(block) <> "\n"
         end
+    end
+  end
+
+  defp ensure_assets_corex_ignored(content) do
+    if Regex.match?(~r{^/?assets/corex/?$}m, content) do
+      content
+    else
+      entry = "/assets/corex/\n"
+
+      cond do
+        content == "" ->
+          entry
+
+        String.ends_with?(content, "\n") ->
+          content <> "\n" <> entry
+
+        true ->
+          content <> "\n\n" <> entry
+      end
+    end
+  end
+
+  defp corex_design_dep_source(opts) do
+    case Keyword.get(opts, :dev) do
+      path when is_binary(path) ->
+        trimmed = String.trim(path)
+
+        if trimmed != "" do
+          Corex.New.Cli.validate_dev_path!(trimmed)
+          design_path = Path.join(trimmed, "design")
+          "[path: #{inspect(design_path)}, runtime: false, only: :dev]"
+        else
+          corex_design_dep_constraint()
+        end
+
+      _ ->
+        corex_design_dep_constraint()
+    end
+  end
+
+  defp corex_design_dep_constraint do
+    "\"~> 0.2\", runtime: false, only: :dev"
+  end
+
+  defp installer_components(opts) do
+    base =
+      ~w(
+        toast layout-heading typo icon link button dialog password-input scrollbar
+        checkbox data-list data-table date-picker native-input number-input select
+      )a
+
+    if Keyword.get(opts, :mode, false) do
+      base ++ [:toggle]
+    else
+      base
     end
   end
 

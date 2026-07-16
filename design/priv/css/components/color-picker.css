@@ -1,0 +1,376 @@
+@import "../main.css";
+@import "./scrollbar.css";
+
+@layer components {
+ .color-picker {
+ width: fit-content;
+ max-width: fit-content;
+ }
+
+ .color-picker[data-loading] [data-scope="color-picker"][data-part="root"] {
+ @apply ui-loading;
+ }
+
+ .color-picker [data-scope="color-picker"][data-part="root"] {
+ @apply ui-root;
+
+ width: fit-content;
+ max-width: fit-content;
+ gap: var(--spacing-space);
+ position: relative;
+ padding-inline-end: var(--spacing-space);
+ }
+
+ .color-picker [data-scope="color-picker"][data-part="root"][data-readonly] {
+ @apply ui-readonly;
+ }
+
+ .color-picker [data-scope="color-picker"][data-part="label"] {
+ @apply ui-label;
+ }
+
+ .color-picker [data-scope="color-picker"][data-part="control"] {
+ display: flex;
+ flex-flow: row nowrap;
+ align-items: center;
+ width: fit-content;
+ max-width: fit-content;
+ padding: 0;
+ overflow: hidden;
+ gap: 0;
+ justify-content: flex-start;
+ border-radius: var(--ctl-radius, var(--radius-md));
+ }
+
+ .color-picker [data-scope="color-picker"][data-part="trigger"] {
+ @apply ui-trigger;
+
+ min-width: var(--ctl-size, var(--spacing-size));
+ padding: 0;
+ aspect-ratio: 1 / 1;
+ width: auto;
+ position: relative;
+ overflow: hidden;
+ border-start-end-radius: 0;
+ border-end-end-radius: 0;
+ border-start-start-radius: var(--ctl-radius, var(--radius-md));
+ border-end-start-radius: var(--ctl-radius, var(--radius-md));
+ background-color: transparent;
+
+ & [data-scope="color-picker"][data-part="swatch"] {
+ width: 100%;
+ height: 100%;
+ display: block;
+ border-radius: inherit;
+ }
+
+ & [data-scope="color-picker"][data-part="transparency-grid"] {
+ width: 100%;
+ height: 100%;
+ min-height: 0;
+ border-radius: inherit;
+ }
+ }
+
+ .color-picker [data-scope="color-picker"][data-part="channel-input"] {
+ @apply ui-input;
+
+ text-align: center;
+ justify-content: center;
+
+ &::-webkit-outer-spin-button,
+ &::-webkit-inner-spin-button {
+ -webkit-appearance: none;
+ margin: 0;
+ }
+
+ &[type="number"] {
+ -moz-appearance: textfield;
+ appearance: textfield;
+ }
+ }
+
+ .color-picker
+ [data-scope="color-picker"][data-part="control"]
+ [data-scope="color-picker"][data-part="channel-input"][data-channel="hex"] {
+ width: calc(var(--spacing-size) * 2.5);
+ flex: 0 0 auto;
+ border-radius: 0;
+ border-inline-start: none;
+ }
+
+ .color-picker
+ [data-scope="color-picker"][data-part="control"]
+ [data-scope="color-picker"][data-part="channel-input"][data-channel="alpha"] {
+ width: calc(var(--spacing-size) * 1.35);
+ flex: 0 0 auto;
+ padding: 0;
+ padding-inline: calc(var(--spacing-space) * 0.5);
+ border-inline-start: none;
+ border-start-start-radius: 0;
+ border-end-start-radius: 0;
+ border-start-end-radius: var(--ctl-radius, var(--radius-md));
+ border-end-end-radius: var(--ctl-radius, var(--radius-md));
+ }
+
+ .color-picker
+ [data-part="input-groups"]
+ [data-scope="color-picker"][data-part="channel-input"][data-channel="alpha"],
+ .color-picker
+ [data-scope="color-picker"][data-part="channel-input"][data-channel="red"],
+ .color-picker
+ [data-scope="color-picker"][data-part="channel-input"][data-channel="blue"],
+ .color-picker
+ [data-scope="color-picker"][data-part="channel-input"][data-channel="green"],
+ .color-picker
+ [data-scope="color-picker"][data-part="channel-input"][data-channel="hue"],
+ .color-picker
+ [data-scope="color-picker"][data-part="channel-input"][data-channel="saturation"],
+ .color-picker
+ [data-scope="color-picker"][data-part="channel-input"][data-channel="lightness"],
+ .color-picker
+ [data-scope="color-picker"][data-part="channel-input"][data-channel="brightness"] {
+ width: calc(var(--spacing-size)* 1.2);
+ min-height: calc(var(--spacing-size) * 0.55);
+ padding: 0;
+ padding-inline: calc(var(--spacing-space-sm) * 0.5);
+ font-size: var(--text-xs);
+ line-height: var(--text-xs--line-height);
+ }
+
+ .color-picker
+ [data-part="input-group"]
+ [data-scope="color-picker"][data-part="channel-input"][data-channel] {
+ width: 100%;
+ min-width: 0;
+ min-height: calc(var(--spacing-size) * 0.55);
+ height: calc(var(--spacing-size) * 0.55);
+ max-height: calc(var(--spacing-size) * 0.55);
+ padding: 0;
+ padding-inline: calc(var(--spacing-space-sm) * 0.5);
+ font-size: var(--text-xs);
+ line-height: 1;
+ box-sizing: border-box;
+ }
+
+ .color-picker [data-part="input-group"]:last-child {
+ flex: 0 0 calc(var(--spacing-size) * 0.85);
+ min-width: calc(var(--spacing-size) * 0.85);
+ max-width: calc(var(--spacing-size) * 0.85);
+ }
+
+ .color-picker
+ [data-part="input-group"]:last-child
+ [data-scope="color-picker"][data-part="channel-input"][data-channel="alpha"] {
+ padding-inline: calc(var(--spacing-space-sm) * 0.35);
+ }
+
+ .color-picker [data-part="positioner"] {
+ display: none;
+ width: max-content;
+ max-width: max-content;
+ }
+
+ .color-picker
+ [data-part="positioner"]:has([data-part="content"][data-state="open"]) {
+ display: block;
+ }
+
+ .color-picker [data-scope="color-picker"][data-part="content"] {
+ @apply ui-content scrollbar scrollbar--sm;
+
+ flex-direction: column;
+ z-index: 30;
+ padding: 0;
+ width: max-content;
+ min-width: var(--container-4xs);
+ max-width: var(--container-4xs);
+ gap: calc(var(--spacing-space-sm) * 0.5);
+ box-sizing: border-box;
+ overflow-x: hidden;
+ overflow-y: auto;
+ }
+
+ .color-picker [data-scope="color-picker"][data-part="area"] {
+ @apply ui-trigger;
+
+ position: relative;
+ padding: 0;
+ min-height: 0;
+ width: 100%;
+ max-width: 100%;
+ aspect-ratio: 4 / 3;
+ height: auto;
+ align-self: center;
+ }
+
+ .color-picker [data-scope="color-picker"][data-part="area-background"] {
+ position: absolute;
+ inset: 0;
+ width: 100%;
+ height: 100%;
+ }
+
+ .color-picker [data-scope="color-picker"][data-part="area-thumb"],
+ .color-picker [data-scope="color-picker"][data-part="channel-slider-thumb"] {
+ border: calc(var(--spacing-space) / 8) solid var(--color-ink);
+ border-radius: var(--radius-full);
+ box-sizing: border-box;
+ transform: translate(-50%, -50%);
+ outline: none;
+ box-shadow: inset 0 0 0 var(--spacing-space) var(--color-root);
+ width: calc(var(--spacing-size) * 0.4);
+ height: calc(var(--spacing-size) * 0.4);
+ }
+
+ .color-picker [data-scope="color-picker"][data-part="channel-slider"] {
+ height: calc(var(--spacing-size) * 0.375);
+ width: 100%;
+ min-width: 0;
+ border-radius: var(--radius-md);
+ box-sizing: border-box;
+ }
+
+ .color-picker [data-scope="color-picker"][data-part="channel-slider-track"] {
+ height: 100%;
+ width: 100%;
+ border-radius: var(--radius-md);
+ }
+
+ .color-picker
+ [data-scope="color-picker"][data-part="channel-slider"]
+ [data-scope="color-picker"][data-part="transparency-grid"] {
+ min-height: 0;
+ width: 100%;
+ height: 100%;
+ }
+
+ .color-picker [data-scope="color-picker"][data-part="swatch-group"] [data-part="transparency-grid"] {
+ min-height: 0;
+ width: 100%;
+ height: 100%;
+ }
+
+ .color-picker [data-scope="color-picker"][data-part="eye-dropper-trigger"] {
+ @apply ui-trigger ui-trigger--square;
+ }
+
+ @media (pointer: coarse) {
+ .color-picker [data-part="eye-dropper-trigger"] {
+ display: none;
+ }
+ }
+
+ .color-picker [data-part="pickers"] {
+ display: flex;
+ flex-direction: row;
+ width: 100%;
+ min-width: 0;
+ max-width: 100%;
+ margin-inline: auto;
+ gap: calc(var(--spacing-space-sm) * 0.5);
+ align-items: center;
+ box-sizing: border-box;
+ }
+
+ .color-picker [data-part="sliders"] {
+ display: flex;
+ flex-direction: column;
+ flex: 1 1 0;
+ width: 100%;
+ min-width: 0;
+ gap: calc(var(--spacing-space-sm) * 0.5);
+ padding-inline: calc(var(--spacing-space-sm) * 0.75);
+ }
+
+ .color-picker [data-part="input-groups"] {
+ @apply scrollbar scrollbar--sm;
+
+ display: flex;
+ flex-flow: row nowrap;
+ width: 100%;
+ max-width: 100%;
+ min-width: 0;
+ gap: calc(var(--spacing-space-sm) * 0.5);
+ padding-inline: calc(var(--spacing-space-sm) * 0.75);
+ padding-block-end: calc(var(--spacing-space-sm) * 0.5);
+ align-items: flex-start;
+ box-sizing: border-box;
+ overflow-x: auto;
+ overflow-y: hidden;
+ }
+
+ .color-picker [data-part="input-group"] {
+ display: flex;
+ flex-direction: column;
+ flex: 1 1 0;
+ min-width: calc(var(--spacing-size) * 0.75);
+ align-items: stretch;
+ gap: calc(var(--spacing-space-sm) * 0.5);
+ text-align: center;
+ font-size: var(--text-xs);
+ line-height: var(--text-xs--line-height);
+ }
+
+ .color-picker [data-part="input-group"] > input {
+ width: 100%;
+ min-width: 0;
+ box-sizing: border-box;
+ text-align: center;
+ }
+
+ .color-picker [data-part="swatch-group"] {
+ display: flex;
+ flex-flow: row wrap;
+ width: 100%;
+ gap: calc(var(--spacing-space-sm) * 0.5);
+ padding-inline: calc(var(--spacing-space-sm) * 0.75);
+ padding-block-end: calc(var(--spacing-space-sm) * 0.5);
+ align-items: center;
+ }
+
+ .color-picker [data-scope="color-picker"][data-part="swatch-trigger"] {
+ @apply ui-trigger;
+
+ min-height: calc(var(--spacing-size) * 0.4);
+ padding: 0;
+ aspect-ratio: 1 / 1;
+ width: auto;
+ position: relative;
+ overflow: hidden;
+ border-radius: var(--radius-md);
+ background-color: transparent;
+
+ & [data-scope="color-picker"][data-part="swatch"] {
+ min-height: calc(var(--spacing-size) * 0.4);
+ width: auto;
+ aspect-ratio: 1 / 1;
+ border-radius: inherit;
+ }
+
+ & [data-scope="color-picker"][data-part="transparency-grid"] {
+ min-height: 0;
+ width: 100%;
+ height: 100%;
+ border-radius: inherit;
+ }
+ }
+
+ .color-picker [data-scope="color-picker"][data-part="error"] {
+ @apply ui-error;
+ }
+
+ .color-picker.ui-rounded-full [data-scope="color-picker"][data-part="content"] {
+ border-radius: var(--radius-xl);
+ }
+
+ .color-picker.ui-rounded-full [data-scope="color-picker"][data-part="area"] {
+ border-radius: var(--radius-lg);
+ }
+
+ .color-picker [data-scope="color-picker"][data-part="error"].absolute {
+ padding-block: 0;
+ display: block;
+ }
+
+}

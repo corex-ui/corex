@@ -1,0 +1,33 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+@theme inline {
+  --color-accent: var(--color-accent);
+  --color-accent-contrast: var(--color-accent-contrast);
+  --color-accent-text: var(--color-accent-text);
+  --color-alert: var(--color-alert);
+  --color-alert-contrast: var(--color-alert-contrast);
+  --color-alert-text: var(--color-alert-text);
+  --color-border: var(--color-border);
+  --color-brand: var(--color-brand);
+  --color-brand-contrast: var(--color-brand-contrast);
+  --color-brand-text: var(--color-brand-text);
+  --color-focus: var(--color-focus);
+  --color-info: var(--color-info);
+  --color-info-contrast: var(--color-info-contrast);
+  --color-info-text: var(--color-info-text);
+  --color-ink: var(--color-ink);
+  --color-ink-muted: var(--color-ink-muted);
+  --color-layer: var(--color-layer);
+  --color-link: var(--color-link);
+  --color-root: var(--color-root);
+  --color-shadow: var(--color-shadow);
+  --color-success: var(--color-success);
+  --color-success-contrast: var(--color-success-contrast);
+  --color-success-text: var(--color-success-text);
+  --color-ui: var(--color-ui);
+  --color-ui-active: var(--color-ui-active);
+  --color-ui-hover: var(--color-ui-hover);
+  --color-ui-muted: var(--color-ui-muted);
+}

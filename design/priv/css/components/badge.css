@@ -1,0 +1,58 @@
+@import "../main.css";
+
+@layer components {
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    cursor: unset;
+    width: fit-content;
+    max-width: 100%;
+    font-size: calc(var(--ctl-text, var(--text-base)) * 0.8);
+    line-height: var(--ctl-leading, var(--text-base--line-height));
+    font-weight: var(--font-weight-normal);
+    border-radius: var(--ctl-radius, var(--radius-full));
+    border: 1px solid transparent;
+    padding-inline: var(--ctl-space, var(--spacing-space));
+    padding-block: 0;
+    gap: var(--ctl-space, var(--spacing-space));
+    height: calc(var(--ctl-size, var(--spacing-size)) * 0.8);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+    box-sizing: border-box;
+
+    & svg {
+      @apply ui-icon;
+
+      padding: 0;
+    }
+  }
+
+  .badge:not(.ui-solid) {
+    background-color: var(--color-ui);
+    color: var(--ctl-ink-text, var(--color-ink));
+    border-color: var(--color-border);
+  }
+
+  .badge.ui-solid {
+    background-color: var(--ctl-bg, var(--ctl-fill, var(--color-ui-active)));
+    color: var(--ctl-ink, var(--ctl-fill-ink, var(--color-ink)));
+    border-color: var(--ctl-bd, transparent);
+  }
+
+  .badge.badge--square,
+  .badge.badge--circle {
+    display: inline-flex;
+    aspect-ratio: 1 / 1;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+    padding: 0;
+  }
+
+  .badge.badge--circle {
+    border-radius: var(--radius-full);
+  }
+}

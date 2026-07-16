@@ -1,0 +1,38 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+[data-theme="leo"] {
+  --theme-spacing: 0.215rem;
+  --theme-spacing-space-sm: calc(var(--spacing) * 2);
+  --theme-spacing-space-md: calc(var(--spacing) * 3);
+  --theme-spacing-space-lg: calc(var(--spacing) * 4);
+  --theme-spacing-space-xl: calc(var(--spacing) * 5);
+  --theme-spacing-space-xs: calc(var(--spacing) * 1);
+  --theme-spacing-size-sm: calc(var(--spacing) * 7.6279);
+  --theme-spacing-size-md: calc(var(--spacing) * 9.5349);
+  --theme-spacing-size-lg: calc(var(--spacing) * 11.4419);
+  --theme-spacing-size-xl: calc(var(--spacing) * 13.3488);
+  --theme-spacing-size-xs: calc(var(--spacing) * 5.7209);
+  --theme-container-9xs: 3.6rem;
+  --theme-container-8xs: 4.5rem;
+  --theme-container-7xs: 5.4rem;
+  --theme-container-6xs: 7.2rem;
+  --theme-container-5xs: 9rem;
+  --theme-container-4xs: 10.8rem;
+  --theme-container-3xs: 14.4rem;
+  --theme-container-2xs: 16.2rem;
+  --theme-container-xs: 18rem;
+  --theme-container-sm: 21.6rem;
+  --theme-container-md: 25.2rem;
+  --theme-container-lg: 28.8rem;
+  --theme-container-xl: 32.4rem;
+  --theme-container-2xl: 37.8rem;
+  --theme-container-3xl: 43.2rem;
+  --theme-container-4xl: 50.4rem;
+  --theme-container-5xl: 57.6rem;
+  --theme-container-6xl: 64.8rem;
+  --theme-container-7xl: 72rem;
+  --theme-container-8xl: 79.2rem;
+  --theme-container-9xl: 86.4rem;
+}

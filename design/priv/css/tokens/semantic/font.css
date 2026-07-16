@@ -1,0 +1,20 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+@theme inline {
+  --font-sans: var(--theme-font-sans);
+  --font-serif: var(--theme-font-serif);
+  --font-mono: var(--theme-font-mono);
+  --font-code: var(--theme-font-code);
+  --font-display: var(--theme-font-display);
+  --font-weight-thin: var(--theme-font-weight-thin);
+  --font-weight-extralight: var(--theme-font-weight-extralight);
+  --font-weight-light: var(--theme-font-weight-light);
+  --font-weight-normal: var(--theme-font-weight-normal);
+  --font-weight-medium: var(--theme-font-weight-medium);
+  --font-weight-semibold: var(--theme-font-weight-semibold);
+  --font-weight-bold: var(--theme-font-weight-bold);
+  --font-weight-extrabold: var(--theme-font-weight-extrabold);
+  --font-weight-black: var(--theme-font-weight-black);
+}

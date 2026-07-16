@@ -1,0 +1,47 @@
+@import "../main.css";
+
+@layer components {
+  .button {
+    @apply ui-trigger;
+
+    width: fit-content;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .button.ui-trigger--square {
+    @apply ui-trigger--square;
+  }
+
+  .button.ui-trigger--circle {
+    @apply ui-trigger--circle;
+  }
+
+  .button:not(.ui-solid) {
+    background-color: var(--color-ui);
+    color: var(--ctl-ink-text, var(--color-ink));
+    border-color: var(--color-border);
+  }
+
+  .button:not(.ui-solid):hover {
+    background-color: var(--color-ui-active);
+  }
+
+  .button:not(.ui-solid):active {
+    background-color: var(--color-ui-active);
+  }
+
+  .button:not(.ui-solid):focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--ctl-ink-text, var(--color-ink));
+  }
+
+  .button:not(.ui-solid):disabled,
+  .button:not(.ui-solid)[data-disabled],
+  .button:not(.ui-solid)[disabled] {
+    background-color: var(--color-ui-muted);
+    color: var(--color-ink-muted);
+    border-color: var(--color-ui-muted);
+    cursor: not-allowed;
+  }
+}
