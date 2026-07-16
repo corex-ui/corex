@@ -104,7 +104,7 @@ describe("Toast hook lifecycle", () => {
     expect(el.dataset.toastGroup).toBeUndefined();
   });
 
-  it("DOM toast:create ignores untrusted action payloads", () => {
+  it("DOM corex:toast:create ignores untrusted action payloads", () => {
     const el = document.createElement("div");
     el.id = groupId;
     document.body.appendChild(el);
@@ -126,7 +126,7 @@ describe("Toast hook lifecycle", () => {
     callHookMounted(Toast, hook);
 
     el.dispatchEvent(
-      new CustomEvent("toast:create", {
+      new CustomEvent("corex:toast:create", {
         detail: {
           id: "dom-toast",
           title: "Hello",

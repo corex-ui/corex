@@ -42,7 +42,13 @@ defmodule E2eWeb.AccordionModel do
     end
   end
 
+  def scroll_section_into_view(session, section_dom_id) do
+    E2eWeb.FormInputHelpers.scroll_into_view(session, section_dom_id)
+  end
+
   def wait_section_accordion_ready(session, section_dom_id, _opts \\ []) do
+    session = scroll_section_into_view(session, section_dom_id)
+
     assert_has(
       session,
       css(~s(##{section_dom_id} [phx-hook="Accordion"][data-loading]),
@@ -50,6 +56,8 @@ defmodule E2eWeb.AccordionModel do
         visible: :any
       )
     )
+
+    session
   end
 
   def click_item(session, trigger_text) do
@@ -81,11 +89,13 @@ defmodule E2eWeb.AccordionModel do
   end
 
   def click_first_trigger_in_section(session, section_dom_id) do
+    session = scroll_section_into_view(session, section_dom_id)
     click(session, first_item_trigger_query(section_dom_id))
     session
   end
 
   def click_trigger_in_section_at(session, section_dom_id, n) when is_integer(n) and n > 0 do
+    session = scroll_section_into_view(session, section_dom_id)
     click(session, nth_item_trigger_query(section_dom_id, n))
     session
   end

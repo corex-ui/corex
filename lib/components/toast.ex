@@ -328,7 +328,7 @@ defmodule Corex.Toast do
       id={@id}
       phx-disconnected={
         JS.remove_attribute("hidden", to: "##{@id}")
-        |> JS.dispatch("toast:create",
+        |> JS.dispatch("corex:toast:create",
           to: "##{@toast_group_id}",
           detail: %{
             title: @title,
@@ -378,7 +378,7 @@ defmodule Corex.Toast do
       id={@id}
       phx-disconnected={
         JS.remove_attribute("hidden", to: "##{@id}")
-        |> JS.dispatch("toast:create",
+        |> JS.dispatch("corex:toast:create",
           to: "##{@toast_group_id}",
           detail: %{
             title: @title,
@@ -426,7 +426,7 @@ defmodule Corex.Toast do
     <div
       id={@id}
       phx-connected={
-        JS.dispatch("toast:create",
+        JS.dispatch("corex:toast:create",
           to: "##{@toast_group_id}",
           detail: %{
             title: @title,
@@ -473,7 +473,7 @@ defmodule Corex.Toast do
     <div
       id={@id}
       phx-disconnected={
-        JS.dispatch("toast:create",
+        JS.dispatch("corex:toast:create",
           to: "##{@toast_group_id}",
           detail: %{
             title: @title,
@@ -500,7 +500,7 @@ defmodule Corex.Toast do
 
   ```javascript
   document.getElementById("toast-group-id")?.dispatchEvent(
-    new CustomEvent("toast:create", {
+    new CustomEvent("corex:toast:create", {
       bubbles: true,
       detail: { title: "Saved", description: "OK.", type: "info", duration: 4000 },
     })
@@ -532,7 +532,7 @@ defmodule Corex.Toast do
   end
 
   api_doc(~S"""
-  Patch an existing toast from `phx-click`. Dispatches `toast:update` with `detail.id` and optional fields from `attrs` (map or keyword list).
+  Patch an existing toast from `phx-click`. Dispatches `corex:toast:update` with `detail.id` and optional fields from `attrs` (map or keyword list).
 
   ```heex
   <.action phx-click={Corex.Toast.update("toast-group-id", @toast_id, title: "Uploading…", loading: true)}>Update</.action>
@@ -543,7 +543,7 @@ defmodule Corex.Toast do
   def update(toast_group_id, toast_id, attrs)
       when is_binary(toast_group_id) and is_binary(toast_id) and (is_map(attrs) or is_list(attrs)) do
     detail = ToastPayload.update_detail(toast_id, attrs)
-    JS.dispatch("toast:update", to: "##{toast_group_id}", detail: detail)
+    JS.dispatch("corex:toast:update", to: "##{toast_group_id}", detail: detail)
   end
 
   api_doc(~S"""
@@ -565,7 +565,7 @@ defmodule Corex.Toast do
   end
 
   api_doc(~S"""
-  Remove a toast immediately from `phx-click`. Dispatches `toast:remove` with `detail.id`.
+  Remove a toast immediately from `phx-click`. Dispatches `corex:toast:remove` with `detail.id`.
 
   ```heex
   <.action phx-click={Corex.Toast.remove("toast-group-id", @toast_id)}>Remove</.action>
@@ -574,7 +574,7 @@ defmodule Corex.Toast do
   """)
 
   def remove(toast_group_id, toast_id) when is_binary(toast_group_id) and is_binary(toast_id) do
-    JS.dispatch("toast:remove", to: "##{toast_group_id}", detail: %{id: toast_id})
+    JS.dispatch("corex:toast:remove", to: "##{toast_group_id}", detail: %{id: toast_id})
   end
 
   api_doc(~S"""
@@ -594,7 +594,7 @@ defmodule Corex.Toast do
   end
 
   api_doc(~S"""
-  Begin dismiss animation from `phx-click`. Dispatches `toast:dismiss` with `detail.id`.
+  Begin dismiss animation from `phx-click`. Dispatches `corex:toast:dismiss` with `detail.id`.
 
   ```heex
   <.action phx-click={Corex.Toast.dismiss("toast-group-id", @toast_id)}>Dismiss</.action>
@@ -603,7 +603,7 @@ defmodule Corex.Toast do
   """)
 
   def dismiss(toast_group_id, toast_id) when is_binary(toast_group_id) and is_binary(toast_id) do
-    JS.dispatch("toast:dismiss", to: "##{toast_group_id}", detail: %{id: toast_id})
+    JS.dispatch("corex:toast:dismiss", to: "##{toast_group_id}", detail: %{id: toast_id})
   end
 
   api_doc(~S"""
