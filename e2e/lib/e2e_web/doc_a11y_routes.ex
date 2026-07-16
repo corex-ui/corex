@@ -246,7 +246,6 @@ defmodule E2eWeb.DocA11yRoutes do
     {"/en/tree-view/patterns", "#tree-view-patterns-page"},
     {"/en/tree-view/animation", "#tree-view-animation-page"},
     {"/en/tree-view/style", "#tree-view-styling-page"},
-    {"/en/angle-slider/controlled", "#controlled-angle-slider"}
   ]
 
   def all, do: @routes

@@ -80,7 +80,6 @@ defmodule E2eWeb.Router do
       live("/angle-slider/api", AngleSliderApiLive)
       live("/angle-slider/events", AngleSliderEventsLive)
       live("/angle-slider/patterns", AngleSliderPatternsLive)
-      live("/angle-slider/controlled", AngleSliderControlledLive)
       live("/angle-slider/live-form", AngleSliderFormLive)
 
       live("/avatar/playground", AvatarPlayLive)

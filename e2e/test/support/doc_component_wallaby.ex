@@ -10,7 +10,6 @@ defmodule E2eWeb.DocComponentWallaby do
                 :events,
                 :patterns,
                 :playground,
-                :controlled,
                 :animation,
                 :live_form
               ])

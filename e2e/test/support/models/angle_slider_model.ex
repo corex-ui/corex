@@ -276,15 +276,6 @@ defmodule E2eWeb.AngleSliderModel do
     session
   end
 
-  def wait_controlled_angle_slider_ready(session) do
-    assert_has(
-      session,
-      css("#controlled-angle-slider[phx-hook='AngleSlider']:not([data-loading])", visible: :any)
-    )
-
-    session
-  end
-
   def angle_api_js_root_style(session) do
     el =
       find(

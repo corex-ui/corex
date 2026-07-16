@@ -50,7 +50,7 @@ defmodule E2eWeb.DemoPage do
 
   Routing follows `E2eWeb.DocPageMatrix`:
 
-  - **Zag-backed**  -  anatomy (and style when applicable), playground, API, events, patterns where the primitive supports them; optional animation, live form, controlled when routed.
+  - **Zag-backed**  -  anatomy (and style when applicable), playground, API, events, patterns where the primitive supports them; optional animation and live form when routed.
   - **Form + Zag**  -  static **Form** and live-form routes as listed.
   - **Non-Zag** (layout, data table shell, etc.)  -  usually anatomy and style only; **data table** adds a **Pattern** page.
 
