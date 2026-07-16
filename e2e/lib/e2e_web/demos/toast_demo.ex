@@ -81,28 +81,28 @@ defmodule E2eWeb.Demos.ToastDemo do
       <button
         type="button"
         class="button button--sm"
-        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('toast:create', {bubbles: false, detail: { id: 'toast-cjs-info', groupId: 'layout-toast', title: 'Info', description: 'From client JS', type: 'info', duration: '5000' } }))"
+        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:create', {bubbles: false, detail: { id: 'toast-cjs-info', groupId: 'layout-toast', title: 'Info', description: 'From client JS', type: 'info', duration: '5000' } }))"
       >
         Info
       </button>
       <button
         type="button"
         class="button button--sm"
-        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('toast:create', {bubbles: false, detail: { id: 'toast-cjs-success', groupId: 'layout-toast', title: 'Success', description: 'From client JS', type: 'success', duration: '5000' } }))"
+        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:create', {bubbles: false, detail: { id: 'toast-cjs-success', groupId: 'layout-toast', title: 'Success', description: 'From client JS', type: 'success', duration: '5000' } }))"
       >
         Success
       </button>
       <button
         type="button"
         class="button button--sm"
-        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('toast:create', {bubbles: false, detail: { id: 'toast-cjs-error', groupId: 'layout-toast', title: 'Error', description: 'From client JS', type: 'error', duration: '5000' } }))"
+        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:create', {bubbles: false, detail: { id: 'toast-cjs-error', groupId: 'layout-toast', title: 'Error', description: 'From client JS', type: 'error', duration: '5000' } }))"
       >
         Error
       </button>
       <button
         type="button"
         class="button button--sm"
-        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('toast:create', {bubbles: false, detail: { id: 'toast-cjs-loading', groupId: 'layout-toast', title: 'Loading', description: 'From client JS', type: 'info', duration: 'Infinity', loading: true } }))"
+        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:create', {bubbles: false, detail: { id: 'toast-cjs-loading', groupId: 'layout-toast', title: 'Loading', description: 'From client JS', type: 'info', duration: 'Infinity', loading: true } }))"
       >
         Loading
       </button>
@@ -115,7 +115,7 @@ defmodule E2eWeb.Demos.ToastDemo do
     const el = document.getElementById("layout-toast");
     const dispatch = (detail) =>
       el?.dispatchEvent(
-        new CustomEvent("toast:create", { bubbles: false, detail: { groupId: "layout-toast", ...detail } })
+        new CustomEvent("corex:toast:create", { bubbles: false, detail: { groupId: "layout-toast", ...detail } })
       );
 
     dispatch({
@@ -158,7 +158,7 @@ defmodule E2eWeb.Demos.ToastDemo do
     const el: HTMLElement | null = document.getElementById("layout-toast");
     const dispatch = (detail: Record<string, unknown>) =>
       el?.dispatchEvent(
-        new CustomEvent("toast:create", { bubbles: false, detail: { groupId: "layout-toast", ...detail } })
+        new CustomEvent("corex:toast:create", { bubbles: false, detail: { groupId: "layout-toast", ...detail } })
       );
 
     dispatch({
@@ -204,28 +204,28 @@ defmodule E2eWeb.Demos.ToastDemo do
       <button
         type="button"
         class="button button--sm"
-        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('toast:create', {bubbles: false, detail: { id: 'toast-cjs-info', groupId: 'layout-toast', title: 'Info', description: 'From client JS', type: 'info', duration: '5000' } }))"
+        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:create', {bubbles: false, detail: { id: 'toast-cjs-info', groupId: 'layout-toast', title: 'Info', description: 'From client JS', type: 'info', duration: '5000' } }))"
       >
         Info
       </button>
       <button
         type="button"
         class="button button--sm"
-        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('toast:create', {bubbles: false, detail: { id: 'toast-cjs-success', groupId: 'layout-toast', title: 'Success', description: 'From client JS', type: 'success', duration: '5000' } }))"
+        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:create', {bubbles: false, detail: { id: 'toast-cjs-success', groupId: 'layout-toast', title: 'Success', description: 'From client JS', type: 'success', duration: '5000' } }))"
       >
         Success
       </button>
       <button
         type="button"
         class="button button--sm"
-        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('toast:create', {bubbles: false, detail: { id: 'toast-cjs-error', groupId: 'layout-toast', title: 'Error', description: 'From client JS', type: 'error', duration: '5000' } }))"
+        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:create', {bubbles: false, detail: { id: 'toast-cjs-error', groupId: 'layout-toast', title: 'Error', description: 'From client JS', type: 'error', duration: '5000' } }))"
       >
         Error
       </button>
       <button
         type="button"
         class="button button--sm"
-        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('toast:create', {bubbles: false, detail: { id: 'toast-cjs-loading', groupId: 'layout-toast', title: 'Loading', description: 'From client JS', type: 'info', duration: 'Infinity', loading: true } }))"
+        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:create', {bubbles: false, detail: { id: 'toast-cjs-loading', groupId: 'layout-toast', title: 'Loading', description: 'From client JS', type: 'info', duration: 'Infinity', loading: true } }))"
       >
         Loading
       </button>
@@ -355,14 +355,14 @@ defmodule E2eWeb.Demos.ToastDemo do
       <button
         type="button"
         class="button button--sm"
-        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('toast:create', {bubbles: false, detail: { id: 'toast-api-update-demo', groupId: 'layout-toast', title: 'Before update', description: 'Create once then tap Update.', type: 'info', duration: '60000' } }))"
+        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:create', {bubbles: false, detail: { id: 'toast-api-update-demo', groupId: 'layout-toast', title: 'Before update', description: 'Create once then tap Update.', type: 'info', duration: '60000' } }))"
       >
         Create demo toast
       </button>
       <button
         type="button"
         class="button button--sm"
-        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('toast:update', {bubbles: false, detail: { id: 'toast-api-update-demo', groupId: 'layout-toast', title: 'After update', description: 'Updated via toast:update', type: 'success', duration: '5000' } }))"
+        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:update', {bubbles: false, detail: { id: 'toast-api-update-demo', groupId: 'layout-toast', title: 'After update', description: 'Updated via corex:toast:update', type: 'success', duration: '5000' } }))"
       >
         Update
       </button>
@@ -374,7 +374,7 @@ defmodule E2eWeb.Demos.ToastDemo do
     ~S"""
     const el = document.getElementById("layout-toast");
     el?.dispatchEvent(
-      new CustomEvent("toast:create", {
+      new CustomEvent("corex:toast:create", {
         bubbles: false,
         detail: {
           id: "toast-api-update-demo",
@@ -388,13 +388,13 @@ defmodule E2eWeb.Demos.ToastDemo do
     );
 
     el?.dispatchEvent(
-      new CustomEvent("toast:update", {
+      new CustomEvent("corex:toast:update", {
         bubbles: false,
         detail: {
           id: "toast-api-update-demo",
           groupId: "layout-toast",
           title: "After update",
-          description: "Updated via toast:update",
+          description: "Updated via corex:toast:update",
           type: "success",
           duration: "5000",
         },
@@ -407,7 +407,7 @@ defmodule E2eWeb.Demos.ToastDemo do
     ~S"""
     const el: HTMLElement | null = document.getElementById("layout-toast");
     el?.dispatchEvent(
-      new CustomEvent("toast:create", {
+      new CustomEvent("corex:toast:create", {
         bubbles: false,
         detail: {
           id: "toast-api-update-demo",
@@ -421,13 +421,13 @@ defmodule E2eWeb.Demos.ToastDemo do
     );
 
     el?.dispatchEvent(
-      new CustomEvent("toast:update", {
+      new CustomEvent("corex:toast:update", {
         bubbles: false,
         detail: {
           id: "toast-api-update-demo",
           groupId: "layout-toast",
           title: "After update",
-          description: "Updated via toast:update",
+          description: "Updated via corex:toast:update",
           type: "success",
           duration: "5000",
         },
@@ -444,14 +444,14 @@ defmodule E2eWeb.Demos.ToastDemo do
       <button
         type="button"
         class="button button--sm"
-        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('toast:create', {bubbles: false, detail: { id: 'toast-api-update-demo', groupId: 'layout-toast', title: 'Before update', description: 'Create once then tap Update.', type: 'info', duration: '60000' } }))"
+        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:create', {bubbles: false, detail: { id: 'toast-api-update-demo', groupId: 'layout-toast', title: 'Before update', description: 'Create once then tap Update.', type: 'info', duration: '60000' } }))"
       >
         Create demo toast
       </button>
       <button
         type="button"
         class="button button--sm"
-        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('toast:update', {bubbles: false, detail: { id: 'toast-api-update-demo', groupId: 'layout-toast', title: 'After update', description: 'Updated via toast:update', type: 'success', duration: '5000' } }))"
+        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('corex:toast:update', {bubbles: false, detail: { id: 'toast-api-update-demo', groupId: 'layout-toast', title: 'After update', description: 'Updated via corex:toast:update', type: 'success', duration: '5000' } }))"
       >
         Update
       </button>

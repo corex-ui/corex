@@ -1634,16 +1634,6 @@ var ToastHook = {
         console.error("Failed to create toast:", error);
       }
     };
-    const onCorexToastCreate = (event) => {
-      const { detail } = event;
-      const st = getToastStore(detail.groupId || this.groupId);
-      if (!st) return;
-      try {
-        st.create(buildCreateOptions(detail, false));
-      } catch (error) {
-        console.error("Failed to create toast:", error);
-      }
-    };
     const onToastUpdate = (event) => {
       const { detail } = event;
       const st = getToastStore(detail.groupId || this.groupId);
@@ -1666,11 +1656,10 @@ var ToastHook = {
       domListeners.push({ el, name, fn });
     };
     this.domListeners = domListeners;
-    addDom("corex:toast:create", onCorexToastCreate);
-    addDom("toast:create", onToastCreate);
-    addDom("toast:update", onToastUpdate);
-    addDom("toast:dismiss", onToastDismiss);
-    addDom("toast:remove", onToastRemove);
+    addDom("corex:toast:create", onToastCreate);
+    addDom("corex:toast:update", onToastUpdate);
+    addDom("corex:toast:dismiss", onToastDismiss);
+    addDom("corex:toast:remove", onToastRemove);
   },
   destroyed() {
     for (const { el, name, fn } of this.domListeners ?? []) {
