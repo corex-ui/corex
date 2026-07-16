@@ -99,16 +99,4 @@ defmodule E2eWeb.DatePickerTest do
       |> DatePicker.wait_playground_date_picker_ready()
     end
   end
-
-  describe "patterns" do
-    feature "controlled  -  status reflects selected date", %{session: session} do
-      session =
-        session
-        |> ComponentBehaviorSpec.visit_ready(DatePicker, :date_picker, :patterns)
-        |> DatePicker.wait_patterns_page()
-        |> DatePicker.wait_root_date_picker_ready("date-picker-patterns-controlled")
-
-      assert_has(session, css("#date-picker-patterns-status", visible: :any))
-    end
-  end
 end

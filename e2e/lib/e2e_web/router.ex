@@ -126,7 +126,6 @@ defmodule E2eWeb.Router do
       live("/date-picker/playground", DatePickerPlayLive)
       live("/date-picker/api", DatePickerApiLive)
       live("/date-picker/events", DatePickerEventsLive)
-      live("/date-picker/patterns", DatePickerPatternsLive)
       live("/date-picker/live-form", DatePickerFormLive)
 
       live("/dialog/playground", DialogPlayLive)

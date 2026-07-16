@@ -911,7 +911,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     """
   end
 
-  def patterns_controlled_heex do
+  def patterns_value_heex do
     ~S"""
     <.tags_input
       class="tags-input"
@@ -924,7 +924,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     """
   end
 
-  def patterns_controlled_elixir do
+  def patterns_value_elixir do
     ~S"""
     def handle_event("tags_patterns_value_changed", %{"id" => _id, "value" => value}, socket)
         when is_list(value) do

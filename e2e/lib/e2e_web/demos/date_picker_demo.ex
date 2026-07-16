@@ -431,34 +431,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     """
   end
 
-  def patterns_controlled_code do
-    ~S"""
-    <.date_picker
-      class="date-picker"
-      value={@selected}
-      on_value_change="pattern_date_changed"
-      translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
-    >
-      <:label>Date</:label>
-      <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-      <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-      <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
-    </.date_picker>
-    """
-  end
-
-  def patterns_controlled_elixir do
-    ~S"""
-    def mount(_params, _session, socket) do
-      {:ok, assign(socket, :selected, nil)}
-    end
-
-    def handle_event("pattern_date_changed", %{"value" => value}, socket) do
-      {:noreply, assign(socket, :selected, value)}
-    end
-    """
-  end
-
   def form_ecto do
     ~S"""
     defmodule MyApp.Form.DatePickerForm do
