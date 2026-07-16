@@ -2,12 +2,12 @@ defmodule Corex.Integration.CodeGeneration.CorexDesignAutoEnableTest do
   use Corex.Integration.CodeGeneratorCase, async: true
 
   describe "auto-enable design" do
-    test "corex.new --mode auto-enables design (assets/corex exists)" do
+    test "corex.new --mode auto-enables design (config :corex_design in config.exs)" do
       with_installer_tmp("corex_auto_enable_mode", fn tmp_dir ->
         {app_root_path, output} = generate_corex_app(tmp_dir, "my_app", ["--mode"])
 
-        assert output =~ "copying Corex design" or output =~ "assets/corex"
-        assert File.dir?(Path.join(app_root_path, "assets/corex"))
+        assert output =~ "installing Corex" or output =~ "assets/corex"
+        assert File.read!(Path.join(app_root_path, "config/config.exs")) =~ "config :corex_design"
         assert_corex_design_layout_classes_present!(app_root_path, "my_app")
       end)
     end
