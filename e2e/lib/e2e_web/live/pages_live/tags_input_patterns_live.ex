@@ -28,11 +28,15 @@ defmodule E2eWeb.TagsInputPatternsLive do
   end
 
   @impl true
-  def handle_event("tags_patterns_validated_changed", %{"id" => _id, "value" => value}, socket)
+  def handle_event("tags_patterns_validated_changed", %{"id" => id, "value" => value}, socket)
       when is_list(value) do
     allowed = socket.assigns.allowed_tags
     filtered = Enum.filter(value, &(&1 in allowed))
-    {:noreply, assign(socket, :tags_validated, filtered)}
+
+    {:noreply,
+     socket
+     |> assign(:tags_validated, filtered)
+     |> Corex.TagsInput.set_value(id, filtered)}
   end
 
   @impl true
