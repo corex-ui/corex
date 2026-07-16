@@ -1020,7 +1020,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
             if (!el) return;
             const layoutToast = (title, description) => {
               document.querySelector("#layout-toast")?.dispatchEvent(
-                new CustomEvent("toast:create", {
+                new CustomEvent("corex:toast:create", {
                   bubbles: true,
                   detail: { title, description, type: "info", duration: 5000 },
                 })
@@ -1086,7 +1086,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     ~S"""
     const layoutToast = (title, description) => {
       document.querySelector("#layout-toast")?.dispatchEvent(
-        new CustomEvent("toast:create", {
+        new CustomEvent("corex:toast:create", {
           bubbles: true,
           detail: { title, description, type: "info", duration: 5000 },
         })
@@ -1115,7 +1115,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     ~S"""
     const layoutToast = (title: string, description: string) => {
       document.querySelector("#layout-toast")?.dispatchEvent(
-        new CustomEvent("toast:create", {
+        new CustomEvent("corex:toast:create", {
           bubbles: true,
           detail: { title, description, type: "info", duration: 5000 },
         })
@@ -1194,7 +1194,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     ~S"""
     const layoutToast = (title, description) => {
       document.querySelector("#layout-toast")?.dispatchEvent(
-        new CustomEvent("toast:create", {
+        new CustomEvent("corex:toast:create", {
           bubbles: true,
           detail: { title, description, type: "info", duration: 5000 },
         })
@@ -1223,7 +1223,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     ~S"""
     const layoutToast = (title: string, description: string) => {
       document.querySelector("#layout-toast")?.dispatchEvent(
-        new CustomEvent("toast:create", {
+        new CustomEvent("corex:toast:create", {
           bubbles: true,
           detail: { title, description, type: "info", duration: 5000 },
         })
@@ -1303,7 +1303,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     ~S"""
     const layoutToast = (title, description) => {
       document.querySelector("#layout-toast")?.dispatchEvent(
-        new CustomEvent("toast:create", {
+        new CustomEvent("corex:toast:create", {
           bubbles: true,
           detail: { title, description, type: "info", duration: 5000 },
         })
@@ -1323,7 +1323,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     ~S"""
     const layoutToast = (title: string, description: string) => {
       document.querySelector("#layout-toast")?.dispatchEvent(
-        new CustomEvent("toast:create", {
+        new CustomEvent("corex:toast:create", {
           bubbles: true,
           detail: { title, description, type: "info", duration: 5000 },
         })
@@ -1374,7 +1374,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     ~S"""
     const layoutToast = (title, description) => {
       document.querySelector("#layout-toast")?.dispatchEvent(
-        new CustomEvent("toast:create", {
+        new CustomEvent("corex:toast:create", {
           bubbles: true,
           detail: { title, description, type: "info", duration: 5000 },
         })
@@ -1403,7 +1403,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     ~S"""
     const layoutToast = (title: string, description: string) => {
       document.querySelector("#layout-toast")?.dispatchEvent(
-        new CustomEvent("toast:create", {
+        new CustomEvent("corex:toast:create", {
           bubbles: true,
           detail: { title, description, type: "info", duration: 5000 },
         })
@@ -1477,7 +1477,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     ~S"""
     const layoutToast = (title, description) => {
       document.querySelector("#layout-toast")?.dispatchEvent(
-        new CustomEvent("toast:create", {
+        new CustomEvent("corex:toast:create", {
           bubbles: true,
           detail: { title, description, type: "info", duration: 5000 },
         })
@@ -1506,7 +1506,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     ~S"""
     const layoutToast = (title: string, description: string) => {
       document.querySelector("#layout-toast")?.dispatchEvent(
-        new CustomEvent("toast:create", {
+        new CustomEvent("corex:toast:create", {
           bubbles: true,
           detail: { title, description, type: "info", duration: 5000 },
         })
@@ -1587,7 +1587,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     ~S"""
     const layoutToast = (title, description) => {
       document.querySelector("#layout-toast")?.dispatchEvent(
-        new CustomEvent("toast:create", {
+        new CustomEvent("corex:toast:create", {
           bubbles: true,
           detail: { title, description, type: "info", duration: 5000 },
         })
@@ -1607,7 +1607,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     ~S"""
     const layoutToast = (title: string, description: string) => {
       document.querySelector("#layout-toast")?.dispatchEvent(
-        new CustomEvent("toast:create", {
+        new CustomEvent("corex:toast:create", {
           bubbles: true,
           detail: { title, description, type: "info", duration: 5000 },
         })
