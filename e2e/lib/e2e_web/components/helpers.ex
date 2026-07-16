@@ -340,7 +340,7 @@ defmodule E2eWeb.Helpers do
           playground_to: ~p"/date-picker/playground",
           api_to: ~p"/date-picker/api",
           events_to: ~p"/date-picker/events",
-          patterns_to: ~p"/date-picker/patterns",
+          pattern: false,
           style_to: ~p"/date-picker/style",
           forms: [
             doc_form_menu_item(~t"Controller Form", ~p"/date-picker/form"),

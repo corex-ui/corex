@@ -85,21 +85,6 @@ defmodule Corex.TagsInputTest do
       assert html =~ "&quot;c&quot;"
     end
 
-    test "controlled uses data-tags" do
-      assigns = assign(%{__changed__: %{}}, id: "ti", controlled: true, value: ["x"])
-
-      html =
-        rendered_to_string(~H"""
-        <.tags_input id={@id} controlled={@controlled} value={@value}>
-          <:close><.heroicon name="hero-x-mark" /></:close>
-        </.tags_input>
-        """)
-
-      assert html =~ ~r/data-controlled/
-      assert html =~ "data-tags"
-      assert html =~ "&quot;x&quot;"
-    end
-
     test "renders array form inputs when name is set" do
       assigns = assign(%{__changed__: %{}}, id: "ti", value: ["a"], name: "kw")
 

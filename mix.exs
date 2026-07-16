@@ -77,12 +77,10 @@ defmodule Corex.MixProject do
   end
 
   defp maybe_json_polyfill do
-    case Integer.parse(System.otp_release()) do
-      {otp, _} when otp >= 27 ->
-        []
-
-      _ ->
-        [{:json_polyfill, "~> 0.2 or ~> 1.0", only: [:dev, :test]}]
+    if Code.ensure_loaded?(:json) do
+      []
+    else
+      [{:json_polyfill, "~> 0.2 or ~> 1.0"}]
     end
   end
 

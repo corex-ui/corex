@@ -32,6 +32,7 @@ defmodule Corex.TreeView.Connect do
   defp depth_style(index_path) when is_list(index_path), do: "--depth: #{length(index_path)}"
   defp depth_style(_), do: "--depth: 0"
 
+  defp path_key(nil), do: "root"
   defp path_key([]), do: "root"
 
   defp path_key(index_path) when is_list(index_path) do
@@ -42,14 +43,11 @@ defmodule Corex.TreeView.Connect do
   defp tree_label_id(component_id), do: "tree:#{component_id}:label"
   defp tree_tree_id(component_id), do: "tree:#{component_id}:tree"
 
-  defp tree_node_id(component_id, value),
-    do: "tree:#{component_id}:node:#{value}"
-
-  defp tree_branch_wrapper_id(component_id, value),
-    do: "tree:#{component_id}:branch:#{value}"
-
   defp tree_branch_part_id(component_id, part, path_key),
     do: "tree:#{component_id}:#{part}:#{path_key}"
+
+  defp tree_index_id(component_id, part, index_path),
+    do: tree_branch_part_id(component_id, part, path_key(index_path))
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
@@ -141,7 +139,7 @@ defmodule Corex.TreeView.Connect do
       "data-path" => encode_index_path(assigns.index_path),
       "data-disabled" => get_boolean(assigns.disabled),
       "dir" => assigns.dir,
-      "id" => tree_node_id(assigns.id, assigns.value),
+      "id" => tree_index_id(assigns.id, "node", assigns.index_path),
       "style" => depth_style(assigns.index_path)
     }
 
@@ -167,7 +165,7 @@ defmodule Corex.TreeView.Connect do
 
   def ignore_item(assigns) do
     JS.ignore_attributes(Item.ignored_attrs(),
-      to: Selectors.css_id(tree_node_id(assigns.id, assigns.value))
+      to: Selectors.css_id(tree_index_id(assigns.id, "node", assigns.index_path))
     )
   end
 
@@ -183,7 +181,7 @@ defmodule Corex.TreeView.Connect do
       "data-state" => state,
       "data-disabled" => get_boolean(assigns.disabled),
       "dir" => assigns.dir,
-      "id" => tree_branch_wrapper_id(assigns.id, assigns.value)
+      "id" => tree_index_id(assigns.id, "branch", assigns.index_path)
     }
 
     base = if Map.get(assigns, :name), do: Map.put(base, "data-name", assigns.name), else: base
@@ -193,7 +191,7 @@ defmodule Corex.TreeView.Connect do
 
   def ignore_branch(assigns) do
     JS.ignore_attributes(Branch.ignored_attrs(),
-      to: Selectors.css_id(tree_branch_wrapper_id(assigns.id, assigns.value))
+      to: Selectors.css_id(tree_index_id(assigns.id, "branch", assigns.index_path))
     )
   end
 
@@ -210,7 +208,7 @@ defmodule Corex.TreeView.Connect do
       "data-disabled" => get_boolean(assigns.disabled),
       "dir" => assigns.dir,
       "style" => depth_style(assigns.index_path),
-      "id" => tree_node_id(assigns.id, assigns.value)
+      "id" => tree_index_id(assigns.id, "node", assigns.index_path)
     }
 
     base = if Map.get(assigns, :selected), do: Map.put(base, "data-selected", ""), else: base
@@ -219,7 +217,7 @@ defmodule Corex.TreeView.Connect do
 
   def ignore_branch_trigger(assigns) do
     JS.ignore_attributes(BranchControl.ignored_attrs(),
-      to: Selectors.css_id(tree_node_id(assigns.id, assigns.value))
+      to: Selectors.css_id(tree_index_id(assigns.id, "node", assigns.index_path))
     )
   end
 

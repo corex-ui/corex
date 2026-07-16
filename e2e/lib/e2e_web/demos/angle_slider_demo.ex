@@ -641,35 +641,6 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     """
   end
 
-  def patterns_controlled_heex do
-    ~S"""
-    <.angle_slider
-      class="angle-slider"
-      marker_values={[0.0, 90.0, 180.0, 270.0]}
-      controlled
-      value={@value}
-      on_value_change="patterns_controlled_changed"
-    >
-      <:label>Angle</:label>
-    </.angle_slider>
-    """
-  end
-
-  def patterns_controlled_elixir do
-    ~S"""
-    def mount(_params, _session, socket) do
-      {:ok,
-       socket
-       |> assign(:id_controlled, "patterns-angle-slider-controlled")
-       |> assign(:value, 90.0)}
-    end
-
-    def handle_event("patterns_controlled_changed", %{"value" => value}, socket) do
-      {:noreply, assign(socket, :value, value)}
-    end
-    """
-  end
-
   def form_ecto do
     ~S"""
     defmodule MyApp.Forms.AngleSlider do

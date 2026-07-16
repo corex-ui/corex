@@ -25,45 +25,63 @@ defmodule Corex.Action do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/button.css";
+  @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host.
+  Stack modifiers on the host. Combine axes, for example `button ui-accent ui-size-lg` or `button ui-info`.
+
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables. Add `ui-solid` for a filled button. Default is subtle.
 
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
+
+  Palette variables for button ink and fill. Does not change surface treatment by itself.
 
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `button` |
-  | Accent | `button button--accent` |
-  | Brand | `button button--brand` |
-  | Alert | `button button--alert` |
-  | Info | `button button--info` |
-  | Success | `button button--success` |
+  | Accent | `button ui-accent` |
+  | Brand | `button ui-brand` |
+  | Alert | `button ui-alert` |
+  | Info | `button ui-info` |
+  | Success | `button ui-success` |
+
+  ### Variant
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `button` or `button ui-accent` |
+  | Solid | `button ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `button button--sm` |
-  | MD | `button button--md` |
-  | LG | `button button--lg` |
-  | XL | `button button--xl` |
+  | SM | `button ui-size-sm` |
+  | MD | `button ui-size-md` |
+  | LG | `button ui-size-lg` |
+  | XL | `button ui-size-xl` |
 
   ### Rounded
 
-  Use Tailwind `rounded-*` utilities on the host (for example `class="button rounded-xl"`).
+  | Modifier | Classes |
+  | -------- | ------- |
+  | None | `button ui-rounded-none` |
+  | SM | `button ui-rounded-sm` |
+  | MD | `button ui-rounded-md` |
+  | LG | `button ui-rounded-lg` |
+  | XL | `button ui-rounded-xl` |
+  | Full | `button ui-rounded-full` |
+
+  ### Shape
 
   | Modifier | Classes |
   | -------- | ------- |
-  | None | `button rounded-none` |
-  | SM | `button rounded-sm` |
-  | MD | `button rounded-md` |
-  | LG | `button rounded-lg` |
-  | XL | `button rounded-xl` |
-  | Full | `button rounded-full` |
+  | Square | `button ui-trigger--square` |
+  | Circle | `button ui-trigger--circle` |
 
   <!-- tabs-close -->
 

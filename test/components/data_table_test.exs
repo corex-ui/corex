@@ -64,6 +64,7 @@ defmodule Corex.DataTableTest do
       assert html =~ ~S(data-part="sort-trigger")
       assert html =~ ~S(phx-click="sort_event")
       assert html =~ ~S(phx-value-sort_by="name")
+      assert html =~ ~S(phx-value-table_id="users")
       assert html =~ ~S(data-active="true")
     end
 

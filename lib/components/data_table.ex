@@ -82,7 +82,7 @@ defmodule Corex.DataTable do
   >
     <:col :let={user} label="Name">{user.name}</:col>
     <:action :let={user}>
-      <.action class="button button--sm">Edit</.action>
+      <.action class="button ui-size-sm">Edit</.action>
     </:action>
   </.data_table>
   ```
@@ -95,7 +95,7 @@ defmodule Corex.DataTable do
 
   ### Sortable
 
-  Set `sort_by`, `sort_order`, `on_sort`; give each sortable column a `name`. Delegate sorting to [`Corex.DataTable.Sort`](Corex.DataTable.Sort.html). Pass `:sort_columns` when you want an explicit whitelist; otherwise allowed columns are inferred from row map keys. LiveView minimum:
+  Set `sort_by`, `sort_order`, `on_sort`; give each sortable column a `name`. Delegate sorting to [`Corex.DataTable.Sort`](Corex.DataTable.Sort.html). Pass `:sort_columns` when you want an explicit whitelist; otherwise allowed columns are inferred from row map keys. Sort triggers send `phx-value-sort_by` and `phx-value-table_id` (the table `id`) with the `on_sort` event. LiveView minimum:
 
   ```elixir
   # mount
@@ -119,6 +119,15 @@ defmodule Corex.DataTable do
       <.heroicon name={%{asc: "hero-chevron-up", desc: "hero-chevron-down", none: "hero-chevron-up-down"}[direction]} />
     </:sort_icon>
   </.data_table>
+  ```
+
+  When several tables share one `on_sort` handler, use [`Corex.DataTable.Sort.handle_sort_for/3`](Corex.DataTable.Sort.html#handle_sort_for/3). It reads `table_id` from the event params (`phx-value-table_id`) and keeps `%{sort_by, sort_order}` under `:data_table_sort` keyed by that id. Pair with [`sorted_rows/3`](Corex.DataTable.Sort.html#sorted_rows/3) when rendering each table:
+
+  ```elixir
+  def handle_event("sort", params, socket) do
+    {:noreply,
+     Corex.DataTable.Sort.handle_sort_for(socket, params, sort_columns: [:id, :name])}
+  end
   ```
 
   ### Selectable
@@ -291,18 +300,22 @@ defmodule Corex.DataTable do
 
   Modifier classes on the root:
 
-  - `data-table--sm|md|lg|xl` — font size on header and body cells; cell padding
-  - `data-table--accent|brand|alert|success|info` — header ink (`--color-ink-*`) on column titles only
+  - `data-table ui-size-sm|md|lg|xl` — font size and padding on header and body cells; selection checkbox control size
+  - `data-table ui-accent|brand|alert|success|info` — header ink (`--ctl-ink-text`) on column titles and action header; selection checkbox ink
+
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+
+  Variant modifiers control sort trigger surface treatment. Default is subtle; add `data-table ui-solid` for filled sort controls. Selection checkboxes inherit the host semantic and size tokens (pass `checkbox_class="checkbox"`; no need to repeat `ui-*` on the checkbox). The `<:action>` slot does not inherit host semantic or size; style action controls with their own `ui-*` classes.
 
   Default host caps use `max-width` and `max-height` at `--container-md`. Override on the host with the same container scale as width, e.g. `max-w-none`, `max-h-none`, `max-h-2xs`, `min-h-md`, or `h-full` in a sized parent.
 
   Optional `dir="ltr"` or `dir="rtl"` on the component root for text direction.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+  This requires the `corex_design` dependency and `mix corex.design.build`; import the component css file.
 
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/data-table.css";
+  @import "../corex/components.css";
   ```
   '''
 
@@ -427,6 +440,7 @@ defmodule Corex.DataTable do
                   <button
                     phx-click={@on_sort}
                     phx-value-sort_by={col[:name]}
+                    phx-value-table_id={@id}
                     aria-label={"Sort by #{col[:label]}"}
                     data-scope="data-table"
                     data-part="sort-trigger"

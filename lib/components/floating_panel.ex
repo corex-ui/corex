@@ -8,7 +8,7 @@ defmodule Corex.FloatingPanel do
 
   ```heex
   <.floating_panel class="floating-panel">
-    <:trigger class="button button--ghost button--sm">
+    <:trigger class="button ui-size-sm">
       <span data-closed>Open panel</span>
       <span data-open>Close panel</span>
     </:trigger>
@@ -36,7 +36,7 @@ defmodule Corex.FloatingPanel do
 
   Required slots: `:trigger`, `:title`, `:close_trigger`, `:content`.
 
-  Set **`class`** on **`:trigger`** to style the outer trigger button (e.g. `button button--ghost button--sm`).
+  Set **`class`** on **`:trigger`** to style the outer trigger button (e.g. `button ui-size-sm`).
 
   Use **`data-open`** and **`data-closed`** on elements inside `:trigger` to swap label when the panel is open vs closed (see default rules in `floating-panel.css`). You can also target **`[data-part="trigger"][data-state="open"]`** / **`closed`** with your own selectors.
 
@@ -99,18 +99,18 @@ defmodule Corex.FloatingPanel do
   ```
 
   If you wish to use the default Corex styling, you can use the class `floating-panel` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+  This requires the `corex_design` dependency and `mix corex.design.build`; import the component css file.
 
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/floating-panel.css";
+  @import "../corex/components.css";
   ```
 
   You can then use modifiers
 
   ```heex
-  <.floating_panel class="floating-panel floating-panel--accent floating-panel--lg">
+  <.floating_panel class="floating-panel ui-accent ui-size-lg">
     <:trigger>
       <span data-closed>Closed</span>
       <span data-open>Open</span>
@@ -120,6 +120,10 @@ defmodule Corex.FloatingPanel do
     <:content>Body</:content>
   </.floating_panel>
   ```
+
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on the trigger and panel body. Variant modifiers control trigger and panel surface treatment. Default is subtle; add `floating-panel ui-solid` for a filled trigger or panel.
 
   '''
 
@@ -344,7 +348,7 @@ defmodule Corex.FloatingPanel do
   ```heex
   <.action phx-click={Corex.FloatingPanel.set_open("my-floating-panel", true)}>Open</.action>
   <.floating_panel id="my-floating-panel" class="floating-panel">
-    <:trigger class="button button--ghost button--sm"><span>Open</span></:trigger>
+    <:trigger class="button ui-size-sm"><span>Open</span></:trigger>
     <:title>Panel</:title>
     <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
     <:content><p>Content.</p></:content>
@@ -376,7 +380,7 @@ defmodule Corex.FloatingPanel do
   ```heex
   <.action phx-click="open_panel">Open</.action>
   <.floating_panel id="my-floating-panel" class="floating-panel">
-    <:trigger class="button button--ghost button--sm"><span>Open</span></:trigger>
+    <:trigger class="button ui-size-sm"><span>Open</span></:trigger>
     <:title>Panel</:title>
     <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
     <:content><p>Content.</p></:content>

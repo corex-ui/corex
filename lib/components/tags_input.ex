@@ -100,29 +100,7 @@ defmodule Corex.TagsInput do
 
   ## Patterns
 
-  <!-- tabs-open -->
-
-  ### Controlled
-
-  ```heex
-  <.tags_input
-    class="tags-input"
-    controlled
-    value={@tags}
-    on_value_change="tags_changed"
-  >
-    <:label>Keywords</:label>
-    <:close><.heroicon name="hero-x-mark" /></:close>
-  </.tags_input>
-  ```
-
-  ```elixir
-  def handle_event("tags_changed", %{"value" => value}, socket) do
-    {:noreply, assign(socket, :tags, value)}
-  end
-  ```
-
-  <!-- tabs-close -->
+  Pass `value` for the initial tag list on mount. The machine owns updates after that unless you use [`set_value/2`](#set_value/2) or form `field`.
 
   ## Form
 
@@ -142,7 +120,7 @@ defmodule Corex.TagsInput do
 
   The `delimiter` attribute only controls how **new** tags are split when typing or pasting in the control (default `,`). It does not affect form submission.
 
-  In LiveView, rebuild the form from the changeset on `phx-change` so validation stays in sync. Do not use `controlled` on form examples; use `field={@form[:tags]}` only.
+  In LiveView, rebuild the form from the changeset on `phx-change` so validation stays in sync. Use `field={@form[:tags]}` only.
 
   ```elixir
   embedded_schema do
@@ -167,7 +145,7 @@ defmodule Corex.TagsInput do
         {msg}
       </:error>
     </.tags_input>
-    <.action type="submit" class="button button--accent">Save</.action>
+    <.action type="submit" class="button ui-accent">Save</.action>
   </.form>
   ```
 
@@ -184,32 +162,47 @@ defmodule Corex.TagsInput do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/tags-input.css";
+  @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.tags_input>`).
+  Stack modifiers on the host (`class` on `<.tags_input>`). Combine axes, for example `tags-input ui-accent ui-size-lg` or `tags-input ui-info ui-solid`.
+
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on the input and tag chips. Variant modifiers control input surface treatment. Default is subtle; add `tags-input ui-solid` for a filled typing field.
 
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
+
+  Palette variables for tags input ink and fill. Does not change surface treatment by itself.
 
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `tags-input` |
-  | Accent | `tags-input tags-input--accent` |
-  | Brand | `tags-input tags-input--brand` |
-  | Alert | `tags-input tags-input--alert` |
-  | Info | `tags-input tags-input--info` |
-  | Success | `tags-input tags-input--success` |
+  | Accent | `tags-input ui-accent` |
+  | Brand | `tags-input ui-brand` |
+  | Alert | `tags-input ui-alert` |
+  | Info | `tags-input ui-info` |
+  | Success | `tags-input ui-success` |
+
+  ### Variant
+
+  Visual treatment of the typing input surface. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `tags-input` or `tags-input ui-accent` |
+  | Solid | `tags-input ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `tags-input tags-input--sm` |
-  | MD | `tags-input tags-input--md` |
-  | LG | `tags-input tags-input--lg` |
-  | XL | `tags-input tags-input--xl` |
+  | SM | `tags-input ui-size-sm` |
+  | MD | `tags-input ui-size-md` |
+  | LG | `tags-input ui-size-lg` |
+  | XL | `tags-input ui-size-xl` |
 
   <!-- tabs-close -->
 
@@ -246,10 +239,9 @@ defmodule Corex.TagsInput do
 
   attr(:value, :list,
     default: [],
-    doc: "Initial or controlled list of tag strings; JSON-encoded for the hook"
+    doc: "Initial list of tag strings; JSON-encoded for the hook"
   )
 
-  attr(:controlled, :boolean, default: false)
   attr(:disabled, :boolean, default: false)
   attr(:read_only, :boolean, default: false)
   attr(:invalid, :boolean, default: false)
@@ -357,7 +349,6 @@ defmodule Corex.TagsInput do
         form_field: form_field,
         field_used: field_used,
         value: assigns.value,
-        controlled: assigns.controlled,
         disabled: assigns.disabled,
         read_only: assigns.read_only,
         invalid: assigns.invalid,

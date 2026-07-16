@@ -36,8 +36,49 @@ defmodule Corex.ColorPicker do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/color-picker.css";
+  @import "../corex/components.css";
   ```
+
+  Stack modifiers on the host (`class` on `<.color_picker>`). Combine axes, for example `color-picker ui-accent ui-size-lg` or `color-picker ui-info ui-solid`.
+
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on the swatch trigger and channel inputs. Variant modifiers control field surface treatment. Default is subtle; add `color-picker ui-solid` for a filled control.
+
+  <!-- tabs-open -->
+
+  ### Semantic
+
+  Palette variables for color picker ink and fill. Does not change surface treatment by itself.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `color-picker` |
+  | Accent | `color-picker ui-accent` |
+  | Brand | `color-picker ui-brand` |
+  | Alert | `color-picker ui-alert` |
+  | Info | `color-picker ui-info` |
+  | Success | `color-picker ui-success` |
+
+  ### Variant
+
+  Visual treatment of the swatch trigger and channel input surfaces. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `color-picker` or `color-picker ui-accent` |
+  | Solid | `color-picker ui-accent ui-solid` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `color-picker ui-size-sm` |
+  | MD | `color-picker ui-size-md` |
+  | LG | `color-picker ui-size-lg` |
+  | XL | `color-picker ui-size-xl` |
+
+  <!-- tabs-close -->
 
   ## API
 
@@ -53,7 +94,7 @@ defmodule Corex.ColorPicker do
   ### set_value
 
   ```heex
-  <.action phx-click={Corex.ColorPicker.set_value("color-picker-api", "#ff0000")} class="button button--sm">
+  <.action phx-click={Corex.ColorPicker.set_value("color-picker-api", "#ff0000")} class="button ui-size-sm">
     Set red
   </.action>
   <.color_picker id="color-picker-api" value="#000000" label="Color" class="color-picker" />
@@ -196,7 +237,7 @@ defmodule Corex.ColorPicker do
           </:error>
         </.color_picker>
 
-        <.action type="submit" class="button button--accent">
+        <.action type="submit" class="button ui-accent">
           Submit
         </.action>
       </.form>
@@ -249,7 +290,7 @@ defmodule Corex.ColorPicker do
           </:error>
         </.color_picker>
 
-        <.action type="submit" class="button button--accent">
+        <.action type="submit" class="button ui-accent">
           Submit
         </.action>
       </.form>
@@ -346,7 +387,7 @@ defmodule Corex.ColorPicker do
           label="Color"
           class="color-picker"
         />
-        <.action type="submit" class="button button--accent">
+        <.action type="submit" class="button ui-accent">
           Submit
         </.action>
       </form>

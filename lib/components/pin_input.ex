@@ -90,47 +90,62 @@ defmodule Corex.PinInput do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/pin-input.css";
+  @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.pin_input>`).
+  Stack modifiers on the host (`class` on `<.pin_input>`). Combine axes, for example `pin-input ui-accent ui-size-lg` or `pin-input ui-info ui-solid`.
+
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on each cell input. Variant modifiers control input surface treatment. Default is subtle; add `pin-input ui-solid` for filled cells. Complete and invalid states keep their dedicated styling.
 
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
+
+  Palette variables for pin input ink and fill. Does not change surface treatment by itself.
 
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `pin-input` |
-  | Accent | `pin-input pin-input--accent` |
-  | Brand | `pin-input pin-input--brand` |
-  | Alert | `pin-input pin-input--alert` |
-  | Info | `pin-input pin-input--info` |
-  | Success | `pin-input pin-input--success` |
+  | Accent | `pin-input ui-accent` |
+  | Brand | `pin-input ui-brand` |
+  | Alert | `pin-input ui-alert` |
+  | Info | `pin-input ui-info` |
+  | Success | `pin-input ui-success` |
+
+  ### Variant
+
+  Visual treatment of each cell input surface. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `pin-input` or `pin-input ui-accent` |
+  | Solid | `pin-input ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `pin-input pin-input--sm` |
-  | MD | `pin-input pin-input--md` |
-  | LG | `pin-input pin-input--lg` |
-  | XL | `pin-input pin-input--xl` |
+  | SM | `pin-input ui-size-sm` |
+  | MD | `pin-input ui-size-md` |
+  | LG | `pin-input ui-size-lg` |
+  | XL | `pin-input ui-size-xl` |
 
   ### Radius
 
   | Modifier | Classes |
   | -------- | ------- |
-  | None | `pin-input pin-input--rounded-none` |
-  | SM | `pin-input pin-input--rounded-sm` |
-  | MD | `pin-input pin-input--rounded-md` |
-  | LG | `pin-input pin-input--rounded-lg` |
-  | XL | `pin-input pin-input--rounded-xl` |
-  | Full | `pin-input pin-input--rounded-full` |
+  | None | `pin-input ui-rounded-none` |
+  | SM | `pin-input ui-rounded-sm` |
+  | MD | `pin-input ui-rounded-md` |
+  | LG | `pin-input ui-rounded-lg` |
+  | XL | `pin-input ui-rounded-xl` |
+  | Full | `pin-input ui-rounded-full` |
 
   <!-- tabs-close -->
 
-  The `value` assign is the initial cell contents. Standalone mode uses `data-default-value`; `field={@form[:code]}` uses Zag controlled `data-value` and resyncs on patch via `updateProps({ value })`. Use the `controlled` assign only for non-form LiveView with `on_value_change`.
+  The `value` assign is the initial cell contents via `data-default-value`.
 
   '''
 
@@ -150,14 +165,7 @@ defmodule Corex.PinInput do
 
   attr(:value, :list,
     default: [],
-    doc:
-      "Initial or controlled value (list of single-character strings). Padded to `count` for the hook."
-  )
-
-  attr(:controlled, :boolean,
-    default: false,
-    doc:
-      "Opt-in LiveView controlled mode (`data-value`). Requires re-assigning `value` on `on_value_change`. Not used with `field={...}`."
+    doc: "Initial value (list of single-character strings). Padded to `count` for the hook."
   )
 
   attr(:count, :integer, default: 4, doc: "Number of input boxes")
@@ -222,7 +230,6 @@ defmodule Corex.PinInput do
       assigns
       |> assign_new(:id, fn -> "pin-input-#{System.unique_integer([:positive])}" end)
       |> assign_new(:form_field, fn -> false end)
-      |> assign_new(:controlled, fn -> false end)
       |> assign_new(:errors, fn -> [] end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign_new(:orientation, fn -> "horizontal" end)
@@ -244,7 +251,6 @@ defmodule Corex.PinInput do
       {Connect.props(%Props{
         id: @id,
         form_field: @form_field,
-        controlled: @controlled,
         value: @value,
         count: @count,
         disabled: @disabled,

@@ -83,7 +83,6 @@ defmodule Corex.AngleSliderTest do
               value={45}
               name="angle"
               step={15}
-              controlled={true}
               disabled={true}
               invalid={true}
               read_only={true}
@@ -161,7 +160,7 @@ defmodule Corex.AngleSliderTest do
   end
 
   describe "Connect.props/1" do
-    test "maps flags and step" do
+    test "maps flags and step to default value dataset" do
       m =
         Connect.props(%Props{
           id: "s",
@@ -169,7 +168,6 @@ defmodule Corex.AngleSliderTest do
           disabled: true,
           read_only: true,
           invalid: true,
-          controlled: true,
           value: 30,
           on_value_change: "a"
         })
@@ -178,8 +176,8 @@ defmodule Corex.AngleSliderTest do
       assert m["data-disabled"] == ""
       assert m["data-readonly"] == ""
       assert m["data-invalid"] == ""
-      assert m["data-controlled"] == ""
-      assert m["data-value"] == "30"
+      assert m["data-default-value"] == "30"
+      assert m["data-value"] == nil
       assert m["data-on-value-change"] == "a"
       assert m["data-orientation"] == "horizontal"
     end

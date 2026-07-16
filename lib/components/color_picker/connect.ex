@@ -505,24 +505,13 @@ defmodule Corex.ColorPicker.Connect do
       )
       |> Map.new()
 
-    form_field = Map.get(assigns, :form_field, false)
-    controlled = Map.get(assigns, :controlled, false)
-    zag_controlled = form_field || controlled
     value_dataset = FormField.default_value_dataset(assigns, assigns.value)
-
-    {value_attr, default_attr} =
-      if zag_controlled do
-        {value_dataset, nil}
-      else
-        {nil, value_dataset}
-      end
 
     base =
       %{
         "id" => assigns.id,
-        "data-controlled" => get_boolean(zag_controlled),
-        "data-value" => value_attr,
-        "data-default-value" => default_attr,
+        "data-value" => nil,
+        "data-default-value" => value_dataset,
         "data-name" => Map.get(assigns, :name) || assigns.id,
         "data-close-on-select" => get_boolean(assigns.close_on_select),
         "data-open-auto-focus" => get_boolean(assigns.open_auto_focus),

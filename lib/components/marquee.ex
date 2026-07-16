@@ -98,32 +98,34 @@ defmodule Corex.Marquee do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/marquee.css";
+  @import "../corex/components.css";
   ```
 
   Stack modifiers on the host (`class` on `<.marquee>`).
 
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
 
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `marquee` |
-  | Accent | `marquee marquee--accent` |
-  | Brand | `marquee marquee--brand` |
-  | Alert | `marquee marquee--alert` |
-  | Info | `marquee marquee--info` |
-  | Success | `marquee marquee--success` |
+  | Accent | `marquee ui-accent` |
+  | Brand | `marquee ui-brand` |
+  | Alert | `marquee ui-alert` |
+  | Info | `marquee ui-info` |
+  | Success | `marquee ui-success` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `marquee marquee--sm` |
-  | MD | `marquee marquee--md` |
-  | LG | `marquee marquee--lg` |
-  | XL | `marquee marquee--xl` |
+  | SM | `marquee ui-size-sm` |
+  | MD | `marquee ui-size-md` |
+  | LG | `marquee ui-size-lg` |
+  | XL | `marquee ui-size-xl` |
 
   <!-- tabs-close -->
 
@@ -134,7 +136,7 @@ defmodule Corex.Marquee do
 
   import Corex.Api.Doc
 
-  alias Corex.Marquee.Anatomy.{Content, Edge, Item, Props, Root, Viewport}
+  alias Corex.Marquee.Anatomy.{Item, Props}
   alias Corex.Marquee.Connect
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
@@ -208,7 +210,6 @@ defmodule Corex.Marquee do
     items_count = length(items)
     orient = orientation(assigns.side)
     dir = assigns.dir || "ltr"
-    translate = marquee_translate(assigns.side, dir)
 
     assigns =
       assigns
@@ -217,14 +218,12 @@ defmodule Corex.Marquee do
       |> assign(:items_count, items_count)
       |> assign(:orientation, orient)
       |> assign(:dir, dir)
-      |> assign(:translate, translate)
 
     connect_props = %Props{
       id: assigns.id,
       aria_label: assigns.aria_label,
       duration: assigns.duration,
       items_count: items_count,
-      content_count: 2,
       side: assigns.side,
       speed: assigns.speed,
       spacing: assigns.spacing,
@@ -244,24 +243,7 @@ defmodule Corex.Marquee do
       on_complete_client: assigns.on_complete_client
     }
 
-    root_attrs = %Root{
-      id: assigns.id,
-      aria_label: assigns.aria_label,
-      dir: dir,
-      orientation: orient,
-      duration: assigns.duration,
-      spacing: assigns.spacing,
-      delay: assigns.delay,
-      loop_count: assigns.loop_count,
-      translate: translate,
-      respect_reduced_motion: assigns.respect_reduced_motion,
-      paused: assigns.paused
-    }
-
-    assigns =
-      assigns
-      |> assign(:connect_props, connect_props)
-      |> assign(:marquee_root, root_attrs)
+    assigns = assign(assigns, :connect_props, connect_props)
 
     ~H"""
     <div
@@ -272,46 +254,21 @@ defmodule Corex.Marquee do
       {@rest}
       {Connect.props(@connect_props)}
     >
+      <div data-part="ssr-preview" data-orientation={@orientation} aria-hidden="true">
+        <div :for={item <- @items} {Connect.item(%Item{orientation: @orientation, dir: @dir})}>
+          {render_slot(@item, item)}
+        </div>
+      </div>
       <template data-part="items-template" style="display:none" aria-hidden="true">
         <div :for={item <- @items} {Connect.item(%Item{orientation: @orientation, dir: @dir})}>
           {render_slot(@item, item)}
         </div>
       </template>
-      <div {Connect.root(@marquee_root)}>
-        <div {Connect.edge(%Edge{side: "start", orientation: @orientation})}></div>
-        <div {Connect.viewport(%Viewport{id: @id, orientation: @orientation, side: @side})}>
-          <div
-            :for={i <- 0..(@connect_props.content_count - 1)}
-            {Connect.content(%Content{
-              root_id: @id,
-              index: i,
-              orientation: @orientation,
-              side: @side,
-              reverse: @reverse,
-              dir: @dir
-            })}
-          >
-            <div :for={item <- @items} {Connect.item(%Item{orientation: @orientation, dir: @dir})}>
-              {render_slot(@item, item)}
-            </div>
-          </div>
-        </div>
-        <div {Connect.edge(%Edge{side: "end", orientation: @orientation})}></div>
-      </div>
     </div>
     """
   end
 
   defp orientation(side), do: if(side in ["top", "bottom"], do: "vertical", else: "horizontal")
-
-  defp marquee_translate(side, dir) do
-    case side do
-      "top" -> "-100%"
-      "bottom" -> "100%"
-      "start" -> if(dir == "rtl", do: "-100%", else: "100%")
-      _ -> if(dir == "rtl", do: "100%", else: "-100%")
-    end
-  end
 
   api_doc(~S"""
   Pause the marquee from a control (`phx-click`).

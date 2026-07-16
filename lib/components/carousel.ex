@@ -193,23 +193,27 @@ defmodule Corex.Carousel do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/carousel.css";
+  @import "../corex/components.css";
   ```
 
   Stack modifiers on the host (`class` on `<.carousel>`).
 
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on nav triggers. Variant modifiers control prev/next/autoplay trigger surface treatment. Default is subtle; add `carousel ui-solid` for filled nav controls.
+
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
 
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `carousel` |
-  | Accent | `carousel carousel--accent` |
-  | Brand | `carousel carousel--brand` |
-  | Alert | `carousel carousel--alert` |
-  | Info | `carousel carousel--info` |
-  | Success | `carousel carousel--success` |
+  | Accent | `carousel ui-accent` |
+  | Brand | `carousel ui-brand` |
+  | Alert | `carousel ui-alert` |
+  | Info | `carousel ui-info` |
+  | Success | `carousel ui-success` |
 
   ```heex
   <.carousel
@@ -233,12 +237,21 @@ defmodule Corex.Carousel do
       Corex.Image.new("/images/star.jpg", alt: "Star"),
       Corex.Image.new("/images/winter.jpg", alt: "Winter")
     ]}
-    class="carousel carousel--accent"
+    class="carousel ui-accent"
   >
     <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
     <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
   </.carousel>
   ```
+
+  ### Variant
+
+  Visual treatment of prev/next/autoplay triggers only.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `carousel` or `carousel ui-accent` |
+  | Solid | `carousel ui-accent ui-solid` |
 
   ### Size
 
@@ -246,10 +259,10 @@ defmodule Corex.Carousel do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `carousel carousel--sm` |
-  | MD | `carousel carousel--md` |
-  | LG | `carousel carousel--lg` |
-  | XL | `carousel carousel--xl` |
+  | SM | `carousel ui-size-sm` |
+  | MD | `carousel ui-size-md` |
+  | LG | `carousel ui-size-lg` |
+  | XL | `carousel ui-size-xl` |
 
   ```heex
   <.carousel
@@ -260,7 +273,7 @@ defmodule Corex.Carousel do
       Corex.Image.new("/images/star.jpg", alt: "Star"),
       Corex.Image.new("/images/winter.jpg", alt: "Winter")
     ]}
-    class="carousel carousel--sm"
+    class="carousel ui-size-sm"
   >
     <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
     <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -273,7 +286,7 @@ defmodule Corex.Carousel do
       Corex.Image.new("/images/star.jpg", alt: "Star"),
       Corex.Image.new("/images/winter.jpg", alt: "Winter")
     ]}
-    class="carousel carousel--lg"
+    class="carousel ui-size-lg"
   >
     <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
     <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
@@ -286,12 +299,12 @@ defmodule Corex.Carousel do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | None | `carousel carousel--rounded-none` |
-  | SM | `carousel carousel--rounded-sm` |
-  | MD | `carousel carousel--rounded-md` |
-  | LG | `carousel carousel--rounded-lg` |
-  | XL | `carousel carousel--rounded-xl` |
-  | Full | `carousel carousel--rounded-full` |
+  | None | `carousel ui-rounded-none` |
+  | SM | `carousel ui-rounded-sm` |
+  | MD | `carousel ui-rounded-md` |
+  | LG | `carousel ui-rounded-lg` |
+  | XL | `carousel ui-rounded-xl` |
+  | Full | `carousel ui-rounded-full` |
 
   ```heex
   <.carousel
@@ -302,7 +315,7 @@ defmodule Corex.Carousel do
       Corex.Image.new("/images/star.jpg", alt: "Star"),
       Corex.Image.new("/images/winter.jpg", alt: "Winter")
     ]}
-    class="carousel carousel--rounded-md"
+    class="carousel ui-rounded-md"
   >
     <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
     <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>

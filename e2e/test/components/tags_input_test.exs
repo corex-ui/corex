@@ -225,8 +225,8 @@ defmodule E2eWeb.TagsInputTest do
   end
 
   describe "patterns" do
-    feature "controlled  -  delete updates chips", %{session: session} do
-      section = "tags-input-patterns-controlled-section"
+    feature "value  -  delete updates chips", %{session: session} do
+      section = "tags-input-patterns-value-section"
 
       session
       |> ComponentBehaviorSpec.visit_ready(TagsInput, :tags_input, :patterns)

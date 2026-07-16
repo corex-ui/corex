@@ -3,8 +3,9 @@ defmodule Corex.New.Patches do
 
   @doc """
   Adds `{:corex, ...}` (and `{:localize_web, "~> 0.5"}` when `--lang`)
-  to the `deps/0` list in `mix.exs`. When `--lang` and Erlang `:json` is not
-  loaded, adds `{:json_polyfill, ...}` like `localize_web`. Idempotent.
+  to the `deps/0` list in `mix.exs`. When `--lang` or `--design` and Erlang
+  `:json` is not loaded, adds `{:json_polyfill, ...}` like `localize_web`.
+  Idempotent.
   """
   def patch_mix_exs(install_dir, opts) do
     path = Path.join(install_dir, "mix.exs")
@@ -276,7 +277,7 @@ defmodule Corex.New.Patches do
   end
 
   defp maybe_ensure_json_polyfill_dep(content, opts) do
-    if not Keyword.get(opts, :lang, false) do
+    if not (Keyword.get(opts, :lang, false) or Keyword.get(opts, :design, false)) do
       content
     else
       cond do

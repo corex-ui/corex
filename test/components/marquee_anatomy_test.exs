@@ -8,8 +8,9 @@ defmodule Corex.MarqueeAnatomyTest do
 
     assert props.side == "end"
     assert props.speed == 50
-    assert props.content_count == 2
+    assert props.auto_fill == true
     assert props.respect_reduced_motion == true
+    assert Anatomy.Props.ignored_attrs() == ["data-loading"]
   end
 
   test "Root Edge Viewport Content and Item structs" do

@@ -19,7 +19,7 @@ defmodule Corex.Editable do
 
   ## API
 
-  Requires a stable `id` on `<.editable>`.
+  Pass a stable `id` when using [`set_value/2`](#set_value/2) or [`set_value/3`](#set_value/3). Otherwise an id is generated automatically.
 
   | Function | Action | Returns |
   | -------- | ------ | ------- |
@@ -106,24 +106,65 @@ defmodule Corex.Editable do
   ```
 
   If you wish to use the default Corex styling, you can use the class `editable` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+  This requires the `corex_design` dependency and `mix corex.design.build`; import the component css file.
 
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/editable.css";
+  @import "../corex/components.css";
   ```
 
   You can then use modifiers
 
   ```heex
-  <.editable class="editable editable--accent editable--lg" value="">
+  <.editable class="editable ui-accent ui-size-lg" value="">
     <:label>Label</:label>
     <:edit_trigger>Edit</:edit_trigger>
     <:submit_trigger>Save</:submit_trigger>
     <:cancel_trigger>Cancel</:cancel_trigger>
   </.editable>
   ```
+
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+
+  Host width utilities (`w-*`, `max-w-*`, `w-full`) set the track the field fills. Preview and input share that width so entering edit mode stays stable (same pattern as clipboard).
+
+  Semantic modifiers set palette variables on the input, preview, and edit trigger. Variant modifiers control field surface treatment. Default is subtle; add `editable ui-solid` for a filled field. Cancel and submit triggers keep their alert and success styling.
+
+  <!-- tabs-open -->
+
+  ### Semantic
+
+  Palette variables for editable ink and fill. Does not change surface treatment by itself.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `editable` |
+  | Accent | `editable ui-accent` |
+  | Brand | `editable ui-brand` |
+  | Alert | `editable ui-alert` |
+  | Info | `editable ui-info` |
+  | Success | `editable ui-success` |
+
+  ### Variant
+
+  Visual treatment of the input, preview, and edit trigger surfaces. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `editable` or `editable ui-accent` |
+  | Solid | `editable ui-accent ui-solid` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `editable ui-size-sm` |
+  | MD | `editable ui-size-md` |
+  | LG | `editable ui-size-lg` |
+  | XL | `editable ui-size-xl` |
+
+  <!-- tabs-close -->
 
   '''
 

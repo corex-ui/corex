@@ -11,6 +11,9 @@ defmodule Corex.Checkbox do
   ```heex
   <.checkbox class="checkbox">
     <:label>Option</:label>
+    <:indicator>
+      <.heroicon name="hero-check" />
+    </:indicator>
   </.checkbox>
   ```
 
@@ -29,7 +32,7 @@ defmodule Corex.Checkbox do
 
   ```heex
   <.checkbox
-    class="checkbox checkbox--accent"
+    class="checkbox ui-accent"
     invalid
     checked
     errors={["Required"]}
@@ -77,13 +80,13 @@ defmodule Corex.Checkbox do
   ### set_checked
 
   ```heex
-  <.action phx-click={Corex.Checkbox.set_checked("checkbox-api-bind", true)} class="button button--sm">
+  <.action phx-click={Corex.Checkbox.set_checked("checkbox-api-bind", true)} class="button ui-size-sm">
     Set checked
   </.action>
-  <.action phx-click={Corex.Checkbox.set_checked("checkbox-api-bind", false)} class="button button--sm">
+  <.action phx-click={Corex.Checkbox.set_checked("checkbox-api-bind", false)} class="button ui-size-sm">
     Set unchecked
   </.action>
-  <.action phx-click={Corex.Checkbox.toggle_checked("checkbox-api-bind")} class="button button--sm">
+  <.action phx-click={Corex.Checkbox.toggle_checked("checkbox-api-bind")} class="button ui-size-sm">
     Toggle
   </.action>
   <.checkbox id="checkbox-api-bind" class="checkbox">
@@ -269,21 +272,38 @@ defmodule Corex.Checkbox do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/checkbox.css";
+  @import "../corex/components.css";
   ```
+
+  Stack modifiers on the host (`class` on `<.checkbox>`). Combine axes, for example `checkbox ui-accent ui-size-lg` or `checkbox ui-info ui-solid`.
+
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on the control. Variant modifiers control surface treatment. Default is subtle: unchecked uses a neutral surface, checked uses selected with semantic ink text. Add `ui-solid` for a filled checked state.
 
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
+
+  Palette variables for control ink and fill. Does not change surface treatment by itself.
 
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `checkbox` |
-  | Accent | `checkbox checkbox--accent` |
-  | Brand | `checkbox checkbox--brand` |
-  | Alert | `checkbox checkbox--alert` |
-  | Info | `checkbox checkbox--info` |
-  | Success | `checkbox checkbox--success` |
+  | Accent | `checkbox ui-accent` |
+  | Brand | `checkbox ui-brand` |
+  | Alert | `checkbox ui-alert` |
+  | Info | `checkbox ui-info` |
+  | Success | `checkbox ui-success` |
+
+  ### Variant
+
+  Visual treatment of the control. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `checkbox` or `checkbox ui-accent` |
+  | Solid | `checkbox ui-accent ui-solid` |
 
   ```heex
   <.checkbox class="checkbox" checked>
@@ -295,7 +315,7 @@ defmodule Corex.Checkbox do
           <.heroicon name="hero-minus" />
         </:indeterminate>
       </.checkbox>
-      <.checkbox class="checkbox checkbox--accent" checked>
+      <.checkbox class="checkbox ui-accent" checked>
         <:label>Accent</:label>
         <:indicator>
           <.heroicon name="hero-check" />
@@ -304,7 +324,7 @@ defmodule Corex.Checkbox do
           <.heroicon name="hero-minus" />
         </:indeterminate>
       </.checkbox>
-      <.checkbox class="checkbox checkbox--brand" checked>
+      <.checkbox class="checkbox ui-brand" checked>
         <:label>Brand</:label>
         <:indicator>
           <.heroicon name="hero-check" />
@@ -313,7 +333,7 @@ defmodule Corex.Checkbox do
           <.heroicon name="hero-minus" />
         </:indeterminate>
       </.checkbox>
-      <.checkbox class="checkbox checkbox--alert" checked>
+      <.checkbox class="checkbox ui-alert" checked>
         <:label>Alert</:label>
         <:indicator>
           <.heroicon name="hero-check" />
@@ -322,7 +342,7 @@ defmodule Corex.Checkbox do
           <.heroicon name="hero-minus" />
         </:indeterminate>
       </.checkbox>
-      <.checkbox class="checkbox checkbox--info" checked>
+      <.checkbox class="checkbox ui-info" checked>
         <:label>Info</:label>
         <:indicator>
           <.heroicon name="hero-check" />
@@ -331,7 +351,7 @@ defmodule Corex.Checkbox do
           <.heroicon name="hero-minus" />
         </:indeterminate>
       </.checkbox>
-      <.checkbox class="checkbox checkbox--success" checked>
+      <.checkbox class="checkbox ui-success" checked>
         <:label>Success</:label>
         <:indicator>
           <.heroicon name="hero-check" />
@@ -346,23 +366,35 @@ defmodule Corex.Checkbox do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `checkbox checkbox--sm` |
+  | SM | `checkbox ui-size-sm` |
   | Default | `checkbox` |
-  | LG | `checkbox checkbox--lg` |
-  | XL | `checkbox checkbox--xl` |
+  | LG | `checkbox ui-size-lg` |
+  | XL | `checkbox ui-size-xl` |
 
   ```heex
-  <.checkbox class="checkbox checkbox--sm">
+  <.checkbox class="checkbox ui-size-sm">
         <:label>Small</:label>
+        <:indicator>
+          <.heroicon name="hero-check" />
+        </:indicator>
       </.checkbox>
       <.checkbox class="checkbox">
         <:label>Default</:label>
+        <:indicator>
+          <.heroicon name="hero-check" />
+        </:indicator>
       </.checkbox>
-      <.checkbox class="checkbox checkbox--lg">
+      <.checkbox class="checkbox ui-size-lg">
         <:label>Large</:label>
+        <:indicator>
+          <.heroicon name="hero-check" />
+        </:indicator>
       </.checkbox>
-      <.checkbox class="checkbox checkbox--xl">
+      <.checkbox class="checkbox ui-size-xl">
         <:label>XLarge</:label>
+        <:indicator>
+          <.heroicon name="hero-check" />
+        </:indicator>
       </.checkbox>
   ```
 
@@ -371,7 +403,7 @@ defmodule Corex.Checkbox do
   Invalid styles the label and control border. Checked indicators keep their semantic fill color.
 
   ```heex
-  <.checkbox class="checkbox checkbox--accent" invalid checked errors={["Required"]}>
+  <.checkbox class="checkbox ui-accent" invalid checked errors={["Required"]}>
     <:label>Subscribe</:label>
     <:indicator>
       <.heroicon name="hero-check" />
@@ -406,13 +438,16 @@ defmodule Corex.Checkbox do
       >
         <.checkbox field={f[:terms]} class="checkbox">
           <:label>Accept terms</:label>
+          <:indicator>
+            <.heroicon name="hero-check" />
+          </:indicator>
           <:error :let={msg}>
             <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
           </:error>
         </.checkbox>
 
-        <.action type="submit" class="button button--accent">
+        <.action type="submit" class="button ui-accent">
           Submit
         </.action>
       </.form>
@@ -495,13 +530,16 @@ defmodule Corex.Checkbox do
       >
         <.checkbox field={f[:terms]} class="checkbox">
           <:label>Accept terms (strict messages)</:label>
+          <:indicator>
+            <.heroicon name="hero-check" />
+          </:indicator>
           <:error :let={msg}>
             <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
           </:error>
         </.checkbox>
 
-        <.action type="submit" class="button button--accent">
+        <.action type="submit" class="button ui-accent">
           Submit
         </.action>
       </.form>
@@ -585,8 +623,11 @@ defmodule Corex.Checkbox do
           class="checkbox"
         >
           <:label>Accept terms</:label>
+          <:indicator>
+            <.heroicon name="hero-check" />
+          </:indicator>
         </.checkbox>
-        <.action type="submit" class="button button--accent">Submit</.action>
+        <.action type="submit" class="button ui-accent">Submit</.action>
       </form>
   ```
 
@@ -603,13 +644,16 @@ defmodule Corex.Checkbox do
       >
         <.checkbox field={@form[:terms]} class="checkbox">
           <:label>Accept terms</:label>
+          <:indicator>
+            <.heroicon name="hero-check" />
+          </:indicator>
           <:error :let={msg}>
             <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
           </:error>
         </.checkbox>
 
-        <.action type="submit" class="button button--accent">
+        <.action type="submit" class="button ui-accent">
           Submit
         </.action>
       </.form>
@@ -687,13 +731,16 @@ defmodule Corex.Checkbox do
       >
         <.checkbox field={@form[:terms]} class="checkbox">
           <:label>Accept terms</:label>
+          <:indicator>
+            <.heroicon name="hero-check" />
+          </:indicator>
           <:error :let={msg}>
             <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
           </:error>
         </.checkbox>
 
-        <.action type="submit" class="button button--accent">
+        <.action type="submit" class="button ui-accent">
           Submit
         </.action>
       </.form>
@@ -761,6 +808,202 @@ defmodule Corex.Checkbox do
           |> validate_required([:terms], message: "can't be blank")
           |> validate_acceptance(:terms, message: "must be accepted to continue")
         end
+      end
+  ```
+
+  ### LiveView · Ecto + Controlled
+
+  Use `controlled` with `phx-change` so the checkbox checked state and validation errors stay in sync during LiveView validation.
+
+  #### Heex
+
+  ```heex
+      <.form
+        for={@ecto_controlled_form}
+        phx-change="validate_controlled"
+        phx-submit="save_controlled"
+      >
+        <.checkbox
+          field={@ecto_controlled_form[:terms]}
+          class="checkbox"
+          controlled
+        >
+          <:label>Accept terms</:label>
+          <:indicator>
+            <.heroicon name="hero-check" />
+          </:indicator>
+          <:error :let={msg}>
+            <.heroicon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.checkbox>
+
+        <.action type="submit" class="button ui-accent">
+          Submit
+        </.action>
+      </.form>
+  ```
+
+  #### Elixir
+
+  ```elixir
+      def mount(_params, _session, socket) do
+        ecto_controlled_form =
+          %MyApp.Forms.Terms{}
+          |> MyApp.Forms.Terms.changeset_validate(%{})
+          |> Phoenix.Component.to_form(as: :terms_ecto_controlled, id: "checkbox-live-form-ecto-controlled")
+
+        {:ok, assign(socket, :ecto_controlled_form, ecto_controlled_form)}
+      end
+
+      def handle_event("validate_controlled", %{"terms_ecto_controlled" => params}, socket) do
+        validate_ecto_controlled(socket, params)
+      end
+
+      def handle_event("save_controlled", %{"terms_ecto_controlled" => params}, socket) do
+        case MyApp.Forms.Terms.changeset_validate(%MyApp.Forms.Terms{}, params) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            _data = Ecto.Changeset.apply_changes(changeset)
+
+            {:noreply,
+             assign(
+               socket,
+               :ecto_controlled_form,
+               Phoenix.Component.to_form(
+                 MyApp.Forms.Terms.changeset_validate(%MyApp.Forms.Terms{}, params),
+                 as: :terms_ecto_controlled,
+                 id: "checkbox-live-form-ecto-controlled"
+               )
+             )}
+
+          changeset ->
+            {:noreply,
+             assign(
+               socket,
+               :ecto_controlled_form,
+               Phoenix.Component.to_form(changeset,
+                 action: :insert,
+                 as: :terms_ecto_controlled,
+                 id: "checkbox-live-form-ecto-controlled"
+               )
+             )}
+        end
+      end
+
+      defp validate_ecto_controlled(socket, params) do
+        changeset =
+          %MyApp.Forms.Terms{}
+          |> MyApp.Forms.Terms.changeset_validate(params)
+          |> Map.put(:action, :validate)
+
+        {:noreply,
+         assign(
+           socket,
+           :ecto_controlled_form,
+           Phoenix.Component.to_form(changeset,
+             action: :validate,
+             as: :terms_ecto_controlled,
+             id: "checkbox-live-form-ecto-controlled"
+           )
+         )}
+      end
+  ```
+
+  ### LiveView · Ecto + Invalid
+
+  Pass `invalid={Corex.FormField.invalid?(@form[:terms])}` for alert borders after validation. Error messages still render through the `:error` slot.
+
+  #### Heex
+
+  ```heex
+      <.form
+        for={@ecto_invalid_form}
+        phx-change="validate_invalid"
+        phx-submit="save_invalid"
+      >
+        <.checkbox
+          field={@ecto_invalid_form[:terms]}
+          class="checkbox"
+          invalid={Corex.FormField.invalid?(@ecto_invalid_form[:terms])}
+        >
+          <:label>Accept terms</:label>
+          <:indicator>
+            <.heroicon name="hero-check" />
+          </:indicator>
+          <:error :let={msg}>
+            <.heroicon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.checkbox>
+
+        <.action type="submit" class="button ui-accent">
+          Submit
+        </.action>
+      </.form>
+  ```
+
+  #### Elixir
+
+  ```elixir
+      def mount(_params, _session, socket) do
+        ecto_invalid_form =
+          %MyApp.Forms.Terms{}
+          |> MyApp.Forms.Terms.changeset_validate(%{})
+          |> Phoenix.Component.to_form(as: :terms_ecto_invalid, id: "checkbox-live-form-ecto-invalid")
+
+        {:ok, assign(socket, :ecto_invalid_form, ecto_invalid_form)}
+      end
+
+      def handle_event("validate_invalid", %{"terms_ecto_invalid" => params}, socket) do
+        validate_ecto_invalid(socket, params)
+      end
+
+      def handle_event("save_invalid", %{"terms_ecto_invalid" => params}, socket) do
+        case MyApp.Forms.Terms.changeset_validate(%MyApp.Forms.Terms{}, params) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            _data = Ecto.Changeset.apply_changes(changeset)
+
+            {:noreply,
+             assign(
+               socket,
+               :ecto_invalid_form,
+               Phoenix.Component.to_form(
+                 MyApp.Forms.Terms.changeset_validate(%MyApp.Forms.Terms{}, params),
+                 as: :terms_ecto_invalid,
+                 id: "checkbox-live-form-ecto-invalid"
+               )
+             )}
+
+          changeset ->
+            {:noreply,
+             assign(
+               socket,
+               :ecto_invalid_form,
+               Phoenix.Component.to_form(changeset,
+                 action: :insert,
+                 as: :terms_ecto_invalid,
+                 id: "checkbox-live-form-ecto-invalid"
+               )
+             )}
+        end
+      end
+
+      defp validate_ecto_invalid(socket, params) do
+        changeset =
+          %MyApp.Forms.Terms{}
+          |> MyApp.Forms.Terms.changeset_validate(params)
+          |> Map.put(:action, :validate)
+
+        {:noreply,
+         assign(
+           socket,
+           :ecto_invalid_form,
+           Phoenix.Component.to_form(changeset,
+             action: :validate,
+             as: :terms_ecto_invalid,
+             id: "checkbox-live-form-ecto-invalid"
+           )
+         )}
       end
   ```
 

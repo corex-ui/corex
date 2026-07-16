@@ -113,32 +113,47 @@ defmodule Corex.Clipboard do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/clipboard.css";
+  @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.clipboard>`).
+  Stack modifiers on the host (`class` on `<.clipboard>`). Combine axes, for example `clipboard ui-accent ui-size-lg` or `clipboard ui-info ui-solid`.
+
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on the trigger. Variant modifiers control trigger surface treatment. Default is subtle. Copied feedback tints the input and trigger border and text only (surface stays on the UI tokens). Default copied palette is success; add a semantic modifier to override.
 
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
+
+  Palette variables for clipboard ink and fill. Does not change surface treatment by itself.
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Default | `clipboard` |
-  | Accent | `clipboard clipboard--accent` |
-  | Brand | `clipboard clipboard--brand` |
-  | Alert | `clipboard clipboard--alert` |
-  | Info | `clipboard clipboard--info` |
-  | Success | `clipboard clipboard--success` |
+  | Default (success on copy) | `clipboard` |
+  | Accent | `clipboard ui-accent` |
+  | Brand | `clipboard ui-brand` |
+  | Alert | `clipboard ui-alert` |
+  | Info | `clipboard ui-info` |
+  | Success | `clipboard ui-success` |
+
+  ### Variant
+
+  Visual treatment of the copy trigger. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `clipboard` or `clipboard ui-accent` |
+  | Solid | `clipboard ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `clipboard clipboard--sm` |
-  | MD | `clipboard clipboard--md` |
-  | LG | `clipboard clipboard--lg` |
-  | XL | `clipboard clipboard--xl` |
+  | SM | `clipboard ui-size-sm` |
+  | MD | `clipboard ui-size-md` |
+  | LG | `clipboard ui-size-lg` |
+  | XL | `clipboard ui-size-xl` |
 
   <!-- tabs-close -->
 

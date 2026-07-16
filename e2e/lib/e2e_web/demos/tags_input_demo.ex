@@ -911,11 +911,10 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     """
   end
 
-  def patterns_controlled_heex do
+  def patterns_value_heex do
     ~S"""
     <.tags_input
       class="tags-input"
-      controlled
       value={["lorem", "duis", "donec"]}
       on_value_change="tags_patterns_value_changed"
     >
@@ -925,7 +924,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     """
   end
 
-  def patterns_controlled_elixir do
+  def patterns_value_elixir do
     ~S"""
     def handle_event("tags_patterns_value_changed", %{"id" => _id, "value" => value}, socket)
         when is_list(value) do
@@ -938,7 +937,6 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     ~S"""
     <.tags_input
       class="tags-input"
-      controlled
       value={["lorem", "duis"]}
       on_value_change="tags_patterns_validated_changed"
     >
@@ -954,11 +952,15 @@ defmodule E2eWeb.Demos.TagsInputDemo do
       {:ok, assign(socket, :allowed_tags, ["lorem", "duis", "donec"])}
     end
 
-    def handle_event("tags_patterns_validated_changed", %{"id" => _id, "value" => value}, socket)
+    def handle_event("tags_patterns_validated_changed", %{"id" => id, "value" => value}, socket)
         when is_list(value) do
       allowed = socket.assigns.allowed_tags
       filtered = Enum.filter(value, &(&1 in allowed))
-      {:noreply, assign(socket, :tags_validated, filtered)}
+
+      {:noreply,
+       socket
+       |> assign(:tags_validated, filtered)
+       |> Corex.TagsInput.set_value(id, filtered)}
     end
     """
   end

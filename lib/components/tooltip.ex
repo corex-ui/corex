@@ -114,7 +114,7 @@ defmodule Corex.Tooltip do
 
   ```heex
   <.menu_item disabled value="support">
-    <.tooltip class="tooltip tooltip--sm" trigger_tag={:span}>
+    <.tooltip class="tooltip ui-size-sm" trigger_tag={:span}>
       <:trigger focusable={false}>Support</:trigger>
       <:content>Coming soon</:content>
     </.tooltip>
@@ -137,39 +137,45 @@ defmodule Corex.Tooltip do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/tooltip.css";
+  @import "../corex/components.css";
   ```
 
   Stack modifiers on the host (`class` on `<.tooltip>`).
 
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on the content panel. Variant modifiers control tooltip panel surface treatment. Default is subtle; add `tooltip ui-solid` for a filled panel.
+
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
 
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `tooltip` |
-  | Accent | `tooltip tooltip--accent` |
-  | Brand | `tooltip tooltip--brand` |
-  | Alert | `tooltip tooltip--alert` |
-  | Info | `tooltip tooltip--info` |
-  | Success | `tooltip tooltip--success` |
+  | Accent | `tooltip ui-accent` |
+  | Brand | `tooltip ui-brand` |
+  | Alert | `tooltip ui-alert` |
+  | Info | `tooltip ui-info` |
+  | Success | `tooltip ui-success` |
+
+  ### Variant
+
+  Visual treatment of `[data-part="content"]`.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `tooltip` or `tooltip ui-accent` |
+  | Solid | `tooltip ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `tooltip tooltip--sm` |
-  | MD | `tooltip tooltip--md` |
-  | LG | `tooltip tooltip--lg` |
-  | XL | `tooltip tooltip--xl` |
-
-  ### Text
-
-  | Modifier | Classes |
-  | -------- | ------- |
-  | SM | `tooltip tooltip--text-sm` |
-  | XL | `tooltip tooltip--text-xl` |
+  | SM | `tooltip ui-size-sm` |
+  | MD | `tooltip ui-size-md` |
+  | LG | `tooltip ui-size-lg` |
+  | XL | `tooltip ui-size-xl` |
 
   <!-- tabs-close -->
 

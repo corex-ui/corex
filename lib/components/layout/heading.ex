@@ -13,7 +13,7 @@ defmodule Corex.Layout.Heading do
     <:title>Page Title</:title>
     <:subtitle>Optional subtitle or context</:subtitle>
     <:actions>
-      <.action phx-click="save" class="button button--accent">Save</.action>
+      <.action phx-click="save" class="button ui-accent">Save</.action>
     </:actions>
   </.layout_heading>
   ```
@@ -42,14 +42,16 @@ defmodule Corex.Layout.Heading do
 
   ## Style
 
-  Use `class="layout-heading"` on the host, plus optional `layout-heading--*` modifiers for semantic ink on the title and subtitle.
+  Use `class="layout-heading"` on the host, plus optional `ui-*` modifiers for semantic ink on the title and subtitle.
+
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Size** (`ui-size-sm` … `ui-size-xl`). No variant axis (typography layout only). See the [modifier guide](modifiers.html).
 
   <!-- tabs-open -->
 
   ### Accent
 
   ```heex
-  <.layout_heading class="layout-heading layout-heading--accent">
+  <.layout_heading class="layout-heading ui-accent">
     <:title>Accent title</:title>
     <:subtitle>Accent subtitle</:subtitle>
   </.layout_heading>

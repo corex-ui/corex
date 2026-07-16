@@ -22,21 +22,11 @@ defmodule Corex.PinInput.Connect do
     padded = padded_value_list(value_list, count)
     json = FormField.dataset_default_json(padded)
 
-    controlled = Map.get(assigns, :controlled, false)
-    form_field = Map.get(assigns, :form_field, false)
-    zag_controlled = form_field || controlled
-
-    {value_str, default_value_str} =
-      if zag_controlled do
-        {json, nil}
-      else
-        {nil, FormField.default_value_dataset(assigns, json)}
-      end
+    default_value_str = FormField.default_value_dataset(assigns, json)
 
     %{
       "id" => assigns.id,
-      "data-controlled" => get_boolean(zag_controlled),
-      "data-value" => value_str,
+      "data-value" => nil,
       "data-default-value" => default_value_str,
       "data-count" => to_string(assigns.count),
       "data-disabled" => get_boolean(assigns.disabled),

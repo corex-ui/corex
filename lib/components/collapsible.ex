@@ -70,7 +70,7 @@ defmodule Corex.Collapsible do
   ### set_open
 
   ```heex
-  <.action phx-click={Corex.Collapsible.set_open("collapsible-api", true)} class="button button--sm">
+  <.action phx-click={Corex.Collapsible.set_open("collapsible-api", true)} class="button ui-size-sm">
     Open
   </.action>
   <.collapsible id="collapsible-api" class="collapsible">
@@ -223,26 +223,46 @@ defmodule Corex.Collapsible do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/collapsible.css";
+  @import "../corex/components.css";
   ```
+
+  Stack modifiers on the host (`class` on `<.collapsible>`). Combine axes, for example `collapsible ui-accent ui-size-lg` or `collapsible ui-info`.
+
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on triggers. Variant modifiers control surface treatment. Default open triggers use a neutral selected surface with semantic text ink; add `ui-solid` for a filled open trigger.
 
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
+
+  Palette variables for trigger ink and fill. Does not change open trigger treatment by itself.
 
   | Modifier | Classes |
   | -------- | ------- |
-  | Default | `collapsible collapsible--md` |
-  | Accent | `collapsible collapsible--md collapsible--accent` |
-  | Brand | `collapsible collapsible--md collapsible--brand` |
+  | Default | `collapsible ui-size-md` |
+  | Accent | `collapsible ui-size-md ui-accent` |
+  | Brand | `collapsible ui-size-md ui-brand` |
+  | Alert | `collapsible ui-size-md ui-alert` |
+  | Info | `collapsible ui-size-md ui-info` |
+  | Success | `collapsible ui-size-md ui-success` |
+
+  ### Variant
+
+  Visual treatment of the trigger. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `collapsible ui-size-md` or `collapsible ui-size-md ui-accent` |
+  | Solid | `collapsible ui-size-md ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `collapsible collapsible--sm` |
-  | MD | `collapsible collapsible--md` |
-  | LG | `collapsible collapsible--lg` |
+  | SM | `collapsible ui-size-sm` |
+  | MD | `collapsible ui-size-md` |
+  | LG | `collapsible ui-size-lg` |
 
   <!-- tabs-close -->
   '''
@@ -452,7 +472,7 @@ defmodule Corex.Collapsible do
 
   ```heex
   <.action phx-click={Corex.Collapsible.set_open("my-collapsible", true)}>Expand</.action>
-  <.collapsible id="my-collapsible" class="collapsible collapsible--md">
+  <.collapsible id="my-collapsible" class="collapsible ui-size-md">
     <:trigger :let={c}>{if c.open, do: "Hide", else: "Show"}</:trigger>
     <:content>Details.</:content>
   </.collapsible>
@@ -477,7 +497,7 @@ defmodule Corex.Collapsible do
 
   ```heex
   <.action phx-click="expand_collapsible">Expand</.action>
-  <.collapsible id="my-collapsible" class="collapsible collapsible--md">
+  <.collapsible id="my-collapsible" class="collapsible ui-size-md">
     <:trigger :let={c}>{if c.open, do: "Hide", else: "Show"}</:trigger>
     <:content>Details.</:content>
   </.collapsible>

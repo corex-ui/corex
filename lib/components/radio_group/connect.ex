@@ -23,14 +23,20 @@ defmodule Corex.RadioGroup.Connect do
   def props(assigns) do
     form_field = Map.get(assigns, :form_field, false)
     controlled = Map.get(assigns, :controlled, false)
-    zag_controlled = form_field || controlled
     value_dataset = FormField.dataset_default_string(assigns.value)
 
-    {value_str, default_value_str} =
-      if zag_controlled do
-        {value_dataset, nil}
+    default_value_str =
+      if form_field do
+        value_dataset
       else
-        controlled_string_value(controlled, assigns.value)
+        assigns.value
+      end
+
+    {value_str, default_value_str} =
+      if controlled do
+        controlled_string_value(true, assigns.value)
+      else
+        {nil, default_value_str}
       end
 
     %{

@@ -165,32 +165,47 @@ defmodule Corex.Tabs do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/tabs.css";
+  @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.tabs>`).
+  Stack modifiers on the host (`class` on `<.tabs>`). Combine axes, for example `tabs ui-accent ui-size-lg` or `tabs ui-info`.
+
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on triggers. Variant modifiers control surface treatment. Default selected triggers use a neutral selected surface with semantic text ink; add `ui-solid` for a filled selected trigger.
 
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
+
+  Palette variables for trigger ink and fill. Does not change selected trigger treatment by itself.
 
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `tabs` |
-  | Accent | `tabs tabs--accent` |
-  | Brand | `tabs tabs--brand` |
-  | Alert | `tabs tabs--alert` |
-  | Info | `tabs tabs--info` |
-  | Success | `tabs tabs--success` |
+  | Accent | `tabs ui-accent` |
+  | Brand | `tabs ui-brand` |
+  | Alert | `tabs ui-alert` |
+  | Info | `tabs ui-info` |
+  | Success | `tabs ui-success` |
+
+  ### Variant
+
+  Visual treatment of tab triggers. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `tabs` or `tabs ui-accent` |
+  | Solid | `tabs ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `tabs tabs--sm` |
-  | MD | `tabs tabs--md` |
-  | LG | `tabs tabs--lg` |
-  | XL | `tabs tabs--xl` |
+  | SM | `tabs ui-size-sm` |
+  | MD | `tabs ui-size-md` |
+  | LG | `tabs ui-size-lg` |
+  | XL | `tabs ui-size-xl` |
 
   <!-- tabs-close -->
 
@@ -405,6 +420,7 @@ defmodule Corex.Tabs do
           {cond do
             panel.source == :slots -> render_slot(panel.content_slot)
             @content != [] -> render_slot(@content, %{content: panel.item_entry.content, meta: panel.item_entry.meta || %{}})
+            is_binary(panel.item_entry.content) -> tabs_text_content(%{text: panel.item_entry.content})
             true -> panel.item_entry.content
           end}
         </div>
@@ -463,6 +479,14 @@ defmodule Corex.Tabs do
 
   defp tabs_panel_class(%{source: :slots} = panel, slot_key),
     do: Map.get(panel[slot_key], :class, nil)
+
+  attr(:text, :string, required: true)
+
+  defp tabs_text_content(assigns) do
+    ~H"""
+    <p>{@text}</p>
+    """
+  end
 
   defp tabs_panel_trigger(panel, id, values, orientation, dir) do
     %Trigger{

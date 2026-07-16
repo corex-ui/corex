@@ -410,6 +410,41 @@ defmodule Corex.New.PatchesTest do
         end
       end)
     end
+
+    test "adds json_polyfill when --design and :json is not loaded" do
+      mix_exs = """
+      defmodule MyApp.MixProject do
+        use Mix.Project
+
+        def project do
+          [app: :my_app, version: "0.1.0", deps: deps()]
+        end
+
+        def application do
+          [mod: {MyApp.Application, []}, extra_applications: [:logger, :runtime_tools]]
+        end
+
+        defp deps do
+          [
+            {:phoenix, "~> 1.8.1"},
+            {:jason, "~> 1.2"}
+          ]
+        end
+      end
+      """
+
+      in_tmp(:patch_mix_exs_json_polyfill_design, fn ->
+        File.write!("mix.exs", mix_exs)
+        Patches.patch_mix_exs(File.cwd!(), design: true)
+        body = File.read!("mix.exs")
+
+        if Code.ensure_loaded?(:json) do
+          refute body =~ ~r/\{:json_polyfill,/
+        else
+          assert body =~ ~r/\{:json_polyfill,\s*"~> 0\.2 or ~> 1\.0"\}/
+        end
+      end)
+    end
   end
 
   describe "patch_live_view_for_lang/3" do

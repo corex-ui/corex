@@ -2,6 +2,9 @@ defmodule Corex.TabsTest do
   use CorexTest.ComponentCase, async: true
 
   alias Corex.Tabs
+  alias Corex.Tabs.Anatomy.Content
+  alias Corex.Tabs.Anatomy.Indicator
+  alias Corex.Tabs.Anatomy.Trigger
   alias Corex.Tabs.Connect
 
   describe "tabs/1" do
@@ -173,13 +176,47 @@ defmodule Corex.TabsTest do
       result = Connect.trigger(assigns)
       assert result["aria-disabled"] == "true"
       assert result["disabled"] == true
+      assert result["data-disabled"] == ""
       assert result["tabindex"] == -1
+    end
+
+    test "omits data-disabled when not disabled" do
+      assigns = %{
+        id: "test-tabs",
+        value: "tab-1",
+        values: [],
+        dir: "ltr",
+        orientation: "vertical",
+        disabled: false,
+        data: %{}
+      }
+
+      result = Connect.trigger(assigns)
+      assert result["data-disabled"] == nil
+      assert result["disabled"] == false
+    end
+  end
+
+  describe "Trigger.ignored_attrs/0" do
+    test "allows LiveView to patch item disabled attrs on trigger" do
+      ignored = Trigger.ignored_attrs()
+      refute "data-disabled" in ignored
+      refute "disabled" in ignored
+      assert "aria-disabled" in ignored
+      assert "tabindex" in ignored
+    end
+  end
+
+  describe "Content.ignored_attrs/0" do
+    test "allows LiveView to patch item data-disabled on content" do
+      ignored = Content.ignored_attrs()
+      refute "data-disabled" in ignored
     end
   end
 
   describe "Connect.indicator/1" do
     test "returns indicator attributes when a tab is selected" do
-      assigns = %Corex.Tabs.Anatomy.Indicator{
+      assigns = %Indicator{
         id: "test-tabs",
         values: ["tab-1"],
         dir: "ltr",
@@ -194,7 +231,7 @@ defmodule Corex.TabsTest do
     end
 
     test "returns indicator attributes when no tab is selected" do
-      assigns = %Corex.Tabs.Anatomy.Indicator{
+      assigns = %Indicator{
         id: "test-tabs",
         values: [],
         dir: "ltr",
@@ -240,6 +277,21 @@ defmodule Corex.TabsTest do
       result = Connect.content(assigns)
       assert result["hidden"] == true
       assert result["data-state"] == "closed"
+    end
+
+    test "sets data-disabled when item disabled" do
+      assigns = %{
+        id: "test-tabs",
+        value: "tab-1",
+        values: ["tab-1"],
+        dir: "ltr",
+        orientation: "vertical",
+        disabled: true,
+        data: %{}
+      }
+
+      result = Connect.content(assigns)
+      assert result["data-disabled"] == ""
     end
   end
 

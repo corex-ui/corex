@@ -106,7 +106,7 @@ defmodule Corex.Pagination do
   ### set_page
 
   ```heex
-  <.action phx-click={Corex.Pagination.set_page("pagination-api-bind", 5)} class="button button--sm">5</.action>
+  <.action phx-click={Corex.Pagination.set_page("pagination-api-bind", 5)} class="button ui-size-sm">5</.action>
   <.pagination id="pagination-api-bind" class="pagination" count={95} page={5} page_size={10}>
     <:prev><.heroicon name="hero-chevron-left" /></:prev>
     <:next><.heroicon name="hero-chevron-right" /></:next>
@@ -254,55 +254,60 @@ defmodule Corex.Pagination do
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/pagination.css";
+  @import "../corex/components.css";
   ```
 
-  Stack modifiers on `<.pagination class="pagination ...">`.
+  Stack modifiers on `<.pagination class="pagination ...">`. Combine axes, for example `pagination ui-accent ui-size-lg` or `pagination ui-info ui-solid`.
+
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on item triggers. Variant modifiers control surface treatment. Default is subtle: unselected items use a neutral surface, the active page uses selected with semantic ink text. Add `pagination ui-solid` for filled active and nav triggers.
 
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
+
+  Palette variables for pagination ink and fill. Does not change surface treatment by itself.
 
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `pagination` |
-  | Accent | `pagination pagination--accent` |
-  | Brand | `pagination pagination--brand` |
-  | Alert | `pagination pagination--alert` |
-  | Success | `pagination pagination--success` |
-  | Info | `pagination pagination--info` |
+  | Accent | `pagination ui-accent` |
+  | Brand | `pagination ui-brand` |
+  | Alert | `pagination ui-alert` |
+  | Success | `pagination ui-success` |
+  | Info | `pagination ui-info` |
+
+  ### Variant
+
+  Visual treatment of prev, next, and page item triggers. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `pagination` or `pagination ui-accent` |
+  | Solid | `pagination ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `pagination` |
-  | SM | `pagination pagination--sm` |
-  | MD | `pagination pagination--md` |
-  | LG | `pagination pagination--lg` |
-  | XL | `pagination pagination--xl` |
-
-  ### Text
-
-  | Modifier | Classes |
-  | -------- | ------- |
-  | Default | `pagination` |
-  | SM | `pagination pagination--text-sm` |
-  | XL | `pagination pagination--text-xl` |
-  | 2XL | `pagination pagination--text-2xl` |
-  | 4XL | `pagination pagination--text-4xl` |
+  | SM | `pagination ui-size-sm` |
+  | MD | `pagination ui-size-md` |
+  | LG | `pagination ui-size-lg` |
+  | XL | `pagination ui-size-xl` |
 
   ### Rounded
 
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `pagination` |
-  | None | `pagination pagination--rounded-none` |
-  | SM | `pagination pagination--rounded-sm` |
-  | MD | `pagination pagination--rounded-md` |
-  | LG | `pagination pagination--rounded-lg` |
-  | XL | `pagination pagination--rounded-xl` |
-  | Full | `pagination pagination--rounded-full` |
+  | None | `pagination ui-rounded-none` |
+  | SM | `pagination ui-rounded-sm` |
+  | MD | `pagination ui-rounded-md` |
+  | LG | `pagination ui-rounded-lg` |
+  | XL | `pagination ui-rounded-xl` |
+  | Full | `pagination ui-rounded-full` |
 
   ### Max width
 

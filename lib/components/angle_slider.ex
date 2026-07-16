@@ -2,7 +2,7 @@ defmodule Corex.AngleSlider do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Angle Slider](https://zagjs.com/components/react/angle-slider).
 
-  WAI-ARIA circular angle control. Use `angle_slider/1` with an optional label slot, marks, and controlled or uncontrolled mode.
+  WAI-ARIA circular angle control. Use `angle_slider/1` with an optional label slot and marks.
 
   ## Anatomy
 
@@ -22,40 +22,6 @@ defmodule Corex.AngleSlider do
   <.angle_slider class="angle-slider" marker_values={[0, 90, 180, 270]}>
     <:label>Angle</:label>
   </.angle_slider>
-  ```
-
-  ### Controlled
-
-  In controlled mode, use `on_value_change` and `on_value_change_client` so the thumb moves
-  during drag. Use `on_value_change_end` and `on_value_change_end_client` if you only need
-  to react when the user releases.
-
-  ```elixir
-  defmodule MyAppWeb.AngleSliderLive do
-    use MyAppWeb, :live_view
-
-    def mount(_params, _session, socket) do
-      {:ok, assign(socket, :value, 0)}
-    end
-
-    def handle_event("angle_changed", %{"value" => value}, socket) do
-      {:noreply, assign(socket, :value, value)}
-    end
-
-    def render(assigns) do
-      ~H"""
-      <.angle_slider
-        id="angle"
-        controlled
-        value={@value}
-        on_value_change="angle_changed"
-        marker_values={[0, 90, 180, 270]}
-        class="angle-slider">
-        <:label>Angle</:label>
-      </.angle_slider>
-      """
-    end
-  end
   ```
 
   <!-- tabs-close -->
@@ -127,37 +93,52 @@ defmodule Corex.AngleSlider do
   ```
 
   If you wish to use the default Corex styling, you can use the class `angle-slider` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+  This requires the `corex_design` dependency and `mix corex.design.build`; import the component css file.
 
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/angle-slider.css";
+  @import "../corex/components.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.angle_slider>`).
+  Stack modifiers on the host (`class` on `<.angle_slider>`). Combine axes, for example `angle-slider ui-accent ui-size-lg` or `angle-slider ui-info ui-solid`.
+
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on the control and thumb handle. Variant modifiers control surface treatment. Default is subtle: a neutral control ring with semantic thumb color. Add `angle-slider ui-solid` for a filled control and matching handle.
 
   <!-- tabs-open -->
 
-  ### Color
+  ### Semantic
+
+  Palette variables for control fill and thumb ink. Does not change surface treatment by itself.
 
   | Modifier | Classes |
   | -------- | ------- |
   | Default | `angle-slider` |
-  | Accent | `angle-slider angle-slider--accent` |
-  | Brand | `angle-slider angle-slider--brand` |
-  | Alert | `angle-slider angle-slider--alert` |
-  | Info | `angle-slider angle-slider--info` |
-  | Success | `angle-slider angle-slider--success` |
+  | Accent | `angle-slider ui-accent` |
+  | Brand | `angle-slider ui-brand` |
+  | Alert | `angle-slider ui-alert` |
+  | Info | `angle-slider ui-info` |
+  | Success | `angle-slider ui-success` |
+
+  ### Variant
+
+  Visual treatment of the control ring and thumb handle. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `angle-slider` or `angle-slider ui-accent` |
+  | Solid | `angle-slider ui-accent ui-solid` |
 
   ### Size
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `angle-slider angle-slider--sm` |
-  | MD | `angle-slider angle-slider--md` |
-  | LG | `angle-slider angle-slider--lg` |
-  | XL | `angle-slider angle-slider--xl` |
+  | SM | `angle-slider ui-size-sm` |
+  | MD | `angle-slider ui-size-md` |
+  | LG | `angle-slider ui-size-lg` |
+  | XL | `angle-slider ui-size-xl` |
 
   <!-- tabs-close -->
 
@@ -234,8 +215,7 @@ defmodule Corex.AngleSlider do
   import Corex.Helpers, only: [respond_to_fields: 1]
 
   attr(:id, :string, required: false, doc: "The id of the angle slider")
-  attr(:value, :float, default: 0.0, doc: "The value or controlled value in degrees")
-  attr(:controlled, :boolean, default: false, doc: "Whether the value is controlled")
+  attr(:value, :float, default: 0.0, doc: "The initial value in degrees")
   attr(:step, :float, default: 1.0, doc: "Step value")
   attr(:disabled, :boolean, default: false, doc: "Whether the slider is disabled")
   attr(:read_only, :boolean, default: false, doc: "Whether the slider is read-only")
@@ -258,22 +238,22 @@ defmodule Corex.AngleSlider do
 
   attr(:on_value_change, :string,
     default: nil,
-    doc: "Server event when value changes (uncontrolled)"
+    doc: "Server event when value changes during drag"
   )
 
   attr(:on_value_change_client, :string,
     default: nil,
-    doc: "Client event when value changes (uncontrolled)"
+    doc: "Client event when value changes during drag"
   )
 
   attr(:on_value_change_end, :string,
     default: nil,
-    doc: "Server event when value change ends (controlled)"
+    doc: "Server event when the user releases the thumb"
   )
 
   attr(:on_value_change_end_client, :string,
     default: nil,
-    doc: "Client event when value change ends (controlled)"
+    doc: "Client event when the user releases the thumb"
   )
 
   attr(:marker_values, :list,
@@ -325,7 +305,6 @@ defmodule Corex.AngleSlider do
       dir: assigns.dir,
       orientation: assigns.orientation,
       value: assigns.value,
-      controlled: assigns.controlled,
       step: assigns.step,
       disabled: assigns.disabled,
       read_only: assigns.read_only,
@@ -348,7 +327,6 @@ defmodule Corex.AngleSlider do
         id: @id,
         form_field: @form_field,
         value: @value,
-        controlled: @controlled,
         step: @step,
         disabled: @disabled,
         read_only: @read_only,
