@@ -6,9 +6,10 @@ function reapplyLiveViewValueInputUsage(input) {
   p.phxPrivate[PHX_HAS_FOCUSED] = true;
 }
 function notifyPhoenixFormChange(input, value, options = {}) {
-  if (String(input.value) !== String(value)) {
-    input.value = value;
+  if (String(input.value) === String(value)) {
+    return;
   }
+  input.value = value;
   options.onTouched?.();
   if (options.markUsed === false) {
     return;

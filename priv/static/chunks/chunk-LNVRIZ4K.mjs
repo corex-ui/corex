@@ -13,8 +13,10 @@ function parseRespondTo(source) {
   }
   return "server";
 }
-function idMatches(elId, payloadId) {
-  if (payloadId === void 0 || payloadId === null || payloadId === "") return true;
+function idMatches(elId, payloadId, opts) {
+  if (payloadId === void 0 || payloadId === null || payloadId === "") {
+    return opts?.broadcast === true;
+  }
   return elId === payloadId;
 }
 function readPayloadChecked(payload) {

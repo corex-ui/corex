@@ -1,23 +1,22 @@
 import {
   syncHiddenInputValue
-} from "./chunks/chunk-YV3G4M5K.mjs";
+} from "./chunks/chunk-YFTSYDFS.mjs";
 import {
   setValueAtIndex
 } from "./chunks/chunk-PE34YET2.mjs";
 import {
   stripZagSubmitNames
-} from "./chunks/chunk-BRLTIGVO.mjs";
+} from "./chunks/chunk-YJPGDO7P.mjs";
 import {
   syncArrayHiddenInputsForPhoenix
-} from "./chunks/chunk-NZ3YNDJS.mjs";
+} from "./chunks/chunk-IKLCQZIF.mjs";
 import {
   notifyPhoenixFormChange
-} from "./chunks/chunk-VMKNATWC.mjs";
+} from "./chunks/chunk-ASQD2R2U.mjs";
 import {
   getJsonStringList,
-  mountStringListBinding,
-  readUpdatedServerStringList
-} from "./chunks/chunk-I2HPUDHJ.mjs";
+  mountStringListBinding
+} from "./chunks/chunk-XL4XUS2C.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -28,7 +27,7 @@ import {
   notifyChange,
   parseRespondTo,
   readPayloadId
-} from "./chunks/chunk-2WCNJX5P.mjs";
+} from "./chunks/chunk-LNVRIZ4K.mjs";
 import {
   Component,
   VanillaMachine,
@@ -53,7 +52,7 @@ import {
   raf,
   setup,
   visuallyHiddenStyle
-} from "./chunks/chunk-2GQRP3FN.mjs";
+} from "./chunks/chunk-YGZLYEUJ.mjs";
 
 // ../node_modules/.pnpm/@zag-js+pin-input@1.40.0/node_modules/@zag-js/pin-input/dist/pin-input.anatomy.mjs
 var anatomy = createAnatomy("pinInput").parts("root", "label", "input", "control");
@@ -692,11 +691,6 @@ function padStringListBinding(el, count) {
   }
   return { defaultValue: padToCount(binding.defaultValue, count) };
 }
-function readUpdatedPinValue(el, count) {
-  const patch = readUpdatedServerStringList(el);
-  if (!("value" in patch)) return {};
-  return { value: padToCount(patch.value, count) };
-}
 function syncPinInputFormForPhoenix(el, values, onTouched, opts = {}) {
   const submitName = getString(el, "submitName");
   const count = getNumber(el, "count") ?? 0;
@@ -842,11 +836,9 @@ var PinInputHook = {
     const el = this.el;
     const zag = this.pinInput;
     const count = getNumber(el, "count") ?? 0;
-    const valuePatch = readUpdatedPinValue(el, count);
     zag?.updateProps({
       id: el.id,
       count,
-      ...valuePatch,
       disabled: getBoolean(el, "disabled"),
       invalid: getBoolean(el, "invalid"),
       required: getBoolean(el, "required"),
@@ -861,9 +853,6 @@ var PinInputHook = {
       type: getString(el, "type"),
       placeholder: getString(el, "placeholder")
     });
-    if ("value" in valuePatch) {
-      syncPinInputFormForPhoenix(el, valuePatch.value, void 0, { notifyLiveView: false });
-    }
   },
   destroyed() {
     this.domRegistry?.teardown();
@@ -877,6 +866,5 @@ export {
   parseValueWithEmpties,
   readDefaultValueList,
   readPinValueList,
-  readUpdatedPinValue,
   syncPinInputFormForPhoenix
 };

@@ -1,10 +1,10 @@
 import {
   memo
-} from "./chunks/chunk-HWSJUKAB.mjs";
+} from "./chunks/chunk-KCVHCORZ.mjs";
 import {
   setRafInterval,
   setRafTimeout
-} from "./chunks/chunk-GFGOJ2RY.mjs";
+} from "./chunks/chunk-5HFWMYJG.mjs";
 import {
   clampValue
 } from "./chunks/chunk-PE34YET2.mjs";
@@ -17,7 +17,7 @@ import {
   idMatches,
   parseRespondTo,
   readPayloadId
-} from "./chunks/chunk-2WCNJX5P.mjs";
+} from "./chunks/chunk-LNVRIZ4K.mjs";
 import {
   Component,
   VanillaMachine,
@@ -30,7 +30,7 @@ import {
   getString,
   getStringList,
   match
-} from "./chunks/chunk-2GQRP3FN.mjs";
+} from "./chunks/chunk-YGZLYEUJ.mjs";
 
 // ../node_modules/.pnpm/@zag-js+timer@1.40.0/node_modules/@zag-js/timer/dist/timer.anatomy.mjs
 var anatomy = createAnatomy("timer").parts(
@@ -451,19 +451,6 @@ var Timer = class extends Component {
   initApi() {
     return this.zagConnect(connect);
   }
-  init = () => {
-    this.machine.subscribe(() => {
-      this.api = this.initApi();
-      this.render();
-    });
-    try {
-      this.machine.start();
-      this.api = this.initApi();
-      this.render();
-    } finally {
-      this.el.removeAttribute("data-loading");
-    }
-  };
   render() {
     const rootEl = this.el.querySelector('[data-scope="timer"][data-part="root"]') ?? this.el;
     this.spreadProps(rootEl, this.api.getRootProps());

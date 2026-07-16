@@ -1,10 +1,12 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import * as hookModule from "../../hooks/select";
 import {
   buildCollection,
+  controlledValueMatchesServer,
   formatSelectHiddenValue,
   reapplySelectInteractiveState,
   syncSelectHiddenInputForPhoenix,
+  syncControlledValueInputFromServer,
   syncSelectHiddenSelectForPhoenix,
 } from "../../hooks/select";
 import { mutableArray } from "../helpers/matrix";
@@ -84,14 +86,11 @@ describe("syncSelectHiddenInputForPhoenix", () => {
     expect(selected).toEqual(["option1", "option2"]);
   });
 
-  it("syncs single select values to value-input", async () => {
+  it("syncs single select values to value-input synchronously", () => {
     const root = el({ multiple: false });
     root.innerHTML = `<input data-scope="select" data-part="value-input" type="text" hidden name="post[status]" />`;
 
     syncSelectHiddenInputForPhoenix(root, ["draft"]);
-    await new Promise<void>((resolve) => {
-      queueMicrotask(() => resolve());
-    });
 
     const valueInput = root.querySelector<HTMLInputElement>(
       '[data-scope="select"][data-part="value-input"]'
@@ -104,6 +103,47 @@ describe("formatSelectHiddenValue", () => {
   it("joins multiple values with commas for legacy value-input mode", () => {
     const root = el({ multiple: true });
     expect(formatSelectHiddenValue(root, ["a", "b"])).toBe("a,b");
+  });
+});
+
+describe("controlledValueMatchesServer", () => {
+  it("matches empty controlled value against empty server data-value", () => {
+    const root = el({ controlled: true, value: "" });
+    expect(controlledValueMatchesServer(root, [])).toBe(true);
+  });
+
+  it("does not match user selection before server data-value updates", () => {
+    const root = el({ controlled: true, value: "" });
+    expect(controlledValueMatchesServer(root, ["fra"])).toBe(false);
+  });
+});
+
+describe("syncControlledValueInputFromServer", () => {
+  it("updates value-input without dispatching change", () => {
+    const root = el({ controlled: true, value: "fra" });
+    root.innerHTML = `<input data-scope="select" data-part="value-input" type="text" hidden name="post[country]" value="" />`;
+    const valueInput = root.querySelector<HTMLInputElement>(
+      '[data-scope="select"][data-part="value-input"]'
+    )!;
+    const changeHandler = vi.fn();
+    valueInput.addEventListener("change", changeHandler);
+
+    syncControlledValueInputFromServer(root, ["fra"]);
+
+    expect(valueInput.value).toBe("fra");
+    expect(changeHandler).not.toHaveBeenCalled();
+  });
+
+  it("no-ops when value already matches server", () => {
+    const root = el({ controlled: true, value: "fra" });
+    root.innerHTML = `<input data-scope="select" data-part="value-input" type="text" hidden name="post[country]" value="fra" />`;
+
+    syncControlledValueInputFromServer(root, ["fra"]);
+
+    const valueInput = root.querySelector<HTMLInputElement>(
+      '[data-scope="select"][data-part="value-input"]'
+    )!;
+    expect(valueInput.value).toBe("fra");
   });
 });
 

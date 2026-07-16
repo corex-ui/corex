@@ -165,3 +165,13 @@ export function syncInputFormAssociation(input: HTMLElement | null, hookEl: HTML
     associateInputWithFormIfOutside(input, hookEl);
   }
 }
+
+export function safeParseJson<T>(raw: string | null | undefined, fallback: T): T {
+  if (raw == null || raw === "") return fallback;
+  try {
+    return JSON.parse(raw) as T;
+  } catch (error) {
+    console.error("Failed to parse JSON", error);
+    return fallback;
+  }
+}

@@ -3,17 +3,16 @@ import {
 } from "./chunks/chunk-7BZGUIUZ.mjs";
 import {
   trackInteractOutside
-} from "./chunks/chunk-B5L2AGOH.mjs";
+} from "./chunks/chunk-26XTEIHY.mjs";
 import {
   bindArrayFieldSubmitIntent,
   isFormFieldUsed,
   syncArrayHiddenInputsForPhoenix
-} from "./chunks/chunk-NZ3YNDJS.mjs";
-import "./chunks/chunk-VMKNATWC.mjs";
+} from "./chunks/chunk-IKLCQZIF.mjs";
+import "./chunks/chunk-ASQD2R2U.mjs";
 import {
-  mountTagsBinding,
-  readUpdatedServerTags
-} from "./chunks/chunk-I2HPUDHJ.mjs";
+  mountTagsBinding
+} from "./chunks/chunk-XL4XUS2C.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -24,7 +23,7 @@ import {
   readPayloadId,
   readPayloadStringArray,
   readPayloadValue
-} from "./chunks/chunk-2WCNJX5P.mjs";
+} from "./chunks/chunk-LNVRIZ4K.mjs";
 import {
   Component,
   VanillaMachine,
@@ -61,7 +60,7 @@ import {
   trackFormControl,
   uniq,
   warn
-} from "./chunks/chunk-2GQRP3FN.mjs";
+} from "./chunks/chunk-YGZLYEUJ.mjs";
 
 // ../node_modules/.pnpm/@zag-js+tags-input@1.40.0/node_modules/@zag-js/tags-input/dist/tags-input.anatomy.mjs
 var anatomy = createAnatomy("tagsInput").parts(
@@ -1500,7 +1499,6 @@ var TagsInputHook = {
   },
   updated() {
     const el = this.el;
-    const valuePatch = readUpdatedServerTags(el);
     const blur = blurBehavior(el);
     const max = maxProp(el);
     const delimiter = getString(el, "delimiter");
@@ -1508,7 +1506,6 @@ var TagsInputHook = {
     this.tagsInput?.updateProps({
       id: el.id,
       ...resolveZagTagsInputTranslations(el),
-      ...valuePatch,
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readonly"),
       invalid: getBoolean(el, "invalid"),
@@ -1526,12 +1523,6 @@ var TagsInputHook = {
       ...delimiter !== void 0 && delimiter !== "" ? { delimiter } : {},
       ...placeholder !== void 0 ? { placeholder } : {}
     });
-    if ("value" in valuePatch) {
-      syncTagsInputFormForPhoenix(el, valuePatch.value, void 0, {
-        notifyLiveView: false,
-        fieldTouched: isFormFieldUsed(el, this.fieldTouched === true)
-      });
-    }
     this.tagsInput?.render();
   },
   destroyed() {

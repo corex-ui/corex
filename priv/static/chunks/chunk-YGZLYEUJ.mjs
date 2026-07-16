@@ -86,6 +86,15 @@ function syncInputFormAssociation(input, hookEl) {
     associateInputWithFormIfOutside(input, hookEl);
   }
 }
+function safeParseJson(raw, fallback) {
+  if (raw == null || raw === "") return fallback;
+  try {
+    return JSON.parse(raw);
+  } catch (error) {
+    console.error("Failed to parse JSON", error);
+    return fallback;
+  }
+}
 
 // ../node_modules/.pnpm/@zag-js+vanilla@1.40.0/node_modules/@zag-js/vanilla/dist/chunk-QZ7TP4HQ.mjs
 var __defProp = Object.defineProperty;
@@ -2630,6 +2639,7 @@ var Component = class {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   machine;
   api;
+  unsubscribe;
   constructor(el, props, beforeInitMachine) {
     if (!el) throw new Error("Root element not found");
     this.el = el;
@@ -2642,16 +2652,18 @@ var Component = class {
     try {
       this.machine.start();
       this.render();
+      this.unsubscribe = this.machine.subscribe(() => {
+        this.api = this.initApi();
+        this.render();
+      });
     } finally {
       this.el.removeAttribute("data-loading");
     }
-    this.machine.subscribe(() => {
-      this.api = this.initApi();
-      this.render();
-    });
   };
   destroy = () => {
     this.el.removeAttribute("data-loading");
+    this.unsubscribe?.();
+    this.unsubscribe = void 0;
     this.machine.stop();
   };
   spreadProps = (el, props) => {
@@ -2842,5 +2854,6 @@ export {
   generateId,
   canPushEvent,
   associateInputWithFormIfOutside,
-  syncInputFormAssociation
+  syncInputFormAssociation,
+  safeParseJson
 };

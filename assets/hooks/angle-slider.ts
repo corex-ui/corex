@@ -3,7 +3,7 @@ import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook"
 import { AngleSlider } from "../components/angle-slider";
 import type { Props, ValueChangeDetails } from "@zag-js/angle-slider";
 import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
-import { mountNumberBinding, readUpdatedServerNumber } from "../lib/read-props";
+import { mountNumberBinding } from "../lib/read-props";
 import {
   parseRespondTo,
   emitResponse,
@@ -146,11 +146,9 @@ const AngleSliderHook: Hook<object & AngleSliderHookState, HTMLElement> = {
   updated(this: object & HookInterface<HTMLElement> & AngleSliderHookState) {
     const el = this.el;
     const zag = this.angleSlider;
-    const valuePatch = readUpdatedServerNumber(el);
 
     zag?.updateProps({
       id: el.id,
-      ...valuePatch,
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readonly"),
       invalid: getBoolean(el, "invalid"),

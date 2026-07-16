@@ -2,7 +2,7 @@ import type { Hook } from "phoenix_live_view";
 import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { Listbox } from "../components/listbox";
 import type { Props, ValueChangeDetails } from "@zag-js/listbox";
-import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
+import { getString, getBoolean, getDir, canPushEvent, safeParseJson } from "../lib/util";
 import {
   readStringListControlledZagProps,
   readStringListControlledZagUpdate,
@@ -75,7 +75,7 @@ type ListboxHookState = {
 const ListboxHook: Hook<object & ListboxHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & ListboxHookState) {
     const el = this.el;
-    const allItems = JSON.parse(el.dataset.items ?? "[]") as ListboxItem[];
+    const allItems = safeParseJson<ListboxItem[]>(el.dataset.items ?? "[]", []);
     const hasGroups = allItems.some((item) => Boolean(item.group));
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
@@ -132,7 +132,7 @@ const ListboxHook: Hook<object & ListboxHookState, HTMLElement> = {
   updated(this: object & HookInterface<HTMLElement> & ListboxHookState) {
     if (!this.listbox) return;
 
-    const newItems = JSON.parse(this.el.dataset.items ?? "[]") as ListboxItem[];
+    const newItems = safeParseJson<ListboxItem[]>(this.el.dataset.items ?? "[]", []);
     const hasGroups = newItems.some((item) => Boolean(item.group));
 
     this.listbox.hasGroups = hasGroups;

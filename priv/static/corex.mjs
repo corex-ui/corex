@@ -147,22 +147,57 @@ function createLazyHook(importFn, exportName) {
   return {
     async mounted() {
       const el = this.el;
-      try {
-        const mod = await importFn();
-        const real = mod[exportName];
-        this._realHook = real;
-        if (real?.mounted) {
-          await real.mounted.call(this);
+      const state = this;
+      const run = async () => {
+        try {
+          const mod = await importFn();
+          const real = mod[exportName];
+          if (!real) {
+            console.error(`Lazy hook: export "${exportName}" not found`);
+            el.setAttribute("data-error", "");
+            return;
+          }
+          state._realHook = real;
+          if (state._destroyedBeforeMount) {
+            real.destroyed?.call(this);
+            return;
+          }
+          if (real.mounted) {
+            await real.mounted.call(this);
+          }
+          if (state._destroyedBeforeMount) {
+            real.destroyed?.call(this);
+            return;
+          }
+          if (state._pendingUpdated) {
+            state._pendingUpdated = false;
+            real.updated?.call(this);
+          }
+        } catch (error) {
+          console.error(`Lazy hook: failed to load "${exportName}"`, error);
+          el.setAttribute("data-error", "");
+        } finally {
+          el.removeAttribute("data-loading");
         }
-      } finally {
-        el.removeAttribute("data-loading");
-      }
+      };
+      state._mountPromise = run();
+      await state._mountPromise;
     },
     updated() {
-      this._realHook?.updated?.call(this);
+      const state = this;
+      if (state._realHook?.updated) {
+        state._realHook.updated.call(this);
+      } else if (state._mountPromise) {
+        state._pendingUpdated = true;
+      }
     },
     destroyed() {
-      this._realHook?.destroyed?.call(this);
+      const state = this;
+      if (state._realHook?.destroyed) {
+        state._realHook.destroyed.call(this);
+      } else if (state._mountPromise) {
+        state._destroyedBeforeMount = true;
+      }
     },
     disconnected() {
       this._realHook?.disconnected?.call(this);

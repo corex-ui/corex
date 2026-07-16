@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { el } from "../helpers/dom";
 import { parseRootNode, readExpandedAttr, readSelectedAttr } from "../../hooks/tree-view";
 
@@ -9,29 +9,33 @@ describe("parseRootNode", () => {
     expect(parseRootNode(node)).toEqual({ value: "root", name: "Root" });
   });
 
-  it("throws when data-tree missing", () => {
-    expect(() => parseRootNode(document.createElement("div"))).toThrow(/missing data-tree/);
+  it("returns empty tree when data-tree missing", () => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    expect(parseRootNode(document.createElement("div"))).toEqual({
+      value: "",
+      name: "",
+      children: [],
+    });
+    errorSpy.mockRestore();
   });
 });
 
 describe("readExpandedAttr", () => {
-  it("reads controlled expanded value attribute", () => {
-    const node = el({ controlled: true });
-    node.setAttribute("data-expanded-value", "a,b");
+  it("reads default expanded value attribute", () => {
+    const node = el({});
+    node.setAttribute("data-default-expanded-value", "a,b");
     expect(readExpandedAttr(node)).toBe("a,b");
   });
 
-  it("reads default expanded when uncontrolled", () => {
-    const node = el({});
-    node.setAttribute("data-default-expanded-value", "x");
-    expect(readExpandedAttr(node)).toBe("x");
+  it("returns empty when unset", () => {
+    expect(readExpandedAttr(el({}))).toBe("");
   });
 });
 
 describe("readSelectedAttr", () => {
-  it("reads controlled selected value attribute", () => {
-    const node = el({ controlled: true });
-    node.setAttribute("data-selected-value", "item-1");
+  it("reads default selected value attribute", () => {
+    const node = el({});
+    node.setAttribute("data-default-selected-value", "item-1");
     expect(readSelectedAttr(node)).toBe("item-1");
   });
 });

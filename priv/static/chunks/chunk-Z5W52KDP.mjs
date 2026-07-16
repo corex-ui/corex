@@ -1,8 +1,11 @@
 import {
   getBooleanValue
-} from "./chunk-2GQRP3FN.mjs";
+} from "./chunk-YGZLYEUJ.mjs";
 
 // lib/animation.ts
+function prefersReducedMotion() {
+  return typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
 function readRequiredAttrString(el, dataAttr, label) {
   const raw = el.getAttribute(dataAttr);
   if (raw === null) {
@@ -182,6 +185,18 @@ function runHeightPanelAnimation(targetEl, isOpening, opts, blockRoot) {
   targetEl.style.overflow = "hidden";
   targetEl.style.height = "auto";
   const fullHeight = `${targetEl.scrollHeight}px`;
+  if (prefersReducedMotion()) {
+    targetEl.style.opacity = String(toOp);
+    targetEl.style.height = isOpening ? fullHeight : "0px";
+    if (!isOpening) {
+      targetEl.style.height = "0px";
+    } else {
+      targetEl.style.removeProperty("height");
+      targetEl.style.removeProperty("overflow");
+      targetEl.style.removeProperty("opacity");
+    }
+    return targetEl.animate([], { duration: 0 });
+  }
   targetEl.style.height = isOpening ? "0px" : fullHeight;
   const fromFrame = {
     opacity: fromOp,
@@ -227,6 +242,16 @@ function runHeightPanelAnimation(targetEl, isOpening, opts, blockRoot) {
 }
 function runScaleAnimation(targetEl, isOpening, opts, blockRoot) {
   targetEl.getAnimations().forEach((a) => a.cancel());
+  if (prefersReducedMotion()) {
+    if (isOpening) {
+      targetEl.style.removeProperty("opacity");
+      targetEl.style.removeProperty("transform");
+    } else {
+      targetEl.style.opacity = String(opts.opacityStart);
+      targetEl.style.transform = `scale(${opts.scaleStart})`;
+    }
+    return targetEl.animate([], { duration: 0 });
+  }
   const isBackdrop = targetEl.dataset.part === "backdrop";
   const useScale = !isBackdrop && (opts.scaleStart !== opts.scaleEnd || opts.scaleStart !== 1 || opts.scaleEnd !== 1);
   const fromOp = isOpening ? opts.opacityStart : opts.opacityEnd;

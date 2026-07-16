@@ -1,14 +1,28 @@
 import type { Hook } from "phoenix_live_view";
 import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
-import { Combobox } from "../components/combobox";
+import {
+  Combobox,
+  resolveZagComboboxTranslations,
+  type ComboboxItem,
+} from "../components/combobox";
 import type {
   Props,
   InputValueChangeDetails,
   OpenChangeDetails,
   ValueChangeDetails,
+  HighlightChangeDetails,
+  SelectionDetails,
 } from "@zag-js/combobox";
-import { getString, getBoolean, getStringList, getDir, canPushEvent } from "../lib/util";
-import { mountStringListBinding, readUpdatedServerStringList } from "../lib/read-props";
+import {
+  getString,
+  getBoolean,
+  getStringList,
+  getDir,
+  canPushEvent,
+  getBooleanValue,
+  safeParseJson,
+} from "../lib/util";
+import { mountStringListBinding } from "../lib/read-props";
 import { performRedirect, readDomItemRedirect } from "../lib/redirect";
 import { idMatches, readPayloadId, notifyChange } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
@@ -76,6 +90,25 @@ export function syncVisibleInputAttribute(el: HTMLElement, value: string): void 
   if (visible) visible.setAttribute("value", value);
 }
 
+function zagName(el: HTMLElement): string | undefined {
+  if (getString(el, "submitName")) return undefined;
+  const hidden = el.querySelector<HTMLInputElement>(
+    '[data-scope="combobox"][data-part="hidden-input"]'
+  );
+  if (hidden?.name) return undefined;
+  return getString(el, "name");
+}
+
+function zagForm(el: HTMLElement): string | undefined {
+  return getString(el, "form");
+}
+
+function optionalBooleanProp(el: HTMLElement, key: string): Partial<Props> {
+  const value = getBooleanValue(el, key);
+  if (value === undefined) return {};
+  return { [key]: value } as Partial<Props>;
+}
+
 function buildComboboxProps(
   el: HTMLElement,
   pushEvent: (name: string, payload: Record<string, unknown>) => void,
@@ -85,6 +118,9 @@ function buildComboboxProps(
   markFieldTouched: () => void
 ): Props {
   const redirectOn = getBoolean(el, "redirect");
+  const selectionBehavior =
+    getString<"clear" | "replace" | "preserve">(el, "selectionBehavior") ?? "replace";
+
   return {
     id: el.id,
     disabled: getBoolean(el, "disabled"),
@@ -97,11 +133,19 @@ function buildComboboxProps(
     loopFocus: getBoolean(el, "loopFocus"),
     multiple: redirectOn ? false : getBoolean(el, "multiple"),
     invalid: getBoolean(el, "invalid"),
-    allowCustomValue: false,
-    selectionBehavior: "replace",
+    allowCustomValue: getBoolean(el, "allowCustomValue"),
+    selectionBehavior,
     readOnly: getBoolean(el, "readonly"),
     required: getBoolean(el, "required"),
+    name: zagName(el),
+    form: zagForm(el),
     positioning: readPositioningOptions(el),
+    ...resolveZagComboboxTranslations(el),
+    ...optionalBooleanProp(el, "openOnClick"),
+    ...optionalBooleanProp(el, "openOnChange"),
+    ...optionalBooleanProp(el, "openOnKeyPress"),
+    ...optionalBooleanProp(el, "composite"),
+    ...optionalBooleanProp(el, "disableLayer"),
     onOpenChange: (details: OpenChangeDetails) => {
       notifyChange({
         el,
@@ -119,6 +163,13 @@ function buildComboboxProps(
     },
     onInputValueChange: (details: InputValueChangeDetails) => {
       syncVisibleInputAttribute(el, details.inputValue ?? "");
+      if (
+        getBoolean(el, "clearOnEmpty") &&
+        details.reason === "input-change" &&
+        !(details.inputValue ?? "")
+      ) {
+        getCombobox()?.api.clearValue();
+      }
       notifyChange({
         el,
         canPushServer: canPush(),
@@ -156,6 +207,33 @@ function buildComboboxProps(
         clientEventName: getString(el, "onValueChangeClient"),
       });
     },
+    onHighlightChange: (details: HighlightChangeDetails) => {
+      notifyChange({
+        el,
+        canPushServer: canPush(),
+        pushEvent,
+        payload: {
+          id: el.id,
+          highlightedValue: details.highlightedValue,
+        } as Record<string, unknown>,
+        serverEventName: getString(el, "onHighlightChange"),
+        clientEventName: getString(el, "onHighlightChangeClient"),
+      });
+    },
+    onSelect: (details: SelectionDetails) => {
+      notifyChange({
+        el,
+        canPushServer: canPush(),
+        pushEvent,
+        payload: {
+          id: el.id,
+          value: details.value,
+          itemValue: details.itemValue,
+        } as Record<string, unknown>,
+        serverEventName: getString(el, "onSelect"),
+        clientEventName: getString(el, "onSelectClient"),
+      });
+    },
   } as Props;
 }
 
@@ -173,6 +251,8 @@ function comboboxMachineDomPropsForUpdate(
   delete rest.onOpenChange;
   delete rest.onInputValueChange;
   delete rest.onValueChange;
+  delete rest.onHighlightChange;
+  delete rest.onSelect;
   return rest as Partial<Props>;
 }
 
@@ -188,8 +268,8 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
     };
 
     const itemsJson = el.getAttribute("data-items") ?? "[]";
-    const allItems = JSON.parse(itemsJson);
-    const hasGroups = allItems.some((item: { group?: unknown }) => Boolean(item.group));
+    const allItems = safeParseJson<ComboboxItem[]>(itemsJson, []);
+    const hasGroups = allItems.some((item) => Boolean(item.group));
 
     const defaultValues = getStringList(el, "defaultValue") ?? [];
     if (defaultValues.length > 0) {
@@ -223,6 +303,10 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
       combobox.api.setValue(event.detail.value);
     });
 
+    domRegistry.add<CustomEvent<{ open: boolean }>>("corex:combobox:set-open", (event) => {
+      combobox.api.setOpen(event.detail.open);
+    });
+
     const registry = createHookHandleEventRegistry(this);
     this.handleRegistry = registry;
 
@@ -230,18 +314,22 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       combobox.api.setValue(payload.value);
     });
+
+    registry.add("combobox_set_open", (payload: { id?: string; open?: boolean }) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      if (typeof payload.open !== "boolean") return;
+      combobox.api.setOpen(payload.open);
+    });
   },
 
   updated(this: object & HookInterface<HTMLElement> & ComboboxHookState) {
     if (!this.combobox) return;
 
-    const valuePatch = readUpdatedServerStringList(this.el);
-
     const newItemsJson = this.el.getAttribute("data-items") ?? "[]";
     if (newItemsJson !== this.lastItemsJson) {
       this.lastItemsJson = newItemsJson;
-      const newCollection = JSON.parse(newItemsJson);
-      const hasGroups = newCollection.some((item: { group?: unknown }) => Boolean(item.group));
+      const newCollection = safeParseJson<ComboboxItem[]>(newItemsJson, []);
+      const hasGroups = newCollection.some((item) => Boolean(item.group));
       this.combobox.hasGroups = hasGroups;
       this.combobox.setAllOptions(newCollection);
     }
@@ -260,7 +348,6 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
           this.fieldTouched = true;
         }
       ),
-      ...valuePatch,
     } as Props);
 
     if (this.combobox.api.open) {
@@ -269,20 +356,6 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
 
     this.combobox.renderItems();
     this.combobox.applyItemProps();
-
-    if ("value" in valuePatch) {
-      syncComboboxHiddenInputForPhoenix(this.el, valuePatch.value, undefined);
-      reapplyComboboxHiddenInputUsage(this.el);
-      const items = JSON.parse(this.el.getAttribute("data-items") ?? "[]") as Array<{
-        value?: string;
-        label?: string;
-      }>;
-      const labels = valuePatch.value.map((value) => {
-        const item = items.find((entry) => String(entry.value ?? "") === String(value));
-        return { value, label: item?.label ?? value };
-      });
-      syncVisibleInputAttribute(this.el, selectedItemLabel(labels));
-    }
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & ComboboxHookState) {

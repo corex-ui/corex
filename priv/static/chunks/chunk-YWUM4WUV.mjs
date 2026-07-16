@@ -1,6 +1,6 @@
 import {
   syncInputFormAssociation
-} from "./chunk-2GQRP3FN.mjs";
+} from "./chunk-YGZLYEUJ.mjs";
 
 // lib/checkable-form-sync.ts
 function hiddenInputPropsWithoutChecked(props) {

@@ -34,8 +34,14 @@ type EmitResponseArgs<TPayload extends Record<string, unknown>> = {
   domDetail: TPayload;
 };
 
-export function idMatches(elId: string, payloadId: string | undefined | null): boolean {
-  if (payloadId === undefined || payloadId === null || payloadId === "") return true;
+export function idMatches(
+  elId: string,
+  payloadId: string | undefined | null,
+  opts?: { broadcast?: boolean }
+): boolean {
+  if (payloadId === undefined || payloadId === null || payloadId === "") {
+    return opts?.broadcast === true;
+  }
   return elId === payloadId;
 }
 

@@ -3,11 +3,7 @@ import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook"
 import { Editable } from "../components/editable";
 import type { Props, ValueChangeDetails } from "@zag-js/editable";
 import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
-import {
-  mountStringBinding,
-  readEditControlledZagUpdate,
-  readUpdatedServerString,
-} from "../lib/read-props";
+import { mountStringBinding } from "../lib/read-props";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
 import { idMatches, notifyChange, readPayloadId, readPayloadValue } from "../lib/respond-to";
@@ -126,9 +122,7 @@ const EditableHook: Hook<object & HookInterface<HTMLElement> & EditableHookState
       ...(placeholder !== undefined ? { placeholder } : {}),
       ...(activationMode !== undefined ? { activationMode } : {}),
       ...(selectOnFocus !== undefined ? { selectOnFocus } : {}),
-      ...(getBoolean(el, "controlled")
-        ? { edit: getBoolean(el, "edit") }
-        : { defaultEdit: getBoolean(el, "defaultEdit") }),
+      defaultEdit: getBoolean(el, "defaultEdit"),
       onValueChange: (details: ValueChangeDetails) => {
         notifyEditableValueChange(el, pushEvent, canPush, details.value, this);
       },
@@ -165,9 +159,8 @@ const EditableHook: Hook<object & HookInterface<HTMLElement> & EditableHookState
 
   updated(this: object & HookInterface<HTMLElement> & EditableHookState) {
     const el = this.el;
-    const valuePatch = readUpdatedServerString(el);
-    const editPatch = readEditControlledZagUpdate(el);
-    const props: Partial<Props> = {
+
+    this.editable?.updateProps({
       id: el.id,
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readonly"),
@@ -176,12 +169,7 @@ const EditableHook: Hook<object & HookInterface<HTMLElement> & EditableHookState
       name: zagName(el),
       form: formValueInput(el) ? undefined : getString(el, "form"),
       dir: getDir(el),
-      ...editPatch,
-    };
-    if (!this.editable?.api.editing && "value" in valuePatch) {
-      Object.assign(props, valuePatch);
-    }
-    this.editable?.updateProps(props);
+    });
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & EditableHookState) {

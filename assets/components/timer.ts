@@ -88,20 +88,6 @@ export class Timer extends Component<Props, Api> {
     return this.zagConnect(connect);
   }
 
-  init = (): void => {
-    this.machine.subscribe(() => {
-      (this as { api: Api }).api = this.initApi();
-      this.render();
-    });
-    try {
-      this.machine.start();
-      (this as { api: Api }).api = this.initApi();
-      this.render();
-    } finally {
-      this.el.removeAttribute("data-loading");
-    }
-  };
-
   render(): void {
     const rootEl =
       this.el.querySelector<HTMLElement>('[data-scope="timer"][data-part="root"]') ?? this.el;

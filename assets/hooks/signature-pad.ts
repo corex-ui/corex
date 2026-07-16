@@ -85,6 +85,7 @@ type SignaturePadHookState = {
   handlers?: Array<CallbackRef>;
   onClear?: (event: Event) => void;
   padTouched: boolean;
+  unbindSubmitIntent?: () => void;
 };
 
 const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {

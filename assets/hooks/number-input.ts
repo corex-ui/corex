@@ -51,9 +51,9 @@ export function machineState(api: Api): NumberInputMachineState {
 
 type NumberInputHookState = {
   numberInput?: NumberInput;
+  lastServerValue?: string;
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
-  lastServerValue?: string;
 };
 
 function submitValueForHost(el: HTMLElement, valueAsNumber: number): string {
@@ -194,7 +194,7 @@ const NumberInputHook: Hook<object & NumberInputHookState, HTMLElement> = {
     const zag = new NumberInput(el, buildMachineProps(el, pushEvent, canPush));
     zag.init();
     this.numberInput = zag;
-    this.lastServerValue = getString(el, "value") ?? getString(el, "defaultValue") ?? undefined;
+    this.lastServerValue = getString(el, "value") ?? getString(el, "defaultValue") ?? "";
     const initialSubmit = submitValueForHost(el, zag.api.valueAsNumber);
     syncNumberInputValueInput(el, zag.api.value ?? "", true, zag.api.valueAsNumber);
     const valueInput = el.querySelector<HTMLInputElement>(
@@ -307,54 +307,26 @@ const NumberInputHook: Hook<object & NumberInputHookState, HTMLElement> = {
   updated(this: object & HookInterface<HTMLElement> & NumberInputHookState) {
     const el = this.el;
     const zag = this.numberInput;
-    const valuePatch = readUpdatedServerNumber(el, this.lastServerValue);
+    if (!zag) return;
 
-    if (valuePatch.nextServerValue !== undefined) {
+    const valuePatch = readUpdatedServerNumber(el, this.lastServerValue);
+    if ("nextServerValue" in valuePatch && valuePatch.nextServerValue !== undefined) {
       this.lastServerValue = valuePatch.nextServerValue;
     }
 
-    const zagPatch = { ...valuePatch };
-    delete zagPatch.nextServerValue;
-
-    zag?.updateProps({
+    zag.updateProps({
       ...numberInputPropsForUpdate(el),
-      ...zagPatch,
+      ...(valuePatch.value !== undefined ? { value: valuePatch.value } : {}),
+      ...(valuePatch.step !== undefined ? { step: valuePatch.step } : {}),
     } as Partial<Props>);
 
     queueMicrotask(() => {
-      if (zag && "value" in zagPatch) {
-        syncNumberInputValueInput(el, String(zagPatch.value ?? ""), false, zag.api.valueAsNumber);
-      } else if (zag) {
-        syncNumberInputValueInput(
-          el,
-          zag.api.value ?? getString(el, "defaultValue") ?? "",
-          false,
-          zag.api.valueAsNumber
-        );
-      }
-
-      const visible = el.querySelector<HTMLInputElement>(
-        '[data-scope="number-input"][data-part="input"]'
+      syncNumberInputValueInput(
+        el,
+        zag.api.value ?? getString(el, "defaultValue") ?? "",
+        false,
+        zag.api.valueAsNumber
       );
-      if (visible) {
-        if (!getBoolean(el, "readonly")) {
-          visible.readOnly = false;
-          visible.removeAttribute("readonly");
-        }
-        if (!getBoolean(el, "disabled")) {
-          visible.disabled = false;
-          visible.removeAttribute("disabled");
-        }
-      }
-
-      const triggers = el.querySelectorAll<HTMLButtonElement>(
-        '[data-scope="number-input"][data-part="increment-trigger"], [data-scope="number-input"][data-part="decrement-trigger"]'
-      );
-      triggers.forEach((trigger) => {
-        if (trigger.hasAttribute("data-disabled")) return;
-        trigger.disabled = false;
-        trigger.removeAttribute("disabled");
-      });
     });
   },
 

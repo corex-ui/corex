@@ -157,6 +157,7 @@ defmodule Mix.Corex.Gen.Inputs do
     <.select
       field={#{field_prefix}[#{inspect(key)}]}
       class="select"
+      controlled
       multiple
       deselectable
       close_on_select={false}
@@ -180,6 +181,7 @@ defmodule Mix.Corex.Gen.Inputs do
     <.select
       field={#{field_prefix}[#{inspect(key)}]}
       class="select"
+      controlled
       items={
         Enum.map(Ecto.Enum.values(#{inspect(schema.module)}, #{inspect(key)}), fn v ->
           %{value: v, label: Phoenix.Naming.humanize(to_string(v))}

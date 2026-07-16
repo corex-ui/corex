@@ -54,7 +54,7 @@ export class Tabs extends Component<Props, Api> {
 
     triggers.forEach((triggerEl) => {
       const value = triggerEl.dataset.value;
-      const disabled = triggerEl.dataset.disabled == "";
+      const disabled = triggerEl.dataset.disabled === "";
 
       if (!value) return;
 

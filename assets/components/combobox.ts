@@ -14,6 +14,37 @@ import { getString } from "../lib/util";
 import { itemValue, zagListCollectionConfig } from "../lib/list-collection";
 import { templatesContentRoot } from "../lib/util";
 
+type ZagComboboxTranslations = NonNullable<Props["translations"]>;
+
+export type ComboboxMessageMap = {
+  triggerLabel?: string;
+  clearTriggerLabel?: string;
+};
+
+export function resolveZagComboboxTranslations(el: HTMLElement): {
+  translations: ZagComboboxTranslations;
+} {
+  const defaults: ZagComboboxTranslations = {
+    triggerLabel: "Open options",
+    clearTriggerLabel: "Clear selection",
+  };
+  const raw = el.dataset.translation;
+  if (!raw) {
+    return { translations: defaults };
+  }
+  try {
+    const m = JSON.parse(raw) as ComboboxMessageMap;
+    return {
+      translations: {
+        triggerLabel: m.triggerLabel ?? defaults.triggerLabel,
+        clearTriggerLabel: m.clearTriggerLabel ?? defaults.clearTriggerLabel,
+      },
+    };
+  } catch {
+    return { translations: defaults };
+  }
+}
+
 export type ComboboxItem = {
   value?: string;
   label: string;

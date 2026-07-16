@@ -328,6 +328,17 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
       }
     }) as EventListener;
 
+    const onCorexToastCreate = ((event: CustomEvent<ToastCreatePayload>) => {
+      const { detail } = event;
+      const st = getToastStore(detail.groupId || this.groupId);
+      if (!st) return;
+      try {
+        st.create(buildCreateOptions(detail, false));
+      } catch (error) {
+        console.error("Failed to create toast:", error);
+      }
+    }) as EventListener;
+
     const onToastUpdate = ((event: CustomEvent<ToastUpdatePayload>) => {
       const { detail } = event;
       const st = getToastStore(detail.groupId || this.groupId);
@@ -354,6 +365,7 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
     };
     (this as object & ToastHookState).domListeners = domListeners;
 
+    addDom("corex:toast:create", onCorexToastCreate);
     addDom("toast:create", onToastCreate);
     addDom("toast:update", onToastUpdate);
     addDom("toast:dismiss", onToastDismiss);
