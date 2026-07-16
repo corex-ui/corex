@@ -403,7 +403,6 @@ function calculateDuration(options) {
 // components/marquee.ts
 var Marquee = class extends Component {
   items = null;
-  unsubscribe;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, props);
@@ -411,25 +410,6 @@ var Marquee = class extends Component {
   initApi() {
     return this.zagConnect(connect);
   }
-  init = () => {
-    try {
-      this.machine.start();
-      this.api = this.initApi();
-      this.render();
-      this.unsubscribe = this.machine.subscribe(() => {
-        this.api = this.initApi();
-        this.render();
-      });
-    } finally {
-      this.el.removeAttribute("data-loading");
-    }
-  };
-  destroy = () => {
-    this.unsubscribe?.();
-    this.unsubscribe = void 0;
-    this.el.removeAttribute("data-loading");
-    this.machine.stop();
-  };
   buildDom() {
     const templateEl = this.el.querySelector(
       'template[data-part="items-template"]'

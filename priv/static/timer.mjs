@@ -444,7 +444,6 @@ function applyTimerItemVisibility(root, api) {
   }
 }
 var Timer = class extends Component {
-  unsubscribe;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, props);
@@ -452,25 +451,6 @@ var Timer = class extends Component {
   initApi() {
     return this.zagConnect(connect);
   }
-  init = () => {
-    try {
-      this.machine.start();
-      this.api = this.initApi();
-      this.render();
-      this.unsubscribe = this.machine.subscribe(() => {
-        this.api = this.initApi();
-        this.render();
-      });
-    } finally {
-      this.el.removeAttribute("data-loading");
-    }
-  };
-  destroy = () => {
-    this.unsubscribe?.();
-    this.unsubscribe = void 0;
-    this.el.removeAttribute("data-loading");
-    this.machine.stop();
-  };
   render() {
     const rootEl = this.el.querySelector('[data-scope="timer"][data-part="root"]') ?? this.el;
     this.spreadProps(rootEl, this.api.getRootProps());

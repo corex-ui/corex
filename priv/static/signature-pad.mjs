@@ -725,7 +725,6 @@ var SignaturePadHook = {
           fieldTouched: true
         });
         details.getDataUrl("image/png").then((url) => {
-          if (hook.destroyed) return;
           signaturePad.imageURL = url;
           const eventName = getString(el, "onDrawEnd");
           if (eventName && this.liveSocket.main.isConnected()) {
@@ -815,7 +814,6 @@ var SignaturePadHook = {
     }
   },
   destroyed() {
-    this.destroyed = true;
     this.unbindSubmitIntent?.();
     if (this.onClear) {
       this.el.removeEventListener("corex:signature-pad:clear", this.onClear);

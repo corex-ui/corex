@@ -28001,27 +28001,6 @@ ${err}`);
         constructor() {
           super(...arguments);
           __publicField(this, "items", null);
-          __publicField(this, "unsubscribe");
-          __publicField(this, "init", () => {
-            try {
-              this.machine.start();
-              this.api = this.initApi();
-              this.render();
-              this.unsubscribe = this.machine.subscribe(() => {
-                this.api = this.initApi();
-                this.render();
-              });
-            } finally {
-              this.el.removeAttribute("data-loading");
-            }
-          });
-          __publicField(this, "destroy", () => {
-            var _a4;
-            (_a4 = this.unsubscribe) == null ? void 0 : _a4.call(this);
-            this.unsubscribe = void 0;
-            this.el.removeAttribute("data-loading");
-            this.machine.stop();
-          });
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
@@ -36645,7 +36624,6 @@ ${err}`);
                 fieldTouched: true
               });
               details.getDataUrl("image/png").then((url) => {
-                if (hook.destroyed) return;
                 signaturePad.imageURL = url;
                 const eventName = getString(el, "onDrawEnd");
                 if (eventName && this.liveSocket.main.isConnected()) {
@@ -36738,7 +36716,6 @@ ${err}`);
         },
         destroyed() {
           var _a4, _b;
-          this.destroyed = true;
           (_a4 = this.unbindSubmitIntent) == null ? void 0 : _a4.call(this);
           if (this.onClear) {
             this.el.removeEventListener("corex:signature-pad:clear", this.onClear);
@@ -39891,30 +39868,6 @@ ${err}`);
         }
       });
       Timer2 = class extends Component {
-        constructor() {
-          super(...arguments);
-          __publicField(this, "unsubscribe");
-          __publicField(this, "init", () => {
-            try {
-              this.machine.start();
-              this.api = this.initApi();
-              this.render();
-              this.unsubscribe = this.machine.subscribe(() => {
-                this.api = this.initApi();
-                this.render();
-              });
-            } finally {
-              this.el.removeAttribute("data-loading");
-            }
-          });
-          __publicField(this, "destroy", () => {
-            var _a4;
-            (_a4 = this.unsubscribe) == null ? void 0 : _a4.call(this);
-            this.unsubscribe = void 0;
-            this.el.removeAttribute("data-loading");
-            this.machine.stop();
-          });
-        }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(machine28, props);
