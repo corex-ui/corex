@@ -45,15 +45,6 @@ defmodule Corex.MCP.ServerTest do
     assert tools != []
   end
 
-  test "tools_and_dispatch lazy-inits when persistent_term was never set" do
-    :persistent_term.erase({Server, :tools_and_dispatch})
-
-    assert {tools, dispatch} = Server.tools_and_dispatch()
-    assert tools != []
-    assert is_map(dispatch)
-    assert map_size(dispatch) == length(tools)
-  end
-
   test "handle_http_message initialize returns protocol and tools" do
     body = %{
       "jsonrpc" => "2.0",

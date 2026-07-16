@@ -1,6 +1,10 @@
 import type { Hook } from "phoenix_live_view";
 import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
-import { Combobox, resolveZagComboboxTranslations } from "../components/combobox";
+import {
+  Combobox,
+  resolveZagComboboxTranslations,
+  type ComboboxItem,
+} from "../components/combobox";
 import type {
   Props,
   InputValueChangeDetails,
@@ -264,8 +268,8 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
     };
 
     const itemsJson = el.getAttribute("data-items") ?? "[]";
-    const allItems = safeParseJson<Array<{ group?: unknown }>>(itemsJson, []);
-    const hasGroups = allItems.some((item: { group?: unknown }) => Boolean(item.group));
+    const allItems = safeParseJson<ComboboxItem[]>(itemsJson, []);
+    const hasGroups = allItems.some((item) => Boolean(item.group));
 
     const defaultValues = getStringList(el, "defaultValue") ?? [];
     if (defaultValues.length > 0) {
@@ -324,8 +328,8 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
     const newItemsJson = this.el.getAttribute("data-items") ?? "[]";
     if (newItemsJson !== this.lastItemsJson) {
       this.lastItemsJson = newItemsJson;
-      const newCollection = safeParseJson<Array<{ group?: unknown }>>(newItemsJson, []);
-      const hasGroups = newCollection.some((item: { group?: unknown }) => Boolean(item.group));
+      const newCollection = safeParseJson<ComboboxItem[]>(newItemsJson, []);
+      const hasGroups = newCollection.some((item) => Boolean(item.group));
       this.combobox.hasGroups = hasGroups;
       this.combobox.setAllOptions(newCollection);
     }

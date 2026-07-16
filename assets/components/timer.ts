@@ -79,8 +79,6 @@ function applyTimerItemVisibility(root: HTMLElement, api: Api): void {
 }
 
 export class Timer extends Component<Props, Api> {
-  private unsubscribe: (() => void) | undefined;
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props: Props): VanillaMachine<any> {
     return new VanillaMachine(machine, props);
@@ -89,27 +87,6 @@ export class Timer extends Component<Props, Api> {
   initApi(): Api {
     return this.zagConnect(connect);
   }
-
-  init = (): void => {
-    try {
-      this.machine.start();
-      (this as { api: Api }).api = this.initApi();
-      this.render();
-      this.unsubscribe = this.machine.subscribe(() => {
-        (this as { api: Api }).api = this.initApi();
-        this.render();
-      });
-    } finally {
-      this.el.removeAttribute("data-loading");
-    }
-  };
-
-  destroy = (): void => {
-    this.unsubscribe?.();
-    this.unsubscribe = undefined;
-    this.el.removeAttribute("data-loading");
-    this.machine.stop();
-  };
 
   render(): void {
     const rootEl =
