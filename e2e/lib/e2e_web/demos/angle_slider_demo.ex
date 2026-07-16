@@ -646,7 +646,6 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     <.angle_slider
       class="angle-slider"
       marker_values={[0.0, 90.0, 180.0, 270.0]}
-      controlled
       value={@value}
       on_value_change="patterns_controlled_changed"
     >

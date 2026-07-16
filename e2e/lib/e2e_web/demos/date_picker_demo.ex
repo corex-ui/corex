@@ -435,7 +435,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     ~S"""
     <.date_picker
       class="date-picker"
-      controlled
       value={@selected}
       on_value_change="pattern_date_changed"
       translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}

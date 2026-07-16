@@ -61,7 +61,6 @@ defmodule E2eWeb.DatePickerPatternsLive do
               <.date_picker
                 id="date-picker-patterns-controlled"
                 class="date-picker"
-                controlled
                 value={@selected}
                 on_value_change="pattern_date_changed"
                 translation={

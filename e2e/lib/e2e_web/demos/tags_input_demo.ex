@@ -915,7 +915,6 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     ~S"""
     <.tags_input
       class="tags-input"
-      controlled
       value={["lorem", "duis", "donec"]}
       on_value_change="tags_patterns_value_changed"
     >
@@ -938,7 +937,6 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     ~S"""
     <.tags_input
       class="tags-input"
-      controlled
       value={["lorem", "duis"]}
       on_value_change="tags_patterns_validated_changed"
     >

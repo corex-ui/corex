@@ -87,7 +87,6 @@ defmodule E2eWeb.AngleSliderPatternsLive do
               id={@id_controlled}
               class="angle-slider"
               marker_values={[0, 90, 180, 270]}
-              controlled
               value={@value}
               on_value_change="patterns_controlled_changed"
             >

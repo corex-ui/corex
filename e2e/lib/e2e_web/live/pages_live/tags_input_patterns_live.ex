@@ -57,7 +57,6 @@ defmodule E2eWeb.TagsInputPatternsLive do
             <.tags_input
               id="tags-input-patterns-controlled"
               class="tags-input"
-              controlled
               value={@tags}
               on_value_change="tags_patterns_value_changed"
             >
@@ -79,7 +78,6 @@ defmodule E2eWeb.TagsInputPatternsLive do
             <.tags_input
               id="tags-input-patterns-validation"
               class="tags-input"
-              controlled
               value={@tags_validated}
               on_value_change="tags_patterns_validated_changed"
             >
