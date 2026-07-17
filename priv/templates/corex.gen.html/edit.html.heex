@@ -7,7 +7,7 @@
   <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>
 >
 <% else %><Layouts.app flash={@flash}><% end %>
-  <article class="layout__article">
+  <article class="mx-auto flex w-full min-w-0 max-w-6xl flex-col items-center gap-size-lg text-ink rounded-md">
   <.layout_heading class="layout-heading">
     <:title>Edit <%= schema.human_singular %> {@<%= schema.singular %>.<%= primary_key %>}</:title>
     <:subtitle>Use this form to manage <%= schema.singular %> records in your database.</:subtitle>
@@ -32,7 +32,7 @@
         final_focus={"dialog:<%= schema.singular %>-delete-#{@<%= schema.singular %>.<%= primary_key %>}:trigger"}
       >
         <:trigger
-          class="button button--alert button--square"
+          class="button ui-alert ui-trigger--square"
           aria_label="Delete <%= schema.human_singular %>"
           title="Delete <%= schema.human_singular %>"
         >
@@ -45,7 +45,7 @@
             <.action
               id={"<%= schema.singular %>-delete-#{@<%= schema.singular %>.<%= primary_key %>}-cancel"}
               phx-click={Corex.Dialog.set_open("<%= schema.singular %>-delete-#{@<%= schema.singular %>.<%= primary_key %>}", false)}
-              class="button button--sm button--ghost"
+              class="button ui-size-sm"
             >
               Cancel
             </.action>
@@ -53,7 +53,7 @@
               id={"<%= schema.singular %>-delete-#{@<%= schema.singular %>.<%= primary_key %>}-confirm"}
               to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{@<%= schema.singular %>}"}
               method="delete"
-              class="button button--sm button--alert"
+              class="button ui-size-sm ui-alert"
             >
               Delete
             </.navigate>

@@ -131,7 +131,7 @@ defmodule E2eWeb.ComponentSourceLinks do
   end
 
   defp design_url(slug) do
-    rel = "priv/design/corex/components/#{slug}.css"
+    rel = "design/priv/css/components/#{slug}.css"
 
     if corex_file_exists?(rel), do: "#{@github_base}/#{rel}"
   end

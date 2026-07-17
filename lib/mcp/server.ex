@@ -57,7 +57,14 @@ defmodule Corex.MCP.Server do
 
   @doc "Returns the stored `{tools, dispatch}` tuple."
   def tools_and_dispatch do
-    :persistent_term.get(@tools_key)
+    case :persistent_term.get(@tools_key, :missing) do
+      :missing ->
+        :ok = init_tools()
+        :persistent_term.get(@tools_key)
+
+      stored ->
+        stored
+    end
   end
 
   defp tools do
