@@ -25,8 +25,16 @@ defmodule Corex.New.Tableau.GenerateTest do
       File.mkdir_p!(Path.join(install_dir, "config"))
       File.mkdir_p!(Path.join(install_dir, "lib/layouts"))
       File.mkdir_p!(Path.join(install_dir, "lib/pages"))
-      File.write!(Path.join(install_dir, "lib/layouts/root_layout.ex"), "defmodule Broken do\nend\n")
-      File.write!(Path.join(install_dir, "lib/pages/home_page.ex"), "defmodule BrokenPage do\nend\n")
+
+      File.write!(
+        Path.join(install_dir, "lib/layouts/root_layout.ex"),
+        "defmodule Broken do\nend\n"
+      )
+
+      File.write!(
+        Path.join(install_dir, "lib/pages/home_page.ex"),
+        "defmodule BrokenPage do\nend\n"
+      )
 
       assert :ok == Generate.run(install_dir, base_opts())
 

@@ -36,7 +36,8 @@ defmodule Mix.Tasks.Corex.Tableau.New do
   """
   use Mix.Task
 
-  alias Corex.New.{Cli, Tableau}
+  alias Corex.New.Cli
+  alias Corex.New.Tableau.{Generate, PostGenerate, Wrapper}
 
   @version Mix.Project.config()[:version]
   @shortdoc "Creates a new Tableau static site with Corex"
@@ -101,9 +102,9 @@ defmodule Mix.Tasks.Corex.Tableau.New do
     app_module = Module.concat([Macro.camelize(app)])
     check_module_name_validity!(app_module)
 
-    Tableau.Wrapper.ensure_tableau_new!()
+    Wrapper.ensure_tableau_new!()
 
-    tableau_argv = Tableau.Wrapper.build_tableau_new_argv(expanded)
+    tableau_argv = Wrapper.build_tableau_new_argv(expanded)
 
     Mix.shell().info([
       :green,
@@ -112,7 +113,7 @@ defmodule Mix.Tasks.Corex.Tableau.New do
       "mix tableau.new #{Enum.join(tableau_argv, " ")}"
     ])
 
-    Tableau.Wrapper.tableau_new!(Path.dirname(expanded), tableau_argv)
+    Wrapper.tableau_new!(Path.dirname(expanded), tableau_argv)
 
     generate_opts =
       opts
@@ -120,9 +121,9 @@ defmodule Mix.Tasks.Corex.Tableau.New do
       |> Keyword.put(:app_module, app_module)
 
     Mix.shell().info([:green, "* installing Corex into ", :reset, expanded])
-    Tableau.Generate.run(expanded, generate_opts)
+    Generate.run(expanded, generate_opts)
 
-    Tableau.PostGenerate.run(expanded, generate_opts)
+    PostGenerate.run(expanded, generate_opts)
   end
 
   defp infer_app_name(expanded, _opts) do
