@@ -43,6 +43,7 @@ export default [
         CSS: "readonly",
         EventListener: "readonly",
         MouseEvent: "readonly",
+        PointerEvent: "readonly",
         File: "readonly",
         HTMLInputElement: "readonly",
         HTMLLIElement: "readonly",
