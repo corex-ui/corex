@@ -45,6 +45,7 @@ defmodule CorexMcp.MixProject do
       {:corex_design, path: "../design", only: :test, runtime: false},
       {:ex_doc, "~> 0.40", only: :docs, runtime: false},
       {:excoveralls, "~> 0.18", only: :test},
+      {:castore, "~> 1.0", only: :test},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:oeditus_credo, "~> 0.6.3", only: [:dev, :test], runtime: false},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
@@ -92,7 +93,9 @@ defmodule CorexMcp.MixProject do
       source_ref: "v#{@version}",
       extras: ["README.md", "guides/MCP.md"],
       filter_modules: fn
-        Corex.MCP, _ -> true
+        Corex.MCP, _ ->
+          true
+
         mod, _ ->
           raise "you forgot to add \"@moduledoc false\" to #{inspect(mod)}"
       end

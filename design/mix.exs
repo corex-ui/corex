@@ -44,6 +44,7 @@ defmodule CorexDesign.MixProject do
       {:nimble_options, "~> 1.1"},
       {:ex_doc, "~> 0.40", only: :docs, runtime: false},
       {:excoveralls, "~> 0.18", only: :test},
+      {:castore, "~> 1.0", only: :test},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:oeditus_credo, "~> 0.6.3", only: [:dev, :test], runtime: false},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},

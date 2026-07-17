@@ -52,9 +52,7 @@ defmodule Corex.Design.Options do
   end
 
   defp format_list(list) when is_list(list) do
-    list
-    |> Enum.map(&to_string/1)
-    |> Enum.join(" ")
+    Enum.map_join(list, " ", &to_string/1)
   end
 
   defp indent_lines(text) when is_binary(text) do

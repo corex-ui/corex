@@ -1,5 +1,6 @@
 %{
   "bunt": {:hex, :bunt, "1.0.0", "081c2c665f086849e6d57900292b3a161727ab40431219529f13c4ddcf3e7a44", [:mix], [], "hexpm", "dc5f86aa08a5f6fa6b8096f0735c4e76d54ae5c9fa2c143e5a1fc7c1cd9bb6b5"},
+  "castore": {:hex, :castore, "1.0.20", "455e48f7115eca98c9f2b0e7a152b5a2e8f2a8a4f964c96e95bd31645ee5fa59", [:mix], [], "hexpm", "940eafbfd8b14bee649f083bc11b3b54ec555b54c3e4ea8213351ff6fee39c10"},
   "color": {:hex, :color, "0.13.0", "068110e5397ac5d3c9f97658282e0f4ab9a32468be6d7a2a91a8804e67b228d7", [:mix], [{:bandit, "~> 1.5", [hex: :bandit, repo: "hexpm", optional: true]}, {:plug, "~> 1.15", [hex: :plug, repo: "hexpm", optional: true]}], "hexpm", "de127946869931d418bac2d82dc29feae1a8f5f729f135922fbccf0059a58ab2"},
   "credo": {:hex, :credo, "1.7.19", "cc52129665fc7c15143d47838fda0f9cd6dac9ceced7bf4da6f85fcbfe64b12a", [:mix], [{:bunt, "~> 0.2.1 or ~> 1.0", [hex: :bunt, repo: "hexpm", optional: false]}, {:file_system, "~> 0.2 or ~> 1.0", [hex: :file_system, repo: "hexpm", optional: false]}, {:jason, "~> 1.0", [hex: :jason, repo: "hexpm", optional: false]}], "hexpm", "2d8bc95d5a7bb99dd2613621d4f08c6a3575c3fd4b62e6a2b48a100352a557b8"},
   "earmark_parser": {:hex, :earmark_parser, "1.4.45", "cba8369ab2a1342e419bc2760eec731b17be828941dcf494045d44766227e1d5", [:mix], [], "hexpm", "d3ec045bf122965db20c0bdb420e19ee1415843135327124918473feb4b328e8"},

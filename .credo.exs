@@ -227,7 +227,6 @@
           {OeditusCredo.Check.Refactoring.SuggestFSM, []},
           # Telemetry & Observability
           {OeditusCredo.Check.Warning.MissingTelemetryInObanWorker, []},
-          {OeditusCredo.Check.Warning.MissingTelemetryInLiveViewMount, []},
           {OeditusCredo.Check.Warning.TelemetryInRecursiveFunction, []},
           {OeditusCredo.Check.Warning.MissingTelemetryInAuthPlug, []},
           {OeditusCredo.Check.Warning.MissingTelemetryForExternalHttp, []},

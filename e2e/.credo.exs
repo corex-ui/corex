@@ -303,7 +303,6 @@
           {OeditusCredo.Check.Security.TOCTOU, []}
         ],
         disabled: [
-          {OeditusCredo.Check.Warning.MissingTelemetryInLiveViewMount, []},
           {OeditusCredo.Check.Warning.MissingPreload, []},
           {ExSlop.Check.Readability.NarratorDoc, []},
           {ExSlop.Check.Readability.DocFalseOnPublicFunction, []},
