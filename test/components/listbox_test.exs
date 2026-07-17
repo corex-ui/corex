@@ -201,7 +201,7 @@ defmodule Corex.ListboxTest do
       }
 
       result = Connect.props(assigns)
-      assert result["data-value"] == ~s(["a"])
+      assert result["data-value"] == ~S(["a"])
       assert result["data-controlled"] == ""
     end
 
@@ -225,7 +225,7 @@ defmodule Corex.ListboxTest do
       }
 
       result = Connect.props(assigns)
-      assert result["data-default-value"] == ~s(["a"])
+      assert result["data-default-value"] == ~S(["a"])
       assert result["data-value"] == nil
     end
   end

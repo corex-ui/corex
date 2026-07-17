@@ -14,6 +14,7 @@ defmodule Corex.Listbox.Connect do
     Root
   }
 
+  alias Corex.Connect.ItemNav
   alias Phoenix.LiveView.JS
 
   alias Corex.ValueBinding
@@ -149,7 +150,7 @@ defmodule Corex.Listbox.Connect do
       "id" => "listbox:#{assigns.id}:item:#{assigns.value}"
     }
 
-    Corex.Connect.ItemNav.put_item_nav_attrs(base, assigns)
+    ItemNav.put_item_nav_attrs(base, assigns)
   end
 
   def ignore_item(assigns) do

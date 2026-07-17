@@ -837,28 +837,26 @@ defmodule Corex.Combobox do
   end
 
   defp get_value(field_value) do
-    case field_value do
-      nil ->
+    cond do
+      empty_field_value?(field_value) ->
         []
 
-      "" ->
-        []
+      is_list(field_value) ->
+        normalize_field_value_list(field_value)
 
-      "[]" ->
-        []
-
-      [] ->
-        []
-
-      value when is_list(value) ->
-        value
-        |> Enum.map(&to_string/1)
-        |> Enum.reject(&(&1 == "" or &1 == "[]"))
-
-      value ->
-        s = to_string(value)
-        if s == "" or s == "[]", do: [], else: [s]
+      true ->
+        s = to_string(field_value)
+        if empty_field_value?(s), do: [], else: [s]
     end
+  end
+
+  defp empty_field_value?(value) when value in [nil, "", "[]", []], do: true
+  defp empty_field_value?(_), do: false
+
+  defp normalize_field_value_list(value) do
+    value
+    |> Enum.map(&to_string/1)
+    |> Enum.reject(&empty_field_value?/1)
   end
 
   defp normalize_value_to_ids(items, value_list) do

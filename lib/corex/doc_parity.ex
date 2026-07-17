@@ -1,6 +1,8 @@
 defmodule Corex.DocParity do
   @moduledoc false
 
+  alias Corex.DocParity.Markers
+
   @root Path.expand("../..", __DIR__)
   @components_dir Path.join(@root, "lib/components")
   @demos_dir Path.join(@root, "e2e/lib/e2e_web/demos")
@@ -96,8 +98,8 @@ defmodule Corex.DocParity do
               detail: "obsolete tokens/themes/neo/light.css path"
             }
 
-          String.contains?(doc, ~s(@import "../corex/main.css")) and
-              not String.contains?(doc, ~s(@import "../corex/corex.css")) ->
+          String.contains?(doc, ~S(@import "../corex/main.css")) and
+              not String.contains?(doc, ~S(@import "../corex/corex.css")) ->
             %{
               component: slug,
               section: "style / css",
@@ -438,7 +440,7 @@ defmodule Corex.DocParity do
         fns
 
       [] ->
-        case Corex.DocParity.Markers.anatomy(slug, heading) do
+        case Markers.anatomy(slug, heading) do
           {:ok, fns} -> fns
           :error -> []
         end

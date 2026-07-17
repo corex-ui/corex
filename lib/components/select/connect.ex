@@ -19,6 +19,7 @@ defmodule Corex.Select.Connect do
     ValueInput
   }
 
+  alias Corex.Connect.ItemNav
   alias Corex.FormField
   alias Corex.ValueBinding
   alias Phoenix.LiveView.JS
@@ -301,7 +302,7 @@ defmodule Corex.Select.Connect do
       "id" => "select:#{assigns.id}:item:#{assigns.value}"
     }
 
-    Corex.Connect.ItemNav.put_item_nav_attrs(base, assigns)
+    ItemNav.put_item_nav_attrs(base, assigns)
   end
 
   def ignore_item(assigns) do

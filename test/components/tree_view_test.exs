@@ -682,8 +682,8 @@ defmodule Corex.TreeViewTest do
 
       result = Connect.props(assigns)
       assert result["data-tree"] == Json.encode!(@zag_root)
-      assert result["data-default-expanded-value"] == ~s(["node-1"])
-      assert result["data-default-selected-value"] == ~s(["node-2"])
+      assert result["data-default-expanded-value"] == ~S(["node-1"])
+      assert result["data-default-selected-value"] == ~S(["node-2"])
       refute Map.has_key?(result, "data-expanded-value")
       refute Map.has_key?(result, "data-selected-value")
       refute Map.has_key?(result, "data-controlled")

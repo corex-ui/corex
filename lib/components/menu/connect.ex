@@ -14,6 +14,7 @@ defmodule Corex.Menu.Connect do
     Trigger
   }
 
+  alias Corex.Connect.ItemNav
   alias Phoenix.LiveView.JS
 
   import Corex.Helpers, only: [get_boolean: 1]
@@ -155,7 +156,7 @@ defmodule Corex.Menu.Connect do
       "data-has-nested" => get_boolean(assigns.has_nested)
     }
 
-    Corex.Connect.ItemNav.put_item_nav_attrs(base, assigns)
+    ItemNav.put_item_nav_attrs(base, assigns)
   end
 
   def ignore_item(assigns) do

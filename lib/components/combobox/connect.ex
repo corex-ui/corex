@@ -22,6 +22,7 @@ defmodule Corex.Combobox.Connect do
   }
 
   alias Corex.Combobox.Translation, as: ComboboxTranslation
+  alias Corex.Connect.ItemNav
   alias Phoenix.LiveView.JS
 
   alias Corex.ValueBinding
@@ -361,7 +362,7 @@ defmodule Corex.Combobox.Connect do
       "id" => "combobox:#{assigns.id}:option:#{assigns.value}"
     }
 
-    Corex.Connect.ItemNav.put_item_nav_attrs(base, assigns)
+    ItemNav.put_item_nav_attrs(base, assigns)
   end
 
   def item_template(assigns), do: Map.drop(item(assigns), ["id"])

@@ -131,7 +131,7 @@ defmodule Corex.SelectTest do
       }
 
       result = Connect.props(Map.merge(ConnectProps.default_select(), assigns))
-      assert result["data-value"] == ~s(["a"])
+      assert result["data-value"] == ~S(["a"])
       assert result["data-default-value"] == nil
       assert result["data-controlled"] == ""
     end
@@ -164,7 +164,7 @@ defmodule Corex.SelectTest do
       }
 
       result = Connect.props(Map.merge(ConnectProps.default_select(), assigns))
-      assert result["data-value"] == ~s(["a"])
+      assert result["data-value"] == ~S(["a"])
       assert result["data-default-value"] == nil
       assert result["data-controlled"] == ""
       assert result["data-form-field"] == "true"

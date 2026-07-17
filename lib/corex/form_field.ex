@@ -11,7 +11,6 @@ defmodule Corex.FormField do
 
   alias Corex.Checkable.Helpers, as: CheckableHelpers
 
-  @doc false
   @spec assign_errors(map(), Phoenix.HTML.FormField.t()) :: map()
   def assign_errors(assigns, %Phoenix.HTML.FormField{} = field) do
     errors =
@@ -36,7 +35,6 @@ defmodule Corex.FormField do
 
   defp field_errors_visible?(field), do: Phoenix.Component.used_input?(field)
 
-  @doc false
   @spec assign_ids(map(), Phoenix.HTML.FormField.t()) :: map()
   def assign_ids(assigns, %Phoenix.HTML.FormField{} = field) do
     assigns
@@ -45,7 +43,6 @@ defmodule Corex.FormField do
     |> assign(:form, field.form.id)
   end
 
-  @doc false
   @spec assign_form_field(map(), Phoenix.HTML.FormField.t()) :: map()
   def assign_form_field(assigns, %Phoenix.HTML.FormField{} = field) do
     assigns =
@@ -69,18 +66,15 @@ defmodule Corex.FormField do
     end
   end
 
-  @doc false
   @spec dataset_default_boolean(boolean() | :indeterminate) :: String.t()
   def dataset_default_boolean(checked) do
     CheckableHelpers.checked_form_field_default_attr(checked)
   end
 
-  @doc false
   @spec dataset_default_string(String.t() | nil) :: String.t()
   def dataset_default_string(value) when is_binary(value), do: value
   def dataset_default_string(nil), do: ""
 
-  @doc false
   @spec dataset_default_list(list()) :: String.t()
   def dataset_default_list([]), do: "[]"
 
@@ -88,13 +82,11 @@ defmodule Corex.FormField do
     Corex.ValueBinding.encode_list(list) || "[]"
   end
 
-  @doc false
   @spec dataset_default_json(list()) :: String.t()
   def dataset_default_json(list) when is_list(list) do
     Corex.ValueBinding.encode_list(list) || "[]"
   end
 
-  @doc false
   @spec dataset_default_paths(list()) :: String.t()
   def dataset_default_paths([]), do: ""
 
@@ -102,7 +94,6 @@ defmodule Corex.FormField do
     Enum.join(paths, "\n")
   end
 
-  @doc false
   @spec put_form_field_attrs(map(), map() | struct()) :: map()
   def put_form_field_attrs(attrs, assigns) do
     attrs =
@@ -119,7 +110,6 @@ defmodule Corex.FormField do
     end
   end
 
-  @doc false
   @spec default_value_dataset(map(), String.t() | nil) :: String.t() | nil
   def default_value_dataset(assigns, value) do
     if Map.get(assigns, :form_field, false) do
@@ -129,18 +119,15 @@ defmodule Corex.FormField do
     end
   end
 
-  @doc false
   @spec list_submit_name(String.t() | nil) :: String.t() | nil
   def list_submit_name(nil), do: nil
   def list_submit_name(name) when is_binary(name), do: name <> "[]"
 
-  @doc false
   @spec assign_list_submit(map()) :: map()
   def assign_list_submit(assigns) do
     assign(assigns, :submit_name, list_submit_name(assigns[:name]))
   end
 
-  @doc false
   @spec require_id!(map(), String.t()) :: map()
   def require_id!(assigns, component_name) when is_binary(component_name) do
     case assigns[:id] do

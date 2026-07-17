@@ -485,7 +485,7 @@ defmodule Corex.ComboboxTest do
       }
 
       result = Connect.props(Map.merge(ConnectProps.default_combobox(), assigns))
-      assert result["data-default-value"] == ~s(["a"])
+      assert result["data-default-value"] == ~S(["a"])
       assert result["data-value"] == nil
       assert result["data-controlled"] == nil
     end

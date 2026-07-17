@@ -2,6 +2,7 @@ defmodule Corex.TreeView.Connect do
   @moduledoc false
 
   alias Corex.Animation.Height
+  alias Corex.Connect.ItemNav
   alias Corex.Selectors
 
   alias Corex.TreeView.Anatomy.{
@@ -154,7 +155,7 @@ defmodule Corex.TreeView.Connect do
 
     base =
       base
-      |> Corex.Connect.ItemNav.put_item_nav_attrs(assigns)
+      |> ItemNav.put_item_nav_attrs(assigns)
       |> then(fn attrs ->
         if Map.get(assigns, :selected), do: Map.put(attrs, "data-selected", ""), else: attrs
       end)
