@@ -76,14 +76,11 @@ defmodule E2e.Accounts.Admin do
   end
 
   defp normalize_pin_attrs(%{} = attrs) do
-    case Map.get(attrs, "pin") || Map.get(attrs, :pin) do
-      list when is_list(list) ->
-        attrs
-        |> Map.put("pin", Enum.join(list))
-        |> Map.delete(:pin)
+    attrs = Map.new(attrs, fn {key, value} -> {to_string(key), value} end)
 
-      _ ->
-        attrs
+    case Map.get(attrs, "pin") do
+      list when is_list(list) -> Map.put(attrs, "pin", Enum.join(list))
+      _ -> attrs
     end
   end
 

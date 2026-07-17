@@ -427,13 +427,24 @@ defmodule E2eWeb.AdminLive.Form do
   defp put_avatar_filename(socket, admin_params) do
     names =
       consume_uploaded_entries(socket, :avatar, fn %{path: path}, entry ->
-        File.rm(path)
+        _ = File.rm(tmp_upload_path!(path))
         {:ok, entry.client_name}
       end)
 
     case names do
       [name | _] when is_binary(name) and name != "" -> Map.put(admin_params, "avatar", name)
       _ -> admin_params
+    end
+  end
+
+  defp tmp_upload_path!(path) when is_binary(path) do
+    tmp = Path.expand(System.tmp_dir!())
+    expanded = Path.expand(path)
+
+    if expanded == tmp or String.starts_with?(expanded, tmp <> "/") do
+      expanded
+    else
+      raise ArgumentError, "upload path outside system tmp"
     end
   end
 
