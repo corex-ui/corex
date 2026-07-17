@@ -1,118 +1,33 @@
 # Theming
 
+Package: [corex_design](https://hexdocs.pm/corex_design). Full guide on **corex** Hexdocs.
+
 ## Introduction
 
-You wire a theme picker (neo, uno, duo, leo) into a Phoenix + Corex app. The result is `data-theme` on `<html>` that persists across reloads. Theme is independent from light/dark mode; Corex Design combines them as `[data-theme="neo"][data-mode="dark"]`.
+Visitors pick a Corex Design theme (neo, uno, duo, leo) from a `<.select>`. The choice updates `data-theme` on `<html>` without a server round-trip, and persists across reloads.
 
-Static Tableau sites use the same `data-theme` pattern without plugs—see [Tableau Theming](tableau_theming.html). Mode is covered in [Dark mode](dark_mode.html).
+Theme is independent from light/dark mode. Corex Design combines them as `[data-theme="neo"][data-mode="dark"]`. Mode is covered in [Dark mode](dark_mode.html). Static Tableau sites use the same picker pattern without plugs; see [Tableau Theming](tableau_theming.html).
 
-## Before you start
+## Install first
 
-| Requirement | Notes |
-| ----------- | ----- |
-| Corex installed | [Manual installation](manual_installation.html) or `mix corex.new --theme` |
-| Theme CSS imported | One `@import` per theme you expose in the picker |
-| `select` hook | Registered in `assets/js/app.js` |
+Wire the picker allowlist, plug, bridge script, and `select` hook before you drop this UI into a layout:
 
-## How it works
+- New app: `mix corex.new my_app --theme`
+- Existing app: [Manual installation: optional theme wiring](manual_installation.html#optional-theme-wiring)
 
-1. **`config :my_app, :themes`** is the single source of truth; the first entry is the default.
-2. **`Plugs.Theme`** reads `phx_theme`, validates against config, assigns `:theme`.
-3. **Bridge script** reconciles `localStorage`, `data-theme`, and the default.
-4. **`<.select on_value_change_client="phx:set-theme">`** updates theme without a server round-trip.
+Which theme CSS the design build emits is separate (`config :corex_design`). See [Design](design.html) and [Configuration](configuration.html). Keep the picker list a subset of the themes you build. Run `mix corex.design.options` for allowed build values.
 
-<!-- tabs-open -->
+## Already wired?
 
-### Config and plug
+| Piece | Expect |
+| ----- | ------ |
+| Config | `config :my_app, :themes, ~w(neo uno duo leo)` (first entry is the default) |
+| Plug | `MyAppWeb.Plugs.Theme` in the browser pipeline; assigns `:theme` / `:themes` |
+| Bridge | Inline `<script>` listens for `phx:set-theme` and writes `localStorage` / cookie / `data-theme` |
+| Hook | `Select` registered in `assets/js/app.js` |
+| CSS | `@import "../corex/corex.css"` and `select` in `components:` when you use Design |
 
-`config/config.exs`:
-
-```elixir
-config :my_app, :themes, ~w(neo uno duo leo)
-```
-
-`lib/my_app_web/plugs/theme.ex`:
-
-```elixir
-defmodule MyAppWeb.Plugs.Theme do
-  import Plug.Conn
-
-  def init(opts), do: opts
-
-  def call(conn, _opts) do
-    themes = Application.get_env(:my_app, :themes, ["neo"])
-    default_theme = List.first(themes) || "neo"
-
-    theme =
-      conn.cookies["phx_theme"]
-      |> parse_theme(themes, default_theme)
-
-    conn
-    |> assign(:theme, theme)
-    |> assign(:themes, themes)
-    |> put_session(:theme, theme)
-  end
-
-  defp parse_theme(nil, _themes, default), do: default
-
-  defp parse_theme(theme, themes, default) do
-    if theme in themes, do: theme, else: default
-  end
-end
-```
-
-Browser pipeline (after `:fetch_live_flash`; with `--lang`, put Mode/Theme plugs after localize plugs):
-
-```elixir
-plug MyAppWeb.Plugs.Mode
-plug MyAppWeb.Plugs.Theme
-```
-
-### Layout and theme bridge
-
-`root.html.heex`:
-
-```heex
-<html lang="en" data-theme={assigns[:theme] || "neo"} data-mode={assigns[:mode] || "light"}>
-```
-
-Theme bridge in `<head>` (merge into the same IIFE as [Dark mode](dark_mode.html) when you use both):
-
-```heex
-<script>
-  (() => {
-    const validThemes = ["neo", "uno", "duo", "leo"];
-
-    const setTheme = (theme) => {
-      const resolved = validThemes.includes(theme) ? theme : "neo";
-      localStorage.setItem("phx:theme", resolved);
-      document.cookie = "phx_theme=" + resolved + "; path=/; max-age=31536000";
-      document.documentElement.setAttribute("data-theme", resolved);
-    };
-
-    setTheme(
-      localStorage.getItem("phx:theme") ||
-        document.documentElement.getAttribute("data-theme") ||
-        "neo"
-    );
-
-    window.addEventListener(
-      "storage",
-      (e) => e.key === "phx:theme" && e.newValue && setTheme(e.newValue)
-    );
-
-    window.addEventListener("phx:set-theme", (e) => {
-      const value = e.detail?.value;
-      const theme = Array.isArray(value) && value[0] ? value[0] : "neo";
-      setTheme(theme);
-    });
-  })();
-</script>
-```
-
-Keep `validThemes` and fallbacks in sync with `config :my_app, :themes`.
-
-### Theme picker
+## Theme picker
 
 ```elixir
 def theme_toggle(assigns) do
@@ -142,40 +57,48 @@ def theme_toggle(assigns) do
 end
 ```
 
+`on_value_change_client="phx:set-theme"` fires a browser event the theme bridge handles. Keep the `items` values in sync with `config :my_app, :themes` and with `validThemes` in the bridge.
+
+## Layout placement
+
+Pass `:theme` (and `:mode` when you use both) into the app layout from every LiveView and controller template:
+
 ```heex
 <Layouts.app flash={@flash} theme={assigns[:theme] || "neo"} mode={assigns[:mode] || "light"}>
   <h1>{gettext("Home")}</h1>
 </Layouts.app>
 ```
 
-### LiveView on_mount
+Render the picker where it belongs in the shell (header, menu, footer):
 
-```elixir
-defmodule MyAppWeb.ThemeLive do
-  def on_mount(:default, _params, session, socket) do
-    theme = session["theme"] || "neo"
-    {:cont, Phoenix.Component.assign(socket, :theme, theme)}
-  end
-end
+```heex
+<.theme_toggle theme={@theme} />
 ```
 
-<!-- tabs-close -->
+With LiveViews, ensure `:theme` is on the socket (session via `Plugs.Theme`, or `on_mount` / `Hooks.Layout` when you also use `--lang`). Root `<html>` should carry `data-theme={assigns[:theme] || "neo"}` so the first paint matches the plug.
 
 ## CSS
 
 ```css
-@import "../corex/main.css";
-@import "../corex/theme/neo.css";
-@import "../corex/theme/uno.css";
-@import "../corex/theme/duo.css";
-@import "../corex/theme/leo.css";
-@import "../corex/components.css";
+@import "../corex/corex.css";
 ```
 
-Include `select` in `components:` when you use a theme picker.
+`corex.css` loads utilities, configured themes, and `components.css`. Include `select` in `components:` when you use a theme picker. For layered imports, see [Design](design.html).
+
+## Troubleshooting
+
+| Symptom | Check |
+| ------- | ----- |
+| Picker does nothing | Bridge listens for `phx:set-theme`; `Select` hook is registered |
+| Wrong theme selected | `value={[@theme]}` matches an item `value`; plug assign reaches the layout |
+| Theme flashes then resets | Bridge `validThemes` matches config and picker items |
+| Styles missing for a theme | That theme is in `config :corex_design` and you rebuilt with `mix corex.design.build` |
 
 ## Related
 
-- [Dark mode](dark_mode.html) — combine bridges in one `<script>` block
-- [Tableau Theming](tableau_theming.html) — static site equivalent
-- [Localize](localize.html) — session layout hook may also assign theme and mode
+- [Manual installation](manual_installation.html#optional-theme-wiring): plug, bridge, and config
+- [Configuration](configuration.html): build vs picker vs generators
+- [Design](design.html): `config :corex_design` theme CSS
+- [Dark mode](dark_mode.html): mode toggle; combine bridges in one `<script>` block
+- [Tableau Theming](tableau_theming.html): static site equivalent
+- [Localize](localize.html): language switcher when using `--lang`

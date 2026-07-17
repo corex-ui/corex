@@ -51,6 +51,13 @@ function syncMenuPropsFromDom(menu: Menu): void {
   }
 }
 
+function renderMenuTree(menu: Menu): void {
+  menu.render();
+  for (const child of menu.children) {
+    renderMenuTree(child);
+  }
+}
+
 function destroyDescendantMenus(menu: Menu): void {
   for (const child of [...menu.children]) {
     destroyDescendantMenus(child);
@@ -188,8 +195,10 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
     );
 
     this.handlers.push(
-      this.handleEvent("menu_open", () => {
+      this.handleEvent("menu_open", (payload: unknown) => {
+        if (!menuSetOpenMatches(el.id, payload)) return;
         this.pushEvent("menu_open_response", {
+          id: readPayloadId(payload),
           open: menu.api.open,
         });
       })
@@ -201,7 +210,7 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
     if (!this.menu) return;
 
     syncMenuPropsFromDom(this.menu);
-    this.menu.render();
+    renderMenuTree(this.menu);
 
     if (this.menu.children.length > 0) {
       wireSubmenuTriggersDeep(this.menu);

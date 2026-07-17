@@ -198,6 +198,114 @@ defmodule E2eWeb.AdminLive.Form do
           </:error>
         </.checkbox>
 
+        <.password_input field={@form[:password]} class="password-input max-w-none">
+          <:label>Password</:label>
+          <:visible_indicator>
+            <.heroicon name="hero-eye" class="icon" />
+          </:visible_indicator>
+          <:hidden_indicator>
+            <.heroicon name="hero-eye-slash" class="icon" />
+          </:hidden_indicator>
+          <:error :let={msg}>
+            <.heroicon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.password_input>
+
+        <.switch field={@form[:notifications]} class="switch max-w-none">
+          <:label>Email notifications</:label>
+          <:error :let={msg}>
+            <.heroicon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.switch>
+
+        <.radio_group
+          field={@form[:role]}
+          class="radio-group"
+          items={[
+            %{label: "Admin", value: "admin"},
+            %{label: "Editor", value: "editor"},
+            %{label: "Viewer", value: "viewer"}
+          ]}
+        >
+          <:label>Role</:label>
+          <:item_control>
+            <.heroicon name="hero-check" class="data-checked" />
+          </:item_control>
+          <:error :let={msg}>
+            <.heroicon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.radio_group>
+
+        <.pin_input field={@form[:pin]} count={4} class="pin-input">
+          <:label>PIN</:label>
+          <:error :let={msg}>
+            <.heroicon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.pin_input>
+
+        <.color_picker
+          field={@form[:accent_color]}
+          label="Accent color"
+          class="color-picker max-w-none"
+          presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
+        >
+          <:error :let={msg}>
+            <.heroicon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.color_picker>
+
+        <.angle_slider
+          field={@form[:heading_angle]}
+          marker_values={[0, 90, 180, 270]}
+          class="angle-slider"
+        >
+          <:label>Heading angle</:label>
+          <:error :let={msg}>
+            <.heroicon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.angle_slider>
+
+        <.editable
+          field={@form[:title]}
+          placeholder="Enter title"
+          activation_mode="dblclick"
+          select_on_focus
+          class="editable max-w-none"
+        >
+          <:label>Title</:label>
+          <:edit_trigger>
+            <.heroicon name="hero-pencil-square" class="icon" />
+          </:edit_trigger>
+          <:submit_trigger>
+            <.heroicon name="hero-check" class="icon" />
+          </:submit_trigger>
+          <:cancel_trigger>
+            <.heroicon name="hero-x-mark" class="icon" />
+          </:cancel_trigger>
+          <:error :let={msg}>
+            <.heroicon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.editable>
+
+        <.file_upload_live
+          id={@form[:avatar].id}
+          upload={@uploads.avatar}
+          field={:avatar}
+          class="file-upload max-w-none"
+        >
+          <:label>Avatar</:label>
+          <:close>
+            <.heroicon name="hero-x-mark" />
+          </:close>
+        </.file_upload_live>
+
         <footer class="flex w-full justify-between gap-2">
           <.navigate to={return_path(@return_to, @admin)} type="navigate" class="button">
             Cancel
@@ -216,6 +324,11 @@ defmodule E2eWeb.AdminLive.Form do
     {:ok,
      socket
      |> assign(:return_to, return_to(params["return_to"]))
+     |> allow_upload(:avatar,
+       accept: ~W(.jpg .jpeg .png .gif .webp .pdf .txt),
+       max_entries: 1,
+       max_file_size: 8_000_000
+     )
      |> apply_action(socket.assigns.live_action, params)}
   end
 
@@ -261,6 +374,11 @@ defmodule E2eWeb.AdminLive.Form do
     save_admin(socket, socket.assigns.live_action, admin_params)
   end
 
+  def handle_event("file_upload_live_cancel", params, socket) do
+    %{"ref" => ref, "upload_field" => field} = params
+    {:noreply, cancel_upload(socket, String.to_existing_atom(field), ref)}
+  end
+
   def handle_event("delete", %{"id" => id}, socket) do
     admin = Accounts.get_admin!(id)
 
@@ -277,6 +395,8 @@ defmodule E2eWeb.AdminLive.Form do
   end
 
   defp save_admin(socket, :edit, admin_params) do
+    admin_params = put_avatar_filename(socket, admin_params)
+
     case Accounts.update_admin(socket.assigns.admin, admin_params) do
       {:ok, admin} ->
         {:noreply,
@@ -290,6 +410,8 @@ defmodule E2eWeb.AdminLive.Form do
   end
 
   defp save_admin(socket, :new, admin_params) do
+    admin_params = put_avatar_filename(socket, admin_params)
+
     case Accounts.create_admin(admin_params) do
       {:ok, admin} ->
         {:noreply,
@@ -299,6 +421,30 @@ defmodule E2eWeb.AdminLive.Form do
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
+    end
+  end
+
+  defp put_avatar_filename(socket, admin_params) do
+    names =
+      consume_uploaded_entries(socket, :avatar, fn %{path: path}, entry ->
+        _ = File.rm(tmp_upload_path!(path))
+        {:ok, entry.client_name}
+      end)
+
+    case names do
+      [name | _] when is_binary(name) and name != "" -> Map.put(admin_params, "avatar", name)
+      _ -> admin_params
+    end
+  end
+
+  defp tmp_upload_path!(path) when is_binary(path) do
+    tmp = Path.expand(System.tmp_dir!())
+    expanded = Path.expand(path)
+
+    if expanded == tmp or String.starts_with?(expanded, tmp <> "/") do
+      expanded
+    else
+      raise ArgumentError, "upload path outside system tmp"
     end
   end
 

@@ -17,6 +17,10 @@ defmodule Corex.New.Tableau.TemplatesTest do
     assert :md_ex_converter in keys
     assert :theme_module in keys
     assert :mode_module in keys
+    assert :root_index_page in keys
+    assert :gettext_module in keys
+    assert :gettext_sigil_module in keys
+    assert :locale_module in keys
     assert :site_css in keys
     assert :site_js in keys
     assert :config_exs in keys
@@ -25,7 +29,8 @@ defmodule Corex.New.Tableau.TemplatesTest do
     assert :test_exs in keys
     assert :mix_exs in keys
     assert :sample_post in keys
-    assert length(keys) == 20
+    assert :gen_post_task in keys
+    assert length(keys) == 24
   end
 
   @base_assigns [
@@ -33,6 +38,7 @@ defmodule Corex.New.Tableau.TemplatesTest do
     otp_app: :my_blog,
     mode: false,
     theme: false,
+    lang: false,
     mcp: true,
     design: true,
     themes: ["neo"],
@@ -40,8 +46,14 @@ defmodule Corex.New.Tableau.TemplatesTest do
     components: ~w(toast layout-heading typo icon link button scrollbar)a,
     corex_js_import: "corex",
     corex_dep_source: "\"~> 0.2.0\"",
-    corex_design_dep_source: "\"~> 0.2\", runtime: false, only: :dev"
+    corex_design_dep_source: "\"~> 0.2\", runtime: false, only: :dev",
+    corex_mcp_dep_source: "\"~> 0.2.0\", only: [:dev, :test]"
   ]
+
+  @lang_assigns Keyword.merge(@base_assigns,
+                  lang: true,
+                  components: ~w(toast layout-heading typo icon link button scrollbar select)a
+                )
 
   describe "root_layout/1" do
     test "renders a valid Tableau layout module" do
@@ -71,6 +83,15 @@ defmodule Corex.New.Tableau.TemplatesTest do
       refute out =~ "theme_toggle"
     end
 
+    test "includes language select and locale attrs when lang is on" do
+      out = Templates.root_layout(@lang_assigns)
+      assert out =~ "data-locale="
+      assert out =~ "data-locales="
+      assert out =~ "id=\"corex-language-switch\""
+      assert out =~ "MyBlog.Locale"
+      assert out =~ "corex:set-locale"
+    end
+
     test "omits data-theme when design is off" do
       out = Templates.root_layout(Keyword.put(@base_assigns, :design, false))
       refute out =~ "data-theme="
@@ -96,6 +117,13 @@ defmodule Corex.New.Tableau.TemplatesTest do
       assert out =~ "<.layout_heading"
       assert out =~ "permalink: \"/\""
     end
+
+    test "emits Module.create per locale when lang is on" do
+      out = Templates.home_page(@lang_assigns)
+      assert out =~ "Module.create"
+      assert out =~ ~S[permalink = "/#{locale}/"]
+      refute out =~ ~S[permalink: "/"]
+    end
   end
 
   describe "blog_index_page/1" do
@@ -104,6 +132,21 @@ defmodule Corex.New.Tableau.TemplatesTest do
       assert out =~ "defmodule MyBlog.BlogIndexPage do"
       assert out =~ "permalink: \"/blog\""
       assert out =~ "sorted_posts"
+    end
+
+    test "emits per-locale blog permalinks when lang is on" do
+      out = Templates.blog_index_page(@lang_assigns)
+      assert out =~ "Module.create"
+      assert out =~ ~S[permalink = "/#{locale}/blog/"]
+    end
+  end
+
+  describe "root_index_page/1" do
+    test "renders a root index that reuses HomePage" do
+      out = Templates.root_index_page(@lang_assigns)
+      assert out =~ "defmodule MyBlog.RootIndexPage do"
+      assert out =~ "permalink: \"/\""
+      assert out =~ "MyBlog.HomePage.template"
     end
   end
 
@@ -157,6 +200,12 @@ defmodule Corex.New.Tableau.TemplatesTest do
       refute out =~ "Select:"
       refute out =~ "Toggle:"
     end
+
+    test "imports locale.js and Select when lang is on" do
+      out = Templates.site_js(@lang_assigns)
+      assert out =~ ~S[import "./locale.js"]
+      assert out =~ "Select:"
+    end
   end
 
   describe "config_exs/1" do
@@ -187,6 +236,7 @@ defmodule Corex.New.Tableau.TemplatesTest do
       assert out =~ ":corex"
       assert out =~ ":my_blog"
       assert out =~ "corex_design"
+      assert out =~ "corex_mcp"
     end
 
     test "includes corex_design compiler when design is on" do
@@ -197,6 +247,35 @@ defmodule Corex.New.Tableau.TemplatesTest do
     test "omits corex_design compiler when design is off" do
       out = Templates.mix_exs(Keyword.put(@base_assigns, :design, false))
       refute out =~ ":corex_design"
+    end
+
+    test "omits corex_mcp dep when mcp is off" do
+      out = Templates.mix_exs(Keyword.put(@base_assigns, :mcp, false))
+      refute out =~ "corex_mcp"
+    end
+
+    test "includes gettext and localize when lang is on" do
+      out = Templates.mix_exs(@lang_assigns)
+      assert out =~ "gettext"
+      assert out =~ "gettext_sigils"
+      assert out =~ "localize_web"
+      assert out =~ "localize.download_locales"
+      assert out =~ ":localize"
+    end
+  end
+
+  describe "locale modules" do
+    test "locale module exposes the soonex_i18n surface" do
+      out = Templates.locale_module(@lang_assigns)
+      assert out =~ "defmodule MyBlog.Locale do"
+      assert out =~ "def swap_path"
+      assert out =~ "def language_select_items"
+      assert out =~ "def selected_path"
+    end
+
+    test "gettext module lists en fr ar" do
+      out = Templates.gettext_module(@lang_assigns)
+      assert out =~ "locales: ~w(en fr ar)"
     end
   end
 

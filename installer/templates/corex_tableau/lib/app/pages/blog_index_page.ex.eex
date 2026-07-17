@@ -1,5 +1,62 @@
 defmodule <%= @app_module %>.BlogIndexPage do
-  use Tableau.Page,
+<%= if @lang do %>  @moduledoc false
+
+  use Phoenix.Component
+  use Corex
+  use <%= @app_module %>.GettextSigil
+
+  def template(assigns) do
+    posts =
+      assigns
+      |> Map.get(:posts, [])
+      |> Enum.sort_by(& &1[:date], {:desc, DateTime})
+
+    assigns = Map.put(assigns, :sorted_posts, posts)
+
+    ~H"""
+    <div class="flex w-full max-w-3xl flex-col gap-size">
+      <header class="flex flex-col gap-space border-b border-border pb-space-lg">
+        <h1 class="m-0">{~t"Blog"}</h1>
+        <p class="m-0 max-w-prose leading-relaxed text-ink-muted">
+          {~t"Posts are Markdown files in the"} <code class="rounded-md bg-layer px-1 py-0.5 text-sm">_posts/</code> {~t"directory."}
+        </p>
+      </header>
+      <ul :if={@sorted_posts != []} class="m-0 flex list-none flex-col gap-space-lg p-0">
+        <li :for={post <- @sorted_posts} class="flex flex-col gap-space-sm">
+          <.navigate to={post.permalink} class="link text-lg font-semibold">
+            {post[:title] || ~t"Untitled"}
+          </.navigate>
+          <p :if={post[:description]} class="m-0 text-ink-muted">{post[:description]}</p>
+        </li>
+      </ul>
+      <p :if={@sorted_posts == []} class="m-0 text-ink-muted">
+        {~t"No posts yet. Add Markdown files to"} <code class="rounded-md bg-layer px-1 py-0.5 text-sm">_posts/</code> {~t"to get started."}
+      </p>
+    </div>
+    """
+  end
+end
+
+for locale <- <%= @app_module %>.Locale.locales() do
+  mod = Module.concat(<%= @app_module %>.BlogIndexPage, String.upcase(locale))
+  permalink = "/#{locale}/blog/"
+
+  Module.create(
+    mod,
+    quote do
+      use Tableau.Page,
+        layout: <%= @app_module %>.RootLayout,
+        permalink: unquote(permalink),
+        title: "Blog",
+        page_kind: :blog_index,
+        sitemap: %{priority: 0.7, changefreq: "weekly"}
+
+      def template(assigns), do: <%= @app_module %>.BlogIndexPage.template(assigns)
+    end,
+    __ENV__
+  )
+end
+<% else %>  use Tableau.Page,
     layout: <%= @app_module %>.RootLayout,
     permalink: "/blog",
     title: "Blog",
@@ -40,3 +97,4 @@ defmodule <%= @app_module %>.BlogIndexPage do
     """
   end
 end
+<% end %>

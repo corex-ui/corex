@@ -39,6 +39,7 @@ defmodule Corex.New.GenerateTest do
 
       mix_exs = File.read!("mix.exs")
       assert mix_exs =~ ~r/\{:corex_design,/
+      assert mix_exs =~ ~r/\{:corex_mcp,\s*"~> 0.2",\s*only:\s*\[:dev,\s*:test\]\}/
       assert File.read!("config/config.exs") =~ "config :corex_design"
       assert File.read!(Path.join("assets/css", "app.css")) =~ "../corex/corex.css"
     end)
@@ -158,7 +159,7 @@ defmodule Corex.New.GenerateTest do
     end)
   end
 
-  test "run/2 with mcp false skips endpoint MCP plug patch side effects" do
+  test "run/2 with mcp false skips endpoint MCP plug and corex_mcp dep" do
     Corex.New.MixHelper.in_tmp("generate no mcp", fn ->
       ScaffoldHelper.write_phoenix_scaffold!(File.cwd!())
 
@@ -169,6 +170,7 @@ defmodule Corex.New.GenerateTest do
                )
 
       refute File.read!(Path.join("lib/my_app_web", "endpoint.ex")) =~ "plug Corex.MCP"
+      refute File.read!("mix.exs") =~ "{:corex_mcp,"
     end)
   end
 

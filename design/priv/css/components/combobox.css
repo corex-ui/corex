@@ -101,7 +101,7 @@
  @apply ui-content scrollbar scrollbar--sm;
 
  z-index: 50;
- max-height: calc(var(--spacing) * 96);
+ max-height: var(--ctl-max-height, calc(var(--spacing) * 96));
  overflow: auto;
  padding: 0;
  border-radius: var(--radius-md);

@@ -1,12 +1,14 @@
 defmodule Corex.Animation.Scale do
   @moduledoc """
-  Web Animations config for **dialog** when `animation` is `js`:
-  **opacity** and **transform scale** on the `content` node; **opacity only** on the **backdrop** (handled in the hook).
-  No height keyframes, no translate.
+  Dialog open/close animation when `animation` is `js` (opacity + scale).
 
-  `to_dataset/1` is merged on the host only for `js`. Custom `animation` does not use this on the server; the hook may still apply an optional lock using client defaults when the `data-anim-scale-*` attributes are absent.
+      <.dialog
+        id="confirm"
+        animation={:js}
+        animation_config={%Corex.Animation.Scale{duration: 0.2}}
+      >
 
-  Set `block_interaction` to `false` to allow pointer input on the dialog shell during the built-in WAAPI transition.
+  Set `block_interaction` to `false` to allow pointer input during the transition.
   """
 
   defstruct duration: 0.3,
@@ -27,6 +29,7 @@ defmodule Corex.Animation.Scale do
           block_interaction: boolean()
         }
 
+  @doc false
   @spec to_dataset(t()) :: %{String.t() => term()}
   def to_dataset(%__MODULE__{} = a) do
     base = %{

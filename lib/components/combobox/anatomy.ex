@@ -9,9 +9,11 @@ defmodule Corex.Combobox.Anatomy do
     defstruct [
       :id,
       items: [],
+      items_json: nil,
       placeholder: nil,
       value: [],
       form_field: false,
+      controlled: false,
       always_submit_on_enter: false,
       auto_focus: false,
       close_on_select: true,
@@ -54,6 +56,7 @@ defmodule Corex.Combobox.Anatomy do
     @type t :: %__MODULE__{
             id: String.t(),
             items: list(Tree.Item.t() | map()),
+            items_json: String.t() | nil,
             placeholder: String.t() | nil,
             value: list(String.t()),
             always_submit_on_enter: boolean(),

@@ -11,6 +11,13 @@ defmodule Corex.Url do
 
   def allowed_href?(_), do: false
 
+  @spec put_data_to(map(), term()) :: map()
+  def put_data_to(map, to) when is_map(map) and is_binary(to) do
+    if allowed_href?(to), do: Map.put(map, "data-to", to), else: map
+  end
+
+  def put_data_to(map, _) when is_map(map), do: map
+
   defp allowed_uri?(%URI{scheme: nil, host: nil}), do: true
 
   defp allowed_uri?(%URI{scheme: scheme}) when scheme in ["http", "https"], do: true

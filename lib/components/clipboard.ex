@@ -1,7 +1,6 @@
 defmodule Corex.Clipboard do
   @moduledoc ~S'''
-  Phoenix implementation of [Zag.js Clipboard](https://zagjs.com/components/react/clipboard).
-
+  Copy-to-clipboard control for Phoenix LiveView. Behavior follows [Zag.js Clipboard](https://zagjs.com/components/react/clipboard).
   Set `value` for the initial string to copy. Use `Corex.Clipboard.set_value/2` or `corex:clipboard:set-value` to change it on the client.
 
   ## Anatomy
@@ -111,9 +110,7 @@ defmodule Corex.Clipboard do
   ```
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   Stack modifiers on the host (`class` on `<.clipboard>`). Combine axes, for example `clipboard ui-accent ui-size-lg` or `clipboard ui-info ui-solid`.

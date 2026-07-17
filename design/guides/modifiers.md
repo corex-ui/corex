@@ -1,8 +1,8 @@
 # Modifier axes
 
-Corex Design components use a shared modifier class set on the host element. Stack axes on the root class, for example `accordion ui-accent ui-size-lg ui-rounded-xl`.
+Shared host classes for Corex Design components. Stack axes on the root, for example `accordion ui-accent ui-size-lg ui-rounded-xl`.
 
-Modifier classes require the component recipe CSS from Corex Design (`mix corex.design.build` with the `corex_design` dependency).
+Requires `mix corex.design.build` (`corex_design`). Per-component supported classes are listed on each component’s Hexdocs **Style** section on [corex](https://hexdocs.pm/corex).
 
 ## Semantic
 
@@ -73,9 +73,21 @@ Corex uses a single container ladder from `9xs` through `9xl` for named sizing. 
 
 Each component sets its own host width in component CSS. Use Tailwind `w-*` and `max-w-*` utilities with container steps on the host when you need explicit bounds.
 
+## Max height
+
+Opt-in clamp for scrollable content panels. Put `ui-max-height-*` on the **host**; the recipe applies `--ctl-max-height` to `[data-part="content"]` (or accordion `item-content`) with overflow and scrollbar only when the modifier is present.
+
+| Step | Example |
+| ---- | ------- |
+| XS | `select ui-max-height-xs` |
+| SM | `accordion ui-max-height-sm` |
+| MD | `menu ui-max-height-md` |
+
+Uses the same `--container-*` ladder as width. Combobox keeps a default content max-height; the modifier overrides it.
+
 ## Naming
 
-Pattern: `<component> ui-<role> ui-solid ui-size-<step> ui-rounded-<step>`.
+Pattern: `<component> ui-<role> ui-solid ui-size-<step> ui-rounded-<step> ui-max-height-<step>`.
 
 Combine freely: `dialog ui-brand ui-size-lg ui-rounded-lg ui-solid`.
 

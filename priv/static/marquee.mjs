@@ -12,7 +12,7 @@ import {
   getDir,
   getNumber,
   getString
-} from "./chunks/chunk-YGZLYEUJ.mjs";
+} from "./chunks/chunk-6AOEC32Q.mjs";
 
 // ../node_modules/.pnpm/@zag-js+marquee@1.40.0/node_modules/@zag-js/marquee/dist/marquee.anatomy.mjs
 var anatomy = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");
@@ -605,7 +605,6 @@ var MarqueeHook = {
     const zag = this.marquee;
     if (!zag) return;
     zag.updateProps(readMarqueeProps(this.el));
-    zag.ensureDom();
   },
   destroyed() {
     if (this.onPause) this.el.removeEventListener("corex:marquee:pause", this.onPause);

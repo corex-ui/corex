@@ -5,7 +5,15 @@ defmodule E2eWeb.Demos.ActionDemo do
 
   def anatomy_minimal_code do
     ~S"""
-    <.action class="button">Text</.action>
+    <.action class="button">Send!</.action>
+
+    <.action class="button" phx-click="go">Send!</.action>
+
+    <.action class="button" type="submit">Save</.action>
+
+    <.action class="button" aria_label="Close dialog">
+      <.heroicon name="hero-x-mark" aria-hidden="true" />
+    </.action>
     """
   end
 

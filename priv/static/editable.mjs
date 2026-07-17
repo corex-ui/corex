@@ -1,12 +1,15 @@
 import {
-  trackInteractOutside
-} from "./chunks/chunk-26XTEIHY.mjs";
+  setScalarValue
+} from "./chunks/chunk-2H6YHTHG.mjs";
 import {
-  notifyPhoenixFormChange
-} from "./chunks/chunk-ASQD2R2U.mjs";
+  trackInteractOutside
+} from "./chunks/chunk-ZSA4KI2Y.mjs";
+import "./chunks/chunk-3BEM4I52.mjs";
+import "./chunks/chunk-DOKFN6DA.mjs";
 import {
   mountStringBinding
-} from "./chunks/chunk-XL4XUS2C.mjs";
+} from "./chunks/chunk-BGER3KYP.mjs";
+import "./chunks/chunk-TKOH2OAC.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -34,7 +37,7 @@ import {
   raf,
   setElementValue,
   syncInputFormAssociation
-} from "./chunks/chunk-YGZLYEUJ.mjs";
+} from "./chunks/chunk-6AOEC32Q.mjs";
 
 // ../node_modules/.pnpm/@zag-js+editable@1.40.0/node_modules/@zag-js/editable/dist/editable.anatomy.mjs
 var anatomy = createAnatomy("editable").parts(
@@ -582,17 +585,21 @@ function formValueInput(el) {
 function syncEditableFormValue(el, value, options = {}) {
   const hidden = formValueInput(el);
   if (hidden) {
-    notifyPhoenixFormChange(hidden, value, options);
+    setScalarValue(hidden, value, options);
     return;
   }
   const inputEl = el.querySelector('[data-scope="editable"][data-part="input"]');
   if (inputEl) {
-    notifyPhoenixFormChange(inputEl, value, options);
+    setScalarValue(inputEl, value, options);
   }
 }
-function notifyEditableValueChange(el, pushEvent, canPush, value, hook) {
+function notifyEditableValueChange(el, pushEvent, canPush, value, hook, initialValue) {
+  const isMountEcho = hook.fieldTouched !== true && value === initialValue;
+  if (!isMountEcho) {
+    hook.fieldTouched = true;
+  }
   syncEditableFormValue(el, value, {
-    markUsed: hook.allowFormNotify === true
+    markUsed: !isMountEcho
   });
   notifyChange({
     el,
@@ -632,8 +639,9 @@ var EditableHook = {
     const placeholder = getString(el, "placeholder");
     const activationMode = getString(el, "activationMode");
     const selectOnFocus = getBoolean(el, "selectOnFocus");
-    this.allowFormNotify = false;
+    this.fieldTouched = false;
     const valueBinding = mountStringBinding(el, "value", "defaultValue");
+    const initialValue = "value" in valueBinding ? valueBinding.value ?? "" : valueBinding.defaultValue ?? "";
     const zag = new Editable(el, {
       id: el.id,
       ..."value" in valueBinding ? { value: valueBinding.value ?? "" } : { defaultValue: valueBinding.defaultValue ?? "" },
@@ -649,18 +657,15 @@ var EditableHook = {
       ...selectOnFocus !== void 0 ? { selectOnFocus } : {},
       defaultEdit: getBoolean(el, "defaultEdit"),
       onValueChange: (details) => {
-        notifyEditableValueChange(el, pushEvent, canPush, details.value, this);
+        notifyEditableValueChange(el, pushEvent, canPush, details.value, this, initialValue);
       },
       onValueCommit: (details) => {
-        notifyEditableValueChange(el, pushEvent, canPush, details.value, this);
+        notifyEditableValueChange(el, pushEvent, canPush, details.value, this, initialValue);
       }
     });
     zag.init();
     this.editable = zag;
-    queueMicrotask(() => {
-      syncEditableFormValue(el, zag.api.value, { markUsed: false });
-      this.allowFormNotify = true;
-    });
+    syncEditableFormValue(el, zag.api.value, { markUsed: false });
     this.unbindFormSubmit = bindFormSubmitSync(el, zag);
     const domRegistry = createDomEventRegistry(el);
     this.domRegistry = domRegistry;

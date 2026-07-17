@@ -276,6 +276,7 @@
                  "lib/e2e/",
                  "lib/mix/",
                  "lib/e2e_web/code_examples.ex",
+                 "lib/e2e_web/live/admin_live/form.ex",
                  "lib/e2e_web/live/pages_live/file_upload_form_live.ex",
                  "test/"
                ]
@@ -302,7 +303,6 @@
           {OeditusCredo.Check.Security.TOCTOU, []}
         ],
         disabled: [
-          {OeditusCredo.Check.Warning.MissingTelemetryInLiveViewMount, []},
           {OeditusCredo.Check.Warning.MissingPreload, []},
           {ExSlop.Check.Readability.NarratorDoc, []},
           {ExSlop.Check.Readability.DocFalseOnPublicFunction, []},

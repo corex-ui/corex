@@ -4,6 +4,8 @@ import {LiveSocket} from "phoenix_live_view"
 import {hooks} from "corex/hooks"
 <% else %>
 import {hooks} from <%= inspect(String.replace(@corex_js_import, "corex.mjs", "hooks.mjs")) %>
+<% end %><%= if @lang do %>
+import "./locale.js"
 <% end %>
 
 const csrfToken = document
@@ -15,7 +17,7 @@ const liveSocket = new LiveSocket("/live", Socket, {
   params: {_csrf_token: csrfToken},
   hooks: {
     ...hooks({
-<%= if @theme do %>      Select: () => import(<%= if @corex_js_import == "corex" do %>"corex/select"<% else %><%= inspect(String.replace(@corex_js_import, "corex.mjs", "select.mjs")) %><% end %>),
+<%= if @theme or @lang do %>      Select: () => import(<%= if @corex_js_import == "corex" do %>"corex/select"<% else %><%= inspect(String.replace(@corex_js_import, "corex.mjs", "select.mjs")) %><% end %>),
 <% end %><%= if @mode do %>      Toggle: () => import(<%= if @corex_js_import == "corex" do %>"corex/toggle"<% else %><%= inspect(String.replace(@corex_js_import, "corex.mjs", "toggle.mjs")) %><% end %>),
 <% end %>      Toast: () => import(<%= if @corex_js_import == "corex" do %>"corex/toast"<% else %><%= inspect(String.replace(@corex_js_import, "corex.mjs", "toast.mjs")) %><% end %>),
     }),

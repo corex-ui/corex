@@ -78,7 +78,7 @@ defmodule E2eWeb.SelectFormLiveTest do
     refute controlled_html =~ "can&#39;t be blank"
 
     assert controlled_html =~
-             ~r/id="select-live-form-ecto-controlled_country"[^>]*data-value="fra"/
+             ~r/id="select-live-form-ecto-controlled_country"[^>]*data-value="\[&quot;fra&quot;\]"/
   end
 
   test "ecto controlled save with country pushes toast-create", %{conn: conn} do
@@ -130,6 +130,8 @@ defmodule E2eWeb.SelectFormLiveTest do
     invalid_html = invalid_form_html(html)
     refute invalid_html =~ "can&#39;t be blank"
     refute invalid_html =~ ~r/id="select-live-form-ecto-invalid_country"[^>]*data-invalid=""/
-    assert invalid_html =~ ~S/data-value="fra"/
+
+    assert invalid_html =~
+             ~r/id="select-live-form-ecto-invalid_country"[^>]*data-default-value="\[&quot;fra&quot;\]"/
   end
 end

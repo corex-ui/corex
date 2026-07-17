@@ -326,6 +326,22 @@ defmodule Corex.TreeViewTest do
       assert result["data-name"] == "my-link"
     end
 
+    test "omits data-to for disallowed href" do
+      assigns = %{
+        id: "test-tree",
+        value: "node-1",
+        index_path: [],
+        disabled: false,
+        redirect: true,
+        new_tab: false,
+        dir: "ltr",
+        to: "javascript:alert(1)"
+      }
+
+      result = Connect.item(assigns)
+      refute Map.has_key?(result, "data-to")
+    end
+
     test "adds data-redirect when redirect false" do
       assigns = %{
         id: "test-tree",
@@ -666,8 +682,8 @@ defmodule Corex.TreeViewTest do
 
       result = Connect.props(assigns)
       assert result["data-tree"] == Json.encode!(@zag_root)
-      assert result["data-default-expanded-value"] == "node-1"
-      assert result["data-default-selected-value"] == "node-2"
+      assert result["data-default-expanded-value"] == ~S(["node-1"])
+      assert result["data-default-selected-value"] == ~S(["node-2"])
       refute Map.has_key?(result, "data-expanded-value")
       refute Map.has_key?(result, "data-selected-value")
       refute Map.has_key?(result, "data-controlled")

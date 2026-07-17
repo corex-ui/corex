@@ -1,6 +1,6 @@
 import {
   syncHiddenInputValue
-} from "./chunks/chunk-YFTSYDFS.mjs";
+} from "./chunks/chunk-DH47S3VU.mjs";
 import {
   createRect
 } from "./chunks/chunk-QB2YSZP6.mjs";
@@ -9,7 +9,8 @@ import {
 } from "./chunks/chunk-PE34YET2.mjs";
 import {
   mountNumberBinding
-} from "./chunks/chunk-XL4XUS2C.mjs";
+} from "./chunks/chunk-BGER3KYP.mjs";
+import "./chunks/chunk-TKOH2OAC.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -39,7 +40,7 @@ import {
   raf,
   setElementValue,
   trackPointerMove
-} from "./chunks/chunk-YGZLYEUJ.mjs";
+} from "./chunks/chunk-6AOEC32Q.mjs";
 
 // ../node_modules/.pnpm/@zag-js+angle-slider@1.40.0/node_modules/@zag-js/angle-slider/dist/angle-slider.anatomy.mjs
 var anatomy = createAnatomy("angle-slider").parts(

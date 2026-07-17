@@ -5,22 +5,20 @@ defmodule Corex.Accordion.Connect do
   alias Corex.Selectors
   alias Phoenix.LiveView.JS
 
+  alias Corex.ValueBinding
+
   import Corex.Helpers,
     only: [
       validate_value!: 1,
       get_boolean: 1,
-      joined_csv_values: 1,
-      controlled_dataset_values: 2,
       maybe_put_data_dir: 2,
       maybe_put_dir: 2
     ]
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
-    joined = (assigns.value || []) |> validate_value!() |> joined_csv_values()
-
-    {value_str, default_value_str} =
-      controlled_dataset_values(assigns.controlled, joined)
+    vlist = (assigns.value || []) |> validate_value!()
+    {value_str, default_value_str} = ValueBinding.list_pair(vlist, assigns.controlled)
 
     base = %{
       "data-collapsible" => get_boolean(assigns.collapsible),

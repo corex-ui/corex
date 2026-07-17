@@ -1,4 +1,5 @@
 @import "../main.css";
+@import "./scrollbar.css";
 
 @layer components {
  .collapsible[data-loading] [data-scope="collapsible"][data-part="root"] {
@@ -167,6 +168,8 @@
  color: var(--color-ink);
  box-shadow: var(--shadow-md);
  gap: var(--ctl-space, var(--spacing-space));
+ max-height: var(--ctl-max-height, none);
+ overflow-y: var(--ctl-max-height-overflow, hidden);
  }
 
  .collapsible [data-scope="collapsible"][data-part="content"] > * {
@@ -174,9 +177,8 @@
  min-width: 0;
  }
 
- .collapsible [data-scope="collapsible"][data-part="content"] > p {
- max-height: calc(var(--spacing) * 80);
- overflow-y: auto;
+ .collapsible[class*="ui-max-height-"] [data-scope="collapsible"][data-part="content"] {
+ @apply scrollbar scrollbar--sm;
  }
 
  .collapsible

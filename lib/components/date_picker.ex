@@ -1,7 +1,6 @@
 defmodule Corex.DatePicker do
   @moduledoc ~S'''
-  Phoenix implementation of [Zag.js Date Picker](https://zagjs.com/components/react/date-picker).
-
+  Date picker for Phoenix LiveView forms. Behavior follows [Zag.js Date Picker](https://zagjs.com/components/react/date-picker).
   ## Anatomy
 
   ### Basic Usage
@@ -25,7 +24,7 @@ defmodule Corex.DatePicker do
 
   When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `<.form for={@form}>`.
 
-  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:date])}` when you want alert borders after validation.
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. With `field={@form[:…]}`, pass `auto_invalid` for alert borders from visible errors, or `invalid={true}` to force the alert state.
 
   ### Wire format vs domain types
 
@@ -246,9 +245,7 @@ defmodule Corex.DatePicker do
   ```
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   Stack modifiers on the host (`class` on `<.date_picker>`). Combine axes, for example `date-picker ui-accent ui-size-lg` or `date-picker ui-info ui-solid`.
@@ -307,6 +304,7 @@ defmodule Corex.DatePicker do
   alias Corex.DatePicker.Anatomy
   alias Corex.DatePicker.Connect
   alias Corex.DatePicker.Translation, as: DatePickerTranslation
+  alias Corex.Selectors
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
@@ -377,8 +375,13 @@ defmodule Corex.DatePicker do
   )
 
   attr(:invalid, :boolean,
-    default: false,
+    default: nil,
     doc: "Whether the date picker is invalid"
+  )
+
+  attr(:auto_invalid, :boolean,
+    default: false,
+    doc: "When true with `field`, set invalid from visible changeset errors"
   )
 
   attr(:outside_day_selectable, :boolean,
@@ -540,21 +543,24 @@ defmodule Corex.DatePicker do
     value =
       case assigns[:value] do
         nil -> date_field_value(field.value, mode)
-        explicit -> explicit
+        explicit -> date_field_value(explicit, mode)
       end
 
     assigns
     |> Corex.FormField.assign_form_field(field)
     |> assign(:value, value)
-    |> date_picker()
+    |> date_picker_render(Phoenix.Component.used_input?(field))
   end
 
-  def date_picker(assigns) do
+  def date_picker(assigns), do: date_picker_render(assigns, false)
+
+  defp date_picker_render(assigns, field_used) do
     assigns =
       assigns
-      |> assign(:id, assigns[:id] || "date-picker-#{System.unique_integer([:positive])}")
+      |> Corex.FormField.require_id!("Corex component (date-picker)")
+      |> assign(:field_used, field_used)
       |> merge_date_picker_assigns()
-      |> assign_array_form_submit()
+      |> assign_array_form_submit(field_used)
 
     ~H"""
     <div
@@ -566,6 +572,7 @@ defmodule Corex.DatePicker do
       {Connect.props(%Anatomy.Props{
         id: @id,
         form_field: @form_field,
+        field_used: @field_used,
         value: @value,
         locale: @locale,
         time_zone: @time_zone,
@@ -616,25 +623,36 @@ defmodule Corex.DatePicker do
             :if={@array_form_submit}
             data-scope="date-picker"
             data-part="array-inputs"
-            phx-update="ignore"
             id={"date-picker:#{@id}:array-inputs"}
           >
             <input
-              :for={iso <- @array_iso_values}
+              :for={{iso, index} <- Enum.with_index(@array_iso_values)}
               type="hidden"
+              id={"date-picker:#{@id}:array-input-#{index}"}
               data-scope="date-picker"
               data-part="array-input"
               name={@submit_name}
               value={iso}
+              phx-mounted={
+                JS.ignore_attributes(["value", "name"],
+                  to: Selectors.css_id("date-picker:#{@id}:array-input-#{index}")
+                )
+              }
             />
             <input
               :if={@array_iso_values == []}
               type="hidden"
+              id={"date-picker:#{@id}:array-input-empty"}
               data-scope="date-picker"
               data-part="array-input"
               data-empty
-              name={@submit_name}
+              name={@empty_array_name}
               value=""
+              phx-mounted={
+                JS.ignore_attributes(["value", "name"],
+                  to: Selectors.css_id("date-picker:#{@id}:array-input-empty")
+                )
+              }
             />
           </div>
           <input
@@ -925,21 +943,26 @@ defmodule Corex.DatePicker do
     |> assign(translation: DatePickerTranslation.resolve(Map.get(assigns, :translation)))
   end
 
-  defp assign_array_form_submit(assigns) do
+  defp assign_array_form_submit(assigns, field_used) do
     array = assigns.selection_mode in ["multiple", "range"] && is_binary(assigns[:name])
 
     if array do
-      assigns
-      |> Corex.FormField.assign_list_submit()
-      |> assign(:array_form_submit, true)
-      |> assign(
-        :array_iso_values,
-        iso_values_for_array_submit(assigns.value, assigns.selection_mode)
-      )
+      assigns =
+        assigns
+        |> Corex.FormField.assign_list_submit()
+        |> assign(:array_form_submit, true)
+        |> assign(
+          :array_iso_values,
+          iso_values_for_array_submit(assigns.value, assigns.selection_mode)
+        )
+
+      empty_name = if field_used, do: assigns.submit_name
+      assign(assigns, :empty_array_name, empty_name)
     else
       assigns
       |> assign(:array_form_submit, false)
       |> assign(:submit_name, nil)
+      |> assign(:empty_array_name, nil)
       |> assign(:array_iso_values, [])
     end
   end
@@ -967,6 +990,9 @@ defmodule Corex.DatePicker do
   defp date_field_value(nil, _), do: nil
   defp date_field_value(%Date{} = d, _), do: Date.to_iso8601(d)
   defp date_field_value(s, _) when is_binary(s), do: s
+
+  defp date_field_value([single | _], "single"), do: date_field_value(single, "single")
+  defp date_field_value([], "single"), do: nil
 
   defp date_field_value(values, mode) when is_list(values) and mode in ["multiple", "range"] do
     values

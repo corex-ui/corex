@@ -6,14 +6,14 @@ import {
   getPlacement,
   getPlacementSide,
   getPlacementStyles
-} from "./chunks/chunk-DVA7SQMW.mjs";
+} from "./chunks/chunk-MHRYIVD2.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-MOSXJRWI.mjs";
-import "./chunks/chunk-26XTEIHY.mjs";
+} from "./chunks/chunk-CBUVYVIR.mjs";
+import "./chunks/chunk-ZSA4KI2Y.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-QU36267Q.mjs";
+} from "./chunks/chunk-C4KEB3WL.mjs";
 import {
   performRedirect,
   readDomItemRedirect
@@ -22,7 +22,7 @@ import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunks/chunk-JF64R7HW.mjs";
+} from "./chunks/chunk-YUSIPE4B.mjs";
 import {
   notifyChange,
   readPayloadId
@@ -71,7 +71,7 @@ import {
   queryAll,
   raf,
   scrollIntoView
-} from "./chunks/chunk-YGZLYEUJ.mjs";
+} from "./chunks/chunk-6AOEC32Q.mjs";
 
 // ../node_modules/.pnpm/@zag-js+menu@1.40.0/node_modules/@zag-js/menu/dist/menu.anatomy.mjs
 var anatomy = createAnatomy("menu").parts(
@@ -1689,7 +1689,10 @@ var Menu = class extends Component {
   }
   destroy = () => {
     this.clearSubmenuTriggerSubscriptions();
+    this.unsubscribe?.();
+    this.unsubscribe = void 0;
     this.el.removeAttribute("data-loading");
+    this.clearSpreadPropsCleanups();
     this.machine.stop();
   };
   render() {
@@ -1798,6 +1801,12 @@ function syncMenuPropsFromDom(menu) {
   });
   for (const child of menu.children) {
     syncMenuPropsFromDom(child);
+  }
+}
+function renderMenuTree(menu) {
+  menu.render();
+  for (const child of menu.children) {
+    renderMenuTree(child);
   }
 }
 function destroyDescendantMenus(menu) {
@@ -1916,8 +1925,10 @@ var MenuHook = {
       })
     );
     this.handlers.push(
-      this.handleEvent("menu_open", () => {
+      this.handleEvent("menu_open", (payload) => {
+        if (!menuSetOpenMatches(el.id, payload)) return;
         this.pushEvent("menu_open_response", {
+          id: readPayloadId(payload),
           open: menu.api.open
         });
       })
@@ -1927,7 +1938,7 @@ var MenuHook = {
     if (this.el.hasAttribute("data-nested")) return;
     if (!this.menu) return;
     syncMenuPropsFromDom(this.menu);
-    this.menu.render();
+    renderMenuTree(this.menu);
     if (this.menu.children.length > 0) {
       wireSubmenuTriggersDeep(this.menu);
     }

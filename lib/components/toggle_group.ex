@@ -1,7 +1,6 @@
 defmodule Corex.ToggleGroup do
   @moduledoc ~S'''
-  Phoenix implementation of [Zag.js Toggle Group](https://zagjs.com/components/react/toggle-group).
-
+  Toggle group for Phoenix LiveView. Behavior follows [Zag.js Toggle Group](https://zagjs.com/components/react/toggle-group).
   ## Anatomy
 
   <!-- tabs-open -->
@@ -169,9 +168,7 @@ defmodule Corex.ToggleGroup do
   ```
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   Stack modifiers on the host (`class` on `<.toggle_group>`). Combine axes, for example `toggle-group ui-accent ui-size-lg` or `toggle-group ui-info ui-solid`.

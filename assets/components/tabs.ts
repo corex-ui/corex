@@ -1,5 +1,5 @@
 import { connect, machine, type Props, type Api } from "@zag-js/tabs";
-import { VanillaMachine, type Attrs } from "@zag-js/vanilla";
+import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 
 export type TabsDomIds = {
@@ -21,16 +21,18 @@ export function tabsDomIds(rootId: string): TabsDomIds {
 }
 
 export class Tabs extends Component<Props, Api> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: Props): VanillaMachine<any> {
+  private withDomIds(props: Partial<Props>): Partial<Props> {
     const id = props.id ?? this.el.id;
-    return new VanillaMachine(machine, { ...props, id, ids: tabsDomIds(id) });
+    return { ...props, id, ids: tabsDomIds(id) };
   }
 
-  updateProps = (attrs: Attrs) => {
-    const props = attrs as Props;
-    const id = props.id ?? this.el.id;
-    this.machine.updateProps({ ...props, id, ids: tabsDomIds(id) });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  initMachine(props: Props): VanillaMachine<any> {
+    return new VanillaMachine(machine, this.withDomIds(props) as Props);
+  }
+
+  updateProps = (props: Partial<Props>) => {
+    super.updateProps(this.withDomIds(props));
   };
 
   initApi(): Api {

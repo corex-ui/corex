@@ -79,7 +79,18 @@ defmodule Corex.SignaturePad.Anatomy do
             dir: String.t()
           }
 
-    @ignored_attrs ["id", "dir", "data-state", "data-disabled"]
+    @ignored_attrs [
+      "id",
+      "dir",
+      "data-state",
+      "data-disabled",
+      "tabindex",
+      "role",
+      "aria-roledescription",
+      "aria-label",
+      "aria-disabled",
+      "style"
+    ]
     def ignored_attrs, do: @ignored_attrs
   end
 

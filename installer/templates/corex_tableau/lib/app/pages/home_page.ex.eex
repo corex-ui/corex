@@ -1,5 +1,48 @@
 defmodule <%= @app_module %>.HomePage do
-  use Tableau.Page,
+<%= if @lang do %>  @moduledoc false
+
+  use Phoenix.Component
+  use Corex
+  use <%= @app_module %>.GettextSigil
+
+  def template(assigns) do
+    ~H"""
+    <.layout_heading class="layout-heading">
+      <:title>{~t"Corex for Tableau"}</:title>
+      <:subtitle>{~t"Accessible components and design tokens for static sites"}</:subtitle>
+      <:actions>
+        <.navigate class="button" external to="https://hexdocs.pm/corex">
+          {~t"Hex Doc"} <.heroicon name="hero-arrow-top-right-on-square" />
+        </.navigate>
+        <.navigate class="button" external to="https://corex.gigalixirapp.com/">
+          {~t"Demo Site"} <.heroicon name="hero-arrow-top-right-on-square" />
+        </.navigate>
+      </:actions>
+    </.layout_heading>
+    """
+  end
+end
+
+for locale <- <%= @app_module %>.Locale.locales() do
+  mod = Module.concat(<%= @app_module %>.HomePage, String.upcase(locale))
+  permalink = "/#{locale}/"
+
+  Module.create(
+    mod,
+    quote do
+      use Tableau.Page,
+        layout: <%= @app_module %>.RootLayout,
+        permalink: unquote(permalink),
+        title: "<%= @app_module %>",
+        page_kind: :home,
+        sitemap: %{priority: 1.0, changefreq: "weekly"}
+
+      def template(assigns), do: <%= @app_module %>.HomePage.template(assigns)
+    end,
+    __ENV__
+  )
+end
+<% else %>  use Tableau.Page,
     layout: <%= @app_module %>.RootLayout,
     permalink: "/",
     title: "<%= @app_module %>",
@@ -26,3 +69,4 @@ defmodule <%= @app_module %>.HomePage do
     """
   end
 end
+<% end %>

@@ -28,11 +28,7 @@ import { idMatches, readPayloadId, notifyChange } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
 import { readPositioningOptions } from "../lib/positioning";
-import {
-  queueLiveViewFormInputSync,
-  reapplyLiveViewValueInputUsage,
-} from "../lib/live-view-form-input";
-import { syncArrayHiddenInputsForPhoenix } from "../lib/form-array-submit";
+import { markUsed, setArrayValues, syncFormInput } from "../lib/phoenix-form-bridge";
 
 type ComboboxHookState = {
   combobox?: Combobox;
@@ -54,7 +50,7 @@ export function syncComboboxHiddenInputForPhoenix(
 ): void {
   const submitName = getString(el, "submitName");
   if (submitName && getBoolean(el, "multiple")) {
-    syncArrayHiddenInputsForPhoenix(el, values, {
+    setArrayValues(el, values, {
       onTouched,
       scope: "combobox",
       submitName,
@@ -67,14 +63,14 @@ export function syncComboboxHiddenInputForPhoenix(
     '[data-scope="combobox"][data-part="hidden-input"]'
   );
   if (!hidden) return;
-  queueLiveViewFormInputSync(hidden, () => formatComboboxHiddenValue(el, values), onTouched);
+  syncFormInput(hidden, () => formatComboboxHiddenValue(el, values), onTouched);
 }
 
 function reapplyComboboxHiddenInputUsage(el: HTMLElement): void {
   const hidden = el.querySelector<HTMLInputElement>(
     '[data-scope="combobox"][data-part="hidden-input"]'
   );
-  if (hidden) reapplyLiveViewValueInputUsage(hidden);
+  if (hidden) markUsed(hidden);
 }
 
 export { mountStringListBinding as comboboxValueBinding };
@@ -274,7 +270,7 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
     const defaultValues = getStringList(el, "defaultValue") ?? [];
     if (defaultValues.length > 0) {
       hook.fieldTouched = true;
-      queueMicrotask(() => reapplyComboboxHiddenInputUsage(el));
+      reapplyComboboxHiddenInputUsage(el);
     }
 
     let comboboxRef: Combobox | undefined;
@@ -326,8 +322,10 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
     if (!this.combobox) return;
 
     const newItemsJson = this.el.getAttribute("data-items") ?? "[]";
+    let itemsChanged = false;
     if (newItemsJson !== this.lastItemsJson) {
       this.lastItemsJson = newItemsJson;
+      itemsChanged = true;
       const newCollection = safeParseJson<ComboboxItem[]>(newItemsJson, []);
       const hasGroups = newCollection.some((item) => Boolean(item.group));
       this.combobox.hasGroups = hasGroups;
@@ -354,8 +352,10 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
       this.combobox.api.reposition();
     }
 
-    this.combobox.renderItems();
-    this.combobox.applyItemProps();
+    if (itemsChanged) {
+      this.combobox.renderItems();
+      this.combobox.applyItemProps();
+    }
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & ComboboxHookState) {

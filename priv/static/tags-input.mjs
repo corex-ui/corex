@@ -2,17 +2,20 @@ import {
   createLiveRegion
 } from "./chunks/chunk-7BZGUIUZ.mjs";
 import {
+  setArrayValues
+} from "./chunks/chunk-2H6YHTHG.mjs";
+import {
   trackInteractOutside
-} from "./chunks/chunk-26XTEIHY.mjs";
+} from "./chunks/chunk-ZSA4KI2Y.mjs";
 import {
   bindArrayFieldSubmitIntent,
-  isFormFieldUsed,
-  syncArrayHiddenInputsForPhoenix
-} from "./chunks/chunk-IKLCQZIF.mjs";
-import "./chunks/chunk-ASQD2R2U.mjs";
+  isFormFieldUsed
+} from "./chunks/chunk-3BEM4I52.mjs";
+import "./chunks/chunk-DOKFN6DA.mjs";
 import {
   mountTagsBinding
-} from "./chunks/chunk-XL4XUS2C.mjs";
+} from "./chunks/chunk-BGER3KYP.mjs";
+import "./chunks/chunk-TKOH2OAC.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -60,7 +63,7 @@ import {
   trackFormControl,
   uniq,
   warn
-} from "./chunks/chunk-YGZLYEUJ.mjs";
+} from "./chunks/chunk-6AOEC32Q.mjs";
 
 // ../node_modules/.pnpm/@zag-js+tags-input@1.40.0/node_modules/@zag-js/tags-input/dist/tags-input.anatomy.mjs
 var anatomy = createAnatomy("tagsInput").parts(
@@ -1199,6 +1202,26 @@ function itemInputIsEditing(input) {
   if (!input) return false;
   return !input.hidden;
 }
+function stripLiveViewDomAttrs(root) {
+  const walk = (node) => {
+    for (const attr of Array.from(node.attributes)) {
+      if (attr.name.startsWith("data-phx-")) {
+        node.removeAttribute(attr.name);
+      }
+    }
+    for (const child of Array.from(node.children)) {
+      walk(child);
+    }
+  };
+  walk(root);
+}
+function normalizeDeleteTriggerContent(delEl) {
+  const keep = delEl.querySelector(':scope > [class^="hero-"], :scope > .icon, :scope > svg') ?? delEl.firstElementChild;
+  if (!keep) return;
+  for (const child of Array.from(delEl.children)) {
+    if (child !== keep) delEl.removeChild(child);
+  }
+}
 var TagsInput = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
@@ -1221,10 +1244,16 @@ var TagsInput = class extends Component {
       '[data-scope="tags-input"][data-part="item-delete-trigger"]'
     );
     if (delEl) {
-      while (delEl.childElementCount > 1) {
-        delEl.removeChild(delEl.lastElementChild);
-      }
-      this.spreadProps(delEl, this.api.getItemDeleteTriggerProps({ index, value }));
+      normalizeDeleteTriggerContent(delEl);
+      const deleteProps = this.api.getItemDeleteTriggerProps({ index, value });
+      const onPointerDown = deleteProps.onPointerDown;
+      deleteProps.onPointerDown = (event) => {
+        event.stopPropagation();
+        if (typeof onPointerDown === "function") {
+          onPointerDown(event);
+        }
+      };
+      this.spreadProps(delEl, deleteProps);
     }
     const itemInputEl = itemEl.querySelector(
       '[data-scope="tags-input"][data-part="item-input"]'
@@ -1263,6 +1292,7 @@ var TagsInput = class extends Component {
       if (!itemEl || !isItem) {
         const fresh = template.cloneNode(true);
         fresh.removeAttribute("data-template");
+        stripLiveViewDomAttrs(fresh);
         const ref = items[index] ?? mainInputEl;
         controlEl.insertBefore(fresh, ref);
         items = directItemElements(controlEl);
@@ -1316,7 +1346,7 @@ var TagsInput = class extends Component {
 
 // lib/tags-input-form.ts
 function syncTagsArrayInputsForPhoenix(el, values, onTouched, opts = {}) {
-  syncArrayHiddenInputsForPhoenix(el, values, {
+  setArrayValues(el, values, {
     onTouched,
     scope: "tags-input",
     notifyLiveView: opts.notifyLiveView,
@@ -1328,6 +1358,9 @@ function syncTagsInputFormForPhoenix(el, values, onTouched, opts = {}) {
 }
 
 // hooks/tags-input.ts
+function sameStringList(a, b) {
+  return a.length === b.length && a.every((v, i) => v === b[i]);
+}
 function parseJsonTags(el, key) {
   const raw = el.dataset[key];
   if (!raw || raw.trim() === "") return [];
@@ -1362,7 +1395,6 @@ var TagsInputHook = {
   mounted() {
     const el = this.el;
     const hook = this;
-    hook.allowFormNotify = false;
     hook.fieldTouched = false;
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
@@ -1370,10 +1402,12 @@ var TagsInputHook = {
     const max = maxProp(el);
     const delimiter = getString(el, "delimiter");
     const placeholder = readPlaceholderFromMainInput(el);
+    const valueBinding = mountTagsBinding(el);
+    const initialValues = "value" in valueBinding ? valueBinding.value : valueBinding.defaultValue;
     const zag = new TagsInput(el, {
       id: el.id,
       ...resolveZagTagsInputTranslations(el),
-      ...mountTagsBinding(el),
+      ...valueBinding,
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readonly"),
       invalid: getBoolean(el, "invalid"),
@@ -1391,10 +1425,13 @@ var TagsInputHook = {
       ...delimiter !== void 0 && delimiter !== "" ? { delimiter } : {},
       ...placeholder !== void 0 ? { placeholder } : {},
       onValueChange: (details) => {
-        hook.fieldTouched = true;
+        const isMountEcho = hook.fieldTouched !== true && sameStringList(details.value, initialValues);
+        if (!isMountEcho) {
+          hook.fieldTouched = true;
+        }
         syncTagsInputFormForPhoenix(el, details.value, void 0, {
-          notifyLiveView: hook.allowFormNotify === true,
-          fieldTouched: true
+          notifyLiveView: !isMountEcho,
+          fieldTouched: !isMountEcho
         });
         notifyChange({
           el,
@@ -1442,15 +1479,12 @@ var TagsInputHook = {
     const syncForm = (values, opts = {}) => {
       syncTagsInputFormForPhoenix(el, values, void 0, {
         notifyLiveView: opts.notifyLiveView,
-        fieldTouched: isFormFieldUsed(el, hook.fieldTouched === true)
+        fieldTouched: isFormFieldUsed(el, Boolean(hook.fieldTouched))
       });
     };
-    queueMicrotask(() => {
-      if (!isFormFieldUsed(el, hook.fieldTouched === true)) {
-        syncForm(zag.api.value, { notifyLiveView: false });
-      }
-      hook.allowFormNotify = true;
-    });
+    if (!isFormFieldUsed(el, Boolean(hook.fieldTouched))) {
+      syncForm(zag.api.value, { notifyLiveView: false });
+    }
     hook.unbindSubmitIntent = bindArrayFieldSubmitIntent(el, () => {
       hook.fieldTouched = true;
       syncForm(zag.api.value, { notifyLiveView: false });

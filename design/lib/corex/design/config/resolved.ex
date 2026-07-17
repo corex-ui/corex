@@ -42,7 +42,7 @@ defmodule Corex.Design.Config.Resolved do
       themes: Map.get(config, :themes),
       scales: normalize_scales(Map.get(config, :scales, [])),
       components: Map.get(config, :components),
-      semantics: Map.get(config, :semantics),
+      semantics: Map.get(config, :semantics)
     ]
   end
 

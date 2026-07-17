@@ -14,12 +14,12 @@ defmodule Corex.SelectTest do
 
     test "controlled select has data-value" do
       html = render_component(&CorexTest.ComponentHelpers.render_select_controlled_multiple/1, [])
-      assert html =~ ~r/data-value="a"/
+      assert html =~ ~r/data-value="\[&quot;a&quot;\]"/
     end
 
     test "select with value only in default attr has data-default-value" do
       html = render_component(&CorexTest.ComponentHelpers.render_select_uncontrolled_value/1, [])
-      assert html =~ ~r/data-default-value="a"/
+      assert html =~ ~r/data-default-value="\[&quot;a&quot;\]"/
     end
 
     test "with field from form has correct name and id" do
@@ -131,7 +131,7 @@ defmodule Corex.SelectTest do
       }
 
       result = Connect.props(Map.merge(ConnectProps.default_select(), assigns))
-      assert result["data-value"] == "a"
+      assert result["data-value"] == ~S(["a"])
       assert result["data-default-value"] == nil
       assert result["data-controlled"] == ""
     end
@@ -164,7 +164,7 @@ defmodule Corex.SelectTest do
       }
 
       result = Connect.props(Map.merge(ConnectProps.default_select(), assigns))
-      assert result["data-value"] == "a"
+      assert result["data-value"] == ~S(["a"])
       assert result["data-default-value"] == nil
       assert result["data-controlled"] == ""
       assert result["data-form-field"] == "true"
@@ -251,6 +251,19 @@ defmodule Corex.SelectTest do
       assert result["data-to"] == "/foo"
       assert result["data-redirect"] == "patch"
       assert Map.has_key?(result, "data-new-tab")
+    end
+
+    test "omits data-to for disallowed href" do
+      assigns = %{
+        id: "s",
+        value: "a",
+        dir: "ltr",
+        orientation: "vertical",
+        to: "javascript:alert(1)"
+      }
+
+      result = Connect.item(assigns)
+      refute Map.has_key?(result, "data-to")
     end
 
     test "emits data-redirect=\"false\" when redirect is false" do

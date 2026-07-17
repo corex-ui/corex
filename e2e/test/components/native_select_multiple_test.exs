@@ -2,6 +2,8 @@ defmodule E2eWeb.NativeSelectMultipleTest do
   use ExUnit.Case, async: false
   use Wallaby.Feature
 
+  @moduletag :wallaby
+
   alias E2eWeb.NativeInputModel, as: NativeInput
 
   feature "submit without selection shows empty tags", %{session: session} do

@@ -2,6 +2,8 @@ defmodule E2eWeb.DatePickerFormTest do
   use ExUnit.Case, async: false
   use Wallaby.Feature
 
+  @moduletag :wallaby
+
   alias E2eWeb.DatePickerModel, as: DatePicker
 
   feature "static form - submit empty/default includes date", %{session: session} do

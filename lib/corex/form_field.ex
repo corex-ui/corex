@@ -1,14 +1,10 @@
 defmodule Corex.FormField do
   @moduledoc """
-  Shared helpers for Corex components that accept `field={@form[:name]}`.
+  Use `invalid?/1` when you need an explicit `invalid={...}` from visible
+  changeset errors. Prefer `auto_invalid` on the component for the common case.
+  Explicit `invalid` wins over `auto_invalid`.
 
-  `assign_form_field/2` wires id, name, form, errors, and `field_used`. It does **not**
-  set `invalid` from changeset errors. Pass `invalid` on the component when you want
-  alert styling (`data-invalid`):
-
-      <.select field={@form[:country]} invalid={FormField.invalid?(@form[:country])} />
-
-  Error messages still come from the `:error` slot via `assign_errors/2`.
+  See the [Forms](forms.html) guide.
   """
 
   import Phoenix.Component
@@ -27,6 +23,11 @@ defmodule Corex.FormField do
     assign(assigns, :errors, errors)
   end
 
+  @doc """
+  Returns true when the field has visible errors (`used_input?/1`).
+
+      <.select field={@form[:country]} invalid={Corex.FormField.invalid?(@form[:country])} />
+  """
   @spec invalid?(Phoenix.HTML.FormField.t()) :: boolean()
   def invalid?(%Phoenix.HTML.FormField{} = field), do: field_errors_visible?(field)
 
@@ -52,7 +53,17 @@ defmodule Corex.FormField do
       |> assign_ids(field)
       |> assign_errors(field)
 
-    assign(assigns, :invalid, Map.get(assigns, :invalid, false))
+    assign(assigns, :invalid, resolve_invalid(assigns, field))
+  end
+
+  defp resolve_invalid(assigns, field) do
+    case Map.get(assigns, :invalid) do
+      nil ->
+        if Map.get(assigns, :auto_invalid, false), do: invalid?(field), else: false
+
+      invalid ->
+        invalid
+    end
   end
 
   @spec dataset_default_boolean(boolean() | :indeterminate) :: String.t()
@@ -65,15 +76,15 @@ defmodule Corex.FormField do
   def dataset_default_string(nil), do: ""
 
   @spec dataset_default_list(list()) :: String.t()
-  def dataset_default_list([]), do: ""
+  def dataset_default_list([]), do: "[]"
 
   def dataset_default_list(list) when is_list(list) do
-    Corex.Helpers.joined_csv_values(list) || ""
+    Corex.ValueBinding.encode_list(list) || "[]"
   end
 
   @spec dataset_default_json(list()) :: String.t()
   def dataset_default_json(list) when is_list(list) do
-    Corex.Dataset.encode_json(list) || "[]"
+    Corex.ValueBinding.encode_list(list) || "[]"
   end
 
   @spec dataset_default_paths(list()) :: String.t()
@@ -83,7 +94,7 @@ defmodule Corex.FormField do
     Enum.join(paths, "\n")
   end
 
-  @spec put_form_field_attrs(map(), map()) :: map()
+  @spec put_form_field_attrs(map(), map() | struct()) :: map()
   def put_form_field_attrs(attrs, assigns) do
     attrs =
       if Map.get(assigns, :form_field, false) do
@@ -112,18 +123,24 @@ defmodule Corex.FormField do
   def list_submit_name(nil), do: nil
   def list_submit_name(name) when is_binary(name), do: name <> "[]"
 
-  @spec unused_input_name(String.t() | nil) :: String.t() | nil
-  def unused_input_name(nil), do: nil
-
-  def unused_input_name(name) when is_binary(name) do
-    case Regex.run(~r/^(.*)\[([^\]]+)\]$/, name) do
-      [_, prefix, field] -> "#{prefix}[_unused_#{field}]"
-      _ -> nil
-    end
-  end
-
   @spec assign_list_submit(map()) :: map()
   def assign_list_submit(assigns) do
     assign(assigns, :submit_name, list_submit_name(assigns[:name]))
+  end
+
+  @spec require_id!(map(), String.t()) :: map()
+  def require_id!(assigns, component_name) when is_binary(component_name) do
+    case assigns[:id] do
+      id when is_binary(id) and id != "" ->
+        assigns
+
+      _ ->
+        raise ArgumentError, """
+        #{component_name} requires a stable :id (or :field) for its LiveView hook host.
+
+        Pass id explicitly, or use field={@form[:name]} so Phoenix FormField.id is used
+        (Ecto changesets with to_form/1 provide stable ids automatically).
+        """
+    end
   end
 end

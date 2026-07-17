@@ -313,9 +313,7 @@ defmodule Corex.DataTable do
   This requires the `corex_design` dependency and `mix corex.design.build`; import the component css file.
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
   '''
 
@@ -407,7 +405,10 @@ defmodule Corex.DataTable do
         if(assigns.selectable, do: 1, else: 0) +
         if assigns.action != [], do: 1, else: 0
 
-    assigns = assign(assigns, :empty_col_count, col_count)
+    assigns =
+      assigns
+      |> assign(:empty_col_count, col_count)
+      |> assign(:selected_set, MapSet.new(List.wrap(assigns.selected)))
 
     ~H"""
     <div tabindex="0" dir={@dir} {@rest}>
@@ -474,38 +475,41 @@ defmodule Corex.DataTable do
               </div>
             </td>
           </tr>
-          <tr :for={row <- @rows} id={@row_id && @row_id.(row)} data-scope="data-table" data-part="row" style={@row_click && "cursor: pointer"}>
-            <td :if={@selectable} data-scope="data-table" data-part="selection-cell">
-              <Corex.Checkbox.checkbox
-                id={"#{@id}-select-#{@row_id.(row)}"}
-                class={@checkbox_class}
-                name={to_string(@row_id.(row))}
-                value={to_string(@row_id.(row))}
-                phx-value-id={@row_id.(row)}
-                checked={@row_id.(row) in @selected}
-                on_checked_change={@on_select}
-                controlled={true}
-                aria_label={@translation.select_row}
+          <%= for row <- @rows do %>
+            <% row_id = @row_id && @row_id.(row) %>
+            <tr id={row_id} data-scope="data-table" data-part="row" style={@row_click && "cursor: pointer"}>
+              <td :if={@selectable} data-scope="data-table" data-part="selection-cell">
+                <Corex.Checkbox.checkbox
+                  id={"#{@id}-select-#{row_id}"}
+                  class={@checkbox_class}
+                  name={to_string(row_id)}
+                  value={to_string(row_id)}
+                  phx-value-id={row_id}
+                  checked={MapSet.member?(@selected_set, row_id)}
+                  on_checked_change={@on_select}
+                  controlled={true}
+                  aria_label={@translation.select_row}
+                >
+                  <:indicator :if={@checkbox_indicator != []}>
+                    {render_slot(@checkbox_indicator)}
+                  </:indicator>
+                </Corex.Checkbox.checkbox>
+              </td>
+              <td
+                :for={{col, index} <- Enum.with_index(@col)}
+                phx-click={@row_click && @row_click.(row)}
+                data-scope="data-table"
+                data-part={cell_data_part(index, length(@col))}
               >
-                <:indicator :if={@checkbox_indicator != []}>
-                  {render_slot(@checkbox_indicator)}
-                </:indicator>
-              </Corex.Checkbox.checkbox>
-            </td>
-            <td
-              :for={{col, index} <- Enum.with_index(@col)}
-              phx-click={@row_click && @row_click.(row)}
-              data-scope="data-table"
-              data-part={cell_data_part(index, length(@col))}
-            >
-              {render_slot(col, @row_item.(row))}
-            </td>
-            <td :if={@action != []} data-scope="data-table" data-part="action-cell">
-              <div data-scope="data-table" data-part="actions">
-                {render_slot(@action, @row_item.(row))}
-              </div>
-            </td>
-          </tr>
+                {render_slot(col, @row_item.(row))}
+              </td>
+              <td :if={@action != []} data-scope="data-table" data-part="action-cell">
+                <div data-scope="data-table" data-part="actions">
+                  {render_slot(@action, @row_item.(row))}
+                </div>
+              </td>
+            </tr>
+          <% end %>
         </tbody>
       </table>
     </div>

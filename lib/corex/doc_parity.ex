@@ -1,6 +1,8 @@
 defmodule Corex.DocParity do
   @moduledoc false
 
+  alias Corex.DocParity.Markers
+
   @root Path.expand("../..", __DIR__)
   @components_dir Path.join(@root, "lib/components")
   @demos_dir Path.join(@root, "e2e/lib/e2e_web/demos")
@@ -14,129 +16,6 @@ defmodule Corex.DocParity do
           status: status(),
           detail: String.t() | nil
         }
-
-  @anatomy_demo_aliases %{
-    "minimal" => ["minimal_code", "anatomy_minimal_code"],
-    "invalid" => ["invalid_code"],
-    "label and indicator" => ["labeled_code", "anatomy_labeled_code"],
-    "indeterminate" => ["indeterminate_code"],
-    "disabled" => ["disabled_code"],
-    "read-only" => ["read_only_code", "readonly_code"],
-    "controlled" => ["controlled_code"],
-    "with slots" => ["with_indicator_code", "with_slots_code"],
-    "custom slots" => ["custom_slots_code", "anatomy_custom_slots_code"],
-    "basic" => ["basic_code", "anatomy_basic_code"],
-    "basic usage" => ["minimal_code", "anatomy_basic_code", "anatomy_minimal_code"],
-    "with indicator" => ["with_indicator_code", "anatomy_indicator_code"],
-    "with marks" => ["with_label_code", "custom_slots_code"],
-    "title and description" => ["with_title_description_code"],
-    "actions in content" => ["actions_in_content_code", "actions_code"],
-    "icon only" => ["anatomy_icon_only_code"],
-    "with icon" => ["anatomy_with_icon_code", "anatomy_with_icon_code"],
-    "fallback" => ["anatomy_fallback_code"],
-    "value slot" => ["anatomy_value_code"],
-    "pending" => ["anatomy_pending_code", "anatomy_value_code"],
-    "trigger only" => ["trigger_only_code", "minimal_code"],
-    "multi-line with heredoc" => ["multi_line_heredoc_code", "heredoc_code"],
-    "loading from a file" => ["loading_from_file_code", "from_file_code"],
-    "with label" => ["anatomy_with_label_code", "with_label_code"],
-    "multipart form (controller)" => ["multipart_form_controller_code", "anatomy_multipart_code"],
-    "list" => ["basic_code", "anatomy_minimal_code"],
-    "nested menu" => ["anatomy_nested_code", "nested_menu_code"],
-    "nested menu with custom indicator" => ["nested_menu_code", "anatomy_nested_code"],
-    "grouped items" => ["grouped_code", "anatomy_grouped_code"],
-    "grouped" => ["grouped_code", "anatomy_grouped_code"],
-    "custom item slot" => ["anatomy_extended_code", "extended_code"],
-    "textarea (icon slot ignored)" => ["anatomy_textarea_code", "anatomy_text_code"],
-    "checkbox, select, radio" => ["anatomy_other_code"],
-    "with form field" => ["form_field_code", "anatomy_text_code"],
-    "min, max, step" => ["min_max_step_code", "min_max_default_code", "minimal_code"],
-    "controlled page" => ["anatomy_controlled_code", "controlled_page_code"],
-    "translation" => ["translation_code", "with_translation_code", "layout_translation_code"],
-    "custom error" => ["custom_error_code", "invalid_code"],
-    "custom" => ["custom_code", "extended_code", "anatomy_extended_code"],
-    "custom grouped" => [
-      "custom_grouped_code",
-      "extended_grouped_code",
-      "anatomy_extended_grouped_code"
-    ],
-    "with callback" => ["with_label_code", "with_callback_code"],
-    "custom drawing options" => ["custom_drawing_options_code", "with_presets_code"],
-    "with triggers" => ["anatomy_with_triggers_code", "with_triggers_code"],
-    "countdown" => ["anatomy_countdown_code", "countdown_code"],
-    "interval tick" => ["anatomy_timing_code", "interval_tick_code"],
-    "layout flash" => ["layout_flash_code", "flash_code"],
-    "flash defaults" => ["flash_defaults_code", "defaults_code"],
-    "dual label" => ["dual_label_code", "with_indicator_code"],
-    "single selection" => ["anatomy_single_selection_code", "single_selection_code"],
-    "with arrow" => ["anatomy_with_arrow_code"],
-    "placement" => ["anatomy_placement_code"],
-    "compound" => ["compound_code", "anatomy_compound_code"],
-    "empty" => ["empty_code", "anatomy_empty_code"],
-    "manual slots" => ["manual_slots_code", "anatomy_manual_slots_code"],
-    "extended" => ["extended_code", "anatomy_extended_code"],
-    "extended grouped" => ["extended_grouped_code", "anatomy_extended_grouped_code"]
-  }
-
-  @component_anatomy_overrides %{
-    "file_upload_live" => %{
-      "minimal" => ["live_anatomy_minimal_code"],
-      "with label" => ["live_anatomy_with_label_code"],
-      "custom slots" => ["live_anatomy_custom_slots_code"],
-      "form with submit" => ["live_form_with_submit_code", "form_with_submit_code"]
-    },
-    "tree_view" => %{
-      "basic" => ["anatomy_minimal_code"],
-      "with label" => ["anatomy_with_label_code"],
-      "with indicator" => ["anatomy_with_indicator_code"],
-      "custom slots" => ["anatomy_custom_slots_code"],
-      "compound" => ["anatomy_compound_code"]
-    },
-    "angle_slider" => %{
-      "basic" => ["minimal_code"],
-      "with marks" => ["with_label_code"]
-    },
-    "color_picker" => %{"basic" => ["minimal_code"]},
-    "editable" => %{"basic" => ["minimal_code"]},
-    "pin_input" => %{"basic" => ["minimal_code"]},
-    "native_input" => %{
-      "basic" => ["anatomy_basic_code"],
-      "with icon" => ["anatomy_with_icon_code"],
-      "checkbox, select, radio" => ["anatomy_other_code"]
-    },
-    "clipboard" => %{"trigger only" => ["trigger_only_code"]},
-    "listbox" => %{"with indicator" => ["anatomy_with_indicator_code"]},
-    "radio_group" => %{"with indicator" => ["indicator_code"]},
-    "password_input" => %{"custom error" => ["invalid_code"]},
-    "collapsible" => %{
-      "minimal" => ["anatomy_basic_code"]
-    },
-    "code" => %{
-      "basic usage" => ["basic_usage_code"],
-      "multi-line with heredoc" => ["multiline_code"],
-      "loading from a file" => ["from_file_code"]
-    },
-    "toast" => %{
-      "layout flash" => ["layout_flash_code"],
-      "flash defaults" => ["flash_defaults_code"]
-    },
-    "toggle_group" => %{
-      "single selection" => ["anatomy_single_selection_code"]
-    },
-    "tabs" => %{
-      "custom" => ["anatomy_custom_code"]
-    },
-    "select" => %{
-      "custom" => ["extended_code"],
-      "custom grouped" => ["extended_grouped_code"]
-    },
-    "number_input" => %{
-      "minimal" => ["anatomy_minimal_quantity_code"]
-    },
-    "signature_pad" => %{
-      "custom drawing options" => ["with_presets_code"]
-    }
-  }
 
   @form_demo_pairs [
     {"phoenix form (changeset)", "heex",
@@ -185,7 +64,61 @@ defmodule Corex.DocParity do
 
   @spec failures([result()]) :: [result()]
   def failures(results),
-    do: Enum.reject(results, &(&1.status in [:pass, :missing_demo, :missing_moduledoc]))
+    do: Enum.reject(results, &(&1.status in [:pass, :missing_moduledoc]))
+
+  @doc """
+  Ensures Style CSS snippets in component docs prefer `@import \"../corex/corex.css\"`
+  and do not teach the obsolete `tokens/themes/neo/light.css` path.
+  """
+  @spec css_style_results([String.t()] | nil) :: [result()]
+  def css_style_results(components \\ nil) do
+    (components || component_slugs())
+    |> Enum.map(&css_style_result/1)
+  end
+
+  defp css_style_result(slug) do
+    case moduledoc_for(slug) do
+      nil ->
+        %{
+          component: slug,
+          section: "style / css",
+          demo_fn: "-",
+          status: :missing_moduledoc,
+          detail: "missing source"
+        }
+
+      doc ->
+        cond do
+          String.contains?(doc, "tokens/themes/neo/light.css") ->
+            %{
+              component: slug,
+              section: "style / css",
+              demo_fn: "-",
+              status: :drift,
+              detail: "obsolete tokens/themes/neo/light.css path"
+            }
+
+          String.contains?(doc, ~S(@import "../corex/main.css")) and
+              not String.contains?(doc, ~S(@import "../corex/corex.css")) ->
+            %{
+              component: slug,
+              section: "style / css",
+              demo_fn: "-",
+              status: :drift,
+              detail: "Style docs still teach main.css without corex.css"
+            }
+
+          true ->
+            %{
+              component: slug,
+              section: "style / css",
+              demo_fn: "-",
+              status: :pass,
+              detail: nil
+            }
+        end
+    end
+  end
 
   @spec report([result()]) :: String.t()
   def report(results) do
@@ -261,8 +194,21 @@ defmodule Corex.DocParity do
 
   defp moduledoc_for(slug) do
     case read_within(@components_dir, "#{slug}.ex") do
-      {:ok, source} -> extract_moduledoc(source)
+      {:ok, source} -> doc_with_anatomy(source)
       _ -> nil
+    end
+  end
+
+  defp doc_with_anatomy(source) do
+    moduledoc = extract_moduledoc(source)
+
+    if is_binary(moduledoc) and String.contains?(moduledoc, "## Anatomy") do
+      moduledoc
+    else
+      case extract_component_doc(source) do
+        doc when is_binary(doc) -> doc
+        _ -> moduledoc
+      end
     end
   end
 
@@ -302,16 +248,40 @@ defmodule Corex.DocParity do
 
   defp anatomy_pairs(slug, moduledoc, demo_source) do
     case {moduledoc, demo_source} do
-      {nil, _} ->
-        [anatomy_missing_source(slug, :missing_moduledoc)]
+      {nil, _} -> [anatomy_missing_source(slug, :missing_moduledoc)]
+      {_, nil} -> [anatomy_missing_source(slug, :missing_demo)]
+      {moduledoc, demo_source} -> anatomy_pairs_from_docs(slug, moduledoc, demo_source)
+    end
+  end
 
-      {_, nil} ->
-        [anatomy_missing_source(slug, :missing_demo)]
+  defp anatomy_pairs_from_docs(slug, moduledoc, demo_source) do
+    case anatomy_heading_pairs(slug, moduledoc) do
+      [] -> anatomy_root_results(slug, moduledoc, demo_source)
+      pairs -> Enum.flat_map(pairs, &anatomy_heading_results(slug, demo_source, &1))
+    end
+  end
 
-      {moduledoc, demo_source} ->
-        moduledoc
-        |> sections_under("## Anatomy")
-        |> Enum.flat_map(&anatomy_heading_results(slug, demo_source, &1))
+  defp anatomy_root_results(slug, moduledoc, demo_source) do
+    case root_anatomy_heex(moduledoc) do
+      nil -> []
+      heex -> anatomy_heex_results(slug, "minimal", heex, demo_source)
+    end
+  end
+
+  defp anatomy_heading_pairs(slug, moduledoc) do
+    anatomy_section_names(slug)
+    |> Enum.flat_map(&sections_under(moduledoc, &1))
+  end
+
+  defp anatomy_section_names("carousel"), do: ["## Anatomy", "## Items"]
+  defp anatomy_section_names(_slug), do: ["## Anatomy"]
+
+  defp root_anatomy_heex(moduledoc) do
+    with [_, body] <- Regex.run(~r/^\s*## Anatomy\s*\n(.*?)(?=\n\s*## |\z)/ms, moduledoc),
+         [_, snippet] <- Regex.run(~r/```heex\s*\n(.*?)```/s, body) do
+      String.trim(snippet)
+    else
+      _ -> nil
     end
   end
 
@@ -333,7 +303,7 @@ defmodule Corex.DocParity do
   end
 
   defp anatomy_heex_results(slug, heading, heex, demo_source) do
-    demo_fns = anatomy_demo_fns(slug, heading)
+    demo_fns = anatomy_demo_fns(slug, heading, demo_source)
 
     case pick_demo_snippet(demo_source, demo_fns) do
       nil ->
@@ -464,20 +434,29 @@ defmodule Corex.DocParity do
     |> Enum.map(fn {heading, content} -> {String.downcase(heading), content} end)
   end
 
-  defp anatomy_demo_fns(slug, heading) do
-    key = String.downcase(heading)
+  defp anatomy_demo_fns(slug, heading, demo_source) do
+    case demo_parity_fns(demo_source, heading) do
+      [_ | _] = fns ->
+        fns
 
-    case Map.get(@component_anatomy_overrides, slug) do
-      %{^key => fns} -> fns
-      _ -> Map.get(@anatomy_demo_aliases, key, ["#{slugify_heading(key)}_code"])
+      [] ->
+        case Markers.anatomy(slug, heading) do
+          {:ok, fns} -> fns
+          :error -> []
+        end
     end
   end
 
-  defp slugify_heading(heading) do
-    heading
-    |> String.replace(~r/[^a-z0-9]+/, "_")
-    |> String.trim("_")
+  defp demo_parity_fns(source, heading) when is_binary(source) do
+    key = String.downcase(heading)
+
+    ~r/#\s*@parity\s+anatomy:\s+"([^"]+)"\s*\ndef\s+([a-z0-9_]+)/
+    |> Regex.scan(source)
+    |> Enum.filter(fn [_, h, _] -> String.downcase(h) == key end)
+    |> Enum.map(fn [_, _, name] -> name end)
   end
+
+  defp demo_parity_fns(_, _), do: []
 
   defp pick_demo_snippet(demo_source, fn_names) do
     Enum.find_value(fn_names, fn name ->
@@ -490,7 +469,9 @@ defmodule Corex.DocParity do
 
   defp extract_demo_function(source, name) do
     patterns = [
+      ~r/def #{Regex.escape(name)}\s+do\s+~S'''\s*(.*?)\s*'''/s,
       ~r/def #{Regex.escape(name)}\s+do\s+~S"""\s*(.*?)\s*"""/s,
+      ~r/def #{Regex.escape(name)}\s+do\s+'''\s*(.*?)\s*'''/s,
       ~r/def #{Regex.escape(name)}\s+do\s+"""\s*(.*?)\s*"""/s
     ]
 
@@ -514,6 +495,21 @@ defmodule Corex.DocParity do
         end
     end
   end
+
+  defp extract_component_doc(source) do
+    [
+      ~r/@doc\s+~S'''(.*?)'''/s,
+      ~r/@doc\s+"""(.*?)"""/s
+    ]
+    |> Enum.flat_map(&Regex.scan(&1, source))
+    |> Enum.find_value(&anatomy_doc_body/1)
+  end
+
+  defp anatomy_doc_body([_, doc]) do
+    if String.contains?(doc, "## Anatomy"), do: doc
+  end
+
+  defp anatomy_doc_body(_), do: nil
 
   defp ellipsis?(text), do: String.contains?(text, "…") or String.contains?(text, "...")
 end

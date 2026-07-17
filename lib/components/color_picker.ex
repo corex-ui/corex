@@ -1,7 +1,6 @@
 defmodule Corex.ColorPicker do
   @moduledoc ~S'''
-  Phoenix implementation of [Zag.js Color Picker](https://zagjs.com/components/react/color-picker).
-
+  Color picker for Phoenix LiveView forms. Behavior follows [Zag.js Color Picker](https://zagjs.com/components/react/color-picker).
   ## Anatomy
 
   ### Basic
@@ -34,9 +33,7 @@ defmodule Corex.ColorPicker do
   Import the Corex design:
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   Stack modifiers on the host (`class` on `<.color_picker>`). Combine axes, for example `color-picker ui-accent ui-size-lg` or `color-picker ui-info ui-solid`.
@@ -210,7 +207,7 @@ defmodule Corex.ColorPicker do
 
   Set the form `id` in `to_form/2` and use `<.form for={@form}>`. Use `field={@form[:color]}` so the picker name matches the form. For Ecto validation in LiveView, add `phx-change` on the form so params stay in sync.
 
-  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:color])}` when you want alert borders after validation.
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. With `field={@form[:…]}`, pass `auto_invalid` for alert borders from visible errors, or `invalid={true}` to force the alert state.
 
   <!-- tabs-open -->
 
@@ -453,7 +450,13 @@ defmodule Corex.ColorPicker do
   attr(:close_on_select, :boolean, default: true)
   attr(:open_auto_focus, :boolean, default: true)
   attr(:disabled, :boolean, default: false)
-  attr(:invalid, :boolean, default: false)
+  attr(:invalid, :boolean, default: nil)
+
+  attr(:auto_invalid, :boolean,
+    default: false,
+    doc: "When true with `field`, set invalid from visible changeset errors"
+  )
+
   attr(:read_only, :boolean, default: false)
   attr(:required, :boolean, default: false)
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
@@ -503,7 +506,7 @@ defmodule Corex.ColorPicker do
 
     assigns =
       assigns
-      |> assign_new(:id, fn -> "color-picker-#{System.unique_integer([:positive])}" end)
+      |> Corex.FormField.require_id!("Corex component (color-picker)")
       |> assign_new(:form_field, fn -> false end)
       |> assign_new(:errors, fn -> [] end)
       |> assign_new(:invalid, fn -> false end)

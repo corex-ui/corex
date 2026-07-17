@@ -1,7 +1,6 @@
 defmodule Corex.PinInput do
   @moduledoc ~S'''
-  Phoenix implementation of [Zag.js Pin Input](https://zagjs.com/components/react/pin-input).
-
+  PIN / OTP input for Phoenix LiveView forms. Behavior follows [Zag.js Pin Input](https://zagjs.com/components/react/pin-input).
   ## Anatomy
 
   ### Basic
@@ -66,7 +65,7 @@ defmodule Corex.PinInput do
 
   Use `field={f[:code]}` inside `<.form>` so the hidden input name and validation align with Phoenix forms.
 
-  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:code])}` when you want alert borders after validation.
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. With `field={@form[:…]}`, pass `auto_invalid` for alert borders from visible errors, or `invalid={true}` to force the alert state.
 
   ```heex
   <.form for={@form} phx-change="validate">
@@ -88,9 +87,7 @@ defmodule Corex.PinInput do
   ```
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   Stack modifiers on the host (`class` on `<.pin_input>`). Combine axes, for example `pin-input ui-accent ui-size-lg` or `pin-input ui-info ui-solid`.
@@ -157,11 +154,13 @@ defmodule Corex.PinInput do
   alias Corex.PinInput.Anatomy.{Control, HiddenInput, Input, Label, Props, Root}
   alias Corex.PinInput.Connect
   alias Corex.PinInput.Translation
+  alias Corex.Selectors
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
   import Corex.Helpers, only: [validate_value!: 1, respond_to_fields: 1]
+  import Corex.Component, only: [form_control_attrs: 0]
 
-  attr(:id, :string, required: false)
+  form_control_attrs()
 
   attr(:value, :list,
     default: [],
@@ -169,16 +168,10 @@ defmodule Corex.PinInput do
   )
 
   attr(:count, :integer, default: 4, doc: "Number of input boxes")
-  attr(:disabled, :boolean, default: false)
-  attr(:invalid, :boolean, default: false)
-  attr(:required, :boolean, default: false)
-  attr(:read_only, :boolean, default: false)
   attr(:mask, :boolean, default: false)
   attr(:otp, :boolean, default: false)
   attr(:blur_on_complete, :boolean, default: false)
   attr(:select_on_focus, :boolean, default: false)
-  attr(:name, :string, default: nil)
-  attr(:form, :string, default: nil)
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
   attr(:orientation, :string, default: "vertical", values: ["horizontal", "vertical"])
   attr(:type, :string, default: "numeric", values: ["alphanumeric", "numeric", "alphabetic"])
@@ -194,7 +187,6 @@ defmodule Corex.PinInput do
   )
 
   attr(:errors, :list, default: [], doc: "Error messages to display (non-field API)")
-  attr(:field, Phoenix.HTML.FormField, doc: "A form field, e.g. f[:code] or @form[:code]")
 
   attr(:rest, :global)
 
@@ -228,7 +220,7 @@ defmodule Corex.PinInput do
 
     assigns =
       assigns
-      |> assign_new(:id, fn -> "pin-input-#{System.unique_integer([:positive])}" end)
+      |> Corex.FormField.require_id!("Corex component (pin-input)")
       |> assign_new(:form_field, fn -> false end)
       |> assign_new(:errors, fn -> [] end)
       |> assign_new(:dir, fn -> "ltr" end)
@@ -253,6 +245,7 @@ defmodule Corex.PinInput do
         form_field: @form_field,
         value: @value,
         count: @count,
+        controlled: @controlled,
         disabled: @disabled,
         invalid: @invalid,
         required: @required,
@@ -282,16 +275,21 @@ defmodule Corex.PinInput do
           :if={@submit_name}
           data-scope="pin-input"
           data-part="array-inputs"
-          phx-update="ignore"
           id={"pin-input:#{@id}:array-inputs"}
         >
           <input
-            :for={digit <- padded_pin_digits(@value, @count)}
+            :for={{digit, index} <- Enum.with_index(padded_pin_digits(@value, @count))}
             type="hidden"
+            id={"pin-input:#{@id}:array-input-#{index}"}
             data-scope="pin-input"
             data-part="array-input"
             name={@submit_name}
             value={digit}
+            phx-mounted={
+              JS.ignore_attributes(["value", "name"],
+                to: Selectors.css_id("pin-input:#{@id}:array-input-#{index}")
+              )
+            }
           />
         </div>
         <input phx-mounted={Connect.ignore_hidden_input(%HiddenInput{id: @id, name: if(@submit_name, do: nil, else: @name), value: @value_str})} {Connect.hidden_input(%HiddenInput{id: @id, name: if(@submit_name, do: nil, else: @name), value: @value_str})} />

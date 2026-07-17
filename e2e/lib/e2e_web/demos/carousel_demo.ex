@@ -820,6 +820,61 @@ defmodule E2eWeb.Demos.CarouselDemo do
     """
   end
 
+  def anatomy_images_code do
+    ~S"""
+    <.carousel
+      items={[
+        Corex.Image.new("/images/beach.jpg", alt: "Beach"),
+        Corex.Image.new("/images/fall.jpg", alt: "Fall"),
+        Corex.Image.new("/images/sand.jpg", alt: "Sand"),
+        Corex.Image.new("/images/star.jpg", alt: "Star"),
+        Corex.Image.new("/images/winter.jpg", alt: "Winter")
+      ]}
+      class="carousel"
+    >
+      <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
+    </.carousel>
+    """
+  end
+
+  def anatomy_custom_content_code do
+    ~S"""
+    <.carousel items={@posts} class="carousel">
+      <:item :let={post}>
+        <article>
+          <h3>{post.title}</h3>
+          <p>{post.description}</p>
+          <.navigate to="#" class="link">Read more</.navigate>
+        </article>
+      </:item>
+      <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
+    </.carousel>
+    """
+  end
+
+  def anatomy_compound_code do
+    ~S"""
+    <.carousel compound :let={ctx} item_count={2} class="carousel">
+      <.carousel_root ctx={ctx}>
+        <.carousel_item_group ctx={ctx}>
+          <.carousel_item ctx={ctx} index={0}>First slide</.carousel_item>
+          <.carousel_item ctx={ctx} index={1}>Second slide</.carousel_item>
+        </.carousel_item_group>
+        <.carousel_control ctx={ctx}>
+          <.carousel_prev_trigger ctx={ctx}><.heroicon name="hero-arrow-left" /></.carousel_prev_trigger>
+          <.carousel_indicator_group ctx={ctx}>
+            <.carousel_indicator ctx={ctx} index={0} />
+            <.carousel_indicator ctx={ctx} index={1} />
+          </.carousel_indicator_group>
+          <.carousel_next_trigger ctx={ctx}><.heroicon name="hero-arrow-right" /></.carousel_next_trigger>
+        </.carousel_control>
+      </.carousel_root>
+    </.carousel>
+    """
+  end
+
   def images_code do
     """
     <.carousel #{@gallery_items_attr} class="carousel">

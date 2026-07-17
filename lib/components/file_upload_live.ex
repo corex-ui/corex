@@ -144,7 +144,13 @@ defmodule Corex.FileUploadLive do
     doc: "Text direction (ltr or rtl)"
   )
 
-  attr(:invalid, :boolean, default: false, doc: "Whether the file upload is invalid")
+  attr(:invalid, :boolean, default: nil, doc: "Whether the file upload is invalid")
+
+  attr(:auto_invalid, :boolean,
+    default: false,
+    doc: "When true with `field`, set invalid from visible changeset errors"
+  )
+
   attr(:disabled, :boolean, default: false, doc: "Whether the file upload is disabled")
 
   attr(:cancel_event, :string,
@@ -185,7 +191,7 @@ defmodule Corex.FileUploadLive do
 
     assigns =
       assigns
-      |> assign_new(:id, fn -> "file-upload-live-#{System.unique_integer([:positive])}" end)
+      |> Corex.FormField.require_id!("Corex component (file-upload-live)")
       |> assign(:translation, translation)
 
     ~H"""

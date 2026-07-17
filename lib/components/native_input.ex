@@ -77,7 +77,7 @@ defmodule Corex.NativeInput do
 
   Use `field={f[:email]}` inside `<.form>` with a changeset-backed form.
 
-  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:email])}` when you want alert borders after validation.
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. With `field={@form[:…]}`, pass `auto_invalid` for alert borders from visible errors, or `invalid={true}` to force the alert state.
 
   For `type="select"` with `multiple`, the field name is suffixed with `[]` so Ecto `{:array, :string}` receives a list (same Phoenix convention as [`Corex.Select`](Corex.Select.html) `multiple`).
 
@@ -109,9 +109,7 @@ defmodule Corex.NativeInput do
   This requires the `corex_design` dependency and `mix corex.design.build`; import the component css file.
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
@@ -164,7 +162,12 @@ defmodule Corex.NativeInput do
   attr(:id, :string, required: false)
   attr(:name, :string, required: false)
   attr(:value, :any)
-  attr(:invalid, :boolean, default: false)
+  attr(:invalid, :boolean, default: nil)
+
+  attr(:auto_invalid, :boolean,
+    default: false,
+    doc: "When true with `field`, set invalid from visible changeset errors"
+  )
 
   attr(:read_only, :boolean,
     default: false,
@@ -226,7 +229,7 @@ defmodule Corex.NativeInput do
     assigns =
       assigns
       |> assign_read_only()
-      |> assign_new(:id, fn -> "native-input-#{System.unique_integer([:positive])}" end)
+      |> Corex.FormField.require_id!("Corex component (native-input)")
       |> assign_new(:checked, fn ->
         Form.normalize_value("checkbox", assigns[:value])
       end)
@@ -270,7 +273,7 @@ defmodule Corex.NativeInput do
     assigns =
       assigns
       |> assign_read_only()
-      |> assign_new(:id, fn -> "native-input-#{System.unique_integer([:positive])}" end)
+      |> Corex.FormField.require_id!("Corex component (native-input)")
       |> assign_new(:value, fn -> nil end)
 
     ~H"""
@@ -307,7 +310,7 @@ defmodule Corex.NativeInput do
     assigns =
       assigns
       |> assign_read_only()
-      |> assign_new(:id, fn -> "native-input-#{System.unique_integer([:positive])}" end)
+      |> Corex.FormField.require_id!("Corex component (native-input)")
       |> assign_new(:value, fn -> nil end)
       |> assign(:options, assigns[:options] || [])
 
@@ -347,7 +350,7 @@ defmodule Corex.NativeInput do
     assigns =
       assigns
       |> assign_read_only()
-      |> assign_new(:id, fn -> "native-input-#{System.unique_integer([:positive])}" end)
+      |> Corex.FormField.require_id!("Corex component (native-input)")
       |> assign_new(:value, fn -> nil end)
       |> assign(:show_icon, show_icon?(assigns))
 

@@ -15,6 +15,7 @@ import {
   formatSubmitValue,
   mergeFormatOptions,
 } from "../lib/number-input-format";
+import { snapshotDataset, type DatasetSnapshot } from "../lib/controlled-attr-snapshot";
 import { mountNumberBinding, readUpdatedServerNumber } from "../lib/read-props";
 import {
   notifyChange,
@@ -26,10 +27,7 @@ import {
 } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
-import {
-  queueLiveViewFormInputSync,
-  reapplyLiveViewValueInputUsage,
-} from "../lib/live-view-form-input";
+import { markUsed, syncFormInput } from "../lib/phoenix-form-bridge";
 
 type NumberInputMachineState = {
   focused: boolean;
@@ -51,7 +49,7 @@ export function machineState(api: Api): NumberInputMachineState {
 
 type NumberInputHookState = {
   numberInput?: NumberInput;
-  lastServerValue?: string;
+  beforeAttrs?: DatasetSnapshot;
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
@@ -103,7 +101,7 @@ export function syncNumberInputValueInput(
   if (changed) valueInput.value = v;
   syncInputFormAssociation(valueInput, el);
   if (notifyForm && (changed || v !== "")) {
-    reapplyLiveViewValueInputUsage(valueInput);
+    markUsed(valueInput);
     valueInput.dispatchEvent(new Event("input", { bubbles: true }));
     valueInput.dispatchEvent(new Event("change", { bubbles: true }));
   }
@@ -194,14 +192,13 @@ const NumberInputHook: Hook<object & NumberInputHookState, HTMLElement> = {
     const zag = new NumberInput(el, buildMachineProps(el, pushEvent, canPush));
     zag.init();
     this.numberInput = zag;
-    this.lastServerValue = getString(el, "value") ?? getString(el, "defaultValue") ?? "";
     const initialSubmit = submitValueForHost(el, zag.api.valueAsNumber);
     syncNumberInputValueInput(el, zag.api.value ?? "", true, zag.api.valueAsNumber);
     const valueInput = el.querySelector<HTMLInputElement>(
       '[data-scope="number-input"][data-part="value-input"]'
     );
     if (valueInput) {
-      queueLiveViewFormInputSync(valueInput, () => initialSubmit);
+      syncFormInput(valueInput, () => initialSubmit);
     }
 
     const emitState = (respondTo: RespondTo) => {
@@ -304,30 +301,33 @@ const NumberInputHook: Hook<object & NumberInputHookState, HTMLElement> = {
     });
   },
 
+  beforeUpdate(this: object & HookInterface<HTMLElement> & NumberInputHookState) {
+    this.beforeAttrs = snapshotDataset(this.el, ["value", "defaultValue"]);
+  },
+
   updated(this: object & HookInterface<HTMLElement> & NumberInputHookState) {
     const el = this.el;
     const zag = this.numberInput;
     if (!zag) return;
 
-    const valuePatch = readUpdatedServerNumber(el, this.lastServerValue);
-    if ("nextServerValue" in valuePatch && valuePatch.nextServerValue !== undefined) {
-      this.lastServerValue = valuePatch.nextServerValue;
-    }
+    try {
+      const valuePatch = readUpdatedServerNumber(el, this.beforeAttrs);
 
-    zag.updateProps({
-      ...numberInputPropsForUpdate(el),
-      ...(valuePatch.value !== undefined ? { value: valuePatch.value } : {}),
-      ...(valuePatch.step !== undefined ? { step: valuePatch.step } : {}),
-    } as Partial<Props>);
+      zag.updateProps({
+        ...numberInputPropsForUpdate(el),
+        ...(valuePatch.value !== undefined ? { value: valuePatch.value } : {}),
+        ...(valuePatch.step !== undefined ? { step: valuePatch.step } : {}),
+      } as Partial<Props>);
 
-    queueMicrotask(() => {
       syncNumberInputValueInput(
         el,
         zag.api.value ?? getString(el, "defaultValue") ?? "",
         false,
         zag.api.valueAsNumber
       );
-    });
+    } finally {
+      this.beforeAttrs = undefined;
+    }
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & NumberInputHookState) {

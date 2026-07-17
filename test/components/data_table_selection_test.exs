@@ -38,6 +38,29 @@ defmodule Corex.DataTable.SelectionTest do
       assert socket.assigns.selected == []
     end
 
+    test "treats string checked values like booleans" do
+      socket = base_socket()
+
+      socket =
+        Selection.handle_select(socket, %{"id" => "tbl-select-1", "checked" => "true"}, :users)
+
+      assert socket.assigns.selected == ["1"]
+
+      socket =
+        Selection.handle_select(socket, %{"id" => "tbl-select-1", "checked" => "false"}, :users)
+
+      assert socket.assigns.selected == []
+    end
+
+    test "does not select when checked is the string false" do
+      socket = base_socket()
+
+      socket =
+        Selection.handle_select(socket, %{"id" => "tbl-select-1", "checked" => "false"}, :users)
+
+      assert socket.assigns.selected == []
+    end
+
     test "aggregates multiple selections and updates select-all state" do
       socket = base_socket()
 
@@ -79,6 +102,21 @@ defmodule Corex.DataTable.SelectionTest do
         Selection.handle_select_all(socket, %{"checked" => true}, :users)
 
       assert Enum.sort(socket.assigns.selected) == ["1", "2"]
+
+      events = get_in(socket.private, [:live_temp, :push_events]) || []
+
+      assert ["checkbox_set_checked_many", %{"checked" => true, "ids" => ids}] =
+               Enum.find(events, &match?(["checkbox_set_checked_many", _], &1))
+
+      assert Enum.sort(ids) == ["tbl-select-1", "tbl-select-2"]
+    end
+
+    test "does not select when checked is the string false" do
+      socket =
+        base_socket()
+        |> Selection.handle_select_all(%{"checked" => "false"}, :users)
+
+      assert socket.assigns.selected == []
     end
 
     test "clears selection when checked false" do

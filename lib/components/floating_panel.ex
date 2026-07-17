@@ -1,7 +1,6 @@
 defmodule Corex.FloatingPanel do
   @moduledoc ~S'''
-  Phoenix implementation of [Zag.js Floating Panel](https://zagjs.com/components/react/floating-panel).
-
+  Draggable floating panel for Phoenix LiveView. Behavior follows [Zag.js Floating Panel](https://zagjs.com/components/react/floating-panel).
   ## Anatomy
 
   ### Basic
@@ -102,9 +101,7 @@ defmodule Corex.FloatingPanel do
   This requires the `corex_design` dependency and `mix corex.design.build`; import the component css file.
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   You can then use modifiers

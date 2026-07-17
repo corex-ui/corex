@@ -4,7 +4,10 @@ import {
 import {
   readStringControlledZagProps,
   readStringControlledZagUpdate
-} from "./chunks/chunk-XL4XUS2C.mjs";
+} from "./chunks/chunk-BGER3KYP.mjs";
+import {
+  snapshotDataset
+} from "./chunks/chunk-TKOH2OAC.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -42,7 +45,7 @@ import {
   raf,
   resizeObserverBorderBox,
   setup
-} from "./chunks/chunk-YGZLYEUJ.mjs";
+} from "./chunks/chunk-6AOEC32Q.mjs";
 
 // ../node_modules/.pnpm/@zag-js+tabs@1.40.0/node_modules/@zag-js/tabs/dist/tabs.anatomy.mjs
 var anatomy = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
@@ -566,15 +569,16 @@ function tabsDomIds(rootId) {
   };
 }
 var Tabs = class extends Component {
+  withDomIds(props) {
+    const id = props.id ?? this.el.id;
+    return { ...props, id, ids: tabsDomIds(id) };
+  }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
-    const id = props.id ?? this.el.id;
-    return new VanillaMachine(machine, { ...props, id, ids: tabsDomIds(id) });
+    return new VanillaMachine(machine, this.withDomIds(props));
   }
-  updateProps = (attrs) => {
-    const props = attrs;
-    const id = props.id ?? this.el.id;
-    this.machine.updateProps({ ...props, id, ids: tabsDomIds(id) });
+  updateProps = (props) => {
+    super.updateProps(this.withDomIds(props));
   };
   initApi() {
     return this.zagConnect(connect);
@@ -681,12 +685,19 @@ var TabsHook = {
       });
     });
   },
+  beforeUpdate() {
+    this.beforeAttrs = snapshotDataset(this.el, ["value"]);
+  },
   updated() {
-    this.tabs?.updateProps({
-      id: this.el.id,
-      ...readStringControlledZagUpdate(this.el, "value", "defaultValue"),
-      ...readTabsLayoutProps(this.el)
-    });
+    try {
+      this.tabs?.updateProps({
+        id: this.el.id,
+        ...readStringControlledZagUpdate(this.el, "value", "defaultValue", this.beforeAttrs),
+        ...readTabsLayoutProps(this.el)
+      });
+    } finally {
+      this.beforeAttrs = void 0;
+    }
   },
   destroyed() {
     this.domRegistry?.teardown();

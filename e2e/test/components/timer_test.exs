@@ -2,6 +2,8 @@ defmodule E2eWeb.TimerTest do
   use ExUnit.Case, async: false
   use Wallaby.Feature
 
+  @moduletag :wallaby
+
   alias E2eWeb.ComponentBehaviorSpec
   alias E2eWeb.TimerModel, as: Timer
 

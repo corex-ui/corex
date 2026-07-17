@@ -1,7 +1,6 @@
 defmodule Corex.Timer do
   @moduledoc ~S'''
-  Phoenix implementation of [Zag.js Timer](https://zagjs.com/components/react/timer).
-
+  Timer for Phoenix LiveView. Behavior follows [Zag.js Timer](https://zagjs.com/components/react/timer).
   Countdown leading-zero collapse is on by default when `countdown` is true. Override with `collapse_leading_zeros={false}` or fixed `segments`.
 
   ## Anatomy
@@ -165,9 +164,7 @@ defmodule Corex.Timer do
   Import `timer.css` and stack modifiers on the host (`class` on `<.timer>`). Use Tailwind `max-w-*` on the root for width caps.
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).

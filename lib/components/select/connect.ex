@@ -19,7 +19,9 @@ defmodule Corex.Select.Connect do
     ValueInput
   }
 
+  alias Corex.Connect.ItemNav
   alias Corex.FormField
+  alias Corex.ValueBinding
   alias Phoenix.LiveView.JS
 
   import Corex.Helpers,
@@ -27,32 +29,18 @@ defmodule Corex.Select.Connect do
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
-    sorted_items = sort_items_by_group(assigns.items || [])
     vlist = assigns.value || []
-    form_field = Map.get(assigns, :form_field, false)
     controlled = Map.get(assigns, :controlled, false)
-    zag_controlled = controlled
 
-    joined_csv = Corex.Helpers.joined_csv_values(vlist)
+    {value_str, default_value_str} = ValueBinding.list_pair(vlist, controlled)
 
-    default_joined =
-      if form_field do
-        FormField.dataset_default_json(vlist)
-      else
-        joined_csv
-      end
-
-    {value_str, default_value_str} =
-      if zag_controlled do
-        {joined_csv, nil}
-      else
-        {nil, default_joined}
-      end
+    items_json =
+      Map.get(assigns, :items_json) || Corex.Dataset.encode_json(assigns.items || [])
 
     base = %{
       "id" => assigns.id,
-      "data-items" => Corex.Dataset.encode_json(sorted_items),
-      "data-controlled" => get_boolean(zag_controlled),
+      "data-items" => items_json,
+      "data-controlled" => get_boolean(controlled),
       "data-value" => value_str,
       "data-default-value" => default_value_str,
       "data-placeholder" => assigns.placeholder || "",
@@ -86,13 +74,6 @@ defmodule Corex.Select.Connect do
       "data-update-trigger",
       if(Map.get(assigns, :update_trigger, true), do: nil, else: "false")
     )
-  end
-
-  defp sort_items_by_group(items) do
-    items
-    |> Enum.group_by(&Map.get(&1, :group))
-    |> Enum.sort_by(fn {group, _items} -> group || "" end, :asc)
-    |> Enum.flat_map(fn {_group, group_items} -> group_items end)
   end
 
   @spec root(Root.t()) :: map()
@@ -321,21 +302,7 @@ defmodule Corex.Select.Connect do
       "id" => "select:#{assigns.id}:item:#{assigns.value}"
     }
 
-    base = if Map.get(assigns, :to), do: Map.put(base, "data-to", assigns.to), else: base
-
-    base =
-      case Map.get(assigns, :redirect) do
-        false ->
-          Map.put(base, "data-redirect", "false")
-
-        mode when mode in [:href, :patch, :navigate] ->
-          Map.put(base, "data-redirect", Atom.to_string(mode))
-
-        _ ->
-          base
-      end
-
-    if Map.get(assigns, :new_tab), do: Map.put(base, "data-new-tab", ""), else: base
+    ItemNav.put_item_nav_attrs(base, assigns)
   end
 
   def ignore_item(assigns) do

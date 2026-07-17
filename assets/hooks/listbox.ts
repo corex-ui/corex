@@ -3,6 +3,7 @@ import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook"
 import { Listbox } from "../components/listbox";
 import type { Props, ValueChangeDetails } from "@zag-js/listbox";
 import { getString, getBoolean, getDir, canPushEvent, safeParseJson } from "../lib/util";
+import { snapshotDataset, type DatasetSnapshot } from "../lib/controlled-attr-snapshot";
 import {
   readStringListControlledZagProps,
   readStringListControlledZagUpdate,
@@ -70,6 +71,8 @@ type ListboxHookState = {
   listbox?: Listbox;
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
+  lastItemsJson?: string;
+  beforeAttrs?: DatasetSnapshot;
 };
 
 const ListboxHook: Hook<object & ListboxHookState, HTMLElement> = {
@@ -89,6 +92,7 @@ const ListboxHook: Hook<object & ListboxHookState, HTMLElement> = {
     zag.init();
 
     this.listbox = zag;
+    this.lastItemsJson = el.dataset.items ?? "[]";
 
     const emitValue = (respondTo: RespondTo) => {
       const value = zag.api.value;
@@ -129,20 +133,31 @@ const ListboxHook: Hook<object & ListboxHookState, HTMLElement> = {
     });
   },
 
+  beforeUpdate(this: object & HookInterface<HTMLElement> & ListboxHookState) {
+    this.beforeAttrs = snapshotDataset(this.el, ["value"]);
+  },
+
   updated(this: object & HookInterface<HTMLElement> & ListboxHookState) {
     if (!this.listbox) return;
 
-    const newItems = safeParseJson<ListboxItem[]>(this.el.dataset.items ?? "[]", []);
-    const hasGroups = newItems.some((item) => Boolean(item.group));
+    try {
+      const newItemsJson = this.el.dataset.items ?? "[]";
+      if (newItemsJson !== this.lastItemsJson) {
+        this.lastItemsJson = newItemsJson;
+        const newItems = safeParseJson<ListboxItem[]>(newItemsJson, []);
+        const hasGroups = newItems.some((item) => Boolean(item.group));
+        this.listbox.hasGroups = hasGroups;
+        this.listbox.setOptions(newItems);
+      }
 
-    this.listbox.hasGroups = hasGroups;
-    this.listbox.setOptions(newItems);
-
-    this.listbox.updateProps({
-      ...listboxZagPropsBase(this.el, this.liveSocket, this.pushEvent.bind(this)),
-      collection: this.listbox.getCollection(),
-      ...readStringListControlledZagUpdate(this.el, "value", "defaultValue"),
-    } as Partial<Props<ListboxItem>>);
+      this.listbox.updateProps({
+        ...listboxZagPropsBase(this.el, this.liveSocket, this.pushEvent.bind(this)),
+        collection: this.listbox.getCollection(),
+        ...readStringListControlledZagUpdate(this.el, "value", "defaultValue", this.beforeAttrs),
+      } as Partial<Props<ListboxItem>>);
+    } finally {
+      this.beforeAttrs = undefined;
+    }
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & ListboxHookState) {

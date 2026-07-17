@@ -6,16 +6,15 @@
 mix archive.install hex phx_new
 mix archive.install hex corex_new
 mix corex.new my_app
-mix corex.new my_app --mode --theme --lang --designex
+mix corex.new my_app --mode --theme --lang
 ```
 
-Defaults: Corex Design, MCP in `:dev`/`:test` only.
+Defaults: Corex Design, `corex_mcp` + MCP plug in `:dev`/`:test` only.
 
 | Flag | Effect |
 |------|--------|
-| `--no-design` | Skip design assets |
-| `--no-mcp` | Skip MCP plug |
-| `--designex` | Copy token sources |
+| `--no-design` | Skip corex_design dependency and design CSS |
+| `--no-mcp` | Skip `corex_mcp` dep and MCP plug |
 | `--mode` / `--theme` / `--lang` | Mode, theme, localization |
 
 Run `mix help corex.new`. Update generator: `mix local.corex`.
@@ -27,7 +26,7 @@ Replace `my_app` with your OTP app name.
 ### 1. Dependency
 
 ```elixir
-{:corex, "~> 0.1.0"}
+{:corex, "~> 0.2.0"}
 ```
 
 ### 2. Esbuild ESM splitting
@@ -97,17 +96,15 @@ mix compile && mix assets.build
 
 ## Design assets
 
+Add `{:corex_design, "~> 0.2", runtime: false, only: :dev}`, configure `config :corex_design`, add `/assets/corex/` to `.gitignore`, then:
+
 ```sh
-mix corex.design
-mix corex.design --force
+mix corex.design.build
 ```
 
-When using mode/theme/lang pickers, also import:
+Do not commit `assets/corex/`. If already tracked: `git rm -r --cached assets/corex` after adding the ignore rule.
 
-```css
-@import "../corex/components/toggle.css";
-@import "../corex/components/select.css";
-```
+When using mode/theme/lang pickers, include `toggle` and `select` in `components:` in `config :corex_design` so they appear in the generated `components.css` entry.
 
 ## Optional toast layout
 
@@ -121,7 +118,11 @@ When using mode/theme/lang pickers, also import:
 ## MCP (dev only)
 
 ```elixir
-if Mix.env() == :dev do
+{:corex_mcp, "~> 0.2", only: [:dev, :test]}
+```
+
+```elixir
+if Mix.env() in [:dev, :test] do
   plug Corex.MCP
 end
 ```

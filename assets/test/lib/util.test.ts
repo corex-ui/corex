@@ -89,6 +89,14 @@ describe("getStringList", () => {
     node.setAttribute("data-value", " , ");
     expect(getStringList(node, "value")).toEqual([]);
   });
+
+  it("parses empty JSON array as empty list", () => {
+    expect(getStringList(el({ value: "[]" }), "value")).toEqual([]);
+  });
+
+  it("parses JSON string arrays", () => {
+    expect(getStringList(el({ value: '["a","b"]' }), "value")).toEqual(["a", "b"]);
+  });
 });
 
 describe("getString without validValues", () => {

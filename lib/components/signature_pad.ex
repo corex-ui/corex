@@ -1,7 +1,6 @@
 defmodule Corex.SignaturePad do
   @moduledoc ~S'''
-  Phoenix implementation of [Zag.js Signature Pad](https://zagjs.com/components/react/signature-pad).
-
+  Signature pad for Phoenix LiveView forms. Behavior follows [Zag.js Signature Pad](https://zagjs.com/components/react/signature-pad).
   ## Anatomy
 
   <!-- tabs-open -->
@@ -57,7 +56,7 @@ defmodule Corex.SignaturePad do
 
   When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `<.form for={@form}>`. For `phx-change` and `used_input?/1`, set `phx-change` on `<.form>` so the whole form is sent (not on a single input only).
 
-  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:signature])}` when you want alert borders after validation.
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. With `field={@form[:…]}`, pass `auto_invalid` for alert borders from visible errors, or `invalid={true}` to force the alert state.
 
   With `field={@form[:signature]}`, paths submit as `name="…[]"` hidden array inputs. On draw or clear, the hook updates those inputs and dispatches `input` so LiveView tracks the field. Errors render only when `Phoenix.Component.used_input?/1` is true for the field.
 
@@ -245,9 +244,7 @@ defmodule Corex.SignaturePad do
   This requires the `corex_design` dependency and `mix corex.design.build`; import the component css file.
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   Drawing stroke color is set with the `drawing_fill` attribute (a CSS color value such as
@@ -281,6 +278,8 @@ defmodule Corex.SignaturePad do
   use Phoenix.Component
 
   import Corex.Api.Doc
+
+  alias Corex.Selectors
 
   alias Corex.SignaturePad.Anatomy.{
     ClearTrigger,
@@ -378,6 +377,13 @@ defmodule Corex.SignaturePad do
       "A form field from the form, e.g. @form[:signature]. Sets id, name, paths, and errors. Errors are filtered with `used_input?/1` (see the Phoenix Form Integration section)."
   )
 
+  attr(:invalid, :boolean, default: nil, doc: "Whether the signature pad is invalid")
+
+  attr(:auto_invalid, :boolean,
+    default: false,
+    doc: "When true with `field`, set invalid from visible changeset errors"
+  )
+
   attr(:rest, :global)
 
   slot :label, required: false do
@@ -420,10 +426,10 @@ defmodule Corex.SignaturePad do
   defp signature_pad_render(assigns, form_field, field_used) do
     assigns =
       assigns
-      |> assign_new(:id, fn -> "signature-pad-#{System.unique_integer([:positive])}" end)
+      |> Corex.FormField.require_id!("Corex component (signature-pad)")
       |> then(fn a -> assign(a, :paths, paths_from_paths_attr(a[:paths])) end)
       |> assign_new(:form, fn -> nil end)
-      |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:name, fn -> nil end)
       |> Corex.FormField.assign_list_submit()
 
     connect_props =
@@ -466,25 +472,36 @@ defmodule Corex.SignaturePad do
           :if={@submit_name}
           data-scope="signature-pad"
           data-part="array-inputs"
-          phx-update="ignore"
           id={"signature-pad:#{@id}:array-inputs"}
         >
           <input
-            :for={path <- @paths}
+            :for={{path, index} <- Enum.with_index(@paths)}
             type="hidden"
+            id={"signature-pad:#{@id}:array-input-#{index}"}
             data-scope="signature-pad"
             data-part="array-input"
             name={@submit_name}
             value={path}
+            phx-mounted={
+              JS.ignore_attributes(["value", "name"],
+                to: Selectors.css_id("signature-pad:#{@id}:array-input-#{index}")
+              )
+            }
           />
           <input
             :if={@paths == []}
             type="hidden"
+            id={"signature-pad:#{@id}:array-input-empty"}
             data-scope="signature-pad"
             data-part="array-input"
             data-empty
             name={@empty_array_name}
             value=""
+            phx-mounted={
+              JS.ignore_attributes(["value", "name"],
+                to: Selectors.css_id("signature-pad:#{@id}:array-input-empty")
+              )
+            }
           />
         </div>
         <label

@@ -2,6 +2,8 @@ defmodule E2eWeb.PasswordInputFormTest do
   use ExUnit.Case, async: false
   use Wallaby.Feature
 
+  @moduletag :wallaby
+
   alias E2eWeb.PasswordInputModel, as: PasswordInput
 
   feature "static form - submit empty native password", %{session: session} do

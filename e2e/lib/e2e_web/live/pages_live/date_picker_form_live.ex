@@ -488,9 +488,9 @@ defmodule E2eWeb.DatePickerFormLive do
   end
 
   defp date_display_single(nil), do: nil
-  defp date_display_single(%Date{} = d), do: [Date.to_iso8601(d)]
+  defp date_display_single(%Date{} = d), do: Date.to_iso8601(d)
   defp date_display_single(""), do: nil
-  defp date_display_single(s) when is_binary(s), do: [s]
+  defp date_display_single(s) when is_binary(s), do: s
   defp date_display_single(_), do: nil
 
   defp date_display_multiple(nil), do: nil

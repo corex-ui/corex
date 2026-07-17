@@ -2,6 +2,8 @@ defmodule E2eWeb.RadioGroupFormTest do
   use ExUnit.Case, async: false
   use Wallaby.Feature
 
+  @moduletag :wallaby
+
   alias E2eWeb.RadioGroupModel, as: RadioGroup
 
   feature "static form - submit without selection shows validation error", %{session: session} do

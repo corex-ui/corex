@@ -77,13 +77,13 @@ defmodule Corex.Code do
 
   Axes: **Size** (`text-sm` … `text-xl`, or `ui-size-*`), **Radius** (`ui-rounded-*`), **Max width** (`code--max-w-*` / `max-w-*`). See the [modifier guide](modifiers.html).
 
-  Without Corex Design, run `mix corex.code` to generate the Makeup stylesheet and
+  Without Corex Design, run `mix corex.design.code` to generate the Makeup stylesheet and
   import it in your CSS:
 
   ```bash
-  mix corex.code
-  mix corex.code assets/styles/syntax.css
-  mix corex.code --force
+  mix corex.design.code
+  mix corex.design.code assets/styles/syntax.css
+  mix corex.design.code --force
   ```
 
   ```css

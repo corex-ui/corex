@@ -2,6 +2,8 @@ defmodule E2eWeb.AngleSliderFormTest do
   use ExUnit.Case, async: false
   use Wallaby.Feature
 
+  @moduletag :wallaby
+
   alias E2eWeb.AngleSliderModel, as: AngleSlider
 
   describe "static" do

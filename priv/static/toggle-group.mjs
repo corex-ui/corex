@@ -1,6 +1,9 @@
 import {
   readStringListControlledZagUpdate
-} from "./chunks/chunk-XL4XUS2C.mjs";
+} from "./chunks/chunk-BGER3KYP.mjs";
+import {
+  snapshotDataset
+} from "./chunks/chunk-TKOH2OAC.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -36,7 +39,7 @@ import {
   prevById,
   queryAll,
   raf
-} from "./chunks/chunk-YGZLYEUJ.mjs";
+} from "./chunks/chunk-6AOEC32Q.mjs";
 
 // ../node_modules/.pnpm/@zag-js+toggle-group@1.40.0/node_modules/@zag-js/toggle-group/dist/toggle-group.anatomy.mjs
 var anatomy = createAnatomy("toggle-group").parts("root", "item");
@@ -450,17 +453,24 @@ var ToggleGroupHook = {
       });
     });
   },
+  beforeUpdate() {
+    this.beforeAttrs = snapshotDataset(this.el, ["value"]);
+  },
   updated() {
-    this.toggleGroup?.updateProps({
-      ...readStringListControlledZagUpdate(this.el, "value", "defaultValue"),
-      deselectable: getBoolean(this.el, "deselectable"),
-      loopFocus: getBoolean(this.el, "loopFocus"),
-      rovingFocus: getBoolean(this.el, "rovingFocus"),
-      disabled: getBoolean(this.el, "disabled"),
-      multiple: getBoolean(this.el, "multiple"),
-      orientation: getString(this.el, "orientation"),
-      dir: getDir(this.el)
-    });
+    try {
+      this.toggleGroup?.updateProps({
+        ...readStringListControlledZagUpdate(this.el, "value", "defaultValue", this.beforeAttrs),
+        deselectable: getBoolean(this.el, "deselectable"),
+        loopFocus: getBoolean(this.el, "loopFocus"),
+        rovingFocus: getBoolean(this.el, "rovingFocus"),
+        disabled: getBoolean(this.el, "disabled"),
+        multiple: getBoolean(this.el, "multiple"),
+        orientation: getString(this.el, "orientation"),
+        dir: getDir(this.el)
+      });
+    } finally {
+      this.beforeAttrs = void 0;
+    }
   },
   destroyed() {
     this.domRegistry?.teardown();

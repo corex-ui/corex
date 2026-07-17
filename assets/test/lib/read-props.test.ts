@@ -63,14 +63,14 @@ describe("readStringControlledZagUpdate", () => {
     expect(readStringControlledZagUpdate(node, "value", "defaultValue")).toEqual({});
   });
 
-  it("returns empty when form field data-value unchanged and controlled", () => {
+  it("returns empty when form field data-value unchanged across patch", () => {
     const node = el({ formField: true, controlled: true, value: "same" });
-    expect(readUpdatedServerString(node, "same")).toEqual({});
+    expect(readUpdatedServerString(node, { value: "same" })).toEqual({});
   });
 
-  it("returns value when form field data-value changes and controlled", () => {
+  it("returns value when form field data-value changes across patch", () => {
     const node = el({ formField: true, controlled: true, value: "next" });
-    expect(readUpdatedServerString(node, "prev")).toEqual({ value: "next" });
+    expect(readUpdatedServerString(node, { value: "prev" })).toEqual({ value: "next" });
   });
 });
 
@@ -105,6 +105,11 @@ describe("readCheckedControlledZagUpdate", () => {
   it("returns empty when uncontrolled", () => {
     const node = el({ defaultChecked: true });
     expect(readCheckedControlledZagUpdate(node)).toEqual({});
+  });
+
+  it("returns empty when checked attr unchanged across patch", () => {
+    const node = el({ controlled: true, checked: "true" });
+    expect(readCheckedControlledZagUpdate(node, { checked: "true" })).toEqual({});
   });
 });
 
@@ -167,6 +172,11 @@ describe("readBooleanControlledZagUpdate", () => {
       readBooleanControlledZagUpdate(el({ defaultOpen: true }), "open", "defaultOpen")
     ).toEqual({});
   });
+
+  it("returns empty when open attr unchanged across patch", () => {
+    const node = el({ controlled: true, open: true });
+    expect(readBooleanControlledZagUpdate(node, "open", "defaultOpen", { open: "" })).toEqual({});
+  });
 });
 
 describe("readStringListControlledZagUpdate", () => {
@@ -195,9 +205,11 @@ describe("readStringListControlledZagUpdate", () => {
     });
   });
 
-  it("returns empty when server value matches lastServerValue", () => {
+  it("returns empty when value attr unchanged across patch", () => {
     const node = el({ controlled: true, value: "fra" });
-    expect(readStringListControlledZagUpdate(node, "value", "defaultValue", "fra")).toEqual({});
+    expect(
+      readStringListControlledZagUpdate(node, "value", "defaultValue", { value: "fra" })
+    ).toEqual({});
   });
 });
 
@@ -207,7 +219,6 @@ describe("readNumberControlledZagUpdate", () => {
     expect(readNumberControlledZagUpdate(node)).toEqual({
       value: "5",
       step: 2,
-      nextServerValue: "5",
     });
   });
 
@@ -216,7 +227,6 @@ describe("readNumberControlledZagUpdate", () => {
     expect(readNumberControlledZagUpdate(node)).toEqual({
       value: "7",
       step: 1,
-      nextServerValue: "7",
     });
   });
 
@@ -234,6 +244,11 @@ describe("readPressedControlledZagUpdate", () => {
 
   it("returns empty when uncontrolled", () => {
     expect(readPressedControlledZagUpdate(el({ defaultPressed: true }))).toEqual({});
+  });
+
+  it("returns empty when pressed attr unchanged across patch", () => {
+    const node = el({ controlled: true, pressed: "true" });
+    expect(readPressedControlledZagUpdate(node, { pressed: "true" })).toEqual({});
   });
 });
 

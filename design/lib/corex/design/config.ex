@@ -1,9 +1,10 @@
 defmodule Corex.Design.Config do
   @moduledoc """
-  Facade for `config :corex_design` host config.
+  Advanced: read and validate `config :corex_design`.
 
-  Validates host config before compile via `validate!/0`. For key reference,
-  see `options_docs/0`.
+  Most apps set keyword config in `config/config.exs` and run `mix corex.design.build`.
+  Use this module when you need programmatic access or `validate!/0` before a custom build.
+  Key reference: `options_docs/0`.
   """
 
   alias Corex.Design.Config.Options
@@ -56,9 +57,7 @@ defmodule Corex.Design.Config do
     end
   end
 
-  @doc """
-  Normalizes flat config keys into a canonical option keyword list for internal readers.
-  """
+  @doc false
   def resolved_options(config \\ Corex.Design.design_config()) do
     Resolved.resolved_options(config)
   end
@@ -83,9 +82,7 @@ defmodule Corex.Design.Config do
   """
   def options_docs, do: Options.options_docs()
 
-  @doc """
-  Returns a keyword list describing the customization map for docs and tooling.
-  """
+  @doc false
   def customization_map do
     Map.new([
       {:corex,
@@ -102,17 +99,15 @@ defmodule Corex.Design.Config do
          {:default_mode, "Default data-mode (default :light)"},
          {:themes, "Built-in preset subset list or full theme catalog map"},
          {:theme, "Host Corex.Design.ThemeDefinition module (single-module setup)"},
-         {:scales, "Per-axis [step: value] overrides for built-in step names; legacy semantic role list (prefer semantics:)"},
+         {:scales,
+          "Per-axis [step: value] overrides for built-in step names; legacy semantic role list (prefer semantics:)"},
          {:components, "Component css ids to emit (nil = all shipped components)"},
          {:semantics, "Semantic palette roles to emit (nil = all; base is always included)"}
        ]}
     ])
   end
 
-  @doc """
-  Warns when theme dimension steps lack obvious scale coverage from configured scale overrides.
-  Returns `:ok` or `{:warn, messages}`.
-  """
+  @doc false
   def warn_scale_theme_links do
     themes = Corex.Design.Theme.resolved_themes()
     radius_steps = Corex.Design.Axes.radius_atoms()
@@ -164,7 +159,8 @@ defmodule Corex.Design.Config.Options do
             ],
             scales: [
               type: :keyword_list,
-              doc: "Per-axis [step: value] overrides for built-in step names; legacy semantic role list (prefer semantics:)"
+              doc:
+                "Per-axis [step: value] overrides for built-in step names; legacy semantic role list (prefer semantics:)"
             ],
             components: [
               doc: "Component css ids to emit (nil = all shipped components)"
@@ -203,7 +199,8 @@ defmodule Corex.Design.Config.Options do
          :ok <- validate_scales(Keyword.get(flat, :scales)),
          :ok <- validate_filter_keys(grouped),
          :ok <- validate_themes(Keyword.get(flat, :themes)),
-         :ok <- validate_default_theme(Keyword.get(flat, :default_theme), Keyword.get(flat, :themes)) do
+         :ok <-
+           validate_default_theme(Keyword.get(flat, :default_theme), Keyword.get(flat, :themes)) do
       {:ok, config}
     end
   end
@@ -228,7 +225,8 @@ defmodule Corex.Design.Config.Options do
     if function_exported?(module, :output, 0) and function_exported?(module, :scales, 0) do
       :ok
     else
-      {:error, "config :corex_design, theme: #{inspect(module)} must use Corex.Design.ThemeDefinition"}
+      {:error,
+       "config :corex_design, theme: #{inspect(module)} must use Corex.Design.ThemeDefinition"}
     end
   end
 
@@ -344,7 +342,8 @@ defmodule Corex.Design.Config.Options do
   end
 
   defp validate_components(other) do
-    {:error, "config :corex_design, components: must be a list of component ids, got: #{inspect(other)}"}
+    {:error,
+     "config :corex_design, components: must be a list of component ids, got: #{inspect(other)}"}
   end
 
   defp validate_semantics(nil), do: :ok
@@ -361,7 +360,8 @@ defmodule Corex.Design.Config.Options do
   end
 
   defp validate_semantics(other) do
-    {:error, "config :corex_design, semantics: must be a list of role atoms, got: #{inspect(other)}"}
+    {:error,
+     "config :corex_design, semantics: must be a list of role atoms, got: #{inspect(other)}"}
   end
 
   defp validate_axis_scale(:semantic, spec) when is_list(spec) do
@@ -380,8 +380,7 @@ defmodule Corex.Design.Config.Options do
       keyword_with_values?(spec) ->
         cond do
           duplicate_scale_steps?(spec) ->
-            {:error,
-             "config :corex_design, scales: #{inspect(axis)} has duplicate step names"}
+            {:error, "config :corex_design, scales: #{inspect(axis)} has duplicate step names"}
 
           true ->
             validate_value_map_steps(axis, spec)
@@ -454,5 +453,4 @@ defmodule Corex.Design.Config.Options do
   defp normalize_config_scale_axis(axis) when is_atom(axis), do: axis
   defp normalize_config_scale_axis("space"), do: :density
   defp normalize_config_scale_axis(axis) when is_binary(axis), do: String.to_atom(axis)
-
 end

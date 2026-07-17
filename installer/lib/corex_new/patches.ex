@@ -5,7 +5,7 @@ defmodule Corex.New.Patches do
   Adds `{:corex, ...}` (and `{:localize_web, "~> 0.5"}` when `--lang`)
   to the `deps/0` list in `mix.exs`. When `--lang` or `--design` and Erlang
   `:json` is not loaded, adds `{:json_polyfill, ...}` like `localize_web`.
-  Idempotent.
+  When `--mcp`, adds `{:corex_mcp, ..., only: [:dev, :test]}`. Idempotent.
   """
   def patch_mix_exs(install_dir, opts) do
     path = Path.join(install_dir, "mix.exs")
@@ -17,6 +17,7 @@ defmodule Corex.New.Patches do
       |> maybe_ensure_localize_web_dep(opts)
       |> maybe_ensure_gettext_sigils_dep(opts)
       |> maybe_ensure_design_dep(opts)
+      |> maybe_ensure_mcp_dep(opts)
       |> maybe_add_design_aliases(opts)
       |> maybe_ensure_json_polyfill_dep(opts)
 
@@ -276,8 +277,27 @@ defmodule Corex.New.Patches do
     end
   end
 
+  defp maybe_ensure_mcp_dep(content, opts) do
+    if Keyword.get(opts, :mcp, true) == false do
+      content
+    else
+      if Regex.match?(~r/\{:corex_mcp\s*,/u, content) do
+        content
+      else
+        insert_before_closing_deps(
+          content,
+          "      {:corex_mcp, #{corex_mcp_dep_source(opts)}},\n"
+        )
+      end
+    end
+  end
+
   defp maybe_ensure_json_polyfill_dep(content, opts) do
-    if not (Keyword.get(opts, :lang, false) or Keyword.get(opts, :design, false)) do
+    needs_json? =
+      Keyword.get(opts, :lang, false) or Keyword.get(opts, :design, false) or
+        Keyword.get(opts, :mcp, true)
+
+    if not needs_json? do
       content
     else
       cond do
@@ -486,6 +506,28 @@ defmodule Corex.New.Patches do
 
   defp corex_design_dep_constraint do
     "\"~> 0.2\", runtime: false, only: :dev"
+  end
+
+  defp corex_mcp_dep_source(opts) do
+    case Keyword.get(opts, :dev) do
+      path when is_binary(path) ->
+        trimmed = String.trim(path)
+
+        if trimmed != "" do
+          Corex.New.Cli.validate_dev_path!(trimmed)
+          mcp_path = Path.join(trimmed, "mcp")
+          "[path: #{inspect(mcp_path)}, only: [:dev, :test]]"
+        else
+          corex_mcp_dep_constraint()
+        end
+
+      _ ->
+        corex_mcp_dep_constraint()
+    end
+  end
+
+  defp corex_mcp_dep_constraint do
+    "\"~> 0.2\", only: [:dev, :test]"
   end
 
   defp installer_components(opts) do

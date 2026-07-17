@@ -145,6 +145,12 @@
 
  .accordion [data-scope="accordion"][data-part="item-content"] {
  overflow: hidden;
+ max-height: var(--ctl-max-height, none);
+ overflow-y: var(--ctl-max-height-overflow, hidden);
+ }
+
+ .accordion[class*="ui-max-height-"] [data-scope="accordion"][data-part="item-content"] {
+ @apply scrollbar scrollbar--sm;
  }
 
  .accordion[data-animation="js"] [data-scope="accordion"][data-part="item-content"][data-state="closed"],

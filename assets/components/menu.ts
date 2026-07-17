@@ -85,7 +85,10 @@ export class Menu extends Component<Props, Api> {
 
   destroy = () => {
     this.clearSubmenuTriggerSubscriptions();
+    this.unsubscribe?.();
+    this.unsubscribe = undefined;
     this.el.removeAttribute("data-loading");
+    this.clearSpreadPropsCleanups();
     this.machine.stop();
   };
 

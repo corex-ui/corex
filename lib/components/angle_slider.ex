@@ -1,7 +1,6 @@
 defmodule Corex.AngleSlider do
   @moduledoc ~S'''
-  Phoenix implementation of [Zag.js Angle Slider](https://zagjs.com/components/react/angle-slider).
-
+  Circular angle control for Phoenix LiveView forms. Behavior follows [Zag.js Angle Slider](https://zagjs.com/components/react/angle-slider).
   WAI-ARIA circular angle control. Use `angle_slider/1` with an optional label slot and marks.
 
   ## Anatomy
@@ -96,9 +95,7 @@ defmodule Corex.AngleSlider do
   This requires the `corex_design` dependency and `mix corex.design.build`; import the component css file.
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   Stack modifiers on the host (`class` on `<.angle_slider>`). Combine axes, for example `angle-slider ui-accent ui-size-lg` or `angle-slider ui-info ui-solid`.
@@ -162,7 +159,7 @@ defmodule Corex.AngleSlider do
 
   When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `<.form for={@form}>`.
 
-  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:angle])}` when you want alert borders after validation.
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. With `field={@form[:…]}`, pass `auto_invalid` for alert borders from visible errors, or `invalid={true}` to force the alert state.
 
   ```elixir
   def angle_slider_form_page(conn, _params) do
@@ -219,7 +216,13 @@ defmodule Corex.AngleSlider do
   attr(:step, :float, default: 1.0, doc: "Step value")
   attr(:disabled, :boolean, default: false, doc: "Whether the slider is disabled")
   attr(:read_only, :boolean, default: false, doc: "Whether the slider is read-only")
-  attr(:invalid, :boolean, default: false, doc: "Whether the slider is invalid")
+  attr(:invalid, :boolean, default: nil, doc: "Whether the slider is invalid")
+
+  attr(:auto_invalid, :boolean,
+    default: false,
+    doc: "When true with `field`, set invalid from visible changeset errors"
+  )
+
   attr(:name, :string, default: nil, doc: "Name for form submission")
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"], doc: "Direction")
   attr(:orientation, :string, default: "vertical", values: ["horizontal", "vertical"])
@@ -296,7 +299,7 @@ defmodule Corex.AngleSlider do
   def angle_slider(assigns) do
     assigns =
       assigns
-      |> assign_new(:id, fn -> "angle-slider-#{System.unique_integer([:positive])}" end)
+      |> Corex.FormField.require_id!("Corex component (angle-slider)")
       |> assign_new(:form_field, fn -> false end)
       |> update(:value, &clamp_angle/1)
 

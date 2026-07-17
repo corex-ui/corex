@@ -1,7 +1,6 @@
 defmodule Corex.Combobox do
   @moduledoc ~S'''
-  Phoenix implementation of [Zag.js Combobox](https://zagjs.com/components/react/combobox).
-
+  Searchable combobox for Phoenix LiveView forms. Behavior follows [Zag.js Combobox](https://zagjs.com/components/react/combobox).
   Pass options with `Corex.List.new/1`. With `redirect`, use per-item `:to`, `:redirect` (`:href` | `:patch` | `:navigate` | `false`), and `:new_tab`; Zag runs single-select when `redirect` is true.
 
   ## Anatomy
@@ -235,9 +234,7 @@ defmodule Corex.Combobox do
   This requires the `corex_design` dependency and `mix corex.design.build`; import the component css file.
 
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components.css";
+  @import "../corex/corex.css";
   ```
 
   You can then use modifiers
@@ -251,7 +248,7 @@ defmodule Corex.Combobox do
   </.combobox>
   ```
 
-  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`), **Max height** (`ui-max-height-*` on the host; clamps content). See the [modifier guide](modifiers.html).
 
   Semantic modifiers set palette variables on the input and triggers. Variant modifiers control field surface treatment. Default is subtle; add `combobox ui-solid` for a filled control.
 
@@ -288,13 +285,17 @@ defmodule Corex.Combobox do
   | LG | `combobox ui-size-lg` |
   | XL | `combobox ui-size-xl` |
 
+  ### Max height
+
+  Overrides the default content max-height. Example: `combobox ui-max-height-sm`.
+
   <!-- tabs-close -->
 
   ## Form
 
   Use `field={f[:key]}` with a form built from an Ecto changeset. Set the form `id` in `to_form/2` and use `<.form for={@form}>`. See [Select](`Corex.Select`) **Form** for full controller and LiveView examples.
 
-  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:field])}` when you want alert borders after validation.
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. With `field={@form[:…]}`, pass `auto_invalid` for alert borders from visible errors, or `invalid={true}` to force the alert state.
 
   ### Localization
 
@@ -402,7 +403,13 @@ defmodule Corex.Combobox do
 
   attr(:loop_focus, :boolean, default: false, doc: "Whether to loop focus the combobox")
   attr(:multiple, :boolean, default: false, doc: "Whether to allow multiple selection")
-  attr(:invalid, :boolean, default: false, doc: "Whether the combobox is invalid")
+  attr(:invalid, :boolean, default: nil, doc: "Whether the combobox is invalid")
+
+  attr(:auto_invalid, :boolean,
+    default: false,
+    doc: "When true with `field`, set invalid from visible changeset errors"
+  )
+
   attr(:name, :string, doc: "The name of the combobox")
   attr(:form, :string, doc: "The id of the form of the combobox")
 
@@ -550,7 +557,7 @@ defmodule Corex.Combobox do
       "A form field struct retrieved from the form, for example: @form[:country]. Automatically sets id, name, value, and errors from the form field"
   )
 
-  attr(:form_field, :boolean, default: false)
+  attr(:form_field, :boolean, default: false, doc: false)
 
   attr(:errors, :list,
     default: [],
@@ -568,24 +575,27 @@ defmodule Corex.Combobox do
     |> Corex.FormField.assign_form_field(field)
     |> assign(:value, value)
     |> assign(:selected_label, selected_label)
-    |> combobox()
+    |> combobox_render(Phoenix.Component.used_input?(field))
   end
 
-  def combobox(assigns) do
+  def combobox(assigns), do: combobox_render(assigns, false)
+
+  defp combobox_render(assigns, field_used) do
     translation = Translation.resolve(assigns[:translation])
     placeholder = translation.placeholder
     empty_text = translation.empty
 
     assigns =
       assigns
-      |> assign_new(:id, fn -> "combobox-#{System.unique_integer([:positive])}" end)
-      |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
+      |> Corex.FormField.require_id!("Corex component (combobox)")
+      |> assign_new(:name, fn -> nil end)
       |> assign_new(:form, fn -> nil end)
       |> assign_new(:form_field, fn -> false end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign(:translation, translation)
       |> assign(:placeholder, placeholder)
       |> assign(:empty_text, empty_text)
+      |> assign(:field_used, field_used)
 
     items = normalize_items(assigns.items)
 
@@ -602,6 +612,7 @@ defmodule Corex.Combobox do
     assigns =
       assigns
       |> assign(:items, items)
+      |> assign(:items_json, Corex.Dataset.encode_json(items))
       |> assign(:has_groups, has_groups)
       |> assign(:groups, groups)
       |> assign(:value, value_list)
@@ -613,6 +624,9 @@ defmodule Corex.Combobox do
         else
           assign(a, :submit_name, nil)
         end
+      end)
+      |> then(fn a ->
+        assign(a, :empty_array_name, if(field_used, do: a.submit_name))
       end)
 
     assigns = assign(assigns, :hook_attrs, combobox_connect_props(assigns))
@@ -629,25 +643,36 @@ defmodule Corex.Combobox do
           :if={@submit_name}
           data-scope="combobox"
           data-part="array-inputs"
-          phx-update="ignore"
           id={"combobox:#{@id}:array-inputs"}
         >
           <input
-            :for={v <- @value}
+            :for={{v, index} <- Enum.with_index(@value)}
             type="hidden"
+            id={"combobox:#{@id}:array-input-#{index}"}
             data-scope="combobox"
             data-part="array-input"
             name={@submit_name}
             value={v}
+            phx-mounted={
+              JS.ignore_attributes(["value", "name"],
+                to: Selectors.css_id("combobox:#{@id}:array-input-#{index}")
+              )
+            }
           />
           <input
             :if={@value == []}
             type="hidden"
+            id={"combobox:#{@id}:array-input-empty"}
             data-scope="combobox"
             data-part="array-input"
             data-empty
-            name={@submit_name}
+            name={@empty_array_name}
             value=""
+            phx-mounted={
+              JS.ignore_attributes(["value", "name"],
+                to: Selectors.css_id("combobox:#{@id}:array-input-empty")
+              )
+            }
           />
         </div>
       <input
@@ -679,7 +704,7 @@ defmodule Corex.Combobox do
 
         <div phx-mounted={Connect.ignore_positioner(%Positioner{id: @id, dir: @dir, orientation: @orientation})} {Connect.positioner(%Positioner{id: @id, dir: @dir, orientation: @orientation})}>
           <div phx-mounted={Connect.ignore_content(%Content{id: @id, dir: @dir, orientation: @orientation})} {Connect.content(%Content{id: @id, dir: @dir, orientation: @orientation})}>
-            <ul phx-update="ignore" phx-mounted={Connect.ignore_list(%List{id: @id, dir: @dir, orientation: @orientation})} {Connect.list(%List{id: @id, dir: @dir, orientation: @orientation})}>
+            <ul phx-mounted={Connect.ignore_list(%List{id: @id, dir: @dir, orientation: @orientation})} {Connect.list(%List{id: @id, dir: @dir, orientation: @orientation})}>
               <li :if={@items == []} phx-mounted={Connect.ignore_empty(%Empty{id: @id, dir: @dir, orientation: @orientation})} {Connect.empty(%Empty{id: @id, dir: @dir, orientation: @orientation})}>
                 {if Enum.empty?(@empty), do: @empty_text, else: render_slot(@empty)}
               </li>
@@ -812,25 +837,26 @@ defmodule Corex.Combobox do
   end
 
   defp get_value(field_value) do
-    case field_value do
-      nil ->
+    cond do
+      empty_field_value?(field_value) ->
         []
 
-      "" ->
-        []
+      is_list(field_value) ->
+        normalize_field_value_list(field_value)
 
-      [] ->
-        []
-
-      value when is_list(value) ->
-        value
-        |> Enum.map(&to_string/1)
-        |> Enum.reject(&(&1 == ""))
-
-      value ->
-        s = to_string(value)
-        if s == "", do: [], else: [s]
+      true ->
+        s = to_string(field_value)
+        if empty_field_value?(s), do: [], else: [s]
     end
+  end
+
+  defp empty_field_value?(value) when value in [nil, "", "[]", []], do: true
+  defp empty_field_value?(_), do: false
+
+  defp normalize_field_value_list(value) do
+    value
+    |> Enum.map(&to_string/1)
+    |> Enum.reject(&empty_field_value?/1)
   end
 
   defp normalize_value_to_ids(items, value_list) do
@@ -986,7 +1012,9 @@ defmodule Corex.Combobox do
     props = %Props{
       id: assigns.id,
       items: assigns.items,
+      items_json: Map.get(assigns, :items_json),
       form_field: assigns[:form_field] == true,
+      controlled: false,
       placeholder: assigns.placeholder,
       value: assigns.value,
       name: assigns.name,

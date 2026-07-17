@@ -1,3 +1,8 @@
+import {
+  anyDatasetKeyChanged,
+  datasetKeyChanged,
+  type DatasetSnapshot,
+} from "./controlled-attr-snapshot";
 import { formatDisplayValue } from "./number-input-format";
 import {
   getBoolean,
@@ -7,6 +12,8 @@ import {
   getStringList,
   type CheckedState,
 } from "./util";
+
+export type { DatasetSnapshot };
 
 const z = (s: string | undefined) => (s === undefined ? null : s);
 
@@ -21,9 +28,14 @@ export function readStringControlledZagProps(
 export function readStringControlledZagUpdate(
   el: HTMLElement,
   valueKey: string,
-  _defaultKey: string
+  _defaultKey: string,
+  before?: DatasetSnapshot
 ): Record<string, string | null> {
   if (!isZagValueControlled(el)) {
+    return {};
+  }
+
+  if (!datasetKeyChanged(before, el, valueKey)) {
     return {};
   }
 
@@ -31,9 +43,10 @@ export function readStringControlledZagUpdate(
 }
 
 export function readCheckedControlledZagUpdate(
-  el: HTMLElement
+  el: HTMLElement,
+  before?: DatasetSnapshot
 ): { checked: CheckedState } | Record<string, never> {
-  return readUpdatedServerChecked(el);
+  return readUpdatedServerChecked(el, before);
 }
 
 export function getJsonStringList(el: HTMLElement, datasetKey: string): string[] | undefined {
@@ -72,9 +85,14 @@ export function readFormFieldServerPaths(
 export function readBooleanControlledZagUpdate(
   el: HTMLElement,
   openKey: string,
-  _defaultOpenKey: string
+  _defaultOpenKey: string,
+  before?: DatasetSnapshot
 ): { open: boolean } | Record<string, never> {
   if (!getBoolean(el, "controlled")) {
+    return {};
+  }
+
+  if (!datasetKeyChanged(before, el, openKey)) {
     return {};
   }
 
@@ -91,19 +109,17 @@ export function readDatasetStringList(el: HTMLElement, datasetKey: string): stri
 
 export function readUpdatedServerStringList(
   el: HTMLElement,
-  lastServerValue?: string
-): { value: string[]; nextServerValue: string } | Record<string, never> {
+  before?: DatasetSnapshot
+): { value: string[] } | Record<string, never> {
   if (!isZagValueControlled(el)) {
     return {};
   }
 
-  const raw = getString(el, "value") ?? "";
-
-  if (raw === lastServerValue) {
+  if (!datasetKeyChanged(before, el, "value")) {
     return {};
   }
 
-  return { value: readDatasetStringList(el, "value"), nextServerValue: raw };
+  return { value: readDatasetStringList(el, "value") };
 }
 
 export function mountStringListBinding(
@@ -118,19 +134,17 @@ export function mountStringListBinding(
 
 export function readUpdatedServerString(
   el: HTMLElement,
-  lastServerValue?: string
+  before?: DatasetSnapshot
 ): { value: string | null } | Record<string, never> {
   if (!isZagValueControlled(el)) {
     return {};
   }
 
-  const raw = getString(el, "value");
-
-  if (raw === lastServerValue) {
+  if (!datasetKeyChanged(before, el, "value")) {
     return {};
   }
 
-  return { value: z(raw) };
+  return { value: z(getString(el, "value")) };
 }
 
 export function mountStringBinding(
@@ -150,9 +164,14 @@ export function isZagCheckedControlled(el: HTMLElement): boolean {
 }
 
 export function readUpdatedServerChecked(
-  el: HTMLElement
+  el: HTMLElement,
+  before?: DatasetSnapshot
 ): { checked: CheckedState } | Record<string, never> {
   if (!isZagCheckedControlled(el)) {
+    return {};
+  }
+
+  if (!datasetKeyChanged(before, el, "checked")) {
     return {};
   }
 
@@ -197,18 +216,21 @@ function numberInputStep(el: HTMLElement): number {
 export type NumberServerValuePatch = {
   value?: string;
   step?: number;
-  nextServerValue?: string;
 };
 
 export function readUpdatedServerNumber(
   el: HTMLElement,
-  lastServerValue?: string
+  before?: DatasetSnapshot
 ): NumberServerValuePatch {
   const step = numberInputStep(el);
   const base: NumberServerValuePatch = { step };
 
   const sync = getBoolean(el, "controlled") || getBoolean(el, "formField");
   if (!sync) {
+    return base;
+  }
+
+  if (!anyDatasetKeyChanged(before, el, ["value", "defaultValue"])) {
     return base;
   }
 
@@ -219,14 +241,9 @@ export function readUpdatedServerNumber(
     return base;
   }
 
-  if (raw === lastServerValue) {
-    return base;
-  }
-
   return {
     ...base,
     value: formatDisplayValue(raw, step),
-    nextServerValue: raw,
   };
 }
 
@@ -252,20 +269,20 @@ export function readStringListControlledZagUpdate(
   el: HTMLElement,
   _valueKey: string,
   _defaultValueKey: string,
-  lastServerValue?: string
+  before?: DatasetSnapshot
 ): { value: string[] | undefined } | Record<string, never> {
-  const patch = readUpdatedServerStringList(el, lastServerValue);
-  if (!("value" in patch)) {
-    return {};
-  }
-
-  return { value: patch.value };
+  return readUpdatedServerStringList(el, before);
 }
 
 export function readPressedControlledZagUpdate(
-  el: HTMLElement
+  el: HTMLElement,
+  before?: DatasetSnapshot
 ): { pressed: boolean } | Record<string, never> {
   if (!getBoolean(el, "controlled")) {
+    return {};
+  }
+
+  if (!datasetKeyChanged(before, el, "pressed")) {
     return {};
   }
 
@@ -273,9 +290,14 @@ export function readPressedControlledZagUpdate(
 }
 
 export function readEditControlledZagUpdate(
-  el: HTMLElement
+  el: HTMLElement,
+  before?: DatasetSnapshot
 ): { edit: boolean } | Record<string, never> {
   if (!getBoolean(el, "controlled")) {
+    return {};
+  }
+
+  if (!datasetKeyChanged(before, el, "edit")) {
     return {};
   }
 
@@ -292,9 +314,9 @@ export function readNumberControlledZagProps(el: HTMLElement): NumZag {
 
 export function readNumberControlledZagUpdate(
   el: HTMLElement,
-  lastServerValue?: string
+  before?: DatasetSnapshot
 ): NumberServerValuePatch {
-  return readUpdatedServerNumber(el, lastServerValue);
+  return readUpdatedServerNumber(el, before);
 }
 
 export function readBooleanControlledZagProps(

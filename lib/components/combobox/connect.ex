@@ -22,34 +22,33 @@ defmodule Corex.Combobox.Connect do
   }
 
   alias Corex.Combobox.Translation, as: ComboboxTranslation
+  alias Corex.Connect.ItemNav
   alias Phoenix.LiveView.JS
 
-  alias Corex.FormField
+  alias Corex.ValueBinding
 
   import Corex.Helpers,
     only: [
       get_boolean: 1,
       validate_value!: 1,
-      joined_csv_values: 1,
       maybe_put: 3
     ]
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
     vlist = validate_value!(assigns.value)
+    controlled = Map.get(assigns, :controlled, false)
+    {value_str, default_value_str} = ValueBinding.list_pair(vlist, controlled)
 
-    joined =
-      if Map.get(assigns, :form_field, false) do
-        FormField.dataset_default_json(vlist)
-      else
-        joined_csv_values(vlist)
-      end
+    items_json =
+      Map.get(assigns, :items_json) || Corex.Dataset.encode_json(assigns.items)
 
     base = %{
       "id" => assigns.id,
-      "data-items" => Corex.Dataset.encode_json(assigns.items),
-      "data-value" => nil,
-      "data-default-value" => joined,
+      "data-items" => items_json,
+      "data-controlled" => get_boolean(controlled),
+      "data-value" => value_str,
+      "data-default-value" => default_value_str,
       "data-placeholder" => assigns.placeholder,
       "data-close-on-select" => get_boolean(assigns.close_on_select),
       "data-always-submit-on-enter" => get_boolean(assigns.always_submit_on_enter),
@@ -363,21 +362,7 @@ defmodule Corex.Combobox.Connect do
       "id" => "combobox:#{assigns.id}:option:#{assigns.value}"
     }
 
-    base = if Map.get(assigns, :to), do: Map.put(base, "data-to", assigns.to), else: base
-
-    base =
-      case Map.get(assigns, :redirect) do
-        false ->
-          Map.put(base, "data-redirect", "false")
-
-        mode when mode in [:href, :patch, :navigate] ->
-          Map.put(base, "data-redirect", Atom.to_string(mode))
-
-        _ ->
-          base
-      end
-
-    if Map.get(assigns, :new_tab), do: Map.put(base, "data-new-tab", ""), else: base
+    ItemNav.put_item_nav_attrs(base, assigns)
   end
 
   def item_template(assigns), do: Map.drop(item(assigns), ["id"])
