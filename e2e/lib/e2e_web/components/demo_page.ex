@@ -59,14 +59,14 @@ defmodule E2eWeb.DemoPage do
 
   use E2eWeb, :html
 
-  attr :id, :string, required: true
-  attr :title, :string, required: true
-  attr :subtitle, :any, default: nil
-  attr :path, :string, default: nil
-  attr :heading_class, :string, default: "layout-heading max-w-none"
-  attr :class, :string, default: "w-full flex flex-col gap-size"
-  attr :rest, :global
-  slot :inner_block, required: true
+  attr(:id, :string, required: true)
+  attr(:title, :string, required: true)
+  attr(:subtitle, :any, default: nil)
+  attr(:path, :string, default: nil)
+  attr(:heading_class, :string, default: "layout-heading max-w-none")
+  attr(:class, :string, default: "w-full flex flex-col gap-size")
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
 
   def demo_page(assigns) do
     ~H"""
@@ -81,9 +81,9 @@ defmodule E2eWeb.DemoPage do
     """
   end
 
-  attr :name, :string, required: true
+  attr(:name, :string, required: true)
 
-  attr :axis, :atom,
+  attr(:axis, :atom,
     required: true,
     values: [
       :semantic,
@@ -97,11 +97,12 @@ defmodule E2eWeb.DemoPage do
       :max_height,
       :min_height
     ]
+  )
 
-  attr :pattern, :string, default: nil
-  attr :options, :list, default: nil
-  attr :purpose, :string, default: nil
-  attr :class, :string, default: "typo text-ink-muted flex flex-col gap-space-xs max-w-none"
+  attr(:pattern, :string, default: nil)
+  attr(:options, :list, default: nil)
+  attr(:purpose, :string, default: nil)
+  attr(:class, :string, default: "typo text-ink-muted flex flex-col gap-space-xs max-w-none")
 
   def demo_modifier_axis(assigns) do
     name = assigns.name
@@ -130,7 +131,9 @@ defmodule E2eWeb.DemoPage do
     ~H"""
     <div :if={@axis == :variant} class={@class}>
       <p>
-        Variant modifiers control {@host} surface treatment. Default is subtle (neutral fill and border; semantic roles tint text ink); add <code class="text-sm">ui-solid</code> for a filled surface.
+        Variant modifiers control {@host} surface treatment. Default is subtle (neutral fill and border; semantic roles tint text ink); add
+        <code class="text-sm">ui-solid</code>
+        for a filled surface.
       </p>
     </div>
     <div :if={@axis != :variant} class={@class}>
@@ -145,8 +148,8 @@ defmodule E2eWeb.DemoPage do
     """
   end
 
-  attr :host, :string, required: true
-  attr :class, :string, default: "typo text-ink-muted flex flex-col gap-space-xs max-w-none"
+  attr(:host, :string, required: true)
+  attr(:class, :string, default: "typo text-ink-muted flex flex-col gap-space-xs max-w-none")
 
   def variant_matrix_description(assigns) do
     ~H"""
@@ -258,7 +261,7 @@ defmodule E2eWeb.DemoPage do
     end)
   end
 
-  attr :path, :string, required: true
+  attr(:path, :string, required: true)
 
   def component_source_bar(assigns) do
     links = E2eWeb.ComponentSourceLinks.links_for_path(assigns.path)
@@ -280,16 +283,16 @@ defmodule E2eWeb.DemoPage do
     """
   end
 
-  attr :id, :string, default: nil
-  attr :title, :string, default: nil
-  attr :subtitle, :any, default: nil
-  attr :path, :string, default: nil
-  attr :heading_class, :string, default: "layout-heading"
-  attr :title_tag, :string, default: "h1"
-  attr :subtitle_tag, :string, default: "p"
-  attr :controls_strip, :boolean, default: true
-  slot :controls
-  slot :canvas, required: true
+  attr(:id, :string, default: nil)
+  attr(:title, :string, default: nil)
+  attr(:subtitle, :any, default: nil)
+  attr(:path, :string, default: nil)
+  attr(:heading_class, :string, default: "layout-heading")
+  attr(:title_tag, :string, default: "h1")
+  attr(:subtitle_tag, :string, default: "p")
+  attr(:controls_strip, :boolean, default: true)
+  slot(:controls)
+  slot(:canvas, required: true)
 
   def demo_playground(assigns) do
     ~H"""
@@ -319,9 +322,9 @@ defmodule E2eWeb.DemoPage do
     """
   end
 
-  attr :id, :string, required: true
-  attr :value, :list, required: true
-  attr :on_value_change, :string, required: true
+  attr(:id, :string, required: true)
+  attr(:value, :list, required: true)
+  attr(:on_value_change, :string, required: true)
 
   def playground_dir_toggle(assigns) do
     ~H"""
@@ -339,35 +342,39 @@ defmodule E2eWeb.DemoPage do
     """
   end
 
-  attr :id, :string, required: true
-  attr :title, :string, required: true
-  attr :code, :string, default: nil
-  attr :code_tabs, :list, default: []
-  attr :default_value, :string, default: "preview"
-  attr :trigger_class, :string, default: nil
-  attr :tabs_id, :string, default: nil
-  attr :class, :string, default: "flex flex-col gap-4 items-start w-full"
+  attr(:id, :string, required: true)
+  attr(:title, :string, required: true)
+  attr(:code, :string, default: nil)
+  attr(:code_tabs, :list, default: [])
+  attr(:default_value, :string, default: "preview")
+  attr(:trigger_class, :string, default: nil)
+  attr(:tabs_id, :string, default: nil)
+  attr(:class, :string, default: "flex flex-col gap-4 items-start w-full")
 
-  attr :tabs_class, :string,
+  attr(:tabs_class, :string,
     default:
       "tabs w-full max-w-none [&>[data-scope=tabs][data-part=root]>[data-scope=tabs][data-part=list]]:place-self-end"
+  )
 
-  attr :tabs_shell_class, :string, default: "w-full"
+  attr(:tabs_shell_class, :string, default: "w-full")
 
-  attr :preview_class, :string,
+  attr(:preview_class, :string,
     default: "flex flex-col items-center justify-center py-space-xl p-space bg-root gap-space"
+  )
 
-  attr :code_panel_class, :string,
+  attr(:code_panel_class, :string,
     default:
       "flex flex-col items-center bg-root p-0 relative max-h-[70vh] overflow-y-auto scrollbar scrollbar--sm"
+  )
 
-  attr :code_class, :string, default: "code max-w-none w-full min-h-0"
+  attr(:code_class, :string, default: "code max-w-none w-full min-h-0")
 
-  attr :clipboard_class, :string,
+  attr(:clipboard_class, :string,
     default: "clipboard w-fit ui-size-sm absolute top-2 right-2 z-10"
+  )
 
-  slot :description
-  slot :preview, required: true
+  slot(:description)
+  slot(:preview, required: true)
 
   def demo_section(assigns) do
     assigns =
@@ -442,10 +449,10 @@ defmodule E2eWeb.DemoPage do
   Pass a list of events (most recent first). Each entry should be a
   map with `:name` and `:payload` (inspected as JSON-ish text).
   """
-  attr :id, :string, required: true
-  attr :events, :list, required: true
-  attr :empty_label, :string, default: "Interact with the component to see events here."
-  attr :class, :string, default: "flex flex-col w-full max-w-6xl gap-2"
+  attr(:id, :string, required: true)
+  attr(:events, :list, required: true)
+  attr(:empty_label, :string, default: "Interact with the component to see events here.")
+  attr(:class, :string, default: "flex flex-col w-full max-w-6xl gap-2")
 
   def demo_event_log(assigns) do
     ~H"""
@@ -468,12 +475,12 @@ defmodule E2eWeb.DemoPage do
   @doc """
   One "dispatch + response" row used on every API page.
   """
-  attr :id, :string, required: true
-  attr :title, :string, required: true
-  attr :description, :string, default: nil
-  attr :class, :string, default: "flex flex-col gap-2"
-  slot :actions, required: true
-  slot :result
+  attr(:id, :string, required: true)
+  attr(:title, :string, required: true)
+  attr(:description, :string, default: nil)
+  attr(:class, :string, default: "flex flex-col gap-2")
+  slot(:actions, required: true)
+  slot(:result)
 
   def demo_api_row(assigns) do
     ~H"""
@@ -497,10 +504,10 @@ defmodule E2eWeb.DemoPage do
   `data-loading` container. Component CSS hooks on
   `[data-loading]` to render its skeleton.
   """
-  attr :id, :string, required: true
-  attr :loading, :boolean, default: false
-  attr :class, :string, default: "flex flex-col gap-2 w-full"
-  slot :inner_block, required: true
+  attr(:id, :string, required: true)
+  attr(:loading, :boolean, default: false)
+  attr(:class, :string, default: "flex flex-col gap-2 w-full")
+  slot(:inner_block, required: true)
 
   def demo_pattern_async(assigns) do
     ~H"""
@@ -514,12 +521,12 @@ defmodule E2eWeb.DemoPage do
   Optional shell for a **Controlled** pattern or `/controlled` page: status text,
   toolbar actions, then the live component.
   """
-  attr :id, :string, required: true
-  attr :class, :string, default: "flex flex-col gap-3 w-full max-w-6xl"
+  attr(:id, :string, required: true)
+  attr(:class, :string, default: "flex flex-col gap-3 w-full max-w-6xl")
 
-  slot :state
-  slot :toolbar
-  slot :inner_block, required: true
+  slot(:state)
+  slot(:toolbar)
+  slot(:inner_block, required: true)
 
   def demo_pattern_controlled(assigns) do
     ~H"""

@@ -245,7 +245,7 @@ defmodule E2eWeb.DocA11yRoutes do
     {"/en/tree-view/events", "#tree-view-events-page"},
     {"/en/tree-view/patterns", "#tree-view-patterns-page"},
     {"/en/tree-view/animation", "#tree-view-animation-page"},
-    {"/en/tree-view/style", "#tree-view-styling-page"},
+    {"/en/tree-view/style", "#tree-view-styling-page"}
   ]
 
   def all, do: @routes
