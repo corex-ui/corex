@@ -543,7 +543,7 @@ defmodule Corex.DatePicker do
     value =
       case assigns[:value] do
         nil -> date_field_value(field.value, mode)
-        explicit -> explicit
+        explicit -> date_field_value(explicit, mode)
       end
 
     assigns
@@ -990,6 +990,9 @@ defmodule Corex.DatePicker do
   defp date_field_value(nil, _), do: nil
   defp date_field_value(%Date{} = d, _), do: Date.to_iso8601(d)
   defp date_field_value(s, _) when is_binary(s), do: s
+
+  defp date_field_value([single | _], "single"), do: date_field_value(single, "single")
+  defp date_field_value([], "single"), do: nil
 
   defp date_field_value(values, mode) when is_list(values) and mode in ["multiple", "range"] do
     values

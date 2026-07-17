@@ -7,8 +7,14 @@ import {
   Menu as MenuHook,
 } from "../../hooks/menu";
 import { Menu as MenuComponent } from "../../components/menu";
+import { menuTree } from "../helpers/component-smoke";
 import { expectHookModule } from "../helpers/expect-hook";
-import { callHookDestroyed, callHookMounted, mockHookContext } from "../helpers/mock-hook";
+import {
+  callHookDestroyed,
+  callHookLifecycle,
+  callHookMounted,
+  mockHookContext,
+} from "../helpers/mock-hook";
 
 describe("menu hook module", () => {
   it("exports lifecycle hook", () => {
@@ -153,6 +159,39 @@ describe("Menu hook lifecycle", () => {
       id: "menu-api-server",
       open: expect.any(Boolean),
     });
+
+    callHookDestroyed(MenuHook, hook);
+  });
+
+  it("updated re-syncs trigger aria-disabled when native disabled toggles", () => {
+    const el = menuTree();
+    el.id = "menu:menu-playground";
+    el.setAttribute("phx-hook", "Menu");
+    document.body.appendChild(el);
+
+    const trigger = el.querySelector<HTMLElement>('[data-part="trigger"]')!;
+    const { hook } = mockHookContext(el, {
+      connected: false,
+      overrides: {
+        menu: undefined as MenuComponent | undefined,
+        handlers: [] as CallbackRef[],
+      },
+    });
+
+    callHookMounted(MenuHook, hook);
+    expect(trigger.getAttribute("aria-disabled")).toBe("false");
+    expect(trigger.getAttribute("tabindex")).toBe("0");
+
+    trigger.setAttribute("disabled", "");
+    callHookLifecycle(MenuHook, hook, "updated");
+    expect(trigger.getAttribute("aria-disabled")).toBe("true");
+    expect(trigger.getAttribute("tabindex")).toBe("-1");
+
+    trigger.removeAttribute("disabled");
+    callHookLifecycle(MenuHook, hook, "updated");
+    expect(trigger.hasAttribute("disabled")).toBe(false);
+    expect(trigger.getAttribute("aria-disabled")).toBe("false");
+    expect(trigger.getAttribute("tabindex")).toBe("0");
 
     callHookDestroyed(MenuHook, hook);
   });

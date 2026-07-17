@@ -375,6 +375,24 @@ defmodule Corex.DatePickerTest do
       refute Map.has_key?(result, "data-controlled")
     end
 
+    test "props/1 normalizes one-element list value for single mode form_field" do
+      result =
+        Connect.props(
+          Map.merge(default_props(), %{
+            id: "test-dp",
+            form_field: true,
+            selection_mode: "single",
+            value: ["2025-06-01"],
+            name: "admin[birth_date]",
+            locale: "en",
+            time_zone: "UTC",
+            dir: "ltr"
+          })
+        )
+
+      assert result["data-default-value"] == "2025-06-01"
+    end
+
     test "props/1 includes client event attribute names when set" do
       result =
         Connect.props(
@@ -430,5 +448,24 @@ defmodule Corex.DatePickerTest do
       max_selected_dates: nil,
       translation: nil
     }
+  end
+
+  describe "date_picker/1 list-shaped single value" do
+    test "accepts a one-element list from form display helpers" do
+      form = to_form(%{"date" => "2025-12-25"}, as: :f, id: "f")
+
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <Corex.DatePicker.date_picker field={@form[:date]} value={["2025-12-25"]} id="dp" />
+            """
+          end,
+          %{form: form}
+        )
+
+      assert html =~ ~S(data-default-value="2025-12-25")
+      assert html =~ ~S(value="2025-12-25")
+    end
   end
 end

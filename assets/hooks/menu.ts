@@ -51,6 +51,13 @@ function syncMenuPropsFromDom(menu: Menu): void {
   }
 }
 
+function renderMenuTree(menu: Menu): void {
+  menu.render();
+  for (const child of menu.children) {
+    renderMenuTree(child);
+  }
+}
+
 function destroyDescendantMenus(menu: Menu): void {
   for (const child of [...menu.children]) {
     destroyDescendantMenus(child);
@@ -203,6 +210,7 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
     if (!this.menu) return;
 
     syncMenuPropsFromDom(this.menu);
+    renderMenuTree(this.menu);
 
     if (this.menu.children.length > 0) {
       wireSubmenuTriggersDeep(this.menu);

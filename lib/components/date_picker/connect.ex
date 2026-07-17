@@ -93,9 +93,21 @@ defmodule Corex.DatePicker.Connect do
       |> iso_values_from_assigns()
       |> Corex.ValueBinding.encode_list()
     else
-      assigns.value
+      single_default_value(assigns.value)
     end
   end
+
+  defp single_default_value(nil), do: nil
+  defp single_default_value(value) when is_binary(value), do: value
+  defp single_default_value(%Date{} = date), do: Date.to_iso8601(date)
+
+  defp single_default_value(values) when is_list(values) do
+    values
+    |> Enum.map(&single_default_value/1)
+    |> Enum.find(&(is_binary(&1) and &1 != ""))
+  end
+
+  defp single_default_value(_), do: nil
 
   defp iso_values_from_assigns(nil), do: []
 

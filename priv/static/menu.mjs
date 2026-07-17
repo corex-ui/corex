@@ -1803,6 +1803,12 @@ function syncMenuPropsFromDom(menu) {
     syncMenuPropsFromDom(child);
   }
 }
+function renderMenuTree(menu) {
+  menu.render();
+  for (const child of menu.children) {
+    renderMenuTree(child);
+  }
+}
 function destroyDescendantMenus(menu) {
   for (const child of [...menu.children]) {
     destroyDescendantMenus(child);
@@ -1932,6 +1938,7 @@ var MenuHook = {
     if (this.el.hasAttribute("data-nested")) return;
     if (!this.menu) return;
     syncMenuPropsFromDom(this.menu);
+    renderMenuTree(this.menu);
     if (this.menu.children.length > 0) {
       wireSubmenuTriggersDeep(this.menu);
     }
