@@ -47,13 +47,12 @@ defmodule Corex.New.Tableau.TemplatesTest do
     corex_js_import: "corex",
     corex_dep_source: "\"~> 0.2.0\"",
     corex_design_dep_source: "\"~> 0.2\", runtime: false, only: :dev",
-    corex_mcp_dep_source: "\"~> 0.2.0\", only: :dev"
+    corex_mcp_dep_source: "\"~> 0.2.0\", only: [:dev, :test]"
   ]
 
   @lang_assigns Keyword.merge(@base_assigns,
                   lang: true,
-                  components:
-                    ~w(toast layout-heading typo icon link button scrollbar select)a
+                  components: ~w(toast layout-heading typo icon link button scrollbar select)a
                 )
 
   describe "root_layout/1" do

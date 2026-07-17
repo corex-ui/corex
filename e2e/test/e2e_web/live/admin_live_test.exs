@@ -81,11 +81,20 @@ defmodule E2eWeb.AdminLiveTest do
 
         val =
           cond do
-            key in ["terms", "notifications"] and is_boolean(v) -> if(v, do: "true", else: "false")
-            key == "level" and is_integer(v) -> Integer.to_string(v)
-            key == "heading_angle" and is_float(v) -> Float.to_string(v)
-            key == "birth_date" and is_nil(v) -> ""
-            true -> v
+            key in ["terms", "notifications"] and is_boolean(v) ->
+              if(v, do: "true", else: "false")
+
+            key == "level" and is_integer(v) ->
+              Integer.to_string(v)
+
+            key == "heading_angle" and is_float(v) ->
+              Float.to_string(v)
+
+            key == "birth_date" and is_nil(v) ->
+              ""
+
+            true ->
+              v
           end
 
         {key, val}

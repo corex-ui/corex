@@ -5,7 +5,7 @@ defmodule Corex.New.Patches do
   Adds `{:corex, ...}` (and `{:localize_web, "~> 0.5"}` when `--lang`)
   to the `deps/0` list in `mix.exs`. When `--lang` or `--design` and Erlang
   `:json` is not loaded, adds `{:json_polyfill, ...}` like `localize_web`.
-  When `--mcp`, adds `{:corex_mcp, ..., only: :dev}`. Idempotent.
+  When `--mcp`, adds `{:corex_mcp, ..., only: [:dev, :test]}`. Idempotent.
   """
   def patch_mix_exs(install_dir, opts) do
     path = Path.join(install_dir, "mix.exs")
@@ -293,7 +293,11 @@ defmodule Corex.New.Patches do
   end
 
   defp maybe_ensure_json_polyfill_dep(content, opts) do
-    if not (Keyword.get(opts, :lang, false) or Keyword.get(opts, :design, false)) do
+    needs_json? =
+      Keyword.get(opts, :lang, false) or Keyword.get(opts, :design, false) or
+        Keyword.get(opts, :mcp, true)
+
+    if not needs_json? do
       content
     else
       cond do
@@ -512,7 +516,7 @@ defmodule Corex.New.Patches do
         if trimmed != "" do
           Corex.New.Cli.validate_dev_path!(trimmed)
           mcp_path = Path.join(trimmed, "mcp")
-          "[path: #{inspect(mcp_path)}, only: :dev]"
+          "[path: #{inspect(mcp_path)}, only: [:dev, :test]]"
         else
           corex_mcp_dep_constraint()
         end
@@ -523,7 +527,7 @@ defmodule Corex.New.Patches do
   end
 
   defp corex_mcp_dep_constraint do
-    "\"~> 0.2\", only: :dev"
+    "\"~> 0.2\", only: [:dev, :test]"
   end
 
   defp installer_components(opts) do

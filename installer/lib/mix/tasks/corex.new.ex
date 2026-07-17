@@ -24,7 +24,7 @@ defmodule Mix.Tasks.Corex.New do
   * **`--mode`**  -  plugs, mode toggle, root-layout bridge for light/dark. Implies **`--design`**.
   * **`--theme`**  -  themes (Neo/Uno/Duo/Leo), plugs, theme toggle, layout bridge. Implies **`--design`**.
   * **`--lang`**  -  Localize + Gettext, path plug, locale scope helpers, `language_switch`.
-  * **`--mcp`** / **`--no-mcp`**  -  when **`--mcp`** (default), adds `{:corex_mcp, "~> 0.2", only: :dev}` and `plug Corex.MCP` on the endpoint in `:dev` / `:test` after `Plug.Static`.
+  * **`--mcp`** / **`--no-mcp`**  -  when **`--mcp`** (default), adds `{:corex_mcp, "~> 0.2", only: [:dev, :test]}` and `plug Corex.MCP` on the endpoint in `:dev` / `:test` after `Plug.Static`.
   * **`--dev PATH`**  -  `{:corex, path: PATH}`, `{:corex_design, path: PATH/design}`, and relative `corex.mjs` import when building JS.
   * **`--install`** / **`--no-install`**  -  whether Corex runs **`mix deps.get`** in the new project after generation (prompt if omitted). Does **not** change Phoenix’s **`--no-install`** step.
 

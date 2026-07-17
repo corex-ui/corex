@@ -1,7 +1,7 @@
 ---
 name: corex-mcp
 description: >-
-  Load when adding {:corex_mcp, only: :dev}, configuring plug Corex.MCP in
+  Load when adding {:corex_mcp, only: [:dev, :test]}, configuring plug Corex.MCP in
   endpoint.ex, editing .cursor/mcp.json or Claude Desktop mcpServers JSON,
   calling list_components get_component list_modifiers get_component_style
   list_themes design_guide installation_guide, or when MCP connection refused.
@@ -10,7 +10,7 @@ description: >-
 
 # Corex MCP
 
-Dev/test only. Package: `{:corex_mcp, "~> 0.2", only: :dev}`.
+Dev/test only. Package: `{:corex_mcp, "~> 0.2", only: [:dev, :test]}`.
 
 After `Plug.Static` in endpoint:
 

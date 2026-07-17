@@ -118,7 +118,7 @@ When using mode/theme/lang pickers, include `toggle` and `select` in `components
 ## MCP (dev only)
 
 ```elixir
-{:corex_mcp, "~> 0.2", only: :dev}
+{:corex_mcp, "~> 0.2", only: [:dev, :test]}
 ```
 
 ```elixir

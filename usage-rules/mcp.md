@@ -8,7 +8,7 @@ Self-hosted read-only MCP via the **`corex_mcp`** Hex package. **Dev and test on
 
 ```elixir
 {:corex, "~> 0.2"},
-{:corex_mcp, "~> 0.2", only: :dev}
+{:corex_mcp, "~> 0.2", only: [:dev, :test]}
 ```
 
 Optional: `{:corex_design, "~> 0.2", runtime: false, only: :dev}` for design tools and richer `get_component` fields.
@@ -68,7 +68,7 @@ URL: `http://localhost:4000/corex/mcp`
 | Issue | Fix |
 |-------|-----|
 | Connection refused | Start Phoenix (`mix phx.server`); check port |
-| Tools empty / module missing | Add `{:corex_mcp, "~> 0.2", only: :dev}` and `plug Corex.MCP` |
+| Tools empty / module missing | Add `{:corex_mcp, "~> 0.2", only: [:dev, :test]}` and `plug Corex.MCP` |
 | Design tools error | Add `corex_design` and rebuild |
 | Stale metadata | Restart server after Corex upgrade |
 | Verbose logging | `config :corex_mcp, debug: true` in dev |

@@ -190,7 +190,7 @@ defmodule Corex.New.PatchesTest do
         Patches.patch_mix_exs(File.cwd!(), [])
         body = File.read!("mix.exs")
         assert body =~ "{:corex,"
-        assert body =~ ~r/\{:corex_mcp,\s*"~> 0.2",\s*only:\s*:dev\}/
+        assert body =~ ~r/\{:corex_mcp,\s*"~> 0.2",\s*only:\s*\[:dev,\s*:test\]\}/
 
         Patches.patch_mix_exs(File.cwd!(), [])
         body2 = File.read!("mix.exs")
@@ -214,7 +214,7 @@ defmodule Corex.New.PatchesTest do
         File.write!("mix.exs", @stock_mix_exs)
         Patches.patch_mix_exs(File.cwd!(), dev: "../corex", mcp: true)
         body = File.read!("mix.exs")
-        assert body =~ ~s({:corex_mcp, [path: "../corex/mcp", only: :dev]})
+        assert body =~ ~s({:corex_mcp, [path: "../corex/mcp", only: [:dev, :test]]})
       end)
     end
 

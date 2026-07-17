@@ -4,7 +4,7 @@ defmodule Corex.MCP do
   HTTP endpoint for AI tooling.
 
   Ships as the Hex package [`corex_mcp`](https://hex.pm/packages/corex_mcp). Add it to your app
-  with `only: :dev`, then mount after `Plug.Static` and before the code reloader:
+  with `only: [:dev, :test]`, then mount after `Plug.Static` and before the code reloader:
 
       if Mix.env() in [:dev, :test] do
         plug Corex.MCP

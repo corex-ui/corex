@@ -246,7 +246,7 @@ defmodule Corex.MCP.Tools.Installation do
         note: "Add the corex_mcp Hex package, then mount the plug. Never enable in prod.",
         snippet: """
         # mix.exs deps:
-            {:corex_mcp, \"~> #{corex_hex_version()}\", only: :dev}
+            {:corex_mcp, \"~> #{corex_hex_version()}\", only: [:dev, :test]}
 
         # lib/my_app_web/endpoint.ex:
         #{mcp_mount_snippet()[:plug_block]}
@@ -257,7 +257,7 @@ defmodule Corex.MCP.Tools.Installation do
 
   defp mcp_mount_snippet do
     %{
-      dependency: "{:corex_mcp, \"~> #{corex_hex_version()}\", only: :dev}",
+      dependency: "{:corex_mcp, \"~> #{corex_hex_version()}\", only: [:dev, :test]}",
       plug_block: """
       if Mix.env() in [:dev, :test] do
         plug Corex.MCP

@@ -29,7 +29,7 @@ If you use Corex Design, also depend on the separate Hex package:
 If you use Corex MCP (AI tooling), depend on:
 
 ```elixir
-{:corex_mcp, "~> 0.2", only: :dev}
+{:corex_mcp, "~> 0.2", only: [:dev, :test]}
 ```
 
 MCP used to ship inside `corex`. Keep `plug Corex.MCP` on the endpoint; move any `config :corex, mcp_*` / MCP `debug` settings to `config :corex_mcp`.

@@ -355,13 +355,13 @@ defmodule Corex.New.Tableau.Generate do
         if trimmed != "" do
           Corex.New.Cli.validate_dev_path!(trimmed)
           mcp_path = Path.join(trimmed, "mcp")
-          "[path: #{inspect(mcp_path)}, only: :dev]"
+          "[path: #{inspect(mcp_path)}, only: [:dev, :test]]"
         else
-          "\"~> 0.2.0\", only: :dev"
+          "\"~> 0.2.0\", only: [:dev, :test]"
         end
 
       _ ->
-        "\"~> 0.2.0\", only: :dev"
+        "\"~> 0.2.0\", only: [:dev, :test]"
     end
   end
 
