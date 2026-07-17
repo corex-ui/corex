@@ -36,6 +36,10 @@ defmodule E2eWeb.Endpoint do
     plug Corex.MCP
   end
 
+  if Mix.env() in [:dev] do
+    plug Tidewave
+  end
+
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
   if code_reloading? do

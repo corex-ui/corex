@@ -7,19 +7,44 @@
   <.demo_page
     path={@path}
     id="select-styling-page"
-    title={~t"Select · Styling"}
+    title={~t"Select · Style"}
     subtitle={
       ~t"Semantic colors, density, typography, radius, and width utilities via modifier classes on the select root."
     }
   >
     <.demo_section
       id="select-styling-color"
-      title={~t"Color"}
+      title={~t"Semantic"}
       code={E2eWeb.Demos.SelectDemo.styling_color_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="select" axis={:semantic} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.SelectDemo.styling_color_example />
       </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="select-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.SelectDemo.styling_variant_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="select" axis={:variant} />
+      </:description>
+      <:preview><E2eWeb.Demos.SelectDemo.styling_variant_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="select-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.SelectDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <.variant_matrix_description host="select" />
+      </:description>
+      <:preview><E2eWeb.Demos.SelectDemo.styling_variant_matrix_example /></:preview>
     </.demo_section>
 
     <.demo_section
@@ -27,26 +52,22 @@
       title={~t"Size"}
       code={E2eWeb.Demos.SelectDemo.styling_size_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="select" axis={:size} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.SelectDemo.styling_size_example />
       </:preview>
     </.demo_section>
 
     <.demo_section
-      id="select-styling-text"
-      title={~t"Text"}
-      code={E2eWeb.Demos.SelectDemo.styling_text_code()}
-    >
-      <:preview>
-        <E2eWeb.Demos.SelectDemo.styling_text_example />
-      </:preview>
-    </.demo_section>
-
-    <.demo_section
       id="select-styling-radius"
-      title={~t"Radius"}
+      title={~t"Rounded"}
       code={E2eWeb.Demos.SelectDemo.styling_radius_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="select" axis={:radius} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.SelectDemo.styling_radius_example />
       </:preview>
@@ -54,9 +75,12 @@
 
     <.demo_section
       id="select-styling-max-width"
-      title={~t"Max Width"}
+      title={~t"Max width"}
       code={E2eWeb.Demos.SelectDemo.styling_max_width_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="select" axis={:max_width} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.SelectDemo.styling_max_width_example />
       </:preview>

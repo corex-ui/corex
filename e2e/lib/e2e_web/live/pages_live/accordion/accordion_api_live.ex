@@ -46,14 +46,22 @@ defmodule E2eWeb.AccordionApiLive do
       set_value_js_ts: m.api_set_value_client_js_ts(),
       set_value_js_heex: m.api_set_value_client_js_heex(),
       value_client_heex: m.api_value_client_heex(),
+      value_client_js: m.api_value_client_binding_js(),
+      value_client_ts: m.api_value_client_binding_ts(),
       value_server_heex: m.api_value_server_heex(),
       value_elixir: m.api_value_server_elixir(),
+      value_server_js: m.api_value_server_js(),
+      value_server_ts: m.api_value_server_ts(),
       value_js_heex: m.api_value_client_js_heex(),
       value_js: m.api_value_client_js_js(),
       value_js_ts: m.api_value_client_js_ts(),
       focused_client_heex: m.api_focused_client_heex(),
+      focused_client_js: m.api_focused_client_binding_js(),
+      focused_client_ts: m.api_focused_client_binding_ts(),
       focused_server_heex: m.api_focused_server_heex(),
       focused_elixir: m.api_focused_server_elixir(),
+      focused_server_js: m.api_focused_server_js(),
+      focused_server_ts: m.api_focused_server_ts(),
       focused_js_heex: m.api_focused_client_js_heex(),
       focused_js: m.api_focused_client_js_js(),
       focused_js_ts: m.api_focused_client_js_ts(),
@@ -218,19 +226,19 @@ defmodule E2eWeb.AccordionApiLive do
             <div class="flex flex-wrap gap-2 mb-4">
               <.action
                 phx-click={Corex.Accordion.set_value(@id_sv_client, "lorem")}
-                class="button button--sm"
+                class="button ui-size-sm"
               >
                 Open Lorem
               </.action>
               <.action
                 phx-click={Corex.Accordion.set_value(@id_sv_client, ["lorem", "donec"])}
-                class="button button--sm"
+                class="button ui-size-sm"
               >
                 Lorem and Donec
               </.action>
               <.action
                 phx-click={Corex.Accordion.set_value(@id_sv_client, [])}
-                class="button button--sm"
+                class="button ui-size-sm"
               >
                 Close all
               </.action>
@@ -304,7 +312,26 @@ defmodule E2eWeb.AccordionApiLive do
         <.demo_section
           id="accordion-api-value-binding"
           title={~t"Value (Client Binding)"}
-          code={@codes.value_client_heex}
+          code_tabs={[
+            %{
+              value: "heex",
+              label: ~t"Heex",
+              language: :heex,
+              code: @codes.value_client_heex
+            },
+            %{
+              value: "js",
+              label: ~t"JS",
+              language: :js,
+              code: @codes.value_client_js
+            },
+            %{
+              value: "ts",
+              label: ~t"TS",
+              language: :javascript,
+              code: @codes.value_client_ts
+            }
+          ]}
         >
           <:preview>
             <E2eWeb.Demos.AccordionDemo.api_value_client_binding_example
@@ -361,6 +388,18 @@ defmodule E2eWeb.AccordionApiLive do
               label: ~t"Elixir",
               language: :elixir,
               code: @codes.value_elixir
+            },
+            %{
+              value: "js",
+              label: ~t"JS",
+              language: :js,
+              code: @codes.value_server_js
+            },
+            %{
+              value: "ts",
+              label: ~t"TS",
+              language: :javascript,
+              code: @codes.value_server_ts
             }
           ]}
         >
@@ -377,7 +416,26 @@ defmodule E2eWeb.AccordionApiLive do
         <.demo_section
           id="accordion-api-focused-binding"
           title={~t"Focused (Client Binding)"}
-          code={@codes.focused_client_heex}
+          code_tabs={[
+            %{
+              value: "heex",
+              label: ~t"Heex",
+              language: :heex,
+              code: @codes.focused_client_heex
+            },
+            %{
+              value: "js",
+              label: ~t"JS",
+              language: :js,
+              code: @codes.focused_client_js
+            },
+            %{
+              value: "ts",
+              label: ~t"TS",
+              language: :javascript,
+              code: @codes.focused_client_ts
+            }
+          ]}
         >
           <:preview>
             <E2eWeb.Demos.AccordionDemo.api_focused_client_example
@@ -444,6 +502,18 @@ defmodule E2eWeb.AccordionApiLive do
               label: ~t"Elixir",
               language: :elixir,
               code: @codes.focused_elixir
+            },
+            %{
+              value: "js",
+              label: ~t"JS",
+              language: :js,
+              code: @codes.focused_server_js
+            },
+            %{
+              value: "ts",
+              label: ~t"TS",
+              language: :javascript,
+              code: @codes.focused_server_ts
             }
           ]}
         >

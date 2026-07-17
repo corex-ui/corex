@@ -637,19 +637,21 @@ defmodule E2eWeb.TetrexLive do
             <header class="flex items-center justify-between gap-space-sm shrink-0">
               <div class="flex items-center gap-space-sm min-w-0">
                 <h1 class="font-display text-lg uppercase tracking-widest text-ink m-0">Tetrex</h1>
-                <span :if={@live_action == :watch && @source == :session} class="badge badge--alert">
+                <span :if={@live_action == :watch && @source == :session} class="badge ui-alert">
                   {~t"LIVE"}
                 </span>
                 <span
                   :if={@source == :session && is_binary(@game_id)}
-                  class="badge badge--ghost"
+                  class="badge"
                   aria-live="polite"
                 >
                   {watchers_label(@watchers_count)}
                 </span>
-                <span :if={@live_action == :replay} class="badge badge--ghost">{~t"Replay"}</span>
+                <span :if={@live_action == :replay} class="badge">
+                  {~t"Replay"}
+                </span>
               </div>
-              <.navigate to={~p"/showcases/tetrex"} class="link link--accent text-sm shrink-0">
+              <.navigate to={~p"/showcases/tetrex"} class="link ui-accent text-sm shrink-0">
                 {~t"Home"}
               </.navigate>
             </header>
@@ -775,7 +777,7 @@ defmodule E2eWeb.TetrexLive do
     >
       <p class="font-display text-lg uppercase tracking-widest text-ink m-0">Tetrex</p>
       <p class="text-ink-muted text-xs m-0">{~t"Clear rows. Beat your score."}</p>
-      <.action phx-click="start_game" class="button button--accent">
+      <.action phx-click="start_game" class="button ui-accent">
         {~t"Start"}
       </.action>
     </div>
@@ -790,7 +792,7 @@ defmodule E2eWeb.TetrexLive do
       aria-live="polite"
     >
       <p class="font-display text-lg uppercase tracking-widest text-alert m-0">{~t"Game over"}</p>
-      <p class="font-display text-2xl tabular-nums text-ink-accent m-0 leading-tight">
+      <p class="font-display text-2xl tabular-nums text-accent-text m-0 leading-tight">
         {String.pad_leading(Integer.to_string(@score), 6, "0")}
       </p>
       <p :if={@show_replay_link} class="text-ink-muted text-sm m-0 max-w-xs">
@@ -799,7 +801,7 @@ defmodule E2eWeb.TetrexLive do
       <.editable
         :if={@show_replay_link && @can_edit_name}
         id="tetrex-overlay-player-name"
-        class="editable editable--sm w-full max-w-xs"
+        class="editable ui-size-sm w-full max-w-xs"
         value={@player_name}
         placeholder={~t"Name"}
         on_value_change="tetrex_player_name_changed"
@@ -816,7 +818,7 @@ defmodule E2eWeb.TetrexLive do
       >
         {~t"Watch replay"}
       </.navigate>
-      <.navigate to={~p"/showcases/tetrex/new"} class="button button--accent w-full max-w-xs">
+      <.navigate to={~p"/showcases/tetrex/new"} class="button ui-accent w-full max-w-xs">
         {~t"New game"}
       </.navigate>
     </div>
@@ -870,7 +872,7 @@ defmodule E2eWeb.TetrexLive do
       data-preview={"#{@cell.col}-#{@cell.row}"}
       class={[
         @tile_class,
-        @cell.filled && @cell.theme && "checkbox--#{Tetrex.theme_name(@cell.theme)}"
+        @cell.filled && @cell.theme && "ui-#{Tetrex.theme_name(@cell.theme)}"
       ]}
     >
       <div
@@ -894,7 +896,7 @@ defmodule E2eWeb.TetrexLive do
       <div class="flex flex-wrap items-center gap-1">
         <.toggle
           id="tetrex-replay-play"
-          class="toggle toggle--sm"
+          class="toggle ui-size-sm"
           pressed
           data-toggle-dual-label
           on_pressed_change_client="tetrex-replay-play-changed"
@@ -910,7 +912,7 @@ defmodule E2eWeb.TetrexLive do
         </.toggle>
         <.action
           data-replay-action="restart"
-          class="button button--square button--sm"
+          class="button ui-trigger--square ui-size-sm"
           aria_label={~t"Restart replay"}
         >
           <.heroicon name="hero-arrow-path" class="icon" />
@@ -918,7 +920,7 @@ defmodule E2eWeb.TetrexLive do
         <.action
           id="tetrex-replay-speed"
           data-replay-action="speed"
-          class="button button--sm"
+          class="button ui-size-sm"
           aria_label={~t"Replay speed"}
         >
           ×2
@@ -943,7 +945,7 @@ defmodule E2eWeb.TetrexLive do
           </p>
           <p
             id="tetrex-score"
-            class="font-display text-base md:text-xl tabular-nums text-ink-accent m-0 leading-none md:leading-tight"
+            class="font-display text-base md:text-xl tabular-nums text-accent-text m-0 leading-none md:leading-tight"
           >
             {String.pad_leading(Integer.to_string(@score), 6, "0")}
           </p>
@@ -1001,7 +1003,7 @@ defmodule E2eWeb.TetrexLive do
         <.action
           type="button"
           data-tetrex-cmd="rotate"
-          class="button button--square button--md col-start-2"
+          class="button ui-trigger--square ui-size-md col-start-2"
           aria_label={~t"Rotate"}
         >
           <.heroicon name="hero-arrow-path" />
@@ -1009,7 +1011,7 @@ defmodule E2eWeb.TetrexLive do
         <.action
           type="button"
           data-tetrex-cmd="left"
-          class="button button--square button--md col-start-1 row-start-2"
+          class="button ui-trigger--square ui-size-md col-start-1 row-start-2"
           aria_label={~t"Move left"}
         >
           <.heroicon name="hero-arrow-left" />
@@ -1017,7 +1019,7 @@ defmodule E2eWeb.TetrexLive do
         <.action
           type="button"
           data-tetrex-cmd="down"
-          class="button button--square button--md col-start-2 row-start-2"
+          class="button ui-trigger--square ui-size-md col-start-2 row-start-2"
           aria_label={~t"Soft drop"}
         >
           <.heroicon name="hero-arrow-down" />
@@ -1025,7 +1027,7 @@ defmodule E2eWeb.TetrexLive do
         <.action
           type="button"
           data-tetrex-cmd="right"
-          class="button button--square button--md col-start-3 row-start-2"
+          class="button ui-trigger--square ui-size-md col-start-3 row-start-2"
           aria_label={~t"Move right"}
         >
           <.heroicon name="hero-arrow-right" />
@@ -1091,6 +1093,6 @@ defmodule E2eWeb.TetrexLive do
   defp cell_checkbox_class(true, nil), do: @tile_base
 
   defp cell_checkbox_class(true, theme) when not is_nil(theme) do
-    @tile_base <> " checkbox--#{Tetrex.theme_name(theme)}"
+    @tile_base <> " ui-#{Tetrex.theme_name(theme)}"
   end
 end

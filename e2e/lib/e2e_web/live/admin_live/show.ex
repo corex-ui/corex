@@ -29,7 +29,7 @@ defmodule E2eWeb.AdminLive.Show do
           <.navigate
             to={~p"/admins/#{@admin}/edit?return_to=show"}
             type="navigate"
-            class="button button--accent button--square"
+            class="button ui-accent ui-trigger--square"
             aria_label="Edit admin"
             title="Edit admin"
           >
@@ -46,7 +46,7 @@ defmodule E2eWeb.AdminLive.Show do
             final_focus={"dialog:admin-delete-#{@admin.id}:trigger"}
           >
             <:trigger
-              class="button button--alert button--square"
+              class="button ui-alert ui-trigger--square"
               aria_label="Delete admin"
               title="Delete admin"
             >
@@ -59,7 +59,7 @@ defmodule E2eWeb.AdminLive.Show do
                 <.action
                   id={"admin-delete-#{@admin.id}-cancel"}
                   phx-click={Corex.Dialog.set_open("admin-delete-#{@admin.id}", false)}
-                  class="button button--sm button--ghost"
+                  class="button ui-size-sm"
                 >
                   Cancel
                 </.action>
@@ -69,7 +69,7 @@ defmodule E2eWeb.AdminLive.Show do
                     Corex.Dialog.set_open("admin-delete-#{@admin.id}", false)
                     |> JS.push("delete", value: %{id: @admin.id})
                   }
-                  class="button button--sm button--alert"
+                  class="button ui-size-sm ui-alert"
                 >
                   Delete
                 </.action>

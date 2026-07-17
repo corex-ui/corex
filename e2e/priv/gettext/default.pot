@@ -12,12 +12,12 @@ msgid ""
 msgstr ""
 
 #: lib/e2e_web/components/app/main_nav.ex:40
-#: lib/e2e_web/controllers/home_html/index.html.heex:163
+#: lib/e2e_web/controllers/home_html/index.html.heex:177
 #, elixir-autogen, elixir-format
 msgid "Components"
 msgstr ""
 
-#: lib/e2e_web/components/app/header.ex:85
+#: lib/e2e_web/components/app/header.ex:89
 #, elixir-autogen, elixir-format
 msgid "Display settings"
 msgstr ""
@@ -27,27 +27,27 @@ msgstr ""
 msgid "Select a country"
 msgstr ""
 
-#: lib/e2e_web/components/layouts.ex:65
-#: lib/e2e_web/components/layouts.ex:109
-#: lib/e2e_web/components/layouts.ex:143
-#, elixir-autogen, elixir-format
-msgid "We lost the connection"
-msgstr ""
-
 #: lib/e2e_web/components/layouts.ex:66
 #: lib/e2e_web/components/layouts.ex:110
 #: lib/e2e_web/components/layouts.ex:144
 #, elixir-autogen, elixir-format
+msgid "We lost the connection"
+msgstr ""
+
+#: lib/e2e_web/components/layouts.ex:67
+#: lib/e2e_web/components/layouts.ex:111
+#: lib/e2e_web/components/layouts.ex:145
+#, elixir-autogen, elixir-format
 msgid "We're trying to reconnect you..."
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:27
-#: lib/e2e_web/controllers/home_html/index.html.heex:253
+#: lib/e2e_web/controllers/home_html/index.html.heex:39
+#: lib/e2e_web/controllers/home_html/index.html.heex:267
 #, elixir-autogen, elixir-format
 msgid "Browse components"
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:156
+#: lib/e2e_web/controllers/home_html/index.html.heex:170
 #, elixir-autogen, elixir-format
 msgid "Corex by the numbers"
 msgstr ""
@@ -58,100 +58,100 @@ msgstr ""
 msgid "Skip to content"
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:261
+#: lib/e2e_web/controllers/home_html/index.html.heex:275
 #, elixir-autogen, elixir-format
 msgid "Star on GitHub"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/templates_page.html.heex:6
+#: lib/e2e_web/controllers/page_html/templates_page.html.heex:9
 #, elixir-autogen, elixir-format
 msgid "Templates"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_controller.ex:1836
+#: lib/e2e_web/controllers/page_controller.ex:1848
 #, elixir-autogen, elixir-format
 msgid "Templates · Corex"
 msgstr ""
 
 #: lib/e2e_web/components/listing_page.ex:65
-#: lib/e2e_web/controllers/page_html/templates_page.html.heex:63
-#: lib/e2e_web/controllers/page_html/templates_page.html.heex:114
+#: lib/e2e_web/controllers/page_html/templates_page.html.heex:66
+#: lib/e2e_web/controllers/page_html/templates_page.html.heex:117
 #, elixir-autogen, elixir-format
 msgid "GitHub"
 msgstr ""
 
 #: lib/e2e_web/components/listing_page.ex:61
-#: lib/e2e_web/controllers/page_html/templates_page.html.heex:55
-#: lib/e2e_web/controllers/page_html/templates_page.html.heex:106
+#: lib/e2e_web/controllers/page_html/templates_page.html.heex:58
+#: lib/e2e_web/controllers/page_html/templates_page.html.heex:109
 #, elixir-autogen, elixir-format
 msgid "Live demo"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/templates_page.html.heex:27
+#: lib/e2e_web/controllers/page_html/templates_page.html.heex:30
 #, elixir-autogen, elixir-format
 msgid "Soonex preview slides"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_controller.ex:1825
+#: lib/e2e_web/controllers/page_controller.ex:1837
 #, elixir-autogen, elixir-format
 msgid "Hero section"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_controller.ex:1828
+#: lib/e2e_web/controllers/page_controller.ex:1840
 #, elixir-autogen, elixir-format
 msgid "Highlights section"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/templates_page.html.heex:72
+#: lib/e2e_web/controllers/page_html/templates_page.html.heex:75
 #, elixir-autogen, elixir-format
 msgid "Locales & RTL"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/templates_page.html.heex:14
+#: lib/e2e_web/controllers/page_html/templates_page.html.heex:17
 #, elixir-autogen, elixir-format
 msgid "Production-ready coming-soon sites: Tableau export, shared tokens, Markdown posts, and Corex components. Choose English-first Soonex or Soonex i18n with locales and RTL."
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/templates_page.html.heex:97
+#: lib/e2e_web/controllers/page_html/templates_page.html.heex:100
 #, elixir-autogen, elixir-format
 msgid "Same Soonex surface with Gettext and Localize: Arabic, English, and French out of the box, RTL-aware controls, and the same static build pipeline."
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/templates_page.html.heex:46
+#: lib/e2e_web/controllers/page_html/templates_page.html.heex:49
 #: lib/e2e_web/showcase_catalog.ex:12
 #, elixir-autogen, elixir-format
 msgid "Single-locale coming-soon layout with Neo through Leo themes, Markdown journal, waitlist, and static assets sized for GitHub Pages or any CDN."
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/templates_page.html.heex:43
+#: lib/e2e_web/controllers/page_html/templates_page.html.heex:46
 #: lib/e2e_web/showcase_catalog.ex:10
 #, elixir-autogen, elixir-format
 msgid "Soonex"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/templates_page.html.heex:94
+#: lib/e2e_web/controllers/page_html/templates_page.html.heex:97
 #: lib/e2e_web/showcase_catalog.ex:19
 #, elixir-autogen, elixir-format
 msgid "Soonex i18n"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/templates_page.html.heex:78
+#: lib/e2e_web/controllers/page_html/templates_page.html.heex:81
 #, elixir-autogen, elixir-format
 msgid "Soonex i18n preview slides"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/templates_page.html.heex:21
+#: lib/e2e_web/controllers/page_html/templates_page.html.heex:24
 #: lib/e2e_web/showcase_catalog.ex:15
 #, elixir-autogen, elixir-format
 msgid "Starter kit"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/templates_page.html.heex:9
+#: lib/e2e_web/controllers/page_html/templates_page.html.heex:12
 #, elixir-autogen, elixir-format
 msgid "Static Tableau starters with Corex"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_controller.ex:1831
+#: lib/e2e_web/controllers/page_controller.ex:1843
 #, elixir-autogen, elixir-format
 msgid "Waitlist section"
 msgstr ""
@@ -172,7 +172,7 @@ msgstr ""
 msgid "API"
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:172
+#: lib/e2e_web/controllers/home_html/index.html.heex:186
 #, elixir-autogen, elixir-format
 msgid "API & Events"
 msgstr ""
@@ -188,7 +188,7 @@ msgid "Accessible by default."
 msgstr ""
 
 #: lib/e2e_web/components/helpers.ex:172
-#: lib/e2e_web/controllers/home_html/index.html.heex:51
+#: lib/e2e_web/controllers/home_html/index.html.heex:63
 #, elixir-autogen, elixir-format
 msgid "Accordion"
 msgstr ""
@@ -198,7 +198,7 @@ msgstr ""
 msgid "Accordion Anatomy"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:209
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:217
 #, elixir-autogen, elixir-format
 msgid "Accordion · API"
 msgstr ""
@@ -238,7 +238,7 @@ msgstr ""
 msgid "Alert"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/data_table_patterns_live.ex:58
+#: lib/e2e_web/live/pages_live/data_table_patterns_live.ex:62
 #, elixir-autogen, elixir-format
 msgid "Alice"
 msgstr ""
@@ -313,7 +313,7 @@ msgstr ""
 msgid "Async loading, controlled state, and streaming items."
 msgstr ""
 
-#: lib/e2e_web/components/form_patterns_fields.ex:280
+#: lib/e2e_web/components/form_patterns_fields.ex:283
 #: lib/e2e_web/controllers/user_html.ex:21
 #: lib/e2e_web/live/admin_live/form.ex:316
 #, elixir-autogen, elixir-format
@@ -379,13 +379,13 @@ msgid "Block with clipboard"
 msgstr ""
 
 #: lib/e2e_web/components/app/main_nav.ex:54
-#: lib/e2e_web/components/helpers.ex:709
+#: lib/e2e_web/components/helpers.ex:716
 #: lib/e2e_web/controllers/blog_controller.ex:16
 #, elixir-autogen, elixir-format
 msgid "Blog"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/data_table_patterns_live.ex:59
+#: lib/e2e_web/live/pages_live/data_table_patterns_live.ex:63
 #, elixir-autogen, elixir-format
 msgid "Bob"
 msgstr ""
@@ -400,19 +400,19 @@ msgstr ""
 msgid "Bring your own CSS or opt into Corex Design tokens, themes and modes."
 msgstr ""
 
-#: lib/e2e_web/components/form_patterns_fields.ex:276
+#: lib/e2e_web/components/form_patterns_fields.ex:279
 #: lib/e2e_web/controllers/user_html.ex:17
 #: lib/e2e_web/live/admin_live/form.ex:312
 #, elixir-autogen, elixir-format
 msgid "British Pound"
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:190
+#: lib/e2e_web/controllers/home_html/index.html.heex:204
 #, elixir-autogen, elixir-format
 msgid "Built in"
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:203
+#: lib/e2e_web/controllers/home_html/index.html.heex:217
 #, elixir-autogen, elixir-format
 msgid "Built with"
 msgstr ""
@@ -422,7 +422,7 @@ msgstr ""
 msgid "Built-in JS animation, instant mode, and custom Motion-driven transitions."
 msgstr ""
 
-#: lib/e2e_web/components/form_patterns_fields.ex:279
+#: lib/e2e_web/components/form_patterns_fields.ex:282
 #: lib/e2e_web/controllers/user_html.ex:20
 #: lib/e2e_web/live/admin_live/form.ex:315
 #, elixir-autogen, elixir-format
@@ -454,7 +454,7 @@ msgstr ""
 msgid "Carousel · Style"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/data_table_patterns_live.ex:60
+#: lib/e2e_web/live/pages_live/data_table_patterns_live.ex:64
 #, elixir-autogen, elixir-format
 msgid "Charlie"
 msgstr ""
@@ -481,7 +481,7 @@ msgid "Checkbox · Event"
 msgstr ""
 
 #: lib/e2e_web/controllers/page_html/checkbox_form_page.html.heex:11
-#: lib/e2e_web/live/pages_live/checkbox_form_live.ex:118
+#: lib/e2e_web/live/pages_live/checkbox_form_live.ex:244
 #, elixir-autogen, elixir-format
 msgid "Checkbox · Form"
 msgstr ""
@@ -494,11 +494,6 @@ msgstr ""
 #: lib/e2e_web/live/pages_live/checkbox_play_live.ex:57
 #, elixir-autogen, elixir-format
 msgid "Checkbox · Playground"
-msgstr ""
-
-#: lib/e2e_web/controllers/page_html/checkbox_styling_page.html.heex:10
-#, elixir-autogen, elixir-format
-msgid "Checkbox · Styling"
 msgstr ""
 
 #: lib/e2e_web/live/pages_live/marquee/marquee_events_live.ex:115
@@ -539,12 +534,7 @@ msgstr ""
 msgid "Clipboard Anatomy"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/clipboard_styling_page.html.heex:10
-#, elixir-autogen, elixir-format
-msgid "Clipboard · Styling"
-msgstr ""
-
-#: lib/e2e_web/controllers/home_html/index.html.heex:120
+#: lib/e2e_web/controllers/home_html/index.html.heex:134
 #, elixir-autogen, elixir-format
 msgid "Close all"
 msgstr ""
@@ -583,45 +573,6 @@ msgstr ""
 #: lib/e2e_web/live/pages_live/collapsible_play_live.ex:45
 #, elixir-autogen, elixir-format
 msgid "Collapsible · Playground"
-msgstr ""
-
-#: lib/e2e_web/controllers/page_html/collapsible_styling_page.html.heex:10
-#, elixir-autogen, elixir-format
-msgid "Collapsible · Styling"
-msgstr ""
-
-#: lib/e2e_web/controllers/page_html/accordion/accordion_styling_page.html.heex:17
-#: lib/e2e_web/controllers/page_html/action_styling_page.html.heex:15
-#: lib/e2e_web/controllers/page_html/angle_slider_styling_page.html.heex:15
-#: lib/e2e_web/controllers/page_html/avatar_styling_page.html.heex:15
-#: lib/e2e_web/controllers/page_html/carousel_styling_page.html.heex:17
-#: lib/e2e_web/controllers/page_html/checkbox_styling_page.html.heex:15
-#: lib/e2e_web/controllers/page_html/collapsible_styling_page.html.heex:15
-#: lib/e2e_web/controllers/page_html/color_picker_styling_page.html.heex:17
-#: lib/e2e_web/controllers/page_html/combobox_styling_page.html.heex:25
-#: lib/e2e_web/controllers/page_html/data_list_styling_page.html.heex:18
-#: lib/e2e_web/controllers/page_html/date_picker_styling_page.html.heex:17
-#: lib/e2e_web/controllers/page_html/editable_styling_page.html.heex:17
-#: lib/e2e_web/controllers/page_html/layout_heading_styling_page.html.heex:17
-#: lib/e2e_web/controllers/page_html/listbox_styling_page.html.heex:12
-#: lib/e2e_web/controllers/page_html/menu_styling_page.html.heex:10
-#: lib/e2e_web/controllers/page_html/native_input_styling_page.html.heex:27
-#: lib/e2e_web/controllers/page_html/navigate_styling_page.html.heex:15
-#: lib/e2e_web/controllers/page_html/number_input_styling_page.html.heex:17
-#: lib/e2e_web/controllers/page_html/pagination_styling_page.html.heex:12
-#: lib/e2e_web/controllers/page_html/pin_input_styling_page.html.heex:12
-#: lib/e2e_web/controllers/page_html/radio_group_styling_page.html.heex:17
-#: lib/e2e_web/controllers/page_html/select_styling_page.html.heex:17
-#: lib/e2e_web/controllers/page_html/switch_styling_page.html.heex:15
-#: lib/e2e_web/controllers/page_html/tabs_styling_page.html.heex:17
-#: lib/e2e_web/controllers/page_html/tags_input_styling_page.html.heex:12
-#: lib/e2e_web/controllers/page_html/timer_styling_page.html.heex:17
-#: lib/e2e_web/controllers/page_html/toggle_group_styling_page.html.heex:12
-#: lib/e2e_web/controllers/page_html/toggle_styling_page.html.heex:12
-#: lib/e2e_web/controllers/page_html/tooltip_styling_page.html.heex:15
-#: lib/e2e_web/controllers/page_html/tree_view/tree_view_styling_page.html.heex:17
-#, elixir-autogen, elixir-format
-msgid "Color"
 msgstr ""
 
 #: lib/e2e_web/live/pages_live/color_picker_form_live.ex:160
@@ -675,14 +626,9 @@ msgstr ""
 msgid "Combobox · Patterns"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/combobox_play_live.ex:128
+#: lib/e2e_web/live/pages_live/combobox_play_live.ex:148
 #, elixir-autogen, elixir-format
 msgid "Combobox · Playground"
-msgstr ""
-
-#: lib/e2e_web/controllers/page_html/combobox_styling_page.html.heex:10
-#, elixir-autogen, elixir-format
-msgid "Combobox · Styling"
 msgstr ""
 
 #: lib/e2e_web/live/pages_live/angle_slider_patterns_live.ex:49
@@ -708,14 +654,14 @@ msgstr ""
 msgid "Compound"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:580
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:650
 #: lib/e2e_web/live/pages_live/accordion/accordion_patterns_live.ex:63
 #: lib/e2e_web/live/pages_live/accordion/accordion_play_live.ex:43
 #, elixir-autogen, elixir-format
 msgid "Congue molestie ipsum gravida a. Sed ac eros luctus."
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:570
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:640
 #: lib/e2e_web/live/pages_live/accordion/accordion_patterns_live.ex:53
 #: lib/e2e_web/live/pages_live/accordion/accordion_play_live.ex:31
 #, elixir-autogen, elixir-format
@@ -728,7 +674,7 @@ msgstr ""
 msgid "Content for item %{id}."
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:210
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:218
 #, elixir-autogen, elixir-format
 msgid "Control and interact with the accordion from LiveView or the client."
 msgstr ""
@@ -764,48 +710,48 @@ msgstr ""
 #: lib/e2e_web/components/helpers.ex:309
 #: lib/e2e_web/components/helpers.ex:346
 #: lib/e2e_web/components/helpers.ex:374
-#: lib/e2e_web/components/helpers.ex:387
-#: lib/e2e_web/components/helpers.ex:466
-#: lib/e2e_web/components/helpers.ex:491
-#: lib/e2e_web/components/helpers.ex:504
-#: lib/e2e_web/components/helpers.ex:518
-#: lib/e2e_web/components/helpers.ex:532
-#: lib/e2e_web/components/helpers.ex:547
-#: lib/e2e_web/components/helpers.ex:562
-#: lib/e2e_web/components/helpers.ex:577
-#: lib/e2e_web/components/helpers.ex:603
+#: lib/e2e_web/components/helpers.ex:389
+#: lib/e2e_web/components/helpers.ex:471
+#: lib/e2e_web/components/helpers.ex:496
+#: lib/e2e_web/components/helpers.ex:511
+#: lib/e2e_web/components/helpers.ex:525
+#: lib/e2e_web/components/helpers.ex:539
+#: lib/e2e_web/components/helpers.ex:554
+#: lib/e2e_web/components/helpers.ex:569
+#: lib/e2e_web/components/helpers.ex:584
+#: lib/e2e_web/components/helpers.ex:610
 #, elixir-autogen, elixir-format
 msgid "Controller Form"
 msgstr ""
 
-#: lib/e2e_web/components/helpers.ex:696
+#: lib/e2e_web/components/helpers.ex:703
 #, elixir-autogen, elixir-format
 msgid "Controller View"
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:84
-#: lib/e2e_web/controllers/home_html/index.html.heex:246
+#: lib/e2e_web/controllers/home_html/index.html.heex:96
+#: lib/e2e_web/controllers/home_html/index.html.heex:260
 #, elixir-autogen, elixir-format
 msgid "Copied"
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:80
-#: lib/e2e_web/controllers/home_html/index.html.heex:242
+#: lib/e2e_web/controllers/home_html/index.html.heex:92
+#: lib/e2e_web/controllers/home_html/index.html.heex:256
 #, elixir-autogen, elixir-format
 msgid "Copy"
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:239
+#: lib/e2e_web/controllers/home_html/index.html.heex:253
 #, elixir-autogen, elixir-format
 msgid "Copy install command"
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:77
+#: lib/e2e_web/controllers/home_html/index.html.heex:89
 #, elixir-autogen, elixir-format
 msgid "Copy snippet"
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:232
+#: lib/e2e_web/controllers/home_html/index.html.heex:246
 #, elixir-autogen, elixir-format
 msgid "Corex generator wires up the dependency, the design tokens and the assets pipeline for you."
 msgstr ""
@@ -916,7 +862,7 @@ msgstr ""
 msgid "Default structure, indicator, error slot, and indeterminate state."
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/tags_input_styling_page.html.heex:22
+#: lib/e2e_web/controllers/page_html/tags_input_styling_page.html.heex:25
 #, elixir-autogen, elixir-format
 msgid "Delete trigger"
 msgstr ""
@@ -924,11 +870,6 @@ msgstr ""
 #: lib/e2e_web/controllers/page_html/collapsible_styling_page.html.heex:11
 #, elixir-autogen, elixir-format
 msgid "Density and trigger colors via modifier classes on the collapsible root."
-msgstr ""
-
-#: lib/e2e_web/controllers/page_html/clipboard_styling_page.html.heex:11
-#, elixir-autogen, elixir-format
-msgid "Density and width via modifier classes on the clipboard root."
 msgstr ""
 
 #: lib/e2e_web/components/helpers.ex:351
@@ -946,9 +887,9 @@ msgstr ""
 msgid "Dialog · Style"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/action_styling_page.html.heex:47
-#: lib/e2e_web/controllers/page_html/toggle_group_styling_page.html.heex:42
-#: lib/e2e_web/controllers/page_html/toggle_styling_page.html.heex:42
+#: lib/e2e_web/controllers/page_html/action_styling_page.html.heex:114
+#: lib/e2e_web/controllers/page_html/toggle_group_styling_page.html.heex:77
+#: lib/e2e_web/controllers/page_html/toggle_styling_page.html.heex:81
 #, elixir-autogen, elixir-format
 msgid "Disabled"
 msgstr ""
@@ -963,7 +904,7 @@ msgstr ""
 msgid "Donec"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:579
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:649
 #: lib/e2e_web/live/pages_live/accordion/accordion_patterns_live.ex:62
 #, elixir-autogen, elixir-format
 msgid "Donec condimentum ex mi"
@@ -984,7 +925,7 @@ msgstr ""
 msgid "Duis"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:574
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:644
 #: lib/e2e_web/live/pages_live/accordion/accordion_patterns_live.ex:57
 #, elixir-autogen, elixir-format
 msgid "Duis dictum gravida odio ac pharetra?"
@@ -996,7 +937,9 @@ msgid "Duration"
 msgstr ""
 
 #: lib/e2e_web/live/pages_live/angle_slider_form_live.ex:187
-#: lib/e2e_web/live/pages_live/checkbox_form_live.ex:139
+#: lib/e2e_web/live/pages_live/checkbox_form_live.ex:265
+#: lib/e2e_web/live/pages_live/checkbox_form_live.ex:289
+#: lib/e2e_web/live/pages_live/checkbox_form_live.ex:313
 #: lib/e2e_web/live/pages_live/color_picker_form_live.ex:181
 #: lib/e2e_web/live/pages_live/combobox_form.ex:134
 #: lib/e2e_web/live/pages_live/date_picker_form_live.ex:403
@@ -1012,7 +955,9 @@ msgstr ""
 #: lib/e2e_web/live/pages_live/radio_group_form_live.ex:142
 #: lib/e2e_web/live/pages_live/select_form_live.ex:143
 #: lib/e2e_web/live/pages_live/signature_form_live.ex:173
-#: lib/e2e_web/live/pages_live/switch_form_live.ex:146
+#: lib/e2e_web/live/pages_live/switch_form_live.ex:280
+#: lib/e2e_web/live/pages_live/switch_form_live.ex:304
+#: lib/e2e_web/live/pages_live/switch_form_live.ex:328
 #: lib/e2e_web/live/pages_live/tags_input_form_live.ex:145
 #, elixir-autogen, elixir-format
 msgid "Ecto"
@@ -1045,10 +990,10 @@ msgid "Editable · Style"
 msgstr ""
 
 #: lib/e2e_web/controllers/home_controller.ex:45
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:289
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:361
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:444
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:544
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:297
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:388
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:502
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:614
 #: lib/e2e_web/live/pages_live/accordion/accordion_events_live.ex:92
 #: lib/e2e_web/live/pages_live/accordion/accordion_patterns_live.ex:139
 #: lib/e2e_web/live/pages_live/accordion/accordion_patterns_live.ex:167
@@ -1064,8 +1009,10 @@ msgstr ""
 #: lib/e2e_web/live/pages_live/carousel/carousel_events_live.ex:90
 #: lib/e2e_web/live/pages_live/checkbox_api_live.ex:79
 #: lib/e2e_web/live/pages_live/checkbox_events_live.ex:79
-#: lib/e2e_web/live/pages_live/checkbox_form_live.ex:125
-#: lib/e2e_web/live/pages_live/checkbox_form_live.ex:138
+#: lib/e2e_web/live/pages_live/checkbox_form_live.ex:251
+#: lib/e2e_web/live/pages_live/checkbox_form_live.ex:264
+#: lib/e2e_web/live/pages_live/checkbox_form_live.ex:285
+#: lib/e2e_web/live/pages_live/checkbox_form_live.ex:309
 #: lib/e2e_web/live/pages_live/checkbox_patterns_live.ex:61
 #: lib/e2e_web/live/pages_live/checkbox_patterns_live.ex:92
 #: lib/e2e_web/live/pages_live/collapsible_events_live.ex:75
@@ -1080,11 +1027,8 @@ msgstr ""
 #: lib/e2e_web/live/pages_live/combobox_form.ex:133
 #: lib/e2e_web/live/pages_live/combobox_patterns_live.ex:109
 #: lib/e2e_web/live/pages_live/combobox_patterns_live.ex:143
-#: lib/e2e_web/live/pages_live/data_table_patterns_live.ex:264
-#: lib/e2e_web/live/pages_live/data_table_patterns_live.ex:302
-#: lib/e2e_web/live/pages_live/data_table_patterns_live.ex:356
-#: lib/e2e_web/live/pages_live/data_table_patterns_live.ex:401
-#: lib/e2e_web/live/pages_live/data_table_patterns_live.ex:448
+#: lib/e2e_web/live/pages_live/data_table_patterns_live.ex:278
+#: lib/e2e_web/live/pages_live/data_table_patterns_live.ex:316
 #: lib/e2e_web/live/pages_live/date_picker_events_live.ex:94
 #: lib/e2e_web/live/pages_live/date_picker_events_live.ex:138
 #: lib/e2e_web/live/pages_live/date_picker_form_live.ex:355
@@ -1133,6 +1077,7 @@ msgstr ""
 #: lib/e2e_web/live/pages_live/radio_group_form_live.ex:128
 #: lib/e2e_web/live/pages_live/radio_group_form_live.ex:141
 #: lib/e2e_web/live/pages_live/radio_group_patterns_live.ex:107
+#: lib/e2e_web/live/pages_live/select_api_live.ex:84
 #: lib/e2e_web/live/pages_live/select_events_live.ex:77
 #: lib/e2e_web/live/pages_live/select_form_live.ex:129
 #: lib/e2e_web/live/pages_live/select_form_live.ex:142
@@ -1141,8 +1086,10 @@ msgstr ""
 #: lib/e2e_web/live/pages_live/signature_form_live.ex:172
 #: lib/e2e_web/live/pages_live/switch_api_live.ex:96
 #: lib/e2e_web/live/pages_live/switch_events_live.ex:79
-#: lib/e2e_web/live/pages_live/switch_form_live.ex:132
-#: lib/e2e_web/live/pages_live/switch_form_live.ex:145
+#: lib/e2e_web/live/pages_live/switch_form_live.ex:266
+#: lib/e2e_web/live/pages_live/switch_form_live.ex:279
+#: lib/e2e_web/live/pages_live/switch_form_live.ex:300
+#: lib/e2e_web/live/pages_live/switch_form_live.ex:324
 #: lib/e2e_web/live/pages_live/tabs_events_live.ex:74
 #: lib/e2e_web/live/pages_live/tags_input_form_live.ex:131
 #: lib/e2e_web/live/pages_live/tags_input_form_live.ex:144
@@ -1152,6 +1099,11 @@ msgstr ""
 #: lib/e2e_web/live/pages_live/tooltip_patterns_live.ex:79
 #: lib/e2e_web/live/pages_live/tooltip_patterns_live.ex:116
 #: lib/e2e_web/live/pages_live/tooltip_patterns_live.ex:157
+#: lib/e2e_web/live/pages_live/tooltip_patterns_live.ex:197
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:155
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:201
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:254
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:310
 #: lib/e2e_web/live/pages_live/tree_view_events_live.ex:90
 #: lib/e2e_web/live/pages_live/tree_view_patterns_live.ex:115
 #, elixir-autogen, elixir-format
@@ -1164,7 +1116,7 @@ msgstr ""
 msgid "Empty"
 msgstr ""
 
-#: lib/e2e_web/components/form_patterns_fields.ex:274
+#: lib/e2e_web/components/form_patterns_fields.ex:277
 #: lib/e2e_web/controllers/user_html.ex:15
 #: lib/e2e_web/live/admin_live/form.ex:310
 #, elixir-autogen, elixir-format
@@ -1176,7 +1128,7 @@ msgstr ""
 msgid "Event"
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:128
+#: lib/e2e_web/controllers/home_html/index.html.heex:142
 #, elixir-autogen, elixir-format
 msgid "Events"
 msgstr ""
@@ -1236,7 +1188,7 @@ msgstr ""
 msgid "File upload"
 msgstr ""
 
-#: lib/e2e_web/components/helpers.ex:391
+#: lib/e2e_web/components/helpers.ex:393
 #, elixir-autogen, elixir-format
 msgid "File upload live"
 msgstr ""
@@ -1251,7 +1203,7 @@ msgstr ""
 msgid "Floating Panel"
 msgstr ""
 
-#: lib/e2e_web/components/helpers.ex:403
+#: lib/e2e_web/components/helpers.ex:406
 #, elixir-autogen, elixir-format
 msgid "Floating panel"
 msgstr ""
@@ -1266,17 +1218,17 @@ msgstr ""
 msgid "Focus"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:379
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:418
 #, elixir-autogen, elixir-format
 msgid "Focused (Client Binding)"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:397
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:455
 #, elixir-autogen, elixir-format
 msgid "Focused (Client JS)"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:434
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:492
 #, elixir-autogen, elixir-format
 msgid "Focused (Server)"
 msgstr ""
@@ -1286,12 +1238,12 @@ msgstr ""
 msgid "From file"
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:174
+#: lib/e2e_web/controllers/home_html/index.html.heex:188
 #, elixir-autogen, elixir-format
 msgid "From the Server and the Client"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/data_table_patterns_live.ex:438
+#: lib/e2e_web/live/pages_live/data_table_patterns_live.ex:426
 #, elixir-autogen, elixir-format
 msgid "Full (action, sort, select)"
 msgstr ""
@@ -1326,16 +1278,18 @@ msgstr ""
 msgid "Grouped toggles with text labels or icon triggers."
 msgstr ""
 
-#: lib/e2e_web/components/demo_page.ex:202
+#: lib/e2e_web/components/demo_page.ex:363
 #: lib/e2e_web/live/pages_live/accordion/accordion_animation_live.ex:194
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:251
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:283
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:323
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:355
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:401
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:438
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:485
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:538
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:259
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:291
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:318
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:350
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:382
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:422
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:459
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:496
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:555
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:608
 #: lib/e2e_web/live/pages_live/accordion/accordion_events_live.ex:91
 #: lib/e2e_web/live/pages_live/accordion/accordion_events_live.ex:128
 #: lib/e2e_web/live/pages_live/accordion/accordion_patterns_live.ex:138
@@ -1359,8 +1313,10 @@ msgstr ""
 #: lib/e2e_web/live/pages_live/checkbox_api_live.ex:65
 #: lib/e2e_web/live/pages_live/checkbox_events_live.ex:78
 #: lib/e2e_web/live/pages_live/checkbox_events_live.ex:118
-#: lib/e2e_web/live/pages_live/checkbox_form_live.ex:124
-#: lib/e2e_web/live/pages_live/checkbox_form_live.ex:137
+#: lib/e2e_web/live/pages_live/checkbox_form_live.ex:250
+#: lib/e2e_web/live/pages_live/checkbox_form_live.ex:263
+#: lib/e2e_web/live/pages_live/checkbox_form_live.ex:279
+#: lib/e2e_web/live/pages_live/checkbox_form_live.ex:303
 #: lib/e2e_web/live/pages_live/checkbox_patterns_live.ex:60
 #: lib/e2e_web/live/pages_live/checkbox_patterns_live.ex:91
 #: lib/e2e_web/live/pages_live/collapsible_events_live.ex:74
@@ -1379,10 +1335,7 @@ msgstr ""
 #: lib/e2e_web/live/pages_live/combobox_form.ex:132
 #: lib/e2e_web/live/pages_live/combobox_patterns_live.ex:106
 #: lib/e2e_web/live/pages_live/combobox_patterns_live.ex:137
-#: lib/e2e_web/live/pages_live/data_table_patterns_live.ex:296
-#: lib/e2e_web/live/pages_live/data_table_patterns_live.ex:350
-#: lib/e2e_web/live/pages_live/data_table_patterns_live.ex:395
-#: lib/e2e_web/live/pages_live/data_table_patterns_live.ex:442
+#: lib/e2e_web/live/pages_live/data_table_patterns_live.ex:310
 #: lib/e2e_web/live/pages_live/date_picker_events_live.ex:93
 #: lib/e2e_web/live/pages_live/date_picker_events_live.ex:137
 #: lib/e2e_web/live/pages_live/date_picker_events_live.ex:181
@@ -1445,6 +1398,8 @@ msgstr ""
 #: lib/e2e_web/live/pages_live/radio_group_form_live.ex:127
 #: lib/e2e_web/live/pages_live/radio_group_form_live.ex:140
 #: lib/e2e_web/live/pages_live/radio_group_patterns_live.ex:101
+#: lib/e2e_web/live/pages_live/select_api_live.ex:48
+#: lib/e2e_web/live/pages_live/select_api_live.ex:81
 #: lib/e2e_web/live/pages_live/select_events_live.ex:76
 #: lib/e2e_web/live/pages_live/select_events_live.ex:112
 #: lib/e2e_web/live/pages_live/select_form_live.ex:128
@@ -1458,8 +1413,10 @@ msgstr ""
 #: lib/e2e_web/live/pages_live/switch_api_live.ex:90
 #: lib/e2e_web/live/pages_live/switch_events_live.ex:78
 #: lib/e2e_web/live/pages_live/switch_events_live.ex:108
-#: lib/e2e_web/live/pages_live/switch_form_live.ex:131
-#: lib/e2e_web/live/pages_live/switch_form_live.ex:144
+#: lib/e2e_web/live/pages_live/switch_form_live.ex:265
+#: lib/e2e_web/live/pages_live/switch_form_live.ex:278
+#: lib/e2e_web/live/pages_live/switch_form_live.ex:294
+#: lib/e2e_web/live/pages_live/switch_form_live.ex:318
 #: lib/e2e_web/live/pages_live/tabs_events_live.ex:73
 #: lib/e2e_web/live/pages_live/tabs_events_live.ex:107
 #: lib/e2e_web/live/pages_live/tags_input_form_live.ex:130
@@ -1469,6 +1426,16 @@ msgstr ""
 #: lib/e2e_web/live/pages_live/toggle_group_events_live.ex:109
 #: lib/e2e_web/live/pages_live/tooltip_patterns_live.ex:110
 #: lib/e2e_web/live/pages_live/tooltip_patterns_live.ex:151
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:138
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:152
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:184
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:198
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:220
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:237
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:251
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:276
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:293
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:307
 #: lib/e2e_web/live/pages_live/tree_view_events_live.ex:89
 #: lib/e2e_web/live/pages_live/tree_view_events_live.ex:127
 #: lib/e2e_web/live/pages_live/tree_view_patterns_live.ex:114
@@ -1479,7 +1446,7 @@ msgstr ""
 #: lib/e2e_web/live/pages_live/carousel/carousel_play_live.ex:141
 #: lib/e2e_web/live/pages_live/checkbox_play_live.ex:76
 #: lib/e2e_web/live/pages_live/collapsible_play_live.ex:66
-#: lib/e2e_web/live/pages_live/combobox_play_live.ex:147
+#: lib/e2e_web/live/pages_live/combobox_play_live.ex:167
 #, elixir-autogen, elixir-format
 msgid "Horizontal orientation"
 msgstr ""
@@ -1525,7 +1492,7 @@ msgstr ""
 msgid "Inline"
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:229
+#: lib/e2e_web/controllers/home_html/index.html.heex:243
 #, elixir-autogen, elixir-format
 msgid "Install Corex"
 msgstr ""
@@ -1563,25 +1530,29 @@ msgstr ""
 msgid "Item %{socket_assigns_next_grouped_id}"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:465
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:535
 #, elixir-autogen, elixir-format
 msgid "Item State (Client Binding)"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:481
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:551
 #, elixir-autogen, elixir-format
 msgid "Item State (Client JS)"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:534
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:604
 #, elixir-autogen, elixir-format
 msgid "Item State (Server)"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:257
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:329
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:407
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:491
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:265
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:324
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:356
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:394
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:428
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:465
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:508
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:561
 #: lib/e2e_web/live/pages_live/accordion/accordion_events_live.ex:129
 #: lib/e2e_web/live/pages_live/angle_slider_events_live.ex:120
 #: lib/e2e_web/live/pages_live/avatar/avatar_api_live.ex:106
@@ -1608,6 +1579,7 @@ msgstr ""
 #: lib/e2e_web/live/pages_live/pin_input_events_live.ex:105
 #: lib/e2e_web/live/pages_live/radio_group_api_live.ex:91
 #: lib/e2e_web/live/pages_live/radio_group_events_live.ex:111
+#: lib/e2e_web/live/pages_live/select_api_live.ex:114
 #: lib/e2e_web/live/pages_live/select_events_live.ex:113
 #: lib/e2e_web/live/pages_live/signature_events_live.ex:108
 #: lib/e2e_web/live/pages_live/switch_api_live.ex:69
@@ -1615,12 +1587,20 @@ msgstr ""
 #: lib/e2e_web/live/pages_live/tabs_events_live.ex:108
 #: lib/e2e_web/live/pages_live/toggle_group_events_live.ex:110
 #: lib/e2e_web/live/pages_live/tooltip_events_live.ex:68
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:139
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:185
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:221
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:238
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:258
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:277
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:294
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:314
 #: lib/e2e_web/live/pages_live/tree_view_events_live.ex:128
 #, elixir-autogen, elixir-format
 msgid "JS"
 msgstr ""
 
-#: lib/e2e_web/components/form_patterns_fields.ex:277
+#: lib/e2e_web/components/form_patterns_fields.ex:280
 #: lib/e2e_web/controllers/user_html.ex:18
 #: lib/e2e_web/live/admin_live/form.ex:313
 #, elixir-autogen, elixir-format
@@ -1637,7 +1617,7 @@ msgstr ""
 msgid "Javascript"
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:192
+#: lib/e2e_web/controllers/home_html/index.html.heex:206
 #, elixir-autogen, elixir-format
 msgid "Keyboard, focus and ARIA from Zag.js machines."
 msgstr ""
@@ -1672,7 +1652,7 @@ msgstr ""
 msgid "Layout Heading · Style"
 msgstr ""
 
-#: lib/e2e_web/components/helpers.ex:412
+#: lib/e2e_web/components/helpers.ex:417
 #, elixir-autogen, elixir-format
 msgid "Layout heading"
 msgstr ""
@@ -1693,7 +1673,7 @@ msgstr ""
 msgid "List of profile links (one tooltip per row)"
 msgstr ""
 
-#: lib/e2e_web/components/helpers.ex:423
+#: lib/e2e_web/components/helpers.ex:428
 #: lib/e2e_web/controllers/page_html/listbox_page.html.heex:10
 #, elixir-autogen, elixir-format
 msgid "Listbox"
@@ -1720,21 +1700,21 @@ msgstr ""
 #: lib/e2e_web/components/helpers.ex:310
 #: lib/e2e_web/components/helpers.ex:347
 #: lib/e2e_web/components/helpers.ex:375
-#: lib/e2e_web/components/helpers.ex:399
-#: lib/e2e_web/components/helpers.ex:467
-#: lib/e2e_web/components/helpers.ex:492
-#: lib/e2e_web/components/helpers.ex:505
-#: lib/e2e_web/components/helpers.ex:519
-#: lib/e2e_web/components/helpers.ex:533
-#: lib/e2e_web/components/helpers.ex:548
-#: lib/e2e_web/components/helpers.ex:563
-#: lib/e2e_web/components/helpers.ex:578
-#: lib/e2e_web/components/helpers.ex:604
+#: lib/e2e_web/components/helpers.ex:402
+#: lib/e2e_web/components/helpers.ex:472
+#: lib/e2e_web/components/helpers.ex:497
+#: lib/e2e_web/components/helpers.ex:512
+#: lib/e2e_web/components/helpers.ex:526
+#: lib/e2e_web/components/helpers.ex:540
+#: lib/e2e_web/components/helpers.ex:555
+#: lib/e2e_web/components/helpers.ex:570
+#: lib/e2e_web/components/helpers.ex:585
+#: lib/e2e_web/components/helpers.ex:611
 #, elixir-autogen, elixir-format
 msgid "Live Form"
 msgstr ""
 
-#: lib/e2e_web/components/helpers.ex:697
+#: lib/e2e_web/components/helpers.ex:704
 #, elixir-autogen, elixir-format
 msgid "Live View"
 msgstr ""
@@ -1770,7 +1750,7 @@ msgstr ""
 msgid "Lorem"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:569
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:639
 #: lib/e2e_web/live/pages_live/accordion/accordion_patterns_live.ex:52
 #, elixir-autogen, elixir-format
 msgid "Lorem ipsum dolor sit amet"
@@ -1791,7 +1771,7 @@ msgstr ""
 msgid "Manual slots"
 msgstr ""
 
-#: lib/e2e_web/components/helpers.ex:434
+#: lib/e2e_web/components/helpers.ex:439
 #, elixir-autogen, elixir-format
 msgid "Marquee"
 msgstr ""
@@ -1826,32 +1806,41 @@ msgstr ""
 msgid "Max 5 days"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/accordion/accordion_styling_page.html.heex:57
-#: lib/e2e_web/controllers/page_html/layout_heading_styling_page.html.heex:27
-#: lib/e2e_web/controllers/page_html/radio_group_styling_page.html.heex:37
-#: lib/e2e_web/controllers/page_html/select_styling_page.html.heex:57
-#: lib/e2e_web/controllers/page_html/signature_styling_page.html.heex:47
-#: lib/e2e_web/controllers/page_html/tree_view/tree_view_styling_page.html.heex:57
-#, elixir-autogen, elixir-format
-msgid "Max Width"
-msgstr ""
-
-#: lib/e2e_web/controllers/page_html/code_styling_page.html.heex:25
-#: lib/e2e_web/controllers/page_html/combobox_styling_page.html.heex:35
-#: lib/e2e_web/controllers/page_html/data_list_styling_page.html.heex:34
-#: lib/e2e_web/controllers/page_html/editable_styling_page.html.heex:47
-#: lib/e2e_web/controllers/page_html/listbox_styling_page.html.heex:32
-#: lib/e2e_web/controllers/page_html/marquee_styling_page.html.heex:20
-#: lib/e2e_web/controllers/page_html/native_input_styling_page.html.heex:57
-#: lib/e2e_web/controllers/page_html/number_input_styling_page.html.heex:37
-#: lib/e2e_web/controllers/page_html/pagination_styling_page.html.heex:52
-#: lib/e2e_web/controllers/page_html/tabs_styling_page.html.heex:57
-#: lib/e2e_web/controllers/page_html/tags_input_styling_page.html.heex:62
+#: lib/e2e_web/controllers/page_html/accordion/accordion_styling_page.html.heex:92
+#: lib/e2e_web/controllers/page_html/action_styling_page.html.heex:91
+#: lib/e2e_web/controllers/page_html/carousel_styling_page.html.heex:56
+#: lib/e2e_web/controllers/page_html/checkbox_styling_page.html.heex:56
+#: lib/e2e_web/controllers/page_html/clipboard_styling_page.html.heex:73
+#: lib/e2e_web/controllers/page_html/code_styling_page.html.heex:41
+#: lib/e2e_web/controllers/page_html/collapsible_styling_page.html.heex:41
+#: lib/e2e_web/controllers/page_html/color_picker_styling_page.html.heex:69
+#: lib/e2e_web/controllers/page_html/combobox_styling_page.html.heex:56
+#: lib/e2e_web/controllers/page_html/data_list_styling_page.html.heex:51
+#: lib/e2e_web/controllers/page_html/date_picker_styling_page.html.heex:69
+#: lib/e2e_web/controllers/page_html/editable_styling_page.html.heex:69
+#: lib/e2e_web/controllers/page_html/file_upload_styling_page.html.heex:56
+#: lib/e2e_web/controllers/page_html/layout_heading_styling_page.html.heex:30
+#: lib/e2e_web/controllers/page_html/listbox_styling_page.html.heex:51
+#: lib/e2e_web/controllers/page_html/marquee_styling_page.html.heex:23
+#: lib/e2e_web/controllers/page_html/native_input_styling_page.html.heex:66
+#: lib/e2e_web/controllers/page_html/number_input_styling_page.html.heex:56
+#: lib/e2e_web/controllers/page_html/pagination_styling_page.html.heex:64
+#: lib/e2e_web/controllers/page_html/password_input_styling_page.html.heex:56
+#: lib/e2e_web/controllers/page_html/radio_group_styling_page.html.heex:69
+#: lib/e2e_web/controllers/page_html/select_styling_page.html.heex:56
+#: lib/e2e_web/controllers/page_html/signature_styling_page.html.heex:64
+#: lib/e2e_web/controllers/page_html/switch_styling_page.html.heex:67
+#: lib/e2e_web/controllers/page_html/tabs_styling_page.html.heex:56
+#: lib/e2e_web/controllers/page_html/tags_input_styling_page.html.heex:61
+#: lib/e2e_web/controllers/page_html/timer_styling_page.html.heex:69
+#: lib/e2e_web/controllers/page_html/toggle_group_styling_page.html.heex:64
+#: lib/e2e_web/controllers/page_html/toggle_styling_page.html.heex:64
+#: lib/e2e_web/controllers/page_html/tree_view/tree_view_styling_page.html.heex:56
 #, elixir-autogen, elixir-format
 msgid "Max width"
 msgstr ""
 
-#: lib/e2e_web/components/helpers.ex:445
+#: lib/e2e_web/components/helpers.ex:450
 #, elixir-autogen, elixir-format
 msgid "Menu"
 msgstr ""
@@ -1986,12 +1975,12 @@ msgstr ""
 msgid "Native form (plain HTML)"
 msgstr ""
 
-#: lib/e2e_web/components/helpers.ex:456
+#: lib/e2e_web/components/helpers.ex:461
 #, elixir-autogen, elixir-format
 msgid "Native input"
 msgstr ""
 
-#: lib/e2e_web/components/helpers.ex:471
+#: lib/e2e_web/components/helpers.ex:476
 #, elixir-autogen, elixir-format
 msgid "Navigate"
 msgstr ""
@@ -2027,14 +2016,14 @@ msgstr ""
 msgid "No visible trigger"
 msgstr ""
 
-#: lib/e2e_web/components/form_patterns_fields.ex:282
+#: lib/e2e_web/components/form_patterns_fields.ex:285
 #: lib/e2e_web/controllers/user_html.ex:23
 #: lib/e2e_web/live/admin_live/form.ex:318
 #, elixir-autogen, elixir-format
 msgid "Norwegian Krone"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:575
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:645
 #: lib/e2e_web/live/pages_live/accordion/accordion_patterns_live.ex:58
 #: lib/e2e_web/live/pages_live/accordion/accordion_play_live.ex:37
 #, elixir-autogen, elixir-format
@@ -2062,7 +2051,7 @@ msgstr ""
 msgid "Number Input · Style"
 msgstr ""
 
-#: lib/e2e_web/components/helpers.ex:481
+#: lib/e2e_web/components/helpers.ex:486
 #, elixir-autogen, elixir-format
 msgid "Number input"
 msgstr ""
@@ -2204,22 +2193,22 @@ msgstr ""
 msgid "One tooltip, multiple profile links as triggers"
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:181
+#: lib/e2e_web/controllers/home_html/index.html.heex:195
 #, elixir-autogen, elixir-format
 msgid "Open Source"
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:183
+#: lib/e2e_web/controllers/home_html/index.html.heex:197
 #, elixir-autogen, elixir-format
 msgid "Open Source and free to use. MIT License"
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:113
+#: lib/e2e_web/controllers/home_html/index.html.heex:127
 #, elixir-autogen, elixir-format
 msgid "Open all"
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:136
+#: lib/e2e_web/controllers/home_html/index.html.heex:150
 #, elixir-autogen, elixir-format
 msgid "Open items"
 msgstr ""
@@ -2240,7 +2229,7 @@ msgstr ""
 msgid "Page headings with title, subtitle, and actions."
 msgstr ""
 
-#: lib/e2e_web/components/helpers.ex:628
+#: lib/e2e_web/components/helpers.ex:635
 #, elixir-autogen, elixir-format
 msgid "Pagination"
 msgstr ""
@@ -2271,13 +2260,13 @@ msgstr ""
 msgid "Password Input · Form"
 msgstr ""
 
-#: lib/e2e_web/components/helpers.ex:496
+#: lib/e2e_web/components/helpers.ex:501
 #, elixir-autogen, elixir-format
 msgid "Password input"
 msgstr ""
 
 #: lib/e2e_web/components/helpers.ex:82
-#: lib/e2e_web/components/helpers.ex:698
+#: lib/e2e_web/components/helpers.ex:705
 #, elixir-autogen, elixir-format
 msgid "Pattern"
 msgstr ""
@@ -2308,7 +2297,7 @@ msgstr ""
 msgid "Pin Input · Form"
 msgstr ""
 
-#: lib/e2e_web/components/helpers.ex:509
+#: lib/e2e_web/components/helpers.ex:516
 #, elixir-autogen, elixir-format
 msgid "Pin input"
 msgstr ""
@@ -2351,6 +2340,7 @@ msgid "Programmatic selection and reading the current value from LiveView or the
 msgstr ""
 
 #: lib/e2e_web/live/pages_live/combobox_api_live.ex:46
+#: lib/e2e_web/live/pages_live/select_api_live.ex:42
 #, elixir-autogen, elixir-format
 msgid "Programmatic selection from LiveView or the client."
 msgstr ""
@@ -2381,28 +2371,9 @@ msgstr ""
 msgid "Radio Group · Style"
 msgstr ""
 
-#: lib/e2e_web/components/helpers.ex:523
+#: lib/e2e_web/components/helpers.ex:530
 #, elixir-autogen, elixir-format
 msgid "Radio group"
-msgstr ""
-
-#: lib/e2e_web/controllers/page_html/accordion/accordion_styling_page.html.heex:47
-#: lib/e2e_web/controllers/page_html/carousel_styling_page.html.heex:37
-#: lib/e2e_web/controllers/page_html/date_picker_styling_page.html.heex:37
-#: lib/e2e_web/controllers/page_html/dialog_styling_page.html.heex:37
-#: lib/e2e_web/controllers/page_html/editable_styling_page.html.heex:37
-#: lib/e2e_web/controllers/page_html/native_input_styling_page.html.heex:47
-#: lib/e2e_web/controllers/page_html/pagination_styling_page.html.heex:42
-#: lib/e2e_web/controllers/page_html/pin_input_styling_page.html.heex:32
-#: lib/e2e_web/controllers/page_html/select_styling_page.html.heex:47
-#: lib/e2e_web/controllers/page_html/tabs_styling_page.html.heex:47
-#: lib/e2e_web/controllers/page_html/tags_input_styling_page.html.heex:52
-#: lib/e2e_web/controllers/page_html/timer_styling_page.html.heex:47
-#: lib/e2e_web/controllers/page_html/toggle_group_styling_page.html.heex:32
-#: lib/e2e_web/controllers/page_html/toggle_styling_page.html.heex:32
-#: lib/e2e_web/controllers/page_html/tree_view/tree_view_styling_page.html.heex:47
-#, elixir-autogen, elixir-format
-msgid "Radius"
 msgstr ""
 
 #: lib/e2e_web/controllers/page_html/date_picker_page.html.heex:24
@@ -2415,7 +2386,7 @@ msgstr ""
 msgid "Read-only"
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:227
+#: lib/e2e_web/controllers/home_html/index.html.heex:241
 #, elixir-autogen, elixir-format
 msgid "Ready?"
 msgstr ""
@@ -2436,7 +2407,7 @@ msgstr ""
 msgid "Search…"
 msgstr ""
 
-#: lib/e2e_web/components/helpers.ex:537
+#: lib/e2e_web/components/helpers.ex:544
 #: lib/e2e_web/live/pages_live/combobox_api_live.ex:73
 #: lib/e2e_web/live/pages_live/combobox_api_live.ex:103
 #: lib/e2e_web/live/pages_live/combobox_api_live.ex:151
@@ -2444,7 +2415,10 @@ msgstr ""
 #: lib/e2e_web/live/pages_live/combobox_events_live.ex:141
 #: lib/e2e_web/live/pages_live/combobox_events_live.ex:199
 #: lib/e2e_web/live/pages_live/combobox_events_live.ex:236
-#: lib/e2e_web/live/pages_live/data_table_patterns_live.ex:391
+#: lib/e2e_web/live/pages_live/data_table_patterns_live.ex:392
+#: lib/e2e_web/live/pages_live/select_api_live.ex:70
+#: lib/e2e_web/live/pages_live/select_api_live.ex:103
+#: lib/e2e_web/live/pages_live/select_api_live.ex:150
 #, elixir-autogen, elixir-format
 msgid "Select"
 msgstr ""
@@ -2465,21 +2439,6 @@ msgstr ""
 msgid "Select · Form"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/select_styling_page.html.heex:10
-#, elixir-autogen, elixir-format
-msgid "Select · Styling"
-msgstr ""
-
-#: lib/e2e_web/controllers/page_html/switch_styling_page.html.heex:11
-#, elixir-autogen, elixir-format
-msgid "Semantic colors and density (sm–xl) via modifier classes on the root."
-msgstr ""
-
-#: lib/e2e_web/controllers/page_html/checkbox_styling_page.html.heex:11
-#, elixir-autogen, elixir-format
-msgid "Semantic colors and density via modifier classes on the checkbox root."
-msgstr ""
-
 #: lib/e2e_web/controllers/page_html/pagination_styling_page.html.heex:7
 #, elixir-autogen, elixir-format
 msgid "Semantic colors on page controls, density steps, type scale, radii, and host max-width utilities—same modifier pattern as accordion."
@@ -2490,24 +2449,9 @@ msgstr ""
 msgid "Semantic colors on title and subtitle, width utilities on the root; use typography utilities on the heading slots for scale."
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/accordion/accordion_styling_page.html.heex:12
-#, elixir-autogen, elixir-format
-msgid "Semantic colors, density steps, and width utilities via modifier classes on the accordion."
-msgstr ""
-
-#: lib/e2e_web/controllers/page_html/radio_group_styling_page.html.heex:12
-#, elixir-autogen, elixir-format
-msgid "Semantic colors, density steps, and width utilities via modifier classes on the radio group."
-msgstr ""
-
 #: lib/e2e_web/controllers/page_html/tree_view/tree_view_styling_page.html.heex:12
 #, elixir-autogen, elixir-format
 msgid "Semantic colors, density steps, radius, and text utilities via modifier classes on the tree view."
-msgstr ""
-
-#: lib/e2e_web/controllers/page_html/combobox_styling_page.html.heex:11
-#, elixir-autogen, elixir-format
-msgid "Semantic colors, density, and width utilities on the combobox root."
 msgstr ""
 
 #: lib/e2e_web/controllers/page_html/select_styling_page.html.heex:12
@@ -2525,19 +2469,9 @@ msgstr ""
 msgid "Semantic colors, root gap, typography, radius, and max-width utilities on the tabs root."
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/tooltip_styling_page.html.heex:11
-#, elixir-autogen, elixir-format
-msgid "Semantic colors, size, and typography via modifier classes on the tooltip root."
-msgstr ""
-
 #: lib/e2e_web/controllers/page_html/timer_styling_page.html.heex:12
 #, elixir-autogen, elixir-format
 msgid "Semantic colors, typography, and radius on the timer root (add max-width with utilities such as max-w-md)."
-msgstr ""
-
-#: lib/e2e_web/controllers/page_html/data_list_styling_page.html.heex:12
-#, elixir-autogen, elixir-format
-msgid "Semantic ink on the label, size scale on label and content, and host max-width utilities."
 msgstr ""
 
 #: lib/e2e_web/controllers/page_html/tags_input_styling_page.html.heex:7
@@ -2611,20 +2545,23 @@ msgstr ""
 msgid "Set Src (Server)"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:214
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:222
 #: lib/e2e_web/live/pages_live/combobox_api_live.ex:50
+#: lib/e2e_web/live/pages_live/select_api_live.ex:46
 #, elixir-autogen, elixir-format
 msgid "Set Value (Client Binding)"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:247
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:255
 #: lib/e2e_web/live/pages_live/combobox_api_live.ex:114
+#: lib/e2e_web/live/pages_live/select_api_live.ex:112
 #, elixir-autogen, elixir-format
 msgid "Set Value (Client JS)"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:279
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:287
 #: lib/e2e_web/live/pages_live/combobox_api_live.ex:84
+#: lib/e2e_web/live/pages_live/select_api_live.ex:79
 #, elixir-autogen, elixir-format
 msgid "Set Value (Server)"
 msgstr ""
@@ -2659,12 +2596,12 @@ msgstr ""
 msgid "Set visibility (Server)"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/action_styling_page.html.heex:39
+#: lib/e2e_web/controllers/page_html/action_styling_page.html.heex:106
 #, elixir-autogen, elixir-format
 msgid "Shape"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/dialog_styling_page.html.heex:47
+#: lib/e2e_web/controllers/page_html/dialog_styling_page.html.heex:56
 #, elixir-autogen, elixir-format
 msgid "Side"
 msgstr ""
@@ -2679,7 +2616,7 @@ msgstr ""
 msgid "Signature Pad · Event"
 msgstr ""
 
-#: lib/e2e_web/components/helpers.ex:552
+#: lib/e2e_web/components/helpers.ex:559
 #, elixir-autogen, elixir-format
 msgid "Signature pad"
 msgstr ""
@@ -2690,7 +2627,7 @@ msgstr ""
 msgid "Signature · Form"
 msgstr ""
 
-#: lib/e2e_web/components/form_patterns_fields.ex:283
+#: lib/e2e_web/components/form_patterns_fields.ex:286
 #: lib/e2e_web/controllers/user_html.ex:24
 #: lib/e2e_web/live/admin_live/form.ex:319
 #, elixir-autogen, elixir-format
@@ -2702,48 +2639,46 @@ msgstr ""
 msgid "Single date, range, and multiple selection (uncontrolled); same slots as minimal."
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/accordion/accordion_styling_page.html.heex:27
-#: lib/e2e_web/controllers/page_html/action_styling_page.html.heex:23
-#: lib/e2e_web/controllers/page_html/angle_slider_styling_page.html.heex:25
-#: lib/e2e_web/controllers/page_html/avatar_styling_page.html.heex:25
-#: lib/e2e_web/controllers/page_html/carousel_styling_page.html.heex:27
-#: lib/e2e_web/controllers/page_html/checkbox_styling_page.html.heex:25
-#: lib/e2e_web/controllers/page_html/clipboard_styling_page.html.heex:15
+#: lib/e2e_web/controllers/page_html/accordion/accordion_styling_page.html.heex:66
+#: lib/e2e_web/controllers/page_html/action_styling_page.html.heex:58
+#: lib/e2e_web/controllers/page_html/angle_slider_styling_page.html.heex:28
+#: lib/e2e_web/controllers/page_html/avatar_styling_page.html.heex:28
+#: lib/e2e_web/controllers/page_html/carousel_styling_page.html.heex:30
+#: lib/e2e_web/controllers/page_html/checkbox_styling_page.html.heex:30
+#: lib/e2e_web/controllers/page_html/clipboard_styling_page.html.heex:34
 #: lib/e2e_web/controllers/page_html/code_styling_page.html.heex:15
-#: lib/e2e_web/controllers/page_html/collapsible_styling_page.html.heex:25
-#: lib/e2e_web/controllers/page_html/color_picker_styling_page.html.heex:27
-#: lib/e2e_web/controllers/page_html/combobox_styling_page.html.heex:15
-#: lib/e2e_web/controllers/page_html/data_list_styling_page.html.heex:26
-#: lib/e2e_web/controllers/page_html/date_picker_styling_page.html.heex:27
-#: lib/e2e_web/controllers/page_html/dialog_styling_page.html.heex:17
-#: lib/e2e_web/controllers/page_html/editable_styling_page.html.heex:27
+#: lib/e2e_web/controllers/page_html/collapsible_styling_page.html.heex:28
+#: lib/e2e_web/controllers/page_html/color_picker_styling_page.html.heex:30
+#: lib/e2e_web/controllers/page_html/combobox_styling_page.html.heex:30
+#: lib/e2e_web/controllers/page_html/data_list_styling_page.html.heex:29
+#: lib/e2e_web/controllers/page_html/date_picker_styling_page.html.heex:30
+#: lib/e2e_web/controllers/page_html/dialog_styling_page.html.heex:30
+#: lib/e2e_web/controllers/page_html/editable_styling_page.html.heex:30
+#: lib/e2e_web/controllers/page_html/file_upload_styling_page.html.heex:30
 #: lib/e2e_web/controllers/page_html/floating_panel_page.html.heex:40
-#: lib/e2e_web/controllers/page_html/listbox_styling_page.html.heex:22
+#: lib/e2e_web/controllers/page_html/floating_panel_styling_page.html.heex:30
+#: lib/e2e_web/controllers/page_html/listbox_styling_page.html.heex:25
 #: lib/e2e_web/controllers/page_html/marquee_styling_page.html.heex:10
-#: lib/e2e_web/controllers/page_html/menu_styling_page.html.heex:20
-#: lib/e2e_web/controllers/page_html/native_input_styling_page.html.heex:37
-#: lib/e2e_web/controllers/page_html/navigate_styling_page.html.heex:23
-#: lib/e2e_web/controllers/page_html/number_input_styling_page.html.heex:27
-#: lib/e2e_web/controllers/page_html/pagination_styling_page.html.heex:22
-#: lib/e2e_web/controllers/page_html/pin_input_styling_page.html.heex:22
-#: lib/e2e_web/controllers/page_html/radio_group_styling_page.html.heex:27
-#: lib/e2e_web/controllers/page_html/select_styling_page.html.heex:27
-#: lib/e2e_web/controllers/page_html/signature_styling_page.html.heex:37
-#: lib/e2e_web/controllers/page_html/switch_styling_page.html.heex:25
-#: lib/e2e_web/controllers/page_html/tabs_styling_page.html.heex:27
-#: lib/e2e_web/controllers/page_html/tags_input_styling_page.html.heex:32
-#: lib/e2e_web/controllers/page_html/timer_styling_page.html.heex:27
-#: lib/e2e_web/controllers/page_html/toggle_group_styling_page.html.heex:22
-#: lib/e2e_web/controllers/page_html/toggle_styling_page.html.heex:22
-#: lib/e2e_web/controllers/page_html/tooltip_styling_page.html.heex:25
-#: lib/e2e_web/controllers/page_html/tree_view/tree_view_styling_page.html.heex:27
+#: lib/e2e_web/controllers/page_html/menu_styling_page.html.heex:25
+#: lib/e2e_web/controllers/page_html/native_input_styling_page.html.heex:40
+#: lib/e2e_web/controllers/page_html/navigate_styling_page.html.heex:26
+#: lib/e2e_web/controllers/page_html/number_input_styling_page.html.heex:30
+#: lib/e2e_web/controllers/page_html/pagination_styling_page.html.heex:25
+#: lib/e2e_web/controllers/page_html/password_input_styling_page.html.heex:30
+#: lib/e2e_web/controllers/page_html/pin_input_styling_page.html.heex:25
+#: lib/e2e_web/controllers/page_html/radio_group_styling_page.html.heex:30
+#: lib/e2e_web/controllers/page_html/select_styling_page.html.heex:30
+#: lib/e2e_web/controllers/page_html/signature_styling_page.html.heex:51
+#: lib/e2e_web/controllers/page_html/switch_styling_page.html.heex:28
+#: lib/e2e_web/controllers/page_html/tabs_styling_page.html.heex:30
+#: lib/e2e_web/controllers/page_html/tags_input_styling_page.html.heex:35
+#: lib/e2e_web/controllers/page_html/timer_styling_page.html.heex:30
+#: lib/e2e_web/controllers/page_html/toggle_group_styling_page.html.heex:25
+#: lib/e2e_web/controllers/page_html/toggle_styling_page.html.heex:25
+#: lib/e2e_web/controllers/page_html/tooltip_styling_page.html.heex:30
+#: lib/e2e_web/controllers/page_html/tree_view/tree_view_styling_page.html.heex:30
 #, elixir-autogen, elixir-format
 msgid "Size"
-msgstr ""
-
-#: lib/e2e_web/controllers/page_html/dialog_styling_page.html.heex:12
-#, elixir-autogen, elixir-format
-msgid "Size, type scale, corner radius, and edge (side) layout via modifier classes on the dialog."
 msgstr ""
 
 #: lib/e2e_web/controllers/page_html/combobox_page.html.heex:25
@@ -2756,7 +2691,7 @@ msgstr ""
 msgid "Sorry, the page you are looking for does not exist."
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/data_table_patterns_live.ex:346
+#: lib/e2e_web/live/pages_live/data_table_patterns_live.ex:360
 #, elixir-autogen, elixir-format
 msgid "Sort"
 msgstr ""
@@ -2767,7 +2702,7 @@ msgid "State machines"
 msgstr ""
 
 #: lib/e2e_web/live/pages_live/accordion/accordion_patterns_live.ex:189
-#: lib/e2e_web/live/pages_live/data_table_patterns_live.ex:292
+#: lib/e2e_web/live/pages_live/data_table_patterns_live.ex:306
 #: lib/e2e_web/live/pages_live/listbox_patterns_live.ex:119
 #: lib/e2e_web/live/pages_live/radio_group_patterns_live.ex:97
 #, elixir-autogen, elixir-format
@@ -2870,21 +2805,21 @@ msgstr ""
 msgid "Success"
 msgstr ""
 
-#: lib/e2e_web/components/form_patterns_fields.ex:281
+#: lib/e2e_web/components/form_patterns_fields.ex:284
 #: lib/e2e_web/controllers/user_html.ex:22
 #: lib/e2e_web/live/admin_live/form.ex:317
 #, elixir-autogen, elixir-format
 msgid "Swedish Krona"
 msgstr ""
 
-#: lib/e2e_web/components/form_patterns_fields.ex:278
+#: lib/e2e_web/components/form_patterns_fields.ex:281
 #: lib/e2e_web/controllers/user_html.ex:19
 #: lib/e2e_web/live/admin_live/form.ex:314
 #, elixir-autogen, elixir-format
 msgid "Swiss Franc"
 msgstr ""
 
-#: lib/e2e_web/components/helpers.ex:567
+#: lib/e2e_web/components/helpers.ex:574
 #, elixir-autogen, elixir-format
 msgid "Switch"
 msgstr ""
@@ -2900,7 +2835,7 @@ msgid "Switch · Event"
 msgstr ""
 
 #: lib/e2e_web/controllers/page_html/switch_form_page.html.heex:11
-#: lib/e2e_web/live/pages_live/switch_form_live.ex:125
+#: lib/e2e_web/live/pages_live/switch_form_live.ex:259
 #, elixir-autogen, elixir-format
 msgid "Switch · Form"
 msgstr ""
@@ -2915,10 +2850,14 @@ msgstr ""
 msgid "Syntax highlighting, inline and block, optional clipboard, and other languages."
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:263
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:335
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:413
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:497
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:271
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:330
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:362
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:400
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:434
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:471
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:514
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:567
 #: lib/e2e_web/live/pages_live/accordion/accordion_events_live.ex:130
 #: lib/e2e_web/live/pages_live/angle_slider_events_live.ex:121
 #: lib/e2e_web/live/pages_live/avatar/avatar_api_live.ex:112
@@ -2947,13 +2886,21 @@ msgstr ""
 #: lib/e2e_web/live/pages_live/switch_events_live.ex:110
 #: lib/e2e_web/live/pages_live/tabs_events_live.ex:109
 #: lib/e2e_web/live/pages_live/toggle_group_events_live.ex:111
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:140
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:186
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:222
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:239
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:259
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:278
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:295
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:315
 #: lib/e2e_web/live/pages_live/tree_view_events_live.ex:129
 #, elixir-autogen, elixir-format
 msgid "TS"
 msgstr ""
 
-#: lib/e2e_web/components/helpers.ex:582
-#: lib/e2e_web/live/pages_live/menu_play_live.ex:95
+#: lib/e2e_web/components/helpers.ex:589
+#: lib/e2e_web/live/pages_live/menu_play_live.ex:30
 #, elixir-autogen, elixir-format
 msgid "Tabs"
 msgstr ""
@@ -2984,7 +2931,7 @@ msgstr ""
 msgid "Tags Input · Form"
 msgstr ""
 
-#: lib/e2e_web/components/helpers.ex:593
+#: lib/e2e_web/components/helpers.ex:600
 #, elixir-autogen, elixir-format
 msgid "Tags input"
 msgstr ""
@@ -3004,26 +2951,17 @@ msgstr ""
 msgid "Tailwind"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/accordion/accordion_styling_page.html.heex:37
-#: lib/e2e_web/controllers/page_html/dialog_styling_page.html.heex:27
 #: lib/e2e_web/controllers/page_html/native_input_page.html.heex:23
-#: lib/e2e_web/controllers/page_html/pagination_styling_page.html.heex:32
-#: lib/e2e_web/controllers/page_html/select_styling_page.html.heex:37
-#: lib/e2e_web/controllers/page_html/tabs_styling_page.html.heex:37
-#: lib/e2e_web/controllers/page_html/tags_input_styling_page.html.heex:42
-#: lib/e2e_web/controllers/page_html/timer_styling_page.html.heex:37
-#: lib/e2e_web/controllers/page_html/tooltip_styling_page.html.heex:35
-#: lib/e2e_web/controllers/page_html/tree_view/tree_view_styling_page.html.heex:37
 #, elixir-autogen, elixir-format
 msgid "Text"
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:135
+#: lib/e2e_web/controllers/home_html/index.html.heex:149
 #, elixir-autogen, elixir-format
 msgid "Time"
 msgstr ""
 
-#: lib/e2e_web/components/helpers.ex:608
+#: lib/e2e_web/components/helpers.ex:615
 #, elixir-autogen, elixir-format
 msgid "Timer"
 msgstr ""
@@ -3048,7 +2986,7 @@ msgstr ""
 msgid "Title only"
 msgstr ""
 
-#: lib/e2e_web/components/helpers.ex:619
+#: lib/e2e_web/components/helpers.ex:626
 #, elixir-autogen, elixir-format
 msgid "Toast"
 msgstr ""
@@ -3063,7 +3001,7 @@ msgstr ""
 msgid "Toast type, duration, loading, and three trigger styles (redirect, Phoenix.LiveView.JS, custom label)."
 msgstr ""
 
-#: lib/e2e_web/components/helpers.ex:639
+#: lib/e2e_web/components/helpers.ex:646
 #, elixir-autogen, elixir-format
 msgid "Toggle"
 msgstr ""
@@ -3073,7 +3011,7 @@ msgstr ""
 msgid "Toggle content visibility."
 msgstr ""
 
-#: lib/e2e_web/components/helpers.ex:650
+#: lib/e2e_web/components/helpers.ex:657
 #, elixir-autogen, elixir-format
 msgid "Toggle group"
 msgstr ""
@@ -3093,7 +3031,7 @@ msgstr ""
 msgid "Toggle group · Style"
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:139
+#: lib/e2e_web/controllers/home_html/index.html.heex:153
 #, elixir-autogen, elixir-format
 msgid "Toggle the accordion to watch events land."
 msgstr ""
@@ -3108,7 +3046,7 @@ msgstr ""
 msgid "Toggle · Style"
 msgstr ""
 
-#: lib/e2e_web/components/helpers.ex:661
+#: lib/e2e_web/components/helpers.ex:668
 #, elixir-autogen, elixir-format
 msgid "Tooltip"
 msgstr ""
@@ -3118,17 +3056,12 @@ msgstr ""
 msgid "Tooltip · Anatomy"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/tooltip_styling_page.html.heex:10
-#, elixir-autogen, elixir-format
-msgid "Tooltip · Styling"
-msgstr ""
-
 #: lib/e2e_web/controllers/page_html/tags_input_page.html.heex:32
 #, elixir-autogen, elixir-format
 msgid "Translation"
 msgstr ""
 
-#: lib/e2e_web/components/helpers.ex:673
+#: lib/e2e_web/components/helpers.ex:680
 #, elixir-autogen, elixir-format
 msgid "Tree view"
 msgstr ""
@@ -3194,12 +3127,7 @@ msgstr ""
 msgid "TypeScript"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/code_styling_page.html.heex:11
-#, elixir-autogen, elixir-format
-msgid "Typography and max-width via modifier classes on the code root."
-msgstr ""
-
-#: lib/e2e_web/components/form_patterns_fields.ex:275
+#: lib/e2e_web/components/form_patterns_fields.ex:278
 #: lib/e2e_web/controllers/user_html.ex:16
 #: lib/e2e_web/live/admin_live/form.ex:311
 #, elixir-autogen, elixir-format
@@ -3221,17 +3149,17 @@ msgstr ""
 msgid "Update props at runtime without resetting component state."
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:306
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:314
 #, elixir-autogen, elixir-format
 msgid "Value (Client Binding)"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:319
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:346
 #, elixir-autogen, elixir-format
 msgid "Value (Client JS)"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:351
+#: lib/e2e_web/live/pages_live/accordion/accordion_api_live.ex:378
 #, elixir-autogen, elixir-format
 msgid "Value (Server)"
 msgstr ""
@@ -3249,7 +3177,7 @@ msgstr ""
 #: lib/e2e_web/live/pages_live/carousel/carousel_play_live.ex:138
 #: lib/e2e_web/live/pages_live/checkbox_play_live.ex:73
 #: lib/e2e_web/live/pages_live/collapsible_play_live.ex:63
-#: lib/e2e_web/live/pages_live/combobox_play_live.ex:144
+#: lib/e2e_web/live/pages_live/combobox_play_live.ex:164
 #, elixir-autogen, elixir-format
 msgid "Vertical orientation"
 msgstr ""
@@ -3280,7 +3208,7 @@ msgstr ""
 msgid "With arrow"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/data_table_patterns_live.ex:505
+#: lib/e2e_web/live/pages_live/data_table_patterns_live.ex:480
 #, elixir-autogen, elixir-format
 msgid "With database"
 msgstr ""
@@ -3351,7 +3279,7 @@ msgstr ""
 msgid "With visibility icons"
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:165
+#: lib/e2e_web/controllers/home_html/index.html.heex:179
 #, elixir-autogen, elixir-format
 msgid "Works in Controller and Live View"
 msgstr ""
@@ -3371,7 +3299,7 @@ msgstr ""
 msgid "Zag.js powers accessibility, keyboard, and focus."
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:229
+#: lib/e2e_web/controllers/home_html/index.html.heex:243
 #, elixir-autogen, elixir-format
 msgid "in one command."
 msgstr ""
@@ -3381,7 +3309,7 @@ msgstr ""
 msgid "lorem, duis, donec: pressed control, optional indicator, and trigger label swap."
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/data_table_patterns_live.ex:70
+#: lib/e2e_web/live/pages_live/data_table_patterns_live.ex:74
 #, elixir-autogen, elixir-format
 msgid "name-%{system_unique_integer}"
 msgstr ""
@@ -3600,11 +3528,6 @@ msgstr ""
 msgid "Dialog · Pattern"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/signature_styling_page.html.heex:17
-#, elixir-autogen, elixir-format
-msgid "Drawing color"
-msgstr ""
-
 #: lib/e2e_web/controllers/page_html/signature_styling_page.html.heex:12
 #, elixir-autogen, elixir-format
 msgid "Drawing color via drawing_fill, trigger color and density via modifier classes on the signature pad root."
@@ -3668,7 +3591,7 @@ msgid "Games in progress. Click Watch or use the action."
 msgstr ""
 
 #: lib/e2e_web/components/app/main_nav.ex:62
-#: lib/e2e_web/components/helpers.ex:710
+#: lib/e2e_web/components/helpers.ex:717
 #, elixir-autogen, elixir-format
 msgid "Hex Doc"
 msgstr ""
@@ -3771,11 +3694,6 @@ msgstr ""
 #: lib/e2e_web/controllers/page_html/navigate_page.html.heex:11
 #, elixir-autogen, elixir-format
 msgid "Minimal link content: text, text with icon, and icon-only (aria_label)."
-msgstr ""
-
-#: lib/e2e_web/controllers/page_html/avatar_styling_page.html.heex:11
-#, elixir-autogen, elixir-format
-msgid "Modifiers for color, size, and corner radius on the fallback and frame."
 msgstr ""
 
 #: lib/e2e_web/live/tetrex_live.ex:1043
@@ -3910,7 +3828,7 @@ msgstr ""
 #: lib/e2e_web/controllers/page_html/switch_form_page.html.heex:15
 #: lib/e2e_web/controllers/page_html/tags_input_form_page.html.heex:15
 #: lib/e2e_web/live/pages_live/angle_slider_form_live.ex:170
-#: lib/e2e_web/live/pages_live/checkbox_form_live.ex:122
+#: lib/e2e_web/live/pages_live/checkbox_form_live.ex:248
 #: lib/e2e_web/live/pages_live/color_picker_form_live.ex:164
 #: lib/e2e_web/live/pages_live/combobox_form.ex:117
 #: lib/e2e_web/live/pages_live/editable_form_live.ex:149
@@ -3922,7 +3840,7 @@ msgstr ""
 #: lib/e2e_web/live/pages_live/radio_group_form_live.ex:125
 #: lib/e2e_web/live/pages_live/select_form_live.ex:126
 #: lib/e2e_web/live/pages_live/signature_form_live.ex:156
-#: lib/e2e_web/live/pages_live/switch_form_live.ex:129
+#: lib/e2e_web/live/pages_live/switch_form_live.ex:263
 #: lib/e2e_web/live/pages_live/tags_input_form_live.ex:128
 #, elixir-autogen, elixir-format
 msgid "Phoenix Form"
@@ -3944,7 +3862,7 @@ msgstr ""
 #: lib/e2e_web/controllers/page_html/switch_form_page.html.heex:28
 #: lib/e2e_web/controllers/page_html/tags_input_form_page.html.heex:28
 #: lib/e2e_web/live/pages_live/angle_slider_form_live.ex:183
-#: lib/e2e_web/live/pages_live/checkbox_form_live.ex:135
+#: lib/e2e_web/live/pages_live/checkbox_form_live.ex:261
 #: lib/e2e_web/live/pages_live/color_picker_form_live.ex:177
 #: lib/e2e_web/live/pages_live/combobox_form.ex:130
 #: lib/e2e_web/live/pages_live/editable_form_live.ex:162
@@ -3956,7 +3874,7 @@ msgstr ""
 #: lib/e2e_web/live/pages_live/radio_group_form_live.ex:138
 #: lib/e2e_web/live/pages_live/select_form_live.ex:139
 #: lib/e2e_web/live/pages_live/signature_form_live.ex:169
-#: lib/e2e_web/live/pages_live/switch_form_live.ex:142
+#: lib/e2e_web/live/pages_live/switch_form_live.ex:276
 #: lib/e2e_web/live/pages_live/tags_input_form_live.ex:141
 #, elixir-autogen, elixir-format
 msgid "Phoenix Form + Ecto"
@@ -4057,9 +3975,39 @@ msgstr ""
 msgid "Rotate"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/action_styling_page.html.heex:31
-#: lib/e2e_web/controllers/page_html/avatar_styling_page.html.heex:35
-#: lib/e2e_web/controllers/page_html/signature_styling_page.html.heex:57
+#: lib/e2e_web/controllers/page_html/accordion/accordion_styling_page.html.heex:79
+#: lib/e2e_web/controllers/page_html/action_styling_page.html.heex:69
+#: lib/e2e_web/controllers/page_html/avatar_styling_page.html.heex:41
+#: lib/e2e_web/controllers/page_html/carousel_styling_page.html.heex:43
+#: lib/e2e_web/controllers/page_html/checkbox_styling_page.html.heex:43
+#: lib/e2e_web/controllers/page_html/clipboard_styling_page.html.heex:47
+#: lib/e2e_web/controllers/page_html/code_styling_page.html.heex:28
+#: lib/e2e_web/controllers/page_html/color_picker_styling_page.html.heex:43
+#: lib/e2e_web/controllers/page_html/combobox_styling_page.html.heex:43
+#: lib/e2e_web/controllers/page_html/data_list_styling_page.html.heex:40
+#: lib/e2e_web/controllers/page_html/date_picker_styling_page.html.heex:43
+#: lib/e2e_web/controllers/page_html/dialog_styling_page.html.heex:43
+#: lib/e2e_web/controllers/page_html/editable_styling_page.html.heex:43
+#: lib/e2e_web/controllers/page_html/file_upload_styling_page.html.heex:43
+#: lib/e2e_web/controllers/page_html/floating_panel_styling_page.html.heex:43
+#: lib/e2e_web/controllers/page_html/listbox_styling_page.html.heex:38
+#: lib/e2e_web/controllers/page_html/menu_styling_page.html.heex:38
+#: lib/e2e_web/controllers/page_html/native_input_styling_page.html.heex:53
+#: lib/e2e_web/controllers/page_html/number_input_styling_page.html.heex:43
+#: lib/e2e_web/controllers/page_html/pagination_styling_page.html.heex:38
+#: lib/e2e_web/controllers/page_html/password_input_styling_page.html.heex:43
+#: lib/e2e_web/controllers/page_html/pin_input_styling_page.html.heex:38
+#: lib/e2e_web/controllers/page_html/radio_group_styling_page.html.heex:43
+#: lib/e2e_web/controllers/page_html/select_styling_page.html.heex:43
+#: lib/e2e_web/controllers/page_html/signature_styling_page.html.heex:77
+#: lib/e2e_web/controllers/page_html/switch_styling_page.html.heex:41
+#: lib/e2e_web/controllers/page_html/tabs_styling_page.html.heex:43
+#: lib/e2e_web/controllers/page_html/tags_input_styling_page.html.heex:48
+#: lib/e2e_web/controllers/page_html/timer_styling_page.html.heex:43
+#: lib/e2e_web/controllers/page_html/toggle_group_styling_page.html.heex:38
+#: lib/e2e_web/controllers/page_html/toggle_styling_page.html.heex:38
+#: lib/e2e_web/controllers/page_html/tooltip_styling_page.html.heex:43
+#: lib/e2e_web/controllers/page_html/tree_view/tree_view_styling_page.html.heex:43
 #, elixir-autogen, elixir-format
 msgid "Rounded"
 msgstr ""
@@ -4071,29 +4019,9 @@ msgstr ""
 msgid "Score"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/listbox_styling_page.html.heex:7
-#, elixir-autogen, elixir-format
-msgid "Selected-item colors, density, and width via modifier classes and Tailwind max-w-* on the listbox root (vertical by default; horizontal uses a wider default max width)."
-msgstr ""
-
-#: lib/e2e_web/controllers/page_html/menu_styling_page.html.heex:6
-#, elixir-autogen, elixir-format
-msgid "Semantic colors and density via modifier classes on the menu root."
-msgstr ""
-
-#: lib/e2e_web/controllers/page_html/color_picker_styling_page.html.heex:12
-#, elixir-autogen, elixir-format
-msgid "Semantic colors on the control-row inputs and density via modifier classes on the color picker root."
-msgstr ""
-
 #: lib/e2e_web/controllers/page_html/date_picker_styling_page.html.heex:12
 #, elixir-autogen, elixir-format
 msgid "Semantic colors, density, and corner radius via modifier classes on the date picker root."
-msgstr ""
-
-#: lib/e2e_web/controllers/page_html/number_input_styling_page.html.heex:12
-#, elixir-autogen, elixir-format
-msgid "Semantic colors, density, and width via modifier classes and Tailwind max-w-* on the number input root."
 msgstr ""
 
 #: lib/e2e_web/controllers/page_html/pin_input_styling_page.html.heex:7
@@ -4117,7 +4045,7 @@ msgid "Server-driven filtering."
 msgstr ""
 
 #: lib/e2e_web/components/app/main_nav.ex:47
-#: lib/e2e_web/components/helpers.ex:708
+#: lib/e2e_web/components/helpers.ex:715
 #: lib/e2e_web/controllers/showcases_controller.ex:12
 #: lib/e2e_web/controllers/showcases_html/index.html.heex:18
 #, elixir-autogen, elixir-format
@@ -4145,7 +4073,8 @@ msgstr ""
 msgid "Start"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/pin_input_styling_page.html.heex:42
+#: lib/e2e_web/controllers/page_html/angle_slider_styling_page.html.heex:41
+#: lib/e2e_web/controllers/page_html/pin_input_styling_page.html.heex:64
 #, elixir-autogen, elixir-format
 msgid "States"
 msgstr ""
@@ -4183,11 +4112,6 @@ msgstr ""
 #: lib/e2e_web/live/tetrex_index_live.ex:105
 #, elixir-autogen, elixir-format
 msgid "Top 10 by score. Edit your name on rows from games you played."
-msgstr ""
-
-#: lib/e2e_web/controllers/page_html/signature_styling_page.html.heex:27
-#, elixir-autogen, elixir-format
-msgid "Trigger color"
 msgstr ""
 
 #: lib/e2e_web/live/pages_live/navigate_patterns_live.ex:30
@@ -4288,12 +4212,12 @@ msgstr ""
 msgid "A landing page built with Corex, Tableau, and Motion. Contact form using a Cloudflare Worker and the Resend API."
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:11
+#: lib/e2e_web/controllers/home_html/index.html.heex:17
 #, elixir-autogen, elixir-format
 msgid "Accessible, unstyled Phoenix components with a full server-and-client API, powered by"
 msgstr ""
 
-#: lib/e2e_web/components/app/footer.ex:21
+#: lib/e2e_web/components/app/footer.ex:22
 #, elixir-autogen, elixir-format
 msgid "Become a sponsor"
 msgstr ""
@@ -4303,37 +4227,37 @@ msgstr ""
 msgid "Checkbox Tetris with semantic piece colors, live sessions, top-10 leaderboard, and frame replay."
 msgstr ""
 
-#: lib/e2e_web/components/app/header.ex:40
+#: lib/e2e_web/components/app/header.ex:44
 #, elixir-autogen, elixir-format
 msgid "Close menu"
 msgstr ""
 
-#: lib/e2e_web/components/app/footer.ex:110
+#: lib/e2e_web/components/app/footer.ex:111
 #, elixir-autogen, elixir-format
 msgid "Corex Blog RSS"
 msgstr ""
 
-#: lib/e2e_web/components/app/footer.ex:55
+#: lib/e2e_web/components/app/footer.ex:56
 #, elixir-autogen, elixir-format
 msgid "Corex UI documentation"
 msgstr ""
 
-#: lib/e2e_web/components/app/footer.ex:32
+#: lib/e2e_web/components/app/footer.ex:33
 #, elixir-autogen, elixir-format
 msgid "Corex UI on GitHub"
 msgstr ""
 
-#: lib/e2e_web/components/app/header.ex:70
+#: lib/e2e_web/components/app/header.ex:74
 #, elixir-autogen, elixir-format
 msgid "Documentation navigation"
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:99
+#: lib/e2e_web/controllers/home_html/index.html.heex:112
 #, elixir-autogen, elixir-format
 msgid "Drive the accordion from anywhere."
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:46
+#: lib/e2e_web/controllers/home_html/index.html.heex:58
 #, elixir-autogen, elixir-format
 msgid "Interactive preview"
 msgstr ""
@@ -4368,17 +4292,17 @@ msgstr ""
 msgid "Motion"
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:106
+#: lib/e2e_web/controllers/home_html/index.html.heex:120
 #, elixir-autogen, elixir-format
 msgid "Open first"
 msgstr ""
 
-#: lib/e2e_web/components/app/header.ex:29
+#: lib/e2e_web/components/app/header.ex:32
 #, elixir-autogen, elixir-format
 msgid "Open menu"
 msgstr ""
 
-#: lib/e2e_web/components/app/footer.ex:13
+#: lib/e2e_web/components/app/footer.ex:14
 #, elixir-autogen, elixir-format
 msgid "Open source by Netoum"
 msgstr ""
@@ -4394,22 +4318,331 @@ msgstr ""
 msgid "Tableau"
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:7
+#: lib/e2e_web/controllers/home_html/index.html.heex:13
 #, elixir-autogen, elixir-format
 msgid "The Phoenix UI with a"
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:35
+#: lib/e2e_web/controllers/home_html/index.html.heex:47
 #, elixir-autogen, elixir-format
 msgid "Visit Hexdocs"
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:7
+#: lib/e2e_web/controllers/home_html/index.html.heex:13
 #, elixir-autogen, elixir-format
 msgid "real API"
 msgstr ""
 
-#: lib/e2e_web/controllers/home_html/index.html.heex:13
+#: lib/e2e_web/controllers/home_html/index.html.heex:19
 #, elixir-autogen, elixir-format
 msgid "state machines."
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/checkbox_styling_page.html.heex:10
+#, elixir-autogen, elixir-format
+msgid "Checkbox · Style"
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/clipboard_styling_page.html.heex:10
+#, elixir-autogen, elixir-format
+msgid "Clipboard · Style"
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/collapsible_styling_page.html.heex:10
+#, elixir-autogen, elixir-format
+msgid "Collapsible · Style"
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/combobox_styling_page.html.heex:10
+#, elixir-autogen, elixir-format
+msgid "Combobox · Style"
+msgstr ""
+
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:122
+#, elixir-autogen, elixir-format
+msgid "Control and interact with the tree view from LiveView or the client."
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/clipboard_styling_page.html.heex:12
+#, elixir-autogen, elixir-format
+msgid "Copied-state semantic palette, density, and corner radius via modifier classes on the clipboard root. Click Copy to preview feedback."
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/signature_styling_page.html.heex:17
+#, elixir-autogen, elixir-format
+msgid "Drawing"
+msgstr ""
+
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:218
+#, elixir-autogen, elixir-format
+msgid "Expanded (Client Binding)"
+msgstr ""
+
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:235
+#, elixir-autogen, elixir-format
+msgid "Expanded (Client JS)"
+msgstr ""
+
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:249
+#, elixir-autogen, elixir-format
+msgid "Expanded (Server)"
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/file_upload_styling_page.html.heex:10
+#, elixir-autogen, elixir-format
+msgid "File Upload · Style"
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/floating_panel_styling_page.html.heex:10
+#, elixir-autogen, elixir-format
+msgid "Floating Panel · Style"
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/angle_slider_styling_page.html.heex:51
+#, elixir-autogen, elixir-format
+msgid "Markers"
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/avatar_styling_page.html.heex:11
+#, elixir-autogen, elixir-format
+msgid "Modifiers for semantic role, size, and corner radius on the fallback and frame."
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/password_input_styling_page.html.heex:10
+#, elixir-autogen, elixir-format
+msgid "Password Input · Style"
+msgstr ""
+
+#: lib/e2e_web/live/pages_live/checkbox_form_live.ex:275
+#: lib/e2e_web/live/pages_live/switch_form_live.ex:290
+#, elixir-autogen, elixir-format
+msgid "Phoenix Form + Ecto + Controlled"
+msgstr ""
+
+#: lib/e2e_web/live/pages_live/tree_view_patterns_live.ex:143
+#, elixir-autogen, elixir-format
+msgid "Redirect (navigation)"
+msgstr ""
+
+#: lib/e2e_web/live/pages_live/select_api_live.ex:41
+#, elixir-autogen, elixir-format
+msgid "Select · API"
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/select_styling_page.html.heex:10
+#, elixir-autogen, elixir-format
+msgid "Select · Style"
+msgstr ""
+
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:274
+#, elixir-autogen, elixir-format
+msgid "Selected (Client Binding)"
+msgstr ""
+
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:291
+#, elixir-autogen, elixir-format
+msgid "Selected (Client JS)"
+msgstr ""
+
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:305
+#, elixir-autogen, elixir-format
+msgid "Selected (Server)"
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/listbox_styling_page.html.heex:7
+#, elixir-autogen, elixir-format
+msgid "Selected-item colors, density, corner radius, and width via modifier classes and Tailwind max-w-* on the listbox root (vertical by default; horizontal uses a wider default max width)."
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/accordion/accordion_styling_page.html.heex:17
+#: lib/e2e_web/controllers/page_html/action_styling_page.html.heex:15
+#: lib/e2e_web/controllers/page_html/angle_slider_styling_page.html.heex:15
+#: lib/e2e_web/controllers/page_html/avatar_styling_page.html.heex:15
+#: lib/e2e_web/controllers/page_html/carousel_styling_page.html.heex:17
+#: lib/e2e_web/controllers/page_html/checkbox_styling_page.html.heex:17
+#: lib/e2e_web/controllers/page_html/clipboard_styling_page.html.heex:17
+#: lib/e2e_web/controllers/page_html/collapsible_styling_page.html.heex:15
+#: lib/e2e_web/controllers/page_html/color_picker_styling_page.html.heex:17
+#: lib/e2e_web/controllers/page_html/combobox_styling_page.html.heex:17
+#: lib/e2e_web/controllers/page_html/data_list_styling_page.html.heex:18
+#: lib/e2e_web/controllers/page_html/date_picker_styling_page.html.heex:17
+#: lib/e2e_web/controllers/page_html/dialog_styling_page.html.heex:17
+#: lib/e2e_web/controllers/page_html/editable_styling_page.html.heex:17
+#: lib/e2e_web/controllers/page_html/file_upload_styling_page.html.heex:17
+#: lib/e2e_web/controllers/page_html/floating_panel_styling_page.html.heex:17
+#: lib/e2e_web/controllers/page_html/layout_heading_styling_page.html.heex:17
+#: lib/e2e_web/controllers/page_html/listbox_styling_page.html.heex:12
+#: lib/e2e_web/controllers/page_html/menu_styling_page.html.heex:12
+#: lib/e2e_web/controllers/page_html/native_input_styling_page.html.heex:27
+#: lib/e2e_web/controllers/page_html/navigate_styling_page.html.heex:15
+#: lib/e2e_web/controllers/page_html/number_input_styling_page.html.heex:17
+#: lib/e2e_web/controllers/page_html/pagination_styling_page.html.heex:12
+#: lib/e2e_web/controllers/page_html/password_input_styling_page.html.heex:17
+#: lib/e2e_web/controllers/page_html/pin_input_styling_page.html.heex:12
+#: lib/e2e_web/controllers/page_html/radio_group_styling_page.html.heex:17
+#: lib/e2e_web/controllers/page_html/select_styling_page.html.heex:17
+#: lib/e2e_web/controllers/page_html/switch_styling_page.html.heex:15
+#: lib/e2e_web/controllers/page_html/tabs_styling_page.html.heex:17
+#: lib/e2e_web/controllers/page_html/tags_input_styling_page.html.heex:12
+#: lib/e2e_web/controllers/page_html/timer_styling_page.html.heex:17
+#: lib/e2e_web/controllers/page_html/toggle_group_styling_page.html.heex:12
+#: lib/e2e_web/controllers/page_html/toggle_styling_page.html.heex:12
+#: lib/e2e_web/controllers/page_html/tooltip_styling_page.html.heex:17
+#: lib/e2e_web/controllers/page_html/tree_view/tree_view_styling_page.html.heex:17
+#, elixir-autogen, elixir-format
+msgid "Semantic"
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/color_picker_styling_page.html.heex:12
+#, elixir-autogen, elixir-format
+msgid "Semantic colors on the control-row inputs, density, and corner radius via modifier classes on the color picker root."
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/radio_group_styling_page.html.heex:12
+#, elixir-autogen, elixir-format
+msgid "Semantic colors, density steps, corner radius, and width utilities via modifier classes on the radio group."
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/number_input_styling_page.html.heex:12
+#, elixir-autogen, elixir-format
+msgid "Semantic colors, density, and corner radius via modifier classes and Tailwind max-w-* on the number input root."
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/checkbox_styling_page.html.heex:12
+#, elixir-autogen, elixir-format
+msgid "Semantic colors, density, and corner radius via modifier classes on the checkbox root."
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/floating_panel_styling_page.html.heex:12
+#, elixir-autogen, elixir-format
+msgid "Semantic colors, density, and corner radius via modifier classes on the floating panel root."
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/menu_styling_page.html.heex:7
+#, elixir-autogen, elixir-format
+msgid "Semantic colors, density, and corner radius via modifier classes on the menu root."
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/switch_styling_page.html.heex:11
+#, elixir-autogen, elixir-format
+msgid "Semantic colors, density, and corner radius via modifier classes on the root."
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/file_upload_styling_page.html.heex:12
+#, elixir-autogen, elixir-format
+msgid "Semantic colors, density, corner radius, and max width via modifier classes on the file upload root."
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/password_input_styling_page.html.heex:12
+#, elixir-autogen, elixir-format
+msgid "Semantic colors, density, corner radius, and max width via modifier classes on the password input root."
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/combobox_styling_page.html.heex:12
+#, elixir-autogen, elixir-format
+msgid "Semantic colors, density, corner radius, and width utilities on the combobox root."
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/tooltip_styling_page.html.heex:12
+#, elixir-autogen, elixir-format
+msgid "Semantic colors, size, and corner radius via modifier classes on the tooltip root."
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/dialog_styling_page.html.heex:12
+#, elixir-autogen, elixir-format
+msgid "Semantic colors, size, type scale, corner radius, and edge (side) layout via modifier classes on the dialog."
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/accordion/accordion_styling_page.html.heex:12
+#, elixir-autogen, elixir-format
+msgid "Semantic colors, visual variants, density steps, and max-width utilities via modifier classes on the accordion."
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/data_list_styling_page.html.heex:12
+#, elixir-autogen, elixir-format
+msgid "Semantic ink on the label, size scale on label and content, corner radius on items, and host max-width utilities."
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/accordion/accordion_styling_page.html.heex:49
+#: lib/e2e_web/controllers/page_html/action_styling_page.html.heex:43
+#, elixir-autogen, elixir-format
+msgid "Semantic × variant"
+msgstr ""
+
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:126
+#, elixir-autogen, elixir-format
+msgid "Set Expanded (Client Binding)"
+msgstr ""
+
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:136
+#, elixir-autogen, elixir-format
+msgid "Set Expanded (Client JS)"
+msgstr ""
+
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:150
+#, elixir-autogen, elixir-format
+msgid "Set Expanded (Server)"
+msgstr ""
+
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:172
+#, elixir-autogen, elixir-format
+msgid "Set Selected (Client Binding)"
+msgstr ""
+
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:182
+#, elixir-autogen, elixir-format
+msgid "Set Selected (Client JS)"
+msgstr ""
+
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:196
+#, elixir-autogen, elixir-format
+msgid "Set Selected (Server)"
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/tooltip_styling_page.html.heex:10
+#, elixir-autogen, elixir-format
+msgid "Tooltip · Style"
+msgstr ""
+
+#: lib/e2e_web/live/pages_live/tree_view_api_live.ex:121
+#, elixir-autogen, elixir-format
+msgid "Tree view · API"
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/signature_styling_page.html.heex:34
+#, elixir-autogen, elixir-format
+msgid "Trigger"
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/code_styling_page.html.heex:11
+#, elixir-autogen, elixir-format
+msgid "Typography, corner radius, and max-width via modifier classes on the code root."
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/accordion/accordion_styling_page.html.heex:30
+#: lib/e2e_web/controllers/page_html/action_styling_page.html.heex:26
+#, elixir-autogen, elixir-format
+msgid "Variant"
+msgstr ""
+
+#: lib/e2e_web/controllers/page_html/action_styling_page.html.heex:80
+#: lib/e2e_web/controllers/page_html/clipboard_styling_page.html.heex:60
+#: lib/e2e_web/controllers/page_html/color_picker_styling_page.html.heex:56
+#: lib/e2e_web/controllers/page_html/date_picker_styling_page.html.heex:56
+#: lib/e2e_web/controllers/page_html/editable_styling_page.html.heex:56
+#: lib/e2e_web/controllers/page_html/pagination_styling_page.html.heex:51
+#: lib/e2e_web/controllers/page_html/pin_input_styling_page.html.heex:51
+#: lib/e2e_web/controllers/page_html/radio_group_styling_page.html.heex:56
+#: lib/e2e_web/controllers/page_html/switch_styling_page.html.heex:54
+#: lib/e2e_web/controllers/page_html/timer_styling_page.html.heex:56
+#: lib/e2e_web/controllers/page_html/toggle_group_styling_page.html.heex:51
+#: lib/e2e_web/controllers/page_html/toggle_styling_page.html.heex:51
+#, elixir-autogen, elixir-format
+msgid "Width"
+msgstr ""
+
+#: lib/e2e_web/live/pages_live/checkbox_form_live.ex:299
+#: lib/e2e_web/live/pages_live/switch_form_live.ex:314
+#, elixir-autogen, elixir-format
+msgid "Phoenix Form + Ecto + Invalid"
 msgstr ""

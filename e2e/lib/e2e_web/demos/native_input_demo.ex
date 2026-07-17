@@ -1,6 +1,8 @@
 defmodule E2eWeb.Demos.NativeInputDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.DemoScales
+
   import E2eWeb.Demos.NativeInputFormFields
 
   def tag_options do
@@ -54,7 +56,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-h-[70vh] overflow-y-auto scrollbar scrollbar--sm">
+    <div class="w-full max-h-[70vh] overflow-y-auto scrollbar scrollbar--sm" tabindex="0">
       <.anatomy_all_fields
         id_prefix="native-input-style-all"
         name_prefix="native-input-style-all"
@@ -66,35 +68,64 @@ defmodule E2eWeb.Demos.NativeInputDemo do
 
   @styling_color_variants [
     %{id: "default", label: "Default", modifier: ""},
-    %{id: "accent", label: "Accent", modifier: "native-input--accent"},
-    %{id: "brand", label: "Brand", modifier: "native-input--brand"},
-    %{id: "alert", label: "Alert", modifier: "native-input--alert"},
-    %{id: "info", label: "Info", modifier: "native-input--info"},
-    %{id: "success", label: "Success", modifier: "native-input--success"}
+    %{id: "accent", label: "Accent", modifier: "ui-accent"},
+    %{id: "brand", label: "Brand", modifier: "ui-brand"},
+    %{id: "alert", label: "Alert", modifier: "ui-alert"},
+    %{id: "info", label: "Info", modifier: "ui-info"},
+    %{id: "success", label: "Success", modifier: "ui-success"}
   ]
 
   @styling_size_variants [
-    %{id: "sm", label: "SM", modifier: "native-input--sm"},
-    %{id: "md", label: "MD", modifier: "native-input--md"},
-    %{id: "lg", label: "LG", modifier: "native-input--lg"},
-    %{id: "xl", label: "XL", modifier: "native-input--xl"}
+    %{id: "sm", label: "SM", modifier: "ui-size-sm"},
+    %{id: "md", label: "MD", modifier: "ui-size-md"},
+    %{id: "lg", label: "LG", modifier: "ui-size-lg"},
+    %{id: "xl", label: "XL", modifier: "ui-size-xl"}
   ]
 
   @styling_rounded_variants [
-    %{id: "none", label: "None", modifier: "native-input--rounded-none"},
-    %{id: "sm", label: "SM", modifier: "native-input--rounded-sm"},
-    %{id: "md", label: "MD", modifier: "native-input--rounded-md"},
-    %{id: "lg", label: "LG", modifier: "native-input--rounded-lg"},
-    %{id: "xl", label: "XL", modifier: "native-input--rounded-xl"},
-    %{id: "full", label: "Full", modifier: "native-input--rounded-full"}
+    %{id: "none", label: "None", modifier: "ui-rounded-none"},
+    %{id: "sm", label: "SM", modifier: "ui-rounded-sm"},
+    %{id: "md", label: "MD", modifier: "ui-rounded-md"},
+    %{id: "lg", label: "LG", modifier: "ui-rounded-lg"},
+    %{id: "xl", label: "XL", modifier: "ui-rounded-xl"},
+    %{id: "full", label: "Full", modifier: "ui-rounded-full"}
   ]
 
-  @styling_max_width_variants [
-    %{id: "2xs", label: "2xs", modifier: "max-w-2xs"},
-    %{id: "md", label: "MD", modifier: "max-w-md"},
-    %{id: "xl", label: "XL", modifier: "max-w-xl"},
-    %{id: "2xl", label: "2XL", modifier: "max-w-2xl"}
-  ]
+  def styling_max_width_code do
+    DemoScales.max_width_variants("native-input")
+    |> Enum.map(fn %{id: id, label: label, modifier: modifier} ->
+      input_class = styling_width_input_class(modifier)
+
+      """
+      <div class="flex flex-col gap-3 pb-8 last:pb-0">
+        <p class="typo ui-size-sm font-medium">#{label}</p>
+        <.anatomy_all_fields
+          id_prefix="native-input-style-max-width-#{id}"
+          input_class="#{input_class}"
+        />
+      </div>
+      """
+    end)
+    |> then(fn blocks ->
+      """
+      <div class="w-full max-h-[70vh] overflow-y-auto scrollbar scrollbar--sm" tabindex="0">
+      #{Enum.join(blocks, "\n")}
+      </div>
+      """
+    end)
+  end
+
+  def styling_max_width_example(assigns) do
+    assigns = assign(assigns, :variants, DemoScales.max_width_variants("native-input"))
+
+    ~H"""
+    <.styling_modifier_preview
+      id_prefix="native-input-style-max-width"
+      variants={@variants}
+      width_modifiers
+    />
+    """
+  end
 
   attr(:id_prefix, :string, required: true)
   attr(:variants, :list, required: true)
@@ -116,9 +147,9 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     assigns = assign(assigns, :variants, variants)
 
     ~H"""
-    <div class="w-full max-h-[70vh] overflow-y-auto scrollbar scrollbar--sm">
+    <div class="w-full max-h-[70vh] overflow-y-auto scrollbar scrollbar--sm" tabindex="0">
       <div :for={variant <- @variants} class="flex flex-col gap-3 pb-8 last:pb-0">
-        <p class="typo typo--sm font-medium">{variant.label}</p>
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.anatomy_all_fields
           id_prefix={"#{@id_prefix}-#{variant.id}"}
           name_prefix={"#{@id_prefix}-#{variant.id}"}
@@ -140,14 +171,14 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     |> Enum.join(" ")
   end
 
-  defp styling_variant_code(id_prefix, modifier, width_modifiers \\ false) do
+  defp styling_modifier_code(id_prefix, modifier, width_modifiers \\ false) do
     input_class =
       if width_modifiers,
         do: styling_width_input_class(modifier),
         else: styling_input_class(modifier)
 
     ~s"""
-    <div class="max-h-[70vh] overflow-y-auto scrollbar scrollbar--sm">
+    <div class="max-h-[70vh] overflow-y-auto scrollbar scrollbar--sm" tabindex="0">
       <.anatomy_all_fields
         id_prefix="#{id_prefix}-example"
         input_class="#{input_class}"
@@ -218,7 +249,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
 
   def anatomy_text_code do
     ~S"""
-    <div class="layout__row flex flex-col gap-4">
+    <div class="flex flex-col gap-4">
       <.native_input type="text" name="user[name]" class="native-input">
         <:label>Text</:label>
         <:icon><.heroicon name="hero-pencil-square" class="icon" /></:icon>
@@ -283,7 +314,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="layout__row flex flex-col gap-4">
+    <div class="flex flex-col gap-4">
       <.native_input type="text" id="text-with-icon" name="user[name]" class="native-input">
         <:label>Text</:label>
         <:icon><.heroicon name="hero-pencil-square" class="icon" /></:icon>
@@ -364,7 +395,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
 
   def anatomy_date_time_code do
     ~S"""
-    <div class="layout__row flex flex-col gap-4">
+    <div class="flex flex-col gap-4">
       <.native_input type="date" name="user[date]" class="native-input">
         <:label>Date</:label>
       </.native_input>
@@ -388,7 +419,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="layout__row flex flex-col gap-4">
+    <div class="flex flex-col gap-4">
       <.native_input type="date" id="date" name="user[date]" class="native-input">
         <:label>Date</:label>
       </.native_input>
@@ -410,7 +441,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
 
   def anatomy_multiple_code do
     ~S"""
-    <div class="layout__row flex flex-col gap-4">
+    <div class="flex flex-col gap-4">
       <.native_input
         type="select"
         multiple
@@ -435,7 +466,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="layout__row flex flex-col gap-4">
+    <div class="flex flex-col gap-4">
       <.native_input
         type="select"
         multiple
@@ -475,7 +506,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="layout__row flex flex-col gap-4">
+    <div class="flex flex-col gap-4">
       <.native_input type="checkbox" id="checkbox" name="user[agree]" class="native-input">
         <:label>I agree</:label>
       </.native_input>
@@ -514,7 +545,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
   end
 
   def styling_color_code do
-    styling_variant_code("native-input-style-color", "native-input--accent")
+    styling_modifier_code("native-input-style-color", "ui-accent")
   end
 
   def styling_color_example(assigns) do
@@ -528,8 +559,82 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     """
   end
 
+  def styling_variant_code do
+    ~S"""
+    <.native_input type="text" name="user[name]" class="native-input">
+      <:label>Subtle (default)</:label>
+    </.native_input>
+    <.native_input type="text" name="user[name]" class="native-input ui-solid">
+      <:label>Solid</:label>
+    </.native_input>
+
+    """
+  end
+
+  def styling_variant_example(assigns) do
+    ~H"""
+    <div class="flex flex-col gap-4 max-w-md">
+      <.native_input
+        id="native-input-style-variant-subtle"
+        type="text"
+        name="user[name]"
+        class="native-input"
+      >
+        <:label>Subtle (default)</:label>
+      </.native_input>
+      <.native_input
+        id="native-input-style-variant-solid"
+        type="text"
+        name="user[name]"
+        class="native-input ui-solid"
+      >
+        <:label>Solid</:label>
+      </.native_input>
+    </div>
+    """
+  end
+
+  def styling_variant_matrix_code do
+    for semantic <- DemoScales.styling_semantic_axis_steps("native-input"),
+        variant <- DemoScales.styling_variant_axis_steps("native-input") do
+      class =
+        DemoScales.join_matrix_modifiers("native-input", semantic.modifier, variant.modifier)
+
+      ~s(<.native_input type="text" name="user[name]" class="#{class}">
+        <:label>#{semantic.label}</:label>
+      </.native_input>)
+    end
+    |> DemoScales.join_code()
+  end
+
+  def styling_variant_matrix_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("native-input"))
+      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("native-input"))
+
+    ~H"""
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+      <div class="grid grid-cols-4 gap-space items-start min-w-max">
+        <div :for={semantic <- @matrix_semantics} class="contents">
+          <.native_input
+            :for={variant <- @matrix_variants}
+            type="text"
+            name="user[name]"
+            class={
+              DemoScales.join_matrix_modifiers("native-input", semantic.modifier, variant.modifier)
+            }
+          >
+            <:label>{semantic.label}</:label>
+          </.native_input>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
   def styling_size_code do
-    styling_variant_code("native-input-style-size", "native-input--lg")
+    styling_modifier_code("native-input-style-size", "ui-size-lg")
   end
 
   def styling_size_example(assigns) do
@@ -544,7 +649,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
   end
 
   def styling_rounded_code do
-    styling_variant_code("native-input-style-rounded", "native-input--rounded-lg")
+    styling_modifier_code("native-input-style-rounded", "ui-rounded-lg")
   end
 
   def styling_rounded_example(assigns) do
@@ -554,22 +659,6 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     <.styling_modifier_preview
       id_prefix="native-input-style-rounded"
       variants={@variants}
-    />
-    """
-  end
-
-  def styling_max_width_code do
-    styling_variant_code("native-input-style-max-width", "max-w-md", true)
-  end
-
-  def styling_max_width_example(assigns) do
-    assigns = assign(assigns, :variants, @styling_max_width_variants)
-
-    ~H"""
-    <.styling_modifier_preview
-      id_prefix="native-input-style-max-width"
-      variants={@variants}
-      width_modifiers
     />
     """
   end
@@ -644,7 +733,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.form_full_fields variant={:ecto} id_prefix="native-input-phoenix" f={@form} />
-      <.action type="submit" id="native-input-form-phoenix-submit" class="button button--accent">
+      <.action type="submit" id="native-input-form-phoenix-submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -680,7 +769,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
       class="flex flex-col gap-6 w-full max-w-md"
     >
       <.form_full_fields variant={:ecto} id_prefix="native-input-live-phoenix" f={@form} />
-      <.action type="submit" id="native-input-live-form-phoenix-submit" class="button button--accent">
+      <.action type="submit" id="native-input-live-form-phoenix-submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -696,7 +785,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <div class="flex flex-col gap-3">
-        <p class="typo typo--sm font-medium">Text</p>
+        <p class="typo ui-size-sm font-medium">Text</p>
         <.native_input field={@form[:name]} type="text" placeholder="Your name" class="native-input">
           <:label>Name</:label>
           <:error :let={msg}>{msg}</:error>
@@ -731,7 +820,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
         </.native_input>
       </div>
       <div class="flex flex-col gap-3">
-        <p class="typo typo--sm font-medium">Date & time</p>
+        <p class="typo ui-size-sm font-medium">Date & time</p>
         <.native_input field={@form[:birth_date]} type="date" class="native-input">
           <:label>Birth date</:label>
           <:error :let={msg}>{msg}</:error>
@@ -754,7 +843,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
         </.native_input>
       </div>
       <div class="flex flex-col gap-3">
-        <p class="typo typo--sm font-medium">Multiple</p>
+        <p class="typo ui-size-sm font-medium">Multiple</p>
         <.native_input
           field={@form[:tags]}
           type="select"
@@ -774,7 +863,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
         </.native_input>
       </div>
       <div class="flex flex-col gap-3">
-        <p class="typo typo--sm font-medium">Other</p>
+        <p class="typo ui-size-sm font-medium">Other</p>
         <.native_input field={@form[:color]} type="color" value="#3b82f6" class="native-input">
           <:label>Color</:label>
           <:error :let={msg}>{msg}</:error>
@@ -803,7 +892,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
           <:error :let={msg}>{msg}</:error>
         </.native_input>
       </div>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -891,7 +980,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     <form action={~p"/native-input/form"} method="post">
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <div class="flex flex-col gap-3">
-        <p class="typo typo--sm font-medium">Text</p>
+        <p class="typo ui-size-sm font-medium">Text</p>
         <.native_input type="text" name="profile[name]" placeholder="Your name" class="native-input">
           <:label>Name</:label>
         </.native_input>
@@ -918,7 +1007,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
         </.native_input>
       </div>
       <div class="flex flex-col gap-3">
-        <p class="typo typo--sm font-medium">Date & time</p>
+        <p class="typo ui-size-sm font-medium">Date & time</p>
         <.native_input type="date" name="profile[birth_date]" class="native-input">
           <:label>Birth date</:label>
         </.native_input>
@@ -936,7 +1025,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
         </.native_input>
       </div>
       <div class="flex flex-col gap-3">
-        <p class="typo typo--sm font-medium">Multiple</p>
+        <p class="typo ui-size-sm font-medium">Multiple</p>
         <.native_input
           type="select"
           multiple
@@ -955,7 +1044,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
         </.native_input>
       </div>
       <div class="flex flex-col gap-3">
-        <p class="typo typo--sm font-medium">Other</p>
+        <p class="typo ui-size-sm font-medium">Other</p>
         <.native_input type="color" name="profile[color]" value="#3b82f6" class="native-input">
           <:label>Color</:label>
         </.native_input>
@@ -969,7 +1058,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
           <:label>I agree</:label>
         </.native_input>
       </div>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" class="button ui-accent">
         Submit
       </.action>
     </form>
@@ -1000,7 +1089,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.form_full_fields variant={:ecto} id_prefix="native-input-form" f={f} />
-      <.action type="submit" id="native-input-form-submit" class="button button--accent">
+      <.action type="submit" id="native-input-form-submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -1021,7 +1110,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.form_full_fields variant={:native} id_prefix="native-input-native" name_prefix="profile" />
-      <.action type="submit" id="native-input-native-submit" class="button button--accent">
+      <.action type="submit" id="native-input-native-submit" class="button ui-accent">
         Submit
       </.action>
     </form>
@@ -1040,7 +1129,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
       class="flex flex-col gap-6 w-full max-w-md"
     >
       <.form_full_fields variant={:ecto} id_prefix="native-input-live" f={@form} />
-      <.action type="submit" id="native-input-live-submit" class="button button--accent">
+      <.action type="submit" id="native-input-live-submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -1069,7 +1158,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.form_full_fields variant={:ecto} id_prefix="native-input-phoenix" f={f} />
-      <.action type="submit" id="native-input-form-phoenix-submit" class="button button--accent">
+      <.action type="submit" id="native-input-form-phoenix-submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -1090,7 +1179,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
       phx-submit="save"
     >
       <.form_full_fields variant={:ecto} id_prefix="native-input-live" f={@form} />
-      <.action type="submit" id="native-input-live-submit" class="button button--accent">
+      <.action type="submit" id="native-input-live-submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -1110,7 +1199,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
       class="flex flex-col gap-6 w-full max-w-md"
     >
       <.form_full_fields variant={:ecto} id_prefix="native-input-live-phoenix" f={@form} />
-      <.action type="submit" id="native-input-live-form-phoenix-submit" class="button button--accent">
+      <.action type="submit" id="native-input-live-form-phoenix-submit" class="button ui-accent">
         Submit
       </.action>
     </.form>

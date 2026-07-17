@@ -9,6 +9,8 @@ defmodule E2eWeb.SelectFormLive do
 
   @phoenix_form_id "select-live-form-phoenix"
   @ecto_form_id "select-live-form-ecto"
+  @ecto_controlled_form_id "select-live-form-ecto-controlled"
+  @ecto_invalid_form_id "select-live-form-ecto-invalid"
 
   @impl true
   def mount(_params, _session, socket) do
@@ -20,6 +22,10 @@ defmodule E2eWeb.SelectFormLive do
      |> assign(:live_phoenix_elixir, SelectDemo.form_doc_live_phoenix_elixir())
      |> assign(:live_ecto_heex, SelectDemo.form_doc_live_ecto_heex())
      |> assign(:live_ecto_elixir, SelectDemo.form_doc_live_ecto_elixir())
+     |> assign(:live_ecto_controlled_heex, SelectDemo.form_doc_live_ecto_controlled_heex())
+     |> assign(:live_ecto_controlled_elixir, SelectDemo.form_doc_live_ecto_controlled_elixir())
+     |> assign(:live_ecto_invalid_heex, SelectDemo.form_doc_live_ecto_invalid_heex())
+     |> assign(:live_ecto_invalid_elixir, SelectDemo.form_doc_live_ecto_invalid_elixir())
      |> assign_forms()}
   end
 
@@ -28,13 +34,22 @@ defmodule E2eWeb.SelectFormLive do
       Phoenix.Component.to_form(%{"country" => ""}, as: :select_phoenix, id: @phoenix_form_id)
 
     ecto_form =
-      %SelectForm{}
-      |> SelectForm.changeset_validate(%{})
+      change_select(%{})
       |> Phoenix.Component.to_form(as: :select_ecto, id: @ecto_form_id)
+
+    ecto_controlled_form =
+      change_select(%{})
+      |> Phoenix.Component.to_form(as: :select_ecto_controlled, id: @ecto_controlled_form_id)
+
+    ecto_invalid_form =
+      change_select(%{})
+      |> Phoenix.Component.to_form(as: :select_ecto_invalid, id: @ecto_invalid_form_id)
 
     socket
     |> assign(:phoenix_form, phoenix_form)
     |> assign(:ecto_form, ecto_form)
+    |> assign(:ecto_controlled_form, ecto_controlled_form)
+    |> assign(:ecto_invalid_form, ecto_invalid_form)
   end
 
   @impl true
@@ -54,19 +69,71 @@ defmodule E2eWeb.SelectFormLive do
   end
 
   @impl true
-  def handle_event("select_country_changed", %{"value" => value}, socket) do
-    country = List.first(value) || ""
-    validate_ecto(socket, %{"country" => country})
+  def handle_event("validate", %{"select_ecto" => params}, socket) do
+    {:noreply, validate_form(socket, params, :ecto_form, :select_ecto, @ecto_form_id)}
   end
 
   @impl true
-  def handle_event("validate", %{"select_ecto" => params}, socket) do
-    validate_ecto(socket, params)
+  def handle_event("validate_controlled", %{"select_ecto_controlled" => params}, socket) do
+    {:noreply,
+     validate_form(
+       socket,
+       params,
+       :ecto_controlled_form,
+       :select_ecto_controlled,
+       @ecto_controlled_form_id
+     )}
+  end
+
+  @impl true
+  def handle_event("validate_invalid", %{"select_ecto_invalid" => params}, socket) do
+    {:noreply,
+     validate_form(
+       socket,
+       params,
+       :ecto_invalid_form,
+       :select_ecto_invalid,
+       @ecto_invalid_form_id
+     )}
   end
 
   @impl true
   def handle_event("save", %{"select_ecto" => params}, socket) do
-    case SelectForm.changeset_validate(%SelectForm{}, params) do
+    save_form(socket, params, :ecto_form, :select_ecto, @ecto_form_id)
+  end
+
+  @impl true
+  def handle_event("save_controlled", %{"select_ecto_controlled" => params}, socket) do
+    save_form(
+      socket,
+      params,
+      :ecto_controlled_form,
+      :select_ecto_controlled,
+      @ecto_controlled_form_id
+    )
+  end
+
+  @impl true
+  def handle_event("save_invalid", %{"select_ecto_invalid" => params}, socket) do
+    save_form(socket, params, :ecto_invalid_form, :select_ecto_invalid, @ecto_invalid_form_id)
+  end
+
+  defp change_select(attrs), do: SelectForm.changeset(%SelectForm{}, attrs)
+
+  defp validate_form(socket, params, form_key, form_as, form_id) do
+    assign(
+      socket,
+      form_key,
+      Phoenix.Component.to_form(change_select(params),
+        action: :validate,
+        as: form_as,
+        id: form_id
+      )
+    )
+  end
+
+  defp save_form(socket, params, form_key, form_as, form_id) do
+    case change_select(params) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
 
@@ -76,44 +143,18 @@ defmodule E2eWeb.SelectFormLive do
            duration: 5000
          )
          |> assign(
-           :ecto_form,
-           Phoenix.Component.to_form(
-             SelectForm.changeset_validate(%SelectForm{}, params),
-             as: :select_ecto,
-             id: @ecto_form_id
-           )
+           form_key,
+           Phoenix.Component.to_form(change_select(params), as: form_as, id: form_id)
          )}
 
       %Ecto.Changeset{} = changeset ->
         {:noreply,
          assign(
            socket,
-           :ecto_form,
-           Phoenix.Component.to_form(changeset,
-             action: :insert,
-             as: :select_ecto,
-             id: @ecto_form_id
-           )
+           form_key,
+           Phoenix.Component.to_form(changeset, action: :insert, as: form_as, id: form_id)
          )}
     end
-  end
-
-  defp validate_ecto(socket, params) do
-    changeset =
-      %SelectForm{}
-      |> SelectForm.changeset_validate(params)
-      |> Map.put(:action, :validate)
-
-    {:noreply,
-     assign(
-       socket,
-       :ecto_form,
-       Phoenix.Component.to_form(changeset,
-         action: :validate,
-         as: :select_ecto,
-         id: @ecto_form_id
-       )
-     )}
   end
 
   @impl true
@@ -145,6 +186,54 @@ defmodule E2eWeb.SelectFormLive do
         >
           <:preview>
             <SelectDemo.form_preview_live_ecto form={@ecto_form} />
+          </:preview>
+        </.demo_section>
+
+        <.demo_section
+          id="select-live-form-ecto-controlled-section"
+          title={~t"Phoenix Form + Ecto + Controlled"}
+          code_tabs={[
+            %{
+              value: "heex",
+              label: ~t"Heex",
+              language: :heex,
+              code: @live_ecto_controlled_heex
+            },
+            %{
+              value: "elixir",
+              label: ~t"Elixir",
+              language: :elixir,
+              code: @live_ecto_controlled_elixir
+            },
+            %{value: "ecto", label: ~t"Ecto", language: :elixir, code: @form_ecto}
+          ]}
+        >
+          <:preview>
+            <SelectDemo.form_preview_live_ecto_controlled form={@ecto_controlled_form} />
+          </:preview>
+        </.demo_section>
+
+        <.demo_section
+          id="select-live-form-ecto-invalid-section"
+          title={~t"Phoenix Form + Ecto + Invalid"}
+          code_tabs={[
+            %{
+              value: "heex",
+              label: ~t"Heex",
+              language: :heex,
+              code: @live_ecto_invalid_heex
+            },
+            %{
+              value: "elixir",
+              label: ~t"Elixir",
+              language: :elixir,
+              code: @live_ecto_invalid_elixir
+            },
+            %{value: "ecto", label: ~t"Ecto", language: :elixir, code: @form_ecto}
+          ]}
+        >
+          <:preview>
+            <SelectDemo.form_preview_live_ecto_invalid form={@ecto_invalid_form} />
           </:preview>
         </.demo_section>
       </.demo_page>

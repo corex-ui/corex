@@ -16,7 +16,7 @@ defmodule E2eWeb.ModeToggle do
     ~H"""
     <.toggle
       id={@id}
-      class="toggle toggle--sm"
+      class="toggle ui-size-sm"
       data-toggle-dual-label
       pressed={@mode == "dark"}
       on_pressed_change_client="phx:set-mode"

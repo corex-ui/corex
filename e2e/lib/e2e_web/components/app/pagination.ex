@@ -20,7 +20,7 @@ defmodule E2eWeb.App.Pagination do
       <.navigate
         :if={@prev}
         to={@prev.to}
-        class="button button--sm flex items-center gap-2 rounded-e-none max-w-[min(100%,18rem)] min-w-0"
+        class="button ui-size-sm flex items-center gap-2 rounded-e-none max-w-[min(100%,18rem)] min-w-0"
       >
         <.heroicon name="hero-chevron-left" class="shrink-0" title={@prev.label} />
       </.navigate>
@@ -28,7 +28,7 @@ defmodule E2eWeb.App.Pagination do
       <.navigate
         :if={@next}
         to={@next.to}
-        class="button button--sm flex items-center gap-2 not-only:border-s-0 rounded-s-none max-w-[min(100%,18rem)] min-w-0"
+        class="button ui-size-sm flex items-center gap-2 not-only:border-s-0 rounded-s-none max-w-[min(100%,18rem)] min-w-0"
       >
         <.heroicon name="hero-chevron-right" class="shrink-0" title={@next.label} />
       </.navigate>
@@ -52,7 +52,7 @@ defmodule E2eWeb.App.Pagination do
         <.navigate
           :if={@prev}
           to={@prev.to}
-          class="button button--sm flex items-center gap-2 max-w-full min-w-0"
+          class="button ui-size-sm flex items-center gap-2 max-w-full min-w-0"
         >
           <.heroicon name="hero-chevron-left" class="shrink-0" title={@prev.label} />
           <span class="truncate text-start">{@prev.label}</span>
@@ -63,7 +63,7 @@ defmodule E2eWeb.App.Pagination do
         <.navigate
           :if={@next}
           to={@next.to}
-          class="button button--sm flex items-center gap-2 max-w-full min-w-0"
+          class="button ui-size-sm flex items-center gap-2 max-w-full min-w-0"
         >
           <span class="truncate text-end">{@next.label}</span>
           <.heroicon name="hero-chevron-right" class="shrink-0" title={@next.label} />

@@ -20,7 +20,7 @@ defmodule CorexWeb.Dialog do
               content: [
                 %{
                   inner_block:
-                    ~S|<p>Dialog content goes here. You can add any content you want inside the dialog.</p> <.action phx-click={Corex.Dialog.set_open("my-dialog", false)} class="button button--sm">API Close Dialog</.action>|
+                    ~S|<p>Dialog content goes here. You can add any content you want inside the dialog.</p> <.action phx-click={Corex.Dialog.set_open("my-dialog", false)} class="button ui-size-sm">API Close Dialog</.action>|
                 }
               ],
               close_trigger: [%{inner_block: ~S(<.heroicon name="hero-x-mark" class="icon" />)}]

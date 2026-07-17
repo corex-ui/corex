@@ -2,11 +2,22 @@
 
 ## Introduction
 
-You add [Corex](installation.html) to a [Tableau](https://hex.pm/packages/tableau) static site: HEEx templates, Esbuild, Tailwind, and lazy Corex hooks over `LiveSocket`. When you finish, you can render Corex components on static pages.
+[Corex](installation.html) on a [Tableau](https://hex.pm/packages/tableau) static site: HEEx templates, Esbuild, Tailwind, and lazy Corex hooks over `LiveSocket`.
+
+Install the archives once, then scaffold a site:
+
+```bash
+mix archive.install hex tableau_new
+mix archive.install hex corex_new
+mix corex.tableau.new my_site
+# optional: --mode --theme --mcp --dev ../corex
+```
+
+The default scaffold mirrors `mix corex.new` patterns (design assets, ESM Esbuild, `use Corex`, lazy hooks) plus a Blog link and one sample post. It is not the Soonex marketing landing. For a full marketing showcase built on Tableau + Corex, see [corex-ui/soonex](https://github.com/corex-ui/soonex) and [corex-ui/soonex_i18n](https://github.com/corex-ui/soonex_i18n).
 
 Optional follow-ups: [Tableau Theming](tableau_theming.html), [Tableau Mode](tableau_mode.html), [Tableau Localize](tableau_localize.html). For Phoenix apps with cookies and plugs, see [Dark mode](dark_mode.html), [Theming](theming.html), and [Localize](localize.html).
 
-Reference templates: [corex-ui/soonex](https://github.com/corex-ui/soonex) and [corex-ui/soonex_i18n](https://github.com/corex-ui/soonex_i18n).
+Run **`mix help corex.tableau.new`** or see **`Mix.Tasks.Corex.Tableau.New`** for every Corex-only flag.
 
 ## Before you start
 
@@ -14,33 +25,29 @@ Reference templates: [corex-ui/soonex](https://github.com/corex-ui/soonex) and [
 | ----------- | ----- |
 | Elixir ~> 1.15 | Match your Tableau version |
 | Node.js | For Esbuild and npm deps |
-| `mix tableau.new` | HEEx + Esbuild + Tailwind template |
+| `tableau_new` + `corex_new` archives | Or an existing Tableau HEEx site for the Manual path |
 
 ## How it works
 
-1. **`mix corex.design`** copies token and component CSS into `assets/corex/`.
+1. **`mix corex.design.build`** generates token and component CSS into `assets/corex/` via the `corex_design` dependency.
 2. **Esbuild** bundles `assets/js/site.js` as ESM with splitting into `_site/js/`.
 3. **`RootLayout`** loads CSRF meta, `site.css`, and `type="module"` for `site.js`.
 4. **`LiveSocket`** registers only the Corex hooks you import (lazy factories keep chunks small).
 
-<!-- tabs-open -->
+## Manual
 
-### Create the site
+For an existing Tableau site (HEEx + Esbuild + Tailwind), add Corex by hand.
 
-```bash
-mix tableau.new my_site --template heex --js esbuild --css tailwind
-cd my_site
-```
-
-Add Corex to `mix.exs`:
+Add Corex and Corex Design to `mix.exs`:
 
 ```elixir
-{:corex, "~> 0.1.0"}
+{:corex, "~> 0.2"},
+{:corex_design, "~> 0.2", runtime: false, only: :dev},
 ```
 
 ```bash
 mix deps.get
-mix corex.design
+mix corex.design.build
 ```
 
 Configure Esbuild in `config/config.exs` (ESM + splitting for dynamic hook imports):
@@ -60,16 +67,13 @@ Import Corex CSS in `assets/css/site.css`:
 
 ```css
 @import "tailwindcss";
-
-@import "../corex/main.css";
-@import "../corex/theme/neo.css";
-
-@import "../corex/components/typo.css";
-@import "../corex/components/layout.css";
-@import "../corex/components/accordion.css";
+@plugin "../vendor/heroicons";
+@import "../corex/corex.css";
 ```
 
-Add `typo` and `layout` classes on `<body>` in your root layout (see below).
+Add `typo` (and layout utilities as needed) on `<body>` in your root layout.
+
+<!-- tabs-open -->
 
 ### Hooks lazy
 
@@ -177,7 +181,7 @@ In a page template:
 
 ## Optional: MCP on Bandit
 
-Tableau has no Phoenix endpoint. Run [MCP](mcp.html) on a separate Bandit port (default `4004`).
+Tableau has no Phoenix endpoint. Run [MCP](mcp.html) on a separate Bandit port (default `4004`). With `mix corex.tableau.new`, MCP is on by default (`--no-mcp` to skip).
 
 `lib/my_app/mcp_plug.ex`:
 
@@ -237,6 +241,6 @@ Point your MCP client at `http://localhost:4004`.
 ## Related
 
 - [Tableau Theming](tableau_theming.html), [Tableau Mode](tableau_mode.html), [Tableau Localize](tableau_localize.html)
-- [Manual installation](manual_installation.html) — Esbuild, `mix corex.design`, `use Corex`
+- [Manual installation](manual_installation.html) — Esbuild, `corex_design`, `use Corex`
 - [MCP](mcp.html) — plug behavior and Phoenix endpoint setup
 - [Installation](installation.html) — `mix corex.new` for full Phoenix apps

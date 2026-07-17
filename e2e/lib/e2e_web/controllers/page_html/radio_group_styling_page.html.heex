@@ -9,17 +9,42 @@
     id="radio-group-styling-page"
     title={~t"Radio Group · Style"}
     subtitle={
-      ~t"Semantic colors, density steps, and width utilities via modifier classes on the radio group."
+      ~t"Semantic colors, density steps, corner radius, and width utilities via modifier classes on the radio group."
     }
   >
     <.demo_section
       id="radio-group-styling-color"
-      title={~t"Color"}
+      title={~t"Semantic"}
       code={E2eWeb.Demos.RadioGroupDemo.styling_color_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="radio-group" axis={:semantic} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.RadioGroupDemo.styling_color_example />
       </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="radio-group-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.RadioGroupDemo.styling_variant_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="radio-group" axis={:variant} />
+      </:description>
+      <:preview><E2eWeb.Demos.RadioGroupDemo.styling_variant_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="radio-group-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.RadioGroupDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <.variant_matrix_description host="radio-group" />
+      </:description>
+      <:preview><E2eWeb.Demos.RadioGroupDemo.styling_variant_matrix_example /></:preview>
     </.demo_section>
 
     <.demo_section
@@ -27,16 +52,48 @@
       title={~t"Size"}
       code={E2eWeb.Demos.RadioGroupDemo.styling_size_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="radio-group" axis={:size} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.RadioGroupDemo.styling_size_example />
       </:preview>
     </.demo_section>
 
     <.demo_section
+      id="radio-group-styling-rounded"
+      title={~t"Rounded"}
+      code={E2eWeb.Demos.RadioGroupDemo.styling_rounded_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="radio-group" axis={:radius} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.RadioGroupDemo.styling_rounded_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="radio-group-styling-width"
+      title={~t"Width"}
+      code={E2eWeb.Demos.RadioGroupDemo.styling_width_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="radio-group" axis={:width} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.RadioGroupDemo.styling_width_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
       id="radio-group-styling-max-width"
-      title={~t"Max Width"}
+      title={~t"Max width"}
       code={E2eWeb.Demos.RadioGroupDemo.styling_max_width_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="radio-group" axis={:max_width} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.RadioGroupDemo.styling_max_width_example />
       </:preview>

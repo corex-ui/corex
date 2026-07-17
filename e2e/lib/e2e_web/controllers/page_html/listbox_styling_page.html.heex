@@ -4,17 +4,42 @@
     id="listbox-styling-page"
     title={~t"Listbox · Style"}
     subtitle={
-      ~t"Selected-item colors, density, and width via modifier classes and Tailwind max-w-* on the listbox root (vertical by default; horizontal uses a wider default max width)."
+      ~t"Selected-item colors, density, corner radius, and width via modifier classes and Tailwind max-w-* on the listbox root (vertical by default; horizontal uses a wider default max width)."
     }
   >
     <.demo_section
       id="listbox-styling-color"
-      title={~t"Color"}
+      title={~t"Semantic"}
       code={E2eWeb.Demos.ListboxDemo.styling_color_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="listbox" axis={:semantic} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.ListboxDemo.styling_color_example />
       </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="listbox-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.ListboxDemo.styling_variant_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="listbox" axis={:variant} />
+      </:description>
+      <:preview><E2eWeb.Demos.ListboxDemo.styling_variant_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="listbox-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.ListboxDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <.variant_matrix_description host="listbox" />
+      </:description>
+      <:preview><E2eWeb.Demos.ListboxDemo.styling_variant_matrix_example /></:preview>
     </.demo_section>
 
     <.demo_section
@@ -22,8 +47,24 @@
       title={~t"Size"}
       code={E2eWeb.Demos.ListboxDemo.styling_size_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="listbox" axis={:size} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.ListboxDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="listbox-styling-rounded"
+      title={~t"Rounded"}
+      code={E2eWeb.Demos.ListboxDemo.styling_rounded_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="listbox" axis={:radius} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.ListboxDemo.styling_rounded_example />
       </:preview>
     </.demo_section>
 
@@ -32,6 +73,9 @@
       title={~t"Max width"}
       code={E2eWeb.Demos.ListboxDemo.styling_max_width_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="listbox" axis={:max_width} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.ListboxDemo.styling_max_width_example />
       </:preview>

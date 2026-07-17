@@ -28,7 +28,7 @@
         final_focus={"dialog:user-delete-#{@user.id}:trigger"}
       >
         <:trigger
-          class="button button--alert button--square"
+          class="button ui-alert ui-trigger--square"
           aria_label="Delete user"
           title="Delete user"
         >
@@ -41,7 +41,7 @@
             <.action
               id={"user-delete-#{@user.id}-cancel"}
               phx-click={Corex.Dialog.set_open("user-delete-#{@user.id}", false)}
-              class="button button--sm button--ghost"
+              class="button ui-size-sm"
             >
               Cancel
             </.action>
@@ -49,7 +49,7 @@
               id={"user-delete-#{@user.id}-confirm"}
               to={~p"/users/#{@user}"}
               method="delete"
-              class="button button--sm button--alert"
+              class="button ui-size-sm ui-alert"
             >
               Delete
             </.navigate>

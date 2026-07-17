@@ -34,11 +34,11 @@ Tokens define the palette and scale once. Ink, borders, spacing, radius, type, e
 
 Utilities are short class names that compose tokens into patterns: `ui-input` is everything inputs need. `ui-trigger` is everything triggers need. `ui-item` is everything list rows need. `ui-content` is the surface a floating panel sits on. You almost never write these classes by hand. Component CSS uses them inside `@apply` rules and aims them at the right `data-part`.
 
-Modifiers are how you tune one instance without forking the whole system. They live on the root class. A button is `button`. An accent button is `button button--accent`. A large rounded button is `button button--accent button--lg button--rounded-lg`. The modifier system has four axes (color, size, radius, type), and they map directly to CSS variables under the hood.
+Modifiers are how you tune one instance without forking the whole system. They live on the root class. A button is `button`. An accent button is `button ui-accent`. A large rounded button is `button ui-accent ui-size-lg ui-rounded-lg`. The modifier system has four axes (color, size, radius, type), and they map directly to CSS variables under the hood.
 
 ```heex
 <.accordion
-  class="accordion accordion--accent accordion--lg accordion--rounded-lg"
+  class="accordion ui-accent ui-size-lg ui-rounded-lg"
   id="faq"
   items={@topics}
 />
@@ -72,20 +72,16 @@ That is what makes it possible to swap `data-theme` or `data-mode` on `<html>` a
 
 You are not asking the palette to be pretty in two modes. You are asking it to clear an audit in two modes, and the generation pipeline is doing the work.
 
-If a label ever fails an audit, the answer is almost always to switch a theme, switch a mode, or switch a modifier (`button--accent` vs `button--muted`), before reaching for any override. Tokens are the source. Overrides are the symptom.
+If a label ever fails an audit, the answer is almost always to switch a theme, switch a mode, or switch a modifier (`ui-accent` vs default neutral subtle), before reaching for any override. Tokens are the source. Overrides are the symptom.
 
 ## A thin `site.css`
 
-The setup is small enough to fit in a paragraph. Run `mix corex.design` once. Files land under `assets/corex/`. In `app.css`, import the Corex base, the theme files you want to expose, the typography, the layout, and one file per component you render. Point Tailwind at the copied directory. Set `data-theme` and `data-mode` on `<html>`. Set `class="typo layout"` on `<body>`. That is the whole story.
+The setup is small enough to fit in a paragraph. Add the `corex_design` dependency and run `mix corex.design.build`. Files land under `assets/corex/`. In `app.css`, import the Corex base, the theme files you want to expose, and the generated `components.css` entry (built from the `components:` list in config). Point Tailwind at the generated directory. Set `data-theme` and `data-mode` on `<html>`. Set `class="typo layout"` on `<body>`. That is the whole story.
 
 ```css
 @import "../corex/main.css";
 @import "../corex/theme/neo.css";
-@import "../corex/components/typo.css";
-@import "../corex/components/layout.css";
-@import "../corex/components/accordion.css";
-@import "../corex/components/combobox.css";
-@import "../corex/components/button.css";
+@import "../corex/components.css";
 ```
 
 If your `app.css` still loads daisyUI from stock `phx.new`, remove it. Two token systems fighting for the same utility names is the most reliable way to make both unhappy.

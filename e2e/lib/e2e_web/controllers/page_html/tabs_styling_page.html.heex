@@ -14,12 +14,37 @@
   >
     <.demo_section
       id="tabs-styling-color"
-      title={~t"Color"}
+      title={~t"Semantic"}
       code={E2eWeb.Demos.TabsDemo.styling_color_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="tabs" axis={:semantic} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.TabsDemo.styling_color_example />
       </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="tabs-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.TabsDemo.styling_variant_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="tabs" axis={:variant} />
+      </:description>
+      <:preview><E2eWeb.Demos.TabsDemo.styling_variant_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="tabs-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.TabsDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <.variant_matrix_description host="tabs" />
+      </:description>
+      <:preview><E2eWeb.Demos.TabsDemo.styling_variant_matrix_example /></:preview>
     </.demo_section>
 
     <.demo_section
@@ -27,26 +52,22 @@
       title={~t"Size"}
       code={E2eWeb.Demos.TabsDemo.styling_size_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="tabs" axis={:size} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.TabsDemo.styling_size_example />
       </:preview>
     </.demo_section>
 
     <.demo_section
-      id="tabs-styling-text"
-      title={~t"Text"}
-      code={E2eWeb.Demos.TabsDemo.styling_text_code()}
-    >
-      <:preview>
-        <E2eWeb.Demos.TabsDemo.styling_text_example />
-      </:preview>
-    </.demo_section>
-
-    <.demo_section
       id="tabs-styling-radius"
-      title={~t"Radius"}
+      title={~t"Rounded"}
       code={E2eWeb.Demos.TabsDemo.styling_radius_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="tabs" axis={:radius} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.TabsDemo.styling_radius_example />
       </:preview>
@@ -57,6 +78,9 @@
       title={~t"Max width"}
       code={E2eWeb.Demos.TabsDemo.styling_max_width_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="tabs" axis={:max_width} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.TabsDemo.styling_max_width_example />
       </:preview>

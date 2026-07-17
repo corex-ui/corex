@@ -1,5 +1,4 @@
 @import "../main.css";
-@import "./scrollbar.css";
 
 @layer components {
 
@@ -10,7 +9,6 @@
  .accordion {
  width: 100%;
  max-width: var(--container-md);
- --accordion-scrollbar-size: calc(var(--spacing-space) * 0.6);
  }
 
  .accordion [data-scope="accordion"][data-part="root"] {
@@ -101,21 +99,14 @@
  }
 
  .accordion [data-scope="accordion"][data-part="item-text"] {
- @apply scrollbar;
-
  flex: 1 1 auto;
  min-width: 0;
  width: auto;
  display: flex;
  align-items: center;
  gap: var(--spacing-space);
- overflow-x: auto;
+ overflow-x: clip;
  overflow-y: hidden;
-
- &::-webkit-scrollbar {
- width: var(--accordion-scrollbar-size);
- height: var(--accordion-scrollbar-size);
- }
  }
 
  .accordion [data-scope="accordion"][data-part="item-trigger"][data-orientation="horizontal"] [data-scope="accordion"][data-part="item-text"] {
@@ -123,7 +114,7 @@
  min-width: 0;
  align-items: center;
  overflow-x: hidden;
- overflow-y: auto;
+ overflow-y: clip;
  }
 
  .accordion [data-scope="accordion"][data-part="item-indicator"] {
@@ -169,19 +160,11 @@
  }
 
  .accordion [data-scope="accordion"][data-part="item-content"] > p {
- @apply ui-content scrollbar;
+ @apply ui-content;
 
  margin: 0;
  margin-bottom: var(--spacing-space);
- max-height: calc(var(--spacing) * 80);
  min-width: 0;
- overflow: auto;
- scrollbar-gutter: stable;
-
- &::-webkit-scrollbar {
- width: var(--accordion-scrollbar-size);
- height: var(--accordion-scrollbar-size);
- }
  }
 
  .accordion [data-scope="accordion"][data-part="root"][data-async] [data-scope="accordion"][data-part="item-text"] > *,

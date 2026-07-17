@@ -1,6 +1,7 @@
 defmodule E2eWeb.Demos.FileUploadDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.DemoScales
   alias Phoenix.LiveView.JS
 
   def anatomy_minimal_code do
@@ -175,7 +176,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           {msg}
         </:error>
       </.file_upload>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" class="button ui-accent">Submit</.action>
     </.form>
     """
   end
@@ -210,7 +211,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           {msg}
         </:error>
       </.file_upload>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -231,7 +232,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           {msg}
         </:error>
       </.file_upload>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" class="button ui-accent">Submit</.action>
     </.form>
     """
   end
@@ -257,7 +258,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           {msg}
         </:error>
       </.file_upload>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" class="button ui-accent">Submit</.action>
     </.form>
     """
   end
@@ -280,7 +281,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           <.heroicon name="hero-x-mark" />
         </:close>
       </.file_upload>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" class="button ui-accent">Submit</.action>
     </form>
     """
   end
@@ -321,7 +322,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           {msg}
         </:error>
       </.file_upload>
-      <.action type="submit" id="file-upload-cs-submit" class="button button--accent">
+      <.action type="submit" id="file-upload-cs-submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -350,7 +351,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           {msg}
         </:error>
       </.file_upload>
-      <.action type="submit" id="file-upload-val-submit" class="button button--accent">
+      <.action type="submit" id="file-upload-val-submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -375,7 +376,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           <.heroicon name="hero-x-mark" />
         </:close>
       </.file_upload>
-      <.action type="submit" id="file-upload-native-submit" class="button button--accent">
+      <.action type="submit" id="file-upload-native-submit" class="button ui-accent">
         Submit
       </.action>
     </form>
@@ -384,7 +385,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def api_open_phoenix_binding_heex do
     ~S"""
-    <.action phx-click={Corex.FileUpload.open_file_picker("file-upload-api-phx")} class="button button--sm">
+    <.action phx-click={Corex.FileUpload.open_file_picker("file-upload-api-phx")} class="button ui-size-sm">
       Open picker
     </.action>
     <.file_upload name="demo[]" class="file-upload" max_files={3}>
@@ -398,7 +399,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def api_open_server_heex do
     ~S"""
-    <.action phx-click="api_fu_open_server" phx-value-id="file-upload-api-server" class="button button--sm">
+    <.action phx-click="api_fu_open_server" phx-value-id="file-upload-api-server" class="button ui-size-sm">
       Open picker
     </.action>
     <.file_upload name="demo[]" class="file-upload" max_files={3}>
@@ -436,7 +437,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     <div class="flex flex-wrap gap-2 mb-4 items-center w-full justify-center">
       <.action
         phx-click={Corex.FileUpload.open_file_picker("file-upload-api-phx")}
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Open picker
       </.action>
@@ -458,7 +459,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       <.action
         phx-click="api_fu_open_server"
         phx-value-id="file-upload-api-server"
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Open picker
       </.action>
@@ -479,7 +480,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     <div class="flex flex-wrap gap-2 mb-4 items-center w-full justify-center">
       <.action
         type="button"
-        class="button button--sm"
+        class="button ui-size-sm"
         phx-click={JS.dispatch("corex:file-upload:open", to: "#file-upload-api-js", bubbles: false)}
       >
         Open picker (JS)
@@ -554,7 +555,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           <.heroicon name="hero-x-mark" />
         </:close>
       </.file_upload_live>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" class="button ui-accent">Submit</.action>
     </form>
     """
   end
@@ -644,7 +645,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           <.heroicon name="hero-x-mark" />
         </:close>
       </.file_upload>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" class="button ui-accent">Submit</.action>
     </.form>
     """
   end
@@ -672,7 +673,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           <.heroicon name="hero-x-mark" />
         </:close>
       </.file_upload>
-      <.action type="submit" id="file-upload-live-phoenix-submit" class="button button--accent">
+      <.action type="submit" id="file-upload-live-phoenix-submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -700,7 +701,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           {msg}
         </:error>
       </.file_upload>
-      <.action type="submit" id="file-upload-live-ecto-submit" class="button button--accent">
+      <.action type="submit" id="file-upload-live-ecto-submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -788,6 +789,365 @@ defmodule E2eWeb.Demos.FileUploadDemo do
         end
       end
     end
+    """
+  end
+
+  def styling_color_code do
+    close = styling_close_code()
+
+    """
+    <.file_upload name="document" class="file-upload">
+      <:label>Default</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" class="file-upload ui-accent">
+      <:label>Accent</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" class="file-upload ui-brand">
+      <:label>Brand</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" class="file-upload ui-alert">
+      <:label>Alert</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" class="file-upload ui-info">
+      <:label>Info</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" class="file-upload ui-success">
+      <:label>Success</:label>
+    #{close}
+    </.file_upload>
+    """
+  end
+
+  def styling_color_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-4 max-w-md">
+      <.file_upload id="file-upload-style-color-default" name="document" class="file-upload w-full">
+        <:label>Default</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+      <.file_upload
+        id="file-upload-style-color-accent"
+        name="document"
+        class="file-upload ui-accent w-full"
+      >
+        <:label>Accent</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+      <.file_upload
+        id="file-upload-style-color-brand"
+        name="document"
+        class="file-upload ui-brand w-full"
+      >
+        <:label>Brand</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+      <.file_upload
+        id="file-upload-style-color-alert"
+        name="document"
+        class="file-upload ui-alert w-full"
+      >
+        <:label>Alert</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+      <.file_upload
+        id="file-upload-style-color-info"
+        name="document"
+        class="file-upload ui-info w-full"
+      >
+        <:label>Info</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+      <.file_upload
+        id="file-upload-style-color-success"
+        name="document"
+        class="file-upload ui-success w-full"
+      >
+        <:label>Success</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+    </div>
+    """
+  end
+
+  def styling_variant_code do
+    close = styling_close_code()
+
+    """
+    <.file_upload name="document" class="file-upload">
+      <:label>Subtle (default)</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" class="file-upload ui-solid">
+      <:label>Solid</:label>
+    #{close}
+    </.file_upload>
+
+    """
+  end
+
+  def styling_variant_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-4 max-w-md">
+      <.file_upload id="file-upload-style-variant-subtle" name="document" class="file-upload w-full">
+        <:label>Subtle (default)</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+      <.file_upload
+        id="file-upload-style-variant-solid"
+        name="document"
+        class="file-upload ui-solid w-full"
+      >
+        <:label>Solid</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+    </div>
+    """
+  end
+
+  def styling_variant_matrix_code do
+    close = styling_close_code()
+
+    for semantic <- DemoScales.styling_semantic_axis_steps("file-upload"),
+        variant <- DemoScales.styling_variant_axis_steps("file-upload") do
+      class = DemoScales.join_matrix_modifiers("file-upload", semantic.modifier, variant.modifier)
+
+      """
+      <.file_upload name="document" class="#{class}">
+        <:label>#{semantic.label}</:label>
+      #{close}
+      </.file_upload>
+      """
+    end
+    |> DemoScales.join_code()
+  end
+
+  def styling_variant_matrix_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("file-upload"))
+      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("file-upload"))
+
+    ~H"""
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+      <div class="grid grid-cols-4 gap-space items-start min-w-max">
+        <div :for={semantic <- @matrix_semantics} class="contents">
+          <.file_upload
+            :for={variant <- @matrix_variants}
+            name="document"
+            class={DemoScales.join_matrix_modifiers("file-upload", semantic.modifier, variant.modifier) <> " w-full"}
+          >
+            <:label>{semantic.label}</:label>
+            <:close><.heroicon name="hero-x-mark" /></:close>
+          </.file_upload>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  def styling_size_code do
+    close = styling_close_code()
+
+    """
+    <.file_upload name="document" class="file-upload ui-size-sm">
+      <:label>SM</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" class="file-upload ui-size-md">
+      <:label>MD</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" class="file-upload ui-size-lg">
+      <:label>LG</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" class="file-upload ui-size-xl">
+      <:label>XL</:label>
+    #{close}
+    </.file_upload>
+    """
+  end
+
+  def styling_size_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-4 max-w-md">
+      <.file_upload
+        id="file-upload-style-sm"
+        name="document"
+        class="file-upload ui-size-sm w-full"
+      >
+        <:label>SM</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+      <.file_upload
+        id="file-upload-style-md"
+        name="document"
+        class="file-upload ui-size-md w-full"
+      >
+        <:label>MD</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+      <.file_upload
+        id="file-upload-style-lg"
+        name="document"
+        class="file-upload ui-size-lg w-full"
+      >
+        <:label>LG</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+      <.file_upload
+        id="file-upload-style-xl"
+        name="document"
+        class="file-upload ui-size-xl w-full"
+      >
+        <:label>XL</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+    </div>
+    """
+  end
+
+  def styling_rounded_code do
+    close = styling_close_code()
+
+    """
+    <.file_upload name="document" class="file-upload ui-rounded-none">
+      <:label>None</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" class="file-upload ui-rounded-sm">
+      <:label>SM</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" class="file-upload ui-rounded-md">
+      <:label>MD</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" class="file-upload ui-rounded-lg">
+      <:label>LG</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" class="file-upload ui-rounded-xl">
+      <:label>XL</:label>
+    #{close}
+    </.file_upload>
+    <.file_upload name="document" class="file-upload ui-rounded-full">
+      <:label>Full</:label>
+    #{close}
+    </.file_upload>
+    """
+  end
+
+  def styling_rounded_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-4 max-w-md">
+      <.file_upload
+        id="file-upload-style-rounded-none"
+        name="document"
+        class="file-upload ui-rounded-none w-full"
+      >
+        <:label>None</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+      <.file_upload
+        id="file-upload-style-rounded-sm"
+        name="document"
+        class="file-upload ui-rounded-sm w-full"
+      >
+        <:label>SM</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+      <.file_upload
+        id="file-upload-style-rounded-md"
+        name="document"
+        class="file-upload ui-rounded-md w-full"
+      >
+        <:label>MD</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+      <.file_upload
+        id="file-upload-style-rounded-lg"
+        name="document"
+        class="file-upload ui-rounded-lg w-full"
+      >
+        <:label>LG</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+      <.file_upload
+        id="file-upload-style-rounded-xl"
+        name="document"
+        class="file-upload ui-rounded-xl w-full"
+      >
+        <:label>XL</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+      <.file_upload
+        id="file-upload-style-rounded-full"
+        name="document"
+        class="file-upload ui-rounded-full w-full"
+      >
+        <:label>Full</:label>
+        <:close><.heroicon name="hero-x-mark" /></:close>
+      </.file_upload>
+    </div>
+    """
+  end
+
+  def styling_max_width_code do
+    close = styling_close_code()
+
+    DemoScales.max_width_variants("file-upload")
+    |> Enum.map(fn %{label: label, modifier: modifier} ->
+      class = DemoScales.join_block_modifiers("file-upload", modifier)
+
+      """
+      <.file_upload name="document" class="#{class}">
+        <:label>#{label}</:label>
+      #{close}
+      </.file_upload>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_max_width_example(assigns) do
+    assigns = assign(assigns, :max_width_variants, DemoScales.max_width_variants("file-upload"))
+
+    ~H"""
+    <div {DemoScales.preview_scroll_attrs()}>
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
+        <.file_upload
+          id={"file-upload-style-max-#{variant.id}"}
+          name="document"
+          class={DemoScales.join_block_modifiers("file-upload", variant.modifier)}
+        >
+          <:label>{variant.label}</:label>
+          <:close><.heroicon name="hero-x-mark" /></:close>
+        </.file_upload>
+      </div>
+    </div>
+    """
+  end
+
+  defp styling_close_code do
+    """
+      <:close>
+        <.heroicon name="hero-x-mark" />
+      </:close>
     """
   end
 end

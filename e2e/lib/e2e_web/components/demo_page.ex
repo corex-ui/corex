@@ -24,20 +24,21 @@ defmodule E2eWeb.DemoPage do
 
   ## Section copy
 
-  - Do not use the `demo_section` **`:description`** slot for teaching copy.
+  - On **Style** pages, put modifier guidance in each `demo_section` **`:description`** slot via `<.demo_modifier_axis>`.
+  - Elsewhere, do not use **`:description`** for teaching copy.
   - Previews should show the component, not long prose or “test” explanations; keep state in code tabs when possible.
 
   ## Playground pages
 
   - Use **`<.demo_playground>>`** (below) for every `… · Playground` LiveView: one DOM shape (`layout_heading` + `preview` frame + sidebar + canvas). `AccordionPlayLive` is the visual reference; all play pages should render through this component. Source links live on **`demo_page`** only, not in the playground block.
   - **Control strip order (when a control exists for the component):** (1) **Direction** LTR/RTL  -  `<.playground_dir_toggle>` when the component has `dir`; (2) orientation or other `toggle_group` axes; (3) `select` controls; (4) `switch` rows. Not every page has every control; only include what the primitive supports.
-  - **Control strip sizing:** use `--sm` on sidebar controls only (not the canvas demo), e.g. `toggle-group toggle-group--sm`, `select select--sm`, `switch switch--sm`, `checkbox checkbox--sm`, `number-input number-input--sm`, `native-input native-input--sm`.
+  - **Control strip sizing:** use `ui-size-sm` on sidebar controls only (not the canvas demo), e.g. `toggle-group ui-size-sm`, `select ui-size-sm`, `switch ui-size-sm`, `checkbox ui-size-sm`, `number-input ui-size-sm`, `native-input ui-size-sm`.
 
   ## Shell contract (page types)
   ## Shell contract (page types)
 
   - **Anatomy**  -  `<.demo_page path={@path}>>` + one `<.demo_section>` per variant; stable `id` on each section.
-  - **Style**  -  same structure as anatomy; focus on CSS modifier classes and layout.
+  - **Style**  -  same structure as anatomy; focus on CSS modifier classes and layout. On Style pages, only `:fit` host components (see `Corex.Design.ComponentLayout`) get a `Width` section with three rows: intrinsic default, `w-full`, and `w-fit`. `:fill` and `:auto` hosts demonstrate sizing via `Max width` only. Named container steps (`9xs` … `9xl`) appear on the Max width section, not Width. Atomic fit hosts (button, switch, toggle, timer, clipboard, color-picker, date-picker) demo max-width with `w-full`, wide content, and `max-w-*` via `DemoScales.join_block_modifiers/2`.
   - **Form**  -  static submit flow; real field names and assigns.
   - **Playground**  -  `Layouts.app` + `<.demo_playground>>`; optional controls in the **controls** slot when `controls_strip` is true (default), demo in the **canvas** slot. Set `controls_strip={false}` to omit the sidebar (e.g. Toast playground).
   - **API**  -  LiveView; stable element ids; snippets from `E2eWeb.Demos.*`. Prefer `<.demo_section>` with **Preview** and code tabs. The optional **`<.demo_api_row>`** is available for action rows if you need it; most API lives use `demo_section` with `<.action>` only.
@@ -49,7 +50,7 @@ defmodule E2eWeb.DemoPage do
 
   Routing follows `E2eWeb.DocPageMatrix`:
 
-  - **Zag-backed**  -  anatomy (and style when applicable), playground, API, events, patterns where the primitive supports them; optional animation, live form, controlled when routed.
+  - **Zag-backed**  -  anatomy (and style when applicable), playground, API, events, patterns where the primitive supports them; optional animation and live form when routed.
   - **Form + Zag**  -  static **Form** and live-form routes as listed.
   - **Non-Zag** (layout, data table shell, etc.)  -  usually anatomy and style only; **data table** adds a **Pattern** page.
 
@@ -58,14 +59,14 @@ defmodule E2eWeb.DemoPage do
 
   use E2eWeb, :html
 
-  attr :id, :string, required: true
-  attr :title, :string, required: true
-  attr :subtitle, :any, default: nil
-  attr :path, :string, default: nil
-  attr :heading_class, :string, default: "layout-heading max-w-none"
-  attr :class, :string, default: "w-full flex flex-col gap-size"
-  attr :rest, :global
-  slot :inner_block, required: true
+  attr(:id, :string, required: true)
+  attr(:title, :string, required: true)
+  attr(:subtitle, :any, default: nil)
+  attr(:path, :string, default: nil)
+  attr(:heading_class, :string, default: "layout-heading max-w-none")
+  attr(:class, :string, default: "w-full flex flex-col gap-size")
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
 
   def demo_page(assigns) do
     ~H"""
@@ -80,7 +81,187 @@ defmodule E2eWeb.DemoPage do
     """
   end
 
-  attr :path, :string, required: true
+  attr(:name, :string, required: true)
+
+  attr(:axis, :atom,
+    required: true,
+    values: [
+      :semantic,
+      :variant,
+      :size,
+      :radius,
+      :text,
+      :width,
+      :max_width,
+      :min_width,
+      :max_height,
+      :min_height
+    ]
+  )
+
+  attr(:pattern, :string, default: nil)
+  attr(:options, :list, default: nil)
+  attr(:purpose, :string, default: nil)
+  attr(:class, :string, default: "typo text-ink-muted flex flex-col gap-space-xs max-w-none")
+
+  def demo_modifier_axis(assigns) do
+    name = assigns.name
+    label = String.replace(name, "-", " ")
+    article = modifier_article(label)
+
+    {pattern, purpose, options, intrinsic_note} =
+      modifier_axis_copy(
+        name,
+        label,
+        article,
+        assigns.axis,
+        assigns.pattern,
+        assigns.purpose,
+        assigns.options
+      )
+
+    assigns =
+      assigns
+      |> assign(:pattern, pattern)
+      |> assign(:purpose, purpose)
+      |> assign(:options_text, Enum.join(options, ", "))
+      |> assign(:intrinsic_note, intrinsic_note)
+      |> assign(:host, name)
+
+    ~H"""
+    <div :if={@axis == :variant} class={@class}>
+      <p>
+        Variant modifiers control {@host} surface treatment. Default is subtle (neutral fill and border; semantic roles tint text ink); add
+        <code class="text-sm">ui-solid</code>
+        for a filled surface.
+      </p>
+    </div>
+    <div :if={@axis != :variant} class={@class}>
+      <p :if={@intrinsic_note}>{@intrinsic_note}</p>
+      <p>
+        Use <code class="text-sm">class="{@pattern}"</code> to {@purpose}.
+      </p>
+      <p>
+        Available options: {@options_text}
+      </p>
+    </div>
+    """
+  end
+
+  attr(:host, :string, required: true)
+  attr(:class, :string, default: "typo text-ink-muted flex flex-col gap-space-xs max-w-none")
+
+  def variant_matrix_description(assigns) do
+    ~H"""
+    <div class={@class}>
+      <p>
+        Combine semantic palette and variant treatment on the same host, for example <code class="text-sm">{@host} ui-accent ui-solid</code>.
+      </p>
+    </div>
+    """
+  end
+
+  defp modifier_article(label) do
+    if String.match?(label, ~r/^[aeiou]/i), do: "an", else: "a"
+  end
+
+  defp modifier_axis_copy(
+         name,
+         label,
+         article,
+         axis,
+         pattern_override,
+         purpose_override,
+         options_override
+       ) do
+    intrinsic_note = intrinsic_width_note(name, axis)
+
+    {pattern, purpose, options} =
+      case axis do
+        :semantic ->
+          {"ui-{role}", "set the semantic palette of #{article} #{label}",
+           E2eWeb.DemoScales.semantic_steps()}
+
+        :size ->
+          {"ui-size-{size}", "set the size of #{article} #{label}",
+           E2eWeb.DemoScales.size_steps()}
+
+        :radius ->
+          {"ui-rounded-{step}", "set the corner radius of #{article} #{label}",
+           E2eWeb.DemoScales.radius_steps()}
+
+        :text ->
+          {"ui-text-{size}", "set the text size of #{article} #{label}",
+           E2eWeb.DemoScales.text_steps()}
+
+        :variant ->
+          {"ui-solid", "set a filled surface on #{article} #{label} (default is subtle)",
+           ["subtle (default)", "solid"]}
+
+        :width ->
+          {"w-{step}",
+           "set the host stretch mode of #{article} #{label} (`w-full`, `w-fit`); use Max width for named container steps",
+           E2eWeb.DemoScales.width_layout_options_for(name)}
+
+        :max_width ->
+          {"max-w-{step}", "set the maximum width of #{article} #{label} root",
+           E2eWeb.DemoScales.max_width_options_for(name)}
+
+        :min_width ->
+          {"min-w-{step}", "set the minimum width of #{article} #{label} root",
+           E2eWeb.DemoScales.min_width_steps()}
+
+        :max_height ->
+          {"max-h-{step}", "set the maximum height of #{article} #{label} root",
+           E2eWeb.DemoScales.max_height_steps()}
+
+        :min_height ->
+          {"min-h-{step}", "set the minimum height of #{article} #{label} root",
+           E2eWeb.DemoScales.min_height_steps()}
+      end
+
+    pattern = pattern_override || pattern
+    purpose = purpose_override || purpose
+    options = options_override || with_defaults(options, axis)
+
+    {pattern, purpose, options, intrinsic_note}
+  end
+
+  defp intrinsic_width_note(name, axis) when axis in [:max_width, :width] do
+    if component_layout_registered?(name) do
+      max_label = E2eWeb.DemoScales.default_max_width_label(name)
+      width_label = E2eWeb.DemoScales.default_width_label(name)
+
+      "Without #{if(axis == :width, do: "w-*", else: "max-w-*")}, width comes from component CSS. Default for #{name}: #{max_label} (width: #{width_label})."
+    else
+      nil
+    end
+  end
+
+  defp intrinsic_width_note(_name, _axis), do: nil
+
+  defp component_layout_registered?(name) do
+    name in Corex.Design.ComponentLayout.ids()
+  rescue
+    ArgumentError -> false
+  end
+
+  defp with_defaults(options, axis) do
+    default =
+      case axis do
+        :size -> "md"
+        :radius -> "full"
+        :text -> "md"
+        _ -> nil
+      end
+
+    Enum.map(options, fn
+      ^default -> "#{default} (default)"
+      option -> option
+    end)
+  end
+
+  attr(:path, :string, required: true)
 
   def component_source_bar(assigns) do
     links = E2eWeb.ComponentSourceLinks.links_for_path(assigns.path)
@@ -91,7 +272,7 @@ defmodule E2eWeb.DemoPage do
       <.navigate
         :for={link <- @links}
         to={link.to}
-        class="button button--sm button--ghost"
+        class="button ui-size-sm"
         external
       >
         <img :if={link.icon} src={link.icon} alt="" class="icon object-contain shrink-0" />
@@ -102,16 +283,16 @@ defmodule E2eWeb.DemoPage do
     """
   end
 
-  attr :id, :string, default: nil
-  attr :title, :string, default: nil
-  attr :subtitle, :any, default: nil
-  attr :path, :string, default: nil
-  attr :heading_class, :string, default: "layout-heading"
-  attr :title_tag, :string, default: "h1"
-  attr :subtitle_tag, :string, default: "p"
-  attr :controls_strip, :boolean, default: true
-  slot :controls
-  slot :canvas, required: true
+  attr(:id, :string, default: nil)
+  attr(:title, :string, default: nil)
+  attr(:subtitle, :any, default: nil)
+  attr(:path, :string, default: nil)
+  attr(:heading_class, :string, default: "layout-heading")
+  attr(:title_tag, :string, default: "h1")
+  attr(:subtitle_tag, :string, default: "p")
+  attr(:controls_strip, :boolean, default: true)
+  slot(:controls)
+  slot(:canvas, required: true)
 
   def demo_playground(assigns) do
     ~H"""
@@ -141,14 +322,14 @@ defmodule E2eWeb.DemoPage do
     """
   end
 
-  attr :id, :string, required: true
-  attr :value, :list, required: true
-  attr :on_value_change, :string, required: true
+  attr(:id, :string, required: true)
+  attr(:value, :list, required: true)
+  attr(:on_value_change, :string, required: true)
 
   def playground_dir_toggle(assigns) do
     ~H"""
     <.toggle_group
-      class="toggle-group toggle-group--sm max-w-7xs"
+      class="toggle-group ui-size-sm max-w-3xs"
       id={@id}
       on_value_change={@on_value_change}
       multiple={false}
@@ -161,30 +342,39 @@ defmodule E2eWeb.DemoPage do
     """
   end
 
-  attr :id, :string, required: true
-  attr :title, :string, required: true
-  attr :code, :string, default: nil
-  attr :code_tabs, :list, default: []
-  attr :default_value, :string, default: "preview"
-  attr :trigger_class, :string, default: nil
-  attr :tabs_id, :string, default: nil
-  attr :class, :string, default: "flex flex-col gap-4 items-start"
+  attr(:id, :string, required: true)
+  attr(:title, :string, required: true)
+  attr(:code, :string, default: nil)
+  attr(:code_tabs, :list, default: [])
+  attr(:default_value, :string, default: "preview")
+  attr(:trigger_class, :string, default: nil)
+  attr(:tabs_id, :string, default: nil)
+  attr(:class, :string, default: "flex flex-col gap-4 items-start w-full")
 
-  attr :tabs_class, :string,
+  attr(:tabs_class, :string,
     default:
-      "tabs max-w-6xl [&>[data-scope=tabs][data-part=root]>[data-scope=tabs][data-part=list]]:place-self-end"
+      "tabs w-full max-w-none [&>[data-scope=tabs][data-part=root]>[data-scope=tabs][data-part=list]]:place-self-end"
+  )
 
-  attr :preview_class, :string,
-    default: "items-center shadow-sm py-space-xl p-space bg-root gap-space"
+  attr(:tabs_shell_class, :string, default: "w-full")
 
-  attr :code_panel_class, :string, default: "items-center bg-root p-0 relative"
-  attr :code_class, :string, default: "code max-w-none w-full"
+  attr(:preview_class, :string,
+    default: "flex flex-col items-center justify-center py-space-xl p-space bg-root gap-space"
+  )
 
-  attr :clipboard_class, :string,
-    default: "clipboard w-fit clipboard--sm absolute top-2 right-2 z-10"
+  attr(:code_panel_class, :string,
+    default:
+      "flex flex-col items-center bg-root p-0 relative max-h-[70vh] overflow-y-auto scrollbar scrollbar--sm"
+  )
 
-  slot :description
-  slot :preview, required: true
+  attr(:code_class, :string, default: "code max-w-none w-full min-h-0")
+
+  attr(:clipboard_class, :string,
+    default: "clipboard w-fit ui-size-sm absolute top-2 right-2 z-10"
+  )
+
+  slot(:description)
+  slot(:preview, required: true)
 
   def demo_section(assigns) do
     assigns =
@@ -212,41 +402,43 @@ defmodule E2eWeb.DemoPage do
     <section id={@id} class={@class}>
       <h2>{@title}</h2>
       {render_slot(@description)}
-      <.tabs id={@tabs_id} class={@tabs_class} value={@default_value}>
-        <:trigger value="preview" class={@trigger_class}>Preview</:trigger>
-        <:trigger
-          :for={tab <- @code_tabs}
-          value={tab.value}
-          class={@trigger_class}
-        >
-          {tab.label}
-        </:trigger>
-        <:content value="preview" class={@preview_class}>
-          {render_slot(@preview)}
-        </:content>
-        <:content :for={tab <- @code_tabs} value={tab.value} class={@code_panel_class}>
-          <.clipboard
-            class={@clipboard_class}
-            value={tab.code}
-            input={false}
-            trigger_aria_label="Copy code"
+      <div class={@tabs_shell_class}>
+        <.tabs id={@tabs_id} class={@tabs_class} value={@default_value}>
+          <:trigger value="preview" class={@trigger_class}>Preview</:trigger>
+          <:trigger
+            :for={tab <- @code_tabs}
+            value={tab.value}
+            class={@trigger_class}
           >
-            <:copy>
-              <span>Copy</span>
-              <.heroicon name="hero-clipboard" />
-            </:copy>
-            <:copied>
-              <span>Copied</span>
-              <.heroicon name="hero-check" />
-            </:copied>
-          </.clipboard>
-          <.code
-            class={@code_class}
-            language={Map.get(tab, :language, :heex)}
-            code={tab.code}
-          />
-        </:content>
-      </.tabs>
+            {tab.label}
+          </:trigger>
+          <:content value="preview" class={@preview_class}>
+            {render_slot(@preview)}
+          </:content>
+          <:content :for={tab <- @code_tabs} value={tab.value} class={@code_panel_class}>
+            <.clipboard
+              class={@clipboard_class}
+              value={tab.code}
+              input={false}
+              trigger_aria_label="Copy code"
+            >
+              <:copy>
+                <span>Copy</span>
+                <.heroicon name="hero-clipboard" />
+              </:copy>
+              <:copied>
+                <span>Copied</span>
+                <.heroicon name="hero-check" />
+              </:copied>
+            </.clipboard>
+            <.code
+              class={@code_class}
+              language={Map.get(tab, :language, :heex)}
+              code={tab.code}
+            />
+          </:content>
+        </.tabs>
+      </div>
     </section>
     """
   end
@@ -257,10 +449,10 @@ defmodule E2eWeb.DemoPage do
   Pass a list of events (most recent first). Each entry should be a
   map with `:name` and `:payload` (inspected as JSON-ish text).
   """
-  attr :id, :string, required: true
-  attr :events, :list, required: true
-  attr :empty_label, :string, default: "Interact with the component to see events here."
-  attr :class, :string, default: "flex flex-col w-full max-w-6xl gap-2"
+  attr(:id, :string, required: true)
+  attr(:events, :list, required: true)
+  attr(:empty_label, :string, default: "Interact with the component to see events here.")
+  attr(:class, :string, default: "flex flex-col w-full max-w-6xl gap-2")
 
   def demo_event_log(assigns) do
     ~H"""
@@ -283,12 +475,12 @@ defmodule E2eWeb.DemoPage do
   @doc """
   One "dispatch + response" row used on every API page.
   """
-  attr :id, :string, required: true
-  attr :title, :string, required: true
-  attr :description, :string, default: nil
-  attr :class, :string, default: "flex flex-col gap-2"
-  slot :actions, required: true
-  slot :result
+  attr(:id, :string, required: true)
+  attr(:title, :string, required: true)
+  attr(:description, :string, default: nil)
+  attr(:class, :string, default: "flex flex-col gap-2")
+  slot(:actions, required: true)
+  slot(:result)
 
   def demo_api_row(assigns) do
     ~H"""
@@ -312,10 +504,10 @@ defmodule E2eWeb.DemoPage do
   `data-loading` container. Component CSS hooks on
   `[data-loading]` to render its skeleton.
   """
-  attr :id, :string, required: true
-  attr :loading, :boolean, default: false
-  attr :class, :string, default: "flex flex-col gap-2 w-full"
-  slot :inner_block, required: true
+  attr(:id, :string, required: true)
+  attr(:loading, :boolean, default: false)
+  attr(:class, :string, default: "flex flex-col gap-2 w-full")
+  slot(:inner_block, required: true)
 
   def demo_pattern_async(assigns) do
     ~H"""
@@ -329,12 +521,12 @@ defmodule E2eWeb.DemoPage do
   Optional shell for a **Controlled** pattern or `/controlled` page: status text,
   toolbar actions, then the live component.
   """
-  attr :id, :string, required: true
-  attr :class, :string, default: "flex flex-col gap-3 w-full max-w-6xl"
+  attr(:id, :string, required: true)
+  attr(:class, :string, default: "flex flex-col gap-3 w-full max-w-6xl")
 
-  slot :state
-  slot :toolbar
-  slot :inner_block, required: true
+  slot(:state)
+  slot(:toolbar)
+  slot(:inner_block, required: true)
 
   def demo_pattern_controlled(assigns) do
     ~H"""

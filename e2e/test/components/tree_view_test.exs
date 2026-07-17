@@ -64,6 +64,18 @@ defmodule E2eWeb.TreeViewTest do
       |> TreeView.click_in_section("tree-view-api-set-expanded-server", "Expand lib")
       |> TreeView.wait_branch_content_open_in_host(host, "repo-lib", timeout: 8_000)
     end
+
+    feature "expanded (server)  -  Expanded shows toast", %{session: session} do
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(TreeView, :tree_view, :api)
+        |> TreeView.prepare_live_form()
+        |> TreeView.wait_host_tree_view_ready("tree-api-get-expanded-server")
+
+      session
+      |> TreeView.click_in_section("tree-view-api-get-expanded-server", "Expanded")
+      |> TreeView.assert_toast("tree-api-get-expanded-server")
+    end
   end
 
   describe "events" do

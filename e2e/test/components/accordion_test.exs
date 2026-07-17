@@ -397,42 +397,6 @@ defmodule E2eWeb.AccordionTest do
 
       assert Accordion.trigger_aria_disabled?(session, "my-accordion", "lorem")
     end
-
-    feature "size  -  SM adds accordion--sm on the host", %{session: session} do
-      session =
-        session
-        |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :playground)
-        |> Accordion.wait_root_no_loading("#my-accordion")
-
-      session =
-        session
-        |> click(css("#accordion-size [data-part='trigger']"))
-        |> click(
-          css(~S|#accordion-size [data-scope="select"][data-part="item"][data-value="sm"]|)
-        )
-        |> Accordion.wait_root_no_loading("#my-accordion")
-
-      el = find(session, css("#my-accordion"))
-      classes = Wallaby.Element.attr(el, "class")
-      assert String.contains?(classes, "accordion--sm")
-    end
-
-    feature "color  -  accent adds accordion--accent on the host", %{session: session} do
-      session =
-        session
-        |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :playground)
-        |> Accordion.wait_root_no_loading("#my-accordion")
-
-      session =
-        session
-        |> click(css("#accordion-color [data-part='trigger']"))
-        |> click(css("#accordion-color [data-part='item'][data-value='accent']"))
-        |> Accordion.wait_root_no_loading("#my-accordion")
-
-      el = find(session, css("#my-accordion"))
-      classes = Wallaby.Element.attr(el, "class")
-      assert String.contains?(classes, "accordion--accent")
-    end
   end
 
   describe "patterns" do

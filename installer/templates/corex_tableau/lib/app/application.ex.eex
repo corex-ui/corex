@@ -1,0 +1,16 @@
+defmodule <%= @app_module %>.Application do
+  use Application
+
+  @impl true
+  def start(_type, _args) do
+    children =
+      if <%= @app_module %>.Config.mcp_enabled?() do
+        [{Bandit, plug: <%= @app_module %>.Mcp, scheme: :http, port: <%= @app_module %>.Config.mcp_port()}]
+      else
+        []
+      end
+
+    opts = [strategy: :one_for_one, name: <%= @app_module %>.Supervisor]
+    Supervisor.start_link(children, opts)
+  end
+end

@@ -1,0 +1,54 @@
+defmodule <%= @app_module %>.PostLayout do
+  use Tableau.Layout, layout: <%= @app_module %>.RootLayout
+  use Phoenix.Component
+  use Corex
+
+  def template(assigns) do
+    page = assigns.page
+    title = page[:title] || "Post"
+    description = page[:description]
+    date = page[:date]
+
+    date_label =
+      case date do
+        %DateTime{} -> Calendar.strftime(date, "%Y-%m-%d")
+        _ -> nil
+      end
+
+    tags =
+      page
+      |> Map.get(:tags, [])
+      |> List.wrap()
+      |> Enum.filter(&is_binary/1)
+
+    assigns =
+      assigns
+      |> Map.put(:post_title, title)
+      |> Map.put(:post_description, description)
+      |> Map.put(:post_date_label, date_label)
+      |> Map.put(:post_tags, tags)
+
+    ~H"""
+    <article class="flex w-full max-w-3xl flex-col gap-space-lg">
+      <header class="flex flex-col gap-space border-b border-border pb-space-lg">
+        <.navigate to="/blog" class="link w-fit">
+          <.heroicon name="hero-arrow-left" /> Back to blog
+        </.navigate>
+        <div :if={@post_date_label} class="text-sm text-ink-muted">{@post_date_label}</div>
+        <h1 class="m-0 text-4xl font-bold tracking-tight">{@post_title}</h1>
+        <p :if={@post_description} class="m-0 max-w-prose leading-relaxed text-ink-muted">
+          {@post_description}
+        </p>
+        <ul :if={@post_tags != []} class="m-0 flex list-none flex-wrap gap-space-sm p-0">
+          <li :for={tag <- @post_tags}>
+            <span class="badge">{tag}</span>
+          </li>
+        </ul>
+      </header>
+      <div class="typo prose max-w-none">
+        {{:safe, render(@inner_content)}}
+      </div>
+    </article>
+    """
+  end
+end

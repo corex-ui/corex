@@ -9,12 +9,37 @@
   >
     <.demo_section
       id="pagination-styling-color"
-      title={~t"Color"}
+      title={~t"Semantic"}
       code={E2eWeb.Demos.PaginationDemo.styling_color_heex()}
     >
+      <:description>
+        <.demo_modifier_axis name="pagination" axis={:semantic} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.PaginationDemo.styling_color_example />
       </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="pagination-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.PaginationDemo.styling_variant_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="pagination" axis={:variant} />
+      </:description>
+      <:preview><E2eWeb.Demos.PaginationDemo.styling_variant_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="pagination-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.PaginationDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <.variant_matrix_description host="pagination" />
+      </:description>
+      <:preview><E2eWeb.Demos.PaginationDemo.styling_variant_matrix_example /></:preview>
     </.demo_section>
 
     <.demo_section
@@ -22,28 +47,37 @@
       title={~t"Size"}
       code={E2eWeb.Demos.PaginationDemo.styling_size_heex()}
     >
+      <:description>
+        <.demo_modifier_axis name="pagination" axis={:size} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.PaginationDemo.styling_size_example />
       </:preview>
     </.demo_section>
 
     <.demo_section
-      id="pagination-styling-text"
-      title={~t"Text"}
-      code={E2eWeb.Demos.PaginationDemo.styling_text_heex()}
+      id="pagination-styling-radius"
+      title={~t"Rounded"}
+      code={E2eWeb.Demos.PaginationDemo.styling_radius_heex()}
     >
+      <:description>
+        <.demo_modifier_axis name="pagination" axis={:radius} />
+      </:description>
       <:preview>
-        <E2eWeb.Demos.PaginationDemo.styling_text_example />
+        <E2eWeb.Demos.PaginationDemo.styling_radius_example />
       </:preview>
     </.demo_section>
 
     <.demo_section
-      id="pagination-styling-radius"
-      title={~t"Radius"}
-      code={E2eWeb.Demos.PaginationDemo.styling_radius_heex()}
+      id="pagination-styling-width"
+      title={~t"Width"}
+      code={E2eWeb.Demos.PaginationDemo.styling_width_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="pagination" axis={:width} />
+      </:description>
       <:preview>
-        <E2eWeb.Demos.PaginationDemo.styling_radius_example />
+        <E2eWeb.Demos.PaginationDemo.styling_width_example />
       </:preview>
     </.demo_section>
 
@@ -52,6 +86,9 @@
       title={~t"Max width"}
       code={E2eWeb.Demos.PaginationDemo.styling_max_width_heex()}
     >
+      <:description>
+        <.demo_modifier_axis name="pagination" axis={:max_width} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.PaginationDemo.styling_max_width_example />
       </:preview>

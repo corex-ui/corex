@@ -8,15 +8,31 @@
     path={@path}
     id="code-styling-page"
     title={~t"Code · Style"}
-    subtitle={~t"Typography and max-width via modifier classes on the code root."}
+    subtitle={~t"Typography, corner radius, and max-width via modifier classes on the code root."}
   >
     <.demo_section
       id="code-styling-size"
       title={~t"Size"}
       code={E2eWeb.Demos.CodeDemo.styling_size_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="code" axis={:text} pattern="text-{size}" />
+      </:description>
       <:preview>
         <E2eWeb.Demos.CodeDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="code-styling-rounded"
+      title={~t"Rounded"}
+      code={E2eWeb.Demos.CodeDemo.styling_rounded_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="code" axis={:radius} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.CodeDemo.styling_rounded_example />
       </:preview>
     </.demo_section>
 
@@ -25,6 +41,9 @@
       title={~t"Max width"}
       code={E2eWeb.Demos.CodeDemo.styling_max_width_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="code" axis={:max_width} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.CodeDemo.styling_max_width_example />
       </:preview>

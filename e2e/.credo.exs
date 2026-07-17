@@ -201,7 +201,6 @@
                excluded: [
                  "test/",
                  "test/support/",
-                 "lib/e2e/design_palette.ex",
                  "lib/e2e/place/helper.ex",
                  "lib/e2e_web/controllers/",
                  "lib/e2e_web/live/admin_live/"

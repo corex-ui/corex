@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300..900;1,300..900&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:ital,wght@0,400..800;1,400..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Work+Sans:ital,wght@0,300..900;1,300..900&display=swap');
 @import "tailwindcss" source(none);
 @plugin "../vendor/heroicons";
 
@@ -8,61 +8,9 @@
 @source "../js";
 @source "../../lib/e2e_web";
 
-@import "../corex/main.css";
+@import "../corex/corex.css";
 
-@import "../corex/theme/neo.css";
-@import "../corex/theme/uno.css";
-@import "../corex/theme/leo.css";
-@import "../corex/theme/duo.css";
-
-@import "../corex/components/typo.css";
-@import "../corex/components/accordion.css";
-@import "../corex/components/layout.css";
-@import "../corex/components/layout-heading.css";
-@import "../corex/components/combobox.css";
-@import "../corex/components/date-picker.css";
-@import "../corex/components/select.css";
-@import "../corex/components/checkbox.css";
-@import "../corex/components/clipboard.css";
-@import "../corex/components/color-picker.css";
-@import "../corex/components/collapsible.css";
-@import "../corex/components/menu.css";
-@import "../corex/components/dialog.css";
-@import "../corex/components/icon.css";
-@import "../corex/components/link.css";
-@import "../corex/components/scrollbar.css";
-@import "../corex/components/signature-pad.css";
-@import "../corex/components/switch.css";
-@import "../corex/components/tags-input.css";
-@import "../corex/components/tabs.css";
-@import "../corex/components/timer.css";
-@import "../corex/components/toggle.css";
-@import "../corex/components/toggle-group.css";
-@import "../corex/components/pagination.css";
-@import "../corex/components/tree-view.css";
 @import "./navigation.css";
-@import "../corex/components/toast.css";
-@import "../corex/components/button.css";
-@import "../corex/components/badge.css";
-@import "../corex/components/angle-slider.css";
-@import "../corex/components/avatar.css";
-@import "../corex/components/carousel.css";
-@import "../corex/components/editable.css";
-@import "../corex/components/file-upload.css";
-@import "../corex/components/floating-panel.css";
-@import "../corex/components/listbox.css";
-@import "../corex/components/marquee.css";
-@import "../corex/components/number-input.css";
-@import "../corex/components/password-input.css";
-@import "../corex/components/pin-input.css";
-@import "../corex/components/native-input.css";
-@import "../corex/components/radio-group.css";
-@import "../corex/components/tooltip.css";
-@import "../corex/components/code.css";
-@import "../corex/components/data-table.css";
-@import "../corex/components/data-list.css";
-
-@import "../corex/components/scrollbar.css";
 
 @import "./card.css";
 @import "./home.css";

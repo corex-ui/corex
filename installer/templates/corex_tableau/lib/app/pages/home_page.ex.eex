@@ -1,0 +1,28 @@
+defmodule <%= @app_module %>.HomePage do
+  use Tableau.Page,
+    layout: <%= @app_module %>.RootLayout,
+    permalink: "/",
+    title: "<%= @app_module %>",
+    page_kind: :home,
+    sitemap: %{priority: 1.0, changefreq: "weekly"}
+
+  use Phoenix.Component
+  use Corex
+
+  def template(assigns) do
+    ~H"""
+    <.layout_heading class="layout-heading">
+      <:title>Corex for Tableau</:title>
+      <:subtitle>Accessible components and design tokens for static sites</:subtitle>
+      <:actions>
+        <.navigate class="button" external to="https://hexdocs.pm/corex">
+          Hex Doc <.heroicon name="hero-arrow-top-right-on-square" />
+        </.navigate>
+        <.navigate class="button" external to="https://corex.gigalixirapp.com/">
+          Demo Site <.heroicon name="hero-arrow-top-right-on-square" />
+        </.navigate>
+      </:actions>
+    </.layout_heading>
+    """
+  end
+end

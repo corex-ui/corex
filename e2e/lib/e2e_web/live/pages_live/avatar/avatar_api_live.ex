@@ -74,13 +74,13 @@ defmodule E2eWeb.AvatarApiLive do
             <div class="flex flex-wrap gap-2 mb-4">
               <.action
                 phx-click={Corex.Avatar.set_src(@id_sv_client, @primary_src)}
-                class="button button--sm"
+                class="button ui-size-sm"
               >
                 Set primary
               </.action>
               <.action
                 phx-click={Corex.Avatar.set_src(@id_sv_client, @alt_src)}
-                class="button button--sm"
+                class="button ui-size-sm"
               >
                 Set alternate
               </.action>

@@ -9,34 +9,65 @@
     id="dialog-styling-page"
     title={~t"Dialog · Style"}
     subtitle={
-      ~t"Size, type scale, corner radius, and edge (side) layout via modifier classes on the dialog."
+      ~t"Semantic colors, size, type scale, corner radius, and edge (side) layout via modifier classes on the dialog."
     }
   >
+    <.demo_section
+      id="dialog-styling-color"
+      title={~t"Semantic"}
+      code={E2eWeb.Demos.DialogDemo.styling_color_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="dialog" axis={:semantic} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.DialogDemo.styling_color_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="dialog-style-variant"
+      title={~t"Variant"}
+      code={E2eWeb.Demos.DialogDemo.styling_variant_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="dialog" axis={:variant} />
+      </:description>
+      <:preview><E2eWeb.Demos.DialogDemo.styling_variant_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="dialog-style-variant-matrix"
+      title={~t"Semantic × variant"}
+      code={E2eWeb.Demos.DialogDemo.styling_variant_matrix_code()}
+    >
+      <:description>
+        <.variant_matrix_description host="dialog" />
+      </:description>
+      <:preview><E2eWeb.Demos.DialogDemo.styling_variant_matrix_example /></:preview>
+    </.demo_section>
+
     <.demo_section
       id="dialog-styling-size"
       title={~t"Size"}
       code={E2eWeb.Demos.DialogDemo.styling_size_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="dialog" axis={:size} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.DialogDemo.styling_size_example />
       </:preview>
     </.demo_section>
 
     <.demo_section
-      id="dialog-styling-text"
-      title={~t"Text"}
-      code={E2eWeb.Demos.DialogDemo.styling_text_code()}
-    >
-      <:preview>
-        <E2eWeb.Demos.DialogDemo.styling_text_example />
-      </:preview>
-    </.demo_section>
-
-    <.demo_section
       id="dialog-styling-radius"
-      title={~t"Radius"}
+      title={~t"Rounded"}
       code={E2eWeb.Demos.DialogDemo.styling_radius_code()}
     >
+      <:description>
+        <.demo_modifier_axis name="dialog" axis={:radius} />
+      </:description>
       <:preview>
         <E2eWeb.Demos.DialogDemo.styling_radius_example />
       </:preview>

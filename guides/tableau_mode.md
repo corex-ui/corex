@@ -4,6 +4,8 @@
 
 You add light/dark switching to a Tableau site that already follows [Tableau](tableau.html). Visitors get `data-mode` on `<html>`, a before-paint script, a Corex `<.toggle>`, and `mode.js` for `localStorage` and `corex:set-mode`.
 
+Mode is client-side only. There is no OTP `default_mode` config. Resolution uses `localStorage`, then `prefers-color-scheme`.
+
 For Phoenix apps with `Plugs.Mode` and cookies, see [Dark mode](dark_mode.html).
 
 ## Before you start
@@ -11,11 +13,11 @@ For Phoenix apps with `Plugs.Mode` and cookies, see [Dark mode](dark_mode.html).
 | Requirement | Notes |
 | ----------- | ----- |
 | [Tableau](tableau.html) | Design assets, ESM Esbuild, `use Corex`, `LiveSocket` |
-| `toggle.css` | Imported in `site.css` |
+| `toggle` in design components | Covered by `@import "../corex/corex.css"` |
 
 ## How it works
 
-1. **`head_script/0`** sets `data-mode` from `localStorage` or `prefers-color-scheme` before paint.
+1. **`head_script/0`** sets `data-mode` from `localStorage` or `prefers-color-scheme` before paint (no Application env).
 2. **`mode.js`** syncs the toggle after hydration and listens for `corex:set-mode`.
 3. **`<.toggle id="mode-switcher">`** dispatches `corex:set-mode` when pressed changes.
 
@@ -66,11 +68,15 @@ assigns = Map.put(assigns, :mode, MyApp.Mode.current(assigns))
     {MyApp.Mode.head_script()}
 ```
 
-Import in `assets/css/site.css`:
+Import in `assets/css/site.css` (same baseline as [Tableau](tableau.html)):
 
 ```css
-@import "../corex/components/toggle.css";
+@import "tailwindcss";
+@plugin "../vendor/heroicons";
+@import "../corex/corex.css";
 ```
+
+Include `toggle` in `components:` when you use a mode switcher.
 
 ### With Tableau Theming
 
@@ -198,7 +204,7 @@ Mode only: omit `theme.js` and `Select` if you do not use [Tableau Theming](tabl
 ```heex
 <.toggle
   id="mode-switcher"
-  class="toggle toggle--sm"
+  class="toggle ui-size-sm"
   data-toggle-dual-label
   pressed={@mode == "dark"}
   on_pressed_change_client="corex:set-mode"

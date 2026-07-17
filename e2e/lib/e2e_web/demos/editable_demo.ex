@@ -1,6 +1,8 @@
 defmodule E2eWeb.Demos.EditableDemo do
   use E2eWeb, :html
 
+  alias E2eWeb.DemoScales
+
   def minimal_code do
     ~S"""
     <.editable value="Click to edit" class="editable">
@@ -74,22 +76,22 @@ defmodule E2eWeb.Demos.EditableDemo do
     slots = styling_slots_code()
 
     """
-    <.editable class="editable" value="Default">
+    <.editable class="editable w-3xs" value="Default">
     #{slots}
     </.editable>
-    <.editable class="editable editable--accent" value="Accent">
+    <.editable class="editable w-3xs ui-accent" value="Accent">
     #{slots}
     </.editable>
-    <.editable class="editable editable--brand" value="Brand">
+    <.editable class="editable w-3xs ui-brand" value="Brand">
     #{slots}
     </.editable>
-    <.editable class="editable editable--alert" value="Alert">
+    <.editable class="editable w-3xs ui-alert" value="Alert">
     #{slots}
     </.editable>
-    <.editable class="editable editable--info" value="Info">
+    <.editable class="editable w-3xs ui-info" value="Info">
     #{slots}
     </.editable>
-    <.editable class="editable editable--success" value="Success">
+    <.editable class="editable w-3xs ui-success" value="Success">
     #{slots}
     </.editable>
     """
@@ -100,37 +102,37 @@ defmodule E2eWeb.Demos.EditableDemo do
 
     ~H"""
     <div class="flex flex-wrap gap-6 items-start">
-      <.editable id="editable-style-color-default" class="editable" value="Default">
+      <.editable id="editable-style-color-default" class="editable w-3xs" value="Default">
         <:label>Label</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.editable id="editable-style-color-accent" class="editable editable--accent" value="Accent">
+      <.editable id="editable-style-color-accent" class="editable w-3xs ui-accent" value="Accent">
         <:label>Label</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.editable id="editable-style-color-brand" class="editable editable--brand" value="Brand">
+      <.editable id="editable-style-color-brand" class="editable w-3xs ui-brand" value="Brand">
         <:label>Label</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.editable id="editable-style-color-alert" class="editable editable--alert" value="Alert">
+      <.editable id="editable-style-color-alert" class="editable w-3xs ui-alert" value="Alert">
         <:label>Label</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.editable id="editable-style-color-info" class="editable editable--info" value="Info">
+      <.editable id="editable-style-color-info" class="editable w-3xs ui-info" value="Info">
         <:label>Label</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.editable id="editable-style-color-success" class="editable editable--success" value="Success">
+      <.editable id="editable-style-color-success" class="editable w-3xs ui-success" value="Success">
         <:label>Label</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
@@ -140,20 +142,109 @@ defmodule E2eWeb.Demos.EditableDemo do
     """
   end
 
+  def styling_variant_code do
+    slots = styling_slots_code()
+
+    """
+    <.editable class="editable w-3xs" value="Subtle (default)">
+    #{slots}
+    </.editable>
+    <.editable class="editable w-3xs ui-solid" value="Solid">
+    #{slots}
+    </.editable>
+    """
+  end
+
+  def styling_variant_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-wrap gap-6 items-start">
+      <.editable id="editable-style-variant-subtle" class="editable w-3xs" value="Subtle (default)">
+        <:label>Label</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+      <.editable
+        id="editable-style-variant-solid"
+        class="editable w-3xs ui-solid"
+        value="Solid"
+      >
+        <:label>Label</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+    </div>
+    """
+  end
+
+  def styling_variant_matrix_code do
+    slots = styling_slots_code()
+
+    for semantic <- DemoScales.styling_semantic_axis_steps("editable"),
+        variant <- DemoScales.styling_variant_axis_steps("editable") do
+      class =
+        DemoScales.join_modifiers(
+          DemoScales.join_matrix_modifiers("editable", semantic.modifier, variant.modifier),
+          "w-3xs"
+        )
+
+      """
+      <.editable class="#{class}" value="#{semantic.label}">
+      #{slots}
+      </.editable>
+      """
+    end
+    |> DemoScales.join_code()
+  end
+
+  def styling_variant_matrix_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:matrix_semantics, DemoScales.styling_semantic_axis_steps("editable"))
+      |> assign(:matrix_variants, DemoScales.styling_variant_axis_steps("editable"))
+
+    ~H"""
+    <div class="w-full overflow-x-auto scrollbar scrollbar--sm">
+      <div class="grid grid-cols-4 gap-space items-start min-w-max">
+        <div :for={semantic <- @matrix_semantics} class="contents">
+          <.editable
+            :for={variant <- @matrix_variants}
+            class={
+              DemoScales.join_modifiers(
+                DemoScales.join_matrix_modifiers("editable", semantic.modifier, variant.modifier),
+                "w-3xs"
+              )
+            }
+            value={semantic.label}
+          >
+            <:label>Label</:label>
+            <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+            <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+            <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+          </.editable>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
   def styling_size_code do
     slots = styling_slots_code()
 
     """
-    <.editable class="editable editable--sm" value="SM">
+    <.editable class="editable w-3xs ui-size-sm" value="SM">
     #{slots}
     </.editable>
-    <.editable class="editable editable--md" value="MD">
+    <.editable class="editable w-3xs ui-size-md" value="MD">
     #{slots}
     </.editable>
-    <.editable class="editable editable--lg" value="LG">
+    <.editable class="editable w-3xs ui-size-lg" value="LG">
     #{slots}
     </.editable>
-    <.editable class="editable editable--xl" value="XL">
+    <.editable class="editable w-3xs ui-size-xl" value="XL">
     #{slots}
     </.editable>
     """
@@ -164,25 +255,25 @@ defmodule E2eWeb.Demos.EditableDemo do
 
     ~H"""
     <div class="flex flex-col gap-4 items-start">
-      <.editable id="editable-style-sm" class="editable editable--sm" value="SM">
+      <.editable id="editable-style-sm" class="editable w-3xs ui-size-sm" value="SM">
         <:label>Label</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.editable id="editable-style-md" class="editable editable--md" value="MD">
+      <.editable id="editable-style-md" class="editable w-3xs ui-size-md" value="MD">
         <:label>Label</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.editable id="editable-style-lg" class="editable editable--lg" value="LG">
+      <.editable id="editable-style-lg" class="editable w-3xs ui-size-lg" value="LG">
         <:label>Label</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.editable id="editable-style-xl" class="editable editable--xl" value="XL">
+      <.editable id="editable-style-xl" class="editable w-3xs ui-size-xl" value="XL">
         <:label>Label</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
@@ -196,22 +287,22 @@ defmodule E2eWeb.Demos.EditableDemo do
     slots = styling_slots_code()
 
     """
-    <.editable class="editable editable--rounded-none" value="None">
+    <.editable class="editable w-3xs ui-rounded-none" value="None">
     #{slots}
     </.editable>
-    <.editable class="editable editable--rounded-sm" value="SM">
+    <.editable class="editable w-3xs ui-rounded-sm" value="SM">
     #{slots}
     </.editable>
-    <.editable class="editable editable--rounded-md" value="MD">
+    <.editable class="editable w-3xs ui-rounded-md" value="MD">
     #{slots}
     </.editable>
-    <.editable class="editable editable--rounded-lg" value="LG">
+    <.editable class="editable w-3xs ui-rounded-lg" value="LG">
     #{slots}
     </.editable>
-    <.editable class="editable editable--rounded-xl" value="XL">
+    <.editable class="editable w-3xs ui-rounded-xl" value="XL">
     #{slots}
     </.editable>
-    <.editable class="editable editable--rounded-full" value="Full">
+    <.editable class="editable w-3xs ui-rounded-full" value="Full">
     #{slots}
     </.editable>
     """
@@ -222,37 +313,37 @@ defmodule E2eWeb.Demos.EditableDemo do
 
     ~H"""
     <div class="flex flex-col gap-4 items-start">
-      <.editable id="editable-style-radius-none" class="editable editable--rounded-none" value="None">
+      <.editable id="editable-style-radius-none" class="editable w-3xs ui-rounded-none" value="None">
         <:label>Label</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.editable id="editable-style-radius-sm" class="editable editable--rounded-sm" value="SM">
+      <.editable id="editable-style-radius-sm" class="editable w-3xs ui-rounded-sm" value="SM">
         <:label>Label</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.editable id="editable-style-radius-md" class="editable editable--rounded-md" value="MD">
+      <.editable id="editable-style-radius-md" class="editable w-3xs ui-rounded-md" value="MD">
         <:label>Label</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.editable id="editable-style-radius-lg" class="editable editable--rounded-lg" value="LG">
+      <.editable id="editable-style-radius-lg" class="editable w-3xs ui-rounded-lg" value="LG">
         <:label>Label</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.editable id="editable-style-radius-xl" class="editable editable--rounded-xl" value="XL">
+      <.editable id="editable-style-radius-xl" class="editable w-3xs ui-rounded-xl" value="XL">
         <:label>Label</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.editable id="editable-style-radius-full" class="editable editable--rounded-full" value="Full">
+      <.editable id="editable-style-radius-full" class="editable w-3xs ui-rounded-full" value="Full">
         <:label>Label</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
@@ -265,60 +356,84 @@ defmodule E2eWeb.Demos.EditableDemo do
   def styling_max_width_code do
     slots = styling_slots_code()
 
-    """
-    <.editable class="editable max-w-2xs" value="2xs">
-    #{slots}
-    </.editable>
-    <.editable class="editable max-w-md" value="MD">
-    #{slots}
-    </.editable>
-    <.editable class="editable max-w-xl" value="XL">
-    #{slots}
-    </.editable>
-    <.editable class="editable max-w-2xl" value="2XL">
-    #{slots}
-    </.editable>
-    """
+    DemoScales.max_width_variants("editable")
+    |> Enum.map(fn %{id: id, modifier: modifier} ->
+      class = DemoScales.join_modifiers("editable", modifier)
+
+      """
+      <.editable class="#{class}" value="#{id}">
+      #{slots}
+      </.editable>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_width_code do
+    slots = styling_slots_code()
+
+    DemoScales.width_layout_variants("editable")
+    |> Enum.map(fn %{id: id, modifier: modifier} ->
+      class = DemoScales.join_modifiers("editable", modifier)
+
+      """
+      <.editable class="#{class}" value="#{id}">
+      #{slots}
+      </.editable>
+      """
+    end)
+    |> DemoScales.join_code()
   end
 
   def styling_max_width_example(assigns) do
-    _ = assigns
+    assigns = assign(assigns, :max_width_variants, DemoScales.max_width_variants("editable"))
 
     ~H"""
-    <div class="flex flex-col gap-4 items-start">
-      <.editable id="editable-style-max-2xs" class="editable max-w-2xs" value="2xs">
-        <:label>Label</:label>
-        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
-        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
-        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
-      </.editable>
-      <.editable id="editable-style-max-md" class="editable max-w-md" value="MD">
-        <:label>Label</:label>
-        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
-        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
-        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
-      </.editable>
-      <.editable id="editable-style-max-xl" class="editable max-w-xl" value="XL">
-        <:label>Label</:label>
-        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
-        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
-        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
-      </.editable>
-      <.editable id="editable-style-max-2xl" class="editable max-w-2xl" value="2XL">
-        <:label>Label</:label>
-        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
-        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
-        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
-      </.editable>
+    <div {DemoScales.preview_scroll_attrs()}>
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
+        <.editable
+          id={"editable-style-max-#{variant.id}"}
+          class={DemoScales.join_modifiers("editable", variant.modifier)}
+          value={variant.label}
+        >
+          <:label>Label</:label>
+          <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+          <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+          <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+        </.editable>
+      </div>
+    </div>
+    """
+  end
+
+  def styling_width_example(assigns) do
+    assigns = assign(assigns, :width_variants, DemoScales.width_layout_variants("editable"))
+
+    ~H"""
+    <div {DemoScales.preview_scroll_attrs()}>
+      <div :for={variant <- @width_variants} class="flex flex-col gap-2">
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
+        <.editable
+          id={"editable-style-width-#{variant.id}"}
+          class={DemoScales.join_modifiers("editable", variant.modifier)}
+          value={variant.label}
+        >
+          <:label>Label</:label>
+          <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+          <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+          <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+        </.editable>
+      </div>
     </div>
     """
   end
 
   def api_set_value_client_binding_heex do
     ~S"""
-    <div class="layout__row">
-      <.action phx-click={Corex.Editable.set_value("editable-api-cb", "Alpha")} class="button button--sm">Alpha</.action>
-      <.action phx-click={Corex.Editable.set_value("editable-api-cb", "Beta")} class="button button--sm">Beta</.action>
+    <div class="flex flex-wrap items-center gap-space">
+      <.action phx-click={Corex.Editable.set_value("editable-api-cb", "Alpha")} class="button ui-size-sm">Alpha</.action>
+      <.action phx-click={Corex.Editable.set_value("editable-api-cb", "Beta")} class="button ui-size-sm">Beta</.action>
     </div>
     <.editable class="editable" value="Start">
       <:label>Label</:label>
@@ -336,13 +451,13 @@ defmodule E2eWeb.Demos.EditableDemo do
     <div class="flex flex-wrap gap-2 mb-4 w-full max-w-4xl">
       <.action
         phx-click={Corex.Editable.set_value("editable-api-cb", "Alpha")}
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Alpha
       </.action>
       <.action
         phx-click={Corex.Editable.set_value("editable-api-cb", "Beta")}
-        class="button button--sm"
+        class="button ui-size-sm"
       >
         Beta
       </.action>
@@ -358,10 +473,10 @@ defmodule E2eWeb.Demos.EditableDemo do
 
   def api_set_value_client_js_heex do
     ~S"""
-    <div class="layout__row">
+    <div class="flex flex-wrap items-center gap-space">
       <button
         type="button"
-        class="button button--sm"
+        class="button ui-size-sm"
         onclick="document.getElementById('editable-api-cjs')?.dispatchEvent(new CustomEvent('corex:editable:set-value', { bubbles: false, detail: { value: 'Gamma' } }))"
       >
         Gamma (client JS)
@@ -399,10 +514,10 @@ defmodule E2eWeb.Demos.EditableDemo do
 
     ~H"""
     <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
-      <div class="layout__row">
+      <div class="flex flex-wrap items-center gap-space">
         <button
           type="button"
-          class="button button--sm"
+          class="button ui-size-sm"
           onclick="document.getElementById('editable-api-cjs')?.dispatchEvent(new CustomEvent('corex:editable:set-value', { bubbles: false, detail: { value: 'Gamma' } }))"
         >
           Gamma (client JS)
@@ -420,9 +535,9 @@ defmodule E2eWeb.Demos.EditableDemo do
 
   def api_set_value_server_heex do
     ~S"""
-    <div class="layout__row">
-      <.action phx-click="editable_api_alpha" class="button button--sm">Alpha</.action>
-      <.action phx-click="editable_api_beta" class="button button--sm">Beta</.action>
+    <div class="flex flex-wrap items-center gap-space">
+      <.action phx-click="editable_api_alpha" class="button ui-size-sm">Alpha</.action>
+      <.action phx-click="editable_api_beta" class="button ui-size-sm">Beta</.action>
     </div>
     <.editable class="editable" value="Start">
       <:label>Label</:label>
@@ -450,9 +565,9 @@ defmodule E2eWeb.Demos.EditableDemo do
 
     ~H"""
     <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
-      <div class="layout__row">
-        <.action phx-click="editable_api_alpha" class="button button--sm">Alpha</.action>
-        <.action phx-click="editable_api_beta" class="button button--sm">Beta</.action>
+      <div class="flex flex-wrap items-center gap-space">
+        <.action phx-click="editable_api_alpha" class="button ui-size-sm">Alpha</.action>
+        <.action phx-click="editable_api_beta" class="button ui-size-sm">Beta</.action>
       </div>
       <.editable id="editable-api-srv" class="editable" value="Start">
         <:label>Label</:label>
@@ -511,7 +626,7 @@ defmodule E2eWeb.Demos.EditableDemo do
           {msg}
         </:error>
       </.editable>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" class="button ui-accent">Submit</.action>
     </.form>
     """
   end
@@ -554,7 +669,7 @@ defmodule E2eWeb.Demos.EditableDemo do
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" class="button ui-accent">Submit</.action>
     </.form>
     """
   end
@@ -600,7 +715,7 @@ defmodule E2eWeb.Demos.EditableDemo do
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" class="button ui-accent">Submit</.action>
     </form>
     """
   end
@@ -630,7 +745,7 @@ defmodule E2eWeb.Demos.EditableDemo do
           {msg}
         </:error>
       </.editable>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" class="button ui-accent">Submit</.action>
     </.form>
     """
   end
@@ -648,7 +763,7 @@ defmodule E2eWeb.Demos.EditableDemo do
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.action type="submit" class="button button--accent">Submit</.action>
+      <.action type="submit" class="button ui-accent">Submit</.action>
     </.form>
     """
   end
@@ -676,7 +791,7 @@ defmodule E2eWeb.Demos.EditableDemo do
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.action type="submit" id="editable-form-phoenix-submit" class="button button--accent">
+      <.action type="submit" id="editable-form-phoenix-submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -710,7 +825,7 @@ defmodule E2eWeb.Demos.EditableDemo do
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.action type="submit" id="editable-form-ecto-submit" class="button button--accent">
+      <.action type="submit" id="editable-form-ecto-submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -737,7 +852,7 @@ defmodule E2eWeb.Demos.EditableDemo do
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.action type="submit" id="editable-form-native-submit" class="button button--accent">
+      <.action type="submit" id="editable-form-native-submit" class="button ui-accent">
         Submit
       </.action>
     </form>
@@ -762,7 +877,7 @@ defmodule E2eWeb.Demos.EditableDemo do
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.action type="submit" id="editable-live-form-phoenix-submit" class="button button--accent">
+      <.action type="submit" id="editable-live-form-phoenix-submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -792,7 +907,7 @@ defmodule E2eWeb.Demos.EditableDemo do
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.action type="submit" id="editable-live-form-ecto-submit" class="button button--accent">
+      <.action type="submit" id="editable-live-form-ecto-submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -829,7 +944,7 @@ defmodule E2eWeb.Demos.EditableDemo do
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" class="button ui-accent">
         Submit
       </.action>
     </.form>
@@ -979,7 +1094,7 @@ defmodule E2eWeb.Demos.EditableDemo do
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.action type="submit" id="editable-form-live-submit" class="button button--accent">
+      <.action type="submit" id="editable-form-live-submit" class="button ui-accent">
         Submit
       </.action>
     </.form>

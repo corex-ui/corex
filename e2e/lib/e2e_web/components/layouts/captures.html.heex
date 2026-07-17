@@ -69,20 +69,20 @@
       })();
     </script>
   </head>
-  <body class="typo layout">
+  <body class={Shell.body()}>
     <.navigate to="#main-content" class="link link--skip">{~t"Skip to content"}</.navigate>
     <.toast_group id="layout-toast" class="toast" phx-update="ignore" flash={@flash}>
       <:loading>
         <.heroicon name="hero-arrow-path" class="icon" />
       </:loading>
     </.toast_group>
-    <header class="layout__header">
-      <div class="layout__header__content">
-        <div class="layout__row gap-mini-gap">
+    <header class={Shell.header()}>
+      <div class={Shell.header_content()}>
+        <div class="flex flex-wrap items-center gap-space gap-mini-gap">
           <a
             href="/"
             target="_blank"
-            class="link md:link--md lg:link--lg link--brand gap-mini-gap text-xl flex flex-nowrap px-1 uppercase after:content-none"
+            class="link md:ui-size-md lg:ui-size-lg ui-brand gap-mini-gap text-xl flex flex-nowrap px-1 uppercase after:content-none"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 136 136">
               <path
@@ -93,23 +93,23 @@
             Corex
           </a>
         </div>
-        <div class="layout__row">
+        <div class="flex flex-wrap items-center gap-space">
           <.theme_toggle theme={assigns[:theme] || "neo"} />
           <.mode_toggle mode={@mode} />
         </div>
       </div>
     </header>
-    <main id="main-content" class="layout__main">
-      <div class="layout__content">
-        <div class="layout__article">
+    <main id="main-content" class={Shell.main()}>
+      <div class={Shell.content()}>
+        <div class={Shell.article()}>
           {@inner_content}
         </div>
       </div>
     </main>
-    <footer class="layout__footer">
-      <div class="layout__footer__content gap-2 justify-center md:justify-between">
-        <div class="layout__row">
-          <a class="link link--sm link--success" href="https://netoum.com" target="_blank">
+    <footer class={Shell.footer()}>
+      <div class={Shell.footer_content() <> " gap-2 justify-center md:justify-between"}>
+        <div class="flex flex-wrap items-center gap-space">
+          <a class="link ui-size-sm ui-success" href="https://netoum.com" target="_blank">
             Open source by Netoum
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -128,7 +128,7 @@
             </svg>
           </a>
           <a
-            class="link link--sm link--success"
+            class="link ui-size-sm ui-success"
             href="https://github.com/sponsors/corex-ui"
             target="_blank"
           >
@@ -150,11 +150,11 @@
             </svg>
           </a>
         </div>
-        <div class="layout__row gap-2">
+        <div class="flex flex-wrap items-center gap-space">
           <a
             href="https://github.com/corex-ui/corex"
             target="_blank"
-            class="button button--sm button--circle"
+            class="button ui-size-sm ui-trigger--circle"
             aria_label={~t"Go to Corex UI Github"}
           >
             <svg
@@ -176,7 +176,7 @@
           <a
             href="https://hexdocs.pm/corex"
             target="_blank"
-            class="button button--sm button--circle"
+            class="button ui-size-sm ui-trigger--circle"
             aria_label={~t"Go to Corex UI Github"}
           >
             <svg

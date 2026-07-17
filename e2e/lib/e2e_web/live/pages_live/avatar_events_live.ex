@@ -62,7 +62,7 @@ defmodule E2eWeb.AvatarEventsLive do
                   id="avatar-events-src"
                   name="avatar_src"
                   value={@avatar_src}
-                  class="native-input native-input--sm w-full"
+                  class="native-input ui-size-sm w-full"
                 >
                   <:label>Image URL</:label>
                 </.native_input>

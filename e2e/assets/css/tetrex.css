@@ -49,48 +49,48 @@
   display: none;
 }
 
-#tetrex-board .checkbox.checkbox--accent [data-scope="checkbox"][data-part="control"][data-state="checked"],
-#tetrex-board .checkbox.checkbox--accent [data-scope="checkbox"][data-part="control"][data-state="indeterminate"],
-#tetrex-board .checkbox.checkbox--accent [data-scope="checkbox"][data-part="control"][data-state="checked"]:hover,
-#tetrex-board .checkbox.checkbox--accent [data-scope="checkbox"][data-part="control"][data-state="checked"]:active,
-#tetrex-next .checkbox.checkbox--accent [data-scope="checkbox"][data-part="control"][data-state="checked"],
-#tetrex-next .checkbox.checkbox--accent [data-scope="checkbox"][data-part="control"][data-state="indeterminate"] {
-  background-color: var(--color-ink-accent);
+#tetrex-board .checkbox.ui-accent [data-scope="checkbox"][data-part="control"][data-state="checked"],
+#tetrex-board .checkbox.ui-accent [data-scope="checkbox"][data-part="control"][data-state="indeterminate"],
+#tetrex-board .checkbox.ui-accent [data-scope="checkbox"][data-part="control"][data-state="checked"]:hover,
+#tetrex-board .checkbox.ui-accent [data-scope="checkbox"][data-part="control"][data-state="checked"]:active,
+#tetrex-next .checkbox.ui-accent [data-scope="checkbox"][data-part="control"][data-state="checked"],
+#tetrex-next .checkbox.ui-accent [data-scope="checkbox"][data-part="control"][data-state="indeterminate"] {
+  background-color: var(--color-accent-text);
   border-color: var(--color-border);
-  color: var(--color-ink-accent);
+  color: var(--color-accent-text);
 }
 
-#tetrex-board .checkbox.checkbox--brand [data-scope="checkbox"][data-part="control"][data-state="checked"],
-#tetrex-board .checkbox.checkbox--brand [data-scope="checkbox"][data-part="control"][data-state="indeterminate"],
-#tetrex-board .checkbox.checkbox--brand [data-scope="checkbox"][data-part="control"][data-state="checked"]:hover,
-#tetrex-board .checkbox.checkbox--brand [data-scope="checkbox"][data-part="control"][data-state="checked"]:active,
-#tetrex-next .checkbox.checkbox--brand [data-scope="checkbox"][data-part="control"][data-state="checked"],
-#tetrex-next .checkbox.checkbox--brand [data-scope="checkbox"][data-part="control"][data-state="indeterminate"] {
-  background-color: var(--color-ink-brand);
+#tetrex-board .checkbox.ui-brand [data-scope="checkbox"][data-part="control"][data-state="checked"],
+#tetrex-board .checkbox.ui-brand [data-scope="checkbox"][data-part="control"][data-state="indeterminate"],
+#tetrex-board .checkbox.ui-brand [data-scope="checkbox"][data-part="control"][data-state="checked"]:hover,
+#tetrex-board .checkbox.ui-brand [data-scope="checkbox"][data-part="control"][data-state="checked"]:active,
+#tetrex-next .checkbox.ui-brand [data-scope="checkbox"][data-part="control"][data-state="checked"],
+#tetrex-next .checkbox.ui-brand [data-scope="checkbox"][data-part="control"][data-state="indeterminate"] {
+  background-color: var(--color-brand-text);
   border-color: var(--color-border);
-  color: var(--color-ink-brand);
+  color: var(--color-brand-text);
 }
 
-#tetrex-board .checkbox.checkbox--alert [data-scope="checkbox"][data-part="control"][data-state="checked"],
-#tetrex-board .checkbox.checkbox--alert [data-scope="checkbox"][data-part="control"][data-state="indeterminate"],
-#tetrex-board .checkbox.checkbox--alert [data-scope="checkbox"][data-part="control"][data-state="checked"]:hover,
-#tetrex-board .checkbox.checkbox--alert [data-scope="checkbox"][data-part="control"][data-state="checked"]:active,
-#tetrex-next .checkbox.checkbox--alert [data-scope="checkbox"][data-part="control"][data-state="checked"],
-#tetrex-next .checkbox.checkbox--alert [data-scope="checkbox"][data-part="control"][data-state="indeterminate"] {
-  background-color: var(--color-ink-alert);
+#tetrex-board .checkbox.ui-alert [data-scope="checkbox"][data-part="control"][data-state="checked"],
+#tetrex-board .checkbox.ui-alert [data-scope="checkbox"][data-part="control"][data-state="indeterminate"],
+#tetrex-board .checkbox.ui-alert [data-scope="checkbox"][data-part="control"][data-state="checked"]:hover,
+#tetrex-board .checkbox.ui-alert [data-scope="checkbox"][data-part="control"][data-state="checked"]:active,
+#tetrex-next .checkbox.ui-alert [data-scope="checkbox"][data-part="control"][data-state="checked"],
+#tetrex-next .checkbox.ui-alert [data-scope="checkbox"][data-part="control"][data-state="indeterminate"] {
+  background-color: var(--color-alert-text);
   border-color: var(--color-border);
-  color: var(--color-ink-alert);
+  color: var(--color-alert-text);
 }
 
-#tetrex-board .checkbox.checkbox--success [data-scope="checkbox"][data-part="control"][data-state="checked"],
-#tetrex-board .checkbox.checkbox--success [data-scope="checkbox"][data-part="control"][data-state="indeterminate"],
-#tetrex-board .checkbox.checkbox--success [data-scope="checkbox"][data-part="control"][data-state="checked"]:hover,
-#tetrex-board .checkbox.checkbox--success [data-scope="checkbox"][data-part="control"][data-state="checked"]:active,
-#tetrex-next .checkbox.checkbox--success [data-scope="checkbox"][data-part="control"][data-state="checked"],
-#tetrex-next .checkbox.checkbox--success [data-scope="checkbox"][data-part="control"][data-state="indeterminate"] {
-  background-color: var(--color-ink-success);
+#tetrex-board .checkbox.ui-success [data-scope="checkbox"][data-part="control"][data-state="checked"],
+#tetrex-board .checkbox.ui-success [data-scope="checkbox"][data-part="control"][data-state="indeterminate"],
+#tetrex-board .checkbox.ui-success [data-scope="checkbox"][data-part="control"][data-state="checked"]:hover,
+#tetrex-board .checkbox.ui-success [data-scope="checkbox"][data-part="control"][data-state="checked"]:active,
+#tetrex-next .checkbox.ui-success [data-scope="checkbox"][data-part="control"][data-state="checked"],
+#tetrex-next .checkbox.ui-success [data-scope="checkbox"][data-part="control"][data-state="indeterminate"] {
+  background-color: var(--color-success-text);
   border-color: var(--color-border);
-  color: var(--color-ink-success);
+  color: var(--color-success-text);
 }
 
 #tetrex-board-stage {
@@ -106,30 +106,30 @@
 }
 
 @media (max-width: 767px) {
-  body.layout:has(#tetrex-page) {
+  body:has(#tetrex-page) {
     overflow: hidden;
     height: 100dvh;
     max-height: 100dvh;
   }
 
-  body:has(#tetrex-page) .layout__content--blog {
+  body:has(#tetrex-page) .shell-blog-content {
     padding-block: var(--spacing-space-sm);
   }
 
-  body:has(#tetrex-page) .layout__footer {
+  body:has(#tetrex-page) .shell-footer {
     display: none;
   }
 
-  body:has(#tetrex-page) .layout__wrapper {
+  body:has(#tetrex-page) .shell-blog-wrapper {
     min-height: 0;
   }
 
-  body:has(#tetrex-page) .layout__main--blog {
+  body:has(#tetrex-page) .shell-blog-main {
     min-height: 0;
     max-height: calc(100dvh - var(--spacing-size-lg));
   }
 
-  body:has(#tetrex-page) .layout__content--blog {
+  body:has(#tetrex-page) .shell-blog-content {
     flex: 1 1 auto;
     min-height: 0;
     max-height: calc(100dvh - var(--spacing-size-lg));

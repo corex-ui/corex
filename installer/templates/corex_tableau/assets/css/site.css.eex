@@ -1,0 +1,7 @@
+@import "tailwindcss";
+@plugin "../vendor/heroicons";
+<%= if @design do %>
+@import "../corex/corex.css";
+<% end %><%= if @mode do %>
+@custom-variant dark (&:where([data-mode=dark], [data-mode=dark] *));
+<% end %>

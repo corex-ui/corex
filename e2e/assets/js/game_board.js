@@ -423,7 +423,7 @@ const GameBoard = {
       const tile = root.querySelector(`[data-preview="${cell.col}-${cell.row}"]`)
       if (!tile) continue
 
-      const mod = cell.theme ? ` checkbox--${cell.theme}` : ""
+      const mod = cell.theme ? ` ui-${cell.theme}` : ""
       tile.className = PREVIEW_TILE + mod
 
       const control = tile.querySelector('[data-part="control"]')
@@ -613,7 +613,7 @@ const GameBoard = {
     const root = document.getElementById(id)
     if (!root) return
 
-    const mod = theme ? ` checkbox--${theme}` : ""
+    const mod = theme ? ` ui-${theme}` : ""
     const nextClass = TILE_CLASS + mod
     const control = document.getElementById(`checkbox:${id}:control`)
     const wasChecked = control?.getAttribute("data-state") === "checked"

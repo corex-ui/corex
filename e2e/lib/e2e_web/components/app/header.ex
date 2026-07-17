@@ -1,6 +1,7 @@
 defmodule E2eWeb.App.Header do
   use E2eWeb, :html
   import E2eWeb.App.Aside
+  alias E2eWeb.App.Shell
   import E2eWeb.App.MainNav
   import E2eWeb.{ModeToggle, ThemeToggle, Helpers}
 
@@ -22,24 +23,24 @@ defmodule E2eWeb.App.Header do
       |> assign(:components_menu, components_menu)
 
     ~H"""
-    <header class="layout__header">
-      <div class="layout__header__content">
-        <div class="layout__row">
+    <header class={Shell.header()}>
+      <div class={Shell.header_content()}>
+        <div class={Shell.row()}>
           <.dialog id="menu-dialog" animation="instant" class="dialog dialog--side lg:hidden">
             <:trigger
-              class="button button--sm button--circle button--ghost"
+              class="button ui-size-sm ui-trigger--circle"
               aria_label={~t"Open menu"}
             >
               <.heroicon name="hero-bars-3" />
             </:trigger>
 
             <:content>
-              <div class="layout__header">
-                <div class="layout__header__content">
-                  <div class="layout__row">
+              <div class={Shell.header()}>
+                <div class={Shell.header_content()}>
+                  <div class={Shell.row()}>
                     <.action
                       phx-click={Corex.Dialog.set_open("menu-dialog", false)}
-                      class="button button--sm button--circle button--ghost"
+                      class="button ui-size-sm ui-trigger--circle"
                       aria_label={~t"Close menu"}
                     >
                       <.heroicon name="hero-x-mark" />
@@ -47,7 +48,7 @@ defmodule E2eWeb.App.Header do
 
                     <.navigate
                       to={~p"/"}
-                      class="ui-link ui-link--brand ui-link--xl flex flex-nowrap items-center
+                      class="link ui-brand ui-size-xl flex flex-nowrap items-center
                  gap-space font-semibold uppercase hover:no-underline"
                     >
                       <svg
@@ -57,7 +58,7 @@ defmodule E2eWeb.App.Header do
                       >
                         <path
                           d="M70.573 1.67C33.94 1.67 4.243 31.367 4.243 68c0 36.634 29.697 66.33 66.33 66.33s66.33-29.696 66.33-66.33c0-36.633-29.697-66.33-66.33-66.33m.05 102.736c-20.117 0-36.427-16.308-36.427-36.427 0-20.118 16.31-36.427 36.427-36.427 17.055 0 31.37 11.723 35.333 27.55H89.845c-3.365-7.255-10.713-12.301-19.222-12.301-11.678 0-21.179 9.501-21.179 21.18s9.501 21.178 21.18 21.178c8.539 0 15.907-5.08 19.256-12.377h16.095c-3.939 15.864-18.269 27.624-35.352 27.624"
-                          fill="var(--color-ink-brand)"
+                          fill="currentColor"
                         >
                         </path>
                       </svg>
@@ -95,7 +96,7 @@ defmodule E2eWeb.App.Header do
 
           <.navigate
             to={~p"/"}
-            class="ui-link ui-link--brand ui-link--xl hover:text-link flex flex-nowrap items-center
+            class="link ui-brand ui-size-xl hover:text-link flex flex-nowrap items-center
          gap-space font-semibold uppercase no-underline"
           >
             <svg
@@ -105,7 +106,7 @@ defmodule E2eWeb.App.Header do
             >
               <path
                 d="M70.573 1.67C33.94 1.67 4.243 31.367 4.243 68c0 36.634 29.697 66.33 66.33 66.33s66.33-29.696 66.33-66.33c0-36.633-29.697-66.33-66.33-66.33m.05 102.736c-20.117 0-36.427-16.308-36.427-36.427 0-20.118 16.31-36.427 36.427-36.427 17.055 0 31.37 11.723 35.333 27.55H89.845c-3.365-7.255-10.713-12.301-19.222-12.301-11.678 0-21.179 9.501-21.179 21.18s9.501 21.178 21.18 21.178c8.539 0 15.907-5.08 19.256-12.377h16.095c-3.939 15.864-18.269 27.624-35.352 27.624"
-                fill="var(--color-ink-brand)"
+                fill="currentColor"
               >
               </path>
             </svg>
@@ -114,7 +115,7 @@ defmodule E2eWeb.App.Header do
 
           <.header_main_nav path={@path} orientation={:horizontal} placement={:header} />
         </div>
-        <div class="hidden lg:flex layout__row gap-2 sm:gap-4 shrink-0">
+        <div class={"hidden lg:flex #{Shell.row()} gap-2 sm:gap-4 shrink-0"}>
           <.theme_toggle id="theme-select" theme={@theme} />
           <.mode_toggle id="mode-switcher" mode={@mode} />
         </div>
