@@ -715,7 +715,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
       |> assign(:max_width_variants, DemoScales.max_width_variants("marquee"))
 
     ~H"""
-    <div class={DemoScales.preview_scroll_class()}>
+    <div {DemoScales.preview_scroll_attrs()}>
       <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.marquee

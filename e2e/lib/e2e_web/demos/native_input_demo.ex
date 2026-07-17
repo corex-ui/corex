@@ -56,7 +56,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-h-[70vh] overflow-y-auto scrollbar scrollbar--sm">
+    <div class="w-full max-h-[70vh] overflow-y-auto scrollbar scrollbar--sm" tabindex="0">
       <.anatomy_all_fields
         id_prefix="native-input-style-all"
         name_prefix="native-input-style-all"
@@ -108,7 +108,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     end)
     |> then(fn blocks ->
       """
-      <div class="w-full max-h-[70vh] overflow-y-auto scrollbar scrollbar--sm">
+      <div class="w-full max-h-[70vh] overflow-y-auto scrollbar scrollbar--sm" tabindex="0">
       #{Enum.join(blocks, "\n")}
       </div>
       """
@@ -147,7 +147,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     assigns = assign(assigns, :variants, variants)
 
     ~H"""
-    <div class="w-full max-h-[70vh] overflow-y-auto scrollbar scrollbar--sm">
+    <div class="w-full max-h-[70vh] overflow-y-auto scrollbar scrollbar--sm" tabindex="0">
       <div :for={variant <- @variants} class="flex flex-col gap-3 pb-8 last:pb-0">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.anatomy_all_fields
@@ -178,7 +178,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
         else: styling_input_class(modifier)
 
     ~s"""
-    <div class="max-h-[70vh] overflow-y-auto scrollbar scrollbar--sm">
+    <div class="max-h-[70vh] overflow-y-auto scrollbar scrollbar--sm" tabindex="0">
       <.anatomy_all_fields
         id_prefix="#{id_prefix}-example"
         input_class="#{input_class}"

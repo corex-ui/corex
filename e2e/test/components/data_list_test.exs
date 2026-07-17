@@ -33,7 +33,7 @@ defmodule E2eWeb.DataListTest do
       session =
         ComponentBehaviorSpec.visit_ready(session, DataList, :data_list, :anatomy)
 
-      assert_has(session, css("#data-list-anatomy-custom-slots .tag", minimum: 1))
+      assert_has(session, css("#data-list-anatomy-custom-slots .badge", minimum: 1))
     end
 
     feature "empty section renders empty message", %{session: session} do

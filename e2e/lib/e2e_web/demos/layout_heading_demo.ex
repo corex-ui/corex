@@ -178,7 +178,7 @@ defmodule E2eWeb.Demos.LayoutHeadingDemo do
       assign(assigns, :max_width_variants, DemoScales.max_width_variants("layout-heading"))
 
     ~H"""
-    <div class={DemoScales.preview_scroll_class()}>
+    <div {DemoScales.preview_scroll_attrs()}>
       <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.layout_heading class={DemoScales.join_modifiers("layout-heading", variant.modifier)}>

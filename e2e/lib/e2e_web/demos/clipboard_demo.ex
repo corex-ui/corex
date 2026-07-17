@@ -653,7 +653,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
     assigns = assign(assigns, :width_variants, DemoScales.width_layout_variants("clipboard"))
 
     ~H"""
-    <div class={DemoScales.preview_scroll_class()}>
+    <div {DemoScales.preview_scroll_attrs()}>
       <div :for={variant <- @width_variants} class="flex flex-col gap-2">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.clipboard
@@ -675,7 +675,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
     assigns = assign(assigns, :max_width_variants, DemoScales.max_width_variants("clipboard"))
 
     ~H"""
-    <div class={DemoScales.preview_scroll_class()}>
+    <div {DemoScales.preview_scroll_attrs()}>
       <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.clipboard

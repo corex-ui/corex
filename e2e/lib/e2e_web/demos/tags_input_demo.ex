@@ -1052,6 +1052,8 @@ defmodule E2eWeb.Demos.TagsInputDemo do
   end
 
   def styling_variant_example(assigns) do
+    assigns = assign(assigns, :demo_tags, styling_tags_value())
+
     ~H"""
     <div class="flex flex-col gap-space-lg w-full items-center">
       <.tags_input id="tags-style-variant-subtle" class="tags-input w-full" value={@demo_tags}>
@@ -1291,7 +1293,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
       |> assign(:max_width_variants, DemoScales.max_width_variants_from("tags-input", "6xs"))
 
     ~H"""
-    <div class={DemoScales.preview_scroll_class()}>
+    <div {DemoScales.preview_scroll_attrs()}>
       <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.tags_input

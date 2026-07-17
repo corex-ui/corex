@@ -331,7 +331,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     assigns = assign(assigns, :max_width_variants, DemoScales.max_width_variants("number-input"))
 
     ~H"""
-    <div class={DemoScales.preview_scroll_class()}>
+    <div {DemoScales.preview_scroll_attrs()}>
       <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.number_input

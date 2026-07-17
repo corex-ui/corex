@@ -133,7 +133,7 @@ defmodule E2eWeb.DataTableStyleLive do
           code_tabs={E2eWeb.Demos.DataTableDemo.styling_max_width_code_tabs()}
         >
           <:preview>
-            <div class={DemoScales.preview_scroll_class()}>
+            <div {DemoScales.preview_scroll_attrs()}>
               <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
                 <p class="typo ui-size-sm font-medium">{variant.label}</p>
                 <.style_table

@@ -115,7 +115,7 @@ defmodule E2eWeb.Demos.CodeDemo do
       |> assign(:text_steps, DemoScales.text_steps())
 
     ~H"""
-    <div class={DemoScales.preview_scroll_class()}>
+    <div {DemoScales.preview_scroll_attrs()}>
       <div :for={step <- @text_steps} class="flex flex-col gap-2">
         <p class="typo ui-size-sm font-medium">{step}</p>
         <.code
@@ -146,7 +146,7 @@ defmodule E2eWeb.Demos.CodeDemo do
       |> assign(:max_width_variants, DemoScales.max_width_variants("code"))
 
     ~H"""
-    <div class={DemoScales.preview_scroll_class()}>
+    <div {DemoScales.preview_scroll_attrs()}>
       <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.code
@@ -176,7 +176,7 @@ defmodule E2eWeb.Demos.CodeDemo do
       |> assign(:radius_steps, DemoScales.radius_steps())
 
     ~H"""
-    <div class={DemoScales.preview_scroll_class()}>
+    <div {DemoScales.preview_scroll_attrs()}>
       <div :for={step <- @radius_steps} class="flex flex-col gap-2">
         <p class="typo ui-size-sm font-medium">{step}</p>
         <.code class={"code ui-rounded-#{step}"} language={:elixir} code={@styling_snippet} />
