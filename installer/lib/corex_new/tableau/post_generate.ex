@@ -8,7 +8,7 @@ defmodule Corex.New.Tableau.PostGenerate do
     prompt_install(project_path, opts)
   end
 
-  defp init_git(project_path) do
+  def init_git(project_path) do
     if git_available?() and not inside_git_repo?(project_path) do
       Mix.shell().info([:green, "* initializing git repository", :reset])
 
@@ -19,7 +19,7 @@ defmodule Corex.New.Tableau.PostGenerate do
     end
   end
 
-  defp prompt_install(project_path, opts) do
+  def prompt_install(project_path, opts) do
     install? =
       Keyword.get_lazy(opts, :install, fn ->
         Mix.shell().yes?("\nFetch and install dependencies?")

@@ -128,4 +128,43 @@ defmodule Corex.New.Tableau.GenerateTest do
       refute File.read!("assets/js/site.js") =~ "Toggle:"
     end)
   end
+
+  test "run/2 with --dev uses path deps and relative corex.mjs import" do
+    Corex.New.MixHelper.in_tmp("tableau generate dev", fn ->
+      install_dir = File.cwd!()
+      File.mkdir_p!(Path.join(install_dir, "assets/js"))
+      File.mkdir_p!(Path.join(install_dir, "assets/css"))
+      File.mkdir_p!(Path.join(install_dir, "config"))
+
+      corex_root = Path.join(install_dir, "fake_corex")
+      File.mkdir_p!(Path.join(corex_root, "priv/static"))
+      File.write!(Path.join(corex_root, "priv/static/corex.mjs"), "export {}\n")
+
+      opts = base_opts(dev: "fake_corex")
+      assert :ok == Generate.run(install_dir, opts)
+
+      mix = File.read!("mix.exs")
+      assert mix =~ ~S[path: "fake_corex"]
+      assert mix =~ ~S[path: "fake_corex/design"]
+
+      js = File.read!("assets/js/site.js")
+      assert js =~ "../../fake_corex/priv/static/hooks.mjs"
+      assert js =~ "../../fake_corex/priv/static/toast.mjs"
+      refute js =~ ~s[from "corex"]
+    end)
+  end
+
+  test "run/2 with --dev raises when corex.mjs is missing" do
+    Corex.New.MixHelper.in_tmp("tableau generate dev missing mjs", fn ->
+      install_dir = File.cwd!()
+      File.mkdir_p!(Path.join(install_dir, "assets/js"))
+      File.mkdir_p!(Path.join(install_dir, "assets/css"))
+      File.mkdir_p!(Path.join(install_dir, "config"))
+      File.mkdir_p!(Path.join(install_dir, "empty_corex"))
+
+      assert_raise Mix.Error, ~r/Expected Corex bundle/, fn ->
+        Generate.run(install_dir, base_opts(dev: "empty_corex"))
+      end
+    end)
+  end
 end
