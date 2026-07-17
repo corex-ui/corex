@@ -56,7 +56,7 @@ defmodule CorexMcp.MixProject do
     if Code.ensure_loaded?(:json) do
       []
     else
-      [{:json_polyfill, "~> 0.2 or ~> 1.0", only: [:dev, :test]}]
+      [{:json_polyfill, "~> 0.2 or ~> 1.0"}]
     end
   end
 
