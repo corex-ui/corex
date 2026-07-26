@@ -19,7 +19,6 @@
 }
 
 @layer components {
-
  .marquee {
  width: 100%;
  max-width: var(--container-md);
@@ -144,8 +143,3 @@
 }
 }
 
-@utility marquee--on-* {
- [data-scope="marquee"][data-part="edge"] {
- --edge-background: --value(--color-*, [color]);
- }
-}

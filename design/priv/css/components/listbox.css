@@ -20,8 +20,6 @@
  }
 
  .listbox [data-scope="listbox"][data-part="root"] {
- @apply ui-root;
-
  flex-direction: column;
  flex-wrap: nowrap;
  align-items: stretch;
@@ -47,10 +45,6 @@
  .listbox [data-scope="listbox"][data-part="root"][data-orientation="horizontal"] {
  flex-direction: column;
  flex-wrap: nowrap;
- }
-
- .listbox [data-scope="listbox"][data-part="label"] {
- @apply ui-label;
  }
 
  .listbox [data-scope="listbox"][data-part="label"][data-disabled] {
@@ -150,8 +144,6 @@
  }
 
  .listbox [data-scope="listbox"][data-part="item"] {
- @apply ui-item;
-
  display: flex;
  width: 100%;
  align-self: stretch;

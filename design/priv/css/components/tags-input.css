@@ -2,8 +2,6 @@
 
 @layer components {
  .tags-input {
- @apply ui-root;
-
  width: 100%;
  max-width: var(--container-md);
  }
@@ -13,8 +11,6 @@
  }
 
  .tags-input [data-scope="tags-input"][data-part="root"] {
- @apply ui-root;
-
  position: relative;
  }
 
@@ -28,10 +24,6 @@
 
  .tags-input [data-scope="tags-input"][data-part="root"][data-readonly] {
  @apply ui-readonly;
- }
-
- .tags-input [data-scope="tags-input"][data-part="label"] {
- @apply ui-label;
  }
 
  .tags-input [data-scope="tags-input"][data-part="control"] {
@@ -74,8 +66,6 @@
  }
 
  .tags-input [data-scope="tags-input"][data-part="input"] {
- @apply ui-input;
-
  flex: 1 1 var(--container-5xs);
  min-width: var(--container-6xs);
  max-width: none;
@@ -97,10 +87,6 @@
  display: none !important;
  }
 
- .tags-input [data-scope="tags-input"][data-part="item-preview"] {
- @apply ui-trigger;
- }
-
  .tags-input [data-scope="tags-input"][data-part="item-text"] {
  min-width: 0;
  overflow: hidden;
@@ -110,7 +96,12 @@
  }
 
  .tags-input [data-scope="tags-input"][data-part="item-delete-trigger"] {
- @apply ui-trigger ui-trigger--square;
+ aspect-ratio: 1 / 1;
+ padding: 0;
+ justify-content: center;
+ width: auto;
+ border-radius: var(--radius-sm);
+ --ctl-radius: var(--radius-sm);
 
  min-height: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
  min-width: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
@@ -121,43 +112,12 @@
  }
 
  .tags-input [data-scope="tags-input"][data-part="item-input"] {
- @apply ui-input;
-
  max-width: var(--container-7xs);
- }
-
- .tags-input [data-scope="tags-input"][data-part="error"] {
- @apply ui-error;
  }
 
  .tags-input [data-scope="tags-input"][data-part="error"].absolute {
  padding-block: 0;
  display: block;
  }
-
 }
 
-@utility tags-input--trigger--* { [data-scope="tags-input"][data-part="item-delete-trigger"] {
- background-color: --value(--color-*, [color]);
- color: --value(--color-*-ink, [color]);
- }
- [data-scope="tags-input"][data-part="item-delete-trigger"]:hover {
- background-color: --value(--color-*-hover, [color]);
- }
- [data-scope="tags-input"][data-part="item-delete-trigger"]:active {
- background-color: --value(--color-*-active, [color]);
- }
- [data-scope="tags-input"][data-part="item-delete-trigger"]:focus-visible {
- outline: none;
- box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
- }
- [data-scope="tags-input"][data-part="item-delete-trigger"]:disabled,
- [data-scope="tags-input"][data-part="item-delete-trigger"][data-disabled] {
- background-color: --value(--color-*-muted, [color]);
- color: var(--color-ink-muted);
- }
- [data-scope="tags-input"][data-part="item-delete-trigger"] svg,
- [data-scope="tags-input"][data-part="item-delete-trigger"] .icon,
- [data-scope="tags-input"][data-part="item-delete-trigger"] [class^="hero-"] {
- color: inherit;
- }}

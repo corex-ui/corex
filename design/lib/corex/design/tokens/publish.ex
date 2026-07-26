@@ -1,33 +1,38 @@
 defmodule Corex.Design.Tokens.Publish do
   @moduledoc false
 
+  alias Corex.Design.Emit.Css
   alias Corex.Design.Emit.Semantic
+  alias Corex.Design.Emit.Typography
   alias Corex.Design.Theme
   alias Corex.Design.Tokens.Colors
+  alias Corex.Design.Tokens.Naming
   alias Corex.Design.Tokens.Scales
   alias Corex.Design.Write
-
-  @header "/**\n * Do not edit directly, this file was auto-generated.\n */\n\n"
 
   @doc false
   def write_theme_tokens!(output_root) do
     colors = Colors.generate()
 
-    for theme <- Theme.themes() do
+    Enum.each(Theme.themes(), fn theme ->
       write_dimension!(output_root, theme)
       write_border!(output_root, theme)
       write_text!(output_root, theme)
       write_font!(output_root, theme)
+      write_effect!(output_root, theme)
+      Typography.write!(output_root, theme)
 
-      for mode <- Theme.modes() do
+      Enum.each(Theme.modes(), fn mode ->
         write_color!(output_root, theme, mode, Map.fetch!(colors, {theme, mode}))
-      end
-    end
+      end)
+    end)
 
     Semantic.write_color_bridge!(output_root)
     Semantic.write_border_bridge!(output_root)
     Semantic.write_dimension_bridge!(output_root)
     Semantic.write_font_bridge!(output_root)
+    Semantic.write_text_bridge!(output_root)
+    Semantic.write_effect_bridge!(output_root)
     Semantic.remove_legacy_color_scope!(output_root)
     write_theme_entries!(output_root)
 
@@ -45,21 +50,16 @@ defmodule Corex.Design.Tokens.Publish do
     :ok
   end
 
+  @theme_token_files ~w(border dimension text font effect typography)
+
   defp theme_entry(theme) do
     name = Atom.to_string(theme)
 
-    imports =
-      [
-        ~s(@import "../tokens/themes/#{name}/border.css";),
-        ~s(@import "../tokens/themes/#{name}/dimension.css";),
-        ~s(@import "../tokens/themes/#{name}/text.css";),
-        ~s(@import "../tokens/themes/#{name}/font.css";)
-      ] ++
-        Enum.map(Theme.modes(), fn mode ->
-          ~s(@import "../tokens/themes/#{name}/color/#{mode}.css";)
-        end)
+    paths =
+      Enum.map(@theme_token_files, &"../tokens/themes/#{name}/#{&1}.css") ++
+        Enum.map(Theme.modes(), &"../tokens/themes/#{name}/color/#{&1}.css")
 
-    Enum.join(imports, "\n") <> "\n"
+    Css.imports(paths)
   end
 
   defp write_dimension!(output_root, theme) do
@@ -119,6 +119,48 @@ defmodule Corex.Design.Tokens.Publish do
     Write.atomic!(path, theme_block(theme, stack_vars ++ weight_vars))
   end
 
+  defp write_effect!(output_root, theme) do
+    scale = Theme.shadow_scale(theme)
+
+    shadow_vars =
+      for {step, template} <- Scales.shadow() do
+        {"theme-shadow-#{dash(step)}", Scales.scale_shadow_template(template, scale)}
+      end
+
+    inset_vars =
+      for {step, template} <- Scales.inset_shadow() do
+        {"theme-inset-shadow-#{dash(step)}", Scales.scale_shadow_template(template, scale)}
+      end
+
+    drop_vars =
+      for {step, template} <- Scales.drop_shadow() do
+        {"theme-drop-shadow-#{dash(step)}", Scales.scale_shadow_template(template, scale)}
+      end
+
+    text_shadow_vars =
+      for {step, template} <- Scales.text_shadow() do
+        {"theme-text-shadow-#{dash(step)}", Scales.scale_shadow_template(template, scale)}
+      end
+
+    blur_vars =
+      for {step, value} <- Scales.blur() do
+        {"theme-blur-#{dash(step)}", scale_length(value, scale)}
+      end
+
+    path = Path.join([output_root, "tokens", "themes", Atom.to_string(theme), "effect.css"])
+
+    Write.atomic!(
+      path,
+      theme_block(theme, shadow_vars ++ inset_vars ++ drop_vars ++ text_shadow_vars ++ blur_vars)
+    )
+  end
+
+  defp scale_length(value, 1.0), do: value
+
+  defp scale_length(value, scale) when is_binary(value) do
+    Scales.scale_shadow_template(value, scale)
+  end
+
   defp write_color!(output_root, theme, mode, tokens) do
     sorted =
       tokens
@@ -158,23 +200,20 @@ defmodule Corex.Design.Tokens.Publish do
   end
 
   defp color_block(theme, mode, vars) do
-    @header <>
-      ~s([data-theme="#{theme}"][data-mode="#{mode}"] {\n) <>
-      format_vars(vars) <> "\n}\n"
+    block(~s([data-theme="#{theme}"][data-mode="#{mode}"]), vars)
   end
 
   defp theme_block(theme, vars) do
-    @header <> selector_theme(theme) <> "\n" <> format_vars(vars) <> "\n}\n"
+    block(~s([data-theme="#{theme}"]), vars)
   end
 
-  defp selector_theme(theme), do: ~s([data-theme="#{theme}"] {)
+  defp block(selector, vars) do
+    declarations = Enum.map(vars, fn {name, value} -> Css.declaration(name, value) end)
 
-  defp format_vars(vars) do
-    Enum.map_join(vars, "\n", fn {name, value} -> "  --#{name}: #{value};" end)
+    Css.document([Css.block(selector, declarations)])
   end
 
-  defp dash(value), do: value |> to_string() |> String.replace("_", "-")
+  defp dash(value), do: Naming.dash(value)
 
-  defp text_token_step(:md), do: "base"
-  defp text_token_step(step), do: dash(step)
+  defp text_token_step(step), do: Naming.text_token_step(step)
 end

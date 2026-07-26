@@ -5,12 +5,14 @@
  @apply ui-loading;
  }
 
- .dialog [data-scope="dialog"][data-part="trigger"] {
- @apply ui-trigger;
- }
-
  .dialog [data-scope="dialog"][data-part="close-trigger"] {
- @apply ui-trigger ui-trigger--square ui-size-sm;
+ aspect-ratio: 1 / 1;
+ padding: 0;
+ justify-content: center;
+ width: auto;
+ border-radius: var(--radius-sm);
+ --ctl-radius: var(--radius-sm);
+ @apply ui-size-sm;
 
  flex-shrink: 0;
  height: fit-content;
@@ -26,6 +28,10 @@
  z-index: 10;
  }
 
+ .dialog.dialog--side [data-scope="dialog"][data-part="backdrop"] {
+ background: transparent;
+ }
+
  .dialog [data-scope="dialog"][data-part="positioner"] {
  position: fixed;
  inset: 0;
@@ -38,8 +44,6 @@
  }
 
  .dialog [data-scope="dialog"][data-part="content"] {
- @apply ui-content;
-
  max-width: var(--container-md);
  padding: var(--spacing-space);
  text-align: start;
@@ -89,6 +93,8 @@
  padding: var(--spacing-space);
  border-radius: var(--radius-none);
  border: 0;
+ background: transparent;
+ box-shadow: none;
  }
 
  .dialog.dialog--side [data-scope="dialog"][data-part="header"] {
@@ -109,7 +115,7 @@
  .dialog.dialog--side [data-scope="dialog"][data-part="positioner"] {
  align-items: stretch;
  justify-content: flex-start;
- height: 100vh;
+ height: 100dvh;
  }
 
  .dialog [data-scope="dialog"][data-part="content"][data-has-nested] {

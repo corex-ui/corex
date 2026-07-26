@@ -14,8 +14,6 @@
  }
 
  .native-input [data-scope="native-input"][data-part="root"] {
- @apply ui-root;
-
  gap: var(--spacing-space);
  position: relative;
  padding-inline-end: var(--spacing-space);
@@ -23,10 +21,6 @@
 
  .native-input [data-scope="native-input"][data-part="root"][data-readonly] {
  @apply ui-readonly;
- }
-
- .native-input [data-scope="native-input"][data-part="label"] {
- @apply ui-label;
  }
 
  .native-input [data-scope="native-input"][data-part="control"] {
@@ -39,8 +33,6 @@
  }
 
  .native-input [data-scope="native-input"][data-part="input"] {
- @apply ui-input;
-
  flex: 1 1 auto;
  min-width: 0;
  }
@@ -69,10 +61,6 @@
 
  .native-input:not([data-no-icon]) [data-scope="native-input"][data-part="input"] {
  padding-inline-start: var(--spacing-size);
- }
-
- .native-input [data-scope="native-input"][data-part="error"] {
- @apply ui-error;
  }
 
  .native-input [data-scope="native-input"][data-part="control"] label[data-part="label"] {
@@ -361,5 +349,4 @@
  .native-input [data-scope="native-input"][data-part="date-wrapper"]:focus-within [data-part="placeholder-overlay"] {
  visibility: hidden;
  }
-
 }

@@ -47,12 +47,6 @@
  background-color: var(--color-ui);
  }
 
- .avatar.ui-solid [data-scope="avatar"][data-part="fallback"] {
- color: var(--ctl-ink, var(--ctl-fill-ink, var(--color-ink)));
- background-color: var(--ctl-bg, var(--ctl-fill, var(--color-ui-active)));
- border-color: var(--ctl-bd, transparent);
- }
-
  .avatar [data-scope="avatar"][data-part="image"] {
  display: block;
  width: 100%;

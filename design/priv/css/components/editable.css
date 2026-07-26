@@ -10,8 +10,6 @@
  }
 
  .editable [data-scope="editable"][data-part="root"] {
- @apply ui-root;
-
  width: 100%;
  position: relative;
  padding-inline-end: var(--spacing-space);
@@ -19,10 +17,6 @@
 
  .editable [data-scope="editable"][data-part="root"][data-readonly] {
  @apply ui-readonly;
- }
-
- .editable [data-scope="editable"][data-part="label"] {
- @apply ui-label;
  }
 
  .editable [data-scope="editable"][data-part="control"] {
@@ -46,8 +40,6 @@
  }
 
  .editable [data-scope="editable"][data-part="input"] {
- @apply ui-input;
-
  flex: 1 1 0%;
  min-width: 0;
  width: auto;
@@ -55,8 +47,6 @@
  }
 
  .editable [data-scope="editable"][data-part="preview"] {
- @apply ui-input;
-
  flex: 1 1 0%;
  min-width: 0;
  width: auto;
@@ -73,7 +63,12 @@
  }
 
  .editable [data-scope="editable"][data-part="edit-trigger"] {
- @apply ui-trigger ui-trigger--square;
+ aspect-ratio: 1 / 1;
+ padding: 0;
+ justify-content: center;
+ width: auto;
+ border-radius: var(--radius-sm);
+ --ctl-radius: var(--radius-sm);
 
  flex: 0 0 auto;
  width: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
@@ -83,7 +78,12 @@
  max-height: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
  }
  .editable [data-scope="editable"][data-part="cancel-trigger"] {
- @apply ui-trigger ui-trigger--square;
+ aspect-ratio: 1 / 1;
+ padding: 0;
+ justify-content: center;
+ width: auto;
+ border-radius: var(--radius-sm);
+ --ctl-radius: var(--radius-sm);
 
  flex: 0 0 auto;
  width: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
@@ -93,7 +93,12 @@
  max-height: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
  }
  .editable [data-scope="editable"][data-part="submit-trigger"] {
- @apply ui-trigger ui-trigger--square;
+ aspect-ratio: 1 / 1;
+ padding: 0;
+ justify-content: center;
+ width: auto;
+ border-radius: var(--radius-sm);
+ --ctl-radius: var(--radius-sm);
 
  flex: 0 0 auto;
  width: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
@@ -110,9 +115,4 @@
  .editable [data-scope="editable"][data-part="submit-trigger"] {
  @apply ui-success;
  }
-
- .editable [data-scope="editable"][data-part="error"] {
- @apply ui-error;
- }
-
 }

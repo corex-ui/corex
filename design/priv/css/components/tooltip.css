@@ -26,8 +26,6 @@
  }
 
  .tooltip [data-scope="tooltip"][data-part="content"] {
- @apply ui-content;
-
  padding: var(--spacing-space);
  max-width: var(--container-5xs);
  position: relative;
@@ -36,12 +34,6 @@
  background-color: var(--color-ui);
  border: 1px solid var(--color-border);
  box-shadow: var(--shadow-ui);
- }
-
- .tooltip.ui-solid [data-scope="tooltip"][data-part="content"] {
- color: var(--ctl-ink, var(--ctl-ink-text, var(--color-ink)));
- background-color: var(--ctl-bg, var(--color-ui));
- border-color: var(--ctl-bd, var(--color-border));
  }
 
  .tooltip [data-scope="tooltip"][data-part="content"][data-state="closed"] {
@@ -62,16 +54,8 @@
  z-index: 0;
  }
 
- .tooltip.ui-solid [data-scope="tooltip"][data-part="arrow"] {
- --arrow-background: var(--ctl-bg, var(--color-ui));
- }
-
  .tooltip [data-scope="tooltip"][data-part="arrow-tip"] {
  background: var(--arrow-background);
  border: 1px solid var(--color-border);
- }
-
- .tooltip.ui-solid [data-scope="tooltip"][data-part="arrow-tip"] {
- border-color: var(--ctl-bd, var(--color-border));
  }
 }

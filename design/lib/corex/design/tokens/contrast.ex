@@ -110,7 +110,7 @@ defmodule Corex.Design.Tokens.Contrast do
   end
 
   defp roles do
-    Filter.semantics()
+    Filter.semantic_strings()
     |> Enum.map(&to_string/1)
     |> Enum.reject(&(&1 == "base"))
   end

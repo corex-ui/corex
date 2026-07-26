@@ -192,6 +192,12 @@
           {Credo.Check.Warning.UnusedStringOperation, []},
           {Credo.Check.Warning.UnusedTupleOperation, []},
           {Credo.Check.Warning.WrongTestFilename, []},
+          {Credo.Check.Warning.UnsafeToAtom,
+           [
+             files: %{
+               excluded: ["test/**/*", "lib/corex/design/keys.ex"]
+             }
+           ]},
           # Error Handling
           {OeditusCredo.Check.Warning.MissingErrorHandling, []},
           {OeditusCredo.Check.Warning.SilentErrorCase, []},
@@ -249,6 +255,7 @@
           {OeditusCredo.Check.Security.TOCTOU, [files: %{excluded: ["lib/", "test/"]}]}
         ],
         disabled: [
+          {Credo.Check.Readability.Specs, []},
           #
           # Checks scheduled for next check update (opt-in for now)
           {Credo.Check.Refactor.UtcNowTruncate, []},
@@ -271,7 +278,6 @@
           {Credo.Check.Readability.SeparateAliasRequire, []},
           {Credo.Check.Readability.SingleFunctionToBlockPipe, []},
           {Credo.Check.Readability.SinglePipe, []},
-          {Credo.Check.Readability.Specs, []},
           {Credo.Check.Readability.StrictModuleLayout, []},
           {Credo.Check.Readability.WithCustomTaggedTuple, []},
           {Credo.Check.Refactor.ABCSize, []},
@@ -291,7 +297,6 @@
           {Credo.Check.Warning.LeakyEnvironment, []},
           {Credo.Check.Warning.MapGetUnsafePass, []},
           {Credo.Check.Warning.MixEnv, []},
-          {Credo.Check.Warning.UnsafeToAtom, []}
           # {Credo.Check.Warning.UnusedOperation, [{MyMagicModule, [:fun1, :fun2]}]}
 
           # {Credo.Check.Refactor.MapInto, []},

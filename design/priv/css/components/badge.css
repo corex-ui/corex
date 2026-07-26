@@ -23,6 +23,8 @@
     white-space: normal;
     box-sizing: border-box;
 
+    & .icon,
+    & [class^="hero-"],
     & svg {
       @apply ui-icon;
 
@@ -30,29 +32,20 @@
     }
   }
 
-  .badge:not(.ui-solid) {
-    background-color: var(--color-ui);
-    color: var(--ctl-ink-text, var(--color-ink));
-    border-color: var(--color-border);
-  }
-
-  .badge.ui-solid {
-    background-color: var(--ctl-bg, var(--ctl-fill, var(--color-ui-active)));
-    color: var(--ctl-ink, var(--ctl-fill-ink, var(--color-ink)));
-    border-color: var(--ctl-bd, transparent);
-  }
-
-  .badge.badge--square,
-  .badge.badge--circle {
-    display: inline-flex;
+  .badge.ui-trigger--square {
     aspect-ratio: 1 / 1;
-    justify-content: center;
-    align-items: center;
-    width: auto;
     padding: 0;
+    justify-content: center;
+    width: auto;
+    border-radius: var(--radius-sm);
+    --ctl-radius: var(--radius-sm);
   }
 
-  .badge.badge--circle {
-    border-radius: var(--radius-full);
+  .badge.ui-trigger--circle {
+    aspect-ratio: 1 / 1;
+    padding: 0;
+    justify-content: center;
+    width: auto;
+    border-radius: var(--radius-full) !important;
   }
 }

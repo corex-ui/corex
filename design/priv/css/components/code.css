@@ -150,14 +150,3 @@
  [data-mode="dark"] .code .ss { color: #9cdcfe; }
 }
 
-@utility code--max-w-none {
- max-width: none;
-}
-
-@utility code--max-w-full {
- max-width: 100%;
-}
-
-@utility code--max-w-* {
- max-width: --value(--container-*, [length]);
-}

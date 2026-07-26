@@ -19,8 +19,6 @@
  }
 
  .checkbox [data-scope="checkbox"][data-part="root"] {
- @apply ui-root;
-
  gap: var(--spacing-space); 
  position: relative;
  padding-inline-end: var(--spacing-space);
@@ -72,8 +70,6 @@
  [data-scope="checkbox"][data-part="label"],
  [data-scope="checkbox"][data-part="root"][data-loading]
  [data-scope="checkbox"][data-part="label"] {
- @apply ui-label;
-
  height: 1em;
  min-height: 1em;
  max-height: 1em;
@@ -87,7 +83,6 @@
  }
 
  .checkbox [data-scope="checkbox"][data-part="label"] {
- @apply ui-label;
  cursor: pointer;
  }
 
@@ -102,7 +97,12 @@
  }
 
  .checkbox [data-scope="checkbox"][data-part="control"] {
- @apply ui-trigger ui-trigger--square;
+ aspect-ratio: 1 / 1;
+ padding: 0;
+ justify-content: center;
+ width: auto;
+ border-radius: var(--radius-sm);
+ --ctl-radius: var(--radius-sm);
 
  min-height: unset;
  min-width: unset;
@@ -132,40 +132,40 @@
  }
  }
 
- .checkbox.ui-solid [data-scope="checkbox"][data-part="control"][data-state="unchecked"] {
+ .checkbox [data-scope="checkbox"][data-part="control"][data-state="unchecked"] {
  background-color: var(--color-ui);
  color: var(--ctl-ink-text, var(--color-ink));
  border-color: var(--color-border);
  }
 
- .checkbox.ui-solid [data-scope="checkbox"][data-part="control"][data-state="unchecked"]:hover {
+ .checkbox [data-scope="checkbox"][data-part="control"][data-state="unchecked"]:hover {
  background-color: var(--color-ui-hover);
  }
 
- .checkbox.ui-solid [data-scope="checkbox"][data-part="control"][data-state="unchecked"]:active {
+ .checkbox [data-scope="checkbox"][data-part="control"][data-state="unchecked"]:active {
  background-color: var(--color-ui-active);
  }
 
- .checkbox.ui-solid [data-scope="checkbox"][data-part="control"][data-state="checked"],
- .checkbox.ui-solid [data-scope="checkbox"][data-part="control"][data-state="indeterminate"] {
- background-color: var(--ctl-fill, var(--color-ui-active));
- color: var(--ctl-fill-ink, var(--color-ink));
+ .checkbox [data-scope="checkbox"][data-part="control"][data-state="checked"],
+ .checkbox [data-scope="checkbox"][data-part="control"][data-state="indeterminate"] {
+ background-color: var(--ctl-fill, var(--color-ink));
+ color: var(--ctl-fill-ink, var(--color-root));
  border-color: transparent;
  }
 
- .checkbox.ui-solid [data-scope="checkbox"][data-part="control"][data-state="checked"]:hover,
- .checkbox.ui-solid [data-scope="checkbox"][data-part="control"][data-state="indeterminate"]:hover {
- background-color: var(--ctl-fill-hover, var(--color-ui-hover));
+ .checkbox [data-scope="checkbox"][data-part="control"][data-state="checked"]:hover,
+ .checkbox [data-scope="checkbox"][data-part="control"][data-state="indeterminate"]:hover {
+ background-color: var(--ctl-fill-hover, color-mix(in oklab, var(--color-ink) 88%, black));
  }
 
- .checkbox.ui-solid [data-scope="checkbox"][data-part="control"][data-state="checked"]:active,
- .checkbox.ui-solid [data-scope="checkbox"][data-part="control"][data-state="indeterminate"]:active {
- background-color: var(--ctl-fill-active, var(--color-ui-active));
+ .checkbox [data-scope="checkbox"][data-part="control"][data-state="checked"]:active,
+ .checkbox [data-scope="checkbox"][data-part="control"][data-state="indeterminate"]:active {
+ background-color: var(--ctl-fill-active, color-mix(in oklab, var(--color-ink) 76%, black));
  }
 
- .checkbox.ui-solid [data-scope="checkbox"][data-part="control"][data-state="checked"]:focus-visible,
- .checkbox.ui-solid [data-scope="checkbox"][data-part="control"][data-state="indeterminate"]:focus-visible {
- box-shadow: inset 0 0 0 2px var(--ctl-fill-ink, var(--color-ink));
+ .checkbox [data-scope="checkbox"][data-part="control"][data-state="checked"]:focus-visible,
+ .checkbox [data-scope="checkbox"][data-part="control"][data-state="indeterminate"]:focus-visible {
+ box-shadow: inset 0 0 0 2px var(--ctl-fill-ink, var(--color-root));
  outline: none;
  }
 
@@ -192,7 +192,6 @@
  .checkbox
  [data-scope="checkbox"][data-part="control"][data-state="indeterminate"]
  [data-part="indeterminate"] {
-
  display: flex !important;
  
 
@@ -202,9 +201,6 @@
  & img {
  @apply ui-icon;
  }
- }
- .checkbox [data-scope="checkbox"][data-part="error"] {
- @apply ui-error;
  }
 
  .checkbox [data-scope="checkbox"][data-part="error"].absolute {

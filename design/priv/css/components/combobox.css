@@ -16,21 +16,13 @@
  }
 
  .combobox [data-scope="combobox"][data-part="root"] {
- @apply ui-root;
-
  gap: var(--spacing-space);
  width: 100%;
  position: relative;
  padding-inline-end: var(--spacing-space);
  }
 
- .combobox [data-scope="combobox"][data-part="label"] {
- @apply ui-label;
- }
-
  .combobox [data-scope="combobox"][data-part="empty"] {
- @apply ui-label;
-
  list-style: none;
  padding-inline: var(--spacing-space);
  padding-block: var(--spacing-space);
@@ -42,8 +34,6 @@
  }
 
  .combobox [data-scope="combobox"][data-part="input"] {
- @apply ui-input;
-
  flex: 1;
  padding-inline: var(--spacing-space);
  border-end-end-radius: 0;
@@ -69,8 +59,6 @@
  }
 
  .combobox [data-scope="combobox"][data-part="trigger"] {
- @apply ui-trigger;
-
  aspect-ratio: 1 / 1;
  padding: 0;
  justify-content: center;
@@ -85,7 +73,12 @@
  }
 
  .combobox [data-scope="combobox"][data-part="clear-trigger"] {
- @apply ui-trigger ui-trigger--square;
+ aspect-ratio: 1 / 1;
+ padding: 0;
+ justify-content: center;
+ width: auto;
+ border-radius: var(--radius-sm);
+ --ctl-radius: var(--radius-sm);
 
  border-inline-start: none;
  border-radius: 0;
@@ -98,7 +91,7 @@
  }
 
  .combobox [data-scope="combobox"][data-part="content"] {
- @apply ui-content scrollbar scrollbar--sm;
+ @apply scrollbar scrollbar--sm;
 
  z-index: 50;
  max-height: var(--ctl-max-height, calc(var(--spacing) * 96));
@@ -131,10 +124,6 @@
  background-color: var(--color-root);
  color: var(--color-ink);
  border-bottom: 1px solid var(--color-border);
- }
-
- .combobox [data-scope="combobox"][data-part="item"] {
- @apply ui-item;
  }
 
  .combobox [data-scope="combobox"][data-part="content"] [data-part="item-text"] {
@@ -175,10 +164,6 @@
  visibility: hidden;
  }
 
- .combobox [data-scope="combobox"][data-part="error"] {
- @apply ui-error;
- }
-
  .combobox [data-scope="combobox"][data-part="error"].absolute {
  padding-block: 0;
  display: block;
@@ -187,5 +172,4 @@
  .combobox [data-scope="combobox"][data-part="root"][data-readonly] {
  @apply ui-readonly;
  }
-
 }

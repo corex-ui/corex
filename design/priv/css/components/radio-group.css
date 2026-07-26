@@ -11,8 +11,6 @@
  }
 
  .radio-group [data-scope="radio-group"][data-part="root"] {
- @apply ui-root;
-
  gap: var(--spacing-space);
  position: relative;
  padding-inline-end: var(--spacing-space);
@@ -20,10 +18,6 @@
 
  .radio-group [data-scope="radio-group"][data-part="root"][data-readonly] {
  @apply ui-readonly;
- }
-
- .radio-group [data-scope="radio-group"][data-part="label"] {
- @apply ui-label;
  }
 
  [data-scope="radio-group"][data-part="item"] {
@@ -46,7 +40,11 @@
  }
 
  [data-scope="radio-group"][data-part="item-control"] {
- @apply ui-trigger ui-trigger--circle;
+ aspect-ratio: 1 / 1;
+ padding: 0;
+ justify-content: center;
+ width: auto;
+ border-radius: var(--radius-full) !important;
 
  flex-shrink: 0;
  margin-inline-start: auto;
@@ -75,36 +73,36 @@
  }
  }
 
- .radio-group.ui-solid [data-scope="radio-group"][data-part="item-control"][data-state="unchecked"] {
+ .radio-group [data-scope="radio-group"][data-part="item-control"][data-state="unchecked"] {
  background-color: var(--color-ui);
  color: var(--ctl-ink-text, var(--color-ink));
  border-color: var(--color-border);
  }
 
- .radio-group.ui-solid [data-scope="radio-group"][data-part="item-control"][data-state="unchecked"]:hover {
+ .radio-group [data-scope="radio-group"][data-part="item-control"][data-state="unchecked"]:hover {
  background-color: var(--color-ui-hover);
  }
 
- .radio-group.ui-solid [data-scope="radio-group"][data-part="item-control"][data-state="unchecked"]:active {
+ .radio-group [data-scope="radio-group"][data-part="item-control"][data-state="unchecked"]:active {
  background-color: var(--color-ui-active);
  }
 
- .radio-group.ui-solid [data-scope="radio-group"][data-part="item-control"][data-state="checked"] {
- background-color: var(--ctl-fill, var(--color-ui-active));
- color: var(--ctl-fill-ink, var(--color-ink));
+ .radio-group [data-scope="radio-group"][data-part="item-control"][data-state="checked"] {
+ background-color: var(--ctl-fill, var(--color-ink));
+ color: var(--ctl-fill-ink, var(--color-root));
  border-color: transparent;
  }
 
- .radio-group.ui-solid [data-scope="radio-group"][data-part="item-control"][data-state="checked"]:hover {
- background-color: var(--ctl-fill-hover, var(--color-ui-hover));
+ .radio-group [data-scope="radio-group"][data-part="item-control"][data-state="checked"]:hover {
+ background-color: var(--ctl-fill-hover, color-mix(in oklab, var(--color-ink) 88%, black));
  }
 
- .radio-group.ui-solid [data-scope="radio-group"][data-part="item-control"][data-state="checked"]:active {
- background-color: var(--ctl-fill-active, var(--color-ui-active));
+ .radio-group [data-scope="radio-group"][data-part="item-control"][data-state="checked"]:active {
+ background-color: var(--ctl-fill-active, color-mix(in oklab, var(--color-ink) 76%, black));
  }
 
- .radio-group.ui-solid [data-scope="radio-group"][data-part="item-control"][data-state="checked"]:focus-visible {
- box-shadow: inset 0 0 0 2px var(--ctl-fill-ink, var(--color-ink));
+ .radio-group [data-scope="radio-group"][data-part="item-control"][data-state="checked"]:focus-visible {
+ box-shadow: inset 0 0 0 2px var(--ctl-fill-ink, var(--color-root));
  outline: none;
  }
 
@@ -119,9 +117,5 @@
  color: inherit;
  width: 60%;
  height: 60%;
- }
-
- .radio-group [data-scope="radio-group"][data-part="error"] {
- @apply ui-error;
  }
 }

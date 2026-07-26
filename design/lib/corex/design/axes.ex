@@ -19,4 +19,10 @@ defmodule Corex.Design.Axes do
 
   def weights, do: Scales.steps(:weight)
   def weight_atoms, do: Scales.step_atoms(:weight)
+
+  def max_heights, do: Scales.steps(:max_height)
+  def max_height_atoms, do: Scales.step_atoms(:max_height)
+
+  def widths, do: Scales.steps(:width)
+  def width_atoms, do: Scales.step_atoms(:width)
 end

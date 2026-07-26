@@ -2,7 +2,9 @@
 
 Shared host classes for Corex Design components. Stack axes on the root, for example `accordion ui-accent ui-size-lg ui-rounded-xl`.
 
-Requires `mix corex.design.build` (`corex_design`). Per-component supported classes are listed on each component’s Hexdocs **Style** section on [corex](https://hexdocs.pm/corex).
+Requires `mix corex.design.build` (`corex_design`). Per-component supported classes are listed on each component Hexdocs **Style** section on [corex](https://hexdocs.pm/corex).
+
+Import one entry: `@import "../corex/corex.css"`.
 
 ## Semantic
 
@@ -10,27 +12,38 @@ Semantic palette roles from design tokens. Applied to interactive surfaces (trig
 
 | Role | Example |
 | ---- | ------- |
-| Default | `button` |
+| Default (base) | `button` or `button ui-base` |
 | Accent | `button ui-accent` |
 | Brand | `button ui-brand` |
 | Alert | `button ui-alert` |
 | Info | `button ui-info` |
 | Success | `button ui-success` |
 
-Semantic classes set shared control palette variables on the host (`--ctl-fill`, `--ctl-fill-hover`, `--ctl-ink-text`, and related tokens). They do not change surface treatment by themselves.
+Semantic classes set shared control palette variables on the host (`--ctl-fill`, `--ctl-fill-hover`, `--ctl-ink-text`, and related tokens). They do not change surface treatment by themselves. Base is always present as default fill vars on every host.
 
-Bundle filtering: `config :corex_design, semantics: ~w(base accent)a` trims unused `ui-{role}` utilities from `utilities.css`.
+Bundle filtering: `config :corex_design, semantics: ~w(base accent)a` trims unused role tokens and `ui-{role}` utilities at generation time.
 
 ## Variant
 
-Surface treatment for interactive parts. Orthogonal to semantic role. Default is **subtle** (neutral `ui` fill + border, semantic text ink when a palette class is present).
+Surface treatment for **Action** hosts (buttons, badges, links, compound triggers). Orthogonal to semantic role. Default is **subtle** (neutral `ui` fill + border, semantic text ink when a palette class is present).
 
 | Treatment | Surface | Example |
 | --------- | ------- | ------- |
 | Subtle (default) | Neutral `ui` fill + border | `button` or `button ui-accent` |
 | Solid | Full semantic fill + on-color ink | `button ui-accent ui-solid` |
+| Ghost | Transparent fill and border; hover tint | `button ui-accent ui-ghost` |
 
-Add `ui-solid` for a filled control. Subtle needs no class.
+Add `ui-solid` or `ui-ghost` for an explicit surface. Subtle needs no class.
+
+**Selection hosts** (`toggle`, `toggle-group`, `checkbox`, `radio-group`, `switch`, `tabs`, `pagination`, `tree-view`, `angle-slider`) and **Field hosts** (`native-input`, `number-input`, `password-input`, `pin-input`, `tags-input`) have **no variant axis**. Use semantic, size, and radius only.
+
+**Paint contract (all interactive surfaces):**
+
+1. Idle chrome follows the variant axis (Action) or stays neutral (Selection / Field).
+2. Disclosure (`data-state="open"`) darkens to `--color-ui-active`; it never fills.
+3. Selection (`on`, `checked`, `selected`, `in-range`, `indeterminate`) always fills with `--ctl-fill` / `--ctl-fill-ink`.
+
+**Link** also supports `ui-nav` for chrome-less nav items: no underline, ink by default, link-colored hover, and `aria-current="page"|"location"` for current weight and color (`class="link ui-nav"`).
 
 ## Size
 
@@ -60,22 +73,25 @@ Corner radius on roundable surfaces. Orthogonal to size and semantic role.
 
 Not every component exposes a radius axis (for example `icon`, `link`, `typo`).
 
-## Shape (buttons only)
+## Shape (buttons and badges)
 
 | Class | Example |
 | ----- | ------- |
 | Square | `button ui-trigger--square` |
 | Circle | `button ui-trigger--circle` |
 
-## Width and max width
+## Width
 
-Corex uses a single container ladder from `9xs` through `9xl` for named sizing. Theme files define `--theme-container-*`; the semantic bridge exposes `--container-*`.
-
-Each component sets its own host width in component CSS. Use Tailwind `w-*` and `max-w-*` utilities with container steps on the host when you need explicit bounds.
+| Class | Example |
+| ----- | ------- |
+| Auto | `select ui-width-auto` |
+| Fit | `button ui-width-fit` |
+| Full | `accordion ui-width-full` |
+| Container step | `select ui-width-3xs` |
 
 ## Max height
 
-Opt-in clamp for scrollable content panels. Put `ui-max-height-*` on the **host**; the recipe applies `--ctl-max-height` to `[data-part="content"]` (or accordion `item-content`) with overflow and scrollbar only when the modifier is present.
+Opt-in clamp for scrollable content panels. Put `ui-max-height-*` on the **host**; the recipe applies `--ctl-max-height` to content parts with overflow and scrollbar only when the modifier is present.
 
 | Step | Example |
 | ---- | ------- |
@@ -83,22 +99,26 @@ Opt-in clamp for scrollable content panels. Put `ui-max-height-*` on the **host*
 | SM | `accordion ui-max-height-sm` |
 | MD | `menu ui-max-height-md` |
 
-Uses the same `--container-*` ladder as width. Combobox keeps a default content max-height; the modifier overrides it.
+Uses the same `--container-*` ladder as width.
 
 ## Naming
 
-Pattern: `<component> ui-<role> ui-solid ui-size-<step> ui-rounded-<step> ui-max-height-<step>`.
+Pattern: `<component> ui-<role> ui-solid ui-size-<step> ui-rounded-<step> ui-width-<step> ui-max-height-<step>`.
 
-Combine freely: `dialog ui-brand ui-size-lg ui-rounded-lg ui-solid`.
+Combine freely: `button ui-brand ui-size-lg ui-rounded-lg ui-solid`, `accordion ui-accent ui-ghost`, `dialog ui-brand ui-size-lg ui-rounded-lg`.
 
 Each component Hexdocs **Style** section lists supported classes for that component.
+
+## Custom themes
+
+`config :corex_design, themes: %{my_theme: spec}` accepts a full theme map (palette seeds, surface lightness, contrast ratios, dimension scales, per-tag typography). See preset modules under `Corex.Design.Theme.Presets` for the shape. New apps default to `themes: [:uno]`.
 
 ## Overrides
 
 Override design tokens on `:root`, `[data-theme]`, or on a component host:
 
 ```css
-[data-theme="neo"][data-mode="light"] {
+[data-theme="uno"][data-mode="light"] {
   --color-accent: #0055aa;
 }
 

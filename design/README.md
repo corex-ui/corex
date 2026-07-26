@@ -15,9 +15,10 @@ Full app wiring (html attributes, pickers, fonts, icons) lives in Corex Hexdocs:
 # config/config.exs
 config :corex_design,
   output: "assets/corex",
-  default_theme: :neo,
+  default_theme: :uno,
   default_mode: :light,
-  themes: nil,
+  themes: [:uno],
+  modes: [:light, :dark],
   scales: [],
   components: nil,
   semantics: nil
@@ -41,7 +42,7 @@ Most apps call the build from `assets.build` / `assets.deploy` instead (see Core
 
 | Command | Purpose |
 |---------|---------|
-| `mix corex.design.build` | Write `assets/corex/` (`corex.css`, themes, components) |
+| `mix corex.design.build` | Write `assets/corex/` (`corex.css`, `recipes.css`, themes, components) |
 | `mix corex.design.options` | List allowed config values and your resolved config |
 | `mix corex.design.validate` | Validate `config :corex_design` |
 
@@ -50,23 +51,29 @@ Most apps call the build from `assets.build` / `assets.deploy` instead (see Core
 @source "../corex";
 ```
 
+One consumption mode: import `corex.css`. Do not cherry-pick individual component CSS files.
+
 ### Bundle filtering
 
 | Key | Default | Effect |
 |-----|---------|--------|
-| `components` | `nil` (all) | Emit only listed component CSS |
+| `components` | `nil` (all) | Emit only listed component CSS (deps auto-included) |
 | `semantics` | `nil` (all) | Emit only listed palette roles (`base` always included) |
-| `themes` | `nil` (all) | Emit only listed theme CSS |
-| `default_theme` | `:neo` | Build default theme |
+| `themes` | `nil` (all) | Emit only listed theme CSS; map form for custom themes |
+| `modes` | `[:light, :dark]` | Emit only listed color modes |
+| `default_theme` | `:uno` | Build default theme |
 | `default_mode` | `:light` | Build default mode |
 
 ```elixir
 components: ~w(button dialog accordion typo layout-heading)a,
 semantics: ~w(accent brand alert)a,
-themes: ~w(neo uno)a
+themes: ~w(uno neo)a,
+modes: [:light]
 ```
 
 Prefer top-level `semantics:` over legacy `scales: [semantic: ...]`.
+
+Custom themes: `themes: %{my_theme: spec}` where `spec` follows preset shape (palette seeds, surfaces, contrast, dimensions, typography). See `Corex.Design.Theme.Presets`.
 
 ### Scales
 
@@ -80,14 +87,13 @@ scales: [
 ]
 ```
 
-Public keys: `space`, `size`, `text`, `radius`, `weight`.
+### Host class opt-in
 
-## Modifiers
+Design styles apply only when the host carries the component class:
 
-Shared host classes: `ui-accent`, `ui-solid`, `ui-size-lg`, `ui-rounded-xl`, …. Full reference: [modifiers](guides/modifiers.md).
+```heex
+<.accordion class="accordion ui-accent">...</.accordion>
+<.accordion class="my-accordion">...</.accordion>
+```
 
-## See also
-
-- [Corex Design guide](https://hexdocs.pm/corex/design.html)
-- [Theming](https://hexdocs.pm/corex/theming.html) / [Dark mode](https://hexdocs.pm/corex/dark_mode.html)
-- [Manual installation](https://hexdocs.pm/corex/manual_installation.html)
+Omit the component class for a fully custom instance.

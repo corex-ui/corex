@@ -17,80 +17,88 @@ defmodule Corex.Design.Theme.Presets.Duo do
 
   defp palette do
     %{
-      base: "#F2F1EF",
-      accent: "#57534E",
-      alert: "#8F4040",
-      brand: "#524D6E",
-      info: "#3E5080",
-      success: "#3D6B52"
+      base: "#F2EFE8",
+      accent: "#3F3A32",
+      alert: "#9B3A3A",
+      brand: "#1D4E89",
+      info: "#3D5278",
+      success: "#3F6B4E"
     }
   end
 
   defp light_colors do
     %{
       surface:
-        Shared.surface_light(99, 96, 93, %{
-          muted: 96,
-          default: 94,
-          hover: 91,
-          active: 89
+        Shared.surface_light(99, 97, 94, %{
+          muted: 97,
+          default: 95,
+          hover: 92,
+          active: 90
         }),
       roles:
         Shared.light_roles(94, %{
-          accent: 40,
-          alert: 40,
-          brand: 40,
+          accent: 38,
+          alert: 42,
+          brand: 42,
           info: 40,
           success: 40
         }),
-      on: Shared.light_on(),
-      border: %{palette: :base, against: :control, ratio: 1.08},
-      focus: %{palette: :base, against: :control, ratio: 2.5},
-      shadow: %{palette: :base, against: :page, ratio: 1.16}
+      on: %{
+        page: %{palette: :accent, against: :page, ratio: 8.5},
+        muted: %{palette: :accent, against: :page, ratio: 5.0},
+        link: %{palette: :brand, against: :page, ratio: 5.8}
+      },
+      border: %{palette: :base, against: :control, ratio: 1.06},
+      focus: %{palette: :brand, against: :control, ratio: 2.3},
+      shadow: %{palette: :accent, against: :page, ratio: 1.2}
     }
   end
 
   defp dark_colors do
     %{
       surface:
-        Shared.surface_dark(8, 15, 24, %{
-          muted: 27,
-          default: 25,
-          hover: 20,
-          active: 18
+        Shared.surface_dark(9, 14, 22, %{
+          muted: 25,
+          default: 23,
+          hover: 18,
+          active: 16
         }),
       roles:
-        Shared.dark_roles(24, %{
-          accent: 48,
+        Shared.dark_roles(22, %{
+          accent: 50,
           alert: 48,
-          brand: 48,
-          info: 48,
+          brand: 52,
+          info: 50,
           success: 48
         }),
-      on: Shared.dark_on(),
-      border: %{palette: :base, against: :control, ratio: 1.20},
-      focus: %{palette: :base, against: :control, ratio: 2.6},
-      shadow: %{palette: :base, against: :page, ratio: 1.22}
+      on: %{
+        page: %{palette: :base, against: :page, ratio: 12},
+        muted: %{palette: :base, against: :page, ratio: 6},
+        link: %{palette: :brand, against: :page, ratio: 7.2}
+      },
+      border: %{palette: :base, against: :control, ratio: 1.14},
+      focus: %{palette: :brand, against: :control, ratio: 2.5},
+      shadow: %{palette: :accent, against: :page, ratio: 1.25}
     }
   end
 
   defp dimensions do
     %{
-      space_scale: 1.12,
-      size_scale: 1.14,
-      text_scale: 1.08,
-      radius_scale: 1.24,
-      container_scale: 1.10,
-      shadow_scale: 1.35,
+      space_scale: 1.16,
+      size_scale: 1.16,
+      text_scale: 1.1,
+      radius_scale: 1.28,
+      container_scale: 1.12,
+      shadow_scale: 1.4,
       radius: %{
-        xs: 0.20,
-        sm: 0.36,
-        md: 0.50,
-        lg: 0.76,
-        xl: 1.05,
-        "2xl": 1.45,
-        "3xl": 2.05,
-        "4xl": 2.70,
+        xs: 0.22,
+        sm: 0.4,
+        md: 0.62,
+        lg: 0.86,
+        xl: 1.15,
+        "2xl": 1.55,
+        "3xl": 2.2,
+        "4xl": 2.9,
         full: 9999
       },
       font: %{

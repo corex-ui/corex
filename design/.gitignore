@@ -49,3 +49,5 @@ corex-*.tar
 /.cursor/
 
 /.vscode/
+# Dialyzer PLTs
+/priv/plts/

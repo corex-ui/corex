@@ -61,25 +61,58 @@ defmodule Corex.Design.BuildSmokeTest do
 end
 
 defmodule Corex.Design.TokenLayerTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
 
-  test "priv ships generated theme color files with runtime --color-* tokens" do
+  test "priv keeps anatomy and import shells, not generated theme token trees" do
     root =
       :corex_design
       |> :code.priv_dir()
       |> List.to_string()
       |> Path.join("css")
 
-    neo_light = Path.join(root, "tokens/themes/neo/color/light.css")
-    color_bridge = Path.join(root, "tokens/semantic/color.css")
-    color_scope = Path.join(root, "tokens/semantic/color-scope.css")
+    assert File.exists?(Path.join(root, "tokens.css"))
+    assert File.exists?(Path.join(root, "main.css"))
+    assert File.exists?(Path.join(root, "utilities.css"))
+    assert File.dir?(Path.join(root, "components"))
 
-    assert File.exists?(neo_light)
-    assert File.read!(neo_light) =~ "--color-ink:"
-    refute File.read!(neo_light) =~ "--theme-color-accent:"
-    refute File.exists?(color_scope)
-    assert File.read!(color_bridge) =~ "@theme inline"
+    refute File.dir?(Path.join(root, "theme"))
+    refute File.dir?(Path.join(root, "tokens/themes"))
+    refute File.dir?(Path.join(root, "tokens/semantic"))
+    refute File.exists?(Path.join(root, "corex.css"))
+    refute File.exists?(Path.join(root, "components.css"))
     refute File.read!(Path.join(root, "tokens.css")) =~ "color-scope"
+  end
+
+  test "bundle writes theme color files with runtime --color-* tokens" do
+    original = CorexDesign.TestConfig.snapshot()
+
+    try do
+      CorexDesign.TestConfig.put(
+        output: "_build/test_token_layer",
+        default_theme: :neo,
+        default_mode: :light,
+        themes: nil,
+        scales: []
+      )
+
+      output = Path.expand("_build/test_token_layer", File.cwd!())
+      File.rm_rf!(output)
+
+      Mix.Task.reenable("corex.design.build")
+      Mix.Task.run("corex.design.build", ["--output", output])
+
+      neo_light = Path.join(output, "tokens/themes/neo/color/light.css")
+      color_bridge = Path.join(output, "tokens/semantic/color.css")
+      color_scope = Path.join(output, "tokens/semantic/color-scope.css")
+
+      assert File.exists?(neo_light)
+      assert File.read!(neo_light) =~ "--color-ink:"
+      refute File.read!(neo_light) =~ "--theme-color-accent:"
+      refute File.exists?(color_scope)
+      assert File.read!(color_bridge) =~ "@theme inline"
+    after
+      CorexDesign.TestConfig.restore(original)
+    end
   end
 end
 
@@ -121,7 +154,6 @@ defmodule Corex.Design.ComponentAxesTest do
       root
       |> Path.join("*.css")
       |> Path.wildcard()
-      |> Enum.reject(&String.ends_with?(&1, "layout.css"))
 
     assert css_files != []
 
@@ -208,8 +240,10 @@ defmodule Corex.Design.InkTokenCssTest do
     assert color_picker =~ ".color-picker.ui-rounded-full"
 
     assert utilities =~ "@utility ui-solid"
-    assert File.read!(Path.join(root, "angle-slider.css")) =~ ".angle-slider.ui-solid"
-    assert File.read!(Path.join(root, "button.css")) =~ ":not(.ui-solid)"
+    assert utilities =~ "@utility ui-ghost"
+    refute utilities =~ "@utility ui-outline"
+    refute File.read!(Path.join(root, "button.css")) =~ ":not(.ui-solid)"
+    assert File.exists?(Path.join(Path.dirname(root), "utilities.css"))
   end
 end
 
@@ -299,7 +333,7 @@ defmodule Corex.Design.ScalesTest do
     Mix.Task.run("corex.design.build", ["--output", output])
 
     border = Path.join(output, "tokens/themes/neo/border.css")
-    assert File.read!(border) =~ "--theme-radius-md: 0.625rem;"
+    assert File.read!(border) =~ "--theme-radius-md: 0.5625rem;"
   end
 
   test "semantic border bridge emits runtime radius tokens" do
@@ -353,10 +387,10 @@ defmodule Corex.Design.ScalesTest do
   end
 end
 
-defmodule Corex.Design.ComponentLayoutTest do
+defmodule Corex.Design.ComponentsTest do
   use ExUnit.Case, async: true
 
-  alias Corex.Design.ComponentLayout
+  alias Corex.Design.Components
 
   test "registry covers shipped component css files" do
     root =
@@ -374,10 +408,10 @@ defmodule Corex.Design.ComponentLayoutTest do
       |> Enum.reject(&(&1 in ~w(keyframes layout)))
       |> Enum.sort()
 
-    registry_ids = ComponentLayout.ids()
+    registry_ids = Components.ids()
 
     for id <- css_ids do
-      assert id in registry_ids, "missing ComponentLayout entry for #{id}"
+      assert id in registry_ids, "missing Corex.Design.Components entry for #{id}"
     end
   end
 
@@ -394,13 +428,87 @@ defmodule Corex.Design.ComponentLayoutTest do
     ]
 
     for {id, expected_width, expected_max} <- checks do
-      css = File.read!(ComponentLayout.css_path(id))
-      selector = ComponentLayout.host_selector(id)
+      css = File.read!(Components.css_path(id))
+      selector = Components.host_selector(id)
 
-      assert ComponentLayout.parse_host_width(css, selector) == expected_width
-      assert ComponentLayout.parse_host_max(css, selector) == expected_max
-      assert ComponentLayout.host_width(id) == expected_width
-      assert ComponentLayout.default_max(id) == expected_max
+      assert Components.parse_host_width(css, selector) == expected_width
+      assert Components.parse_host_max(css, selector) == expected_max
+      assert Components.host_width(id) == expected_width
+      assert Components.default_max(id) == expected_max
+    end
+  end
+
+  test "every part host is a registered component" do
+    part_hosts = Components.parts() |> Enum.map(&elem(&1, 0)) |> Enum.uniq()
+
+    for host <- part_hosts do
+      assert Components.family?(host), "part table references unregistered host #{host}"
+    end
+  end
+
+  test "every component has exactly one family" do
+    for id <- Components.ids() do
+      assert Components.family(id) in [:action, :selection, :field, :static]
+    end
+  end
+
+  test "only action hosts carry the variant axis" do
+    for id <- Components.ids() do
+      assert Components.has_variant_axis?(id) == (Components.family(id) == :action)
+    end
+
+    assert Components.no_variant_hosts() ==
+             Components.ids()
+             |> Enum.reject(&Components.has_variant_axis?/1)
+             |> Enum.sort()
+  end
+
+  test "axes_for always ends in width and starts with variant for action hosts" do
+    assert List.last(Components.axes_for("button")) == :width
+    assert hd(Components.axes_for("select")) == :variant
+    refute :variant in Components.axes_for("checkbox")
+    assert :shape in Components.axes_for("badge")
+    refute :shape in Components.axes_for("select")
+    assert :max_height in Components.axes_for("combobox")
+    refute :max_height in Components.axes_for("switch")
+  end
+
+  describe "id mapping" do
+    test "resolves component ids that differ from their css host" do
+      assert Components.fetch_css_id("action") == {:ok, "button"}
+      assert Components.fetch_css_id("navigate") == {:ok, "link"}
+      assert Components.fetch_css_id("heroicon") == {:ok, "icon"}
+      assert Components.fetch_css_id("file_upload_live") == {:ok, "file-upload"}
+    end
+
+    test "dashes underscored component ids" do
+      assert Components.fetch_css_id("date_picker") == {:ok, "date-picker"}
+      assert Components.fetch_css_id(:tags_input) == {:ok, "tags-input"}
+      assert Components.fetch_css_id("accordion") == {:ok, "accordion"}
+    end
+
+    test "returns :error for components with no styled host" do
+      assert Components.fetch_css_id("hidden_input") == :error
+      assert Components.fetch_css_id("nonsense") == :error
+    end
+
+    test "resolves css hosts back to component ids" do
+      assert Components.fetch_elixir_id("button") == {:ok, "action"}
+      assert Components.fetch_elixir_id("link") == {:ok, "navigate"}
+      assert Components.fetch_elixir_id("icon") == {:ok, "heroicon"}
+      assert Components.fetch_elixir_id("date-picker") == {:ok, "date_picker"}
+    end
+
+    test "returns :error for css-only hosts" do
+      for id <- Components.css_only_ids() do
+        assert Components.fetch_elixir_id(id) == :error
+      end
+    end
+
+    test "round-trips every css host that has a component" do
+      for css_id <- Components.ids(), {:ok, elixir_id} <- [Components.fetch_elixir_id(css_id)] do
+        assert Components.fetch_css_id(elixir_id) == {:ok, css_id}
+      end
     end
   end
 end
@@ -476,7 +584,7 @@ end
 defmodule Corex.Design.BundleFilterTest do
   use ExUnit.Case, async: false
 
-  alias Corex.Design.ComponentLayout
+  alias Corex.Design.Components
 
   setup do
     original = CorexDesign.TestConfig.snapshot()
@@ -519,7 +627,21 @@ defmodule Corex.Design.BundleFilterTest do
       |> Enum.map(&String.replace_suffix(&1, ".css", ""))
       |> Enum.sort()
 
-    assert ids == ComponentLayout.ids() |> Enum.sort()
+    assert ids == Components.ids() |> Enum.sort()
+  end
+
+  test "GENERATED records a content hash so repeated builds are byte identical" do
+    output = build!([components: ~w(button)], "_build/test_bundle_manifest")
+    manifest = Path.join(output, "GENERATED")
+    first = File.read!(manifest)
+
+    assert first =~ ~r/^content_hash=[0-9a-f]{64}$/m
+    refute first =~ "generated_at"
+
+    Mix.Task.reenable("corex.design.build")
+    Mix.Task.run("corex.design.build", ["--output", "_build/test_bundle_manifest"])
+
+    assert File.read!(manifest) == first
   end
 
   test "components filter copies only requested ids and deps" do
@@ -581,7 +703,31 @@ defmodule Corex.Design.BundleFilterTest do
 
     entry = File.read!(Path.join(output, "corex.css"))
     assert entry =~ ~s(@import "./main.css";)
-    assert entry =~ ~s(@import "./utilities.css";)
+    assert entry =~ ~s(@import "./recipes.css";)
     assert entry =~ ~s(@import "./components.css";)
+    refute entry =~ ~s(@import "./utilities.css";)
+  end
+
+  test "a filtered build leaves the static utilities.css untouched" do
+    source = Path.join([:code.priv_dir(:corex_design), "css", "utilities.css"])
+    before = File.read!(source)
+
+    output =
+      build!([semantics: ~w(base accent), components: ~w(button)], "_build/test_bundle_src")
+
+    assert File.read!(source) == before
+    refute File.read!(Path.join(output, "utilities.css")) =~ "@utility ui-brand"
+  end
+
+  test "emits theme steps in ladder order rather than atom table order" do
+    output = build!([components: ~w(button)], "_build/test_bundle_order")
+
+    steps =
+      Path.join(output, "tokens/themes/neo/border.css")
+      |> File.read!()
+      |> then(&Regex.scan(~r/--theme-radius-([\w-]+):/, &1))
+      |> Enum.map(fn [_, step] -> step end)
+
+    assert steps == ~w(none xs sm md lg xl 2xl 3xl 4xl full)
   end
 end

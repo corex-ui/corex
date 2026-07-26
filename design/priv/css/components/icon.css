@@ -1,17 +1,18 @@
 @import "../main.css";
 
 @layer components {
- .icon {
- @apply ui-icon;
- font-size: var(--text-base);
+  .icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 1em !important;
+    width: 1em !important;
+    color: currentcolor;
+    flex-shrink: 0;
+    font-size: var(--ctl-text, var(--text-base));
+  }
 
- }
-}
-
-@utility icon--* {
- font-size: --value(--text-*, [length]);
- line-height: --value(--text-*--line-height, [length]);
- height: --value(--spacing-*, [length]) !important;
- width: --value(--spacing-*, [length]) !important;
- color: --value(--color-ink-*, [color]);
+  [dir="rtl"] .icon {
+    transform: scaleX(-1);
+  }
 }

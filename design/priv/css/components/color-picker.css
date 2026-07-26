@@ -12,8 +12,6 @@
  }
 
  .color-picker [data-scope="color-picker"][data-part="root"] {
- @apply ui-root;
-
  width: fit-content;
  max-width: fit-content;
  gap: var(--spacing-space);
@@ -23,10 +21,6 @@
 
  .color-picker [data-scope="color-picker"][data-part="root"][data-readonly] {
  @apply ui-readonly;
- }
-
- .color-picker [data-scope="color-picker"][data-part="label"] {
- @apply ui-label;
  }
 
  .color-picker [data-scope="color-picker"][data-part="control"] {
@@ -43,8 +37,6 @@
  }
 
  .color-picker [data-scope="color-picker"][data-part="trigger"] {
- @apply ui-trigger;
-
  min-width: var(--ctl-size, var(--spacing-size));
  padding: 0;
  aspect-ratio: 1 / 1;
@@ -73,8 +65,6 @@
  }
 
  .color-picker [data-scope="color-picker"][data-part="channel-input"] {
- @apply ui-input;
-
  text-align: center;
  justify-content: center;
 
@@ -177,7 +167,7 @@
  }
 
  .color-picker [data-scope="color-picker"][data-part="content"] {
- @apply ui-content scrollbar scrollbar--sm;
+ @apply scrollbar scrollbar--sm;
 
  flex-direction: column;
  z-index: 30;
@@ -192,8 +182,6 @@
  }
 
  .color-picker [data-scope="color-picker"][data-part="area"] {
- @apply ui-trigger;
-
  position: relative;
  padding: 0;
  min-height: 0;
@@ -252,7 +240,12 @@
  }
 
  .color-picker [data-scope="color-picker"][data-part="eye-dropper-trigger"] {
- @apply ui-trigger ui-trigger--square;
+ aspect-ratio: 1 / 1;
+ padding: 0;
+ justify-content: center;
+ width: auto;
+ border-radius: var(--radius-sm);
+ --ctl-radius: var(--radius-sm);
  }
 
  @media (pointer: coarse) {
@@ -330,8 +323,6 @@
  }
 
  .color-picker [data-scope="color-picker"][data-part="swatch-trigger"] {
- @apply ui-trigger;
-
  min-height: calc(var(--spacing-size) * 0.4);
  padding: 0;
  aspect-ratio: 1 / 1;
@@ -356,10 +347,6 @@
  }
  }
 
- .color-picker [data-scope="color-picker"][data-part="error"] {
- @apply ui-error;
- }
-
  .color-picker.ui-rounded-full [data-scope="color-picker"][data-part="content"] {
  border-radius: var(--radius-xl);
  }
@@ -372,5 +359,4 @@
  padding-block: 0;
  display: block;
  }
-
 }

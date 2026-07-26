@@ -2,7 +2,8 @@ import Config
 
 config :corex_design,
   themes: nil,
-  default_theme: :neo,
+  default_theme: :uno,
   default_mode: :light,
+  modes: [:light, :dark],
   scales: [],
   output: "assets/corex"

@@ -1,7 +1,6 @@
 @import "../main.css";
 
 @layer components {
-
  .layout-heading {
  width: 100%;
  }
@@ -46,21 +45,3 @@
  }
 }
 
-@utility layout-heading--* {
- [data-scope="layout-heading"][data-part="root"] {
- gap: --value(--spacing-space-*, [length]);
- padding: --value(--spacing-space-*, [length]);
- }
-
- [data-scope="layout-heading"][data-part="title"] {
- font-size: --value(--text-*, [length]);
- line-height: --value(--text-*--line-height, [length]);
- color: --value(--color-ink, [color]);
- }
-
- [data-scope="layout-heading"][data-part="subtitle"] {
- font-size: --value(--text-*, [length]);
- line-height: --value(--text-*--line-height, [length]);
- color: --value(--color-ink-muted, [color]);
- }
-}

@@ -1,7 +1,6 @@
 @import "../main.css";
 
 @layer components {
-
  .pagination {
  width: fit-content;
  max-width: var(--container-md);
@@ -12,8 +11,6 @@
  }
 
  .pagination [data-scope="pagination"][data-part="root"] {
- @apply ui-root;
-
  width: fit-content;
  max-width: 100%;
  }
@@ -35,7 +32,12 @@
  }
 
  .pagination [data-scope="pagination"][data-part="prev-trigger"] {
- @apply ui-trigger ui-trigger--square;
+ aspect-ratio: 1 / 1;
+ padding: 0;
+ justify-content: center;
+ width: auto;
+ border-radius: var(--radius-sm);
+ --ctl-radius: var(--radius-sm);
 
  min-width: calc(var(--spacing-size-md) * 0.8);
  min-height: calc(var(--spacing-size-md) * 0.8);
@@ -44,7 +46,12 @@
  padding: 0;
  }
  .pagination [data-scope="pagination"][data-part="next-trigger"] {
- @apply ui-trigger ui-trigger--square;
+ aspect-ratio: 1 / 1;
+ padding: 0;
+ justify-content: center;
+ width: auto;
+ border-radius: var(--radius-sm);
+ --ctl-radius: var(--radius-sm);
 
  min-width: calc(var(--spacing-size-md) * 0.8);
  min-height: calc(var(--spacing-size-md) * 0.8);
@@ -54,8 +61,6 @@
  }
 
  .pagination [data-scope="pagination"][data-part="item"] {
- @apply ui-item;
-
  width: auto;
  max-width: none;
  min-width: var(--spacing-size-md);
@@ -63,39 +68,6 @@
  padding-inline: var(--spacing-space-sm);
  justify-content: center;
  border-radius: var(--ctl-radius, var(--radius-md));
- }
-
- .pagination.ui-solid [data-scope="pagination"][data-part="item"]:not([data-selected]) {
- background-color: var(--color-ui);
- color: var(--ctl-ink-text, var(--color-ink));
- border-color: var(--color-border);
- }
-
- .pagination.ui-solid [data-scope="pagination"][data-part="item"]:not([data-selected]):hover {
- background-color: var(--color-ui-hover);
- }
-
- .pagination.ui-solid [data-scope="pagination"][data-part="item"]:not([data-selected]):active {
- background-color: var(--color-ui-active);
- }
-
- .pagination.ui-solid [data-scope="pagination"][data-part="item"][data-selected] {
- background-color: var(--ctl-fill, var(--color-ui-active));
- color: var(--ctl-fill-ink, var(--color-ink));
- border-color: transparent;
- }
-
- .pagination.ui-solid [data-scope="pagination"][data-part="item"][data-selected]:hover {
- background-color: var(--ctl-fill-hover, var(--color-ui-hover));
- }
-
- .pagination.ui-solid [data-scope="pagination"][data-part="item"][data-selected]:active {
- background-color: var(--ctl-fill-active, var(--color-ui-active));
- }
-
- .pagination.ui-solid [data-scope="pagination"][data-part="item"][data-selected]:focus-visible {
- box-shadow: inset 0 0 0 2px var(--ctl-fill-ink, var(--color-ink));
- outline: none;
  }
 
  .pagination [data-scope="pagination"][data-part="ellipsis"] {
@@ -115,5 +87,4 @@
  cursor: not-allowed;
  pointer-events: none;
  }
-
 }

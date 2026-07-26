@@ -34,7 +34,6 @@ defmodule Corex.Design.Scales do
     overflow: ~w(visible hidden auto scroll)a
   ]
 
-  @builtin_semantics ~w(base accent brand alert info success)a
   @dimension_axes ~w(density size text radius weight)a
   @scale_axis_aliases %{space: :density}
 
@@ -62,6 +61,31 @@ defmodule Corex.Design.Scales do
 
   def dimension_axes, do: @dimension_axes
 
+  @doc """
+  Every axis name a `config :corex_design, scales:` entry may use, including the
+  `:space` alias for `:density`.
+  """
+  def config_axes do
+    Keyword.keys(@builtin_steps) ++ [:semantic] ++ Map.keys(@scale_axis_aliases)
+  end
+
+  @doc """
+  Resolves a config axis name to its atom, returning `:error` for an unknown one.
+
+  A string axis name reaches this from a serialized config, where interning it
+  would hide the typo behind an axis that has no steps.
+  """
+  def config_axis(axis) when is_atom(axis) do
+    if axis in config_axes(), do: {:ok, normalize_scale_axis(axis)}, else: :error
+  end
+
+  def config_axis(axis) when is_binary(axis) do
+    case Enum.find(config_axes(), &(Atom.to_string(&1) == axis)) do
+      nil -> :error
+      found -> {:ok, normalize_scale_axis(found)}
+    end
+  end
+
   def dimension_values(axis) when axis in @dimension_axes do
     case configured_axis(axis) do
       %{values: values} when map_size(values) > 0 -> values
@@ -82,7 +106,7 @@ defmodule Corex.Design.Scales do
 
   def semantic_atoms do
     case configured_axis(:semantic) do
-      %{steps: steps} when steps != [] -> Enum.map(steps, &normalize_step_atom/1)
+      %{steps: steps} when steps != [] -> Enum.map(steps, &Corex.Design.Filter.semantic_atom/1)
       _ -> theme_semantic_atoms()
     end
   end
@@ -119,12 +143,7 @@ defmodule Corex.Design.Scales do
     |> Enum.map(&Atom.to_string/1)
   end
 
-  def default_semantic_atoms, do: @builtin_semantics
-
-  def default_semantics, do: Enum.map(@builtin_semantics, &Atom.to_string/1)
-
-  def builtin_semantic_atoms, do: default_semantic_atoms()
-  def builtin_semantics, do: default_semantics()
+  def default_semantic_atoms, do: Corex.Design.Filter.default_semantics()
 
   def attr_values(axis) do
     case attr_value_strings(axis) do
@@ -169,8 +188,6 @@ defmodule Corex.Design.Scales do
     }
   end
 
-  def json, do: IO.iodata_to_binary(:json.encode(export()))
-
   defp configured_axis(axis) do
     parse_axis(axis, scales_input(), semantics_input())
   end
@@ -186,49 +203,43 @@ defmodule Corex.Design.Scales do
   end
 
   defp scales_input do
-    Corex.Design.Config.resolved_options()
-    |> Keyword.get(:scales, [])
-    |> normalize_entries()
-    |> Enum.map(fn {axis, spec} -> {normalize_scale_axis(axis), spec} end)
+    Enum.map(Corex.Design.Config.resolved().scales, fn {axis, spec} ->
+      {normalize_scale_axis(axis), spec}
+    end)
   end
 
-  defp parse_axis(axis, entries, semantics) do
-    spec = Keyword.get(entries, normalize_scale_axis(axis))
+  defp parse_axis(:semantic, _entries, semantics) when is_list(semantics) and semantics != [] do
+    %{steps: Enum.map(semantics, &normalize_step/1), values: %{}}
+  end
 
-    cond do
-      axis == :semantic and is_list(semantics) and semantics != [] ->
-        %{steps: Enum.map(semantics, &normalize_step/1), values: %{}}
-
-      is_nil(spec) ->
-        if axis == :semantic do
-          %{steps: [], values: %{}}
-        else
-          %{steps: default_steps(axis), values: default_values(axis)}
-        end
-
-      axis == :semantic ->
-        %{steps: Enum.map(spec, &normalize_step/1), values: %{}}
-
-      keyword_with_values?(spec) ->
-        overrides =
-          spec
-          |> Map.new(fn {step, value} -> {normalize_step(step), value} end)
-
-        defaults = default_values(axis)
-
-        %{
-          steps: default_steps(axis),
-          values: Map.merge(defaults, overrides)
-        }
-
-      true ->
-        %{steps: default_steps(axis), values: default_values(axis)}
+  defp parse_axis(:semantic, entries, _semantics) do
+    case Keyword.get(entries, :semantic) do
+      nil -> %{steps: [], values: %{}}
+      spec -> %{steps: Enum.map(spec, &normalize_step/1), values: %{}}
     end
   end
 
-  defp normalize_entries(list) when is_list(list), do: list
-  defp normalize_entries(map) when is_map(map), do: Map.to_list(map)
-  defp normalize_entries(_), do: []
+  defp parse_axis(axis, entries, _semantics) do
+    axis
+    |> defaults_for()
+    |> merge_step_overrides(Keyword.get(entries, normalize_scale_axis(axis)), axis)
+  end
+
+  defp defaults_for(axis), do: %{steps: default_steps(axis), values: default_values(axis)}
+
+  defp merge_step_overrides(scale, spec, axis) when is_list(spec) do
+    if keyword_with_values?(spec) do
+      %{scale | values: Map.merge(default_values(axis), step_overrides(spec))}
+    else
+      scale
+    end
+  end
+
+  defp merge_step_overrides(scale, _spec, _axis), do: scale
+
+  defp step_overrides(spec) do
+    Map.new(spec, fn {step, value} -> {normalize_step(step), value} end)
+  end
 
   defp default_steps(axis) do
     builtin_step_strings(axis)
@@ -268,14 +279,6 @@ defmodule Corex.Design.Scales do
     else
       theme_roles
     end
-  end
-
-  defp normalize_step_atom(step) when is_atom(step), do: step
-
-  defp normalize_step_atom(step) when is_binary(step) do
-    String.to_existing_atom(step)
-  rescue
-    ArgumentError -> String.to_atom(step)
   end
 
   defp normalize_scale_axis(axis) do

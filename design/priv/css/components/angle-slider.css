@@ -17,7 +17,6 @@
  }
 
  .angle-slider [data-scope="angle-slider"][data-part="root"] {
- @apply ui-root;
  width: 100%;
 
  gap: var(--spacing-space);
@@ -68,11 +67,6 @@
  color: var(--color-ink-muted);
  }
 
- .angle-slider [data-scope="angle-slider"][data-part="label"],
- [data-scope="angle-slider"][data-part="label"] {
- @apply ui-label;
- }
-
  .angle-slider
  [data-scope="angle-slider"][data-part="root"][data-disabled]
  [data-scope="angle-slider"][data-part="thumb"]::before {
@@ -108,12 +102,6 @@
  user-select: none;
  position: relative;
  overflow: hidden;
- }
-
- .angle-slider.ui-solid [data-scope="angle-slider"][data-part="control"] {
- background-color: var(--ctl-fill, var(--color-ink));
- border-color: var(--ctl-bd, transparent);
- color: var(--ctl-fill-ink, var(--color-layer));
  }
 
  .angle-slider [data-scope="angle-slider"][data-part="thumb"] {
@@ -197,11 +185,6 @@
  .angle-slider
  [data-scope="angle-slider"][data-part="marker"][data-state="over-value"] {
  --marker-color: var(--color-ink-muted);
- }
-
- .angle-slider.ui-solid
- [data-scope="angle-slider"][data-part="marker"][data-state="over-value"] {
- --marker-color: color-mix(in oklab, currentColor 42%, transparent);
  }
 
  .angle-slider [data-scope="angle-slider"][data-part="value-text"] {
@@ -357,8 +340,6 @@
  }
 
  .angle-slider [data-scope="angle-slider"][data-part="error"] {
- @apply ui-error;
-
  width: 100%;
  max-width: 100%;
  min-width: 0;

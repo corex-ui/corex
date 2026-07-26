@@ -13,8 +13,6 @@
  }
 
  .number-input [data-scope="number-input"][data-part="root"] {
- @apply ui-root;
-
  width: 100%;
  min-width: 0;
  gap: var(--spacing-space);
@@ -26,10 +24,6 @@
  @apply ui-readonly;
  }
 
- .number-input [data-scope="number-input"][data-part="label"] {
- @apply ui-label;
- }
-
  .number-input [data-scope="number-input"][data-part="control"] {
  display: flex;
  flex-flow: row nowrap;
@@ -39,8 +33,6 @@
  }
 
  .number-input [data-scope="number-input"][data-part="input"] {
- @apply ui-input;
-
  flex: 1;
  min-width: 0;
  min-height: var(--spacing-size);
@@ -64,7 +56,12 @@
  }
 
  .number-input [data-scope="number-input"][data-part="increment-trigger"] {
- @apply ui-trigger ui-trigger--square;
+ aspect-ratio: 1 / 1;
+ padding: 0;
+ justify-content: center;
+ width: auto;
+ border-radius: var(--radius-sm);
+ --ctl-radius: var(--radius-sm);
 
  flex: 1;
  min-height: 0;
@@ -76,7 +73,12 @@
  padding-inline: var(--spacing-space);
  }
  .number-input [data-scope="number-input"][data-part="decrement-trigger"] {
- @apply ui-trigger ui-trigger--square;
+ aspect-ratio: 1 / 1;
+ padding: 0;
+ justify-content: center;
+ width: auto;
+ border-radius: var(--radius-sm);
+ --ctl-radius: var(--radius-sm);
 
  flex: 1;
  min-height: 0;
@@ -97,9 +99,4 @@
  border-start-end-radius: 0;
  border-block-start: 0;
  }
-
- .number-input [data-scope="number-input"][data-part="error"] {
- @apply ui-error;
- }
-
 }

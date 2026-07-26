@@ -10,8 +10,6 @@
  }
 
  .clipboard [data-scope="clipboard"][data-part="root"] {
- @apply ui-root;
-
  gap: var(--spacing-space);
  }
 
@@ -21,10 +19,6 @@
 
  .clipboard [data-scope="clipboard"][data-part="root"][data-orientation="vertical"] {
  align-items: start;
- }
-
- .clipboard [data-scope="clipboard"][data-part="label"] {
- @apply ui-label;
  }
 
  .clipboard [data-scope="clipboard"][data-part="control"] {
@@ -38,8 +32,6 @@
  }
 
  .clipboard [data-scope="clipboard"][data-part="input"] {
- @apply ui-input;
-
  flex: 1 1 0%;
  min-width: 0;
  field-sizing: content;
@@ -51,8 +43,6 @@
  }
 
  .clipboard [data-scope="clipboard"][data-part="trigger"] {
- @apply ui-trigger;
-
  flex-shrink: 0;
  }
 
@@ -70,13 +60,6 @@
 
  .clipboard [data-scope="clipboard"][data-part="trigger"][data-copied] {
  color: var(--color-success-text);
- border-color: var(--color-success);
- outline: none;
- }
-
- .clipboard.ui-solid [data-scope="clipboard"][data-part="trigger"][data-copied] {
- color: var(--ctl-fill-ink, var(--ctl-ink, var(--color-ink)));
- border-color: var(--color-success);
  outline: none;
  }
 
@@ -91,5 +74,4 @@
  [data-scope="clipboard"][data-part="copied"] {
  display: inline-flex;
  }
-
 }

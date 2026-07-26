@@ -14,8 +14,6 @@
  }
 
  .signature-pad [data-scope="signature-pad"][data-part="root"] {
- @apply ui-root;
-
  width: 100%;
  gap: var(--spacing-space);
  position: relative;
@@ -24,10 +22,6 @@
 
  .signature-pad [data-scope="signature-pad"][data-part="root"][data-readonly] {
  @apply ui-readonly;
- }
-
- .signature-pad [data-scope="signature-pad"][data-part="label"] {
- @apply ui-label;
  }
 
  .signature-pad [data-scope="signature-pad"][data-part="control"] {
@@ -59,7 +53,12 @@
  }
 
  .signature-pad [data-scope="signature-pad"][data-part="clear-trigger"] {
- @apply ui-trigger ui-trigger--square;
+ aspect-ratio: 1 / 1;
+ padding: 0;
+ justify-content: center;
+ width: auto;
+ border-radius: var(--radius-sm);
+ --ctl-radius: var(--radius-sm);
 
  position: absolute;
  z-index: 1;
@@ -91,20 +90,5 @@
  background-color: var(--color-root);
  }
  }
-
- .signature-pad [data-scope="signature-pad"][data-part="error"] {
- @apply ui-error;
- }
 }
 
-@utility signature-pad--ui {
- max-width: var(--container-sm);
-}
-
-@utility signature-pad--mini {
- max-width: var(--container-xs);
-}
-
-@utility signature-pad--micro {
- max-width: var(--container-6xs);
-}

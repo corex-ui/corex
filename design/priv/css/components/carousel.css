@@ -12,8 +12,6 @@
  }
 
  .carousel [data-scope="carousel"][data-part="root"] {
- @apply ui-root;
-
  width: 100%;
  aspect-ratio: 4/3;
  overflow: hidden;
@@ -47,7 +45,12 @@
  }
 
  .carousel [data-scope="carousel"][data-part="prev-trigger"] {
- @apply ui-trigger ui-trigger--square;
+ aspect-ratio: 1 / 1;
+ padding: 0;
+ justify-content: center;
+ width: auto;
+ border-radius: var(--radius-sm);
+ --ctl-radius: var(--radius-sm);
  min-height: calc(var(--spacing-size-md) * 0.8);
  min-width: calc(var(--spacing-size-md) * 0.8);
  padding: 0;
@@ -59,7 +62,12 @@
  }
  }
  .carousel [data-scope="carousel"][data-part="next-trigger"] {
- @apply ui-trigger ui-trigger--square;
+ aspect-ratio: 1 / 1;
+ padding: 0;
+ justify-content: center;
+ width: auto;
+ border-radius: var(--radius-sm);
+ --ctl-radius: var(--radius-sm);
  min-height: calc(var(--spacing-size-md) * 0.8);
  min-width: calc(var(--spacing-size-md) * 0.8);
  padding: 0;
@@ -72,7 +80,12 @@
  }
 
  .carousel [data-scope="carousel"][data-part="autoplay-trigger"] {
- @apply ui-trigger ui-trigger--square;
+ aspect-ratio: 1 / 1;
+ padding: 0;
+ justify-content: center;
+ width: auto;
+ border-radius: var(--radius-sm);
+ --ctl-radius: var(--radius-sm);
  min-height: var(--spacing-size-md);
  min-width: var(--spacing-size-md);
  padding: 0;
@@ -147,7 +160,11 @@
  }
 
  .carousel [data-scope="carousel"][data-part="indicator"] {
- @apply ui-trigger ui-trigger--circle;
+ aspect-ratio: 1 / 1;
+ padding: 0;
+ justify-content: center;
+ width: auto;
+ border-radius: var(--radius-full) !important;
 
  min-height: var(--spacing-space);
  min-width: var(--spacing-space);

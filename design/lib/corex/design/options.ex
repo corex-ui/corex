@@ -2,11 +2,11 @@ defmodule Corex.Design.Options do
   @moduledoc false
 
   alias Corex.Design.Axes
-  alias Corex.Design.ComponentLayout
+  alias Corex.Design.Components
   alias Corex.Design.Config
   alias Corex.Design.Filter
   alias Corex.Design.Theme
-  alias Corex.Design.Theme.Options, as: ThemeOptions
+  alias Corex.Design.Theme.Validator, as: ThemeValidator
 
   @doc false
   def report do
@@ -17,15 +17,15 @@ defmodule Corex.Design.Options do
       indent_lines(Config.options_docs()),
       "",
       "Allowed components: (components:)",
-      format_atoms(ComponentLayout.ids()),
+      format_atoms(Components.ids()),
       "Current components: #{format_current_components(Filter.components())}",
       "",
       "Allowed semantics: (semantics:)",
       format_atoms(Filter.default_semantics()),
-      "Current semantics: #{format_list(Filter.semantics())}",
+      "Current semantics: #{format_list(Filter.semantic_strings())}",
       "",
       "Allowed themes: (themes:, default_theme:)",
-      format_atoms(ThemeOptions.preset_ids()),
+      format_atoms(ThemeValidator.preset_ids()),
       "Current default_theme: #{Theme.default_theme()}",
       "",
       "Allowed modes: (default_mode:)",

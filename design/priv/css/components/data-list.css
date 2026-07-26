@@ -2,8 +2,6 @@
 
 @layer components {
  .data-list {
- @apply ui-root;
-
  width: 100%;
  max-width: var(--container-md);
  overflow: hidden;
@@ -50,11 +48,6 @@
  color: var(--color-ink);
  }
 
- .data-list.ui-solid [data-scope="data-list"][data-part="item"] {
- background-color: var(--ctl-bg, var(--ctl-fill, var(--color-ui-active)));
- color: var(--ctl-ink, var(--ctl-fill-ink, var(--color-ink)));
- }
-
  .data-list
  [data-scope="data-list"][data-part="root"][data-orientation="horizontal"]
  [data-scope="data-list"][data-part="item"] {
@@ -64,16 +57,10 @@
  }
 
  .data-list [data-scope="data-list"][data-part="label"] {
- @apply ui-label;
-
  flex-shrink: 0;
  gap: var(--spacing-space);
  width: 100%;
  color: var(--ctl-ink-text, var(--color-ink));
- }
-
- .data-list.ui-solid [data-scope="data-list"][data-part="label"] {
- color: var(--ctl-ink, var(--ctl-fill-ink, var(--color-ink)));
  }
 
  .data-list [data-scope="data-list"][data-part="label"] .icon,
@@ -96,10 +83,6 @@
  min-width: 0;
  flex: 1 1 auto;
  color: var(--color-ink);
- }
-
- .data-list.ui-solid [data-scope="data-list"][data-part="content"] {
- color: var(--ctl-ink, var(--ctl-fill-ink, var(--color-ink)));
  }
 
  .data-list

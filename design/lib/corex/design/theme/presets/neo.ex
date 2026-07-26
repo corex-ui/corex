@@ -1,6 +1,8 @@
 defmodule Corex.Design.Theme.Presets.Neo do
   @moduledoc false
 
+  alias Corex.Design.Theme.Presets.Shared
+
   def spec do
     %{
       palette: palette(),
@@ -8,110 +10,81 @@ defmodule Corex.Design.Theme.Presets.Neo do
         light: light_colors(),
         dark: dark_colors()
       },
-      dimensions: dimensions()
+      dimensions: dimensions(),
+      typography: typography()
     }
   end
 
   defp palette do
     %{
-      base: "#F0F0F0",
-      accent: "#4B4B4B",
-      alert: "#A43C3C",
+      base: "#E8E0D6",
+      accent: "#1C1917",
+      alert: "#B42318",
       brand: "#32479C",
-      info: "#1F77D4",
-      success: "#059669"
+      info: "#0F766E",
+      success: "#166534"
     }
   end
 
   defp light_colors do
     %{
-      surface: %{
-        page: %{palette: :base, lightness: 98},
-        raised: %{palette: :base, lightness: 97},
-        control: %{
-          palette: :base,
-          lightness: 94,
-          states: %{muted: 97, default: 95, hover: 95, active: 93}
-        }
-      },
-      roles: light_roles(),
+      surface:
+        Shared.surface_light(98, 95, 92, %{muted: 95, default: 93, hover: 90, active: 87}),
+      roles:
+        Shared.light_roles(92, %{
+          accent: 28,
+          alert: 42,
+          brand: 42,
+          info: 38,
+          success: 36
+        }),
       on: %{
-        page: %{palette: :base, against: :page, ratio: 8},
-        muted: %{palette: :base, against: :page, ratio: 5.15},
-        link: %{palette: :info, against: :page, ratio: 6},
-        control: %{palette: :base, against: :control, ratio: 8}
+        page: %{palette: :accent, against: :page, ratio: 11},
+        muted: %{palette: :accent, against: :page, ratio: 5.8},
+        link: %{palette: :brand, against: :page, ratio: 5.5},
+        accent: %{palette: :base, against: :accent, ratio: 9.5},
+        brand: %{palette: :base, against: :brand, ratio: 9.5},
+        alert: %{palette: :base, against: :alert, ratio: 9.5},
+        info: %{palette: :base, against: :info, ratio: 9.5},
+        success: %{palette: :base, against: :success, ratio: 9.5}
       },
-      border: %{palette: :base, against: :control, ratio: 1.16},
-      focus: %{palette: :base, against: :control, ratio: 2.2},
-      shadow: %{palette: :base, against: :page, ratio: 1.05}
+      border: %{palette: :base, against: :control, ratio: 1.3},
+      focus: %{palette: :brand, against: :control, ratio: 2.4},
+      shadow: %{palette: :accent, against: :page, ratio: 1.15}
     }
   end
 
   defp dark_colors do
     %{
-      surface: %{
-        page: %{palette: :base, lightness: 8},
-        raised: %{palette: :base, lightness: 15},
-        control: %{
-          palette: :base,
-          lightness: 24,
-          states: %{muted: 27, default: 25, hover: 20, active: 18}
-        }
-      },
-      roles: dark_roles(),
+      surface:
+        Shared.surface_dark(
+          7,
+          12,
+          18,
+          %{muted: 22, default: 20, hover: 16, active: 14},
+          :accent
+        ),
+      roles:
+        Shared.dark_roles(18, %{
+          accent: 54,
+          alert: 52,
+          brand: 48,
+          info: 52,
+          success: 48
+        }),
       on: %{
-        page: %{palette: :base, against: :page, ratio: 12},
-        muted: %{palette: :base, against: :page, ratio: 6},
-        link: %{palette: :info, against: :page, ratio: 7.5},
-        control: %{palette: :base, against: :control, ratio: 12}
+        page: %{palette: :base, against: :page, ratio: 13},
+        muted: %{palette: :base, against: :page, ratio: 6.5},
+        link: %{palette: :brand, against: :page, ratio: 6},
+        accent: %{palette: :base, against: :accent, ratio: 9.5},
+        brand: %{palette: :base, against: :brand, ratio: 9.5},
+        alert: %{palette: :base, against: :alert, ratio: 9.5},
+        info: %{palette: :base, against: :info, ratio: 9.5},
+        success: %{palette: :base, against: :success, ratio: 9.5}
       },
-      border: %{palette: :base, against: :control, ratio: 1.22},
-      focus: %{palette: :base, against: :control, ratio: 2.4},
-      shadow: %{palette: :base, against: :page, ratio: 1.2}
-    }
-  end
-
-  defp light_roles do
-    fill = %{
-      lightness: 40,
-      states: %{muted: 43, default: 40, hover: 36, active: 33},
-      component: true
-    }
-
-    %{
-      base: %{
-        palette: :base,
-        lightness: 94,
-        states: %{muted: 97, default: 94, hover: 90, active: 87},
-        component: true
-      },
-      accent: Map.merge(fill, %{palette: :accent}),
-      alert: Map.merge(fill, %{palette: :alert}),
-      brand: Map.merge(fill, %{palette: :brand}),
-      info: Map.merge(fill, %{palette: :info}),
-      success: Map.merge(fill, %{palette: :success})
-    }
-  end
-
-  defp dark_roles do
-    fill = %{
-      lightness: 48,
-      states: %{muted: 51, default: 48, hover: 44, active: 41},
-      component: true
-    }
-
-    %{
-      base: %{
-        palette: :base,
-        lightness: 24,
-        states: %{muted: 27, default: 25, hover: 20, active: 18},
-        component: true
-      },
-      accent: Map.merge(fill, %{palette: :accent}),
-      alert: Map.merge(fill, %{palette: :alert}),
-      brand: Map.merge(fill, %{palette: :brand}),
-      info: Map.merge(fill, %{palette: :info}),
-      success: Map.merge(fill, %{palette: :success})
+      border: %{palette: :base, against: :control, ratio: 1.35},
+      focus: %{palette: :brand, against: :control, ratio: 2.5},
+      shadow: %{palette: :accent, against: :page, ratio: 1.3}
     }
   end
 
@@ -119,8 +92,8 @@ defmodule Corex.Design.Theme.Presets.Neo do
     %{
       space_scale: 1.0,
       size_scale: 1.0,
-      text_scale: 1.0,
-      radius_scale: 1.0,
+      text_scale: 1.05,
+      radius_scale: 0.9,
       container_scale: 1.0,
       shadow_scale: 1.0,
       radius: %{
@@ -133,7 +106,36 @@ defmodule Corex.Design.Theme.Presets.Neo do
         "3xl": 1.5,
         "4xl": 2.0,
         full: 9999
+      },
+      font: %{
+        sans: ["Manrope", "ui-sans-serif", "system-ui", "sans-serif"],
+        display: ["Outfit", "ui-sans-serif", "system-ui", "sans-serif"],
+        mono: ["JetBrains Mono", "ui-monospace", "monospace"],
+        code: ["JetBrains Mono", "ui-monospace", "monospace"],
+        serif: ["ui-serif", "Georgia", "serif"]
       }
     }
+  end
+
+  defp typography do
+    Shared.typography(%{
+      "h1" => %{
+        font_family: {:font, :display},
+        font_weight: {:weight, :bold},
+        letter_spacing: {:tracking, :tighter}
+      },
+      "h2" => %{
+        font_family: {:font, :display},
+        font_weight: {:weight, :bold},
+        letter_spacing: {:tracking, :tight}
+      },
+      "h3" => %{font_family: {:font, :display}, font_weight: {:weight, :semibold}},
+      "p.display" => %{
+        font_family: {:font, :display},
+        font_weight: {:weight, :bold},
+        letter_spacing: {:tracking, :tighter}
+      },
+      "kbd" => %{font_family: {:font, :mono}}
+    })
   end
 end

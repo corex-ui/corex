@@ -1,7 +1,6 @@
 @import "../main.css";
 
 @layer components {
-
  .data-table {
  @apply scrollbar;
  display: block;
@@ -152,7 +151,12 @@
  }
 
  .data-table [data-scope="data-table"][data-part="sort-trigger"] {
- @apply ui-trigger ui-size-sm ui-trigger--circle;
+ aspect-ratio: 1 / 1;
+ padding: 0;
+ justify-content: center;
+ width: auto;
+ border-radius: var(--radius-full) !important;
+ @apply ui-size-sm;
  }
 
  .data-table [data-scope="data-table"][data-part="sort-text"] {
@@ -235,6 +239,12 @@
 
  .data-table
  [data-scope="data-table"][data-part="tbody"]
+ tr[data-part="row"][data-clickable] {
+ cursor: pointer;
+ }
+
+ .data-table
+ [data-scope="data-table"][data-part="tbody"]
  tr[data-part="row"]:hover
  [data-part="selection-cell"],
  .data-table
@@ -264,11 +274,6 @@
  --ctl-bg-active: initial;
  --ctl-bd: initial;
  --ctl-ring: initial;
- --ctl-sel-bg: initial;
- --ctl-sel-ink: initial;
- --ctl-sel-bg-hover: initial;
- --ctl-sel-bg-active: initial;
- --ctl-sel-ring: initial;
  --ctl-bg-muted: initial;
  --ctl-ink-muted: initial;
  --ctl-text: initial;

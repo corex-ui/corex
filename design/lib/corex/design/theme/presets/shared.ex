@@ -47,58 +47,21 @@ defmodule Corex.Design.Theme.Presets.Shared do
     Map.put(dark_fills, :base, base_role(base_lightness))
   end
 
-  def light_on do
-    %{
-      page: %{palette: :base, against: :page, ratio: 8},
-      muted: %{palette: :base, against: :page, ratio: 5.15},
-      link: %{palette: :info, against: :page, ratio: 6},
-      control: %{palette: :base, against: :control, ratio: 8}
-    }
-  end
-
-  def dark_on do
-    %{
-      page: %{palette: :base, against: :page, ratio: 12},
-      muted: %{palette: :base, against: :page, ratio: 6},
-      link: %{palette: :info, against: :page, ratio: 7.5},
-      control: %{palette: :base, against: :control, ratio: 12}
-    }
-  end
-
-  def light_tokens(border_ratio, focus_ratio, shadow_ratio) do
-    %{
-      border: %{palette: :base, against: :control, ratio: border_ratio},
-      focus: %{palette: :base, against: :control, ratio: focus_ratio},
-      shadow: %{palette: :base, against: :page, ratio: shadow_ratio}
-    }
-  end
-
-  def dark_tokens(border_ratio, focus_ratio, shadow_ratio) do
-    %{
-      border: %{palette: :base, against: :control, ratio: border_ratio},
-      focus: %{palette: :base, against: :control, ratio: focus_ratio},
-      shadow: %{palette: :base, against: :page, ratio: shadow_ratio}
-    }
-  end
-
   def surface_light(page, raised, control_lightness, control_states) do
-    %{
-      page: %{palette: :base, lightness: page},
-      raised: %{palette: :base, lightness: raised},
-      control: %{
-        palette: :base,
-        lightness: control_lightness,
-        states: control_states
-      }
-    }
+    surface(:base, page, raised, control_lightness, control_states)
   end
 
-  def surface_dark(page, raised, control_lightness, control_states) do
+  def surface_dark(page, raised, control_lightness, control_states, palette \\ :base) do
+    surface(palette, page, raised, control_lightness, control_states)
+  end
+
+  def surface(palette, page, raised, control_lightness, control_states)
+      when palette in [:base, :accent] do
     %{
-      page: %{palette: :base, lightness: page},
-      raised: %{palette: :base, lightness: raised},
+      page: %{palette: palette, lightness: page},
+      raised: %{palette: palette, lightness: raised},
       control: %{
-        palette: :base,
+        palette: palette,
         lightness: control_lightness,
         states: control_states
       }

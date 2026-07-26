@@ -17,7 +17,6 @@
  }
 
  .toast [data-scope="toast"][data-part="root"] {
- @apply ui-root;
  max-width: var(--container-xs);
  translate: var(--x) var(--y);
  scale: var(--scale);
@@ -42,8 +41,6 @@
  }
 
  .toast [data-scope="toast"][data-part="content"] {
- @apply ui-content;
-
  display: flex;
  flex-direction: column;
 
@@ -61,8 +58,6 @@
  }
 
  .toast [data-scope="toast"][data-part="title"] {
- @apply ui-label;
-
  flex: 1;
  min-width: 0;
  font-weight: var(--font-weight-medium);
@@ -88,7 +83,7 @@
  }
 
  .toast [data-scope="toast"][data-part="action-trigger"] {
- @apply ui-trigger ui-size-sm;
+ @apply ui-size-sm;
  }
 
  .toast [data-scope="toast"][data-part="action-trigger"][hidden] {
@@ -96,7 +91,13 @@
  }
 
  .toast [data-scope="toast"][data-part="close-trigger"] {
- @apply ui-trigger ui-size-sm ui-trigger--square ;
+ aspect-ratio: 1 / 1;
+ padding: 0;
+ justify-content: center;
+ width: auto;
+ border-radius: var(--radius-sm);
+ --ctl-radius: var(--radius-sm);
+ @apply ui-size-sm;
 
  flex-shrink: 0;
  }

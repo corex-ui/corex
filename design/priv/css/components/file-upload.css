@@ -35,8 +35,6 @@
  }
 
  .file-upload [data-scope="file-upload"][data-part="root"] {
- @apply ui-root;
-
  display: flex;
  flex-direction: column;
  align-items: center;
@@ -49,8 +47,6 @@
  }
 
  .file-upload [data-scope="file-upload"][data-part="label"] {
- @apply ui-label;
-
  align-self: stretch;
  text-align: center;
  }
@@ -83,10 +79,6 @@
  min-height: 0;
  cursor: pointer;
  text-align: center;
- }
-
- .file-upload [data-scope="file-upload"][data-part="trigger"] {
- @apply ui-trigger;
  }
 
  .file-upload [data-scope="file-upload"][data-part="item-group"] {
@@ -151,7 +143,6 @@
  }
 
  .file-upload [data-scope="file-upload"][data-part="item-name"] {
- @apply ui-label;
  flex: 1 1 0;
  min-width: 0;
  overflow: hidden;
@@ -159,18 +150,18 @@
  }
 
  .file-upload [data-scope="file-upload"][data-part="item-size-text"] {
- @apply ui-label;
-
  font-weight: var(--font-weight-medium);
  }
 
  .file-upload [data-scope="file-upload"][data-part="item-delete-trigger"] {
- @apply ui-trigger ui-size-sm ui-trigger--square ui-alert;
+ aspect-ratio: 1 / 1;
+ padding: 0;
+ justify-content: center;
+ width: auto;
+ border-radius: var(--radius-sm);
+ --ctl-radius: var(--radius-sm);
+ @apply ui-size-sm ui-alert;
 
  margin-inline-end: var(--spacing-space);
- }
-
- .file-upload [data-scope="file-upload"][data-part="error"] {
- @apply ui-error;
  }
 }

@@ -75,7 +75,6 @@
  }
  }
 
-
  .typo p {
  font-size: var(--text-base);
  line-height: var(--text-base--line-height);
@@ -399,7 +398,3 @@
  }
 }
 
-@utility typo--* {
- font-size: --value(--text-*, [length]);
- line-height: --value(--text-*--line-height, [length]);
-}

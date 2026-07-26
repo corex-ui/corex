@@ -11,10 +11,6 @@
  min-width: 0;
  }
 
- .tree-view [data-scope="tree-view"][data-part="root"] {
- @apply ui-root;
- }
-
  .tree-view [data-scope="tree-view"][data-part="tree"] {
  display: flex;
  flex-direction: column;
@@ -22,7 +18,6 @@
  }
 
  .tree-view [data-scope="tree-view"][data-part="label"] {
- @apply ui-label;
  padding-inline-start: var(--spacing-space);
  }
 
@@ -30,11 +25,6 @@
  display: flex;
  flex-direction: column;
  width: 100%;
- }
-
- .tree-view [data-scope="tree-view"][data-part="item"],
- .tree-view [data-scope="tree-view"][data-part="branch-control"] {
- @apply ui-item;
  }
 
  .tree-view
@@ -83,10 +73,6 @@
  height: 0;
  opacity: 0;
  overflow: hidden;
- }
-
- .tree-view [data-scope="tree-view"][data-part="branch-label"] {
- @apply ui-label;
  }
 
  .tree-view

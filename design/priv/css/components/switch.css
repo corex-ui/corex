@@ -79,8 +79,6 @@
  }
 
  .switch [data-scope="switch"][data-part="label"] {
- @apply ui-label;
-
  cursor: pointer;
  }
 
@@ -93,8 +91,7 @@
  cursor: not-allowed;
  }
 
- 
- .switch:not(.ui-solid) [data-scope="switch"][data-part="control"][data-state="unchecked"] {
+ .switch [data-scope="switch"][data-part="control"][data-state="unchecked"] {
  background-color: var(--color-ui);
  border-color: var(--color-border);
 
@@ -103,29 +100,17 @@
  }
  }
 
- .switch:not(.ui-solid) [data-scope="switch"][data-part="control"][data-state="checked"] {
- background-color: var(--ctl-sel-bg, var(--color-ui-active));
- border-color: var(--ctl-sel-bg, var(--color-ui-active));
-
- & [data-scope="switch"][data-part="thumb"] {
- background-color: var(--ctl-sel-ink, var(--color-ink));
- }
- }
-
- .switch.ui-solid [data-scope="switch"][data-part="control"][data-state="checked"] {
- background-color: var(--ctl-fill, var(--color-ui-active));
+ .switch [data-scope="switch"][data-part="control"][data-state="checked"] {
+ background-color: var(--ctl-fill, var(--color-ink));
  border-color: transparent;
 
  & [data-scope="switch"][data-part="thumb"] {
- background-color: var(--ctl-fill-ink, var(--color-ink));
+ background-color: var(--ctl-fill-ink, var(--color-root));
  }
- }
- .switch--square [data-scope="switch"][data-part="control"] {
- border-radius: var(--radius-none);
  }
 
- .switch [data-scope="switch"][data-part="error"] {
- @apply ui-error;
+ .switch--square [data-scope="switch"][data-part="control"] {
+ border-radius: var(--radius-none);
  }
 
  .switch [data-scope="switch"][data-part="error"].absolute {

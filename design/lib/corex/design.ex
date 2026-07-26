@@ -11,8 +11,6 @@ defmodule Corex.Design do
   [Dark mode](https://hexdocs.pm/corex/dark_mode.html), [Modifiers](https://hexdocs.pm/corex/modifiers.html).
   """
 
-  @default_output "assets/corex"
-
   @doc false
   def design_config do
     defaults = default_config()
@@ -23,10 +21,11 @@ defmodule Corex.Design do
   @doc false
   def default_config do
     %{
-      output: @default_output,
-      default_theme: :neo,
+      output: Corex.Design.Config.default_output(),
+      default_theme: :uno,
       default_mode: :light,
       themes: nil,
+      modes: [:light, :dark],
       scales: [],
       components: nil,
       semantics: nil
@@ -35,23 +34,22 @@ defmodule Corex.Design do
 
   @doc false
   def mix_root do
-    if Code.ensure_loaded?(Mix) and function_exported?(Mix.ProjectStack, :top_and_bottom, 0) do
-      {_top, bottom} = Mix.ProjectStack.top_and_bottom()
+    case bottom_project() do
+      %{file: file} when is_binary(file) -> Path.dirname(file)
+      _no_project_file -> File.cwd!()
+    end
+  end
 
-      if is_map(bottom) and is_binary(bottom.file) do
-        Path.dirname(bottom.file)
-      else
-        File.cwd!()
-      end
-    else
-      File.cwd!()
+  defp bottom_project do
+    if Code.ensure_loaded?(Mix) and function_exported?(Mix.ProjectStack, :top_and_bottom, 0) do
+      with {_top, bottom} <- Mix.ProjectStack.top_and_bottom(), do: bottom
     end
   end
 
   @doc false
   def output_path do
     case Corex.Design.Config.output() do
-      nil -> Path.join(mix_root(), @default_output)
+      nil -> Path.join(mix_root(), Corex.Design.Config.default_output())
       output -> Path.expand(output, mix_root())
     end
   end

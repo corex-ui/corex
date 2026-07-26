@@ -37,9 +37,9 @@ defmodule Mix.Tasks.Corex.Design.Build do
   end
 
   defp check_contrast! do
-    for warning <- Corex.Design.Tokens.Contrast.check!() do
+    Enum.each(Corex.Design.Tokens.Contrast.check!(), fn warning ->
       Mix.shell().info([:yellow, "warning: ", :reset, contrast_line(warning)])
-    end
+    end)
   end
 
   defp contrast_line(v) do
@@ -56,8 +56,8 @@ defmodule Mix.Tasks.Corex.Design.Build do
       Mix.raise("Expected #{path} to evaluate to a keyword list")
     end
 
-    for {key, value} <- config do
+    Enum.each(config, fn {key, value} ->
       Application.put_env(:corex_design, key, value)
-    end
+    end)
   end
 end

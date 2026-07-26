@@ -1,6 +1,7 @@
 defmodule Corex.Design.Tokens.Colors do
   @moduledoc false
 
+  alias Corex.Design.Keys
   alias Corex.Design.Theme
   alias Corex.Design.Tokens.PaletteGen
 
@@ -14,8 +15,6 @@ defmodule Corex.Design.Tokens.Colors do
   @default_on_muted_dark %{palette: "base", against: :page, ratio: 6.0}
   @default_on_link_light %{palette: "info", against: :page, ratio: 6.0}
   @default_on_link_dark %{palette: "info", against: :page, ratio: 7.5}
-  @default_on_control_light %{palette: "base", against: :control, ratio: 8.0}
-  @default_on_control_dark %{palette: "base", against: :control, ratio: 12.0}
 
   def generate do
     for {theme_id, spec} <- Theme.resolved_themes(),
@@ -27,10 +26,10 @@ defmodule Corex.Design.Tokens.Colors do
   end
 
   def build_mode_colors(palette, mode_map, mode) when is_map(palette) and is_map(mode_map) do
-    palette = string_key_map(palette)
-    surface = map_get(mode_map, :surface, %{})
-    roles = map_get(mode_map, :roles, %{})
-    on = map_get(mode_map, :on, %{})
+    palette = Keys.to_strings(palette)
+    surface = Keys.get(mode_map, :surface, %{})
+    roles = Keys.get(mode_map, :roles, %{})
+    on = Keys.get(mode_map, :on, %{})
     cache = PaletteGen.new_cache()
 
     {surface_tokens, cache} = surface_tokens(%{}, palette, surface, cache)
@@ -44,9 +43,9 @@ defmodule Corex.Design.Tokens.Colors do
     |> Map.merge(ink_tokens)
     |> then(fn acc ->
       acc
-      |> put_flat_token(palette, :border, map_get(mode_map, :border, nil), surface_tokens, cache)
-      |> put_flat_token(palette, :focus, map_get(mode_map, :focus, nil), surface_tokens, cache)
-      |> put_flat_token(palette, :shadow, map_get(mode_map, :shadow, nil), surface_tokens, cache)
+      |> put_flat_token(palette, :border, Keys.get(mode_map, :border, nil), surface_tokens, cache)
+      |> put_flat_token(palette, :focus, Keys.get(mode_map, :focus, nil), surface_tokens, cache)
+      |> put_flat_token(palette, :shadow, Keys.get(mode_map, :shadow, nil), surface_tokens, cache)
     end)
     |> Map.merge(decorative_ink_tokens(palette, role_tokens, mode))
   end
@@ -224,50 +223,39 @@ defmodule Corex.Design.Tokens.Colors do
   end
 
   defp semantic_role_set do
-    Corex.Design.Filter.semantics() |> MapSet.new()
+    Corex.Design.Filter.semantic_strings() |> MapSet.new()
   end
 
   defp merge_auto_on(on, roles, mode) do
-    defaults = default_on(mode)
+    role_on = roles |> Enum.flat_map(&auto_on_entry/1) |> Map.new()
 
-    role_on =
-      Map.new(roles, fn {role, cfg} ->
-        role_str = role_key(role)
-
-        default =
-          if Map.get(cfg, :component, true) do
-            against =
-              if role_str == "base" do
-                :ui
-              else
-                String.to_atom(role_str)
-              end
-
-            %{
-              palette: "base",
-              against: against,
-              ratio: Map.get(@default_on_ink, :ratio)
-            }
-          else
-            nil
-          end
-
-        {role, default}
-      end)
-      |> Enum.reject(fn {_k, v} -> is_nil(v) end)
-      |> Map.new()
-
-    defaults
+    mode
+    |> default_on()
     |> Map.merge(role_on)
     |> Map.merge(on)
+  end
+
+  defp auto_on_entry({role, cfg}) do
+    case Map.get(cfg, :component, true) do
+      component when component in [nil, false] -> []
+      _component -> [{role, auto_on_default(role_key(role))}]
+    end
+  end
+
+  defp auto_on_default("base"), do: auto_on_default(:ui)
+
+  defp auto_on_default(role) when is_binary(role),
+    do: auto_on_default(Corex.Design.Filter.semantic_atom(role))
+
+  defp auto_on_default(against) when is_atom(against) do
+    %{palette: "base", against: against, ratio: Map.get(@default_on_ink, :ratio)}
   end
 
   defp default_on(:light) do
     %{
       page: @default_on_page_light,
       muted: @default_on_muted_light,
-      link: @default_on_link_light,
-      control: @default_on_control_light
+      link: @default_on_link_light
     }
   end
 
@@ -275,8 +263,7 @@ defmodule Corex.Design.Tokens.Colors do
     %{
       page: @default_on_page_dark,
       muted: @default_on_muted_dark,
-      link: @default_on_link_dark,
-      control: @default_on_control_dark
+      link: @default_on_link_dark
     }
   end
 
@@ -297,13 +284,5 @@ defmodule Corex.Design.Tokens.Colors do
 
   defp at_lightness(hex, lightness, cache) do
     PaletteGen.at_lightness(hex, lightness, cache)
-  end
-
-  defp string_key_map(map) when is_map(map) do
-    Map.new(map, fn {k, v} -> {to_string(k), v} end)
-  end
-
-  defp map_get(map, key, default) when is_map(map) do
-    Map.get(map, key) || Map.get(map, Atom.to_string(key)) || default
   end
 end
