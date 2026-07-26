@@ -39,38 +39,40 @@ defmodule E2eWeb.Layouts do
     assigns = assign(assigns, :path, path)
 
     ~H"""
-    <.header path={@path} theme={@theme} mode={@mode} />
+    <.header path={@path} theme={@theme} mode={@mode} variant={:marketing} />
     <div class={Shell.wrapper()}>
       <.aside path={@path} theme={@theme} mode={@mode} />
       <main id="main-content" class={Shell.main()}>
-        <.docs_pagination path={@path} />
-        <div class={Shell.content()}>
-          <div class={Shell.article()}>
-            {render_slot(@inner_block)}
+        <div class={Shell.docs_body()}>
+          <.docs_pagination path={@path} />
+          <div class={Shell.content()}>
+            <div class={Shell.article()}>
+              {render_slot(@inner_block)}
+            </div>
           </div>
-        </div>
-        <.docs_pagination_bottom path={@path} />
+          <.docs_pagination_bottom path={@path} />
 
-        <.toast_group
-          id="layout-toast"
-          class="toast"
-          phx-update="ignore"
-          flash={@flash}
-        >
-          <:loading>
-            <.heroicon name="hero-arrow-path" class="icon" />
-          </:loading>
-        </.toast_group>
-        <.toast_client_error
-          toast_group_id="layout-toast"
-          title={~t"We lost the connection"}
-          description={~t"We're trying to reconnect you..."}
-          type={:error}
-          duration={:infinity}
-        />
+          <.toast_group
+            id="layout-toast"
+            class="toast"
+            phx-update="ignore"
+            flash={@flash}
+          >
+            <:loading>
+              <.heroicon name="hero-arrow-path" class="icon" />
+            </:loading>
+          </.toast_group>
+          <.toast_client_error
+            toast_group_id="layout-toast"
+            title={~t"We lost the connection"}
+            description={~t"We're trying to reconnect you..."}
+            type={:error}
+            duration={:infinity}
+          />
+        </div>
+        <.footer path={@path} variant={:marketing} />
       </main>
     </div>
-    <.footer path={@path} />
     """
   end
 
@@ -89,7 +91,7 @@ defmodule E2eWeb.Layouts do
     assigns = assign(assigns, :path, path)
 
     ~H"""
-    <.header path={@path} theme={@theme} mode={@mode} />
+    <.header path={@path} theme={@theme} mode={@mode} variant={:marketing} />
     <div class={Shell.wrapper() <> " shell-blog-wrapper"}>
       <main id="main-content" class={Shell.main() <> " shell-blog-main w-full"}>
         <div class={Shell.content_blog() <> " shell-blog-content items-stretch"}>
@@ -114,7 +116,7 @@ defmodule E2eWeb.Layouts do
         />
       </main>
     </div>
-    <.footer path={@path} />
+    <.footer path={@path} variant={:marketing} />
     """
   end
 
@@ -123,10 +125,10 @@ defmodule E2eWeb.Layouts do
     assigns = assign(assigns, :path, path)
 
     ~H"""
-    <.header path={@path} theme={@theme} mode={@mode} />
+    <.header path={@path} theme={@theme} mode={@mode} variant={:marketing} />
     <div class={Shell.wrapper()}>
       <main id="main-content" class={Shell.main() <> " w-full"}>
-        <div class={Shell.content_marketing() <> " items-stretch"}>
+        <div class={Shell.content_marketing()}>
           {render_slot(@inner_block)}
         </div>
         <.toast_group
@@ -148,7 +150,7 @@ defmodule E2eWeb.Layouts do
         />
       </main>
     </div>
-    <.footer path={@path} />
+    <.footer path={@path} variant={:marketing} />
     """
   end
 

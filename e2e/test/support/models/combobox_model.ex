@@ -1,4 +1,14 @@
 defmodule E2eWeb.ComboboxModel do
+  @moduledoc """
+  Behavior map:
+    anatomy   - open + select item, assert hidden input value
+    api       - set value (binding/server/js), assert hidden input
+    playground - mount, patch anchoring
+    patterns  - server filter interactive
+    events    - server/client log growth + value mention
+    form      - submit, validation
+  """
+
   use E2eWeb.Model, component: "combobox"
 
   @anatomy_sections ~W(
@@ -287,11 +297,161 @@ defmodule E2eWeb.ComboboxModel do
     session
   end
 
+  def first_item_value(session, host_dom_id) when is_binary(host_dom_id) do
+    key = {:e2e_combobox_first_item, self(), make_ref()}
+
+    _ =
+      execute_script(
+        session,
+        """
+        const root = document.getElementById(arguments[0]);
+        const item = root?.querySelector('[data-scope="combobox"][data-part="item"]:not([data-template])');
+        return item?.getAttribute('data-value') ?? '';
+        """,
+        [host_dom_id],
+        fn value -> Process.put(key, to_string(value || "")) end
+      )
+
+    Process.get(key, "")
+  end
+
   def assert_positioner_anchored(session, host_dom_id, _opts \\ []) when is_binary(host_dom_id) do
     if not (String.match?(host_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and host_dom_id != "") do
       raise ArgumentError, "invalid combobox host dom id"
     end
 
     wait_combobox_content_open(session, host_dom_id)
+  end
+
+  def events_server_log_has_row?(session) do
+    has?(session, css("#combobox-events-log-server tr[data-part='row']"))
+  end
+
+  def events_client_log_has_row?(session) do
+    has?(session, css("#combobox-events-log-client tr[data-part='row']"))
+  end
+
+  def events_log_text(session, log_dom_id) when is_binary(log_dom_id) do
+    el = find(session, css("##{log_dom_id}", visible: :any))
+    Wallaby.Element.text(el)
+  end
+
+  def assert_events_log_mentions(session, log_dom_id, substring)
+      when is_binary(log_dom_id) and is_binary(substring) do
+    text = events_log_text(session, log_dom_id)
+
+    assert String.contains?(text, substring),
+           "expected ##{log_dom_id} to mention #{inspect(substring)}, got: #{inspect(text)}"
+
+    session
+  end
+
+  defp safe_dom_token?(token), do: String.match?(token, ~r/^[a-zA-Z0-9_-]+$/) and token != ""
+
+  def focus_trigger_in_section(session, section_dom_id) when is_binary(section_dom_id) do
+    if not safe_dom_token?(section_dom_id),
+      do: raise(ArgumentError, "invalid section id")
+
+    execute_script(
+      session,
+      """
+      const section = document.getElementById('#{section_dom_id}');
+      const trigger = section && section.querySelector(
+        '[data-scope="combobox"][data-part="trigger"]'
+      );
+      if (trigger) trigger.focus();
+      return !!(trigger && document.activeElement === trigger);
+      """,
+      [],
+      fn v -> assert v == true, "expected focus on combobox trigger in ##{section_dom_id}" end
+    )
+
+    session
+  end
+
+  def press_key_on_active(session, key) do
+    press_key(session, key, 1)
+  end
+
+  def content_open_in_section?(session, section_dom_id) do
+    has?(
+      session,
+      css(
+        ~s|section##{section_dom_id} [data-scope="combobox"][data-part="content"][data-state="open"]|,
+        visible: :any
+      )
+    )
+  end
+
+  def assert_highlighted_item_in_section(session, section_dom_id, value) do
+    if not safe_dom_token?(section_dom_id), do: raise(ArgumentError, "invalid section id")
+
+    execute_script(
+      session,
+      """
+      const section = document.getElementById('#{section_dom_id}');
+      if (!section) return false;
+      const item = section.querySelector(
+        '[data-scope="combobox"][data-part="item"][data-value="#{value}"][data-highlighted]'
+      );
+      return !!item;
+      """,
+      [],
+      fn v ->
+        assert v == true, "expected highlighted item #{value} in section ##{section_dom_id}"
+      end
+    )
+
+    session
+  end
+
+  def goto_form(session, mode) do
+    {path, page_id} =
+      case mode do
+        :static -> {"/en/combobox/form", "combobox-form-page"}
+        :live -> {"/en/combobox/live-form", "combobox-form-live-page"}
+      end
+
+    goto_form_page(session, path, page_id, mode)
+  end
+
+  defp form_dom_id(:static, :ecto), do: "combobox-form-ecto"
+  defp form_dom_id(:static, _), do: "combobox-form-phoenix"
+  defp form_dom_id(:live, :ecto), do: "combobox-live-form-ecto"
+  defp form_dom_id(:live, _), do: "combobox-live-form-phoenix"
+
+  def click_form_combobox_trigger(session, mode \\ :live, form \\ :phoenix) do
+    form_id = form_dom_id(mode, form)
+
+    session =
+      if mode == :live do
+        assert_has(session, css("##{form_id} [phx-hook='Combobox']:not([data-loading])"))
+      else
+        session
+      end
+
+    click(session, css("##{form_id} [data-scope='combobox'][data-part='trigger']"))
+  end
+
+  def submit_form(session, mode \\ :live, form \\ :phoenix) do
+    case {mode, form} do
+      {:live, :ecto} ->
+        click(session, css("#combobox-live-form-ecto button[type='submit']"))
+
+      {:live, _} ->
+        click(session, css("#combobox-live-form-phoenix-submit"))
+
+      {:static, :ecto} ->
+        click(session, css("#combobox-form-ecto button[type='submit']"))
+
+      {:static, _} ->
+        click(session, css("#combobox-form-phoenix button[type='submit']"))
+    end
+  end
+
+  def select_item(session, value) when is_binary(value) do
+    session
+    |> assert_has(css(~S([data-scope='combobox'][data-part='content'][data-state='open'])))
+    |> click(css("[data-scope='combobox'][data-part='item'][data-value='#{value}']"))
   end
 end

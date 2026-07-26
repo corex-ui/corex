@@ -7,9 +7,9 @@ defmodule E2eWeb.AccordionPatternsLive do
 
   @id_async "patterns-async"
   @id_controlled "patterns-controlled"
-  @id_stream "stream-accordion"
+  @id_dynamic "patterns-dynamic"
 
-  @initial_stream_items [
+  @initial_items [
     %{value: "1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
     %{
       value: "2",
@@ -20,15 +20,11 @@ defmodule E2eWeb.AccordionPatternsLive do
   ]
 
   def mount(_params, _session, socket) do
-    if connected?(socket) do
-      Process.send_after(self(), :add_timestamp_item, 3000)
-    end
-
     socket =
       socket
       |> assign(:id_async, @id_async)
       |> assign(:id_controlled, @id_controlled)
-      |> assign(:id_stream, @id_stream)
+      |> assign(:id_dynamic, @id_dynamic)
       |> assign(:value, ["lorem"])
       |> assign(:items, items())
       |> assign(:async_heex_full, Demo.patterns_async_heex_full())
@@ -36,11 +32,9 @@ defmodule E2eWeb.AccordionPatternsLive do
       |> assign(:async_elixir, Demo.patterns_async_elixir())
       |> assign(:controlled_heex, Demo.patterns_controlled_heex())
       |> assign(:controlled_elixir, Demo.patterns_controlled_elixir())
-      |> assign(:stream_heex, Demo.patterns_stream_demo_heex())
-      |> assign(:stream_elixir, Demo.patterns_stream_elixir())
-      |> stream_configure(:items, dom_id: &"accordion:stream-accordion:item:#{&1.value}")
-      |> stream(:items, @initial_stream_items)
-      |> assign(:items_list, @initial_stream_items)
+      |> assign(:dynamic_heex, Demo.patterns_dynamic_demo_heex())
+      |> assign(:dynamic_elixir, Demo.patterns_dynamic_elixir())
+      |> assign(:dynamic_items, @initial_items)
       |> assign(:next_id, 4)
       |> assign_async(:accordion, fn ->
         Process.sleep(1000)
@@ -70,47 +64,18 @@ defmodule E2eWeb.AccordionPatternsLive do
     {:ok, socket}
   end
 
-  def handle_info(:add_timestamp_item, socket) do
-    Process.send_after(self(), :add_timestamp_item, 10_000)
-
-    id = to_string(socket.assigns.next_id)
-
-    time =
-      DateTime.utc_now()
-      |> DateTime.truncate(:second)
-      |> DateTime.to_time()
-      |> Time.to_string()
-
-    item = %{
-      value: id,
-      label: ~t"Item #{id} @ #{time}",
-      content: ~t"Content for item #{id}."
-    }
-
-    {:noreply,
-     socket
-     |> stream_insert(:items, item)
-     |> assign(:items_list, socket.assigns.items_list ++ [item])
-     |> assign(:next_id, socket.assigns.next_id + 1)}
-  end
-
   def handle_event("add_item", _params, socket) do
     id = to_string(socket.assigns.next_id)
-    item = %{value: id, label: ~t"Item #{id}", content: ~t"Content for item #{id}."}
+    item = %{value: id, label: "Item #{id}", content: "Content for item #{id}."}
 
     {:noreply,
      socket
-     |> stream_insert(:items, item)
-     |> assign(:items_list, socket.assigns.items_list ++ [item])
+     |> assign(:dynamic_items, socket.assigns.dynamic_items ++ [item])
      |> assign(:next_id, socket.assigns.next_id + 1)}
   end
 
   def handle_event("reset", _params, socket) do
-    {:noreply,
-     socket
-     |> stream(:items, @initial_stream_items, reset: true)
-     |> assign(:items_list, @initial_stream_items)
-     |> assign(:next_id, 4)}
+    {:noreply, socket |> assign(:dynamic_items, @initial_items) |> assign(:next_id, 4)}
   end
 
   def handle_event("patterns_controlled_changed", %{"value" => value}, socket) do
@@ -129,7 +94,7 @@ defmodule E2eWeb.AccordionPatternsLive do
         path={@path}
         id="accordion-patterns-page"
         title={~t"Accordion · Pattern"}
-        subtitle={~t"Async loading, controlled state, and streaming items."}
+        subtitle={~t"Async loading, controlled state, and dynamic items."}
       >
         <.demo_section
           id="accordion-patterns-async"
@@ -185,11 +150,11 @@ defmodule E2eWeb.AccordionPatternsLive do
         </.demo_section>
 
         <.demo_section
-          id="accordion-patterns-stream"
-          title={~t"Stream"}
+          id="accordion-patterns-dynamic"
+          title={~t"Dynamic items"}
           code_tabs={[
-            %{value: "heex", label: ~t"Heex", language: :heex, code: @stream_heex},
-            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @stream_elixir}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @dynamic_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @dynamic_elixir}
           ]}
         >
           <:preview>
@@ -202,9 +167,9 @@ defmodule E2eWeb.AccordionPatternsLive do
               </.action>
             </div>
             <.accordion
-              id={@id_stream}
+              id={@id_dynamic}
               class="accordion"
-              items={Corex.Content.new(@items_list)}
+              items={Corex.Content.new(@dynamic_items)}
             >
               <:indicator>
                 <.heroicon name="hero-chevron-right" />

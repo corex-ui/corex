@@ -1,5 +1,6 @@
 const MAX_EVENT_ROWS = 20
 const ACCORDION_EVENT = "hero-accordion-changed"
+const EVENT_FLASH_MS = 800
 
 function formatOpen(value) {
   if (value == null) return " - "
@@ -32,10 +33,13 @@ function dispatchAccordionValue(accordionEl, value) {
 const HomeHero = {
   mounted() {
     this.accordionEl = document.getElementById("hero-accordion")
+    this.eventsBadge = document.getElementById("hero-events-badge")
+    this.flashTimer = null
 
     this.onAccordionChange = (event) => {
       const detail = event.detail ?? {}
       this.prependEventRow(formatTime(), formatOpen(detail.value))
+      this.flashEventsBadge()
     }
 
     this.el.addEventListener(ACCORDION_EVENT, this.onAccordionChange)
@@ -59,6 +63,25 @@ const HomeHero = {
     if (this.onAccordionChange) {
       this.el.removeEventListener(ACCORDION_EVENT, this.onAccordionChange)
     }
+    if (this.flashTimer) {
+      clearTimeout(this.flashTimer)
+      this.flashTimer = null
+    }
+  },
+
+  flashEventsBadge() {
+    const badge = this.eventsBadge
+    if (!badge) return
+
+    badge.classList.add("ui-success")
+    badge.classList.remove("ui-ghost")
+
+    if (this.flashTimer) clearTimeout(this.flashTimer)
+    this.flashTimer = setTimeout(() => {
+      badge.classList.remove("ui-success")
+      badge.classList.add("ui-ghost")
+      this.flashTimer = null
+    }, EVENT_FLASH_MS)
   },
 
   prependEventRow(time, open) {

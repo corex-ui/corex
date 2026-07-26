@@ -258,6 +258,31 @@ defmodule E2eWeb.Demos.SelectDemo do
     """
   end
 
+  def styling_canonical_code do
+    items_attr =
+      ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
+
+    value_attr = ~S|value={["fra"]}|
+
+    """
+    <.select class="select" #{items_attr} #{value_attr}>
+      <:label>Subtle (default)</:label>
+      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    </.select>
+    """
+  end
+
+  def styling_canonical_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.select id="select-style-canonical" class="select" items={items()} value={["fra"]}>
+      <:label>Subtle (default)</:label>
+      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    </.select>
+    """
+  end
+
   def styling_color_code do
     items_attr =
       ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
@@ -368,6 +393,10 @@ defmodule E2eWeb.Demos.SelectDemo do
       <:label>Solid</:label>
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
     </.select>
+    <.select class="select ui-ghost" #{items_attr} #{value_attr}>
+      <:label>Ghost</:label>
+      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    </.select>
 
     """
   end
@@ -388,6 +417,15 @@ defmodule E2eWeb.Demos.SelectDemo do
         value={["fra"]}
       >
         <:label>Solid</:label>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.select>
+      <.select
+        id="select-style-variant-ghost"
+        class="select ui-ghost"
+        items={items()}
+        value={["fra"]}
+      >
+        <:label>Ghost</:label>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
       </.select>
     </div>
@@ -1505,7 +1543,7 @@ defmodule E2eWeb.Demos.SelectDemo do
     """
   end
 
-  def patterns_stream_demo_heex do
+  def patterns_dynamic_demo_heex do
     ~S"""
     <div class="flex flex-col gap-3 w-full max-w-xl">
       <div class="flex flex-wrap gap-2">
@@ -1516,7 +1554,7 @@ defmodule E2eWeb.Demos.SelectDemo do
           Reset
         </.action>
       </div>
-      <.select class="select" items={Corex.List.new(@items_list)}>
+      <.select class="select" items={Corex.List.new(@items)}>
         <:label>Country</:label>
         <:trigger>
           <.heroicon name="hero-chevron-down" class="icon" />
@@ -1526,9 +1564,9 @@ defmodule E2eWeb.Demos.SelectDemo do
     """
   end
 
-  def patterns_stream_elixir do
+  def patterns_dynamic_elixir do
     ~S'''
-    defmodule MyAppWeb.SelectStreamDemoLive do
+    defmodule MyAppWeb.SelectDynamicDemoLive do
       use MyAppWeb, :live_view
 
       @impl true
@@ -1539,12 +1577,7 @@ defmodule E2eWeb.Demos.SelectDemo do
           %{value: "donec", label: "Donec condimentum ex mi"}
         ]
 
-        {:ok,
-         socket
-         |> stream_configure(:items, dom_id: &("select:stream-select:item:" <> &1.value))
-         |> stream(:items, initial)
-         |> assign(:items_list, initial)
-         |> assign(:next_id, 1)}
+        {:ok, socket |> assign(:items, initial) |> assign(:next_id, 1)}
       end
 
       @impl true
@@ -1554,8 +1587,7 @@ defmodule E2eWeb.Demos.SelectDemo do
 
         {:noreply,
          socket
-         |> stream_insert(:items, item)
-         |> assign(:items_list, socket.assigns.items_list ++ [item])
+         |> assign(:items, socket.assigns.items ++ [item])
          |> assign(:next_id, socket.assigns.next_id + 1)}
       end
 
@@ -1567,11 +1599,7 @@ defmodule E2eWeb.Demos.SelectDemo do
           %{value: "donec", label: "Donec condimentum ex mi"}
         ]
 
-        {:noreply,
-         socket
-         |> stream(:items, initial, reset: true)
-         |> assign(:items_list, initial)
-         |> assign(:next_id, 1)}
+        {:noreply, socket |> assign(:items, initial) |> assign(:next_id, 1)}
       end
 
       @impl true
@@ -1586,7 +1614,7 @@ defmodule E2eWeb.Demos.SelectDemo do
               Reset
             </.action>
           </div>
-          <.select id="stream-select" class="select" items={Corex.List.new(@items_list)}>
+          <.select id="patterns-dynamic" class="select" items={Corex.List.new(@items)}>
             <:label>Country</:label>
             <:trigger>
               <.heroicon name="hero-chevron-down" class="icon" />

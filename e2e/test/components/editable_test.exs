@@ -63,6 +63,19 @@ defmodule E2eWeb.EditableTest do
       |> Editable.wait_preview_contains_in_host(host, "Alpha", timeout: 8_000)
     end
 
+    feature "client js  -  Gamma updates preview", %{session: session} do
+      host = "editable-api-cjs"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Editable, :editable, :api)
+        |> Editable.wait_host_editable_ready(host)
+
+      session
+      |> Editable.click_in_section("editable-api-set-value-client-js", "Gamma (client JS)")
+      |> Editable.wait_preview_contains_in_host(host, "Gamma", timeout: 8_000)
+    end
+
     feature "server  -  Beta updates preview", %{session: session} do
       host = "editable-api-srv"
 
@@ -95,6 +108,24 @@ defmodule E2eWeb.EditableTest do
       |> Editable.type_in_host(host, "Event value")
       |> Editable.click_submit_trigger_in_host(host)
       |> Editable.wait_log_rows_grew("editable-events-log-server", before, timeout: 10_000)
+    end
+
+    feature "client  -  value change appends log row", %{session: session} do
+      host = "editable-events-client"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Editable, :editable, :events)
+        |> Editable.prepare_live_form()
+        |> Editable.wait_host_editable_ready(host)
+
+      before = Editable.log_row_count(session, "editable-events-log-client")
+
+      session
+      |> Editable.click_edit_trigger_in_host(host)
+      |> Editable.type_in_host(host, "Client event")
+      |> Editable.click_submit_trigger_in_host(host)
+      |> Editable.wait_log_rows_grew("editable-events-log-client", before, timeout: 10_000)
     end
   end
 end

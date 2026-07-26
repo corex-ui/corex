@@ -1,7 +1,7 @@
 defmodule E2eWeb.DemoScales do
   @moduledoc false
 
-  alias Corex.Design.ComponentLayout
+  alias Corex.Design.Components
   alias Corex.Design.Scales
   alias E2eWeb.TailwindSizingLiterals
 
@@ -33,11 +33,11 @@ defmodule E2eWeb.DemoScales do
   def join_code(blocks), do: Enum.join(blocks, "\n")
 
   def default_max_width_label(component_id) do
-    ComponentLayout.default_max_label(component_id)
+    Components.default_max_label(component_id)
   end
 
   def default_width_label(component_id) do
-    ComponentLayout.host_width_label(component_id)
+    Components.host_width_label(component_id)
   end
 
   def max_width_options_for(component_id) do
@@ -125,11 +125,18 @@ defmodule E2eWeb.DemoScales do
     |> then(&join_modifiers(host, &1))
   end
 
-  def styling_variant_axis_steps(_host) do
-    [
-      %{label: "Subtle (default)", modifier: ""},
-      %{label: "Solid", modifier: "ui-solid"}
-    ]
+  def styling_variant_axis?(host) when is_binary(host) do
+    Components.has_variant_axis?(host)
+  end
+
+  def no_variant_hosts, do: Components.no_variant_hosts()
+
+  def styling_variant_axis_steps(host) when is_binary(host) do
+    if styling_variant_axis?(host) do
+      Components.variant_steps()
+    else
+      []
+    end
   end
 
   def styling_semantic_axis_steps(_host) do

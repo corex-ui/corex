@@ -11,10 +11,8 @@ defmodule E2eWeb.RadioGroupPatternsLive do
   def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> stream_configure(:items, dom_id: &"radio-group:stream-radio-group:item:#{&1.value}")
-     |> stream(:items, @initial_items)
-     |> assign(:items_list, @initial_items)
-     |> assign(:stream_value, "lorem")
+     |> assign(:items, @initial_items)
+     |> assign(:dynamic_value, "lorem")
      |> assign(:next_id, 1)
      |> assign(:value, "lorem")}
   end
@@ -24,8 +22,8 @@ defmodule E2eWeb.RadioGroupPatternsLive do
     {:noreply, assign(socket, :value, v)}
   end
 
-  def handle_event("patterns_stream_value", %{"value" => v}, socket) do
-    {:noreply, assign(socket, :stream_value, v)}
+  def handle_event("patterns_dynamic_value", %{"value" => v}, socket) do
+    {:noreply, assign(socket, :dynamic_value, v)}
   end
 
   def handle_event("add_item", _params, socket) do
@@ -34,17 +32,15 @@ defmodule E2eWeb.RadioGroupPatternsLive do
 
     {:noreply,
      socket
-     |> stream_insert(:items, item)
-     |> assign(:items_list, socket.assigns.items_list ++ [item])
+     |> assign(:items, socket.assigns.items ++ [item])
      |> assign(:next_id, socket.assigns.next_id + 1)}
   end
 
   def handle_event("reset", _params, socket) do
     {:noreply,
      socket
-     |> stream(:items, @initial_items, reset: true)
-     |> assign(:items_list, @initial_items)
-     |> assign(:stream_value, "lorem")
+     |> assign(:items, @initial_items)
+     |> assign(:dynamic_value, "lorem")
      |> assign(:next_id, 1)}
   end
 
@@ -61,7 +57,7 @@ defmodule E2eWeb.RadioGroupPatternsLive do
         path={@path}
         id="radio-group-patterns-page"
         title="Radio Group · Pattern"
-        subtitle="Controlled selection and stream-driven items."
+        subtitle="Controlled selection and dynamic items."
       >
         <.demo_section
           id="radio-group-patterns-controlled"
@@ -93,20 +89,20 @@ defmodule E2eWeb.RadioGroupPatternsLive do
         </.demo_section>
 
         <.demo_section
-          id="radio-group-patterns-stream"
-          title={~t"Stream"}
+          id="radio-group-patterns-dynamic"
+          title={~t"Dynamic items"}
           code_tabs={[
             %{
               value: "heex",
               label: ~t"Heex",
               language: :heex,
-              code: Demo.patterns_stream_demo_heex()
+              code: Demo.patterns_dynamic_demo_heex()
             },
             %{
               value: "elixir",
               label: ~t"Elixir",
               language: :elixir,
-              code: Demo.patterns_stream_elixir()
+              code: Demo.patterns_dynamic_elixir()
             }
           ]}
         >
@@ -121,13 +117,13 @@ defmodule E2eWeb.RadioGroupPatternsLive do
                 </.action>
               </div>
               <.radio_group
-                id="stream-radio-group"
-                name="stream-rg"
+                id="patterns-dynamic"
+                name="dynamic-rg"
                 class="radio-group"
-                items={@items_list}
-                value={@stream_value}
+                items={@items}
+                value={@dynamic_value}
                 controlled
-                on_value_change="patterns_stream_value"
+                on_value_change="patterns_dynamic_value"
               >
                 <:label>Choose one</:label>
                 <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>

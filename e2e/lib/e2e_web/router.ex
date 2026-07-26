@@ -29,7 +29,6 @@ defmodule E2eWeb.Router do
 
     get("/sitemap.xml", SitemapController, :index)
     get("/feed.xml", FeedController, :index)
-
     get("/", HomeController, :index)
   end
 

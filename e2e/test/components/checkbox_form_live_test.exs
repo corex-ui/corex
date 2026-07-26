@@ -23,26 +23,26 @@ defmodule E2eWeb.CheckboxFormLiveTest do
     |> form("#checkbox-live-form-phoenix")
     |> render_submit(%{"terms_phoenix" => %{"terms" => "false"}})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "terms=false",
       duration: 5000,
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })
   end
 
-  test "phoenix save with accepted terms pushes toast-create", %{conn: conn} do
+  test "phoenix save with accepted terms pushes toast_create", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/checkbox/live-form")
 
     view
     |> form("#checkbox-live-form-phoenix")
     |> render_submit(%{"terms_phoenix" => %{"terms" => "true"}})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "terms=true",
       duration: 5000,
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })
@@ -59,17 +59,17 @@ defmodule E2eWeb.CheckboxFormLiveTest do
     assert html =~ "must be accepted"
   end
 
-  test "ecto save with accepted terms pushes toast-create", %{conn: conn} do
+  test "ecto save with accepted terms pushes toast_create", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/checkbox/live-form")
 
     view
     |> form("#checkbox-live-form-ecto")
     |> render_submit(%{"terms_ecto" => %{"terms" => "true"}})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "Submitted: terms=true",
       duration: 5000,
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })
@@ -130,17 +130,17 @@ defmodule E2eWeb.CheckboxFormLiveTest do
     assert controlled_html =~ ~S/data-state="checked"/
   end
 
-  test "ecto controlled save with accepted terms pushes toast-create", %{conn: conn} do
+  test "ecto controlled save with accepted terms pushes toast_create", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/checkbox/live-form")
 
     view
     |> form("#checkbox-live-form-ecto-controlled")
     |> render_submit(%{"terms_ecto_controlled" => %{"terms" => "true"}})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "Submitted: terms=true",
       duration: 5000,
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })
@@ -181,17 +181,17 @@ defmodule E2eWeb.CheckboxFormLiveTest do
     refute ecto_invalid_html =~ ~r/id="checkbox-live-form-ecto-invalid_terms"[^>]*data-invalid=""/
   end
 
-  test "ecto invalid save with accepted terms pushes toast-create", %{conn: conn} do
+  test "ecto invalid save with accepted terms pushes toast_create", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/checkbox/live-form")
 
     view
     |> form("#checkbox-live-form-ecto-invalid")
     |> render_submit(%{"terms_ecto_invalid" => %{"terms" => "true"}})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "Submitted: terms=true",
       duration: 5000,
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })

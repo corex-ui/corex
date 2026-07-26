@@ -138,4 +138,78 @@ defmodule E2eWeb.TreeViewModel do
   def tree_view_events_client_log_has_row?(session) do
     has?(session, css("#tree-events-log-client tr[data-part='row']", visible: :any))
   end
+
+  def events_log_text(session, log_dom_id) when is_binary(log_dom_id) do
+    el = find(session, css("##{log_dom_id}", visible: :any))
+    Wallaby.Element.text(el)
+  end
+
+  def assert_events_log_mentions(session, log_dom_id, substring)
+      when is_binary(log_dom_id) and is_binary(substring) do
+    text = events_log_text(session, log_dom_id)
+
+    assert String.contains?(text, substring),
+           "expected ##{log_dom_id} to mention #{inspect(substring)}, got: #{inspect(text)}"
+
+    session
+  end
+
+  def wait_item_selected_in_host(session, host_dom_id, item_value, opts \\ []) do
+    if not valid_dom_id?(host_dom_id), do: raise(ArgumentError, "invalid host dom id")
+
+    wait_for_has(
+      session,
+      css(
+        ~s|##{host_dom_id} [data-scope="tree-view"][data-part="item"][data-value="#{item_value}"][data-selected]|,
+        visible: :any
+      ),
+      opts
+    )
+
+    session
+  end
+
+  def focus_branch_control(session, host_dom_id, branch_value)
+      when is_binary(host_dom_id) and is_binary(branch_value) do
+    if not valid_dom_id?(host_dom_id) or not valid_dom_id?(branch_value),
+      do: raise(ArgumentError, "invalid host or branch value")
+
+    execute_script(
+      session,
+      """
+      const root = document.getElementById('#{host_dom_id}');
+      const control = root && root.querySelector(
+        '[data-scope="tree-view"][data-part="branch-control"][data-value="#{branch_value}"]'
+      );
+      if (control) control.focus();
+      return !!(control && document.activeElement === control);
+      """,
+      [],
+      fn v ->
+        assert v == true,
+               "expected focus on tree branch #{branch_value} in ##{host_dom_id}"
+      end
+    )
+
+    session
+  end
+
+  def press_key_on_active(session, key) do
+    press_key(session, key, 1)
+  end
+
+  def wait_branch_content_closed_in_host(session, host_dom_id, branch_value, opts \\ []) do
+    if not valid_dom_id?(host_dom_id), do: raise(ArgumentError, "invalid host dom id")
+
+    wait_for_has(
+      session,
+      css(
+        ~s|##{host_dom_id} [data-scope="tree-view"][data-part="branch-content"][data-value="#{branch_value}"][data-state="closed"]|,
+        visible: :any
+      ),
+      opts
+    )
+
+    session
+  end
 end

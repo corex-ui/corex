@@ -13,17 +13,17 @@ defmodule E2eWeb.ComboboxFormLiveTest do
     assert html =~ "can&#39;t be blank"
   end
 
-  test "ecto save with country pushes toast-create", %{conn: conn} do
+  test "ecto save with country pushes toast_create", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/combobox/live-form")
 
     view
     |> form("#combobox-live-form-ecto")
     |> render_submit(%{"combobox_ecto" => %{"country" => "fra"}})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "Submitted: country=fra",
       duration: 5000,
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })

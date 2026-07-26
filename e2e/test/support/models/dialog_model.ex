@@ -141,6 +141,29 @@ defmodule E2eWeb.DialogModel do
     has?(session, css("#dialog-events-log tr[data-part='row']"))
   end
 
+  def dialog_events_server_log_has_row?(session) do
+    has?(session, css("#dialog-events-log-server tr[data-part='row']", visible: :any))
+  end
+
+  def dialog_events_client_log_has_row?(session) do
+    has?(session, css("#dialog-events-log-client tr[data-part='row']", visible: :any))
+  end
+
+  def events_log_text(session, log_dom_id) when is_binary(log_dom_id) do
+    el = find(session, css("##{log_dom_id}", visible: :any))
+    Wallaby.Element.text(el)
+  end
+
+  def assert_events_log_mentions(session, log_dom_id, substring)
+      when is_binary(log_dom_id) and is_binary(substring) do
+    text = events_log_text(session, log_dom_id)
+
+    assert String.contains?(text, substring),
+           "expected ##{log_dom_id} to mention #{inspect(substring)}, got: #{inspect(text)}"
+
+    session
+  end
+
   def assert_active_element_id(session, dom_id) when is_binary(dom_id) do
     if not (String.match?(dom_id, ~r/^[a-zA-Z0-9_:-]+$/) and String.length(dom_id) > 0) do
       raise ArgumentError, "only safe id strings for assert_active_element_id/2"
@@ -151,6 +174,43 @@ defmodule E2eWeb.DialogModel do
       "return document.activeElement?.id",
       [],
       fn id -> assert id == dom_id end
+    )
+
+    session
+  end
+
+  defp safe_dom_token?(token), do: String.match?(token, ~r/^[a-zA-Z0-9_-]+$/) and token != ""
+
+  def press_key_on_active(session, key) do
+    press_key(session, key, 1)
+  end
+
+  def dialog_open?(session, host_dom_id) when is_binary(host_dom_id) do
+    has?(
+      session,
+      css(
+        ~s|##{host_dom_id} [data-scope="dialog"][data-part="trigger"][data-state="open"]|,
+        visible: :any
+      )
+    )
+  end
+
+  def assert_focus_inside_dialog(session, host_dom_id) when is_binary(host_dom_id) do
+    if not safe_dom_token?(host_dom_id), do: raise(ArgumentError, "invalid dialog host dom id")
+
+    execute_script(
+      session,
+      """
+      const root = document.getElementById('#{host_dom_id}');
+      const content = root && root.querySelector(
+        '[data-scope="dialog"][data-part="content"][data-state="open"]'
+      );
+      return !!(content && content.contains(document.activeElement));
+      """,
+      [],
+      fn v ->
+        assert v == true, "expected focus inside open dialog content in ##{host_dom_id}"
+      end
     )
 
     session

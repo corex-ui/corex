@@ -754,6 +754,35 @@ defmodule E2eWeb.Demos.TimerDemo do
     """
   end
 
+  def styling_canonical_code do
+    triggers = styling_triggers_code()
+
+    """
+    <.timer class="timer w-full max-w-xs" start_ms={60_000} target_ms={0} countdown>
+    #{triggers}
+    </.timer>
+    """
+  end
+
+  def styling_canonical_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.timer
+      id="timer-style-canonical"
+      class="timer w-full max-w-xs"
+      start_ms={60_000}
+      target_ms={0}
+      countdown
+    >
+      <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+      <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+      <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+      <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
+    </.timer>
+    """
+  end
+
   def styling_color_code do
     ~S"""
     <.timer class="timer w-full max-w-xs" start_ms={60_000} target_ms={0} countdown />

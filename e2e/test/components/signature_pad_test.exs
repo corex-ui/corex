@@ -57,6 +57,22 @@ defmodule E2eWeb.SignaturePadTest do
       |> Signature.refute_segment_in_host(host)
     end
 
+    feature "client js  -  Clear removes stroke", %{session: session} do
+      host = "signature-api-cjs"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Signature, :signature_pad, :api)
+        |> Signature.prepare_live_form()
+        |> Signature.wait_host_signature_ready(host)
+        |> Signature.draw_stroke_in_host(host)
+        |> Signature.wait_has_segment_in_host(host, timeout: 8_000)
+
+      session
+      |> Signature.click_in_section("signature-api-clear-client-js", "Clear")
+      |> Signature.refute_segment_in_host(host)
+    end
+
     feature "server  -  Clear removes stroke", %{session: session} do
       host = "signature-api-srv"
 
@@ -86,6 +102,21 @@ defmodule E2eWeb.SignaturePadTest do
       |> Signature.draw_stroke_and_wait_for_draw_end_log(
         "signature-events-server",
         "signature-events-log-server",
+        timeout: 15_000
+      )
+    end
+
+    feature "client  -  draw end appends log row", %{session: session} do
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Signature, :signature_pad, :events)
+        |> Signature.prepare_live_form()
+        |> Signature.wait_host_signature_ready("signature-events-client")
+
+      session
+      |> Signature.draw_stroke_and_wait_for_draw_end_log(
+        "signature-events-client",
+        "signature-events-log-client",
         timeout: 15_000
       )
     end

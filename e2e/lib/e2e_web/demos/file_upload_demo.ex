@@ -53,7 +53,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
   def live_anatomy_minimal_code do
     ~S"""
     <form phx-change="validate">
-      <.file_upload_live upload={@uploads.document} field={:document} class="file-upload">
+      <.file_upload_live upload={@uploads.document} upload_name={:document} class="file-upload">
         <:close>
           <.heroicon name="hero-x-mark" />
         </:close>
@@ -65,7 +65,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
   def live_anatomy_with_label_code do
     ~S"""
     <form phx-change="validate">
-      <.file_upload_live upload={@uploads.document} field={:document} class="file-upload">
+      <.file_upload_live upload={@uploads.document} upload_name={:document} class="file-upload">
         <:label>Files</:label>
         <:close>
           <.heroicon name="hero-x-mark" />
@@ -112,7 +112,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
   def live_anatomy_custom_slots_code do
     ~S"""
     <form phx-change="validate">
-      <.file_upload_live upload={@uploads.document} field={:document} class="file-upload">
+      <.file_upload_live upload={@uploads.document} upload_name={:document} class="file-upload">
         <:dropzone>
           <span>Custom dropzone</span>
         </:dropzone>
@@ -149,7 +149,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
   def live_form_with_submit_code do
     ~S"""
     <form phx-change="validate" phx-submit="save">
-      <.file_upload_live upload={@uploads.attachment} field={:attachment} class="file-upload">
+      <.file_upload_live upload={@uploads.attachment} upload_name={:attachment} class="file-upload">
         <:label>Attachment</:label>
         <:close>
           <.heroicon name="hero-x-mark" />
@@ -582,7 +582,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
   def form_live_upload_heex do
     ~S"""
     <form phx-change="validate" phx-submit="save">
-      <.file_upload_live upload={@uploads.attachment} field={:attachment}>
+      <.file_upload_live upload={@uploads.attachment} upload_name={:attachment}>
         <:label>Attachment</:label>
         <:close>
           <.heroicon name="hero-x-mark" />

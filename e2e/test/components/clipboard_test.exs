@@ -32,7 +32,18 @@ defmodule E2eWeb.ClipboardTest do
   end
 
   describe "api" do
-    feature "client  -  Copy pushes copied state", %{session: session} do
+    feature "client binding  -  Copy pushes copied state", %{session: session} do
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Clipboard, :clipboard, :api)
+        |> Clipboard.wait_host_clipboard_ready("clipboard-api")
+
+      session
+      |> Clipboard.click_in_section("clipboard-api-client-section", "Copy")
+      |> Clipboard.wait_trigger_copied_in_host("clipboard-api", timeout: 8_000)
+    end
+
+    feature "client js  -  Copy pushes copied state", %{session: session} do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(Clipboard, :clipboard, :api)

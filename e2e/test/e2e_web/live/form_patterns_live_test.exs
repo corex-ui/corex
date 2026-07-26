@@ -83,10 +83,10 @@ defmodule E2eWeb.FormPatternsLiveTest do
       }
     })
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description:
         "country=fra currency=eur tags=[\"alpha\"] terms=true notifications=true password=***",
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })

@@ -13,17 +13,17 @@ defmodule E2eWeb.NumberInputFormLiveTest do
     assert html =~ "can&#39;t be blank"
   end
 
-  test "ecto save with value pushes toast-create", %{conn: conn} do
+  test "ecto save with value pushes toast_create", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/number-input/live-form")
 
     view
     |> form("#number-input-live-form-ecto")
     |> render_submit(%{"number_input_ecto" => %{"value" => "99"}})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "Submitted: value=99.0",
       duration: 5000,
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })
@@ -40,23 +40,23 @@ defmodule E2eWeb.NumberInputFormLiveTest do
     assert html =~ "must be greater than or equal to"
   end
 
-  test "ecto save with in-range value pushes toast-create", %{conn: conn} do
+  test "ecto save with in-range value pushes toast_create", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/number-input/live-form")
 
     view
     |> form("#number-input-live-form-ecto")
     |> render_submit(%{"number_input_ecto" => %{"value" => "50"}})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "Submitted: value=50.0",
       duration: 5000,
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })
   end
 
-  test "phoenix save default value pushes toast-create", %{conn: conn} do
+  test "phoenix save default value pushes toast_create", %{conn: conn} do
     {:ok, view, _html} = live(conn, ~p"/number-input/live-form")
 
     view
@@ -67,15 +67,15 @@ defmodule E2eWeb.NumberInputFormLiveTest do
     |> form("#number-input-live-form-phoenix")
     |> render_submit(%{"number_input_phoenix" => %{"value" => "1234"}})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "value=\"1234\"",
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })
   end
 
-  test "phoenix save with changed value pushes toast-create", %{conn: conn} do
+  test "phoenix save with changed value pushes toast_create", %{conn: conn} do
     {:ok, view, _html} = live(conn, ~p"/number-input/live-form")
 
     view
@@ -86,9 +86,9 @@ defmodule E2eWeb.NumberInputFormLiveTest do
     |> form("#number-input-live-form-phoenix")
     |> render_submit(%{"number_input_phoenix" => %{"value" => "42"}})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "value=\"42\"",
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })

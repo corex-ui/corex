@@ -56,6 +56,24 @@ defmodule E2eWeb.DatePickerTest do
       )
     end
 
+    feature "set value (js)  -  January 15 via CustomEvent", %{session: session} do
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(DatePicker, :date_picker, :api)
+        |> DatePicker.wait_root_date_picker_ready("date-picker-api-sv-js")
+
+      session
+      |> DatePicker.click_button_in_section(
+        "date-picker-api-set-value-js",
+        "Set to 2024-01-15"
+      )
+      |> DatePicker.wait_input_value_in_section(
+        "date-picker-api-set-value-js",
+        "2024-01-15",
+        timeout: 8_000
+      )
+    end
+
     feature "set value (server)  -  January 15 via LiveView", %{session: session} do
       session =
         session
@@ -89,6 +107,22 @@ defmodule E2eWeb.DatePickerTest do
       session
       |> DatePicker.open_date_picker_by_host_id("date-picker-e-so")
       |> DatePicker.wait_for_has(css("#date-picker-events-log-so tr[data-part='row']", count: 1),
+        timeout: 10_000
+      )
+    end
+
+    feature "client  -  opening calendar appends log row", %{session: session} do
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(DatePicker, :date_picker, :events)
+        |> DatePicker.prepare_live_form()
+        |> DatePicker.wait_root_date_picker_ready("date-picker-e-co")
+
+      refute DatePicker.date_picker_events_client_open_log_has_row?(session)
+
+      session
+      |> DatePicker.open_date_picker_by_host_id("date-picker-e-co")
+      |> DatePicker.wait_for_has(css("#date-picker-events-log-co tr[data-part='row']", count: 1),
         timeout: 10_000
       )
     end

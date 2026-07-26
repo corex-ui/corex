@@ -391,6 +391,30 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     """
   end
 
+  def styling_canonical_code do
+    ~S"""
+    <.tree_view class="tree-view max-w-xs" expanded_value={styling_expanded()} value={styling_value()} items={styling_items()}>
+      <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
+    </.tree_view>
+    """
+  end
+
+  def styling_canonical_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.tree_view
+      id="tree-style-canonical"
+      class="tree-view max-w-xs"
+      expanded_value={styling_expanded()}
+      value={styling_value()}
+      items={styling_items()}
+    >
+      <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
+    </.tree_view>
+    """
+  end
+
   def styling_color_code do
     items = code_styling_items()
 

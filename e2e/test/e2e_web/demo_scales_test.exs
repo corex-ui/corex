@@ -57,11 +57,18 @@ defmodule E2eWeb.DemoScalesTest do
     assert DemoScales.tailwind_max_width("none") == "max-w-none"
   end
 
-  test "styling_variant_axis_steps is subtle default plus ui-solid only" do
+  test "styling_variant_axis_steps is subtle solid and ghost for variant hosts" do
     steps = DemoScales.styling_variant_axis_steps("button")
 
-    assert Enum.map(steps, & &1.modifier) == ["", "ui-solid"]
-    assert Enum.map(steps, & &1.label) == ["Subtle (default)", "Solid"]
+    assert Enum.map(steps, & &1.modifier) == ["", "ui-solid", "ui-ghost"]
+    assert Enum.map(steps, & &1.label) == ["Subtle (default)", "Solid", "Ghost"]
+  end
+
+  test "styling_variant_axis_steps is empty for binary and input hosts" do
+    for host <- DemoScales.no_variant_hosts() do
+      assert DemoScales.styling_variant_axis_steps(host) == []
+      refute DemoScales.styling_variant_axis?(host)
+    end
   end
 
   test "join_block_modifiers prepends w-full for fit max-width demos" do

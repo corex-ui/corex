@@ -2,7 +2,7 @@ defmodule E2eWeb.NativeInputFormLiveTest do
   use E2eWeb.ConnCase, async: false
   import Phoenix.LiveViewTest
 
-  test "save_phoenix submits profile and pushes toast-create", %{conn: conn} do
+  test "save_phoenix submits profile and pushes toast_create", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/native-input/live-form")
     %{proxy: {ref, _, _}} = view
 
@@ -20,10 +20,10 @@ defmodule E2eWeb.NativeInputFormLiveTest do
       }
     })
 
-    assert_receive {^ref, {:push_event, "toast-create", payload}}, 200
+    assert_receive {^ref, {:push_event, "toast_create", payload}}, 200
     assert payload.title == "Submitted"
     assert payload.type == "info"
-    assert payload.groupId == "layout-toast"
+    assert payload.group_id == "layout-toast"
     assert payload.duration == 5000
     assert payload.description =~ "name=\"Ada\""
     assert payload.description =~ "email=\"ada@ex.com\""
@@ -51,7 +51,7 @@ defmodule E2eWeb.NativeInputFormLiveTest do
     assert html =~ "must look like an email address"
   end
 
-  test "save with valid profile pushes toast-create including size and tags", %{conn: conn} do
+  test "save with valid profile pushes toast_create including size and tags", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/native-input/live-form")
     %{proxy: {ref, _, _}} = view
 
@@ -61,7 +61,7 @@ defmodule E2eWeb.NativeInputFormLiveTest do
       "profile_ecto" => E2e.Form.NativeInputProfile.valid_attrs()
     })
 
-    assert_receive {^ref, {:push_event, "toast-create", payload}}, 200
+    assert_receive {^ref, {:push_event, "toast_create", payload}}, 200
     assert payload.title == "Submitted"
     desc = payload.description
     assert desc =~ "name=\"Ada\""

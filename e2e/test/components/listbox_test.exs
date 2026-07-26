@@ -34,7 +34,9 @@ defmodule E2eWeb.ListboxTest do
           end)
         end)
     end
+  end
 
+  describe "keyboard focus and aria" do
     feature "minimal  -  keyboard moves selection from fra to bel", %{session: session} do
       section = "listbox-anatomy-minimal"
       host = Listbox.listbox_host_id_for_anatomy_section(section)
@@ -165,16 +167,48 @@ defmodule E2eWeb.ListboxTest do
   end
 
   describe "patterns" do
-    feature "stream  -  can select an item", %{session: session} do
+    feature "dynamic  -  can select an item", %{session: session} do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(Listbox, :listbox, :patterns)
-        |> Listbox.wait_root_no_loading("#stream-listbox")
+        |> Listbox.wait_root_no_loading("#patterns-dynamic")
 
       session
-      |> Listbox.click_item_by_value("stream-listbox", "1")
+      |> Listbox.click_item_by_value("patterns-dynamic", "1")
 
-      assert Listbox.item_aria_selected?(session, "stream-listbox", "1")
+      assert Listbox.item_aria_selected?(session, "patterns-dynamic", "1")
+    end
+
+    feature "dynamic  -  Add item then Reset restores selection set", %{session: session} do
+      section = "listbox-patterns-dynamic"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Listbox, :listbox, :patterns)
+        |> Listbox.wait_root_no_loading("#patterns-dynamic")
+        |> Listbox.click_button_in_section(section, "Add item")
+        |> Listbox.wait_root_no_loading("#patterns-dynamic")
+
+      session
+      |> Listbox.click_item_by_value("patterns-dynamic", "4")
+
+      assert Listbox.item_aria_selected?(session, "patterns-dynamic", "4")
+
+      session =
+        session
+        |> Listbox.click_button_in_section(section, "Reset")
+        |> Listbox.wait_root_no_loading("#patterns-dynamic")
+        |> assert_has(
+          css(~s|#patterns-dynamic [data-scope="listbox"][data-part="item"][data-value="4"]|,
+            count: 0,
+            visible: :any
+          )
+        )
+
+      session
+      |> Listbox.click_item_by_value("patterns-dynamic", "1")
+
+      assert Listbox.item_aria_selected?(session, "patterns-dynamic", "1")
     end
 
     @tag :listbox_patterns_controlled

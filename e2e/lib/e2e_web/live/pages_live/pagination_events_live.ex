@@ -68,8 +68,8 @@ defmodule E2eWeb.PaginationEventsLive do
                 page_size={10}
                 on_page_change="pagination_page_changed"
               >
-                <:prev><.heroicon name="hero-chevron-left" /></:prev>
-                <:next><.heroicon name="hero-chevron-right" /></:next>
+                <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+                <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
                 <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
               </.pagination>
 
@@ -106,8 +106,8 @@ defmodule E2eWeb.PaginationEventsLive do
               page_size={10}
               on_page_change_client="pagination-page-changed"
             >
-              <:prev><.heroicon name="hero-chevron-left" /></:prev>
-              <:next><.heroicon name="hero-chevron-right" /></:next>
+              <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+              <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
               <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
             </.pagination>
           </:preview>

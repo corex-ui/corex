@@ -176,14 +176,14 @@ defmodule E2eWeb.AccordionModel do
   def trigger_aria_disabled?(session, accordion_id, value) do
     has?(
       session,
-      css(~s([id="accordion:#{accordion_id}:trigger:#{value}"][aria-disabled="true"]))
+      css(~s([id="accordion:#{accordion_id}:trigger:#{value}"][disabled]))
     )
   end
 
   def item_data_disabled?(session, accordion_id, value) do
     has?(
       session,
-      css(~s([id="accordion:#{accordion_id}:item:#{value}"][data-disabled="true"]))
+      css(~s([id="accordion:#{accordion_id}:item:#{value}"][data-disabled]), visible: :any)
     )
   end
 
@@ -266,5 +266,236 @@ defmodule E2eWeb.AccordionModel do
     )
 
     session
+  end
+
+  def trigger_id(accordion_id, value)
+      when is_binary(accordion_id) and is_binary(value) do
+    "accordion:#{accordion_id}:trigger:#{value}"
+  end
+
+  def content_id(accordion_id, value)
+      when is_binary(accordion_id) and is_binary(value) do
+    "accordion:#{accordion_id}:content:#{value}"
+  end
+
+  def focus_trigger(session, accordion_id, value)
+      when is_binary(accordion_id) and is_binary(value) do
+    tid = trigger_id(accordion_id, value)
+
+    if not (String.match?(tid, ~r/^[a-zA-Z0-9_:-]+$/) and tid != "") do
+      raise ArgumentError, "invalid trigger id for focus_trigger/3"
+    end
+
+    execute_script(
+      session,
+      """
+      const el = document.getElementById('#{tid}');
+      if (el) el.focus();
+      return !!(el && document.activeElement === el);
+      """,
+      [],
+      fn v -> assert v == true, "expected focus on ##{tid}" end
+    )
+
+    session
+  end
+
+  def focus_trigger_in_section(session, section_dom_id, value)
+      when is_binary(section_dom_id) and is_binary(value) do
+    if not safe_dom_token?(section_dom_id) or not safe_dom_token?(value) do
+      raise ArgumentError, "invalid section or value for focus_trigger_in_section/3"
+    end
+
+    execute_script(
+      session,
+      """
+      const section = document.getElementById('#{section_dom_id}');
+      const item = section && section.querySelector(
+        '[data-scope="accordion"][data-part="item"][data-value="#{value}"]'
+      );
+      const trigger = item && item.querySelector(
+        '[data-scope="accordion"][data-part="item-trigger"]'
+      );
+      if (trigger) trigger.focus();
+      return !!(trigger && document.activeElement === trigger);
+      """,
+      [],
+      fn v ->
+        assert v == true,
+               "expected focus on #{value} trigger inside ##{section_dom_id}"
+      end
+    )
+
+    session
+  end
+
+  def assert_active_trigger(session, accordion_id, value)
+      when is_binary(accordion_id) and is_binary(value) do
+    tid = trigger_id(accordion_id, value)
+
+    execute_script(
+      session,
+      """
+      const el = document.getElementById('#{tid}');
+      return !!(el && document.activeElement === el);
+      """,
+      [],
+      fn v -> assert v == true, "expected activeElement ##{tid}" end
+    )
+
+    session
+  end
+
+  def assert_active_trigger_in_section(session, section_dom_id, value)
+      when is_binary(section_dom_id) and is_binary(value) do
+    if not safe_dom_token?(section_dom_id) or not safe_dom_token?(value) do
+      raise ArgumentError, "invalid section or value for assert_active_trigger_in_section/3"
+    end
+
+    execute_script(
+      session,
+      """
+      const section = document.getElementById('#{section_dom_id}');
+      const item = section && section.querySelector(
+        '[data-scope="accordion"][data-part="item"][data-value="#{value}"]'
+      );
+      const trigger = item && item.querySelector(
+        '[data-scope="accordion"][data-part="item-trigger"]'
+      );
+      return !!(trigger && document.activeElement === trigger);
+      """,
+      [],
+      fn v ->
+        assert v == true,
+               "expected activeElement #{value} trigger inside ##{section_dom_id}"
+      end
+    )
+
+    session
+  end
+
+  def press_key_on_active(session, key) do
+    press_key(session, key, 1)
+  end
+
+  def assert_aria_controls(session, accordion_id, value)
+      when is_binary(accordion_id) and is_binary(value) do
+    tid = trigger_id(accordion_id, value)
+    cid = content_id(accordion_id, value)
+    trigger = find(session, css(~s([id="#{tid}"]), visible: :any))
+    controls = Wallaby.Element.attr(trigger, "aria-controls")
+    assert controls == cid
+    assert_has(session, css(~s([id="#{cid}"]), visible: :any, count: 1))
+    session
+  end
+
+  def assert_aria_controls_in_section(session, section_dom_id, value)
+      when is_binary(section_dom_id) and is_binary(value) do
+    if not safe_dom_token?(section_dom_id) or not safe_dom_token?(value) do
+      raise ArgumentError, "invalid section or value for assert_aria_controls_in_section/3"
+    end
+
+    execute_script(
+      session,
+      """
+      const section = document.getElementById('#{section_dom_id}');
+      const item = section && section.querySelector(
+        '[data-scope="accordion"][data-part="item"][data-value="#{value}"]'
+      );
+      const trigger = item && item.querySelector(
+        '[data-scope="accordion"][data-part="item-trigger"]'
+      );
+      const controls = trigger && trigger.getAttribute('aria-controls');
+      const content = controls && document.getElementById(controls);
+      return !!(controls && content && item.contains(content));
+      """,
+      [],
+      fn v ->
+        assert v == true,
+               "expected aria-controls association for #{value} in ##{section_dom_id}"
+      end
+    )
+
+    session
+  end
+
+  defp safe_dom_token?(token) do
+    String.match?(token, ~r/^[a-zA-Z0-9_-]+$/) and token != ""
+  end
+
+  def trigger_count(session, section_dom_id) when is_binary(section_dom_id) do
+    case find(
+           session,
+           css(
+             ~s|##{section_dom_id} [data-scope="accordion"][data-part="item-trigger"]|,
+             count: :any,
+             visible: :any
+           )
+         ) do
+      elements when is_list(elements) -> length(elements)
+      _ -> 0
+    end
+  rescue
+    Wallaby.QueryError -> 0
+  end
+
+  def events_log_text(session, log_dom_id) when is_binary(log_dom_id) do
+    el = find(session, css("##{log_dom_id}", visible: :any))
+    Wallaby.Element.text(el)
+  end
+
+  def assert_events_log_mentions(session, log_dom_id, substring)
+      when is_binary(log_dom_id) and is_binary(substring) do
+    text = events_log_text(session, log_dom_id)
+    assert String.contains?(text, substring),
+           "expected ##{log_dom_id} to mention #{inspect(substring)}, got: #{inspect(text)}"
+
+    session
+  end
+
+  def click_playground_collapsible(session) do
+    click(session, css(~s|[id^="playground-collapsible-"] [data-part="control"]|))
+    session
+  end
+
+  def click_playground_multiple(session) do
+    click(session, css("#multiple [data-part='control']"))
+    session
+  end
+
+  def set_playground_disabled_item(session, value) when is_binary(value) do
+    item_q =
+      css(~s|[id="select:playground-disabled-items:content"] [data-part="item"][data-value="#{value}"]|,
+        visible: :any
+      )
+
+    session
+    |> click(css("#playground-disabled-items [data-part='trigger']"))
+    |> assert_has(item_q)
+    |> click(item_q)
+    |> wait(300)
+    |> click_outside()
+  end
+
+  def clear_playground_disabled_items(session) do
+    execute_script(
+      session,
+      """
+      const root = document.getElementById('playground-disabled-items');
+      if (!root) return { ok: false, reason: 'missing-root' };
+      root.dispatchEvent(
+        new CustomEvent('corex:select:set-value', {
+          bubbles: false,
+          detail: { value: [] }
+        })
+      );
+      return { ok: true, valueAttr: root.getAttribute('data-value') };
+      """,
+      [],
+      fn v -> assert v["ok"] == true, "expected corex:select:set-value to run" end
+    )
+
+    session
+    |> wait(500)
   end
 end

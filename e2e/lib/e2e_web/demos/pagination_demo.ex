@@ -14,8 +14,8 @@ defmodule E2eWeb.Demos.PaginationDemo do
   def anatomy_minimal_code do
     ~S"""
     <.pagination class="pagination" count={95} page_size={10}>
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     """
@@ -31,8 +31,8 @@ defmodule E2eWeb.Demos.PaginationDemo do
       controlled
       on_page_change="pagination_controlled_changed"
     >
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     """
@@ -54,8 +54,8 @@ defmodule E2eWeb.Demos.PaginationDemo do
           )
       }}
     >
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     """
@@ -66,8 +66,8 @@ defmodule E2eWeb.Demos.PaginationDemo do
 
     ~H"""
     <.pagination id="pagination-anatomy" class="pagination" count={@count} page_size={@page_size}>
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     """
@@ -76,33 +76,33 @@ defmodule E2eWeb.Demos.PaginationDemo do
   def styling_color_heex do
     ~S"""
     <.pagination class="pagination" count={50} page={3} page_size={10}>
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     <.pagination class="pagination ui-accent" count={50} page={3} page_size={10}>
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     <.pagination class="pagination ui-brand" count={50} page={3} page_size={10}>
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     <.pagination class="pagination ui-alert" count={50} page={3} page_size={10}>
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     <.pagination class="pagination ui-success" count={50} page={3} page_size={10}>
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     <.pagination class="pagination ui-info" count={50} page={3} page_size={10}>
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     """
@@ -193,23 +193,23 @@ defmodule E2eWeb.Demos.PaginationDemo do
   def styling_size_heex do
     ~S"""
     <.pagination class="pagination ui-size-sm" count={50} page={3} page_size={10}>
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     <.pagination class="pagination ui-size-md" count={50} page={3} page_size={10}>
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     <.pagination class="pagination ui-size-lg" count={50} page={3} page_size={10}>
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     <.pagination class="pagination ui-size-xl" count={50} page={3} page_size={10}>
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     """
@@ -231,33 +231,33 @@ defmodule E2eWeb.Demos.PaginationDemo do
   def styling_radius_heex do
     ~S"""
     <.pagination class="pagination ui-rounded-none" count={50} page={3} page_size={10}>
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     <.pagination class="pagination ui-rounded-sm" count={50} page={3} page_size={10}>
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     <.pagination class="pagination ui-rounded-md" count={50} page={3} page_size={10}>
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     <.pagination class="pagination ui-rounded-lg" count={50} page={3} page_size={10}>
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     <.pagination class="pagination ui-rounded-xl" count={50} page={3} page_size={10}>
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     <.pagination class="pagination ui-rounded-full" count={50} page={3} page_size={10}>
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     """
@@ -356,8 +356,8 @@ defmodule E2eWeb.Demos.PaginationDemo do
 
   defp styling_pagination_slots_heex do
     """
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     """
   end
@@ -383,8 +383,8 @@ defmodule E2eWeb.Demos.PaginationDemo do
       page={@page}
       page_size={@page_size}
     >
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     """
@@ -406,8 +406,8 @@ defmodule E2eWeb.Demos.PaginationDemo do
       <.action phx-click={Corex.Pagination.set_page("pagination-api-bind", 9)} class="button ui-size-sm">9</.action>
     </div>
     <.pagination id="pagination-api-bind" class="pagination" count={95} page={5} page_size={10}>
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     """
@@ -445,8 +445,8 @@ defmodule E2eWeb.Demos.PaginationDemo do
         page={5}
         page_size={@page_size}
       >
-        <:prev><.heroicon name="hero-chevron-left" /></:prev>
-        <:next><.heroicon name="hero-chevron-right" /></:next>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
         <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
       </.pagination>
     </div>
@@ -457,8 +457,8 @@ defmodule E2eWeb.Demos.PaginationDemo do
     ~S"""
     <.action phx-click="pagination_api_page_3" class="button ui-size-sm">Page 3</.action>
     <.pagination id="pagination-api-srv" class="pagination" count={95} page={@page} page_size={10} controlled on_page_change="pagination_api_page_changed">
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     """
@@ -494,8 +494,8 @@ defmodule E2eWeb.Demos.PaginationDemo do
         controlled
         on_page_change="pagination_api_page_changed"
       >
-        <:prev><.heroicon name="hero-chevron-left" /></:prev>
-        <:next><.heroicon name="hero-chevron-right" /></:next>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
         <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
       </.pagination>
     </div>
@@ -505,8 +505,8 @@ defmodule E2eWeb.Demos.PaginationDemo do
   def events_server_heex do
     ~S"""
     <.pagination class="pagination" count={95} page_size={10} on_page_change="pagination_page_changed">
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     """
@@ -528,8 +528,8 @@ defmodule E2eWeb.Demos.PaginationDemo do
       page_size={10}
       on_page_change_client="pagination-page-changed"
     >
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     """
@@ -569,8 +569,8 @@ defmodule E2eWeb.Demos.PaginationDemo do
       controlled
       on_page_change="pagination_controlled_changed"
     >
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     <p class="text-ink-muted text-sm">Current page: {@page}</p>
@@ -606,8 +606,8 @@ defmodule E2eWeb.Demos.PaginationDemo do
         controlled
         on_page_change="pagination_controlled_changed"
       >
-        <:prev><.heroicon name="hero-chevron-left" /></:prev>
-        <:next><.heroicon name="hero-chevron-right" /></:next>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
         <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
       </.pagination>
       <p class="text-ink-muted text-sm">Current page: {@page}</p>
@@ -634,8 +634,8 @@ defmodule E2eWeb.Demos.PaginationDemo do
       to="/pagination/patterns"
       redirect={:patch}
     >
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     """
@@ -711,8 +711,8 @@ defmodule E2eWeb.Demos.PaginationDemo do
       controlled
       on_page_change="patterns_server_page"
     >
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     """
@@ -817,8 +817,8 @@ defmodule E2eWeb.Demos.PaginationDemo do
       page_size={4}
       on_page_change_client="pagination-page-changed"
     >
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     """
@@ -947,8 +947,8 @@ defmodule E2eWeb.Demos.PaginationDemo do
         to={~p"/pagination/patterns"}
         redirect={:patch}
       >
-        <:prev><.heroicon name="hero-chevron-left" /></:prev>
-        <:next><.heroicon name="hero-chevron-right" /></:next>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
         <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
       </.pagination>
     </div>
@@ -970,8 +970,8 @@ defmodule E2eWeb.Demos.PaginationDemo do
         controlled
         on_page_change="patterns_server_page"
       >
-        <:prev><.heroicon name="hero-chevron-left" /></:prev>
-        <:next><.heroicon name="hero-chevron-right" /></:next>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
         <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
       </.pagination>
     </div>
@@ -1039,8 +1039,8 @@ defmodule E2eWeb.Demos.PaginationDemo do
         page_size={@page_size}
         on_page_change_client="pagination-page-changed"
       >
-        <:prev><.heroicon name="hero-chevron-left" /></:prev>
-        <:next><.heroicon name="hero-chevron-right" /></:next>
+        <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
         <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
       </.pagination>
     </div>

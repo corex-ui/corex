@@ -175,10 +175,10 @@
 
   <.color_picker
     field={f[:accent_color]}
-    label="Accent color"
     class="color-picker max-w-none"
     presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
   >
+    <:label>Accent color</:label>
     <:error :let={msg}>
       <.heroicon name="hero-exclamation-circle" class="icon" />
       {msg}
@@ -219,17 +219,6 @@
       {msg}
     </:error>
   </.editable>
-
-  <.file_upload field={f[:avatar]} class="file-upload max-w-none">
-    <:label>Avatar</:label>
-    <:close>
-      <.heroicon name="hero-x-mark" />
-    </:close>
-    <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
-      {msg}
-    </:error>
-  </.file_upload>
 
   <footer class="flex w-full justify-between gap-2">
     <.navigate :if={@return_to} to={@return_to} type="navigate" class="button ui-size-sm">

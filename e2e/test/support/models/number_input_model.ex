@@ -149,6 +149,10 @@ defmodule E2eWeb.NumberInputModel do
     has?(session, css("#number-input-events-log-server tr[data-part='row']"))
   end
 
+  def number_input_events_client_log_has_row?(session) do
+    has?(session, css("#number-input-events-log-client tr[data-part='row']"))
+  end
+
   def goto_form(session, mode, form \\ :phoenix) do
     path =
       case {mode, form} do

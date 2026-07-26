@@ -725,6 +725,29 @@ defmodule E2eWeb.Demos.PinInputDemo do
     """
   end
 
+  def styling_canonical_code do
+    ~S"""
+    <.pin_input count={4} class="pin-input" value={["1", "2", "", ""]}>
+      <:label>Subtle (default)</:label>
+    </.pin_input>
+    """
+  end
+
+  def styling_canonical_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.pin_input
+      id="pin-input-style-canonical"
+      count={4}
+      class="pin-input"
+      value={["1", "2", "", ""]}
+    >
+      <:label>Subtle (default)</:label>
+    </.pin_input>
+    """
+  end
+
   def styling_color_code do
     """
     <.pin_input count={4} class="pin-input" value={["1", "2", "", ""]}>

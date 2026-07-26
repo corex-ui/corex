@@ -72,6 +72,29 @@ defmodule E2eWeb.Demos.EditableDemo do
     """
   end
 
+  def styling_canonical_code do
+    slots = styling_slots_code()
+
+    """
+    <.editable class="editable w-3xs" value="Subtle (default)">
+    #{slots}
+    </.editable>
+    """
+  end
+
+  def styling_canonical_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.editable id="editable-style-canonical" class="editable w-3xs" value="Subtle (default)">
+      <:label>Label</:label>
+      <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+      <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+      <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+    </.editable>
+    """
+  end
+
   def styling_color_code do
     slots = styling_slots_code()
 
@@ -152,6 +175,9 @@ defmodule E2eWeb.Demos.EditableDemo do
     <.editable class="editable w-3xs ui-solid" value="Solid">
     #{slots}
     </.editable>
+    <.editable class="editable w-3xs ui-ghost" value="Ghost">
+    #{slots}
+    </.editable>
     """
   end
 
@@ -170,6 +196,16 @@ defmodule E2eWeb.Demos.EditableDemo do
         id="editable-style-variant-solid"
         class="editable w-3xs ui-solid"
         value="Solid"
+      >
+        <:label>Label</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+      <.editable
+        id="editable-style-variant-ghost"
+        class="editable w-3xs ui-ghost"
+        value="Ghost"
       >
         <:label>Label</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>

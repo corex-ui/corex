@@ -206,7 +206,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
     """
   end
 
-  def patterns_stream_demo_heex do
+  def patterns_dynamic_demo_heex do
     ~S"""
     <div class="flex flex-col gap-3 w-full max-w-xl">
       <div class="flex flex-wrap gap-2">
@@ -217,7 +217,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
           Reset
         </.action>
       </div>
-      <.listbox class="listbox" items={Corex.List.new(@items_list)}>
+      <.listbox class="listbox" items={Corex.List.new(@items)}>
         <:label>Choose an item</:label>
         <:empty>No items</:empty>
         <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
@@ -226,9 +226,9 @@ defmodule E2eWeb.Demos.ListboxDemo do
     """
   end
 
-  def patterns_stream_elixir do
+  def patterns_dynamic_elixir do
     ~S'''
-    defmodule MyAppWeb.ListboxStreamDemoLive do
+    defmodule MyAppWeb.ListboxDynamicDemoLive do
       use MyAppWeb, :live_view
 
       @impl true
@@ -239,38 +239,10 @@ defmodule E2eWeb.Demos.ListboxDemo do
           %{value: "3", label: "Cherry"}
         ]
 
-        socket =
-          socket
-          |> stream_configure(:items, dom_id: &("listbox:stream-listbox:item:" <> to_string(&1.value)))
-          |> stream(:items, initial)
-          |> assign(:items_list, initial)
-          |> assign(:next_id, 4)
-
-        if connected?(socket) do
-          Process.send_after(self(), :add_timestamp_item, 3_000)
-        end
-
-        {:ok, socket}
-      end
-
-      @impl true
-      def handle_info(:add_timestamp_item, socket) do
-        Process.send_after(self(), :add_timestamp_item, 10_000)
-        id = to_string(socket.assigns.next_id)
-
-        time =
-          DateTime.utc_now()
-          |> DateTime.truncate(:second)
-          |> DateTime.to_time()
-          |> Time.to_string()
-
-        item = %{value: id, label: "Item " <> id <> " @ " <> time}
-
-        {:noreply,
+        {:ok,
          socket
-         |> stream_insert(:items, item)
-         |> assign(:items_list, socket.assigns.items_list ++ [item])
-         |> assign(:next_id, socket.assigns.next_id + 1)}
+         |> assign(:items, initial)
+         |> assign(:next_id, 4)}
       end
 
       @impl true
@@ -280,8 +252,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
 
         {:noreply,
          socket
-         |> stream_insert(:items, item)
-         |> assign(:items_list, socket.assigns.items_list ++ [item])
+         |> assign(:items, socket.assigns.items ++ [item])
          |> assign(:next_id, socket.assigns.next_id + 1)}
       end
 
@@ -295,8 +266,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
 
         {:noreply,
          socket
-         |> stream(:items, initial, reset: true)
-         |> assign(:items_list, initial)
+         |> assign(:items, initial)
          |> assign(:next_id, 4)}
       end
 
@@ -312,7 +282,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
                 Reset
               </.action>
             </div>
-            <.listbox id="stream-listbox" class="listbox" items={Corex.List.new(@items_list)}>
+            <.listbox id="patterns-dynamic" class="listbox" items={Corex.List.new(@items)}>
               <:label>Choose an item</:label>
               <:empty>No items</:empty>
               <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
@@ -324,7 +294,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
     '''
   end
 
-  def patterns_stream_grouped_demo_heex do
+  def patterns_dynamic_grouped_demo_heex do
     ~S"""
     <div class="flex flex-col gap-3 w-full max-w-xl">
       <div class="flex flex-wrap gap-2">
@@ -348,7 +318,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       </div>
       <.listbox
         class="listbox"
-        items={Corex.List.new(@grouped_items_list)}
+        items={Corex.List.new(@grouped_items)}
       >
         <:label>Choose a country</:label>
         <:empty>No items</:empty>
@@ -358,9 +328,9 @@ defmodule E2eWeb.Demos.ListboxDemo do
     """
   end
 
-  def patterns_stream_grouped_elixir do
+  def patterns_dynamic_grouped_elixir do
     ~S'''
-    defmodule MyAppWeb.ListboxStreamGroupedDemoLive do
+    defmodule MyAppWeb.ListboxDynamicGroupedDemoLive do
       use MyAppWeb, :live_view
 
       @impl true
@@ -371,14 +341,10 @@ defmodule E2eWeb.Demos.ListboxDemo do
           %{value: "g3", label: "Germany", group: "Europe"}
         ]
 
-        socket =
-          socket
-          |> stream_configure(:grouped_items, dom_id: &("listbox:stream-grouped-listbox:item:" <> to_string(&1.value)))
-          |> stream(:grouped_items, initial)
-          |> assign(:grouped_items_list, initial)
-          |> assign(:next_grouped_id, 4)
-
-        {:ok, socket}
+        {:ok,
+         socket
+         |> assign(:grouped_items, initial)
+         |> assign(:next_grouped_id, 4)}
       end
 
       @impl true
@@ -389,8 +355,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
 
         {:noreply,
          socket
-         |> stream_insert(:grouped_items, item)
-         |> assign(:grouped_items_list, socket.assigns.grouped_items_list ++ [item])
+         |> assign(:grouped_items, socket.assigns.grouped_items ++ [item])
          |> assign(:next_grouped_id, n + 1)}
       end
 
@@ -404,8 +369,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
 
         {:noreply,
          socket
-         |> stream(:grouped_items, initial, reset: true)
-         |> assign(:grouped_items_list, initial)
+         |> assign(:grouped_items, initial)
          |> assign(:next_grouped_id, 4)}
       end
 
@@ -433,9 +397,9 @@ defmodule E2eWeb.Demos.ListboxDemo do
               </.action>
             </div>
             <.listbox
-              id="stream-grouped-listbox"
+              id="patterns-dynamic-grouped"
               class="listbox"
-              items={Corex.List.new(@grouped_items_list)}
+              items={Corex.List.new(@grouped_items)}
             >
               <:label>Choose a country</:label>
               <:empty>No items</:empty>
@@ -723,6 +687,32 @@ defmodule E2eWeb.Demos.ListboxDemo do
     ~S|value={["fra"]}|
   end
 
+  def styling_canonical_code do
+    items = styling_items_attr()
+    value = styling_value_attr()
+
+    """
+    <.listbox class="listbox" #{items} #{value}>
+      <:label>Subtle (default)</:label>
+      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+    </.listbox>
+    """
+  end
+
+  def styling_canonical_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:items, items_minimal())
+      |> assign(:value, ["fra"])
+
+    ~H"""
+    <.listbox id="listbox-style-canonical" class="listbox" items={@items} value={@value}>
+      <:label>Subtle (default)</:label>
+      <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+    </.listbox>
+    """
+  end
+
   def styling_color_code do
     items = styling_items_attr()
     value = styling_value_attr()
@@ -829,6 +819,10 @@ defmodule E2eWeb.Demos.ListboxDemo do
       <:label>Solid</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
+    <.listbox class="listbox ui-ghost" #{items} #{value}>
+      <:label>Ghost</:label>
+      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+    </.listbox>
 
     """
   end
@@ -852,6 +846,15 @@ defmodule E2eWeb.Demos.ListboxDemo do
         value={@value}
       >
         <:label>Solid</:label>
+        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+      </.listbox>
+      <.listbox
+        id="listbox-style-variant-ghost"
+        class="listbox ui-ghost"
+        items={@items}
+        value={@value}
+      >
+        <:label>Ghost</:label>
         <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
       </.listbox>
     </div>

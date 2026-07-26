@@ -43,26 +43,62 @@ defmodule E2eWeb.StylePageSectionsTest do
     refute source =~ "axis={:width}"
   end
 
-  test "variant style pages use DemoScales subtle and solid only" do
-    steps = E2eWeb.DemoScales.styling_variant_axis_steps("checkbox")
-    assert Enum.map(steps, & &1.modifier) == ["", "ui-solid"]
+  test "variant style pages use DemoScales subtle solid and ghost" do
+    steps = E2eWeb.DemoScales.styling_variant_axis_steps("button")
+    assert Enum.map(steps, & &1.modifier) == ["", "ui-solid", "ui-ghost"]
 
-    for {relative_path, _layout_id} <- StylePageExpectations.style_pages() do
+    for {relative_path, layout_id} <- StylePageExpectations.style_pages() do
       source = StylePageExpectations.read_page(relative_path)
 
-      if source =~ "axis={:variant}" do
-        assert source =~ "styling_variant",
-               "expected styling_variant helpers on #{relative_path}"
+      if layout_id in StylePageExpectations.no_variant_layout_ids() do
+        refute source =~ "axis={:variant}",
+               "no-variant page #{relative_path} (#{layout_id}) must not include Variant axis"
 
-        refute source =~ "Ghost",
-               "variant axis on #{relative_path} must not mention Ghost"
-
-        refute source =~ "Outline",
-               "variant axis on #{relative_path} must not mention Outline"
-
-        refute source =~ "variant-ghost",
-               "variant axis on #{relative_path} must not mention variant-ghost"
+        refute source =~ "Semantic × variant",
+               "no-variant page #{relative_path} (#{layout_id}) must not include Semantic × variant"
+      else
+        if source =~ "axis={:variant}" do
+          assert source =~ "styling_variant",
+                 "expected styling_variant helpers on #{relative_path}"
+        end
       end
+    end
+  end
+
+  test "compound style pages keep canonical preview plus semantic variant matrices" do
+    for {relative_path, layout_id} <- StylePageExpectations.style_pages(),
+        layout_id in StylePageExpectations.canonical_preview_layout_ids() do
+      source = StylePageExpectations.read_page(relative_path)
+
+      assert source =~ "styling_canonical",
+             "expected canonical preview helpers on #{relative_path} (#{layout_id})"
+
+      if layout_id in StylePageExpectations.no_variant_layout_ids() do
+        refute source =~ "Semantic × variant",
+               "no-variant compound page #{relative_path} (#{layout_id}) must omit Semantic × variant"
+
+        refute source =~ "axis={:variant}",
+               "no-variant compound page #{relative_path} (#{layout_id}) must omit Variant axis"
+      else
+        assert source =~ "Semantic × variant",
+               "compound page #{relative_path} (#{layout_id}) must include Semantic × variant"
+
+        assert source =~ "axis={:variant}",
+               "compound page #{relative_path} (#{layout_id}) must include Variant axis"
+      end
+    end
+  end
+
+  test "matrix style pages keep semantic variant matrices" do
+    for {relative_path, layout_id} <- StylePageExpectations.style_pages(),
+        layout_id in StylePageExpectations.matrix_layout_ids() do
+      source = StylePageExpectations.read_page(relative_path)
+
+      assert source =~ "Semantic × variant",
+             "page #{relative_path} (#{layout_id}) must keep Semantic × variant"
+
+      assert source =~ "axis={:variant}",
+             "page #{relative_path} (#{layout_id}) must keep Variant axis"
     end
   end
 end

@@ -503,6 +503,35 @@ defmodule E2eWeb.Demos.DialogDemo do
     """
   end
 
+
+  def styling_canonical_code do
+    """
+    <.dialog class="dialog" modal>
+      <:trigger>Preview</:trigger>
+      <:title>#{style_dialog_title()}</:title>
+      <:description>#{style_dialog_description()}</:description>
+      <:content><p>#{style_dialog_body()}</p></:content>
+      <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+    </.dialog>
+    """
+  end
+
+  def styling_canonical_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.dialog id="dialog-style-canonical" class="dialog" modal>
+      <:trigger>Preview</:trigger>
+      <:title>{style_dialog_title()}</:title>
+      <:description>{style_dialog_description()}</:description>
+      <:content>
+        <p>{style_dialog_body()}</p>
+      </:content>
+      <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+    </.dialog>
+    """
+  end
+
   def styling_color_example(assigns) do
     ~H"""
     <div class="flex flex-col gap-4 items-start w-full max-w-2xl">
@@ -580,6 +609,13 @@ defmodule E2eWeb.Demos.DialogDemo do
       <:content><p>#{style_dialog_body()}</p></:content>
       <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
     </.dialog>
+    <.dialog class="dialog ui-ghost" modal>
+      <:trigger>Ghost</:trigger>
+      <:title>#{style_dialog_title()}</:title>
+      <:description>#{style_dialog_description()}</:description>
+      <:content><p>#{style_dialog_body()}</p></:content>
+      <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+    </.dialog>
 
     """
   end
@@ -600,6 +636,15 @@ defmodule E2eWeb.Demos.DialogDemo do
       </.dialog>
       <.dialog id="dialog-style-variant-solid" class="dialog ui-solid" modal>
         <:trigger>Solid</:trigger>
+        <:title>{style_dialog_title()}</:title>
+        <:description>{style_dialog_description()}</:description>
+        <:content>
+          <p>{style_dialog_body()}</p>
+        </:content>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+      </.dialog>
+      <.dialog id="dialog-style-variant-ghost" class="dialog ui-ghost" modal>
+        <:trigger>Ghost</:trigger>
         <:title>{style_dialog_title()}</:title>
         <:description>{style_dialog_description()}</:description>
         <:content>

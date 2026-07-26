@@ -227,4 +227,79 @@ defmodule E2eWeb.TagsInputModel do
   def tags_input_events_client_log_has_row?(session) do
     has?(session, css("#tags-input-events-log-client tr[data-part='row']"))
   end
+
+  def goto_form(session, mode) do
+    {path, page_id} =
+      case mode do
+        :static -> {"/en/tags-input/form", "tags-input-form-page"}
+        :live -> {"/en/tags-input/live-form", "tags-input-form-live-page"}
+      end
+
+    goto_form_page(session, path, page_id, mode)
+  end
+
+  def submit_form(session, mode \\ :static, form \\ :phoenix) do
+    case {mode, form} do
+      {:static, :phoenix} ->
+        click(session, css("#tags-input-form-phoenix button[type='submit']"))
+
+      {:static, :ecto} ->
+        click(session, css("#tags-input-changeset-submit"))
+
+      {:static, :native} ->
+        click(session, css("#tags-input-native-submit"))
+
+      {:live, :phoenix} ->
+        click(session, css("#tags-input-live-form-phoenix-submit"))
+
+      {:live, :ecto} ->
+        click(session, css("#tags-input-live-changeset-submit"))
+    end
+  end
+
+  def add_tag_in_form(session, form_id, text) when is_binary(form_id) and is_binary(text) do
+    session
+    |> scroll_section_into_view(form_id)
+    |> focus_tags_input_in_form(form_id)
+    |> type_in_focused_input(text <> ",")
+  end
+
+  defp focus_tags_input_in_form(session, form_id) do
+    _ =
+      execute_script(
+        session,
+        """
+        const f = document.getElementById(arguments[0]);
+        if (!f) return;
+        const inp = f.querySelector('[data-scope="tags-input"][data-part="input"]');
+        if (inp) inp.focus();
+        """,
+        [form_id]
+      )
+
+    session
+  end
+
+  def see_error(session, error_text, mode \\ :static) do
+    form_id =
+      case mode do
+        :static -> "tags-input-form-ecto"
+        :live -> "tags-input-live-form-ecto"
+      end
+
+    wait_for_field_error(session, form_id, "tags-input", error_text)
+  end
+
+  def wait_form_tags_input_ready(session, form_id) when is_binary(form_id) do
+    wait_for_has(
+      session,
+      css(
+        ~s|##{form_id} [phx-hook="TagsInput"]:not([data-loading])|,
+        visible: :any
+      ),
+      timeout: 15_000
+    )
+
+    session
+  end
 end

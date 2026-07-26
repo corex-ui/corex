@@ -12,17 +12,17 @@ defmodule E2eWeb.AngleSliderFormLiveTest do
     end
   end
 
-  test "save_phoenix submits angle and pushes toast-create", %{conn: conn} do
+  test "save_phoenix submits angle and pushes toast_create", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/angle-slider/live-form")
 
     view
     |> form("#angle-slider-live-form-phoenix")
     |> render_submit(%{"angle_slider_phoenix" => %{"angle" => "12.5"}})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "Submitted: angle=12.5",
       duration: 5000,
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })
@@ -50,17 +50,17 @@ defmodule E2eWeb.AngleSliderFormLiveTest do
     assert html =~ "must be between 0 and 90"
   end
 
-  test "validate form save in range pushes toast-create", %{conn: conn} do
+  test "validate form save in range pushes toast_create", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/angle-slider/live-form")
 
     view
     |> form("#angle-slider-validate-form-live")
     |> render_submit(%{"angle_slider_validate" => %{"angle" => "45"}})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "Submitted: angle=45.0",
       duration: 5000,
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })

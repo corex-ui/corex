@@ -443,6 +443,27 @@ defmodule E2eWeb.Demos.TabsDemo do
     """
   end
 
+  def styling_canonical_code do
+    ~S"""
+    <.tabs class="tabs" value="lorem" items={Corex.Content.new([
+      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])} />
+    """
+  end
+
+  def styling_canonical_example(assigns) do
+    ~H"""
+    <.tabs
+      id="tabs-style-canonical"
+      class="tabs"
+      value="lorem"
+      items={E2eWeb.Demos.TabsDemo.basic_items()}
+    />
+    """
+  end
+
   def styling_variant_code do
     ~S"""
     <.tabs class="tabs" value="lorem" items={Corex.Content.new([

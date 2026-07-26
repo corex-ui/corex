@@ -9,9 +9,19 @@
     id="timer-styling-page"
     title={~t"Timer · Style"}
     subtitle={
-      ~t"Semantic colors, typography, and radius on the timer root (add max-width with utilities such as max-w-md)."
+      ~t"Semantic colors, density, corner radius, and width utilities on the timer root."
     }
   >
+    <.demo_section
+      id="timer-styling-preview"
+      title={~t"Preview"}
+      code={E2eWeb.Demos.TimerDemo.styling_canonical_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.TimerDemo.styling_canonical_example />
+      </:preview>
+    </.demo_section>
+
     <.demo_section
       id="timer-styling-color"
       title={~t"Semantic"}
@@ -25,27 +35,7 @@
       </:preview>
     </.demo_section>
 
-    <.demo_section
-      id="timer-style-variant"
-      title={~t"Variant"}
-      code={E2eWeb.Demos.TimerDemo.styling_variant_code()}
-    >
-      <:description>
-        <.demo_modifier_axis name="timer" axis={:variant} />
-      </:description>
-      <:preview><E2eWeb.Demos.TimerDemo.styling_variant_example /></:preview>
-    </.demo_section>
 
-    <.demo_section
-      id="timer-style-variant-matrix"
-      title={~t"Semantic × variant"}
-      code={E2eWeb.Demos.TimerDemo.styling_variant_matrix_code()}
-    >
-      <:description>
-        <.variant_matrix_description host="timer" />
-      </:description>
-      <:preview><E2eWeb.Demos.TimerDemo.styling_variant_matrix_example /></:preview>
-    </.demo_section>
 
     <.demo_section
       id="timer-styling-size"

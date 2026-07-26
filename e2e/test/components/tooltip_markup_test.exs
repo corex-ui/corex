@@ -51,7 +51,9 @@ defmodule E2eWeb.TooltipMarkupTest do
       assert html =~ ~S(id="menu:tooltip-pattern-menu")
       assert html =~ ~S(id="tooltip-pattern-menu-support")
       assert html =~ ~S(id="tooltip:tooltip-pattern-menu-support:trigger")
-      assert html =~ ~S|id="tooltip:tooltip-pattern-menu-support:trigger" tabindex="-1"|
+
+      assert html =~
+               ~r/id="tooltip:tooltip-pattern-menu-support:trigger"[^>]*\stabindex="-1"/
     end
 
     test "renders arrow parts when show_arrow", %{conn: conn} do

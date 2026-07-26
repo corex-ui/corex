@@ -167,29 +167,35 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
       </button>
     </div>
 
-    <script :type={Phoenix.LiveView.ColocatedHook} name=".FloatingPanelApiClientJs">
-      export default {
-        mounted() {
-          const panel = document.getElementById("floating-panel-api-js")
-          document.getElementById("floating-panel-api-js-open")?.addEventListener("click", () => {
-            panel?.dispatchEvent(
-              new CustomEvent("corex:floating-panel:set-open", {
-                detail: { open: true },
-                bubbles: false,
-              })
-            )
-          })
-          document.getElementById("floating-panel-api-js-close")?.addEventListener("click", () => {
-            panel?.dispatchEvent(
-              new CustomEvent("corex:floating-panel:set-open", {
-                detail: { open: false },
-                bubbles: false,
-              })
-            )
-          })
-        },
-      }
-    </script>
+    <div
+      id="floating-panel-api-js-listener"
+      phx-hook=".FloatingPanelApiClientJs"
+      phx-update="ignore"
+    >
+      <script :type={Phoenix.LiveView.ColocatedHook} name=".FloatingPanelApiClientJs">
+        export default {
+          mounted() {
+            const panel = document.getElementById("floating-panel-api-js")
+            document.getElementById("floating-panel-api-js-open")?.addEventListener("click", () => {
+              panel?.dispatchEvent(
+                new CustomEvent("corex:floating-panel:set-open", {
+                  detail: { open: true },
+                  bubbles: false,
+                })
+              )
+            })
+            document.getElementById("floating-panel-api-js-close")?.addEventListener("click", () => {
+              panel?.dispatchEvent(
+                new CustomEvent("corex:floating-panel:set-open", {
+                  detail: { open: false },
+                  bubbles: false,
+                })
+              )
+            })
+          },
+        }
+      </script>
+    </div>
 
     <.floating_panel_api_fixture
       id="floating-panel-api-js"
@@ -604,6 +610,37 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     """
   end
 
+  def styling_canonical_code do
+    """
+    <.floating_panel class="floating-panel">
+      <:trigger class="button ui-size-sm">Subtle (default)</:trigger>
+      <:title>Notes</:title>
+      #{styling_panel_controls_code()}
+      <:content><p>Drag, resize, and minimize this panel while you work.</p></:content>
+    </.floating_panel>
+    """
+  end
+
+  def styling_canonical_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.floating_panel id="floating-panel-style-canonical" class="floating-panel">
+      <:trigger class="button ui-size-sm">Subtle (default)</:trigger>
+      <:title>Notes</:title>
+      <:minimize_trigger><.heroicon name="hero-minus" class="icon" /></:minimize_trigger>
+      <:maximize_trigger>
+        <.heroicon name="hero-arrows-pointing-out" class="icon" />
+      </:maximize_trigger>
+      <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
+      <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+      <:content>
+        <p>Drag, resize, and minimize this panel while you work.</p>
+      </:content>
+    </.floating_panel>
+    """
+  end
+
   def styling_color_code do
     """
     <.floating_panel class="floating-panel">
@@ -761,6 +798,12 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
       #{styling_panel_controls_code()}
       <:content><p>Drag, resize, and minimize this panel while you work.</p></:content>
     </.floating_panel>
+    <.floating_panel class="floating-panel ui-ghost">
+      <:trigger class="button ui-size-sm">Ghost</:trigger>
+      <:title>Notes</:title>
+      #{styling_panel_controls_code()}
+      <:content><p>Drag, resize, and minimize this panel while you work.</p></:content>
+    </.floating_panel>
 
     """
   end
@@ -788,6 +831,22 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         class="floating-panel ui-solid"
       >
         <:trigger class="button ui-size-sm">Solid</:trigger>
+        <:title>Notes</:title>
+        <:minimize_trigger><.heroicon name="hero-minus" class="icon" /></:minimize_trigger>
+        <:maximize_trigger>
+          <.heroicon name="hero-arrows-pointing-out" class="icon" />
+        </:maximize_trigger>
+        <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+        <:content>
+          <p>Drag, resize, and minimize this panel while you work.</p>
+        </:content>
+      </.floating_panel>
+      <.floating_panel
+        id="floating-panel-style-variant-ghost"
+        class="floating-panel ui-ghost"
+      >
+        <:trigger class="button ui-size-sm">Ghost</:trigger>
         <:title>Notes</:title>
         <:minimize_trigger><.heroicon name="hero-minus" class="icon" /></:minimize_trigger>
         <:maximize_trigger>

@@ -131,6 +131,10 @@ defmodule E2eWeb.PasswordInputModel do
     has?(session, css("#password-input-events-log-server tr[data-part='row']"))
   end
 
+  def password_input_events_client_log_has_row?(session) do
+    has?(session, css("#password-input-events-log-client tr[data-part='row']"))
+  end
+
   def goto_form(session, mode) do
     {path, page_id} =
       case mode do

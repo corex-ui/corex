@@ -15,9 +15,7 @@ defmodule E2eWeb.SelectPatternsLive do
   def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> stream_configure(:items, dom_id: &"select:stream-select:item:#{&1.value}")
-     |> stream(:items, @initial_items)
-     |> assign(:items_list, @initial_items)
+     |> assign(:dynamic_items, @initial_items)
      |> assign(:next_id, 1)
      |> assign(:value, [])
      |> assign(:items, Demo.patterns_items_flat())
@@ -40,16 +38,14 @@ defmodule E2eWeb.SelectPatternsLive do
 
     {:noreply,
      socket
-     |> stream_insert(:items, item)
-     |> assign(:items_list, socket.assigns.items_list ++ [item])
+     |> assign(:dynamic_items, socket.assigns.dynamic_items ++ [item])
      |> assign(:next_id, socket.assigns.next_id + 1)}
   end
 
   def handle_event("reset", _params, socket) do
     {:noreply,
      socket
-     |> stream(:items, @initial_items, reset: true)
-     |> assign(:items_list, @initial_items)
+     |> assign(:dynamic_items, @initial_items)
      |> assign(:next_id, 1)}
   end
 
@@ -66,7 +62,7 @@ defmodule E2eWeb.SelectPatternsLive do
         path={@path}
         id="select-patterns-page"
         title="Select · Pattern"
-        subtitle="Controlled selection and stream-driven items."
+        subtitle="Controlled selection and dynamic items."
       >
         <.demo_section
           id="select-patterns-controlled-section"
@@ -94,15 +90,15 @@ defmodule E2eWeb.SelectPatternsLive do
         </.demo_section>
 
         <.demo_section
-          id="select-patterns-stream-section"
-          title="Stream"
+          id="select-patterns-dynamic-section"
+          title="Dynamic items"
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: Demo.patterns_stream_demo_heex()},
+            %{value: "heex", label: "Heex", language: :heex, code: Demo.patterns_dynamic_demo_heex()},
             %{
               value: "elixir",
               label: "Elixir",
               language: :elixir,
-              code: Demo.patterns_stream_elixir()
+              code: Demo.patterns_dynamic_elixir()
             }
           ]}
         >
@@ -116,7 +112,7 @@ defmodule E2eWeb.SelectPatternsLive do
                   Reset
                 </.action>
               </div>
-              <.select id="stream-select" class="select" items={Corex.List.new(@items_list)}>
+              <.select id="patterns-dynamic" class="select" items={Corex.List.new(@dynamic_items)}>
                 <:label>Country</:label>
                 <:trigger>
                   <.heroicon name="hero-chevron-down" class="icon" />

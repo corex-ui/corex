@@ -216,8 +216,8 @@ defmodule E2eWeb.PaginationPlayLive do
               to={~p"/pagination/playground"}
               redirect={:patch}
             >
-              <:prev><.heroicon name="hero-chevron-left" /></:prev>
-              <:next><.heroicon name="hero-chevron-right" /></:next>
+              <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+              <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
               <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
             </.pagination>
           </div>

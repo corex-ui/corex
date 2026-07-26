@@ -13,17 +13,17 @@ defmodule E2eWeb.EditableFormLiveTest do
     assert html =~ "LiveView copy"
   end
 
-  test "ecto save pushes toast-create with submitted text", %{conn: conn} do
+  test "ecto save pushes toast_create with submitted text", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/editable/live-form")
 
     view
     |> form("#editable-live-form-ecto")
     |> render_submit(%{"editable_ecto" => %{"text" => "Hello"}})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "Submitted: text=Hello",
       duration: 5000,
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })

@@ -194,6 +194,7 @@ defmodule E2eWeb.Demos.ActionDemo do
     ~S"""
     <.action class="button">Subtle (default)</.action>
     <.action class="button ui-solid">Solid</.action>
+    <.action class="button ui-ghost">Ghost</.action>
     """
   end
 
@@ -202,6 +203,7 @@ defmodule E2eWeb.Demos.ActionDemo do
     <div class="flex flex-wrap items-center gap-space">
       <.action class="button">Subtle (default)</.action>
       <.action class="button ui-solid">Solid</.action>
+      <.action class="button ui-ghost">Ghost</.action>
     </div>
     """
   end

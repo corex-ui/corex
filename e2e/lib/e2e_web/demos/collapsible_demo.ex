@@ -353,6 +353,24 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
     """
   end
 
+  def styling_canonical_code do
+    ~S"""
+    <.collapsible class="collapsible ui-size-md">
+      <:trigger>Subtle (default)</:trigger>
+      <:content>Content</:content>
+    </.collapsible>
+    """
+  end
+
+  def styling_canonical_example(assigns) do
+        ~H"""
+      <.collapsible id="collapsible-style-canonical" class="collapsible ui-size-md">
+        <:trigger>Subtle (default)</:trigger>
+        <:content>Content</:content>
+      </.collapsible>
+    """
+  end
+
   def styling_color_code do
     ~S"""
     <.collapsible class="collapsible ui-size-md">
@@ -405,6 +423,10 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
       <:trigger>Solid</:trigger>
       <:content>Content</:content>
     </.collapsible>
+    <.collapsible class="collapsible ui-ghost ui-size-md">
+      <:trigger>Ghost</:trigger>
+      <:content>Content</:content>
+    </.collapsible>
 
     """
   end
@@ -421,6 +443,13 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
         class="collapsible ui-solid ui-size-md"
       >
         <:trigger>Solid</:trigger>
+        <:content>Content</:content>
+      </.collapsible>
+      <.collapsible
+        id="collapsible-style-variant-ghost"
+        class="collapsible ui-ghost ui-size-md"
+      >
+        <:trigger>Ghost</:trigger>
         <:content>Content</:content>
       </.collapsible>
     </div>

@@ -1,9 +1,16 @@
 defmodule E2eWeb.DocDemoCoveragePolicyTest do
   use ExUnit.Case, async: true
 
-  alias E2eWeb.{ComponentBehaviorSpec, DocA11yRoutes, DocPageMatrix}
+  alias E2eWeb.{ComponentBehaviorBar, ComponentBehaviorSpec, DocA11yRoutes, DocPageMatrix}
 
   @feature_pattern ~r/\bfeature\s+"/
+
+  test "behavior bar module documents false-friend rule and dimensions" do
+    refute Enum.empty?(ComponentBehaviorBar.false_friend_examples())
+    assert :anatomy_state in ComponentBehaviorBar.dimensions()
+    assert :api_binding in ComponentBehaviorBar.dimensions()
+    assert :keyboard_aria in ComponentBehaviorBar.dimensions()
+  end
 
   test "every wallaby matrix page has DocA11yRoutes and ComponentBehaviorSpec entries" do
     for component <- DocPageMatrix.all_components(),
@@ -70,6 +77,7 @@ defmodule E2eWeb.DocDemoCoveragePolicyTest do
     tabs: "tabs_test.exs",
     tags_input: "tags_input_test.exs",
     timer: "timer_test.exs",
+    toast: "toast_test.exs",
     toggle: "toggle_test.exs",
     toggle_group: "toggle_group_test.exs",
     tooltip: "tooltip_test.exs",

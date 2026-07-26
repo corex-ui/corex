@@ -55,7 +55,7 @@ config :corex_web, E2e.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configure esbuild (the version is required)
 config :esbuild,
-  version: "0.25.4",
+  version: "0.25.12",
   e2e: [
     args: ~w(js/app.js
       --bundle

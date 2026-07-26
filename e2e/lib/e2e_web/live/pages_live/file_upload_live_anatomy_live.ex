@@ -58,7 +58,7 @@ defmodule E2eWeb.FileUploadLiveAnatomyLive do
             >
               <.file_upload_live
                 upload={@uploads.anatomy_minimal}
-                field={:anatomy_minimal}
+                upload_name={:anatomy_minimal}
                 id="file-upload-live-anatomy-minimal"
               >
                 <:close>
@@ -81,7 +81,7 @@ defmodule E2eWeb.FileUploadLiveAnatomyLive do
             >
               <.file_upload_live
                 upload={@uploads.anatomy_label}
-                field={:anatomy_label}
+                upload_name={:anatomy_label}
                 id="file-upload-live-anatomy-label"
               >
                 <:label>Files</:label>
@@ -105,7 +105,7 @@ defmodule E2eWeb.FileUploadLiveAnatomyLive do
             >
               <.file_upload_live
                 upload={@uploads.anatomy_custom}
-                field={:anatomy_custom}
+                upload_name={:anatomy_custom}
                 id="file-upload-live-anatomy-custom"
               >
                 <:dropzone>

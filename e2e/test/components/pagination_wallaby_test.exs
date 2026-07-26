@@ -83,15 +83,15 @@ defmodule E2eWeb.PaginationWallabyTest do
       )
     end
 
-    feature "client section renders pagination", %{session: session} do
+    feature "client section page change updates selection", %{session: session} do
       section = "pagination-events-client-section"
 
-      session =
-        session
-        |> ComponentBehaviorSpec.visit_ready(Pagination, :pagination, :events)
-        |> Pagination.prepare_live_form()
-
-      Pagination.wait_pagination_in_section(session, section, "pagination-events-client")
+      session
+      |> ComponentBehaviorSpec.visit_ready(Pagination, :pagination, :events)
+      |> Pagination.prepare_live_form()
+      |> Pagination.wait_pagination_in_section(section, "pagination-events-client")
+      |> Pagination.click_page_in_section(section, 2)
+      |> Pagination.assert_item_selected_in_section(section, 2)
     end
   end
 

@@ -35,7 +35,7 @@ defmodule E2eWeb.SwitchFormLivePushTest do
     html = view |> form(@form_id) |> render_submit()
 
     assert html =~ "must be accepted"
-    refute_push_event(view, "toast-create", %{})
+    refute_push_event(view, "toast_create", %{})
   end
 
   test "validate shows cast error for invalid boolean", %{conn: conn} do
@@ -49,17 +49,17 @@ defmodule E2eWeb.SwitchFormLivePushTest do
     assert html =~ "is invalid"
   end
 
-  test "save with notifications true pushes toast-create", %{conn: conn} do
+  test "save with notifications true pushes toast_create", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/switch/live-form")
 
     view
     |> form(@form_id)
     |> render_submit(%{"preferences_ecto" => %{"notifications" => "true"}})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "Submitted: notifications=true",
       duration: 5000,
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })
@@ -120,17 +120,17 @@ defmodule E2eWeb.SwitchFormLivePushTest do
     assert controlled_html =~ ~S/data-state="checked"/
   end
 
-  test "ecto controlled save with accepted notifications pushes toast-create", %{conn: conn} do
+  test "ecto controlled save with accepted notifications pushes toast_create", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/switch/live-form")
 
     view
     |> form("#switch-live-form-ecto-controlled")
     |> render_submit(%{"preferences_ecto_controlled" => %{"notifications" => "true"}})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "Submitted: notifications=true",
       duration: 5000,
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })
@@ -177,17 +177,17 @@ defmodule E2eWeb.SwitchFormLivePushTest do
              ~r/id="switch-live-form-ecto-invalid_notifications"[^>]*data-invalid=""/
   end
 
-  test "ecto invalid save with accepted notifications pushes toast-create", %{conn: conn} do
+  test "ecto invalid save with accepted notifications pushes toast_create", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/switch/live-form")
 
     view
     |> form("#switch-live-form-ecto-invalid")
     |> render_submit(%{"preferences_ecto_invalid" => %{"notifications" => "true"}})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "Submitted: notifications=true",
       duration: 5000,
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })

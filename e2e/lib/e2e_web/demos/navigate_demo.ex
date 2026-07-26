@@ -163,6 +163,8 @@ defmodule E2eWeb.Demos.NavigateDemo do
     ~S"""
     <.navigate class="link" to="#">Subtle (default)</.navigate>
     <.navigate class="link ui-solid" to="#">Solid</.navigate>
+    <.navigate class="link ui-nav" to="#">Nav</.navigate>
+    <.navigate class="link ui-nav" to="#" aria-current="page">Nav current</.navigate>
     """
   end
 
@@ -172,6 +174,10 @@ defmodule E2eWeb.Demos.NavigateDemo do
       <.navigate id="navigate-style-variant-subtle" class="link" to="#">Subtle (default)</.navigate>
       <.navigate id="navigate-style-variant-solid" class="link ui-solid" to="#">
         Solid
+      </.navigate>
+      <.navigate id="navigate-style-variant-nav" class="link ui-nav" to="#">Nav</.navigate>
+      <.navigate id="navigate-style-variant-nav-current" class="link ui-nav" to="#" aria-current="page">
+        Nav current
       </.navigate>
     </div>
     """

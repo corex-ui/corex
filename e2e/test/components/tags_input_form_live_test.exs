@@ -58,17 +58,17 @@ defmodule E2eWeb.TagsInputFormLiveTest do
     assert html =~ "tags-input-live-form-ecto"
   end
 
-  test "phoenix save pushes toast-create and keeps form usable", %{conn: conn} do
+  test "phoenix save pushes toast_create and keeps form usable", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/tags-input/live-form")
 
     view
     |> form("#tags-input-live-form-phoenix")
     |> render_submit(%{"tags_input_phoenix" => %{"tags" => ["alpha", "beta"]}})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "tags=[\"alpha\", \"beta\"]",
       duration: 5000,
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })
@@ -81,17 +81,17 @@ defmodule E2eWeb.TagsInputFormLiveTest do
     assert html =~ "tags-input-live-form-phoenix"
   end
 
-  test "ecto save pushes toast-create with tags description", %{conn: conn} do
+  test "ecto save pushes toast_create with tags description", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/tags-input/live-form")
 
     view
     |> form("#tags-input-live-form-ecto")
     |> render_submit(%{"tags_input_ecto" => %{"tags" => ["alpha", "beta"]}})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "Submitted: tags=[\"alpha\", \"beta\"]",
       duration: 5000,
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })

@@ -93,15 +93,15 @@ defmodule E2eWeb.ColorPickerPlayLive do
           <.color_picker
             id="color-picker-playground"
             class="color-picker"
-            label="Pick a color"
             presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
             value={@value}
             dir={@controls.dir}
             disabled={@controls.disabled}
             read_only={@controls.read_only}
             invalid={@controls.invalid}
-            on_value_change="play_value"
-          />
+            on_value_change="play_value">
+            <:label>Pick a color</:label>
+          </.color_picker>
         </:canvas>
       </.demo_playground>
     </Layouts.app>

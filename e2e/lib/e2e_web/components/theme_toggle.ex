@@ -5,18 +5,19 @@ defmodule E2eWeb.ThemeToggle do
   Provides theme selection using the select component.
   """
 
-  attr :theme, :string,
+  attr(:theme, :string,
     default: "neo",
     values: ["neo", "uno", "duo", "leo"],
     doc: "the theme from cookie/session"
+  )
 
-  attr :id, :string, default: "theme-select"
+  attr(:id, :string, default: "theme-select")
 
   def theme_toggle(assigns) do
     ~H"""
     <.select
       id={@id}
-      class="select ui-size-sm w-4xs"
+      class="select ui-ghost ui-size-sm ui-rounded-full ui-width-auto"
       items={[
         %{value: "neo", label: "Neo"},
         %{value: "uno", label: "Uno"},

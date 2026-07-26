@@ -552,7 +552,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     """
   end
 
-  def patterns_stream_demo_heex do
+  def patterns_dynamic_demo_heex do
     ~S"""
     <div class="flex flex-col gap-3 w-full max-w-xl">
       <div class="flex flex-wrap gap-2">
@@ -564,12 +564,12 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
         </.action>
       </div>
       <.radio_group
-        name="stream-rg"
+        name="dynamic-rg"
         class="radio-group"
-        items={@items_list}
-        value={@stream_value}
+        items={@items}
+        value={@value}
         controlled
-        on_value_change="patterns_stream_value"
+        on_value_change="patterns_dynamic_value"
       >
         <:label>Choose one</:label>
         <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
@@ -578,9 +578,9 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     """
   end
 
-  def patterns_stream_elixir do
+  def patterns_dynamic_elixir do
     ~S'''
-    defmodule MyAppWeb.RadioGroupStreamDemoLive do
+    defmodule MyAppWeb.RadioGroupDynamicDemoLive do
       use MyAppWeb, :live_view
 
       @impl true
@@ -591,15 +591,11 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
           %{value: "donec", label: "Donec condimentum ex mi"}
         ]
 
-        socket =
-          socket
-          |> stream_configure(:items, dom_id: &("radio-group:stream-radio-group:item:" <> &1.value))
-          |> stream(:items, initial)
-          |> assign(:items_list, initial)
-          |> assign(:stream_value, "lorem")
-          |> assign(:next_id, 1)
-
-        {:ok, socket}
+        {:ok,
+         socket
+         |> assign(:items, initial)
+         |> assign(:value, "lorem")
+         |> assign(:next_id, 1)}
       end
 
       @impl true
@@ -609,8 +605,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
 
         {:noreply,
          socket
-         |> stream_insert(:items, item)
-         |> assign(:items_list, socket.assigns.items_list ++ [item])
+         |> assign(:items, socket.assigns.items ++ [item])
          |> assign(:next_id, socket.assigns.next_id + 1)}
       end
 
@@ -624,15 +619,14 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
 
         {:noreply,
          socket
-         |> stream(:items, initial, reset: true)
-         |> assign(:items_list, initial)
-         |> assign(:stream_value, "lorem")
+         |> assign(:items, initial)
+         |> assign(:value, "lorem")
          |> assign(:next_id, 1)}
       end
 
       @impl true
-      def handle_event("patterns_stream_value", %{"value" => v}, socket) do
-        {:noreply, assign(socket, :stream_value, v)}
+      def handle_event("patterns_dynamic_value", %{"value" => v}, socket) do
+        {:noreply, assign(socket, :value, v)}
       end
 
       @impl true
@@ -648,13 +642,13 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
             </.action>
           </div>
           <.radio_group
-            id="stream-radio-group"
-            name="stream-rg"
+            id="patterns-dynamic"
+            name="dynamic-rg"
             class="radio-group"
-            items={@items_list}
-            value={@stream_value}
+            items={@items}
+            value={@value}
             controlled
-            on_value_change="patterns_stream_value"
+            on_value_change="patterns_dynamic_value"
           >
             <:label>Choose one</:label>
             <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>

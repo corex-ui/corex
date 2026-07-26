@@ -678,6 +678,28 @@ defmodule E2eWeb.Demos.MenuDemo do
     ]}|
   end
 
+  def styling_canonical_code do
+    items = styling_items_attr()
+
+    """
+    <.menu class="menu" value="menu" #{items}>
+      <:trigger>Subtle (default)</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    """
+  end
+
+  def styling_canonical_example(assigns) do
+    assigns = assign(assigns, :items, demo_leaf_items())
+
+    ~H"""
+    <.menu id="menu-style-canonical" class="menu w-full" items={@items} value="menu">
+      <:trigger>Subtle (default)</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    """
+  end
+
   def styling_color_code do
     items = styling_items_attr()
 
@@ -759,6 +781,10 @@ defmodule E2eWeb.Demos.MenuDemo do
       <:trigger>Solid</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
+    <.menu class="menu ui-ghost" value="menu" #{items}>
+      <:trigger>Ghost</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
 
     """
   end
@@ -779,6 +805,15 @@ defmodule E2eWeb.Demos.MenuDemo do
         value="menu"
       >
         <:trigger>Solid</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+      <.menu
+        id="menu-style-variant-ghost"
+        class="menu ui-ghost w-full"
+        items={@items}
+        value="menu"
+      >
+        <:trigger>Ghost</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
       </.menu>
     </div>

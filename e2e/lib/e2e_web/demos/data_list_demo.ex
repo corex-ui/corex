@@ -388,11 +388,11 @@ defmodule E2eWeb.Demos.DataListDemo do
     """
   end
 
-  def patterns_stream_demo_heex do
+  def patterns_dynamic_demo_heex do
     ~S"""
-    <.action phx-click="stream_add" class="button ui-accent">Add row</.action>
-    <.action phx-click="stream_reset" class="button ui-alert">Reset</.action>
-    <.data_list class="data-list" items={Corex.Content.new(@items_list)}>
+    <.action phx-click="add" class="button ui-accent">Add row</.action>
+    <.action phx-click="reset" class="button ui-alert">Reset</.action>
+    <.data_list class="data-list" items={Corex.Content.new(@items)}>
       <:empty>
         <p>No items</p>
       </:empty>
@@ -400,41 +400,30 @@ defmodule E2eWeb.Demos.DataListDemo do
     """
   end
 
-  def patterns_stream_elixir do
+  def patterns_dynamic_elixir do
     ~S'''
-    @stream_initial [
+    @initial [
       %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
       %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."},
       %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a."}
     ]
 
     def mount(_params, _session, socket) do
-      {:ok,
-       socket
-       |> stream_configure(:items, dom_id: &"data-list:stream-data-list:item:#{&1.value}")
-       |> stream(:items, @stream_initial)
-       |> assign(:items_list, @stream_initial)
-       |> assign(:next_id, 4)}
+      {:ok, socket |> assign(:items, @initial) |> assign(:next_id, 4)}
     end
 
-    def handle_event("stream_add", _params, socket) do
+    def handle_event("add", _params, socket) do
       id = "item-#{socket.assigns.next_id}"
       row = %{value: id, label: "Row #{socket.assigns.next_id}", content: "Added at #{DateTime.utc_now()}"}
-      items_list = socket.assigns.items_list ++ [row]
 
       {:noreply,
        socket
-       |> stream_insert(:items, row)
-       |> assign(:items_list, items_list)
+       |> assign(:items, socket.assigns.items ++ [row])
        |> assign(:next_id, socket.assigns.next_id + 1)}
     end
 
-    def handle_event("stream_reset", _params, socket) do
-      {:noreply,
-       socket
-       |> stream(:items, [], reset: true)
-       |> assign(:items_list, [])
-       |> assign(:next_id, 1)}
+    def handle_event("reset", _params, socket) do
+      {:noreply, socket |> assign(:items, []) |> assign(:next_id, 1)}
     end
     '''
   end

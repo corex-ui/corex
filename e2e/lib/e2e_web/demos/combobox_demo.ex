@@ -1103,6 +1103,34 @@ defmodule E2eWeb.Demos.ComboboxDemo do
     """
   end
 
+  def styling_canonical_code do
+    items_attr =
+      ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
+
+    """
+    <.combobox class="combobox" placeholder="Subtle (default)" #{items_attr}>
+      <:empty>No results</:empty>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+    </.combobox>
+    """
+  end
+
+  def styling_canonical_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.combobox
+      id="combobox-style-canonical"
+      class="combobox"
+      placeholder="Subtle (default)"
+      items={Corex.List.new(items_minimal())}
+    >
+      <:empty>No results</:empty>
+      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    </.combobox>
+    """
+  end
+
   def styling_color_code do
     items_attr =
       ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
@@ -1209,6 +1237,10 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.combobox>
+    <.combobox class="combobox ui-ghost" placeholder="Ghost" #{items_attr}>
+      <:empty>No results</:empty>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+    </.combobox>
     """
   end
 
@@ -1230,6 +1262,15 @@ defmodule E2eWeb.Demos.ComboboxDemo do
         id="combobox-style-variant-solid"
         class="combobox ui-solid"
         placeholder="Solid"
+        items={Corex.List.new(items_minimal())}
+      >
+        <:empty>No results</:empty>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.combobox>
+      <.combobox
+        id="combobox-style-variant-ghost"
+        class="combobox ui-ghost"
+        placeholder="Ghost"
         items={Corex.List.new(items_minimal())}
       >
         <:empty>No results</:empty>

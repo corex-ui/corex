@@ -31,17 +31,17 @@ defmodule E2eWeb.SelectFormLiveTest do
     assert html =~ "can&#39;t be blank"
   end
 
-  test "ecto save with country pushes toast-create", %{conn: conn} do
+  test "ecto save with country pushes toast_create", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/select/live-form")
 
     view
     |> form(@form_id)
     |> render_submit(%{"select_ecto" => %{"country" => "fra"}})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "country=fra",
       duration: 5000,
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })
@@ -81,17 +81,17 @@ defmodule E2eWeb.SelectFormLiveTest do
              ~r/id="select-live-form-ecto-controlled_country"[^>]*data-value="\[&quot;fra&quot;\]"/
   end
 
-  test "ecto controlled save with country pushes toast-create", %{conn: conn} do
+  test "ecto controlled save with country pushes toast_create", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/select/live-form")
 
     view
     |> form(@controlled_form_id)
     |> render_submit(%{"select_ecto_controlled" => %{"country" => "fra"}})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "country=fra",
       duration: 5000,
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })

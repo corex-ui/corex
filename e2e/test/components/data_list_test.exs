@@ -66,16 +66,15 @@ defmodule E2eWeb.DataListTest do
   end
 
   describe "patterns" do
-    feature "stream section add and reset", %{session: session} do
+    feature "dynamic section add and reset", %{session: session} do
       session
       |> ComponentBehaviorSpec.visit_ready(DataList, :data_list, :patterns)
       |> DataList.prepare_live_form()
-      |> DataList.click_in_section("data-list-patterns-stream", "Add row")
-      |> DataList.see_in_section("data-list-patterns-stream", "Row 4")
-      |> DataList.click_in_section("data-list-patterns-stream", "Reset")
-      |> DataList.see_in_section("data-list-patterns-stream", "No items")
-    end
-  end
+      |> DataList.click_in_section("data-list-patterns-dynamic", "Add row")
+      |> DataList.see_in_section("data-list-patterns-dynamic", "Row 4")
+      |> DataList.click_in_section("data-list-patterns-dynamic", "Reset")
+      |> DataList.see_in_section("data-list-patterns-dynamic", "No items")
+    end  end
 
   describe "playground" do
     feature "orientation toggle switches layout", %{session: session} do

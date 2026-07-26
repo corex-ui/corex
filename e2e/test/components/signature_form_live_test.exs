@@ -13,17 +13,17 @@ defmodule E2eWeb.SignatureFormLiveTest do
     assert html =~ "can&#39;t be blank"
   end
 
-  test "ecto save with signature data pushes toast-create", %{conn: conn} do
+  test "ecto save with signature data pushes toast_create", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/signature-pad/live-form")
 
     view
     |> form("#signature-live-form-ecto")
     |> render_submit(%{"signature_ecto" => %{"signature" => ["path-data-mv"]}})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "signature=[\"path-data-mv\"]",
       duration: 5000,
-      groupId: "layout-toast",
+      group_id: "layout-toast",
       title: "Submitted",
       type: "info"
     })
@@ -36,7 +36,7 @@ defmodule E2eWeb.SignatureFormLiveTest do
     |> form("#signature-live-form-phoenix")
     |> render_submit(%{"signature_phoenix" => %{"signature" => ["M0,0L1,1Z"]}})
 
-    assert_push_event(view, "toast-create", %{
+    assert_push_event(view, "toast_create", %{
       description: "signature=[\"M0,0L1,1Z\"]",
       title: "Submitted",
       type: "info"

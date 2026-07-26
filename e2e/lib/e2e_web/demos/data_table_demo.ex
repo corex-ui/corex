@@ -666,8 +666,8 @@ defmodule E2eWeb.Demos.DataTableDemo do
       controlled
       on_page_change="pattern_db_page"
     >
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     </.pagination>
     """
   end

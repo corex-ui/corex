@@ -65,8 +65,8 @@ For those screens you opt in to controlled mode. You pass `controlled`, you bind
 ```
 
 ```elixir
-def handle_event("faq_value_change", %{"value" => value}, socket) do
-  {:noreply, assign(socket, :open, Corex.Accordion.validate_value!(value))}
+def handle_event("faq_value_change", %{"value" => value}, socket) when is_list(value) do
+  {:noreply, assign(socket, :open, value)}
 end
 ```
 

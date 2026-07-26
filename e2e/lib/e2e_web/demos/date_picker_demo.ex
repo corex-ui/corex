@@ -1852,6 +1852,28 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     }
   end
 
+  def styling_canonical_code do
+    ~S"""
+    <.date_picker class="date-picker" value="2024-06-15">
+      <:label>Subtle (default)</:label>
+      <:trigger><.heroicon name="hero-calendar" /></:trigger>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
+    </.date_picker>
+    """
+  end
+
+  def styling_canonical_example(assigns) do
+    ~H"""
+    <.date_picker id="date-picker-style-canonical" class="date-picker" value="2024-06-15">
+      <:label>Subtle (default)</:label>
+      <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
+      <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+    </.date_picker>
+    """
+  end
+
   def styling_color_code do
     ~S"""
     <.date_picker class="date-picker" value="2024-06-15">
@@ -1988,6 +2010,12 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
       <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
     </.date_picker>
+    <.date_picker class="date-picker ui-ghost" value="2024-06-15">
+      <:label>Ghost</:label>
+      <:trigger><.heroicon name="hero-calendar" /></:trigger>
+      <:prev_trigger><.heroicon name="hero-chevron-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-chevron-right" /></:next_trigger>
+    </.date_picker>
 
     """
   end
@@ -2007,6 +2035,16 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         value="2024-06-15"
       >
         <:label>Solid</:label>
+        <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
+        <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+      </.date_picker>
+      <.date_picker
+        id="date-picker-style-variant-ghost"
+        class="date-picker ui-ghost"
+        value="2024-06-15"
+      >
+        <:label>Ghost</:label>
         <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
         <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
         <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
