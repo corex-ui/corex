@@ -45,6 +45,14 @@ export function idMatches(
   return elId === payloadId;
 }
 
+export function payloadTargetsEl(
+  el: HTMLElement,
+  payload: unknown,
+  opts?: { broadcast?: boolean }
+): boolean {
+  return idMatches(el.id, readPayloadId(payload), opts);
+}
+
 export function readPayloadChecked(payload: unknown): boolean | undefined {
   if (!payload || typeof payload !== "object") return undefined;
   const o = payload as Record<string, unknown>;
@@ -138,7 +146,8 @@ type ValueEmitterHook = {
 };
 
 type ValueEmitterOptions = {
-  getValue: () => unknown;
+  getValue?: () => unknown;
+  getPayload?: () => Record<string, unknown>;
   serverEventName: string;
   domEventName: string;
 };
@@ -148,8 +157,9 @@ export function createValueEmitter(
   options: ValueEmitterOptions
 ): (respondTo: RespondTo) => void {
   return (respondTo: RespondTo) => {
-    const value = options.getValue();
-    const payload = { id: hook.el.id, value } as Record<string, unknown>;
+    const payload = options.getPayload
+      ? options.getPayload()
+      : ({ id: hook.el.id, value: options.getValue?.() } as Record<string, unknown>);
 
     emitResponse({
       respondTo,

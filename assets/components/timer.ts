@@ -1,7 +1,7 @@
 import { connect, machine, type Props, type Api } from "@zag-js/timer";
 import type { ItemProps, ActionTriggerProps, Time } from "@zag-js/timer";
 import { VanillaMachine } from "@zag-js/vanilla";
-import { Component } from "../lib/core";
+import { Component, type SchemaOf } from "../lib/core";
 import { getStringList } from "../lib/util";
 
 export function collapseStartIndex(vals: number[]): number {
@@ -78,9 +78,10 @@ function applyTimerItemVisibility(root: HTMLElement, api: Api): void {
   }
 }
 
-export class Timer extends Component<Props, Api> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: Props): VanillaMachine<any> {
+type Schema = SchemaOf<typeof machine>;
+
+export class Timer extends Component<Props, Api, Schema> {
+  initMachine(props: Props): VanillaMachine<Schema> {
     return new VanillaMachine(machine, props);
   }
 
@@ -108,6 +109,14 @@ export class Timer extends Component<Props, Api> {
       );
       if (itemEl) {
         this.spreadProps(itemEl, this.api.getItemProps({ type } as ItemProps));
+        if (type === "days") {
+          const days = Number(this.api.time.days);
+          if (days > 99) {
+            itemEl.setAttribute("data-plain", String(days));
+          } else {
+            itemEl.removeAttribute("data-plain");
+          }
+        }
       }
       const labelEl = this.el.querySelector<HTMLElement>(
         `[data-scope="timer"][data-part="item-label"][data-type="${type}"]`

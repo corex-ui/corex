@@ -112,15 +112,15 @@ defmodule Corex.NativeInput do
   @import "../corex/corex.css";
   ```
 
-  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on the input. Variant modifiers control input surface treatment. Default is subtle; add `native-input ui-solid` for a filled field. Checkbox and radio inputs keep their dedicated styling.
+  Semantic modifiers set palette variables for focus and accent ink on the field. The input surface stays the shared `ui-input` treatment. Native input has no variant axis. Checkbox and radio inputs keep their dedicated styling.
 
   <!-- tabs-open -->
 
   ### Semantic
 
-  Palette variables for native input ink and fill. Does not change surface treatment by itself.
+  Palette for focus and accent ink on the field.
 
   | Modifier | Classes |
   | -------- | ------- |
@@ -130,15 +130,6 @@ defmodule Corex.NativeInput do
   | Alert | `native-input ui-alert` |
   | Info | `native-input ui-info` |
   | Success | `native-input ui-success` |
-
-  ### Variant
-
-  Visual treatment of the input surface. Combine with a semantic modifier for palette-driven ink and fill.
-
-  | Modifier | Classes |
-  | -------- | ------- |
-  | Subtle (default) | `native-input` or `native-input ui-accent` |
-  | Solid | `native-input ui-accent ui-solid` |
 
   ### Size
 
@@ -154,26 +145,22 @@ defmodule Corex.NativeInput do
 
   @doc type: :component
   use Phoenix.Component
+  use Corex.Component, :form
   alias Phoenix.HTML.Form
 
   @types ~W(text textarea date datetime-local time month week email url tel search color number password checkbox radio select)
 
   attr(:type, :string, required: true, values: @types)
-  attr(:id, :string, required: false)
-  attr(:name, :string, required: false)
+
+  form_control_attrs(
+    except: [:form, :controlled, :disabled, :required],
+    docs: [
+      field: "A form field struct from the form, e.g. @form[:email]",
+      read_only: "Read-only state; also sets HTML readonly on the input"
+    ]
+  )
+
   attr(:value, :any)
-  attr(:invalid, :boolean, default: nil)
-
-  attr(:auto_invalid, :boolean,
-    default: false,
-    doc: "When true with `field`, set invalid from visible changeset errors"
-  )
-
-  attr(:read_only, :boolean,
-    default: false,
-    doc: "Read-only state; also sets HTML readonly on the input"
-  )
-
   attr(:errors, :list, default: [], doc: "List of error messages to display")
   attr(:class, :any, default: nil)
   attr(:prompt, :string, default: nil, doc: "Prompt for select inputs")
@@ -185,10 +172,6 @@ defmodule Corex.NativeInput do
 
   attr(:multiple, :boolean, default: false, doc: "Multiple flag for select inputs")
   attr(:checked, :boolean, doc: "Checked flag for checkbox. Defaults from value.")
-
-  attr(:field, Phoenix.HTML.FormField,
-    doc: "A form field struct from the form, e.g. @form[:email]"
-  )
 
   attr(:rest, :global,
     include:

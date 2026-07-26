@@ -211,17 +211,19 @@ defmodule Corex.Tabs do
   @doc type: :component
   use Phoenix.Component
 
+  use Corex.Component, :api
+
   import Corex.Api.Doc
 
-  alias Corex.Tabs.Anatomy.{Content, Indicator, List, Props, Root, Trigger}
-  alias Corex.Tabs.Connect
-  alias Phoenix.LiveView
-  alias Phoenix.LiveView.JS
+  alias Corex.Selectors
 
-  import Corex.Helpers,
-    only: [
-      validate_tabs_value!: 1
-    ]
+  alias Corex.Tabs.Anatomy.{Content, Indicator, List, Props, Root, Trigger}
+
+  alias Corex.Tabs.Connect
+
+  alias Phoenix.LiveView
+
+  alias Phoenix.LiveView.JS
 
   @doc """
   Renders a tabs component.
@@ -245,7 +247,7 @@ defmodule Corex.Tabs do
 
   attr(:items, :list,
     default: nil,
-    doc: "The items of the tabs, must be a list of content items"
+    doc: "Items from `Corex.Content.new/1` (see `Corex.Content` for the full contract)"
   )
 
   attr(:compound, :boolean,
@@ -340,7 +342,7 @@ defmodule Corex.Tabs do
 
     assigns =
       assigns
-      |> assign_new(:id, fn -> "tabs-#{System.unique_integer([:positive])}" end)
+      |> Corex.FormField.assign_stable_id("tabs")
       |> assign(:values, values)
       |> tabs_assign_panels()
 
@@ -354,7 +356,7 @@ defmodule Corex.Tabs do
     assigns = assign(assigns, :ctx, ctx)
 
     ~H"""
-    <div id={@id} phx-hook="Tabs" data-loading phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}  {@rest}
+    <div id={@id} phx-hook="Tabs" {Corex.Hook.loading()}{@rest}
     {Connect.props(%Props{
       id: @id,
       controlled: @controlled,
@@ -372,18 +374,15 @@ defmodule Corex.Tabs do
         render_slot(@inner_block, @ctx)
       end}
       <div :if={not @compound}
-        phx-mounted={Connect.ignore_root(%Root{id: @id, orientation: @orientation, dir: @dir})}
-        {Connect.root(%Root{id: @id, orientation: @orientation, dir: @dir})}
+        {Connect.mounted_root(%Root{id: @id, orientation: @orientation, dir: @dir})}
       >
         <div
-          phx-mounted={Connect.ignore_list(%List{id: @id, orientation: @orientation, dir: @dir})}
-          {Connect.list(%List{id: @id, orientation: @orientation, dir: @dir})}
+          {Connect.mounted_list(%List{id: @id, orientation: @orientation, dir: @dir})}
         >
           <button
             :for={panel <- @panels}
             class={tabs_panel_class(panel, :trigger_slot)}
-            phx-mounted={Connect.ignore_trigger(tabs_panel_trigger(panel, @id, @values, @orientation, @dir))}
-            {Connect.trigger(tabs_panel_trigger(panel, @id, @values, @orientation, @dir))}
+            {Connect.mounted_trigger(tabs_panel_trigger(panel, @id, @values, @orientation, @dir))}
           >
             {cond do
               panel.source == :slots -> render_slot(panel.trigger_slot)
@@ -394,13 +393,7 @@ defmodule Corex.Tabs do
         </div>
         <span
           :if={@indicator}
-          phx-mounted={Connect.ignore_indicator(%Indicator{
-            id: @id,
-            values: @values,
-            orientation: @orientation,
-            dir: @dir
-          })}
-          {Connect.indicator(%Indicator{
+          {Connect.mounted_indicator(%Indicator{
             id: @id,
             values: @values,
             orientation: @orientation,
@@ -411,8 +404,7 @@ defmodule Corex.Tabs do
         <div
           :for={panel <- @panels}
           class={tabs_panel_class(panel, :content_slot)}
-          phx-mounted={Connect.ignore_content(tabs_panel_content(panel, @id, @values, @orientation, @dir))}
-          {Connect.content(tabs_panel_content(panel, @id, @values, @orientation, @dir))}
+          {Connect.mounted_content(tabs_panel_content(panel, @id, @values, @orientation, @dir))}
         >
           {cond do
             panel.source == :slots -> render_slot(panel.content_slot)
@@ -433,20 +425,17 @@ defmodule Corex.Tabs do
           []
 
         is_list(assigns.items) and assigns.items != [] ->
+          _ = Corex.Content.assert_content_items!(assigns, "Tabs", required: false)
+
           assigns.items
           |> Enum.with_index()
-          |> Enum.map(fn
-            {%Corex.Content.Item{} = entry, index} ->
-              %{
-                source: :items,
-                value: entry.value || "item-#{index}",
-                disabled: entry.disabled,
-                item_entry: entry
-              }
-
-            {other, _index} ->
-              raise ArgumentError,
-                    "items must be a list of Corex.Content.Item structs, got: #{inspect(other)}"
+          |> Enum.map(fn {entry, index} ->
+            %{
+              source: :items,
+              value: entry.value || "item-#{index}",
+              disabled: entry.disabled,
+              item_entry: entry
+            }
           end)
 
         is_nil(assigns.items) and (assigns.trigger != [] or assigns.content != []) ->
@@ -524,7 +513,7 @@ defmodule Corex.Tabs do
     assigns = assign(assigns, :root, root)
 
     ~H"""
-    <div phx-mounted={Connect.ignore_root(@root)} {Connect.root(@root)} {@rest}>
+    <div {Connect.mounted_root(@root)} {@rest}>
       {render_slot(@inner_block)}
     </div>
     """
@@ -545,7 +534,7 @@ defmodule Corex.Tabs do
     assigns = assign(assigns, :list, list)
 
     ~H"""
-    <div phx-mounted={Connect.ignore_list(@list)} {Connect.list(@list)} {@rest}>
+    <div {Connect.mounted_list(@list)} {@rest}>
       {render_slot(@inner_block)}
     </div>
     """
@@ -574,8 +563,7 @@ defmodule Corex.Tabs do
     ~H"""
     <button
       type="button"
-      phx-mounted={Connect.ignore_trigger(@trigger)}
-      {Connect.trigger(@trigger)}
+      {Connect.mounted_trigger(@trigger)}
       {@rest}
     >
       {render_slot(@inner_block)}
@@ -599,7 +587,7 @@ defmodule Corex.Tabs do
     assigns = assign(assigns, :indicator, indicator)
 
     ~H"""
-    <span phx-mounted={Connect.ignore_indicator(@indicator)} {Connect.indicator(@indicator)} {@rest}>
+    <span {Connect.mounted_indicator(@indicator)} {@rest}>
       {render_slot(@inner_block)}
     </span>
     """
@@ -626,7 +614,7 @@ defmodule Corex.Tabs do
     assigns = assign(assigns, :content, content)
 
     ~H"""
-    <div phx-mounted={Connect.ignore_content(@content)} {Connect.content(@content)} {@rest}>
+    <div {Connect.mounted_content(@content)} {@rest}>
       {render_slot(@inner_block)}
     </div>
     """
@@ -695,10 +683,13 @@ defmodule Corex.Tabs do
   ```
   """)
 
+  @spec set_value(String.t(), Corex.Value.coercible()) :: Phoenix.LiveView.JS.t()
+  @spec set_value(Phoenix.LiveView.Socket.t(), String.t(), Corex.Value.coercible()) ::
+          Phoenix.LiveView.Socket.t()
   def set_value(tabs_id, value) when is_binary(tabs_id) do
     JS.dispatch("corex:tabs:set-value",
-      to: "##{tabs_id}",
-      detail: %{value: validate_tabs_value!(value)},
+      to: Selectors.css_id(tabs_id),
+      detail: %{value: coerce_string_value(value, "Corex.Tabs.set_value/2")},
       bubbles: false
     )
   end
@@ -729,7 +720,7 @@ defmodule Corex.Tabs do
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(tabs_id) do
     LiveView.push_event(socket, "tabs_set_value", %{
       tabs_id: tabs_id,
-      value: validate_tabs_value!(value)
+      value: coerce_string_value(value, "Corex.Tabs.set_value/2")
     })
   end
 end

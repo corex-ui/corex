@@ -1,5 +1,9 @@
 defmodule Corex.FloatingPanel.Connect do
   @moduledoc false
+  use Corex.Connect.Mounted
+
+  use Corex.Component, :connect
+
   alias Corex.Selectors
 
   alias Corex.FloatingPanel.Anatomy.{
@@ -19,7 +23,6 @@ defmodule Corex.FloatingPanel.Connect do
   }
 
   alias Phoenix.LiveView.JS
-  import Corex.Helpers, only: [get_boolean: 1]
 
   defp encode_size(nil), do: nil
 
@@ -38,11 +41,11 @@ defmodule Corex.FloatingPanel.Connect do
   @spec props(Props.t()) :: map()
   def props(assigns) do
     %{
-      "data-draggable" => get_boolean(assigns.draggable),
-      "data-resizable" => get_boolean(assigns.resizable),
-      "data-allow-overflow" => get_boolean(assigns.allow_overflow),
-      "data-close-on-escape" => get_boolean(assigns.close_on_escape),
-      "data-disabled" => get_boolean(assigns.disabled),
+      "data-draggable" => presence_attr(assigns.draggable),
+      "data-resizable" => presence_attr(assigns.resizable),
+      "data-allow-overflow" => presence_attr(assigns.allow_overflow),
+      "data-close-on-escape" => presence_attr(assigns.close_on_escape),
+      "data-disabled" => presence_attr(assigns.disabled),
       "data-dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "horizontal"),
       "data-size" => encode_size(assigns.size),
@@ -50,7 +53,7 @@ defmodule Corex.FloatingPanel.Connect do
       "data-default-position" => encode_point(assigns.default_position),
       "data-min-size" => encode_size(assigns.min_size),
       "data-max-size" => encode_size(assigns.max_size),
-      "data-persist-rect" => get_boolean(assigns.persist_rect),
+      "data-persist-rect" => presence_attr(assigns.persist_rect),
       "data-grid-size" => to_string(assigns.grid_size),
       "data-on-open-change" => assigns.on_open_change,
       "data-on-open-change-client" => assigns.on_open_change_client,

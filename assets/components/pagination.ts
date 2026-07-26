@@ -1,14 +1,15 @@
 import { machine, type Api, type Props } from "@zag-js/pagination";
 import type { IntlTranslations } from "@zag-js/pagination";
 import { VanillaMachine } from "@zag-js/vanilla";
-import { Component } from "../lib/core";
+import { Component, type SchemaOf } from "../lib/core";
 import { corexPaginationConnect } from "./pagination-connect";
 import { isAllowedRedirectDestination } from "../lib/redirect";
 import { cloneTemplateChildren, getString } from "../lib/util";
 
-export class Pagination extends Component<Props, Api> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: Props): VanillaMachine<any> {
+type Schema = SchemaOf<typeof machine>;
+
+export class Pagination extends Component<Props, Api, Schema> {
+  initMachine(props: Props): VanillaMachine<Schema> {
     return new VanillaMachine(machine, props);
   }
 

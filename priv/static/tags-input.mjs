@@ -1,32 +1,28 @@
 import {
   createLiveRegion
-} from "./chunks/chunk-7BZGUIUZ.mjs";
+} from "./chunks/chunk-UFCM6256.mjs";
 import {
   setArrayValues
-} from "./chunks/chunk-2H6YHTHG.mjs";
+} from "./chunks/chunk-52LJJOX7.mjs";
 import {
   trackInteractOutside
-} from "./chunks/chunk-ZSA4KI2Y.mjs";
+} from "./chunks/chunk-7JTELVWK.mjs";
 import {
   bindArrayFieldSubmitIntent,
   isFormFieldUsed
-} from "./chunks/chunk-3BEM4I52.mjs";
-import "./chunks/chunk-DOKFN6DA.mjs";
+} from "./chunks/chunk-4UPAN2NC.mjs";
+import "./chunks/chunk-7LA2VUMJ.mjs";
 import {
+  isZagValueControlled,
   mountTagsBinding
-} from "./chunks/chunk-BGER3KYP.mjs";
-import "./chunks/chunk-TKOH2OAC.mjs";
-import {
-  createDomEventRegistry,
-  createHookHandleEventRegistry
-} from "./chunks/chunk-77HPO22C.mjs";
+} from "./chunks/chunk-LVRCAC6Y.mjs";
 import {
   idMatches,
   notifyChange,
   readPayloadId,
   readPayloadStringArray,
   readPayloadValue
-} from "./chunks/chunk-LNVRIZ4K.mjs";
+} from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
   Component,
   VanillaMachine,
@@ -36,7 +32,9 @@ import {
   createAnatomy,
   createGuards,
   createMachine,
+  createZagLiveHook,
   dataAttr,
+  datasetKeyChanged,
   dispatchInputValueEvent,
   getBoolean,
   getBooleanValue,
@@ -54,6 +52,7 @@ import {
   isEqual,
   isLeftClick,
   nextById,
+  parseJsonStringList,
   prevById,
   queryAll,
   raf,
@@ -63,9 +62,9 @@ import {
   trackFormControl,
   uniq,
   warn
-} from "./chunks/chunk-6AOEC32Q.mjs";
+} from "./chunks/chunk-E4OZ7DWO.mjs";
 
-// ../node_modules/.pnpm/@zag-js+tags-input@1.40.0/node_modules/@zag-js/tags-input/dist/tags-input.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+tags-input@1.42.0/node_modules/@zag-js/tags-input/dist/tags-input.anatomy.mjs
 var anatomy = createAnatomy("tagsInput").parts(
   "root",
   "label",
@@ -80,7 +79,7 @@ var anatomy = createAnatomy("tagsInput").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+tags-input@1.40.0/node_modules/@zag-js/tags-input/dist/tags-input.dom.mjs
+// ../node_modules/.pnpm/@zag-js+tags-input@1.42.0/node_modules/@zag-js/tags-input/dist/tags-input.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `tags-input:${ctx.id}`;
 var getInputId = (ctx) => ctx.ids?.input ?? `tags-input:${ctx.id}:input`;
 var getClearTriggerId = (ctx) => ctx.ids?.clearBtn ?? `tags-input:${ctx.id}:clear-btn`;
@@ -120,7 +119,7 @@ var dispatchInputEvent = (ctx, value) => {
   dispatchInputValueEvent(inputEl, { value });
 };
 
-// ../node_modules/.pnpm/@zag-js+tags-input@1.40.0/node_modules/@zag-js/tags-input/dist/tags-input.connect.mjs
+// ../node_modules/.pnpm/@zag-js+tags-input@1.42.0/node_modules/@zag-js/tags-input/dist/tags-input.connect.mjs
 function connect(service, normalize) {
   const { state, send, computed, prop, scope, context } = service;
   const interactive = computed("isInteractive");
@@ -447,14 +446,14 @@ function endsWith(str, del) {
   return new RegExp(`${del.source}$`).test(str);
 }
 
-// ../node_modules/.pnpm/@zag-js+auto-resize@1.40.0/node_modules/@zag-js/auto-resize/dist/visual-style.mjs
+// ../node_modules/.pnpm/@zag-js+auto-resize@1.42.0/node_modules/@zag-js/auto-resize/dist/visual-style.mjs
 function getVisualStyles(node) {
   if (!node) return;
   const style = getComputedStyle(node);
   return "box-sizing:" + style.boxSizing + ";border-left:" + style.borderLeftWidth + " solid red;border-right:" + style.borderRightWidth + " solid red;font-family:" + style.fontFamily + ";font-feature-settings:" + style.fontFeatureSettings + ";font-kerning:" + style.fontKerning + ";font-size:" + style.fontSize + ";font-stretch:" + style.fontStretch + ";font-style:" + style.fontStyle + ";font-variant:" + style.fontVariant + ";font-variant-caps:" + style.fontVariantCaps + ";font-variant-ligatures:" + style.fontVariantLigatures + ";font-variant-numeric:" + style.fontVariantNumeric + ";font-weight:" + style.fontWeight + ";letter-spacing:" + style.letterSpacing + ";margin-left:" + style.marginLeft + ";margin-right:" + style.marginRight + ";padding-left:" + style.paddingLeft + ";padding-right:" + style.paddingRight + ";text-indent:" + style.textIndent + ";text-transform:" + style.textTransform;
 }
 
-// ../node_modules/.pnpm/@zag-js+auto-resize@1.40.0/node_modules/@zag-js/auto-resize/dist/autoresize-input.mjs
+// ../node_modules/.pnpm/@zag-js+auto-resize@1.42.0/node_modules/@zag-js/auto-resize/dist/autoresize-input.mjs
 function createGhostElement(doc) {
   const el = doc.createElement("div");
   el.id = "ghost";
@@ -486,7 +485,7 @@ function autoResizeInput(input) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+tags-input@1.40.0/node_modules/@zag-js/tags-input/dist/tags-input.machine.mjs
+// ../node_modules/.pnpm/@zag-js+tags-input@1.42.0/node_modules/@zag-js/tags-input/dist/tags-input.machine.mjs
 var { and, not, or } = createGuards();
 var machine = createMachine({
   props({ props }) {
@@ -571,6 +570,9 @@ var machine = createMachine({
     isOverflowing: ({ context, prop }) => context.get("value").length > prop("max")
   },
   watch({ track, context, action, computed, refs }) {
+    track([() => computed("valueAsString")], () => {
+      action(["dispatchChangeEvent"]);
+    });
     track([() => context.get("editedTagValue")], () => {
       action(["syncEditedTagInputValue"]);
     });
@@ -900,7 +902,9 @@ var machine = createMachine({
         send({ type: "EXTERNAL_BLUR", id: event.id });
       },
       dispatchChangeEvent({ scope, computed }) {
-        dispatchInputEvent(scope, computed("valueAsString"));
+        queueMicrotask(() => {
+          dispatchInputEvent(scope, computed("valueAsString"));
+        });
       },
       highlightNextTag({ context, scope }) {
         const highlightedTagId = context.get("highlightedTagId");
@@ -1223,7 +1227,6 @@ function normalizeDeleteTriggerContent(delEl) {
   }
 }
 var TagsInput = class extends Component {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, props);
   }
@@ -1358,18 +1361,20 @@ function syncTagsInputFormForPhoenix(el, values, onTouched, opts = {}) {
 }
 
 // hooks/tags-input.ts
+function readUpdatedServerTags(el, before) {
+  if (!isZagValueControlled(el)) {
+    return {};
+  }
+  if (!datasetKeyChanged(before, el, "tags")) {
+    return {};
+  }
+  return { value: parseJsonTags(el, "tags") };
+}
 function sameStringList(a, b) {
   return a.length === b.length && a.every((v, i) => v === b[i]);
 }
 function parseJsonTags(el, key) {
-  const raw = el.dataset[key];
-  if (!raw || raw.trim() === "") return [];
-  try {
-    const v = JSON.parse(raw);
-    return Array.isArray(v) && v.every((x) => typeof x === "string") ? v : [];
-  } catch {
-    return [];
-  }
+  return parseJsonStringList(el.dataset[key]);
 }
 function blurBehavior(el) {
   return getString(el, "blurBehavior", ["add", "clear"]);
@@ -1391,13 +1396,14 @@ function zagNameForForm(el) {
   if (getString(el, "submitName")) return void 0;
   return getString(el, "name");
 }
-var TagsInputHook = {
-  mounted() {
-    const el = this.el;
-    const hook = this;
+var TagsInputHook = createZagLiveHook({
+  key: "tagsInput",
+  controlledKeys: ["tags"],
+  mount(hook, { dom, server }) {
+    const el = hook.el;
     hook.fieldTouched = false;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     const blur = blurBehavior(el);
     const max = maxProp(el);
     const delimiter = getString(el, "delimiter");
@@ -1474,8 +1480,6 @@ var TagsInputHook = {
         });
       }
     });
-    zag.init();
-    this.tagsInput = zag;
     const syncForm = (values, opts = {}) => {
       syncTagsInputFormForPhoenix(el, values, void 0, {
         notifyLiveView: opts.notifyLiveView,
@@ -1489,55 +1493,53 @@ var TagsInputHook = {
       hook.fieldTouched = true;
       syncForm(zag.api.value, { notifyLiveView: false });
     });
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-    domRegistry.add("corex:tags-input:set-value", (event) => {
+    dom.add("corex:tags-input:set-value", (event) => {
       const v = event.detail?.value;
       if (Array.isArray(v) && v.every((x) => typeof x === "string"))
         zag.api.setValue(v);
     });
-    domRegistry.add("corex:tags-input:clear-value", () => {
+    dom.add("corex:tags-input:clear-value", () => {
       zag.api.clearValue();
     });
-    domRegistry.add("corex:tags-input:add-value", (event) => {
+    dom.add("corex:tags-input:add-value", (event) => {
       const tag = event.detail?.value;
       if (typeof tag === "string" && tag !== "") zag.api.addValue(tag);
     });
-    domRegistry.add("corex:tags-input:remove-value", (event) => {
+    dom.add("corex:tags-input:remove-value", (event) => {
       const tag = event.detail?.value;
       if (typeof tag !== "string" || tag === "") return;
       zag.api.setValue(zag.api.value.filter((t) => t !== tag));
     });
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-    registry.add("tags_input_set_value", (payload) => {
+    server.add("tags_input_set_value", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       const v = readPayloadStringArray(payload);
       if (v) zag.api.setValue(v);
     });
-    registry.add("tags_input_clear_value", (payload) => {
+    server.add("tags_input_clear_value", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.clearValue();
     });
-    registry.add("tags_input_add_value", (payload) => {
+    server.add("tags_input_add_value", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       const tag = readPayloadValue(payload);
       if (tag !== "") zag.api.addValue(tag);
     });
-    registry.add("tags_input_remove_value", (payload) => {
+    server.add("tags_input_remove_value", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       const tag = readPayloadValue(payload);
       if (tag === "") return;
       zag.api.setValue(zag.api.value.filter((t) => t !== tag));
     });
+    return zag;
   },
-  updated() {
-    const el = this.el;
+  update(hook, zag) {
+    const el = hook.el;
     const blur = blurBehavior(el);
     const max = maxProp(el);
     const delimiter = getString(el, "delimiter");
     const placeholder = readPlaceholderFromMainInput(el);
-    this.tagsInput?.updateProps({
+    const valuePatch = readUpdatedServerTags(el, hook.beforeAttrs);
+    zag.updateProps({
       id: el.id,
       ...resolveZagTagsInputTranslations(el),
       disabled: getBoolean(el, "disabled"),
@@ -1555,17 +1557,14 @@ var TagsInputHook = {
       ...blur !== void 0 ? { blurBehavior: blur } : {},
       ...max !== void 0 ? { max } : {},
       ...delimiter !== void 0 && delimiter !== "" ? { delimiter } : {},
-      ...placeholder !== void 0 ? { placeholder } : {}
+      ...placeholder !== void 0 ? { placeholder } : {},
+      ...valuePatch.value !== void 0 ? { value: valuePatch.value } : {}
     });
-    this.tagsInput?.render();
   },
-  destroyed() {
-    this.unbindSubmitIntent?.();
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.tagsInput?.destroy();
+  destroy(hook) {
+    hook.unbindSubmitIntent?.();
   }
-};
+});
 export {
   TagsInputHook as TagsInput,
   blurBehavior,

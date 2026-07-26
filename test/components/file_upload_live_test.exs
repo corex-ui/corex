@@ -78,7 +78,7 @@ defmodule Corex.FileUploadLiveTest do
         render_component(
           fn assigns ->
             ~H"""
-            <FileUploadLive.file_upload_live upload={@upload} field={:attachment} id="ful-entries">
+            <FileUploadLive.file_upload_live upload={@upload} upload_name={:attachment} id="ful-entries">
               <:close>Remove</:close>
             </FileUploadLive.file_upload_live>
             """
@@ -108,7 +108,7 @@ defmodule Corex.FileUploadLiveTest do
         render_component(
           fn assigns ->
             ~H"""
-            <FileUploadLive.file_upload_live upload={@upload} field={:attachment} id="ful-pdf">
+            <FileUploadLive.file_upload_live upload={@upload} upload_name={:attachment} id="ful-pdf">
               <:close>Remove</:close>
             </FileUploadLive.file_upload_live>
             """
@@ -138,7 +138,7 @@ defmodule Corex.FileUploadLiveTest do
         render_component(
           fn assigns ->
             ~H"""
-            <FileUploadLive.file_upload_live upload={@upload} field={:attachment} id="ful-errors">
+            <FileUploadLive.file_upload_live upload={@upload} upload_name={:attachment} id="ful-errors">
               <:close>Remove</:close>
               <:error :let={msg}><span data-err>{msg}</span></:error>
             </FileUploadLive.file_upload_live>
@@ -161,7 +161,7 @@ defmodule Corex.FileUploadLiveTest do
             ~H"""
             <FileUploadLive.file_upload_live
               upload={@upload}
-              field={:attachment}
+              upload_name={:attachment}
               id="ful-defaults"
               translation={%Corex.FileUpload.Translation{dropzone: "Drop here"}}
             >
@@ -183,7 +183,7 @@ defmodule Corex.FileUploadLiveTest do
         render_component(
           fn assigns ->
             ~H"""
-            <FileUploadLive.file_upload_live upload={@upload} field={:attachment} id="ful-custom">
+            <FileUploadLive.file_upload_live upload={@upload} upload_name={:attachment} id="ful-custom">
               <:label>Pick files</:label>
               <:dropzone>Drop zone</:dropzone>
               <:open>Browse</:open>

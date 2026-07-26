@@ -1,6 +1,4 @@
 defmodule Mix.Tasks.Corex do
-  use Mix.Task
-
   @shortdoc "Prints Corex help information"
 
   @moduledoc """
@@ -19,9 +17,11 @@ defmodule Mix.Tasks.Corex do
   See `Mix.Tasks.Corex.New` for all options.
   """
 
-  @version Mix.Project.config()[:version]
+  use Mix.Task
 
   alias Mix.Tasks.Help
+
+  @version Mix.Project.config()[:version]
 
   @impl true
   @doc false
@@ -37,11 +37,18 @@ defmodule Mix.Tasks.Corex do
   end
 
   defp general do
-    Application.ensure_all_started(:corex)
+    start_corex!()
     Mix.shell().info("Corex v#{Application.spec(:corex, :vsn)}")
     Mix.shell().info("Accessible and unstyled UI components library")
     Mix.shell().info("\n## Options\n")
     Mix.shell().info("-v, --version        # Prints Corex version\n")
     Help.run(["--search", "corex."])
+  end
+
+  defp start_corex! do
+    case Application.ensure_all_started(:corex) do
+      {:ok, _apps} -> :ok
+      {:error, reason} -> Mix.raise("could not start :corex, got: #{inspect(reason)}")
+    end
   end
 end

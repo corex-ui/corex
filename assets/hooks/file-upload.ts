@@ -1,5 +1,3 @@
-import type { Hook } from "phoenix_live_view";
-import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
 import { FileUpload } from "../components/file-upload";
 import type {
   Props,
@@ -8,17 +6,13 @@ import type {
   FileRejectDetails,
 } from "@zag-js/file-upload";
 import { getString, getBoolean, getDir, getNumber, canPushEvent } from "../lib/util";
-import { bindArrayFieldSubmitIntent } from "../lib/form-array-submit";
+import { bindArrayFieldSubmitIntent } from "../lib/phoenix-form-bridge";
 import { notifyChange, idMatches, readPayloadId } from "../lib/respond-to";
-import { createHookHandleEventRegistry } from "../lib/hook-handlers";
-import { createDomEventRegistry } from "../lib/dom-events";
+import { createZagLiveHook } from "../lib/zag-live-hook";
 
 type FileUploadHookState = {
   fileUpload?: FileUpload;
-  handlers?: Array<CallbackRef>;
   unbindSubmitIntent?: () => void;
-  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
-  domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
 
 export function fileChangePayload(
@@ -56,11 +50,12 @@ export function fileRejectPayload(
   };
 }
 
-const FileUploadHook: Hook<object & FileUploadHookState, HTMLElement> = {
-  mounted(this: object & HookInterface<HTMLElement> & FileUploadHookState) {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+const FileUploadHook = createZagLiveHook<FileUploadHookState, FileUpload>({
+  key: "fileUpload",
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     const maxFiles = getNumber(el, "maxFiles");
     const maxFileSize = getNumber(el, "maxFileSize");
     const minFileSize = getNumber(el, "minFileSize");
@@ -115,81 +110,68 @@ const FileUploadHook: Hook<object & FileUploadHookState, HTMLElement> = {
         });
       },
     } as Props);
-    zag.init();
-    this.fileUpload = zag;
-    this.handlers = [];
 
-    this.unbindSubmitIntent = bindArrayFieldSubmitIntent(el, () => {
+    hook.unbindSubmitIntent = bindArrayFieldSubmitIntent(el, () => {
       zag.syncFormSubmitInputs();
     });
 
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-
-    domRegistry.add("corex:file-upload:clear-files", () => {
+    dom.add("corex:file-upload:clear-files", () => {
       zag.api.clearFiles();
     });
 
-    domRegistry.add("corex:file-upload:clear-rejected", () => {
+    dom.add("corex:file-upload:clear-rejected", () => {
       zag.api.clearRejectedFiles();
     });
 
-    domRegistry.add("corex:file-upload:open", () => {
+    dom.add("corex:file-upload:open", () => {
       zag.api.openFilePicker();
     });
 
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-
-    registry.add("file_upload_clear_files", (payload: unknown) => {
+    server.add("file_upload_clear_files", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.clearFiles();
     });
 
-    registry.add("file_upload_clear_rejected", (payload: unknown) => {
+    server.add("file_upload_clear_rejected", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.clearRejectedFiles();
     });
 
-    registry.add("file_upload_open", (payload: unknown) => {
+    server.add("file_upload_open", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.openFilePicker();
     });
+
+    return zag;
   },
 
-  updated(this: object & HookInterface<HTMLElement> & FileUploadHookState) {
-    this.fileUpload?.updateProps({
-      id: this.el.id,
-      disabled: getBoolean(this.el, "disabled"),
-      invalid: getBoolean(this.el, "invalid"),
-      readOnly: getBoolean(this.el, "readonly"),
-      required: getBoolean(this.el, "required"),
-      name: getString(this.el, "name"),
-      dir: getDir(this.el),
+  update(hook, zag) {
+    zag.updateProps({
+      id: hook.el.id,
+      disabled: getBoolean(hook.el, "disabled"),
+      invalid: getBoolean(hook.el, "invalid"),
+      readOnly: getBoolean(hook.el, "readonly"),
+      required: getBoolean(hook.el, "required"),
+      name: getString(hook.el, "name"),
+      dir: getDir(hook.el),
       allowDrop:
-        this.el.dataset.allowDrop === undefined ? true : this.el.dataset.allowDrop !== "false",
+        hook.el.dataset.allowDrop === undefined ? true : hook.el.dataset.allowDrop !== "false",
       preventDocumentDrop:
-        this.el.dataset.preventDocumentDrop === undefined
+        hook.el.dataset.preventDocumentDrop === undefined
           ? true
-          : this.el.dataset.preventDocumentDrop !== "false",
-      maxFiles: getNumber(this.el, "maxFiles") ?? 1,
-      maxFileSize: getNumber(this.el, "maxFileSize") ?? Number.POSITIVE_INFINITY,
-      minFileSize: getNumber(this.el, "minFileSize") ?? 0,
-      accept: getString(this.el, "accept"),
-      directory: getBoolean(this.el, "directory"),
+          : hook.el.dataset.preventDocumentDrop !== "false",
+      maxFiles: getNumber(hook.el, "maxFiles") ?? 1,
+      maxFileSize: getNumber(hook.el, "maxFileSize") ?? Number.POSITIVE_INFINITY,
+      minFileSize: getNumber(hook.el, "minFileSize") ?? 0,
+      accept: getString(hook.el, "accept"),
+      directory: getBoolean(hook.el, "directory"),
     } as Partial<Props>);
   },
 
-  destroyed(this: object & HookInterface<HTMLElement> & FileUploadHookState) {
-    this.unbindSubmitIntent?.();
-    if (this.handlers) {
-      for (const h of this.handlers) this.removeHandleEvent(h);
-    }
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.fileUpload?.cleanupPreviews();
-    this.fileUpload?.destroy();
+  destroy(hook, zag) {
+    hook.unbindSubmitIntent?.();
+    zag.cleanupPreviews();
   },
-};
+});
 
 export { FileUploadHook as FileUpload };

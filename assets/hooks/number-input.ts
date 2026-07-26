@@ -1,5 +1,3 @@
-import type { Hook } from "phoenix_live_view";
-import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { NumberInput } from "../components/number-input";
 import type { Api, Props, ValueChangeDetails } from "@zag-js/number-input";
 import {
@@ -15,7 +13,6 @@ import {
   formatSubmitValue,
   mergeFormatOptions,
 } from "../lib/number-input-format";
-import { snapshotDataset, type DatasetSnapshot } from "../lib/controlled-attr-snapshot";
 import { mountNumberBinding, readUpdatedServerNumber } from "../lib/read-props";
 import {
   notifyChange,
@@ -25,9 +22,8 @@ import {
   parseRespondTo,
   type RespondTo,
 } from "../lib/respond-to";
-import { createHookHandleEventRegistry } from "../lib/hook-handlers";
-import { createDomEventRegistry } from "../lib/dom-events";
-import { markUsed, syncFormInput } from "../lib/phoenix-form-bridge";
+import { markUsed, syncFormInput, dispatchFormInputEvents } from "../lib/phoenix-form-bridge";
+import { createZagLiveHook } from "../lib/zag-live-hook";
 
 type NumberInputMachineState = {
   focused: boolean;
@@ -49,9 +45,6 @@ export function machineState(api: Api): NumberInputMachineState {
 
 type NumberInputHookState = {
   numberInput?: NumberInput;
-  beforeAttrs?: DatasetSnapshot;
-  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
-  domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
 
 function submitValueForHost(el: HTMLElement, valueAsNumber: number): string {
@@ -102,8 +95,7 @@ export function syncNumberInputValueInput(
   syncInputFormAssociation(valueInput, el);
   if (notifyForm && (changed || v !== "")) {
     markUsed(valueInput);
-    valueInput.dispatchEvent(new Event("input", { bubbles: true }));
-    valueInput.dispatchEvent(new Event("change", { bubbles: true }));
+    dispatchFormInputEvents(valueInput);
   }
 }
 
@@ -183,23 +175,15 @@ function numberInputPropsForUpdate(el: HTMLElement): Partial<Props> {
   };
 }
 
-const NumberInputHook: Hook<object & NumberInputHookState, HTMLElement> = {
-  mounted(this: object & HookInterface<HTMLElement> & NumberInputHookState) {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+const NumberInputHook = createZagLiveHook<NumberInputHookState, NumberInput>({
+  key: "numberInput",
+  controlledKeys: ["value", "defaultValue"],
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
 
     const zag = new NumberInput(el, buildMachineProps(el, pushEvent, canPush));
-    zag.init();
-    this.numberInput = zag;
-    const initialSubmit = submitValueForHost(el, zag.api.valueAsNumber);
-    syncNumberInputValueInput(el, zag.api.value ?? "", true, zag.api.valueAsNumber);
-    const valueInput = el.querySelector<HTMLInputElement>(
-      '[data-scope="number-input"][data-part="value-input"]'
-    );
-    if (valueInput) {
-      syncFormInput(valueInput, () => initialSubmit);
-    }
 
     const emitState = (respondTo: RespondTo) => {
       const snapshot = machineState(zag.api);
@@ -215,126 +199,116 @@ const NumberInputHook: Hook<object & NumberInputHookState, HTMLElement> = {
       });
     };
 
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
+    dom.add<CustomEvent<{ value: number | string }>>("corex:number-input:set-value", (event) => {
+      const v = event.detail?.value;
+      if (typeof v === "number" && !Number.isNaN(v)) setZagValue(zag, v);
+      else if (typeof v === "string") setZagValue(zag, v);
+    });
 
-    domRegistry.add<CustomEvent<{ value: number | string }>>(
-      "corex:number-input:set-value",
-      (event) => {
-        const v = event.detail?.value;
-        if (typeof v === "number" && !Number.isNaN(v)) setZagValue(zag, v);
-        else if (typeof v === "string") setZagValue(zag, v);
-      }
-    );
-
-    domRegistry.add<CustomEvent>("corex:number-input:clear-value", () => {
+    dom.add<CustomEvent>("corex:number-input:clear-value", () => {
       zag.api.clearValue();
     });
 
-    domRegistry.add<CustomEvent>("corex:number-input:increment", () => {
+    dom.add<CustomEvent>("corex:number-input:increment", () => {
       zag.api.increment();
     });
 
-    domRegistry.add<CustomEvent>("corex:number-input:decrement", () => {
+    dom.add<CustomEvent>("corex:number-input:decrement", () => {
       zag.api.decrement();
     });
 
-    domRegistry.add<CustomEvent>("corex:number-input:set-to-min", () => {
+    dom.add<CustomEvent>("corex:number-input:set-to-min", () => {
       zag.api.setToMin();
     });
 
-    domRegistry.add<CustomEvent>("corex:number-input:set-to-max", () => {
+    dom.add<CustomEvent>("corex:number-input:set-to-max", () => {
       zag.api.setToMax();
     });
 
-    domRegistry.add<CustomEvent>("corex:number-input:focus", () => {
+    dom.add<CustomEvent>("corex:number-input:focus", () => {
       zag.api.focus();
     });
 
-    domRegistry.add<CustomEvent>("corex:number-input:state", (event) => {
+    dom.add<CustomEvent>("corex:number-input:state", (event) => {
       emitState(parseRespondTo(event.detail));
     });
 
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-
-    registry.add("number_input_set_value", (payload: { id?: string; value: number }) => {
+    server.add("number_input_set_value", (payload: { id?: string; value: number }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       if (typeof payload.value === "number" && !Number.isNaN(payload.value)) {
         setZagValue(zag, payload.value);
       }
     });
 
-    registry.add("number_input_clear_value", (payload: { id?: string }) => {
+    server.add("number_input_clear_value", (payload: { id?: string }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.clearValue();
     });
 
-    registry.add("number_input_increment", (payload: { id?: string }) => {
+    server.add("number_input_increment", (payload: { id?: string }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.increment();
     });
 
-    registry.add("number_input_decrement", (payload: { id?: string }) => {
+    server.add("number_input_decrement", (payload: { id?: string }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.decrement();
     });
 
-    registry.add("number_input_set_to_min", (payload: { id?: string }) => {
+    server.add("number_input_set_to_min", (payload: { id?: string }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.setToMin();
     });
 
-    registry.add("number_input_set_to_max", (payload: { id?: string }) => {
+    server.add("number_input_set_to_max", (payload: { id?: string }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.setToMax();
     });
 
-    registry.add("number_input_focus", (payload: { id?: string }) => {
+    server.add("number_input_focus", (payload: { id?: string }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.focus();
     });
 
-    registry.add("number_input_state", (payload: { id?: string; respond_to?: string }) => {
+    server.add("number_input_state", (payload: { id?: string; respond_to?: string }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       emitState(parseRespondTo(payload));
     });
+
+    return zag;
   },
 
-  beforeUpdate(this: object & HookInterface<HTMLElement> & NumberInputHookState) {
-    this.beforeAttrs = snapshotDataset(this.el, ["value", "defaultValue"]);
-  },
+  afterInit(hook, zag) {
+    const el = hook.el;
+    const initialSubmit = submitValueForHost(el, zag.api.valueAsNumber);
+    syncNumberInputValueInput(el, zag.api.value ?? "", true, zag.api.valueAsNumber);
 
-  updated(this: object & HookInterface<HTMLElement> & NumberInputHookState) {
-    const el = this.el;
-    const zag = this.numberInput;
-    if (!zag) return;
-
-    try {
-      const valuePatch = readUpdatedServerNumber(el, this.beforeAttrs);
-
-      zag.updateProps({
-        ...numberInputPropsForUpdate(el),
-        ...(valuePatch.value !== undefined ? { value: valuePatch.value } : {}),
-        ...(valuePatch.step !== undefined ? { step: valuePatch.step } : {}),
-      } as Partial<Props>);
-
-      syncNumberInputValueInput(
-        el,
-        zag.api.value ?? getString(el, "defaultValue") ?? "",
-        false,
-        zag.api.valueAsNumber
-      );
-    } finally {
-      this.beforeAttrs = undefined;
+    const valueInput = el.querySelector<HTMLInputElement>(
+      '[data-scope="number-input"][data-part="value-input"]'
+    );
+    if (valueInput) {
+      syncFormInput(valueInput, () => initialSubmit);
     }
   },
 
-  destroyed(this: object & HookInterface<HTMLElement> & NumberInputHookState) {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.numberInput?.destroy();
+  update(hook, zag) {
+    const el = hook.el;
+
+    const valuePatch = readUpdatedServerNumber(el, hook.beforeAttrs);
+
+    zag.updateProps({
+      ...numberInputPropsForUpdate(el),
+      ...(valuePatch.value !== undefined ? { value: valuePatch.value } : {}),
+      ...(valuePatch.step !== undefined ? { step: valuePatch.step } : {}),
+    } as Partial<Props>);
+
+    syncNumberInputValueInput(
+      el,
+      zag.api.value ?? getString(el, "defaultValue") ?? "",
+      false,
+      zag.api.valueAsNumber
+    );
   },
-};
+});
 
 export { NumberInputHook as NumberInput };

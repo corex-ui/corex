@@ -1,5 +1,11 @@
 defmodule Corex.Checkbox.Connect do
   @moduledoc false
+  use Corex.Connect.Mounted
+
+  use Corex.Component, :connect
+
+  import Corex.Checkable.Helpers, only: [visual_state: 1]
+
   alias Corex.Selectors
 
   alias Corex.Checkbox.Anatomy.{
@@ -12,10 +18,8 @@ defmodule Corex.Checkbox.Connect do
     Root
   }
 
-  import Corex.Helpers, only: [get_boolean: 1, maybe_put_dir: 2]
-  import Corex.Checkable.Helpers, only: [visual_state: 1]
-
   alias Corex.Checkable.Connect, as: CheckableConnect
+
   alias Phoenix.LiveView.JS
 
   @spec props(Props.t()) :: map()
@@ -34,9 +38,9 @@ defmodule Corex.Checkbox.Connect do
       "htmlFor" => "checkbox:#{assigns.id}:input",
       "for" => "checkbox:#{assigns.id}:input",
       "data-state" => state,
-      "data-readonly" => get_boolean(Map.get(assigns, :read_only, false))
+      "data-readonly" => presence_attr(Map.get(assigns, :read_only, false))
     }
-    |> maybe_put_dir(assigns.dir)
+    |> put_dir_attr(assigns.dir)
   end
 
   def ignore_root(assigns) do
@@ -69,7 +73,7 @@ defmodule Corex.Checkbox.Connect do
       "id" => "checkbox:#{assigns.id}:control",
       "data-state" => state
     }
-    |> maybe_put_dir(assigns.dir)
+    |> put_dir_attr(assigns.dir)
   end
 
   def ignore_control(assigns) do
@@ -90,7 +94,7 @@ defmodule Corex.Checkbox.Connect do
       "id" => "checkbox:#{assigns.id}:label",
       "data-state" => state
     }
-    |> maybe_put_dir(assigns.dir)
+    |> put_dir_attr(assigns.dir)
   end
 
   def ignore_label(assigns) do
@@ -111,7 +115,7 @@ defmodule Corex.Checkbox.Connect do
       "id" => "checkbox:#{assigns.id}:indicator",
       "data-state" => state
     }
-    |> maybe_put_dir(assigns.dir)
+    |> put_dir_attr(assigns.dir)
   end
 
   def ignore_indicator(assigns) do
@@ -132,7 +136,7 @@ defmodule Corex.Checkbox.Connect do
       "id" => "checkbox:#{assigns.id}:indeterminate",
       "data-state" => state
     }
-    |> maybe_put_dir(assigns.dir)
+    |> put_dir_attr(assigns.dir)
   end
 
   def ignore_indeterminate(assigns) do

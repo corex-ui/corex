@@ -1,5 +1,3 @@
-import type { Hook } from "phoenix_live_view";
-import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import {
   Pagination,
   buildGetPageUrl,
@@ -9,13 +7,10 @@ import {
 import type { PageChangeDetails, PageSizeChangeDetails, Props } from "@zag-js/pagination";
 import { getString, getBoolean, getNumber, getDir, canPushEvent } from "../lib/util";
 import { idMatches, notifyChange, readPayloadId } from "../lib/respond-to";
-import { createHookHandleEventRegistry } from "../lib/hook-handlers";
-import { createDomEventRegistry } from "../lib/dom-events";
+import { createZagLiveHook } from "../lib/zag-live-hook";
 
 type PaginationHookState = {
   pagination?: Pagination;
-  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
-  domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
 
 export function readPayloadPage(payload: unknown): number | undefined {
@@ -111,95 +106,81 @@ function buildPaginationPropsForUpdate(
   };
 }
 
-const PaginationHook: Hook<object & PaginationHookState, HTMLElement> = {
-  mounted(this: object & HookInterface<HTMLElement> & PaginationHookState) {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+const PaginationHook = createZagLiveHook<PaginationHookState, Pagination>({
+  key: "pagination",
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
 
     const pagination = new Pagination(el, buildPaginationProps(el, pushEvent, canPush));
-    pagination.init();
-    this.pagination = pagination;
 
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-
-    domRegistry.add<CustomEvent<{ page: number }>>("corex:pagination:set-page", (event) => {
+    dom.add<CustomEvent<{ page: number }>>("corex:pagination:set-page", (event) => {
       const page = event.detail?.page;
       if (typeof page === "number") pagination.api.setPage(page);
     });
 
-    domRegistry.add<CustomEvent<{ page_size: number }>>(
-      "corex:pagination:set-page-size",
-      (event) => {
-        const pageSize = event.detail?.page_size;
-        if (typeof pageSize === "number") pagination.api.setPageSize(pageSize);
-      }
-    );
+    dom.add<CustomEvent<{ page_size: number }>>("corex:pagination:set-page-size", (event) => {
+      const pageSize = event.detail?.page_size;
+      if (typeof pageSize === "number") pagination.api.setPageSize(pageSize);
+    });
 
-    domRegistry.add("corex:pagination:go-to-next-page", () => {
+    dom.add("corex:pagination:go-to-next-page", () => {
       pagination.api.goToNextPage();
     });
 
-    domRegistry.add("corex:pagination:go-to-prev-page", () => {
+    dom.add("corex:pagination:go-to-prev-page", () => {
       pagination.api.goToPrevPage();
     });
 
-    domRegistry.add("corex:pagination:go-to-first-page", () => {
+    dom.add("corex:pagination:go-to-first-page", () => {
       pagination.api.goToFirstPage();
     });
 
-    domRegistry.add("corex:pagination:go-to-last-page", () => {
+    dom.add("corex:pagination:go-to-last-page", () => {
       pagination.api.goToLastPage();
     });
 
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-
-    registry.add("pagination_set_page", (payload: unknown) => {
+    server.add("pagination_set_page", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       const page = readPayloadPage(payload);
       if (page != null) pagination.api.setPage(page);
     });
 
-    registry.add("pagination_set_page_size", (payload: unknown) => {
+    server.add("pagination_set_page_size", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       const pageSize = readPayloadPageSize(payload);
       if (pageSize != null) pagination.api.setPageSize(pageSize);
     });
 
-    registry.add("pagination_go_to_next_page", (payload: unknown) => {
+    server.add("pagination_go_to_next_page", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       pagination.api.goToNextPage();
     });
 
-    registry.add("pagination_go_to_prev_page", (payload: unknown) => {
+    server.add("pagination_go_to_prev_page", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       pagination.api.goToPrevPage();
     });
 
-    registry.add("pagination_go_to_first_page", (payload: unknown) => {
+    server.add("pagination_go_to_first_page", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       pagination.api.goToFirstPage();
     });
 
-    registry.add("pagination_go_to_last_page", (payload: unknown) => {
+    server.add("pagination_go_to_last_page", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       pagination.api.goToLastPage();
     });
+
+    return pagination;
   },
 
-  updated(this: object & HookInterface<HTMLElement> & PaginationHookState) {
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
-    this.pagination?.updateProps(buildPaginationPropsForUpdate(this.el, pushEvent, canPush));
+  update(hook, pagination) {
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
+    pagination.updateProps(buildPaginationPropsForUpdate(hook.el, pushEvent, canPush));
   },
-
-  destroyed(this: object & HookInterface<HTMLElement> & PaginationHookState) {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.pagination?.destroy();
-  },
-};
+});
 
 export { PaginationHook as Pagination };

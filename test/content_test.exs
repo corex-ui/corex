@@ -160,4 +160,33 @@ defmodule Corex.ContentTest do
     assert String.starts_with?(item2.value, "content-")
     refute item1.value == item2.value
   end
+
+  describe "assert_content_items!/2" do
+    test "raises when items is nil" do
+      assert_raise ArgumentError, ~r/requires :items/, fn ->
+        Corex.Content.assert_content_items!(%{items: nil}, "Tabs")
+      end
+    end
+
+    test "raises for an entry that is not an Item struct" do
+      assert_raise ArgumentError, ~r/Expected %Corex.Content.Item\{\} struct/, fn ->
+        Corex.Content.assert_content_items!(%{items: [%{label: "x"}]}, "Tabs")
+      end
+    end
+
+    test "raises when items is present but not a list" do
+      assert_raise ArgumentError, ~r/must be a list/, fn ->
+        Corex.Content.assert_content_items!(%{items: "nope"}, "Tabs")
+      end
+    end
+
+    test "returns assigns unchanged for valid items" do
+      item = Item.new(%{label: "L", content: "C"})
+      assert %{items: [^item]} = Corex.Content.assert_content_items!(%{items: [item]}, "Tabs")
+    end
+
+    test "passes through assigns without an :items key" do
+      assert %{foo: 1} = Corex.Content.assert_content_items!(%{foo: 1}, "Tabs")
+    end
+  end
 end

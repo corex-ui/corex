@@ -209,6 +209,8 @@ defmodule Corex.Timer do
   @doc type: :component
   use Phoenix.Component
 
+  use Corex.Component, :api
+
   import Corex.Api.Doc
 
   alias Corex.Timer.Anatomy.{
@@ -223,12 +225,15 @@ defmodule Corex.Timer do
     Separator
   }
 
-  alias Corex.Timer.Connect
-  alias Corex.Timer.Translation, as: TimerTranslation
-  alias Phoenix.LiveView
-  alias Phoenix.LiveView.JS
+  alias Corex.Selectors
 
-  import Corex.Helpers, only: [respond_to_fields: 1]
+  alias Corex.Timer.Connect
+
+  alias Corex.Timer.Translation, as: TimerTranslation
+
+  alias Phoenix.LiveView
+
+  alias Phoenix.LiveView.JS
 
   @parts [:days, :hours, :minutes, :seconds]
 
@@ -336,99 +341,78 @@ defmodule Corex.Timer do
     attr(:class, :string, required: false)
   end
 
-  def timer(assigns) do
+  @action_triggers [
+    {:start_trigger_struct, "start", :while_running},
+    {:pause_trigger_struct, "pause", :while_stopped},
+    {:resume_trigger_struct, "resume", :always},
+    {:reset_trigger_struct, "reset", :while_stopped}
+  ]
+
+  defp prepare_timer(assigns) do
     assigns =
       assigns
-      |> assign_new(:id, fn -> "timer-#{System.unique_integer([:positive])}" end)
-      |> assign(
-        :translation,
-        TimerTranslation.resolve(assigns.translation)
-      )
+      |> Corex.FormField.assign_stable_id("timer")
+      |> assign(:translation, TimerTranslation.resolve(assigns.translation))
 
     segments = normalize_segments(assigns.segments)
     time_values = time_values(assigns.start_ms)
 
-    visibility_hidden =
-      visibility_hidden(
-        assigns.countdown,
-        assigns.collapse_leading_zeros,
-        segments,
-        time_values
-      )
+    assigns
+    |> assign(:time_values, time_values)
+    |> assign(:running, assigns.auto_start)
+    |> assign(:paused, false)
+    |> assign(:segments, segments)
+    |> assign(:has_timer_controls?, has_timer_controls?(assigns))
+    |> assign(
+      :visibility_hidden,
+      visibility_hidden(assigns.countdown, assigns.collapse_leading_zeros, segments, time_values)
+    )
+    |> assign(:props_struct, props_struct(assigns, segments))
+    |> assign_part_structs()
+    |> assign_action_triggers()
+  end
 
-    id = assigns.id
-    dir = assigns.dir
-    orientation = assigns.orientation
-    running = assigns.auto_start
+  defp has_timer_controls?(assigns) do
+    [assigns.start_trigger, assigns.pause_trigger, assigns.resume_trigger, assigns.reset_trigger]
+    |> Enum.any?(&(&1 != []))
+  end
 
-    assigns =
-      assigns
-      |> assign(:time_values, time_values)
-      |> assign(:running, running)
-      |> assign(:paused, false)
-      |> assign(:segments, segments)
-      |> assign(
-        :has_timer_controls?,
-        assigns.start_trigger != [] or assigns.pause_trigger != [] or assigns.resume_trigger != [] or
-          assigns.reset_trigger != []
-      )
-      |> assign(:visibility_hidden, visibility_hidden)
-      |> assign(:props_struct, props_struct(assigns, segments))
-      |> assign(:root_struct, %Root{id: id, dir: dir, orientation: orientation})
-      |> assign(:area_struct, %Area{id: id, dir: dir, orientation: orientation})
-      |> assign(:control_struct, %Control{id: id, dir: dir, orientation: orientation})
-      |> assign(
-        :start_trigger_struct,
-        %ActionTrigger{
-          id: id,
-          action: "start",
-          hidden: running,
-          dir: dir,
-          orientation: orientation
-        }
-      )
-      |> assign(
-        :pause_trigger_struct,
-        %ActionTrigger{
-          id: id,
-          action: "pause",
-          hidden: not running,
-          dir: dir,
-          orientation: orientation
-        }
-      )
-      |> assign(
-        :resume_trigger_struct,
-        %ActionTrigger{
-          id: id,
-          action: "resume",
-          hidden: true,
-          dir: dir,
-          orientation: orientation
-        }
-      )
-      |> assign(
-        :reset_trigger_struct,
-        %ActionTrigger{
-          id: id,
-          action: "reset",
-          hidden: not running,
-          dir: dir,
-          orientation: orientation
-        }
-      )
+  defp assign_part_structs(%{id: id, dir: dir, orientation: orientation} = assigns) do
+    assigns
+    |> assign(:root_struct, %Root{id: id, dir: dir, orientation: orientation})
+    |> assign(:area_struct, %Area{id: id, dir: dir, orientation: orientation})
+    |> assign(:control_struct, %Control{id: id, dir: dir, orientation: orientation})
+  end
+
+  defp assign_action_triggers(assigns) do
+    Enum.reduce(@action_triggers, assigns, fn {key, action, visibility}, acc ->
+      assign(acc, key, %ActionTrigger{
+        id: assigns.id,
+        action: action,
+        hidden: trigger_hidden?(visibility, assigns.running),
+        dir: assigns.dir,
+        orientation: assigns.orientation
+      })
+    end)
+  end
+
+  defp trigger_hidden?(:while_running, running), do: running
+  defp trigger_hidden?(:while_stopped, running), do: not running
+  defp trigger_hidden?(:always, _running), do: true
+
+  def timer(assigns) do
+    assigns = prepare_timer(assigns)
 
     ~H"""
     <div
       id={@id}
       phx-hook="Timer"
-      data-loading
-      phx-mounted={JS.ignore_attributes(["data-loading"])}
+      {Corex.Hook.loading()}
       {@rest}
       {Connect.props(@props_struct)}
     >
-      <div phx-mounted={Connect.ignore_root(@root_struct)} {Connect.root(@root_struct)}>
-        <div phx-mounted={Connect.ignore_area(@area_struct)} {Connect.area(@area_struct)}>
+      <div {Connect.mounted_root(@root_struct)}>
+        <div {Connect.mounted_area(@area_struct)}>
           <%= for {part, i} <- Enum.with_index([:days, :hours, :minutes, :seconds]) do %>
             <% hv = Enum.at(@visibility_hidden, i) %>
             <% ls = label_slot(assigns, part) %>
@@ -436,18 +420,15 @@ defmodule Corex.Timer do
             <% item_struct = %Item{id: @id, type: to_string(part), value: Map.fetch!(@time_values, part), dir: @dir, orientation: @orientation, hidden: hv} %>
             <% item_label_struct = %ItemLabel{id: @id, type: to_string(part), dir: @dir, orientation: @orientation} %>
             <div
-              phx-mounted={Connect.ignore_segment(segment_struct)}
-              {Connect.segment(segment_struct)}
+              {Connect.mounted_segment(segment_struct)}
             >
               <div
-                phx-mounted={Connect.ignore_item(item_struct)}
-                {Connect.item(item_struct)}
+                {Connect.mounted_item(item_struct)}
               >
               </div>
               <%= if ls != [] do %>
                 <span
-                  phx-mounted={Connect.ignore_item_label(item_label_struct)}
-                  {Connect.item_label(item_label_struct)}
+                  {Connect.mounted_item_label(item_label_struct)}
                 >
                   {render_slot(ls)}
                 </span>
@@ -456,8 +437,7 @@ defmodule Corex.Timer do
             <%= if i < 3 and @separator != [] do %>
               <% separator_struct = %Separator{id: "timer:#{@id}:sep:#{i}", dir: @dir, orientation: @orientation, hidden: hv} %>
               <div
-                phx-mounted={Connect.ignore_separator(separator_struct)}
-                {Connect.separator(separator_struct)}
+                {Connect.mounted_separator(separator_struct)}
               >
                 {render_slot(@separator)}
               </div>
@@ -466,38 +446,33 @@ defmodule Corex.Timer do
         </div>
         <div
           :if={@has_timer_controls?}
-          phx-mounted={Connect.ignore_control(@control_struct)}
-          {Connect.control(@control_struct)}
+          {Connect.mounted_control(@control_struct)}
         >
           <button
             :if={@start_trigger != []}
             type="button"
-            phx-mounted={Connect.ignore_action_trigger(@start_trigger_struct)}
-            {Connect.action_trigger(@start_trigger_struct)}
+            {Connect.mounted_action_trigger(@start_trigger_struct)}
           >
             {render_slot(@start_trigger)}
           </button>
           <button
             :if={@pause_trigger != []}
             type="button"
-            phx-mounted={Connect.ignore_action_trigger(@pause_trigger_struct)}
-            {Connect.action_trigger(@pause_trigger_struct)}
+            {Connect.mounted_action_trigger(@pause_trigger_struct)}
           >
             {render_slot(@pause_trigger)}
           </button>
           <button
             :if={@resume_trigger != []}
             type="button"
-            phx-mounted={Connect.ignore_action_trigger(@resume_trigger_struct)}
-            {Connect.action_trigger(@resume_trigger_struct)}
+            {Connect.mounted_action_trigger(@resume_trigger_struct)}
           >
             {render_slot(@resume_trigger)}
           </button>
           <button
             :if={@reset_trigger != []}
             type="button"
-            phx-mounted={Connect.ignore_action_trigger(@reset_trigger_struct)}
-            {Connect.action_trigger(@reset_trigger_struct)}
+            {Connect.mounted_action_trigger(@reset_trigger_struct)}
           >
             {render_slot(@reset_trigger)}
           </button>
@@ -539,28 +514,23 @@ defmodule Corex.Timer do
   end
 
   defp normalize_segments(list) when is_list(list) do
-    allowed = MapSet.new(@parts)
-
-    unless MapSet.subset?(MapSet.new(list), allowed) do
-      raise ArgumentError, "Corex.Timer: segments must be a subset of #{inspect(@parts)}"
-    end
-
-    idx = fn atom -> Enum.find_index(@parts, &(&1 == atom)) end
-
-    indexes =
-      list
-      |> Enum.map(fn a ->
-        case idx.(a) do
-          nil -> raise ArgumentError, "Corex.Timer: invalid segment #{inspect(a)}"
-          i -> i
-        end
-      end)
-
-    unless indexes == Enum.sort(indexes) do
-      raise ArgumentError, "Corex.Timer: segments must follow order #{inspect(@parts)}"
-    end
-
+    Enum.each(list, &assert_segment!/1)
+    indexes = Enum.map(list, fn segment -> Enum.find_index(@parts, &(&1 == segment)) end)
+    assert_segment_order!(indexes, Enum.sort(indexes))
     list
+  end
+
+  defp assert_segment!(segment) when segment in @parts, do: :ok
+
+  defp assert_segment!(segment) do
+    raise ArgumentError,
+          "Corex.Timer: segments must be a subset of #{inspect(@parts)}, got: #{inspect(segment)}"
+  end
+
+  defp assert_segment_order!(indexes, indexes), do: :ok
+
+  defp assert_segment_order!(_indexes, _sorted) do
+    raise ArgumentError, "Corex.Timer: segments must follow order #{inspect(@parts)}"
   end
 
   defp visibility_hidden(_countdown, _collapse_opt, segments, _time_values)
@@ -619,8 +589,10 @@ defmodule Corex.Timer do
   ```
   """)
 
+  @spec start(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec start(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def start(timer_id) when is_binary(timer_id) do
-    JS.dispatch("corex:timer:start", to: "##{timer_id}", bubbles: false)
+    JS.dispatch("corex:timer:start", to: Selectors.css_id(timer_id), bubbles: false)
   end
 
   api_doc(~S"""
@@ -647,8 +619,10 @@ defmodule Corex.Timer do
   ```
   """)
 
+  @spec pause(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec pause(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def pause(timer_id) when is_binary(timer_id) do
-    JS.dispatch("corex:timer:pause", to: "##{timer_id}", bubbles: false)
+    JS.dispatch("corex:timer:pause", to: Selectors.css_id(timer_id), bubbles: false)
   end
 
   api_doc(~S"""
@@ -675,8 +649,10 @@ defmodule Corex.Timer do
   ```
   """)
 
+  @spec resume(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec resume(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def resume(timer_id) when is_binary(timer_id) do
-    JS.dispatch("corex:timer:resume", to: "##{timer_id}", bubbles: false)
+    JS.dispatch("corex:timer:resume", to: Selectors.css_id(timer_id), bubbles: false)
   end
 
   api_doc(~S"""
@@ -703,8 +679,10 @@ defmodule Corex.Timer do
   ```
   """)
 
+  @spec reset(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec reset(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def reset(timer_id) when is_binary(timer_id) do
-    JS.dispatch("corex:timer:reset", to: "##{timer_id}", bubbles: false)
+    JS.dispatch("corex:timer:reset", to: Selectors.css_id(timer_id), bubbles: false)
   end
 
   api_doc(~S"""
@@ -731,8 +709,10 @@ defmodule Corex.Timer do
   ```
   """)
 
+  @spec restart(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec restart(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def restart(timer_id) when is_binary(timer_id) do
-    JS.dispatch("corex:timer:restart", to: "##{timer_id}", bubbles: false)
+    JS.dispatch("corex:timer:restart", to: Selectors.css_id(timer_id), bubbles: false)
   end
 
   api_doc(~S"""
@@ -776,9 +756,12 @@ defmodule Corex.Timer do
   ```
   """)
 
+  @spec state(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec state(String.t(), keyword()) :: Phoenix.LiveView.JS.t()
+  @spec state(Phoenix.LiveView.Socket.t(), String.t(), keyword()) :: Phoenix.LiveView.Socket.t()
   def state(timer_id, opts) when is_binary(timer_id) and is_list(opts) do
     JS.dispatch("corex:timer:state",
-      to: "##{timer_id}",
+      to: Selectors.css_id(timer_id),
       detail: respond_to_fields(opts),
       bubbles: false
     )
@@ -789,7 +772,7 @@ defmodule Corex.Timer do
     state(socket, timer_id, [])
   end
 
-  api_doc_short("Same as [`state/2`](#state/2) with default `respond_to:`.")
+  api_doc("Same as [`state/2`](#state/2) with default `respond_to:`.")
   def state(timer_id) when is_binary(timer_id), do: state(timer_id, [])
 
   api_doc(~S"""
@@ -845,10 +828,10 @@ defmodule Corex.Timer do
           </div>
         </div>
         <div {Connect.control(%Control{id: @id, dir: "ltr", orientation: "horizontal"})}>
-          <div class="timer-skeleton__btn" data-scope="timer" data-part="action-trigger" aria-hidden="true"></div>
-          <div class="timer-skeleton__btn" data-scope="timer" data-part="action-trigger" aria-hidden="true"></div>
-          <div class="timer-skeleton__btn" data-scope="timer" data-part="action-trigger" aria-hidden="true"></div>
-          <div class="timer-skeleton__btn" data-scope="timer" data-part="action-trigger" aria-hidden="true"></div>
+          <div data-scope="timer" data-part="action-trigger" aria-hidden="true"></div>
+          <div data-scope="timer" data-part="action-trigger" aria-hidden="true"></div>
+          <div data-scope="timer" data-part="action-trigger" aria-hidden="true"></div>
+          <div data-scope="timer" data-part="action-trigger" aria-hidden="true"></div>
         </div>
       </div>
     </div>

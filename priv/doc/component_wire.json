@@ -3,6 +3,7 @@
   {"id": "action", "phx_hook": null, "connect_module": null},
   {"id": "angle_slider", "phx_hook": "AngleSlider", "connect_module": "Corex.AngleSlider.Connect"},
   {"id": "avatar", "phx_hook": "Avatar", "connect_module": "Corex.Avatar.Connect"},
+  {"id": "button_group", "phx_hook": null, "connect_module": null},
   {"id": "carousel", "phx_hook": "Carousel", "connect_module": "Corex.Carousel.Connect"},
   {"id": "checkbox", "phx_hook": "Checkbox", "connect_module": "Corex.Checkbox.Connect"},
   {"id": "clipboard", "phx_hook": "Clipboard", "connect_module": "Corex.Clipboard.Connect"},

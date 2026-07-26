@@ -276,6 +276,7 @@ defmodule Corex.SignaturePad do
 
   @doc type: :component
   use Phoenix.Component
+  use Corex.Component, :form
 
   import Corex.Api.Doc
 
@@ -302,9 +303,15 @@ defmodule Corex.SignaturePad do
   Renders a signature pad component.
   """
 
-  attr(:id, :string,
-    required: false,
-    doc: "The id of the signature pad, useful for API to identify the signature pad"
+  form_control_attrs(
+    except: [:controlled, :disabled, :read_only, :required],
+    docs: [
+      id: "The id of the signature pad, useful for API to identify the signature pad",
+      field:
+        "A form field from the form, e.g. @form[:signature]. Sets id, name, paths, and errors. Errors are filtered with `used_input?/1` (see the Phoenix Form Integration section).",
+      name: "The name of the signature pad input for form submission",
+      form: "The id of the form this signature pad belongs to"
+    ]
   )
 
   attr(:drawing_fill, :string,
@@ -365,23 +372,9 @@ defmodule Corex.SignaturePad do
       "Initial stroke paths: a list of SVG d strings, or one string with lines separated by newline, sent as `data-default-paths` to the hook."
   )
 
-  attr(:name, :string, doc: "The name of the signature pad input for form submission")
-
   attr(:errors, :list,
     default: [],
     doc: "List of error messages to display"
-  )
-
-  attr(:field, Phoenix.HTML.FormField,
-    doc:
-      "A form field from the form, e.g. @form[:signature]. Sets id, name, paths, and errors. Errors are filtered with `used_input?/1` (see the Phoenix Form Integration section)."
-  )
-
-  attr(:invalid, :boolean, default: nil, doc: "Whether the signature pad is invalid")
-
-  attr(:auto_invalid, :boolean,
-    default: false,
-    doc: "When true with `field`, set invalid from visible changeset errors"
   )
 
   attr(:rest, :global)
@@ -428,8 +421,6 @@ defmodule Corex.SignaturePad do
       assigns
       |> Corex.FormField.require_id!("Corex component (signature-pad)")
       |> then(fn a -> assign(a, :paths, paths_from_paths_attr(a[:paths])) end)
-      |> assign_new(:form, fn -> nil end)
-      |> assign_new(:name, fn -> nil end)
       |> Corex.FormField.assign_list_submit()
 
     connect_props =
@@ -462,12 +453,11 @@ defmodule Corex.SignaturePad do
     <div
       id={@id}
       phx-hook="SignaturePad"
-      data-loading
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])} 
+      {Corex.Hook.loading()}
       {@rest}
       {@connect_props}
     >
-      <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir})} {Connect.root(%Root{id: @id, dir: @dir})}>
+      <div {Connect.mounted_root(%Root{id: @id, dir: @dir})}>
         <div
           :if={@submit_name}
           data-scope="signature-pad"
@@ -506,32 +496,21 @@ defmodule Corex.SignaturePad do
         </div>
         <label
           :if={@label != []}
-          phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir})}
-          {Connect.label(%Label{id: @id, dir: @dir})}
+          {Connect.mounted_label(%Label{id: @id, dir: @dir})}
         >
           {render_slot(@label)}
         </label>
-        <div phx-mounted={Connect.ignore_control(%Control{id: @id, dir: @dir})} {Connect.control(%Control{id: @id, dir: @dir})}>
-          <svg phx-mounted={Connect.ignore_segment(%Segment{id: @id, dir: @dir})} {Connect.segment(%Segment{id: @id, dir: @dir})} fill={@drawing_fill}>
+        <div {Connect.mounted_control(%Control{id: @id, dir: @dir})}>
+          <svg {Connect.mounted_segment(%Segment{id: @id, dir: @dir})} fill={@drawing_fill}>
             <path
               :for={{path, idx} <- Enum.with_index(@paths)}
-              phx-mounted={Connect.ignore_path(%Path{id: @id, index: idx})}
-              {Connect.path(%Path{id: @id, index: idx})}
+              {Connect.mounted_path(%Path{id: @id, index: idx})}
               d={path}
             />
           </svg>
           <button
             :if={@clear_trigger != []}
-            phx-mounted={Connect.ignore_clear_trigger(%ClearTrigger{
-              id: @id,
-              dir: @dir,
-              has_paths: has_paths?(@paths),
-              aria_label: case @clear_trigger do
-                [entry | _] -> Map.get(entry, :aria_label)
-                _ -> nil
-              end
-            })}
-            {Connect.clear_trigger(%ClearTrigger{
+            {Connect.mounted_clear_trigger(%ClearTrigger{
               id: @id,
               dir: @dir,
               has_paths: has_paths?(@paths),
@@ -543,7 +522,7 @@ defmodule Corex.SignaturePad do
           >
             {render_slot(@clear_trigger)}
           </button>
-          <div phx-mounted={Connect.ignore_guide(%Guide{id: @id, dir: @dir})} {Connect.guide(%Guide{id: @id, dir: @dir})} />
+          <div {Connect.mounted_guide(%Guide{id: @id, dir: @dir})} />
         </div>
         <input
           value={if(@submit_name, do: "", else: hidden_input_value(@paths))}
@@ -554,8 +533,7 @@ defmodule Corex.SignaturePad do
       <div
       :if={!Enum.empty?(@errors)}
       :for={{msg, idx} <- Enum.with_index(@errors)}
-      phx-mounted={Connect.ignore_error(%Error{id: @id, index: idx})}
-      {Connect.error(%Error{id: @id, index: idx})}
+      {Connect.mounted_error(%Error{id: @id, index: idx})}
     >
       {render_slot(@error, msg)}
     </div>
@@ -584,9 +562,11 @@ defmodule Corex.SignaturePad do
   ```
   """)
 
+  @spec clear(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec clear(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def clear(signature_pad_id) when is_binary(signature_pad_id) do
     JS.dispatch("corex:signature-pad:clear",
-      to: "##{signature_pad_id}",
+      to: Selectors.css_id(signature_pad_id),
       detail: %{id: signature_pad_id},
       bubbles: false
     )

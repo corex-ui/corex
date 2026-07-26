@@ -32,6 +32,13 @@ defmodule Corex.Collapsible.Anatomy do
     @moduledoc false
     defstruct [:id, :dir, :open, orientation: "vertical"]
 
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            open: boolean(),
+            orientation: String.t()
+          }
+
     @ignored_attrs ["data-state", "dir", "id", "data-orientation"]
     def ignored_attrs, do: @ignored_attrs
   end
@@ -39,6 +46,14 @@ defmodule Corex.Collapsible.Anatomy do
   defmodule Trigger do
     @moduledoc false
     defstruct [:id, :dir, :open, :disabled, orientation: "vertical"]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            open: boolean(),
+            disabled: boolean(),
+            orientation: String.t()
+          }
 
     @ignored_attrs [
       "type",
@@ -60,6 +75,14 @@ defmodule Corex.Collapsible.Anatomy do
     @moduledoc false
     defstruct [:id, :dir, :open, :disabled, orientation: "vertical"]
 
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            open: boolean(),
+            disabled: boolean(),
+            orientation: String.t()
+          }
+
     @ignored_attrs [
       "hidden",
       "data-state",
@@ -78,6 +101,13 @@ defmodule Corex.Collapsible.Anatomy do
     @moduledoc false
     defstruct [:id, :dir, :disabled, orientation: "vertical"]
 
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            disabled: boolean(),
+            orientation: String.t()
+          }
+
     @ignored_attrs ["aria-hidden", "dir", "id", "data-disabled"]
     def ignored_attrs, do: @ignored_attrs
   end
@@ -85,6 +115,13 @@ defmodule Corex.Collapsible.Anatomy do
   defmodule Opened do
     @moduledoc false
     defstruct [:id, :dir, :disabled, orientation: "vertical"]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            disabled: boolean(),
+            orientation: String.t()
+          }
 
     @ignored_attrs ["aria-hidden", "dir", "id", "data-disabled"]
     def ignored_attrs, do: @ignored_attrs

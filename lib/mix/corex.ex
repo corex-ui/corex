@@ -590,7 +590,7 @@ defmodule Mix.Corex do
     vsn = Application.spec(:corex_live_view)[:vsn]
 
     # if lv is not installed, such as in corex's own test env, do not raise
-    if vsn && Version.compare("#{vsn}", "1.0.0-rc.7") != :gt do
+    if vsn && Version.compare("#{vsn}", "1.0.0") == :lt do
       raise "#{inspect(generator_mod)} requires :corex_live_view >= 1.0.0, got: #{vsn}"
     end
   end

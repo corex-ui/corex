@@ -32,6 +32,12 @@ defmodule Corex.Clipboard.Anatomy do
     @moduledoc false
     defstruct [:id, :dir, orientation: "horizontal"]
 
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            orientation: String.t()
+          }
+
     @ignored_attrs ["data-orientation", "dir", "id"]
     def ignored_attrs, do: @ignored_attrs
   end
@@ -39,6 +45,12 @@ defmodule Corex.Clipboard.Anatomy do
   defmodule Label do
     @moduledoc false
     defstruct [:id, :dir, orientation: "horizontal"]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            orientation: String.t()
+          }
 
     @ignored_attrs ["data-orientation", "dir", "id"]
     def ignored_attrs, do: @ignored_attrs
@@ -48,6 +60,12 @@ defmodule Corex.Clipboard.Anatomy do
     @moduledoc false
     defstruct [:id, :dir, orientation: "horizontal"]
 
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            orientation: String.t()
+          }
+
     @ignored_attrs ["data-orientation", "dir", "id"]
     def ignored_attrs, do: @ignored_attrs
   end
@@ -56,6 +74,13 @@ defmodule Corex.Clipboard.Anatomy do
     @moduledoc false
     defstruct [:id, :dir, :value, orientation: "horizontal"]
 
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            value: String.t() | nil,
+            orientation: String.t()
+          }
+
     @ignored_attrs ["value", "readonly", "data-orientation", "dir", "id"]
     def ignored_attrs, do: @ignored_attrs
   end
@@ -63,6 +88,12 @@ defmodule Corex.Clipboard.Anatomy do
   defmodule Trigger do
     @moduledoc false
     defstruct [:id, :dir, orientation: "horizontal"]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            orientation: String.t()
+          }
 
     @ignored_attrs [
       "type",
@@ -82,6 +113,12 @@ defmodule Corex.Clipboard.Anatomy do
     @moduledoc false
     defstruct [:id, :dir, orientation: "horizontal"]
 
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            orientation: String.t()
+          }
+
     @ignored_attrs [
       "data-orientation",
       "dir",
@@ -98,6 +135,12 @@ defmodule Corex.Clipboard.Anatomy do
   defmodule Copied do
     @moduledoc false
     defstruct [:id, :dir, orientation: "horizontal"]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            orientation: String.t()
+          }
 
     @ignored_attrs [
       "data-orientation",

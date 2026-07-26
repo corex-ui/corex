@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "rootDir": "assets",
+    "outDir": "priv/static/types"
+  },
+  "include": ["assets/hooks/**/*.ts", "assets/components/**/*.ts", "assets/lib/**/*.ts"],
+  "exclude": ["assets/test", "priv", "node_modules"]
+}

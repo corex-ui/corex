@@ -1,5 +1,9 @@
 defmodule Corex.Editable.Connect do
   @moduledoc false
+  use Corex.Connect.Mounted
+
+  use Corex.Component, :connect
+
   alias Corex.Selectors
 
   alias Corex.FormField
@@ -20,7 +24,6 @@ defmodule Corex.Editable.Connect do
   }
 
   alias Phoenix.LiveView.JS
-  import Corex.Helpers, only: [get_boolean: 1, maybe_put: 3]
 
   defp orientation(assigns), do: Map.get(assigns, :orientation, "horizontal")
 
@@ -50,7 +53,7 @@ defmodule Corex.Editable.Connect do
 
   def ignore_form_value(assigns) do
     JS.ignore_attributes(FormValue.ignored_attrs(),
-      to: "##{assigns.id}-value"
+      to: Selectors.css_id("#{assigns.id}-value")
     )
   end
 
@@ -92,18 +95,18 @@ defmodule Corex.Editable.Connect do
       "id" => assigns.id,
       "data-value" => nil,
       "data-default-value" => value_dataset,
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-readonly" => get_boolean(assigns.read_only),
-      "data-required" => get_boolean(assigns.required),
-      "data-invalid" => get_boolean(assigns.invalid),
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-readonly" => presence_attr(assigns.read_only),
+      "data-required" => presence_attr(assigns.required),
+      "data-invalid" => presence_attr(assigns.invalid),
       "data-name" => assigns.name,
       "data-form" => assigns.form,
       "data-dir" => assigns.dir,
       "data-orientation" => orientation(assigns),
-      "data-default-edit" => get_boolean(assigns.default_edit),
+      "data-default-edit" => presence_attr(assigns.default_edit),
       "data-placeholder" => assigns.placeholder,
       "data-activation-mode" => assigns.activation_mode,
-      "data-select-on-focus" => get_boolean(assigns.select_on_focus),
+      "data-select-on-focus" => presence_attr(assigns.select_on_focus),
       "data-on-value-change" => assigns.on_value_change,
       "data-on-value-change-client" => assigns.on_value_change_client
     }
@@ -118,7 +121,7 @@ defmodule Corex.Editable.Connect do
       "dir" => assigns.dir,
       "data-orientation" => orientation(assigns),
       "id" => "editable:#{assigns.id}",
-      "data-readonly" => get_boolean(Map.get(assigns, :read_only, false))
+      "data-readonly" => presence_attr(Map.get(assigns, :read_only, false))
     }
   end
 
@@ -130,8 +133,8 @@ defmodule Corex.Editable.Connect do
       "dir" => assigns.dir,
       "data-orientation" => orientation(assigns),
       "id" => "editable:#{assigns.id}:area",
-      "data-focus" => get_boolean(assigns.editing),
-      "data-placeholder-shown" => get_boolean(assigns.empty)
+      "data-focus" => presence_attr(assigns.editing),
+      "data-placeholder-shown" => presence_attr(assigns.empty)
     }
 
     if assigns.auto_resize do
@@ -171,13 +174,13 @@ defmodule Corex.Editable.Connect do
     %{
       "data-scope" => "editable",
       "data-part" => "input",
-      "disabled" => get_boolean(assigns.disabled),
+      "disabled" => presence_attr(assigns.disabled),
       "id" => "editable:#{assigns.id}:input",
-      "required" => get_boolean(assigns.required),
-      "readonly" => get_boolean(assigns.read_only),
+      "required" => presence_attr(assigns.required),
+      "readonly" => presence_attr(assigns.read_only),
       "aria-label" => assigns.aria_label,
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-readonly" => get_boolean(assigns.read_only),
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-readonly" => presence_attr(assigns.read_only),
       "dir" => assigns.dir,
       "data-orientation" => orientation(assigns)
     }
@@ -196,7 +199,7 @@ defmodule Corex.Editable.Connect do
       "dir" => assigns.dir,
       "data-orientation" => orientation(assigns),
       "id" => "editable:#{assigns.id}:preview",
-      "data-placeholder-shown" => get_boolean(assigns.empty),
+      "data-placeholder-shown" => presence_attr(assigns.empty),
       "aria-label" => assigns.aria_label,
       "tabindex" => "0",
       "hidden" => if(assigns.editing, do: "", else: nil)

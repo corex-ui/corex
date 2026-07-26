@@ -1,10 +1,9 @@
 defmodule Corex.ItemBuilder do
   @moduledoc false
 
-  def generate_id(prefix) when is_binary(prefix) do
-    "#{prefix}-#{System.unique_integer([:positive])}"
-  end
+  defdelegate generate_id(prefix), to: Corex.Item, as: :generate_value
 
+  @spec build_item(module(), map() | keyword(), keyword()) :: struct()
   def build_item(module, attrs, opts \\ []) when is_atom(module) do
     index = Keyword.get(opts, :index)
     id_prefix = Keyword.get(opts, :id_prefix)

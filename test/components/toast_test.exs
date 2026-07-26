@@ -374,7 +374,7 @@ defmodule Corex.ToastTest do
           loading: true
         )
 
-      assert server.groupId == "group-1"
+      assert server.group_id == "group-1"
       assert server.loading == true
     end
 
@@ -395,7 +395,7 @@ defmodule Corex.ToastTest do
       assert updated.action["class"] == "button"
 
       server = Payload.update_server_data("group-1", "toast-1", title: "Server")
-      assert server.groupId == "group-1"
+      assert server.group_id == "group-1"
       assert server.title == "Server"
     end
 
@@ -435,11 +435,13 @@ defmodule Corex.ToastTest do
       assert Payload.normalize_action(%{label: "Go", js: %JS{ops: []}}) == nil
     end
 
-    test "update_detail ignores id and groupId keys" do
-      updated = Payload.update_detail("t1", %{"id" => "other", "groupId" => "g", "title" => "Hi"})
+    test "update_detail ignores id and group_id keys" do
+      updated =
+        Payload.update_detail("t1", %{"id" => "other", "group_id" => "g", "title" => "Hi"})
+
       assert updated.id == "t1"
       assert updated.title == "Hi"
-      refute Map.has_key?(updated, :groupId)
+      refute Map.has_key?(updated, :group_id)
     end
 
     test "create_detail omits nil optional fields" do

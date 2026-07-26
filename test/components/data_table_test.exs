@@ -224,6 +224,8 @@ defmodule Corex.DataTableTest do
 
       assert html =~ "ALICE"
       assert html =~ ~S(phx-click=)
+      assert html =~ ~S(data-clickable)
+      refute html =~ ~S(cursor: pointer)
     end
 
     test "renders checkbox_indicator slot" do

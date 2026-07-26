@@ -1,6 +1,6 @@
 import { collection, connect, machine, type Props, type Api } from "@zag-js/tree-view";
 import { VanillaMachine } from "@zag-js/vanilla";
-import { Component } from "../lib/core";
+import { Component, type SchemaOf } from "../lib/core";
 import { stripHiddenFromProps } from "../lib/animation";
 
 export interface TreeNode {
@@ -21,7 +21,9 @@ function createTreeCollection(rootNode: TreeNode) {
   });
 }
 
-export class TreeView extends Component<Props, Api> {
+type Schema = SchemaOf<typeof machine>;
+
+export class TreeView extends Component<Props, Api, Schema> {
   private treeCollection: ReturnType<typeof collection<TreeNode>>;
 
   constructor(el: HTMLElement | null, props: Omit<Props, "collection"> & { rootNode: TreeNode }) {
@@ -37,8 +39,7 @@ export class TreeView extends Component<Props, Api> {
     this.updateProps({ collection: treeCollection });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: Props): VanillaMachine<any> {
+  initMachine(props: Props): VanillaMachine<Schema> {
     return new VanillaMachine(machine, { ...props });
   }
 

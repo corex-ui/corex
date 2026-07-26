@@ -20,32 +20,37 @@ defmodule Corex.HiddenInput do
 
   @doc type: :component
   use Phoenix.Component
+  use Corex.Component, :form
 
-  attr(:id, :string, required: false, doc: "The id of the hidden input")
-  attr(:name, :string, required: false, doc: "The name attribute for form submission")
+  alias Corex.FormField
+
+  form_control_attrs(
+    except: [:invalid, :auto_invalid, :controlled, :disabled, :read_only, :required],
+    docs: [
+      id: "The id of the hidden input",
+      field: "A form field struct from the form, e.g. @form[:id]",
+      name: "The name attribute for form submission",
+      form: "The id of the form this input belongs to"
+    ]
+  )
+
   attr(:value, :any, default: nil, doc: "The value of the hidden input")
-  attr(:form, :string, required: false, doc: "The id of the form this input belongs to")
-
-  attr(:field, Phoenix.HTML.FormField, doc: "A form field struct from the form, e.g. @form[:id]")
-
   attr(:rest, :global)
 
   def hidden_input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
     assigns =
       assigns
       |> assign(field: nil)
-      |> assign_new(:id, fn -> field.id end)
-      |> assign_new(:name, fn -> field.name end)
-      |> assign_new(:value, fn -> field.value end)
-      |> assign_new(:form, fn -> field.form.id end)
+      |> FormField.assign_unless_given(:id, field.id)
+      |> FormField.assign_unless_given(:name, field.name)
+      |> FormField.assign_unless_given(:value, field.value)
+      |> FormField.assign_unless_given(:form, field.form.id)
 
     hidden_input(assigns)
   end
 
   def hidden_input(assigns) do
-    assigns =
-      assigns
-      |> Corex.FormField.require_id!("Corex component (hidden-input)")
+    assigns = FormField.require_id!(assigns, "Corex component (hidden-input)")
 
     ~H"""
     <input

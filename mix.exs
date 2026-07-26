@@ -9,7 +9,7 @@ defmodule Corex.MixProject do
   end
 
   @version "0.2.0"
-  @elixir_requirement "~> 1.17"
+  @elixir_requirement "~> 1.18"
 
   def project do
     [
@@ -20,6 +20,7 @@ defmodule Corex.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       aliases: aliases(),
+      dialyzer: dialyzer(),
       name: "Corex",
       description:
         "Accessible Phoenix UI components with Zag.js hooks, plus an optional Corex Design Hex package for token-driven CSS and shared ui-* modifiers.",
@@ -42,7 +43,13 @@ defmodule Corex.MixProject do
 
   def cli do
     [
-      preferred_envs: [docs: :docs]
+      preferred_envs: [
+        docs: :docs,
+        lint: :test,
+        ci: :test,
+        "release.check": :test,
+        "pre.publish": :test
+      ]
     ]
   end
 
@@ -53,9 +60,8 @@ defmodule Corex.MixProject do
 
   defp deps do
     [
-      {:jason, "~> 1.0"},
       {:phoenix, "~> 1.8.1"},
-      {:phoenix_live_view, "~> 1.1"},
+      {:phoenix_live_view, "~> 1.1 or ~> 1.2"},
       {:gettext, "~> 1.0"},
       {:esbuild, "~> 0.8", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.40", only: [:dev, :docs], runtime: false},
@@ -72,8 +78,18 @@ defmodule Corex.MixProject do
       {:bandit, "~> 1.0", only: :dev},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
       {:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:tidewave, "~> 0.5.5", only: :dev}
     ] ++ maybe_json_polyfill()
+  end
+
+  defp dialyzer do
+    [
+      plt_local_path: "priv/plts",
+      plt_core_path: "priv/plts",
+      plt_add_apps: [:mix, :ex_unit, :phoenix],
+      flags: [:error_handling, :extra_return, :missing_return, :unmatched_returns]
+    ]
   end
 
   defp maybe_json_polyfill do
@@ -98,13 +114,40 @@ defmodule Corex.MixProject do
       ],
       "assets.watch": "esbuild module --watch",
       "archive.build": &raise_on_archive_build/1,
+      "format.all": [
+        "format",
+        "cmd --cd design mix format",
+        "cmd --cd mcp mix format",
+        "cmd --cd installer mix format"
+      ],
+      "format.all.check": [
+        "format --check-formatted",
+        "cmd --cd design mix format --check-formatted",
+        "cmd --cd mcp mix format --check-formatted",
+        "cmd --cd installer mix format --check-formatted"
+      ],
       lint: [
         "format --check-formatted",
         "compile --force --warnings-as-errors",
         "compile --force --warnings-as-errors --env test",
-        "corex.doc_parity --sections anatomy --components checkbox,switch,select,combobox,accordion,tabs,dialog,action,navigate",
+        "corex.doc_parity --sections anatomy,form",
         "credo --strict",
         "sobelow --exit"
+      ],
+      ci: [
+        "format.all.check",
+        "lint",
+        "test",
+        "cmd --cd design mix lint",
+        "cmd --cd design mix dialyzer",
+        "cmd --cd design mix test",
+        "cmd --cd mcp mix lint",
+        "cmd --cd mcp mix dialyzer",
+        "cmd --cd mcp mix test",
+        "cmd --cd installer mix lint",
+        "cmd --cd installer mix dialyzer",
+        "cmd --cd installer mix test",
+        "cmd npm run check"
       ],
       "release.check": ["hex.audit", "lint", "test", "assets.build"],
       "pre.publish": ["release.check"],
@@ -169,7 +212,19 @@ defmodule Corex.MixProject do
         "guides/usage_rules.md",
         "guides/production.md",
         "guides/configuration.md",
-        "guides/update.md"
+        "guides/update.md",
+        "guides/components/accordion.md": [
+          filename: "components/accordion",
+          title: "Accordion"
+        ],
+        "guides/components/checkbox.md": [
+          filename: "components/checkbox",
+          title: "Checkbox"
+        ],
+        "guides/components/tree_view.md": [
+          filename: "components/tree_view",
+          title: "Tree view"
+        ]
       ],
       formatters: ["html", "epub"],
       groups_for_modules: groups_for_modules(),
@@ -205,6 +260,12 @@ defmodule Corex.MixProject do
            "guides/tableau_theming.md",
            "guides/tableau_mode.md",
            "guides/tableau_localize.md"
+         ]},
+        {"Components",
+         [
+           "guides/components/accordion.md",
+           "guides/components/checkbox.md",
+           "guides/components/tree_view.md"
          ]}
       ]
     ]
@@ -217,6 +278,7 @@ defmodule Corex.MixProject do
         Corex.Action,
         Corex.AngleSlider,
         Corex.Avatar,
+        Corex.ButtonGroup,
         Corex.Carousel,
         Corex.Checkbox,
         Corex.Clipboard,

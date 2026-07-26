@@ -1,7 +1,8 @@
 defmodule Corex.Checkable.Connect do
   @moduledoc false
+  use Corex.Connect.Mounted
 
-  import Corex.Helpers, only: [get_boolean: 1, maybe_put_data_dir: 2]
+  use Corex.Component, :connect
 
   import Corex.Checkable.Helpers,
     only: [
@@ -37,20 +38,20 @@ defmodule Corex.Checkable.Connect do
       "id" => assigns.id,
       "data-default-checked" => default_checked_attr,
       "data-checked" => checked_attr,
-      "data-controlled" => get_boolean(controlled),
-      "data-disabled" => get_boolean(assigns.disabled),
+      "data-controlled" => presence_attr(controlled),
+      "data-disabled" => presence_attr(assigns.disabled),
       "data-value" => assigns.value,
       "data-name" => assigns.name,
       "data-form" => assigns.form,
       "data-orientation" => Map.get(assigns, :orientation, "horizontal"),
       "data-label" => assigns.label,
-      "data-readonly" => get_boolean(assigns.read_only),
-      "data-invalid" => get_boolean(assigns.invalid),
-      "data-required" => get_boolean(assigns.required),
+      "data-readonly" => presence_attr(assigns.read_only),
+      "data-invalid" => presence_attr(assigns.invalid),
+      "data-required" => presence_attr(assigns.required),
       "data-on-checked-change" => assigns.on_checked_change,
       "data-on-checked-change-client" => assigns.on_checked_change_client
     }
-    |> maybe_put_data_dir(assigns.dir)
+    |> put_data_dir_attr(assigns.dir)
     |> FormField.put_form_field_attrs(assigns)
   end
 
@@ -66,12 +67,11 @@ defmodule Corex.Checkable.Connect do
       "checked" => native_checked(assigns.checked),
       "value" => input_value,
       "name" => assigns.name,
-      "required" => get_boolean(assigns.required),
-      "disabled" => get_boolean(assigns.disabled),
+      "required" => presence_attr(assigns.required),
+      "disabled" => presence_attr(assigns.disabled),
       "aria-labelledby" => "#{scope}:#{assigns.id}:label",
       "aria-invalid" => if(assigns.invalid, do: "true", else: "false"),
-      "style" =>
-        "border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap;word-wrap:normal;"
+      "style" => visually_hidden_style()
     }
   end
 end

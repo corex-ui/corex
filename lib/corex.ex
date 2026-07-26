@@ -47,6 +47,7 @@ defmodule Corex do
          angle_slider_skeleton: 1
        ]},
     avatar: {Corex.Avatar, [avatar: 1, avatar_skeleton: 1]},
+    button_group: {Corex.ButtonGroup, [button_group: 1]},
     carousel:
       {Corex.Carousel,
        [
@@ -201,12 +202,56 @@ defmodule Corex do
   defp include?(name, :all, except), do: name not in except
   defp include?(name, only, _except) when is_list(only), do: name in only
 
+  defp include?(_name, only, _except) do
+    raise ArgumentError, """
+    use Corex expected :only to be :all or a list of component ids, got: #{inspect(only)}
+
+    Examples:
+
+        use Corex
+        use Corex, only: [:select, :dialog]
+        use Corex, except: [:toast]
+    """
+  end
+
+  @heex_only_ids [:action, :file_upload_live, :heroicon, :hidden_input, :navigate]
+
+  @unknown_heex_only_ids for id <- @heex_only_ids,
+                             not Map.has_key?(@components, id),
+                             do: id
+
+  if @unknown_heex_only_ids != [] do
+    raise CompileError,
+      description:
+        "Corex @heex_only_ids references ids missing from @components: " <>
+          inspect(@unknown_heex_only_ids)
+  end
+
   @doc "Returns sorted ids from the component registry for MCP and tooling."
+  @spec component_ids() :: [atom()]
   def component_ids do
     @components |> Map.keys() |> Enum.sort()
   end
 
+  @doc """
+  HEEx registry ids with no matching Design CSS id after `_`/`-` normalization.
+
+  These are helpers or LiveView-only entry points (`action`, `heroicon`, `navigate`,
+  `hidden_input`, `file_upload_live`). Aliased ones still resolve to a CSS host via
+  `Corex.Design.Components.fetch_css_id/1` when Design is available.
+  """
+  @spec heex_only_ids() :: [atom()]
+  def heex_only_ids, do: @heex_only_ids
+
   @doc "Resolves a registered component id to module and function-component metadata."
+  @spec component_spec(atom()) ::
+          {:ok,
+           %{
+             id: atom(),
+             module: String.t(),
+             function_components: [%{name: atom(), arity: arity()}]
+           }}
+          | :error
   def component_spec(id) when is_atom(id) do
     case Map.fetch(@components, id) do
       {:ok, {mod, functions}} ->
@@ -228,6 +273,7 @@ defmodule Corex do
   end
 
   @doc "Maps a string MCP component id to its implementing module when registered."
+  @spec component_module_for_mcp_id(String.t()) :: {:ok, module()} | :error
   def component_module_for_mcp_id(id) when is_binary(id) do
     allowed = MapSet.new(for a <- component_ids(), do: to_string(a))
 

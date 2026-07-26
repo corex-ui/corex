@@ -7,7 +7,6 @@ defmodule CorexTest.ComponentCase do
     quote do
       @endpoint CorexTest.Endpoint
       import Phoenix.LiveViewTest
-      import CorexTest.Assertions
 
       defp parse_html_fragment(html) do
         case Floki.parse_fragment(to_string(html)) do

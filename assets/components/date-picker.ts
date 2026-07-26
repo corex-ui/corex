@@ -1,6 +1,6 @@
 import { connect, machine, type Props, type Api } from "@zag-js/date-picker";
 import { VanillaMachine } from "@zag-js/vanilla";
-import { Component } from "../lib/core";
+import { Component, type SchemaOf } from "../lib/core";
 
 type ZagDatePickerTranslations = NonNullable<Props["translations"]>;
 
@@ -122,9 +122,10 @@ export function applyInputAriaIfNeeded(
   }
 }
 
-export class DatePicker extends Component<Props, Api> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: Props): VanillaMachine<any> {
+type Schema = SchemaOf<typeof machine>;
+
+export class DatePicker extends Component<Props, Api, Schema> {
+  initMachine(props: Props): VanillaMachine<Schema> {
     return new VanillaMachine(machine, props);
   }
 

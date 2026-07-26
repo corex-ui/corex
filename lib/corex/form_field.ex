@@ -13,15 +13,13 @@ defmodule Corex.FormField do
 
   @spec assign_errors(map(), Phoenix.HTML.FormField.t()) :: map()
   def assign_errors(assigns, %Phoenix.HTML.FormField{} = field) do
-    errors =
-      if field_errors_visible?(field) do
-        Enum.map(field.errors, &Corex.Gettext.translate_error/1)
-      else
-        []
-      end
-
-    assign(assigns, :errors, errors)
+    assign(assigns, :errors, visible_errors(field))
   end
+
+  defp visible_errors(field), do: translate_errors(field_errors_visible?(field), field)
+
+  defp translate_errors(true, field), do: Enum.map(field.errors, &Corex.Gettext.translate_error/1)
+  defp translate_errors(false, _field), do: []
 
   @doc """
   Returns true when the field has visible errors (`used_input?/1`).
@@ -41,6 +39,21 @@ defmodule Corex.FormField do
     |> assign(:id, field.id)
     |> assign(:name, field.name)
     |> assign(:form, field.form.id)
+  end
+
+  @doc """
+  Fills an assign from the form field only when the caller left it blank.
+
+  `assign_new/3` cannot serve here: `form_control_attrs/1` declares these attrs
+  with `default: nil`, so the key is always present and `assign_new/3` would
+  never run. Blank means `nil` or `""`, both of which mean "not given".
+  """
+  @spec assign_unless_given(map(), atom(), term()) :: map()
+  def assign_unless_given(assigns, key, value) when is_atom(key) do
+    case Map.get(assigns, key) do
+      given when given in [nil, ""] -> assign(assigns, key, value)
+      _given -> assigns
+    end
   end
 
   @spec assign_form_field(map(), Phoenix.HTML.FormField.t()) :: map()
@@ -75,16 +88,12 @@ defmodule Corex.FormField do
   def dataset_default_string(value) when is_binary(value), do: value
   def dataset_default_string(nil), do: ""
 
-  @spec dataset_default_list(list()) :: String.t()
-  def dataset_default_list([]), do: "[]"
-
-  def dataset_default_list(list) when is_list(list) do
-    Corex.ValueBinding.encode_list(list) || "[]"
-  end
-
   @spec dataset_default_json(list()) :: String.t()
   def dataset_default_json(list) when is_list(list) do
-    Corex.ValueBinding.encode_list(list) || "[]"
+    case Corex.ValueBinding.encode_list(list) do
+      nil -> "[]"
+      json -> json
+    end
   end
 
   @spec dataset_default_paths(list()) :: String.t()
@@ -96,28 +105,19 @@ defmodule Corex.FormField do
 
   @spec put_form_field_attrs(map(), map() | struct()) :: map()
   def put_form_field_attrs(attrs, assigns) do
-    attrs =
-      if Map.get(assigns, :form_field, false) do
-        Map.put(attrs, "data-form-field", "true")
-      else
-        attrs
-      end
-
-    if Map.get(assigns, :field_used, false) do
-      Map.put(attrs, "data-field-used", "true")
-    else
-      attrs
-    end
+    attrs
+    |> put_flag("data-form-field", Map.get(assigns, :form_field, false))
+    |> put_flag("data-field-used", Map.get(assigns, :field_used, false))
   end
+
+  defp put_flag(attrs, key, flag) when flag not in [nil, false], do: Map.put(attrs, key, "true")
+  defp put_flag(attrs, _key, _flag), do: attrs
 
   @spec default_value_dataset(map(), String.t() | nil) :: String.t() | nil
-  def default_value_dataset(assigns, value) do
-    if Map.get(assigns, :form_field, false) do
-      dataset_default_string(value)
-    else
-      value
-    end
-  end
+  def default_value_dataset(%{form_field: form_field}, value) when form_field not in [nil, false],
+    do: dataset_default_string(value)
+
+  def default_value_dataset(_assigns, value), do: value
 
   @spec list_submit_name(String.t() | nil) :: String.t() | nil
   def list_submit_name(nil), do: nil
@@ -125,12 +125,12 @@ defmodule Corex.FormField do
 
   @spec assign_list_submit(map()) :: map()
   def assign_list_submit(assigns) do
-    assign(assigns, :submit_name, list_submit_name(assigns[:name]))
+    assign(assigns, :submit_name, list_submit_name(Map.get(assigns, :name)))
   end
 
   @spec require_id!(map(), String.t()) :: map()
   def require_id!(assigns, component_name) when is_binary(component_name) do
-    case assigns[:id] do
+    case Map.get(assigns, :id) do
       id when is_binary(id) and id != "" ->
         assigns
 
@@ -142,5 +142,97 @@ defmodule Corex.FormField do
         (Ecto changesets with to_form/1 provide stable ids automatically).
         """
     end
+  end
+
+  @doc """
+  Assigns a stable optional `:id` for hook hosts.
+
+  Derivation order:
+
+  1. Explicit `:id` when present and non-empty
+  2. Prefixed `:name` when present (e.g. `"accordion-country"`)
+  3. Prefixed random id for static usage
+
+  Emits a `Logger.warning` in non-prod when the random fallback is used with
+  server-driven updates (`controlled` or a server `on_*` handler), because a
+  regenerated id remounts the LiveView hook on the next patch.
+  """
+  @spec assign_stable_id(map(), String.t()) :: map()
+  def assign_stable_id(assigns, prefix) when is_binary(prefix) do
+    case Map.get(assigns, :id) do
+      id when is_binary(id) and id != "" ->
+        assigns
+
+      _ ->
+        case derive_stable_id(assigns, prefix) do
+          {:ok, id} ->
+            assign(assigns, :id, id)
+
+          :random ->
+            maybe_warn_unstable_id(assigns, prefix)
+            assign(assigns, :id, "#{prefix}-#{System.unique_integer([:positive])}")
+        end
+    end
+  end
+
+  defp derive_stable_id(assigns, prefix) do
+    case Map.get(assigns, :name) do
+      name when is_binary(name) and name != "" ->
+        {:ok, "#{prefix}-#{sanitize_id_fragment(name)}"}
+
+      _ ->
+        :random
+    end
+  end
+
+  defp sanitize_id_fragment(value) when is_binary(value) do
+    value
+    |> String.replace(~r/[^A-Za-z0-9_-]+/, "-")
+    |> String.trim("-")
+    |> case do
+      "" -> "name"
+      fragment -> fragment
+    end
+  end
+
+  defp maybe_warn_unstable_id(assigns, prefix) do
+    if server_driven_updates?(assigns) and not production_env?() do
+      require Logger
+
+      Logger.warning("""
+      Corex.#{prefix_to_component(prefix)} generated a random id (#{prefix}-…). \
+      Pass a stable :id when using controlled={true} or server on_* handlers so \
+      LiveView patches do not remount the hook.
+      """)
+    end
+
+    :ok
+  end
+
+  defp production_env? do
+    case Code.ensure_loaded(Mix) do
+      {:module, Mix} -> Mix.env() == :prod
+      _ -> true
+    end
+  end
+
+  defp server_driven_updates?(assigns) do
+    Map.get(assigns, :controlled) in [true, :all] or
+      Enum.any?(assigns, fn
+        {key, value} when is_atom(key) ->
+          key_str = Atom.to_string(key)
+
+          String.starts_with?(key_str, "on_") and not String.ends_with?(key_str, "_client") and
+            is_binary(value) and value != ""
+
+        _ ->
+          false
+      end)
+  end
+
+  defp prefix_to_component(prefix) do
+    prefix
+    |> String.split("-")
+    |> Enum.map_join(".", &String.capitalize/1)
   end
 end

@@ -1,19 +1,19 @@
 import {
   createRect,
   getRectCorners
-} from "./chunks/chunk-QB2YSZP6.mjs";
+} from "./chunks/chunk-SBGJ6WBJ.mjs";
 import {
   getPlacement,
   getPlacementSide,
   getPlacementStyles
-} from "./chunks/chunk-MHRYIVD2.mjs";
+} from "./chunks/chunk-STMYDYIS.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-CBUVYVIR.mjs";
-import "./chunks/chunk-ZSA4KI2Y.mjs";
+} from "./chunks/chunk-KJGYDHXF.mjs";
+import "./chunks/chunk-7JTELVWK.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-C4KEB3WL.mjs";
+} from "./chunks/chunk-3OQP2D73.mjs";
 import {
   performRedirect,
   readDomItemRedirect
@@ -22,11 +22,11 @@ import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunks/chunk-YUSIPE4B.mjs";
+} from "./chunks/chunk-WAPDN2S7.mjs";
 import {
   notifyChange,
   readPayloadId
-} from "./chunks/chunk-LNVRIZ4K.mjs";
+} from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
   Component,
   VanillaMachine,
@@ -40,6 +40,7 @@ import {
   createAnatomy,
   createGuards,
   createMachine,
+  createZagLiveHook,
   dataAttr,
   first,
   getBoolean,
@@ -71,9 +72,9 @@ import {
   queryAll,
   raf,
   scrollIntoView
-} from "./chunks/chunk-6AOEC32Q.mjs";
+} from "./chunks/chunk-E4OZ7DWO.mjs";
 
-// ../node_modules/.pnpm/@zag-js+menu@1.40.0/node_modules/@zag-js/menu/dist/menu.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+menu@1.42.0/node_modules/@zag-js/menu/dist/menu.anatomy.mjs
 var anatomy = createAnatomy("menu").parts(
   "arrow",
   "arrowTip",
@@ -92,7 +93,7 @@ var anatomy = createAnatomy("menu").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+core@1.40.0/node_modules/@zag-js/core/dist/merge-props.mjs
+// ../node_modules/.pnpm/@zag-js+core@1.42.0/node_modules/@zag-js/core/dist/merge-props.mjs
 var clsx = (...args) => args.map((str) => str?.trim?.()).filter(Boolean).join(" ");
 var CSS_REGEX = /((?:--)?(?:\w+-?)+)\s*:\s*([^;]*)/g;
 var serialize = (style) => {
@@ -144,7 +145,7 @@ function mergeProps(...args) {
   return result;
 }
 
-// ../node_modules/.pnpm/@zag-js+menu@1.40.0/node_modules/@zag-js/menu/dist/menu.dom.mjs
+// ../node_modules/.pnpm/@zag-js+menu@1.42.0/node_modules/@zag-js/menu/dist/menu.dom.mjs
 var getTriggerId = (ctx, value) => {
   const customId = ctx.ids?.trigger;
   if (customId != null) return isFunction(customId) ? customId(value) : customId;
@@ -167,8 +168,8 @@ var getPositionerEl = (ctx) => ctx.getById(getPositionerId(ctx));
 var getTriggerEl = (ctx) => ctx.getById(getTriggerId(ctx));
 var getItemEl = (ctx, value) => value ? ctx.getById(getItemId(ctx, value)) : null;
 var getContextTriggerEl = (ctx) => ctx.getById(getContextTriggerId(ctx));
-var getTriggerEls = (ctx) => queryAll(ctx.getDoc(), `[data-scope="menu"][data-part="trigger"][data-ownedby="${ctx.id}"]`);
-var getContextTriggerEls = (ctx) => queryAll(ctx.getDoc(), `[data-scope="menu"][data-part="context-trigger"][data-ownedby="${ctx.id}"]`);
+var getTriggerEls = (ctx) => queryAll(ctx.getRootNode(), `[data-scope="menu"][data-part="trigger"][data-ownedby="${ctx.id}"]`);
+var getContextTriggerEls = (ctx) => queryAll(ctx.getRootNode(), `[data-scope="menu"][data-part="context-trigger"][data-ownedby="${ctx.id}"]`);
 var getActiveTriggerEl = (ctx, value) => {
   if (value == null) {
     return getTriggerEl(ctx) ?? getTriggerEls(ctx)[0];
@@ -230,7 +231,7 @@ function isTargetWithinMenuTree(target, children) {
   return false;
 }
 
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.40.0/node_modules/@zag-js/rect-utils/dist/polygon.mjs
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.42.0/node_modules/@zag-js/rect-utils/dist/polygon.mjs
 function getElementPolygon(rectValue, placement) {
   const rect = createRect(rectValue);
   const { top, right, left, bottom } = getRectCorners(rect);
@@ -257,7 +258,7 @@ function isPointInPolygon(polygon, point) {
   return c;
 }
 
-// ../node_modules/.pnpm/@zag-js+menu@1.40.0/node_modules/@zag-js/menu/dist/menu.utils.mjs
+// ../node_modules/.pnpm/@zag-js+menu@1.42.0/node_modules/@zag-js/menu/dist/menu.utils.mjs
 function closeRootMenu(ctx) {
   let parent = ctx.parent;
   while (parent && parent.context.get("isSubmenu")) {
@@ -313,7 +314,7 @@ function unlockParentOnSubmenuClose(parent) {
   }
 }
 
-// ../node_modules/.pnpm/@zag-js+menu@1.40.0/node_modules/@zag-js/menu/dist/menu.connect.mjs
+// ../node_modules/.pnpm/@zag-js+menu@1.42.0/node_modules/@zag-js/menu/dist/menu.connect.mjs
 function connect(service, normalize) {
   const { context, send, state, computed, prop, scope } = service;
   const open = state.hasTag("open");
@@ -321,12 +322,13 @@ function connect(service, normalize) {
   const isTypingAhead = computed("isTypingAhead");
   const composite = prop("composite");
   const currentPlacement = context.get("currentPlacement");
+  const currentPlacementSide = currentPlacement ? getPlacementSide(currentPlacement) : void 0;
   const anchorPoint = context.get("anchorPoint");
   const highlightedValue = context.get("highlightedValue");
   const triggerValue = context.get("triggerValue");
   const popperStyles = getPlacementStyles({
     ...prop("positioning"),
-    placement: anchorPoint ? "bottom" : currentPlacement
+    placement: currentPlacement
   });
   function getItemState(props) {
     return {
@@ -481,7 +483,8 @@ function connect(service, normalize) {
       const triggerId = getTriggerId(scope, value);
       return normalize.button({
         ...isSubmenu ? parts.triggerItem.attrs : parts.trigger.attrs,
-        "data-placement": context.get("currentPlacement"),
+        "data-placement": currentPlacement,
+        "data-side": currentPlacementSide,
         type: "button",
         dir: prop("dir"),
         id: triggerId,
@@ -608,6 +611,7 @@ function connect(service, normalize) {
         "aria-activedescendant": computed("highlightedId") || void 0,
         "aria-labelledby": anchorPoint ? getContextTriggerId(scope, triggerValue ?? void 0) : getTriggerId(scope, triggerValue ?? void 0),
         "data-placement": currentPlacement,
+        "data-side": currentPlacementSide,
         onPointerEnter(event) {
           if (event.pointerType !== "mouse") return;
           send({ type: "MENU_POINTERENTER" });
@@ -749,7 +753,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+menu@1.40.0/node_modules/@zag-js/menu/dist/menu.machine.mjs
+// ../node_modules/.pnpm/@zag-js+menu@1.42.0/node_modules/@zag-js/menu/dist/menu.machine.mjs
 var { not, and, or } = createGuards();
 var machine = createMachine({
   props({ props }) {
@@ -940,7 +944,7 @@ var machine = createMachine({
       tags: ["closed"],
       effects: ["waitForLongPress"],
       on: {
-        "CONTROLLED.OPEN": { target: "open" },
+        "CONTROLLED.OPEN": { target: "open", actions: ["reposition"] },
         "CONTROLLED.CLOSE": { target: "closed", actions: ["focusTrigger"] },
         CONTEXT_MENU_CANCEL: [
           {
@@ -959,7 +963,7 @@ var machine = createMachine({
           },
           {
             target: "open",
-            actions: ["setTriggerValue", "invokeOnOpen"]
+            actions: ["setTriggerValue", "invokeOnOpen", "reposition"]
           }
         ]
       }
@@ -1632,7 +1636,6 @@ function triggerDisabledAttrs(disabled) {
 var Menu = class extends Component {
   children = [];
   submenuTriggerUnsubs = [];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, props);
   }
@@ -1820,14 +1823,15 @@ function menuSetOpenMatches(elId, payload) {
   if (!targetId) return false;
   return elId === targetId || elId === `menu:${targetId}`;
 }
-var MenuHook = {
-  mounted() {
-    const el = this.el;
+var MenuHook = createZagLiveHook({
+  key: "menu",
+  mount(hook, { dom, server }) {
+    const el = hook.el;
     if (el.hasAttribute("data-nested")) {
       return;
     }
-    const pushEvent = this.pushEvent.bind(this);
-    const liveSocket = this.liveSocket;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const liveSocket = hook.liveSocket;
     const buildOnSelect = () => (details) => {
       if (getBoolean(el, "redirect") && details.value) {
         const itemEl = el.querySelector(
@@ -1871,8 +1875,6 @@ var MenuHook = {
         });
       }
     });
-    menu.init();
-    this.menu = menu;
     const nestedMenuElements = el.querySelectorAll(
       '[data-scope="menu"][data-nested="menu"]'
     );
@@ -1895,9 +1897,9 @@ var MenuHook = {
       menuByHookId.set(hookId, nestedMenu);
       nestedMenuInstances.push(nestedMenu);
     });
-    this.submenuWireTimer = setTimeout(() => {
-      this.submenuWireTimer = void 0;
-      const rootMenu = this.menu;
+    hook.submenuWireTimer = setTimeout(() => {
+      hook.submenuWireTimer = void 0;
+      const rootMenu = hook.menu;
       if (!rootMenu) return;
       nestedMenuInstances.forEach((nestedMenu) => {
         const nestedEl = nestedMenu.el;
@@ -1912,58 +1914,38 @@ var MenuHook = {
         wireSubmenuTriggersDeep(rootMenu);
       }
     }, 0);
-    this.onSetOpen = (event) => {
+    dom.add("corex:menu:set-open", (event) => {
       const { open } = event.detail;
       if (menu.api.open !== open) menu.api.setOpen(open);
-    };
-    el.addEventListener("corex:menu:set-open", this.onSetOpen);
-    this.handlers = [];
-    this.handlers.push(
-      this.handleEvent("menu_set_open", (payload) => {
-        if (!menuSetOpenMatches(el.id, payload)) return;
-        menu.api.setOpen(payload.open);
-      })
-    );
-    this.handlers.push(
-      this.handleEvent("menu_open", (payload) => {
-        if (!menuSetOpenMatches(el.id, payload)) return;
-        this.pushEvent("menu_open_response", {
-          id: readPayloadId(payload),
-          open: menu.api.open
-        });
-      })
-    );
+    });
+    server.add("menu_set_open", (payload) => {
+      if (!menuSetOpenMatches(el.id, payload)) return;
+      menu.api.setOpen(payload.open);
+    });
+    server.add("menu_open", (payload) => {
+      if (!menuSetOpenMatches(el.id, payload)) return;
+      hook.pushEvent("menu_open_response", {
+        id: readPayloadId(payload),
+        open: menu.api.open
+      });
+    });
+    return menu;
   },
-  updated() {
-    if (this.el.hasAttribute("data-nested")) return;
-    if (!this.menu) return;
-    syncMenuPropsFromDom(this.menu);
-    renderMenuTree(this.menu);
-    if (this.menu.children.length > 0) {
-      wireSubmenuTriggersDeep(this.menu);
+  update(_hook, menu) {
+    syncMenuPropsFromDom(menu);
+    renderMenuTree(menu);
+    if (menu.children.length > 0) {
+      wireSubmenuTriggersDeep(menu);
     }
   },
-  destroyed() {
-    if (this.el.hasAttribute("data-nested")) return;
-    if (this.submenuWireTimer !== void 0) {
-      clearTimeout(this.submenuWireTimer);
-      this.submenuWireTimer = void 0;
+  destroy(hook, menu) {
+    if (hook.submenuWireTimer !== void 0) {
+      clearTimeout(hook.submenuWireTimer);
+      hook.submenuWireTimer = void 0;
     }
-    if (this.onSetOpen) {
-      this.el.removeEventListener("corex:menu:set-open", this.onSetOpen);
-    }
-    if (this.handlers) {
-      for (const handler of this.handlers) {
-        this.removeHandleEvent(handler);
-      }
-    }
-    if (this.menu) {
-      destroyDescendantMenus(this.menu);
-      this.menu.destroy();
-      this.menu = void 0;
-    }
+    destroyDescendantMenus(menu);
   }
-};
+});
 export {
   MenuHook as Menu,
   findImmediateParentMenuHookEl,

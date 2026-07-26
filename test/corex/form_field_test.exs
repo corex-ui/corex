@@ -198,4 +198,27 @@ defmodule Corex.FormFieldTest do
     assert result.name == field.name
     assert FormField.list_submit_name(result.name) == field.name <> "[]"
   end
+
+  test "assign_stable_id keeps explicit id" do
+    assigns = %{id: "my-accordion", __changed__: %{}}
+    assert FormField.assign_stable_id(assigns, "accordion").id == "my-accordion"
+  end
+
+  test "assign_stable_id derives from name when id missing" do
+    assigns = %{name: "country", __changed__: %{}}
+    result = FormField.assign_stable_id(assigns, "accordion")
+    assert result.id == "accordion-country"
+  end
+
+  test "assign_stable_id falls back to prefixed random id" do
+    assigns = %{__changed__: %{}}
+    result = FormField.assign_stable_id(assigns, "menu")
+    assert result.id =~ ~r/^menu-\d+$/
+  end
+
+  test "assign_stable_id sanitizes name fragments" do
+    assigns = %{name: "user[country]", __changed__: %{}}
+    result = FormField.assign_stable_id(assigns, "listbox")
+    assert result.id == "listbox-user-country"
+  end
 end

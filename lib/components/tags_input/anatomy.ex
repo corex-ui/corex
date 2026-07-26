@@ -76,6 +76,12 @@ defmodule Corex.TagsInput.Anatomy do
 
     defstruct [:id, dir: "ltr", read_only: false]
 
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            read_only: boolean()
+          }
+
     @ignored_attrs [
       "data-focus",
       "data-empty",
@@ -94,6 +100,11 @@ defmodule Corex.TagsInput.Anatomy do
     @moduledoc false
 
     defstruct [:id, dir: "ltr"]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t()
+          }
 
     @ignored_attrs [
       "data-disabled",
@@ -115,6 +126,11 @@ defmodule Corex.TagsInput.Anatomy do
 
     defstruct [:id, dir: "ltr"]
 
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t()
+          }
+
     @ignored_attrs [
       "data-focus",
       "data-disabled",
@@ -133,6 +149,12 @@ defmodule Corex.TagsInput.Anatomy do
     @moduledoc false
 
     defstruct [:id, dir: "ltr", placeholder: nil]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            placeholder: term()
+          }
 
     @ignored_attrs [
       "data-invalid",
@@ -165,6 +187,10 @@ defmodule Corex.TagsInput.Anatomy do
 
     defstruct [:id]
 
+    @type t :: %__MODULE__{
+            id: String.t()
+          }
+
     @ignored_attrs [
       "type",
       "hidden",
@@ -186,6 +212,11 @@ defmodule Corex.TagsInput.Anatomy do
     @moduledoc false
 
     defstruct [:id, dir: "ltr"]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t()
+          }
 
     @ignored_attrs [
       "type",

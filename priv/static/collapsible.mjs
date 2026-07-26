@@ -1,30 +1,24 @@
 import {
   toPx
-} from "./chunks/chunk-PE34YET2.mjs";
+} from "./chunks/chunk-KHEHQE65.mjs";
 import {
   readBooleanControlledZagProps,
   readBooleanControlledZagUpdate
-} from "./chunks/chunk-BGER3KYP.mjs";
+} from "./chunks/chunk-LVRCAC6Y.mjs";
 import {
-  snapshotDataset
-} from "./chunks/chunk-TKOH2OAC.mjs";
-import {
-  createDomEventRegistry,
-  createHookHandleEventRegistry
-} from "./chunks/chunk-77HPO22C.mjs";
-import {
-  emitResponse,
+  createValueEmitter,
   idMatches,
   notifyChange,
   parseRespondTo,
   readPayloadId
-} from "./chunks/chunk-LNVRIZ4K.mjs";
+} from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
   Component,
   VanillaMachine,
   canPushEvent,
   createAnatomy,
   createMachine,
+  createZagLiveHook,
   dataAttr,
   getBoolean,
   getComputedStyle,
@@ -37,19 +31,19 @@ import {
   raf,
   setAttribute,
   setStyle
-} from "./chunks/chunk-6AOEC32Q.mjs";
+} from "./chunks/chunk-E4OZ7DWO.mjs";
 
-// ../node_modules/.pnpm/@zag-js+collapsible@1.40.0/node_modules/@zag-js/collapsible/dist/collapsible.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+collapsible@1.42.0/node_modules/@zag-js/collapsible/dist/collapsible.anatomy.mjs
 var anatomy = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+collapsible@1.40.0/node_modules/@zag-js/collapsible/dist/collapsible.dom.mjs
+// ../node_modules/.pnpm/@zag-js+collapsible@1.42.0/node_modules/@zag-js/collapsible/dist/collapsible.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `collapsible:${ctx.id}`;
 var getContentId = (ctx) => ctx.ids?.content ?? `collapsible:${ctx.id}:content`;
 var getTriggerId = (ctx) => ctx.ids?.trigger ?? `collapsible:${ctx.id}:trigger`;
 var getContentEl = (ctx) => ctx.getById(getContentId(ctx));
 
-// ../node_modules/.pnpm/@zag-js+collapsible@1.40.0/node_modules/@zag-js/collapsible/dist/collapsible.connect.mjs
+// ../node_modules/.pnpm/@zag-js+collapsible@1.42.0/node_modules/@zag-js/collapsible/dist/collapsible.connect.mjs
 function connect(service, normalize) {
   const { state, send, context, scope, prop } = service;
   const visible = state.matches("open") || state.matches("closing");
@@ -139,7 +133,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+collapsible@1.40.0/node_modules/@zag-js/collapsible/dist/collapsible.machine.mjs
+// ../node_modules/.pnpm/@zag-js+collapsible@1.42.0/node_modules/@zag-js/collapsible/dist/collapsible.machine.mjs
 var machine = createMachine({
   initialState({ prop }) {
     const open = prop("open") || prop("defaultOpen");
@@ -389,7 +383,6 @@ var machine = createMachine({
 
 // components/collapsible.ts
 var Collapsible = class extends Component {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, props);
   }
@@ -429,11 +422,13 @@ function openChangePayload(el, details) {
     open: details.open
   };
 }
-var CollapsibleHook = {
-  mounted() {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+var CollapsibleHook = createZagLiveHook({
+  key: "collapsible",
+  controlledKeys: ["open"],
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     const collapsible = new Collapsible(el, {
       id: el.id,
       ...readBooleanControlledZagProps(el, "open", "defaultOpen"),
@@ -450,75 +445,49 @@ var CollapsibleHook = {
         });
       }
     });
-    collapsible.init();
-    this.collapsible = collapsible;
-    const emitOpen = (respondTo) => {
-      emitResponse({
-        respondTo,
-        canPushServer: canPush(),
-        pushEvent,
+    const emitOpen = createValueEmitter(
+      { el, pushEvent, canPushServer: canPush },
+      {
+        getPayload: () => ({
+          id: el.id,
+          open: collapsible.api.open,
+          disabled: collapsible.api.disabled
+        }),
         serverEventName: "collapsible_open_response",
-        serverPayload: {
-          id: el.id,
-          open: collapsible.api.open,
-          disabled: collapsible.api.disabled
-        },
-        el,
-        domEventName: "collapsible-open",
-        domDetail: {
-          id: el.id,
-          open: collapsible.api.open,
-          disabled: collapsible.api.disabled
-        }
-      });
-    };
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-    domRegistry.add("corex:collapsible:set-open", (event) => {
-      const { open } = event.detail;
-      collapsible.api.setOpen(open);
+        domEventName: "collapsible-open"
+      }
+    );
+    dom.add("corex:collapsible:set-open", (event) => {
+      collapsible.api.setOpen(event.detail.open);
     });
-    domRegistry.add("corex:collapsible:open", (event) => {
+    dom.add("corex:collapsible:open", (event) => {
       emitOpen(parseRespondTo(event.detail));
     });
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-    registry.add("collapsible_set_open", (payload) => {
+    server.add("collapsible_set_open", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       collapsible.api.setOpen(payload.open);
     });
-    registry.add("collapsible_open", (payload) => {
+    server.add("collapsible_open", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       emitOpen(parseRespondTo(payload));
     });
+    return collapsible;
   },
-  beforeUpdate() {
-    this.beforeAttrs = snapshotDataset(this.el, ["open"]);
-  },
-  updated() {
-    try {
-      const openPatch = readBooleanControlledZagUpdate(
-        this.el,
-        "open",
-        "defaultOpen",
-        this.beforeAttrs
-      );
-      this.collapsible?.updateProps({
-        id: this.el.id,
-        ...openPatch,
-        disabled: getBoolean(this.el, "disabled"),
-        dir: getDir(this.el)
-      });
-    } finally {
-      this.beforeAttrs = void 0;
-    }
-  },
-  destroyed() {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.collapsible?.destroy();
+  update(hook, collapsible) {
+    const openPatch = readBooleanControlledZagUpdate(
+      hook.el,
+      "open",
+      "defaultOpen",
+      hook.beforeAttrs
+    );
+    collapsible.updateProps({
+      id: hook.el.id,
+      ...openPatch,
+      disabled: getBoolean(hook.el, "disabled"),
+      dir: getDir(hook.el)
+    });
   }
-};
+});
 export {
   CollapsibleHook as Collapsible,
   openChangePayload

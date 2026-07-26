@@ -17,11 +17,9 @@ describe("zagListCollectionConfig collections", () => {
     { label: "A", value: "a" },
     { label: "B", value: "b" },
   ];
-  const grouped = [
-    { label: "A", value: "a", group: "g1" },
-    { label: "B", value: "b", group: "g2" },
-    { label: "C", value: "c", group: "g1" },
-  ];
+  const groupedFirst = { label: "A", value: "a", group: "g1" };
+  const groupedSecond = { label: "B", value: "b", group: "g2" };
+  const grouped = [groupedFirst, groupedSecond, { label: "C", value: "c", group: "g1" }];
 
   it.each([
     [flat, false, 2],
@@ -33,7 +31,7 @@ describe("zagListCollectionConfig collections", () => {
 
   it("groupBy assigns groups when enabled", () => {
     const config = zagListCollectionConfig(grouped, true);
-    expect(config.groupBy?.(grouped[0])).toBe("g1");
-    expect(config.groupBy?.(grouped[1])).toBe("g2");
+    expect(config.groupBy?.(groupedFirst)).toBe("g1");
+    expect(config.groupBy?.(groupedSecond)).toBe("g2");
   });
 });

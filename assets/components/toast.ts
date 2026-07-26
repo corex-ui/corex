@@ -12,7 +12,7 @@ import {
   type Options,
 } from "@zag-js/toast";
 import { VanillaMachine } from "@zag-js/vanilla";
-import { Component } from "../lib/core";
+import { Component, type SchemaOf } from "../lib/core";
 import { cloneTemplateChildren, getDir } from "../lib/util";
 
 export function actionClassTokens(action: unknown): string[] {
@@ -33,13 +33,16 @@ function actionLabelHtml(action: unknown): boolean {
 export const toastGroups = new Map<string, ToastGroup>();
 export const toastStores = new Map<string, Store>();
 
+type ItemSchema = SchemaOf<typeof machine>;
+type GroupSchema = SchemaOf<typeof group.machine>;
+
 type ToastItemProps<T = unknown> = Props<T> & {
   parent: unknown;
   index: number;
   meta?: { loading?: boolean };
 };
 
-export class ToastItem<T = unknown> extends Component<ToastItemProps<T>, Api> {
+export class ToastItem<T = unknown> extends Component<ToastItemProps<T>, Api, ItemSchema> {
   private parts!: {
     title: HTMLElement;
     description: HTMLElement;
@@ -67,7 +70,6 @@ export class ToastItem<T = unknown> extends Component<ToastItemProps<T>, Api> {
 
     this.el.setAttribute("data-scope", "toast");
     this.el.setAttribute("data-part", "root");
-    this.el.classList.add("toast-item");
 
     this.el.innerHTML = `
       <span data-scope="toast" data-part="ghost-before"></span>
@@ -100,15 +102,12 @@ export class ToastItem<T = unknown> extends Component<ToastItemProps<T>, Api> {
     };
   }
 
-  updateProps = (props: Partial<ToastItemProps<T>> & Record<string, unknown>) => {
+  updateProps(props: Partial<ToastItemProps<T>> & Record<string, unknown>): boolean {
     Object.assign(this.latestProps, props);
-    super.updateProps(
-      props as Props<T> & { parent: unknown; index: number; meta?: { loading?: boolean } }
-    );
-  };
+    return super.updateProps(props as Partial<ToastItemProps<T>>);
+  }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: Props<T>): VanillaMachine<any> {
+  initMachine(props: Props<T>): VanillaMachine<ItemSchema> {
     return new VanillaMachine(machine, props);
   }
 
@@ -213,13 +212,15 @@ export class ToastItem<T = unknown> extends Component<ToastItemProps<T>, Api> {
   }
 
   destroy = () => {
+    this.unsubscribe?.();
+    this.unsubscribe = undefined;
     this.clearSpreadPropsCleanups();
     this.machine.stop();
     this.el.remove();
   };
 }
 
-export class ToastGroup extends Component<GroupProps, GroupApi> {
+export class ToastGroup extends Component<GroupProps, GroupApi, GroupSchema> {
   private toastComponents = new Map<string, ToastItem>();
   private groupEl: HTMLElement;
   public store: Store;
@@ -240,8 +241,7 @@ export class ToastGroup extends Component<GroupProps, GroupApi> {
       })();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: GroupProps): VanillaMachine<any> {
+  initMachine(props: GroupProps): VanillaMachine<GroupSchema> {
     return new VanillaMachine(group.machine, props);
   }
 
@@ -263,7 +263,6 @@ export class ToastGroup extends Component<GroupProps, GroupApi> {
 
       if (!item) {
         const el = document.createElement("div");
-        el.classList.add("toast-item");
         el.setAttribute("data-scope", "toast");
         el.setAttribute("data-part", "root");
         this.groupEl.appendChild(el);
@@ -317,6 +316,10 @@ export function createToastGroup(
 ) {
   const groupId = options?.id ?? container.id;
 
+  if (toastGroups.has(groupId)) {
+    disposeToastGroup(groupId);
+  }
+
   const store =
     options?.store ??
     createStore({
@@ -361,21 +364,28 @@ export function getToastStore(groupId?: string): Store | undefined {
   return id ? toastStores.get(id) : undefined;
 }
 
-export function createToast(options: Options & { id: string; groupId?: string }) {
-  const { groupId, ...rest } = options;
-  const store = getToastStore(groupId);
-  if (!store) throw new Error("No toast store found");
+export function createToast(options: Options & { id: string; group_id?: string }) {
+  const { group_id, ...rest } = options;
+  const store = getToastStore(group_id);
+
+  if (!store) {
+    console.warn(
+      `[corex] no toast group${group_id ? ` "${group_id}"` : ""} is mounted, dropping toast`
+    );
+    return;
+  }
+
   store.create(rest);
 }
 
-export function updateToast(id: string, options: Partial<Props>, groupId?: string) {
-  getToastStore(groupId)?.update(id, options);
+export function updateToast(id: string, options: Partial<Props>, group_id?: string) {
+  getToastStore(group_id)?.update(id, options);
 }
 
-export function dismissToast(id: string, groupId?: string) {
-  getToastStore(groupId)?.dismiss(id);
+export function dismissToast(id: string, group_id?: string) {
+  getToastStore(group_id)?.dismiss(id);
 }
 
-export function removeToast(id: string, groupId?: string) {
-  getToastStore(groupId)?.remove(id);
+export function removeToast(id: string, group_id?: string) {
+  getToastStore(group_id)?.remove(id);
 }

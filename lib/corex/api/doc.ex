@@ -10,14 +10,6 @@ defmodule Corex.Api.Doc do
   end
 
   @doc false
-  defmacro api_doc_short(contents) do
-    quote do
-      @doc type: :api
-      @doc unquote(contents)
-    end
-  end
-
-  @doc false
   defmacro api_doc_hidden do
     quote do
       @doc false

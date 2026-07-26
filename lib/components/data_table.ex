@@ -10,9 +10,9 @@ defmodule Corex.DataTable do
   @doc type: :component
   use Phoenix.Component
 
-  require Logger
-
   alias Corex.DataTable.Translation
+
+  require Logger
 
   @doc ~S'''
   Renders a table with data.
@@ -477,7 +477,7 @@ defmodule Corex.DataTable do
           </tr>
           <%= for row <- @rows do %>
             <% row_id = @row_id && @row_id.(row) %>
-            <tr id={row_id} data-scope="data-table" data-part="row" style={@row_click && "cursor: pointer"}>
+            <tr id={row_id} data-scope="data-table" data-part="row" data-clickable={!!@row_click || nil}>
               <td :if={@selectable} data-scope="data-table" data-part="selection-cell">
                 <Corex.Checkbox.checkbox
                   id={"#{@id}-select-#{row_id}"}

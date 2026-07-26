@@ -1,11 +1,12 @@
 import { connect, machine, type Props, type Api } from "@zag-js/toggle-group";
 import { VanillaMachine } from "@zag-js/vanilla";
-import { Component } from "../lib/core";
+import { Component, type SchemaOf } from "../lib/core";
 import { getString, getBoolean } from "../lib/util";
 
-export class ToggleGroup extends Component<Props, Api> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: Props): VanillaMachine<any> {
+type Schema = SchemaOf<typeof machine>;
+
+export class ToggleGroup extends Component<Props, Api, Schema> {
+  initMachine(props: Props): VanillaMachine<Schema> {
     return new VanillaMachine(machine, props);
   }
 
@@ -24,8 +25,7 @@ export class ToggleGroup extends Component<Props, Api> {
       '[data-scope="toggle-group"][data-part="item"]'
     );
 
-    for (let i = 0; i < items.length; i++) {
-      const itemEl = items[i];
+    for (const itemEl of items) {
       const value = getString(itemEl, "value");
       if (!value) continue;
 

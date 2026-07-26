@@ -1,10 +1,16 @@
 import { VanillaMachine, spreadProps, normalizeProps } from "@zag-js/vanilla";
 import type { Attrs } from "@zag-js/vanilla";
+import type { Machine, MachineSchema, Service } from "@zag-js/core";
 
-interface ComponentInterface<Api> {
+/**
+ * The state schema behind a Zag machine value, so a component can name its
+ * schema as `SchemaOf<typeof machine>` from the import it already has.
+ */
+export type SchemaOf<M> = M extends Machine<infer Schema> ? Schema : never;
+
+interface ComponentInterface<Api, Schema extends MachineSchema> {
   el: HTMLElement;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  machine: VanillaMachine<any>;
+  machine: VanillaMachine<Schema>;
   api: Api;
 
   init(): void;
@@ -12,30 +18,84 @@ interface ComponentInterface<Api> {
   render(): void;
 }
 
-function stableUpdatePropsKey(props: Record<string, unknown>): string {
-  const keys = Object.keys(props).sort();
-  const serializable: Record<string, unknown> = {};
-  for (const key of keys) {
-    const value = props[key];
-    if (typeof value === "function") continue;
-    if (value !== null && typeof value === "object") {
-      try {
-        serializable[key] = JSON.parse(JSON.stringify(value));
-      } catch {
-        serializable[key] = String(value);
-      }
-    } else {
-      serializable[key] = value;
-    }
+const HEAVY_PROP_KEYS = new Set(["collection"]);
+
+const objectRefIds = new WeakMap<object, number>();
+let nextObjectRefId = 1;
+
+function objectRefId(value: object): string {
+  let id = objectRefIds.get(value);
+  if (id === undefined) {
+    id = nextObjectRefId++;
+    objectRefIds.set(value, id);
   }
-  return JSON.stringify(serializable);
+  return `#${id}`;
 }
 
-export abstract class Component<Props, Api> implements ComponentInterface<Api> {
+function isPlainObject(value: object): boolean {
+  const proto = Object.getPrototypeOf(value);
+  return proto === Object.prototype || proto === null;
+}
+
+function stableValueKey(value: unknown): string {
+  if (value === null) return "null";
+  const type = typeof value;
+  if (type === "string") return JSON.stringify(value);
+  if (type === "number" || type === "boolean") return String(value);
+  if (type === "undefined") return "undefined";
+  if (type === "function" || type === "symbol" || type === "bigint") return "";
+  if (typeof value !== "object") return String(value);
+
+  if (Array.isArray(value)) {
+    let out = "[";
+    for (let i = 0; i < value.length; i++) {
+      if (i > 0) out += ",";
+      out += stableValueKey(value[i]);
+    }
+    return out + "]";
+  }
+
+  if (isPlainObject(value)) {
+    try {
+      return JSON.stringify(value, (_key, nested) => {
+        if (typeof nested === "function") return undefined;
+        return nested;
+      });
+    } catch {
+      return objectRefId(value);
+    }
+  }
+
+  const asString = String(value);
+  if (asString !== "[object Object]") {
+    return JSON.stringify(asString);
+  }
+  return objectRefId(value);
+}
+
+function stableUpdatePropsKey(props: Record<string, unknown>): string {
+  const keys = Object.keys(props).sort();
+  let out = "";
+  for (const key of keys) {
+    if (HEAVY_PROP_KEYS.has(key)) continue;
+    const value = props[key];
+    if (typeof value === "function") continue;
+    out += key;
+    out += ":";
+    out += stableValueKey(value);
+    out += ";";
+  }
+  return out;
+}
+
+export abstract class Component<
+  Props extends Partial<Schema["props"]>,
+  Api,
+  Schema extends MachineSchema = MachineSchema,
+> implements ComponentInterface<Api, Schema> {
   el: HTMLElement;
   protected doc: Document;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  machine: VanillaMachine<any>;
+  machine: VanillaMachine<Schema>;
   api: Api;
   protected unsubscribe: (() => void) | undefined;
   private lastUpdatePropsKey: string | undefined;
@@ -44,7 +104,7 @@ export abstract class Component<Props, Api> implements ComponentInterface<Api> {
   constructor(
     el: HTMLElement | null,
     props: Props,
-    beforeInitMachine?: (instance: Component<Props, Api>) => void
+    beforeInitMachine?: (instance: Component<Props, Api, Schema>) => void
   ) {
     if (!el) throw new Error("Root element not found");
     this.el = el;
@@ -54,8 +114,7 @@ export abstract class Component<Props, Api> implements ComponentInterface<Api> {
     this.api = this.initApi();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  abstract initMachine(props: Props): VanillaMachine<any>;
+  abstract initMachine(props: Props): VanillaMachine<Schema>;
   abstract initApi(): Api;
   abstract render(): void;
 
@@ -93,16 +152,16 @@ export abstract class Component<Props, Api> implements ComponentInterface<Api> {
     this.spreadCleanups.set(el, cleanup);
   };
 
-  updateProps(props: Partial<Props>) {
+  updateProps(props: Partial<Props>): boolean {
     const key = stableUpdatePropsKey(props as Record<string, unknown>);
-    if (key === this.lastUpdatePropsKey) return;
+    if (key === this.lastUpdatePropsKey) return false;
     this.lastUpdatePropsKey = key;
     this.machine.updateProps(props);
+    return true;
   }
 
   protected zagConnect<A>(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    connectFn: (service: any, np: typeof normalizeProps) => A
+    connectFn: (service: Service<Schema>, np: typeof normalizeProps) => A
   ): A {
     return connectFn(this.machine.service, normalizeProps);
   }

@@ -32,6 +32,13 @@ defmodule Corex.Toggle.Anatomy do
 
     defstruct [:id, :dir, pressed: false, disabled: false]
 
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            pressed: boolean(),
+            disabled: boolean()
+          }
+
     @ignored_attrs [
       "data-state",
       "data-pressed",
@@ -53,6 +60,13 @@ defmodule Corex.Toggle.Anatomy do
     @moduledoc false
 
     defstruct [:id, :dir, pressed: false, disabled: false]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            pressed: boolean(),
+            disabled: boolean()
+          }
 
     @ignored_attrs [
       "data-state",

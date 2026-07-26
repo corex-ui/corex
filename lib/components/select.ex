@@ -189,12 +189,12 @@ defmodule Corex.Select do
   end
   ```
 
-  ### Stream
+  ### Dynamic items
 
-  Use `Phoenix.LiveView.stream/3` to add or remove options at runtime. Keep `@items_list` in sync and pass `Corex.List.new(@items_list)` as `items`. Configure `dom_id` as `select:stream-select:item:#{value}`.
+  Grow or shrink options at runtime by updating a list assign and passing `Corex.List.new(@items)` as `items`. Select options are rebuilt from props after morph (not a LiveView stream consumer); use `Phoenix.LiveView.stream/3` only with components that render `@streams.*` (for example `data_table`).
 
   ```heex
-  <.select class="select" items={Corex.List.new(@items_list)}>
+  <.select class="select" items={Corex.List.new(@items)}>
     <:label>Country</:label>
     <:trigger>
       <.heroicon name="hero-chevron-down" class="icon" />
@@ -553,7 +553,11 @@ defmodule Corex.Select do
   @doc type: :component
   use Phoenix.Component
 
+  use Corex.Component, [:list, :api]
+
   import Corex.Api.Doc
+
+  import Corex.Component, only: [form_control_attrs: 1]
 
   alias Phoenix.LiveView.JS
 
@@ -575,26 +579,34 @@ defmodule Corex.Select do
   }
 
   alias Corex.Api.RespondTo
+
   alias Corex.Select.Connect
+
   alias Corex.Select.Translation
 
-  import Corex.Helpers,
-    only: [normalize_items: 1, has_groups?: 1, group_by_group: 1, validate_value!: 1]
+  alias Corex.Selectors
 
-  attr(:id, :string, required: false, doc: "The id of the select component")
+  form_control_attrs(
+    docs: [
+      id: "The id of the select component",
+      name: "The name of the select",
+      form: "The id of the form of the select",
+      read_only: "Whether the select is read only",
+      field:
+        "A form field struct retrieved from the form, for example: @form[:country]. Automatically sets id, name, value, and errors from the form field"
+    ]
+  )
 
   attr(:items, :list,
     default: [],
-    doc: "List of items from `Corex.List.new/1` (or maps with :label and optional :value)"
+    doc:
+      "Items from `Corex.List.new/1`, or plain maps with `:label` (see `Corex.List` for the full contract)"
   )
-
-  attr(:controlled, :boolean, default: false, doc: "Whether the select is controlled")
 
   attr(:form_field, :boolean, default: false, doc: false)
   attr(:field_used, :boolean, default: false, doc: false)
 
   attr(:value, :list, default: [], doc: "The value of the select")
-  attr(:disabled, :boolean, default: false, doc: "Whether the select is disabled")
   attr(:close_on_select, :boolean, default: true, doc: "Whether to close the select on select")
 
   attr(:dir, :string,
@@ -616,18 +628,6 @@ defmodule Corex.Select do
     doc:
       "Allow multiple selection. With field and form, submits name[] list params for Ecto {:array, :string}"
   )
-
-  attr(:invalid, :boolean, default: nil, doc: "Whether the select is invalid")
-
-  attr(:auto_invalid, :boolean,
-    default: false,
-    doc: "When true with `field`, set invalid from visible changeset errors"
-  )
-
-  attr(:name, :string, doc: "The name of the select")
-  attr(:form, :string, doc: "The id of the form of the select")
-  attr(:read_only, :boolean, default: false, doc: "Whether the select is read only")
-  attr(:required, :boolean, default: false, doc: "Whether the select is required")
 
   attr(:deselectable, :boolean,
     default: false,
@@ -698,18 +698,13 @@ defmodule Corex.Select do
     attr(:class, :string, required: false)
   end
 
-  attr(:field, Phoenix.HTML.FormField,
-    doc:
-      "A form field struct retrieved from the form, for example: @form[:country]. Automatically sets id, name, value, and errors from the form field"
-  )
-
   attr(:errors, :list,
     default: [],
     doc: "List of error messages to display"
   )
 
   def select(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    value = get_value(field.value)
+    value = field_value_list(field.value)
 
     assigns
     |> Corex.FormField.assign_form_field(field)
@@ -718,143 +713,71 @@ defmodule Corex.Select do
   end
 
   def select(assigns) do
-    assigns =
-      assign(
-        assigns,
-        :translation,
-        Translation.resolve(assigns.translation)
-      )
-
-    items = normalize_items(assigns.items)
-
-    assigns =
-      assigns
-      |> Corex.FormField.require_id!("Corex component (select)")
-      |> assign(:items, items)
-      |> assign_new(:name, fn -> nil end)
-      |> assign_new(:form, fn -> nil end)
-
-    value_list = get_value(assigns[:value])
-
-    assigns =
-      assigns
-      |> assign(:value, value_list)
-
-    options = transform_collection_to_options(items)
-
-    grouped_items =
-      group_by_group(items)
-      |> Enum.sort_by(fn {group, _items} -> group || "" end, :asc)
-
-    sorted_items =
-      Enum.flat_map(grouped_items, fn {_group, group_items} -> group_items end)
-
-    has_groups = has_groups?(items)
-
-    selected_for_options =
-      if assigns.multiple do
-        value_list
-      else
-        if value_list == [], do: "", else: List.first(value_list)
-      end
-
-    options_with_prompt = [{"", ""} | options]
-
-    array_form_submit = assigns.multiple && is_binary(assigns[:name])
-
-    assigns =
-      assigns
-      |> assign(:grouped_items, grouped_items)
-      |> assign(:sorted_items, sorted_items)
-      |> assign(:items_json, Corex.Dataset.encode_json(sorted_items))
-      |> assign(:has_groups, has_groups)
-      |> assign(:options, options)
-      |> assign(:options_with_prompt, options_with_prompt)
-      |> assign(:selected_for_options, selected_for_options)
-      |> assign(:disabled_values, get_disabled_values(items))
-      |> assign(:value_for_hidden_input, value_for_hidden_input(value_list, assigns.multiple))
-      |> assign(:array_form_submit, array_form_submit)
-      |> assign(
-        :hidden_select_name,
-        if(array_form_submit, do: Corex.FormField.list_submit_name(assigns.name), else: nil)
-      )
-      |> assign(:value_input_name, if(array_form_submit, do: nil, else: assigns.name))
-      |> then(fn a -> assign(a, :connect_props, select_connect_props(a)) end)
+    assigns = prepare_select(assigns)
 
     ~H"""
     <div 
     id={@id} 
     phx-hook="Select"
-    data-loading
-    phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])} 
+    {Corex.Hook.loading()}
     {@rest}
     {@connect_props}>
-      <div phx-mounted={Connect.ignore_root(%Root{id: @id, invalid: @invalid, read_only: @read_only, orientation: @orientation, dir: @dir})} {Connect.root(%Root{id: @id, invalid: @invalid, read_only: @read_only, orientation: @orientation, dir: @dir})}>
+      <div {Connect.mounted_root(%Root{id: @id, invalid: @invalid, read_only: @read_only, orientation: @orientation, dir: @dir})}>
 
       <input
-        phx-mounted={Connect.ignore_value_input(%ValueInput{id: @id, dir: @dir, orientation: @orientation})}
-        {Connect.value_input(%ValueInput{id: @id, dir: @dir, orientation: @orientation})}
+        {Connect.mounted_value_input(%ValueInput{id: @id, dir: @dir, orientation: @orientation})}
         name={@value_input_name}
         value={@value_for_hidden_input}
       />
 
       <select
-        phx-mounted={Connect.ignore_hidden_select(%HiddenSelect{id: @id, dir: @dir, orientation: @orientation})}
-        {Connect.hidden_select(%HiddenSelect{id: @id, dir: @dir, orientation: @orientation})}
+        {Connect.mounted_hidden_select(%HiddenSelect{id: @id, dir: @dir, orientation: @orientation})}
         name={@hidden_select_name}
         multiple={@multiple}
       >
         {Phoenix.HTML.Form.options_for_select(@options_with_prompt, @selected_for_options)}
       </select>
 
-        <div :if={!Enum.empty?(@label)} class={Map.get(Enum.at(@label, 0), :class, nil)} phx-mounted={Connect.ignore_label(%Label{id: @id, invalid: @invalid, read_only: @read_only, required: @required, disabled: @disabled, dir: @dir, orientation: @orientation})} {Connect.label(%Label{id: @id, invalid: @invalid, read_only: @read_only, required: @required, disabled: @disabled, dir: @dir, orientation: @orientation})}>
+        <div :if={!Enum.empty?(@label)} class={Map.get(Enum.at(@label, 0), :class, nil)} {Connect.mounted_label(%Label{id: @id, invalid: @invalid, read_only: @read_only, required: @required, disabled: @disabled, dir: @dir, orientation: @orientation})}>
           {render_slot(@label)}
         </div>
-        <div phx-mounted={Connect.ignore_control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})} {Connect.control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})}>
-          <button phx-mounted={Connect.ignore_trigger(%Trigger{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})} {Connect.trigger(%Trigger{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})} :if={!Enum.empty?(@trigger)} aria-label={get_selected_label(@items, @value) || @translation.placeholder}>
-            <span phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: "value-label", orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: "value-label", orientation: @orientation})}>
-              {get_selected_label(@items, @value) || @translation.placeholder}
+        <div {Connect.mounted_control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})}>
+          <button {Connect.mounted_trigger(%Trigger{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})} :if={!Enum.empty?(@trigger)} aria-label={@selected_label}>
+            <span {Connect.mounted_item_text(%ItemText{id: @id, value: "value-label", orientation: @orientation})}>
+              {@selected_label}
             </span>
             {render_slot(@trigger)}
           </button>
         </div>
-        <div
-          :if={@error != [] and !Enum.empty?(@errors)}
-          :for={msg <- @errors}
-          class={Map.get(Enum.at(@error, 0), :class, nil)}
-          data-scope="select"
-          data-part="error"
-        >
-          {render_slot(@error, msg)}
-        </div>
-        <div phx-mounted={Connect.ignore_positioner(%Positioner{id: @id, dir: @dir, orientation: @orientation})} {Connect.positioner(%Positioner{id: @id, dir: @dir, orientation: @orientation})}>
-          <ul phx-mounted={Connect.ignore_content(%Content{id: @id, dir: @dir, orientation: @orientation})} {Connect.content(%Content{id: @id, dir: @dir, orientation: @orientation})}>
-            <li :if={@has_groups} :for={{group, group_items} <- @grouped_items} phx-mounted={Connect.ignore_item_group(%ItemGroup{id: @id, group_id: group || "default", dir: @dir, orientation: @orientation})} {Connect.item_group(%ItemGroup{id: @id, group_id: group || "default", dir: @dir, orientation: @orientation})}>
-              <div :if={group} phx-mounted={Connect.ignore_item_group_label(%ItemGroupLabel{id: @id, group_id: group, dir: @dir, orientation: @orientation})} {Connect.item_group_label(%ItemGroupLabel{id: @id, group_id: group, dir: @dir, orientation: @orientation})}>
+        <Corex.Component.Errors.field_errors scope="select" errors={@errors} error={@error} />
+        <div {Connect.mounted_positioner(%Positioner{id: @id, dir: @dir, orientation: @orientation})}>
+          <ul {Connect.mounted_content(%Content{id: @id, dir: @dir, orientation: @orientation})}>
+            <li :if={@has_groups} :for={{group, group_items} <- @grouped_items} {Connect.mounted_item_group(%ItemGroup{id: @id, group_id: group || "default", dir: @dir, orientation: @orientation})}>
+              <div :if={group} {Connect.mounted_item_group_label(%ItemGroupLabel{id: @id, group_id: group, dir: @dir, orientation: @orientation})}>
                 {group}
               </div>
               <ul>
                 <li :for={item <- group_items} phx-mounted={Connect.ignore_item(%Item{id: @id, value: to_string(Map.fetch!(item, :value)), dir: @dir, orientation: @orientation})} {Connect.item(%Item{id: @id, value: to_string(Map.fetch!(item, :value)), dir: @dir, orientation: @orientation, to: Map.get(item, :to), redirect: Map.get(item, :redirect), new_tab: Map.get(item, :new_tab, false)})}>
-                  <span :if={!Enum.empty?(@item)} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: to_string(Map.fetch!(item, :value)), orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: to_string(Map.fetch!(item, :value)), orientation: @orientation})}>
+                  <span :if={!Enum.empty?(@item)} {Connect.mounted_item_text(%ItemText{id: @id, value: to_string(Map.fetch!(item, :value)), orientation: @orientation})}>
                     {render_slot(@item, item)}
                   </span>
-                  <span :if={Enum.empty?(@item)} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: to_string(Map.fetch!(item, :value)), orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: to_string(Map.fetch!(item, :value)), orientation: @orientation})}>
+                  <span :if={Enum.empty?(@item)} {Connect.mounted_item_text(%ItemText{id: @id, value: to_string(Map.fetch!(item, :value)), orientation: @orientation})}>
                     {item.label}
                   </span>
-                  <span :if={!Enum.empty?(@item_indicator)} phx-mounted={Connect.ignore_item_indicator(%ItemIndicator{id: @id, value: to_string(Map.fetch!(item, :value)), orientation: @orientation})} {Connect.item_indicator(%ItemIndicator{id: @id, value: to_string(Map.fetch!(item, :value)), orientation: @orientation})}>
+                  <span :if={!Enum.empty?(@item_indicator)} {Connect.mounted_item_indicator(%ItemIndicator{id: @id, value: to_string(Map.fetch!(item, :value)), orientation: @orientation})}>
                     {render_slot(@item_indicator)}
                   </span>
                 </li>
               </ul>
             </li>
             <li :if={!@has_groups} :for={item <- @items} phx-mounted={Connect.ignore_item(%Item{id: @id, value: to_string(Map.fetch!(item, :value)), dir: @dir, orientation: @orientation})} {Connect.item(%Item{id: @id, value: to_string(Map.fetch!(item, :value)), dir: @dir, orientation: @orientation, to: Map.get(item, :to), redirect: Map.get(item, :redirect), new_tab: Map.get(item, :new_tab, false)})}>
-              <span :if={!Enum.empty?(@item)} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: to_string(Map.fetch!(item, :value)), orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: to_string(Map.fetch!(item, :value)), orientation: @orientation})}>
+              <span :if={!Enum.empty?(@item)} {Connect.mounted_item_text(%ItemText{id: @id, value: to_string(Map.fetch!(item, :value)), orientation: @orientation})}>
                 {render_slot(@item, item)}
               </span>
-              <span :if={Enum.empty?(@item)} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: to_string(Map.fetch!(item, :value)), orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: to_string(Map.fetch!(item, :value)), orientation: @orientation})}>
+              <span :if={Enum.empty?(@item)} {Connect.mounted_item_text(%ItemText{id: @id, value: to_string(Map.fetch!(item, :value)), orientation: @orientation})}>
                 {item.label}
               </span>
-              <span :if={!Enum.empty?(@item_indicator)} phx-mounted={Connect.ignore_item_indicator(%ItemIndicator{id: @id, value: to_string(Map.fetch!(item, :value)), orientation: @orientation})} {Connect.item_indicator(%ItemIndicator{id: @id, value: to_string(Map.fetch!(item, :value)), orientation: @orientation})}>
+              <span :if={!Enum.empty?(@item_indicator)} {Connect.mounted_item_indicator(%ItemIndicator{id: @id, value: to_string(Map.fetch!(item, :value)), orientation: @orientation})}>
                 {render_slot(@item_indicator)}
               </span>
             </li>
@@ -863,6 +786,63 @@ defmodule Corex.Select do
       </div>
     </div>
     """
+  end
+
+  defp prepare_select(assigns) do
+    assigns =
+      assigns
+      |> Corex.FormField.require_id!("Corex component (select)")
+      |> assign(:translation, Translation.resolve(assigns.translation))
+      |> assign_new(:name, fn -> nil end)
+      |> assign_new(:form, fn -> nil end)
+
+    items = normalize_items(assigns.items)
+    value_list = field_value_list(assigns[:value])
+    grouped_items = grouped_items(items)
+    sorted_items = Enum.flat_map(grouped_items, fn {_group, group_items} -> group_items end)
+
+    assigns
+    |> assign(:items, items)
+    |> assign(:value, value_list)
+    |> assign(:grouped_items, grouped_items)
+    |> assign(:sorted_items, sorted_items)
+    |> assign(:items_json, Corex.Dataset.encode_json(sorted_items))
+    |> assign(:has_groups, has_groups?(items))
+    |> assign(:options, transform_collection_to_options(items))
+    |> assign(:options_with_prompt, [{"", ""} | transform_collection_to_options(items)])
+    |> assign(:selected_for_options, selected_for_options(assigns.multiple, value_list))
+    |> assign(:disabled_values, get_disabled_values(items))
+    |> assign(:value_for_hidden_input, value_for_hidden_input(value_list, assigns.multiple))
+    |> assign(
+      :selected_label,
+      selected_label(items, value_list) || assigns.translation.placeholder
+    )
+    |> assign_select_submit_names()
+    |> then(&assign(&1, :connect_props, select_connect_props(&1)))
+  end
+
+  defp grouped_items(items) do
+    items
+    |> group_by_group()
+    |> Enum.sort_by(fn {group, _items} -> group || "" end, :asc)
+  end
+
+  defp selected_for_options(true, value_list), do: value_list
+  defp selected_for_options(_multiple, []), do: ""
+  defp selected_for_options(_multiple, [selected | _rest]), do: selected
+
+  defp assign_select_submit_names(%{multiple: true, name: name} = assigns) when is_binary(name) do
+    assigns
+    |> assign(:array_form_submit, true)
+    |> assign(:hidden_select_name, Corex.FormField.list_submit_name(name))
+    |> assign(:value_input_name, nil)
+  end
+
+  defp assign_select_submit_names(assigns) do
+    assigns
+    |> assign(:array_form_submit, false)
+    |> assign(:hidden_select_name, nil)
+    |> assign(:value_input_name, assigns.name)
   end
 
   api_doc(~S"""
@@ -892,10 +872,13 @@ defmodule Corex.Select do
   ```
   """)
 
+  @spec set_value(String.t(), Corex.Value.coercible()) :: Phoenix.LiveView.JS.t()
+  @spec set_value(Phoenix.LiveView.Socket.t(), String.t(), Corex.Value.coercible()) ::
+          Phoenix.LiveView.Socket.t()
   def set_value(select_id, value) when is_binary(select_id) do
     JS.dispatch("corex:select:set-value",
-      to: "##{select_id}",
-      detail: %{value: validate_value!(List.wrap(value))},
+      to: Selectors.css_id(select_id),
+      detail: %{value: coerce_string_list(List.wrap(value), "Corex.Select.set_value/2")},
       bubbles: false
     )
   end
@@ -930,7 +913,7 @@ defmodule Corex.Select do
       socket,
       "select_set_value",
       select_id,
-      validate_value!(List.wrap(value))
+      coerce_string_list(List.wrap(value), "Corex.Select.set_value/2")
     )
   end
 
@@ -958,9 +941,12 @@ defmodule Corex.Select do
   ```
   """)
 
+  @spec set_open(String.t(), boolean()) :: Phoenix.LiveView.JS.t()
+  @spec set_open(Phoenix.LiveView.Socket.t(), String.t(), boolean()) ::
+          Phoenix.LiveView.Socket.t()
   def set_open(select_id, open) when is_binary(select_id) and is_boolean(open) do
     JS.dispatch("corex:select:set-open",
-      to: "##{select_id}",
+      to: Selectors.css_id(select_id),
       detail: %{open: open},
       bubbles: false
     )
@@ -999,10 +985,6 @@ defmodule Corex.Select do
     |> Enum.map(& &1.value)
   end
 
-  defp value_for_hidden_input(value_list, _multiple) when value_list == [], do: ""
-  defp value_for_hidden_input(value_list, false), do: List.first(value_list)
-  defp value_for_hidden_input(value_list, true), do: Enum.join(value_list, ",")
-
   defp transform_collection_to_options(items) do
     grouped = group_by_group(items)
 
@@ -1014,35 +996,6 @@ defmodule Corex.Select do
 
   defp group_to_options({nil, items}), do: Enum.map(items, &{&1.label, &1.value})
   defp group_to_options({group, items}), do: [{group, Enum.map(items, &{&1.label, &1.value})}]
-
-  defp get_value(field_value) do
-    case field_value do
-      nil -> []
-      [] -> []
-      value when is_list(value) -> Enum.map(value, &to_string/1)
-      value -> [to_string(value)]
-    end
-  end
-
-  defp get_selected_label(collection, value) do
-    case value do
-      [] ->
-        nil
-
-      _ ->
-        value
-        |> Enum.map(fn val ->
-          collection
-          |> Enum.find(&(to_string(&1.value) == val))
-        end)
-        |> Enum.filter(& &1)
-        |> Enum.map(& &1.label)
-        |> case do
-          [] -> nil
-          labels -> Enum.join(labels, ", ")
-        end
-    end
-  end
 
   defp select_connect_props(assigns) do
     props = %Props{

@@ -112,6 +112,7 @@ defmodule Corex.FileUpload do
 
   @doc type: :component
   use Phoenix.Component
+  use Corex.Component, :form
 
   import Corex.Api.Doc
 
@@ -128,26 +129,21 @@ defmodule Corex.FileUpload do
 
   alias Corex.FileUpload.Connect
   alias Corex.FileUpload.Translation
+  alias Corex.Selectors
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
-  attr(:id, :string,
-    required: false,
-    doc: "Stable id for the file upload root; set automatically when using field"
+  form_control_attrs(
+    except: [:controlled],
+    docs: [
+      id: "Stable id for the file upload root; set automatically when using field",
+      field: "Form field for id, name, form, invalid, and required wiring",
+      name: "The name attribute of the hidden file input",
+      form: "The id of the form this control belongs to",
+      read_only: "Whether the file upload is read-only",
+      required: "Whether at least one file is required"
+    ]
   )
-
-  attr(:disabled, :boolean, default: false, doc: "Whether the file upload is disabled")
-  attr(:invalid, :boolean, default: nil, doc: "Whether the file upload is invalid")
-
-  attr(:auto_invalid, :boolean,
-    default: false,
-    doc: "When true with `field`, set invalid from visible changeset errors"
-  )
-
-  attr(:read_only, :boolean, default: false, doc: "Whether the file upload is read-only")
-  attr(:required, :boolean, default: false, doc: "Whether at least one file is required")
-  attr(:name, :string, doc: "The name attribute of the hidden file input")
-  attr(:form, :string, doc: "The id of the form this control belongs to")
 
   attr(:dir, :string,
     default: nil,
@@ -230,10 +226,6 @@ defmodule Corex.FileUpload do
     doc: "List of error messages when not using field="
   )
 
-  attr(:field, Phoenix.HTML.FormField,
-    doc: "Form field for id, name, form, invalid, and required wiring"
-  )
-
   attr(:rest, :global)
 
   slot(:label, required: false, doc: "Label above the dropzone") do
@@ -274,8 +266,6 @@ defmodule Corex.FileUpload do
       assigns
       |> Corex.FormField.require_id!("Corex component (file-upload)")
       |> assign_new(:form_field, fn -> false end)
-      |> assign_new(:name, fn -> nil end)
-      |> assign_new(:form, fn -> nil end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign_new(:max_files, fn -> 1 end)
       |> assign_new(:max_file_size, fn -> nil end)
@@ -291,8 +281,7 @@ defmodule Corex.FileUpload do
     <div
       id={@id}
       phx-hook="FileUpload"
-      data-loading
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+      {Corex.Hook.loading()}
       {@rest}
       {Connect.props(%Props{
         id: @id,
@@ -326,8 +315,8 @@ defmodule Corex.FileUpload do
       >
         {render_slot(@close)}
       </template>
-      <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, read_only: @read_only})} {Connect.root(%Root{id: @id, dir: @dir, read_only: @read_only})}>
-        <label :if={@label != []} phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir})} {Connect.label(%Label{id: @id, dir: @dir})}>
+      <div {Connect.mounted_root(%Root{id: @id, dir: @dir, read_only: @read_only})}>
+        <label :if={@label != []} {Connect.mounted_label(%Label{id: @id, dir: @dir})}>
           {render_slot(@label)}
         </label>
         <div data-scope="file-upload" data-part="region">
@@ -349,14 +338,14 @@ defmodule Corex.FileUpload do
             }
             {Connect.hidden_input(%HiddenInput{id: @id, disabled: @disabled, name: @name, form: @form})}
           />
-          <div phx-mounted={Connect.ignore_dropzone(%Dropzone{id: @id})} {Connect.dropzone(%Dropzone{id: @id})}>
+          <div {Connect.mounted_dropzone(%Dropzone{id: @id})}>
             <%= if @dropzone != [] do %>
               {render_slot(@dropzone)}
             <% else %>
               <span>{@translation.dropzone}</span>
             <% end %>
           </div>
-          <button phx-mounted={Connect.ignore_trigger(%Trigger{id: @id, dir: @dir})} {Connect.trigger(%Trigger{id: @id, dir: @dir})}>
+          <button {Connect.mounted_trigger(%Trigger{id: @id, dir: @dir})}>
             <%= if @open != [] do %>
               {render_slot(@open)}
             <% else %>
@@ -399,9 +388,11 @@ defmodule Corex.FileUpload do
   ```
   """)
 
+  @spec clear_files(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec clear_files(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def clear_files(file_upload_id) when is_binary(file_upload_id) do
     JS.dispatch("corex:file-upload:clear-files",
-      to: "##{file_upload_id}",
+      to: Selectors.css_id(file_upload_id),
       bubbles: false
     )
   end
@@ -432,9 +423,12 @@ defmodule Corex.FileUpload do
   ```
   """)
 
+  @spec clear_rejected_files(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec clear_rejected_files(Phoenix.LiveView.Socket.t(), String.t()) ::
+          Phoenix.LiveView.Socket.t()
   def clear_rejected_files(file_upload_id) when is_binary(file_upload_id) do
     JS.dispatch("corex:file-upload:clear-rejected",
-      to: "##{file_upload_id}",
+      to: Selectors.css_id(file_upload_id),
       bubbles: false
     )
   end
@@ -465,8 +459,10 @@ defmodule Corex.FileUpload do
   ```
   """)
 
+  @spec open_file_picker(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec open_file_picker(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def open_file_picker(file_upload_id) when is_binary(file_upload_id) do
-    JS.dispatch("corex:file-upload:open", to: "##{file_upload_id}", bubbles: false)
+    JS.dispatch("corex:file-upload:open", to: Selectors.css_id(file_upload_id), bubbles: false)
   end
 
   api_doc(~S"""

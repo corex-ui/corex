@@ -404,7 +404,7 @@ defmodule Corex.Menu do
 
   attr(:items, :list,
     default: nil,
-    doc: "The items of the menu, must be a list of %Corex.Tree.Item{} structs"
+    doc: "Items from `Corex.Tree.new/1` (see `Corex.Tree` for the full contract)"
   )
 
   attr(:positioning, Positioning,
@@ -515,7 +515,7 @@ defmodule Corex.Menu do
   def menu(assigns) do
     assigns =
       assigns
-      |> assign_new(:id, fn -> "#{System.unique_integer([:positive])}" end)
+      |> Corex.FormField.assign_stable_id("menu")
       |> Corex.Tree.validate_items_assigns!(component: "menu")
       |> assign_menu_entries()
 
@@ -555,7 +555,7 @@ defmodule Corex.Menu do
         positioning: @positioning
       })}
     >
-      <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation})}>
+      <div {Connect.mounted_root(%Root{id: @id, dir: @dir, orientation: @orientation})}>
         <button phx-mounted={Connect.ignore_trigger(%Trigger{id: @id, disabled: @disabled, dir: @dir, orientation: @orientation})} {Connect.trigger(%Trigger{
           id: @id,
           disabled: @disabled,
@@ -567,30 +567,26 @@ defmodule Corex.Menu do
           </span>
           <span
             :if={@indicator != []}
-            phx-mounted={Connect.ignore_indicator(%Indicator{id: @id, dir: @dir, orientation: @orientation})}
-            {Connect.indicator(%Indicator{id: @id, dir: @dir, orientation: @orientation})}
+            {Connect.mounted_indicator(%Indicator{id: @id, dir: @dir, orientation: @orientation})}
           >
             {render_slot(@indicator)}
           </span>
         </button>
 
-        <div phx-mounted={Connect.ignore_positioner(%Positioner{id: @id, dir: @dir, orientation: @orientation})} {Connect.positioner(%Positioner{id: @id, dir: @dir, orientation: @orientation})}>
-          <div phx-mounted={Connect.ignore_content(%Content{id: @id, dir: @dir, orientation: @orientation})} {Connect.content(%Content{id: @id, dir: @dir, orientation: @orientation})}>
+        <div {Connect.mounted_positioner(%Positioner{id: @id, dir: @dir, orientation: @orientation})}>
+          <div {Connect.mounted_content(%Content{id: @id, dir: @dir, orientation: @orientation})}>
             <div
               :for={{:group, group_id, group_label, group_items} <- @menu_group_entries}
-              phx-mounted={Connect.ignore_item_group(%Group{id: @id, group_id: group_id, dir: @dir, orientation: @orientation})}
-              {Connect.item_group(%Group{id: @id, group_id: group_id, dir: @dir, orientation: @orientation})}
+              {Connect.mounted_item_group(%Group{id: @id, group_id: group_id, dir: @dir, orientation: @orientation})}
             >
               <div
-                phx-mounted={Connect.ignore_item_group_label(%GroupLabel{id: @id, group_id: group_id, dir: @dir, orientation: @orientation})}
-                {Connect.item_group_label(%GroupLabel{id: @id, group_id: group_id, dir: @dir, orientation: @orientation})}
+                {Connect.mounted_item_group_label(%GroupLabel{id: @id, group_id: group_id, dir: @dir, orientation: @orientation})}
               >
                 {group_label}
               </div>
               <div
                 :for={{item, item_struct} <- group_items}
-                phx-mounted={Connect.ignore_item(item_struct)}
-                {Connect.item(item_struct)}
+                {Connect.mounted_item(item_struct)}
               >
                 <div :if={@item != []} data-scope="menu" data-part="item-text">
                   {render_slot(@item, item)}
@@ -631,8 +627,7 @@ defmodule Corex.Menu do
 
             <div
               :for={{:item, item, item_struct} <- @menu_item_entries}
-              phx-mounted={Connect.ignore_item(item_struct)}
-              {Connect.item(item_struct)}
+              {Connect.mounted_item(item_struct)}
             >
               <div :if={@item != []} data-scope="menu" data-part="item-text">
                 {render_slot(@item, item)}
@@ -736,24 +731,21 @@ defmodule Corex.Menu do
         positioning: @positioning
       })}
     >
-      <div phx-mounted={Connect.ignore_root(%Root{id: @nested_id, dir: @dir, orientation: @orientation})} {Connect.root(%Root{id: @nested_id, dir: @dir, orientation: @orientation})}>
-        <div phx-mounted={Connect.ignore_positioner(%Positioner{id: @nested_id, dir: @dir, orientation: @orientation})} {Connect.positioner(%Positioner{id: @nested_id, dir: @dir, orientation: @orientation})}>
-          <div phx-mounted={Connect.ignore_content(%Content{id: @nested_id, dir: @dir, orientation: @orientation})} {Connect.content(%Content{id: @nested_id, dir: @dir, orientation: @orientation})}>
+      <div {Connect.mounted_root(%Root{id: @nested_id, dir: @dir, orientation: @orientation})}>
+        <div {Connect.mounted_positioner(%Positioner{id: @nested_id, dir: @dir, orientation: @orientation})}>
+          <div {Connect.mounted_content(%Content{id: @nested_id, dir: @dir, orientation: @orientation})}>
             <div
               :for={{:group, group_id, group_label, group_items} <- @nested_group_entries}
-              phx-mounted={Connect.ignore_item_group(%Group{id: @nested_id, group_id: group_id, dir: @dir, orientation: @orientation})}
-              {Connect.item_group(%Group{id: @nested_id, group_id: group_id, dir: @dir, orientation: @orientation})}
+              {Connect.mounted_item_group(%Group{id: @nested_id, group_id: group_id, dir: @dir, orientation: @orientation})}
             >
               <div
-                phx-mounted={Connect.ignore_item_group_label(%GroupLabel{id: @nested_id, group_id: group_id, dir: @dir, orientation: @orientation})}
-                {Connect.item_group_label(%GroupLabel{id: @nested_id, group_id: group_id, dir: @dir, orientation: @orientation})}
+                {Connect.mounted_item_group_label(%GroupLabel{id: @nested_id, group_id: group_id, dir: @dir, orientation: @orientation})}
               >
                 {group_label}
               </div>
               <div
                 :for={{nitem, item_struct} <- group_items}
-                phx-mounted={Connect.ignore_item(item_struct)}
-                {Connect.item(item_struct)}
+                {Connect.mounted_item(item_struct)}
               >
                 <div :if={@item_slot != []} data-scope="menu" data-part="item-text">
                   {render_slot(@item_slot, nitem)}
@@ -794,8 +786,7 @@ defmodule Corex.Menu do
 
             <div
               :for={{:item, nitem, item_struct} <- @nested_item_entries}
-              phx-mounted={Connect.ignore_item(item_struct)}
-              {Connect.item(item_struct)}
+              {Connect.mounted_item(item_struct)}
             >
               <div :if={@item_slot != []} data-scope="menu" data-part="item-text">
                 {render_slot(@item_slot, nitem)}
@@ -916,6 +907,9 @@ defmodule Corex.Menu do
   ```
   """)
 
+  @spec set_open(String.t(), Corex.Value.coercible()) :: Phoenix.LiveView.JS.t()
+  @spec set_open(Phoenix.LiveView.Socket.t(), String.t(), Corex.Value.coercible()) ::
+          Phoenix.LiveView.Socket.t()
   def set_open(menu_id, open) when is_binary(menu_id) do
     JS.dispatch("corex:menu:set-open",
       to: "[id=\"menu:#{menu_id}\"]",

@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import type { CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
 import * as hookModule from "../../hooks/select";
 import {
   buildCollection,
@@ -8,11 +9,21 @@ import {
   syncSelectHiddenInputForPhoenix,
   syncControlledValueInputFromServer,
   syncSelectHiddenSelectForPhoenix,
+  Select as SelectHook,
 } from "../../hooks/select";
+import type { Select as SelectComponent } from "../../components/select";
 import { mutableArray } from "../helpers/matrix";
 import type { ValueLabelItem } from "../../lib/list-collection";
 import { expectHookModule } from "../helpers/expect-hook";
 import { el } from "../helpers/dom";
+import {
+  callHookDestroyed,
+  callHookLifecycle,
+  callHookMounted,
+  mockHookContext,
+} from "../helpers/mock-hook";
+import { scopeTree } from "../helpers/component-fixture";
+import { withId } from "../helpers/component-smoke";
 
 const items: ValueLabelItem[] = [
   { label: "Alpha", value: "a" },
@@ -160,5 +171,72 @@ describe("syncSelectHiddenSelectForPhoenix", () => {
     syncSelectHiddenSelectForPhoenix(hiddenSelect, []);
 
     expect(Array.from(hiddenSelect.selectedOptions)).toHaveLength(0);
+  });
+});
+
+describe("Select hook morph sync", () => {
+  it("updated restores trigger label after morph wipe", () => {
+    const root = withId(
+      scopeTree("select", [
+        {
+          part: "root",
+          children: [
+            {
+              part: "control",
+              children: [
+                {
+                  part: "trigger",
+                  children: [{ part: "item-text", text: "France" }],
+                },
+              ],
+            },
+            {
+              part: "content",
+              children: [
+                {
+                  part: "item",
+                  attrs: { "data-value": "fra" },
+                  children: [{ part: "item-text", text: "France" }],
+                },
+              ],
+            },
+          ],
+        },
+      ])
+    );
+    root.id = "select-morph";
+    root.setAttribute("phx-hook", "Select");
+    root.setAttribute("data-placeholder", "Pick");
+    root.setAttribute("data-default-value", "fra");
+    root.setAttribute(
+      "data-items",
+      JSON.stringify([{ label: "France", value: "fra", disabled: false }])
+    );
+    document.body.appendChild(root);
+
+    const { hook } = mockHookContext(root, {
+      connected: false,
+      overrides: {
+        select: undefined as SelectComponent | undefined,
+        handlers: [] as CallbackRef[],
+        beforeAttrs: undefined,
+        lastItemsJson: undefined as string | undefined,
+      },
+    });
+
+    callHookMounted(SelectHook, hook);
+
+    const valueText = root.querySelector<HTMLElement>(
+      '[data-scope="select"][data-part="trigger"] [data-part="item-text"]'
+    )!;
+    expect(hook.select!.api.value).toEqual(["fra"]);
+    expect(valueText.textContent).toBe("France");
+
+    valueText.textContent = "Pick";
+    callHookLifecycle(SelectHook, hook, "updated");
+    expect(valueText.textContent).toBe("France");
+
+    callHookDestroyed(SelectHook, hook);
+    root.remove();
   });
 });

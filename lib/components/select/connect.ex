@@ -1,5 +1,9 @@
 defmodule Corex.Select.Connect do
   @moduledoc false
+  use Corex.Connect.Mounted
+
+  use Corex.Component, :connect
+
   alias Corex.Selectors
 
   alias Corex.Select.Anatomy.{
@@ -20,12 +24,12 @@ defmodule Corex.Select.Connect do
   }
 
   alias Corex.Connect.ItemNav
-  alias Corex.FormField
-  alias Corex.ValueBinding
-  alias Phoenix.LiveView.JS
 
-  import Corex.Helpers,
-    only: [get_boolean: 1, maybe_put: 3, maybe_put_data_dir: 2, maybe_put_dir: 2]
+  alias Corex.FormField
+
+  alias Corex.ValueBinding
+
+  alias Phoenix.LiveView.JS
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
@@ -40,26 +44,26 @@ defmodule Corex.Select.Connect do
     base = %{
       "id" => assigns.id,
       "data-items" => items_json,
-      "data-controlled" => get_boolean(controlled),
+      "data-controlled" => presence_attr(controlled),
       "data-value" => value_str,
       "data-default-value" => default_value_str,
       "data-placeholder" => assigns.placeholder || "",
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-close-on-select" => get_boolean(assigns.close_on_select),
-      "data-loop-focus" => get_boolean(assigns.loop_focus),
-      "data-multiple" => get_boolean(assigns.multiple),
-      "data-invalid" => get_boolean(assigns.invalid),
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-close-on-select" => presence_attr(assigns.close_on_select),
+      "data-loop-focus" => presence_attr(assigns.loop_focus),
+      "data-multiple" => presence_attr(assigns.multiple),
+      "data-invalid" => presence_attr(assigns.invalid),
       "data-name" => assigns.name,
       "data-form" => assigns.form,
-      "data-readonly" => get_boolean(assigns.read_only),
-      "data-required" => get_boolean(assigns.required),
+      "data-readonly" => presence_attr(assigns.read_only),
+      "data-required" => presence_attr(assigns.required),
       "data-orientation" => Map.get(assigns, :orientation, "vertical")
     }
 
     base
     |> Map.merge(Corex.Positioning.to_dataset(assigns.positioning))
     |> merge_optional_select_props(assigns)
-    |> maybe_put_data_dir(assigns.dir)
+    |> put_data_dir_attr(assigns.dir)
     |> FormField.put_form_field_attrs(assigns)
   end
 
@@ -67,8 +71,8 @@ defmodule Corex.Select.Connect do
     base
     |> maybe_put("data-on-value-change", assigns.on_value_change)
     |> maybe_put("data-on-value-change-client", assigns.on_value_change_client)
-    |> maybe_put("data-redirect", get_boolean(assigns.redirect))
-    |> maybe_put("data-deselectable", get_boolean(Map.get(assigns, :deselectable)))
+    |> maybe_put("data-redirect", presence_attr(assigns.redirect))
+    |> maybe_put("data-deselectable", presence_attr(Map.get(assigns, :deselectable)))
     |> maybe_put("data-hidden-select-name", Map.get(assigns, :hidden_select_name))
     |> maybe_put(
       "data-update-trigger",
@@ -86,10 +90,10 @@ defmodule Corex.Select.Connect do
       "data-part" => "root",
       "data-orientation" => orientation,
       "id" => "select:#{assigns.id}",
-      "data-invalid" => get_boolean(assigns.invalid),
-      "data-readonly" => get_boolean(assigns.read_only)
+      "data-invalid" => presence_attr(assigns.invalid),
+      "data-readonly" => presence_attr(assigns.read_only)
     }
-    |> maybe_put_dir(dir)
+    |> put_dir_attr(dir)
   end
 
   def ignore_root(assigns) do
@@ -108,10 +112,10 @@ defmodule Corex.Select.Connect do
       "data-orientation" => orientation,
       "dir" => assigns.dir,
       "id" => "select:#{assigns.id}:label",
-      "data-required" => get_boolean(assigns.required),
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-invalid" => get_boolean(assigns.invalid),
-      "data-readonly" => get_boolean(assigns.read_only)
+      "data-required" => presence_attr(assigns.required),
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-invalid" => presence_attr(assigns.invalid),
+      "data-readonly" => presence_attr(assigns.read_only)
     }
   end
 
@@ -131,8 +135,8 @@ defmodule Corex.Select.Connect do
       "data-orientation" => orientation,
       "dir" => assigns.dir,
       "id" => "select:#{assigns.id}:control",
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-invalid" => get_boolean(assigns.invalid)
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-invalid" => presence_attr(assigns.invalid)
     }
   end
 
@@ -153,8 +157,8 @@ defmodule Corex.Select.Connect do
       "dir" => assigns.dir,
       "id" => "select:#{assigns.id}:trigger",
       "type" => "button",
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-invalid" => get_boolean(assigns.invalid)
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-invalid" => presence_attr(assigns.invalid)
     }
   end
 
@@ -220,8 +224,7 @@ defmodule Corex.Select.Connect do
       "id" => "select:#{assigns.id}:hidden-select",
       "aria-hidden" => "true",
       "tabindex" => -1,
-      "style" =>
-        "border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap;word-wrap:normal;"
+      "style" => visually_hidden_style()
     }
   end
 

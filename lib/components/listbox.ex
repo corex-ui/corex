@@ -218,12 +218,12 @@ defmodule Corex.Listbox do
 
   <!-- tabs-open -->
 
-  ### Stream
+  ### Dynamic items
 
-  Use `Phoenix.LiveView.stream/3` to add or remove items at runtime. Keep a list assign in sync with the stream and pass `Corex.List.new(@items_list)` as `items`. Configure `dom_id` to match each item element id (`listbox:stream-listbox:item:#{value}`).
+  Grow or shrink options at runtime by updating a list assign and passing `Corex.List.new(@items)` as `items`. Listbox options are rebuilt from props after morph (not a LiveView stream consumer); use `Phoenix.LiveView.stream/3` only with components that render `@streams.*` (for example `data_table`).
 
   ```elixir
-  defmodule MyAppWeb.ListboxStreamLive do
+  defmodule MyAppWeb.ListboxDynamicLive do
     use MyAppWeb, :live_view
 
     def mount(_params, _session, socket) do
@@ -233,12 +233,7 @@ defmodule Corex.Listbox do
         %{value: "3", label: "Cherry"}
       ]
 
-      {:ok,
-       socket
-       |> stream_configure(:items, dom_id: &"listbox:stream-listbox:item:#{&1.value}")
-       |> stream(:items, initial)
-       |> assign(:items_list, initial)
-       |> assign(:next_id, 4)}
+      {:ok, socket |> assign(:items, initial) |> assign(:next_id, 4)}
     end
 
     def handle_event("add_item", _params, socket) do
@@ -247,14 +242,13 @@ defmodule Corex.Listbox do
 
       {:noreply,
        socket
-       |> stream_insert(:items, item)
-       |> assign(:items_list, socket.assigns.items_list ++ [item])
+       |> assign(:items, socket.assigns.items ++ [item])
        |> assign(:next_id, socket.assigns.next_id + 1)}
     end
 
     def render(assigns) do
       ~H"""
-      <.listbox id="stream-listbox" class="listbox" items={Corex.List.new(@items_list)}>
+      <.listbox id="patterns-dynamic" class="listbox" items={Corex.List.new(@items)}>
         <:label>Choose an item</:label>
         <:empty>No items</:empty>
         <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
@@ -347,9 +341,12 @@ defmodule Corex.Listbox do
   @doc type: :component
   use Phoenix.Component
 
+  use Corex.Component, [:list, :api]
+
   import Corex.Api.Doc
 
   alias Phoenix.LiveView
+
   alias Phoenix.LiveView.JS
 
   alias Corex.Listbox.Anatomy.{
@@ -366,23 +363,14 @@ defmodule Corex.Listbox do
 
   alias Corex.Listbox.Connect
 
-  import Corex.Helpers,
-    only: [
-      validate_value!: 1,
-      normalize_items: 1,
-      normalize_groups: 1,
-      has_groups?: 1,
-      entry_value: 1,
-      entry_selected?: 2,
-      respond_to_fields: 1
-    ]
+  alias Corex.Selectors
 
   attr(:id, :string, required: false, doc: "The id of the listbox")
 
   attr(:items, :list,
     required: true,
     doc:
-      "Items from `Corex.List.new/1` (or maps with :label and optional :value, disabled, group)"
+      "Items from `Corex.List.new/1`, or plain maps with `:label` (see `Corex.List` for the full contract)"
   )
 
   attr(:value, :list, default: [], doc: "Selected value(s)")
@@ -446,55 +434,68 @@ defmodule Corex.Listbox do
   def listbox(assigns) do
     items = normalize_items(assigns.items)
     has_groups = has_groups?(items)
-    groups = normalize_groups(items)
+
+    grouped_items =
+      items
+      |> group_by_group()
+      |> Enum.reject(fn {group, _} -> is_nil(group) end)
+
+    items_json = Corex.Dataset.encode_json(items)
+    value = coerce_string_list(assigns[:value] || [])
 
     assigns =
       assigns
-      |> assign_new(:id, fn -> "listbox-#{System.unique_integer([:positive])}" end)
-      |> assign(:value, validate_value!(assigns[:value] || []))
+      |> Corex.FormField.assign_stable_id("listbox")
+      |> assign(:value, value)
       |> assign(:items, items)
-      |> assign(:items_json, Corex.Dataset.encode_json(items))
+      |> assign(:items_json, items_json)
       |> assign(:has_groups, has_groups)
-      |> assign(:groups, groups)
+      |> assign(:grouped_items, grouped_items)
+
+    assigns =
+      assign(
+        assigns,
+        :connect_props,
+        Connect.props(%Props{
+          id: assigns.id,
+          items: items,
+          items_json: items_json,
+          value: value,
+          controlled: assigns.controlled,
+          disabled: assigns.disabled,
+          dir: assigns.dir,
+          orientation: assigns.orientation,
+          loop_focus: assigns.loop_focus,
+          selection_mode: assigns.selection_mode,
+          select_on_highlight: assigns.select_on_highlight,
+          deselectable: assigns.deselectable,
+          typeahead: assigns.typeahead,
+          on_value_change: assigns.on_value_change,
+          on_value_change_client: assigns.on_value_change_client,
+          redirect: assigns.redirect
+        })
+      )
 
     ~H"""
     <div
       id={@id}
       phx-hook="Listbox"
-      data-loading
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+      {Corex.Hook.loading()}
       {@rest}
-      {Connect.props(%Props{
-        id: @id,
-        items: @items,
-        items_json: @items_json,
-        value: @value,
-        controlled: @controlled,
-        disabled: @disabled,
-        dir: @dir,
-        orientation: @orientation,
-        loop_focus: @loop_focus,
-        selection_mode: @selection_mode,
-        select_on_highlight: @select_on_highlight,
-        deselectable: @deselectable,
-        typeahead: @typeahead,
-        on_value_change: @on_value_change,
-        on_value_change_client: @on_value_change_client,
-        redirect: @redirect
-      })}
+      {@connect_props}
     >
-      <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation})}>
-         <label phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir, orientation: @orientation})} {Connect.label(%Label{id: @id, dir: @dir, orientation: @orientation})}>
+      <div {Connect.mounted_root(%Root{id: @id, dir: @dir, orientation: @orientation})}>
+         <label {Connect.mounted_label(%Label{id: @id, dir: @dir, orientation: @orientation})}>
           {if @label != [], do: render_slot(@label), else: @aria_label}
         </label>
         <div phx-mounted={Connect.ignore_content(%Content{id: @id, dir: @dir, orientation: @orientation})} {content_attrs(@id, @dir, @orientation, @label != [] || @aria_label != nil)}>
           <div :if={@items == [] && @empty != []} data-scope="listbox" data-part="empty">
             {render_slot(@empty)}
           </div>
-          <div :for={group_id <- @groups} phx-mounted={Connect.ignore_item_group(%ItemGroup{id: @id, group_id: group_id, dir: @dir, orientation: @orientation})} {Connect.item_group(%ItemGroup{id: @id, group_id: group_id, dir: @dir, orientation: @orientation})}>
-            <div phx-mounted={Connect.ignore_item_group_label(%ItemGroupLabel{id: @id, html_for: group_id, dir: @dir, orientation: @orientation})} {Connect.item_group_label(%ItemGroupLabel{id: @id, html_for: group_id, dir: @dir, orientation: @orientation})}>{group_id}</div>
-            <div :for={entry <- Enum.filter(@items, &(&1.group == group_id))} phx-mounted={Connect.ignore_item(%Item{id: @id, item: entry, value: entry_value(entry), dir: @dir, orientation: @orientation})} {item_attrs(@id, entry, @dir, @orientation)}>
-              <span phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, item: entry, orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, item: entry, orientation: @orientation})}>
+          <div :for={{group_id, group_entries} <- @grouped_items} {Connect.mounted_item_group(%ItemGroup{id: @id, group_id: group_id, dir: @dir, orientation: @orientation})}>
+            <div {Connect.mounted_item_group_label(%ItemGroupLabel{id: @id, html_for: group_id, dir: @dir, orientation: @orientation})}>{group_id}</div>
+            <div :for={entry <- group_entries} phx-mounted={Connect.ignore_item(%Item{id: @id, item: entry, value: entry_value(entry), dir: @dir, orientation: @orientation})} {item_attrs(@id, entry, @dir, @orientation)}>
+              <span {Connect.mounted_item_text(%ItemText{id: @id, item: entry, orientation: @orientation})}>
                 <%= if @item == [] do %>
                   {entry[:label]}
                 <% else %>
@@ -502,8 +503,7 @@ defmodule Corex.Listbox do
                 <% end %>
               </span>
               <span
-                phx-mounted={Connect.ignore_item_indicator(%ItemIndicator{id: @id, item: entry, dir: @dir, orientation: @orientation})}
-                {Connect.item_indicator(%ItemIndicator{id: @id, item: entry, dir: @dir, orientation: @orientation})}
+                {Connect.mounted_item_indicator(%ItemIndicator{id: @id, item: entry, dir: @dir, orientation: @orientation})}
                 hidden={!entry_selected?(entry, @value)}
               >
                 {if @item_indicator != [], do: render_slot(@item_indicator), else: nil}
@@ -511,7 +511,7 @@ defmodule Corex.Listbox do
             </div>
           </div>
           <div :for={entry <- if(@has_groups, do: [], else: @items)} phx-mounted={Connect.ignore_item(%Item{id: @id, item: entry, value: entry_value(entry), dir: @dir, orientation: @orientation})} {item_attrs(@id, entry, @dir, @orientation)}>
-            <span phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, item: entry, orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, item: entry, orientation: @orientation})}>
+            <span {Connect.mounted_item_text(%ItemText{id: @id, item: entry, orientation: @orientation})}>
               <%= if @item == [] do %>
                 {entry[:label]}
               <% else %>
@@ -519,8 +519,7 @@ defmodule Corex.Listbox do
               <% end %>
             </span>
             <span
-              phx-mounted={Connect.ignore_item_indicator(%ItemIndicator{id: @id, item: entry, dir: @dir, orientation: @orientation})}
-              {Connect.item_indicator(%ItemIndicator{id: @id, item: entry, dir: @dir, orientation: @orientation})}
+              {Connect.mounted_item_indicator(%ItemIndicator{id: @id, item: entry, dir: @dir, orientation: @orientation})}
               hidden={!entry_selected?(entry, @value)}
             >
               {if @item_indicator != [], do: render_slot(@item_indicator), else: nil}
@@ -553,13 +552,7 @@ defmodule Corex.Listbox do
         new_tab: Map.get(entry, :new_tab, false)
       })
 
-    if Map.get(entry, :disabled) do
-      base
-      |> Map.put("data-disabled", "")
-      |> Map.put("aria-disabled", "true")
-    else
-      base
-    end
+    put_disabled_attrs(base, entry)
   end
 
   api_doc(~S"""
@@ -587,10 +580,13 @@ defmodule Corex.Listbox do
   ```
   """)
 
+  @spec set_value(String.t(), Corex.Value.coercible()) :: Phoenix.LiveView.JS.t()
+  @spec set_value(Phoenix.LiveView.Socket.t(), String.t(), Corex.Value.coercible()) ::
+          Phoenix.LiveView.Socket.t()
   def set_value(listbox_id, value) when is_binary(listbox_id) do
     JS.dispatch("corex:listbox:set-value",
-      to: "##{listbox_id}",
-      detail: %{value: validate_value!(List.wrap(value))},
+      to: Selectors.css_id(listbox_id),
+      detail: %{value: coerce_string_list(List.wrap(value), "Corex.Listbox.set_value/2")},
       bubbles: false
     )
   end
@@ -609,7 +605,7 @@ defmodule Corex.Listbox do
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(listbox_id) do
     LiveView.push_event(socket, "listbox_set_value", %{
       id: listbox_id,
-      value: validate_value!(List.wrap(value))
+      value: coerce_string_list(List.wrap(value), "Corex.Listbox.set_value/2")
     })
   end
 
@@ -635,9 +631,12 @@ defmodule Corex.Listbox do
   ```
   """)
 
+  @spec value(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec value(String.t(), keyword()) :: Phoenix.LiveView.JS.t()
+  @spec value(Phoenix.LiveView.Socket.t(), String.t(), keyword()) :: Phoenix.LiveView.Socket.t()
   def value(listbox_id, opts) when is_binary(listbox_id) and is_list(opts) do
     JS.dispatch("corex:listbox:value",
-      to: "##{listbox_id}",
+      to: Selectors.css_id(listbox_id),
       detail: respond_to_fields(opts),
       bubbles: false
     )
@@ -648,7 +647,7 @@ defmodule Corex.Listbox do
     value(socket, listbox_id, [])
   end
 
-  api_doc_short("Same as [`value/2`](#value/2) with default `respond_to:`.")
+  api_doc("Same as [`value/2`](#value/2) with default `respond_to:`.")
   def value(listbox_id) when is_binary(listbox_id), do: value(listbox_id, [])
 
   api_doc(~S"""

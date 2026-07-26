@@ -61,6 +61,8 @@ defmodule Corex.DataTable.Selection do
   Adds `:selected` (empty list), `:selection_table_id`, and `:selection_row_id`
   for use by [`handle_select/3`](#handle_select/3) and [`handle_select_all/3`](#handle_select_all/3).
   """
+  @spec assign_for_selection(Phoenix.LiveView.Socket.t(), atom(), keyword()) ::
+          Phoenix.LiveView.Socket.t()
   def assign_for_selection(socket, _rows_assign, opts) do
     table_id = Keyword.fetch!(opts, :table_id)
     row_id = Keyword.fetch!(opts, :row_id)
@@ -81,6 +83,7 @@ defmodule Corex.DataTable.Selection do
   current `rows` via `selection_row_id` are added to `:selected`; forged ids are ignored when
   checking a row. `rows_assign` is the assign key passed to [`data_table/1`](Corex.DataTable.html#data_table/1) as `rows` (e.g. `:users`).
   """
+  @spec handle_select(Phoenix.LiveView.Socket.t(), map(), atom()) :: Phoenix.LiveView.Socket.t()
   def handle_select(socket, %{"id" => checkbox_id, "checked" => checked}, rows_assign) do
     checked = CheckableHelpers.native_checked(checked)
     table_id = socket.assigns.selection_table_id
@@ -122,6 +125,8 @@ defmodule Corex.DataTable.Selection do
   [`Corex.Checkbox.set_checked_many/3`](Corex.Checkbox.html#set_checked_many/3). `rows_assign` is the
   assign key passed to [`data_table/1`](Corex.DataTable.html#data_table/1) as `rows`.
   """
+  @spec handle_select_all(Phoenix.LiveView.Socket.t(), map(), atom()) ::
+          Phoenix.LiveView.Socket.t()
   def handle_select_all(socket, %{"checked" => checked}, rows_assign) do
     checked = CheckableHelpers.native_checked(checked)
     table_id = socket.assigns.selection_table_id

@@ -169,22 +169,19 @@ defmodule Corex.ColorPickerTest do
   end
 
   describe "Initial.parse/1" do
-    test "returns empty map for nil" do
+    test "defaults nil to black" do
       result = Initial.parse(nil)
-      assert result.swatch_style == nil
-      assert result.value_rgba == nil
-      assert result.hex_value == nil
-      assert result.alpha_value == nil
-      assert result.red_value == nil
-      assert result.green_value == nil
-      assert result.blue_value == nil
+      assert result.hex_value == "#000000"
+      assert result.red_value == "0"
+      assert result.green_value == "0"
+      assert result.blue_value == "0"
+      assert result.alpha_value == "1"
     end
 
-    test "returns empty map for empty string" do
+    test "defaults empty string to black" do
       result = Initial.parse("")
-      assert result.swatch_style == nil
-      assert result.value_rgba == nil
-      assert result.hex_value == nil
+      assert result.hex_value == "#000000"
+      assert result.red_value == "0"
     end
 
     test "hex short format - parses #fff to white" do
@@ -469,11 +466,10 @@ defmodule Corex.ColorPickerTest do
       assert initial.alpha_value == "0.5"
     end
 
-    test "assigns empty initial when no value" do
+    test "assigns black initial when no value" do
       initial = Initial.parse(nil)
-      assert initial.hex_value == nil
-      assert initial.alpha_value == nil
-      assert initial.swatch_style == nil
+      assert initial.hex_value == "#000000"
+      assert initial.alpha_value == "1"
     end
   end
 
@@ -528,7 +524,7 @@ defmodule Corex.ColorPickerTest do
       assert %Phoenix.LiveView.JS{} = Connect.ignore_area(%Area{picker_id: "cp", dir: "ltr"})
 
       assert %Phoenix.LiveView.JS{} =
-               Connect.ignore_transparency_grid(%TransparencyGrid{id: "cp", size: "10px"})
+               Connect.ignore_transparency_grid(%TransparencyGrid{id: "cp", size: "12px"})
 
       assert %Phoenix.LiveView.JS{} =
                Connect.ignore_swatch(%Swatch{

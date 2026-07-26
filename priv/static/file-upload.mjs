@@ -1,16 +1,12 @@
 import {
   bindArrayFieldSubmitIntent
-} from "./chunks/chunk-3BEM4I52.mjs";
-import "./chunks/chunk-DOKFN6DA.mjs";
-import {
-  createDomEventRegistry,
-  createHookHandleEventRegistry
-} from "./chunks/chunk-77HPO22C.mjs";
+} from "./chunks/chunk-4UPAN2NC.mjs";
+import "./chunks/chunk-7LA2VUMJ.mjs";
 import {
   idMatches,
   notifyChange,
   readPayloadId
-} from "./chunks/chunk-LNVRIZ4K.mjs";
+} from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
   Component,
   VanillaMachine,
@@ -20,6 +16,7 @@ import {
   contains,
   createAnatomy,
   createMachine,
+  createZagLiveHook,
   dataAttr,
   flatArray,
   getBoolean,
@@ -32,9 +29,9 @@ import {
   raf,
   visuallyHiddenStyle,
   warn
-} from "./chunks/chunk-6AOEC32Q.mjs";
+} from "./chunks/chunk-E4OZ7DWO.mjs";
 
-// ../node_modules/.pnpm/@zag-js+file-upload@1.40.0/node_modules/@zag-js/file-upload/dist/file-upload.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+file-upload@1.42.0/node_modules/@zag-js/file-upload/dist/file-upload.anatomy.mjs
 var anatomy = createAnatomy("file-upload").parts(
   "root",
   "dropzone",
@@ -51,7 +48,7 @@ var anatomy = createAnatomy("file-upload").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+file-utils@1.40.0/node_modules/@zag-js/file-utils/dist/data-transfer.mjs
+// ../node_modules/.pnpm/@zag-js+file-utils@1.42.0/node_modules/@zag-js/file-utils/dist/data-transfer.mjs
 var getItemEntry = (item) => typeof item.getAsEntry === "function" ? item.getAsEntry() : typeof item.webkitGetAsEntry === "function" ? item.webkitGetAsEntry() : null;
 var isDirectoryEntry = (entry) => entry.isDirectory;
 var isFileEntry = (entry) => entry.isFile;
@@ -107,7 +104,7 @@ var getDirectoryFiles = (reader, path = "") => new Promise((resolve) => {
   readDirectoryEntries();
 });
 
-// ../node_modules/.pnpm/@zag-js+file-utils@1.40.0/node_modules/@zag-js/file-utils/dist/get-accept-attr.mjs
+// ../node_modules/.pnpm/@zag-js+file-utils@1.42.0/node_modules/@zag-js/file-utils/dist/get-accept-attr.mjs
 function isMIMEType(v) {
   return v === "audio/*" || v === "video/*" || v === "image/*" || v === "text/*" || /\w+\/[-+.\w]+/g.test(v);
 }
@@ -126,12 +123,12 @@ function getAcceptAttrString(accept) {
   return Object.entries(accept).reduce((a, [mimeType, ext]) => [...a, mimeType, ...ext], []).filter(isValidMIME).join(",");
 }
 
-// ../node_modules/.pnpm/@zag-js+file-utils@1.40.0/node_modules/@zag-js/file-utils/dist/is-file-equal.mjs
+// ../node_modules/.pnpm/@zag-js+file-utils@1.42.0/node_modules/@zag-js/file-utils/dist/is-file-equal.mjs
 var isFileEqual = (file1, file2) => {
   return file1.name === file2.name && file1.size === file2.size && file1.type === file2.type;
 };
 
-// ../node_modules/.pnpm/@zag-js+file-utils@1.40.0/node_modules/@zag-js/file-utils/dist/is-valid-file-size.mjs
+// ../node_modules/.pnpm/@zag-js+file-utils@1.42.0/node_modules/@zag-js/file-utils/dist/is-valid-file-size.mjs
 var isDefined = (v) => v !== void 0 && v !== null;
 function isValidFileSize(file, minSize, maxSize) {
   if (isDefined(file.size)) {
@@ -147,7 +144,7 @@ function isValidFileSize(file, minSize, maxSize) {
   return [true, null];
 }
 
-// ../node_modules/.pnpm/@zag-js+file-utils@1.40.0/node_modules/@zag-js/file-utils/dist/mime-types.mjs
+// ../node_modules/.pnpm/@zag-js+file-utils@1.42.0/node_modules/@zag-js/file-utils/dist/mime-types.mjs
 var mimeTypes = "3g2_video/3gpp2[3gp,3gpp_video/3gpp[3mf_model/3mf[7z_application/x-7z-compressed[aac_audio/aac[ac_application/pkix-attr-cert[adp_audio/adpcm[adts_audio/aac[ai_application/postscript[aml_application/automationml-aml+xml[amlx_application/automationml-amlx+zip[amr_audio/amr[apk_application/vnd.android.package-archive[apng_image/apng[appcache,manifest_text/cache-manifest[appinstaller_application/appinstaller[appx_application/appx[appxbundle_application/appxbundle[asc_application/pgp-keys[atom_application/atom+xml[atomcat_application/atomcat+xml[atomdeleted_application/atomdeleted+xml[atomsvc_application/atomsvc+xml[au,snd_audio/basic[avi_video/x-msvideo[avci_image/avci[avcs_image/avcs[avif_image/avif[aw_application/applixware[bdoc_application/bdoc[bin,bpk,buffer,deb,deploy,dist,distz,dll,dmg,dms,dump,elc,exe,img,iso,lrf,mar,msi,msm,msp,pkg,so_application/octet-stream[bmp,dib_image/bmp[btf,btif_image/prs.btif[bz2_application/x-bzip2[c_text/x-c[ccxml_application/ccxml+xml[cdfx_application/cdfx+xml[cdmia_application/cdmi-capability[cdmic_application/cdmi-container[cdmid_application/cdmi-domain[cdmio_application/cdmi-object[cdmiq_application/cdmi-queue[cer_application/pkix-cert[cgm_image/cgm[cjs_application/node[class_application/java-vm[coffee,litcoffee_text/coffeescript[conf,def,in,ini,list,log,text,txt_text/plain[cpp,cxx,cc_text/x-c++src[cpl_application/cpl+xml[cpt_application/mac-compactpro[crl_application/pkix-crl[css_text/css[csv_text/csv[cu_application/cu-seeme[cwl_application/cwl[cww_application/prs.cww[davmount_application/davmount+xml[dbk_application/docbook+xml[doc_application/msword[docx_application/vnd.openxmlformats-officedocument.wordprocessingml.document[dsc_text/prs.lines.tag[dssc_application/dssc+der[dtd_application/xml-dtd[dwd_application/atsc-dwd+xml[ear,jar,war_application/java-archive[ecma_application/ecmascript[emf_image/emf[eml,mime_message/rfc822[emma_application/emma+xml[emotionml_application/emotionml+xml[eot_application/vnd.ms-fontobject[eps,ps_application/postscript[epub_application/epub+zip[exi_application/exi[exp_application/express[exr_image/aces[ez_application/andrew-inset[fdf_application/fdf[fdt_application/fdt+xml[fits_image/fits[flac_audio/flac[flv_video/x-flv[g3_image/g3fax[geojson_application/geo+json[gif_image/gif[glb_model/gltf-binary[gltf_model/gltf+json[gml_application/gml+xml[go_text/x-go[gpx_application/gpx+xml[gz_application/gzip[h_text/x-h[h261_video/h261[h263_video/h263[h264_video/h264[heic_image/heic[heics_image/heic-sequence[heif_image/heif[heifs_image/heif-sequence[htm,html,shtml_text/html[ico_image/x-icon[icns_image/x-icns[ics,ifb_text/calendar[iges,igs_model/iges[ink,inkml_application/inkml+xml[ipa_application/octet-stream[java_text/x-java-source[jp2,jpg2_image/jp2[jpeg,jpe,jpg_image/jpeg[jpf,jpx_image/jpx[jpm,jpgm_image/jpm[jpgv_video/jpeg[jph_image/jph[js,mjs_text/javascript[json_application/json[json5_application/json5[jsonld_application/ld+json[jsx_text/jsx[jxl_image/jxl[jxr_image/jxr[ktx_image/ktx[ktx2_image/ktx2[less_text/less[m1v,m2v,mpe,mpeg,mpg_video/mpeg[m4a_audio/mp4[m4v_video/x-m4v[md,markdown_text/markdown[mid,midi,kar,rmi_audio/midi[mkv_video/x-matroska[mp2,mp2a,mp3,mpga,m3a,m2a_audio/mpeg[mp4,mp4v,mpg4_video/mp4[mp4a_audio/mp4[mp4s,m4p_application/mp4[odp_application/vnd.oasis.opendocument.presentation[oda_application/oda[ods_application/vnd.oasis.opendocument.spreadsheet[odt_application/vnd.oasis.opendocument.text[oga,ogg,opus,spx_audio/ogg[ogv_video/ogg[ogx_application/ogg[otf_font/otf[p12,pfx_application/x-pkcs12[pdf_application/pdf[pem_application/x-pem-file[php_text/x-php[png_image/png[ppt_application/vnd.ms-powerpoint[pptx_application/vnd.openxmlformats-officedocument.presentationml.presentation[pskcxml_application/pskc+xml[psd_image/vnd.adobe.photoshop[py_text/x-python[qt,mov_video/quicktime[rar_application/vnd.rar[rdf_application/rdf+xml[rtf_text/rtf[sass_text/x-sass[scss_text/x-scss[sgm,sgml_text/sgml[sh_application/x-sh[svg,svgz_image/svg+xml[swf_application/x-shockwave-flash[tar_application/x-tar[tif,tiff_image/tiff[toml_application/toml[ts_video/mp2t[tsx_text/tsx[tsv_text/tab-separated-values[ttc_font/collection[ttf_font/ttf[vtt_text/vtt[wasm_application/wasm[wav_audio/wav[weba_audio/webm[webm_video/webm[webmanifest_application/manifest+json[webp_image/webp[wma_audio/x-ms-wma[wmv_video/x-ms-wmv[woff_font/woff[woff2_font/woff2[xls_application/vnd.ms-excel[xlsx_application/vnd.openxmlformats-officedocument.spreadsheetml.sheet[xml_application/xml[xz_application/x-xz[yaml,yml_text/yaml[zip_application/zip";
 var mimeTypesMap = new Map(
   mimeTypes.split("[").flatMap((mime) => {
@@ -156,13 +153,13 @@ var mimeTypesMap = new Map(
   })
 );
 
-// ../node_modules/.pnpm/@zag-js+file-utils@1.40.0/node_modules/@zag-js/file-utils/dist/get-file-mime-type.mjs
+// ../node_modules/.pnpm/@zag-js+file-utils@1.42.0/node_modules/@zag-js/file-utils/dist/get-file-mime-type.mjs
 function getFileMimeType(name) {
   const extension = name.split(".").pop();
   return extension ? mimeTypesMap.get(extension) || null : null;
 }
 
-// ../node_modules/.pnpm/@zag-js+file-utils@1.40.0/node_modules/@zag-js/file-utils/dist/is-valid-file-type.mjs
+// ../node_modules/.pnpm/@zag-js+file-utils@1.42.0/node_modules/@zag-js/file-utils/dist/is-valid-file-type.mjs
 function isFileAccepted(file, accept) {
   if (file && accept) {
     const types = Array.isArray(accept) ? accept : typeof accept === "string" ? accept.split(",") : [];
@@ -188,7 +185,7 @@ function isValidFileType(file, accept) {
   return [isAcceptable, isAcceptable ? null : "FILE_INVALID_TYPE"];
 }
 
-// ../node_modules/.pnpm/@zag-js+i18n-utils@1.40.0/node_modules/@zag-js/i18n-utils/dist/cache.mjs
+// ../node_modules/.pnpm/@zag-js+i18n-utils@1.42.0/node_modules/@zag-js/i18n-utils/dist/cache.mjs
 function i18nCache(Ins) {
   const formatterCache = /* @__PURE__ */ new Map();
   return function create(locale, options) {
@@ -202,14 +199,14 @@ function i18nCache(Ins) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+i18n-utils@1.40.0/node_modules/@zag-js/i18n-utils/dist/format-number.mjs
+// ../node_modules/.pnpm/@zag-js+i18n-utils@1.42.0/node_modules/@zag-js/i18n-utils/dist/format-number.mjs
 var getNumberFormatter = i18nCache(Intl.NumberFormat);
 function formatNumber(v, locale, options = {}) {
   const formatter = getNumberFormatter(locale, options);
   return formatter.format(v);
 }
 
-// ../node_modules/.pnpm/@zag-js+i18n-utils@1.40.0/node_modules/@zag-js/i18n-utils/dist/format-bytes.mjs
+// ../node_modules/.pnpm/@zag-js+i18n-utils@1.42.0/node_modules/@zag-js/i18n-utils/dist/format-bytes.mjs
 var bitPrefixes = ["", "kilo", "mega", "giga", "tera"];
 var bytePrefixes = ["", "kilo", "mega", "giga", "tera", "peta"];
 var formatBytes = (bytes, locale = "en-US", options = {}) => {
@@ -235,7 +232,7 @@ var formatBytes = (bytes, locale = "en-US", options = {}) => {
   });
 };
 
-// ../node_modules/.pnpm/@zag-js+file-upload@1.40.0/node_modules/@zag-js/file-upload/dist/file-upload.dom.mjs
+// ../node_modules/.pnpm/@zag-js+file-upload@1.42.0/node_modules/@zag-js/file-upload/dist/file-upload.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `file:${ctx.id}`;
 var getDropzoneId = (ctx) => ctx.ids?.dropzone ?? `file:${ctx.id}:dropzone`;
 var getHiddenInputId = (ctx) => ctx.ids?.hiddenInput ?? `file:${ctx.id}:input`;
@@ -251,7 +248,7 @@ var getRootEl = (ctx) => ctx.getById(getRootId(ctx));
 var getHiddenInputEl = (ctx) => ctx.getById(getHiddenInputId(ctx));
 var getDropzoneEl = (ctx) => ctx.getById(getDropzoneId(ctx));
 
-// ../node_modules/.pnpm/@zag-js+file-upload@1.40.0/node_modules/@zag-js/file-upload/dist/file-upload.utils.mjs
+// ../node_modules/.pnpm/@zag-js+file-upload@1.42.0/node_modules/@zag-js/file-upload/dist/file-upload.utils.mjs
 function isEventWithFiles(event) {
   const target = getEventTarget(event);
   if (!event.dataTransfer) return !!target && "files" in target;
@@ -314,7 +311,7 @@ function setInputFiles(inputEl, files) {
   }
 }
 
-// ../node_modules/.pnpm/@zag-js+file-upload@1.40.0/node_modules/@zag-js/file-upload/dist/file-upload.connect.mjs
+// ../node_modules/.pnpm/@zag-js+file-upload@1.42.0/node_modules/@zag-js/file-upload/dist/file-upload.connect.mjs
 var DEFAULT_ITEM_TYPE = "accepted";
 var INTERACTIVE_SELECTOR = "button, a[href], input:not([type='file']), select, textarea, [tabindex], [contenteditable]";
 function isInteractiveTarget(element, container) {
@@ -627,7 +624,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+file-upload@1.40.0/node_modules/@zag-js/file-upload/dist/file-upload.machine.mjs
+// ../node_modules/.pnpm/@zag-js+file-upload@1.42.0/node_modules/@zag-js/file-upload/dist/file-upload.machine.mjs
 var machine = createMachine({
   props({ props }) {
     return {
@@ -893,7 +890,6 @@ function setInputFiles2(inputEl, files) {
 var FileUpload = class extends Component {
   previewCleanup = /* @__PURE__ */ new Map();
   sentinelSnapshot = "";
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, props);
   }
@@ -1181,11 +1177,12 @@ function fileRejectPayload(el, details) {
     count: details.files.length
   };
 }
-var FileUploadHook = {
-  mounted() {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+var FileUploadHook = createZagLiveHook({
+  key: "fileUpload",
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     const maxFiles = getNumber(el, "maxFiles");
     const maxFileSize = getNumber(el, "maxFileSize");
     const minFileSize = getNumber(el, "minFileSize");
@@ -1239,67 +1236,55 @@ var FileUploadHook = {
         });
       }
     });
-    zag.init();
-    this.fileUpload = zag;
-    this.handlers = [];
-    this.unbindSubmitIntent = bindArrayFieldSubmitIntent(el, () => {
+    hook.unbindSubmitIntent = bindArrayFieldSubmitIntent(el, () => {
       zag.syncFormSubmitInputs();
     });
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-    domRegistry.add("corex:file-upload:clear-files", () => {
+    dom.add("corex:file-upload:clear-files", () => {
       zag.api.clearFiles();
     });
-    domRegistry.add("corex:file-upload:clear-rejected", () => {
+    dom.add("corex:file-upload:clear-rejected", () => {
       zag.api.clearRejectedFiles();
     });
-    domRegistry.add("corex:file-upload:open", () => {
+    dom.add("corex:file-upload:open", () => {
       zag.api.openFilePicker();
     });
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-    registry.add("file_upload_clear_files", (payload) => {
+    server.add("file_upload_clear_files", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.clearFiles();
     });
-    registry.add("file_upload_clear_rejected", (payload) => {
+    server.add("file_upload_clear_rejected", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.clearRejectedFiles();
     });
-    registry.add("file_upload_open", (payload) => {
+    server.add("file_upload_open", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.openFilePicker();
     });
+    return zag;
   },
-  updated() {
-    this.fileUpload?.updateProps({
-      id: this.el.id,
-      disabled: getBoolean(this.el, "disabled"),
-      invalid: getBoolean(this.el, "invalid"),
-      readOnly: getBoolean(this.el, "readonly"),
-      required: getBoolean(this.el, "required"),
-      name: getString(this.el, "name"),
-      dir: getDir(this.el),
-      allowDrop: this.el.dataset.allowDrop === void 0 ? true : this.el.dataset.allowDrop !== "false",
-      preventDocumentDrop: this.el.dataset.preventDocumentDrop === void 0 ? true : this.el.dataset.preventDocumentDrop !== "false",
-      maxFiles: getNumber(this.el, "maxFiles") ?? 1,
-      maxFileSize: getNumber(this.el, "maxFileSize") ?? Number.POSITIVE_INFINITY,
-      minFileSize: getNumber(this.el, "minFileSize") ?? 0,
-      accept: getString(this.el, "accept"),
-      directory: getBoolean(this.el, "directory")
+  update(hook, zag) {
+    zag.updateProps({
+      id: hook.el.id,
+      disabled: getBoolean(hook.el, "disabled"),
+      invalid: getBoolean(hook.el, "invalid"),
+      readOnly: getBoolean(hook.el, "readonly"),
+      required: getBoolean(hook.el, "required"),
+      name: getString(hook.el, "name"),
+      dir: getDir(hook.el),
+      allowDrop: hook.el.dataset.allowDrop === void 0 ? true : hook.el.dataset.allowDrop !== "false",
+      preventDocumentDrop: hook.el.dataset.preventDocumentDrop === void 0 ? true : hook.el.dataset.preventDocumentDrop !== "false",
+      maxFiles: getNumber(hook.el, "maxFiles") ?? 1,
+      maxFileSize: getNumber(hook.el, "maxFileSize") ?? Number.POSITIVE_INFINITY,
+      minFileSize: getNumber(hook.el, "minFileSize") ?? 0,
+      accept: getString(hook.el, "accept"),
+      directory: getBoolean(hook.el, "directory")
     });
   },
-  destroyed() {
-    this.unbindSubmitIntent?.();
-    if (this.handlers) {
-      for (const h of this.handlers) this.removeHandleEvent(h);
-    }
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.fileUpload?.cleanupPreviews();
-    this.fileUpload?.destroy();
+  destroy(hook, zag) {
+    hook.unbindSubmitIntent?.();
+    zag.cleanupPreviews();
   }
-};
+});
 export {
   FileUploadHook as FileUpload,
   fileAcceptPayload,

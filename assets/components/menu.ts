@@ -1,6 +1,6 @@
 import { connect, machine, type Props, type Api } from "@zag-js/menu";
 import { VanillaMachine } from "@zag-js/vanilla";
-import { Component } from "../lib/core";
+import { Component, type SchemaOf } from "../lib/core";
 
 function triggerDisabledAttrs(disabled: boolean) {
   return {
@@ -10,12 +10,13 @@ function triggerDisabledAttrs(disabled: boolean) {
   };
 }
 
-export class Menu extends Component<Props, Api> {
+type Schema = SchemaOf<typeof machine>;
+
+export class Menu extends Component<Props, Api, Schema> {
   children: Menu[] = [];
   private submenuTriggerUnsubs: Array<() => void> = [];
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: Props): VanillaMachine<any> {
+  initMachine(props: Props): VanillaMachine<Schema> {
     return new VanillaMachine(machine, props);
   }
 

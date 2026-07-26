@@ -50,7 +50,7 @@ defmodule Corex.ConnectRegistryContractTest do
   defp wire_rows do
     Application.app_dir(:corex, "priv/doc/component_wire.json")
     |> File.read!()
-    |> Jason.decode!()
+    |> Corex.Json.decode!()
   end
 
   defp connect_path(module_string) do

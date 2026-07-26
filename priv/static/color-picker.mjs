@@ -1,6 +1,6 @@
 import {
   syncHiddenInputValue
-} from "./chunks/chunk-DH47S3VU.mjs";
+} from "./chunks/chunk-WPH6MYTV.mjs";
 import {
   clampValue,
   getPercentValue,
@@ -8,27 +8,31 @@ import {
   mod,
   snapValueToStep,
   toFixedNumber
-} from "./chunks/chunk-PE34YET2.mjs";
+} from "./chunks/chunk-KHEHQE65.mjs";
 import {
   getPlacement,
+  getPlacementSide,
   getPlacementStyles
-} from "./chunks/chunk-MHRYIVD2.mjs";
+} from "./chunks/chunk-STMYDYIS.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-CBUVYVIR.mjs";
-import "./chunks/chunk-ZSA4KI2Y.mjs";
+} from "./chunks/chunk-KJGYDHXF.mjs";
+import "./chunks/chunk-7JTELVWK.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-C4KEB3WL.mjs";
+} from "./chunks/chunk-3OQP2D73.mjs";
 import {
-  mountStringBinding
-} from "./chunks/chunk-BGER3KYP.mjs";
-import "./chunks/chunk-TKOH2OAC.mjs";
+  notifyPhoenixFormChange
+} from "./chunks/chunk-7LA2VUMJ.mjs";
+import {
+  mountStringBinding,
+  readUpdatedServerString
+} from "./chunks/chunk-LVRCAC6Y.mjs";
 import {
   idMatches,
   notifyChange,
   readPayloadId
-} from "./chunks/chunk-LNVRIZ4K.mjs";
+} from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
   Component,
   VanillaMachine,
@@ -36,6 +40,7 @@ import {
   createAnatomy,
   createGuards,
   createMachine,
+  createZagLiveHook,
   dataAttr,
   disableTextSelection,
   dispatchInputValueEvent,
@@ -57,9 +62,9 @@ import {
   trackPointerMove,
   tryCatch,
   visuallyHiddenStyle
-} from "./chunks/chunk-6AOEC32Q.mjs";
+} from "./chunks/chunk-E4OZ7DWO.mjs";
 
-// ../node_modules/.pnpm/@zag-js+color-picker@1.40.0/node_modules/@zag-js/color-picker/dist/color-picker.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+color-picker@1.42.0/node_modules/@zag-js/color-picker/dist/color-picker.anatomy.mjs
 var anatomy = createAnatomy("color-picker", [
   "root",
   "label",
@@ -88,12 +93,12 @@ var anatomy = createAnatomy("color-picker", [
 ]);
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+color-utils@1.40.0/node_modules/@zag-js/color-utils/dist/chunk-QZ7TP4HQ.mjs
+// ../node_modules/.pnpm/@zag-js+color-utils@1.42.0/node_modules/@zag-js/color-utils/dist/chunk-QZ7TP4HQ.mjs
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
 
-// ../node_modules/.pnpm/@zag-js+color-utils@1.40.0/node_modules/@zag-js/color-utils/dist/color-format-gradient.mjs
+// ../node_modules/.pnpm/@zag-js+color-utils@1.42.0/node_modules/@zag-js/color-utils/dist/color-format-gradient.mjs
 var generateRGB_R = (orientation, dir, zValue) => {
   const maskImage = `linear-gradient(to ${orientation[Number(!dir)]}, transparent, #000)`;
   const result = {
@@ -214,7 +219,7 @@ var generateHSB_B = (orientation, dir, alphaValue) => {
   return result;
 };
 
-// ../node_modules/.pnpm/@zag-js+color-utils@1.40.0/node_modules/@zag-js/color-utils/dist/area-gradient.mjs
+// ../node_modules/.pnpm/@zag-js+color-utils@1.42.0/node_modules/@zag-js/color-utils/dist/area-gradient.mjs
 function getColorAreaGradient(color, options) {
   const { xChannel, yChannel, dir: dirProp = "ltr" } = options;
   const { zChannel } = color.getColorAxes({ xChannel, yChannel });
@@ -273,7 +278,7 @@ function getColorAreaGradient(color, options) {
   return background;
 }
 
-// ../node_modules/.pnpm/@zag-js+color-utils@1.40.0/node_modules/@zag-js/color-utils/dist/color.mjs
+// ../node_modules/.pnpm/@zag-js+color-utils@1.42.0/node_modules/@zag-js/color-utils/dist/color.mjs
 var isEqualObject = (a, b) => {
   if (Object.keys(a).length !== Object.keys(b).length) return false;
   for (let key in a) if (a[key] !== b[key]) return false;
@@ -332,7 +337,7 @@ var Color = class {
   }
 };
 
-// ../node_modules/.pnpm/@zag-js+color-utils@1.40.0/node_modules/@zag-js/color-utils/dist/rgb-color.mjs
+// ../node_modules/.pnpm/@zag-js+color-utils@1.42.0/node_modules/@zag-js/color-utils/dist/rgb-color.mjs
 var HEX_COLOR_REGEX = /^#[\da-f]+$/i;
 var RGB_COLOR_REGEX = /^rgba?\((.*)\)$/;
 var HEX_STARTING_REGEX = /[^#]/gi;
@@ -512,7 +517,7 @@ var _RGBColor = class _RGBColor2 extends Color {
 __publicField(_RGBColor, "colorChannels", ["red", "green", "blue"]);
 var RGBColor = _RGBColor;
 
-// ../node_modules/.pnpm/@zag-js+color-utils@1.40.0/node_modules/@zag-js/color-utils/dist/hsl-color.mjs
+// ../node_modules/.pnpm/@zag-js+color-utils@1.42.0/node_modules/@zag-js/color-utils/dist/hsl-color.mjs
 var HSL_REGEX = /hsl\(([-+]?\d+(?:.\d+)?\s*,\s*[-+]?\d+(?:.\d+)?%\s*,\s*[-+]?\d+(?:.\d+)?%)\)|hsla\(([-+]?\d+(?:.\d+)?\s*,\s*[-+]?\d+(?:.\d+)?%\s*,\s*[-+]?\d+(?:.\d+)?%\s*,\s*[-+]?\d(.\d+)?)\)/;
 var _HSLColor = class _HSLColor2 extends Color {
   constructor(hue, saturation, lightness, alpha) {
@@ -644,7 +649,7 @@ var _HSLColor = class _HSLColor2 extends Color {
 __publicField(_HSLColor, "colorChannels", ["hue", "saturation", "lightness"]);
 var HSLColor = _HSLColor;
 
-// ../node_modules/.pnpm/@zag-js+color-utils@1.40.0/node_modules/@zag-js/color-utils/dist/hsb-color.mjs
+// ../node_modules/.pnpm/@zag-js+color-utils@1.42.0/node_modules/@zag-js/color-utils/dist/hsb-color.mjs
 var HSB_REGEX = /hsb\(([-+]?\d+(?:.\d+)?\s*,\s*[-+]?\d+(?:.\d+)?%\s*,\s*[-+]?\d+(?:.\d+)?%)\)|hsba\(([-+]?\d+(?:.\d+)?\s*,\s*[-+]?\d+(?:.\d+)?%\s*,\s*[-+]?\d+(?:.\d+)?%\s*,\s*[-+]?\d(.\d+)?)\)/;
 var _HSBColor = class _HSBColor2 extends Color {
   constructor(hue, saturation, brightness, alpha) {
@@ -776,7 +781,7 @@ var _HSBColor = class _HSBColor2 extends Color {
 __publicField(_HSBColor, "colorChannels", ["hue", "saturation", "brightness"]);
 var HSBColor = _HSBColor;
 
-// ../node_modules/.pnpm/@zag-js+color-utils@1.40.0/node_modules/@zag-js/color-utils/dist/native-color.mjs
+// ../node_modules/.pnpm/@zag-js+color-utils@1.42.0/node_modules/@zag-js/color-utils/dist/native-color.mjs
 var nativeColors = "aliceblue:f0f8ff,antiquewhite:faebd7,aqua:00ffff,aquamarine:7fffd4,azure:f0ffff,beige:f5f5dc,bisque:ffe4c4,black:000000,blanchedalmond:ffebcd,blue:0000ff,blueviolet:8a2be2,brown:a52a2a,burlywood:deb887,cadetblue:5f9ea0,chartreuse:7fff00,chocolate:d2691e,coral:ff7f50,cornflowerblue:6495ed,cornsilk:fff8dc,crimson:dc143c,cyan:00ffff,darkblue:00008b,darkcyan:008b8b,darkgoldenrod:b8860b,darkgray:a9a9a9,darkgreen:006400,darkkhaki:bdb76b,darkmagenta:8b008b,darkolivegreen:556b2f,darkorange:ff8c00,darkorchid:9932cc,darkred:8b0000,darksalmon:e9967a,darkseagreen:8fbc8f,darkslateblue:483d8b,darkslategray:2f4f4f,darkturquoise:00ced1,darkviolet:9400d3,deeppink:ff1493,deepskyblue:00bfff,dimgray:696969,dodgerblue:1e90ff,firebrick:b22222,floralwhite:fffaf0,forestgreen:228b22,fuchsia:ff00ff,gainsboro:dcdcdc,ghostwhite:f8f8ff,gold:ffd700,goldenrod:daa520,gray:808080,green:008000,greenyellow:adff2f,honeydew:f0fff0,hotpink:ff69b4,indianred:cd5c5c,indigo:4b0082,ivory:fffff0,khaki:f0e68c,lavender:e6e6fa,lavenderblush:fff0f5,lawngreen:7cfc00,lemonchiffon:fffacd,lightblue:add8e6,lightcoral:f08080,lightcyan:e0ffff,lightgoldenrodyellow:fafad2,lightgrey:d3d3d3,lightgreen:90ee90,lightpink:ffb6c1,lightsalmon:ffa07a,lightseagreen:20b2aa,lightskyblue:87cefa,lightslategray:778899,lightsteelblue:b0c4de,lightyellow:ffffe0,lime:00ff00,limegreen:32cd32,linen:faf0e6,magenta:ff00ff,maroon:800000,mediumaquamarine:66cdaa,mediumblue:0000cd,mediumorchid:ba55d3,mediumpurple:9370d8,mediumseagreen:3cb371,mediumslateblue:7b68ee,mediumspringgreen:00fa9a,mediumturquoise:48d1cc,mediumvioletred:c71585,midnightblue:191970,mintcream:f5fffa,mistyrose:ffe4e1,moccasin:ffe4b5,navajowhite:ffdead,navy:000080,oldlace:fdf5e6,olive:808000,olivedrab:6b8e23,orange:ffa500,orangered:ff4500,orchid:da70d6,palegoldenrod:eee8aa,palegreen:98fb98,paleturquoise:afeeee,palevioletred:d87093,papayawhip:ffefd5,peachpuff:ffdab9,peru:cd853f,pink:ffc0cb,plum:dda0dd,powderblue:b0e0e6,purple:800080,rebeccapurple:663399,red:ff0000,rosybrown:bc8f8f,royalblue:4169e1,saddlebrown:8b4513,salmon:fa8072,sandybrown:f4a460,seagreen:2e8b57,seashell:fff5ee,sienna:a0522d,silver:c0c0c0,skyblue:87ceeb,slateblue:6a5acd,slategray:708090,snow:fffafa,springgreen:00ff7f,steelblue:4682b4,tan:d2b48c,teal:008080,thistle:d8bfd8,tomato:ff6347,turquoise:40e0d0,violet:ee82ee,wheat:f5deb3,white:ffffff,whitesmoke:f5f5f5,yellow:ffff00,yellowgreen:9acd32";
 var makeMap = (str) => {
   const map = /* @__PURE__ */ new Map();
@@ -790,7 +795,7 @@ var makeMap = (str) => {
 };
 var nativeColorMap = makeMap(nativeColors);
 
-// ../node_modules/.pnpm/@zag-js+color-utils@1.40.0/node_modules/@zag-js/color-utils/dist/parse-color.mjs
+// ../node_modules/.pnpm/@zag-js+color-utils@1.42.0/node_modules/@zag-js/color-utils/dist/parse-color.mjs
 var parseColor = (value) => {
   if (nativeColorMap.has(value)) {
     return parseColor(nativeColorMap.get(value));
@@ -807,7 +812,7 @@ var normalizeColor = (v) => {
   return typeof v === "string" ? parseColor(v) : v;
 };
 
-// ../node_modules/.pnpm/@zag-js+color-picker@1.40.0/node_modules/@zag-js/color-picker/dist/color-picker.dom.mjs
+// ../node_modules/.pnpm/@zag-js+color-picker@1.42.0/node_modules/@zag-js/color-picker/dist/color-picker.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `color-picker:${ctx.id}`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `color-picker:${ctx.id}:label`;
 var getHiddenInputId = (ctx) => ctx.ids?.hiddenInput ?? `color-picker:${ctx.id}:hidden-input`;
@@ -856,7 +861,7 @@ var getChannelInputEls = (ctx) => {
   ];
 };
 
-// ../node_modules/.pnpm/@zag-js+color-picker@1.40.0/node_modules/@zag-js/color-picker/dist/utils/get-channel-display-color.mjs
+// ../node_modules/.pnpm/@zag-js+color-picker@1.42.0/node_modules/@zag-js/color-picker/dist/utils/get-channel-display-color.mjs
 function getChannelDisplayColor(color, channel) {
   switch (channel) {
     case "hue":
@@ -876,7 +881,7 @@ function getChannelDisplayColor(color, channel) {
   }
 }
 
-// ../node_modules/.pnpm/@zag-js+color-picker@1.40.0/node_modules/@zag-js/color-picker/dist/utils/get-channel-input-value.mjs
+// ../node_modules/.pnpm/@zag-js+color-picker@1.42.0/node_modules/@zag-js/color-picker/dist/utils/get-channel-input-value.mjs
 function getChannelValue(color, channel) {
   if (channel == null) return "";
   if (channel === "hex") {
@@ -934,7 +939,7 @@ function getChannelRange(color, channel) {
   }
 }
 
-// ../node_modules/.pnpm/@zag-js+color-picker@1.40.0/node_modules/@zag-js/color-picker/dist/utils/get-slider-background.mjs
+// ../node_modules/.pnpm/@zag-js+color-picker@1.42.0/node_modules/@zag-js/color-picker/dist/utils/get-slider-background.mjs
 function getSliderBackgroundDirection(orientation, dir) {
   if (orientation === "vertical") {
     return "top";
@@ -972,7 +977,7 @@ var getSliderBackground = (props) => {
   }
 };
 
-// ../node_modules/.pnpm/@zag-js+color-picker@1.40.0/node_modules/@zag-js/color-picker/dist/color-picker.connect.mjs
+// ../node_modules/.pnpm/@zag-js+color-picker@1.42.0/node_modules/@zag-js/color-picker/dist/color-picker.connect.mjs
 function connect(service, normalize) {
   const { context, send, prop, computed, state, scope } = service;
   const value = context.get("value");
@@ -995,6 +1000,7 @@ function connect(service, normalize) {
     };
   };
   const currentPlacement = context.get("currentPlacement");
+  const currentPlacementSide = currentPlacement ? getPlacementSide(currentPlacement) : void 0;
   const popperStyles = getPlacementStyles({
     ...prop("positioning"),
     placement: currentPlacement
@@ -1100,6 +1106,7 @@ function connect(service, normalize) {
         "data-readonly": dataAttr(readOnly),
         "data-invalid": dataAttr(invalid),
         "data-placement": currentPlacement,
+        "data-side": currentPlacementSide,
         "aria-expanded": open,
         "data-state": open ? "open" : "closed",
         "data-focus": dataAttr(focused),
@@ -1133,6 +1140,7 @@ function connect(service, normalize) {
         role: prop("inline") ? void 0 : "dialog",
         tabIndex: -1,
         "data-placement": currentPlacement,
+        "data-side": currentPlacementSide,
         "data-state": open ? "open" : "closed",
         hidden: !open
       });
@@ -1607,12 +1615,12 @@ function assertFormat(format) {
   throw new Error(`Unsupported color format: ${format}`);
 }
 
-// ../node_modules/.pnpm/@zag-js+color-picker@1.40.0/node_modules/@zag-js/color-picker/dist/color-picker.parse.mjs
+// ../node_modules/.pnpm/@zag-js+color-picker@1.42.0/node_modules/@zag-js/color-picker/dist/color-picker.parse.mjs
 var parse = (colorString) => {
   return parseColor(colorString);
 };
 
-// ../node_modules/.pnpm/@zag-js+color-picker@1.40.0/node_modules/@zag-js/color-picker/dist/utils/is-valid-hex.mjs
+// ../node_modules/.pnpm/@zag-js+color-picker@1.42.0/node_modules/@zag-js/color-picker/dist/utils/is-valid-hex.mjs
 var HEX_REGEX = /^[0-9a-fA-F]{3,8}$/;
 function isValidHex(value) {
   return HEX_REGEX.test(value);
@@ -1623,7 +1631,7 @@ function prefixHex(value) {
   return value;
 }
 
-// ../node_modules/.pnpm/@zag-js+color-picker@1.40.0/node_modules/@zag-js/color-picker/dist/color-picker.machine.mjs
+// ../node_modules/.pnpm/@zag-js+color-picker@1.42.0/node_modules/@zag-js/color-picker/dist/color-picker.machine.mjs
 var { and } = createGuards();
 var hashObject = (obj) => {
   let hash = "";
@@ -2022,7 +2030,7 @@ var machine = createMachine({
       }
     },
     actions: {
-      openEyeDropper({ scope, context }) {
+      openEyeDropper({ scope, context, prop }) {
         const win = scope.getWin();
         const isSupported = "EyeDropper" in win;
         if (!isSupported) return;
@@ -2031,6 +2039,12 @@ var machine = createMachine({
           const format = context.get("value").getFormat();
           const color = parseColor(sRGBHex).toFormat(format);
           context.set("value", color);
+          return color;
+        }).then((value) => {
+          prop("onValueChangeEnd")?.({
+            value,
+            valueAsString: value.toString(context.get("format"))
+          });
         }).catch(() => void 0);
       },
       setActiveChannel({ context, event }) {
@@ -2216,7 +2230,6 @@ function syncFormatSelect(scope, format) {
 
 // components/color-picker.ts
 var ColorPicker = class extends Component {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, props);
   }
@@ -2242,11 +2255,11 @@ var ColorPicker = class extends Component {
     if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
     const triggerEl = this.el.querySelector('[data-part="trigger"]');
     if (triggerEl) this.spreadProps(triggerEl, this.api.getTriggerProps());
-    const triggerGrids = this.el.querySelectorAll(
-      '[data-part="transparency-grid"][data-size="10px"]'
+    const transparencyGrids = this.el.querySelectorAll(
+      '[data-part="transparency-grid"]'
     );
-    triggerGrids.forEach(
-      (el) => this.spreadProps(el, this.api.getTransparencyGridProps({ size: "10px" }))
+    transparencyGrids.forEach(
+      (el) => this.spreadProps(el, this.api.getTransparencyGridProps({ size: "12px" }))
     );
     const triggerSwatch = triggerEl?.querySelector('[data-part="swatch"]');
     if (triggerSwatch)
@@ -2293,12 +2306,6 @@ var ColorPicker = class extends Component {
     );
     if (alphaSliderEl)
       this.spreadProps(alphaSliderEl, this.api.getChannelSliderProps({ channel: "alpha" }));
-    const alphaGrids = this.el.querySelectorAll(
-      '[data-part="transparency-grid"][data-size="12px"]'
-    );
-    alphaGrids.forEach(
-      (el) => this.spreadProps(el, this.api.getTransparencyGridProps({ size: "12px" }))
-    );
     const alphaTrackEl = this.el.querySelector(
       '[data-part="channel-slider-track"][data-channel="alpha"]'
     );
@@ -2342,25 +2349,29 @@ var ColorPicker = class extends Component {
           this.spreadProps(swatchEl, this.api.getSwatchProps({ value: swatchValue }));
       }
     });
-    const swatchGrids = this.el.querySelectorAll(
-      '[data-part="transparency-grid"][data-size="var(--spacing-mini)"]'
-    );
-    swatchGrids.forEach(
-      (el) => this.spreadProps(el, this.api.getTransparencyGridProps({ size: "var(--spacing-mini)" }))
-    );
   }
 };
 
 // hooks/color-picker.ts
+function tryParseColor(raw, label = "color") {
+  try {
+    return parse(raw);
+  } catch (error) {
+    console.warn(`[corex] color-picker: failed to parse ${label}`, raw, error);
+    return void 0;
+  }
+}
 function readColorValueBinding(el) {
   const binding = mountStringBinding(el, "value", "defaultValue");
   if ("value" in binding && binding.value) {
-    return { value: parse(binding.value) };
+    const parsed = tryParseColor(binding.value, "value");
+    if (parsed) return { value: parsed };
   }
   if ("defaultValue" in binding && binding.defaultValue) {
-    return { defaultValue: parse(binding.defaultValue) };
+    const parsed = tryParseColor(binding.defaultValue, "defaultValue");
+    if (parsed) return { defaultValue: parsed };
   }
-  return {};
+  return { defaultValue: tryParseColor("#000000", "fallback") };
 }
 function syncColorHiddenAndNotify(el, valueAsString) {
   if (valueAsString === void 0) {
@@ -2370,20 +2381,20 @@ function syncColorHiddenAndNotify(el, valueAsString) {
     '[data-scope="color-picker"][data-part="hidden-input"]'
   );
   if (hidden) {
-    hidden.value = valueAsString;
-    hidden.dispatchEvent(new Event("input", { bubbles: true }));
-    hidden.dispatchEvent(new Event("change", { bubbles: true }));
+    notifyPhoenixFormChange(hidden, valueAsString, { markUsed: false, force: true });
   }
 }
 function readValueProps(el) {
   const defaultVal = getString(el, "defaultValue");
-  return { defaultValue: defaultVal ? parse(defaultVal) : void 0 };
+  return { defaultValue: defaultVal ? tryParseColor(defaultVal, "defaultValue") : void 0 };
 }
-var ColorPickerHook = {
-  mounted() {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+var ColorPickerHook = createZagLiveHook({
+  key: "colorPicker",
+  controlledKeys: ["value"],
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     const valueProps = readColorValueBinding(el);
     const zag = new ColorPicker(el, {
       id: el.id,
@@ -2478,25 +2489,25 @@ var ColorPickerHook = {
         });
       }
     });
-    zag.init();
-    this.colorPicker = zag;
-    this.handlers = [];
-    this.onSetValue = (event) => {
+    dom.add("corex:color-picker:set-value", (event) => {
       const { value } = event.detail;
+      if (typeof value !== "string") return;
+      if (!tryParseColor(value, "set-value")) return;
       zag.api.setValue(value);
-    };
-    el.addEventListener("corex:color-picker:set-value", this.onSetValue);
-    this.handlers.push(
-      this.handleEvent("color_picker_set_value", (payload) => {
-        if (!idMatches(el.id, readPayloadId(payload))) return;
-        zag.api.setValue(payload.value);
-      })
-    );
+    });
+    server.add("color_picker_set_value", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      if (typeof payload.value !== "string") return;
+      if (!tryParseColor(payload.value, "set_value")) return;
+      zag.api.setValue(payload.value);
+    });
+    return zag;
   },
-  updated() {
-    const el = this.el;
-    const zag = this.colorPicker;
-    zag?.updateProps({
+  update(hook, zag) {
+    const el = hook.el;
+    const valuePatch = readUpdatedServerString(el, hook.beforeAttrs);
+    const parsedValue = valuePatch.value !== void 0 && valuePatch.value ? tryParseColor(valuePatch.value, "value") : void 0;
+    zag.updateProps({
       name: getString(el, "name"),
       closeOnSelect: getBoolean(el, "closeOnSelect"),
       openAutoFocus: getBoolean(el, "openAutoFocus"),
@@ -2505,21 +2516,11 @@ var ColorPickerHook = {
       readOnly: getBoolean(el, "readonly"),
       required: getBoolean(el, "required"),
       dir: getDir(el),
-      positioning: readPositioningOptions(el)
+      positioning: readPositioningOptions(el),
+      ...parsedValue !== void 0 ? { value: parsedValue } : {}
     });
-  },
-  destroyed() {
-    if (this.onSetValue) {
-      this.el.removeEventListener("corex:color-picker:set-value", this.onSetValue);
-    }
-    if (this.handlers) {
-      for (const h of this.handlers) {
-        this.removeHandleEvent(h);
-      }
-    }
-    this.colorPicker?.destroy();
   }
-};
+});
 export {
   ColorPickerHook as ColorPicker,
   readValueProps

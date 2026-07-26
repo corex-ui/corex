@@ -1,9 +1,9 @@
-import type { Hook } from "phoenix_live_view";
-import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { AngleSlider } from "../components/angle-slider";
 import type { Props, ValueChangeDetails } from "@zag-js/angle-slider";
 import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
-import { mountNumberBinding } from "../lib/read-props";
+import { mountNumberBinding, readUpdatedServerNumber } from "../lib/read-props";
+import { createZagLiveHook } from "../lib/zag-live-hook";
+import { notifyPhoenixFormChange } from "../lib/phoenix-form-bridge";
 import {
   parseRespondTo,
   emitResponse,
@@ -12,13 +12,9 @@ import {
   notifyChange,
   type RespondTo,
 } from "../lib/respond-to";
-import { createHookHandleEventRegistry } from "../lib/hook-handlers";
-import { createDomEventRegistry } from "../lib/dom-events";
 
 type AngleSliderHookState = {
   angleSlider?: AngleSlider;
-  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
-  domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
 
 export function valueChangePayload(
@@ -42,20 +38,17 @@ function queueFormBubblingInputForPhoenix(
       '[data-scope="angle-slider"][data-part="hidden-input"]'
     );
     if (!input) return;
-    const v = zag.api.value;
-    if (String(input.value) !== String(v)) {
-      input.value = String(v);
-    }
-    input.dispatchEvent(new Event("input", { bubbles: true }));
-    input.dispatchEvent(new Event("change", { bubbles: true }));
+    notifyPhoenixFormChange(input, String(zag.api.value), { markUsed: false, force: true });
   });
 }
 
-const AngleSliderHook: Hook<object & AngleSliderHookState, HTMLElement> = {
-  mounted(this: object & HookInterface<HTMLElement> & AngleSliderHookState) {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+const AngleSliderHook = createZagLiveHook<AngleSliderHookState, AngleSlider>({
+  key: "angleSlider",
+  controlledKeys: ["value", "defaultValue"],
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
 
     const zag = new AngleSlider(el, {
       id: el.id,
@@ -90,8 +83,6 @@ const AngleSliderHook: Hook<object & AngleSliderHookState, HTMLElement> = {
         queueFormBubblingInputForPhoenix(el, () => zag);
       },
     } as Props);
-    zag.init();
-    this.angleSlider = zag;
 
     const emitValue = (respondTo: RespondTo) => {
       emitResponse({
@@ -116,52 +107,44 @@ const AngleSliderHook: Hook<object & AngleSliderHookState, HTMLElement> = {
       });
     };
 
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-
-    domRegistry.add<CustomEvent<{ value: number }>>("corex:angle-slider:set-value", (event) => {
+    dom.add<CustomEvent<{ value: number }>>("corex:angle-slider:set-value", (event) => {
       zag.api.setValue(event.detail.value);
       queueFormBubblingInputForPhoenix(el, () => zag);
     });
 
-    domRegistry.add<CustomEvent>("corex:angle-slider:value", (event) => {
+    dom.add<CustomEvent>("corex:angle-slider:value", (event) => {
       emitValue(parseRespondTo(event.detail));
     });
 
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-
-    registry.add("angle_slider_set_value", (payload: { id?: string; value: number }) => {
+    server.add("angle_slider_set_value", (payload: { id?: string; value: number }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.setValue(payload.value);
       queueFormBubblingInputForPhoenix(el, () => zag);
     });
 
-    registry.add("angle_slider_value", (payload: { id?: string; respond_to?: string }) => {
+    server.add("angle_slider_value", (payload: { id?: string; respond_to?: string }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       emitValue(parseRespondTo(payload));
     });
+
+    return zag;
   },
 
-  updated(this: object & HookInterface<HTMLElement> & AngleSliderHookState) {
-    const el = this.el;
-    const zag = this.angleSlider;
+  update(hook, zag) {
+    const el = hook.el;
+    const valuePatch = readUpdatedServerNumber(el, hook.beforeAttrs);
 
-    zag?.updateProps({
+    zag.updateProps({
       id: el.id,
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readonly"),
       invalid: getBoolean(el, "invalid"),
       name: getString(el, "name"),
       dir: getDir(el),
+      ...(valuePatch.value !== undefined ? { value: valuePatch.value } : {}),
+      ...(valuePatch.step !== undefined ? { step: valuePatch.step } : {}),
     } as Partial<Props>);
   },
-
-  destroyed(this: object & HookInterface<HTMLElement> & AngleSliderHookState) {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.angleSlider?.destroy();
-  },
-};
+});
 
 export { AngleSliderHook as AngleSlider };

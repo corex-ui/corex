@@ -1,5 +1,9 @@
 defmodule Corex.Listbox.Connect do
   @moduledoc false
+  use Corex.Connect.Mounted
+
+  use Corex.Component, [:connect, :api]
+
   alias Corex.Selectors
 
   alias Corex.Listbox.Anatomy.{
@@ -15,19 +19,14 @@ defmodule Corex.Listbox.Connect do
   }
 
   alias Corex.Connect.ItemNav
+
   alias Phoenix.LiveView.JS
 
   alias Corex.ValueBinding
 
-  import Corex.Helpers,
-    only: [
-      validate_value!: 1,
-      get_boolean: 1
-    ]
-
   @spec props(Props.t()) :: map()
   def props(assigns) do
-    vlist = (assigns.value || []) |> validate_value!()
+    vlist = (assigns.value || []) |> coerce_string_list()
     {value_str, default_value_str} = ValueBinding.list_pair(vlist, assigns.controlled)
 
     items_json =
@@ -38,18 +37,18 @@ defmodule Corex.Listbox.Connect do
       "data-items" => items_json,
       "data-value" => value_str,
       "data-default-value" => default_value_str,
-      "data-controlled" => get_boolean(assigns.controlled),
-      "data-disabled" => get_boolean(assigns.disabled),
+      "data-controlled" => presence_attr(assigns.controlled),
+      "data-disabled" => presence_attr(assigns.disabled),
       "data-dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
-      "data-loop-focus" => get_boolean(assigns.loop_focus),
+      "data-loop-focus" => presence_attr(assigns.loop_focus),
       "data-selection-mode" => assigns.selection_mode,
-      "data-select-on-highlight" => get_boolean(assigns.select_on_highlight),
-      "data-deselectable" => get_boolean(assigns.deselectable),
-      "data-typeahead" => get_boolean(assigns.typeahead),
+      "data-select-on-highlight" => presence_attr(assigns.select_on_highlight),
+      "data-deselectable" => presence_attr(assigns.deselectable),
+      "data-typeahead" => presence_attr(assigns.typeahead),
       "data-on-value-change" => assigns.on_value_change,
       "data-on-value-change-client" => assigns.on_value_change_client,
-      "data-redirect" => get_boolean(assigns.redirect)
+      "data-redirect" => presence_attr(assigns.redirect)
     }
   end
 

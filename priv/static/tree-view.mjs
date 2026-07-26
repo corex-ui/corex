@@ -6,25 +6,21 @@ import {
   prepareJsHeightInitialState,
   runHeightOpenTransition,
   stripHiddenFromProps
-} from "./chunks/chunk-4AOGROPJ.mjs";
+} from "./chunks/chunk-ZRVGBPNP.mjs";
 import {
   TreeCollection
-} from "./chunks/chunk-SGRHPBNS.mjs";
+} from "./chunks/chunk-VNSUJWAI.mjs";
 import {
   performRedirect,
   readDomItemRedirect
 } from "./chunks/chunk-HZLPIQBD.mjs";
-import {
-  createDomEventRegistry,
-  createHookHandleEventRegistry
-} from "./chunks/chunk-77HPO22C.mjs";
 import {
   createValueEmitter,
   idMatches,
   notifyChange,
   parseRespondTo,
   readPayloadId
-} from "./chunks/chunk-LNVRIZ4K.mjs";
+} from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
   Component,
   VanillaMachine,
@@ -35,6 +31,7 @@ import {
   createAnatomy,
   createGuards,
   createMachine,
+  createZagLiveHook,
   dataAttr,
   diff,
   ensure,
@@ -61,9 +58,9 @@ import {
   setElementValue,
   toArray,
   uniq
-} from "./chunks/chunk-6AOEC32Q.mjs";
+} from "./chunks/chunk-E4OZ7DWO.mjs";
 
-// ../node_modules/.pnpm/@zag-js+tree-view@1.40.0/node_modules/@zag-js/tree-view/dist/tree-view.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+tree-view@1.42.0/node_modules/@zag-js/tree-view/dist/tree-view.anatomy.mjs
 var anatomy = createAnatomy("tree-view").parts(
   "branch",
   "branchContent",
@@ -83,7 +80,7 @@ var anatomy = createAnatomy("tree-view").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+tree-view@1.40.0/node_modules/@zag-js/tree-view/dist/tree-view.collection.mjs
+// ../node_modules/.pnpm/@zag-js+tree-view@1.42.0/node_modules/@zag-js/tree-view/dist/tree-view.collection.mjs
 var collection = (options) => {
   return new TreeCollection(options);
 };
@@ -91,7 +88,7 @@ collection.empty = () => {
   return new TreeCollection({ rootNode: { children: [] } });
 };
 
-// ../node_modules/.pnpm/@zag-js+tree-view@1.40.0/node_modules/@zag-js/tree-view/dist/tree-view.dom.mjs
+// ../node_modules/.pnpm/@zag-js+tree-view@1.42.0/node_modules/@zag-js/tree-view/dist/tree-view.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `tree:${ctx.id}:root`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `tree:${ctx.id}:label`;
 var getNodeId = (ctx, value) => ctx.ids?.node?.(value) ?? `tree:${ctx.id}:node:${value}`;
@@ -105,7 +102,7 @@ var getRenameInputEl = (ctx, value) => {
   return ctx.getById(getRenameInputId(ctx, value));
 };
 
-// ../node_modules/.pnpm/@zag-js+tree-view@1.40.0/node_modules/@zag-js/tree-view/dist/utils/checked-state.mjs
+// ../node_modules/.pnpm/@zag-js+tree-view@1.42.0/node_modules/@zag-js/tree-view/dist/utils/checked-state.mjs
 function getCheckedState(collection2, node, checkedValue) {
   const value = collection2.getNodeValue(node);
   if (!collection2.isBranchNode(node)) {
@@ -137,7 +134,7 @@ function getCheckedValueMap(collection2, checkedValue) {
   return map;
 }
 
-// ../node_modules/.pnpm/@zag-js+tree-view@1.40.0/node_modules/@zag-js/tree-view/dist/tree-view.connect.mjs
+// ../node_modules/.pnpm/@zag-js+tree-view@1.42.0/node_modules/@zag-js/tree-view/dist/tree-view.connect.mjs
 function connect(service, normalize) {
   const { context, scope, computed, prop, send } = service;
   const collection2 = prop("collection");
@@ -593,7 +590,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+tree-view@1.40.0/node_modules/@zag-js/tree-view/dist/utils/expand-branch.mjs
+// ../node_modules/.pnpm/@zag-js+tree-view@1.42.0/node_modules/@zag-js/tree-view/dist/utils/expand-branch.mjs
 function expandBranches(params, values) {
   const { context, prop, refs } = params;
   if (!prop("loadChildren")) {
@@ -671,7 +668,7 @@ function expandBranches(params, values) {
   });
 }
 
-// ../node_modules/.pnpm/@zag-js+tree-view@1.40.0/node_modules/@zag-js/tree-view/dist/utils/visit-skip.mjs
+// ../node_modules/.pnpm/@zag-js+tree-view@1.42.0/node_modules/@zag-js/tree-view/dist/utils/visit-skip.mjs
 function skipFn(params) {
   const { prop, context } = params;
   return function skip({ indexPath }) {
@@ -680,7 +677,7 @@ function skipFn(params) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+tree-view@1.40.0/node_modules/@zag-js/tree-view/dist/tree-view.machine.mjs
+// ../node_modules/.pnpm/@zag-js+tree-view@1.42.0/node_modules/@zag-js/tree-view/dist/tree-view.machine.mjs
 var { and } = createGuards();
 var machine = createMachine({
   props({ props }) {
@@ -1338,7 +1335,6 @@ var TreeView = class extends Component {
     this.treeCollection = treeCollection;
     this.updateProps({ collection: treeCollection });
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, { ...props });
   }
@@ -1465,14 +1461,15 @@ function readTreeViewInteractionProps(el) {
     dir: getDir(el)
   };
 }
-var TreeViewHook = {
-  mounted() {
-    const el = this.el;
-    const self = this;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+var TreeViewHook = createZagLiveHook({
+  key: "treeView",
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const self = hook;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     const rootNode = parseRootNode(el);
-    this.lastDataTree = el.dataset.tree;
+    hook.lastDataTree = el.dataset.tree;
     self.lastExpanded = getStringList(el, "defaultExpandedValue") ?? [];
     self.lastSelected = getStringList(el, "defaultSelectedValue") ?? [];
     self.lastExpandedAttr = readExpandedAttr(el);
@@ -1493,7 +1490,7 @@ var TreeViewHook = {
         ) : null;
         const isItem = !!itemEl;
         if (redirectOn && isItem) {
-          performRedirect(readDomItemRedirect(itemEl, value), { liveSocket: this.liveSocket });
+          performRedirect(readDomItemRedirect(itemEl, value), { liveSocket: hook.liveSocket });
         }
         const next = details.selectedValue ?? [];
         const previousSelectedValue = self.lastSelected ?? [];
@@ -1547,8 +1544,6 @@ var TreeViewHook = {
         });
       }
     });
-    treeView.init();
-    this.treeView = treeView;
     prepareJsHeightInitialState(el, BRANCH_CONTENT_SELECTOR);
     const hookApi = { el, pushEvent, canPushServer: canPush };
     const emitSelectedValue = createValueEmitter(hookApi, {
@@ -1561,58 +1556,49 @@ var TreeViewHook = {
       serverEventName: "tree_view_expanded_value_response",
       domEventName: "tree-view-expanded-value"
     });
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-    domRegistry.add(
-      "corex:tree-view:set-expanded-value",
-      (event) => {
-        treeView.api.setExpandedValue(event.detail.value);
-      }
-    );
-    domRegistry.add(
-      "corex:tree-view:set-selected-value",
-      (event) => {
-        treeView.api.setSelectedValue(event.detail.value);
-      }
-    );
-    domRegistry.add("corex:tree-view:value", (event) => {
+    dom.add("corex:tree-view:set-expanded-value", (event) => {
+      treeView.api.setExpandedValue(event.detail.value);
+    });
+    dom.add("corex:tree-view:set-selected-value", (event) => {
+      treeView.api.setSelectedValue(event.detail.value);
+    });
+    dom.add("corex:tree-view:value", (event) => {
       emitSelectedValue(parseRespondTo(event.detail));
     });
-    domRegistry.add("corex:tree-view:expanded-value", (event) => {
+    dom.add("corex:tree-view:expanded-value", (event) => {
       emitExpandedValue(parseRespondTo(event.detail));
     });
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-    registry.add(
+    server.add(
       "tree_view_set_expanded_value",
       (payload) => {
         if (!idMatches(el.id, readPayloadId(payload))) return;
         treeView.api.setExpandedValue(payload.value);
       }
     );
-    registry.add(
+    server.add(
       "tree_view_set_selected_value",
       (payload) => {
         if (!idMatches(el.id, readPayloadId(payload))) return;
         treeView.api.setSelectedValue(payload.value);
       }
     );
-    registry.add("tree_view_value", (payload) => {
+    server.add("tree_view_value", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       emitSelectedValue(parseRespondTo(payload));
     });
-    registry.add("tree_view_expanded_value", (payload) => {
+    server.add("tree_view_expanded_value", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       emitExpandedValue(parseRespondTo(payload));
     });
+    return treeView;
   },
-  updated() {
-    const { el } = this;
-    const tv = this.treeView;
+  update(hook, treeView) {
+    const { el } = hook;
+    const tv = treeView;
     if (!tv) return;
     const rawTree = el.dataset.tree;
-    if (rawTree != null && rawTree !== this.lastDataTree) {
-      this.lastDataTree = rawTree;
+    if (rawTree != null && rawTree !== hook.lastDataTree) {
+      hook.lastDataTree = rawTree;
       tv.replaceRootNode(parseRootNode(el));
     }
     const interaction = readTreeViewInteractionProps(el);
@@ -1620,20 +1606,15 @@ var TreeViewHook = {
     const expanded = getStringList(el, "defaultExpandedValue") ?? [];
     const expandedAttr = readExpandedAttr(el);
     const selectedAttr = readSelectedAttr(el);
-    const expandedAttrChanged = expandedAttr !== this.lastExpandedAttr;
-    const selectedAttrChanged = selectedAttr !== this.lastSelectedAttr;
-    this.lastExpandedAttr = expandedAttr;
-    this.lastSelectedAttr = selectedAttr;
+    const expandedAttrChanged = expandedAttr !== hook.lastExpandedAttr;
+    const selectedAttrChanged = selectedAttr !== hook.lastSelectedAttr;
+    hook.lastExpandedAttr = expandedAttr;
+    hook.lastSelectedAttr = selectedAttr;
     tv.updateProps(interaction);
     if (expandedAttrChanged) tv.api.setExpandedValue(expanded);
     if (selectedAttrChanged) tv.api.setSelectedValue(selected);
-  },
-  destroyed() {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.treeView?.destroy();
   }
-};
+});
 export {
   TreeViewHook as TreeView,
   parseRootNode,

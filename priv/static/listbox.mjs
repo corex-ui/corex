@@ -1,44 +1,40 @@
 import {
+  applyItems,
   buildCollection,
   collection,
   connect,
   itemValue,
   machine,
+  readItems,
+  refreshItemsIfChanged,
   zagListCollectionConfig
-} from "./chunks/chunk-DDT7N35T.mjs";
-import "./chunks/chunk-SGRHPBNS.mjs";
+} from "./chunks/chunk-MFM7SQB7.mjs";
+import "./chunks/chunk-VNSUJWAI.mjs";
 import {
   performRedirect,
   readDomItemRedirect
 } from "./chunks/chunk-HZLPIQBD.mjs";
-import "./chunks/chunk-YUSIPE4B.mjs";
+import "./chunks/chunk-WAPDN2S7.mjs";
 import {
   readStringListControlledZagProps,
   readStringListControlledZagUpdate
-} from "./chunks/chunk-BGER3KYP.mjs";
+} from "./chunks/chunk-LVRCAC6Y.mjs";
 import {
-  snapshotDataset
-} from "./chunks/chunk-TKOH2OAC.mjs";
-import {
-  createDomEventRegistry,
-  createHookHandleEventRegistry
-} from "./chunks/chunk-77HPO22C.mjs";
-import {
-  emitResponse,
+  createValueEmitter,
   idMatches,
   notifyChange,
   parseRespondTo,
   readPayloadId
-} from "./chunks/chunk-LNVRIZ4K.mjs";
+} from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
   Component,
   VanillaMachine,
   canPushEvent,
+  createZagLiveHook,
   getBoolean,
   getDir,
-  getString,
-  safeParseJson
-} from "./chunks/chunk-6AOEC32Q.mjs";
+  getString
+} from "./chunks/chunk-E4OZ7DWO.mjs";
 
 // components/listbox.ts
 var Listbox = class extends Component {
@@ -58,7 +54,6 @@ var Listbox = class extends Component {
   getCollection() {
     return collection(zagListCollectionConfig(this.options, this.hasGroups));
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     const getCollection = this.getCollection.bind(this);
     return new VanillaMachine(machine, {
@@ -161,84 +156,57 @@ function listboxZagPropsBase(el, liveSocket, pushEvent) {
     }
   };
 }
-var ListboxHook = {
-  mounted() {
-    const el = this.el;
-    const allItems = safeParseJson(el.dataset.items ?? "[]", []);
-    const hasGroups = allItems.some((item) => Boolean(item.group));
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+var ListboxHook = createZagLiveHook({
+  key: "listbox",
+  controlledKeys: ["value"],
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const { json: itemsJson, items: allItems, hasGroups } = readItems(el);
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     const zag = new Listbox(el, {
-      ...listboxZagPropsBase(el, this.liveSocket, pushEvent),
+      ...listboxZagPropsBase(el, hook.liveSocket, pushEvent),
       collection: buildCollection(allItems, hasGroups),
       ...readStringListControlledZagProps(el, "value", "defaultValue")
     });
-    zag.hasGroups = hasGroups;
-    zag.setOptions(allItems);
-    zag.init();
-    this.listbox = zag;
-    this.lastItemsJson = el.dataset.items ?? "[]";
-    const emitValue = (respondTo) => {
-      const value = zag.api.value;
-      emitResponse({
-        respondTo,
-        canPushServer: canPush(),
-        pushEvent,
+    applyItems(zag, allItems, hasGroups);
+    hook.lastItemsJson = itemsJson;
+    const emitValue = createValueEmitter(
+      { el, pushEvent, canPushServer: canPush },
+      {
+        getValue: () => zag.api.value,
         serverEventName: "listbox_value_response",
-        serverPayload: { id: el.id, value },
-        el,
-        domEventName: "listbox-value",
-        domDetail: { id: el.id, value }
-      });
-    };
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-    domRegistry.add("corex:listbox:set-value", (event) => {
+        domEventName: "listbox-value"
+      }
+    );
+    dom.add("corex:listbox:set-value", (event) => {
       zag.api.setValue(event.detail.value);
     });
-    domRegistry.add("corex:listbox:value", (event) => {
+    dom.add("corex:listbox:value", (event) => {
       emitValue(parseRespondTo(event.detail));
     });
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-    registry.add("listbox_set_value", (payload) => {
+    server.add("listbox_set_value", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.setValue(payload.value);
     });
-    registry.add("listbox_value", (payload) => {
+    server.add("listbox_value", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       emitValue(parseRespondTo(payload));
     });
+    return zag;
   },
-  beforeUpdate() {
-    this.beforeAttrs = snapshotDataset(this.el, ["value"]);
-  },
-  updated() {
-    if (!this.listbox) return;
-    try {
-      const newItemsJson = this.el.dataset.items ?? "[]";
-      if (newItemsJson !== this.lastItemsJson) {
-        this.lastItemsJson = newItemsJson;
-        const newItems = safeParseJson(newItemsJson, []);
-        const hasGroups = newItems.some((item) => Boolean(item.group));
-        this.listbox.hasGroups = hasGroups;
-        this.listbox.setOptions(newItems);
-      }
-      this.listbox.updateProps({
-        ...listboxZagPropsBase(this.el, this.liveSocket, this.pushEvent.bind(this)),
-        collection: this.listbox.getCollection(),
-        ...readStringListControlledZagUpdate(this.el, "value", "defaultValue", this.beforeAttrs)
-      });
-    } finally {
-      this.beforeAttrs = void 0;
+  update(hook, zag) {
+    refreshItemsIfChanged(hook.el, hook, zag);
+    const propsApplied = zag.updateProps({
+      ...listboxZagPropsBase(hook.el, hook.liveSocket, hook.pushEvent.bind(hook)),
+      collection: zag.getCollection(),
+      ...readStringListControlledZagUpdate(hook.el, "value", "defaultValue", hook.beforeAttrs)
+    });
+    if (!propsApplied) {
+      zag.render();
     }
-  },
-  destroyed() {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.listbox?.destroy();
   }
-};
+});
 export {
   ListboxHook as Listbox,
   buildCollection

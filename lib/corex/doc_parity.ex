@@ -5,6 +5,7 @@ defmodule Corex.DocParity do
 
   @root Path.expand("../..", __DIR__)
   @components_dir Path.join(@root, "lib/components")
+  @guides_components_dir Path.join(@root, "guides/components")
   @demos_dir Path.join(@root, "e2e/lib/e2e_web/demos")
 
   @type status :: :pass | :drift | :missing_demo | :missing_moduledoc | :ellipsis
@@ -166,6 +167,7 @@ defmodule Corex.DocParity do
     |> String.replace(~r/field=\{f\[/, "field={@form[")
     |> String.replace(~r/upload=\{@uploads\.[^}]+\}/, "upload={@uploads.FIELD}")
     |> String.replace(~r/@uploads\.[a-z_]+/, "@uploads.FIELD")
+    |> String.replace(~r/upload_name=\{:[a-z_]+\}/, "upload_name={:FIELD}")
     |> String.replace(~r/field=\{:[a-z_]+\}/, "field={:FIELD}")
     |> String.replace("…", "")
     |> String.replace("...", "")
@@ -184,31 +186,56 @@ defmodule Corex.DocParity do
 
   @spec component_slugs() :: [String.t()]
   def component_slugs do
-    @components_dir
-    |> File.ls!()
-    |> Enum.filter(&String.ends_with?(&1, ".ex"))
-    |> Enum.map(&String.trim_trailing(&1, ".ex"))
-    |> Enum.reject(&(&1 in ["heroicon", "hidden_input", "image"]))
+    top_level =
+      @components_dir
+      |> File.ls!()
+      |> Enum.filter(&String.ends_with?(&1, ".ex"))
+      |> Enum.map(&String.trim_trailing(&1, ".ex"))
+      |> Enum.reject(&(&1 in ["heroicon", "hidden_input", "image"]))
+
+    (top_level ++ ["layout_heading"])
+    |> Enum.uniq()
     |> Enum.sort()
   end
 
-  defp moduledoc_for(slug) do
-    case read_within(@components_dir, "#{slug}.ex") do
-      {:ok, source} -> doc_with_anatomy(source)
+  defp moduledoc_for("layout_heading") do
+    case read_within(@components_dir, "layout/heading.ex") do
+      {:ok, source} -> doc_with_anatomy("layout_heading", source)
       _ -> nil
     end
   end
 
-  defp doc_with_anatomy(source) do
+  defp moduledoc_for(slug) do
+    case read_within(@components_dir, "#{slug}.ex") do
+      {:ok, source} -> doc_with_anatomy(slug, source)
+      _ -> nil
+    end
+  end
+
+  defp doc_with_anatomy(slug, source) do
     moduledoc = extract_moduledoc(source)
 
-    if is_binary(moduledoc) and String.contains?(moduledoc, "## Anatomy") do
-      moduledoc
-    else
-      case extract_component_doc(source) do
-        doc when is_binary(doc) -> doc
-        _ -> moduledoc
-      end
+    cond do
+      is_binary(moduledoc) and String.contains?(moduledoc, "## Anatomy") ->
+        moduledoc
+
+      guide = component_guide_doc(slug) ->
+        guide
+
+      true ->
+        case extract_component_doc(source) do
+          doc when is_binary(doc) -> doc
+          _ -> moduledoc
+        end
+    end
+  end
+
+  defp component_guide_doc(slug) when is_binary(slug) do
+    guide_path = Path.join(@guides_components_dir, "#{slug}.md")
+
+    case File.read(guide_path) do
+      {:ok, doc} -> if String.contains?(doc, "## Anatomy"), do: doc
+      _ -> nil
     end
   end
 
@@ -455,8 +482,6 @@ defmodule Corex.DocParity do
     |> Enum.filter(fn [_, h, _] -> String.downcase(h) == key end)
     |> Enum.map(fn [_, _, name] -> name end)
   end
-
-  defp demo_parity_fns(_, _), do: []
 
   defp pick_demo_snippet(demo_source, fn_names) do
     Enum.find_value(fn_names, fn name ->

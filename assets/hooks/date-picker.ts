@@ -1,20 +1,74 @@
-import type { Hook } from "phoenix_live_view";
-import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
 import {
   DatePicker,
   buildZagDatePickerTranslations,
   type DatePickerMessageMap,
 } from "../components/date-picker";
 
-import type { ValueChangeDetails, Props } from "@zag-js/date-picker";
+import type { ValueChangeDetails, Props, DateValue } from "@zag-js/date-picker";
 import type { Direction } from "@zag-js/types";
 import * as datePicker from "@zag-js/date-picker";
 
 import { getString, getBoolean, getNumber, canPushEvent } from "../lib/util";
-import { mountStringListBinding, readDatasetStringList } from "../lib/read-props";
+import {
+  mountStringListBinding,
+  readDatasetStringList,
+  readUpdatedServerStringList,
+} from "../lib/read-props";
 import { setArrayValues, setScalarValue } from "../lib/phoenix-form-bridge";
 import { readPositioningOptions } from "../lib/positioning";
 import { notifyChange } from "../lib/respond-to";
+import { createZagLiveHook } from "../lib/zag-live-hook";
+
+const DATE_PICKER_UPDATE_ATTR_KEYS = [
+  "dir",
+  "locale",
+  "timeZone",
+  "disabled",
+  "readonly",
+  "required",
+  "invalid",
+  "outsideDaySelectable",
+  "closeOnSelect",
+  "min",
+  "max",
+  "startOfWeek",
+  "fixedWeeks",
+  "selectionMode",
+  "maxSelectedDates",
+  "placeholder",
+  "minView",
+  "maxView",
+  "inline",
+  "translation",
+  "submitName",
+  "value",
+  "positionStrategy",
+  "positionPlacement",
+  "positionGutter",
+  "positionShift",
+  "positionOverflowPadding",
+  "positionArrowPadding",
+  "positionOffsetMainAxis",
+  "positionOffsetCrossAxis",
+  "positionFlip",
+  "positionSlide",
+  "positionOverlap",
+  "positionSameWidth",
+  "positionFitViewport",
+  "positionHideWhenDetached",
+] as const;
+
+function datePickerUpdateAttrsKey(el: HTMLElement): string {
+  const d = el.dataset;
+  let out = "";
+  for (const key of DATE_PICKER_UPDATE_ATTR_KEYS) {
+    out += key;
+    out += "=";
+    out += d[key] ?? "";
+    out += ";";
+  }
+  return out;
+}
 
 type DateLike = { year: number; month: number; day: number };
 
@@ -33,6 +87,25 @@ function isDateLike(d: unknown): d is DateLike {
     typeof (d as DateLike).month === "number" &&
     typeof (d as DateLike).day === "number"
   );
+}
+
+function tryParseDate(raw: string, label = "date"): DateValue | undefined {
+  try {
+    return datePicker.parse(raw);
+  } catch (error) {
+    console.warn(`[corex] date-picker: failed to parse ${label}`, raw, error);
+    return undefined;
+  }
+}
+
+function tryParseDateList(values: string[] | undefined): DateValue[] | undefined {
+  if (!values) return undefined;
+  const parsed: DateValue[] = [];
+  for (const x of values) {
+    const next = tryParseDate(x, "value");
+    if (next) parsed.push(next);
+  }
+  return parsed;
 }
 
 export function valueToIsoString(d: unknown): string {
@@ -100,7 +173,15 @@ export function applyServerIsoToZagIfNeeded(
   if (current.length > 0) return current;
   if (isoList.length === 0) return [];
 
-  datePickerInstance.api.setValue(isoList.map((x) => datePicker.parse(x)));
+  const parsed = tryParseDateList(isoList);
+  if (!parsed || parsed.length === 0) return current;
+
+  try {
+    datePickerInstance.api.setValue(parsed);
+  } catch (error) {
+    console.warn("[corex] date-picker: failed to set value from server iso", isoList, error);
+    return current;
+  }
   return isoListFromValues(datePickerInstance.api.value);
 }
 
@@ -142,25 +223,24 @@ export function resolveCloseOnSelect(el: HTMLElement): boolean {
 
 type DatePickerHookState = {
   datePicker?: DatePicker;
-  handlers?: Array<CallbackRef>;
-  onSetValue?: (event: Event) => void;
   fieldTouched?: boolean;
+  lastUpdateAttrsKey?: string;
 };
 
-const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
-  mounted(this: object & HookInterface<HTMLElement> & DatePickerHookState) {
-    const el = this.el;
-    const hook = this as object & HookInterface<HTMLElement> & DatePickerHookState;
+const DatePickerHook = createZagLiveHook<DatePickerHookState, DatePicker>({
+  key: "datePicker",
+  controlledKeys: ["value"],
+  mount(hook, { dom, server }) {
+    const el = hook.el;
     hook.fieldTouched = false;
-    const pushEvent = this.pushEvent.bind(this);
-    const liveSocket = this.liveSocket;
-    const canPush = () => canPushEvent(this.liveSocket);
+    const pushEvent = hook.pushEvent.bind(hook);
+    const liveSocket = hook.liveSocket;
+    const canPush = () => canPushEvent(hook.liveSocket);
 
     const min = getString(el, "min");
     const max = getString(el, "max");
-    const parseList = (v: string[] | undefined) =>
-      v ? v.map((x) => datePicker.parse(x)) : undefined;
-    const parseOne = (v: string | undefined) => (v ? datePicker.parse(v) : undefined);
+    const parseList = (v: string[] | undefined) => tryParseDateList(v);
+    const parseOne = (v: string | undefined) => (v ? tryParseDate(v, "focusedValue") : undefined);
     const valueBinding = mountStringListBinding(el);
     const initialIsoList = "value" in valueBinding ? valueBinding.value : valueBinding.defaultValue;
 
@@ -183,8 +263,8 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
       invalid: getBoolean(el, "invalid"),
       outsideDaySelectable: getBoolean(el, "outsideDaySelectable"),
       closeOnSelect: resolveCloseOnSelect(el),
-      min: min ? datePicker.parse(min) : undefined,
-      max: max ? datePicker.parse(max) : undefined,
+      min: min ? tryParseDate(min, "min") : undefined,
+      max: max ? tryParseDate(max, "max") : undefined,
       startOfWeek: getNumber(el, "startOfWeek"),
       fixedWeeks: getBoolean(el, "fixedWeeks"),
       selectionMode: getString<"single" | "multiple" | "range">(el, "selectionMode"),
@@ -268,9 +348,6 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
       },
     } as Props);
 
-    datePickerInstance.init();
-    this.datePicker = datePickerInstance;
-
     const submitName = getString(el, "submitName");
     const isoList = applyServerIsoToZagIfNeeded(
       datePickerInstance,
@@ -287,35 +364,38 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
       syncDatePickerValueInput(el, isoList.length > 0 ? isoList.join(",") : "", false);
     }
 
-    this.handlers = [];
+    server.add("date_picker_set_value", (payload: { date_picker_id?: string; value: string }) => {
+      const targetId = payload.date_picker_id;
+      if (!targetId || targetId !== el.id) return;
+      const parsed = tryParseDate(payload.value, "set_value");
+      if (parsed) datePickerInstance.api.setValue([parsed]);
+    });
 
-    this.handlers.push(
-      this.handleEvent(
-        "date_picker_set_value",
-        (payload: { date_picker_id?: string; value: string }) => {
-          const targetId = payload.date_picker_id;
-          if (!targetId || targetId !== el.id) return;
-          datePickerInstance.api.setValue([datePicker.parse(payload.value)]);
-        }
-      )
-    );
-
-    this.onSetValue = (event: Event) => {
-      const value = (event as CustomEvent<{ value: string }>).detail?.value;
+    dom.add<CustomEvent<{ value: string }>>("corex:date-picker:set-value", (event) => {
+      const value = event.detail?.value;
       if (typeof value === "string") {
-        datePickerInstance.api.setValue([datePicker.parse(value)]);
+        const parsed = tryParseDate(value, "set-value");
+        if (parsed) datePickerInstance.api.setValue([parsed]);
       }
-    };
-    el.addEventListener("corex:date-picker:set-value", this.onSetValue);
+    });
+
+    hook.lastUpdateAttrsKey = datePickerUpdateAttrsKey(el);
+
+    return datePickerInstance;
   },
 
-  updated(this: object & HookInterface<HTMLElement> & DatePickerHookState) {
-    const el = this.el;
-    const zag = this.datePicker;
+  update(hook, zag) {
+    const el = hook.el;
+
+    const attrsKey = datePickerUpdateAttrsKey(el);
+    if (attrsKey === hook.lastUpdateAttrsKey) return;
+    hook.lastUpdateAttrsKey = attrsKey;
+
     const min = getString(el, "min");
     const max = getString(el, "max");
+    const valuePatch = readUpdatedServerStringList(el, hook.beforeAttrs);
 
-    zag?.updateProps({
+    zag.updateProps({
       dir: getString<Direction>(el, "dir"),
       locale: getString(el, "locale"),
       timeZone: getString(el, "timeZone"),
@@ -325,8 +405,8 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
       invalid: getBoolean(el, "invalid"),
       outsideDaySelectable: getBoolean(el, "outsideDaySelectable"),
       closeOnSelect: resolveCloseOnSelect(el),
-      min: min ? datePicker.parse(min) : undefined,
-      max: max ? datePicker.parse(max) : undefined,
+      min: min ? tryParseDate(min, "min") : undefined,
+      max: max ? tryParseDate(max, "max") : undefined,
       startOfWeek: getNumber(el, "startOfWeek"),
       fixedWeeks: getBoolean(el, "fixedWeeks"),
       selectionMode: getString<"single" | "multiple" | "range">(el, "selectionMode"),
@@ -337,9 +417,8 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
       inline: getBoolean(el, "inline"),
       positioning: readPositioningOptions(el),
       ...resolveZagDatePickerTranslations(el),
+      ...(valuePatch.value !== undefined ? { value: tryParseDateList(valuePatch.value) } : {}),
     } as Props);
-
-    if (!zag) return;
 
     const submitName = getString(el, "submitName");
     const isoList = isoListFromValues(zag.api.value);
@@ -352,21 +431,7 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
     } else {
       syncDatePickerValueInput(el, isoList.length > 0 ? isoList.join(",") : "", false);
     }
-    zag.render();
   },
-
-  destroyed(this: object & HookInterface<HTMLElement> & DatePickerHookState) {
-    if (this.onSetValue) {
-      this.el.removeEventListener("corex:date-picker:set-value", this.onSetValue);
-    }
-    if (this.handlers) {
-      for (const handler of this.handlers) {
-        this.removeHandleEvent(handler);
-      }
-    }
-
-    this.datePicker?.destroy();
-  },
-};
+});
 
 export { DatePickerHook as DatePicker };

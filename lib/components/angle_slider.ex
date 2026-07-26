@@ -189,6 +189,8 @@ defmodule Corex.AngleSlider do
   @doc type: :component
   use Phoenix.Component
 
+  use Corex.Component, [:api, :form]
+
   import Corex.Api.Doc
 
   alias Corex.AngleSlider.Anatomy.{
@@ -206,24 +208,26 @@ defmodule Corex.AngleSlider do
   }
 
   alias Corex.AngleSlider.Connect
+
+  alias Corex.Selectors
+
   alias Phoenix.LiveView
+
   alias Phoenix.LiveView.JS
 
-  import Corex.Helpers, only: [respond_to_fields: 1]
-
-  attr(:id, :string, required: false, doc: "The id of the angle slider")
-  attr(:value, :float, default: 0.0, doc: "The initial value in degrees")
-  attr(:step, :float, default: 1.0, doc: "Step value")
-  attr(:disabled, :boolean, default: false, doc: "Whether the slider is disabled")
-  attr(:read_only, :boolean, default: false, doc: "Whether the slider is read-only")
-  attr(:invalid, :boolean, default: nil, doc: "Whether the slider is invalid")
-
-  attr(:auto_invalid, :boolean,
-    default: false,
-    doc: "When true with `field`, set invalid from visible changeset errors"
+  form_control_attrs(
+    except: [:form, :controlled, :required],
+    docs: [
+      id: "The id of the angle slider",
+      field:
+        "A form field struct retrieved from the form, for example: @form[:angle]. Automatically sets id, name, value, and errors from the form field",
+      name: "Name for form submission",
+      read_only: "Whether the slider is read-only"
+    ]
   )
 
-  attr(:name, :string, default: nil, doc: "Name for form submission")
+  attr(:value, :float, default: 0.0, doc: "The initial value in degrees")
+  attr(:step, :float, default: 1.0, doc: "Step value")
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"], doc: "Direction")
   attr(:orientation, :string, default: "vertical", values: ["horizontal", "vertical"])
 
@@ -265,11 +269,6 @@ defmodule Corex.AngleSlider do
   )
 
   attr(:errors, :list, default: [], doc: "List of error messages to display")
-
-  attr(:field, Phoenix.HTML.FormField,
-    doc:
-      "A form field struct retrieved from the form, for example: @form[:angle]. Automatically sets id, name, value, and errors from the form field"
-  )
 
   attr(:rest, :global)
 
@@ -323,8 +322,7 @@ defmodule Corex.AngleSlider do
     <div
       id={@id}
       phx-hook="AngleSlider"
-      data-loading
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+      {Corex.Hook.loading()}
       {@rest}
       {Connect.props(%Props{
         id: @id,
@@ -348,40 +346,33 @@ defmodule Corex.AngleSlider do
 
       <div
         :if={not @compound}
-        phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, value: @value, disabled: @disabled, read_only: @read_only, invalid: @invalid, orientation: @orientation})}
-        {Connect.root(%Root{id: @id, dir: @dir, value: @value, disabled: @disabled, read_only: @read_only, invalid: @invalid, orientation: @orientation})}
+        {Connect.mounted_root(%Root{id: @id, dir: @dir, value: @value, disabled: @disabled, read_only: @read_only, invalid: @invalid, orientation: @orientation})}
       >
         <div
           :if={@label != []}
-          phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir, disabled: @disabled, read_only: @read_only, invalid: @invalid, orientation: @orientation})}
-          {Connect.label(%Label{id: @id, dir: @dir, disabled: @disabled, read_only: @read_only, invalid: @invalid, orientation: @orientation})}
+          {Connect.mounted_label(%Label{id: @id, dir: @dir, disabled: @disabled, read_only: @read_only, invalid: @invalid, orientation: @orientation})}
         >
           {render_slot(@label)}
         </div>
         <div
-          phx-mounted={Connect.ignore_control(%Control{id: @id, dir: @dir, disabled: @disabled, read_only: @read_only, invalid: @invalid, orientation: @orientation})}
-          {Connect.control(%Control{id: @id, dir: @dir, disabled: @disabled, read_only: @read_only, invalid: @invalid, orientation: @orientation})}
+          {Connect.mounted_control(%Control{id: @id, dir: @dir, disabled: @disabled, read_only: @read_only, invalid: @invalid, orientation: @orientation})}
         >
           <div
-            phx-mounted={Connect.ignore_thumb(%Thumb{id: @id, dir: @dir, disabled: @disabled, read_only: @read_only, invalid: @invalid, orientation: @orientation})}
-            {Connect.thumb(%Thumb{id: @id, dir: @dir, disabled: @disabled, read_only: @read_only, invalid: @invalid, orientation: @orientation})}
+            {Connect.mounted_thumb(%Thumb{id: @id, dir: @dir, disabled: @disabled, read_only: @read_only, invalid: @invalid, orientation: @orientation})}
             title="Thumb"
             />
           <div
             :if={@marker_values != []}
-            phx-mounted={Connect.ignore_marker_group(%MarkerGroup{id: @id, dir: @dir, orientation: @orientation})}
-            {Connect.marker_group(%MarkerGroup{id: @id, dir: @dir, orientation: @orientation})}
+            {Connect.mounted_marker_group(%MarkerGroup{id: @id, dir: @dir, orientation: @orientation})}
           >
             <div
               :for={val <- @marker_values}
-              phx-mounted={Connect.ignore_marker(%Marker{id: @id, value: val, slider_value: @value, disabled: @disabled, dir: @dir, orientation: @orientation})}
-              {Connect.marker(%Marker{id: @id, value: val, slider_value: @value, disabled: @disabled, dir: @dir, orientation: @orientation})}
+              {Connect.mounted_marker(%Marker{id: @id, value: val, slider_value: @value, disabled: @disabled, dir: @dir, orientation: @orientation})}
             />
           </div>
         </div>
         <div
-          phx-mounted={Connect.ignore_value_text(%ValueText{id: @id, dir: @dir, value: @value, orientation: @orientation})}
-          {Connect.value_text(%ValueText{id: @id, dir: @dir, value: @value, orientation: @orientation})}
+          {Connect.mounted_value_text(%ValueText{id: @id, dir: @dir, value: @value, orientation: @orientation})}
         >
           {render_slot(@value_text, value_text_string(@value, @value_text_as))}
           <span
@@ -394,8 +385,7 @@ defmodule Corex.AngleSlider do
           <span :if={@value_text == []} {Connect.value(%Value{})}>{value_text_string(@value, @value_text_as)}</span>
         </div>
         <input
-          phx-mounted={Connect.ignore_hidden_input(%HiddenInput{id: @id, name: @name, value: @value, disabled: @disabled, dir: @dir, orientation: @orientation})}
-          {Connect.hidden_input(%HiddenInput{id: @id, name: @name, value: @value, disabled: @disabled, dir: @dir, orientation: @orientation})}
+          {Connect.mounted_hidden_input(%HiddenInput{id: @id, name: @name, value: @value, disabled: @disabled, dir: @dir, orientation: @orientation})}
         />
       </div>
 
@@ -430,7 +420,7 @@ defmodule Corex.AngleSlider do
     assigns = assign(assigns, :root, root)
 
     ~H"""
-    <div phx-mounted={Connect.ignore_root(@root)} {Connect.root(@root)} {@rest}>
+    <div {Connect.mounted_root(@root)} {@rest}>
       {render_slot(@inner_block)}
     </div>
     """
@@ -455,7 +445,7 @@ defmodule Corex.AngleSlider do
     assigns = assign(assigns, :label, label)
 
     ~H"""
-    <div phx-mounted={Connect.ignore_label(@label)} {Connect.label(@label)} {@rest}>
+    <div {Connect.mounted_label(@label)} {@rest}>
       {render_slot(@inner_block)}
     </div>
     """
@@ -480,7 +470,7 @@ defmodule Corex.AngleSlider do
     assigns = assign(assigns, :control, control)
 
     ~H"""
-    <div phx-mounted={Connect.ignore_control(@control)} {Connect.control(@control)} {@rest}>
+    <div {Connect.mounted_control(@control)} {@rest}>
       {render_slot(@inner_block)}
     </div>
     """
@@ -504,7 +494,7 @@ defmodule Corex.AngleSlider do
     assigns = assign(assigns, :thumb, thumb)
 
     ~H"""
-    <div phx-mounted={Connect.ignore_thumb(@thumb)} {Connect.thumb(@thumb)} {@rest} />
+    <div {Connect.mounted_thumb(@thumb)} {@rest} />
     """
   end
 
@@ -528,8 +518,7 @@ defmodule Corex.AngleSlider do
 
     ~H"""
     <div
-      phx-mounted={Connect.ignore_value_text(@value_text_props)}
-      {Connect.value_text(@value_text_props)}
+      {Connect.mounted_value_text(@value_text_props)}
       {@rest}
     >
       {render_slot(@value_text, value_text_string(@ctx.value, @ctx.value_text_as))}
@@ -587,7 +576,7 @@ defmodule Corex.AngleSlider do
     assigns = assign(assigns, :marker_group, marker_group)
 
     ~H"""
-    <div phx-mounted={Connect.ignore_marker_group(@marker_group)} {Connect.marker_group(@marker_group)} {@rest}>
+    <div {Connect.mounted_marker_group(@marker_group)} {@rest}>
       {render_slot(@inner_block)}
     </div>
     """
@@ -613,7 +602,7 @@ defmodule Corex.AngleSlider do
     assigns = assign(assigns, :marker, marker)
 
     ~H"""
-    <div phx-mounted={Connect.ignore_marker(@marker)} {Connect.marker(@marker)} {@rest} />
+    <div {Connect.mounted_marker(@marker)} {@rest} />
     """
   end
 
@@ -635,7 +624,7 @@ defmodule Corex.AngleSlider do
     assigns = assign(assigns, :hidden_input, hidden_input)
 
     ~H"""
-    <input phx-mounted={Connect.ignore_hidden_input(@hidden_input)} {Connect.hidden_input(@hidden_input)} {@rest} />
+    <input {Connect.mounted_hidden_input(@hidden_input)} {@rest} />
     """
   end
 
@@ -687,9 +676,12 @@ defmodule Corex.AngleSlider do
   ```
   """)
 
+  @spec set_value(String.t(), number()) :: Phoenix.LiveView.JS.t()
+  @spec set_value(Phoenix.LiveView.Socket.t(), String.t(), Corex.Value.coercible()) ::
+          Phoenix.LiveView.Socket.t()
   def set_value(angle_slider_id, value) when is_binary(angle_slider_id) and is_number(value) do
     JS.dispatch("corex:angle-slider:set-value",
-      to: "##{angle_slider_id}",
+      to: Selectors.css_id(angle_slider_id),
       detail: %{value: value},
       bubbles: false
     )
@@ -712,23 +704,35 @@ defmodule Corex.AngleSlider do
 
   def set_value(socket, angle_slider_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(angle_slider_id) do
-    angle =
-      if is_binary(value) do
-        case Float.parse(value) do
-          {num, _} -> num
-          :error -> 0
-        end
-      else
-        value
-      end
-
     LiveView.push_event(socket, "angle_slider_set_value", %{
       id: angle_slider_id,
-      value: angle
+      value: coerce_angle(value)
     })
   end
 
+  defp coerce_angle(value) when is_number(value), do: value
+
+  defp coerce_angle(value) when is_binary(value) do
+    case Float.parse(value) do
+      {angle, _rest} -> angle
+      :error -> fallback_angle(value)
+    end
+  end
+
+  defp coerce_angle(value), do: fallback_angle(value)
+
+  defp fallback_angle(value) do
+    Corex.Dev.warn(
+      "Corex.AngleSlider.set_value/3 expected a number, got #{inspect(value)}, using 0"
+    )
+
+    0
+  end
+
   @doc false
+  @spec value(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec value(String.t(), keyword()) :: Phoenix.LiveView.JS.t()
+  @spec value(Phoenix.LiveView.Socket.t(), String.t(), keyword()) :: Phoenix.LiveView.Socket.t()
   def value(angle_slider_id) when is_binary(angle_slider_id), do: value(angle_slider_id, [])
 
   api_doc(~S"""
@@ -751,7 +755,7 @@ defmodule Corex.AngleSlider do
 
   def value(angle_slider_id, opts) when is_binary(angle_slider_id) and is_list(opts) do
     JS.dispatch("corex:angle-slider:value",
-      to: "##{angle_slider_id}",
+      to: Selectors.css_id(angle_slider_id),
       detail: respond_to_fields(opts),
       bubbles: false
     )

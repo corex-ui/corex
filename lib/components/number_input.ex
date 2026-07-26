@@ -199,6 +199,8 @@ defmodule Corex.NumberInput do
   @doc type: :component
   use Phoenix.Component
 
+  use Corex.Component, [:api, :form]
+
   import Corex.Api.Doc
 
   alias Phoenix.HTML.Form
@@ -215,33 +217,30 @@ defmodule Corex.NumberInput do
   }
 
   alias Corex.NumberInput.Connect
+
   alias Corex.NumberInput.Format
+
   alias Corex.NumberInput.Translation
+
   alias Corex.Selectors
+
   alias Phoenix.LiveView
+
   alias Phoenix.LiveView.JS
 
-  import Corex.Helpers, only: [respond_to_fields: 1]
+  form_control_attrs(
+    except: [:controlled],
+    docs: [
+      field: "A form field struct, e.g. f[:age] or @form[:age]"
+    ]
+  )
 
-  attr(:id, :string, required: false)
   attr(:value, :string, default: nil)
   attr(:min, :float, default: nil)
   attr(:max, :float, default: nil)
   attr(:step, :float, default: 1.0)
-  attr(:disabled, :boolean, default: false)
-  attr(:read_only, :boolean, default: false)
-  attr(:invalid, :boolean, default: nil)
-
-  attr(:auto_invalid, :boolean,
-    default: false,
-    doc: "When true with `field`, set invalid from visible changeset errors"
-  )
-
-  attr(:required, :boolean, default: false)
   attr(:allow_mouse_wheel, :boolean, default: false)
 
-  attr(:name, :string, default: nil)
-  attr(:form, :string, default: nil)
   attr(:on_value_change, :string, default: nil)
   attr(:on_value_change_client, :string, default: nil)
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
@@ -253,7 +252,6 @@ defmodule Corex.NumberInput do
   )
 
   attr(:errors, :list, default: [], doc: "List of error messages to display")
-  attr(:field, Phoenix.HTML.FormField, doc: "A form field struct, e.g. f[:age] or @form[:age]")
   attr(:rest, :global)
 
   slot :label, required: false do
@@ -301,8 +299,7 @@ defmodule Corex.NumberInput do
     <div
       id={@id}
       phx-hook="NumberInput"
-      data-loading
-      phx-mounted={JS.ignore_attributes(["data-loading"])}
+      {Corex.Hook.loading()}
       {Connect.props(%Props{
         id: @id,
         form_field: @form_field,
@@ -338,17 +335,17 @@ defmodule Corex.NumberInput do
         data-part="value-input"
         phx-mounted={JS.ignore_attributes(["value"], to: Selectors.css_id("number-input:#{@id}:value-input"))}
       />
-      <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation, read_only: @read_only})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation, read_only: @read_only})}>
-        <label :if={@label != []} phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir, orientation: @orientation})} {Connect.label(%Label{id: @id, dir: @dir, orientation: @orientation})}>
+      <div {Connect.mounted_root(%Root{id: @id, dir: @dir, orientation: @orientation, read_only: @read_only})}>
+        <label :if={@label != []} {Connect.mounted_label(%Label{id: @id, dir: @dir, orientation: @orientation})}>
           {render_slot(@label)}
         </label>
-        <div phx-mounted={Connect.ignore_control(%Control{id: @id, dir: @dir, orientation: @orientation})} {Connect.control(%Control{id: @id, dir: @dir, orientation: @orientation})}>
-          <input value={@display_value || ""} phx-mounted={Connect.ignore_input(%Input{id: @id, disabled: @disabled, required: @required, dir: @dir, orientation: @orientation})} {Connect.input(%Input{id: @id, disabled: @disabled, required: @required, dir: @dir, orientation: @orientation})} />
+        <div {Connect.mounted_control(%Control{id: @id, dir: @dir, orientation: @orientation})}>
+          <input value={@display_value || ""} {Connect.mounted_input(%Input{id: @id, disabled: @disabled, required: @required, dir: @dir, orientation: @orientation})} />
           <div {Connect.trigger_group(%TriggerGroup{dir: @dir, orientation: @orientation})}>
-            <button type="button" phx-mounted={Connect.ignore_increment_trigger(%IncrementTrigger{id: @id, aria_label: @translation.increase, dir: @dir, orientation: @orientation})} {Connect.increment_trigger(%IncrementTrigger{id: @id, aria_label: @translation.increase, dir: @dir, orientation: @orientation})}>
+            <button type="button" {Connect.mounted_increment_trigger(%IncrementTrigger{id: @id, aria_label: @translation.increase, dir: @dir, orientation: @orientation})}>
               {render_slot(@increment_trigger)}
             </button>
-            <button type="button" phx-mounted={Connect.ignore_decrement_trigger(%DecrementTrigger{id: @id, aria_label: @translation.decrease, dir: @dir, orientation: @orientation})} {Connect.decrement_trigger(%DecrementTrigger{id: @id, aria_label: @translation.decrease, dir: @dir, orientation: @orientation})}>
+            <button type="button" {Connect.mounted_decrement_trigger(%DecrementTrigger{id: @id, aria_label: @translation.decrease, dir: @dir, orientation: @orientation})}>
               {render_slot(@decrement_trigger)}
             </button>
           </div>
@@ -418,10 +415,13 @@ defmodule Corex.NumberInput do
   ```
   """)
 
+  @spec set_value(String.t(), String.t()) :: Phoenix.LiveView.JS.t()
+  @spec set_value(Phoenix.LiveView.Socket.t(), String.t(), String.t()) ::
+          Phoenix.LiveView.Socket.t()
   def set_value(number_input_id, value)
       when is_binary(number_input_id) and (is_number(value) or is_binary(value)) do
     JS.dispatch("corex:number-input:set-value",
-      to: "##{number_input_id}",
+      to: Selectors.css_id(number_input_id),
       detail: %{value: normalize_api_number!(value)},
       bubbles: false
     )
@@ -458,9 +458,11 @@ defmodule Corex.NumberInput do
   ```
   """)
 
+  @spec clear_value(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec clear_value(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def clear_value(number_input_id) when is_binary(number_input_id) do
     JS.dispatch("corex:number-input:clear-value",
-      to: "##{number_input_id}",
+      to: Selectors.css_id(number_input_id),
       bubbles: false
     )
   end
@@ -492,9 +494,11 @@ defmodule Corex.NumberInput do
   ```
   """)
 
+  @spec increment(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec increment(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def increment(number_input_id) when is_binary(number_input_id) do
     JS.dispatch("corex:number-input:increment",
-      to: "##{number_input_id}",
+      to: Selectors.css_id(number_input_id),
       bubbles: false
     )
   end
@@ -526,9 +530,11 @@ defmodule Corex.NumberInput do
   ```
   """)
 
+  @spec decrement(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec decrement(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def decrement(number_input_id) when is_binary(number_input_id) do
     JS.dispatch("corex:number-input:decrement",
-      to: "##{number_input_id}",
+      to: Selectors.css_id(number_input_id),
       bubbles: false
     )
   end
@@ -560,9 +566,11 @@ defmodule Corex.NumberInput do
   ```
   """)
 
+  @spec set_to_min(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec set_to_min(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def set_to_min(number_input_id) when is_binary(number_input_id) do
     JS.dispatch("corex:number-input:set-to-min",
-      to: "##{number_input_id}",
+      to: Selectors.css_id(number_input_id),
       bubbles: false
     )
   end
@@ -594,9 +602,11 @@ defmodule Corex.NumberInput do
   ```
   """)
 
+  @spec set_to_max(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec set_to_max(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def set_to_max(number_input_id) when is_binary(number_input_id) do
     JS.dispatch("corex:number-input:set-to-max",
-      to: "##{number_input_id}",
+      to: Selectors.css_id(number_input_id),
       bubbles: false
     )
   end
@@ -628,8 +638,10 @@ defmodule Corex.NumberInput do
   ```
   """)
 
+  @spec focus(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec focus(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def focus(number_input_id) when is_binary(number_input_id) do
-    JS.dispatch("corex:number-input:focus", to: "##{number_input_id}", bubbles: false)
+    JS.dispatch("corex:number-input:focus", to: Selectors.css_id(number_input_id), bubbles: false)
   end
 
   api_doc(~S"""
@@ -670,15 +682,18 @@ defmodule Corex.NumberInput do
   ```
   """)
 
+  @spec state(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec state(String.t(), keyword()) :: Phoenix.LiveView.JS.t()
+  @spec state(Phoenix.LiveView.Socket.t(), String.t(), keyword()) :: Phoenix.LiveView.Socket.t()
   def state(number_input_id, opts) when is_binary(number_input_id) and is_list(opts) do
     JS.dispatch("corex:number-input:state",
-      to: "##{number_input_id}",
+      to: Selectors.css_id(number_input_id),
       detail: respond_to_fields(opts),
       bubbles: false
     )
   end
 
-  api_doc_short("Same as [`state/2`](#state/2) with default `respond_to:`.")
+  api_doc("Same as [`state/2`](#state/2) with default `respond_to:`.")
   def state(number_input_id) when is_binary(number_input_id), do: state(number_input_id, [])
 
   api_doc(~S"""

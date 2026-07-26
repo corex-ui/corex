@@ -1,22 +1,30 @@
 defmodule Corex.TreeView.Api do
   @moduledoc false
+  use Corex.Component, :api
+
   alias Corex.Api.RespondTo
+
+  alias Corex.Selectors
+
   alias Phoenix.LiveView
+
   alias Phoenix.LiveView.JS
-  import Corex.Helpers, only: [validate_value!: 1, respond_to_fields: 1]
+
+  @expanded "Corex.TreeView.set_expanded_value/2"
+  @selected "Corex.TreeView.set_selected_value/2"
 
   def set_expanded_value(tree_view_id, value) when is_binary(tree_view_id) do
     JS.dispatch("corex:tree-view:set-expanded-value",
-      to: "##{tree_view_id}",
-      detail: %{value: validate_value!(value)},
+      to: Selectors.css_id(tree_view_id),
+      detail: %{value: coerce_string_list(value, @expanded)},
       bubbles: false
     )
   end
 
   def set_selected_value(tree_view_id, value) when is_binary(tree_view_id) do
     JS.dispatch("corex:tree-view:set-selected-value",
-      to: "##{tree_view_id}",
-      detail: %{value: validate_value!(value)},
+      to: Selectors.css_id(tree_view_id),
+      detail: %{value: coerce_string_list(value, @selected)},
       bubbles: false
     )
   end
@@ -27,7 +35,7 @@ defmodule Corex.TreeView.Api do
       socket,
       "tree_view_set_expanded_value",
       tree_view_id,
-      validate_value!(value)
+      coerce_string_list(value, @expanded)
     )
   end
 
@@ -37,13 +45,13 @@ defmodule Corex.TreeView.Api do
       socket,
       "tree_view_set_selected_value",
       tree_view_id,
-      validate_value!(value)
+      coerce_string_list(value, @selected)
     )
   end
 
   def value(tree_view_id, opts) when is_binary(tree_view_id) and is_list(opts) do
     JS.dispatch("corex:tree-view:value",
-      to: "##{tree_view_id}",
+      to: Selectors.css_id(tree_view_id),
       detail: respond_to_fields(opts),
       bubbles: false
     )
@@ -63,7 +71,7 @@ defmodule Corex.TreeView.Api do
 
   def expanded_value(tree_view_id, opts) when is_binary(tree_view_id) and is_list(opts) do
     JS.dispatch("corex:tree-view:expanded-value",
-      to: "##{tree_view_id}",
+      to: Selectors.css_id(tree_view_id),
       detail: respond_to_fields(opts),
       bubbles: false
     )

@@ -1,21 +1,19 @@
 import {
   getPlacement,
+  getPlacementSide,
   getPlacementStyles
-} from "./chunks/chunk-MHRYIVD2.mjs";
+} from "./chunks/chunk-STMYDYIS.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-C4KEB3WL.mjs";
+} from "./chunks/chunk-3OQP2D73.mjs";
 import {
   isFocusVisible,
   trackFocusVisible
-} from "./chunks/chunk-YUSIPE4B.mjs";
-import {
-  snapshotDataset
-} from "./chunks/chunk-TKOH2OAC.mjs";
+} from "./chunks/chunk-WAPDN2S7.mjs";
 import {
   idMatches,
   readPayloadId
-} from "./chunks/chunk-LNVRIZ4K.mjs";
+} from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
   Component,
   VanillaMachine,
@@ -24,6 +22,7 @@ import {
   createAnatomy,
   createGuards,
   createMachine,
+  createZagLiveHook,
   dataAttr,
   ensureProps,
   getBoolean,
@@ -35,13 +34,13 @@ import {
   isFunction,
   isLeftClick,
   queryAll
-} from "./chunks/chunk-6AOEC32Q.mjs";
+} from "./chunks/chunk-E4OZ7DWO.mjs";
 
-// ../node_modules/.pnpm/@zag-js+tooltip@1.40.0/node_modules/@zag-js/tooltip/dist/tooltip.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+tooltip@1.42.0/node_modules/@zag-js/tooltip/dist/tooltip.anatomy.mjs
 var anatomy = createAnatomy("tooltip").parts("trigger", "arrow", "arrowTip", "positioner", "content");
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+utils@1.40.0/node_modules/@zag-js/utils/dist/store.mjs
+// ../node_modules/.pnpm/@zag-js+utils@1.42.0/node_modules/@zag-js/utils/dist/store.mjs
 function createStore(initialState, compare = Object.is) {
   let state = { ...initialState };
   const listeners = /* @__PURE__ */ new Set();
@@ -84,7 +83,7 @@ function createStore(initialState, compare = Object.is) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+tooltip@1.40.0/node_modules/@zag-js/tooltip/dist/tooltip.dom.mjs
+// ../node_modules/.pnpm/@zag-js+tooltip@1.42.0/node_modules/@zag-js/tooltip/dist/tooltip.dom.mjs
 var getTriggerId = (scope, value) => {
   const customId = scope.ids?.trigger;
   if (customId != null) return isFunction(customId) ? customId(value) : customId;
@@ -93,31 +92,37 @@ var getTriggerId = (scope, value) => {
 var getContentId = (scope) => scope.ids?.content ?? `tooltip:${scope.id}:content`;
 var getArrowId = (scope) => scope.ids?.arrow ?? `tooltip:${scope.id}:arrow`;
 var getPositionerId = (scope) => scope.ids?.positioner ?? `tooltip:${scope.id}:popper`;
+var getTriggerEl = (scope) => scope.getById(getTriggerId(scope));
 var getPositionerEl = (scope) => scope.getById(getPositionerId(scope));
-var getTriggerEls = (scope) => queryAll(scope.getDoc(), `[data-scope="tooltip"][data-part="trigger"][data-ownedby="${scope.id}"]`);
+var getTriggerEls = (scope) => queryAll(scope.getRootNode(), `[data-scope="tooltip"][data-part="trigger"][data-ownedby="${scope.id}"]`);
 var getActiveTriggerEl = (scope, value) => {
-  return value == null ? getTriggerEls(scope)[0] : scope.getById(getTriggerId(scope, value));
+  if (value == null) {
+    return getTriggerEl(scope) ?? getTriggerEls(scope)[0];
+  }
+  return scope.getById(getTriggerId(scope, value));
 };
 
-// ../node_modules/.pnpm/@zag-js+tooltip@1.40.0/node_modules/@zag-js/tooltip/dist/tooltip.store.mjs
+// ../node_modules/.pnpm/@zag-js+tooltip@1.42.0/node_modules/@zag-js/tooltip/dist/tooltip.store.mjs
 var store = createStore({
   id: null,
   prevId: null,
   instant: false
 });
 
-// ../node_modules/.pnpm/@zag-js+tooltip@1.40.0/node_modules/@zag-js/tooltip/dist/tooltip.connect.mjs
+// ../node_modules/.pnpm/@zag-js+tooltip@1.42.0/node_modules/@zag-js/tooltip/dist/tooltip.connect.mjs
 function connect(service, normalize) {
   const { state, context, send, scope, prop, event: _event } = service;
   const id = prop("id");
   const hasAriaLabel = !!prop("aria-label");
   const open = state.matches("open", "closing");
   const triggerValue = context.get("triggerValue");
+  const currentPlacement = context.get("currentPlacement");
+  const currentPlacementSide = currentPlacement ? getPlacementSide(currentPlacement) : void 0;
   const contentId = getContentId(scope);
   const disabled = prop("disabled");
   const popperStyles = getPlacementStyles({
     ...prop("positioning"),
-    placement: context.get("currentPlacement")
+    placement: currentPlacement
   });
   return {
     open,
@@ -238,7 +243,8 @@ function connect(service, normalize) {
         "data-instant": dataAttr(instant),
         role: hasAriaLabel ? void 0 : "tooltip",
         id: hasAriaLabel ? void 0 : contentId,
-        "data-placement": context.get("currentPlacement"),
+        "data-placement": currentPlacement,
+        "data-side": currentPlacementSide,
         onPointerEnter() {
           send({ type: "content.pointer.move" });
         },
@@ -253,7 +259,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+tooltip@1.40.0/node_modules/@zag-js/tooltip/dist/tooltip.machine.mjs
+// ../node_modules/.pnpm/@zag-js+tooltip@1.42.0/node_modules/@zag-js/tooltip/dist/tooltip.machine.mjs
 var { and, not } = createGuards();
 var machine = createMachine({
   initialState: ({ prop }) => {
@@ -535,8 +541,8 @@ var machine = createMachine({
       reposition: ({ context, event, prop, scope }) => {
         if (event.type !== "positioning.set") return;
         const getPositionerEl2 = () => getPositionerEl(scope);
-        const getTriggerEl = () => getActiveTriggerEl(scope, context.get("triggerValue"));
-        getPlacement(getTriggerEl, getPositionerEl2, {
+        const getTriggerEl2 = () => getActiveTriggerEl(scope, context.get("triggerValue"));
+        getPlacement(getTriggerEl2, getPositionerEl2, {
           ...prop("positioning"),
           ...event.options,
           listeners: false,
@@ -548,8 +554,8 @@ var machine = createMachine({
       repositionImmediate: ({ context, event, prop, scope }) => {
         const triggerValue = event.value ?? context.get("triggerValue");
         const getPositionerEl2 = () => getPositionerEl(scope);
-        const getTriggerEl = () => getActiveTriggerEl(scope, triggerValue);
-        return getPlacement(getTriggerEl, getPositionerEl2, {
+        const getTriggerEl2 = () => getActiveTriggerEl(scope, triggerValue);
+        return getPlacement(getTriggerEl2, getPositionerEl2, {
           ...prop("positioning"),
           onComplete(data) {
             context.set("currentPlacement", data.placement);
@@ -590,8 +596,8 @@ var machine = createMachine({
           context.set("currentPlacement", prop("positioning").placement);
         }
         const getPositionerEl2 = () => getPositionerEl(scope);
-        const getTriggerEl = () => getActiveTriggerEl(scope, context.get("triggerValue"));
-        return getPlacement(getTriggerEl, getPositionerEl2, {
+        const getTriggerEl2 = () => getActiveTriggerEl(scope, context.get("triggerValue"));
+        return getPlacement(getTriggerEl2, getPositionerEl2, {
           ...prop("positioning"),
           defer: true,
           onComplete(data) {
@@ -662,7 +668,6 @@ var machine = createMachine({
 
 // components/tooltip.ts
 var Tooltip = class extends Component {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, props);
   }
@@ -704,40 +709,6 @@ var Tooltip = class extends Component {
     if (arrowTipEl) this.spreadProps(arrowTipEl, this.api.getArrowTipProps());
   }
 };
-
-// lib/zag-live-hook.ts
-function createZagLiveHook(config) {
-  return {
-    mounted() {
-      const component = config.mount(this);
-      component.init();
-      this[config.key] = component;
-    },
-    beforeUpdate() {
-      if (config.controlledKeys) {
-        this.beforeAttrs = snapshotDataset(this.el, config.controlledKeys);
-      }
-      config.beforeUpdate?.(this);
-    },
-    updated() {
-      const component = this[config.key];
-      if (!component) return;
-      try {
-        config.update?.(this, component);
-      } finally {
-        this.beforeAttrs = void 0;
-      }
-    },
-    destroyed() {
-      const component = this[config.key];
-      if (!component) return;
-      config.destroy?.(this, component);
-      component.destroy();
-      this[config.key] = void 0;
-      this.beforeAttrs = void 0;
-    }
-  };
-}
 
 // hooks/tooltip.ts
 function createTooltipCallbacks(el, pushEvent, liveSocket) {
@@ -798,35 +769,20 @@ function tooltipProps(el, hook) {
 }
 var TooltipHook = createZagLiveHook({
   key: "tooltip",
-  mount(hook) {
+  mount(hook, { dom, server }) {
     const el = hook.el;
     const tooltip = new Tooltip(el, tooltipProps(el, hook));
-    hook.onSetOpen = (event) => {
-      const { open } = event.detail;
-      tooltip.api.setOpen(open);
-    };
-    el.addEventListener("corex:tooltip:set-open", hook.onSetOpen);
-    hook.handlers = [];
-    hook.handlers.push(
-      hook.handleEvent("tooltip_set_open", (payload) => {
-        if (!idMatches(el.id, readPayloadId(payload))) return;
-        tooltip.api.setOpen(payload.open);
-      })
-    );
+    dom.add("corex:tooltip:set-open", (event) => {
+      tooltip.api.setOpen(event.detail.open);
+    });
+    server.add("tooltip_set_open", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      tooltip.api.setOpen(payload.open);
+    });
     return tooltip;
   },
   update(hook, tooltip) {
     tooltip.updateProps(tooltipProps(hook.el, hook));
-  },
-  destroy(hook) {
-    if (hook.onSetOpen) {
-      hook.el.removeEventListener("corex:tooltip:set-open", hook.onSetOpen);
-    }
-    if (hook.handlers) {
-      for (const handler of hook.handlers) {
-        hook.removeHandleEvent(handler);
-      }
-    }
   }
 });
 export {

@@ -1,13 +1,14 @@
 import { connect, machine, type Props, type Api } from "@zag-js/pin-input";
 import { VanillaMachine } from "@zag-js/vanilla";
-import { Component } from "../lib/core";
+import { Component, type SchemaOf } from "../lib/core";
 import { stripZagSubmitNames } from "../lib/form-field-array-submit";
 import { getString } from "../lib/util";
 import { syncHiddenInputValue } from "../lib/value-form-sync";
 
-export class PinInput extends Component<Props, Api> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: Props): VanillaMachine<any> {
+type Schema = SchemaOf<typeof machine>;
+
+export class PinInput extends Component<Props, Api, Schema> {
+  initMachine(props: Props): VanillaMachine<Schema> {
     return new VanillaMachine(machine, props);
   }
 

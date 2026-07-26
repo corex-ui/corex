@@ -1,5 +1,9 @@
 defmodule Corex.Timer.Connect do
   @moduledoc false
+  use Corex.Connect.Mounted
+
+  use Corex.Component, :connect
+
   alias Corex.Selectors
 
   alias Corex.Timer.Anatomy.{
@@ -17,16 +21,15 @@ defmodule Corex.Timer.Connect do
   alias Corex.Timer.Translation, as: TimerTranslation
 
   alias Phoenix.LiveView.JS
-  import Corex.Helpers, only: [get_boolean: 1]
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
     %{
       "id" => assigns.id,
-      "data-countdown" => get_boolean(assigns.countdown),
+      "data-countdown" => presence_attr(assigns.countdown),
       "data-start-ms" => to_string(assigns.start_ms),
       "data-target-ms" => if(assigns.target_ms, do: to_string(assigns.target_ms), else: nil),
-      "data-auto-start" => get_boolean(assigns.auto_start),
+      "data-auto-start" => presence_attr(assigns.auto_start),
       "data-interval" => to_string(assigns.interval),
       "data-on-tick" => assigns.on_tick,
       "data-on-tick-client" => assigns.on_tick_client,
@@ -135,6 +138,13 @@ defmodule Corex.Timer.Connect do
       "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical")
     }
+
+    base =
+      if assigns.type == "days" and value > 99 do
+        Map.put(base, "data-plain", to_string(value))
+      else
+        base
+      end
 
     if Map.get(assigns, :hidden, false) do
       base

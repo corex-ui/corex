@@ -140,6 +140,8 @@ defmodule Mix.Tasks.Corex.Gen.Live do
   alias Mix.Phoenix.{Context, Schema, Scope}
   alias Mix.Tasks.Phx.Gen
 
+  @typep schema :: %Schema{}
+
   @impl Mix.Task
   def run(args) do
     if Mix.Project.umbrella?() do
@@ -261,14 +263,19 @@ defmodule Mix.Tasks.Corex.Gen.Live do
       )
 
     template_dirs = Mix.Corex.generator_template_dirs("corex.gen.live")
-    Mix.Corex.copy_from(template_dirs, "", binding, files)
-
-    if context.generate?, do: Mix.Corex.Gen.Context.copy_new_files(context, binding)
-
-    Mix.Corex.format_generated_files(files)
+    _ = Mix.Corex.copy_from(template_dirs, "", binding, files)
+    copy_context_files(context, binding)
+    _ = Mix.Corex.format_generated_files(files)
 
     context
   end
+
+  defp copy_context_files(%Context{generate?: true} = context, binding) do
+    _ = Mix.Corex.Gen.Context.copy_new_files(context, binding)
+    :ok
+  end
+
+  defp copy_context_files(%Context{}, _binding), do: :ok
 
   defp print_shell_instructions(%Context{schema: schema, context_app: ctx_app} = context) do
     layout_opts = Corex.layout_generators_opts()
@@ -367,6 +374,7 @@ defmodule Mix.Tasks.Corex.Gen.Live do
   defp layout_mode?(opts), do: Keyword.has_key?(opts, :mode)
 
   @doc "Builds HEEx snippets for each schema attribute used by corex.gen.live templates."
+  @spec inputs(schema()) :: [String.t() | nil]
   def inputs(%Schema{} = schema) do
     Inputs.inputs(schema, "@form")
   end

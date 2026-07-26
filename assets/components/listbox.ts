@@ -1,7 +1,7 @@
 import { connect, machine, collection, type Props, type Api } from "@zag-js/listbox";
 import type { ListCollection } from "@zag-js/collection";
 import { VanillaMachine } from "@zag-js/vanilla";
-import { Component } from "../lib/core";
+import { Component, type SchemaOf } from "../lib/core";
 import { itemValue, zagListCollectionConfig } from "../lib/list-collection";
 
 type Item = {
@@ -11,7 +11,9 @@ type Item = {
   group?: string;
 };
 
-export class Listbox extends Component<Props<Item>, Api> {
+type Schema = SchemaOf<typeof machine>;
+
+export class Listbox extends Component<Props<Item>, Api, Schema> {
   private _options: Item[] = [];
   hasGroups: boolean = false;
 
@@ -34,8 +36,7 @@ export class Listbox extends Component<Props<Item>, Api> {
     return collection(zagListCollectionConfig(this.options, this.hasGroups));
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: Props<Item>): VanillaMachine<any> {
+  initMachine(props: Props<Item>): VanillaMachine<Schema> {
     const getCollection = this.getCollection.bind(this);
     return new VanillaMachine(machine, {
       ...props,

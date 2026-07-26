@@ -1,5 +1,9 @@
 defmodule Corex.RadioGroup.Connect do
   @moduledoc false
+  use Corex.Connect.Mounted
+
+  use Corex.Component, :connect
+
   alias Corex.Selectors
 
   alias Corex.FormField
@@ -17,7 +21,6 @@ defmodule Corex.RadioGroup.Connect do
   }
 
   alias Phoenix.LiveView.JS
-  import Corex.Helpers, only: [get_boolean: 1, controlled_string_value: 2, maybe_put: 3]
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
@@ -34,7 +37,7 @@ defmodule Corex.RadioGroup.Connect do
 
     {value_str, default_value_str} =
       if controlled do
-        controlled_string_value(true, assigns.value)
+        Corex.ValueBinding.controlled_string_value(true, assigns.value)
       else
         {nil, default_value_str}
       end
@@ -43,13 +46,13 @@ defmodule Corex.RadioGroup.Connect do
       "id" => assigns.id,
       "data-value" => value_str,
       "data-default-value" => default_value_str,
-      "data-controlled" => get_boolean(controlled),
+      "data-controlled" => presence_attr(controlled),
       "data-name" => assigns.name,
       "data-form" => assigns.form,
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-invalid" => get_boolean(assigns.invalid),
-      "data-required" => get_boolean(assigns.required),
-      "data-readonly" => get_boolean(assigns.read_only),
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-invalid" => presence_attr(assigns.invalid),
+      "data-required" => presence_attr(assigns.required),
+      "data-readonly" => presence_attr(assigns.read_only),
       "data-dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "data-on-value-change" => assigns.on_value_change,
@@ -68,7 +71,7 @@ defmodule Corex.RadioGroup.Connect do
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "radio-group:#{assigns.id}",
       "style" => "position:relative;",
-      "data-readonly" => get_boolean(Map.get(assigns, :read_only, false))
+      "data-readonly" => presence_attr(Map.get(assigns, :read_only, false))
     }
 
     if assigns.has_label do
@@ -127,8 +130,8 @@ defmodule Corex.RadioGroup.Connect do
       "data-scope" => "radio-group",
       "data-part" => "item",
       "data-value" => assigns.value,
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-invalid" => get_boolean(assigns.invalid),
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-invalid" => presence_attr(assigns.invalid),
       "data-state" => if(assigns.checked, do: "checked", else: "unchecked"),
       "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
@@ -148,8 +151,8 @@ defmodule Corex.RadioGroup.Connect do
       "data-scope" => "radio-group",
       "data-part" => "item-text",
       "data-value" => assigns.value,
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-invalid" => get_boolean(assigns.invalid),
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-invalid" => presence_attr(assigns.invalid),
       "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "radio-group:#{assigns.id}:item-text:#{assigns.value}"
@@ -170,8 +173,8 @@ defmodule Corex.RadioGroup.Connect do
       "aria-hidden" => "true",
       "data-value" => assigns.value,
       "data-state" => if(assigns.checked, do: "checked", else: "unchecked"),
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-invalid" => get_boolean(assigns.invalid),
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-invalid" => presence_attr(assigns.invalid),
       "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "radio-group:#{assigns.id}:item-control:#{assigns.value}"
@@ -216,16 +219,15 @@ defmodule Corex.RadioGroup.Connect do
       "type" => "radio",
       "form" => assigns.form,
       "value" => assigns.value,
-      "checked" => get_boolean(assigns.checked),
-      "disabled" => get_boolean(assigns.disabled),
+      "checked" => presence_attr(assigns.checked),
+      "disabled" => presence_attr(assigns.disabled),
       "data-value" => assigns.value,
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-invalid" => get_boolean(assigns.invalid),
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-invalid" => presence_attr(assigns.invalid),
       "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "radio-group:#{assigns.id}:item-hidden-input:#{assigns.value}",
-      "style" =>
-        "border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap;word-wrap:normal;"
+      "style" => visually_hidden_style()
     }
     |> maybe_put("name", assigns.name)
   end

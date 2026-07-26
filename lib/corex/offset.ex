@@ -132,7 +132,6 @@ defmodule Corex.Offset do
         id="brand-color"
         class="color-picker"
         value="#3366cc"
-        label="Brand color"
         presets={["#ff0000", "#00ff00", "#0000ff", "#3366cc"]}
         positioning={
           %Corex.Positioning{
@@ -140,8 +139,9 @@ defmodule Corex.Offset do
             gutter: 8,
             offset: %Corex.Offset{main_axis: 4, cross_axis: 0}
           }
-        }
-      />
+        }>
+        <:label>Brand color</:label>
+      </.color_picker>
 
   <!-- tabs-close -->
   """

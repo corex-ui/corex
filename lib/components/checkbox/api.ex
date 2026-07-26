@@ -1,11 +1,12 @@
 defmodule Corex.Checkbox.Api do
   @moduledoc false
   alias Corex.Api.RespondTo
+  alias Corex.Selectors
   alias Phoenix.LiveView.JS
 
   def set_checked(checkbox_id, checked) when is_binary(checkbox_id) and is_boolean(checked) do
     JS.dispatch("corex:checkbox:set-checked",
-      to: "##{checkbox_id}",
+      to: Selectors.css_id(checkbox_id),
       detail: %{checked: checked},
       bubbles: false
     )
@@ -33,7 +34,7 @@ defmodule Corex.Checkbox.Api do
 
   def toggle_checked(checkbox_id) when is_binary(checkbox_id) do
     JS.dispatch("corex:checkbox:toggle-checked",
-      to: "##{checkbox_id}",
+      to: Selectors.css_id(checkbox_id),
       bubbles: false
     )
   end

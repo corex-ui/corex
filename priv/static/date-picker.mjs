@@ -1,38 +1,39 @@
 import {
   memo
-} from "./chunks/chunk-NB7M3GJN.mjs";
+} from "./chunks/chunk-2VK4IZYP.mjs";
 import {
   clampValue,
   isValueWithinRange
-} from "./chunks/chunk-PE34YET2.mjs";
+} from "./chunks/chunk-KHEHQE65.mjs";
 import {
   createLiveRegion
-} from "./chunks/chunk-7BZGUIUZ.mjs";
+} from "./chunks/chunk-UFCM6256.mjs";
 import {
   getPlacement,
+  getPlacementSide,
   getPlacementStyles
-} from "./chunks/chunk-MHRYIVD2.mjs";
+} from "./chunks/chunk-STMYDYIS.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-CBUVYVIR.mjs";
+} from "./chunks/chunk-KJGYDHXF.mjs";
 import {
   setArrayValues,
   setScalarValue
-} from "./chunks/chunk-2H6YHTHG.mjs";
-import "./chunks/chunk-ZSA4KI2Y.mjs";
-import "./chunks/chunk-3BEM4I52.mjs";
-import "./chunks/chunk-DOKFN6DA.mjs";
+} from "./chunks/chunk-52LJJOX7.mjs";
+import "./chunks/chunk-7JTELVWK.mjs";
+import "./chunks/chunk-4UPAN2NC.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-C4KEB3WL.mjs";
+} from "./chunks/chunk-3OQP2D73.mjs";
+import "./chunks/chunk-7LA2VUMJ.mjs";
 import {
   mountStringListBinding,
-  readDatasetStringList
-} from "./chunks/chunk-BGER3KYP.mjs";
-import "./chunks/chunk-TKOH2OAC.mjs";
+  readDatasetStringList,
+  readUpdatedServerStringList
+} from "./chunks/chunk-LVRCAC6Y.mjs";
 import {
   notifyChange
-} from "./chunks/chunk-LNVRIZ4K.mjs";
+} from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
   Component,
   VanillaMachine,
@@ -42,6 +43,7 @@ import {
   createAnatomy,
   createGuards,
   createMachine,
+  createZagLiveHook,
   dataAttr,
   disableTextSelection,
   getBoolean,
@@ -56,9 +58,9 @@ import {
   raf,
   restoreTextSelection,
   setElementValue
-} from "./chunks/chunk-6AOEC32Q.mjs";
+} from "./chunks/chunk-E4OZ7DWO.mjs";
 
-// ../node_modules/.pnpm/@zag-js+date-picker@1.40.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-picker/dist/date-picker.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+date-picker@1.42.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-picker/dist/date-picker.anatomy.mjs
 var anatomy = createAnatomy("date-picker").parts(
   "clearTrigger",
   "content",
@@ -1376,7 +1378,7 @@ function $12a3c853105e5a70$var$getResolvedHourCycle(locale, options) {
   throw new Error("Unexpected hour cycle result");
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.40.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-utils/dist/constrain.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.42.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-utils/dist/constrain.mjs
 function alignCenter(date, duration, locale, min, max) {
   const halfDuration = {};
   for (let prop in duration) {
@@ -1449,7 +1451,7 @@ function constrainValue(date, minValue, maxValue) {
   return constrainedDateOnly;
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.40.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-utils/dist/align.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.42.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-utils/dist/align.mjs
 function alignDate(date, alignment, duration, locale, min, max) {
   switch (alignment) {
     case "start":
@@ -1462,7 +1464,7 @@ function alignDate(date, alignment, duration, locale, min, max) {
   }
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.40.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-utils/dist/assertion.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.42.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-utils/dist/assertion.mjs
 function isDateEqual(dateA, dateB) {
   if (dateA == null || dateB == null) return dateA === dateB;
   if (!("hour" in dateA) && !("hour" in dateB)) return $ad063034c8620db8$export$ea39ec197993aef0(dateA, dateB);
@@ -1485,7 +1487,7 @@ function isNextRangeInvalid(endDate, minValue, maxValue) {
   return $ad063034c8620db8$export$ea39ec197993aef0(nextDate, endDate) || isDateOutsideRange(nextDate, minValue, maxValue);
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.40.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-utils/dist/duration.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.42.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-utils/dist/duration.mjs
 function getUnitDuration(duration) {
   let clone = { ...duration };
   for (let key in clone) clone[key] = 1;
@@ -1498,7 +1500,7 @@ function getEndDate(startDate, duration) {
   return startDate.add(clone);
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.40.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-utils/dist/get-era-format.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.42.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-utils/dist/get-era-format.mjs
 function getEraFormat(date) {
   if (!date) return void 0;
   const id = date.calendar.identifier;
@@ -1508,7 +1510,7 @@ function getEraFormat(date) {
   return "short";
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.40.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-utils/dist/formatter.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.42.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-utils/dist/formatter.mjs
 function getDayFormatter(locale, timeZone, referenceDate) {
   const date = referenceDate ?? $d07e34cce18680fd$export$b21e0b124e224484($ad063034c8620db8$export$d0bdf45af03a6ea3(timeZone));
   return new $12a3c853105e5a70$export$ad991b66133851cf(locale, {
@@ -1532,7 +1534,7 @@ function getMonthFormatter(locale, timeZone, referenceDate) {
   });
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.40.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-utils/dist/format.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.42.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-utils/dist/format.mjs
 function formatRange(startDate, endDate, formatter, toString, timeZone) {
   let parts2 = formatter.formatRangeToParts(startDate.toDate(timeZone), endDate.toDate(timeZone));
   let separatorIndex = -1;
@@ -1566,7 +1568,7 @@ function formatSelectedDate(startDate, endDate, locale, timeZone) {
   return formatRange(start, end, formatter, (start2, end2) => `${start2} \u2013 ${end2}`, timeZone);
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.40.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-utils/dist/date-month.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.42.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-utils/dist/date-month.mjs
 var daysOfTheWeek = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 function normalizeFirstDayOfWeek(firstDayOfWeek) {
   return firstDayOfWeek != null ? daysOfTheWeek[firstDayOfWeek] : void 0;
@@ -1651,7 +1653,7 @@ function getWeekOfYear(date, locale) {
   return 1 + Math.floor((julianMonday - julianPrevWeek1) / 7);
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.40.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-utils/dist/date-year.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.42.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-utils/dist/date-year.mjs
 function getYearsRange(range) {
   const years = [];
   for (let year = range.from; year <= range.to; year += 1) years.push(year);
@@ -1689,14 +1691,14 @@ function getDecadeRange(year, opts) {
   return years;
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.40.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-utils/dist/mutation.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.42.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-utils/dist/mutation.mjs
 function getTodayDate(timeZone, calendar) {
   const tod = $ad063034c8620db8$export$d0bdf45af03a6ea3(timeZone ?? $ad063034c8620db8$export$aa8b41735afcabd2());
   if (calendar) return $d07e34cce18680fd$export$b4a036af3fc0b032(tod, calendar);
   return tod;
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.40.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-utils/dist/pagination.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.42.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-utils/dist/pagination.mjs
 function getAdjustedDateFn(visibleDuration, locale, minValue, maxValue) {
   return function getDate(options) {
     const { startDate, focusedDate } = options;
@@ -1802,7 +1804,39 @@ function getPreviousSection(focusedDate, startDate, larger, visibleDuration, loc
   }
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.40.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-utils/dist/parse-date.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.42.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-utils/dist/locale.mjs
+var digitsCache = /* @__PURE__ */ new Map();
+function getLocaleDigits(locale) {
+  let digits = digitsCache.get(locale);
+  if (digits != null) return digits;
+  const localeDigits = new Intl.NumberFormat(locale, { useGrouping: false }).format(1234567890);
+  digits = "0123456789" + localeDigits;
+  digitsCache.set(locale, digits);
+  return digits;
+}
+var isDigit = (char, locale) => {
+  return locale ? getLocaleDigits(locale).includes(char) : /\d/.test(char);
+};
+var isValidCharacter = (char, separator, locale) => {
+  if (!char) return true;
+  if (char.length !== 1) return true;
+  return isDigit(char, locale) || separator.includes(char);
+};
+var ensureValidCharacters = (value, separator, locale) => {
+  return value.split("").filter((char) => isValidCharacter(char, separator, locale)).join("");
+};
+var separatorCache = /* @__PURE__ */ new Map();
+function getLocaleSeparator(locale) {
+  let separator = separatorCache.get(locale);
+  if (separator != null) return separator;
+  const parts2 = new Intl.DateTimeFormat(locale).formatToParts(/* @__PURE__ */ new Date());
+  const literal = parts2.find((part) => part.type === "literal");
+  separator = literal ? literal.value : "/";
+  separatorCache.set(locale, separator);
+  return separator;
+}
+
+// ../node_modules/.pnpm/@zag-js+date-utils@1.42.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-utils/dist/parse-date.mjs
 var isValidYear = (year) => year != null && year.length === 4;
 var isValidMonth = (month) => month != null && parseFloat(month) <= 12;
 var isValidDay = (day) => day != null && parseFloat(day) <= 31;
@@ -1852,7 +1886,7 @@ function extract(pattern, str) {
   }, {});
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.40.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-utils/dist/preset.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.42.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-utils/dist/preset.mjs
 function getDateRangePreset(preset, locale, timeZone) {
   const today = $d07e34cce18680fd$export$93522d1a439f3617($ad063034c8620db8$export$461939dd4422153(timeZone));
   switch (preset) {
@@ -1890,7 +1924,7 @@ function getDateRangePreset(preset, locale, timeZone) {
   }
 }
 
-// ../node_modules/.pnpm/@zag-js+date-picker@1.40.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-picker/dist/date-picker.dom.mjs
+// ../node_modules/.pnpm/@zag-js+date-picker@1.42.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-picker/dist/date-picker.dom.mjs
 var getLabelId = (ctx, index) => ctx.ids?.label?.(index) ?? `datepicker:${ctx.id}:label:${index}`;
 var getRootId = (ctx) => ctx.ids?.root ?? `datepicker:${ctx.id}`;
 var getTableId = (ctx, id) => ctx.ids?.table?.(id) ?? `datepicker:${ctx.id}:table:${id}`;
@@ -1916,7 +1950,7 @@ var getClearTriggerEl = (ctx) => ctx.getById(getClearTriggerId(ctx));
 var getPositionerEl = (ctx) => ctx.getById(getPositionerId(ctx));
 var getControlEl = (ctx) => ctx.getById(getControlId(ctx));
 
-// ../node_modules/.pnpm/@zag-js+date-picker@1.40.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-picker/dist/date-picker.utils.mjs
+// ../node_modules/.pnpm/@zag-js+date-picker@1.42.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-picker/dist/date-picker.utils.mjs
 function adjustStartAndEndDate(value) {
   const [startDate, endDate] = value;
   let result;
@@ -1947,22 +1981,9 @@ var PLACEHOLDERS = {
 function getInputPlaceholder(locale) {
   return new $12a3c853105e5a70$export$ad991b66133851cf(locale).formatToParts(/* @__PURE__ */ new Date()).map((item) => PLACEHOLDERS[item.type] ?? item.value).join("");
 }
-var isValidCharacter = (char, separator) => {
-  if (!char) return true;
-  return /\d/.test(char) || char === separator || char.length !== 1;
-};
 var isValidDate = (value) => {
   return !Number.isNaN(value.day) && !Number.isNaN(value.month) && !Number.isNaN(value.year);
 };
-var ensureValidCharacters = (value, separator) => {
-  return value.split("").filter((char) => isValidCharacter(char, separator)).join("");
-};
-function getLocaleSeparator(locale) {
-  const dateFormatter = new Intl.DateTimeFormat(locale);
-  const parts2 = dateFormatter.formatToParts(/* @__PURE__ */ new Date());
-  const literalPart = parts2.find((part) => part.type === "literal");
-  return literalPart ? literalPart.value : "/";
-}
 var defaultTranslations = {
   dayCell(state) {
     if (state.unavailable) return `Not available. ${state.valueText}`;
@@ -2043,7 +2064,14 @@ function eachView(cb) {
   views.forEach((view) => cb(view));
 }
 var getVisibleRangeText = memo(
-  (opts) => [opts.view, opts.startValue.toString(), opts.endValue.toString(), opts.locale],
+  (opts) => [
+    opts.view,
+    opts.startValue.toString(),
+    opts.endValue.toString(),
+    opts.locale,
+    opts.timeZone,
+    opts.selectionMode
+  ],
   ([view], opts) => {
     const { startValue, endValue, locale, timeZone, selectionMode } = opts;
     if (view === "year") {
@@ -2076,7 +2104,7 @@ var getVisibleRangeText = memo(
   }
 );
 
-// ../node_modules/.pnpm/@zag-js+date-picker@1.40.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-picker/dist/date-picker.connect.mjs
+// ../node_modules/.pnpm/@zag-js+date-picker@1.42.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-picker/dist/date-picker.connect.mjs
 function connect(service, normalize) {
   const { state, context, prop, send, computed, scope } = service;
   const startValue = context.get("startValue");
@@ -2103,6 +2131,7 @@ function connect(service, normalize) {
   const maxSelectedDates = prop("maxSelectedDates");
   const isMaxSelected = isMultiPicker && maxSelectedDates != null && selectedValue.length >= maxSelectedDates;
   const currentPlacement = context.get("currentPlacement");
+  const currentPlacementSide = currentPlacement ? getPlacementSide(currentPlacement) : void 0;
   const popperStyles = getPlacementStyles({
     ...prop("positioning"),
     placement: currentPlacement
@@ -2418,6 +2447,7 @@ function connect(service, normalize) {
         dir: prop("dir"),
         "data-state": open ? "open" : "closed",
         "data-placement": currentPlacement,
+        "data-side": currentPlacementSide,
         "data-inline": dataAttr(prop("inline")),
         id: getContentId(scope),
         tabIndex: -1,
@@ -2588,6 +2618,7 @@ function connect(service, normalize) {
         "aria-disabled": ariaAttr(!cellState.selectable),
         "aria-invalid": ariaAttr(cellState.invalid),
         "data-disabled": dataAttr(!cellState.selectable),
+        "data-selectable": dataAttr(cellState.selectable),
         "data-selected": dataAttr(cellState.selected),
         "data-value": value.toString(),
         "data-view": "day",
@@ -2612,7 +2643,13 @@ function connect(service, normalize) {
           if (!cellState.selectable) return;
           const focus = !scope.isActiveElement(event.currentTarget);
           if (hoveredValue && $ad063034c8620db8$export$91b62ebf2ba703ee(value, hoveredValue)) return;
-          send({ type: "CELL.POINTER_MOVE", cell: "day", value, focus });
+          send({
+            type: "CELL.POINTER_MOVE",
+            cell: "day",
+            value,
+            focus,
+            outsideRange: cellState.outsideRange
+          });
         } : void 0
       });
     },
@@ -2643,6 +2680,7 @@ function connect(service, normalize) {
         "aria-label": cellState.valueText,
         "aria-disabled": ariaAttr(!cellState.selectable),
         "data-disabled": dataAttr(!cellState.selectable),
+        "data-selectable": dataAttr(cellState.selectable),
         "data-selected": dataAttr(cellState.selected),
         "data-value": value,
         "data-view": "month",
@@ -2695,6 +2733,7 @@ function connect(service, normalize) {
         "aria-label": cellState.valueText,
         "aria-disabled": ariaAttr(!cellState.selectable),
         "data-disabled": dataAttr(!cellState.selectable),
+        "data-selectable": dataAttr(cellState.selectable),
         "data-selected": dataAttr(cellState.selected),
         "data-value": value,
         "data-view": "year",
@@ -2775,8 +2814,10 @@ function connect(service, normalize) {
         dir: prop("dir"),
         type: "button",
         "data-placement": currentPlacement,
+        "data-side": currentPlacementSide,
         "aria-label": translations.trigger(open),
         "aria-controls": getContentId(scope),
+        "aria-expanded": open,
         "data-state": open ? "open" : "closed",
         "data-placeholder-shown": dataAttr(empty),
         "aria-haspopup": "grid",
@@ -2843,7 +2884,7 @@ function connect(service, normalize) {
         defaultValue: computed("valueAsString")[index],
         onBeforeInput(event) {
           const { data } = getNativeEvent(event);
-          if (!isValidCharacter(data, separator)) {
+          if (!isValidCharacter(data, separator, locale)) {
             event.preventDefault();
           }
         },
@@ -2879,7 +2920,7 @@ function connect(service, normalize) {
         },
         onInput(event) {
           const value = event.currentTarget.value;
-          send({ type: "INPUT.CHANGE", value: ensureValidCharacters(value, separator), index });
+          send({ type: "INPUT.CHANGE", value: ensureValidCharacters(value, separator, locale), index });
         }
       });
     },
@@ -2933,7 +2974,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+date-picker@1.40.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-picker/dist/date-picker.machine.mjs
+// ../node_modules/.pnpm/@zag-js+date-picker@1.42.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-picker/dist/date-picker.machine.mjs
 var { and } = createGuards();
 function isDateArrayEqual(a, b) {
   if (a?.length !== b?.length) return false;
@@ -3134,7 +3175,13 @@ var machine = createMachine({
       actions: ["setFocusedDate"]
     },
     "VALUE.CLEAR": {
-      actions: ["clearDateValue", "clearFocusedDate", "focusFirstInputElement"]
+      actions: [
+        "clearDateValue",
+        "clearFocusedDate",
+        "setActiveIndexToStart",
+        "clearHoveredDate",
+        "focusFirstInputElement"
+      ]
     },
     "INPUT.CHANGE": [
       {
@@ -3203,7 +3250,7 @@ var machine = createMachine({
       on: {
         "CONTROLLED.OPEN": {
           target: "open",
-          actions: ["focusFirstSelectedDate", "focusActiveCell"]
+          actions: ["resetView", "focusFirstSelectedDate", "focusActiveCell"]
         },
         "TRIGGER.CLICK": [
           {
@@ -3212,7 +3259,7 @@ var machine = createMachine({
           },
           {
             target: "open",
-            actions: ["focusFirstSelectedDate", "focusActiveCell", "invokeOnOpen"]
+            actions: ["resetView", "focusFirstSelectedDate", "focusActiveCell", "invokeOnOpen"]
           }
         ],
         OPEN: [
@@ -3222,7 +3269,7 @@ var machine = createMachine({
           },
           {
             target: "open",
-            actions: ["focusFirstSelectedDate", "focusActiveCell", "invokeOnOpen"]
+            actions: ["resetView", "focusFirstSelectedDate", "focusActiveCell", "invokeOnOpen"]
           }
         ]
       }
@@ -3232,7 +3279,7 @@ var machine = createMachine({
       on: {
         "CONTROLLED.OPEN": {
           target: "open",
-          actions: ["focusFirstSelectedDate", "focusActiveCell"]
+          actions: ["resetView", "focusFirstSelectedDate", "focusActiveCell"]
         },
         "TRIGGER.CLICK": [
           {
@@ -3241,7 +3288,7 @@ var machine = createMachine({
           },
           {
             target: "open",
-            actions: ["focusFirstSelectedDate", "focusActiveCell", "invokeOnOpen"]
+            actions: ["resetView", "focusFirstSelectedDate", "focusActiveCell", "invokeOnOpen"]
           }
         ],
         OPEN: [
@@ -3251,7 +3298,7 @@ var machine = createMachine({
           },
           {
             target: "open",
-            actions: ["focusFirstSelectedDate", "focusActiveCell", "invokeOnOpen"]
+            actions: ["resetView", "focusFirstSelectedDate", "focusActiveCell", "invokeOnOpen"]
           }
         ]
       }
@@ -3259,7 +3306,7 @@ var machine = createMachine({
     open: {
       tags: ["open"],
       effects: ["trackDismissableElement", "trackPositioning"],
-      exit: ["clearHoveredDate", "resetView"],
+      exit: ["clearHoveredDate"],
       on: {
         "CONTROLLED.CLOSE": [
           {
@@ -3341,10 +3388,16 @@ var machine = createMachine({
           }
           // ===
         ],
-        "CELL.POINTER_MOVE": {
-          guard: and("isRangePicker", "isSelectingEndDate"),
-          actions: ["setHoveredDate", "setFocusedDate"]
-        },
+        "CELL.POINTER_MOVE": [
+          {
+            guard: and("isRangePicker", "isSelectingEndDate", "isDayPointerMoveOutsideVisibleMonth"),
+            actions: ["setHoveredDate"]
+          },
+          {
+            guard: and("isRangePicker", "isSelectingEndDate"),
+            actions: ["setHoveredDate", "setFocusedDate"]
+          }
+        ],
         "TABLE.POINTER_LEAVE": {
           guard: "isRangePicker",
           actions: ["clearHoveredDate"]
@@ -3570,7 +3623,8 @@ var machine = createMachine({
       isOpenControlled: ({ prop }) => prop("open") != void 0 || !!prop("inline"),
       isInteractOutsideEvent: ({ event }) => event.previousEvent?.type === "INTERACT_OUTSIDE",
       isInputValueEmpty: ({ event }) => event.value.trim() === "",
-      shouldFixOnBlur: ({ event }) => !!event.fixOnBlur
+      shouldFixOnBlur: ({ event }) => !!event.fixOnBlur,
+      isDayPointerMoveOutsideVisibleMonth: ({ event }) => event.cell === "day" && event.outsideRange === true
     },
     effects: {
       trackPositioning({ context, prop, scope }) {
@@ -3599,6 +3653,7 @@ var machine = createMachine({
         return trackDismissableElement(getContentEl2, {
           type: "popover",
           defer: true,
+          layerStyleTargets: [() => getPositionerEl(scope)],
           exclude: [...getInputEls(scope), getTriggerEl(scope), getClearTriggerEl(scope)],
           onInteractOutside(event) {
             context.set("restoreFocus", !event.detail.focusable);
@@ -3985,9 +4040,10 @@ var machine = createMachine({
         if (!date) return;
         date = constrainValue(date, prop("min"), prop("max"));
         const values = Array.from(context.get("value"));
-        values[event.index] = date;
-        context.set("value", values);
-        const valueAsString = getValueAsString(values, prop);
+        values[event.index] = preserveTime(values[event.index], date);
+        const adjustedValues = adjustStartAndEndDate(values);
+        context.set("value", adjustedValues);
+        const valueAsString = getValueAsString(adjustedValues, prop);
         context.set("inputValue", valueAsString[event.index]);
       },
       resetView({ context }) {
@@ -4072,7 +4128,7 @@ function setAdjustedValue(ctx, value) {
   context.set("focusedValue", value.focusedDate);
 }
 
-// ../node_modules/.pnpm/@zag-js+date-picker@1.40.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-picker/dist/date-picker.parse.mjs
+// ../node_modules/.pnpm/@zag-js+date-picker@1.42.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-picker/dist/date-picker.parse.mjs
 function parse(value) {
   if (Array.isArray(value)) {
     return value.map((v) => parse(v));
@@ -4152,7 +4208,6 @@ function applyInputAriaIfNeeded(el, inputs, selectionMode) {
   }
 }
 var DatePicker = class extends Component {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, props);
   }
@@ -4412,11 +4467,77 @@ var DatePicker = class extends Component {
 };
 
 // hooks/date-picker.ts
+var DATE_PICKER_UPDATE_ATTR_KEYS = [
+  "dir",
+  "locale",
+  "timeZone",
+  "disabled",
+  "readonly",
+  "required",
+  "invalid",
+  "outsideDaySelectable",
+  "closeOnSelect",
+  "min",
+  "max",
+  "startOfWeek",
+  "fixedWeeks",
+  "selectionMode",
+  "maxSelectedDates",
+  "placeholder",
+  "minView",
+  "maxView",
+  "inline",
+  "translation",
+  "submitName",
+  "value",
+  "positionStrategy",
+  "positionPlacement",
+  "positionGutter",
+  "positionShift",
+  "positionOverflowPadding",
+  "positionArrowPadding",
+  "positionOffsetMainAxis",
+  "positionOffsetCrossAxis",
+  "positionFlip",
+  "positionSlide",
+  "positionOverlap",
+  "positionSameWidth",
+  "positionFitViewport",
+  "positionHideWhenDetached"
+];
+function datePickerUpdateAttrsKey(el) {
+  const d = el.dataset;
+  let out = "";
+  for (const key of DATE_PICKER_UPDATE_ATTR_KEYS) {
+    out += key;
+    out += "=";
+    out += d[key] ?? "";
+    out += ";";
+  }
+  return out;
+}
 function sameStringList(a, b) {
   return a.length === b.length && a.every((v, i) => v === b[i]);
 }
 function isDateLike(d) {
   return typeof d === "object" && d !== null && "year" in d && "month" in d && "day" in d && typeof d.year === "number" && typeof d.month === "number" && typeof d.day === "number";
+}
+function tryParseDate(raw, label = "date") {
+  try {
+    return parse(raw);
+  } catch (error) {
+    console.warn(`[corex] date-picker: failed to parse ${label}`, raw, error);
+    return void 0;
+  }
+}
+function tryParseDateList(values) {
+  if (!values) return void 0;
+  const parsed = [];
+  for (const x of values) {
+    const next = tryParseDate(x, "value");
+    if (next) parsed.push(next);
+  }
+  return parsed;
 }
 function valueToIsoString(d) {
   if (d == null) return "";
@@ -4461,7 +4582,14 @@ function applyServerIsoToZagIfNeeded(datePickerInstance, isoList) {
   const current = isoListFromValues(datePickerInstance.api.value);
   if (current.length > 0) return current;
   if (isoList.length === 0) return [];
-  datePickerInstance.api.setValue(isoList.map((x) => parse(x)));
+  const parsed = tryParseDateList(isoList);
+  if (!parsed || parsed.length === 0) return current;
+  try {
+    datePickerInstance.api.setValue(parsed);
+  } catch (error) {
+    console.warn("[corex] date-picker: failed to set value from server iso", isoList, error);
+    return current;
+  }
   return isoListFromValues(datePickerInstance.api.value);
 }
 function syncDatePickerValueInput(el, isoStr, notifyForm = false) {
@@ -4490,18 +4618,19 @@ function resolveZagDatePickerTranslations(el) {
 function resolveCloseOnSelect(el) {
   return getBoolean(el, "closeOnSelect");
 }
-var DatePickerHook = {
-  mounted() {
-    const el = this.el;
-    const hook = this;
+var DatePickerHook = createZagLiveHook({
+  key: "datePicker",
+  controlledKeys: ["value"],
+  mount(hook, { dom, server }) {
+    const el = hook.el;
     hook.fieldTouched = false;
-    const pushEvent = this.pushEvent.bind(this);
-    const liveSocket = this.liveSocket;
-    const canPush = () => canPushEvent(this.liveSocket);
+    const pushEvent = hook.pushEvent.bind(hook);
+    const liveSocket = hook.liveSocket;
+    const canPush = () => canPushEvent(hook.liveSocket);
     const min = getString(el, "min");
     const max = getString(el, "max");
-    const parseList = (v) => v ? v.map((x) => parse(x)) : void 0;
-    const parseOne = (v) => v ? parse(v) : void 0;
+    const parseList = (v) => tryParseDateList(v);
+    const parseOne = (v) => v ? tryParseDate(v, "focusedValue") : void 0;
     const valueBinding = mountStringListBinding(el);
     const initialIsoList = "value" in valueBinding ? valueBinding.value : valueBinding.defaultValue;
     const datePickerInstance = new DatePicker(el, {
@@ -4523,8 +4652,8 @@ var DatePickerHook = {
       invalid: getBoolean(el, "invalid"),
       outsideDaySelectable: getBoolean(el, "outsideDaySelectable"),
       closeOnSelect: resolveCloseOnSelect(el),
-      min: min ? parse(min) : void 0,
-      max: max ? parse(max) : void 0,
+      min: min ? tryParseDate(min, "min") : void 0,
+      max: max ? tryParseDate(max, "max") : void 0,
       startOfWeek: getNumber(el, "startOfWeek"),
       fixedWeeks: getBoolean(el, "fixedWeeks"),
       selectionMode: getString(el, "selectionMode"),
@@ -4604,8 +4733,6 @@ var DatePickerHook = {
         });
       }
     });
-    datePickerInstance.init();
-    this.datePicker = datePickerInstance;
     const submitName = getString(el, "submitName");
     const isoList = applyServerIsoToZagIfNeeded(
       datePickerInstance,
@@ -4620,31 +4747,31 @@ var DatePickerHook = {
     } else {
       syncDatePickerValueInput(el, isoList.length > 0 ? isoList.join(",") : "", false);
     }
-    this.handlers = [];
-    this.handlers.push(
-      this.handleEvent(
-        "date_picker_set_value",
-        (payload) => {
-          const targetId = payload.date_picker_id;
-          if (!targetId || targetId !== el.id) return;
-          datePickerInstance.api.setValue([parse(payload.value)]);
-        }
-      )
-    );
-    this.onSetValue = (event) => {
+    server.add("date_picker_set_value", (payload) => {
+      const targetId = payload.date_picker_id;
+      if (!targetId || targetId !== el.id) return;
+      const parsed = tryParseDate(payload.value, "set_value");
+      if (parsed) datePickerInstance.api.setValue([parsed]);
+    });
+    dom.add("corex:date-picker:set-value", (event) => {
       const value = event.detail?.value;
       if (typeof value === "string") {
-        datePickerInstance.api.setValue([parse(value)]);
+        const parsed = tryParseDate(value, "set-value");
+        if (parsed) datePickerInstance.api.setValue([parsed]);
       }
-    };
-    el.addEventListener("corex:date-picker:set-value", this.onSetValue);
+    });
+    hook.lastUpdateAttrsKey = datePickerUpdateAttrsKey(el);
+    return datePickerInstance;
   },
-  updated() {
-    const el = this.el;
-    const zag = this.datePicker;
+  update(hook, zag) {
+    const el = hook.el;
+    const attrsKey = datePickerUpdateAttrsKey(el);
+    if (attrsKey === hook.lastUpdateAttrsKey) return;
+    hook.lastUpdateAttrsKey = attrsKey;
     const min = getString(el, "min");
     const max = getString(el, "max");
-    zag?.updateProps({
+    const valuePatch = readUpdatedServerStringList(el, hook.beforeAttrs);
+    zag.updateProps({
       dir: getString(el, "dir"),
       locale: getString(el, "locale"),
       timeZone: getString(el, "timeZone"),
@@ -4654,8 +4781,8 @@ var DatePickerHook = {
       invalid: getBoolean(el, "invalid"),
       outsideDaySelectable: getBoolean(el, "outsideDaySelectable"),
       closeOnSelect: resolveCloseOnSelect(el),
-      min: min ? parse(min) : void 0,
-      max: max ? parse(max) : void 0,
+      min: min ? tryParseDate(min, "min") : void 0,
+      max: max ? tryParseDate(max, "max") : void 0,
       startOfWeek: getNumber(el, "startOfWeek"),
       fixedWeeks: getBoolean(el, "fixedWeeks"),
       selectionMode: getString(el, "selectionMode"),
@@ -4665,9 +4792,9 @@ var DatePickerHook = {
       maxView: getString(el, "maxView"),
       inline: getBoolean(el, "inline"),
       positioning: readPositioningOptions(el),
-      ...resolveZagDatePickerTranslations(el)
+      ...resolveZagDatePickerTranslations(el),
+      ...valuePatch.value !== void 0 ? { value: tryParseDateList(valuePatch.value) } : {}
     });
-    if (!zag) return;
     const submitName = getString(el, "submitName");
     const isoList = isoListFromValues(zag.api.value);
     if (submitName) {
@@ -4679,20 +4806,8 @@ var DatePickerHook = {
     } else {
       syncDatePickerValueInput(el, isoList.length > 0 ? isoList.join(",") : "", false);
     }
-    zag.render();
-  },
-  destroyed() {
-    if (this.onSetValue) {
-      this.el.removeEventListener("corex:date-picker:set-value", this.onSetValue);
-    }
-    if (this.handlers) {
-      for (const handler of this.handlers) {
-        this.removeHandleEvent(handler);
-      }
-    }
-    this.datePicker?.destroy();
   }
-};
+});
 export {
   DatePickerHook as DatePicker,
   applyServerIsoToZagIfNeeded,

@@ -90,17 +90,17 @@ defmodule Corex.PinInput do
   @import "../corex/corex.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.pin_input>`). Combine axes, for example `pin-input ui-accent ui-size-lg` or `pin-input ui-info ui-solid`.
+  Stack modifiers on the host (`class` on `<.pin_input>`). Combine axes, for example `pin-input ui-accent ui-size-lg`.
 
-  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on each cell input. Variant modifiers control input surface treatment. Default is subtle; add `pin-input ui-solid` for filled cells. Complete and invalid states keep their dedicated styling.
+  Semantic modifiers set palette variables for focus and accent ink on each cell. The cell surface stays the shared `ui-input` treatment. Pin input has no variant axis. Complete and invalid states keep their dedicated styling.
 
   <!-- tabs-open -->
 
   ### Semantic
 
-  Palette variables for pin input ink and fill. Does not change surface treatment by itself.
+  Palette for focus and accent ink on each cell.
 
   | Modifier | Classes |
   | -------- | ------- |
@@ -110,15 +110,6 @@ defmodule Corex.PinInput do
   | Alert | `pin-input ui-alert` |
   | Info | `pin-input ui-info` |
   | Success | `pin-input ui-success` |
-
-  ### Variant
-
-  Visual treatment of each cell input surface. Combine with a semantic modifier for palette-driven ink and fill.
-
-  | Modifier | Classes |
-  | -------- | ------- |
-  | Subtle (default) | `pin-input` or `pin-input ui-accent` |
-  | Solid | `pin-input ui-accent ui-solid` |
 
   ### Size
 
@@ -149,16 +140,23 @@ defmodule Corex.PinInput do
   @doc type: :component
   use Phoenix.Component
 
+  use Corex.Component, :api
+
   import Corex.Api.Doc
 
-  alias Corex.PinInput.Anatomy.{Control, HiddenInput, Input, Label, Props, Root}
-  alias Corex.PinInput.Connect
-  alias Corex.PinInput.Translation
-  alias Corex.Selectors
-  alias Phoenix.LiveView
-  alias Phoenix.LiveView.JS
-  import Corex.Helpers, only: [validate_value!: 1, respond_to_fields: 1]
   import Corex.Component, only: [form_control_attrs: 0]
+
+  alias Corex.PinInput.Anatomy.{Control, HiddenInput, Input, Label, Props, Root}
+
+  alias Corex.PinInput.Connect
+
+  alias Corex.PinInput.Translation
+
+  alias Corex.Selectors
+
+  alias Phoenix.LiveView
+
+  alias Phoenix.LiveView.JS
 
   form_control_attrs()
 
@@ -226,49 +224,58 @@ defmodule Corex.PinInput do
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign_new(:orientation, fn -> "horizontal" end)
       |> assign(:translation, translation)
-      |> assign(:value, validate_value!(value || []))
+      |> assign(:value, coerce_string_list(value || []))
 
     assigns =
       assigns
       |> assign(:value_str, Enum.join(assigns.value))
       |> Corex.FormField.assign_list_submit()
 
+    padded_digits = padded_pin_digits(assigns.value, assigns.count)
+
+    assigns =
+      assigns
+      |> assign(:padded_digits, padded_digits)
+      |> assign(
+        :connect_props,
+        Connect.props(%Props{
+          id: assigns.id,
+          form_field: assigns.form_field,
+          value: assigns.value,
+          count: assigns.count,
+          controlled: assigns.controlled,
+          disabled: assigns.disabled,
+          invalid: assigns.invalid,
+          required: assigns.required,
+          read_only: assigns.read_only,
+          mask: assigns.mask,
+          otp: assigns.otp,
+          blur_on_complete: assigns.blur_on_complete,
+          select_on_focus: assigns.select_on_focus,
+          name: assigns.name,
+          form: assigns.form,
+          dir: assigns.dir,
+          orientation: assigns.orientation,
+          type: assigns.type,
+          placeholder: assigns.placeholder,
+          on_value_change: assigns.on_value_change,
+          on_value_change_client: assigns.on_value_change_client,
+          on_value_complete: assigns.on_value_complete,
+          on_value_complete_client: assigns.on_value_complete_client,
+          submit_name: assigns.submit_name
+        })
+      )
+
     ~H"""
     <div
       id={@id}
       phx-hook="PinInput"
-      data-loading
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+      {Corex.Hook.loading()}
       {@rest}
-      {Connect.props(%Props{
-        id: @id,
-        form_field: @form_field,
-        value: @value,
-        count: @count,
-        controlled: @controlled,
-        disabled: @disabled,
-        invalid: @invalid,
-        required: @required,
-        read_only: @read_only,
-        mask: @mask,
-        otp: @otp,
-        blur_on_complete: @blur_on_complete,
-        select_on_focus: @select_on_focus,
-        name: @name,
-        form: @form,
-        dir: @dir,
-        orientation: @orientation,
-        type: @type,
-        placeholder: @placeholder,
-        on_value_change: @on_value_change,
-        on_value_change_client: @on_value_change_client,
-        on_value_complete: @on_value_complete,
-        on_value_complete_client: @on_value_complete_client,
-        submit_name: @submit_name
-      })}
+      {@connect_props}
     >
-      <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation, read_only: @read_only})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation, read_only: @read_only})}>
-        <label :if={@label != []} phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir, orientation: @orientation})} {Connect.label(%Label{id: @id, dir: @dir, orientation: @orientation})}>
+      <div {Connect.mounted_root(%Root{id: @id, dir: @dir, orientation: @orientation, read_only: @read_only})}>
+        <label :if={@label != []} {Connect.mounted_label(%Label{id: @id, dir: @dir, orientation: @orientation})}>
           {render_slot(@label)}
         </label>
         <div
@@ -278,7 +285,7 @@ defmodule Corex.PinInput do
           id={"pin-input:#{@id}:array-inputs"}
         >
           <input
-            :for={{digit, index} <- Enum.with_index(padded_pin_digits(@value, @count))}
+            :for={{digit, index} <- Enum.with_index(@padded_digits)}
             type="hidden"
             id={"pin-input:#{@id}:array-input-#{index}"}
             data-scope="pin-input"
@@ -292,16 +299,15 @@ defmodule Corex.PinInput do
             }
           />
         </div>
-        <input phx-mounted={Connect.ignore_hidden_input(%HiddenInput{id: @id, name: if(@submit_name, do: nil, else: @name), value: @value_str})} {Connect.hidden_input(%HiddenInput{id: @id, name: if(@submit_name, do: nil, else: @name), value: @value_str})} />
-        <div phx-mounted={Connect.ignore_control(%Control{id: @id, dir: @dir, orientation: @orientation})} {Connect.control(%Control{id: @id, dir: @dir, orientation: @orientation})}>
+        <input {Connect.mounted_hidden_input(%HiddenInput{id: @id, name: if(@submit_name, do: nil, else: @name), value: @value_str})} />
+        <div {Connect.mounted_control(%Control{id: @id, dir: @dir, orientation: @orientation})}>
           <input
             :for={i <- 0..(@count - 1)}
             type="text"
             inputmode={@type}
             maxlength="1"
             autocomplete={if(@otp, do: "one-time-code", else: "off")}
-            phx-mounted={Connect.ignore_input(%Input{id: @id, index: i, aria_label: Corex.Gettext.gettext(@translation.digit, digit: i + 1), dir: @dir, orientation: @orientation})}
-            {Connect.input(%Input{id: @id, index: i, aria_label: Corex.Gettext.gettext(@translation.digit, digit: i + 1), dir: @dir, orientation: @orientation})}
+            {Connect.mounted_input(%Input{id: @id, index: i, aria_label: Corex.Gettext.gettext(@translation.digit, digit: i + 1), dir: @dir, orientation: @orientation})}
           />
         </div>
       </div>
@@ -324,13 +330,13 @@ defmodule Corex.PinInput do
         []
 
       v when is_list(v) ->
-        validate_value!(v)
+        coerce_string_list(v)
 
       v when is_binary(v) ->
-        v |> String.graphemes() |> validate_value!()
+        v |> String.graphemes() |> coerce_string_list()
 
       v ->
-        v |> to_string() |> String.graphemes() |> validate_value!()
+        v |> to_string() |> String.graphemes() |> coerce_string_list()
     end
   end
 
@@ -352,10 +358,15 @@ defmodule Corex.PinInput do
   ```
   """)
 
+  @spec set_value(String.t(), Corex.Value.coercible()) :: Phoenix.LiveView.JS.t()
+  @spec set_value(Phoenix.LiveView.Socket.t(), String.t(), Corex.Value.coercible()) ::
+          Phoenix.LiveView.Socket.t()
   def set_value(pin_input_id, value) when is_binary(pin_input_id) do
     JS.dispatch("corex:pin-input:set-value",
-      to: "##{pin_input_id}",
-      detail: %{value: Corex.Helpers.normalize_string_list_value!(value, graphemes: true)},
+      to: Selectors.css_id(pin_input_id),
+      detail: %{
+        value: Corex.Value.parse_string_list(value, "Corex.PinInput.set_value/2", graphemes: true)
+      },
       bubbles: false
     )
   end
@@ -374,7 +385,7 @@ defmodule Corex.PinInput do
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(pin_input_id) do
     LiveView.push_event(socket, "pin_input_set_value", %{
       id: pin_input_id,
-      value: Corex.Helpers.normalize_string_list_value!(value, graphemes: true)
+      value: Corex.Value.parse_string_list(value, "Corex.PinInput.set_value/2", graphemes: true)
     })
   end
 
@@ -387,8 +398,10 @@ defmodule Corex.PinInput do
   ```
   """)
 
+  @spec clear(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec clear(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def clear(pin_input_id) when is_binary(pin_input_id) do
-    JS.dispatch("corex:pin-input:clear", to: "##{pin_input_id}", bubbles: false)
+    JS.dispatch("corex:pin-input:clear", to: Selectors.css_id(pin_input_id), bubbles: false)
   end
 
   api_doc(~S"""
@@ -426,15 +439,18 @@ defmodule Corex.PinInput do
   ```
   """)
 
+  @spec value(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec value(String.t(), keyword()) :: Phoenix.LiveView.JS.t()
+  @spec value(Phoenix.LiveView.Socket.t(), String.t(), keyword()) :: Phoenix.LiveView.Socket.t()
   def value(pin_input_id, opts) when is_binary(pin_input_id) and is_list(opts) do
     JS.dispatch("corex:pin-input:value",
-      to: "##{pin_input_id}",
+      to: Selectors.css_id(pin_input_id),
       detail: respond_to_fields(opts),
       bubbles: false
     )
   end
 
-  api_doc_short("Same as [`value/2`](#value/2) with default `respond_to:`.")
+  api_doc("Same as [`value/2`](#value/2) with default `respond_to:`.")
   def value(pin_input_id) when is_binary(pin_input_id), do: value(pin_input_id, [])
 
   api_doc(~S"""

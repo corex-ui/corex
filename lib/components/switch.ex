@@ -149,17 +149,17 @@ defmodule Corex.Switch do
   @import "../corex/corex.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.switch>`). Combine axes, for example `switch ui-accent ui-size-lg` or `switch ui-info ui-solid`.
+  Stack modifiers on the host (`class` on `<.switch>`). Combine axes, for example `switch ui-accent ui-size-lg`.
 
-  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on the track and thumb. Variant modifiers control surface treatment. Default is subtle: unchecked uses a neutral track with semantic thumb color, checked uses selected with semantic ink text. Add `ui-solid` for a filled checked track.
+  Semantic modifiers set the checked track fill and thumb ink. Unchecked stays a neutral track; checked uses the semantic fill with on-color thumb ink. Switch has no variant axis.
 
   <!-- tabs-open -->
 
   ### Semantic
 
-  Palette variables for track fill and thumb ink. Does not change surface treatment by itself.
+  Palette for the checked track fill and thumb ink.
 
   | Modifier | Classes |
   | -------- | ------- |
@@ -169,15 +169,6 @@ defmodule Corex.Switch do
   | Alert | `switch ui-alert` |
   | Info | `switch ui-info` |
   | Success | `switch ui-success` |
-
-  ### Variant
-
-  Visual treatment of the track and thumb. Combine with a semantic modifier for palette-driven ink and fill.
-
-  | Modifier | Classes |
-  | -------- | ------- |
-  | Subtle (default) | `switch` or `switch ui-accent` |
-  | Solid | `switch ui-accent ui-solid` |
 
   ### Size
 
@@ -197,20 +188,34 @@ defmodule Corex.Switch do
 
   import Corex.Api.Doc
 
+  import Corex.Component, only: [form_control_attrs: 1]
+
   alias Corex.Checkable.Helpers, as: CheckableHelpers
+
+  alias Corex.Selectors
+
   alias Corex.Switch.Anatomy.{Control, HiddenInput, Label, Props, Root, Thumb}
+
   alias Corex.Switch.Connect
+
   alias Phoenix.HTML.Form
+
   alias Phoenix.LiveView
+
   alias Phoenix.LiveView.JS
 
   @doc """
   Renders a switch component.
   """
 
-  attr(:id, :string,
-    required: false,
-    doc: "The id of the switch, useful for API to identify the switch"
+  form_control_attrs(
+    docs: [
+      id: "The id of the switch, useful for API to identify the switch",
+      name: "The name of the switch input for form submission",
+      form: "The form id to associate the switch with",
+      field:
+        "A form field struct retrieved from the form, for example: @form[:email]. Automatically sets id, name, checked state, and errors from the form field"
+    ]
   )
 
   attr(:checked, :boolean,
@@ -218,23 +223,9 @@ defmodule Corex.Switch do
     doc: "The initial checked state or the controlled checked state"
   )
 
-  attr(:controlled, :boolean,
-    default: false,
-    doc: "Whether the switch is controlled"
-  )
-
-  attr(:name, :string, doc: "The name of the switch input for form submission")
-
-  attr(:form, :string, doc: "The form id to associate the switch with")
-
   attr(:aria_label, :string,
     default: "Label",
     doc: "The accessible label for the switch"
-  )
-
-  attr(:disabled, :boolean,
-    default: false,
-    doc: "Whether the switch is disabled"
   )
 
   attr(:value, :string,
@@ -255,26 +246,6 @@ defmodule Corex.Switch do
     doc: "Layout orientation for CSS (vertical or horizontal)"
   )
 
-  attr(:read_only, :boolean,
-    default: false,
-    doc: "Whether the switch is read-only"
-  )
-
-  attr(:invalid, :boolean,
-    default: nil,
-    doc: "Whether the switch has validation errors"
-  )
-
-  attr(:auto_invalid, :boolean,
-    default: false,
-    doc: "When true with `field`, set invalid from visible changeset errors"
-  )
-
-  attr(:required, :boolean,
-    default: false,
-    doc: "Whether the switch is required"
-  )
-
   attr(:on_checked_change, :string,
     default: nil,
     doc: "The server event name when the checked state changes"
@@ -288,11 +259,6 @@ defmodule Corex.Switch do
   attr(:errors, :list,
     default: [],
     doc: "List of error messages to display"
-  )
-
-  attr(:field, Phoenix.HTML.FormField,
-    doc:
-      "A form field struct retrieved from the form, for example: @form[:email]. Automatically sets id, name, checked state, and errors from the form field"
   )
 
   attr(:rest, :global)
@@ -334,8 +300,7 @@ defmodule Corex.Switch do
     <div
       id={@id}
       phx-hook="Switch"
-      data-loading
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+      {Corex.Hook.loading()}
       {@rest}
       {Connect.props(%Props{
         id: @id,
@@ -358,50 +323,38 @@ defmodule Corex.Switch do
     >
       <input type="hidden" name={@name} value="false" disabled={@disabled} />
 
-      <label phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation, read_only: @read_only})} {Connect.root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation, read_only: @read_only})}>
+      <label {Connect.mounted_root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation, read_only: @read_only})}>
         <input
-          phx-mounted={Connect.ignore_hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value, controlled: @controlled})}
-          {Connect.hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value, controlled: @controlled})}
+          {Connect.mounted_hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value, controlled: @controlled})}
         />
         <span
           :for={label <- @label}
           :if={Map.get(label, :position, :post) == :pre}
           class={Map.get(label, :class, nil)}
-          phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
-          {Connect.label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
+          {Connect.mounted_label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
         >
           {render_slot(@label)}
         </span>
-        <span phx-mounted={Connect.ignore_control(%Control{id: @id, dir: @dir, checked: @checked, orientation: @orientation})} {Connect.control(%Control{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
-          <span phx-mounted={Connect.ignore_thumb(%Thumb{id: @id, dir: @dir, checked: @checked, orientation: @orientation})} {Connect.thumb(%Thumb{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}></span>
+        <span {Connect.mounted_control(%Control{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
+          <span {Connect.mounted_thumb(%Thumb{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}></span>
         </span>
         <span
           :for={label <- @label}
           :if={Map.get(label, :position, :post) == :post}
           class={Map.get(label, :class, nil)}
-          phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
-          {Connect.label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
+          {Connect.mounted_label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
         >
           {render_slot(@label)}
         </span>
         <span
           :if={@label == [] and @aria_label}
-          class="sr-only"
-          phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
-          {Connect.label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
+          style={Corex.Attrs.visually_hidden_style()}
+          {Connect.mounted_label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
         >
           {@aria_label}
         </span>
       </label>
-      <div
-        :if={@error != [] and !Enum.empty?(@errors)}
-        :for={msg <- @errors}
-        class={Map.get(Enum.at(@error, 0), :class, nil)}
-        data-scope="switch"
-        data-part="error"
-      >
-        {render_slot(@error, msg)}
-      </div>
+      <Corex.Component.Errors.field_errors scope="switch" errors={@errors} error={@error} />
     </div>
     """
   end
@@ -426,9 +379,12 @@ defmodule Corex.Switch do
   ```
   """)
 
+  @spec set_checked(String.t(), boolean()) :: Phoenix.LiveView.JS.t()
+  @spec set_checked(Phoenix.LiveView.Socket.t(), String.t(), boolean()) ::
+          Phoenix.LiveView.Socket.t()
   def set_checked(switch_id, checked) when is_binary(switch_id) and is_boolean(checked) do
     JS.dispatch("corex:switch:set-checked",
-      to: "##{switch_id}",
+      to: Selectors.css_id(switch_id),
       detail: %{checked: checked},
       bubbles: false
     )
@@ -477,9 +433,11 @@ defmodule Corex.Switch do
   ```
   """)
 
+  @spec toggle_checked(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec toggle_checked(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def toggle_checked(switch_id) when is_binary(switch_id) do
     JS.dispatch("corex:switch:toggle-checked",
-      to: "##{switch_id}",
+      to: Selectors.css_id(switch_id),
       bubbles: false
     )
   end

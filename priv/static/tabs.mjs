@@ -1,22 +1,15 @@
 import {
   toPx
-} from "./chunks/chunk-PE34YET2.mjs";
+} from "./chunks/chunk-KHEHQE65.mjs";
 import {
   readStringControlledZagProps,
   readStringControlledZagUpdate
-} from "./chunks/chunk-BGER3KYP.mjs";
-import {
-  snapshotDataset
-} from "./chunks/chunk-TKOH2OAC.mjs";
-import {
-  createDomEventRegistry,
-  createHookHandleEventRegistry
-} from "./chunks/chunk-77HPO22C.mjs";
+} from "./chunks/chunk-LVRCAC6Y.mjs";
 import {
   idMatches,
   notifyChange,
   readPayloadId
-} from "./chunks/chunk-LNVRIZ4K.mjs";
+} from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
   Component,
   VanillaMachine,
@@ -25,6 +18,7 @@ import {
   clickIfLink,
   contains,
   createAnatomy,
+  createZagLiveHook,
   dataAttr,
   first,
   getDir,
@@ -45,13 +39,13 @@ import {
   raf,
   resizeObserverBorderBox,
   setup
-} from "./chunks/chunk-6AOEC32Q.mjs";
+} from "./chunks/chunk-E4OZ7DWO.mjs";
 
-// ../node_modules/.pnpm/@zag-js+tabs@1.40.0/node_modules/@zag-js/tabs/dist/tabs.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+tabs@1.42.0/node_modules/@zag-js/tabs/dist/tabs.anatomy.mjs
 var anatomy = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+tabs@1.40.0/node_modules/@zag-js/tabs/dist/tabs.dom.mjs
+// ../node_modules/.pnpm/@zag-js+tabs@1.42.0/node_modules/@zag-js/tabs/dist/tabs.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `tabs:${ctx.id}`;
 var getListId = (ctx) => ctx.ids?.list ?? `tabs:${ctx.id}:list`;
 var getContentId = (ctx, value) => ctx.ids?.content?.(value) ?? `tabs:${ctx.id}:content-${value}`;
@@ -81,7 +75,7 @@ var getRectByValue = (ctx, value) => {
   return getOffsetRect(tab);
 };
 
-// ../node_modules/.pnpm/@zag-js+tabs@1.40.0/node_modules/@zag-js/tabs/dist/tabs.connect.mjs
+// ../node_modules/.pnpm/@zag-js+tabs@1.42.0/node_modules/@zag-js/tabs/dist/tabs.connect.mjs
 function connect(service, normalize) {
   const { state, send, context, prop, scope } = service;
   const translations = prop("translations");
@@ -275,7 +269,7 @@ function connect(service, normalize) {
 }
 var isRectEmpty = (rect) => rect == null || rect.width === 0 && rect.height === 0 && rect.x === 0 && rect.y === 0;
 
-// ../node_modules/.pnpm/@zag-js+tabs@1.40.0/node_modules/@zag-js/tabs/dist/tabs.machine.mjs
+// ../node_modules/.pnpm/@zag-js+tabs@1.42.0/node_modules/@zag-js/tabs/dist/tabs.machine.mjs
 var { createMachine } = setup();
 var machine = createMachine({
   props({ props }) {
@@ -543,7 +537,11 @@ var machine = createMachine({
         };
         exec();
         const triggerEls = getElements(scope);
-        const indicatorCleanup = callAll(...triggerEls.map((el) => resizeObserverBorderBox.observe(el, exec)));
+        const listEl = getListEl(scope);
+        const indicatorCleanup = callAll(
+          ...triggerEls.map((el) => resizeObserverBorderBox.observe(el, exec)),
+          ...listEl ? [resizeObserverBorderBox.observe(listEl, exec)] : []
+        );
         refs.set("indicatorCleanup", indicatorCleanup);
       },
       navigateIfNeeded({ context, prop, scope }) {
@@ -573,13 +571,12 @@ var Tabs = class extends Component {
     const id = props.id ?? this.el.id;
     return { ...props, id, ids: tabsDomIds(id) };
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, this.withDomIds(props));
   }
-  updateProps = (props) => {
-    super.updateProps(this.withDomIds(props));
-  };
+  updateProps(props) {
+    return super.updateProps(this.withDomIds(props));
+  }
   initApi() {
     return this.zagConnect(connect);
   }
@@ -625,11 +622,13 @@ function readTabsLayoutProps(el) {
     dir: getDir(el)
   };
 }
-var TabsHook = {
-  mounted() {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+var TabsHook = createZagLiveHook({
+  key: "tabs",
+  controlledKeys: ["value"],
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     const tabs = new Tabs(el, {
       id: el.id,
       ...readStringControlledZagProps(el, "value", "defaultValue"),
@@ -655,56 +654,39 @@ var TabsHook = {
         });
       }
     });
-    tabs.init();
-    this.tabs = tabs;
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-    domRegistry.add("corex:tabs:set-value", (event) => {
+    dom.add("corex:tabs:set-value", (event) => {
       tabs.api.setValue(event.detail.value);
     });
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-    registry.add("tabs_set_value", (payload) => {
+    server.add("tabs_set_value", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       tabs.api.setValue(payload.value);
     });
-    registry.add("tabs_value", (payload) => {
+    server.add("tabs_value", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       if (!canPush()) return;
-      this.pushEvent("tabs_value_response", {
+      hook.pushEvent("tabs_value_response", {
         id: el.id,
         value: tabs.api.value
       });
     });
-    registry.add("tabs_focused_value", (payload) => {
+    server.add("tabs_focused_value", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       if (!canPush()) return;
-      this.pushEvent("tabs_focused_value_response", {
+      hook.pushEvent("tabs_focused_value_response", {
         id: el.id,
         value: tabs.api.focusedValue
       });
     });
+    return tabs;
   },
-  beforeUpdate() {
-    this.beforeAttrs = snapshotDataset(this.el, ["value"]);
-  },
-  updated() {
-    try {
-      this.tabs?.updateProps({
-        id: this.el.id,
-        ...readStringControlledZagUpdate(this.el, "value", "defaultValue", this.beforeAttrs),
-        ...readTabsLayoutProps(this.el)
-      });
-    } finally {
-      this.beforeAttrs = void 0;
-    }
-  },
-  destroyed() {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.tabs?.destroy();
+  update(hook, tabs) {
+    tabs.updateProps({
+      id: hook.el.id,
+      ...readStringControlledZagUpdate(hook.el, "value", "defaultValue", hook.beforeAttrs),
+      ...readTabsLayoutProps(hook.el)
+    });
   }
-};
+});
 export {
   TabsHook as Tabs,
   readTabsLayoutProps,

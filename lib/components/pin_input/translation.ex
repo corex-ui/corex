@@ -22,6 +22,7 @@ defmodule Corex.PinInput.Translation do
   @type t :: %__MODULE__{digit: String.t()}
 
   @doc "Merges partial fields with gettext defaults."
+  @spec resolve(t() | nil) :: t()
   def resolve(nil), do: default()
 
   def resolve(%__MODULE__{} = partial), do: merge(partial, default())

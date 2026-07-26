@@ -11,9 +11,11 @@ import {
 
 export {
   PHX_HAS_FOCUSED,
+  dispatchFormInputEvents,
   notifyPhoenixFormChange,
   queueLiveViewFormInputSync,
   reapplyLiveViewValueInputUsage,
+  syncCheckedHiddenInput,
   syncLiveViewFormInput,
   type NotifyPhoenixFormChangeOptions,
 } from "./live-view-form-input";
@@ -25,6 +27,16 @@ export {
   type ArraySubmitScope,
   type SyncArrayHiddenInputsOptions,
 } from "./form-array-submit";
+
+export {
+  hiddenInputPropsWithoutChecked,
+  syncCheckableHiddenInput,
+} from "./checkable-form-sync";
+
+export {
+  hiddenInputPropsWithoutValue,
+  syncHiddenInputValue,
+} from "./value-form-sync";
 
 export function markUsed(input: HTMLInputElement): void {
   reapplyLiveViewValueInputUsage(input);

@@ -1,9 +1,9 @@
 defmodule Mix.Tasks.CorexTest do
   use ExUnit.Case
 
-  alias Mix.Tasks.Corex, as: Corex
-
   import ExUnit.CaptureIO
+
+  alias Mix.Tasks.Corex, as: Corex
 
   test "run/1 prints version" do
     assert capture_io(fn -> Corex.run(["--version"]) end) =~ "Corex v"

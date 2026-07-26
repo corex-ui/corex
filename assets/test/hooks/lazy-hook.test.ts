@@ -73,4 +73,51 @@ describe("createLazyHook", () => {
     await mountedPromise;
     expect(updated).toHaveBeenCalled();
   });
+
+  it("replays beforeUpdate before updated after mount completes", async () => {
+    let resolveImport!: (value: {
+      TestHook: {
+        mounted: () => void;
+        beforeUpdate: ReturnType<typeof vi.fn>;
+        updated: ReturnType<typeof vi.fn>;
+        destroyed: () => void;
+      };
+    }) => void;
+    const callOrder: string[] = [];
+    const beforeUpdate = vi.fn(() => {
+      callOrder.push("beforeUpdate");
+    });
+    const updated = vi.fn(() => {
+      callOrder.push("updated");
+    });
+    const importPromise = new Promise<{
+      TestHook: {
+        mounted: () => void;
+        beforeUpdate: ReturnType<typeof vi.fn>;
+        updated: ReturnType<typeof vi.fn>;
+        destroyed: () => void;
+      };
+    }>((resolve) => {
+      resolveImport = resolve;
+    });
+
+    const hook = createLazyHook(() => importPromise, "TestHook");
+    const el = document.createElement("div");
+    el.setAttribute("data-loading", "");
+    const ctx = { el } as object & HookInterface<HTMLElement>;
+
+    const mountedPromise = hook.mounted!.call(ctx);
+    hook.beforeUpdate!.call(ctx);
+    hook.updated!.call(ctx);
+    expect(beforeUpdate).not.toHaveBeenCalled();
+    expect(updated).not.toHaveBeenCalled();
+
+    resolveImport({
+      TestHook: { mounted() {}, beforeUpdate, updated, destroyed() {} },
+    });
+    await mountedPromise;
+    expect(beforeUpdate).toHaveBeenCalled();
+    expect(updated).toHaveBeenCalled();
+    expect(callOrder).toEqual(["beforeUpdate", "updated"]);
+  });
 });

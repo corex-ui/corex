@@ -5,6 +5,8 @@ defmodule Mix.Tasks.Corex.DocParity do
 
   alias Corex.DocParity
 
+  @sections %{"anatomy" => :anatomy, "form" => :form}
+
   @impl Mix.Task
   def run(args) do
     {opts, _} =
@@ -14,8 +16,8 @@ defmodule Mix.Tasks.Corex.DocParity do
 
     sections =
       case Keyword.get(opts, :sections) do
-        nil -> [:anatomy, :form]
-        value -> value |> String.split(",") |> Enum.map(&String.to_atom/1)
+        nil -> Map.values(@sections)
+        value -> value |> String.split(",") |> Enum.map(&parse_section!/1)
       end
 
     components =
@@ -31,6 +33,19 @@ defmodule Mix.Tasks.Corex.DocParity do
 
     if Keyword.get(opts, :fail, true) and blocking != [] do
       Mix.raise("doc parity failed (#{length(blocking)} blocking checks)")
+    end
+  end
+
+  defp parse_section!(name) do
+    case Map.fetch(@sections, String.trim(name)) do
+      {:ok, section} ->
+        section
+
+      :error ->
+        Mix.raise(
+          "unknown --sections value #{inspect(name)}, expected one of: " <>
+            Enum.join(Map.keys(@sections), ", ")
+        )
     end
   end
 end

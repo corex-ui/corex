@@ -1,10 +1,9 @@
-import type { Hook } from "phoenix_live_view";
-import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { Timer } from "../components/timer";
 import type { Api, Props, TickDetails } from "@zag-js/timer";
 import type { Orientation } from "@zag-js/types";
 
 import { getString, getBoolean, getNumber, getDir, canPushEvent } from "../lib/util";
+import { createZagLiveHook } from "../lib/zag-live-hook";
 import {
   emitResponse,
   idMatches,
@@ -12,8 +11,6 @@ import {
   parseRespondTo,
   type RespondTo,
 } from "../lib/respond-to";
-import { createHookHandleEventRegistry } from "../lib/hook-handlers";
-import { createDomEventRegistry } from "../lib/dom-events";
 
 type TimerMachineState = {
   running: boolean;
@@ -35,8 +32,6 @@ function machineState(api: Api): TimerMachineState {
 
 type TimerHookState = {
   timer?: Timer;
-  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
-  domRegistry?: ReturnType<typeof createDomEventRegistry>;
   lastStartMsRaw?: string | undefined;
   lastTargetMsRaw?: string | undefined;
   lastCountdownRaw?: string | undefined;
@@ -137,21 +132,20 @@ function buildTimerProps(
   } as Props;
 }
 
-const TimerHook: Hook<object & TimerHookState, HTMLElement> = {
-  mounted(this: object & HookInterface<HTMLElement> & TimerHookState) {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+const TimerHook = createZagLiveHook<TimerHookState, Timer>({
+  key: "timer",
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
 
     const identity = readIdentityRaw(el);
-    this.lastStartMsRaw = identity.startMs;
-    this.lastTargetMsRaw = identity.targetMs;
-    this.lastCountdownRaw = identity.countdown;
-    this.lastIntervalRaw = identity.interval;
+    hook.lastStartMsRaw = identity.startMs;
+    hook.lastTargetMsRaw = identity.targetMs;
+    hook.lastCountdownRaw = identity.countdown;
+    hook.lastIntervalRaw = identity.interval;
 
     const zag = new Timer(el, buildTimerProps(el, pushEvent, canPush));
-    zag.init();
-    this.timer = zag;
 
     const emitState = (respondTo: RespondTo) => {
       const snapshot = machineState(zag.api);
@@ -167,71 +161,67 @@ const TimerHook: Hook<object & TimerHookState, HTMLElement> = {
       });
     };
 
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-
-    domRegistry.add<CustomEvent>("corex:timer:start", () => {
+    dom.add<CustomEvent>("corex:timer:start", () => {
       zag.api.start();
     });
 
-    domRegistry.add<CustomEvent>("corex:timer:pause", () => {
+    dom.add<CustomEvent>("corex:timer:pause", () => {
       zag.api.pause();
     });
 
-    domRegistry.add<CustomEvent>("corex:timer:resume", () => {
+    dom.add<CustomEvent>("corex:timer:resume", () => {
       zag.api.resume();
     });
 
-    domRegistry.add<CustomEvent>("corex:timer:reset", () => {
+    dom.add<CustomEvent>("corex:timer:reset", () => {
       zag.api.reset();
     });
 
-    domRegistry.add<CustomEvent>("corex:timer:restart", () => {
+    dom.add<CustomEvent>("corex:timer:restart", () => {
       zag.api.restart();
     });
 
-    domRegistry.add<CustomEvent>("corex:timer:state", (event) => {
+    dom.add<CustomEvent>("corex:timer:state", (event) => {
       emitState(parseRespondTo(event.detail));
     });
 
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-
-    registry.add("timer_start", (payload: { id?: string }) => {
+    server.add("timer_start", (payload: { id?: string }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.start();
     });
 
-    registry.add("timer_pause", (payload: { id?: string }) => {
+    server.add("timer_pause", (payload: { id?: string }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.pause();
     });
 
-    registry.add("timer_resume", (payload: { id?: string }) => {
+    server.add("timer_resume", (payload: { id?: string }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.resume();
     });
 
-    registry.add("timer_reset", (payload: { id?: string }) => {
+    server.add("timer_reset", (payload: { id?: string }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.reset();
     });
 
-    registry.add("timer_restart", (payload: { id?: string }) => {
+    server.add("timer_restart", (payload: { id?: string }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.restart();
     });
 
-    registry.add("timer_state", (payload: { id?: string; respond_to?: string }) => {
+    server.add("timer_state", (payload: { id?: string; respond_to?: string }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       emitState(parseRespondTo(payload));
     });
+
+    return zag;
   },
 
-  updated(this: object & HookInterface<HTMLElement> & TimerHookState) {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+  update(hook, zag) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
 
     const patch: Partial<Props> = {
       id: el.id,
@@ -240,37 +230,31 @@ const TimerHook: Hook<object & TimerHookState, HTMLElement> = {
     };
 
     const startMsRaw = el.dataset.startMs;
-    if (startMsRaw !== this.lastStartMsRaw) {
+    if (startMsRaw !== hook.lastStartMsRaw) {
       patch.startMs = getNumber(el, "startMs");
-      this.lastStartMsRaw = startMsRaw;
+      hook.lastStartMsRaw = startMsRaw;
     }
 
     const targetMsRaw = el.dataset.targetMs;
-    if (targetMsRaw !== this.lastTargetMsRaw) {
+    if (targetMsRaw !== hook.lastTargetMsRaw) {
       patch.targetMs = getNumber(el, "targetMs");
-      this.lastTargetMsRaw = targetMsRaw;
+      hook.lastTargetMsRaw = targetMsRaw;
     }
 
     const countdownRaw = el.dataset.countdown;
-    if (countdownRaw !== this.lastCountdownRaw) {
+    if (countdownRaw !== hook.lastCountdownRaw) {
       patch.countdown = getBoolean(el, "countdown");
-      this.lastCountdownRaw = countdownRaw;
+      hook.lastCountdownRaw = countdownRaw;
     }
 
     const intervalRaw = el.dataset.interval;
-    if (intervalRaw !== this.lastIntervalRaw) {
+    if (intervalRaw !== hook.lastIntervalRaw) {
       patch.interval = getNumber(el, "interval");
-      this.lastIntervalRaw = intervalRaw;
+      hook.lastIntervalRaw = intervalRaw;
     }
 
-    this.timer?.updateProps(patch);
+    zag.updateProps(patch);
   },
-
-  destroyed(this: object & HookInterface<HTMLElement> & TimerHookState) {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.timer?.destroy();
-  },
-};
+});
 
 export { TimerHook as Timer };

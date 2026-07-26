@@ -76,13 +76,11 @@ describe("readPlaceholderFromMainInput", () => {
 });
 
 describe("buildCollection hooks", () => {
-  const items = [
-    { label: "One", value: "1" },
-    { label: "Two", value: "2", group: "g" },
-  ];
+  const ungrouped = { label: "One", value: "1" };
+  const items = [ungrouped, { label: "Two", value: "2", group: "g" }];
 
   it("select collection flat", () => {
-    expect(buildSelectCollection([items[0]], false).size).toBe(1);
+    expect(buildSelectCollection([ungrouped], false).size).toBe(1);
   });
 
   it("listbox collection grouped", () => {

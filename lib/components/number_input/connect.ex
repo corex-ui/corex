@@ -1,5 +1,9 @@
 defmodule Corex.NumberInput.Connect do
   @moduledoc false
+  use Corex.Connect.Mounted
+
+  use Corex.Component, :connect
+
   alias Corex.Selectors
 
   alias Corex.NumberInput.Anatomy.{
@@ -14,8 +18,8 @@ defmodule Corex.NumberInput.Connect do
   }
 
   alias Corex.FormField
+
   alias Phoenix.LiveView.JS
-  import Corex.Helpers, only: [get_boolean: 1]
 
   defp num_attr(nil), do: nil
   defp num_attr(n) when is_number(n), do: to_string(n)
@@ -36,11 +40,11 @@ defmodule Corex.NumberInput.Connect do
       "data-min" => num_attr(assigns.min),
       "data-max" => num_attr(assigns.max),
       "data-step" => num_attr(assigns.step),
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-readonly" => get_boolean(assigns.read_only),
-      "data-invalid" => get_boolean(assigns.invalid),
-      "data-required" => get_boolean(assigns.required),
-      "data-allow-mouse-wheel" => get_boolean(assigns.allow_mouse_wheel),
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-readonly" => presence_attr(assigns.read_only),
+      "data-invalid" => presence_attr(assigns.invalid),
+      "data-required" => presence_attr(assigns.required),
+      "data-allow-mouse-wheel" => presence_attr(assigns.allow_mouse_wheel),
       "data-on-value-change" => assigns.on_value_change,
       "data-on-value-change-client" => assigns.on_value_change_client,
       "data-dir" => Map.get(assigns, :dir),
@@ -93,7 +97,7 @@ defmodule Corex.NumberInput.Connect do
       "id" => "number-input:#{assigns.id}",
       "dir" => Map.get(assigns, :dir),
       "data-orientation" => orientation(assigns),
-      "data-readonly" => get_boolean(Map.get(assigns, :read_only, false))
+      "data-readonly" => presence_attr(Map.get(assigns, :read_only, false))
     }
   end
 
@@ -136,7 +140,7 @@ defmodule Corex.NumberInput.Connect do
     %{
       "data-scope" => "number-input",
       "data-part" => "input",
-      "disabled" => get_boolean(assigns.disabled),
+      "disabled" => presence_attr(assigns.disabled),
       "id" => "number-input:#{assigns.id}:input",
       "dir" => Map.get(assigns, :dir),
       "data-orientation" => orientation(assigns),
@@ -147,7 +151,7 @@ defmodule Corex.NumberInput.Connect do
       "autocorrect" => "off",
       "spellcheck" => "false",
       "pattern" => "-?[0-9]*(.[0-9]+)?",
-      "required" => get_boolean(assigns.required)
+      "required" => presence_attr(assigns.required)
     }
   end
 

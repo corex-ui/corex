@@ -1,5 +1,9 @@
 defmodule Corex.ColorPicker.Connect do
   @moduledoc false
+  use Corex.Connect.Mounted
+
+  use Corex.Component, :connect
+
   alias Corex.Selectors
 
   alias Corex.FormField
@@ -29,16 +33,9 @@ defmodule Corex.ColorPicker.Connect do
 
   alias Phoenix.LiveView.JS
 
-  import Corex.Helpers, only: [get_boolean: 1]
-
-  defp maybe_put(acc, _key, nil), do: acc
-  defp maybe_put(acc, key, value), do: [{key, value} | acc]
-
   defp get_event(assigns, key) do
     Map.get(assigns, key) || Map.get(assigns, to_string(key))
   end
-
-  @visually_hidden_style "border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap;word-wrap:normal;"
 
   @transparency_grid_bg "conic-gradient(#eeeeee 0 25%, transparent 0 50%, #eeeeee 0 75%, transparent 0)"
 
@@ -46,25 +43,20 @@ defmodule Corex.ColorPicker.Connect do
 
   @spec root(Root.t()) :: map()
   def root(assigns) do
-    base = %{
+    %{
       "data-scope" => "color-picker",
       "data-part" => "root",
       "id" => "color-picker:#{assigns.id}",
       "dir" => assigns.dir,
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-readonly" => get_boolean(assigns.read_only),
-      "data-invalid" => get_boolean(assigns.invalid)
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-readonly" => presence_attr(assigns.read_only),
+      "data-invalid" => presence_attr(assigns.invalid)
     }
-
-    base =
-      if assigns.value_style do
-        Map.put(base, "style", "--value:#{assigns.value_style};")
-      else
-        base
-      end
-
-    base
+    |> maybe_put("style", value_style(assigns.value_style))
   end
+
+  defp value_style(nil), do: nil
+  defp value_style(value), do: "--value:#{value};"
 
   def ignore_root(%Root{} = assigns) do
     JS.ignore_attributes(Root.ignored_attrs(),
@@ -80,10 +72,10 @@ defmodule Corex.ColorPicker.Connect do
       "id" => "color-picker:#{assigns.id}:label",
       "for" => "color-picker:#{assigns.id}:hidden-input",
       "dir" => assigns.dir,
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-readonly" => get_boolean(assigns.read_only),
-      "data-invalid" => get_boolean(assigns.invalid),
-      "data-required" => get_boolean(assigns.required)
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-readonly" => presence_attr(assigns.read_only),
+      "data-invalid" => presence_attr(assigns.invalid),
+      "data-required" => presence_attr(assigns.required)
     }
   end
 
@@ -101,7 +93,7 @@ defmodule Corex.ColorPicker.Connect do
       "id" => "color-picker:#{assigns.id}:hidden-input",
       "type" => "text",
       "tabindex" => -1,
-      "style" => @visually_hidden_style
+      "style" => visually_hidden_style()
     }
 
     if assigns.name do
@@ -123,9 +115,9 @@ defmodule Corex.ColorPicker.Connect do
       "data-scope" => "color-picker",
       "data-part" => "control",
       "id" => "color-picker:#{assigns.id}:control",
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-readonly" => get_boolean(assigns.read_only),
-      "data-invalid" => get_boolean(assigns.invalid),
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-readonly" => presence_attr(assigns.read_only),
+      "data-invalid" => presence_attr(assigns.invalid),
       "data-state" => if(assigns.open, do: "open", else: "closed")
     }
   end
@@ -150,9 +142,9 @@ defmodule Corex.ColorPicker.Connect do
       "aria-labelledby" => assigns.label_id,
       "aria-haspopup" => "dialog",
       "aria-expanded" => to_string(assigns.open),
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-readonly" => get_boolean(assigns.read_only),
-      "data-invalid" => get_boolean(assigns.invalid),
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-readonly" => presence_attr(assigns.read_only),
+      "data-invalid" => presence_attr(assigns.invalid),
       "data-state" => if(assigns.open, do: "open", else: "closed")
     }
   end
@@ -192,41 +184,22 @@ defmodule Corex.ColorPicker.Connect do
   def swatch(assigns) do
     variant = Map.get(assigns, :variant) || "main"
 
-    base = %{
+    %{
       "data-scope" => "color-picker",
       "data-part" => "swatch",
       "id" => swatch_dom_id(assigns.id, variant),
-      "style" => "position:relative"
+      "style" => swatch_style(assigns.color)
     }
-
-    base =
-      if assigns.color do
-        Map.put(
-          base,
-          "style",
-          "--color:#{assigns.color};position:relative;background:#{assigns.color};"
-        )
-      else
-        base
-      end
-
-    base =
-      if assigns.value do
-        Map.put(base, "data-value", assigns.value)
-      else
-        base
-      end
-
-    base =
-      if assigns.checked != nil do
-        state = if assigns.checked, do: "checked", else: "unchecked"
-        Map.put(base, "data-state", state)
-      else
-        base
-      end
-
-    base
+    |> maybe_put("data-value", assigns.value)
+    |> maybe_put("data-state", swatch_state(assigns.checked))
   end
+
+  defp swatch_style(nil), do: "position:relative"
+  defp swatch_style(color), do: "--color:#{color};position:relative;background:#{color};"
+
+  defp swatch_state(nil), do: nil
+  defp swatch_state(false), do: "unchecked"
+  defp swatch_state(_checked), do: "checked"
 
   def ignore_swatch(%Swatch{} = assigns) do
     variant = Map.get(assigns, :variant) || "main"
@@ -479,7 +452,7 @@ defmodule Corex.ColorPicker.Connect do
   @spec props(Props.t()) :: map()
   def props(assigns) do
     event_attrs =
-      []
+      %{}
       |> maybe_put("data-on-value-change", get_event(assigns, :on_value_change))
       |> maybe_put("data-on-value-change-client", get_event(assigns, :on_value_change_client))
       |> maybe_put("data-on-value-change-end", get_event(assigns, :on_value_change_end))
@@ -503,7 +476,6 @@ defmodule Corex.ColorPicker.Connect do
         "data-on-interact-outside-client",
         get_event(assigns, :on_interact_outside_client)
       )
-      |> Map.new()
 
     value_dataset = FormField.default_value_dataset(assigns, assigns.value)
 
@@ -513,12 +485,12 @@ defmodule Corex.ColorPicker.Connect do
         "data-value" => nil,
         "data-default-value" => value_dataset,
         "data-name" => Map.get(assigns, :name) || assigns.id,
-        "data-close-on-select" => get_boolean(assigns.close_on_select),
-        "data-open-auto-focus" => get_boolean(assigns.open_auto_focus),
-        "data-disabled" => get_boolean(assigns.disabled),
-        "data-invalid" => get_boolean(assigns.invalid),
-        "data-readonly" => get_boolean(assigns.read_only),
-        "data-required" => get_boolean(assigns.required),
+        "data-close-on-select" => presence_attr(assigns.close_on_select),
+        "data-open-auto-focus" => presence_attr(assigns.open_auto_focus),
+        "data-disabled" => presence_attr(assigns.disabled),
+        "data-invalid" => presence_attr(assigns.invalid),
+        "data-readonly" => presence_attr(assigns.read_only),
+        "data-required" => presence_attr(assigns.required),
         "data-dir" => assigns.dir
       }
       |> Map.merge(Corex.Positioning.to_dataset(assigns.positioning))

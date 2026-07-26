@@ -1,7 +1,7 @@
 defmodule Corex.Url do
   @moduledoc false
 
-  @spec allowed_href?(String.t()) :: boolean()
+  @spec allowed_href?(term()) :: boolean()
   def allowed_href?(destination) when is_binary(destination) do
     case String.trim(destination) do
       "" -> false
@@ -20,7 +20,9 @@ defmodule Corex.Url do
 
   defp allowed_uri?(%URI{scheme: nil, host: nil}), do: true
 
-  defp allowed_uri?(%URI{scheme: scheme}) when scheme in ["http", "https"], do: true
+  defp allowed_uri?(%URI{scheme: scheme})
+       when scheme in ["http", "https", "mailto", "tel"],
+       do: true
 
   defp allowed_uri?(_), do: false
 end

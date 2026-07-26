@@ -57,7 +57,7 @@ defmodule Corex.DataList do
 
   ### Empty
 
-  Optional `<:empty>` when there are no rows. The empty block renders beside the `<dl>` (not inside it) and is hidden by CSS when items exist (stream-friendly).
+  Optional `<:empty>` when there are no rows. The empty block renders beside the `<dl>` (not inside it) and is hidden by CSS when items exist.
 
   ```heex
   <.data_list class="data-list" items={[]}>
@@ -67,10 +67,10 @@ defmodule Corex.DataList do
 
   <!-- tabs-close -->
 
-  ## Stream
+  ## Dynamic items
 
-  Keep a plain list assign for `items` and update it alongside `stream_insert/3` or `stream/3` reset.
-  Pass `items={Corex.Content.new(@items_list)}` to the component. Include `<:empty>` so an empty list shows the empty state without counting stream entries.
+  Grow or shrink rows at runtime by updating a list assign and passing `items={Corex.Content.new(@items)}`.
+  Include `<:empty>` so an empty list shows the empty state. Data list is not a LiveView stream consumer; use `Phoenix.LiveView.stream/3` only with components that render `@streams.*` (for example `data_table`).
 
   ## Style
 
@@ -143,7 +143,7 @@ defmodule Corex.DataList do
 
   attr(:items, :list,
     default: [],
-    doc: "List of %Corex.Content.Item{} structs from Corex.Content.new/1"
+    doc: "Items from `Corex.Content.new/1` (see `Corex.Content` for the full contract)"
   )
 
   attr(:rest, :global)

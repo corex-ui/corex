@@ -1,5 +1,3 @@
-import type { Hook } from "phoenix_live_view";
-import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { FloatingPanel } from "../components/floating-panel";
 import type { PositioningOptions } from "@zag-js/popper";
 import type {
@@ -12,13 +10,10 @@ import type {
 import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
 import { readPositioningOptions } from "../lib/positioning";
 import { idMatches, notifyChange, readPayloadId } from "../lib/respond-to";
-import { createHookHandleEventRegistry } from "../lib/hook-handlers";
-import { createDomEventRegistry } from "../lib/dom-events";
+import { createZagLiveHook } from "../lib/zag-live-hook";
 
 type FloatingPanelHookState = {
   floatingPanel?: FloatingPanel;
-  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
-  domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
 
 type PanelSize = { width: number; height: number };
@@ -140,14 +135,12 @@ export function buildAnchorProps(el: HTMLElement) {
   return { defaultPosition, getAnchorPosition } as const;
 }
 
-const FloatingPanelHook: Hook<
-  object & HookInterface<HTMLElement> & FloatingPanelHookState,
-  HTMLElement
-> = {
-  mounted(this: object & HookInterface<HTMLElement> & FloatingPanelHookState) {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+const FloatingPanelHook = createZagLiveHook<FloatingPanelHookState, FloatingPanel>({
+  key: "floatingPanel",
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     const size = parseSize(el.dataset.size);
     const defaultSize = parseSize(el.dataset.defaultSize);
     const anchorProps = buildAnchorProps(el);
@@ -212,46 +205,32 @@ const FloatingPanelHook: Hook<
         });
       },
     } as Props);
-    zag.init();
-    this.floatingPanel = zag;
 
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-
-    domRegistry.add<CustomEvent<{ open: boolean }>>("corex:floating-panel:set-open", (event) => {
+    dom.add<CustomEvent<{ open: boolean }>>("corex:floating-panel:set-open", (event) => {
       const { open } = event.detail;
       zag.api.setOpen(open);
     });
 
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-
-    registry.add("floating_panel_set_open", (payload: unknown) => {
+    server.add("floating_panel_set_open", (payload: unknown) => {
       if (!payload || typeof payload !== "object") return;
       const o = payload as { open?: boolean };
       if (!idMatches(el.id, readPayloadId(payload))) return;
       if (typeof o.open === "boolean") zag.api.setOpen(o.open);
     });
+
+    return zag;
   },
 
-  updated(this: object & HookInterface<HTMLElement> & FloatingPanelHookState) {
-    const el = this.el;
+  update(hook, zag) {
+    const el = hook.el;
     const anchorProps = buildAnchorProps(el);
-    this.floatingPanel?.updateProps({
+    zag.updateProps({
       id: el.id,
       disabled: getBoolean(el, "disabled"),
       dir: getDir(el),
       getAnchorPosition: anchorProps.getAnchorPosition,
     } as Partial<Props>);
   },
-
-  destroyed(this: object & HookInterface<HTMLElement> & FloatingPanelHookState) {
-    this.domRegistry?.teardown();
-    this.domRegistry = undefined;
-    this.handleRegistry?.teardown();
-    this.handleRegistry = undefined;
-    this.floatingPanel?.destroy();
-  },
-};
+});
 
 export { FloatingPanelHook as FloatingPanel };

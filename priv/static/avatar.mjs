@@ -1,37 +1,34 @@
 import {
-  createDomEventRegistry,
-  createHookHandleEventRegistry
-} from "./chunks/chunk-77HPO22C.mjs";
-import {
-  emitResponse,
+  createValueEmitter,
   idMatches,
   notifyChange,
   parseRespondTo,
   readPayloadId
-} from "./chunks/chunk-LNVRIZ4K.mjs";
+} from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
   Component,
   VanillaMachine,
   canPushEvent,
   createAnatomy,
   createMachine,
+  createZagLiveHook,
   getString,
   observeAttributes,
   observeChildren
-} from "./chunks/chunk-6AOEC32Q.mjs";
+} from "./chunks/chunk-E4OZ7DWO.mjs";
 
-// ../node_modules/.pnpm/@zag-js+avatar@1.40.0/node_modules/@zag-js/avatar/dist/avatar.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+avatar@1.42.0/node_modules/@zag-js/avatar/dist/avatar.anatomy.mjs
 var anatomy = createAnatomy("avatar").parts("root", "image", "fallback");
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+avatar@1.40.0/node_modules/@zag-js/avatar/dist/avatar.dom.mjs
+// ../node_modules/.pnpm/@zag-js+avatar@1.42.0/node_modules/@zag-js/avatar/dist/avatar.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `avatar:${ctx.id}`;
 var getImageId = (ctx) => ctx.ids?.image ?? `avatar:${ctx.id}:image`;
 var getFallbackId = (ctx) => ctx.ids?.fallback ?? `avatar:${ctx.id}:fallback`;
 var getRootEl = (ctx) => ctx.getById(getRootId(ctx));
 var getImageEl = (ctx) => ctx.getById(getImageId(ctx));
 
-// ../node_modules/.pnpm/@zag-js+avatar@1.40.0/node_modules/@zag-js/avatar/dist/avatar.connect.mjs
+// ../node_modules/.pnpm/@zag-js+avatar@1.42.0/node_modules/@zag-js/avatar/dist/avatar.connect.mjs
 function connect(service, normalize) {
   const { state, send, prop, scope } = service;
   const loaded = state.matches("loaded");
@@ -81,7 +78,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+avatar@1.40.0/node_modules/@zag-js/avatar/dist/avatar.machine.mjs
+// ../node_modules/.pnpm/@zag-js+avatar@1.42.0/node_modules/@zag-js/avatar/dist/avatar.machine.mjs
 var machine = createMachine({
   initialState() {
     return "loading";
@@ -174,7 +171,6 @@ function hasLoaded(image) {
 
 // components/avatar.ts
 var Avatar = class extends Component {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, props);
   }
@@ -207,11 +203,12 @@ var Avatar = class extends Component {
 function statusPayload(el, details) {
   return { id: el.id, status: details.status };
 }
-var AvatarHook = {
-  mounted() {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+var AvatarHook = createZagLiveHook({
+  key: "avatar",
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     const initialSrc = getString(el, "src");
     const zag = new Avatar(el, {
       id: el.id,
@@ -228,70 +225,53 @@ var AvatarHook = {
         });
       }
     });
-    zag.init();
-    this.avatar = zag;
-    this.lastSrc = initialSrc;
-    const emitLoaded = (respondTo) => {
-      const loaded = zag.api.loaded;
-      emitResponse({
-        respondTo,
-        canPushServer: canPush(),
-        pushEvent,
+    hook.lastSrc = initialSrc;
+    const emitLoaded = createValueEmitter(
+      { el, pushEvent, canPushServer: canPush },
+      {
+        getPayload: () => ({ id: el.id, loaded: zag.api.loaded }),
         serverEventName: "avatar_loaded_response",
-        serverPayload: { id: el.id, loaded },
-        el,
-        domEventName: "avatar-loaded",
-        domDetail: { id: el.id, loaded }
-      });
-    };
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-    domRegistry.add("corex:avatar:set-src", (event) => {
+        domEventName: "avatar-loaded"
+      }
+    );
+    dom.add("corex:avatar:set-src", (event) => {
       const next = event.detail?.src;
       if (typeof next !== "string") return;
       zag.api.setSrc(next);
-      this.lastSrc = next;
+      hook.lastSrc = next;
       el.dataset.src = next;
     });
-    domRegistry.add("corex:avatar:loaded", (event) => {
+    dom.add("corex:avatar:loaded", (event) => {
       emitLoaded(parseRespondTo(event.detail));
     });
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-    registry.add("avatar_set_src", (payload) => {
+    server.add("avatar_set_src", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.setSrc(payload.src);
-      this.lastSrc = payload.src;
+      hook.lastSrc = payload.src;
       el.dataset.src = payload.src;
     });
-    registry.add("avatar_loaded", (payload) => {
+    server.add("avatar_loaded", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       emitLoaded(parseRespondTo(payload));
     });
+    return zag;
   },
-  updated() {
-    const src = getString(this.el, "src");
-    const dir = getString(this.el, "dir");
-    if (this.avatar) {
-      this.avatar.updateProps({
-        ...dir !== void 0 ? { dir } : {}
-      });
+  update(hook, zag) {
+    const src = getString(hook.el, "src");
+    const dir = getString(hook.el, "dir");
+    zag.updateProps({
+      ...dir !== void 0 ? { dir } : {}
+    });
+    if (src !== void 0 && src !== hook.lastSrc) {
+      zag.api.setSrc(src);
+      hook.lastSrc = src;
     }
-    if (this.avatar && src !== void 0 && src !== this.lastSrc) {
-      this.avatar.api.setSrc(src);
-      this.lastSrc = src;
+    if (src === void 0 && hook.lastSrc !== void 0) {
+      zag.api.setSrc("");
+      hook.lastSrc = void 0;
     }
-    if (this.avatar && src === void 0 && this.lastSrc !== void 0) {
-      this.avatar.api.setSrc("");
-      this.lastSrc = void 0;
-    }
-  },
-  destroyed() {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.avatar?.destroy();
   }
-};
+});
 export {
   AvatarHook as Avatar,
   statusPayload

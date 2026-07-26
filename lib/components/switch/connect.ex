@@ -1,11 +1,15 @@
 defmodule Corex.Switch.Connect do
   @moduledoc false
+  use Corex.Connect.Mounted
+
+  use Corex.Component, :connect
+
   alias Corex.Selectors
+
   alias Corex.Switch.Anatomy.{Control, HiddenInput, Label, Props, Root, Thumb}
 
-  import Corex.Helpers, only: [get_boolean: 1, data_state: 3, maybe_put_dir: 2]
-
   alias Corex.Checkable.Connect, as: CheckableConnect
+
   alias Phoenix.LiveView.JS
 
   @spec props(Props.t()) :: map()
@@ -26,9 +30,9 @@ defmodule Corex.Switch.Connect do
       "htmlFor" => "switch:#{assigns.id}:input",
       "for" => "switch:#{assigns.id}:input",
       "data-state" => state,
-      "data-readonly" => get_boolean(Map.get(assigns, :read_only, false))
+      "data-readonly" => presence_attr(Map.get(assigns, :read_only, false))
     }
-    |> maybe_put_dir(assigns.dir)
+    |> put_dir_attr(assigns.dir)
   end
 
   def ignore_root(assigns) do
@@ -61,7 +65,7 @@ defmodule Corex.Switch.Connect do
       "id" => "switch:#{assigns.id}:control",
       "data-state" => state
     }
-    |> maybe_put_dir(assigns.dir)
+    |> put_dir_attr(assigns.dir)
   end
 
   def ignore_control(assigns) do
@@ -83,7 +87,7 @@ defmodule Corex.Switch.Connect do
       "id" => "switch:#{assigns.id}:thumb",
       "data-state" => state
     }
-    |> maybe_put_dir(assigns.dir)
+    |> put_dir_attr(assigns.dir)
   end
 
   def ignore_thumb(assigns) do
@@ -105,7 +109,7 @@ defmodule Corex.Switch.Connect do
       "id" => "switch:#{assigns.id}:label",
       "data-state" => state
     }
-    |> maybe_put_dir(assigns.dir)
+    |> put_dir_attr(assigns.dir)
   end
 
   def ignore_label(assigns) do

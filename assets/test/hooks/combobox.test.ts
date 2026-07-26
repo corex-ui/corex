@@ -10,7 +10,12 @@ import {
 } from "../../hooks/combobox";
 import type { Combobox as ComboboxComponent } from "../../components/combobox";
 import { expectHookModule } from "../helpers/expect-hook";
-import { callHookDestroyed, callHookMounted, mockHookContext } from "../helpers/mock-hook";
+import {
+  callHookDestroyed,
+  callHookLifecycle,
+  callHookMounted,
+  mockHookContext,
+} from "../helpers/mock-hook";
 import { comboboxTree } from "../helpers/component-smoke";
 import { el } from "../helpers/dom";
 
@@ -126,5 +131,49 @@ describe("Combobox hook lifecycle", () => {
 
     callHookDestroyed(ComboboxHook, hook);
     setOpenSpy.mockRestore();
+  });
+
+  it("updated restores hidden input after morph wipe", () => {
+    const root = comboboxTree();
+    root.id = "combobox-morph";
+    root.setAttribute("phx-hook", "Combobox");
+    root.setAttribute("data-default-value", "fra");
+    root.setAttribute(
+      "data-items",
+      JSON.stringify([
+        {
+          label: "France",
+          value: "fra",
+          disabled: false,
+          meta: {},
+          group: null,
+        },
+      ])
+    );
+    document.body.appendChild(root);
+
+    const { hook } = mockHookContext(root, {
+      connected: true,
+      overrides: {
+        combobox: undefined as ComboboxComponent | undefined,
+        handleRegistry: undefined,
+        domRegistry: undefined,
+        handlers: [] as CallbackRef[],
+      },
+    });
+
+    callHookMounted(ComboboxHook, hook);
+    expect(hook.combobox!.api.value).toEqual(["fra"]);
+
+    const hidden = root.querySelector<HTMLInputElement>(
+      '[data-scope="combobox"][data-part="hidden-input"]'
+    )!;
+    expect(hidden.value).toBe("fra");
+
+    hidden.value = "";
+    callHookLifecycle(ComboboxHook, hook, "updated");
+    expect(hidden.value).toBe("fra");
+
+    callHookDestroyed(ComboboxHook, hook);
   });
 });

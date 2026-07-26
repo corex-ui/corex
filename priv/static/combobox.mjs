@@ -1,37 +1,39 @@
 import {
   stripZagSubmitNames
-} from "./chunks/chunk-OZ2OVCG5.mjs";
+} from "./chunks/chunk-FG5VHRDC.mjs";
 import {
   createLiveRegion
-} from "./chunks/chunk-7BZGUIUZ.mjs";
+} from "./chunks/chunk-UFCM6256.mjs";
 import {
   getPlacement,
+  getPlacementSide,
   getPlacementStyles
-} from "./chunks/chunk-MHRYIVD2.mjs";
+} from "./chunks/chunk-STMYDYIS.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-CBUVYVIR.mjs";
+} from "./chunks/chunk-KJGYDHXF.mjs";
 import {
   markUsed,
   setArrayValues,
   syncFormInput
-} from "./chunks/chunk-2H6YHTHG.mjs";
-import "./chunks/chunk-ZSA4KI2Y.mjs";
-import "./chunks/chunk-3BEM4I52.mjs";
-import "./chunks/chunk-DOKFN6DA.mjs";
+} from "./chunks/chunk-52LJJOX7.mjs";
+import "./chunks/chunk-7JTELVWK.mjs";
+import "./chunks/chunk-4UPAN2NC.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-C4KEB3WL.mjs";
+} from "./chunks/chunk-3OQP2D73.mjs";
 import {
   itemValue,
+  readItems,
+  refreshItemsIfChanged,
   zagListCollectionConfig
-} from "./chunks/chunk-DDT7N35T.mjs";
+} from "./chunks/chunk-MFM7SQB7.mjs";
 import {
   ListCollection,
   createSelectedItemMap,
   deriveSelectionState,
   resolveSelectedItems
-} from "./chunks/chunk-SGRHPBNS.mjs";
+} from "./chunks/chunk-VNSUJWAI.mjs";
 import {
   performRedirect,
   readDomItemRedirect
@@ -40,20 +42,17 @@ import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunks/chunk-YUSIPE4B.mjs";
+} from "./chunks/chunk-WAPDN2S7.mjs";
+import "./chunks/chunk-7LA2VUMJ.mjs";
 import {
-  mountStringListBinding
-} from "./chunks/chunk-BGER3KYP.mjs";
-import "./chunks/chunk-TKOH2OAC.mjs";
-import {
-  createDomEventRegistry,
-  createHookHandleEventRegistry
-} from "./chunks/chunk-77HPO22C.mjs";
+  mountStringListBinding,
+  readUpdatedServerStringList
+} from "./chunks/chunk-LVRCAC6Y.mjs";
 import {
   idMatches,
   notifyChange,
   readPayloadId
-} from "./chunks/chunk-LNVRIZ4K.mjs";
+} from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
   Component,
   VanillaMachine,
@@ -62,6 +61,7 @@ import {
   canPushEvent,
   clickIfLink,
   createAnatomy,
+  createZagLiveHook,
   dataAttr,
   ensure,
   getBoolean,
@@ -82,17 +82,17 @@ import {
   match,
   nextTick,
   observeAttributes,
+  partPropsMethod,
   query,
   raf,
   remove,
-  safeParseJson,
   scrollIntoView,
   setCaretToEnd,
   setup,
   templatesContentRoot
-} from "./chunks/chunk-6AOEC32Q.mjs";
+} from "./chunks/chunk-E4OZ7DWO.mjs";
 
-// ../node_modules/.pnpm/@zag-js+combobox@1.40.0/node_modules/@zag-js/combobox/dist/combobox.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+combobox@1.42.0/node_modules/@zag-js/combobox/dist/combobox.anatomy.mjs
 var anatomy = createAnatomy("combobox").parts(
   "root",
   "clearTrigger",
@@ -111,7 +111,7 @@ var anatomy = createAnatomy("combobox").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+combobox@1.40.0/node_modules/@zag-js/combobox/dist/combobox.collection.mjs
+// ../node_modules/.pnpm/@zag-js+combobox@1.42.0/node_modules/@zag-js/combobox/dist/combobox.collection.mjs
 var collection = (options) => {
   return new ListCollection(options);
 };
@@ -119,7 +119,7 @@ collection.empty = () => {
   return new ListCollection({ items: [] });
 };
 
-// ../node_modules/.pnpm/@zag-js+combobox@1.40.0/node_modules/@zag-js/combobox/dist/combobox.dom.mjs
+// ../node_modules/.pnpm/@zag-js+combobox@1.42.0/node_modules/@zag-js/combobox/dist/combobox.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `combobox:${ctx.id}`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `combobox:${ctx.id}:label`;
 var getControlId = (ctx) => ctx.ids?.control ?? `combobox:${ctx.id}:control`;
@@ -155,7 +155,7 @@ var focusTriggerEl = (ctx) => {
   triggerEl?.focus({ preventScroll: true });
 };
 
-// ../node_modules/.pnpm/@zag-js+combobox@1.40.0/node_modules/@zag-js/combobox/dist/combobox.connect.mjs
+// ../node_modules/.pnpm/@zag-js+combobox@1.42.0/node_modules/@zag-js/combobox/dist/combobox.connect.mjs
 function connect(service, normalize) {
   const { context, prop, state, send, scope, computed, event } = service;
   const translations = prop("translations");
@@ -169,9 +169,11 @@ function connect(service, normalize) {
   const focused = state.hasTag("focused");
   const composite = prop("composite");
   const highlightedValue = context.get("highlightedValue");
+  const currentPlacement = context.get("currentPlacement");
+  const currentPlacementSide = currentPlacement ? getPlacementSide(currentPlacement) : void 0;
   const popperStyles = getPlacementStyles({
     ...prop("positioning"),
-    placement: context.get("currentPlacement")
+    placement: currentPlacement
   });
   function getItemState(props) {
     const itemDisabled = collection2.getItemDisabled(props.item);
@@ -356,10 +358,10 @@ function connect(service, normalize) {
             },
             Enter(event3) {
               send({ type: "INPUT.ENTER", keypress, src: "item-select" });
-              const submittable = computed("isCustomValue") && prop("allowCustomValue");
               const hasHighlight = highlightedValue != null;
               const alwaysSubmit = prop("alwaysSubmitOnEnter");
-              if (open && !submittable && !alwaysSubmit && hasHighlight) {
+              const willBeRejected = computed("isCustomValue") && !prop("allowCustomValue");
+              if (open && !alwaysSubmit && (hasHighlight || willBeRejected)) {
                 event3.preventDefault();
               }
               if (highlightedValue == null) return;
@@ -444,7 +446,8 @@ function connect(service, normalize) {
         tabIndex: -1,
         hidden: !open,
         "data-state": open ? "open" : "closed",
-        "data-placement": context.get("currentPlacement"),
+        "data-placement": currentPlacement,
+        "data-side": currentPlacementSide,
         "aria-labelledby": getLabelId(scope),
         "aria-multiselectable": prop("multiple") && composite ? true : void 0,
         "data-empty": dataAttr(collection2.size === 0),
@@ -567,7 +570,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+combobox@1.40.0/node_modules/@zag-js/combobox/dist/combobox.machine.mjs
+// ../node_modules/.pnpm/@zag-js+combobox@1.42.0/node_modules/@zag-js/combobox/dist/combobox.machine.mjs
 var { guards, createMachine, choose } = setup();
 var { and, not } = guards;
 var machine = createMachine({
@@ -1606,7 +1609,6 @@ var Combobox = class extends Component {
     const items = this.activeItems();
     return collection(zagListCollectionConfig(items, this.hasGroups));
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     const getCollection = () => this.getCollection();
     return new VanillaMachine(machine, {
@@ -1923,8 +1925,7 @@ var Combobox = class extends Component {
     ].forEach((part) => {
       const el = this.el.querySelector(`[data-scope="combobox"][data-part="${part}"]`);
       if (!el) return;
-      const apiMethod = "get" + part.split("-").map((s) => s[0].toUpperCase() + s.slice(1)).join("") + "Props";
-      this.spreadProps(el, this.api[apiMethod]());
+      this.spreadProps(el, this.api[partPropsMethod(part)]());
     });
     this.renderItems();
     this.applyItemProps();
@@ -2109,19 +2110,18 @@ function comboboxMachineDomPropsForUpdate(el, pushEvent, canPush, liveSocket, ge
   delete rest.onSelect;
   return rest;
 }
-var ComboboxHook = {
-  mounted() {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
-    const hook = this;
+var ComboboxHook = createZagLiveHook({
+  key: "combobox",
+  controlledKeys: ["value"],
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     hook.fieldTouched = false;
     const markFieldTouched = () => {
       hook.fieldTouched = true;
     };
-    const itemsJson = el.getAttribute("data-items") ?? "[]";
-    const allItems = safeParseJson(itemsJson, []);
-    const hasGroups = allItems.some((item) => Boolean(item.group));
+    const { json: itemsJson, items: allItems, hasGroups } = readItems(el);
     const defaultValues = getStringList(el, "defaultValue") ?? [];
     if (defaultValues.length > 0) {
       hook.fieldTouched = true;
@@ -2133,7 +2133,7 @@ var ComboboxHook = {
         el,
         pushEvent,
         canPush,
-        this.liveSocket,
+        hook.liveSocket,
         () => comboboxRef,
         markFieldTouched
       ),
@@ -2141,69 +2141,50 @@ var ComboboxHook = {
     };
     const combobox = new Combobox(el, props, allItems, hasGroups);
     comboboxRef = combobox;
-    combobox.init();
-    this.combobox = combobox;
-    this.lastItemsJson = itemsJson;
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-    domRegistry.add("corex:combobox:set-value", (event) => {
+    hook.lastItemsJson = itemsJson;
+    dom.add("corex:combobox:set-value", (event) => {
       combobox.api.setValue(event.detail.value);
     });
-    domRegistry.add("corex:combobox:set-open", (event) => {
+    dom.add("corex:combobox:set-open", (event) => {
       combobox.api.setOpen(event.detail.open);
     });
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-    registry.add("combobox_set_value", (payload) => {
+    server.add("combobox_set_value", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       combobox.api.setValue(payload.value);
     });
-    registry.add("combobox_set_open", (payload) => {
+    server.add("combobox_set_open", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       if (typeof payload.open !== "boolean") return;
       combobox.api.setOpen(payload.open);
     });
+    return combobox;
   },
-  updated() {
-    if (!this.combobox) return;
-    const newItemsJson = this.el.getAttribute("data-items") ?? "[]";
-    let itemsChanged = false;
-    if (newItemsJson !== this.lastItemsJson) {
-      this.lastItemsJson = newItemsJson;
-      itemsChanged = true;
-      const newCollection = safeParseJson(newItemsJson, []);
-      const hasGroups = newCollection.some((item) => Boolean(item.group));
-      this.combobox.hasGroups = hasGroups;
-      this.combobox.setAllOptions(newCollection);
-    }
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
-    this.combobox.updateProps({
+  update(hook, combobox) {
+    refreshItemsIfChanged(hook.el, hook, combobox);
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
+    const valuePatch = readUpdatedServerStringList(hook.el, hook.beforeAttrs);
+    const propsApplied = combobox.updateProps({
       ...comboboxMachineDomPropsForUpdate(
-        this.el,
+        hook.el,
         pushEvent,
         canPush,
-        this.liveSocket,
-        () => this.combobox,
+        hook.liveSocket,
+        () => combobox,
         () => {
-          this.fieldTouched = true;
+          hook.fieldTouched = true;
         }
-      )
+      ),
+      ...valuePatch.value !== void 0 ? { value: valuePatch.value } : {}
     });
-    if (this.combobox.api.open) {
-      this.combobox.api.reposition();
+    if (combobox.api.open) {
+      combobox.api.reposition();
     }
-    if (itemsChanged) {
-      this.combobox.renderItems();
-      this.combobox.applyItemProps();
+    if (!propsApplied) {
+      combobox.render();
     }
-  },
-  destroyed() {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.combobox?.destroy();
   }
-};
+});
 export {
   ComboboxHook as Combobox,
   mountStringListBinding as comboboxValueBinding,

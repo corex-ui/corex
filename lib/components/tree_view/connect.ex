@@ -1,8 +1,13 @@
 defmodule Corex.TreeView.Connect do
   @moduledoc false
+  use Corex.Connect.Mounted
+
+  use Corex.Component, [:connect, :api]
 
   alias Corex.Animation.Height
+
   alias Corex.Connect.ItemNav
+
   alias Corex.Selectors
 
   alias Corex.TreeView.Anatomy.{
@@ -22,12 +27,6 @@ defmodule Corex.TreeView.Connect do
   }
 
   alias Phoenix.LiveView.JS
-
-  import Corex.Helpers,
-    only: [
-      validate_value!: 1,
-      get_boolean: 1
-    ]
 
   defp depth_style(index_path) when is_list(index_path), do: "--depth: #{length(index_path)}"
   defp depth_style(_), do: "--depth: 0"
@@ -56,12 +55,12 @@ defmodule Corex.TreeView.Connect do
 
     default_expanded_str =
       (assigns.expanded_value || [])
-      |> validate_value!()
+      |> coerce_string_list()
       |> Corex.ValueBinding.encode_list()
 
     default_selected_str =
       (assigns.value || [])
-      |> validate_value!()
+      |> coerce_string_list()
       |> Corex.ValueBinding.encode_list()
 
     tree_json =
@@ -71,7 +70,7 @@ defmodule Corex.TreeView.Connect do
       "id" => assigns.id,
       "data-tree" => tree_json,
       "data-animation" => animation,
-      "data-redirect" => get_boolean(assigns.redirect),
+      "data-redirect" => presence_attr(assigns.redirect),
       "data-default-expanded-value" => default_expanded_str,
       "data-default-selected-value" => default_selected_str,
       "data-selection-mode" => assigns.selection_mode,
@@ -145,7 +144,7 @@ defmodule Corex.TreeView.Connect do
       "data-part" => "item",
       "data-value" => assigns.value,
       "data-path" => encode_index_path(assigns.index_path),
-      "data-disabled" => get_boolean(assigns.disabled),
+      "data-disabled" => presence_attr(assigns.disabled),
       "dir" => assigns.dir,
       "id" => tree_index_id(assigns.id, "node", assigns.index_path),
       "style" => depth_style(assigns.index_path)
@@ -179,7 +178,7 @@ defmodule Corex.TreeView.Connect do
       "data-value" => assigns.value,
       "data-path" => encode_index_path(assigns.index_path),
       "data-state" => state,
-      "data-disabled" => get_boolean(assigns.disabled),
+      "data-disabled" => presence_attr(assigns.disabled),
       "dir" => assigns.dir,
       "id" => tree_index_id(assigns.id, "branch", assigns.index_path)
     }
@@ -205,7 +204,7 @@ defmodule Corex.TreeView.Connect do
       "data-value" => assigns.value,
       "data-path" => encode_index_path(assigns.index_path),
       "data-state" => state,
-      "data-disabled" => get_boolean(assigns.disabled),
+      "data-disabled" => presence_attr(assigns.disabled),
       "dir" => assigns.dir,
       "style" => depth_style(assigns.index_path),
       "id" => tree_index_id(assigns.id, "node", assigns.index_path)
@@ -268,7 +267,7 @@ defmodule Corex.TreeView.Connect do
       "data-value" => assigns.value,
       "data-path" => encode_index_path(assigns.index_path),
       "data-state" => state,
-      "data-disabled" => get_boolean(assigns.disabled),
+      "data-disabled" => presence_attr(assigns.disabled),
       "dir" => assigns.dir,
       "id" => tree_branch_part_id(assigns.id, "branch-indicator", pk)
     }
@@ -334,7 +333,7 @@ defmodule Corex.TreeView.Connect do
       "data-part" => "item-indicator",
       "data-value" => assigns.value,
       "data-path" => encode_index_path(assigns.index_path),
-      "data-disabled" => get_boolean(assigns.disabled),
+      "data-disabled" => presence_attr(assigns.disabled),
       "dir" => assigns.dir,
       "id" => tree_branch_part_id(assigns.id, "item-indicator", pk),
       "aria-hidden" => "true"

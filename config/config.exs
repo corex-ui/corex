@@ -83,7 +83,7 @@ if Mix.env() in [:dev, :test] do
       ["--chunk-names=chunks/[name]-[hash]"]
 
   config :esbuild,
-    version: "0.25.4",
+    version: "0.25.12",
     corex_hooks:
       esbuild_corex_hooks.(~w(--format=esm --sourcemap --outfile=../priv/static/hooks.mjs)),
     module:

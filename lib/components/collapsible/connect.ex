@@ -1,21 +1,23 @@
 defmodule Corex.Collapsible.Connect do
   @moduledoc false
+  use Corex.Connect.Mounted
+
+  use Corex.Component, :connect
+
   alias Corex.Collapsible.Anatomy.{Closed, Content, Opened, Props, Root, Trigger}
+
   alias Corex.Selectors
 
   alias Phoenix.LiveView.JS
-
-  import Corex.Helpers,
-    only: [data_state: 3, get_boolean: 1, get_boolean: 2, get_default_boolean: 2]
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
     %{
       "id" => assigns.id,
-      "data-default-open" => get_default_boolean(assigns.controlled, assigns.open),
-      "data-open" => get_boolean(assigns.controlled, assigns.open),
-      "data-controlled" => get_boolean(assigns.controlled),
-      "data-disabled" => get_boolean(assigns.disabled),
+      "data-default-open" => default_presence_attr(assigns.controlled, assigns.open),
+      "data-open" => presence_attr(assigns.controlled, assigns.open),
+      "data-controlled" => presence_attr(assigns.controlled),
+      "data-disabled" => presence_attr(assigns.disabled),
       "data-dir" => assigns.dir,
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "data-on-open-change" => assigns.on_open_change,

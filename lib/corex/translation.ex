@@ -103,22 +103,20 @@ defmodule Corex.Translation do
         quote(do: Corex.Gettext.gettext(unquote(text)))
 
       matches ->
-        opts =
-          matches
-          |> Enum.map_join(", ", fn [_, name] -> "#{name}: \"%{#{name}}\"" end)
+        bindings =
+          Enum.map(matches, fn [placeholder, name] -> {String.to_atom(name), placeholder} end)
 
-        Code.string_to_quoted!(
-          "Corex.Gettext.gettext(#{inspect(text)}, #{opts})",
-          existing_atoms: :all
-        )
+        quote(do: Corex.Gettext.gettext(unquote(text), unquote(bindings)))
     end
   end
 
+  @spec take(term(), term()) :: term()
   def take(nil, default), do: default
   def take("", default), do: default
   def take(value, _default), do: value
 
   @doc "Merges optional legacy attribute overrides into a resolved translation struct."
+  @spec resolve_with_overrides(module(), term(), map()) :: struct()
   def resolve_with_overrides(module, partial, overrides \\ %{})
 
   def resolve_with_overrides(module, partial, overrides) when is_map(overrides) do
@@ -146,5 +144,8 @@ defmodule Corex.Translation do
 
   defp override_field_key(key) when is_binary(key) do
     String.to_existing_atom(key)
+  rescue
+    ArgumentError ->
+      :__corex_unknown_override__
   end
 end

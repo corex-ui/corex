@@ -1,11 +1,8 @@
-import type { Hook } from "phoenix_live_view";
-import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
 import { PasswordInput } from "../components/password-input";
 import type { Props, VisibilityChangeDetails } from "@zag-js/password-input";
 import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
 import { notifyChange, idMatches, readPayloadId, readPayloadVisible } from "../lib/respond-to";
-import { createHookHandleEventRegistry } from "../lib/hook-handlers";
-import { createDomEventRegistry } from "../lib/dom-events";
+import { createZagLiveHook } from "../lib/zag-live-hook";
 
 export function visibilityChangePayload(
   el: HTMLElement,
@@ -16,16 +13,14 @@ export function visibilityChangePayload(
 
 type PasswordInputHookState = {
   passwordInput?: PasswordInput;
-  handlers?: Array<CallbackRef>;
-  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
-  domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
 
-const PasswordInputHook: Hook<object & PasswordInputHookState, HTMLElement> = {
-  mounted(this: object & HookInterface<HTMLElement> & PasswordInputHookState) {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+const PasswordInputHook = createZagLiveHook<PasswordInputHookState, PasswordInput>({
+  key: "passwordInput",
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     const zag = new PasswordInput(el, {
       id: el.id,
       defaultVisible: getBoolean(el, "defaultVisible"),
@@ -48,53 +43,44 @@ const PasswordInputHook: Hook<object & PasswordInputHookState, HTMLElement> = {
         });
       },
     } as Props);
-    zag.init();
-    this.passwordInput = zag;
-    this.handlers = [];
+    hook.handlers = [];
 
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
+    dom.add<CustomEvent<{ visible: boolean }>>("corex:password-input:set-visible", (event) => {
+      const vis = event.detail?.visible;
+      if (typeof vis === "boolean") zag.api.setVisible(vis);
+    });
 
-    domRegistry.add<CustomEvent<{ visible: boolean }>>(
-      "corex:password-input:set-visible",
-      (event) => {
-        const vis = event.detail?.visible;
-        if (typeof vis === "boolean") zag.api.setVisible(vis);
-      }
-    );
-
-    domRegistry.add("corex:password-input:toggle-visible", () => {
+    dom.add("corex:password-input:toggle-visible", () => {
       zag.api.toggleVisible();
     });
 
-    domRegistry.add("corex:password-input:focus", () => {
+    dom.add("corex:password-input:focus", () => {
       zag.api.focus();
     });
 
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-
-    registry.add("password_input_set_visible", (payload: unknown) => {
+    server.add("password_input_set_visible", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       const vis = readPayloadVisible(payload);
       if (typeof vis === "boolean") zag.api.setVisible(vis);
     });
 
-    registry.add("password_input_toggle_visible", (payload: unknown) => {
+    server.add("password_input_toggle_visible", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.toggleVisible();
     });
 
-    registry.add("password_input_focus", (payload: unknown) => {
+    server.add("password_input_focus", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.focus();
     });
+
+    return zag;
   },
 
-  updated(this: object & HookInterface<HTMLElement> & PasswordInputHookState) {
-    const el = this.el;
+  update(hook, zag) {
+    const el = hook.el;
 
-    this.passwordInput?.updateProps({
+    zag.updateProps({
       id: el.id,
       disabled: getBoolean(el, "disabled"),
       invalid: getBoolean(el, "invalid"),
@@ -104,15 +90,6 @@ const PasswordInputHook: Hook<object & PasswordInputHookState, HTMLElement> = {
       dir: getDir(el),
     } as Partial<Props>);
   },
-
-  destroyed(this: object & HookInterface<HTMLElement> & PasswordInputHookState) {
-    if (this.handlers) {
-      for (const h of this.handlers) this.removeHandleEvent(h);
-    }
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.passwordInput?.destroy();
-  },
-};
+});
 
 export { PasswordInputHook as PasswordInput };

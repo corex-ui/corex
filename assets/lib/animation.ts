@@ -26,36 +26,64 @@ export type CorexScaleAnimationOptions = {
   blockInteraction: boolean;
 };
 
-function readRequiredAttrString(el: HTMLElement, dataAttr: string, label: string): string {
+function readRequiredAttrString(
+  el: HTMLElement,
+  dataAttr: string,
+  label: string,
+  fallback: string
+): string {
   const raw = el.getAttribute(dataAttr);
   if (raw === null) {
-    throw new Error(`[corex] missing ${label} on #${el.id}`);
+    console.warn(`[corex] missing ${label} on #${el.id}, using default`);
+    return fallback;
   }
   return raw;
 }
 
-function readRequiredAttrNumber(el: HTMLElement, dataAttr: string, label: string): number {
-  const raw = readRequiredAttrString(el, dataAttr, label);
+function readRequiredAttrNumber(
+  el: HTMLElement,
+  dataAttr: string,
+  label: string,
+  fallback: number
+): number {
+  const raw = el.getAttribute(dataAttr);
+  if (raw === null) {
+    console.warn(`[corex] missing ${label} on #${el.id}, using default`);
+    return fallback;
+  }
   const n = parseFloat(raw);
   if (Number.isNaN(n)) {
-    throw new Error(`[corex] invalid ${label} on #${el.id}`);
+    console.warn(`[corex] invalid ${label} on #${el.id}, using default`);
+    return fallback;
   }
   return n;
 }
 
 export function readHeightAnimationOptions(el: HTMLElement): CorexHeightAnimationOptions {
   return {
-    duration: readRequiredAttrNumber(el, "data-anim-height-duration", "data-anim-height-duration"),
-    easing: readRequiredAttrString(el, "data-anim-height-easing", "data-anim-height-easing"),
+    duration: readRequiredAttrNumber(
+      el,
+      "data-anim-height-duration",
+      "data-anim-height-duration",
+      200
+    ),
+    easing: readRequiredAttrString(
+      el,
+      "data-anim-height-easing",
+      "data-anim-height-easing",
+      "ease"
+    ),
     opacityStart: readRequiredAttrNumber(
       el,
       "data-anim-height-opacity-start",
-      "data-anim-height-opacity-start"
+      "data-anim-height-opacity-start",
+      0
     ),
     opacityEnd: readRequiredAttrNumber(
       el,
       "data-anim-height-opacity-end",
-      "data-anim-height-opacity-end"
+      "data-anim-height-opacity-end",
+      1
     ),
     blockInteraction: getBooleanValue(el, "animHeightBlockInteraction") !== false,
   };
@@ -63,27 +91,36 @@ export function readHeightAnimationOptions(el: HTMLElement): CorexHeightAnimatio
 
 export function readScaleAnimationOptions(el: HTMLElement): CorexScaleAnimationOptions {
   return {
-    duration: readRequiredAttrNumber(el, "data-anim-scale-duration", "data-anim-scale-duration"),
-    easing: readRequiredAttrString(el, "data-anim-scale-easing", "data-anim-scale-easing"),
+    duration: readRequiredAttrNumber(
+      el,
+      "data-anim-scale-duration",
+      "data-anim-scale-duration",
+      200
+    ),
+    easing: readRequiredAttrString(el, "data-anim-scale-easing", "data-anim-scale-easing", "ease"),
     opacityStart: readRequiredAttrNumber(
       el,
       "data-anim-scale-opacity-start",
-      "data-anim-scale-opacity-start"
+      "data-anim-scale-opacity-start",
+      0
     ),
     opacityEnd: readRequiredAttrNumber(
       el,
       "data-anim-scale-opacity-end",
-      "data-anim-scale-opacity-end"
+      "data-anim-scale-opacity-end",
+      1
     ),
     scaleStart: readRequiredAttrNumber(
       el,
       "data-anim-transform-scale-start",
-      "data-anim-transform-scale-start"
+      "data-anim-transform-scale-start",
+      0.95
     ),
     scaleEnd: readRequiredAttrNumber(
       el,
       "data-anim-transform-scale-end",
-      "data-anim-transform-scale-end"
+      "data-anim-transform-scale-end",
+      1
     ),
     blockInteraction: getBooleanValue(el, "animScaleBlockInteraction") !== false,
   };
@@ -443,13 +480,4 @@ export function runScaleAnimation(
     finish();
   };
   return anim;
-}
-
-export function animateHeightOpacityPanel(
-  contentEl: HTMLElement,
-  isOpening: boolean,
-  opts: CorexHeightAnimationOptions,
-  blockRoot?: HTMLElement
-): Animation {
-  return runHeightPanelAnimation(contentEl, isOpening, opts, blockRoot);
 }

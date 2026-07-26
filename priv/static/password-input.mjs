@@ -1,13 +1,9 @@
 import {
-  createDomEventRegistry,
-  createHookHandleEventRegistry
-} from "./chunks/chunk-77HPO22C.mjs";
-import {
   idMatches,
   notifyChange,
   readPayloadId,
   readPayloadVisible
-} from "./chunks/chunk-LNVRIZ4K.mjs";
+} from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
   Component,
   VanillaMachine,
@@ -15,15 +11,16 @@ import {
   canPushEvent,
   createAnatomy,
   createMachine,
+  createZagLiveHook,
   dataAttr,
   getBoolean,
   getDir,
   getString,
   isLeftClick,
   uuid
-} from "./chunks/chunk-6AOEC32Q.mjs";
+} from "./chunks/chunk-E4OZ7DWO.mjs";
 
-// ../node_modules/.pnpm/@zag-js+password-input@1.40.0/node_modules/@zag-js/password-input/dist/password-input.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+password-input@1.42.0/node_modules/@zag-js/password-input/dist/password-input.anatomy.mjs
 var anatomy = createAnatomy("password-input").parts(
   "root",
   "input",
@@ -34,11 +31,11 @@ var anatomy = createAnatomy("password-input").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+password-input@1.40.0/node_modules/@zag-js/password-input/dist/password-input.dom.mjs
+// ../node_modules/.pnpm/@zag-js+password-input@1.42.0/node_modules/@zag-js/password-input/dist/password-input.dom.mjs
 var getInputId = (ctx) => ctx.ids?.input ?? `p-input-${ctx.id}-input`;
 var getInputEl = (ctx) => ctx.getById(getInputId(ctx));
 
-// ../node_modules/.pnpm/@zag-js+password-input@1.40.0/node_modules/@zag-js/password-input/dist/password-input.connect.mjs
+// ../node_modules/.pnpm/@zag-js+password-input@1.42.0/node_modules/@zag-js/password-input/dist/password-input.connect.mjs
 function connect(service, normalize) {
   const { scope, prop, context } = service;
   const visible = context.get("visible");
@@ -153,7 +150,7 @@ var passwordManagerProps = {
   "data-protonpass-ignore": "true"
 };
 
-// ../node_modules/.pnpm/@zag-js+password-input@1.40.0/node_modules/@zag-js/password-input/dist/password-input.machine.mjs
+// ../node_modules/.pnpm/@zag-js+password-input@1.42.0/node_modules/@zag-js/password-input/dist/password-input.machine.mjs
 var machine = createMachine({
   props({ props }) {
     return {
@@ -240,7 +237,6 @@ var machine = createMachine({
 
 // components/password-input.ts
 var PasswordInput = class extends Component {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, props);
   }
@@ -277,11 +273,12 @@ var PasswordInput = class extends Component {
 function visibilityChangePayload(el, details) {
   return { id: el.id, visible: details.visible };
 }
-var PasswordInputHook = {
-  mounted() {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+var PasswordInputHook = createZagLiveHook({
+  key: "passwordInput",
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     const zag = new PasswordInput(el, {
       id: el.id,
       defaultVisible: getBoolean(el, "defaultVisible"),
@@ -304,43 +301,35 @@ var PasswordInputHook = {
         });
       }
     });
-    zag.init();
-    this.passwordInput = zag;
-    this.handlers = [];
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-    domRegistry.add(
-      "corex:password-input:set-visible",
-      (event) => {
-        const vis = event.detail?.visible;
-        if (typeof vis === "boolean") zag.api.setVisible(vis);
-      }
-    );
-    domRegistry.add("corex:password-input:toggle-visible", () => {
+    hook.handlers = [];
+    dom.add("corex:password-input:set-visible", (event) => {
+      const vis = event.detail?.visible;
+      if (typeof vis === "boolean") zag.api.setVisible(vis);
+    });
+    dom.add("corex:password-input:toggle-visible", () => {
       zag.api.toggleVisible();
     });
-    domRegistry.add("corex:password-input:focus", () => {
+    dom.add("corex:password-input:focus", () => {
       zag.api.focus();
     });
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-    registry.add("password_input_set_visible", (payload) => {
+    server.add("password_input_set_visible", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       const vis = readPayloadVisible(payload);
       if (typeof vis === "boolean") zag.api.setVisible(vis);
     });
-    registry.add("password_input_toggle_visible", (payload) => {
+    server.add("password_input_toggle_visible", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.toggleVisible();
     });
-    registry.add("password_input_focus", (payload) => {
+    server.add("password_input_focus", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.focus();
     });
+    return zag;
   },
-  updated() {
-    const el = this.el;
-    this.passwordInput?.updateProps({
+  update(hook, zag) {
+    const el = hook.el;
+    zag.updateProps({
       id: el.id,
       disabled: getBoolean(el, "disabled"),
       invalid: getBoolean(el, "invalid"),
@@ -349,16 +338,8 @@ var PasswordInputHook = {
       name: getString(el, "name"),
       dir: getDir(el)
     });
-  },
-  destroyed() {
-    if (this.handlers) {
-      for (const h of this.handlers) this.removeHandleEvent(h);
-    }
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.passwordInput?.destroy();
   }
-};
+});
 export {
   PasswordInputHook as PasswordInput,
   visibilityChangePayload

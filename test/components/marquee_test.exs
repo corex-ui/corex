@@ -119,7 +119,7 @@ defmodule Corex.MarqueeTest do
       assert result["data-state"] == "idle"
       assert result["role"] == "region"
       assert result["aria-roledescription"] == "marquee"
-      assert result["style"] =~ "width:100%"
+      assert result["style"] =~ "--marquee-duration"
     end
 
     test "respect_reduced_motion false and loop_count > 0" do

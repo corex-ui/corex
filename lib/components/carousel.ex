@@ -342,6 +342,7 @@ defmodule Corex.Carousel do
 
   alias Corex.Carousel.Connect
   alias Corex.Carousel.Utils
+  alias Corex.Selectors
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
@@ -425,7 +426,7 @@ defmodule Corex.Carousel do
 
     assigns =
       assigns
-      |> assign_new(:id, fn -> "carousel-#{System.unique_integer([:positive])}" end)
+      |> Corex.FormField.assign_stable_id("carousel")
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign(:items, items)
       |> assign(:slide_count, slide_count)
@@ -456,8 +457,7 @@ defmodule Corex.Carousel do
     <div
       id={@id}
       phx-hook="Carousel"
-      data-loading      
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+      {Corex.Hook.loading()}
       data-slide-count={@slide_count}
       {@rest}
       {Connect.props(%Props{
@@ -485,17 +485,14 @@ defmodule Corex.Carousel do
         render_slot(@inner_block, @ctx)
       end}
       <div :if={not @compound}
-        phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation, slides_per_page: @slides_per_page, spacing: @spacing, aria_label: @aria_label})}
-        {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation, slides_per_page: @slides_per_page, spacing: @spacing, aria_label: @aria_label})}
+        {Connect.mounted_root(%Root{id: @id, dir: @dir, orientation: @orientation, slides_per_page: @slides_per_page, spacing: @spacing, aria_label: @aria_label})}
       >
         <div
-          phx-mounted={Connect.ignore_item_group(%ItemGroup{id: @id, orientation: @orientation, dir: @dir})}
-          {Connect.item_group(%ItemGroup{id: @id, orientation: @orientation, dir: @dir})}
+          {Connect.mounted_item_group(%ItemGroup{id: @id, orientation: @orientation, dir: @dir})}
         >
           <div
             :for={{item, i} <- Enum.with_index(@items)}
-            phx-mounted={Connect.ignore_item(%Item{id: @id, index: i, orientation: @orientation, slide_count: @slide_count})}
-            {Connect.item(%Item{id: @id, index: i, orientation: @orientation, slide_count: @slide_count})}
+            {Connect.mounted_item(%Item{id: @id, index: i, orientation: @orientation, slide_count: @slide_count})}
             data-index={i}
           >
             <%= if @has_item_slot do %>
@@ -506,33 +503,28 @@ defmodule Corex.Carousel do
           </div>
         </div>
         <div
-          phx-mounted={Connect.ignore_control(%Control{id: @id, orientation: @orientation})}
-          {Connect.control(%Control{id: @id, orientation: @orientation})}
+          {Connect.mounted_control(%Control{id: @id, orientation: @orientation})}
         >
           <button
             type="button"
-            phx-mounted={Connect.ignore_prev_trigger(%PrevTrigger{id: @id, disabled: @prev_disabled})}
-            {Connect.prev_trigger(%PrevTrigger{id: @id, disabled: @prev_disabled})}
+            {Connect.mounted_prev_trigger(%PrevTrigger{id: @id, disabled: @prev_disabled})}
           >
             {render_slot(@prev_trigger)}
           </button>
           <div
-            phx-mounted={Connect.ignore_indicator_group(%IndicatorGroup{id: @id, orientation: @orientation, dir: @dir})}
-            {Connect.indicator_group(%IndicatorGroup{id: @id, orientation: @orientation, dir: @dir})}
+            {Connect.mounted_indicator_group(%IndicatorGroup{id: @id, orientation: @orientation, dir: @dir})}
           >
             <button
               :for={i <- 0..(max(0, @total_pages - 1))}
               type="button"
-              phx-mounted={Connect.ignore_indicator(%Indicator{id: @id, index: i, orientation: @orientation, dir: @dir, page: @page})}
-              {Connect.indicator(%Indicator{id: @id, index: i, orientation: @orientation, dir: @dir, page: @page})}
+              {Connect.mounted_indicator(%Indicator{id: @id, index: i, orientation: @orientation, dir: @dir, page: @page})}
               data-index={i}
               aria-label={"Go to page #{i + 1}"}
             ></button>
           </div>
           <button
             type="button"
-            phx-mounted={Connect.ignore_next_trigger(%NextTrigger{id: @id, disabled: @next_disabled})}
-            {Connect.next_trigger(%NextTrigger{id: @id, disabled: @next_disabled})}
+            {Connect.mounted_next_trigger(%NextTrigger{id: @id, disabled: @next_disabled})}
           >
             {render_slot(@next_trigger)}
           </button>
@@ -560,7 +552,7 @@ defmodule Corex.Carousel do
     assigns = assign(assigns, :root, root)
 
     ~H"""
-    <div phx-mounted={Connect.ignore_root(@root)} {Connect.root(@root)} {@rest}>
+    <div {Connect.mounted_root(@root)} {@rest}>
       {render_slot(@inner_block)}
     </div>
     """
@@ -581,7 +573,7 @@ defmodule Corex.Carousel do
     assigns = assign(assigns, :ig, ig)
 
     ~H"""
-    <div phx-mounted={Connect.ignore_item_group(@ig)} {Connect.item_group(@ig)} {@rest}>
+    <div {Connect.mounted_item_group(@ig)} {@rest}>
       {render_slot(@inner_block)}
     </div>
     """
@@ -605,8 +597,7 @@ defmodule Corex.Carousel do
 
     ~H"""
     <div
-      phx-mounted={Connect.ignore_item(@item)}
-      {Connect.item(@item)}
+      {Connect.mounted_item(@item)}
       data-index={@index}
       {@rest}
     >
@@ -625,7 +616,7 @@ defmodule Corex.Carousel do
     assigns = assign(assigns, :ctl, ctl)
 
     ~H"""
-    <div phx-mounted={Connect.ignore_control(@ctl)} {Connect.control(@ctl)} {@rest}>
+    <div {Connect.mounted_control(@ctl)} {@rest}>
       {render_slot(@inner_block)}
     </div>
     """
@@ -641,7 +632,7 @@ defmodule Corex.Carousel do
     assigns = assign(assigns, :pt, pt)
 
     ~H"""
-    <button type="button" phx-mounted={Connect.ignore_prev_trigger(@pt)} {Connect.prev_trigger(@pt)} {@rest}>
+    <button type="button" {Connect.mounted_prev_trigger(@pt)} {@rest}>
       {render_slot(@inner_block)}
     </button>
     """
@@ -657,7 +648,7 @@ defmodule Corex.Carousel do
     assigns = assign(assigns, :nt, nt)
 
     ~H"""
-    <button type="button" phx-mounted={Connect.ignore_next_trigger(@nt)} {Connect.next_trigger(@nt)} {@rest}>
+    <button type="button" {Connect.mounted_next_trigger(@nt)} {@rest}>
       {render_slot(@inner_block)}
     </button>
     """
@@ -678,7 +669,7 @@ defmodule Corex.Carousel do
     assigns = assign(assigns, :g, g)
 
     ~H"""
-    <div phx-mounted={Connect.ignore_indicator_group(@g)} {Connect.indicator_group(@g)} {@rest}>
+    <div {Connect.mounted_indicator_group(@g)} {@rest}>
       {render_slot(@inner_block)}
     </div>
     """
@@ -704,8 +695,7 @@ defmodule Corex.Carousel do
     ~H"""
     <button
       type="button"
-      phx-mounted={Connect.ignore_indicator(@ind)}
-      {Connect.indicator(@ind)}
+      {Connect.mounted_indicator(@ind)}
       data-index={@index}
       aria-label={"Go to page #{@index + 1}"}
       {@rest}
@@ -743,8 +733,14 @@ defmodule Corex.Carousel do
   ```
   """)
 
+  @spec play(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec play(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def play(carousel_id) when is_binary(carousel_id) do
-    JS.dispatch("corex:carousel:play", to: "##{carousel_id}", detail: %{}, bubbles: false)
+    JS.dispatch("corex:carousel:play",
+      to: Selectors.css_id(carousel_id),
+      detail: %{},
+      bubbles: false
+    )
   end
 
   api_doc(~S"""
@@ -771,8 +767,14 @@ defmodule Corex.Carousel do
   ```
   """)
 
+  @spec pause(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec pause(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
   def pause(carousel_id) when is_binary(carousel_id) do
-    JS.dispatch("corex:carousel:pause", to: "##{carousel_id}", detail: %{}, bubbles: false)
+    JS.dispatch("corex:carousel:pause",
+      to: Selectors.css_id(carousel_id),
+      detail: %{},
+      bubbles: false
+    )
   end
 
   api_doc(~S"""
@@ -833,7 +835,11 @@ defmodule Corex.Carousel do
     LiveView.push_event(socket, "carousel_pause", %{"id" => carousel_id})
   end
 
-  api_doc_short("Same as [`scroll_next/2`](#scroll_next/2) with `instant: false`.")
+  api_doc("Same as [`scroll_next/2`](#scroll_next/2) with `instant: false`.")
+  @spec scroll_next(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec scroll_next(String.t(), boolean()) :: Phoenix.LiveView.JS.t()
+  @spec scroll_next(Phoenix.LiveView.Socket.t(), String.t(), boolean()) ::
+          Phoenix.LiveView.Socket.t()
   def scroll_next(carousel_id) when is_binary(carousel_id), do: scroll_next(carousel_id, false)
 
   api_doc(~S"""
@@ -866,7 +872,7 @@ defmodule Corex.Carousel do
 
   def scroll_next(carousel_id, instant) when is_binary(carousel_id) and is_boolean(instant) do
     JS.dispatch("corex:carousel:scroll-next",
-      to: "##{carousel_id}",
+      to: Selectors.css_id(carousel_id),
       detail: scroll_detail(instant),
       bubbles: false
     )
@@ -906,7 +912,11 @@ defmodule Corex.Carousel do
     LiveView.push_event(socket, "carousel_scroll_next", scroll_payload(carousel_id, instant))
   end
 
-  api_doc_short("Same as [`scroll_prev/2`](#scroll_prev/2) with `instant: false`.")
+  api_doc("Same as [`scroll_prev/2`](#scroll_prev/2) with `instant: false`.")
+  @spec scroll_prev(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec scroll_prev(String.t(), boolean()) :: Phoenix.LiveView.JS.t()
+  @spec scroll_prev(Phoenix.LiveView.Socket.t(), String.t(), boolean()) ::
+          Phoenix.LiveView.Socket.t()
   def scroll_prev(carousel_id) when is_binary(carousel_id), do: scroll_prev(carousel_id, false)
 
   api_doc(~S"""
@@ -939,7 +949,7 @@ defmodule Corex.Carousel do
 
   def scroll_prev(carousel_id, instant) when is_binary(carousel_id) and is_boolean(instant) do
     JS.dispatch("corex:carousel:scroll-prev",
-      to: "##{carousel_id}",
+      to: Selectors.css_id(carousel_id),
       detail: scroll_detail(instant),
       bubbles: false
     )

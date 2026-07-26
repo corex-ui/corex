@@ -1,5 +1,9 @@
 defmodule Corex.Carousel.Connect do
   @moduledoc false
+  use Corex.Connect.Mounted
+
+  use Corex.Component, :connect
+
   alias Corex.Carousel.Anatomy.{
     Control,
     Indicator,
@@ -12,9 +16,11 @@ defmodule Corex.Carousel.Connect do
     Root
   }
 
+  alias Corex.Dataset
+
   alias Corex.Selectors
+
   alias Phoenix.LiveView.JS
-  import Corex.Helpers, only: [get_boolean: 1, maybe_put_data_dir: 2, maybe_put_dir: 2]
 
   defp slides_per_move_value(nil), do: nil
   defp slides_per_move_value("auto"), do: "auto"
@@ -30,27 +36,24 @@ defmodule Corex.Carousel.Connect do
       "data-default-page" => to_string(assigns.page),
       "data-orientation" => assigns.orientation,
       "data-slides-per-page" => to_string(assigns.slides_per_page),
-      "data-loop" => get_boolean(assigns.loop),
-      "data-autoplay" => get_boolean(assigns.autoplay),
+      "data-loop" => presence_attr(assigns.loop),
+      "data-autoplay" => presence_attr(assigns.autoplay),
       "data-autoplay-delay" =>
         if(assigns.autoplay, do: to_string(assigns.autoplay_delay), else: nil),
-      "data-allow-mouse-drag" => get_boolean(assigns.allow_mouse_drag),
+      "data-allow-mouse-drag" => presence_attr(assigns.allow_mouse_drag),
       "data-spacing" => assigns.spacing,
       "data-in-view-threshold" => to_string(assigns.in_view_threshold),
       "data-snap-type" => assigns.snap_type,
-      "data-auto-size" => get_boolean(assigns.auto_size),
+      "data-auto-size" => presence_attr(assigns.auto_size),
       "data-on-page-change" => assigns.on_page_change,
       "data-on-page-change-client" => assigns.on_page_change_client
     }
 
     base
-    |> maybe_put_data_dir(assigns.dir)
-    |> maybe_put_string("data-slides-per-move", slides_per_move_value(assigns.slides_per_move))
-    |> maybe_put_string("data-padding", assigns.padding)
+    |> put_data_dir_attr(assigns.dir)
+    |> Dataset.put_string("data-slides-per-move", slides_per_move_value(assigns.slides_per_move))
+    |> Dataset.put_string("data-padding", assigns.padding)
   end
-
-  defp maybe_put_string(map, _key, nil), do: map
-  defp maybe_put_string(map, key, value), do: Map.put(map, key, to_string(value))
 
   @spec root(Root.t()) :: map()
   def root(assigns) do
@@ -61,7 +64,7 @@ defmodule Corex.Carousel.Connect do
       "calc(100% / var(--slides-per-page) - var(--slide-spacing) * (var(--slides-per-page) - 1) / var(--slides-per-page))"
 
     style =
-      "width:100%;overflow:hidden;--slides-per-page:#{slides_per_page};--slide-spacing:#{spacing};--slide-item-size:#{slide_item_size};aspect-ratio:4/3"
+      "--slides-per-page:#{slides_per_page};--slide-spacing:#{spacing};--slide-item-size:#{slide_item_size}"
 
     base =
       %{
@@ -71,7 +74,7 @@ defmodule Corex.Carousel.Connect do
         "id" => "carousel:#{assigns.id}",
         "style" => style
       }
-      |> maybe_put_dir(assigns.dir)
+      |> put_dir_attr(assigns.dir)
 
     case Map.get(assigns, :aria_label) do
       nil -> Map.put(base, "aria-label", "Carousel #{assigns.id}")
@@ -121,7 +124,7 @@ defmodule Corex.Carousel.Connect do
       "style" => style,
       "tabindex" => "0"
     }
-    |> maybe_put_dir(assigns.dir)
+    |> put_dir_attr(assigns.dir)
   end
 
   def ignore_item_group(%ItemGroup{} = assigns) do
@@ -149,7 +152,7 @@ defmodule Corex.Carousel.Connect do
       "aria-label" => "#{assigns.index + 1} of #{slide_count}",
       "style" => style
     }
-    |> maybe_put_dir(Map.get(assigns, :dir))
+    |> put_dir_attr(Map.get(assigns, :dir))
   end
 
   def ignore_item(%Item{} = assigns) do
@@ -212,7 +215,7 @@ defmodule Corex.Carousel.Connect do
       "data-orientation" => assigns.orientation || "horizontal",
       "id" => "carousel:#{assigns.id}:indicator-group"
     }
-    |> maybe_put_dir(assigns.dir)
+    |> put_dir_attr(assigns.dir)
   end
 
   def ignore_indicator_group(%IndicatorGroup{} = assigns) do
@@ -229,12 +232,12 @@ defmodule Corex.Carousel.Connect do
       "data-scope" => "carousel",
       "data-part" => "indicator",
       "data-index" => to_string(assigns.index),
-      "data-current" => get_boolean(assigns.index + 1 == page),
+      "data-current" => presence_attr(assigns.index + 1 == page),
       "data-orientation" => assigns.orientation || "horizontal",
       "type" => "button",
       "id" => "carousel:#{assigns.id}:indicator:#{assigns.index}"
     }
-    |> maybe_put_dir(assigns.dir)
+    |> put_dir_attr(assigns.dir)
   end
 
   def ignore_indicator(%Indicator{} = assigns) do

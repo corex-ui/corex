@@ -45,14 +45,15 @@ defmodule Corex.Navigate do
   <.navigate class="link ui-accent ui-size-lg">
   ```
 
-  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`, `ui-nav`), **Size** (`ui-size-sm` … `ui-size-xl`). See the [modifier guide](modifiers.html).
 
-  Variant modifiers control link surface treatment. Default is subtle (underline). Add `ui-solid` for a pill fill.
+  Variant modifiers control link surface treatment. Default is subtle (underline). Add `ui-solid` for a pill fill, or `ui-nav` for chrome-less navigation (ink color, no underline, `aria-current` weight and color).
 
   | Variant | Treatment |
   | ------- | --------- |
   | Subtle (default) | Underline |
   | Solid | Pill fill |
+  | Nav | No underline, ink hover, current via `aria-current` |
 
   """
 
@@ -102,53 +103,19 @@ defmodule Corex.Navigate do
 
   slot(:inner_block, required: true)
 
-  def navigate(%{replace: true, type: "href"} = assigns) do
-    IO.warn("<.navigate> replace has no effect with type=\"href\"")
-    navigate(%{assigns | replace: false})
-  end
-
-  def navigate(%{method: method, type: type} = assigns)
-      when is_binary(method) and type in ["navigate", "patch"] do
-    IO.warn("<.navigate> method has no effect with type=\"#{type}\"")
-    navigate(%{assigns | method: nil})
-  end
-
-  def navigate(%{external: true, type: type} = assigns) when type in ["navigate", "patch"] do
-    IO.warn("<.navigate> external has no effect with type=\"#{type}\"")
-    navigate(%{assigns | external: false})
-  end
-
   def navigate(assigns) do
-    safe_to =
-      if Corex.Url.allowed_href?(assigns.to) do
-        assigns.to
-      else
-        if is_binary(assigns.to) and String.trim(assigns.to) != "" do
-          IO.warn("Corex.Navigate: disallowed destination #{inspect(assigns.to)}")
-        end
-
-        nil
-      end
-
-    method_attrs =
-      if assigns.type == "href" && is_binary(assigns.method) do
-        %{method: assigns.method}
-      else
-        %{}
-      end
-
-    replace_attrs =
-      if assigns.type in ["navigate", "patch"] && assigns.replace do
-        %{replace: true}
-      else
-        %{}
-      end
+    assigns =
+      assigns
+      |> drop_inert_replace()
+      |> drop_inert_method()
+      |> drop_inert_external()
 
     assigns =
       assigns
-      |> assign(:safe_to, safe_to)
-      |> assign(:method_attrs, method_attrs)
-      |> assign(:replace_attrs, replace_attrs)
+      |> assign(:safe_to, safe_destination(assigns.to))
+      |> assign(:method_attrs, method_attrs(assigns))
+      |> assign(:replace_attrs, replace_attrs(assigns))
+      |> assign(:external_attrs, external_attrs(assigns))
       |> assign(:title, assigns.title || assigns.aria_label)
 
     ~H"""
@@ -161,12 +128,63 @@ defmodule Corex.Navigate do
       title={@title}
       {@replace_attrs}
       {@method_attrs}
-      target={@external && "_blank"}
-      rel={@external && "noopener noreferrer"}
+      {@external_attrs}
       {@rest}
     >
       {render_slot(@inner_block)}
     </.link>
     """
+  end
+
+  defp method_attrs(%{type: "href", method: method}) when is_binary(method), do: %{method: method}
+  defp method_attrs(_assigns), do: %{}
+
+  defp replace_attrs(%{type: type, replace: true}) when type in ["navigate", "patch"],
+    do: %{replace: true}
+
+  defp replace_attrs(_assigns), do: %{}
+
+  defp external_attrs(%{external: true}), do: %{target: "_blank", rel: "noopener noreferrer"}
+  defp external_attrs(_assigns), do: %{}
+
+  defp drop_inert_replace(%{replace: true, type: "href"} = assigns) do
+    Corex.Dev.warn(~S(<.navigate> replace has no effect with type="href"))
+    assign(assigns, :replace, false)
+  end
+
+  defp drop_inert_replace(assigns), do: assigns
+
+  defp drop_inert_method(%{method: method, type: type} = assigns)
+       when is_binary(method) and type in ["navigate", "patch"] do
+    Corex.Dev.warn(~s(<.navigate> method has no effect with type="#{type}"))
+    assign(assigns, :method, nil)
+  end
+
+  defp drop_inert_method(assigns), do: assigns
+
+  defp drop_inert_external(%{external: true, type: type} = assigns)
+       when type in ["navigate", "patch"] do
+    Corex.Dev.warn(~s(<.navigate> external has no effect with type="#{type}"))
+    assign(assigns, :external, false)
+  end
+
+  defp drop_inert_external(assigns), do: assigns
+
+  defp safe_destination(to) do
+    if Corex.Url.allowed_href?(to), do: to, else: reject_destination(to)
+  end
+
+  defp reject_destination(to) when is_binary(to) do
+    case String.trim(to) do
+      "" -> nil
+      _trimmed -> warn_disallowed(to)
+    end
+  end
+
+  defp reject_destination(_to), do: nil
+
+  defp warn_disallowed(to) do
+    Corex.Dev.warn("Corex.Navigate: disallowed destination #{inspect(to)}")
+    nil
   end
 end

@@ -5,19 +5,15 @@ import {
   closestPartValue,
   isJsAnimation,
   prepareJsHeightInitialState,
-  runHeightOpenToValues,
   runHeightOpenTransition,
   stripHiddenFromProps
-} from "./chunks/chunk-4AOGROPJ.mjs";
+} from "./chunks/chunk-ZRVGBPNP.mjs";
 import {
+  parseDatasetValueList,
   readControlledOrDefaultStringList,
-  readStringListControlledZagProps
-} from "./chunks/chunk-BGER3KYP.mjs";
-import "./chunks/chunk-TKOH2OAC.mjs";
-import {
-  createDomEventRegistry,
-  createHookHandleEventRegistry
-} from "./chunks/chunk-77HPO22C.mjs";
+  readStringListControlledZagProps,
+  readStringListControlledZagUpdate
+} from "./chunks/chunk-LVRCAC6Y.mjs";
 import {
   createValueEmitter,
   emitResponse,
@@ -25,7 +21,7 @@ import {
   notifyChange,
   parseRespondTo,
   readPayloadId
-} from "./chunks/chunk-LNVRIZ4K.mjs";
+} from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
   Component,
   VanillaMachine,
@@ -34,13 +30,13 @@ import {
   createAnatomy,
   createGuards,
   createMachine,
+  createZagLiveHook,
   dataAttr,
   first,
   getBoolean,
   getDir,
   getEventKey,
   getString,
-  getStringList,
   isSafari,
   last,
   nextById,
@@ -48,13 +44,13 @@ import {
   queryAll,
   remove,
   warn
-} from "./chunks/chunk-6AOEC32Q.mjs";
+} from "./chunks/chunk-E4OZ7DWO.mjs";
 
-// ../node_modules/.pnpm/@zag-js+accordion@1.40.0/node_modules/@zag-js/accordion/dist/accordion.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+accordion@1.42.0/node_modules/@zag-js/accordion/dist/accordion.anatomy.mjs
 var anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+accordion@1.40.0/node_modules/@zag-js/accordion/dist/accordion.dom.mjs
+// ../node_modules/.pnpm/@zag-js+accordion@1.42.0/node_modules/@zag-js/accordion/dist/accordion.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `accordion:${ctx.id}`;
 var getItemId = (ctx, value) => ctx.ids?.item?.(value) ?? `accordion:${ctx.id}:item:${value}`;
 var getItemContentId = (ctx, value) => ctx.ids?.itemContent?.(value) ?? `accordion:${ctx.id}:content:${value}`;
@@ -70,7 +66,7 @@ var getLastTriggerEl = (ctx) => last(getTriggerEls(ctx));
 var getNextTriggerEl = (ctx, id) => nextById(getTriggerEls(ctx), getItemTriggerId(ctx, id));
 var getPrevTriggerEl = (ctx, id) => prevById(getTriggerEls(ctx), getItemTriggerId(ctx, id));
 
-// ../node_modules/.pnpm/@zag-js+accordion@1.40.0/node_modules/@zag-js/accordion/dist/accordion.connect.mjs
+// ../node_modules/.pnpm/@zag-js+accordion@1.42.0/node_modules/@zag-js/accordion/dist/accordion.connect.mjs
 function connect(service, normalize) {
   const { send, context, prop, scope, computed } = service;
   const focusedValue = context.get("focusedValue");
@@ -155,7 +151,6 @@ function connect(service, normalize) {
         "aria-expanded": itemState.expanded,
         disabled: itemState.disabled,
         "data-orientation": prop("orientation"),
-        "aria-disabled": itemState.disabled,
         "data-state": itemState.expanded ? "open" : "closed",
         "data-focus": dataAttr(itemState.focused),
         "data-ownedby": getRootId(scope),
@@ -216,7 +211,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+accordion@1.40.0/node_modules/@zag-js/accordion/dist/accordion.machine.mjs
+// ../node_modules/.pnpm/@zag-js+accordion@1.42.0/node_modules/@zag-js/accordion/dist/accordion.machine.mjs
 var { and, not } = createGuards();
 var machine = createMachine({
   props({ props }) {
@@ -350,7 +345,6 @@ var machine = createMachine({
 
 // components/accordion.ts
 var Accordion = class extends Component {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, props);
   }
@@ -417,12 +411,14 @@ function readAccordionLayoutProps(el) {
     dir: getDir(el)
   };
 }
-var AccordionHook = {
-  mounted() {
-    const el = this.el;
-    const self = this;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+var AccordionHook = createZagLiveHook({
+  key: "accordion",
+  controlledKeys: ["value"],
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const self = hook;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     self.lastValue = readControlledOrDefaultStringList(el, "value", "defaultValue");
     const accordion = new Accordion(el, {
       id: el.id,
@@ -452,10 +448,11 @@ var AccordionHook = {
           clientEventName: getString(el, "onValueChangeClient")
         });
         if (isJsAnimation(el) && !getBoolean(el, "controlled")) {
-          runHeightOpenToValues({
+          runHeightOpenTransition({
             el,
             selector: ITEM_CONTENT_SELECTOR,
-            openValues: next,
+            prevOpen: previousValue,
+            nextOpen: next,
             resolveValue: resolveAccordionValue
           });
         }
@@ -471,8 +468,6 @@ var AccordionHook = {
         });
       }
     });
-    accordion.init();
-    this.accordion = accordion;
     prepareJsHeightInitialState(el, ITEM_CONTENT_SELECTOR);
     const hookApi = { el, pushEvent, canPushServer: canPush };
     const emitValue = createValueEmitter(hookApi, {
@@ -507,18 +502,16 @@ var AccordionHook = {
         domDetail: { id: el.id, value: itemValue, state }
       });
     };
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-    domRegistry.add("corex:accordion:set-value", (event) => {
+    dom.add("corex:accordion:set-value", (event) => {
       accordion.api.setValue(event.detail.value);
     });
-    domRegistry.add("corex:accordion:value", (event) => {
+    dom.add("corex:accordion:value", (event) => {
       emitValue(parseRespondTo(event.detail));
     });
-    domRegistry.add("corex:accordion:focused", (event) => {
+    dom.add("corex:accordion:focused", (event) => {
       emitFocusedValue(parseRespondTo(event.detail));
     });
-    domRegistry.add(
+    dom.add(
       "corex:accordion:item-state",
       (event) => {
         const d = event.detail;
@@ -527,21 +520,19 @@ var AccordionHook = {
         emitItemState(v, d?.disabled === true, parseRespondTo(d));
       }
     );
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-    registry.add("accordion_set_value", (payload) => {
+    server.add("accordion_set_value", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       accordion.api.setValue(payload.value);
     });
-    registry.add("accordion_value", (payload) => {
+    server.add("accordion_value", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       emitValue(parseRespondTo(payload));
     });
-    registry.add("accordion_focused", (payload) => {
+    server.add("accordion_focused", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       emitFocusedValue(parseRespondTo(payload));
     });
-    registry.add(
+    server.add(
       "accordion_item_state",
       (payload) => {
         if (!idMatches(el.id, readPayloadId(payload))) return;
@@ -549,39 +540,38 @@ var AccordionHook = {
         emitItemState(payload.value, payload.disabled === true, parseRespondTo(payload));
       }
     );
+    return accordion;
   },
-  beforeUpdate() {
-    const { el } = this;
-    if (getBoolean(el, "controlled") && isJsAnimation(el)) {
-      this.previousValue = getStringList(el, "value") ?? [];
-    }
-  },
-  updated() {
-    const { el } = this;
+  update(hook, accordion) {
+    const { el } = hook;
     const layout = readAccordionLayoutProps(el);
-    if (!getBoolean(el, "controlled")) {
-      this.accordion?.updateProps(layout);
-      return;
-    }
-    const nextValue = getStringList(el, "value") ?? [];
-    const prevValue = this.previousValue ?? this.lastValue ?? [];
-    this.previousValue = void 0;
-    this.lastValue = nextValue;
-    runHeightOpenTransition({
+    const valuePatch = readStringListControlledZagUpdate(
       el,
-      selector: ITEM_CONTENT_SELECTOR,
-      prevOpen: prevValue,
-      nextOpen: nextValue,
-      resolveValue: resolveAccordionValue
+      "value",
+      "defaultValue",
+      hook.beforeAttrs
+    );
+    if ("value" in valuePatch) {
+      const nextValue = valuePatch.value ?? [];
+      const prevValue = parseDatasetValueList(hook.beforeAttrs?.value);
+      runHeightOpenTransition({
+        el,
+        selector: ITEM_CONTENT_SELECTOR,
+        prevOpen: prevValue,
+        nextOpen: nextValue,
+        resolveValue: resolveAccordionValue
+      });
+      hook.lastValue = nextValue;
+    }
+    const propsApplied = accordion.updateProps({
+      ...layout,
+      ...valuePatch
     });
-    this.accordion?.updateProps({ ...layout, value: nextValue });
-  },
-  destroyed() {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.accordion?.destroy();
+    if (!propsApplied) {
+      accordion.render();
+    }
   }
-};
+});
 export {
   AccordionHook as Accordion,
   readAccordionLayoutProps

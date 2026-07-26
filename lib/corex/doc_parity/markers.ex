@@ -29,6 +29,7 @@ defmodule Corex.DocParity.Markers do
       "value slot" => ["anatomy_value_code"]
     },
     "action" => %{"minimal" => ["anatomy_minimal_code"]},
+    "button_group" => %{"minimal" => ["anatomy_minimal_code"]},
     "data_list" => %{
       "custom slots" => ["custom_slots_code"],
       "empty" => ["empty_code"],
@@ -189,6 +190,7 @@ defmodule Corex.DocParity.Markers do
     }
   }
 
+  @spec anatomy(String.t(), String.t()) :: {:ok, [String.t()]} | :error
   def anatomy(slug, heading) do
     key = String.downcase(heading)
 
@@ -197,6 +199,4 @@ defmodule Corex.DocParity.Markers do
       _ -> :error
     end
   end
-
-  def anatomy_markers, do: @anatomy_markers
 end

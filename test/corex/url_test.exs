@@ -12,6 +12,12 @@ defmodule Corex.UrlTest do
       assert Url.allowed_href?("http://localhost:4000")
     end
 
+    test "allows mailto and tel" do
+      assert Url.allowed_href?("mailto:hello@example.com")
+      assert Url.allowed_href?("mailto:hello@example.com?subject=Hi")
+      assert Url.allowed_href?("tel:+15551212")
+    end
+
     test "rejects empty, protocol-relative, and dangerous schemes" do
       refute Url.allowed_href?("")
       refute Url.allowed_href?("   ")

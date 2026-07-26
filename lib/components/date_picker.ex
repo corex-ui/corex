@@ -299,6 +299,7 @@ defmodule Corex.DatePicker do
 
   @doc type: :component
   use Phoenix.Component
+  use Corex.Component, :form
 
   import Corex.Api.Doc
   alias Corex.DatePicker.Anatomy
@@ -311,10 +312,17 @@ defmodule Corex.DatePicker do
   @doc """
   Renders a date picker component.
   """
-  attr(:id, :string,
-    required: false,
-    doc:
-      "The unique identifier for the date picker. Required; use field={} to derive from field.id."
+  form_control_attrs(
+    except: [:form, :controlled],
+    docs: [
+      id:
+        "The unique identifier for the date picker. Required; use field={} to derive from field.id.",
+      field:
+        "A form field struct from the form, e.g. @form[:birth_date]. Sets id, name, value, and errors from the field for form submission and LiveView resync.",
+      name: "The name attribute of the input element",
+      read_only: "Whether the calendar is read-only",
+      disabled: "Whether the calendar is disabled"
+    ]
   )
 
   attr(:value, :string,
@@ -352,36 +360,6 @@ defmodule Corex.DatePicker do
   attr(:on_view_change, :string,
     default: nil,
     doc: "The server event name when the view changes"
-  )
-
-  attr(:name, :string,
-    default: nil,
-    doc: "The name attribute of the input element"
-  )
-
-  attr(:disabled, :boolean,
-    default: false,
-    doc: "Whether the calendar is disabled"
-  )
-
-  attr(:read_only, :boolean,
-    default: false,
-    doc: "Whether the calendar is read-only"
-  )
-
-  attr(:required, :boolean,
-    default: false,
-    doc: "Whether the date picker is required"
-  )
-
-  attr(:invalid, :boolean,
-    default: nil,
-    doc: "Whether the date picker is invalid"
-  )
-
-  attr(:auto_invalid, :boolean,
-    default: false,
-    doc: "When true with `field`, set invalid from visible changeset errors"
   )
 
   attr(:outside_day_selectable, :boolean,
@@ -510,11 +488,6 @@ defmodule Corex.DatePicker do
     doc: "List of error messages to display"
   )
 
-  attr(:field, Phoenix.HTML.FormField,
-    doc:
-      "A form field struct from the form, e.g. @form[:birth_date]. Sets id, name, value, and errors from the field for form submission and LiveView resync."
-  )
-
   attr(:rest, :global)
 
   slot :label, required: false do
@@ -540,19 +513,60 @@ defmodule Corex.DatePicker do
   def date_picker(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
     mode = Map.get(assigns, :selection_mode, "single")
 
-    value =
-      case assigns[:value] do
-        nil -> date_field_value(field.value, mode)
-        explicit -> date_field_value(explicit, mode)
-      end
-
     assigns
     |> Corex.FormField.assign_form_field(field)
-    |> assign(:value, value)
+    |> assign(:value, date_field_value(assigns[:value] || field.value, mode))
     |> date_picker_render(Phoenix.Component.used_input?(field))
   end
 
   def date_picker(assigns), do: date_picker_render(assigns, false)
+
+  defp assign_connect_props(assigns) do
+    assign(
+      assigns,
+      :connect_props,
+      Connect.props(%Anatomy.Props{
+        id: assigns.id,
+        form_field: assigns.form_field,
+        field_used: assigns.field_used,
+        value: assigns.value,
+        locale: assigns.locale,
+        time_zone: assigns.time_zone,
+        name: assigns.name,
+        disabled: assigns.disabled,
+        read_only: assigns.read_only,
+        required: assigns.required,
+        invalid: assigns.invalid,
+        outside_day_selectable: assigns.outside_day_selectable,
+        close_on_select: assigns.close_on_select,
+        min: assigns.min,
+        max: assigns.max,
+        focused_value: assigns.focused_value,
+        start_of_week: assigns.start_of_week,
+        fixed_weeks: assigns.fixed_weeks,
+        selection_mode: assigns.selection_mode,
+        placeholder: assigns.placeholder,
+        view: assigns.view,
+        min_view: assigns.min_view,
+        max_view: assigns.max_view,
+        positioning: assigns.positioning,
+        dir: assigns.dir,
+        on_value_change: assigns.on_value_change,
+        on_focus_change: assigns.on_focus_change,
+        on_view_change: assigns.on_view_change,
+        on_visible_range_change: assigns.on_visible_range_change,
+        on_open_change: assigns.on_open_change,
+        on_value_change_client: assigns.on_value_change_client,
+        on_focus_change_client: assigns.on_focus_change_client,
+        on_view_change_client: assigns.on_view_change_client,
+        on_visible_range_change_client: assigns.on_visible_range_change_client,
+        on_open_change_client: assigns.on_open_change_client,
+        max_selected_dates: assigns.max_selected_dates,
+        translation: assigns.translation,
+        submit_name: assigns.submit_name
+      })
+    )
+  end
 
   defp date_picker_render(assigns, field_used) do
     assigns =
@@ -561,64 +575,24 @@ defmodule Corex.DatePicker do
       |> assign(:field_used, field_used)
       |> merge_date_picker_assigns()
       |> assign_array_form_submit(field_used)
+      |> assign_connect_props()
 
     ~H"""
     <div
       id={@id}
       phx-hook="DatePicker"
-      data-loading
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+      {Corex.Hook.loading()}
       {@rest}
-      {Connect.props(%Anatomy.Props{
-        id: @id,
-        form_field: @form_field,
-        field_used: @field_used,
-        value: @value,
-        locale: @locale,
-        time_zone: @time_zone,
-        name: @name,
-        disabled: @disabled,
-        read_only: @read_only,
-        required: @required,
-        invalid: @invalid,
-        outside_day_selectable: @outside_day_selectable,
-        close_on_select: @close_on_select,
-        min: @min,
-        max: @max,
-        focused_value: @focused_value,
-        start_of_week: @start_of_week,
-        fixed_weeks: @fixed_weeks,
-        selection_mode: @selection_mode,
-        placeholder: @placeholder,
-        view: @view,
-        min_view: @min_view,
-        max_view: @max_view,
-        positioning: @positioning,
-        dir: @dir,
-        on_value_change: @on_value_change,
-        on_focus_change: @on_focus_change,
-        on_view_change: @on_view_change,
-        on_visible_range_change: @on_visible_range_change,
-        on_open_change: @on_open_change,
-        on_value_change_client: @on_value_change_client,
-        on_focus_change_client: @on_focus_change_client,
-        on_view_change_client: @on_view_change_client,
-        on_visible_range_change_client: @on_visible_range_change_client,
-        on_open_change_client: @on_open_change_client,
-        max_selected_dates: @max_selected_dates,
-        translation: @translation,
-        submit_name: @submit_name
-      })}
+      {@connect_props}
     >
-      <div phx-mounted={Connect.ignore_root(%Anatomy.Root{id: @id, dir: @dir, read_only: @read_only})} {Connect.root(%Anatomy.Root{id: @id, dir: @dir, read_only: @read_only})}>
+      <div {Connect.mounted_root(%Anatomy.Root{id: @id, dir: @dir, read_only: @read_only})}>
         <label
           :if={@label != []}
-          phx-mounted={Connect.ignore_label(%Anatomy.Label{id: @id, dir: @dir})}
-          {Connect.label(%Anatomy.Label{id: @id, dir: @dir})}
+          {Connect.mounted_label(%Anatomy.Label{id: @id, dir: @dir})}
         >
           {render_slot(@label)}
         </label>
-        <div phx-mounted={Connect.ignore_control(%Anatomy.Control{id: @id, dir: @dir})} {Connect.control(%Anatomy.Control{id: @id, dir: @dir})}>
+        <div {Connect.mounted_control(%Anatomy.Control{id: @id, dir: @dir})}>
           <div
             :if={@array_form_submit}
             data-scope="date-picker"
@@ -668,33 +642,29 @@ defmodule Corex.DatePicker do
             phx-mounted={Connect.ignore_value_input(@id)}
           />
           <%= if @selection_mode == "range" do %>
-            <div class="date-picker__control-inputs date-picker__control-inputs--range">
-              <span class="date-picker__range-label" id={"#{@id}-range-start-label"}>{@translation.range_start}</span>
+            <div data-scope="date-picker" data-part="control-inputs" data-range>
+              <span data-scope="date-picker" data-part="range-label" id={"#{@id}-range-start-label"}>{@translation.range_start}</span>
               <input
-                phx-mounted={Connect.ignore_input(%Anatomy.Input{id: @id, dir: @dir, index: 0})}
-                {Connect.input(%Anatomy.Input{id: @id, dir: @dir, index: 0})}
+                {Connect.mounted_input(%Anatomy.Input{id: @id, dir: @dir, index: 0})}
                 aria-labelledby={@id <> "-range-start-label"}
                 aria-label={@translation.input}
               />
-              <span class="date-picker__range-label" id={"#{@id}-range-end-label"}>{@translation.range_end}</span>
+              <span data-scope="date-picker" data-part="range-label" id={"#{@id}-range-end-label"}>{@translation.range_end}</span>
               <input
-                phx-mounted={Connect.ignore_input(%Anatomy.Input{id: @id, dir: @dir, index: 1})}
-                {Connect.input(%Anatomy.Input{id: @id, dir: @dir, index: 1})}
+                {Connect.mounted_input(%Anatomy.Input{id: @id, dir: @dir, index: 1})}
                 aria-labelledby={@id <> "-range-end-label"}
                 aria-label={@translation.input}
               />
             </div>
           <% else %>
             <input
-              phx-mounted={Connect.ignore_input(%Anatomy.Input{id: @id, dir: @dir, index: 0})}
-              {Connect.input(%Anatomy.Input{id: @id, dir: @dir, index: 0})}
+              {Connect.mounted_input(%Anatomy.Input{id: @id, dir: @dir, index: 0})}
               aria-label={@translation.input}
             />
           <% end %>
           <button
             :if={@trigger != []}
-            phx-mounted={Connect.ignore_trigger(%Anatomy.Trigger{id: @id, dir: @dir})}
-            {Connect.trigger(%Anatomy.Trigger{id: @id, dir: @dir})}
+            {Connect.mounted_trigger(%Anatomy.Trigger{id: @id, dir: @dir})}
             aria-label={@translation.open_calendar}
           >
             {render_slot(@trigger)}
@@ -703,16 +673,14 @@ defmodule Corex.DatePicker do
         <div
           :if={@error != []}
           :for={{msg, idx} <- Enum.with_index(@errors)}
-          phx-mounted={Connect.ignore_error(%Anatomy.Error{id: @id, index: idx})}
-          {Connect.error(%Anatomy.Error{id: @id, index: idx})}
+          {Connect.mounted_error(%Anatomy.Error{id: @id, index: idx})}
         >
           {render_slot(@error, msg)}
         </div>
         <div
-          phx-mounted={Connect.ignore_positioner(%Anatomy.Positioner{id: @id, dir: @dir, positioning: @positioning})}
-          {Connect.positioner(%Anatomy.Positioner{id: @id, dir: @dir, positioning: @positioning})}
+          {Connect.mounted_positioner(%Anatomy.Positioner{id: @id, dir: @dir, positioning: @positioning})}
         >
-          <div phx-mounted={Connect.ignore_content(%Anatomy.Content{id: @id, dir: @dir})} {Connect.content(%Anatomy.Content{id: @id, dir: @dir})}>
+          <div {Connect.mounted_content(%Anatomy.Content{id: @id, dir: @dir})}>
             <div id={@id <> "-day-view"} data-scope="date-picker" data-part="day-view">
               <div data-scope="date-picker" data-part="view-control" data-view="day">
                 <button
@@ -774,7 +742,7 @@ defmodule Corex.DatePicker do
                 >
                 {render_slot(@prev_trigger)}
                 </button>
-                <span phx-mounted={Connect.ignore_decade(%Anatomy.Decade{id: @id, dir: @dir || "ltr"})} {Connect.decade(%Anatomy.Decade{id: @id, dir: @dir || "ltr"})}></span>
+                <span {Connect.mounted_decade(%Anatomy.Decade{id: @id, dir: @dir || "ltr"})}></span>
                 <button
                   phx-mounted={Connect.ignore_view_next(%{id: @id, view: "year"})}
                   {Connect.view_next(%{id: @id, view: "year", dir: @dir || "ltr"})}
@@ -815,6 +783,9 @@ defmodule Corex.DatePicker do
   ```
   """)
 
+  @spec set_value(String.t(), Corex.Value.coercible()) :: Phoenix.LiveView.JS.t()
+  @spec set_value(Phoenix.LiveView.Socket.t(), String.t(), Corex.Value.coercible()) ::
+          Phoenix.LiveView.Socket.t()
   def set_value(date_picker_id, value) when is_binary(date_picker_id) do
     case normalize_date_value(value) do
       nil ->
@@ -823,7 +794,7 @@ defmodule Corex.DatePicker do
 
       iso ->
         JS.dispatch("corex:date-picker:set-value",
-          to: "##{date_picker_id}",
+          to: Selectors.css_id(date_picker_id),
           detail: %{value: iso},
           bubbles: false
         )
@@ -943,29 +914,32 @@ defmodule Corex.DatePicker do
     |> assign(translation: DatePickerTranslation.resolve(Map.get(assigns, :translation)))
   end
 
-  defp assign_array_form_submit(assigns, field_used) do
-    array = assigns.selection_mode in ["multiple", "range"] && is_binary(assigns[:name])
-
-    if array do
-      assigns =
-        assigns
-        |> Corex.FormField.assign_list_submit()
-        |> assign(:array_form_submit, true)
-        |> assign(
-          :array_iso_values,
-          iso_values_for_array_submit(assigns.value, assigns.selection_mode)
-        )
-
-      empty_name = if field_used, do: assigns.submit_name
-      assign(assigns, :empty_array_name, empty_name)
-    else
+  defp assign_array_form_submit(%{selection_mode: mode, name: name} = assigns, field_used)
+       when mode in ["multiple", "range"] and is_binary(name) do
+    assigns =
       assigns
-      |> assign(:array_form_submit, false)
-      |> assign(:submit_name, nil)
-      |> assign(:empty_array_name, nil)
-      |> assign(:array_iso_values, [])
-    end
+      |> Corex.FormField.assign_list_submit()
+      |> assign(:array_form_submit, true)
+      |> assign(
+        :array_iso_values,
+        iso_values_for_array_submit(assigns.value, assigns.selection_mode)
+      )
+
+    assign(assigns, :empty_array_name, empty_array_name(field_used, assigns.submit_name))
   end
+
+  defp assign_array_form_submit(assigns, _field_used) do
+    assigns
+    |> assign(:array_form_submit, false)
+    |> assign(:submit_name, nil)
+    |> assign(:empty_array_name, nil)
+    |> assign(:array_iso_values, [])
+  end
+
+  defp empty_array_name(field_used, submit_name) when field_used not in [nil, false],
+    do: submit_name
+
+  defp empty_array_name(_field_used, _submit_name), do: nil
 
   defp iso_values_for_array_submit(nil, _), do: []
 

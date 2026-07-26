@@ -1,31 +1,30 @@
 defmodule Corex.Accordion.Connect do
   @moduledoc false
+  use Corex.Connect.Mounted
+
+  use Corex.Component, [:connect, :api]
+
   alias Corex.Accordion.Anatomy.{Item, ItemContent, ItemIndicator, ItemTrigger, Props, Root}
+
   alias Corex.Animation.Height
+
   alias Corex.Selectors
+
   alias Phoenix.LiveView.JS
 
   alias Corex.ValueBinding
 
-  import Corex.Helpers,
-    only: [
-      validate_value!: 1,
-      get_boolean: 1,
-      maybe_put_data_dir: 2,
-      maybe_put_dir: 2
-    ]
-
   @spec props(Props.t()) :: map()
   def props(assigns) do
-    vlist = (assigns.value || []) |> validate_value!()
+    vlist = (assigns.value || []) |> coerce_string_list()
     {value_str, default_value_str} = ValueBinding.list_pair(vlist, assigns.controlled)
 
     base = %{
-      "data-collapsible" => get_boolean(assigns.collapsible),
+      "data-collapsible" => presence_attr(assigns.collapsible),
       "data-default-value" => default_value_str,
       "data-value" => value_str,
-      "data-controlled" => get_boolean(assigns.controlled),
-      "data-multiple" => get_boolean(assigns.multiple),
+      "data-controlled" => presence_attr(assigns.controlled),
+      "data-multiple" => presence_attr(assigns.multiple),
       "data-orientation" => assigns.orientation,
       "data-on-value-change" => assigns.on_value_change,
       "data-on-value-change-client" => assigns.on_value_change_client,
@@ -41,7 +40,7 @@ defmodule Corex.Accordion.Connect do
         base
       end
 
-    maybe_put_data_dir(merged, assigns.dir)
+    put_data_dir_attr(merged, assigns.dir)
   end
 
   # IDs match Zag's default scheme so the JS hook does not have to pass a
@@ -60,7 +59,7 @@ defmodule Corex.Accordion.Connect do
       "data-orientation" => assigns.orientation,
       "id" => root_id(assigns.id)
     }
-    |> maybe_put_dir(assigns.dir)
+    |> put_dir_attr(assigns.dir)
   end
 
   def ignore_root(assigns) do
@@ -73,13 +72,13 @@ defmodule Corex.Accordion.Connect do
       "data-scope" => "accordion",
       "data-part" => "item",
       "data-value" => assigns.value,
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-focus" => get_boolean(false),
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-focus" => presence_attr(false),
       "data-orientation" => assigns.orientation,
       "data-state" => if(assigns.value in assigns.values, do: "open", else: "closed"),
       "id" => item_id(assigns.id, assigns.value)
     }
-    |> maybe_put_dir(assigns.dir)
+    |> put_dir_attr(assigns.dir)
   end
 
   @spec ignore_item(Item.t()) :: JS.t()
@@ -100,7 +99,7 @@ defmodule Corex.Accordion.Connect do
       "aria-expanded" => if(expanded, do: "true", else: "false"),
       "aria-disabled" => if(assigns.disabled, do: "true", else: "false"),
       "disabled" => assigns.disabled,
-      "data-focus" => get_boolean(false),
+      "data-focus" => presence_attr(false),
       "data-orientation" => assigns.orientation,
       "data-state" => if(expanded, do: "open", else: "closed"),
       "id" => trigger_id(assigns.id, assigns.value),
@@ -115,7 +114,7 @@ defmodule Corex.Accordion.Connect do
         aria_label -> Map.put(base_trigger, "aria-label", aria_label)
       end
 
-    maybe_put_dir(base_trigger, assigns.dir)
+    put_dir_attr(base_trigger, assigns.dir)
   end
 
   @spec ignore_trigger(Item.t()) :: JS.t()
@@ -134,8 +133,8 @@ defmodule Corex.Accordion.Connect do
       "data-part" => "item-content",
       "role" => "region",
       "data-state" => if(expanded, do: "open", else: "closed"),
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-focus" => get_boolean(false),
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-focus" => presence_attr(false),
       "data-orientation" => assigns.orientation,
       "id" => content_id(assigns.id, assigns.value)
     }
@@ -154,7 +153,7 @@ defmodule Corex.Accordion.Connect do
           Map.put(base, "hidden", true)
       end
 
-    maybe_put_dir(result, assigns.dir)
+    put_dir_attr(result, assigns.dir)
   end
 
   defp trigger_aria_label(%{label: label, id: id, value: value})
@@ -184,11 +183,11 @@ defmodule Corex.Accordion.Connect do
       "data-part" => "item-indicator",
       "aria-hidden" => "true",
       "data-state" => if(expanded, do: "open", else: "closed"),
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-focus" => get_boolean(false),
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-focus" => presence_attr(false),
       "data-orientation" => assigns.orientation
     }
-    |> maybe_put_dir(assigns.dir)
+    |> put_dir_attr(assigns.dir)
   end
 
   @spec ignore_indicator(Item.t()) :: JS.t()

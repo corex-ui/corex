@@ -8,9 +8,9 @@ import {
   type InputValueChangeDetails,
 } from "@zag-js/combobox";
 import { VanillaMachine } from "@zag-js/vanilla";
-import { Component } from "../lib/core";
+import { Component, type SchemaOf } from "../lib/core";
 import { stripZagSubmitNames } from "../lib/form-field-array-submit";
-import { getString, getStringList } from "../lib/util";
+import { getString, getStringList, partPropsMethod } from "../lib/util";
 import { itemValue, zagListCollectionConfig } from "../lib/list-collection";
 import { templatesContentRoot } from "../lib/util";
 
@@ -52,7 +52,9 @@ export type ComboboxItem = {
   group?: string;
 };
 
-export class Combobox extends Component<Props, Api> {
+type Schema = SchemaOf<typeof machine>;
+
+export class Combobox extends Component<Props, Api, Schema> {
   options!: ComboboxItem[];
   allOptions!: ComboboxItem[];
   hasGroups!: boolean;
@@ -87,8 +89,7 @@ export class Combobox extends Component<Props, Api> {
     return collection(zagListCollectionConfig(items, this.hasGroups));
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: Props): VanillaMachine<any> {
+  initMachine(props: Props): VanillaMachine<Schema> {
     const getCollection = () => this.getCollection();
 
     return new VanillaMachine(machine, {
@@ -492,16 +493,8 @@ export class Combobox extends Component<Props, Api> {
       const el = this.el.querySelector<HTMLElement>(`[data-scope="combobox"][data-part="${part}"]`);
       if (!el) return;
 
-      const apiMethod =
-        "get" +
-        part
-          .split("-")
-          .map((s) => s[0].toUpperCase() + s.slice(1))
-          .join("") +
-        "Props";
-
       // @ts-expect-error dynamic
-      this.spreadProps(el, this.api[apiMethod]());
+      this.spreadProps(el, this.api[partPropsMethod(part)]());
     });
 
     this.renderItems();

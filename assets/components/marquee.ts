@@ -1,12 +1,36 @@
 import { connect, machine, type Props, type Api } from "@zag-js/marquee";
 import { VanillaMachine } from "@zag-js/vanilla";
-import { Component } from "../lib/core";
+import { Component, type SchemaOf } from "../lib/core";
 
-export class Marquee extends Component<Props, Api> {
+const PHX_ATTR_PREFIX = "phx-";
+
+function sanitizeClone(source: Element): HTMLElement {
+  const clone = source.cloneNode(true) as HTMLElement;
+  const nodes = [clone, ...Array.from(clone.querySelectorAll("*"))];
+
+  for (const node of nodes) {
+    if (!(node instanceof HTMLElement)) continue;
+
+    if (node.hasAttribute("id")) node.removeAttribute("id");
+    if (node.hasAttribute("phx-hook")) node.removeAttribute("phx-hook");
+    if (node.hasAttribute("name")) node.removeAttribute("name");
+
+    for (const attr of Array.from(node.attributes)) {
+      if (attr.name.startsWith(PHX_ATTR_PREFIX)) {
+        node.removeAttribute(attr.name);
+      }
+    }
+  }
+
+  return clone;
+}
+
+type Schema = SchemaOf<typeof machine>;
+
+export class Marquee extends Component<Props, Api, Schema> {
   private items: HTMLElement[] | null = null;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: Props): VanillaMachine<any> {
+  initMachine(props: Props): VanillaMachine<Schema> {
     return new VanillaMachine(machine, props);
   }
 
@@ -19,9 +43,7 @@ export class Marquee extends Component<Props, Api> {
       'template[data-part="items-template"]'
     );
     if (templateEl) {
-      this.items = Array.from(templateEl.content.children).map(
-        (el) => el.cloneNode(true) as HTMLElement
-      );
+      this.items = Array.from(templateEl.content.children).map((el) => sanitizeClone(el));
       templateEl.remove();
     }
     if (!this.items) return;
@@ -33,8 +55,6 @@ export class Marquee extends Component<Props, Api> {
     root.setAttribute("data-scope", "marquee");
     root.setAttribute("data-part", "root");
     root.id = `marquee:${this.el.id}`;
-    root.style.cssText =
-      "display:flex;flex-direction:row;position:relative;overflow:hidden;width:100%";
     this.el.appendChild(root);
 
     const edgeStart = document.createElement("div");
@@ -45,7 +65,6 @@ export class Marquee extends Component<Props, Api> {
     viewport.setAttribute("data-scope", "marquee");
     viewport.setAttribute("data-part", "viewport");
     viewport.id = `marquee:${this.el.id}:viewport`;
-    viewport.style.cssText = "display:flex;width:100%";
     root.appendChild(viewport);
 
     const content = document.createElement("div");
@@ -53,9 +72,8 @@ export class Marquee extends Component<Props, Api> {
     content.setAttribute("data-part", "content");
     content.setAttribute("data-index", "0");
     content.id = `marquee:${this.el.id}:content:0`;
-    content.style.cssText = "display:flex;flex-direction:row;flex-shrink:0";
     viewport.appendChild(content);
-    this.fillContent(content);
+    this.fillPrimaryContent(content);
 
     const edgeEnd = document.createElement("div");
     root.appendChild(edgeEnd);
@@ -102,11 +120,26 @@ export class Marquee extends Component<Props, Api> {
       if (!contentEl) {
         contentEl = document.createElement("div");
         viewport.appendChild(contentEl);
-        this.fillContent(contentEl);
+        if (i === 0) {
+          this.fillPrimaryContent(contentEl);
+        } else {
+          this.fillCloneContent(contentEl);
+        }
       } else if (contentEl.querySelectorAll('[data-part="item"]').length === 0) {
-        this.fillContent(contentEl);
+        if (i === 0) {
+          this.fillPrimaryContent(contentEl);
+        } else {
+          this.fillCloneContent(contentEl);
+        }
       }
+
       this.spreadProps(contentEl, this.api.getContentProps({ index: i }));
+      if (i > 0) {
+        contentEl.inert = true;
+      } else {
+        contentEl.inert = false;
+      }
+
       contentEl.querySelectorAll<HTMLElement>('[data-part="item"]').forEach((itemEl) => {
         this.spreadProps(itemEl, this.api.getItemProps());
       });
@@ -116,7 +149,24 @@ export class Marquee extends Component<Props, Api> {
     if (edgeEnd) this.spreadProps(edgeEnd, this.api.getEdgeProps({ side: "end" }));
   }
 
-  private fillContent(contentEl: HTMLElement): void {
+  private fillPrimaryContent(contentEl: HTMLElement): void {
+    if (!this.items) return;
+
+    const ssrPreview = this.el.querySelector('[data-part="ssr-preview"]');
+    if (ssrPreview) {
+      const liveItems = Array.from(
+        ssrPreview.querySelectorAll<HTMLElement>(':scope > [data-part="item"]')
+      );
+      if (liveItems.length > 0) {
+        liveItems.forEach((itemEl) => contentEl.appendChild(itemEl));
+        return;
+      }
+    }
+
+    this.fillCloneContent(contentEl);
+  }
+
+  private fillCloneContent(contentEl: HTMLElement): void {
     if (!this.items) return;
     this.items.forEach((itemEl) => {
       contentEl.appendChild(itemEl.cloneNode(true) as HTMLElement);

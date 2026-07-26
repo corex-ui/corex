@@ -13,6 +13,28 @@ export type NotifyPhoenixFormChangeOptions = {
   force?: boolean;
 };
 
+export function dispatchFormInputEvents(
+  input: HTMLInputElement,
+  options: { change?: boolean } = {}
+): void {
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+  if (options.change !== false) {
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+}
+
+export function syncCheckedHiddenInput(
+  input: HTMLInputElement,
+  checked: boolean,
+  options: { change?: boolean; markUsed?: boolean } = {}
+): void {
+  input.checked = checked;
+  if (options.markUsed !== false) {
+    reapplyLiveViewValueInputUsage(input);
+  }
+  dispatchFormInputEvents(input, options);
+}
+
 export function notifyPhoenixFormChange(
   input: HTMLInputElement,
   value: string,
@@ -38,10 +60,7 @@ export function notifyPhoenixFormChange(
     return;
   }
   reapplyLiveViewValueInputUsage(input);
-  input.dispatchEvent(new Event("input", { bubbles: true }));
-  if (options.change !== false) {
-    input.dispatchEvent(new Event("change", { bubbles: true }));
-  }
+  dispatchFormInputEvents(input, { change: options.change });
 }
 
 export function syncLiveViewFormInput(

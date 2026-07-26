@@ -1,407 +1,8 @@
 defmodule Corex.TreeView do
   @moduledoc ~S'''
   Tree view for Phoenix LiveView. Behavior follows [Zag.js Tree View](https://zagjs.com/components/react/tree-view).
-  ## Anatomy
 
-  Render from a list with `Corex.Tree.new/1`.
-
-  <!-- tabs-open -->
-
-  ### Basic
-
-  Each item supports `:value`, `:label`, optional `:children`, `:to`, `:redirect`, `:new_tab`, `:disabled`.
-
-  ```heex
-  <.tree_view
-    class="tree-view"
-    items={
-      Corex.Tree.new([
-        %{label: "Components", value: "components", children: [
-          %{label: "Accordion", value: "accordion"},
-          %{label: "Checkbox", value: "checkbox"},
-          %{label: "Tree view", value: "tree-view"}
-        ]},
-        %{label: "Form", value: "form"},
-        %{label: "Tree", value: "tree", children: [%{label: "Tree.Item", value: "tree-item"}]}
-      ])
-    }
-  />
-  ```
-
-  ### With Label
-
-  ```heex
-  <.tree_view
-    class="tree-view"
-    items={
-      Corex.Tree.new([
-        %{label: "Guides", value: "guides"},
-        %{label: "Reference", value: "reference"}
-      ])
-    }
-  >
-    <:label>My Documents</:label>
-  </.tree_view>
-  ```
-
-  ### With Indicator
-
-  ```heex
-  <.tree_view
-    class="tree-view"
-    items={
-      Corex.Tree.new([
-        %{label: "src", value: "src", children: [
-          %{label: "components", value: "components"},
-          %{label: "index.ts", value: "index.ts"}
-        ]},
-        %{label: "README.md", value: "readme"}
-      ])
-    }
-  >
-    <:branch_indicator :let={item}>
-      <.heroicon :if={item.children && item.children != []} name="hero-chevron-right" />
-    </:branch_indicator>
-    <:item_indicator>
-      <.heroicon name="hero-check" />
-    </:item_indicator>
-  </.tree_view>
-  ```
-
-  <!-- tabs-close -->
-
-  ### Custom slots
-
-  ```heex
-  <.tree_view
-    class="tree-view"
-    items={
-      Corex.Tree.new([
-        %{label: "src", value: "src", children: [
-          %{label: "components", value: "components", children: [%{label: "tree-view.tsx", value: "tree-view.tsx"}]},
-          %{label: "main.ts", value: "main.ts"}
-        ]},
-        %{label: "README.md", value: "readme"}
-      ])
-    }
-  >
-    <:label>Project</:label>
-    <:branch :let={item}>
-      <.heroicon name="hero-folder" /> {item.label}
-    </:branch>
-    <:item :let={item}>
-      <.heroicon name="hero-document" /> {item.label}
-    </:item>
-  </.tree_view>
-  ```
-
-  ### Compound
-
-  Take full structural control with `tree_view_root`, `tree_view_branch`, and `tree_view_item`. Branches and items resolve their path from `ctx.items`.
-
-  ```heex
-  <.tree_view
-    :let={ctx}
-    compound
-    class="tree-view"
-    items={
-      Corex.Tree.new([
-        %{label: "Components", value: "components", children: [
-          %{label: "Accordion", value: "accordion"},
-          %{label: "Checkbox", value: "checkbox"}
-        ]},
-        %{label: "Form", value: "form"}
-      ])
-    }
-  >
-    <.tree_view_root ctx={ctx}>
-      <:label>Project</:label>
-      <.tree_view_branch :let={branch} :for={item <- ctx.items} ctx={ctx} item={item}>
-        <.tree_view_branch_trigger branch={branch}>
-          {item.label}
-          <:indicator>
-            <.heroicon name="hero-chevron-right" />
-          </:indicator>
-        </.tree_view_branch_trigger>
-        <.tree_view_branch_content branch={branch}>
-          <.tree_view_item :for={child <- item.children || []} ctx={ctx} item={child}>
-            {child.label}
-          </.tree_view_item>
-        </.tree_view_branch_content>
-      </.tree_view_branch>
-    </.tree_view_root>
-  </.tree_view>
-  ```
-
-  `ctx` is a map with `:id`, `:dir`, `:animation`, `:items`, `:expanded_value`, `:value`, and an internal `:index_paths` map. Items referenced from `tree_view_branch` / `tree_view_item` must be present in `ctx.items` (they are resolved to their path).
-
-  ## Patterns
-
-  <!-- tabs-open -->
-
-  ### Initial expanded/selected
-
-  `expanded_value` and `value` are lists of item values matching the tree.
-
-  ```heex
-  <.tree_view
-    class="tree-view"
-    expanded_value={["src", "components"]}
-    value={["tree-view.tsx"]}
-    items={
-      Corex.Tree.new([
-        %{label: "src", value: "src", children: [
-          %{label: "components", value: "components", children: [%{label: "tree-view.tsx", value: "tree-view.tsx"}]},
-          %{label: "main.ts", value: "main.ts"}
-        ]}
-      ])
-    }
-  />
-  ```
-
-  ### Async (`assign_async`)
-
-  ```elixir
-  def mount(_params, _session, socket) do
-    socket =
-      assign_async(socket, :tree, fn ->
-        {:ok, %{tree: Corex.Tree.new([%{label: "Docs", value: "docs"}])}}
-      end)
-    {:ok, socket}
-  end
-
-  def render(assigns) do
-    ~H"""
-    <.async_result :let={tree} assign={@tree}>
-      <:loading><.tree_view_skeleton count={3} class="tree-view" /></:loading>
-      <:failed>Could not load the tree.</:failed>
-      <.tree_view id="async-tree" class="tree-view" items={tree} />
-    </.async_result>
-    """
-  end
-  ```
-
-  ### Navigation (redirect)
-
-  Set `redirect` on the component so selection navigates. Per item, the navigation kind comes from `:redirect`:
-
-  - `:href` (default)  -  full page redirect via `window.location` (safe everywhere)
-  - `:patch`  -  LiveView `js().patch(url)` (caller asserts: same LV mount + matching live route)
-  - `:navigate`  -  LiveView `js().navigate(url)` (caller asserts: another LV in the same `live_session`)
-  - `false`  -  disable redirect for this item
-
-  Set `:new_tab` on an item to open its destination via `window.open`.
-
-  ```heex
-  <.tree_view class="tree-view" redirect items={
-    Corex.Tree.new([
-      %{label: "Home", value: "home", to: "/", redirect: :patch},
-      %{label: "External", value: "ext", to: "https://example.com", new_tab: true}
-    ])
-  } />
-  ```
-
-  <!-- tabs-close -->
-
-  ## Animation
-
-  Set `animation` on the outer `tree_view`. The hook reads `data-animation` and `data-animation-*` on the root.
-
-  <!-- tabs-open -->
-
-  ### `instant`
-
-  Zag toggles the native `hidden` attribute; no height animation on branch content.
-
-  ```heex
-  <.tree_view
-    class="tree-view"
-    animation="instant"
-    items={
-      Corex.Tree.new([
-        %{label: "Components", value: "components", children: [%{label: "Accordion", value: "accordion"}]},
-        %{label: "Form", value: "form"}
-      ])
-    }
-  />
-  ```
-
-  ### `js` (default)
-
-  Built-in height and opacity via the Web Animations API. Tune timing with `animation_options` using `Corex.Animation.Height`.
-
-  ```heex
-  <.tree_view
-    class="tree-view"
-    animation="js"
-    animation_options={%Corex.Animation.Height{duration: 0.3, easing: "ease-out"}}
-    items={
-      Corex.Tree.new([
-        %{label: "Components", value: "components", children: [%{label: "Accordion", value: "accordion"}]},
-        %{label: "Form", value: "form"}
-      ])
-    }
-  />
-  ```
-
-  ### `custom`
-
-  The hook removes `hidden` and dispatches a browser `CustomEvent` whose **type** is `on_expanded_change_client`. The event `detail` is enriched with deltas:
-
-      // event.detail (TreeViewExpandedChangedDetail)
-      { id, expandedValue, previousExpandedValue, added, removed, focusedValue }
-
-  Animate branch content yourself, using `added`/`removed` to drive the transition without diffing on the client side. The example below also seeds initial closed-state styling on mount and after LiveView navigations.
-
-  ```heex
-  <.tree_view
-    class="tree-view"
-    animation="custom"
-    on_expanded_change_client="my-tree-expanded"
-    items={
-      Corex.Tree.new([
-        %{label: "Components", value: "components", children: [%{label: "Accordion", value: "accordion"}]},
-        %{label: "Form", value: "form"}
-      ])
-    }
-  />
-  ```
-
-  ```javascript
-  import { animate } from "motion"
-  import {
-    findTreeBranch,
-    animateHeightOpen,
-    animateHeightClose,
-  } from "corex"
-
-  const reducedMotion = () =>
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
-
-  document.addEventListener("my-tree-expanded", (e) => {
-    const root = document.getElementById(e.detail.id)
-    if (!root) return
-    e.detail.added.forEach((v) => {
-      const el = findTreeBranch(root, v)
-      if (!el) return
-      animateHeightOpen(el, { animator: animate, duration: 0.5, easing: [0.16, 1, 0.3, 1] })
-      if (!reducedMotion()) {
-        animate(
-          el,
-          { filter: ["blur(8px)", "blur(0px)"], y: [-10, 0] },
-          { duration: 0.55, easing: [0.16, 1, 0.3, 1] },
-        )
-      }
-    })
-    e.detail.removed.forEach((v) => {
-      const el = findTreeBranch(root, v)
-      if (!el) return
-      animateHeightClose(el, { animator: animate, duration: 0.28, easing: "ease-in" })
-      if (!reducedMotion()) {
-        animate(
-          el,
-          { filter: ["blur(0px)", "blur(8px)"], y: [0, -8] },
-          { duration: 0.26, easing: "ease-in" },
-        )
-      }
-    })
-  })
-  ```
-
-  <!-- tabs-close -->
-
-  ## API
-
-  Requires a stable `id` on `<.tree_view>`.
-
-  | Function | Action | Returns |
-  | -------- | ------ | ------- |
-  | [`set_selected_value/2`](#set_selected_value/2) | Set selection (client) | `%Phoenix.LiveView.JS{}` |
-  | [`set_selected_value/3`](#set_selected_value/3) | Set selection (server) | `socket` |
-  | [`set_expanded_value/2`](#set_expanded_value/2) | Set expanded nodes (client) | `%Phoenix.LiveView.JS{}` |
-  | [`set_expanded_value/3`](#set_expanded_value/3) | Set expanded nodes (server) | `socket` |
-  | [`value/1`](#value/1) | Read selection (client) | `%Phoenix.LiveView.JS{}` |
-  | [`value/3`](#value/3) | Read selection (server) | `socket` |
-  | [`expanded_value/1`](#expanded_value/1) | Read expanded (client) | `%Phoenix.LiveView.JS{}` |
-  | [`expanded_value/3`](#expanded_value/3) | Read expanded (server) | `socket` |
-
-  For `value` and `expanded_value`, use `respond_to: :server | :client | :both`.
-
-  ## Events
-
-  Pick an event name and pass it to `on_*` on `<.tree_view>`.
-
-  ### Server events
-
-  | Event | When | Payload |
-  | ----- | ---- | ------- |
-  | `on_selection_change="tree_selected"` | Selection changes | `%{"id" => id, "selectedValue" => values, ...}` |
-  | `on_expanded_change="tree_expanded"` | Expanded nodes change | `%{"id" => id, "expandedValue" => values, ...}` |
-
-  ### Client events
-
-  | Event | When | `event.detail` |
-  | ----- | ---- | -------------- |
-  | `on_selection_change_client="tree-selection-changed"` | Selection changes | `id`, `selectedValue`, `added`, `removed` |
-  | `on_expanded_change_client="tree-expanded-changed"` | Expanded changes | `id`, `expandedValue`, `added`, `removed` |
-
-  ## Style
-
-  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `tree-view.css`, then set `class="tree-view"` on `<.tree_view>`.
-
-  ```css
-  [data-scope="tree-view"][data-part="root"] {}
-  [data-scope="tree-view"][data-part="label"] {}
-  [data-scope="tree-view"][data-part="tree"] {}
-  [data-scope="tree-view"][data-part="branch"] {}
-  [data-scope="tree-view"][data-part="branch-content"] {}
-  [data-scope="tree-view"][data-part="item"] {}
-  ```
-
-  ```css
-  @import "../corex/corex.css";
-  ```
-
-  Stack modifiers on the host (`class` on `<.tree_view>`).
-
-  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
-
-  Variant modifiers control unselected item and closed branch control surface treatment. Selected/checked states keep semantic fill. Default is subtle; add `tree-view ui-solid` for filled rows.
-
-  <!-- tabs-open -->
-
-  ### Semantic
-
-  | Modifier | Classes |
-  | -------- | ------- |
-  | Default | `tree-view` |
-  | Accent | `tree-view ui-accent` |
-  | Brand | `tree-view ui-brand` |
-  | Alert | `tree-view ui-alert` |
-  | Info | `tree-view ui-info` |
-  | Success | `tree-view ui-success` |
-
-  ### Variant
-
-  Visual treatment of unselected items and closed branch controls.
-
-  | Modifier | Classes |
-  | -------- | ------- |
-  | Subtle (default) | `tree-view` or `tree-view ui-accent` |
-  | Solid | `tree-view ui-accent ui-solid` |
-
-  ### Size
-
-  | Modifier | Classes |
-  | -------- | ------- |
-  | SM | `tree-view ui-size-sm` |
-  | MD | `tree-view ui-size-md` |
-  | LG | `tree-view ui-size-lg` |
-  | XL | `tree-view ui-size-xl` |
-
-  <!-- tabs-close -->
-
-
+  Examples, events, patterns, and styling: [Tree view guide](components/tree_view.html).
   '''
 
   @doc type: :component
@@ -422,7 +23,7 @@ defmodule Corex.TreeView do
 
   attr(:items, :list,
     required: true,
-    doc: "The tree items: list of Corex.Tree.Item structs (use Corex.Tree.new/1)"
+    doc: "Items from `Corex.Tree.new/1` (see `Corex.Tree` for the full contract)"
   )
 
   attr(:compound, :boolean,
@@ -539,7 +140,7 @@ defmodule Corex.TreeView do
   def tree_view(assigns) do
     assigns =
       assigns
-      |> assign_new(:id, fn -> "tree-view-#{System.unique_integer([:positive])}" end)
+      |> Corex.FormField.assign_stable_id("tree-view")
       |> validate_items()
       |> put_tree()
 
@@ -561,8 +162,7 @@ defmodule Corex.TreeView do
     <div
       id={@id}
       phx-hook="TreeView"
-      data-loading
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+      {Corex.Hook.loading()}
       {@rest}
       {Connect.props(%Props{
         id: @id,
@@ -584,16 +184,15 @@ defmodule Corex.TreeView do
     >
       {if @compound do render_slot(@inner_block, @ctx) end}
 
-      <div :if={not @compound} phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir})} {Connect.root(%Root{id: @id, dir: @dir})}>
+      <div :if={not @compound} {Connect.mounted_root(%Root{id: @id, dir: @dir})}>
         <div
           :if={@label != []}
           class={Map.get(List.first(@label), :class, nil)}
-          phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir})}
-          {Connect.label(%Label{id: @id, dir: @dir})}
+          {Connect.mounted_label(%Label{id: @id, dir: @dir})}
         >
           {render_slot(@label)}
         </div>
-        <div phx-mounted={Connect.ignore_tree(%Props{id: @id, dir: @dir})} {Connect.tree(%Props{id: @id, dir: @dir})}>
+        <div {Connect.mounted_tree(%Props{id: @id, dir: @dir})}>
           <.tree_view_line
             :for={{item, i} <- Enum.with_index(@items)}
             id={@id}
@@ -662,17 +261,17 @@ defmodule Corex.TreeView do
 
     if assigns.tree_item.children && !Enum.empty?(assigns.tree_item.children) do
       ~H"""
-      <div phx-mounted={Connect.ignore_branch(@branch_row)} {Connect.branch(@branch_row)}>
-        <div phx-mounted={Connect.ignore_branch_trigger(@branch_row)} {Connect.branch_trigger(@branch_row)}>
-          <span phx-mounted={Connect.ignore_branch_text(@branch_row)} {Connect.branch_text(@branch_row)}>
+      <div {Connect.mounted_branch(@branch_row)}>
+        <div {Connect.mounted_branch_trigger(@branch_row)}>
+          <span {Connect.mounted_branch_text(@branch_row)}>
             {if @use_branch_slot, do: render_slot(@branch, @tree_item), else: @tree_item.label}
           </span>
-          <span phx-mounted={Connect.ignore_branch_indicator(@branch_row)} {Connect.branch_indicator(@branch_row)}>
+          <span {Connect.mounted_branch_indicator(@branch_row)}>
             {if @use_branch_indicator_slot, do: render_slot(@branch_indicator, @tree_item), else: nil}
           </span>
         </div>
-        <div phx-mounted={Connect.ignore_branch_content(@branch_row)} {Connect.branch_content(@branch_row)}>
-          <div phx-mounted={Connect.ignore_branch_indent_guide(@branch_row)} {Connect.branch_indent_guide(@branch_row)}></div>
+        <div {Connect.mounted_branch_content(@branch_row)}>
+          <div {Connect.mounted_branch_indent_guide(@branch_row)}></div>
           <.tree_view_line
             :for={{child, j} <- Enum.with_index(@tree_item.children)}
             id={@id}
@@ -697,14 +296,13 @@ defmodule Corex.TreeView do
       """
     else
       ~H"""
-      <div phx-mounted={Connect.ignore_item(@item_row)} {Connect.item(@item_row)}>
-        <span phx-mounted={Connect.ignore_item_text(@item_row)} {Connect.item_text(@item_row)}>
+      <div {Connect.mounted_item(@item_row)}>
+        <span {Connect.mounted_item_text(@item_row)}>
           {if @use_item_slot, do: render_slot(@item, @tree_item), else: @tree_item.label}
         </span>
         <span
           :if={@use_item_indicator_slot}
-          phx-mounted={Connect.ignore_item_indicator(@item_row)}
-          {Connect.item_indicator(@item_row)}
+          {Connect.mounted_item_indicator(@item_row)}
         >
           {render_slot(@item_indicator, @tree_item)}
         </span>
@@ -732,16 +330,15 @@ defmodule Corex.TreeView do
       |> assign(:label_assigns, label)
 
     ~H"""
-    <div phx-mounted={Connect.ignore_root(@root)} {Connect.root(@root)} {@rest}>
+    <div {Connect.mounted_root(@root)} {@rest}>
       <h3
         :if={@label != []}
         class={Map.get(List.first(@label), :class, nil)}
-        phx-mounted={Connect.ignore_label(@label_assigns)}
-        {Connect.label(@label_assigns)}
+        {Connect.mounted_label(@label_assigns)}
       >
         {render_slot(@label)}
       </h3>
-      <div phx-mounted={Connect.ignore_tree(%Props{id: @ctx.id, dir: @ctx.dir})} {Connect.tree(%Props{id: @ctx.id, dir: @ctx.dir})}>
+      <div {Connect.mounted_tree(%Props{id: @ctx.id, dir: @ctx.dir})}>
         {render_slot(@inner_block)}
       </div>
     </div>
@@ -765,7 +362,7 @@ defmodule Corex.TreeView do
     assigns = assign(assigns, :branch, branch)
 
     ~H"""
-    <div phx-mounted={Connect.ignore_branch(@branch)} {Connect.branch(@branch)}>
+    <div {Connect.mounted_branch(@branch)}>
       {render_slot(@inner_block, @branch)}
     </div>
     """
@@ -781,11 +378,11 @@ defmodule Corex.TreeView do
 
   def tree_view_branch_trigger(assigns) do
     ~H"""
-    <div phx-mounted={Connect.ignore_branch_trigger(@branch)} {Connect.branch_trigger(@branch)}>
-      <span phx-mounted={Connect.ignore_branch_text(@branch)} {Connect.branch_text(@branch)}>
+    <div {Connect.mounted_branch_trigger(@branch)}>
+      <span {Connect.mounted_branch_text(@branch)}>
         {render_slot(@inner_block)}
       </span>
-      <span phx-mounted={Connect.ignore_branch_indicator(@branch)} {Connect.branch_indicator(@branch)}>
+      <span {Connect.mounted_branch_indicator(@branch)}>
         {if @indicator != [], do: render_slot(@indicator), else: nil}
       </span>
     </div>
@@ -798,7 +395,7 @@ defmodule Corex.TreeView do
 
   def tree_view_branch_indicator(assigns) do
     ~H"""
-    <span phx-mounted={Connect.ignore_branch_indicator(@branch)} {Connect.branch_indicator(@branch)}>
+    <span {Connect.mounted_branch_indicator(@branch)}>
       {render_slot(@inner_block)}
     </span>
     """
@@ -810,8 +407,8 @@ defmodule Corex.TreeView do
 
   def tree_view_branch_content(assigns) do
     ~H"""
-    <div phx-mounted={Connect.ignore_branch_content(@branch)} {Connect.branch_content(@branch)}>
-      <div phx-mounted={Connect.ignore_branch_indent_guide(@branch)} {Connect.branch_indent_guide(@branch)}></div>
+    <div {Connect.mounted_branch_content(@branch)}>
+      <div {Connect.mounted_branch_indent_guide(@branch)}></div>
       {render_slot(@inner_block)}
     </div>
     """
@@ -838,11 +435,11 @@ defmodule Corex.TreeView do
     assigns = assign(assigns, :row, row)
 
     ~H"""
-    <div phx-mounted={Connect.ignore_item(@row)} {Connect.item(@row)}>
-      <span phx-mounted={Connect.ignore_item_text(@row)} {Connect.item_text(@row)}>
+    <div {Connect.mounted_item(@row)}>
+      <span {Connect.mounted_item_text(@row)}>
         {if @inner_block != [], do: render_slot(@inner_block), else: @item.label}
       </span>
-      <span :if={@item_indicator != []} phx-mounted={Connect.ignore_item_indicator(@row)} {Connect.item_indicator(@row)}>
+      <span :if={@item_indicator != []} {Connect.mounted_item_indicator(@row)}>
         {render_slot(@item_indicator)}
       </span>
     </div>
@@ -855,7 +452,7 @@ defmodule Corex.TreeView do
 
   def tree_view_item_indicator(assigns) do
     ~H"""
-    <span phx-mounted={Connect.ignore_item_indicator(@item)} {Connect.item_indicator(@item)}>
+    <span {Connect.mounted_item_indicator(@item)}>
       {render_slot(@inner_block)}
     </span>
     """
@@ -893,8 +490,8 @@ defmodule Corex.TreeView do
 
   def tree_view_markup_item(assigns) do
     ~H"""
-    <div phx-mounted={Connect.ignore_item(@item)} {Connect.item(@item)}>
-      <span phx-mounted={Connect.ignore_item_text(@item)} {Connect.item_text(@item)}>
+    <div {Connect.mounted_item(@item)}>
+      <span {Connect.mounted_item_text(@item)}>
         {render_slot(@inner_block)}
       </span>
     </div>
@@ -922,14 +519,14 @@ defmodule Corex.TreeView do
     assigns = assign(assigns, :branch_connect, branch)
 
     ~H"""
-    <div phx-mounted={Connect.ignore_branch(@branch_connect)} {Connect.branch(@branch_connect)}>
-      <div phx-mounted={Connect.ignore_branch_trigger(@branch_connect)} {Connect.branch_trigger(@branch_connect)}>
+    <div {Connect.mounted_branch(@branch_connect)}>
+      <div {Connect.mounted_branch_trigger(@branch_connect)}>
         {render_slot(@branch)}
-        <span phx-mounted={Connect.ignore_branch_indicator(@branch_connect)} {Connect.branch_indicator(@branch_connect)}>
+        <span {Connect.mounted_branch_indicator(@branch_connect)}>
           {render_slot(@branch_indicator)}
         </span>
       </div>
-      <div phx-mounted={Connect.ignore_branch_content(@branch_connect)} {Connect.branch_content(@branch_connect)}>
+      <div {Connect.mounted_branch_content(@branch_connect)}>
         {render_slot(@inner_block)}
       </div>
     </div>
@@ -1011,6 +608,9 @@ defmodule Corex.TreeView do
   ```
   """)
 
+  @spec value(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec value(String.t(), keyword()) :: Phoenix.LiveView.JS.t()
+  @spec value(Phoenix.LiveView.Socket.t(), String.t(), keyword()) :: Phoenix.LiveView.Socket.t()
   def value(tree_view_id, opts) when is_binary(tree_view_id) and is_list(opts),
     do: Api.value(tree_view_id, opts)
 
@@ -1021,7 +621,7 @@ defmodule Corex.TreeView do
     Api.value(socket, tree_view_id, [])
   end
 
-  api_doc_short("Same as [`value/2`](#value/2) with default `respond_to:`.")
+  api_doc("Same as [`value/2`](#value/2) with default `respond_to:`.")
   def value(tree_view_id) when is_binary(tree_view_id), do: Api.value(tree_view_id)
 
   api_doc(~S"""
@@ -1057,6 +657,10 @@ defmodule Corex.TreeView do
   ```
   """)
 
+  @spec expanded_value(String.t()) :: Phoenix.LiveView.JS.t()
+  @spec expanded_value(String.t(), keyword()) :: Phoenix.LiveView.JS.t()
+  @spec expanded_value(Phoenix.LiveView.Socket.t(), String.t(), keyword()) ::
+          Phoenix.LiveView.Socket.t()
   def expanded_value(tree_view_id, opts) when is_binary(tree_view_id) and is_list(opts),
     do: Api.expanded_value(tree_view_id, opts)
 
@@ -1067,7 +671,7 @@ defmodule Corex.TreeView do
     Api.expanded_value(socket, tree_view_id, [])
   end
 
-  api_doc_short("Same as [`expanded_value/2`](#expanded_value/2) with default `respond_to:`.")
+  api_doc("Same as [`expanded_value/2`](#expanded_value/2) with default `respond_to:`.")
 
   def expanded_value(tree_view_id) when is_binary(tree_view_id),
     do: Api.expanded_value(tree_view_id)
@@ -1238,41 +842,9 @@ defmodule Corex.TreeView do
           "tree_view compound expects a Corex.Tree.Item from ctx.items, got: #{inspect(item)}"
   end
 
-  defp validate_items(%{items: nil} = _assigns) do
-    raise ArgumentError, """
-    tree_view requires :items to be a list of Corex.Tree.Item structs.
-
-    Example:
-
-        items = Corex.Tree.new([
-          %{label: "Src", value: "src", children: [%{label: "index.ts", value: "src/index"}]},
-          %{label: "Readme", value: "readme"}
-        ])
-        <.tree_view id="my-tree" items={items} />
-    """
+  defp validate_items(assigns) do
+    Corex.Tree.validate_items_assigns!(assigns, component: "tree_view", required: true)
   end
-
-  defp validate_items(%{items: items} = assigns) when is_list(items) do
-    Enum.each(items, fn item ->
-      unless is_struct(item, Corex.Tree.Item) do
-        raise ArgumentError, """
-        Invalid item in :items. Expected Corex.Tree.Item struct, got: #{inspect(item)}
-
-        Use Corex.Tree.new/1:
-
-            items = Corex.Tree.new([
-              %{label: "Folder", value: "folder", children: [%{label: "File", value: "file"}]},
-              %{label: "Other", value: "other"}
-            ])
-            <.tree_view id="my-tree" items={items} />
-        """
-      end
-    end)
-
-    assigns
-  end
-
-  defp validate_items(assigns), do: assigns
 
   defp put_tree(assigns) do
     tree = items_to_tree(assigns.id, assigns.items)

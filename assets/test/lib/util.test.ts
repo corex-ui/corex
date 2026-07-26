@@ -12,6 +12,7 @@ import {
   getString,
   getStringList,
   safeParseJson,
+  parseJsonStringList,
   templatesContentRoot,
 } from "../../lib/util";
 
@@ -209,5 +210,16 @@ describe("safeParseJson", () => {
   it("returns fallback for empty input", () => {
     expect(safeParseJson("", [])).toEqual([]);
     expect(safeParseJson(null, { x: 1 })).toEqual({ x: 1 });
+  });
+});
+
+describe("parseJsonStringList", () => {
+  it("returns string items from a JSON array", () => {
+    expect(parseJsonStringList('["a","b"]')).toEqual(["a", "b"]);
+  });
+
+  it("drops non-string items and non-arrays", () => {
+    expect(parseJsonStringList('[1,"a",true]')).toEqual(["a"]);
+    expect(parseJsonStringList('{"a":1}')).toEqual([]);
   });
 });

@@ -58,6 +58,18 @@ defmodule Corex.Tooltip.Anatomy do
       focusable: true
     ]
 
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            open: boolean() | nil,
+            disabled: boolean(),
+            tabindex: String.t() | nil,
+            orientation: String.t(),
+            tag: atom(),
+            value: term(),
+            focusable: boolean()
+          }
+
     @ignored_attrs [
       "type",
       "tabindex",
@@ -82,6 +94,12 @@ defmodule Corex.Tooltip.Anatomy do
     @moduledoc false
     defstruct [:id, :dir, orientation: "horizontal"]
 
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            orientation: String.t()
+          }
+
     @ignored_attrs [
       "dir",
       "data-orientation",
@@ -97,6 +115,13 @@ defmodule Corex.Tooltip.Anatomy do
   defmodule Content do
     @moduledoc false
     defstruct [:id, :dir, :open, orientation: "horizontal"]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            open: boolean() | nil,
+            orientation: String.t()
+          }
 
     @ignored_attrs [
       "dir",
@@ -118,6 +143,12 @@ defmodule Corex.Tooltip.Anatomy do
     @moduledoc false
     defstruct [:id, :dir, orientation: "horizontal"]
 
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            orientation: String.t()
+          }
+
     @ignored_attrs ["dir", "data-orientation", "id", "style", "data-side", "data-placement"]
     def ignored_attrs, do: @ignored_attrs
   end
@@ -125,6 +156,12 @@ defmodule Corex.Tooltip.Anatomy do
   defmodule ArrowTip do
     @moduledoc false
     defstruct [:id, :dir, orientation: "horizontal"]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            orientation: String.t()
+          }
 
     @ignored_attrs ["dir", "data-orientation", "id", "style"]
     def ignored_attrs, do: @ignored_attrs

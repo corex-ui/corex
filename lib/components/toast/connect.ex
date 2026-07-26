@@ -1,9 +1,14 @@
 defmodule Corex.Toast.Connect do
   @moduledoc false
+  use Corex.Connect.Mounted
+
+  use Corex.Component, :connect
+
   alias Corex.Selectors
+
   alias Corex.Toast.Anatomy.Group
+
   alias Phoenix.LiveView.JS
-  import Corex.Helpers, only: [maybe_put_dir_from: 2]
 
   @spec group(Group.t()) :: map()
   def group(assigns) do
@@ -13,7 +18,7 @@ defmodule Corex.Toast.Connect do
       "id" => "toast:#{assigns.id}:group",
       "data-orientation" => Map.get(assigns, :orientation, "vertical")
     }
-    |> maybe_put_dir_from(assigns)
+    |> put_dir_attr_from_assigns(assigns)
   end
 
   @spec ignore_group(Group.t()) :: JS.t()

@@ -1,18 +1,11 @@
 import {
   readStringListControlledZagUpdate
-} from "./chunks/chunk-BGER3KYP.mjs";
-import {
-  snapshotDataset
-} from "./chunks/chunk-TKOH2OAC.mjs";
-import {
-  createDomEventRegistry,
-  createHookHandleEventRegistry
-} from "./chunks/chunk-77HPO22C.mjs";
+} from "./chunks/chunk-LVRCAC6Y.mjs";
 import {
   idMatches,
   notifyChange,
   readPayloadId
-} from "./chunks/chunk-LNVRIZ4K.mjs";
+} from "./chunks/chunk-EAQ6WQNO.mjs";
 import {
   Component,
   VanillaMachine,
@@ -22,6 +15,7 @@ import {
   createAnatomy,
   createGuards,
   createMachine,
+  createZagLiveHook,
   dataAttr,
   ensureProps,
   first,
@@ -39,13 +33,13 @@ import {
   prevById,
   queryAll,
   raf
-} from "./chunks/chunk-6AOEC32Q.mjs";
+} from "./chunks/chunk-E4OZ7DWO.mjs";
 
-// ../node_modules/.pnpm/@zag-js+toggle-group@1.40.0/node_modules/@zag-js/toggle-group/dist/toggle-group.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+toggle-group@1.42.0/node_modules/@zag-js/toggle-group/dist/toggle-group.anatomy.mjs
 var anatomy = createAnatomy("toggle-group").parts("root", "item");
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+toggle-group@1.40.0/node_modules/@zag-js/toggle-group/dist/toggle-group.dom.mjs
+// ../node_modules/.pnpm/@zag-js+toggle-group@1.42.0/node_modules/@zag-js/toggle-group/dist/toggle-group.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `toggle-group:${ctx.id}`;
 var getItemId = (ctx, value) => ctx.ids?.item?.(value) ?? `toggle-group:${ctx.id}:${value}`;
 var getRootEl = (ctx) => ctx.getById(getRootId(ctx));
@@ -59,7 +53,7 @@ var getLastEl = (ctx) => last(getElements(ctx));
 var getNextEl = (ctx, id, loopFocus) => nextById(getElements(ctx), id, loopFocus);
 var getPrevEl = (ctx, id, loopFocus) => prevById(getElements(ctx), id, loopFocus);
 
-// ../node_modules/.pnpm/@zag-js+toggle-group@1.40.0/node_modules/@zag-js/toggle-group/dist/toggle-group.connect.mjs
+// ../node_modules/.pnpm/@zag-js+toggle-group@1.42.0/node_modules/@zag-js/toggle-group/dist/toggle-group.connect.mjs
 function connect(service, normalize) {
   const { context, send, prop, scope } = service;
   const value = context.get("value");
@@ -188,7 +182,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+toggle-group@1.40.0/node_modules/@zag-js/toggle-group/dist/toggle-group.machine.mjs
+// ../node_modules/.pnpm/@zag-js+toggle-group@1.42.0/node_modules/@zag-js/toggle-group/dist/toggle-group.machine.mjs
 var { not, and } = createGuards();
 var machine = createMachine({
   props({ props }) {
@@ -362,7 +356,6 @@ var machine = createMachine({
 
 // components/toggle-group.ts
 var ToggleGroup = class extends Component {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, props);
   }
@@ -378,8 +371,7 @@ var ToggleGroup = class extends Component {
     const items = this.el.querySelectorAll(
       '[data-scope="toggle-group"][data-part="item"]'
     );
-    for (let i = 0; i < items.length; i++) {
-      const itemEl = items[i];
+    for (const itemEl of items) {
       const value = getString(itemEl, "value");
       if (!value) continue;
       const disabled = getBoolean(itemEl, "disabled");
@@ -402,11 +394,13 @@ function readToggleGroupPayloadValue(payload) {
   if (Array.isArray(v) && v.every((x) => typeof x === "string")) return v;
   return void 0;
 }
-var ToggleGroupHook = {
-  mounted() {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+var ToggleGroupHook = createZagLiveHook({
+  key: "toggleGroup",
+  controlledKeys: ["value"],
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     const props = {
       id: el.id,
       ...getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") },
@@ -429,55 +423,38 @@ var ToggleGroupHook = {
       }
     };
     const toggleGroup = new ToggleGroup(el, props);
-    toggleGroup.init();
-    this.toggleGroup = toggleGroup;
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-    domRegistry.add("corex:toggle-group:set-value", (event) => {
+    dom.add("corex:toggle-group:set-value", (event) => {
       const { value } = event.detail;
       toggleGroup.api.setValue(value);
     });
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-    registry.add("toggle-group_set_value", (payload) => {
+    server.add("toggle_group_set_value", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       const value = readToggleGroupPayloadValue(payload);
       if (value) toggleGroup.api.setValue(value);
     });
-    registry.add("toggle-group:value", (payload) => {
+    server.add("toggle-group:value", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       if (!canPush()) return;
-      this.pushEvent("toggle-group:value_response", {
+      hook.pushEvent("toggle-group:value_response", {
         id: el.id,
         value: toggleGroup.api.value
       });
     });
+    return toggleGroup;
   },
-  beforeUpdate() {
-    this.beforeAttrs = snapshotDataset(this.el, ["value"]);
-  },
-  updated() {
-    try {
-      this.toggleGroup?.updateProps({
-        ...readStringListControlledZagUpdate(this.el, "value", "defaultValue", this.beforeAttrs),
-        deselectable: getBoolean(this.el, "deselectable"),
-        loopFocus: getBoolean(this.el, "loopFocus"),
-        rovingFocus: getBoolean(this.el, "rovingFocus"),
-        disabled: getBoolean(this.el, "disabled"),
-        multiple: getBoolean(this.el, "multiple"),
-        orientation: getString(this.el, "orientation"),
-        dir: getDir(this.el)
-      });
-    } finally {
-      this.beforeAttrs = void 0;
-    }
-  },
-  destroyed() {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.toggleGroup?.destroy();
+  update(hook, toggleGroup) {
+    toggleGroup.updateProps({
+      ...readStringListControlledZagUpdate(hook.el, "value", "defaultValue", hook.beforeAttrs),
+      deselectable: getBoolean(hook.el, "deselectable"),
+      loopFocus: getBoolean(hook.el, "loopFocus"),
+      rovingFocus: getBoolean(hook.el, "rovingFocus"),
+      disabled: getBoolean(hook.el, "disabled"),
+      multiple: getBoolean(hook.el, "multiple"),
+      orientation: getString(hook.el, "orientation"),
+      dir: getDir(hook.el)
+    });
   }
-};
+});
 export {
   ToggleGroupHook as ToggleGroup,
   readToggleGroupPayloadValue,

@@ -509,7 +509,7 @@ defmodule Corex.Dialog do
 
     assigns =
       assigns
-      |> assign_new(:id, fn -> "dialog-#{System.unique_integer([:positive])}" end)
+      |> Corex.FormField.assign_stable_id("dialog")
       |> assign(:translation, translation)
 
     id = assigns.id
@@ -543,8 +543,7 @@ defmodule Corex.Dialog do
     <div
       id={@id}
       phx-hook="Dialog"
-      data-loading
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+      {Corex.Hook.loading()}
       {@rest}
       {Connect.props(%Props{
         id: @id,
@@ -577,28 +576,29 @@ defmodule Corex.Dialog do
       </button>
 
       <div phx-mounted={Connect.ignore_backdrop(@backdrop_struct)} {Connect.backdrop(@backdrop_struct, @animation)}></div>
-      <div phx-mounted={Connect.ignore_positioner(@positioner_struct)} {Connect.positioner(@positioner_struct)}>
-        <div phx-mounted={Connect.ignore_content(@content_struct)} {Connect.content(@content_struct, @animation)}>
+      <div {Connect.mounted_positioner(@positioner_struct)}>
+        <div
+          class={Map.get(List.first(@content), :class, nil)}
+          phx-mounted={Connect.ignore_content(@content_struct)}
+          {Connect.content(@content_struct, @animation)}
+        >
           <div data-scope="dialog" data-part="header">
             <h2
               :if={@title != []}
-              phx-mounted={Connect.ignore_title(@title_struct)}
-              {Connect.title(@title_struct)}
+              {Connect.mounted_title(@title_struct)}
             >
               {render_slot(@title)}
             </h2>
             <button
               :if={@close_trigger != []}
-              phx-mounted={Connect.ignore_close_trigger(@close_trigger_struct)}
-              {Connect.close_trigger(@close_trigger_struct)}
+              {Connect.mounted_close_trigger(@close_trigger_struct)}
             >
               {render_slot(@close_trigger)}
             </button>
           </div>
           <p
             :if={@description != []}
-            phx-mounted={Connect.ignore_description(@description_struct)}
-            {Connect.description(@description_struct)}
+            {Connect.mounted_description(@description_struct)}
           >
             {render_slot(@description)}
           </p>
@@ -622,8 +622,7 @@ defmodule Corex.Dialog do
 
     ~H"""
     <h2
-      phx-mounted={Connect.ignore_title(@title_struct)}
-      {Connect.title(@title_struct)}
+      {Connect.mounted_title(@title_struct)}
       {@rest}
     >
       {render_slot(@inner_block)}
@@ -648,8 +647,7 @@ defmodule Corex.Dialog do
 
     ~H"""
     <p
-      phx-mounted={Connect.ignore_description(@description_struct)}
-      {Connect.description(@description_struct)}
+      {Connect.mounted_description(@description_struct)}
       {@rest}
     >
       {render_slot(@inner_block)}
@@ -678,8 +676,7 @@ defmodule Corex.Dialog do
 
     ~H"""
     <button
-      phx-mounted={Connect.ignore_close_trigger(@close_trigger_struct)}
-      {Connect.close_trigger(@close_trigger_struct)}
+      {Connect.mounted_close_trigger(@close_trigger_struct)}
       {@rest}
     >
       {render_slot(@inner_block)}
@@ -709,6 +706,9 @@ defmodule Corex.Dialog do
   ```
   """)
 
+  @spec set_open(String.t(), boolean()) :: Phoenix.LiveView.JS.t()
+  @spec set_open(Phoenix.LiveView.Socket.t(), String.t(), boolean()) ::
+          Phoenix.LiveView.Socket.t()
   def set_open(dialog_id, open) when is_binary(dialog_id) and is_boolean(open) do
     RespondTo.dispatch_set_open(dialog_id, open, "corex:dialog:set-open")
   end

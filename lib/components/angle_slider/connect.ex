@@ -1,5 +1,9 @@
 defmodule Corex.AngleSlider.Connect do
   @moduledoc false
+  use Corex.Connect.Mounted
+
+  use Corex.Component, :connect
+
   alias Corex.Selectors
 
   alias Corex.FormField
@@ -19,7 +23,6 @@ defmodule Corex.AngleSlider.Connect do
   }
 
   alias Phoenix.LiveView.JS
-  import Corex.Helpers, only: [get_boolean: 1]
 
   defp orientation(assigns), do: Map.get(assigns, :orientation, "horizontal")
 
@@ -54,9 +57,9 @@ defmodule Corex.AngleSlider.Connect do
       "data-default-value" => value_dataset,
       "data-value" => nil,
       "data-step" => format_number(assigns.step),
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-readonly" => get_boolean(assigns.read_only),
-      "data-invalid" => get_boolean(assigns.invalid),
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-readonly" => presence_attr(assigns.read_only),
+      "data-invalid" => presence_attr(assigns.invalid),
       "data-name" => assigns.name,
       "data-dir" => assigns.dir,
       "data-orientation" => assigns.orientation,
@@ -81,9 +84,9 @@ defmodule Corex.AngleSlider.Connect do
       "dir" => assigns.dir,
       "data-orientation" => orientation(assigns),
       "style" => "--value:#{format_number(value)};--angle:#{angle};",
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-invalid" => get_boolean(assigns.invalid),
-      "data-readonly" => get_boolean(assigns.read_only)
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-invalid" => presence_attr(assigns.invalid),
+      "data-readonly" => presence_attr(assigns.read_only)
     }
   end
 
@@ -102,9 +105,9 @@ defmodule Corex.AngleSlider.Connect do
       "for" => "angle-slider:#{assigns.id}:input",
       "dir" => assigns.dir,
       "data-orientation" => orientation(assigns),
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-invalid" => get_boolean(assigns.invalid),
-      "data-readonly" => get_boolean(assigns.read_only)
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-invalid" => presence_attr(assigns.invalid),
+      "data-readonly" => presence_attr(assigns.read_only)
     }
   end
 
@@ -122,7 +125,7 @@ defmodule Corex.AngleSlider.Connect do
       "type" => "hidden",
       "name" => assigns.name,
       "value" => to_string(assigns.value),
-      "disabled" => get_boolean(assigns.disabled),
+      "disabled" => presence_attr(assigns.disabled),
       "id" => "angle-slider:#{assigns.id}:input",
       "dir" => assigns.dir
     }
@@ -143,9 +146,9 @@ defmodule Corex.AngleSlider.Connect do
       "id" => "angle-slider:#{assigns.id}:control",
       "dir" => assigns.dir,
       "data-orientation" => orientation(assigns),
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-invalid" => get_boolean(assigns.invalid),
-      "data-readonly" => get_boolean(assigns.read_only)
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-invalid" => presence_attr(assigns.invalid),
+      "data-readonly" => presence_attr(assigns.read_only)
     }
   end
 
@@ -163,9 +166,9 @@ defmodule Corex.AngleSlider.Connect do
       "id" => "angle-slider:#{assigns.id}:thumb",
       "dir" => assigns.dir,
       "style" => "rotate:var(--angle);",
-      "data-disabled" => get_boolean(assigns.disabled),
-      "data-invalid" => get_boolean(assigns.invalid),
-      "data-readonly" => get_boolean(assigns.read_only)
+      "data-disabled" => presence_attr(assigns.disabled),
+      "data-invalid" => presence_attr(assigns.invalid),
+      "data-readonly" => presence_attr(assigns.read_only)
     }
   end
 
@@ -243,7 +246,7 @@ defmodule Corex.AngleSlider.Connect do
       "dir" => assigns.dir,
       "style" =>
         "--marker-value:#{format_number(assigns.value)};--marker-display-value:#{format_number(marker_display)};rotate:calc(var(--marker-display-value) * 1deg);",
-      "data-disabled" => get_boolean(assigns.disabled)
+      "data-disabled" => presence_attr(assigns.disabled)
     }
   end
 

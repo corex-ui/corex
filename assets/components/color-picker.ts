@@ -1,11 +1,12 @@
 import { connect, machine, parse, type Props, type Api } from "@zag-js/color-picker";
 import { VanillaMachine } from "@zag-js/vanilla";
-import { Component } from "../lib/core";
+import { Component, type SchemaOf } from "../lib/core";
 import { syncHiddenInputValue } from "../lib/value-form-sync";
 
-export class ColorPicker extends Component<Props, Api> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: Props): VanillaMachine<any> {
+type Schema = SchemaOf<typeof machine>;
+
+export class ColorPicker extends Component<Props, Api, Schema> {
+  initMachine(props: Props): VanillaMachine<Schema> {
     return new VanillaMachine(machine, props);
   }
 
@@ -37,11 +38,11 @@ export class ColorPicker extends Component<Props, Api> {
     const triggerEl = this.el.querySelector<HTMLElement>('[data-part="trigger"]');
     if (triggerEl) this.spreadProps(triggerEl, this.api.getTriggerProps());
 
-    const triggerGrids = this.el.querySelectorAll<HTMLElement>(
-      '[data-part="transparency-grid"][data-size="10px"]'
+    const transparencyGrids = this.el.querySelectorAll<HTMLElement>(
+      '[data-part="transparency-grid"]'
     );
-    triggerGrids.forEach((el) =>
-      this.spreadProps(el, this.api.getTransparencyGridProps({ size: "10px" }))
+    transparencyGrids.forEach((el) =>
+      this.spreadProps(el, this.api.getTransparencyGridProps({ size: "12px" }))
     );
 
     const triggerSwatch = triggerEl?.querySelector<HTMLElement>('[data-part="swatch"]');
@@ -101,13 +102,6 @@ export class ColorPicker extends Component<Props, Api> {
     if (alphaSliderEl)
       this.spreadProps(alphaSliderEl, this.api.getChannelSliderProps({ channel: "alpha" }));
 
-    const alphaGrids = this.el.querySelectorAll<HTMLElement>(
-      '[data-part="transparency-grid"][data-size="12px"]'
-    );
-    alphaGrids.forEach((el) =>
-      this.spreadProps(el, this.api.getTransparencyGridProps({ size: "12px" }))
-    );
-
     const alphaTrackEl = this.el.querySelector<HTMLElement>(
       '[data-part="channel-slider-track"][data-channel="alpha"]'
     );
@@ -157,13 +151,6 @@ export class ColorPicker extends Component<Props, Api> {
           this.spreadProps(swatchEl, this.api.getSwatchProps({ value: swatchValue }));
       }
     });
-
-    const swatchGrids = this.el.querySelectorAll<HTMLElement>(
-      '[data-part="transparency-grid"][data-size="var(--spacing-mini)"]'
-    );
-    swatchGrids.forEach((el) =>
-      this.spreadProps(el, this.api.getTransparencyGridProps({ size: "var(--spacing-mini)" }))
-    );
   }
 }
 

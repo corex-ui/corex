@@ -1,10 +1,12 @@
 defmodule Corex.Gettext do
   @moduledoc false
 
+  @spec backend() :: module() | nil
   def backend do
     Application.get_env(:phoenix, :gettext_backend)
   end
 
+  @spec gettext(String.t(), keyword()) :: String.t()
   def gettext(msg, opts \\ []) do
     backend = backend()
 
@@ -15,6 +17,7 @@ defmodule Corex.Gettext do
     end
   end
 
+  @spec translate_error({String.t(), keyword()}) :: String.t()
   def translate_error({msg, opts}) do
     backend = backend()
 

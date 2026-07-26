@@ -1,6 +1,6 @@
 import { connect, machine, type Props, type Api, type ItemType } from "@zag-js/file-upload";
 import { VanillaMachine } from "@zag-js/vanilla";
-import { Component } from "../lib/core";
+import { Component, type SchemaOf } from "../lib/core";
 
 const ACCEPTED: ItemType = "accepted";
 
@@ -51,12 +51,13 @@ function setInputFiles(inputEl: HTMLInputElement, files: File[]): void {
   }
 }
 
-export class FileUpload extends Component<Props, Api> {
+type Schema = SchemaOf<typeof machine>;
+
+export class FileUpload extends Component<Props, Api, Schema> {
   private previewCleanup = new Map<HTMLElement, VoidFunction>();
   private sentinelSnapshot = "";
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: Props): VanillaMachine<any> {
+  initMachine(props: Props): VanillaMachine<Schema> {
     return new VanillaMachine(machine, props);
   }
 

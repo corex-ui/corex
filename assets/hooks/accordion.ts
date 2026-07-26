@@ -1,19 +1,19 @@
-import type { Hook } from "phoenix_live_view";
 import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { Accordion } from "../components/accordion";
 import type { ValueChangeDetails, FocusChangeDetails, Props, ItemProps } from "@zag-js/accordion";
 import type { Orientation } from "@zag-js/types";
 
-import { getString, getBoolean, getStringList, getDir, canPushEvent } from "../lib/util";
+import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
 import {
+  parseDatasetValueList,
   readControlledOrDefaultStringList,
   readStringListControlledZagProps,
+  readStringListControlledZagUpdate,
 } from "../lib/read-props";
 import {
   closestPartValue,
   isJsAnimation,
   prepareJsHeightInitialState,
-  runHeightOpenToValues,
   runHeightOpenTransition,
 } from "../lib/animation";
 import {
@@ -25,16 +25,12 @@ import {
   notifyChange,
   type RespondTo,
 } from "../lib/respond-to";
-import { createHookHandleEventRegistry } from "../lib/hook-handlers";
-import { createDomEventRegistry } from "../lib/dom-events";
 import { type AccordionChangedDetail, diffStringValues } from "../lib/event-details";
+import { createZagLiveHook } from "../lib/zag-live-hook";
 
 type AccordionHookState = {
   accordion?: Accordion;
-  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
-  domRegistry?: ReturnType<typeof createDomEventRegistry>;
   lastValue?: string[];
-  previousValue?: string[];
 };
 
 const ITEM_CONTENT_SELECTOR = '[data-scope="accordion"][data-part="item-content"]';
@@ -51,12 +47,14 @@ export function readAccordionLayoutProps(el: HTMLElement) {
   };
 }
 
-const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
-  mounted(this: object & HookInterface<HTMLElement> & AccordionHookState) {
-    const el = this.el;
-    const self = this as object & HookInterface<HTMLElement> & AccordionHookState;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+const AccordionHook = createZagLiveHook<AccordionHookState, Accordion>({
+  key: "accordion",
+  controlledKeys: ["value"],
+  mount(hook, { dom, server }) {
+    const el = hook.el;
+    const self = hook as object & HookInterface<HTMLElement> & AccordionHookState;
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
 
     self.lastValue = readControlledOrDefaultStringList(el, "value", "defaultValue");
 
@@ -91,10 +89,11 @@ const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
         });
 
         if (isJsAnimation(el) && !getBoolean(el, "controlled")) {
-          runHeightOpenToValues({
+          runHeightOpenTransition({
             el,
             selector: ITEM_CONTENT_SELECTOR,
-            openValues: next,
+            prevOpen: previousValue,
+            nextOpen: next,
             resolveValue: resolveAccordionValue,
           });
         }
@@ -111,8 +110,6 @@ const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
         });
       },
     } as Props);
-    accordion.init();
-    this.accordion = accordion;
 
     prepareJsHeightInitialState(el, ITEM_CONTENT_SELECTOR);
 
@@ -153,22 +150,19 @@ const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
       });
     };
 
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-
-    domRegistry.add<CustomEvent<{ value: string[] }>>("corex:accordion:set-value", (event) => {
+    dom.add<CustomEvent<{ value: string[] }>>("corex:accordion:set-value", (event) => {
       accordion.api.setValue(event.detail.value);
     });
 
-    domRegistry.add<CustomEvent>("corex:accordion:value", (event) => {
+    dom.add<CustomEvent>("corex:accordion:value", (event) => {
       emitValue(parseRespondTo(event.detail));
     });
 
-    domRegistry.add<CustomEvent>("corex:accordion:focused", (event) => {
+    dom.add<CustomEvent>("corex:accordion:focused", (event) => {
       emitFocusedValue(parseRespondTo(event.detail));
     });
 
-    domRegistry.add<CustomEvent<{ value?: string; disabled?: boolean }>>(
+    dom.add<CustomEvent<{ value?: string; disabled?: boolean }>>(
       "corex:accordion:item-state",
       (event) => {
         const d = event.detail;
@@ -178,25 +172,22 @@ const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
       }
     );
 
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-
-    registry.add("accordion_set_value", (payload: { id?: string; value: string[] }) => {
+    server.add("accordion_set_value", (payload: { id?: string; value: string[] }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       accordion.api.setValue(payload.value);
     });
 
-    registry.add("accordion_value", (payload: { id?: string; respond_to?: string }) => {
+    server.add("accordion_value", (payload: { id?: string; respond_to?: string }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       emitValue(parseRespondTo(payload));
     });
 
-    registry.add("accordion_focused", (payload: { id?: string; respond_to?: string }) => {
+    server.add("accordion_focused", (payload: { id?: string; respond_to?: string }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       emitFocusedValue(parseRespondTo(payload));
     });
 
-    registry.add(
+    server.add(
       "accordion_item_state",
       (payload: { id?: string; value?: string; disabled?: boolean; respond_to?: string }) => {
         if (!idMatches(el.id, readPayloadId(payload))) return;
@@ -204,46 +195,42 @@ const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
         emitItemState(payload.value, payload.disabled === true, parseRespondTo(payload));
       }
     );
+
+    return accordion;
   },
 
-  beforeUpdate(this: object & HookInterface<HTMLElement> & AccordionHookState) {
-    const { el } = this;
-    if (getBoolean(el, "controlled") && isJsAnimation(el)) {
-      this.previousValue = getStringList(el, "value") ?? [];
-    }
-  },
-
-  updated(this: object & HookInterface<HTMLElement> & AccordionHookState) {
-    const { el } = this;
+  update(hook, accordion) {
+    const { el } = hook;
     const layout = readAccordionLayoutProps(el);
+    const valuePatch = readStringListControlledZagUpdate(
+      el,
+      "value",
+      "defaultValue",
+      hook.beforeAttrs
+    );
 
-    if (!getBoolean(el, "controlled")) {
-      this.accordion?.updateProps(layout as Props);
-      return;
+    if ("value" in valuePatch) {
+      const nextValue = valuePatch.value ?? [];
+      const prevValue = parseDatasetValueList(hook.beforeAttrs?.value);
+      runHeightOpenTransition({
+        el,
+        selector: ITEM_CONTENT_SELECTOR,
+        prevOpen: prevValue,
+        nextOpen: nextValue,
+        resolveValue: resolveAccordionValue,
+      });
+      hook.lastValue = nextValue;
     }
 
-    const nextValue = getStringList(el, "value") ?? [];
-    const prevValue = this.previousValue ?? this.lastValue ?? [];
+    const propsApplied = accordion.updateProps({
+      ...layout,
+      ...valuePatch,
+    } as Props);
 
-    this.previousValue = undefined;
-    this.lastValue = nextValue;
-
-    runHeightOpenTransition({
-      el,
-      selector: ITEM_CONTENT_SELECTOR,
-      prevOpen: prevValue,
-      nextOpen: nextValue,
-      resolveValue: resolveAccordionValue,
-    });
-
-    this.accordion?.updateProps({ ...layout, value: nextValue } as Props);
+    if (!propsApplied) {
+      accordion.render();
+    }
   },
-
-  destroyed(this: object & HookInterface<HTMLElement> & AccordionHookState) {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.accordion?.destroy();
-  },
-};
+});
 
 export { AccordionHook as Accordion };

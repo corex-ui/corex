@@ -1,12 +1,16 @@
 defmodule Corex.Pagination.Connect do
   @moduledoc false
-  alias Corex.Pagination.Anatomy.{NextTrigger, PrevTrigger, Props, Root, SsrEllipsis, SsrPageItem}
-  alias Corex.Pagination.Translation, as: PaginationTranslation
-  alias Corex.Selectors
-  alias Phoenix.LiveView.JS
+  use Corex.Connect.Mounted
 
-  import Corex.Helpers,
-    only: [get_boolean: 1, maybe_put_data_dir_from: 2, maybe_put_dir_from: 2]
+  use Corex.Component, :connect
+
+  alias Corex.Pagination.Anatomy.{NextTrigger, PrevTrigger, Props, Root, SsrEllipsis, SsrPageItem}
+
+  alias Corex.Pagination.Translation, as: PaginationTranslation
+
+  alias Corex.Selectors
+
+  alias Phoenix.LiveView.JS
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
@@ -19,8 +23,8 @@ defmodule Corex.Pagination.Connect do
         if(assigns.controlled_page_size, do: to_string(assigns.page_size), else: nil),
       "data-default-page-size" =>
         if(assigns.controlled_page_size, do: nil, else: to_string(assigns.page_size)),
-      "data-controlled" => get_boolean(assigns.controlled),
-      "data-controlled-page-size" => get_boolean(assigns.controlled_page_size),
+      "data-controlled" => presence_attr(assigns.controlled),
+      "data-controlled-page-size" => presence_attr(assigns.controlled_page_size),
       "data-sibling-count" => to_string(assigns.sibling_count),
       "data-boundary-count" => to_string(assigns.boundary_count),
       "data-type" => assigns.type,
@@ -34,7 +38,7 @@ defmodule Corex.Pagination.Connect do
       "data-on-page-size-change-client" => assigns.on_page_size_change_client,
       "data-translation" => translation_json(assigns)
     }
-    |> maybe_put_data_dir_from(assigns)
+    |> put_data_dir_attr_from_assigns(assigns)
   end
 
   defp link_base_to(%{to: to}) when is_binary(to) do
@@ -67,7 +71,7 @@ defmodule Corex.Pagination.Connect do
       "data-part" => "root",
       "id" => "pagination:#{assigns.id}"
     }
-    |> maybe_put_dir_from(assigns)
+    |> put_dir_attr_from_assigns(assigns)
     |> maybe_put_aria_label(root_aria_label(assigns.id, assigns.aria_label))
   end
 
@@ -84,7 +88,7 @@ defmodule Corex.Pagination.Connect do
       "type" => if(assigns.tag == "link", do: nil, else: "button"),
       "id" => "pagination:#{assigns.id}:prev"
     }
-    |> maybe_put_dir_from(assigns)
+    |> put_dir_attr_from_assigns(assigns)
     |> maybe_put_trigger_aria_label(assigns.aria_label, assigns.disabled, assigns.tag)
     |> maybe_put_data_disabled(assigns.disabled)
     |> maybe_put_disabled(assigns.disabled and assigns.tag == "button")
@@ -107,7 +111,7 @@ defmodule Corex.Pagination.Connect do
       "type" => if(assigns.tag == "link", do: nil, else: "button"),
       "id" => "pagination:#{assigns.id}:next"
     }
-    |> maybe_put_dir_from(assigns)
+    |> put_dir_attr_from_assigns(assigns)
     |> maybe_put_trigger_aria_label(assigns.aria_label, assigns.disabled, assigns.tag)
     |> maybe_put_data_disabled(assigns.disabled)
     |> maybe_put_disabled(assigns.disabled and assigns.tag == "button")
@@ -131,7 +135,7 @@ defmodule Corex.Pagination.Connect do
       "id" => "pagination:#{a.id}:item:#{a.page}",
       "type" => if(a.tag == "link", do: nil, else: "button")
     }
-    |> maybe_put_dir_from(a)
+    |> put_dir_attr_from_assigns(a)
     |> maybe_put_data_selected(a.selected)
     |> maybe_put_aria_current(a.selected)
     |> maybe_put_aria_label(a.aria_label)
@@ -153,7 +157,7 @@ defmodule Corex.Pagination.Connect do
       "data-pagination-part" => "page",
       "id" => "pagination:#{a.id}:ellipsis:#{a.index}"
     }
-    |> maybe_put_dir_from(a)
+    |> put_dir_attr_from_assigns(a)
   end
 
   def ignore_ssr_ellipsis(%SsrEllipsis{} = a) do

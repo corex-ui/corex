@@ -1,10 +1,13 @@
-import type { Hook } from "phoenix_live_view";
-import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { PinInput } from "../components/pin-input";
 import type { Props, ValueChangeDetails } from "@zag-js/pin-input";
 import { getString, getBoolean, getNumber, getDir, canPushEvent } from "../lib/util";
-import { getJsonStringList, mountStringListBinding } from "../lib/read-props";
+import {
+  getJsonStringList,
+  mountStringListBinding,
+  readUpdatedServerStringList,
+} from "../lib/read-props";
 import { setArrayValues, setScalarValue } from "../lib/phoenix-form-bridge";
+import { createZagLiveHook } from "../lib/zag-live-hook";
 import {
   notifyChange,
   emitResponse,
@@ -13,8 +16,6 @@ import {
   parseRespondTo,
   type RespondTo,
 } from "../lib/respond-to";
-import { createHookHandleEventRegistry } from "../lib/hook-handlers";
-import { createDomEventRegistry } from "../lib/dom-events";
 
 function sameStringList(a: ReadonlyArray<string>, b: ReadonlyArray<string>): boolean {
   return a.length === b.length && a.every((v, i) => v === b[i]);
@@ -160,18 +161,17 @@ function buildMachineProps(
 
 type PinInputHookState = {
   pinInput?: PinInput;
-  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
-  domRegistry?: ReturnType<typeof createDomEventRegistry>;
   fieldTouched?: boolean;
 };
 
-const PinInputHook: Hook<object & PinInputHookState, HTMLElement> = {
-  mounted(this: object & HookInterface<HTMLElement> & PinInputHookState) {
-    const el = this.el;
-    const hook = this as object & HookInterface<HTMLElement> & PinInputHookState;
+const PinInputHook = createZagLiveHook<PinInputHookState, PinInput>({
+  key: "pinInput",
+  controlledKeys: ["value"],
+  mount(hook, { dom, server }) {
+    const el = hook.el;
     hook.fieldTouched = false;
-    const pushEvent = this.pushEvent.bind(this);
-    const canPush = () => canPushEvent(this.liveSocket);
+    const pushEvent = hook.pushEvent.bind(hook);
+    const canPush = () => canPushEvent(hook.liveSocket);
     const count = getNumber(el, "count") ?? 0;
     const binding = padStringListBinding(el, count);
     const initialValues = "value" in binding ? binding.value : binding.defaultValue;
@@ -189,14 +189,6 @@ const PinInputHook: Hook<object & PinInputHookState, HTMLElement> = {
         }
       )
     );
-    try {
-      zag.init();
-      this.pinInput = zag;
-    } finally {
-      el.removeAttribute("data-loading");
-    }
-
-    syncPinInputFormForPhoenix(el, zag.api.value, undefined, { notifyLiveView: false });
 
     const emitValue = (respondTo: RespondTo) => {
       const api = zag.api;
@@ -214,47 +206,49 @@ const PinInputHook: Hook<object & PinInputHookState, HTMLElement> = {
       });
     };
 
-    const domRegistry = createDomEventRegistry(el);
-    this.domRegistry = domRegistry;
-
-    domRegistry.add<CustomEvent<{ value: string[] }>>("corex:pin-input:set-value", (event) => {
+    dom.add<CustomEvent<{ value: string[] }>>("corex:pin-input:set-value", (event) => {
       const v = event.detail?.value;
       if (Array.isArray(v)) zag.api.setValue(v);
     });
 
-    domRegistry.add<CustomEvent>("corex:pin-input:clear", () => {
+    dom.add<CustomEvent>("corex:pin-input:clear", () => {
       zag.api.clearValue();
     });
 
-    domRegistry.add<CustomEvent>("corex:pin-input:value", (event) => {
+    dom.add<CustomEvent>("corex:pin-input:value", (event) => {
       emitValue(parseRespondTo(event.detail));
     });
 
-    const registry = createHookHandleEventRegistry(this);
-    this.handleRegistry = registry;
-
-    registry.add("pin_input_set_value", (payload: { id?: string; value: string[] }) => {
+    server.add("pin_input_set_value", (payload: { id?: string; value: string[] }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       if (Array.isArray(payload.value)) zag.api.setValue(payload.value);
     });
 
-    registry.add("pin_input_clear", (payload: { id?: string }) => {
+    server.add("pin_input_clear", (payload: { id?: string }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.clearValue();
     });
 
-    registry.add("pin_input_value", (payload: { id?: string; respond_to?: string }) => {
+    server.add("pin_input_value", (payload: { id?: string; respond_to?: string }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       emitValue(parseRespondTo(payload));
     });
+
+    return zag;
   },
 
-  updated(this: object & HookInterface<HTMLElement> & PinInputHookState) {
-    const el = this.el;
-    const zag = this.pinInput;
+  afterInit(hook, zag) {
+    syncPinInputFormForPhoenix(hook.el, zag.api.value, undefined, { notifyLiveView: false });
+  },
+
+  update(hook, zag) {
+    const el = hook.el;
+
     const count = getNumber(el, "count") ?? 0;
 
-    zag?.updateProps({
+    const valuePatch = readUpdatedServerStringList(el, hook.beforeAttrs);
+
+    zag.updateProps({
       id: el.id,
       count,
       disabled: getBoolean(el, "disabled"),
@@ -270,14 +264,9 @@ const PinInputHook: Hook<object & PinInputHookState, HTMLElement> = {
       dir: getDir(el),
       type: getString<"alphanumeric" | "numeric" | "alphabetic">(el, "type"),
       placeholder: getString(el, "placeholder"),
+      ...(valuePatch.value !== undefined ? { value: padToCount(valuePatch.value, count) } : {}),
     } as Partial<Props>);
   },
-
-  destroyed(this: object & HookInterface<HTMLElement> & PinInputHookState) {
-    this.domRegistry?.teardown();
-    this.handleRegistry?.teardown();
-    this.pinInput?.destroy();
-  },
-};
+});
 
 export { PinInputHook as PinInput };

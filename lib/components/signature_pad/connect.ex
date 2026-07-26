@@ -1,5 +1,9 @@
 defmodule Corex.SignaturePad.Connect do
   @moduledoc false
+  use Corex.Connect.Mounted
+
+  use Corex.Component, :connect
+
   alias Corex.Selectors
 
   alias Corex.FormField
@@ -18,7 +22,6 @@ defmodule Corex.SignaturePad.Connect do
   }
 
   alias Phoenix.LiveView.JS
-  import Corex.Helpers, only: [get_boolean: 1]
 
   defp default_paths_attr(assigns) do
     paths = assigns.paths
@@ -48,7 +51,7 @@ defmodule Corex.SignaturePad.Connect do
       "id" => assigns.id,
       "data-drawing-fill" => assigns.drawing_fill,
       "data-drawing-size" => Integer.to_string(assigns.drawing_size),
-      "data-drawing-simulate-pressure" => get_boolean(assigns.drawing_simulate_pressure),
+      "data-drawing-simulate-pressure" => presence_attr(assigns.drawing_simulate_pressure),
       "data-dir" => assigns.dir,
       "data-on-draw-end" => assigns.on_draw_end,
       "data-on-draw-end-client" => assigns.on_draw_end_client

@@ -2,7 +2,21 @@ defmodule Corex.List do
   @moduledoc ~S'''
   Flat selectable items for [Combobox](Corex.Combobox.html), [Listbox](Corex.Listbox.html), and [Select](Corex.Select.html).
 
-  Build items with `Corex.List.new/1` or `Corex.List.Item.new/1`. Each row is a `Corex.List.Item` with required `:label` and optional `:value` (defaults to `item-1`, `item-2`, … when built through `new/1`, or `list-<integer>` from `generate_id/0` when built only through `Item.new/1`), plus `:to`, `:redirect`, `:new_tab`, `:disabled`, `:group`, and `:meta`.
+  Build items with `Corex.List.new/1` or `Corex.List.Item.new/1`. Each row is a `Corex.List.Item` with required `:label` and optional `:value` (defaults to `item-1`, `item-2`, … when built through `new/1`, or `list-<integer>` from `Corex.Item.generate_value/1` when built only through `Item.new/1`), plus `:to`, `:redirect`, `:new_tab`, `:disabled`, `:group`, and `:meta`.
+
+  ## What the `items` attr accepts
+
+  Combobox, Listbox, and Select accept two shapes, and this is the whole contract:
+
+  1. A `Corex.List.Item` struct, which is what `new/1` returns. Use this.
+  2. A plain map with an atom `:label` key, plus any of the optional fields above.
+     A missing `:value` is generated. This exists so a query result can render
+     without a build step, and only atom keys are read.
+
+  Anything else is dropped with a warning rather than raising, because items are
+  often built from database rows and one malformed row should not take down the
+  LiveView. Nothing else is supported: string keys, keyword lists, and structs of
+  other types all fall into the dropped case.
 
   When the parent sets `redirect`, selection can navigate using each item’s `:to` or value as destination; per-item `:redirect` is `:href`, `:patch`, `:navigate`, or `false` to opt out. With `redirect` enabled, the client runs single-select in Zag even if the form uses `multiple`.
   '''
@@ -53,6 +67,7 @@ defmodule Corex.List do
 
     Raises `ArgumentError` if attrs is not a keyword list or map.
     """
+    @spec new(keyword() | map()) :: t()
     def new(attrs) when is_list(attrs) or is_map(attrs), do: new(attrs, [])
 
     def new(attrs) do
@@ -65,6 +80,7 @@ defmodule Corex.List do
       """
     end
 
+    @spec new(keyword() | map(), keyword()) :: t()
     def new(attrs, opts) when is_list(attrs) or is_map(attrs) do
       Corex.ItemBuilder.build_item(
         __MODULE__,
@@ -86,6 +102,7 @@ defmodule Corex.List do
 
   Raises `ArgumentError` if items is not a list or contains invalid items.
   """
+  @spec new([Item.t() | map() | keyword()]) :: [Item.t()]
   def new([]), do: []
 
   def new(items) when is_list(items) do

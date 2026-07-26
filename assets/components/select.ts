@@ -1,9 +1,9 @@
 import { connect, machine, collection, type Props, type Api } from "@zag-js/select";
 import type { ListCollection } from "@zag-js/collection";
 import { VanillaMachine } from "@zag-js/vanilla";
-import { Component } from "../lib/core";
+import { Component, type SchemaOf } from "../lib/core";
 import { itemValue, zagListCollectionConfig } from "../lib/list-collection";
-import { getBoolean, getString, syncInputFormAssociation } from "../lib/util";
+import { getBoolean, getString, partPropsMethod, syncInputFormAssociation } from "../lib/util";
 
 type Item = {
   value?: string;
@@ -12,7 +12,9 @@ type Item = {
   group?: string;
 };
 
-export class Select extends Component<Props, Api> {
+type Schema = SchemaOf<typeof machine>;
+
+export class Select extends Component<Props, Api, Schema> {
   private _options: Item[] = [];
   hasGroups: boolean = false;
   private placeholder: string = "";
@@ -36,8 +38,7 @@ export class Select extends Component<Props, Api> {
     return collection(zagListCollectionConfig(this.options, this.hasGroups));
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: Props): VanillaMachine<any> {
+  initMachine(props: Props): VanillaMachine<Schema> {
     const getCollection = this.getCollection.bind(this);
 
     return new VanillaMachine(machine, {
@@ -170,16 +171,8 @@ export class Select extends Component<Props, Api> {
       const el = this.el.querySelector<HTMLElement>(`[data-scope="select"][data-part="${part}"]`);
       if (!el) return;
 
-      const method =
-        "get" +
-        part
-          .split("-")
-          .map((s) => s[0].toUpperCase() + s.slice(1))
-          .join("") +
-        "Props";
-
       // @ts-expect-error zag dynamic api
-      this.spreadProps(el, this.api[method]());
+      this.spreadProps(el, this.api[partPropsMethod(part)]());
     });
 
     const valueText = this.el.querySelector<HTMLElement>(
