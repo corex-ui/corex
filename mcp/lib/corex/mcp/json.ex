@@ -1,5 +1,11 @@
 defmodule Corex.MCP.Json do
-  @moduledoc false
+  @moduledoc """
+  OTP `:json` wrapper that encodes `nil` as `null` and decodes `null` back to `nil`.
+
+  Deliberately a copy of `Corex.Json` rather than a delegation: `corex_mcp` does
+  not depend on `corex` (see README), so it cannot reach that module. The two
+  must stay byte-compatible, which `test/json_parity_test.exs` enforces.
+  """
 
   def encoder, do: __MODULE__
 

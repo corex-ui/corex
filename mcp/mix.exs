@@ -8,11 +8,12 @@ defmodule CorexMcp.MixProject do
     [
       app: :corex_mcp,
       version: @version,
-      elixir: "~> 1.17",
+      elixir: "~> 1.18",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       aliases: aliases(),
+      dialyzer: dialyzer(),
       name: "Corex MCP",
       description: description(),
       package: package(),
@@ -49,8 +50,18 @@ defmodule CorexMcp.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:oeditus_credo, "~> 0.6.3", only: [:dev, :test], runtime: false},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
-      {:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false}
+      {:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false}
     ] ++ maybe_json_polyfill()
+  end
+
+  defp dialyzer do
+    [
+      plt_local_path: "priv/plts",
+      plt_core_path: "priv/plts",
+      plt_add_apps: [:mix, :ex_unit],
+      flags: [:error_handling, :extra_return, :missing_return, :unmatched_returns]
+    ]
   end
 
   defp maybe_json_polyfill do

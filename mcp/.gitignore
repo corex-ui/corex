@@ -7,3 +7,6 @@ erl_crash.dump
 *.ez
 corex_mcp-*.tar
 /tmp/
+
+# Dialyzer PLTs
+/priv/plts/

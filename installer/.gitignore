@@ -1,2 +1,4 @@
 /my_app/
 /priv/corex_design/
+# Dialyzer PLTs
+/priv/plts/

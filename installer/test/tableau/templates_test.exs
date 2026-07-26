@@ -43,7 +43,11 @@ defmodule Corex.New.Tableau.TemplatesTest do
     design: true,
     themes: ["neo"],
     default_theme: "neo",
-    components: ~w(toast layout-heading typo icon link button scrollbar)a,
+    components: ~w(
+      toast layout-heading typo icon link button button-group dialog password-input
+      scrollbar checkbox data-list data-table date-picker native-input number-input
+      select toggle toggle-group
+    )a,
     corex_js_import: "corex",
     corex_dep_source: "\"~> 0.2.0\"",
     corex_design_dep_source: "\"~> 0.2\", runtime: false, only: :dev",
@@ -52,7 +56,11 @@ defmodule Corex.New.Tableau.TemplatesTest do
 
   @lang_assigns Keyword.merge(@base_assigns,
                   lang: true,
-                  components: ~w(toast layout-heading typo icon link button scrollbar select)a
+                  components: ~w(
+                    toast layout-heading typo icon link button button-group dialog password-input
+                    scrollbar checkbox data-list data-table date-picker native-input number-input
+                    select toggle toggle-group
+                  )a
                 )
 
   describe "root_layout/1" do

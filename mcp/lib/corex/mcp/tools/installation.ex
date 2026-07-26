@@ -2,6 +2,7 @@ defmodule Corex.MCP.Tools.Installation do
   @moduledoc false
 
   alias Corex.MCP.Json
+  alias Corex.MCP.ToolError
 
   @valid_scenarios ~W(new_project existing_project tableau_new all)
 
@@ -46,7 +47,17 @@ defmodule Corex.MCP.Tools.Installation do
     encode_guide(payload)
   end
 
-  def installation_guide(_), do: {:error, :invalid_arguments}
+  def installation_guide(%{"scenario" => scenario} = args)
+      when is_binary(scenario) and map_size(args) == 1 do
+    ToolError.unknown_value("installation_guide", "scenario", @valid_scenarios)
+  end
+
+  def installation_guide(_) do
+    ToolError.invalid_arguments(
+      "installation_guide",
+      "optional scenario: one of #{Enum.join(@valid_scenarios, ", ")}"
+    )
+  end
 
   defp encode_guide(payload) do
     {:ok, Json.encode!(payload)}
@@ -185,7 +196,7 @@ defmodule Corex.MCP.Tools.Installation do
         #     env: %{\"NODE_PATH\" => [Path.expand(\"../deps\", __DIR__), Mix.Project.build_path()]}
 
         config :esbuild,
-          version: \"0.25.4\",
+          version: \"0.25.12\",
           my_app: [
             args:
               ~W(js/app.js --bundle --format=esm --splitting --target=es2022 --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),

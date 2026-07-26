@@ -2,9 +2,8 @@ defmodule Corex.New.Tableau.Generate do
   @moduledoc false
 
   alias Corex.New.Patches
+  alias Corex.New.Shared
   alias Corex.New.Tableau.Templates
-
-  @default_themes ["neo", "uno", "duo", "leo"]
 
   def run(install_dir, opts) do
     opts = normalize_opts(opts)
@@ -32,13 +31,15 @@ defmodule Corex.New.Tableau.Generate do
   end
 
   defp remove_tableau_scaffold!(install_dir) do
-    for rel <- ["lib/layouts", "lib/pages"] do
-      path = Path.join(install_dir, rel)
+    Enum.each(["lib/layouts", "lib/pages"], fn rel ->
+      remove_scaffold_dir(Path.join(install_dir, rel))
+    end)
 
-      if File.exists?(path) do
-        File.rm_rf!(path)
-      end
-    end
+    :ok
+  end
+
+  defp remove_scaffold_dir(path) do
+    if File.exists?(path), do: File.rm_rf!(path), else: []
   end
 
   defp write_gen_post_task(install_dir, assigns) do
@@ -49,17 +50,8 @@ defmodule Corex.New.Tableau.Generate do
   end
 
   defp normalize_opts(opts) do
-    themes =
-      cond do
-        Keyword.get(opts, :theme, false) -> Keyword.get(opts, :themes, @default_themes)
-        true -> ["neo"]
-      end
-
-    default_theme = List.first(themes) || "neo"
-
     opts
-    |> Keyword.put(:themes, themes)
-    |> Keyword.put(:default_theme, default_theme)
+    |> Shared.put_theme_opts()
     |> Keyword.put_new(:mode, false)
     |> Keyword.put_new(:theme, false)
     |> Keyword.put_new(:lang, false)
@@ -169,22 +161,7 @@ defmodule Corex.New.Tableau.Generate do
     )
   end
 
-  defp copy_gettext_catalog(install_dir) do
-    src = Corex.New.Generate.bundled_gettext_catalog_root()
-    dest = Path.join(install_dir, "priv/gettext")
-
-    unless File.dir?(src) do
-      Mix.raise("""
-      Corex gettext catalog template is missing at #{src}.
-
-      Expected installer/priv/gettext with default.pot and en/fr/ar PO files.
-      """)
-    end
-
-    Mix.shell().info([:green, "* copying ", :reset, "gettext catalog → priv/gettext/"])
-    File.mkdir_p!(Path.dirname(dest))
-    File.cp_r!(src, dest)
-  end
+  defp copy_gettext_catalog(install_dir), do: Shared.copy_gettext_catalog!(install_dir)
 
   defp write_config(install_dir, assigns) do
     write!(Path.join([install_dir, "config", "config.exs"]), Templates.config_exs(assigns))
@@ -243,134 +220,20 @@ defmodule Corex.New.Tableau.Generate do
   end
 
   defp installer_components(opts) do
-    base = ~w(toast layout-heading typo icon link button scrollbar)a
-
-    base =
-      if Keyword.get(opts, :mode, false) do
-        base ++ [:toggle]
-      else
-        base
-      end
-
-    if Keyword.get(opts, :theme, false) or Keyword.get(opts, :lang, false) do
-      base ++ [:select]
-    else
-      base
-    end
+    Corex.New.Components.installer_components(opts)
   end
 
   defp corex_js_import(install_dir, opts) do
-    case Keyword.get(opts, :dev) do
-      path when is_binary(path) ->
-        trimmed = String.trim(path)
-
-        if trimmed != "" do
-          Corex.New.Cli.validate_dev_path!(trimmed)
-          corex_root = Path.expand(trimmed, install_dir)
-          mjs = Path.join([corex_root, "priv", "static", "corex.mjs"])
-
-          unless File.exists?(mjs) do
-            Mix.raise("""
-            Expected Corex bundle at #{mjs}.
-
-            From the Corex checkout run:
-
-                mix assets.build
-
-            Then re-run corex.tableau.new with --dev.
-            """)
-          end
-
-          js_dir = Path.join([install_dir, "assets", "js"])
-          relative_import_from(js_dir, mjs)
-        else
-          "corex"
-        end
-
-      _ ->
-        "corex"
-    end
+    Shared.corex_js_import(install_dir, opts, "corex.tableau.new")
   end
 
-  defp relative_import_from(js_dir, target_file) do
-    js_dir = Path.expand(js_dir)
-    target_file = Path.expand(target_file)
-
-    from_parts = Path.split(js_dir)
-    to_parts = Path.split(target_file)
-
-    {from_rest, to_rest} = drop_common_prefix(from_parts, to_parts)
-
-    ups = List.duplicate("..", length(from_rest))
-    Path.join(ups ++ to_rest) |> String.replace("\\", "/")
-  end
-
-  defp drop_common_prefix([h | ta], [h | tb]), do: drop_common_prefix(ta, tb)
-  defp drop_common_prefix(a, b), do: {a, b}
-
-  defp corex_dep_source(opts) do
-    case Keyword.get(opts, :dev) do
-      path when is_binary(path) ->
-        trimmed = String.trim(path)
-
-        if trimmed != "" do
-          Corex.New.Cli.validate_dev_path!(trimmed)
-          "[path: #{inspect(trimmed)}, override: true]"
-        else
-          corex_dep_constraint()
-        end
-
-      _ ->
-        corex_dep_constraint()
-    end
-  end
-
-  defp corex_dep_constraint do
-    "\"~> 0.2.0\""
-  end
-
-  defp corex_design_dep_source(opts) do
-    case Keyword.get(opts, :dev) do
-      path when is_binary(path) ->
-        trimmed = String.trim(path)
-
-        if trimmed != "" do
-          Corex.New.Cli.validate_dev_path!(trimmed)
-          design_path = Path.join(trimmed, "design")
-          "[path: #{inspect(design_path)}, runtime: false]"
-        else
-          "\"~> 0.2.0\", runtime: false"
-        end
-
-      _ ->
-        "\"~> 0.2.0\", runtime: false"
-    end
-  end
-
-  defp corex_mcp_dep_source(opts) do
-    case Keyword.get(opts, :dev) do
-      path when is_binary(path) ->
-        trimmed = String.trim(path)
-
-        if trimmed != "" do
-          Corex.New.Cli.validate_dev_path!(trimmed)
-          mcp_path = Path.join(trimmed, "mcp")
-          "[path: #{inspect(mcp_path)}, only: [:dev, :test]]"
-        else
-          "\"~> 0.2.0\", only: [:dev, :test]"
-        end
-
-      _ ->
-        "\"~> 0.2.0\", only: [:dev, :test]"
-    end
-  end
+  defp corex_dep_source(opts), do: Shared.corex_dep_source(opts)
+  defp corex_design_dep_source(opts), do: Shared.corex_design_dep_source(opts)
+  defp corex_mcp_dep_source(opts), do: Shared.corex_mcp_dep_source(opts)
 
   defp app_lib_dir(install_dir, opts) do
     Path.join([install_dir, "lib", Atom.to_string(opts[:otp_app])])
   end
 
-  defp write!(path, contents) do
-    File.mkdir_p!(Path.dirname(path))
-    File.write!(path, contents)
-  end
+  defp write!(path, contents), do: Shared.write!(path, contents)
 end

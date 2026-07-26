@@ -92,7 +92,7 @@ defmodule Corex.New.PhxWrapper do
   end
 
   defp pty_subprocess_env do
-    base = System.get_env() || %{}
+    base = System.get_env()
 
     base
     |> Map.put("LANG", Map.get(base, "LANG", "C.UTF-8"))

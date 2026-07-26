@@ -43,14 +43,12 @@ defmodule Corex.MCP.ComponentDocs do
     end
   end
 
-  defp source_path_from_meta(%{} = meta) do
+  defp source_path_from_meta(meta) when is_map(meta) do
     meta
     |> Map.new(fn {key, value} -> {to_string(key), value} end)
     |> Map.get("source_path")
     |> relative_source_path()
   end
-
-  defp source_path_from_meta(_), do: nil
 
   defp compile_source_path(mod) do
     with list when is_list(list) <- mod.module_info(:compile),

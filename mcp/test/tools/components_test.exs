@@ -23,17 +23,24 @@ defmodule Corex.MCP.Tools.ComponentsTest do
   end
 
   test "list_components rejects non-empty arguments" do
-    assert {:error, :invalid_arguments} = Components.list_components(%{"extra" => "x"})
+    assert {:error, %{code: -32_602, data: %{tool: "list_components", expected: expected}}} =
+             Components.list_components(%{"extra" => "x"})
+
+    assert expected =~ "no arguments"
   end
 
   test "get_component rejects unknown keys" do
-    assert {:error, :invalid_arguments} =
+    assert {:error, %{code: -32_602, data: %{tool: "get_component"}}} =
              Components.get_component(%{"id" => "accordion", "extra" => "x"})
   end
 
   test "get_component rejects id longer than 64 bytes" do
     long_id = String.duplicate("a", 65)
-    assert {:error, :invalid_arguments} = Components.get_component(%{"id" => long_id})
+
+    assert {:error, %{code: -32_602, data: %{tool: "get_component", expected: expected}}} =
+             Components.get_component(%{"id" => long_id})
+
+    assert expected =~ "64 bytes"
   end
 
   test "get_component returns spec, docs, attrs, slots, and source metadata for a known id" do
@@ -71,8 +78,11 @@ defmodule Corex.MCP.Tools.ComponentsTest do
   end
 
   test "get_component rejects invalid arguments" do
-    assert {:error, :invalid_arguments} = Components.get_component(%{})
-    assert {:error, :invalid_arguments} = Components.get_component(%{"id" => 1})
+    assert {:error, %{code: -32_602, data: %{tool: "get_component"}}} =
+             Components.get_component(%{})
+
+    assert {:error, %{code: -32_602, data: %{tool: "get_component"}}} =
+             Components.get_component(%{"id" => 1})
   end
 
   test "get_component includes markdown docs and source metadata when available" do

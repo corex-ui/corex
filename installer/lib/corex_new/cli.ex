@@ -1,53 +1,47 @@
 defmodule Corex.New.Cli do
   @moduledoc false
 
+  @elixir_requirement "~> 1.18"
+
+  @design_dependent_flags [:mode, :theme, :lang]
+
   def elixir_version_check!(installer_version) do
-    unless Version.match?(System.version(), "~> 1.17") do
+    unless Version.match?(System.version(), @elixir_requirement) do
       Mix.raise(
-        "Corex v#{installer_version} requires at least Elixir v1.17\n " <>
+        "Corex v#{installer_version} requires Elixir #{@elixir_requirement}\n " <>
           "You have #{System.version()}. Please update accordingly"
       )
     end
   end
 
   def validate_corex_flags!(opts) do
-    if opts[:mode] == true and opts[:design] == false do
-      Mix.raise(
-        "--mode requires design. Remove `--no-design` (design will auto-enable for `--mode`)."
-      )
-    end
-
-    if opts[:theme] == true and opts[:design] == false do
-      Mix.raise(
-        "--theme requires design. Remove `--no-design` (design will auto-enable for `--theme`)."
-      )
-    end
-
-    if opts[:lang] == true and opts[:design] == false do
-      Mix.raise(
-        "--lang requires design. Remove `--no-design` (design will auto-enable for `--lang`)."
-      )
-    end
-
-    case opts[:dev] do
-      nil ->
-        :ok
-
-      v when is_binary(v) ->
-        trimmed = String.trim(v)
-
-        if trimmed == "" do
-          Mix.raise("--dev requires a non-empty path (for example: --dev ../corex)")
-        else
-          validate_dev_path!(trimmed)
-        end
-
-      _ ->
-        :ok
-    end
-
+    Enum.each(@design_dependent_flags, &validate_design_flag!(opts, &1))
+    validate_dev_flag!(opts[:dev])
     :ok
   end
+
+  defp validate_design_flag!(opts, flag) do
+    case {opts[flag], opts[:design]} do
+      {true, false} ->
+        Mix.raise(
+          "--#{flag} requires design. Remove `--no-design` (design will auto-enable for `--#{flag}`)."
+        )
+
+      _other ->
+        :ok
+    end
+  end
+
+  defp validate_dev_flag!(nil), do: :ok
+
+  defp validate_dev_flag!(path) when is_binary(path) do
+    case String.trim(path) do
+      "" -> Mix.raise("--dev requires a non-empty path (for example: --dev ../corex)")
+      trimmed -> validate_dev_path!(trimmed)
+    end
+  end
+
+  defp validate_dev_flag!(_path), do: :ok
 
   @doc """
   Auto-enable `--design` when `--mode`, `--theme`, or `--lang` is set
@@ -55,29 +49,26 @@ defmodule Corex.New.Cli do
   Prints a one-line notice unless `notify: false` is passed.
   """
   def maybe_auto_enable_design(opts, notify_opts \\ []) when is_list(opts) do
-    notify? = Keyword.get(notify_opts, :notify, true)
-    needs_design? = opts[:mode] == true or opts[:theme] == true or opts[:lang] == true
-
-    cond do
-      not needs_design? ->
-        opts
-
-      Keyword.get(opts, :design) == true ->
-        opts
-
-      Keyword.get(opts, :design) == false and needs_design? ->
-        opts
-
-      true ->
-        if notify? do
-          Mix.shell().info(
-            "* Corex: enabling --design because --mode/--theme/--lang was set; pass --no-design to opt out."
-          )
-        end
-
-        Keyword.put(opts, :design, true)
-    end
+    enable_design(opts, needs_design?(opts), Keyword.get(opts, :design), notify_opts)
   end
+
+  defp needs_design?(opts), do: Enum.any?(@design_dependent_flags, &(opts[&1] == true))
+
+  defp enable_design(opts, false, _design, _notify_opts), do: opts
+  defp enable_design(opts, true, design, _notify_opts) when is_boolean(design), do: opts
+
+  defp enable_design(opts, true, _design, notify_opts) do
+    notify_auto_design(Keyword.get(notify_opts, :notify, true))
+    Keyword.put(opts, :design, true)
+  end
+
+  defp notify_auto_design(true) do
+    Mix.shell().info(
+      "* Corex: enabling --design because --mode/--theme/--lang was set; pass --no-design to opt out."
+    )
+  end
+
+  defp notify_auto_design(_notify), do: :ok
 
   def validate_phx_new_flags!(opts) do
     forbidden =
@@ -103,10 +94,7 @@ defmodule Corex.New.Cli do
   end
 
   def relative_to_cwd_hint(path) when is_binary(path) do
-    case Path.relative_to_cwd(path) do
-      {:error, _} -> path
-      rel -> rel
-    end
+    Path.relative_to_cwd(path)
   end
 
   def confirm_install_path!(path) do

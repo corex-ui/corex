@@ -4,10 +4,10 @@ defmodule Corex.MCP.Tools.Components do
   alias Corex.MCP.ComponentDocs
   alias Corex.MCP.CorexAvailable
   alias Corex.MCP.Json
+  alias Corex.MCP.ToolError
   alias Corex.MCP.Tools.Design
 
   @max_id_length 64
-  @unknown_id_message "Unknown component id. Use list_components for valid ids."
 
   def tools do
     [
@@ -51,7 +51,7 @@ defmodule Corex.MCP.Tools.Components do
     end
   end
 
-  def list_components(_), do: {:error, :invalid_arguments}
+  def list_components(_), do: ToolError.invalid_arguments("list_components", "no arguments")
 
   def get_component(%{"id" => id} = args)
       when is_binary(id) and byte_size(id) <= @max_id_length and map_size(args) == 1 do
@@ -70,12 +70,17 @@ defmodule Corex.MCP.Tools.Components do
       |> Json.encode!()
       |> then(&{:ok, &1})
     else
-      :error -> {:error, @unknown_id_message}
+      :error -> ToolError.unknown_id("get_component", id, "list_components")
       {:error, _} = error -> error
     end
   end
 
-  def get_component(_), do: {:error, :invalid_arguments}
+  def get_component(_) do
+    ToolError.invalid_arguments(
+      "get_component",
+      "required id: string of at most #{@max_id_length} bytes, e.g. accordion or data_table"
+    )
+  end
 
   defp enrich_function_components(mod, function_components) do
     comps = component_meta(mod)

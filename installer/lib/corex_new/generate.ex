@@ -1,9 +1,7 @@
 defmodule Corex.New.Generate do
   @moduledoc false
 
-  alias Corex.New.{Patches, Templates}
-
-  @default_themes ["neo", "uno", "duo", "leo"]
+  alias Corex.New.{Patches, Shared, Templates}
 
   @doc """
   Runs all Corex post-generation work on a freshly-scaffolded Phoenix app at
@@ -51,20 +49,11 @@ defmodule Corex.New.Generate do
     web_module = Keyword.fetch!(opts, :web_module)
     app_module = Keyword.fetch!(opts, :app_module)
 
-    themes =
-      cond do
-        Keyword.get(opts, :theme, false) -> Keyword.get(opts, :themes, @default_themes)
-        true -> ["neo"]
-      end
-
-    default_theme = List.first(themes) || "neo"
-
     opts
     |> Keyword.put(:otp_app, otp_app)
     |> Keyword.put(:web_module, web_module)
     |> Keyword.put(:app_module, app_module)
-    |> Keyword.put(:themes, themes)
-    |> Keyword.put(:default_theme, default_theme)
+    |> Shared.put_theme_opts()
     |> Keyword.put_new(:mode, false)
     |> Keyword.put_new(:theme, false)
     |> Keyword.put_new(:lang, false)
@@ -161,9 +150,6 @@ defmodule Corex.New.Generate do
     write!(target, Templates.app_css(template_assigns(install_dir, opts)))
   end
 
-  defp beam_path_to_string(beam) when is_list(beam), do: List.to_string(beam)
-  defp beam_path_to_string(beam) when is_binary(beam), do: beam
-
   defp template_assigns(install_dir, opts) do
     [
       web_module: inspect(opts[:web_module]),
@@ -181,113 +167,12 @@ defmodule Corex.New.Generate do
   end
 
   defp corex_js_import(install_dir, opts) do
-    case Keyword.get(opts, :dev) do
-      path when is_binary(path) ->
-        trimmed = String.trim(path)
-
-        if trimmed != "" do
-          Corex.New.Cli.validate_dev_path!(trimmed)
-          corex_root = Path.expand(trimmed, install_dir)
-          mjs = Path.join([corex_root, "priv", "static", "corex.mjs"])
-
-          unless File.exists?(mjs) do
-            Mix.raise("""
-            Expected Corex bundle at #{mjs}.
-
-            From the Corex checkout run:
-
-                mix assets.build
-
-            Then re-run corex.new with --dev.
-            """)
-          end
-
-          js_dir = Path.join([install_dir, "assets", "js"])
-          relative_import_from(js_dir, mjs)
-        else
-          "corex"
-        end
-
-      _ ->
-        "corex"
-    end
+    Shared.corex_js_import(install_dir, opts, "corex.new")
   end
-
-  defp relative_import_from(js_dir, target_file) do
-    js_dir = Path.expand(js_dir)
-    target_file = Path.expand(target_file)
-
-    from_parts = Path.split(js_dir)
-    to_parts = Path.split(target_file)
-
-    {from_rest, to_rest} = drop_common_prefix(from_parts, to_parts)
-
-    ups = List.duplicate("..", length(from_rest))
-    rel = Path.join(ups ++ to_rest) |> String.replace("\\", "/")
-
-    resolved = Path.expand(Path.join(js_dir, rel))
-
-    if resolved != target_file do
-      Mix.raise(
-        "Could not resolve a relative import path from #{js_dir} to #{target_file}. Use paths on the same filesystem root."
-      )
-    end
-
-    rel
-  end
-
-  defp drop_common_prefix([h | ta], [h | tb]), do: drop_common_prefix(ta, tb)
-  defp drop_common_prefix(a, b), do: {a, b}
 
   defp web_underscore(opts), do: Atom.to_string(Keyword.fetch!(opts, :otp_app)) <> "_web"
 
-  defp write!(path, contents) do
-    File.mkdir_p!(Path.dirname(path))
-    File.write!(path, contents)
-  end
+  defp write!(path, contents), do: Shared.write!(path, contents)
 
-  def bundled_gettext_catalog_root do
-    case archive_priv_gettext_root() do
-      nil -> Path.expand("../../priv/gettext", __DIR__)
-      path -> path
-    end
-  end
-
-  defp archive_priv_gettext_root do
-    case :code.which(Corex.New.Generate) do
-      :non_existing ->
-        nil
-
-      :cover_compiled ->
-        nil
-
-      beam ->
-        beam = beam_path_to_string(beam)
-
-        root =
-          beam
-          |> Path.dirname()
-          |> Path.join("../priv/gettext")
-          |> Path.expand()
-
-        if File.exists?(Path.join(root, "default.pot")), do: root, else: nil
-    end
-  end
-
-  defp copy_gettext_catalog(install_dir) do
-    src = bundled_gettext_catalog_root()
-    dest = Path.join(install_dir, "priv/gettext")
-
-    unless File.dir?(src) do
-      Mix.raise("""
-      Corex gettext catalog template is missing at #{src}.
-
-      Expected installer/priv/gettext with default.pot and en/fr/ar PO files.
-      """)
-    end
-
-    Mix.shell().info([:green, "* copying ", :reset, "gettext catalog → priv/gettext/"])
-    File.mkdir_p!(Path.dirname(dest))
-    File.cp_r!(src, dest)
-  end
+  defp copy_gettext_catalog(install_dir), do: Shared.copy_gettext_catalog!(install_dir)
 end

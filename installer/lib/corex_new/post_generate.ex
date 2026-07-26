@@ -6,12 +6,7 @@ defmodule Corex.New.PostGenerate do
   def copy_cached_build(project_path) do
     case System.fetch_env("COREX_NEW_CACHE_DIR") do
       {:ok, cache_dir} ->
-        cache_dir = validate_cache_dir!(cache_dir)
-
-        if File.exists?(cache_dir) do
-          Mix.shell().info("Copying cached build from #{cache_dir}")
-          copy_tree!(cache_dir, project_path)
-        end
+        cache_dir |> validate_cache_dir!() |> copy_cache_dir(project_path)
 
       :error ->
         :ok
@@ -33,12 +28,17 @@ defmodule Corex.New.PostGenerate do
     end
   end
 
+  defp copy_cache_dir(cache_dir, project_path) do
+    Mix.shell().info("Copying cached build from #{cache_dir}")
+    copy_tree!(cache_dir, project_path)
+  end
+
   defp copy_tree!(source_dir, dest_dir) do
     File.mkdir_p!(dest_dir)
 
-    for entry <- File.ls!(source_dir) do
+    Enum.each(File.ls!(source_dir), fn entry ->
       File.cp_r!(Path.join(source_dir, entry), Path.join(dest_dir, entry))
-    end
+    end)
   end
 
   def init_git(project_path) do

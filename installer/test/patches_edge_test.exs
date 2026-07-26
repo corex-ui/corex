@@ -113,7 +113,7 @@ defmodule Corex.New.PatchesEdgeTest do
   end
 
   describe "patch_mix_exs/2 edge cases" do
-    test "warns when deps block cannot be located" do
+    test "raises with recovery guidance when the deps block cannot be located" do
       mix_exs = """
       defmodule MyApp.MixProject do
         use Mix.Project
@@ -127,9 +127,14 @@ defmodule Corex.New.PatchesEdgeTest do
       in_tmp(:patch_mix_no_deps, fn ->
         File.write!("mix.exs", mix_exs)
 
-        flush()
-        Patches.patch_mix_exs(File.cwd!(), [])
-        assert_shell_info_contains!("Could not locate `defp deps do")
+        error =
+          assert_raise Mix.Error, fn ->
+            Patches.patch_mix_exs(File.cwd!(), [])
+          end
+
+        assert error.message =~ "could not add a dependency"
+        assert error.message =~ "defp deps do"
+        assert error.message =~ "mix archive.install hex corex_new --force"
         refute File.read!("mix.exs") =~ "{:corex,"
       end)
     end

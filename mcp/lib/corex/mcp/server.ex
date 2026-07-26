@@ -45,6 +45,7 @@ defmodule Corex.MCP.Server do
     end
   end
 
+  @dialyzer {:nowarn_function, test_raise_tool: 0}
   defp test_raise_tool do
     %{
       name: "test_raise",
@@ -167,15 +168,6 @@ defmodule Corex.MCP.Server do
 
   defp result_or_error(request_id, {:ok, result}) when is_map(result) do
     jsonrpc_result(request_id, result)
-  end
-
-  defp result_or_error(request_id, {:error, :invalid_arguments}) do
-    {:error,
-     %{
-       jsonrpc: "2.0",
-       id: request_id,
-       error: %{code: @invalid_params, message: "Invalid arguments for tool"}
-     }}
   end
 
   defp result_or_error(request_id, {:error, message}) when is_binary(message) do
@@ -317,18 +309,13 @@ defmodule Corex.MCP.Server do
     |> send_resp(conn.status || 200, Json.encode!(data))
   end
 
-  defp send_jsonrpc_error(conn, id, code, message, data \\ nil) do
-    error =
-      %{code: code, message: message}
-      |> maybe_put_error_data(data)
+  defp send_jsonrpc_error(conn, id, code, message) do
+    error = %{code: code, message: message}
 
     conn
     |> put_resp_content_type("application/json")
     |> send_resp(200, Json.encode!(%{jsonrpc: "2.0", id: id, error: error}))
   end
-
-  defp maybe_put_error_data(error, nil), do: error
-  defp maybe_put_error_data(error, data), do: Map.put(error, :data, data)
 
   @doc "Handles a JSON-RPC MCP request over HTTP."
   def handle_http_message(conn) do

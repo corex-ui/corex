@@ -8,7 +8,7 @@ CI (`.github/workflows/elixir.yml`) installs **`phx_new`** and locally built **`
 in order:
 
 The matrix runs **latest** `phx_new` on each OTP / Elixir row, then repeats all three rows with **pinned
-`phx_new 1.8.4`** (aligned with `installer/mix.exs` `@phoenix_version`) so `corex.new` stays compatible
+`phx_new 1.8.7`** (aligned with `installer/mix.exs` `@phoenix_version`) so `corex.new` stays compatible
 with older Phoenix installers as well as current Hex releases.
 
 1. **`mix test`**  -  matches local default; `test_helper.exs` sets `exclude: [:database]`, so untagged work runs here.

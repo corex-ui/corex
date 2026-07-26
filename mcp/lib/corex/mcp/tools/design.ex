@@ -3,35 +3,20 @@ defmodule Corex.MCP.Tools.Design do
 
   alias Corex.MCP.DesignAvailable
   alias Corex.MCP.Json
+  alias Corex.MCP.ToolError
 
   @max_id_length 64
   @valid_guide_topics ~W(setup modifiers theming dark_mode all)
-  @valid_axes ~W(semantic variant size radius max_height shape)
-
-  @fallback_semantics ~w(base accent brand alert info success)
-  @fallback_sizes ~w(xs sm md lg xl)
-  @fallback_radii ~w(none xs sm md lg xl 2xl 3xl 4xl full)
-  @fallback_max_heights ~w(xs sm md lg xl 2xl 3xl 4xl 5xl 6xl)
-
-  @elixir_to_css %{
-    "angle_slider" => "angle-slider",
-    "color_picker" => "color-picker",
-    "data_list" => "data-list",
-    "data_table" => "data-table",
-    "date_picker" => "date-picker",
-    "file_upload" => "file-upload",
-    "floating_panel" => "floating-panel",
-    "native_input" => "native-input",
-    "number_input" => "number-input",
-    "password_input" => "password-input",
-    "pin_input" => "pin-input",
-    "radio_group" => "radio-group",
-    "signature_pad" => "signature-pad",
-    "tags_input" => "tags-input",
-    "toggle_group" => "toggle-group",
-    "tree_view" => "tree-view",
-    "action" => "button"
+  @axis_keys %{
+    "semantic" => :semantic,
+    "variant" => :variant,
+    "size" => :size,
+    "radius" => :radius,
+    "max_height" => :max_height,
+    "width" => :width,
+    "shape" => :shape
   }
+  @valid_axes Map.keys(@axis_keys) |> Enum.sort()
 
   def tools do
     [
@@ -114,7 +99,13 @@ defmodule Corex.MCP.Tools.Design do
     encode(modifier_vocabulary(axis))
   end
 
-  def list_modifiers(_), do: {:error, :invalid_arguments}
+  def list_modifiers(%{"axis" => axis} = args) when is_binary(axis) and map_size(args) == 1 do
+    ToolError.unknown_value("list_modifiers", "axis", @valid_axes)
+  end
+
+  def list_modifiers(_) do
+    ToolError.invalid_arguments("list_modifiers", "optional axis: one of #{axis_list()}")
+  end
 
   def get_component_style(%{"id" => id} = args)
       when is_binary(id) and byte_size(id) <= @max_id_length and map_size(args) == 1 do
@@ -124,7 +115,12 @@ defmodule Corex.MCP.Tools.Design do
     end
   end
 
-  def get_component_style(_), do: {:error, :invalid_arguments}
+  def get_component_style(_) do
+    ToolError.invalid_arguments(
+      "get_component_style",
+      "required id: string of at most #{@max_id_length} bytes, e.g. accordion, date_picker, or date-picker"
+    )
+  end
 
   def list_themes(%{} = args) when map_size(args) == 0 do
     case DesignAvailable.ensure_design() do
@@ -133,7 +129,7 @@ defmodule Corex.MCP.Tools.Design do
     end
   end
 
-  def list_themes(_), do: {:error, :invalid_arguments}
+  def list_themes(_), do: ToolError.invalid_arguments("list_themes", "no arguments")
 
   def design_guide(args) when args in [nil, %{}] do
     encode(guide_payload("all"))
@@ -144,39 +140,53 @@ defmodule Corex.MCP.Tools.Design do
     encode(guide_payload(topic))
   end
 
-  def design_guide(_), do: {:error, :invalid_arguments}
-
-  def css_id_for_elixir(id) when is_binary(id) do
-    Map.get(@elixir_to_css, id, String.replace(id, "_", "-"))
+  def design_guide(%{"topic" => topic} = args) when is_binary(topic) and map_size(args) == 1 do
+    ToolError.unknown_value("design_guide", "topic", @valid_guide_topics)
   end
 
+  def design_guide(_) do
+    ToolError.invalid_arguments(
+      "design_guide",
+      "optional topic: one of #{Enum.join(@valid_guide_topics, ", ")}"
+    )
+  end
+
+  defp axis_list, do: Enum.join(@valid_axes, ", ")
+
+  @doc """
+  Adds the design slice to a `get_component` payload.
+
+  Three outcomes, each self-describing: design loaded and the component has a
+  styled host, design loaded but the component has none (`hidden_input`), or
+  design not loaded at all. Only the first can name a root class, because the
+  class only exists once corex_design has emitted its CSS.
+  """
   def design_enrichment(elixir_id) when is_binary(elixir_id) do
-    if DesignAvailable.design_available?() do
-      css_id = css_id_for_elixir(elixir_id)
+    with :ok <- DesignAvailable.ensure_design(),
+         {:ok, css_id} <- DesignAvailable.fetch_css_id(elixir_id) do
+      style = component_style(css_id, elixir_id)
 
-      if css_id in DesignAvailable.layout_ids() do
-        style = component_style(css_id, elixir_id)
-
+      %{
+        design_available: true,
+        css_id: style.css_id,
+        root_class: style.root_class,
+        modifiers: %{
+          axes: style.axes,
+          examples: style.examples
+        },
+        layout: style.layout,
+        design_css_path: style.design_css_path
+      }
+    else
+      :error ->
         %{
           design_available: true,
-          css_id: style.css_id,
-          root_class: style.root_class,
-          modifiers: %{
-            axes: style.axes,
-            examples: style.examples
-          },
-          layout: style.layout,
-          design_css_path: style.design_css_path
+          css_id: nil,
+          note: "#{elixir_id} renders no styled host, so it has no design modifiers."
         }
-      else
-        %{design_available: true, css_id: css_id, note: "No ComponentLayout entry for this id."}
-      end
-    else
-      %{
-        design_available: false,
-        css_id: css_id_for_elixir(elixir_id),
-        root_class: css_id_for_elixir(elixir_id)
-      }
+
+      {:error, reason} ->
+        %{design_available: false, note: reason}
     end
   end
 
@@ -190,15 +200,7 @@ defmodule Corex.MCP.Tools.Design do
   defp modifier_vocabulary(axis) do
     full = full_modifier_vocabulary()
 
-    slice =
-      case axis do
-        "semantic" -> %{semantic: full.semantic}
-        "variant" -> %{variant: full.variant}
-        "size" -> %{size: full.size}
-        "radius" -> %{radius: full.radius}
-        "max_height" -> %{max_height: full.max_height}
-        "shape" -> %{shape: full.shape}
-      end
+    slice = Map.take(full, [Map.fetch!(@axis_keys, axis)])
 
     Map.merge(slice, %{
       axis: axis,
@@ -209,29 +211,34 @@ defmodule Corex.MCP.Tools.Design do
   end
 
   defp full_modifier_vocabulary do
-    design? = DesignAvailable.design_available?()
+    if DesignAvailable.design_available?() do
+      modifier_vocabulary_from_design()
+    else
+      modifier_vocabulary_unavailable()
+    end
+  end
 
-    semantics =
-      if design? do
-        DesignAvailable.default_semantics() |> Enum.map(&to_string/1)
-      else
-        @fallback_semantics
-      end
+  defp modifier_vocabulary_from_design do
+    build_modifier_vocabulary(
+      true,
+      Enum.map(DesignAvailable.default_semantics(), &to_string/1),
+      DesignAvailable.sizes(),
+      DesignAvailable.radii(),
+      DesignAvailable.max_heights(),
+      DesignAvailable.widths()
+    )
+  end
 
-    sizes =
-      if design? do
-        DesignAvailable.sizes()
-      else
-        @fallback_sizes
-      end
+  defp modifier_vocabulary_unavailable do
+    false
+    |> build_modifier_vocabulary([], [], [], [], [])
+    |> Map.put(
+      :note,
+      "Step ladders come from corex_design. Add {:corex_design, \"~> 0.2\", runtime: false, only: :dev} to mix.exs to get the real vocabulary."
+    )
+  end
 
-    radii =
-      if design? do
-        DesignAvailable.radii()
-      else
-        @fallback_radii
-      end
-
+  defp build_modifier_vocabulary(design?, semantics, sizes, radii, max_heights, widths) do
     %{
       design_available: design?,
       pattern: "<root> ui-<role> ui-solid ui-size-<step> ui-rounded-<step>",
@@ -242,7 +249,9 @@ defmodule Corex.MCP.Tools.Design do
       variant: %{
         default: "subtle (no class)",
         solid: "ui-solid",
-        note: "Do not invent ghost or outline variants."
+        ghost: "ui-ghost",
+        note:
+          "Action hosts only. Selection, field and static hosts have no variant axis; call get_component_style to see a host's axes."
       },
       size: %{
         steps: sizes,
@@ -253,12 +262,16 @@ defmodule Corex.MCP.Tools.Design do
         classes: Enum.map(radii, &"ui-rounded-#{&1}")
       },
       max_height: %{
-        steps: @fallback_max_heights,
-        classes: Enum.map(@fallback_max_heights, &"ui-max-h-#{&1}")
+        steps: max_heights,
+        classes: Enum.map(max_heights, &"ui-max-height-#{&1}")
+      },
+      width: %{
+        steps: widths,
+        classes: Enum.map(widths, &"ui-width-#{&1}")
       },
       shape: %{
-        note: "Button/action hosts only.",
-        classes: ["ui-square", "ui-circle"]
+        note: "Button and badge hosts.",
+        classes: ["ui-trigger--square", "ui-trigger--circle"]
       },
       anti_patterns: [
         "Do not invent new class names or BEM modifiers in templates.",
@@ -269,32 +282,26 @@ defmodule Corex.MCP.Tools.Design do
   end
 
   defp resolve_css_id(id) do
-    css_id =
-      if String.contains?(id, "_") do
-        css_id_for_elixir(id)
-      else
-        id
-      end
-
-    if css_id in DesignAvailable.layout_ids() do
-      {:ok, css_id}
+    if id in DesignAvailable.component_ids() do
+      {:ok, id}
     else
-      {:error,
-       "Unknown design component id. Use list_components or a CSS id from ComponentLayout."}
+      resolve_elixir_id(id)
+    end
+  end
+
+  defp resolve_elixir_id(id) do
+    case DesignAvailable.fetch_css_id(id) do
+      {:ok, css_id} -> {:ok, css_id}
+      :error -> ToolError.unknown_id("get_component_style", id, "list_components")
     end
   end
 
   defp component_style(css_id, original_id) do
-    layout = DesignAvailable.layout_get(css_id)
-    axes = default_axes_for(css_id)
-    root = String.trim_leading(DesignAvailable.layout_host_selector(css_id), ".")
-
-    examples =
-      [
-        "#{root} ui-accent ui-size-lg",
-        "#{root} ui-accent ui-solid ui-size-md",
-        "#{root} ui-brand ui-size-lg ui-rounded-xl"
-      ]
+    axes = DesignAvailable.axes_for(css_id) |> Enum.map(&Atom.to_string/1)
+    root = String.trim_leading(DesignAvailable.host_selector(css_id), ".")
+    examples = style_examples(root, axes)
+    host_width = DesignAvailable.host_width(css_id)
+    default_max = DesignAvailable.default_max(css_id)
 
     %{
       id: original_id,
@@ -303,14 +310,30 @@ defmodule Corex.MCP.Tools.Design do
       axes: axes,
       examples: examples,
       layout: %{
-        host_width: DesignAvailable.layout_host_width_label(css_id),
-        default_max: DesignAvailable.layout_default_max_label(css_id),
-        host_width_atom: layout.host_width,
-        default_max_raw: encode_default_max(layout.default_max)
+        host_width: DesignAvailable.host_width_label(css_id),
+        default_max: DesignAvailable.default_max_label(css_id),
+        host_width_atom: host_width,
+        default_max_raw: encode_default_max(default_max)
       },
       design_css_path: relative_design_css_path(css_id),
       design_available: true
     }
+  end
+
+  defp style_examples(root, axes) do
+    if "variant" in axes do
+      [
+        "#{root} ui-accent ui-size-lg",
+        "#{root} ui-accent ui-solid ui-size-md",
+        "#{root} ui-brand ui-size-lg ui-rounded-xl"
+      ]
+    else
+      [
+        "#{root} ui-accent ui-size-lg",
+        "#{root} ui-brand ui-size-md",
+        "#{root} ui-info ui-size-lg ui-rounded-xl"
+      ]
+    end
   end
 
   defp encode_default_max(:none), do: "none"
@@ -318,24 +341,15 @@ defmodule Corex.MCP.Tools.Design do
   defp encode_default_max({:container, step}), do: "container:#{step}"
 
   defp relative_design_css_path(css_id) do
-    abs = DesignAvailable.layout_css_path(css_id)
+    abs = DesignAvailable.css_path(css_id)
     root = Path.expand(Corex.MCP.root())
 
-    cond do
-      String.starts_with?(abs, root <> "/") -> Path.relative_to(abs, root)
-      true -> "priv/css/components/#{css_id}.css"
+    if String.starts_with?(abs, root <> "/") do
+      Path.relative_to(abs, root)
+    else
+      "priv/css/components/#{css_id}.css"
     end
   end
-
-  defp default_axes_for("button"), do: ["semantic", "variant", "size", "radius", "shape"]
-  defp default_axes_for("badge"), do: ["semantic", "variant", "size", "radius"]
-  defp default_axes_for("typo"), do: ["semantic", "size"]
-  defp default_axes_for("icon"), do: ["semantic", "size"]
-  defp default_axes_for("link"), do: ["semantic"]
-  defp default_axes_for("scrollbar"), do: ["size"]
-
-  defp default_axes_for(_),
-    do: ["semantic", "variant", "size", "radius", "max_height"]
 
   defp themes_payload do
     %{

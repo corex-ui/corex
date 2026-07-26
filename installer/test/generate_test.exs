@@ -3,24 +3,24 @@ defmodule Corex.New.GenerateTest do
 
   import ExUnit.CaptureIO
 
-  alias Corex.New.{Generate, ScaffoldHelper}
+  alias Corex.New.{Generate, ScaffoldHelper, Shared}
 
   test "bundled_gettext_catalog_root points at installer priv when snapshot exists" do
-    root = Generate.bundled_gettext_catalog_root()
+    root = Shared.bundled_gettext_catalog_root()
     assert File.exists?(Path.join(root, "default.pot"))
     assert File.exists?(Path.join(root, "en/LC_MESSAGES/default.po"))
     assert String.ends_with?(root, "priv/gettext")
   end
 
   test "archive_priv_gettext_root resolves from compiled module beam path" do
-    beam = :code.which(Corex.New.Generate)
+    beam = :code.which(Shared)
 
     if is_binary(beam) or is_list(beam) do
       beam = if is_list(beam), do: List.to_string(beam), else: beam
       expected = beam |> Path.dirname() |> Path.join("../priv/gettext") |> Path.expand()
 
       if File.exists?(Path.join(expected, "default.pot")) do
-        assert Generate.bundled_gettext_catalog_root() == expected
+        assert Shared.bundled_gettext_catalog_root() == expected
       end
     end
   end
@@ -222,6 +222,84 @@ defmodule Corex.New.GenerateTest do
       config = File.read!("config/config.exs")
       assert config =~ "neo"
       assert config =~ "leo"
+    end)
+  end
+
+  test "run/2 scaffold produces consistent file tree across default opts" do
+    Corex.New.MixHelper.in_tmp("generate scaffold consistency", fn ->
+      ScaffoldHelper.write_phoenix_scaffold!(File.cwd!())
+
+      capture_io(fn ->
+        assert :ok == Generate.run(File.cwd!(), ScaffoldHelper.base_generate_opts())
+      end)
+
+      expected_files = [
+        "lib/my_app_web.ex",
+        "lib/my_app_web/router.ex",
+        "lib/my_app_web/endpoint.ex",
+        "mix.exs",
+        "config/config.exs",
+        "assets/js/app.js",
+        "assets/css/app.css",
+        "lib/my_app_web/components/layouts.ex"
+      ]
+
+      for file <- expected_files do
+        assert File.exists?(file), "expected #{file} to exist after generate"
+      end
+
+      web_ex = File.read!("lib/my_app_web.ex")
+      assert web_ex =~ "use Corex"
+
+      mix_exs = File.read!("mix.exs")
+      assert mix_exs =~ "{:corex,"
+      assert mix_exs =~ "{:corex_design,"
+      assert mix_exs =~ "{:corex_mcp,"
+
+      endpoint_ex = File.read!("lib/my_app_web/endpoint.ex")
+      assert endpoint_ex =~ "plug Corex.MCP"
+
+      config = File.read!("config/config.exs")
+      assert config =~ "config :corex_design"
+
+      app_css = File.read!("assets/css/app.css")
+      assert app_css =~ "../corex/corex.css"
+    end)
+  end
+
+  test "run/2 with all flags produces consistent scaffold" do
+    Corex.New.MixHelper.in_tmp("generate all flags consistency", fn ->
+      ScaffoldHelper.write_phoenix_scaffold!(File.cwd!())
+
+      opts =
+        ScaffoldHelper.base_generate_opts(
+          mode: true,
+          theme: true,
+          lang: true,
+          design: true,
+          mcp: true
+        )
+
+      assert :ok == Generate.run(File.cwd!(), opts)
+
+      web_ex = File.read!("lib/my_app_web.ex")
+      assert web_ex =~ "use Corex"
+      assert web_ex =~ "path_prefixes"
+
+      router = File.read!("lib/my_app_web/router.ex")
+      assert router =~ "plug MyAppWeb.Plugs.Mode"
+      assert router =~ "plug MyAppWeb.Plugs.Theme"
+
+      config = File.read!("config/config.exs")
+      assert config =~ "config :corex"
+      assert config =~ "config :corex_design"
+      assert config =~ "config :localize"
+      assert config =~ "layout:"
+
+      assert File.exists?("lib/my_app_web/plugs/mode.ex")
+      assert File.exists?("lib/my_app_web/plugs/theme.ex")
+      assert File.exists?("lib/my_app_web/locale.ex")
+      assert File.exists?("lib/my_app_web/hooks/layout.ex")
     end)
   end
 end

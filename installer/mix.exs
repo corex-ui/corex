@@ -7,10 +7,10 @@ defmodule Corex.New.MixProject do
   use Mix.Project
 
   @version "0.2.0"
-  @phoenix_version "1.8.4"
+  @phoenix_version "1.8.7"
   @scm_url "https://github.com/corex-ui/corex"
 
-  @elixir_requirement "~> 1.17"
+  @elixir_requirement "~> 1.18"
 
   def project do
     [
@@ -23,6 +23,7 @@ defmodule Corex.New.MixProject do
       elixir: @elixir_requirement,
       deps: deps(),
       aliases: aliases(),
+      dialyzer: dialyzer(),
       package: [
         maintainers: ["Karim Semmoud"],
         licenses: ["MIT"],
@@ -58,7 +59,18 @@ defmodule Corex.New.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:oeditus_credo, "~> 0.6.3", only: [:dev, :test], runtime: false},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
-      {:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false}
+      {:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:corex_design, path: "../design", only: :test, runtime: false}
+    ]
+  end
+
+  defp dialyzer do
+    [
+      plt_local_path: "priv/plts",
+      plt_core_path: "priv/plts",
+      plt_add_apps: [:mix, :ex_unit],
+      flags: [:error_handling, :extra_return, :missing_return, :unmatched_returns]
     ]
   end
 

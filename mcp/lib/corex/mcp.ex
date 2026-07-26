@@ -63,7 +63,8 @@ defmodule Corex.MCP do
     if Application.get_env(:corex_mcp, :debug) || Application.get_env(:corex, :debug) do
       :ok
     else
-      Logger.put_module_level(Server, :none)
+      _ = Logger.put_module_level(Server, :none)
+      :ok
     end
   end
 

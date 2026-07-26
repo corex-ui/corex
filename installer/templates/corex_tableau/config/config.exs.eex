@@ -17,7 +17,7 @@ config :<%= @otp_app %>, :mcp_enabled, false
 config :<%= @otp_app %>, :mcp_port, 4004
 
 config :esbuild,
-  version: "0.25.5",
+  version: "0.25.12",
   default: [
     args: ~w(js/site.js --bundle --format=esm --splitting --target=es2022 --outdir=../_site/js),
     cd: Path.expand("../assets", __DIR__),

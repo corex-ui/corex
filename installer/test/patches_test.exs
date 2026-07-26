@@ -132,7 +132,7 @@ defmodule Corex.New.PatchesTest do
     generators: [timestamp_type: :utc_datetime]
 
   config :esbuild,
-    version: "0.25.4",
+    version: "0.25.12",
     my_app: [
       args:
         ~w(js/app.js --bundle --target=es2022 --outdir=../priv/static/assets --external:/fonts/* --external:/images/* --alias:@=.),
@@ -591,6 +591,25 @@ defmodule Corex.New.PatchesTest do
       end)
     end
 
+    test "raises when there is no html_helpers block to patch" do
+      in_tmp(:patch_web_module_no_helpers, fn ->
+        File.mkdir_p!("lib")
+
+        File.write!("lib/my_app_web.ex", """
+        defmodule MyAppWeb do
+        end
+        """)
+
+        error =
+          assert_raise Mix.Error, fn ->
+            Patches.patch_web_module(File.cwd!(), MyAppWeb)
+          end
+
+        assert error.message =~ "could not add `use Corex`"
+        assert error.message =~ "html_helpers"
+      end)
+    end
+
     test "adds path_prefixes when lang is enabled" do
       in_tmp(:patch_web_module_lang, fn ->
         File.mkdir_p!("lib/my_app_web")
@@ -622,6 +641,30 @@ defmodule Corex.New.PatchesTest do
         assert body =~ "Localize.Plug.PutLocale"
         assert body =~ ~s(scope "/:locale")
         refute body =~ ~s(scope "/:locale",,)
+      end)
+    end
+
+    test "raises when the browser pipeline has no anchor for the theme plug" do
+      in_tmp(:patch_router_no_anchor, fn ->
+        File.mkdir_p!("lib/my_app_web")
+
+        File.write!("lib/my_app_web/router.ex", """
+        defmodule MyAppWeb.Router do
+          use MyAppWeb, :router
+
+          pipeline :browser do
+            plug :accepts, ["html"]
+          end
+        end
+        """)
+
+        error =
+          assert_raise Mix.Error, fn ->
+            Patches.patch_router(File.cwd!(), MyAppWeb, theme: true)
+          end
+
+        assert error.message =~ "could not wire up the theme plug"
+        assert error.message =~ "plug :fetch_live_flash"
       end)
     end
 
@@ -742,6 +785,46 @@ defmodule Corex.New.PatchesTest do
       end)
     end
 
+    test "raises when an esbuild target exists but cannot be switched to ESM" do
+      in_tmp(:patch_config_esbuild_unknown, fn ->
+        File.mkdir_p!("config")
+
+        File.write!("config/config.exs", """
+        import Config
+
+        config :esbuild,
+          version: "0.25.12",
+          my_app: [
+            args: ~w(js/entry.ts --bundle --outdir=../priv/static/assets)
+          ]
+        """)
+
+        error =
+          assert_raise Mix.Error, fn ->
+            Patches.patch_config_exs(File.cwd!(), otp_app: :my_app)
+          end
+
+        assert error.message =~ "could not switch esbuild to ESM output"
+        assert error.message =~ "js/app.js --bundle"
+      end)
+    end
+
+    test "leaves config alone when the project has no esbuild target" do
+      in_tmp(:patch_config_no_esbuild, fn ->
+        File.mkdir_p!("config")
+
+        config = """
+        import Config
+
+        config :my_app, ecto_repos: [MyApp.Repo]
+        """
+
+        File.write!("config/config.exs", config)
+        assert :ok = Patches.patch_config_exs(File.cwd!(), otp_app: :my_app)
+        assert File.read!("config/config.exs") == config
+      end)
+    end
+
     test "joins NODE_PATH env lists for tailwind and esbuild on Elixir 1.18" do
       in_tmp(:patch_config_node_path, fn ->
         File.mkdir_p!("config")
@@ -766,7 +849,7 @@ defmodule Corex.New.PatchesTest do
         import Config
 
         config :esbuild,
-          version: "0.25.4",
+          version: "0.25.12",
           my_app: [
             args: ~w(js/app.js --bundle),
             cd: Path.expand("../assets", __DIR__),
