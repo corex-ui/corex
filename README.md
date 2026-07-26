@@ -15,7 +15,7 @@
 - **Truly unstyled.** Bring your own CSS or opt into Corex Design tokens, themes and modes.
 - **Accessible by default.** Keyboard, focus and ARIA wired in by Zag.js state machines.
 
-With `{:corex, "~> 0.1.0"}`, patch and minor releases stay backward compatible until 0.2.0. See [Updating Corex](https://hexdocs.pm/corex/update.html).
+With `{:corex, "~> 0.2.0"}`, patch releases stay backward compatible within 0.2.x. See [Updating Corex](https://hexdocs.pm/corex/update.html).
 
 ## Packages
 
@@ -46,7 +46,7 @@ Design and MCP are on by default. Pass `--no-design` or `--no-mcp` to skip eithe
 If you want the full feature set:
 
 ```bash
-mix corex.new my_app --mode --theme --lang --designex
+mix corex.new my_app --mode --theme --lang
 ```
 
 Run **`mix help corex.new`** or see **`Mix.Tasks.Corex.New`** in Hexdocs for every Corex-only flag.

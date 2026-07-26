@@ -15,6 +15,10 @@ Never guess. Fallback: `mix usage_rules.search_docs "<id>" -p corex`.
 | Hook | `assets/js/app.js` | Register if component uses `phx-hook` |
 | HEEx | `lib/*_web/` | `<.<id> id="stable-id" class="<id> …">` |
 
+## Attr vocabulary
+
+Selection components use `value` / `on_value_change` by default. Boolean Zag widgets (checkbox, switch, toggle) use `checked` / `pressed` and matching `on_*_change` handlers instead. Data table selection uses `selected`. Prefer MCP `get_component` when unsure which attr a host expects.
+
 ## Data builders
 
 | Builder | Use for |

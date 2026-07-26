@@ -42,7 +42,7 @@ This requires two Esbuild flags on your main app target: **`--format=esm`**, **`
 
 ```elixir
 config :esbuild,
-  version: "0.25.4",
+  version: "0.25.12",
   my_app: [
     args:
       ~w(js/app.js --bundle --format=esm --splitting --target=es2022 --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),

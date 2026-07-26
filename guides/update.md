@@ -109,11 +109,13 @@ Per-component BEM palette/size modifiers are gone. Use shared `ui-*` classes on 
 | `accordion accordion--lg` | `accordion ui-size-lg` |
 | `timer timer--rounded-xl` | `timer ui-rounded-xl` |
 | `button button--accent button--solid` | `button ui-accent ui-solid` |
-| `button button--ghost` / `button--outline` | removed (use default subtle, or `ui-solid`) |
+| `button button--ghost` / `button--outline` | `button ui-ghost` (outline removed; drop `--outline` / `ui-outline`) |
 
 Stack freely: `class="accordion ui-accent ui-size-lg ui-rounded-xl"`.
 
-Axes: **semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **variant** (`ui-solid` only; subtle is default), **size** (`ui-size-sm` … `ui-size-xl`), **radius** (`ui-rounded-*`). Full reference: [modifier guide](modifiers.html).
+Axes: **semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **variant** (`ui-solid`, `ui-ghost`; subtle is default), **size** (`ui-size-sm` … `ui-size-xl`), **radius** (`ui-rounded-*`). Full reference: [modifier guide](modifiers.html).
+
+**No variant axis** on `switch`, `checkbox`, `radio-group`, `native-input`, `number-input`, `password-input`, `pin-input`, `tags-input`, or selection hosts such as `toggle` and `toggle-group`. Drop `ui-solid` / `ui-ghost` / `ui-outline` from those hosts. Binary controls always paint the checked state with the semantic fill (the former solid treatment). Input fields keep the shared `ui-input` surface; semantic classes only tint focus and accent ink. `ui-outline` is removed entirely.
 
 ### Token renames
 
@@ -158,11 +160,26 @@ Use `invalid={true}` to force the alert state without errors. Explicit `invalid`
 
 Do not set `form_field` or `field_used` on components; use `field={@form[:…]}` only.
 
+## Unreleased API renames
+
+| Before | After |
+|--------|-------|
+| `toast-create` / `toast-update` / `toast-remove` / `toast-dismiss` | `toast_create` / `toast_update` / `toast_remove` / `toast_dismiss` |
+| toast payload / detail `groupId` | `group_id` |
+| `toggle-group_set_value` | `toggle_group_set_value` |
+| marquee push `%{marquee_id: …}` | `%{id: …}` |
+| pagination `<:prev>` / `<:next>` | `<:prev_trigger>` / `<:next_trigger>` |
+| color_picker `label="…"` | `<:label>…</:label>` |
+| `file_upload_live` `field={:name}` | `upload_name={:name}` |
+
+Zag-faithful attrs (`checked` / `pressed` / `on_checked_change`, and data_table `selected`) stay as-is. Prefer `value` / `on_value_change` for selection components.
+
 ## After upgrading
 
 1. Read [CHANGELOG.md](https://github.com/corex-ui/corex/blob/main/CHANGELOG.md) for breaking or additive changes.
-2. Grep your templates for `--accent`, `--ghost`, `--outline`, and per-component size/radius BEM classes; rewrite to `ui-*`.
-3. Run your usual checks (`mix test`, `mix assets.build`, and your app’s browser checks).
-4. Spot-check pages that use components you rely on (forms, overlays, tables).
+2. Grep your templates for `--accent`, `--ghost`, `--outline`, and per-component size/radius BEM classes; rewrite to `ui-*`. Remove any remaining `ui-outline` (variant deleted).
+3. Grep for the Unreleased API renames above (`toast-create`, `groupId`, `<:prev>`, color_picker `label=`, `file_upload_live` `field=`).
+4. Run your usual checks (`mix test`, `mix assets.build`, and your app’s browser checks).
+5. Spot-check pages that use components you rely on (forms, overlays, tables).
 
 For a full manual install path (first-time setup), see [Manual installation](manual_installation.html).

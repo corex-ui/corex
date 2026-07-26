@@ -56,7 +56,7 @@ Configure Esbuild in `config/config.exs` (ESM + splitting for dynamic hook impor
 
 ```elixir
 config :esbuild,
-  version: "0.25.5",
+  version: "0.25.12",
   default: [
     args:
       ~w(js/site.js --bundle --format=esm --splitting --target=es2022 --outdir=../_site/js),

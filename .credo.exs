@@ -135,6 +135,7 @@
           ## Readability Checks
           #
           {Credo.Check.Readability.AliasOrder, []},
+          {Credo.Check.Readability.StrictModuleLayout, []},
           {Credo.Check.Readability.FunctionNames, []},
           {Credo.Check.Readability.LargeNumbers, []},
           {Credo.Check.Readability.MaxLineLength, [priority: :low, max_length: 120]},
@@ -155,6 +156,12 @@
           {Credo.Check.Readability.UnnecessaryAliasExpansion, []},
           {Credo.Check.Readability.VariableNames, []},
           {Credo.Check.Readability.WithSingleClause, []},
+          {Credo.Check.Readability.Specs,
+           [
+             files: %{
+               included: ["lib/corex/**/*.{ex,exs}"]
+             }
+           ]},
 
           #
           ## Refactoring Opportunities
@@ -202,6 +209,12 @@
           {Credo.Check.Warning.UnusedStringOperation, []},
           {Credo.Check.Warning.UnusedTupleOperation, []},
           {Credo.Check.Warning.WrongTestFilename, []},
+          {Credo.Check.Warning.UnsafeToAtom,
+           [
+             files: %{
+               excluded: ["lib/mix/**/*", "lib/corex.ex", "lib/corex/connect/mounted.ex", "lib/corex/translation.ex", "lib/components/code.ex", "test/**/*"]
+             }
+           ]},
           # Error Handling
           {OeditusCredo.Check.Warning.MissingErrorHandling, []},
           {OeditusCredo.Check.Warning.SilentErrorCase, []},
@@ -288,8 +301,6 @@
           {Credo.Check.Readability.SeparateAliasRequire, []},
           {Credo.Check.Readability.SingleFunctionToBlockPipe, []},
           {Credo.Check.Readability.SinglePipe, []},
-          {Credo.Check.Readability.Specs, []},
-          {Credo.Check.Readability.StrictModuleLayout, []},
           {Credo.Check.Readability.WithCustomTaggedTuple, []},
           {Credo.Check.Refactor.ABCSize, []},
           {Credo.Check.Refactor.AppendSingleItem, []},
@@ -308,7 +319,6 @@
           {Credo.Check.Warning.LeakyEnvironment, []},
           {Credo.Check.Warning.MapGetUnsafePass, []},
           {Credo.Check.Warning.MixEnv, []},
-          {Credo.Check.Warning.UnsafeToAtom, []}
           # {Credo.Check.Warning.UnusedOperation, [{MyMagicModule, [:fun1, :fun2]}]}
 
           # {Credo.Check.Refactor.MapInto, []},

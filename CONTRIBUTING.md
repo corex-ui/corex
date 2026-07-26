@@ -15,7 +15,7 @@ For large features (new components, API changes), open an issue first so we can 
 
 ### Requirements
 
-- **Elixir** `~> 1.17` and a compatible **Erlang/OTP** (CI runs 1.17 / OTP 26 and 1.18 / OTP 27–28).
+- **Elixir** `~> 1.18` and a compatible **Erlang/OTP** (CI runs 1.18 / OTP 27–28 and 1.19.5 / OTP 28, plus a LiveView 1.2 leg).
 - **Node.js** 24 and **npm** (root package: hooks, esbuild, lint).
 - **pnpm** 10.x for the e2e app assets.
 - **PostgreSQL** for e2e and some integration tests.
@@ -26,10 +26,10 @@ For large features (new components, API changes), open an issue first so we can 
 git clone https://github.com/corex-ui/corex.git
 cd corex
 mix deps.get
-pnpm install
+npm install
 mix assets.build
 mix test
-pnpm run check
+npm run check
 ```
 
 ### Test coverage
@@ -37,16 +37,21 @@ pnpm run check
 - **`:corex` (root):** 90% minimum via Coveralls on `lib/`, excluding struct-only and Mix codegen modules listed in `coveralls.json` (see file for the current skip list).
 - **`:corex_new` (installer):** 90% via `mix test --cover` in `installer/`.
 - **e2e / integration_test:** functional tests; not counted in root Coveralls.
-- **`assets/` (Vitest + TypeScript):** `pnpm test` runs Vitest (hooks, components, lib); `pnpm run lint:js` runs typecheck, Prettier, ESLint, and generated `.d.ts` check (CI **Lint** job); `pnpm run check` runs `pnpm test` then `pnpm run lint:js` (local pre-PR). `pnpm run typecheck` and `pnpm run lint` are also available individually.
+- **`assets/` (Vitest + TypeScript):** `npm test` runs Vitest (hooks, components, lib); `npm run lint:js` runs typecheck, Prettier, ESLint, and generated `.d.ts` check (CI **Lint** job); `npm run check` runs `npm test` then `npm run lint:js` (local pre-PR). `npm run typecheck` and `npm run lint` are also available individually.
 
-Optional quality checks before a PR (same as `mix pre.publish`):
+Optional quality checks before a PR:
 
 ```bash
 mix lint
 mix docs
+mix ci
 ```
 
-`mix lint` runs `format --check-formatted`, `credo --strict`, and `sobelow --exit`. OeditusCredo and ExSlop checks are enabled in `.credo.exs` and run via `mix credo --strict` (not `mix oeditus_credo`, which uses a separate default config).
+`mix lint` (root) runs format check, compile with warnings as errors (dev and test), full `corex.doc_parity` for anatomy and form, `credo --strict`, and `sobelow --exit`. OeditusCredo and ExSlop checks are enabled in `.credo.exs` and run via `mix credo --strict` (not `mix oeditus_credo`, which uses a separate default config).
+
+`mix format.all` formats the root package plus `design/`, `mcp/`, and `installer/`. `mix format.all.check` is the check-only variant.
+
+`mix ci` is the single local command that covers the monorepo packages contributors usually touch: format checks across packages, root `mix lint`, root tests, design/mcp/installer lint + dialyzer + tests, and `npm run check`. E2e and `integration_test/` stay separate because they need Postgres and generated apps.
 
 ### E2e app (`e2e/`)
 
@@ -66,10 +71,11 @@ mix phx.server
 
 Visit [http://localhost:4000](http://localhost:4000).
 
-Do not expect one local command to run the entire monorepo suite. Prefer profiles:
+Prefer these profiles for targeted work (for the full packages + JS gate, use `mix ci` from the repo root):
 
 | Profile | Command | Use when |
 | ------- | ------- | -------- |
+| Packages + JS | `mix ci` (repo root) | Pre-PR for library / design / MCP / installer / hooks |
 | Library | `mix test` (repo root) | Component/unit changes |
 | E2e fast (PR-shaped) | `cd e2e && mix test --exclude a11y --exclude slow` | Conn/LiveView + Wallaby without DocA11y axe |
 | E2e full | `cd e2e && mix test` | Hook/a11y changes; matches main CI |
@@ -171,9 +177,9 @@ Use H2 sections in this order when applicable: **Anatomy**, **API**, **Events**,
 
 Components with a `translation` assign use `Corex.<Component>.Translation`:
 
-- `default/0` — strings via `Corex.Gettext.gettext/1`
-- `merge/2` — partial overrides; `nil` / `""` fall back via `Corex.Translation.take/2`
-- Module `@moduledoc` — table `Field | Default | Used for`
+- `default/0` : strings via `Corex.Gettext.gettext/1`
+- `merge/2` : partial overrides; `nil` / `""` fall back via `Corex.Translation.take/2`
+- Module `@moduledoc` : table `Field | Default | Used for`
 - `attr(:translation, …, default: nil)` and `Map.get(assigns, :translation)` before merge
 
 ### `attr` and `slot`
@@ -188,7 +194,7 @@ Every `attr` and `slot` should have a `doc:` (except `rest` / `:global`).
 
 ### Corex Design CSS
 
-- Modifiers use BEM-style classes on the host: `accordion accordion--accent accordion--lg`.
+- Modifiers use shared `ui-*` classes on the host: `accordion ui-accent ui-size-lg`.
 - Implement modifiers with `@utility <component>--*` in `priv/design/corex/components/<name>.css`.
 - Document Color / Size (and other axes) in the component **Style** section as modifier tables.
 

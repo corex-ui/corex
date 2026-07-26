@@ -4,6 +4,8 @@ Corex has **no** `<.form>` component. Forms use standard Phoenix [`to_form/1`](h
 
 Discover field-capable attrs via MCP `get_component` for each input id.
 
+Selection hosts default to `value` / `on_value_change`. Boolean Zag widgets (checkbox, switch, toggle) use `checked` / `pressed` instead. Data table selection uses `selected`.
+
 ## LiveView form pattern
 
 ```elixir
@@ -41,7 +43,7 @@ end
   <.native_input field={@form[:email]} type="email" class="native-input">
     <:label>Email</:label>
   </.native_input>
-  <.action type="submit" class="button button--accent">Save</.action>
+  <.action type="submit" class="button ui-accent">Save</.action>
 </.form>
 ```
 
