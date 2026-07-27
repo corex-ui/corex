@@ -47,7 +47,6 @@ defmodule Corex do
          angle_slider_skeleton: 1
        ]},
     avatar: {Corex.Avatar, [avatar: 1, avatar_skeleton: 1]},
-    button_group: {Corex.ButtonGroup, [button_group: 1]},
     carousel:
       {Corex.Carousel,
        [
@@ -139,7 +138,6 @@ defmodule Corex do
     except = Keyword.get(opts, :except, [])
     prefix = Keyword.get(opts, :prefix)
 
-    # Filter components based on only/except
     selected_components =
       @components
       |> Enum.filter(fn {component_name, _} ->
@@ -147,13 +145,11 @@ defmodule Corex do
       end)
 
     if prefix do
-      # Generate wrapper functions with prefix
       wrappers =
         for {_component_name, {mod, functions}} <- selected_components,
             {func_name, arity} <- functions do
           prefixed_name = :"#{prefix}_#{func_name}"
 
-          # Generate the appropriate number of arguments
           args = Macro.generate_arguments(arity, __MODULE__)
 
           quote do
@@ -163,7 +159,6 @@ defmodule Corex do
           end
         end
 
-      # Generate aliases
       aliases =
         for {_component_name, {mod, _functions}} <- selected_components do
           quote do
@@ -176,7 +171,6 @@ defmodule Corex do
         unquote_splicing(aliases)
       end
     else
-      # Normal import without prefix
       imports =
         for {_component_name, {mod, functions}} <- selected_components do
           quote do

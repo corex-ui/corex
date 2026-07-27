@@ -278,7 +278,6 @@ defmodule Corex.MixProject do
         Corex.Action,
         Corex.AngleSlider,
         Corex.Avatar,
-        Corex.ButtonGroup,
         Corex.Carousel,
         Corex.Checkbox,
         Corex.Clipboard,

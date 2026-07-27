@@ -29,7 +29,6 @@ defmodule Corex.DocParity.Markers do
       "value slot" => ["anatomy_value_code"]
     },
     "action" => %{"minimal" => ["anatomy_minimal_code"]},
-    "button_group" => %{"minimal" => ["anatomy_minimal_code"]},
     "data_list" => %{
       "custom slots" => ["custom_slots_code"],
       "empty" => ["empty_code"],
