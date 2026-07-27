@@ -618,7 +618,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
   def patterns_patch_heex do
     ~S"""
     <ul class="flex flex-col gap-space w-full max-w-md">
-      <li :for={post <- @posts} class="flex flex-col gap-space-xs p-space rounded-md bg-layer border border-border">
+      <li :for={post <- @posts} class="flex flex-col gap-space-xs p-space rounded-md bg-surface border border-border">
         <h3>{post.title}</h3>
         <p class="text-ink-muted text-sm">{post.excerpt}</p>
       </li>
@@ -697,7 +697,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
   def patterns_server_heex do
     ~S"""
     <ul class="flex flex-col gap-space w-full max-w-md">
-      <li :for={post <- @posts} class="flex flex-col gap-space-xs p-space rounded-md bg-layer border border-border">
+      <li :for={post <- @posts} class="flex flex-col gap-space-xs p-space rounded-md bg-surface border border-border">
         <h3>{post.title}</h3>
         <p class="text-ink-muted text-sm">{post.excerpt}</p>
       </li>
@@ -780,7 +780,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
                 ...(pages[page - 1] ?? []).map((post) => {
                   const li = document.createElement("li");
                   li.className =
-                    "flex flex-col gap-space-xs p-space rounded-md bg-layer border border-border";
+                    "flex flex-col gap-space-xs p-space rounded-md bg-surface border border-border";
                   const title = document.createElement("h3");
                   title.textContent = post.title;
                   const excerpt = document.createElement("p");
@@ -802,7 +802,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
       <ul id="pagination-patterns-client-list" class="flex flex-col gap-space w-full max-w-md">
         <li
           :for={post <- @posts}
-          class="flex flex-col gap-space-xs p-space rounded-md bg-layer border border-border"
+          class="flex flex-col gap-space-xs p-space rounded-md bg-surface border border-border"
         >
           <h3>{post.title}</h3>
           <p class="text-ink-muted text-sm">{post.excerpt}</p>
@@ -921,7 +921,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
     <ul class="flex flex-col gap-space w-full max-w-md">
       <li
         :for={post <- @posts}
-        class="flex flex-col gap-space-xs p-space rounded-md bg-layer border border-border"
+        class="flex flex-col gap-space-xs p-space rounded-md bg-surface border border-border"
       >
         <h3>{post.title}</h3>
         <p class="text-ink-muted text-sm">{post.excerpt}</p>
@@ -1002,7 +1002,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
                   ...(pages[page - 1] ?? []).map((post) => {
                     const li = document.createElement("li");
                     li.className =
-                      "flex flex-col gap-space-xs p-space rounded-md bg-layer border border-border";
+                      "flex flex-col gap-space-xs p-space rounded-md bg-surface border border-border";
                     const title = document.createElement("h3");
                     title.textContent = post.title;
                     const excerpt = document.createElement("p");
@@ -1024,7 +1024,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
         <ul id="pagination-patterns-client-list" class="flex flex-col gap-space w-full max-w-md">
           <li
             :for={post <- @posts}
-            class="flex flex-col gap-space-xs p-space rounded-md bg-layer border border-border"
+            class="flex flex-col gap-space-xs p-space rounded-md bg-surface border border-border"
           >
             <h3>{post.title}</h3>
             <p class="text-ink-muted text-sm">{post.excerpt}</p>

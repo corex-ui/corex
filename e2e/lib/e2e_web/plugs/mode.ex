@@ -8,7 +8,11 @@ defmodule E2eWeb.Plugs.Mode do
   def init(opts), do: opts
 
   def call(conn, _opts) do
-    mode = conn.cookies["phx_mode"]
+    mode =
+      case conn.cookies["phx_mode"] do
+        "dark" -> "dark"
+        _ -> "light"
+      end
 
     conn
     |> assign(:mode, mode)

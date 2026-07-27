@@ -8,7 +8,7 @@ defmodule E2eWeb.Layouts do
   import E2eWeb.App.{Footer, Header, Pagination, Aside}
   alias E2eWeb.App.Shell
 
-  import E2eWeb.{ModeToggle, ThemeToggle}
+  import E2eWeb.{AccessibilityToggle, ModeToggle, ThemeToggle}
 
   embed_templates("layouts/*")
 
@@ -39,7 +39,7 @@ defmodule E2eWeb.Layouts do
     assigns = assign(assigns, :path, path)
 
     ~H"""
-    <.header path={@path} theme={@theme} mode={@mode} variant={:marketing} />
+    <.header path={@path} theme={@theme} mode={@mode} />
     <div class={Shell.wrapper()}>
       <.aside path={@path} theme={@theme} mode={@mode} />
       <main id="main-content" class={Shell.main()}>
@@ -70,7 +70,7 @@ defmodule E2eWeb.Layouts do
             duration={:infinity}
           />
         </div>
-        <.footer path={@path} variant={:marketing} />
+        <.footer path={@path} />
       </main>
     </div>
     """
@@ -91,7 +91,7 @@ defmodule E2eWeb.Layouts do
     assigns = assign(assigns, :path, path)
 
     ~H"""
-    <.header path={@path} theme={@theme} mode={@mode} variant={:marketing} />
+    <.header path={@path} theme={@theme} mode={@mode} />
     <div class={Shell.wrapper() <> " shell-blog-wrapper"}>
       <main id="main-content" class={Shell.main() <> " shell-blog-main w-full"}>
         <div class={Shell.content_blog() <> " shell-blog-content items-stretch"}>
@@ -116,7 +116,7 @@ defmodule E2eWeb.Layouts do
         />
       </main>
     </div>
-    <.footer path={@path} variant={:marketing} />
+    <.footer path={@path} />
     """
   end
 
@@ -125,7 +125,7 @@ defmodule E2eWeb.Layouts do
     assigns = assign(assigns, :path, path)
 
     ~H"""
-    <.header path={@path} theme={@theme} mode={@mode} variant={:marketing} />
+    <.header id="home-header" path={@path} theme={@theme} mode={@mode} />
     <div class={Shell.wrapper()}>
       <main id="main-content" class={Shell.main() <> " w-full"}>
         <div class={Shell.content_marketing()}>
@@ -150,7 +150,7 @@ defmodule E2eWeb.Layouts do
         />
       </main>
     </div>
-    <.footer path={@path} variant={:marketing} />
+    <.footer id="home-footer" path={@path} />
     """
   end
 
@@ -160,4 +160,12 @@ defmodule E2eWeb.Layouts do
     do: E2eWeb.Path.strip_after_locale(c.request_path)
 
   defp path_resolved(_), do: ""
+
+  defp a11y_data_attrs(nil), do: a11y_data_attrs(%{})
+
+  defp a11y_data_attrs(a11y) when is_map(a11y) do
+    a11y
+    |> Corex.Design.Accessibility.sanitize()
+    |> Map.new(fn {key, value} -> {"data-#{key}", value} end)
+  end
 end

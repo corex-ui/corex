@@ -17,7 +17,7 @@ defmodule E2eWeb.ThemeToggle do
     ~H"""
     <.select
       id={@id}
-      class="select ui-ghost ui-size-sm ui-rounded-full ui-width-auto"
+      class="select ui-ghost ui-size-sm ui-width-auto"
       items={[
         %{value: "neo", label: "Neo"},
         %{value: "uno", label: "Uno"},

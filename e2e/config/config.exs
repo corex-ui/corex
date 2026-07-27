@@ -81,7 +81,8 @@ config :corex_design,
   default_theme: :neo,
   default_mode: :light,
   themes: nil,
-  scales: []
+  scales: [],
+  accessibility: [:text, :contrast, :motion, :cursor, :focus, :links]
 
 config :tailwind,
   version: "4.1.12",

@@ -28,7 +28,7 @@ defmodule E2eWeb.HomePageTest do
     assert html =~ "lg:grid-cols-2"
     refute html =~ "md:grid-cols-2"
     refute html =~ "max-h-28"
-    assert html =~ "dialog--side"
+    assert html =~ ~s(id="site-nav-menu")
     assert html =~ "phx-hook=\"HomeHero\""
     assert html =~ "hero-accordion-changed"
     assert html =~ "data-hero-accordion-value"
@@ -39,14 +39,18 @@ defmodule E2eWeb.HomePageTest do
     refute html =~ ~s(id="home-api")
     refute html =~ ~s(id="home-cta")
     refute html =~ ~s(id="home-catalog")
+    refute html =~ "dialog--side"
   end
 
-  test "docs page uses marketing header and footer chrome", %{conn: conn} do
+  test "docs page uses classic sticky header chrome", %{conn: conn} do
     conn = get(conn, ~p"/accordion/anatomy")
     html = html_response(conn, 200)
 
-    assert html =~ ~s(id="home-header")
-    assert html =~ ~s(id="home-footer")
-    assert html =~ "dialog--side"
+    refute html =~ ~s(id="home-header")
+    refute html =~ ~s(id="home-footer")
+    refute html =~ "dialog--side"
+    assert html =~ ~s(id="site-nav-menu")
+    assert html =~ "sticky top-0"
+    assert html =~ "border-b border-border"
   end
 end

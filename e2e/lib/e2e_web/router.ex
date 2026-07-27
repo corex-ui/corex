@@ -8,6 +8,7 @@ defmodule E2eWeb.Router do
     plug(:fetch_live_flash)
     plug(E2eWeb.Plugs.Mode)
     plug(E2eWeb.Plugs.Theme)
+    plug(E2eWeb.Plugs.Accessibility)
 
     plug(Localize.Plug.PutLocale,
       from: [:path, :session, :query],
@@ -44,6 +45,7 @@ defmodule E2eWeb.Router do
       on_mount: [
         E2eWeb.ModeLive,
         E2eWeb.ThemeLive,
+        E2eWeb.AccessibilityLive,
         E2eWeb.PathLive,
         E2eWeb.MountTelemetry,
         E2eWeb.SEO.Live

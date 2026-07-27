@@ -7,30 +7,17 @@ defmodule E2eWeb.App.Shell do
 
   def header,
     do:
-      "sticky top-0 z-20 h-size-lg flex items-center border-b border-border bg-layer/80 backdrop-blur-md"
-
-  def header_marketing,
-    do:
-      "sticky top-0 z-20 w-full flex items-start justify-center px-space-xl pt-space bg-transparent"
+      "sticky top-0 z-20 h-size-lg flex items-center border-b border-border bg-surface"
 
   def header_content,
-    do: "mx-auto w-full flex items-center justify-between gap-space-lg px-space-xl h-size-lg"
-
-  def header_content_marketing,
     do:
-      "mx-auto flex w-fit max-w-full items-center justify-between gap-space-xl rounded-full border border-border bg-layer/80 px-space-lg py-space-sm backdrop-blur-md"
+      "mx-auto w-full max-w-9xl flex items-center justify-between gap-space-lg px-space-xl h-size-lg"
 
-  def footer, do: "bg-layer border-t border-border flex items-center min-h-size-lg"
-
-  def footer_marketing,
-    do: "bg-transparent flex items-center px-space-xl pb-space-xl"
+  def footer, do: "bg-surface border-t border-border flex items-center min-h-size-lg"
 
   def footer_content,
-    do: "mx-auto w-full flex flex-col gap-size-lg px-space-xl py-space-lg min-h-size-lg"
-
-  def footer_content_marketing,
     do:
-      "mx-auto flex w-full max-w-7xl flex-col gap-space-lg rounded-2xl border border-border bg-layer/80 p-space-lg backdrop-blur-md"
+      "mx-auto w-full max-w-9xl flex flex-col gap-size-lg px-space-xl py-space min-h-size-lg"
 
   def wrapper, do: "flex flex-1 min-h-0 w-full min-w-0 bg-root relative mx-auto"
 

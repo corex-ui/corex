@@ -48,14 +48,14 @@ defmodule E2eWeb.Home.Page do
             <div class="mt-space-sm flex flex-wrap items-center justify-center gap-space lg:justify-start">
               <.navigate
                 to={~p"/accordion/playground"}
-                class="button ui-accent ui-solid ui-size-lg ui-rounded-full"
+                class="button ui-accent ui-solid ui-size-lg"
               >
                 {~t"Browse components"}
                 <.heroicon name="hero-arrow-right" />
               </.navigate>
               <.navigate
                 to="https://hexdocs.pm/corex/installation.html"
-                class="button ui-ghost ui-size-lg ui-rounded-full"
+                class="button ui-ghost ui-size-lg"
                 external
               >
                 {~t"Visit Hexdocs"}
@@ -66,7 +66,7 @@ defmodule E2eWeb.Home.Page do
 
           <div
             id="home-hero-interactive"
-            class="relative flex h-[min(22rem,55dvh)] w-full min-w-0 flex-col overflow-hidden rounded-xl border border-border bg-layer shadow-md lg:h-[min(28rem,72dvh)]"
+            class="relative flex h-[min(22rem,55dvh)] w-full min-w-0 flex-col overflow-hidden rounded-md border border-border bg-surface shadow-md lg:h-[min(28rem,72dvh)]"
             phx-hook="HomeHero"
           >
             <h2 class="sr-only">{~t"Interactive preview"}</h2>
@@ -78,21 +78,21 @@ defmodule E2eWeb.Home.Page do
               <button
                 type="button"
                 data-hero-accordion-value={Jason.encode!(["anatomy"])}
-                class="button ui-size-sm ui-rounded-full"
+                class="button ui-size-sm"
               >
                 <.heroicon name="hero-chevron-right" /> {~t"Open first"}
               </button>
               <button
                 type="button"
                 data-hero-accordion-value={Jason.encode!(["anatomy", "machine"])}
-                class="button ui-size-sm ui-rounded-full"
+                class="button ui-size-sm"
               >
                 <.heroicon name="hero-square-3-stack-3d" /> {~t"Open all"}
               </button>
               <button
                 type="button"
                 data-hero-accordion-value={Jason.encode!([])}
-                class="button ui-size-sm ui-rounded-full"
+                class="button ui-size-sm"
               >
                 <.heroicon name="hero-x-mark" /> {~t"Close all"}
               </button>
