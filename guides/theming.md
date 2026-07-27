@@ -6,6 +6,8 @@ Package: [corex_design](https://hexdocs.pm/corex_design). Full guide on **corex*
 
 Visitors pick a Corex Design theme (neo, uno, duo, leo) from a `<.select>`. The choice updates `data-theme` on `<html>` without a server round-trip, and persists across reloads.
 
+Each preset is a full personality pack: muted brand color, shared status colors (alert / info / success), plus density, radius, shadow, blur, focus ring geometry, border width, and motion durations. Switching themes should change how the UI feels, not only the brand hue.
+
 Theme is independent from light/dark mode. Corex Design combines them as `[data-theme="neo"][data-mode="dark"]`. Mode is covered in [Dark mode](dark_mode.html). Static Tableau sites use the same picker pattern without plugs; see [Tableau Theming](tableau_theming.html).
 
 ## Install first
@@ -100,5 +102,6 @@ With LiveViews, ensure `:theme` is on the socket (session via `Plugs.Theme`, or 
 - [Configuration](configuration.html): build vs picker vs generators
 - [Design](design.html): `config :corex_design` theme CSS
 - [Dark mode](dark_mode.html): mode toggle; combine bridges in one `<script>` block
+- [Accessibility](accessibility.html): optional preference axes; same bridge pattern
 - [Tableau Theming](tableau_theming.html): static site equivalent
 - [Localize](localize.html): language switcher when using `--lang`

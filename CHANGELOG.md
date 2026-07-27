@@ -6,14 +6,22 @@
 
 #### Design system
 
-- **Design v1 chrome contract:** shared recipe chrome is generated once in `recipes.css` (no `@apply ui-trigger` / `ui-item` inlining). Host class (`class="accordion"`) remains the per-instance opt-in.
+- **Color-native tokens:** seeds + Oklch lightness / `Color.Palette.contrast` (no PaletteGen sampling). Public names end-to-end: `root`, `surface`, `ui`, `ink`, roles `accent`/`brand`/`alert`/`info`/`success`.
+- **`layer` renamed to `surface`** (`--color-surface`, `bg-surface`).
+- **Non-color tokens are public names only:** Publish writes `--radius-*`, `--spacing-*`, `--font-*`, `--duration-*`, … under `[data-theme]`. Semantic bridges are `@theme` identity registration (no `--theme-*` indirection).
+- **Theme Spec lean:** `profile` and intent knobs (`radius_curve`, `elevation`, …) removed; personality is numeric Dimensions + fonts.
+- **Recipes:** host/part selectors only (no `.ui-chrome-*`); disclosure/selection nest under role chrome.
+- **Config:** `semantics:` only (no `scales: [semantic:]`). Nested legacy color maps rejected.
+- **Accessibility:** `true` enables `:text` / `:focus` / `:links`; motion/contrast prefer OS media queries.
+- **Installer defaults:** trimmed component list; `semantics: [:accent, :brand, :alert]`.
+- **Design v1 chrome contract:** shared recipe chrome is generated once in `recipes.css` (no `@apply ui-trigger` / `ui-item` inlining). Host class (`class="accordion"`) remains the per-instance opt-in. Disclosure and selection rules nest under role chrome.
 - **Paint rules:** idle follows the variant axis; disclosure (`open`) darkens only; selection (`on` / `checked` / `selected` / …) always fills with `--ctl-fill`.
 - **`ui-outline` removed.** Variants are subtle (default), `ui-solid`, and `ui-ghost` only.
 - **No variant axis on Selection or Field hosts:** `toggle`, `toggle-group`, `checkbox`, `radio-group`, `switch`, `tabs`, `pagination`, `tree-view`, `angle-slider`, plus `native-input`, `number-input`, `password-input`, `pin-input`, and `tags-input`. Drop `ui-solid` / `ui-ghost` / `ui-outline` from those hosts; field surface stays `ui-input` (semantic classes tint focus and accent ink only). Binary controls always paint the checked state with the semantic fill.
 - **`--ctl-sel-*` removed.** Selection paint uses `--ctl-fill` / `--ctl-fill-ink`.
 - **`ThemeDefinition` removed.** Keyword `config :corex_design` is the only config surface.
 - **`ui-width-*` added;** prefer it over hand-written width CSS on Corex hosts.
-- **New-app defaults:** `default_theme: :uno`, `themes: [:uno]`, installer components include `toggle-group` and `button-group`.
+- **New-app defaults:** without `--theme`, the installer scaffolds `themes: [:neo]` and `default_theme: :neo` (single theme). With `--theme`, all presets ship and the first listed id is default. Installer components: `toast`, `layout-heading`, `typo`, `icon`, `link`, `button`, `dialog`, `scrollbar`, `checkbox`, `native-input`, `select`, `toggle`, `badge`. The Design package fallback when `default_theme` is omitted from config remains `:uno`.
 - **`mix corex.code` renamed to `mix corex.design.code`.** Update scripts and docs that call the old task name.
 
 #### Components and API
@@ -74,7 +82,6 @@ See the [update guide](guides/update.html) for migration notes.
 
 #### Components and API
 
-- **`button_group`:** presentational segmented actions (`role="group"`) with `button-group.css`.
 - **Dialog:** `<:content class=...>` merges onto the content part.
 - **Link:** underline grows on hover via scale; `ui-nav` is the chrome-less nav treatment (ink, no underline, `aria-current` color/weight).
 - **Native radio:** circular indicator painted with control fill tokens (not a checkmark).
@@ -104,6 +111,7 @@ See the [update guide](guides/update.html) for migration notes.
 
 - Enriched MCP component discovery and design tools (see Breaking changes for package move).
 - Installer defaults align with design update themes and component allowlists.
+- **`--a11y`** (default off) on `mix corex.new` and `mix corex.tableau.new`: scaffolds accessibility preference CSS, plug/hook (Phoenix), FOUC bridge, and panel UI. Implies `--design`.
 
 #### Tooling
 

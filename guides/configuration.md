@@ -11,7 +11,7 @@ Theme CSS, the theme picker, and generator layout flags are three different knob
 | Config | Role | Details |
 | ------ | ---- | ------- |
 | `config :corex` | Generators and debug | `debug`, `generators` (including `layout: [theme: true, mode: true]`) for `mix corex.gen.*` only. See below. |
-| `config :corex_design` | Build-time CSS | Which theme CSS, components, and semantics `mix corex.design.build` emits (`themes`, `default_theme`, `default_mode`, …). See [Design](design.html). List allowed keys with `mix corex.design.options`. |
+| `config :corex_design` | Build-time CSS | Which theme CSS, components, semantics, and optional accessibility preference CSS `mix corex.design.build` emits (`themes`, `default_theme`, `default_mode`, `accessibility`, …). See [Design](design.html) and [Accessibility](accessibility.html). List allowed keys with `mix corex.design.options`. |
 | `config :my_app, :themes` | Runtime picker allowlist | Which theme names plugs / Tableau `Config` / JS may switch among (default = first entry). See [Theming](theming.html). Keep this a subset of what `:corex_design` emits. |
 | `config :corex_mcp` | MCP endpoint | Separate Hex package; see [MCP](https://hexdocs.pm/corex_mcp/MCP.html). |
 
@@ -73,6 +73,7 @@ MCP lives in the separate Hex package `corex_mcp`. Mount `plug Corex.MCP` on the
 - [Design](design.html): `config :corex_design` and bundle filtering
 - [Theming](theming.html): runtime `data-theme` picker
 - [Dark mode](dark_mode.html): runtime `data-mode` toggle
+- [Accessibility](accessibility.html): optional preference axes (`data-text`, `data-contrast`, …). Scaffold with `mix corex.new --a11y` / `mix corex.tableau.new --a11y` (default off).
 - [Localize](localize.html): locales and Gettext setup
 - [MCP](https://hexdocs.pm/corex_mcp/MCP.html): development tooling endpoint (`corex_mcp`)
 - [Installation](installation.html): first-time setup

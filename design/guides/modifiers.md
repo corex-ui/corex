@@ -21,7 +21,7 @@ Semantic palette roles from design tokens. Applied to interactive surfaces (trig
 
 Semantic classes set shared control palette variables on the host (`--ctl-fill`, `--ctl-fill-hover`, `--ctl-ink-text`, and related tokens). They do not change surface treatment by themselves. Base is always present as default fill vars on every host.
 
-Bundle filtering: `config :corex_design, semantics: ~w(base accent)a` trims unused role tokens and `ui-{role}` utilities at generation time.
+Bundle filtering: `config :corex_design, semantics: ~w(accent brand)a` trims unused role tokens and `ui-{role}` utilities at generation time.
 
 ## Variant
 
@@ -111,7 +111,7 @@ Each component Hexdocs **Style** section lists supported classes for that compon
 
 ## Custom themes
 
-`config :corex_design, themes: %{my_theme: spec}` accepts a full theme map (palette seeds, surface lightness, contrast ratios, dimension scales, per-tag typography). See preset modules under `Corex.Design.Theme.Presets` for the shape. New apps default to `themes: [:uno]`.
+`config :corex_design, themes: %{my_theme: spec}` accepts a full theme map (`seeds`, flat Color-native mode tokens (`:l` / `:contrast`), `dimensions`, optional `typography`). See preset modules under `Corex.Design.Theme.Presets` for the shape. `mix corex.new` without `--theme` scaffolds `themes: [:neo]` and `default_theme: :neo`.
 
 ## Overrides
 

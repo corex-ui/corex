@@ -10,16 +10,20 @@ Install the archives once, then scaffold a site:
 mix archive.install hex tableau_new
 mix archive.install hex corex_new
 mix corex.tableau.new my_site
-# optional: --mode --theme --lang --mcp
+# optional: --mode --theme --a11y --mcp
 ```
+
+`--a11y` scaffolds accessibility preference CSS, a head FOUC bridge (`phx:a11y`), `data-*` attrs on `<html>`, and a preference panel (implies `--design`). Default is off.
 
 `--lang` scaffolds Gettext, Localize, permalink Locale helpers, `locale.js`, per-locale pages (`en` / `fr` / `ar`), and a language `<.select>` (implies `--design`). Example sites: [corex-ui/soonex](https://github.com/corex-ui/soonex) (baseline), [corex-ui/soonex_i18n](https://github.com/corex-ui/soonex_i18n) (`--lang` shape). For Phoenix apps with plugs and router scopes, see [Localize](localize.html).
 
 The default scaffold (without `--lang`) mirrors `mix corex.new` patterns (design assets, ESM Esbuild, `use Corex`, lazy hooks) plus a Blog link and one sample post.
 
-**Manual** (this guide) owns install wiring: baseline Corex, plus optional theme / mode / locale (`head_script/0`, `phx:set-*` listeners in `site.js`, locale.js, Gettext). [Tableau Theming](tableau_theming.html), [Tableau Mode](tableau_mode.html), and [Tableau Localize](tableau_localize.html) are picker UI only (after wiring or `mix corex.tableau.new --theme --mode --lang`). For Phoenix apps with cookies and plugs, see [Dark mode](dark_mode.html), [Theming](theming.html), and [Localize](localize.html). Config layers are summarized in [Configuration](configuration.html).
+**Manual** (this guide) owns install wiring: baseline Corex, plus optional theme / mode / locale / accessibility (`head_script/0`, `phx:set-*` listeners in `site.js`, locale.js, Gettext). [Tableau Theming](tableau_theming.html), [Tableau Mode](tableau_mode.html), and [Tableau Localize](tableau_localize.html) are picker UI only (after wiring or `mix corex.tableau.new --theme --mode --lang`). Accessibility panel steps match [Accessibility](accessibility.html) without Phoenix cookies. For Phoenix apps with cookies and plugs, see [Dark mode](dark_mode.html), [Theming](theming.html), and [Localize](localize.html). Config layers are summarized in [Configuration](configuration.html).
 
 Run **`mix help corex.tableau.new`** or see **`Mix.Tasks.Corex.Tableau.New`** for every Corex-only flag.
+
+Soonex marketing landings remain separate showcase repos ([soonex](https://github.com/corex-ui/soonex), [soonex_i18n](https://github.com/corex-ui/soonex_i18n)). A future `mix corex.tableau.new --template soonex` may copy those trees; for now use the generic scaffold (`--lang` included) or clone a showcase.
 
 ## Before you start
 
@@ -77,29 +81,33 @@ Add `typo` (and layout utilities as needed) on `<body>` in your root layout.
 
 <!-- tabs-open -->
 
-### Hooks lazy
+### Hooks eager chrome
 
-Import only the hooks you use. In `assets/js/site.js`:
+Chrome controls that load on every page (toast, theme select, mode toggle) are static imports. Page-local components stay lazy via `hooks({ Name: () => import(...) })`. Tableau has no LiveView endpoint, so omit `longPollFallbackMs` and call `liveSocket.disableDebug()`:
 
 ```javascript
 import { Socket } from "phoenix"
 import { LiveSocket } from "phoenix_live_view"
 import { hooks } from "corex/hooks"
+import { Toast } from "corex/toast"
+import { Select } from "corex/select"
 
 const csrfToken = document
   .querySelector("meta[name='csrf-token']")
   ?.getAttribute("content")
 
 const liveSocket = new LiveSocket("/live", Socket, {
-  longPollFallbackMs: 2500,
   params: { _csrf_token: csrfToken },
   hooks: {
+    Toast,
+    Select,
     ...hooks({
       Accordion: () => import("corex/accordion"),
     }),
   },
 })
 
+liveSocket.disableDebug()
 liveSocket.connect()
 ```
 
@@ -117,11 +125,11 @@ const csrfToken = document
   ?.getAttribute("content")
 
 const liveSocket = new LiveSocket("/live", Socket, {
-  longPollFallbackMs: 2500,
   params: { _csrf_token: csrfToken },
   hooks: { ...corex },
 })
 
+liveSocket.disableDebug()
 liveSocket.connect()
 ```
 
@@ -297,27 +305,27 @@ When you add [locale wiring](#optional-locale-wiring), set `lang` and `dir` from
 
 ### site.js
 
-Register `Select` and listen for `phx:set-theme` after `liveSocket.connect()`:
+Eager-import `Select` and listen for `phx:set-theme` after `liveSocket.connect()`:
 
 ```javascript
 import { Socket } from "phoenix"
 import { LiveSocket } from "phoenix_live_view"
-import { hooks } from "corex/hooks"
+import { Toast } from "corex/toast"
+import { Select } from "corex/select"
 
 const csrfToken = document
   .querySelector("meta[name='csrf-token']")
   ?.getAttribute("content")
 
 const liveSocket = new LiveSocket("/live", Socket, {
-  longPollFallbackMs: 2500,
   params: { _csrf_token: csrfToken },
   hooks: {
-    ...hooks({
-      Select: () => import("corex/select"),
-    }),
+    Toast,
+    Select,
   },
 })
 
+liveSocket.disableDebug()
 liveSocket.connect()
 
 window.addEventListener("phx:set-theme", (e) => {
@@ -434,23 +442,24 @@ With theme and mode:
 ```javascript
 import { Socket } from "phoenix"
 import { LiveSocket } from "phoenix_live_view"
-import { hooks } from "corex/hooks"
+import { Toast } from "corex/toast"
+import { Select } from "corex/select"
+import { Toggle } from "corex/toggle"
 
 const csrfToken = document
   .querySelector("meta[name='csrf-token']")
   ?.getAttribute("content")
 
 const liveSocket = new LiveSocket("/live", Socket, {
-  longPollFallbackMs: 2500,
   params: { _csrf_token: csrfToken },
   hooks: {
-    ...hooks({
-      Select: () => import("corex/select"),
-      Toggle: () => import("corex/toggle"),
-    }),
+    Toast,
+    Select,
+    Toggle,
   },
 })
 
+liveSocket.disableDebug()
 liveSocket.connect()
 
 window.addEventListener("phx:set-mode", (e) => {

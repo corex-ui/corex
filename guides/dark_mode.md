@@ -108,5 +108,6 @@ Corex Design themes define `[data-mode=dark]` overrides. Custom CSS can target `
 - [Manual installation](manual_installation.html#optional-mode-wiring): plug, bridge, and pipeline
 - [Configuration](configuration.html): build vs picker vs generators
 - [Theming](theming.html): `data-theme`; combine both bridges in one `<script>` IIFE
+- [Accessibility](accessibility.html): optional preference axes; same bridge pattern
 - [Tableau Mode](tableau_mode.html): static site equivalent
 - [Installation](installation.html): `mix corex.new --mode`

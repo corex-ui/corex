@@ -126,15 +126,21 @@ If you authored CSS against Corex tokens:
 | `{role}-ink` (on filled surfaces) | `{role}-contrast` |
 | `ink-{role}` (text on neutral surfaces) | `{role}-text` |
 | `--theme-color-*` aliases | removed; use `--color-*` |
+| `--theme-*` non-color tokens | removed; use public names (`--radius-*`, `--spacing-*`, `--font-*`, `--duration-*`, …) |
+| `layer` / `--color-layer` / `bg-layer` | `surface` / `--color-surface` / `bg-surface` |
+| `scales: [semantic: …]` | `semantics: […]` |
+| theme `profile` / `radius_curve` / `elevation` / … | removed (use numeric Dimensions scales) |
+| `.ui-chrome-*` | removed; use host class + part selectors |
 | `selected-*` token aliases | removed |
 
-Generated theme CSS may still expose short-lived legacy aliases; prefer the 0.2 names in new CSS.
+Prefer the 0.2 public names in new CSS.
 
 ### Config and dependencies
 
 - Add the optional **`corex_design`** Hex package when you use Design CSS.
 - `mix corex.design` and `--designex` are retired; use `mix corex.design.build`.
 - Default `mix corex.new` adds `corex_design` and runs the design build.
+- Optional **`--a11y`** scaffolds accessibility preference wiring (`config :corex_design, accessibility: true`, plug, bridge, panel). See [Accessibility](accessibility.html).
 - Controlled mode on form fields applies only to **select, radio, switch, checkbox** (not every input).
 - **Form components** require an explicit **`id`** when you do not pass **`field`**. Prefer `field={@form[:name]}` with Ecto + `to_form/1` so ids stay stable across LiveView patches; otherwise pass `id="…"` yourself. Non-form components still auto-generate ids when omitted.
 

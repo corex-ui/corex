@@ -15,13 +15,14 @@ Full app wiring (html attributes, pickers, fonts, icons) lives in Corex Hexdocs:
 # config/config.exs
 config :corex_design,
   output: "assets/corex",
-  default_theme: :uno,
+  default_theme: :neo,
   default_mode: :light,
-  themes: [:uno],
+  themes: [:neo],
   modes: [:light, :dark],
   scales: [],
-  components: nil,
-  semantics: nil
+  components: [:button, :dialog, :typo, :layout-heading],
+  semantics: [:accent, :brand, :alert],
+  accessibility: false
 ```
 
 Add `/assets/corex/` to `.gitignore`. Do not commit the generated tree.
@@ -58,22 +59,31 @@ One consumption mode: import `corex.css`. Do not cherry-pick individual componen
 | Key | Default | Effect |
 |-----|---------|--------|
 | `components` | `nil` (all) | Emit only listed component CSS (deps auto-included) |
-| `semantics` | `nil` (all) | Emit only listed palette roles (`base` always included) |
+| `semantics` | `nil` (all) | Emit only listed roles (`accent`, `brand`, `alert`, `info`, `success`) |
 | `themes` | `nil` (all) | Emit only listed theme CSS; map form for custom themes |
 | `modes` | `[:light, :dark]` | Emit only listed color modes |
-| `default_theme` | `:uno` | Build default theme |
+| `default_theme` | `:uno` (package fallback) | Build default theme id. `mix corex.new` scaffolds `neo` without `--theme`. |
 | `default_mode` | `:light` | Build default mode |
+| `accessibility` | `false` | `true` (text/focus/links), or axis list (`:text`, `:contrast`, `:motion`, `:cursor`, `:focus`, `:links`) |
 
 ```elixir
 components: ~w(button dialog accordion typo layout-heading)a,
 semantics: ~w(accent brand alert)a,
-themes: ~w(uno neo)a,
-modes: [:light]
+themes: ~w(neo uno)a,
+modes: [:light],
+accessibility: [:text, :focus, :links]
 ```
 
-Prefer top-level `semantics:` over legacy `scales: [semantic: ...]`.
+Motion and contrast prefer OS media queries (`prefers-reduced-motion`, `prefers-contrast`). User prefs cover text zoom, focus rings, and link underlines by default.
 
-Custom themes: `themes: %{my_theme: spec}` where `spec` follows preset shape (palette seeds, surfaces, contrast, dimensions, typography). See `Corex.Design.Theme.Presets`.
+### Tokens
+
+Public color names (authoring = CSS):
+
+- Structure: `root`, `surface`, `ui`, `ink`, `ink-muted`, `link`, `border`, `focus`, `shadow`
+- Roles: `accent`, `brand`, `alert`, `info`, `success` (+ `-hover`/`-active`/`-muted`/`-contrast`/`-text`)
+
+Color math uses the Color package directly (Oklch lightness + `Color.Palette.contrast`). Custom themes author `seeds` plus per-mode token defs (`{:l, …}` / `{:contrast, …}`). See `Corex.Design.Theme.Presets`.
 
 ### Scales
 

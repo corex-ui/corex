@@ -1,11 +1,12 @@
 # Manual installation
 
-This guide is the Phoenix **wiring home** for Corex in an existing app: dependency, ESM Esbuild, hooks, root layout module script, `use Corex`, plus optional **Design**, **Theme**, **Mode**, and **Locale** plumbing (plugs, config, bridge scripts, `lang`/`dir`, and related hooks).
+This guide is the Phoenix **wiring home** for Corex in an existing app: dependency, ESM Esbuild, hooks, root layout module script, `use Corex`, plus optional **Design**, **Theme**, **Mode**, **Accessibility**, and **Locale** plumbing (plugs, config, bridge scripts, `lang`/`dir`, and related hooks).
 
-Picker UI (theme select, mode toggle, language switcher) lives in the dedicated guides after you finish the wiring here:
+Picker UI (theme select, mode toggle, language switcher, accessibility panel) lives in the dedicated guides after you finish the wiring here:
 
 - [Theming](theming.html)
 - [Dark mode](dark_mode.html)
+- [Accessibility](accessibility.html)
 - [Localize](localize.html)
 
 If you are creating a new project instead, see the [Installation guide](installation.html).
@@ -81,9 +82,60 @@ Merge with `colocatedHooks` when your app uses them:
 hooks: { ...colocatedHooks, ...corex },
 ```
 
+### Eager chrome + lazy extras {: #eager-chrome-lazy-extras}
+
+Static-import chrome that exists on every page (toast, theme/language select, mode toggle, accessibility panel). Keep page-local components lazy. Keep `longPollFallbackMs` for real LiveView apps; do not call `disableDebug()` (Tableau sites do that separately).
+
+```javascript
+import { Socket } from "phoenix"
+import { LiveSocket } from "phoenix_live_view"
+import { hooks } from "corex/hooks"
+import { Toast } from "corex/toast"
+import { Select } from "corex/select"
+import { Toggle } from "corex/toggle"
+import { Dialog } from "corex/dialog"
+import { ToggleGroup } from "corex/toggle-group"
+
+const csrfToken = document
+  .querySelector("meta[name='csrf-token']")
+  ?.getAttribute("content")
+
+const liveSocket = new LiveSocket("/live", Socket, {
+  longPollFallbackMs: 2500,
+  params: { _csrf_token: csrfToken },
+  hooks: {
+    Toast,
+    Select,
+    Toggle,
+    Dialog,
+    ToggleGroup,
+    ...hooks({
+      Accordion: () => import("corex/accordion"),
+      Combobox: () => import("corex/combobox"),
+    }),
+  },
+})
+
+liveSocket.connect()
+```
+
+Omit chrome imports you do not render in the root layout. Merge with colocated hooks:
+
+```javascript
+hooks: {
+  ...colocatedHooks,
+  Toast,
+  Select,
+  Toggle,
+  ...hooks({
+    Accordion: () => import("corex/accordion"),
+  }),
+},
+```
+
 ### Lazy hooks only
 
-Import only the hooks you render. Keys must match `phx-hook` names (`Dialog`, `Accordion`, …):
+Import only the hooks you render. Keys must match `phx-hook` names (`Dialog`, `Accordion`, …). Prefer the eager-chrome tab above when theme, mode, language, accessibility, or toast live in the root layout; lazy chrome waits on a second chunk before those controls respond.
 
 ```javascript
 import { Socket } from "phoenix"
@@ -132,7 +184,6 @@ defp html_helpers do
   quote do
     use Gettext, backend: MyAppWeb.Gettext
     import Phoenix.HTML
-    import MyAppWeb.CoreComponents
     use Corex
     alias Phoenix.LiveView.JS
     alias MyAppWeb.Layouts
@@ -140,6 +191,8 @@ defp html_helpers do
   end
 end
 ```
+
+Do not keep Phoenix `CoreComponents` in a Corex app. Use Corex components and scaffold with `mix corex.gen.html` / `mix corex.gen.live` instead of `mix phx.gen.*`.
 
 By default this imports every Corex function component (`accordion/1`, `combobox/1`, `dialog/1`, …). If you want a smaller surface area or to avoid name collisions with other components, narrow it with `only:` / `except:` and an optional `prefix:`:
 
@@ -373,7 +426,7 @@ Theme bridge in `<head>` (merge into the same IIFE as [Dark mode](dark_mode.html
 
 Keep `validThemes` and fallbacks in sync with `config :my_app, :themes` (and with the themes you emit from `:corex_design`).
 
-Ensure the **`Select`** hook is registered in `assets/js/app.js` (via `...corex` or a lazy `Select: () => import("corex/select")` entry). Include `select` in `config :corex_design, components:` when you use a theme picker.
+Ensure the **`Select`** hook is registered in `assets/js/app.js` via `...corex` or a static `import { Select } from "corex/select"` (eager chrome). Use a lazy `Select: () => import("corex/select")` entry only for page-local selects, not a root-layout theme picker. Include `select` in `config :corex_design, components:` when you use a theme picker.
 
 CSS: import the Design umbrella entry from section 6:
 
@@ -473,6 +526,25 @@ Resolution order: `localStorage["phx:mode"]`, then `data-mode` from the server, 
 Ensure the **`Toggle`** hook is registered in `assets/js/app.js` (via `...corex` or a lazy `Toggle: () => import("corex/toggle")` entry). Include `toggle` in `config :corex_design, components:` when you use a mode switcher.
 
 Then add the UI: [Dark mode](dark_mode.html).
+
+## Optional: Accessibility wiring {: #optional-accessibility-wiring}
+
+Enable preference CSS in Design, then wire the plug, LiveView assign, root `data-*` attrs, and FOUC bridge. Full steps (including the panel UI) are in [Accessibility](accessibility.html).
+
+Short path with the installer:
+
+```bash
+mix corex.new my_app --a11y
+```
+
+Or by hand:
+
+1. Set `config :corex_design, accessibility: true` (or an axis list) and rebuild with `mix corex.design.build`
+2. Add `MyAppWeb.Plugs.Accessibility` to the browser pipeline and a LiveView `on_mount` that assigns `:a11y`
+3. Apply `a11y_data_attrs/1` on `<html>` and merge the `phx:a11y` bridge into the same `<head>` IIFE as theme/mode
+4. Render an accessibility panel once in the root layout; register `Dialog` and `ToggleGroup` hooks
+
+Scaffolding is also available as `mix corex.new --a11y` (default off) and `mix corex.tableau.new --a11y`.
 
 ## Optional: Locale wiring {: #optional-locale-wiring}
 
@@ -718,6 +790,7 @@ Wiring done? Add the picker UI:
 
 - [Theming](theming.html) theme `<.select>`
 - [Dark mode](dark_mode.html) mode `<.toggle>`
+- [Accessibility](accessibility.html) preference panel (also `mix corex.new --a11y`)
 - [Localize](localize.html) language switcher
 
 Also:
