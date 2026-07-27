@@ -45,6 +45,8 @@ export function machineState(api: Api): NumberInputMachineState {
 
 type NumberInputHookState = {
   numberInput?: NumberInput;
+  fieldTouched?: boolean;
+  initialValue?: string;
 };
 
 function submitValueForHost(el: HTMLElement, valueAsNumber: number): string {
@@ -117,10 +119,17 @@ function setZagValue(zag: NumberInput, value: number | string): void {
   zag.machine.service.send({ type: "VALUE.SET", value: trimmed });
 }
 
+function initialDisplayValue(el: HTMLElement): string {
+  const binding = mountNumberBinding(el);
+  if ("value" in binding) return binding.value ?? "";
+  return binding.defaultValue ?? "";
+}
+
 export function buildMachineProps(
   el: HTMLElement,
   pushEvent: (name: string, payload: Record<string, unknown>) => void,
-  canPush: () => boolean
+  canPush: () => boolean,
+  hook: NumberInputHookState
 ): Props {
   const step = getNumber(el, "step") ?? 1;
 
@@ -138,8 +147,14 @@ export function buildMachineProps(
     allowMouseWheel: getBoolean(el, "allowMouseWheel"),
     dir: getDir(el),
     onValueChange: (details: ValueChangeDetails) => {
+      const next = details.value ?? "";
+      const isMountEcho = hook.fieldTouched !== true && next === (hook.initialValue ?? "");
+      if (!isMountEcho) {
+        hook.fieldTouched = true;
+      }
+
       if (details.value !== undefined) {
-        syncNumberInputValueInput(el, details.value ?? "", true, details.valueAsNumber);
+        syncNumberInputValueInput(el, next, !isMountEcho, details.valueAsNumber);
       }
       notifyChange({
         el,
@@ -180,10 +195,12 @@ const NumberInputHook = createZagLiveHook<NumberInputHookState, NumberInput>({
   controlledKeys: ["value", "defaultValue"],
   mount(hook, { dom, server }) {
     const el = hook.el;
+    hook.fieldTouched = false;
+    hook.initialValue = initialDisplayValue(el);
     const pushEvent = hook.pushEvent.bind(hook);
     const canPush = () => canPushEvent(hook.liveSocket);
 
-    const zag = new NumberInput(el, buildMachineProps(el, pushEvent, canPush));
+    const zag = new NumberInput(el, buildMachineProps(el, pushEvent, canPush, hook));
 
     const emitState = (respondTo: RespondTo) => {
       const snapshot = machineState(zag.api);
@@ -281,7 +298,7 @@ const NumberInputHook = createZagLiveHook<NumberInputHookState, NumberInput>({
   afterInit(hook, zag) {
     const el = hook.el;
     const initialSubmit = submitValueForHost(el, zag.api.valueAsNumber);
-    syncNumberInputValueInput(el, zag.api.value ?? "", true, zag.api.valueAsNumber);
+    syncNumberInputValueInput(el, zag.api.value ?? "", false, zag.api.valueAsNumber);
 
     const valueInput = el.querySelector<HTMLInputElement>(
       '[data-scope="number-input"][data-part="value-input"]'

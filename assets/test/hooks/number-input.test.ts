@@ -22,7 +22,10 @@ describe("buildMachineProps", () => {
       disabled: false,
     });
     node.id = "ni";
-    const props = buildMachineProps(node, vi.fn(), () => true);
+    const props = buildMachineProps(node, vi.fn(), () => true, {
+      fieldTouched: false,
+      initialValue: "5",
+    });
     expect(props.id).toBe("ni");
     expect(props.value).toBe("5");
     expect(props.min).toBe(0);
@@ -33,14 +36,20 @@ describe("buildMachineProps", () => {
   it("formats 10.0 as 10 for whole step", () => {
     const node = el({ controlled: true, value: "10.0", step: 1 });
     node.id = "ni-whole";
-    const props = buildMachineProps(node, vi.fn(), () => true);
+    const props = buildMachineProps(node, vi.fn(), () => true, {
+      fieldTouched: false,
+      initialValue: "10",
+    });
     expect(props.value).toBe("10");
   });
 
   it("uses defaultValue when uncontrolled", () => {
     const node = el({ defaultValue: 2, step: 1 });
     node.id = "ni2";
-    const props = buildMachineProps(node, vi.fn(), () => false);
+    const props = buildMachineProps(node, vi.fn(), () => false, {
+      fieldTouched: false,
+      initialValue: "2",
+    });
     expect(props.defaultValue).toBe("2");
   });
 });
