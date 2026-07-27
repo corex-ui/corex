@@ -2,20 +2,17 @@ import {
   createLiveRegion
 } from "./chunks/chunk-UFCM6256.mjs";
 import {
-  setArrayValues
-} from "./chunks/chunk-52LJJOX7.mjs";
-import {
   trackInteractOutside
-} from "./chunks/chunk-7JTELVWK.mjs";
+} from "./chunks/chunk-KZTSFVJI.mjs";
 import {
   bindArrayFieldSubmitIntent,
-  isFormFieldUsed
-} from "./chunks/chunk-4UPAN2NC.mjs";
-import "./chunks/chunk-7LA2VUMJ.mjs";
+  isFormFieldUsed,
+  setArrayValues
+} from "./chunks/chunk-245LPPAG.mjs";
 import {
   isZagValueControlled,
   mountTagsBinding
-} from "./chunks/chunk-LVRCAC6Y.mjs";
+} from "./chunks/chunk-ILSEF4XK.mjs";
 import {
   idMatches,
   notifyChange,
@@ -62,7 +59,7 @@ import {
   trackFormControl,
   uniq,
   warn
-} from "./chunks/chunk-E4OZ7DWO.mjs";
+} from "./chunks/chunk-RRN4KZDI.mjs";
 
 // ../node_modules/.pnpm/@zag-js+tags-input@1.42.0/node_modules/@zag-js/tags-input/dist/tags-input.anatomy.mjs
 var anatomy = createAnatomy("tagsInput").parts(

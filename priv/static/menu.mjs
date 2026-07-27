@@ -6,23 +6,24 @@ import {
   getPlacement,
   getPlacementSide,
   getPlacementStyles
-} from "./chunks/chunk-STMYDYIS.mjs";
+} from "./chunks/chunk-EDPLM4FN.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-KJGYDHXF.mjs";
-import "./chunks/chunk-7JTELVWK.mjs";
+} from "./chunks/chunk-UNSII3TK.mjs";
+import "./chunks/chunk-KZTSFVJI.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-3OQP2D73.mjs";
+} from "./chunks/chunk-QU3L6FP6.mjs";
 import {
-  performRedirect,
-  readDomItemRedirect
-} from "./chunks/chunk-HZLPIQBD.mjs";
+  redirectCollectionItem
+} from "./chunks/chunk-OGB72GJ7.mjs";
+import "./chunks/chunk-ARXPSEL2.mjs";
+import "./chunks/chunk-HZLPIQBD.mjs";
 import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunks/chunk-WAPDN2S7.mjs";
+} from "./chunks/chunk-QZ6HS4MI.mjs";
 import {
   notifyChange,
   readPayloadId
@@ -72,7 +73,7 @@ import {
   queryAll,
   raf,
   scrollIntoView
-} from "./chunks/chunk-E4OZ7DWO.mjs";
+} from "./chunks/chunk-RRN4KZDI.mjs";
 
 // ../node_modules/.pnpm/@zag-js+menu@1.42.0/node_modules/@zag-js/menu/dist/menu.anatomy.mjs
 var anatomy = createAnatomy("menu").parts(
@@ -1834,10 +1835,7 @@ var MenuHook = createZagLiveHook({
     const liveSocket = hook.liveSocket;
     const buildOnSelect = () => (details) => {
       if (getBoolean(el, "redirect") && details.value) {
-        const itemEl = el.querySelector(
-          `[data-scope="menu"][data-part="item"][data-value="${CSS.escape(details.value)}"]`
-        );
-        performRedirect(readDomItemRedirect(itemEl, details.value), { liveSocket });
+        redirectCollectionItem(el, "menu", details.value, liveSocket);
       }
       notifyChange({
         el,

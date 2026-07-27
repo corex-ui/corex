@@ -3,22 +3,21 @@ import {
   buildCollection,
   collection,
   connect,
+  firstSelectedValue,
+  initCollectionItems,
   itemValue,
   machine,
-  readItems,
+  redirectCollectionItem,
   refreshItemsIfChanged,
   zagListCollectionConfig
-} from "./chunks/chunk-MFM7SQB7.mjs";
-import "./chunks/chunk-VNSUJWAI.mjs";
-import {
-  performRedirect,
-  readDomItemRedirect
-} from "./chunks/chunk-HZLPIQBD.mjs";
-import "./chunks/chunk-WAPDN2S7.mjs";
+} from "./chunks/chunk-OGB72GJ7.mjs";
+import "./chunks/chunk-ARXPSEL2.mjs";
+import "./chunks/chunk-HZLPIQBD.mjs";
+import "./chunks/chunk-QZ6HS4MI.mjs";
 import {
   readStringListControlledZagProps,
   readStringListControlledZagUpdate
-} from "./chunks/chunk-LVRCAC6Y.mjs";
+} from "./chunks/chunk-ILSEF4XK.mjs";
 import {
   createValueEmitter,
   idMatches,
@@ -34,7 +33,7 @@ import {
   getBoolean,
   getDir,
   getString
-} from "./chunks/chunk-E4OZ7DWO.mjs";
+} from "./chunks/chunk-RRN4KZDI.mjs";
 
 // components/listbox.ts
 var Listbox = class extends Component {
@@ -134,12 +133,13 @@ function listboxZagPropsBase(el, liveSocket, pushEvent) {
     deselectable: getBoolean(el, "deselectable"),
     typeahead: getBoolean(el, "typeahead"),
     onValueChange: (details) => {
-      const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
-      if (redirectOn && firstValue) {
-        const itemEl = el.querySelector(
-          `[data-scope="listbox"][data-part="item"][data-value="${CSS.escape(firstValue)}"]`
+      if (redirectOn) {
+        redirectCollectionItem(
+          el,
+          "listbox",
+          firstSelectedValue(details.value),
+          liveSocket
         );
-        performRedirect(readDomItemRedirect(itemEl, firstValue), { liveSocket });
       }
       notifyChange({
         el,
@@ -161,7 +161,7 @@ var ListboxHook = createZagLiveHook({
   controlledKeys: ["value"],
   mount(hook, { dom, server }) {
     const el = hook.el;
-    const { json: itemsJson, items: allItems, hasGroups } = readItems(el);
+    const { items: allItems, hasGroups } = initCollectionItems(el, hook);
     const pushEvent = hook.pushEvent.bind(hook);
     const canPush = () => canPushEvent(hook.liveSocket);
     const zag = new Listbox(el, {
@@ -170,7 +170,6 @@ var ListboxHook = createZagLiveHook({
       ...readStringListControlledZagProps(el, "value", "defaultValue")
     });
     applyItems(zag, allItems, hasGroups);
-    hook.lastItemsJson = itemsJson;
     const emitValue = createValueEmitter(
       { el, pushEvent, canPushServer: canPush },
       {

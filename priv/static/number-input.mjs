@@ -1,9 +1,6 @@
 import {
   memo
-} from "./chunks/chunk-2VK4IZYP.mjs";
-import {
-  syncHiddenInputValue
-} from "./chunks/chunk-WPH6MYTV.mjs";
+} from "./chunks/chunk-COKNR45R.mjs";
 import {
   clampValue,
   decrementValue,
@@ -15,20 +12,18 @@ import {
   wrap
 } from "./chunks/chunk-KHEHQE65.mjs";
 import {
+  dispatchFormInputEvents,
   markUsed,
-  syncFormInput
-} from "./chunks/chunk-52LJJOX7.mjs";
-import "./chunks/chunk-4UPAN2NC.mjs";
-import {
-  dispatchFormInputEvents
-} from "./chunks/chunk-7LA2VUMJ.mjs";
+  syncFormInput,
+  syncHiddenInputValue
+} from "./chunks/chunk-245LPPAG.mjs";
 import {
   formatDisplayValue,
   formatSubmitValue,
   mergeFormatOptions,
   mountNumberBinding,
   readUpdatedServerNumber
-} from "./chunks/chunk-LVRCAC6Y.mjs";
+} from "./chunks/chunk-ILSEF4XK.mjs";
 import {
   emitResponse,
   idMatches,
@@ -66,7 +61,7 @@ import {
   setup,
   syncInputFormAssociation,
   trackFormControl
-} from "./chunks/chunk-E4OZ7DWO.mjs";
+} from "./chunks/chunk-RRN4KZDI.mjs";
 
 // ../node_modules/.pnpm/@zag-js+number-input@1.42.0/node_modules/@zag-js/number-input/dist/number-input.anatomy.mjs
 var anatomy = createAnatomy("numberInput").parts(
@@ -1462,7 +1457,12 @@ function setZagValue(zag, value) {
   if (trimmed === "") return;
   zag.machine.service.send({ type: "VALUE.SET", value: trimmed });
 }
-function buildMachineProps(el, pushEvent, canPush) {
+function initialDisplayValue(el) {
+  const binding = mountNumberBinding(el);
+  if ("value" in binding) return binding.value ?? "";
+  return binding.defaultValue ?? "";
+}
+function buildMachineProps(el, pushEvent, canPush, hook) {
   const step = getNumber(el, "step") ?? 1;
   return {
     id: el.id,
@@ -1478,8 +1478,13 @@ function buildMachineProps(el, pushEvent, canPush) {
     allowMouseWheel: getBoolean(el, "allowMouseWheel"),
     dir: getDir(el),
     onValueChange: (details) => {
+      const next = details.value ?? "";
+      const isMountEcho = hook.fieldTouched !== true && next === (hook.initialValue ?? "");
+      if (!isMountEcho) {
+        hook.fieldTouched = true;
+      }
       if (details.value !== void 0) {
-        syncNumberInputValueInput(el, details.value ?? "", true, details.valueAsNumber);
+        syncNumberInputValueInput(el, next, !isMountEcho, details.valueAsNumber);
       }
       notifyChange({
         el,
@@ -1517,9 +1522,11 @@ var NumberInputHook = createZagLiveHook({
   controlledKeys: ["value", "defaultValue"],
   mount(hook, { dom, server }) {
     const el = hook.el;
+    hook.fieldTouched = false;
+    hook.initialValue = initialDisplayValue(el);
     const pushEvent = hook.pushEvent.bind(hook);
     const canPush = () => canPushEvent(hook.liveSocket);
-    const zag = new NumberInput(el, buildMachineProps(el, pushEvent, canPush));
+    const zag = new NumberInput(el, buildMachineProps(el, pushEvent, canPush, hook));
     const emitState = (respondTo) => {
       const snapshot = machineState(zag.api);
       emitResponse({
@@ -1598,7 +1605,7 @@ var NumberInputHook = createZagLiveHook({
   afterInit(hook, zag) {
     const el = hook.el;
     const initialSubmit = submitValueForHost(el, zag.api.valueAsNumber);
-    syncNumberInputValueInput(el, zag.api.value ?? "", true, zag.api.valueAsNumber);
+    syncNumberInputValueInput(el, zag.api.value ?? "", false, zag.api.valueAsNumber);
     const valueInput = el.querySelector(
       '[data-scope="number-input"][data-part="value-input"]'
     );

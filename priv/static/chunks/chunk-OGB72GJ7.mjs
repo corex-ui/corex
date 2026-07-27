@@ -6,12 +6,16 @@ import {
   deriveSelectionState,
   isGridCollection,
   resolveSelectedItems
-} from "./chunk-VNSUJWAI.mjs";
+} from "./chunk-ARXPSEL2.mjs";
+import {
+  performRedirect,
+  readDomItemRedirect
+} from "./chunk-HZLPIQBD.mjs";
 import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunk-WAPDN2S7.mjs";
+} from "./chunk-QZ6HS4MI.mjs";
 import {
   ariaAttr,
   contains,
@@ -34,7 +38,7 @@ import {
   safeParseJson,
   scrollIntoView,
   setup
-} from "./chunk-E4OZ7DWO.mjs";
+} from "./chunk-RRN4KZDI.mjs";
 
 // ../node_modules/.pnpm/@zag-js+listbox@1.42.0/node_modules/@zag-js/listbox/dist/listbox.anatomy.mjs
 var anatomy = createAnatomy("listbox").parts(
@@ -912,6 +916,23 @@ function refreshItemsIfChanged(el, state, host) {
   return true;
 }
 
+// lib/collection-hook.ts
+function firstSelectedValue(values) {
+  return values.length > 0 ? String(values[0]) : null;
+}
+function redirectCollectionItem(el, scope, value, liveSocket) {
+  if (!value) return false;
+  const itemEl = el.querySelector(
+    `[data-scope="${scope}"][data-part="item"][data-value="${CSS.escape(value)}"]`
+  );
+  return performRedirect(readDomItemRedirect(itemEl, value), { liveSocket });
+}
+function initCollectionItems(el, state) {
+  const result = readItems(el);
+  state.lastItemsJson = result.json;
+  return result;
+}
+
 export {
   collection,
   connect,
@@ -919,7 +940,9 @@ export {
   itemValue,
   zagListCollectionConfig,
   buildCollection,
-  readItems,
   applyItems,
-  refreshItemsIfChanged
+  refreshItemsIfChanged,
+  firstSelectedValue,
+  redirectCollectionItem,
+  initCollectionItems
 };

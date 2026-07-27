@@ -1,12 +1,52 @@
 import {
-  notifyPhoenixFormChange,
-  reapplyLiveViewValueInputUsage
-} from "./chunk-7LA2VUMJ.mjs";
-import {
   associateInputWithFormIfOutside,
   getBoolean,
-  getString
-} from "./chunk-E4OZ7DWO.mjs";
+  getString,
+  syncInputFormAssociation
+} from "./chunk-RRN4KZDI.mjs";
+
+// lib/live-view-form-input.ts
+var PHX_HAS_FOCUSED = "phx-has-focused";
+function reapplyLiveViewValueInputUsage(input) {
+  const p = input;
+  if (!p.phxPrivate) p.phxPrivate = {};
+  p.phxPrivate[PHX_HAS_FOCUSED] = true;
+}
+function dispatchFormInputEvents(input, options = {}) {
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+  if (options.change !== false) {
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+}
+function syncCheckedHiddenInput(input, checked, options = {}) {
+  input.checked = checked;
+  if (options.markUsed !== false) {
+    reapplyLiveViewValueInputUsage(input);
+  }
+  dispatchFormInputEvents(input, options);
+}
+function notifyPhoenixFormChange(input, value, options = {}) {
+  const next = String(value);
+  const unchanged = String(input.value) === next;
+  if (!unchanged) {
+    input.value = next;
+  }
+  if (input.getAttribute("value") !== next) {
+    input.setAttribute("value", next);
+  }
+  if (unchanged && options.force !== true) {
+    return;
+  }
+  options.onTouched?.();
+  if (options.markUsed === false) {
+    return;
+  }
+  reapplyLiveViewValueInputUsage(input);
+  dispatchFormInputEvents(input, { change: options.change });
+}
+function syncLiveViewFormInput(input, getValue, onTouched) {
+  notifyPhoenixFormChange(input, getValue(), { onTouched });
+}
 
 // lib/form-array-submit.ts
 function isFormFieldUsed(el, userTouched = false) {
@@ -117,8 +157,60 @@ function bindArrayFieldSubmitIntent(hostEl, onPrepareSubmit) {
   return () => form.removeEventListener("submit", handler, { capture: true });
 }
 
+// lib/checkable-form-sync.ts
+function hiddenInputPropsWithoutChecked(props) {
+  const rest = { ...props };
+  delete rest.defaultChecked;
+  delete rest.checked;
+  return rest;
+}
+function syncCheckableHiddenInput(inputEl, hostEl, checked, spreadProps, hiddenInputProps) {
+  spreadProps(inputEl, hiddenInputPropsWithoutChecked(hiddenInputProps));
+  inputEl.checked = checked;
+  syncInputFormAssociation(inputEl, hostEl);
+}
+
+// lib/value-form-sync.ts
+function hiddenInputPropsWithoutValue(props) {
+  const rest = { ...props };
+  delete rest.defaultValue;
+  delete rest.value;
+  return rest;
+}
+function syncHiddenInputValue(inputEl, hostEl, value, spreadProps, hiddenProps) {
+  if (Object.keys(hiddenProps).length > 0) {
+    spreadProps(inputEl, hiddenInputPropsWithoutValue(hiddenProps));
+  }
+  inputEl.value = value;
+  syncInputFormAssociation(inputEl, hostEl);
+}
+
+// lib/phoenix-form-bridge.ts
+function markUsed(input) {
+  reapplyLiveViewValueInputUsage(input);
+}
+function setScalarValue(input, value, options = {}) {
+  notifyPhoenixFormChange(input, value, options);
+}
+function setArrayValues(el, values, options = {}) {
+  syncArrayHiddenInputsForPhoenix(el, values, options);
+}
+function syncFormInput(input, getValue, onTouched) {
+  syncLiveViewFormInput(input, getValue, onTouched);
+}
+
 export {
+  syncHiddenInputValue,
+  reapplyLiveViewValueInputUsage,
+  dispatchFormInputEvents,
+  syncCheckedHiddenInput,
+  notifyPhoenixFormChange,
   isFormFieldUsed,
-  syncArrayHiddenInputsForPhoenix,
-  bindArrayFieldSubmitIntent
+  bindArrayFieldSubmitIntent,
+  hiddenInputPropsWithoutChecked,
+  syncCheckableHiddenInput,
+  markUsed,
+  setScalarValue,
+  setArrayValues,
+  syncFormInput
 };

@@ -120,7 +120,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-E4OZ7DWO.mjs
+  // ../priv/static/chunks/chunk-RRN4KZDI.mjs
   function getDir(element) {
     const fromEl = element.dataset.dir;
     if (fromEl !== void 0 && DIR_VALUES.includes(fromEl)) {
@@ -2005,8 +2005,8 @@ var Corex = (() => {
     return out;
   }
   var DIR_VALUES, getString, getStringList, getNumber, getBoolean, getBooleanValue, generateId, REGISTRIES, __defProp2, __defNormalProp2, __publicField2, __defProp22, __typeError2, __defNormalProp22, __publicField22, __accessCheck, __privateGet, __privateAdd2, first, last, has, add, remove, removeAt, uniq, diff, addOrRemove, isArrayLike, isArrayEqual, isEqual, isArray, isBoolean, isObjectLike, isObject, isNumber, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop, callAll, uuid, tryCatch, toChar, hash, STATE_DELIMITER, ABSOLUTE_PREFIX, stateIndexCache, stateIdIndexCache, MachineStatus, INIT_STATE, __defProp3, __defNormalProp3, __publicField3, clamp, wrap, pipe, noop2, isObject2, MAX_Z_INDEX, dataAttr, ariaAttr, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, pageKeys, arrowKeys, addDomEvent, INTERNAL_CHANGE_EVENT, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match2, getByTypeahead, visuallyHiddenStyle, refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack, proxyStateMap, buildProxyFunction, proxyFunction, VanillaMachine, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, HEAVY_PROP_KEYS, objectRefIds, nextObjectRefId, Component, createAnatomy, toKebabCase, isEmpty;
-  var init_chunk_E4OZ7DWO = __esm({
-    "../priv/static/chunks/chunk-E4OZ7DWO.mjs"() {
+  var init_chunk_RRN4KZDI = __esm({
+    "../priv/static/chunks/chunk-RRN4KZDI.mjs"() {
       "use strict";
       DIR_VALUES = ["ltr", "rtl"];
       getString = (element, attrName, validValues) => {
@@ -2995,7 +2995,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-ZRVGBPNP.mjs
+  // ../priv/static/chunks/chunk-CE52IH4H.mjs
   function prefersReducedMotion() {
     return typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
@@ -3317,15 +3317,15 @@ var Corex = (() => {
     return anim;
   }
   var rootPointerBlockCount;
-  var init_chunk_ZRVGBPNP = __esm({
-    "../priv/static/chunks/chunk-ZRVGBPNP.mjs"() {
+  var init_chunk_CE52IH4H = __esm({
+    "../priv/static/chunks/chunk-CE52IH4H.mjs"() {
       "use strict";
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       rootPointerBlockCount = /* @__PURE__ */ new WeakMap();
     }
   });
 
-  // ../priv/static/chunks/chunk-LVRCAC6Y.mjs
+  // ../priv/static/chunks/chunk-ILSEF4XK.mjs
   function fractionDigitsForStep(step) {
     var _a4;
     if (!Number.isFinite(step) || step === Math.trunc(step)) {
@@ -3554,10 +3554,10 @@ var Corex = (() => {
     return (_a4 = getBoolean(el, "controlled") ? getStringList(el, valueKey) : getStringList(el, defaultValueKey)) != null ? _a4 : [];
   }
   var MAX_FRACTION_DIGITS, z;
-  var init_chunk_LVRCAC6Y = __esm({
-    "../priv/static/chunks/chunk-LVRCAC6Y.mjs"() {
+  var init_chunk_ILSEF4XK = __esm({
+    "../priv/static/chunks/chunk-ILSEF4XK.mjs"() {
       "use strict";
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       MAX_FRACTION_DIGITS = 10;
       z = (s2) => s2 === void 0 ? null : s2;
     }
@@ -3861,10 +3861,10 @@ var Corex = (() => {
     "../priv/static/accordion.mjs"() {
       "use strict";
       init_chunk_JDGMEOQK();
-      init_chunk_ZRVGBPNP();
-      init_chunk_LVRCAC6Y();
+      init_chunk_CE52IH4H();
+      init_chunk_ILSEF4XK();
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
       parts = anatomy.build();
       getRootId = (ctx) => {
@@ -4247,27 +4247,6 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-WPH6MYTV.mjs
-  function hiddenInputPropsWithoutValue(props) {
-    const rest = __spreadValues({}, props);
-    delete rest.defaultValue;
-    delete rest.value;
-    return rest;
-  }
-  function syncHiddenInputValue(inputEl, hostEl, value, spreadProps2, hiddenProps) {
-    if (Object.keys(hiddenProps).length > 0) {
-      spreadProps2(inputEl, hiddenInputPropsWithoutValue(hiddenProps));
-    }
-    inputEl.value = value;
-    syncInputFormAssociation(inputEl, hostEl);
-  }
-  var init_chunk_WPH6MYTV = __esm({
-    "../priv/static/chunks/chunk-WPH6MYTV.mjs"() {
-      "use strict";
-      init_chunk_E4OZ7DWO();
-    }
-  });
-
   // ../priv/static/chunks/chunk-SBGJ6WBJ.mjs
   function createRect(r2) {
     const { x: x2, y: y2, width, height } = r2;
@@ -4393,7 +4372,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-7LA2VUMJ.mjs
+  // ../priv/static/chunks/chunk-245LPPAG.mjs
   function reapplyLiveViewValueInputUsage(input) {
     const p2 = input;
     if (!p2.phxPrivate) p2.phxPrivate = {};
@@ -4435,10 +4414,157 @@ var Corex = (() => {
   function syncLiveViewFormInput(input, getValue, onTouched) {
     notifyPhoenixFormChange(input, getValue(), { onTouched });
   }
+  function isFormFieldUsed(el, userTouched = false) {
+    return userTouched || getBoolean(el, "fieldUsed") === true;
+  }
+  function padValues(values, fixedLength) {
+    const out = values.map((v2) => String(v2));
+    while (out.length < fixedLength) out.push("");
+    return out.slice(0, fixedLength);
+  }
+  function arrayInputId(scope, hostId, index) {
+    return index === "empty" ? `${scope}:${hostId}:array-input-empty` : `${scope}:${hostId}:array-input-${index}`;
+  }
+  function createArrayInput(scope, submitName, hostEl, value, empty, index) {
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.id = arrayInputId(scope, hostEl.id, index);
+    input.setAttribute("data-scope", scope);
+    input.setAttribute("data-part", "array-input");
+    if (empty) input.setAttribute("data-empty", "true");
+    if (submitName) {
+      input.name = submitName;
+      associateInputWithFormIfOutside(input, hostEl);
+    }
+    input.value = value;
+    return input;
+  }
+  function syncArrayInputsInPlace(container, scope, submitName, hostEl, values, fieldTouched) {
+    var _a4;
+    const existing = Array.from(
+      container.querySelectorAll(`[data-scope="${scope}"][data-part="array-input"]`)
+    );
+    if (values.length === 0) {
+      existing.forEach((node) => node.remove());
+      const empty = createArrayInput(
+        scope,
+        fieldTouched ? submitName : void 0,
+        hostEl,
+        "",
+        true,
+        "empty"
+      );
+      container.appendChild(empty);
+      return empty;
+    }
+    const emptyNodes = existing.filter((n2) => n2.hasAttribute("data-empty"));
+    emptyNodes.forEach((n2) => n2.remove());
+    let valueNodes = existing.filter((n2) => !n2.hasAttribute("data-empty"));
+    while (valueNodes.length < values.length) {
+      const input = createArrayInput(scope, submitName, hostEl, "", false, valueNodes.length);
+      container.appendChild(input);
+      valueNodes = Array.from(
+        container.querySelectorAll(
+          `[data-scope="${scope}"][data-part="array-input"]:not([data-empty])`
+        )
+      );
+    }
+    while (valueNodes.length > values.length) {
+      const last2 = valueNodes[valueNodes.length - 1];
+      last2 == null ? void 0 : last2.remove();
+      valueNodes = valueNodes.slice(0, -1);
+    }
+    valueNodes.forEach((input, index) => {
+      var _a5;
+      input.id = arrayInputId(scope, hostEl.id, index);
+      input.value = (_a5 = values[index]) != null ? _a5 : "";
+    });
+    return (_a4 = valueNodes[valueNodes.length - 1]) != null ? _a4 : null;
+  }
+  function syncArrayHiddenInputsForPhoenix(el, values, options = {}) {
+    var _a4, _b, _c, _d;
+    const scope = (_a4 = options.scope) != null ? _a4 : "tags-input";
+    const submitName = (_b = options.submitName) != null ? _b : getString(el, "submitName");
+    if (!submitName) return;
+    const fixedLength = options.fixedLength;
+    const normalized = fixedLength !== void 0 ? padValues(values, fixedLength) : values.map((v2) => String(v2));
+    const fieldTouched = isFormFieldUsed(el, options.fieldTouched === true);
+    const container = el.querySelector(
+      `[data-scope="${scope}"][data-part="array-inputs"]`
+    );
+    if (!container) return;
+    const notifyInput = syncArrayInputsInPlace(
+      container,
+      scope,
+      submitName,
+      el,
+      normalized,
+      fieldTouched
+    );
+    if (fieldTouched) {
+      container.querySelectorAll(
+        `[data-scope="${scope}"][data-part="array-input"][name="${CSS.escape(submitName)}"]`
+      ).forEach((input) => reapplyLiveViewValueInputUsage(input));
+    }
+    const notifyLiveView = (_c = options.notifyLiveView) != null ? _c : false;
+    if (!notifyLiveView || !notifyInput) return;
+    (_d = options.onTouched) == null ? void 0 : _d.call(options);
+    notifyPhoenixFormChange(notifyInput, notifyInput.value, {
+      onTouched: void 0,
+      force: true
+    });
+  }
+  function bindArrayFieldSubmitIntent(hostEl, onPrepareSubmit) {
+    const form = hostEl.closest("form");
+    if (!form) return () => {
+    };
+    const handler = () => {
+      onPrepareSubmit();
+    };
+    form.addEventListener("submit", handler, { capture: true });
+    return () => form.removeEventListener("submit", handler, { capture: true });
+  }
+  function hiddenInputPropsWithoutChecked(props) {
+    const rest = __spreadValues({}, props);
+    delete rest.defaultChecked;
+    delete rest.checked;
+    return rest;
+  }
+  function syncCheckableHiddenInput(inputEl, hostEl, checked, spreadProps2, hiddenInputProps) {
+    spreadProps2(inputEl, hiddenInputPropsWithoutChecked(hiddenInputProps));
+    inputEl.checked = checked;
+    syncInputFormAssociation(inputEl, hostEl);
+  }
+  function hiddenInputPropsWithoutValue(props) {
+    const rest = __spreadValues({}, props);
+    delete rest.defaultValue;
+    delete rest.value;
+    return rest;
+  }
+  function syncHiddenInputValue(inputEl, hostEl, value, spreadProps2, hiddenProps) {
+    if (Object.keys(hiddenProps).length > 0) {
+      spreadProps2(inputEl, hiddenInputPropsWithoutValue(hiddenProps));
+    }
+    inputEl.value = value;
+    syncInputFormAssociation(inputEl, hostEl);
+  }
+  function markUsed(input) {
+    reapplyLiveViewValueInputUsage(input);
+  }
+  function setScalarValue(input, value, options = {}) {
+    notifyPhoenixFormChange(input, value, options);
+  }
+  function setArrayValues(el, values, options = {}) {
+    syncArrayHiddenInputsForPhoenix(el, values, options);
+  }
+  function syncFormInput(input, getValue, onTouched) {
+    syncLiveViewFormInput(input, getValue, onTouched);
+  }
   var PHX_HAS_FOCUSED;
-  var init_chunk_7LA2VUMJ = __esm({
-    "../priv/static/chunks/chunk-7LA2VUMJ.mjs"() {
+  var init_chunk_245LPPAG = __esm({
+    "../priv/static/chunks/chunk-245LPPAG.mjs"() {
       "use strict";
+      init_chunk_RRN4KZDI();
       PHX_HAS_FOCUSED = "phx-has-focused";
     }
   });
@@ -4695,13 +4821,12 @@ var Corex = (() => {
   var init_angle_slider = __esm({
     "../priv/static/angle-slider.mjs"() {
       "use strict";
-      init_chunk_WPH6MYTV();
       init_chunk_SBGJ6WBJ();
       init_chunk_KHEHQE65();
-      init_chunk_7LA2VUMJ();
-      init_chunk_LVRCAC6Y();
+      init_chunk_245LPPAG();
+      init_chunk_ILSEF4XK();
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       anatomy2 = createAnatomy("angle-slider").parts(
         "root",
         "label",
@@ -5117,7 +5242,7 @@ var Corex = (() => {
     "../priv/static/avatar.mjs"() {
       "use strict";
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       anatomy3 = createAnatomy("avatar").parts("root", "image", "fallback");
       parts3 = anatomy3.build();
       getRootId3 = (ctx) => {
@@ -5781,7 +5906,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_KHEHQE65();
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       anatomy4 = createAnatomy("carousel").parts(
         "root",
         "itemGroup",
@@ -6524,26 +6649,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-KSFYBETE.mjs
-  function hiddenInputPropsWithoutChecked(props) {
-    const rest = __spreadValues({}, props);
-    delete rest.defaultChecked;
-    delete rest.checked;
-    return rest;
-  }
-  function syncCheckableHiddenInput(inputEl, hostEl, checked, spreadProps2, hiddenInputProps) {
-    spreadProps2(inputEl, hiddenInputPropsWithoutChecked(hiddenInputProps));
-    inputEl.checked = checked;
-    syncInputFormAssociation(inputEl, hostEl);
-  }
-  var init_chunk_KSFYBETE = __esm({
-    "../priv/static/chunks/chunk-KSFYBETE.mjs"() {
-      "use strict";
-      init_chunk_E4OZ7DWO();
-    }
-  });
-
-  // ../priv/static/chunks/chunk-WAPDN2S7.mjs
+  // ../priv/static/chunks/chunk-QZ6HS4MI.mjs
   function isValidKey(e2) {
     return !(e2.metaKey || !isMac() && e2.altKey || e2.ctrlKey || e2.key === "Control" || e2.key === "Shift" || e2.key === "Meta");
   }
@@ -6662,10 +6768,10 @@ var Corex = (() => {
     };
   }
   var nonTextInputTypes, currentModality, changeHandlers, listenerMap, hasEventBeforeFocus, hasBlurredWindowRecently, ignoreFocusEvent, FOCUS_VISIBLE_INPUT_KEYS, tearDownWindowFocusTracking;
-  var init_chunk_WAPDN2S7 = __esm({
-    "../priv/static/chunks/chunk-WAPDN2S7.mjs"() {
+  var init_chunk_QZ6HS4MI = __esm({
+    "../priv/static/chunks/chunk-QZ6HS4MI.mjs"() {
       "use strict";
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       nonTextInputTypes = /* @__PURE__ */ new Set(["checkbox", "radio", "range", "color", "file", "image", "button", "submit", "reset"]);
       currentModality = null;
       changeHandlers = /* @__PURE__ */ new Set();
@@ -6835,12 +6941,11 @@ var Corex = (() => {
   var init_checkbox = __esm({
     "../priv/static/checkbox.mjs"() {
       "use strict";
-      init_chunk_KSFYBETE();
-      init_chunk_WAPDN2S7();
-      init_chunk_7LA2VUMJ();
-      init_chunk_LVRCAC6Y();
+      init_chunk_QZ6HS4MI();
+      init_chunk_245LPPAG();
+      init_chunk_ILSEF4XK();
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       anatomy5 = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
       parts5 = anatomy5.build();
       getRootId5 = (ctx) => {
@@ -7159,7 +7264,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-ADT2MZED.mjs
+  // ../priv/static/chunks/chunk-JTNPM7GV.mjs
   function setRafInterval(fn, intervalMs) {
     const timer = new Timer(({ now, deltaMs }) => {
       if (deltaMs >= intervalMs) {
@@ -7182,10 +7287,10 @@ var Corex = (() => {
     return () => timer.stop();
   }
   var currentTime, _tick, Timer;
-  var init_chunk_ADT2MZED = __esm({
-    "../priv/static/chunks/chunk-ADT2MZED.mjs"() {
+  var init_chunk_JTNPM7GV = __esm({
+    "../priv/static/chunks/chunk-JTNPM7GV.mjs"() {
       "use strict";
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       currentTime = () => performance.now();
       Timer = class {
         constructor(onTick) {
@@ -7363,9 +7468,9 @@ var Corex = (() => {
   var init_clipboard = __esm({
     "../priv/static/clipboard.mjs"() {
       "use strict";
-      init_chunk_ADT2MZED();
+      init_chunk_JTNPM7GV();
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       anatomy6 = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");
       parts6 = anatomy6.build();
       getRootId6 = (ctx) => {
@@ -7677,9 +7782,9 @@ var Corex = (() => {
     "../priv/static/collapsible.mjs"() {
       "use strict";
       init_chunk_KHEHQE65();
-      init_chunk_LVRCAC6Y();
+      init_chunk_ILSEF4XK();
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       anatomy7 = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
       parts7 = anatomy7.build();
       getRootId7 = (ctx) => {
@@ -8046,7 +8151,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-FG5VHRDC.mjs
+  // ../priv/static/chunks/chunk-XKTL3SPR.mjs
   function hasArraySubmitName(el) {
     return getString(el, "submitName") !== void 0;
   }
@@ -8059,10 +8164,10 @@ var Corex = (() => {
       node.removeAttribute("form");
     }
   }
-  var init_chunk_FG5VHRDC = __esm({
-    "../priv/static/chunks/chunk-FG5VHRDC.mjs"() {
+  var init_chunk_XKTL3SPR = __esm({
+    "../priv/static/chunks/chunk-XKTL3SPR.mjs"() {
       "use strict";
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
     }
   });
 
@@ -8138,7 +8243,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-STMYDYIS.mjs
+  // ../priv/static/chunks/chunk-EDPLM4FN.mjs
   function getPlacementDetails(placement) {
     const [side, align] = placement.split("-");
     return { side, align, hasAlign: align != null };
@@ -9515,10 +9620,10 @@ var Corex = (() => {
     };
   }
   var sides, min2, max2, round2, floor2, createCoords, oppositeSideMap, lrPlacement, rlPlacement, tbPlacement, btPlacement, MAX_RESET_COUNT, computePosition, arrow, flip, hide, originSides, offset, shift, limitShift, size, willChangeRe, containRe, isNotNone, isWebKitValue, noOffsets, SCROLLBAR_MAX, getElementRects, platform, offset2, shift2, flip2, size2, hide2, arrow2, limitShift2, computePosition2, toVar, cssVars, getSideAxis2, rectMiddleware, shiftArrowMiddleware, defaultOptions, floatingStyleProps, arrowStyleProps, ARROW_FLOATING_STYLE;
-  var init_chunk_STMYDYIS = __esm({
-    "../priv/static/chunks/chunk-STMYDYIS.mjs"() {
+  var init_chunk_EDPLM4FN = __esm({
+    "../priv/static/chunks/chunk-EDPLM4FN.mjs"() {
       "use strict";
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       sides = ["top", "right", "bottom", "left"];
       min2 = Math.min;
       max2 = Math.max;
@@ -10228,7 +10333,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-7JTELVWK.mjs
+  // ../priv/static/chunks/chunk-KZTSFVJI.mjs
   function getWindowFrames(win) {
     const frames = {
       each(cb) {
@@ -10453,17 +10558,17 @@ var Corex = (() => {
     return el.dispatchEvent(event);
   }
   var POINTER_OUTSIDE_EVENT, FOCUS_OUTSIDE_EVENT, isPointerEvent;
-  var init_chunk_7JTELVWK = __esm({
-    "../priv/static/chunks/chunk-7JTELVWK.mjs"() {
+  var init_chunk_KZTSFVJI = __esm({
+    "../priv/static/chunks/chunk-KZTSFVJI.mjs"() {
       "use strict";
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       POINTER_OUTSIDE_EVENT = "pointerdown.outside";
       FOCUS_OUTSIDE_EVENT = "focus.outside";
       isPointerEvent = (event) => "clientY" in event;
     }
   });
 
-  // ../priv/static/chunks/chunk-KJGYDHXF.mjs
+  // ../priv/static/chunks/chunk-UNSII3TK.mjs
   function trackEscapeKeydown(node, fn) {
     const handleKeyDown = (event) => {
       if (event.key !== "Escape") return;
@@ -10692,11 +10797,11 @@ var Corex = (() => {
     };
   }
   var LAYER_REQUEST_DISMISS_EVENT, layerStack, originalBodyPointerEvents, layerObservers;
-  var init_chunk_KJGYDHXF = __esm({
-    "../priv/static/chunks/chunk-KJGYDHXF.mjs"() {
+  var init_chunk_UNSII3TK = __esm({
+    "../priv/static/chunks/chunk-UNSII3TK.mjs"() {
       "use strict";
-      init_chunk_7JTELVWK();
-      init_chunk_E4OZ7DWO();
+      init_chunk_KZTSFVJI();
+      init_chunk_RRN4KZDI();
       LAYER_REQUEST_DISMISS_EVENT = "layer:request-dismiss";
       layerStack = {
         layers: [],
@@ -10831,147 +10936,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-4UPAN2NC.mjs
-  function isFormFieldUsed(el, userTouched = false) {
-    return userTouched || getBoolean(el, "fieldUsed") === true;
-  }
-  function padValues(values, fixedLength) {
-    const out = values.map((v2) => String(v2));
-    while (out.length < fixedLength) out.push("");
-    return out.slice(0, fixedLength);
-  }
-  function arrayInputId(scope, hostId, index) {
-    return index === "empty" ? `${scope}:${hostId}:array-input-empty` : `${scope}:${hostId}:array-input-${index}`;
-  }
-  function createArrayInput(scope, submitName, hostEl, value, empty, index) {
-    const input = document.createElement("input");
-    input.type = "hidden";
-    input.id = arrayInputId(scope, hostEl.id, index);
-    input.setAttribute("data-scope", scope);
-    input.setAttribute("data-part", "array-input");
-    if (empty) input.setAttribute("data-empty", "true");
-    if (submitName) {
-      input.name = submitName;
-      associateInputWithFormIfOutside(input, hostEl);
-    }
-    input.value = value;
-    return input;
-  }
-  function syncArrayInputsInPlace(container, scope, submitName, hostEl, values, fieldTouched) {
-    var _a4;
-    const existing = Array.from(
-      container.querySelectorAll(`[data-scope="${scope}"][data-part="array-input"]`)
-    );
-    if (values.length === 0) {
-      existing.forEach((node) => node.remove());
-      const empty = createArrayInput(
-        scope,
-        fieldTouched ? submitName : void 0,
-        hostEl,
-        "",
-        true,
-        "empty"
-      );
-      container.appendChild(empty);
-      return empty;
-    }
-    const emptyNodes = existing.filter((n2) => n2.hasAttribute("data-empty"));
-    emptyNodes.forEach((n2) => n2.remove());
-    let valueNodes = existing.filter((n2) => !n2.hasAttribute("data-empty"));
-    while (valueNodes.length < values.length) {
-      const input = createArrayInput(scope, submitName, hostEl, "", false, valueNodes.length);
-      container.appendChild(input);
-      valueNodes = Array.from(
-        container.querySelectorAll(
-          `[data-scope="${scope}"][data-part="array-input"]:not([data-empty])`
-        )
-      );
-    }
-    while (valueNodes.length > values.length) {
-      const last2 = valueNodes[valueNodes.length - 1];
-      last2 == null ? void 0 : last2.remove();
-      valueNodes = valueNodes.slice(0, -1);
-    }
-    valueNodes.forEach((input, index) => {
-      var _a5;
-      input.id = arrayInputId(scope, hostEl.id, index);
-      input.value = (_a5 = values[index]) != null ? _a5 : "";
-    });
-    return (_a4 = valueNodes[valueNodes.length - 1]) != null ? _a4 : null;
-  }
-  function syncArrayHiddenInputsForPhoenix(el, values, options = {}) {
-    var _a4, _b, _c, _d;
-    const scope = (_a4 = options.scope) != null ? _a4 : "tags-input";
-    const submitName = (_b = options.submitName) != null ? _b : getString(el, "submitName");
-    if (!submitName) return;
-    const fixedLength = options.fixedLength;
-    const normalized = fixedLength !== void 0 ? padValues(values, fixedLength) : values.map((v2) => String(v2));
-    const fieldTouched = isFormFieldUsed(el, options.fieldTouched === true);
-    const container = el.querySelector(
-      `[data-scope="${scope}"][data-part="array-inputs"]`
-    );
-    if (!container) return;
-    const notifyInput = syncArrayInputsInPlace(
-      container,
-      scope,
-      submitName,
-      el,
-      normalized,
-      fieldTouched
-    );
-    if (fieldTouched) {
-      container.querySelectorAll(
-        `[data-scope="${scope}"][data-part="array-input"][name="${CSS.escape(submitName)}"]`
-      ).forEach((input) => reapplyLiveViewValueInputUsage(input));
-    }
-    const notifyLiveView = (_c = options.notifyLiveView) != null ? _c : false;
-    if (!notifyLiveView || !notifyInput) return;
-    (_d = options.onTouched) == null ? void 0 : _d.call(options);
-    notifyPhoenixFormChange(notifyInput, notifyInput.value, {
-      onTouched: void 0,
-      force: true
-    });
-  }
-  function bindArrayFieldSubmitIntent(hostEl, onPrepareSubmit) {
-    const form = hostEl.closest("form");
-    if (!form) return () => {
-    };
-    const handler = () => {
-      onPrepareSubmit();
-    };
-    form.addEventListener("submit", handler, { capture: true });
-    return () => form.removeEventListener("submit", handler, { capture: true });
-  }
-  var init_chunk_4UPAN2NC = __esm({
-    "../priv/static/chunks/chunk-4UPAN2NC.mjs"() {
-      "use strict";
-      init_chunk_7LA2VUMJ();
-      init_chunk_E4OZ7DWO();
-    }
-  });
-
-  // ../priv/static/chunks/chunk-52LJJOX7.mjs
-  function markUsed(input) {
-    reapplyLiveViewValueInputUsage(input);
-  }
-  function setScalarValue(input, value, options = {}) {
-    notifyPhoenixFormChange(input, value, options);
-  }
-  function setArrayValues(el, values, options = {}) {
-    syncArrayHiddenInputsForPhoenix(el, values, options);
-  }
-  function syncFormInput(input, getValue, onTouched) {
-    syncLiveViewFormInput(input, getValue, onTouched);
-  }
-  var init_chunk_52LJJOX7 = __esm({
-    "../priv/static/chunks/chunk-52LJJOX7.mjs"() {
-      "use strict";
-      init_chunk_4UPAN2NC();
-      init_chunk_7LA2VUMJ();
-    }
-  });
-
-  // ../priv/static/chunks/chunk-3OQP2D73.mjs
+  // ../priv/static/chunks/chunk-QU3L6FP6.mjs
   function readFlipAttr(el) {
     const raw = el.dataset.positionFlip;
     if (raw == null) return void 0;
@@ -11016,14 +10981,14 @@ var Corex = (() => {
     if (hideWhenDetached !== void 0) options.hideWhenDetached = hideWhenDetached;
     return Object.keys(options).length > 0 ? options : void 0;
   }
-  var init_chunk_3OQP2D73 = __esm({
-    "../priv/static/chunks/chunk-3OQP2D73.mjs"() {
+  var init_chunk_QU3L6FP6 = __esm({
+    "../priv/static/chunks/chunk-QU3L6FP6.mjs"() {
       "use strict";
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
     }
   });
 
-  // ../priv/static/chunks/chunk-VNSUJWAI.mjs
+  // ../priv/static/chunks/chunk-ARXPSEL2.mjs
   function insert(items, index, ...values) {
     return [...items.slice(0, index), ...values, ...items.slice(index)];
   }
@@ -11423,10 +11388,10 @@ var Corex = (() => {
     }
   }
   var __defProp5, __defNormalProp5, __publicField5, fallback, ListCollection, match3, GridCollection, Selection, TreeCollection, fallbackMethods;
-  var init_chunk_VNSUJWAI = __esm({
-    "../priv/static/chunks/chunk-VNSUJWAI.mjs"() {
+  var init_chunk_ARXPSEL2 = __esm({
+    "../priv/static/chunks/chunk-ARXPSEL2.mjs"() {
       "use strict";
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       __defProp5 = Object.defineProperty;
       __defNormalProp5 = (obj, key, value) => key in obj ? __defProp5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
       __publicField5 = (obj, key, value) => __defNormalProp5(obj, typeof key !== "symbol" ? key + "" : key, value);
@@ -12423,7 +12388,63 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-MFM7SQB7.mjs
+  // ../priv/static/chunks/chunk-HZLPIQBD.mjs
+  function isAllowedRedirectDestination(destination) {
+    const trimmed = destination.trim();
+    if (!trimmed) return false;
+    if (trimmed.startsWith("//")) return false;
+    const schemeMatch = SCHEME_PREFIX.exec(trimmed);
+    if (schemeMatch) {
+      const scheme = schemeMatch[0].slice(0, -1).toLowerCase();
+      return scheme === "http" || scheme === "https";
+    }
+    return true;
+  }
+  function readDomItemRedirect(itemEl, fallback2) {
+    if (!itemEl) {
+      if (!fallback2 || !isAllowedRedirectDestination(fallback2)) return null;
+      return { destination: fallback2 };
+    }
+    const dataRedirect = itemEl.getAttribute("data-redirect");
+    if (dataRedirect === "false") return null;
+    const destination = itemEl.getAttribute("data-to") || fallback2 || itemEl.getAttribute("data-value") || "";
+    if (!destination || !isAllowedRedirectDestination(destination)) return null;
+    const mode = REDIRECT_MODES.includes(dataRedirect) ? dataRedirect : void 0;
+    const newTab = itemEl.hasAttribute("data-new-tab");
+    return { destination, mode, newTab };
+  }
+  function performRedirect(input, ctx) {
+    if (!input || !input.destination || !isAllowedRedirectDestination(input.destination))
+      return false;
+    const { destination, newTab, mode } = input;
+    if (newTab) {
+      window.open(destination, "_blank", "noopener,noreferrer");
+      return true;
+    }
+    const main = ctx.liveSocket.main;
+    const connected = !main.isDead && main.isConnected();
+    if (!connected || !mode || mode === "href") {
+      window.location.href = destination;
+      return true;
+    }
+    const js = ctx.liveSocket.js();
+    if (mode === "patch") {
+      js.patch(destination);
+    } else {
+      js.navigate(destination);
+    }
+    return true;
+  }
+  var REDIRECT_MODES, SCHEME_PREFIX;
+  var init_chunk_HZLPIQBD = __esm({
+    "../priv/static/chunks/chunk-HZLPIQBD.mjs"() {
+      "use strict";
+      REDIRECT_MODES = ["href", "patch", "navigate"];
+      SCHEME_PREFIX = /^[a-zA-Z][a-zA-Z0-9+.-]*:/;
+    }
+  });
+
+  // ../priv/static/chunks/chunk-OGB72GJ7.mjs
   function connect8(service, normalize) {
     const { context, prop, scope, computed, send, refs } = service;
     const disabled = prop("disabled");
@@ -12870,13 +12891,29 @@ var Corex = (() => {
     applyItems(host, items);
     return true;
   }
+  function firstSelectedValue(values) {
+    return values.length > 0 ? String(values[0]) : null;
+  }
+  function redirectCollectionItem(el, scope, value, liveSocket) {
+    if (!value) return false;
+    const itemEl = el.querySelector(
+      `[data-scope="${scope}"][data-part="item"][data-value="${CSS.escape(value)}"]`
+    );
+    return performRedirect(readDomItemRedirect(itemEl, value), { liveSocket });
+  }
+  function initCollectionItems(el, state2) {
+    const result = readItems(el);
+    state2.lastItemsJson = result.json;
+    return result;
+  }
   var anatomy8, parts8, collection, gridCollection, getRootId8, getContentId2, getLabelId4, getItemId3, getItemGroupId2, getItemGroupLabelId, getContentEl2, getItemEl, guards, createMachine2, or, machine8, diff2;
-  var init_chunk_MFM7SQB7 = __esm({
-    "../priv/static/chunks/chunk-MFM7SQB7.mjs"() {
+  var init_chunk_OGB72GJ7 = __esm({
+    "../priv/static/chunks/chunk-OGB72GJ7.mjs"() {
       "use strict";
-      init_chunk_VNSUJWAI();
-      init_chunk_WAPDN2S7();
-      init_chunk_E4OZ7DWO();
+      init_chunk_ARXPSEL2();
+      init_chunk_HZLPIQBD();
+      init_chunk_QZ6HS4MI();
+      init_chunk_RRN4KZDI();
       anatomy8 = createAnatomy("listbox").parts(
         "label",
         "input",
@@ -13322,62 +13359,6 @@ var Corex = (() => {
         for (const item of b2) result.delete(item);
         return result;
       };
-    }
-  });
-
-  // ../priv/static/chunks/chunk-HZLPIQBD.mjs
-  function isAllowedRedirectDestination(destination) {
-    const trimmed = destination.trim();
-    if (!trimmed) return false;
-    if (trimmed.startsWith("//")) return false;
-    const schemeMatch = SCHEME_PREFIX.exec(trimmed);
-    if (schemeMatch) {
-      const scheme = schemeMatch[0].slice(0, -1).toLowerCase();
-      return scheme === "http" || scheme === "https";
-    }
-    return true;
-  }
-  function readDomItemRedirect(itemEl, fallback2) {
-    if (!itemEl) {
-      if (!fallback2 || !isAllowedRedirectDestination(fallback2)) return null;
-      return { destination: fallback2 };
-    }
-    const dataRedirect = itemEl.getAttribute("data-redirect");
-    if (dataRedirect === "false") return null;
-    const destination = itemEl.getAttribute("data-to") || fallback2 || itemEl.getAttribute("data-value") || "";
-    if (!destination || !isAllowedRedirectDestination(destination)) return null;
-    const mode = REDIRECT_MODES.includes(dataRedirect) ? dataRedirect : void 0;
-    const newTab = itemEl.hasAttribute("data-new-tab");
-    return { destination, mode, newTab };
-  }
-  function performRedirect(input, ctx) {
-    if (!input || !input.destination || !isAllowedRedirectDestination(input.destination))
-      return false;
-    const { destination, newTab, mode } = input;
-    if (newTab) {
-      window.open(destination, "_blank", "noopener,noreferrer");
-      return true;
-    }
-    const main = ctx.liveSocket.main;
-    const connected = !main.isDead && main.isConnected();
-    if (!connected || !mode || mode === "href") {
-      window.location.href = destination;
-      return true;
-    }
-    const js = ctx.liveSocket.js();
-    if (mode === "patch") {
-      js.patch(destination);
-    } else {
-      js.navigate(destination);
-    }
-    return true;
-  }
-  var REDIRECT_MODES, SCHEME_PREFIX;
-  var init_chunk_HZLPIQBD = __esm({
-    "../priv/static/chunks/chunk-HZLPIQBD.mjs"() {
-      "use strict";
-      REDIRECT_MODES = ["href", "patch", "navigate"];
-      SCHEME_PREFIX = /^[a-zA-Z][a-zA-Z0-9+.-]*:/;
     }
   });
 
@@ -13931,12 +13912,13 @@ var Corex = (() => {
       },
       onValueChange: (details) => {
         var _a5;
-        const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
-        if (redirectOn && firstValue) {
-          const itemEl = el.querySelector(
-            `[data-scope="combobox"][data-part="item"][data-value="${CSS.escape(firstValue)}"]`
+        if (redirectOn) {
+          redirectCollectionItem(
+            el,
+            "combobox",
+            firstSelectedValue(details.value),
+            liveSocket
           );
-          performRedirect(readDomItemRedirect(itemEl, firstValue), { liveSocket });
         }
         syncComboboxHiddenInputForPhoenix(el, details.value, markFieldTouched);
         (_a5 = getCombobox()) == null ? void 0 : _a5.restoreFilteredOptions();
@@ -13996,22 +13978,20 @@ var Corex = (() => {
   var init_combobox = __esm({
     "../priv/static/combobox.mjs"() {
       "use strict";
-      init_chunk_FG5VHRDC();
+      init_chunk_XKTL3SPR();
       init_chunk_UFCM6256();
-      init_chunk_STMYDYIS();
-      init_chunk_KJGYDHXF();
-      init_chunk_52LJJOX7();
-      init_chunk_7JTELVWK();
-      init_chunk_4UPAN2NC();
-      init_chunk_3OQP2D73();
-      init_chunk_MFM7SQB7();
-      init_chunk_VNSUJWAI();
+      init_chunk_EDPLM4FN();
+      init_chunk_UNSII3TK();
+      init_chunk_KZTSFVJI();
+      init_chunk_QU3L6FP6();
+      init_chunk_OGB72GJ7();
+      init_chunk_ARXPSEL2();
       init_chunk_HZLPIQBD();
-      init_chunk_WAPDN2S7();
-      init_chunk_7LA2VUMJ();
-      init_chunk_LVRCAC6Y();
+      init_chunk_QZ6HS4MI();
+      init_chunk_245LPPAG();
+      init_chunk_ILSEF4XK();
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       anatomy9 = createAnatomy("combobox").parts(
         "root",
         "clearTrigger",
@@ -15472,7 +15452,7 @@ var Corex = (() => {
           const markFieldTouched = () => {
             hook.fieldTouched = true;
           };
-          const { json: itemsJson, items: allItems, hasGroups } = readItems(el);
+          const { items: allItems, hasGroups } = initCollectionItems(el, hook);
           const defaultValues = (_a4 = getStringList(el, "defaultValue")) != null ? _a4 : [];
           if (defaultValues.length > 0) {
             hook.fieldTouched = true;
@@ -15489,7 +15469,6 @@ var Corex = (() => {
           )), mountStringListBinding(el));
           const combobox = new Combobox(el, props, allItems, hasGroups);
           comboboxRef = combobox;
-          hook.lastItemsJson = itemsJson;
           dom2.add("corex:combobox:set-value", (event) => {
             combobox.api.setValue(event.detail.value);
           });
@@ -16349,16 +16328,15 @@ var Corex = (() => {
   var init_color_picker = __esm({
     "../priv/static/color-picker.mjs"() {
       "use strict";
-      init_chunk_WPH6MYTV();
       init_chunk_KHEHQE65();
-      init_chunk_STMYDYIS();
-      init_chunk_KJGYDHXF();
-      init_chunk_7JTELVWK();
-      init_chunk_3OQP2D73();
-      init_chunk_7LA2VUMJ();
-      init_chunk_LVRCAC6Y();
+      init_chunk_EDPLM4FN();
+      init_chunk_UNSII3TK();
+      init_chunk_KZTSFVJI();
+      init_chunk_QU3L6FP6();
+      init_chunk_245LPPAG();
+      init_chunk_ILSEF4XK();
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       anatomy10 = createAnatomy("color-picker", [
         "root",
         "label",
@@ -18008,7 +17986,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-2VK4IZYP.mjs
+  // ../priv/static/chunks/chunk-COKNR45R.mjs
   function memo(getDeps, fn, opts) {
     let deps = [];
     let result;
@@ -18023,10 +18001,10 @@ var Corex = (() => {
       return result;
     };
   }
-  var init_chunk_2VK4IZYP = __esm({
-    "../priv/static/chunks/chunk-2VK4IZYP.mjs"() {
+  var init_chunk_COKNR45R = __esm({
+    "../priv/static/chunks/chunk-COKNR45R.mjs"() {
       "use strict";
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
     }
   });
 
@@ -20402,19 +20380,17 @@ var Corex = (() => {
   var init_date_picker = __esm({
     "../priv/static/date-picker.mjs"() {
       "use strict";
-      init_chunk_2VK4IZYP();
+      init_chunk_COKNR45R();
       init_chunk_KHEHQE65();
       init_chunk_UFCM6256();
-      init_chunk_STMYDYIS();
-      init_chunk_KJGYDHXF();
-      init_chunk_52LJJOX7();
-      init_chunk_7JTELVWK();
-      init_chunk_4UPAN2NC();
-      init_chunk_3OQP2D73();
-      init_chunk_7LA2VUMJ();
-      init_chunk_LVRCAC6Y();
+      init_chunk_EDPLM4FN();
+      init_chunk_UNSII3TK();
+      init_chunk_KZTSFVJI();
+      init_chunk_QU3L6FP6();
+      init_chunk_245LPPAG();
+      init_chunk_ILSEF4XK();
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       anatomy11 = createAnatomy("date-picker").parts(
         "clearTrigger",
         "content",
@@ -23095,12 +23071,12 @@ var Corex = (() => {
   var init_dialog = __esm({
     "../priv/static/dialog.mjs"() {
       "use strict";
-      init_chunk_ZRVGBPNP();
-      init_chunk_KJGYDHXF();
-      init_chunk_7JTELVWK();
-      init_chunk_LVRCAC6Y();
+      init_chunk_CE52IH4H();
+      init_chunk_UNSII3TK();
+      init_chunk_KZTSFVJI();
+      init_chunk_ILSEF4XK();
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       anatomy12 = createAnatomy("dialog").parts(
         "trigger",
         "backdrop",
@@ -24511,13 +24487,11 @@ var Corex = (() => {
   var init_editable = __esm({
     "../priv/static/editable.mjs"() {
       "use strict";
-      init_chunk_52LJJOX7();
-      init_chunk_7JTELVWK();
-      init_chunk_4UPAN2NC();
-      init_chunk_7LA2VUMJ();
-      init_chunk_LVRCAC6Y();
+      init_chunk_KZTSFVJI();
+      init_chunk_245LPPAG();
+      init_chunk_ILSEF4XK();
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       anatomy13 = createAnatomy("editable").parts(
         "root",
         "area",
@@ -25427,10 +25401,9 @@ var Corex = (() => {
   var init_file_upload = __esm({
     "../priv/static/file-upload.mjs"() {
       "use strict";
-      init_chunk_4UPAN2NC();
-      init_chunk_7LA2VUMJ();
+      init_chunk_245LPPAG();
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       anatomy14 = createAnatomy("file-upload").parts(
         "root",
         "dropzone",
@@ -26766,9 +26739,9 @@ ${err}`);
       "use strict";
       init_chunk_SBGJ6WBJ();
       init_chunk_KHEHQE65();
-      init_chunk_3OQP2D73();
+      init_chunk_QU3L6FP6();
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       anatomy15 = createAnatomy("floating-panel").parts(
         "trigger",
         "positioner",
@@ -27779,12 +27752,13 @@ ${err}`);
       deselectable: getBoolean(el, "deselectable"),
       typeahead: getBoolean(el, "typeahead"),
       onValueChange: (details) => {
-        const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
-        if (redirectOn && firstValue) {
-          const itemEl = el.querySelector(
-            `[data-scope="listbox"][data-part="item"][data-value="${CSS.escape(firstValue)}"]`
+        if (redirectOn) {
+          redirectCollectionItem(
+            el,
+            "listbox",
+            firstSelectedValue(details.value),
+            liveSocket
           );
-          performRedirect(readDomItemRedirect(itemEl, firstValue), { liveSocket });
         }
         notifyChange({
           el,
@@ -27805,13 +27779,13 @@ ${err}`);
   var init_listbox = __esm({
     "../priv/static/listbox.mjs"() {
       "use strict";
-      init_chunk_MFM7SQB7();
-      init_chunk_VNSUJWAI();
+      init_chunk_OGB72GJ7();
+      init_chunk_ARXPSEL2();
       init_chunk_HZLPIQBD();
-      init_chunk_WAPDN2S7();
-      init_chunk_LVRCAC6Y();
+      init_chunk_QZ6HS4MI();
+      init_chunk_ILSEF4XK();
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       Listbox = class extends Component {
         constructor(el, props) {
           var _a4;
@@ -27902,14 +27876,13 @@ ${err}`);
         controlledKeys: ["value"],
         mount(hook, { dom: dom2, server }) {
           const el = hook.el;
-          const { json: itemsJson, items: allItems, hasGroups } = readItems(el);
+          const { items: allItems, hasGroups } = initCollectionItems(el, hook);
           const pushEvent = hook.pushEvent.bind(hook);
           const canPush = () => canPushEvent(hook.liveSocket);
           const zag = new Listbox(el, __spreadValues(__spreadProps(__spreadValues({}, listboxZagPropsBase(el, hook.liveSocket, pushEvent)), {
             collection: buildCollection(allItems, hasGroups)
           }), readStringListControlledZagProps(el, "value", "defaultValue")));
           applyItems(zag, allItems, hasGroups);
-          hook.lastItemsJson = itemsJson;
           const emitValue = createValueEmitter(
             { el, pushEvent, canPushServer: canPush },
             {
@@ -28144,7 +28117,7 @@ ${err}`);
     "../priv/static/marquee.mjs"() {
       "use strict";
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       anatomy16 = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");
       parts16 = anatomy16.build();
       dom = {
@@ -29201,14 +29174,16 @@ ${err}`);
     "../priv/static/menu.mjs"() {
       "use strict";
       init_chunk_SBGJ6WBJ();
-      init_chunk_STMYDYIS();
-      init_chunk_KJGYDHXF();
-      init_chunk_7JTELVWK();
-      init_chunk_3OQP2D73();
+      init_chunk_EDPLM4FN();
+      init_chunk_UNSII3TK();
+      init_chunk_KZTSFVJI();
+      init_chunk_QU3L6FP6();
+      init_chunk_OGB72GJ7();
+      init_chunk_ARXPSEL2();
       init_chunk_HZLPIQBD();
-      init_chunk_WAPDN2S7();
+      init_chunk_QZ6HS4MI();
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       anatomy17 = createAnatomy("menu").parts(
         "arrow",
         "arrowTip",
@@ -30383,10 +30358,7 @@ ${err}`);
           const buildOnSelect = () => (details) => {
             var _a4;
             if (getBoolean(el, "redirect") && details.value) {
-              const itemEl = el.querySelector(
-                `[data-scope="menu"][data-part="item"][data-value="${CSS.escape(details.value)}"]`
-              );
-              performRedirect(readDomItemRedirect(itemEl, details.value), { liveSocket });
+              redirectCollectionItem(el, "menu", details.value, liveSocket);
             }
             notifyChange({
               el,
@@ -31044,7 +31016,13 @@ ${err}`);
     if (trimmed === "") return;
     zag.machine.service.send({ type: "VALUE.SET", value: trimmed });
   }
-  function buildMachineProps(el, pushEvent, canPush) {
+  function initialDisplayValue(el) {
+    var _a4, _b;
+    const binding = mountNumberBinding(el);
+    if ("value" in binding) return (_a4 = binding.value) != null ? _a4 : "";
+    return (_b = binding.defaultValue) != null ? _b : "";
+  }
+  function buildMachineProps(el, pushEvent, canPush, hook) {
     var _a4;
     const step = (_a4 = getNumber(el, "step")) != null ? _a4 : 1;
     return __spreadProps(__spreadValues({
@@ -31061,9 +31039,14 @@ ${err}`);
       allowMouseWheel: getBoolean(el, "allowMouseWheel"),
       dir: getDir(el),
       onValueChange: (details) => {
-        var _a5;
+        var _a5, _b;
+        const next2 = (_a5 = details.value) != null ? _a5 : "";
+        const isMountEcho = hook.fieldTouched !== true && next2 === ((_b = hook.initialValue) != null ? _b : "");
+        if (!isMountEcho) {
+          hook.fieldTouched = true;
+        }
         if (details.value !== void 0) {
-          syncNumberInputValueInput(el, (_a5 = details.value) != null ? _a5 : "", true, details.valueAsNumber);
+          syncNumberInputValueInput(el, next2, !isMountEcho, details.valueAsNumber);
         }
         notifyChange({
           el,
@@ -31101,15 +31084,12 @@ ${err}`);
   var init_number_input = __esm({
     "../priv/static/number-input.mjs"() {
       "use strict";
-      init_chunk_2VK4IZYP();
-      init_chunk_WPH6MYTV();
+      init_chunk_COKNR45R();
       init_chunk_KHEHQE65();
-      init_chunk_52LJJOX7();
-      init_chunk_4UPAN2NC();
-      init_chunk_7LA2VUMJ();
-      init_chunk_LVRCAC6Y();
+      init_chunk_245LPPAG();
+      init_chunk_ILSEF4XK();
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       anatomy18 = createAnatomy("numberInput").parts(
         "root",
         "label",
@@ -31989,9 +31969,11 @@ ${err}`);
         controlledKeys: ["value", "defaultValue"],
         mount(hook, { dom: dom2, server }) {
           const el = hook.el;
+          hook.fieldTouched = false;
+          hook.initialValue = initialDisplayValue(el);
           const pushEvent = hook.pushEvent.bind(hook);
           const canPush = () => canPushEvent(hook.liveSocket);
-          const zag = new NumberInput(el, buildMachineProps(el, pushEvent, canPush));
+          const zag = new NumberInput(el, buildMachineProps(el, pushEvent, canPush, hook));
           const emitState = (respondTo) => {
             const snapshot2 = machineState(zag.api);
             emitResponse({
@@ -32072,7 +32054,7 @@ ${err}`);
           var _a4;
           const el = hook.el;
           const initialSubmit = submitValueForHost(el, zag.api.valueAsNumber);
-          syncNumberInputValueInput(el, (_a4 = zag.api.value) != null ? _a4 : "", true, zag.api.valueAsNumber);
+          syncNumberInputValueInput(el, (_a4 = zag.api.value) != null ? _a4 : "", false, zag.api.valueAsNumber);
           const valueInput = el.querySelector(
             '[data-scope="number-input"][data-part="value-input"]'
           );
@@ -32400,10 +32382,10 @@ ${err}`);
   var init_pagination = __esm({
     "../priv/static/pagination.mjs"() {
       "use strict";
-      init_chunk_2VK4IZYP();
+      init_chunk_COKNR45R();
       init_chunk_HZLPIQBD();
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       anatomy19 = createAnatomy("pagination").parts(
         "root",
         "item",
@@ -32888,7 +32870,7 @@ ${err}`);
     "../priv/static/password-input.mjs"() {
       "use strict";
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       anatomy20 = createAnatomy("password-input").parts(
         "root",
         "input",
@@ -33471,15 +33453,12 @@ ${err}`);
   var init_pin_input = __esm({
     "../priv/static/pin-input.mjs"() {
       "use strict";
-      init_chunk_WPH6MYTV();
       init_chunk_KHEHQE65();
-      init_chunk_FG5VHRDC();
-      init_chunk_52LJJOX7();
-      init_chunk_4UPAN2NC();
-      init_chunk_7LA2VUMJ();
-      init_chunk_LVRCAC6Y();
+      init_chunk_XKTL3SPR();
+      init_chunk_245LPPAG();
+      init_chunk_ILSEF4XK();
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       anatomy21 = createAnatomy("pinInput").parts("root", "label", "input", "control");
       parts21 = anatomy21.build();
       getRootId16 = (ctx) => {
@@ -34208,13 +34187,12 @@ ${err}`);
   var init_radio_group = __esm({
     "../priv/static/radio-group.mjs"() {
       "use strict";
-      init_chunk_KSFYBETE();
       init_chunk_KHEHQE65();
-      init_chunk_WAPDN2S7();
-      init_chunk_7LA2VUMJ();
-      init_chunk_LVRCAC6Y();
+      init_chunk_QZ6HS4MI();
+      init_chunk_245LPPAG();
+      init_chunk_ILSEF4XK();
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       anatomy22 = createAnatomy("radio-group").parts(
         "root",
         "label",
@@ -35170,12 +35148,8 @@ ${err}`);
       if (getBoolean(el, "controlled") && controlledValueMatchesServer(el, details.value)) {
         return;
       }
-      const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
-      if (getBoolean(el, "redirect") && firstValue) {
-        const itemEl = el.querySelector(
-          `[data-scope="select"][data-part="item"][data-value="${CSS.escape(firstValue)}"]`
-        );
-        performRedirect(readDomItemRedirect(itemEl, firstValue), { liveSocket });
+      if (getBoolean(el, "redirect")) {
+        redirectCollectionItem(el, "select", firstSelectedValue(details.value), liveSocket);
       }
       syncSelectHiddenInputForPhoenix(el, details.value);
       notifyChange({
@@ -35209,18 +35183,18 @@ ${err}`);
   var init_select = __esm({
     "../priv/static/select.mjs"() {
       "use strict";
-      init_chunk_STMYDYIS();
-      init_chunk_KJGYDHXF();
-      init_chunk_7JTELVWK();
-      init_chunk_3OQP2D73();
-      init_chunk_MFM7SQB7();
-      init_chunk_VNSUJWAI();
+      init_chunk_EDPLM4FN();
+      init_chunk_UNSII3TK();
+      init_chunk_KZTSFVJI();
+      init_chunk_QU3L6FP6();
+      init_chunk_OGB72GJ7();
+      init_chunk_ARXPSEL2();
       init_chunk_HZLPIQBD();
-      init_chunk_WAPDN2S7();
-      init_chunk_7LA2VUMJ();
-      init_chunk_LVRCAC6Y();
+      init_chunk_QZ6HS4MI();
+      init_chunk_245LPPAG();
+      init_chunk_ILSEF4XK();
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       anatomy23 = createAnatomy("select").parts(
         "label",
         "positioner",
@@ -36176,7 +36150,6 @@ ${err}`);
           const el = hook.el;
           const pushEvent = hook.pushEvent.bind(hook);
           const canPush = () => canPushEvent(hook.liveSocket);
-          const { json: itemsJson, items: allItems, hasGroups } = readItems(el);
           const onValueChange = createSelectOnValueChange(
             () => hook.el,
             hook.liveSocket,
@@ -36184,11 +36157,11 @@ ${err}`);
             canPush
           );
           hook.onValueChange = onValueChange;
+          const { items: allItems, hasGroups } = initCollectionItems(el, hook);
           const selectComponent = new Select(el, __spreadValues(__spreadProps(__spreadValues({}, selectZagPropsBase(el, onValueChange)), {
             collection: buildCollection2(allItems, hasGroups)
           }), readStringListControlledZagProps(el, "value", "defaultValue")));
           applyItems(selectComponent, allItems, hasGroups);
-          hook.lastItemsJson = itemsJson;
           dom2.add("corex:select:set-value", (event) => {
             selectComponent.api.setValue(event.detail.value);
           });
@@ -36603,13 +36576,11 @@ ${err}`);
   var init_signature_pad = __esm({
     "../priv/static/signature-pad.mjs"() {
       "use strict";
-      init_chunk_FG5VHRDC();
-      init_chunk_52LJJOX7();
-      init_chunk_4UPAN2NC();
-      init_chunk_7LA2VUMJ();
-      init_chunk_LVRCAC6Y();
+      init_chunk_XKTL3SPR();
+      init_chunk_245LPPAG();
+      init_chunk_ILSEF4XK();
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       anatomy24 = createAnatomy("signature-pad").parts(
         "root",
         "control",
@@ -37134,12 +37105,11 @@ ${err}`);
   var init_switch = __esm({
     "../priv/static/switch.mjs"() {
       "use strict";
-      init_chunk_KSFYBETE();
-      init_chunk_WAPDN2S7();
-      init_chunk_7LA2VUMJ();
-      init_chunk_LVRCAC6Y();
+      init_chunk_QZ6HS4MI();
+      init_chunk_245LPPAG();
+      init_chunk_ILSEF4XK();
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       anatomy25 = createAnatomy("switch").parts("root", "label", "control", "thumb");
       parts25 = anatomy25.build();
       getRootId20 = (ctx) => {
@@ -37915,13 +37885,11 @@ ${err}`);
     "../priv/static/tags-input.mjs"() {
       "use strict";
       init_chunk_UFCM6256();
-      init_chunk_52LJJOX7();
-      init_chunk_7JTELVWK();
-      init_chunk_4UPAN2NC();
-      init_chunk_7LA2VUMJ();
-      init_chunk_LVRCAC6Y();
+      init_chunk_KZTSFVJI();
+      init_chunk_245LPPAG();
+      init_chunk_ILSEF4XK();
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       anatomy26 = createAnatomy("tagsInput").parts(
         "root",
         "label",
@@ -39210,9 +39178,9 @@ ${err}`);
     "../priv/static/tabs.mjs"() {
       "use strict";
       init_chunk_KHEHQE65();
-      init_chunk_LVRCAC6Y();
+      init_chunk_ILSEF4XK();
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       anatomy27 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
       parts27 = anatomy27.build();
       getRootId22 = (ctx) => {
@@ -39987,11 +39955,11 @@ ${err}`);
   var init_timer = __esm({
     "../priv/static/timer.mjs"() {
       "use strict";
-      init_chunk_2VK4IZYP();
-      init_chunk_ADT2MZED();
+      init_chunk_COKNR45R();
+      init_chunk_JTNPM7GV();
       init_chunk_KHEHQE65();
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       anatomy28 = createAnatomy("timer").parts(
         "root",
         "area",
@@ -41030,10 +40998,10 @@ ${err}`);
   var init_toast = __esm({
     "../priv/static/toast.mjs"() {
       "use strict";
-      init_chunk_ADT2MZED();
-      init_chunk_KJGYDHXF();
-      init_chunk_7JTELVWK();
-      init_chunk_E4OZ7DWO();
+      init_chunk_JTNPM7GV();
+      init_chunk_UNSII3TK();
+      init_chunk_KZTSFVJI();
+      init_chunk_RRN4KZDI();
       anatomy29 = createAnatomy("toast").parts(
         "group",
         "root",
@@ -42226,11 +42194,11 @@ ${err}`);
   var init_tooltip = __esm({
     "../priv/static/tooltip.mjs"() {
       "use strict";
-      init_chunk_STMYDYIS();
-      init_chunk_3OQP2D73();
-      init_chunk_WAPDN2S7();
+      init_chunk_EDPLM4FN();
+      init_chunk_QU3L6FP6();
+      init_chunk_QZ6HS4MI();
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       anatomy30 = createAnatomy("tooltip").parts("trigger", "arrow", "arrowTip", "positioner", "content");
       parts30 = anatomy30.build();
       getTriggerId11 = (scope, value) => {
@@ -42788,9 +42756,9 @@ ${err}`);
   var init_toggle = __esm({
     "../priv/static/toggle.mjs"() {
       "use strict";
-      init_chunk_LVRCAC6Y();
+      init_chunk_ILSEF4XK();
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       anatomy31 = createAnatomy("toggle", ["root", "indicator"]);
       parts31 = anatomy31.build();
       machine31 = createMachine({
@@ -43071,9 +43039,9 @@ ${err}`);
   var init_toggle_group = __esm({
     "../priv/static/toggle-group.mjs"() {
       "use strict";
-      init_chunk_LVRCAC6Y();
+      init_chunk_ILSEF4XK();
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       anatomy32 = createAnatomy("toggle-group").parts("root", "item");
       parts32 = anatomy32.build();
       getRootId25 = (ctx) => {
@@ -43975,11 +43943,11 @@ ${err}`);
     "../priv/static/tree-view.mjs"() {
       "use strict";
       init_chunk_JDGMEOQK();
-      init_chunk_ZRVGBPNP();
-      init_chunk_VNSUJWAI();
+      init_chunk_CE52IH4H();
+      init_chunk_ARXPSEL2();
       init_chunk_HZLPIQBD();
       init_chunk_EAQ6WQNO();
-      init_chunk_E4OZ7DWO();
+      init_chunk_RRN4KZDI();
       anatomy33 = createAnatomy("tree-view").parts(
         "branch",
         "branchContent",

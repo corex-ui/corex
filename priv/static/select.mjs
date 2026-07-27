@@ -2,43 +2,42 @@ import {
   getPlacement,
   getPlacementSide,
   getPlacementStyles
-} from "./chunks/chunk-STMYDYIS.mjs";
+} from "./chunks/chunk-EDPLM4FN.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-KJGYDHXF.mjs";
-import "./chunks/chunk-7JTELVWK.mjs";
+} from "./chunks/chunk-UNSII3TK.mjs";
+import "./chunks/chunk-KZTSFVJI.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-3OQP2D73.mjs";
+} from "./chunks/chunk-QU3L6FP6.mjs";
 import {
   applyItems,
+  firstSelectedValue,
+  initCollectionItems,
   itemValue,
-  readItems,
+  redirectCollectionItem,
   refreshItemsIfChanged,
   zagListCollectionConfig
-} from "./chunks/chunk-MFM7SQB7.mjs";
+} from "./chunks/chunk-OGB72GJ7.mjs";
 import {
   ListCollection,
   createSelectedItemMap,
   deriveSelectionState,
   resolveSelectedItems
-} from "./chunks/chunk-VNSUJWAI.mjs";
-import {
-  performRedirect,
-  readDomItemRedirect
-} from "./chunks/chunk-HZLPIQBD.mjs";
+} from "./chunks/chunk-ARXPSEL2.mjs";
+import "./chunks/chunk-HZLPIQBD.mjs";
 import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunks/chunk-WAPDN2S7.mjs";
+} from "./chunks/chunk-QZ6HS4MI.mjs";
 import {
   notifyPhoenixFormChange
-} from "./chunks/chunk-7LA2VUMJ.mjs";
+} from "./chunks/chunk-245LPPAG.mjs";
 import {
   readStringListControlledZagProps,
   readUpdatedServerStringList
-} from "./chunks/chunk-LVRCAC6Y.mjs";
+} from "./chunks/chunk-ILSEF4XK.mjs";
 import {
   idMatches,
   notifyChange,
@@ -77,7 +76,7 @@ import {
   syncInputFormAssociation,
   trackFormControl,
   visuallyHiddenStyle
-} from "./chunks/chunk-E4OZ7DWO.mjs";
+} from "./chunks/chunk-RRN4KZDI.mjs";
 
 // ../node_modules/.pnpm/@zag-js+select@1.42.0/node_modules/@zag-js/select/dist/select.anatomy.mjs
 var anatomy = createAnatomy("select").parts(
@@ -1493,12 +1492,8 @@ function createSelectOnValueChange(getEl, liveSocket, pushEvent, canPush) {
     if (getBoolean(el, "controlled") && controlledValueMatchesServer(el, details.value)) {
       return;
     }
-    const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
-    if (getBoolean(el, "redirect") && firstValue) {
-      const itemEl = el.querySelector(
-        `[data-scope="select"][data-part="item"][data-value="${CSS.escape(firstValue)}"]`
-      );
-      performRedirect(readDomItemRedirect(itemEl, firstValue), { liveSocket });
+    if (getBoolean(el, "redirect")) {
+      redirectCollectionItem(el, "select", firstSelectedValue(details.value), liveSocket);
     }
     syncSelectHiddenInputForPhoenix(el, details.value);
     notifyChange({
@@ -1536,7 +1531,6 @@ var SelectHook = createZagLiveHook({
     const el = hook.el;
     const pushEvent = hook.pushEvent.bind(hook);
     const canPush = () => canPushEvent(hook.liveSocket);
-    const { json: itemsJson, items: allItems, hasGroups } = readItems(el);
     const onValueChange = createSelectOnValueChange(
       () => hook.el,
       hook.liveSocket,
@@ -1544,13 +1538,13 @@ var SelectHook = createZagLiveHook({
       canPush
     );
     hook.onValueChange = onValueChange;
+    const { items: allItems, hasGroups } = initCollectionItems(el, hook);
     const selectComponent = new Select(el, {
       ...selectZagPropsBase(el, onValueChange),
       collection: buildCollection(allItems, hasGroups),
       ...readStringListControlledZagProps(el, "value", "defaultValue")
     });
     applyItems(selectComponent, allItems, hasGroups);
-    hook.lastItemsJson = itemsJson;
     dom.add("corex:select:set-value", (event) => {
       selectComponent.api.setValue(event.detail.value);
     });
