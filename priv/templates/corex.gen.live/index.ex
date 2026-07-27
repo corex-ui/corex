@@ -6,11 +6,12 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   @impl true
   def render(assigns) do
     ~H"""
-    <%= if layout_mode || layout_theme || layout_locale || scope do %><Layouts.app
+    <%= if layout_mode || layout_theme || layout_locale_assigns || layout_locale_paths || scope do %><Layouts.app
       flash={@flash}<%= if layout_mode do %>
       mode={@mode}<% end %><%= if layout_theme do %>
-      theme={@theme}<% end %><%= if layout_locale do %>
+      theme={@theme}<% end %><%= if layout_locale_paths do %>
       locale={@locale}
+<% end %><%= if layout_locale_assigns do %>
       current_path={@current_path}<% end %><%= if scope do %>
       <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>
     >
@@ -20,7 +21,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           <:title><%= maybe_heex_slot_translate.("Listing #{schema.human_plural}", @gettext_mode) %></:title>
           <:subtitle><%= maybe_heex_slot_translate.("Add and manage #{schema.singular} records", @gettext_mode) %></:subtitle>
           <:actions>
-            <.navigate to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/new"} type="navigate" class="button ui-accent">
+            <.navigate to={~p"<%= if layout_locale_paths do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/new"} type="navigate" class="button ui-accent">
               <.heroicon name="hero-plus" /> <%= maybe_heex_slot_translate.("New #{schema.human_singular}", @gettext_mode) %>
             </.navigate>
           </:actions>
@@ -30,16 +31,16 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           id="<%= schema.plural %>"
           class="data-table max-w-none"
           rows={@streams.<%= schema.collection %>}
-          row_click={fn {_id, <%= schema.singular %>} -> JS.navigate(~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}") end}
+          row_click={fn {_id, <%= schema.singular %>} -> JS.navigate(~p"<%= if layout_locale_paths do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}") end}
         >
           <:empty><%= maybe_heex_slot_translate.("No #{schema.human_plural} yet.", @gettext_mode) %></:empty><%= for {k, type} <- schema.attrs do %>
           <:col :let={{_id, <%= schema.singular %>}} label="<%= Phoenix.Naming.humanize(Atom.to_string(k)) %>">{<%= Mix.Corex.Gen.Inputs.display_expr(schema.singular, k, type, schema) %>}</:col><% end %>
           <:action :let={{_id, <%= schema.singular %>}}>
             <div class="sr-only">
-              <.link navigate={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}"} class="link">Show</.link>
+              <.link navigate={~p"<%= if layout_locale_paths do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}"} class="link">Show</.link>
             </div>
             <.link
-              navigate={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}/edit"}
+              navigate={~p"<%= if layout_locale_paths do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}/edit"}
               class="button ui-size-sm"
               aria-label={"Edit #{<%= schema.singular %>.<%= schema.attrs |> Keyword.keys() |> List.first() %>}"}
             >

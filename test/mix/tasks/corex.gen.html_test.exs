@@ -238,7 +238,7 @@ defmodule Mix.Tasks.Corex.Gen.HtmlTest do
     end)
   end
 
-  test "run/1 with layout locale and theme opts prints locale routes" do
+  test "run/1 with layout locale and theme opts prints locale-scoped route instructions" do
     prev_generators = Application.get_env(:corex, :generators)
     prev_themes = Application.get_env(:corex, :themes)
 
@@ -263,8 +263,15 @@ defmodule Mix.Tasks.Corex.Gen.HtmlTest do
           loud: true
         )
 
-      assert output =~ "/:locale"
+      assert output =~ ~s(scope "/:locale")
+      assert output =~ ~s(not scope "/")
+      assert output =~ ~s(~p"/#{plural}")
+      assert output =~ "/<locale>/#{plural}"
       assert File.exists?(Path.join([tmp, "web/controllers", "#{singular}_controller.ex"]))
+
+      index = File.read!(Path.join([tmp, "web/controllers", "#{singular}_html", "index.html.heex"]))
+      assert index =~ "current_path={@current_path}"
+      assert index =~ ~s(~p"/\#{@locale}/#{plural}/new")
     end)
   end
 

@@ -726,6 +726,11 @@ defmodule Mix.Corex do
     Keyword.has_key?(layout_opts, :locale) and not verified_routes_path_prefixes?(web_module)
   end
 
+  @doc "Returns whether generated layouts should receive locale assigns such as current_path."
+  def layout_locale_assigns?(layout_opts) when is_list(layout_opts) do
+    Keyword.has_key?(layout_opts, :locale)
+  end
+
   def format_generated_files(files) when is_list(files) do
     paths = for {_, _, path} <- files, do: path
 

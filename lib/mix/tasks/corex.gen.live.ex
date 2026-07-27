@@ -185,7 +185,8 @@ defmodule Mix.Tasks.Corex.Gen.Live do
       scope: schema.scope,
       layout_mode: layout_mode?(layout_opts),
       layout_theme: layout_theme?(layout_opts),
-      layout_locale: Mix.Corex.layout_locale_paths?(context.web_module, layout_opts),
+      layout_locale_paths: Mix.Corex.layout_locale_paths?(context.web_module, layout_opts),
+      layout_locale_assigns: Mix.Corex.layout_locale_assigns?(layout_opts),
       inputs: inputs(schema),
       socket_scope: socket_scope,
       context_scope_prefix: context_scope_prefix,
@@ -204,6 +205,7 @@ defmodule Mix.Tasks.Corex.Gen.Live do
 
     context
     |> copy_new_files(binding)
+    |> tap(fn _ -> Mix.Corex.DesignComponents.ensure_for_live!() end)
     |> print_shell_instructions()
   end
 
@@ -285,7 +287,7 @@ defmodule Mix.Tasks.Corex.Gen.Live do
 
     scope_instruction =
       if locale_scoped do
-        "Add the live routes inside the existing scope \"/:locale\" block in #{web_path}/router.ex:"
+        "Add the live routes inside the existing scope \"/:locale\" block in #{web_path}/router.ex (not scope \"/\"):"
       else
         "Add the live routes to your browser scope in #{web_path}/router.ex:"
       end
@@ -308,6 +310,12 @@ defmodule Mix.Tasks.Corex.Gen.Live do
       #{scope_instruction}
 
       #{for line <- live_route_instructions(schema), do: "    #{line}"}
+      """)
+    end
+
+    if locale_scoped do
+      Mix.shell().info("""
+      With verified route path_prefixes, ~p"/#{schema.plural}" resolves to /<locale>/#{schema.plural}.
       """)
     end
 
