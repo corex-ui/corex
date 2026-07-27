@@ -327,7 +327,7 @@ defmodule Corex.MixProject do
         Corex.Image
       ],
       DataList: [
-        Corex.Content.Item
+        Corex.DataList
       ],
       List: [
         Corex.List,

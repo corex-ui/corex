@@ -5,7 +5,7 @@ defmodule Corex.Carousel do
 
   | Goal | API |
   | ---- | --- |
-  | Image gallery | `items={[Corex.Image.new("/images/a.jpg", alt: "A"), ...]}` — renders `<img>` per slide |
+  | Image gallery | `items={[Corex.Image.new("/images/a.jpg", alt: "A"), ...]}`: renders `<img>` per slide |
   | Custom slides | `items={@posts}` + `<:item :let={post}>` — your markup per slide |
   | Full structure | `compound` + `carousel_*` subcomponents |
 
@@ -120,10 +120,7 @@ defmodule Corex.Carousel do
     on_page_change="carousel_page_changed"
     items={[
       Corex.Image.new("/images/beach.jpg", alt: "Beach"),
-      Corex.Image.new("/images/fall.jpg", alt: "Fall"),
-      Corex.Image.new("/images/sand.jpg", alt: "Sand"),
-      Corex.Image.new("/images/star.jpg", alt: "Star"),
-      Corex.Image.new("/images/winter.jpg", alt: "Winter")
+      Corex.Image.new("/images/fall.jpg", alt: "Fall")
     ]}
   >
     <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
@@ -156,10 +153,7 @@ defmodule Corex.Carousel do
     on_page_change_client="carousel-page-changed"
     items={[
       Corex.Image.new("/images/beach.jpg", alt: "Beach"),
-      Corex.Image.new("/images/fall.jpg", alt: "Fall"),
-      Corex.Image.new("/images/sand.jpg", alt: "Sand"),
-      Corex.Image.new("/images/star.jpg", alt: "Star"),
-      Corex.Image.new("/images/winter.jpg", alt: "Winter")
+      Corex.Image.new("/images/fall.jpg", alt: "Fall")
     ]}
   >
     <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
@@ -216,10 +210,7 @@ defmodule Corex.Carousel do
   <.carousel
     items={[
       Corex.Image.new("/images/beach.jpg", alt: "Beach"),
-      Corex.Image.new("/images/fall.jpg", alt: "Fall"),
-      Corex.Image.new("/images/sand.jpg", alt: "Sand"),
-      Corex.Image.new("/images/star.jpg", alt: "Star"),
-      Corex.Image.new("/images/winter.jpg", alt: "Winter")
+      Corex.Image.new("/images/fall.jpg", alt: "Fall")
     ]}
     class="carousel"
   >
@@ -229,10 +220,7 @@ defmodule Corex.Carousel do
   <.carousel
     items={[
       Corex.Image.new("/images/beach.jpg", alt: "Beach"),
-      Corex.Image.new("/images/fall.jpg", alt: "Fall"),
-      Corex.Image.new("/images/sand.jpg", alt: "Sand"),
-      Corex.Image.new("/images/star.jpg", alt: "Star"),
-      Corex.Image.new("/images/winter.jpg", alt: "Winter")
+      Corex.Image.new("/images/fall.jpg", alt: "Fall")
     ]}
     class="carousel ui-accent"
   >
@@ -265,10 +253,7 @@ defmodule Corex.Carousel do
   <.carousel
     items={[
       Corex.Image.new("/images/beach.jpg", alt: "Beach"),
-      Corex.Image.new("/images/fall.jpg", alt: "Fall"),
-      Corex.Image.new("/images/sand.jpg", alt: "Sand"),
-      Corex.Image.new("/images/star.jpg", alt: "Star"),
-      Corex.Image.new("/images/winter.jpg", alt: "Winter")
+      Corex.Image.new("/images/fall.jpg", alt: "Fall")
     ]}
     class="carousel ui-size-sm"
   >
@@ -278,10 +263,7 @@ defmodule Corex.Carousel do
   <.carousel
     items={[
       Corex.Image.new("/images/beach.jpg", alt: "Beach"),
-      Corex.Image.new("/images/fall.jpg", alt: "Fall"),
-      Corex.Image.new("/images/sand.jpg", alt: "Sand"),
-      Corex.Image.new("/images/star.jpg", alt: "Star"),
-      Corex.Image.new("/images/winter.jpg", alt: "Winter")
+      Corex.Image.new("/images/fall.jpg", alt: "Fall")
     ]}
     class="carousel ui-size-lg"
   >
@@ -307,10 +289,7 @@ defmodule Corex.Carousel do
   <.carousel
     items={[
       Corex.Image.new("/images/beach.jpg", alt: "Beach"),
-      Corex.Image.new("/images/fall.jpg", alt: "Fall"),
-      Corex.Image.new("/images/sand.jpg", alt: "Sand"),
-      Corex.Image.new("/images/star.jpg", alt: "Star"),
-      Corex.Image.new("/images/winter.jpg", alt: "Winter")
+      Corex.Image.new("/images/fall.jpg", alt: "Fall")
     ]}
     class="carousel ui-rounded-md"
   >
@@ -325,6 +304,8 @@ defmodule Corex.Carousel do
 
   @doc type: :component
   use Phoenix.Component
+
+  use Corex.Api.Imports, to: Corex.Carousel.Api
 
   import Corex.Api.Doc
 
@@ -342,9 +323,6 @@ defmodule Corex.Carousel do
 
   alias Corex.Carousel.Connect
   alias Corex.Carousel.Utils
-  alias Corex.Selectors
-  alias Phoenix.LiveView
-  alias Phoenix.LiveView.JS
 
   attr(:id, :string, required: false)
   attr(:aria_label, :string, default: nil)
@@ -735,13 +713,7 @@ defmodule Corex.Carousel do
 
   @spec play(String.t()) :: Phoenix.LiveView.JS.t()
   @spec play(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
-  def play(carousel_id) when is_binary(carousel_id) do
-    JS.dispatch("corex:carousel:play",
-      to: Selectors.css_id(carousel_id),
-      detail: %{},
-      bubbles: false
-    )
-  end
+  defdelegate play(carousel_id), to: Api
 
   api_doc(~S"""
   Pause autoplay from the client. Dispatches `corex:carousel:pause` on the carousel root.
@@ -759,40 +731,14 @@ defmodule Corex.Carousel do
     <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
   </.carousel>
   ```
-
-  ```javascript
-  document.getElementById("my-carousel")?.dispatchEvent(
-    new CustomEvent("corex:carousel:pause", { bubbles: false, detail: {} })
-  );
-  ```
   """)
 
   @spec pause(String.t()) :: Phoenix.LiveView.JS.t()
   @spec pause(Phoenix.LiveView.Socket.t(), String.t()) :: Phoenix.LiveView.Socket.t()
-  def pause(carousel_id) when is_binary(carousel_id) do
-    JS.dispatch("corex:carousel:pause",
-      to: Selectors.css_id(carousel_id),
-      detail: %{},
-      bubbles: false
-    )
-  end
+  defdelegate pause(carousel_id), to: Api
 
   api_doc(~S"""
-  Start or resume autoplay from the server. `push_event("carousel_play", %{"id" => carousel_id})`.
-
-  ```heex
-  <.action phx-click="carousel_play">Play</.action>
-  <.carousel
-    id="my-carousel"
-    autoplay
-    loop
-    class="carousel"
-    items={[Corex.Image.new("/images/beach.jpg", alt: "Beach")]}
-  >
-    <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
-    <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
-  </.carousel>
-  ```
+  Start or resume autoplay from `handle_event`. Pushes `carousel_play`.
 
   ```elixir
   def handle_event("carousel_play", _params, socket) do
@@ -801,27 +747,10 @@ defmodule Corex.Carousel do
   ```
   """)
 
-  def play(socket, carousel_id)
-      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(carousel_id) do
-    LiveView.push_event(socket, "carousel_play", %{"id" => carousel_id})
-  end
+  defdelegate play(socket, carousel_id), to: Api
 
   api_doc(~S"""
-  Pause autoplay from the server. `push_event("carousel_pause", %{"id" => carousel_id})`.
-
-  ```heex
-  <.action phx-click="carousel_pause">Pause</.action>
-  <.carousel
-    id="my-carousel"
-    autoplay
-    loop
-    class="carousel"
-    items={[Corex.Image.new("/images/beach.jpg", alt: "Beach")]}
-  >
-    <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
-    <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
-  </.carousel>
-  ```
+  Pause autoplay from `handle_event`. Pushes `carousel_pause`.
 
   ```elixir
   def handle_event("carousel_pause", _params, socket) do
@@ -830,17 +759,14 @@ defmodule Corex.Carousel do
   ```
   """)
 
-  def pause(socket, carousel_id)
-      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(carousel_id) do
-    LiveView.push_event(socket, "carousel_pause", %{"id" => carousel_id})
-  end
+  defdelegate pause(socket, carousel_id), to: Api
 
   api_doc("Same as [`scroll_next/2`](#scroll_next/2) with `instant: false`.")
   @spec scroll_next(String.t()) :: Phoenix.LiveView.JS.t()
   @spec scroll_next(String.t(), boolean()) :: Phoenix.LiveView.JS.t()
   @spec scroll_next(Phoenix.LiveView.Socket.t(), String.t(), boolean()) ::
           Phoenix.LiveView.Socket.t()
-  def scroll_next(carousel_id) when is_binary(carousel_id), do: scroll_next(carousel_id, false)
+  defdelegate scroll_next(carousel_id), to: Api
 
   api_doc(~S"""
   Scroll to the next page from the client. Dispatches `corex:carousel:scroll-next`.
@@ -849,18 +775,6 @@ defmodule Corex.Carousel do
   ```heex
   <.action phx-click={Corex.Carousel.scroll_next("my-carousel")}>Next</.action>
   <.action phx-click={Corex.Carousel.scroll_next("my-carousel", true)}>Next (instant)</.action>
-  <.carousel
-    id="my-carousel"
-    loop
-    class="carousel"
-    items={[
-      Corex.Image.new("/images/beach.jpg", alt: "Beach"),
-      Corex.Image.new("/images/fall.jpg", alt: "Fall")
-    ]}
-  >
-    <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
-    <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
-  </.carousel>
   ```
 
   ```javascript
@@ -870,34 +784,15 @@ defmodule Corex.Carousel do
   ```
   """)
 
-  def scroll_next(carousel_id, instant) when is_binary(carousel_id) and is_boolean(instant) do
-    JS.dispatch("corex:carousel:scroll-next",
-      to: Selectors.css_id(carousel_id),
-      detail: scroll_detail(instant),
-      bubbles: false
-    )
-  end
+  def scroll_next(carousel_id, instant) when is_binary(carousel_id) and is_boolean(instant),
+    do: Api.scroll_next(carousel_id, instant)
 
   def scroll_next(socket, carousel_id)
-      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(carousel_id) do
-    scroll_next(socket, carousel_id, false)
-  end
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(carousel_id),
+      do: Api.scroll_next(socket, carousel_id)
 
   api_doc(~S"""
   Scroll to the next page from the server. `push_event("carousel_scroll_next", %{"id" => id, "instant" => boolean})`.
-
-  ```heex
-  <.action phx-click="carousel_next">Next</.action>
-  <.carousel
-    id="my-carousel"
-    loop
-    class="carousel"
-    items={[Corex.Image.new("/images/beach.jpg", alt: "Beach")]}
-  >
-    <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
-    <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
-  </.carousel>
-  ```
 
   ```elixir
   def handle_event("carousel_next", _params, socket) do
@@ -906,18 +801,14 @@ defmodule Corex.Carousel do
   ```
   """)
 
-  def scroll_next(socket, carousel_id, instant)
-      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(carousel_id) and
-             is_boolean(instant) do
-    LiveView.push_event(socket, "carousel_scroll_next", scroll_payload(carousel_id, instant))
-  end
+  defdelegate scroll_next(socket, carousel_id, instant), to: Api
 
   api_doc("Same as [`scroll_prev/2`](#scroll_prev/2) with `instant: false`.")
   @spec scroll_prev(String.t()) :: Phoenix.LiveView.JS.t()
   @spec scroll_prev(String.t(), boolean()) :: Phoenix.LiveView.JS.t()
   @spec scroll_prev(Phoenix.LiveView.Socket.t(), String.t(), boolean()) ::
           Phoenix.LiveView.Socket.t()
-  def scroll_prev(carousel_id) when is_binary(carousel_id), do: scroll_prev(carousel_id, false)
+  defdelegate scroll_prev(carousel_id), to: Api
 
   api_doc(~S"""
   Scroll to the previous page from the client. Dispatches `corex:carousel:scroll-prev`.
@@ -926,55 +817,18 @@ defmodule Corex.Carousel do
   ```heex
   <.action phx-click={Corex.Carousel.scroll_prev("my-carousel")}>Prev</.action>
   <.action phx-click={Corex.Carousel.scroll_prev("my-carousel", true)}>Prev (instant)</.action>
-  <.carousel
-    id="my-carousel"
-    loop
-    class="carousel"
-    items={[
-      Corex.Image.new("/images/beach.jpg", alt: "Beach"),
-      Corex.Image.new("/images/fall.jpg", alt: "Fall")
-    ]}
-  >
-    <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
-    <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
-  </.carousel>
-  ```
-
-  ```javascript
-  document.getElementById("my-carousel")?.dispatchEvent(
-    new CustomEvent("corex:carousel:scroll-prev", { bubbles: false, detail: {} })
-  );
   ```
   """)
 
-  def scroll_prev(carousel_id, instant) when is_binary(carousel_id) and is_boolean(instant) do
-    JS.dispatch("corex:carousel:scroll-prev",
-      to: Selectors.css_id(carousel_id),
-      detail: scroll_detail(instant),
-      bubbles: false
-    )
-  end
+  def scroll_prev(carousel_id, instant) when is_binary(carousel_id) and is_boolean(instant),
+    do: Api.scroll_prev(carousel_id, instant)
 
   def scroll_prev(socket, carousel_id)
-      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(carousel_id) do
-    scroll_prev(socket, carousel_id, false)
-  end
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(carousel_id),
+      do: Api.scroll_prev(socket, carousel_id)
 
   api_doc(~S"""
   Scroll to the previous page from the server. `push_event("carousel_scroll_prev", %{"id" => id, "instant" => boolean})`.
-
-  ```heex
-  <.action phx-click="carousel_prev">Prev</.action>
-  <.carousel
-    id="my-carousel"
-    loop
-    class="carousel"
-    items={[Corex.Image.new("/images/beach.jpg", alt: "Beach")]}
-  >
-    <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
-    <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
-  </.carousel>
-  ```
 
   ```elixir
   def handle_event("carousel_prev", _params, socket) do
@@ -983,17 +837,7 @@ defmodule Corex.Carousel do
   ```
   """)
 
-  def scroll_prev(socket, carousel_id, instant)
-      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(carousel_id) and
-             is_boolean(instant) do
-    LiveView.push_event(socket, "carousel_scroll_prev", scroll_payload(carousel_id, instant))
-  end
+  defdelegate scroll_prev(socket, carousel_id, instant), to: Api
 
-  defp scroll_detail(false), do: %{}
-  defp scroll_detail(true), do: %{instant: true}
 
-  defp scroll_payload(carousel_id, instant) do
-    base = %{"id" => carousel_id}
-    if instant, do: Map.put(base, "instant", true), else: base
-  end
 end

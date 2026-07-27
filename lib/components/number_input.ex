@@ -153,17 +153,17 @@ defmodule Corex.NumberInput do
   @import "../corex/corex.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.number_input>`). Combine axes, for example `number-input ui-accent ui-size-lg` or `number-input ui-info ui-solid`.
+  Stack modifiers on the host (`class` on `<.number_input>`). Combine axes, for example `number-input ui-accent ui-size-lg` or `number-input ui-info`.
 
-  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). No variant axis. See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on the input and stepper triggers. Variant modifiers control field surface treatment. Default is subtle; add `number-input ui-solid` for a filled control.
+  Semantic modifiers set palette variables for focus and accent ink on the field and stepper triggers. The input surface stays the shared `ui-input` treatment. Number input has no variant axis.
 
   <!-- tabs-open -->
 
   ### Semantic
 
-  Palette variables for number input ink and fill. Does not change surface treatment by itself.
+  Palette for focus and accent ink on the field and stepper triggers.
 
   | Modifier | Classes |
   | -------- | ------- |
@@ -174,14 +174,6 @@ defmodule Corex.NumberInput do
   | Info | `number-input ui-info` |
   | Success | `number-input ui-success` |
 
-  ### Variant
-
-  Visual treatment of the input and stepper trigger surfaces. Combine with a semantic modifier for palette-driven ink and fill.
-
-  | Modifier | Classes |
-  | -------- | ------- |
-  | Subtle (default) | `number-input` or `number-input ui-accent` |
-  | Solid | `number-input ui-accent ui-solid` |
 
   ### Size
 

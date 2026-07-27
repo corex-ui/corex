@@ -98,17 +98,17 @@ defmodule Corex.AngleSlider do
   @import "../corex/corex.css";
   ```
 
-  Stack modifiers on the host (`class` on `<.angle_slider>`). Combine axes, for example `angle-slider ui-accent ui-size-lg` or `angle-slider ui-info ui-solid`.
+  Stack modifiers on the host (`class` on `<.angle_slider>`). Combine axes, for example `angle-slider ui-accent ui-size-lg` or `angle-slider ui-info`.
 
-  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). No variant axis. See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on the control and thumb handle. Variant modifiers control surface treatment. Default is subtle: a neutral control ring with semantic thumb color. Add `angle-slider ui-solid` for a filled control and matching handle.
+  Semantic modifiers set palette variables on the control and thumb handle. Selection paint always fills; there is no variant axis.
 
   <!-- tabs-open -->
 
   ### Semantic
 
-  Palette variables for control fill and thumb ink. Does not change surface treatment by itself.
+  Palette variables for control fill and thumb ink.
 
   | Modifier | Classes |
   | -------- | ------- |
@@ -119,14 +119,6 @@ defmodule Corex.AngleSlider do
   | Info | `angle-slider ui-info` |
   | Success | `angle-slider ui-success` |
 
-  ### Variant
-
-  Visual treatment of the control ring and thumb handle. Combine with a semantic modifier for palette-driven ink and fill.
-
-  | Modifier | Classes |
-  | -------- | ------- |
-  | Subtle (default) | `angle-slider` or `angle-slider ui-accent` |
-  | Solid | `angle-slider ui-accent ui-solid` |
 
   ### Size
 

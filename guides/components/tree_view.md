@@ -365,9 +365,9 @@ Target parts with `data-scope` and `data-part`, or use Corex Design: import toke
 
 Stack modifiers on the host (`class` on `<.tree_view>`).
 
-Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). No variant axis. See the [modifier guide](modifiers.html).
 
-Variant modifiers control unselected item and closed branch control surface treatment. Selected/checked states keep semantic fill. Default is subtle; add `tree-view ui-solid` for filled rows.
+Semantic modifiers set palette variables for the filled selected state. Unselected items stay neutral. There is no variant axis.
 
 <!-- tabs-open -->
 
@@ -382,14 +382,6 @@ Variant modifiers control unselected item and closed branch control surface trea
 | Info | `tree-view ui-info` |
 | Success | `tree-view ui-success` |
 
-### Variant
-
-Visual treatment of unselected items and closed branch controls.
-
-| Modifier | Classes |
-| -------- | ------- |
-| Subtle (default) | `tree-view` or `tree-view ui-accent` |
-| Solid | `tree-view ui-accent ui-solid` |
 
 ### Size
 

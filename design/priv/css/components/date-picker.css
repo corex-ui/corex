@@ -131,7 +131,7 @@
  --ctl-bd: var(--color-border);
  --ctl-bg-hover: var(--color-ui-hover);
  --ctl-bg-active: var(--color-ui-active);
- --ctl-ring: var(--color-ink);
+ --ctl-ring: var(--color-focus);
  --ctl-bg-muted: var(--color-ui-muted);
  --ctl-ink-muted: var(--color-ink-muted);
  }

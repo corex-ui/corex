@@ -362,6 +362,8 @@ defmodule Corex.Menu do
   @doc type: :component
   use Phoenix.Component
 
+  use Corex.Api.Imports, to: Corex.Menu.Api
+
   import Corex.Api.Doc
 
   alias Corex.Menu.Anatomy.{
@@ -376,10 +378,8 @@ defmodule Corex.Menu do
     Trigger
   }
 
-  alias Corex.Api.RespondTo
   alias Corex.Menu.Connect
   alias Corex.Positioning
-  alias Phoenix.LiveView.JS
 
   @doc """
   Renders a menu component.
@@ -910,13 +910,7 @@ defmodule Corex.Menu do
   @spec set_open(String.t(), Corex.Value.coercible()) :: Phoenix.LiveView.JS.t()
   @spec set_open(Phoenix.LiveView.Socket.t(), String.t(), Corex.Value.coercible()) ::
           Phoenix.LiveView.Socket.t()
-  def set_open(menu_id, open) when is_binary(menu_id) do
-    JS.dispatch("corex:menu:set-open",
-      to: "[id=\"menu:#{menu_id}\"]",
-      detail: %{open: open},
-      bubbles: false
-    )
-  end
+  defdelegate set_open(menu_id, open), to: Api
 
   api_doc(~S"""
   Set open state from `handle_event`. Pushes `menu_set_open`.
@@ -935,8 +929,6 @@ defmodule Corex.Menu do
   ```
   """)
 
-  def set_open(socket, menu_id, open)
-      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(menu_id) do
-    RespondTo.push_set_open(socket, "menu_set_open", menu_id, open)
-  end
+  defdelegate set_open(socket, menu_id, open), to: Api
+
 end

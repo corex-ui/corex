@@ -8,21 +8,13 @@ defmodule Corex.Accordion do
   @doc type: :component
   use Phoenix.Component
 
-  use Corex.Component, :api
+  use Corex.Api.Imports, to: Corex.Accordion.Api
 
   import Corex.Api.Doc
 
   alias Corex.Accordion.Anatomy.{Item, Props, Root}
 
   alias Corex.Accordion.Connect
-
-  alias Corex.Api.RespondTo
-
-  alias Corex.Selectors
-
-  alias Phoenix.LiveView
-
-  alias Phoenix.LiveView.JS
 
   @doc """
   Renders an accordion. See the module documentation for list-driven `items`, With slots, Custom slots, Manual and Compound modes, patterns, API, and events.
@@ -570,13 +562,7 @@ defmodule Corex.Accordion do
   @spec set_value(String.t(), Corex.Value.coercible()) :: Phoenix.LiveView.JS.t()
   @spec set_value(Phoenix.LiveView.Socket.t(), String.t(), Corex.Value.coercible()) ::
           Phoenix.LiveView.Socket.t()
-  def set_value(accordion_id, value) when is_binary(accordion_id) do
-    JS.dispatch("corex:accordion:set-value",
-      to: Selectors.css_id(accordion_id),
-      detail: %{value: parse_string_list(value, "Corex.Accordion.set_value/2")},
-      bubbles: false
-    )
-  end
+  defdelegate set_value(accordion_id, value), to: Api
 
   api_doc(~S"""
   Open or close items from `handle_event`. Pushes `accordion_set_value` (no reply event).
@@ -597,15 +583,7 @@ defmodule Corex.Accordion do
   ```
   """)
 
-  def set_value(socket, accordion_id, value)
-      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id) do
-    RespondTo.push_set_value(
-      socket,
-      "accordion_set_value",
-      accordion_id,
-      parse_string_list(value, "Corex.Accordion.set_value/2")
-    )
-  end
+  defdelegate set_value(socket, accordion_id, value), to: Api
 
   api_doc(~S"""
   Read open items from `phx-click`. Dispatches `corex:accordion:value`. Optional `respond_to:` `:server` (default), `:client`, or `:both`.
@@ -645,19 +623,14 @@ defmodule Corex.Accordion do
   @spec value(String.t()) :: Phoenix.LiveView.JS.t()
   @spec value(String.t(), keyword()) :: Phoenix.LiveView.JS.t()
   @spec value(Phoenix.LiveView.Socket.t(), String.t(), keyword()) :: Phoenix.LiveView.Socket.t()
-  def value(accordion_id, opts) when is_binary(accordion_id) and is_list(opts) do
-    JS.dispatch("corex:accordion:value",
-      to: Selectors.css_id(accordion_id),
-      detail: respond_to_fields(opts),
-      bubbles: false
-    )
-  end
+  def value(accordion_id, opts) when is_binary(accordion_id) and is_list(opts),
+    do: Api.value(accordion_id, opts)
 
   def value(socket, accordion_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id),
-      do: value(socket, accordion_id, [])
+      do: Api.value(socket, accordion_id)
 
-  def value(accordion_id) when is_binary(accordion_id), do: value(accordion_id, [])
+  def value(accordion_id) when is_binary(accordion_id), do: Api.value(accordion_id)
 
   api_doc(~S"""
   Read open items from `handle_event` (`accordion_value`). Same replies as [`value/2`](#value/2).
@@ -686,15 +659,7 @@ defmodule Corex.Accordion do
   ```
   """)
 
-  def value(socket, accordion_id, opts)
-      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id) and
-             is_list(opts) do
-    LiveView.push_event(
-      socket,
-      "accordion_value",
-      Map.merge(%{id: accordion_id}, respond_to_fields(opts))
-    )
-  end
+  defdelegate value(socket, accordion_id, opts), to: Api
 
   api_doc(~S"""
   Read the focused item from `phx-click`. Dispatches `corex:accordion:focused`. Optional `respond_to:` `:server` (default), `:client`, or `:both`.
@@ -732,19 +697,14 @@ defmodule Corex.Accordion do
   @spec focused(String.t()) :: Phoenix.LiveView.JS.t()
   @spec focused(String.t(), keyword()) :: Phoenix.LiveView.JS.t()
   @spec focused(Phoenix.LiveView.Socket.t(), String.t(), keyword()) :: Phoenix.LiveView.Socket.t()
-  def focused(accordion_id, opts) when is_binary(accordion_id) and is_list(opts) do
-    JS.dispatch("corex:accordion:focused",
-      to: Selectors.css_id(accordion_id),
-      detail: respond_to_fields(opts),
-      bubbles: false
-    )
-  end
+  def focused(accordion_id, opts) when is_binary(accordion_id) and is_list(opts),
+    do: Api.focused(accordion_id, opts)
 
   def focused(socket, accordion_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id),
-      do: focused(socket, accordion_id, [])
+      do: Api.focused(socket, accordion_id)
 
-  def focused(accordion_id) when is_binary(accordion_id), do: focused(accordion_id, [])
+  def focused(accordion_id) when is_binary(accordion_id), do: Api.focused(accordion_id)
 
   api_doc(~S"""
   Read the focused item from `handle_event` (`accordion_focused`). Same replies as [`focused/2`](#focused/2).
@@ -773,15 +733,7 @@ defmodule Corex.Accordion do
   ```
   """)
 
-  def focused(socket, accordion_id, opts)
-      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id) and
-             is_list(opts) do
-    LiveView.push_event(
-      socket,
-      "accordion_focused",
-      Map.merge(%{id: accordion_id}, respond_to_fields(opts))
-    )
-  end
+  defdelegate focused(socket, accordion_id, opts), to: Api
 
   api_doc(~S"""
   Read expanded, focused, and disabled state for one item from `phx-click`. Dispatches `corex:accordion:item-state`. Optional `disabled:` and `respond_to:` `:server` (default), `:client`, or `:both`.
@@ -821,30 +773,17 @@ defmodule Corex.Accordion do
   @spec item_state(Phoenix.LiveView.Socket.t(), String.t(), String.t(), keyword()) ::
           Phoenix.LiveView.Socket.t()
   def item_state(accordion_id, item_value, opts)
-      when is_binary(accordion_id) and is_binary(item_value) and is_list(opts) do
-    disabled = Keyword.get(opts, :disabled, false)
-
-    JS.dispatch("corex:accordion:item-state",
-      to: Selectors.css_id(accordion_id),
-      detail:
-        Map.merge(
-          %{value: accordion_validate_item_value!(item_value), disabled: disabled},
-          respond_to_fields(opts)
-        ),
-      bubbles: false
-    )
-  end
+      when is_binary(accordion_id) and is_binary(item_value) and is_list(opts),
+      do: Api.item_state(accordion_id, item_value, opts)
 
   def item_state(socket, accordion_id, item_value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id) and
-             is_binary(item_value) do
-    item_state(socket, accordion_id, item_value, [])
-  end
+             is_binary(item_value),
+      do: Api.item_state(socket, accordion_id, item_value)
 
   def item_state(accordion_id, item_value)
-      when is_binary(accordion_id) and is_binary(item_value) do
-    item_state(accordion_id, item_value, [])
-  end
+      when is_binary(accordion_id) and is_binary(item_value),
+      do: Api.item_state(accordion_id, item_value)
 
   api_doc(~S"""
   Read item state from `handle_event` (`accordion_item_state`). Same replies as [`item_state/3`](#item_state/3).
@@ -873,29 +812,7 @@ defmodule Corex.Accordion do
   ```
   """)
 
-  def item_state(socket, accordion_id, item_value, opts)
-      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id) and
-             is_binary(item_value) and is_list(opts) do
-    disabled = Keyword.get(opts, :disabled, false)
-
-    LiveView.push_event(
-      socket,
-      "accordion_item_state",
-      Map.merge(
-        %{
-          id: accordion_id,
-          value: accordion_validate_item_value!(item_value),
-          disabled: disabled
-        },
-        respond_to_fields(opts)
-      )
-    )
-  end
-
-  defp accordion_validate_item_value!(v) when is_binary(v) and byte_size(v) > 0, do: v
-
-  defp accordion_validate_item_value!(_),
-    do: raise(ArgumentError, "accordion item value must be a non-empty string")
+  defdelegate item_state(socket, accordion_id, item_value, opts), to: Api
 
   defp accordion_assert_trigger_content_pair!(assigns) do
     if not assigns.compound and Enum.empty?(assigns.items) do

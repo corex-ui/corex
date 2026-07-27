@@ -538,6 +538,7 @@ defmodule Corex.Dialog do
         open: open,
         aria_label: assigns.translation.close
       })
+      |> assign(:show_header, assigns.title != [] or assigns.close_trigger != [])
 
     ~H"""
     <div
@@ -582,7 +583,7 @@ defmodule Corex.Dialog do
           phx-mounted={Connect.ignore_content(@content_struct)}
           {Connect.content(@content_struct, @animation)}
         >
-          <div data-scope="dialog" data-part="header">
+          <div :if={@show_header} data-scope="dialog" data-part="header">
             <h2
               :if={@title != []}
               {Connect.mounted_title(@title_struct)}

@@ -297,7 +297,7 @@ defmodule Corex.RadioGroup do
 
   Stack modifiers on the host (`class` on `<.radio_group>`). Combine axes, for example `radio-group ui-accent ui-size-lg`.
 
-  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). No variant axis. See the [modifier guide](modifiers.html).
 
   Semantic modifiers set the checked item-control fill and indicator ink. Unchecked stays a neutral circle; checked uses the semantic fill with on-color ink. Radio group has no variant axis.
 

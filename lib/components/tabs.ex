@@ -167,15 +167,15 @@ defmodule Corex.Tabs do
 
   Stack modifiers on the host (`class` on `<.tabs>`). Combine axes, for example `tabs ui-accent ui-size-lg` or `tabs ui-info`.
 
-  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). No variant axis. See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on triggers. Variant modifiers control surface treatment. Default selected triggers use a neutral selected surface with semantic text ink; add `ui-solid` for a filled selected trigger.
+  Semantic modifiers set palette variables on triggers. Selected triggers always fill (`--ctl-fill`, or ink when no semantic role is set).
 
   <!-- tabs-open -->
 
   ### Semantic
 
-  Palette variables for trigger ink and fill. Does not change selected trigger treatment by itself.
+  Palette variables for trigger ink and the filled selected state.
 
   | Modifier | Classes |
   | -------- | ------- |
@@ -186,14 +186,6 @@ defmodule Corex.Tabs do
   | Info | `tabs ui-info` |
   | Success | `tabs ui-success` |
 
-  ### Variant
-
-  Visual treatment of tab triggers. Combine with a semantic modifier for palette-driven ink and fill.
-
-  | Modifier | Classes |
-  | -------- | ------- |
-  | Subtle (default) | `tabs` or `tabs ui-accent` |
-  | Solid | `tabs ui-accent ui-solid` |
 
   ### Size
 

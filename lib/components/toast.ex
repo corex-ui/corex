@@ -94,9 +94,9 @@ defmodule Corex.Toast do
 
   Stack modifiers on the group host (`class` on `<.toast_group>`).
 
-  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). No variant axis. See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on action triggers and content panels. Variant modifiers control action trigger and toast panel surface treatment. Default is subtle; add `toast ui-solid` for filled action buttons or panels.
+  Semantic modifiers set palette variables on action triggers and content panels.
 
   <!-- tabs-open -->
 
@@ -111,14 +111,6 @@ defmodule Corex.Toast do
   | Info | `toast ui-info` |
   | Success | `toast ui-success` |
 
-  ### Variant
-
-  Visual treatment of `[data-part="action-trigger"]` and the content panel.
-
-  | Modifier | Classes |
-  | -------- | ------- |
-  | Subtle (default) | `toast` or `toast ui-accent` |
-  | Solid | `toast ui-accent ui-solid` |
 
   <!-- tabs-close -->
 

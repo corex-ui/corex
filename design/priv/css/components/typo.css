@@ -15,7 +15,7 @@
  outline: none;
  }
 
- .typo h1 {
+ .typo h1:not(:where([data-scope] *)) {
  font-family: var(--font-display);
  font-size: var(--text-2xl);
  line-height: var(--text-2xl--line-height);
@@ -24,13 +24,13 @@
  }
 
  @media (min-width: theme("breakpoint.md")) {
- .typo h1 {
+ .typo h1:not(:where([data-scope] *)) {
  font-size: var(--text-3xl);
  line-height: var(--text-3xl--line-height);
  }
  }
 
- .typo h2 {
+ .typo h2:not(:where([data-scope] *)) {
  font-family: var(--font-display);
  font-size: var(--text-xl);
  line-height: var(--text-xl--line-height);
@@ -39,13 +39,13 @@
  }
 
  @media (min-width: theme("breakpoint.md")) {
- .typo h2 {
+ .typo h2:not(:where([data-scope] *)) {
  font-size: var(--text-2xl);
  line-height: var(--text-2xl--line-height);
  }
  }
 
- .typo h3 {
+ .typo h3:not(:where([data-scope] *)) {
  font-family: var(--font-display);
  font-size: var(--text-lg);
  line-height: var(--text-lg--line-height);
@@ -54,13 +54,13 @@
  }
 
  @media (min-width: theme("breakpoint.md")) {
- .typo h3 {
+ .typo h3:not(:where([data-scope] *)) {
  font-size: var(--text-xl);
  line-height: var(--text-xl--line-height);
  }
  }
 
- .typo h4 {
+ .typo h4:not(:where([data-scope] *)) {
  font-family: var(--font-display);
  font-size: var(--text-base);
  line-height: var(--text-base--line-height);
@@ -69,13 +69,13 @@
  }
 
  @media (min-width: theme("breakpoint.md")) {
- .typo h4 {
+ .typo h4:not(:where([data-scope] *)) {
  font-size: var(--text-lg);
  line-height: var(--text-lg--line-height);
  }
  }
 
- .typo p {
+ .typo p:not(:where([data-scope] *)) {
  font-size: var(--text-base);
  line-height: var(--text-base--line-height);
  font-weight: var(--font-weight-normal);
@@ -84,13 +84,13 @@
  }
 
  @media (min-width: theme("breakpoint.lg")) {
- .typo p {
+ .typo p:not(:where([data-scope] *)) {
  font-size: var(--text-lg);
  line-height: var(--text-lg--line-height);
  }
  }
 
- .typo p.display {
+ .typo p.display:not(:where([data-scope] *)) {
  font-family: var(--font-display);
  font-size: var(--text-xl);
  line-height: var(--text-xl--line-height);
@@ -98,20 +98,20 @@
  }
 
  @media (min-width: theme("breakpoint.md")) {
- .typo p.display {
+ .typo p.display:not(:where([data-scope] *)) {
  font-size: var(--text-2xl);
  line-height: var(--text-2xl--line-height);
  }
  }
 
  @media (min-width: theme("breakpoint.lg")) {
- .typo p.display {
+ .typo p.display:not(:where([data-scope] *)) {
  font-size: var(--text-display-sm);
  line-height: var(--text-display-sm--line-height);
  }
  }
 
- .typo small {
+ .typo small:not(:where([data-scope] *)) {
  font-size: var(--text-xs);
  line-height: var(--text-xs--line-height);
  font-weight: var(--font-weight-extralight);
@@ -119,44 +119,44 @@
  }
 
  @media (min-width: theme("breakpoint.md")) {
- .typo small {
+ .typo small:not(:where([data-scope] *)) {
  font-size: var(--text-sm);
  line-height: var(--text-sm--line-height);
  }
  }
 
- .typo mark {
+ .typo mark:not(:where([data-scope] *)) {
  background: var(--color-success);
  color: var(--color-success-contrast);
  padding: 0.1em 0.25em;
  border-radius: 0.25em;
  }
 
- .typo abbr[title] {
+ .typo abbr[title]:not(:where([data-scope] *)) {
  border-bottom: 1px dotted var(--color-border);
  cursor: help;
  text-decoration: none;
  }
 
  .typo sup,
- .typo sub {
+ .typo sub:not(:where([data-scope] *)) {
  font-size: 0.75em;
  line-height: 1;
  position: relative;
  vertical-align: baseline;
  }
 
- .typo sup {
+ .typo sup:not(:where([data-scope] *)) {
  top: -0.5em;
  }
 
- .typo sub {
+ .typo sub:not(:where([data-scope] *)) {
  bottom: -0.25em;
  }
 
- .typo kbd {
+ .typo kbd:not(:where([data-scope] *)) {
  font-family: var(--font-mono);
- background: var(--color-layer);
+ background: var(--color-surface);
  color: var(--color-ink);
  border-radius: var(--radius-md);
  border: 1px solid var(--color-border);
@@ -164,28 +164,28 @@
  margin-inline: var(--spacing-space-sm);
  }
 
- .typo del {
+ .typo del:not(:where([data-scope] *)) {
  text-decoration: line-through;
  color: var(--color-alert);
  }
 
- .typo ins {
+ .typo ins:not(:where([data-scope] *)) {
  text-decoration: underline;
  color: var(--color-success);
  }
 
  .typo b,
- .typo strong {
+ .typo strong:not(:where([data-scope] *)) {
  font-weight: var(--font-weight-semibold);
  }
 
  .typo i,
- .typo em {
+ .typo em:not(:where([data-scope] *)) {
  font-style: italic;
  }
 
- .typo blockquote {
- background: var(--color-layer);
+ .typo blockquote:not(:where([data-scope] *)) {
+ background: var(--color-surface);
  color: var(--color-ink);
  box-shadow: var(--shadow-layer);
  font-style: italic;
@@ -199,23 +199,23 @@
  width: fit-content;
  }
 
- .typo blockquote p {
+ .typo blockquote p:not(:where([data-scope] *)) {
  margin-block: 0;
  }
 
- .typo hr {
+ .typo hr:not(:where([data-scope] *)) {
  border-top: 1px solid var(--color-border);
  margin-block: 5em;
  margin-inline: auto;
  width: 80%;
  }
 
- .typo dt {
+ .typo dt:not(:where([data-scope] *)) {
  font-weight: var(--font-weight-semibold);
  font-style: italic;
  }
 
- .typo figcaption {
+ .typo figcaption:not(:where([data-scope] *)) {
  font-size: var(--text-xs);
  line-height: var(--text-xs--line-height);
  color: var(--color-ink-muted);
@@ -223,13 +223,13 @@
  }
 
  @media (min-width: theme("breakpoint.md")) {
- .typo figcaption {
+ .typo figcaption:not(:where([data-scope] *)) {
  font-size: var(--text-sm);
  line-height: var(--text-sm--line-height);
  }
  }
 
- .typo .list {
+ .typo .list:not(:where([data-scope] *)) {
  width: 100%;
  font-size: var(--text-base);
  line-height: var(--text-base--line-height);
@@ -242,7 +242,7 @@
  padding: 0;
  }
 
- .typo .list li {
+ .typo .list li:not(:where([data-scope] *)) {
  text-align: left;
  padding: var(--spacing-space);
  border-bottom: 1px solid var(--color-border);
@@ -250,22 +250,22 @@
  color: var(--color-ink);
  }
 
- .typo .list li:last-child {
+ .typo .list li:last-child:not(:where([data-scope] *)) {
  border-bottom: none;
  }
 
- .typo .list li:hover {
- background: var(--color-layer);
+ .typo .list li:hover:not(:where([data-scope] *)) {
+ background: var(--color-surface);
  }
 
- .typo form {
+ .typo form:not(:where([data-scope] *)) {
  width: 100%;
  max-width: var(--container-md);
  display: flex;
  flex-direction: column;
  gap: var(--spacing-space);
  padding: var(--spacing-space-lg);
- background: var(--color-layer);
+ background: var(--color-surface);
  border: 1px solid var(--color-border);
  color: var(--color-ink);
  border-radius: var(--radius-md);
@@ -298,7 +298,7 @@
  }
 
  .markdown thead {
- background: var(--color-layer);
+ background: var(--color-surface);
  color: var(--color-ink);
  }
 
@@ -346,7 +346,7 @@
  padding: var(--spacing-space);
  border-radius: var(--radius-md);
  border: 1px solid var(--color-border);
- background: var(--color-layer);
+ background: var(--color-surface);
  width: fit-content;
  max-width: 100%;
  box-sizing: border-box;

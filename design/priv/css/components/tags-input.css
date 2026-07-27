@@ -35,7 +35,7 @@
  padding: var(--ctl-space, var(--spacing-space));
  border: 1px solid var(--color-border);
  border-radius: var(--ctl-radius, var(--radius-md));
- background: var(--color-layer);
+ background: var(--color-surface);
  }
 
  .tags-input [data-scope="tags-input"][data-part="control"][data-invalid] {
@@ -61,8 +61,8 @@
  }
 
  .tags-input [data-scope="tags-input"][data-part="control"][data-focus] {
- outline: 2px solid var(--color-focus-ring);
- outline-offset: 2px;
+ outline: var(--ring-width) solid var(--color-focus);
+ outline-offset: var(--ring-offset);
  }
 
  .tags-input [data-scope="tags-input"][data-part="input"] {

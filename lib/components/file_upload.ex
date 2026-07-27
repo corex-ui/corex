@@ -108,6 +108,62 @@ defmodule Corex.FileUpload do
 
   For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide.
 
+  ## Style
+
+  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `file-upload.css`, then set `class="file-upload"` on `<.file_upload>`.
+
+  ```css
+  [data-scope="file-upload"][data-part="root"] {}
+  [data-scope="file-upload"][data-part="trigger"] {}
+  [data-scope="file-upload"][data-part="dropzone"] {}
+  [data-scope="file-upload"][data-part="item-delete-trigger"] {}
+  ```
+
+  ```css
+  @import "../corex/corex.css";
+  ```
+
+  Stack modifiers on the host (`class` on `<.file_upload>`). Combine axes, for example `file-upload ui-accent ui-size-lg` or `file-upload ui-info ui-solid`.
+
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+
+  Semantic modifiers set palette variables on the trigger and dropzone chrome. Variant modifiers control trigger surface treatment. Default is subtle; add `file-upload ui-solid` for a filled trigger.
+
+  <!-- tabs-open -->
+
+  ### Semantic
+
+  Palette variables for trigger and dropzone ink and fill. Does not change surface treatment by itself.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `file-upload` |
+  | Accent | `file-upload ui-accent` |
+  | Brand | `file-upload ui-brand` |
+  | Alert | `file-upload ui-alert` |
+  | Info | `file-upload ui-info` |
+  | Success | `file-upload ui-success` |
+
+  ### Variant
+
+  Visual treatment of the open/trigger control. Combine with a semantic modifier for palette-driven ink and fill.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Subtle (default) | `file-upload` or `file-upload ui-accent` |
+  | Solid | `file-upload ui-accent ui-solid` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `file-upload ui-size-sm` |
+  | MD | `file-upload ui-size-md` |
+  | LG | `file-upload ui-size-lg` |
+  | XL | `file-upload ui-size-xl` |
+
+  <!-- tabs-close -->
+
   '''
 
   @doc type: :component

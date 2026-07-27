@@ -303,9 +303,7 @@ defmodule Corex.DataTable do
   - `data-table ui-size-sm|md|lg|xl` — font size and padding on header and body cells; selection checkbox control size
   - `data-table ui-accent|brand|alert|success|info` — header ink (`--ctl-ink-text`) on column titles and action header; selection checkbox ink
 
-  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
-
-  Variant modifiers control sort trigger surface treatment. Default is subtle; add `data-table ui-solid` for filled sort controls. Selection checkboxes inherit the host semantic and size tokens (pass `checkbox_class="checkbox"`; no need to repeat `ui-*` on the checkbox). The `<:action>` slot does not inherit host semantic or size; style action controls with their own `ui-*` classes.
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). No variant axis. See the [modifier guide](modifiers.html).
 
   Default host caps use `max-width` and `max-height` at `--container-md`. Override on the host with the same container scale as width, e.g. `max-w-none`, `max-h-none`, `max-h-2xs`, `min-h-md`, or `h-full` in a sized parent.
 

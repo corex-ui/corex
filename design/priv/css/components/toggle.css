@@ -15,6 +15,21 @@
     justify-content: center;
   }
 
+  .toggle.ui-ghost [data-scope="toggle"][data-part="root"][data-state="on"],
+  .toggle.ui-ghost [data-scope="toggle"][data-part="root"][data-state="on"]:focus-visible {
+    background-color: var(--ctl-bg, transparent);
+    color: var(--ctl-ink, var(--ctl-ink-text, var(--color-ink)));
+    border-color: var(--ctl-bd, transparent);
+    box-shadow: none;
+  }
+
+  .toggle.ui-ghost [data-scope="toggle"][data-part="root"][data-state="on"]:hover,
+  .toggle.ui-ghost [data-scope="toggle"][data-part="root"][data-state="on"]:active {
+    background-color: var(--ctl-bg-hover, var(--color-ui-hover));
+    color: var(--ctl-ink, var(--ctl-ink-text, var(--color-ink)));
+    border-color: var(--ctl-bd, transparent);
+  }
+
   .toggle[data-toggle-dual-label]
     [data-scope="toggle"][data-part="root"][data-state="off"]
     > span[data-pressed] {

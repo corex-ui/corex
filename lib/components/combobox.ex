@@ -306,11 +306,11 @@ defmodule Corex.Combobox do
   @doc type: :component
   use Phoenix.Component
 
+  use Corex.Api.Imports, to: Corex.Combobox.Api
+
   use Corex.Component, [:list, :form]
 
   import Corex.Api.Doc
-
-  alias Phoenix.LiveView
 
   alias Phoenix.LiveView.JS
 
@@ -335,7 +335,6 @@ defmodule Corex.Combobox do
 
   alias Corex.Combobox.Connect
   alias Corex.Combobox.Translation
-
   alias Corex.Selectors
 
   @doc """
@@ -855,13 +854,7 @@ defmodule Corex.Combobox do
   @spec set_value(String.t(), Corex.Value.coercible()) :: Phoenix.LiveView.JS.t()
   @spec set_value(Phoenix.LiveView.Socket.t(), String.t(), Corex.Value.coercible()) ::
           Phoenix.LiveView.Socket.t()
-  def set_value(combobox_id, value) when is_binary(combobox_id) do
-    JS.dispatch("corex:combobox:set-value",
-      to: Selectors.css_id(combobox_id),
-      detail: %{value: Corex.Value.parse_string_list(value, "Corex.Combobox.set_value/2")},
-      bubbles: false
-    )
-  end
+  defdelegate set_value(combobox_id, value), to: Api
 
   api_doc(~S"""
   Set selection from `handle_event`. Pushes `combobox_set_value`.
@@ -888,13 +881,7 @@ defmodule Corex.Combobox do
   ```
   """)
 
-  def set_value(socket, combobox_id, value)
-      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(combobox_id) do
-    LiveView.push_event(socket, "combobox_set_value", %{
-      id: combobox_id,
-      value: Corex.Value.parse_string_list(value, "Corex.Combobox.set_value/2")
-    })
-  end
+  defdelegate set_value(socket, combobox_id, value), to: Api
 
   api_doc(~S"""
   Open or close the menu from a control (`phx-click`).
@@ -916,13 +903,7 @@ defmodule Corex.Combobox do
   @spec set_open(String.t(), boolean()) :: Phoenix.LiveView.JS.t()
   @spec set_open(Phoenix.LiveView.Socket.t(), String.t(), boolean()) ::
           Phoenix.LiveView.Socket.t()
-  def set_open(combobox_id, open) when is_binary(combobox_id) and is_boolean(open) do
-    JS.dispatch("corex:combobox:set-open",
-      to: Selectors.css_id(combobox_id),
-      detail: %{open: open},
-      bubbles: false
-    )
-  end
+  defdelegate set_open(combobox_id, open), to: Api
 
   api_doc(~S"""
   Open or close the menu from `handle_event`. Pushes `combobox_set_open`.
@@ -934,11 +915,7 @@ defmodule Corex.Combobox do
   ```
   """)
 
-  def set_open(socket, combobox_id, open)
-      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(combobox_id) and
-             is_boolean(open) do
-    LiveView.push_event(socket, "combobox_set_open", %{id: combobox_id, open: open})
-  end
+  defdelegate set_open(socket, combobox_id, open), to: Api
 
   defp combobox_connect_props(assigns) do
     props = %Props{

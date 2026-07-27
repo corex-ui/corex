@@ -167,9 +167,9 @@ defmodule Corex.Timer do
   @import "../corex/corex.css";
   ```
 
-  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). No variant axis. See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on action triggers. Variant modifiers control action trigger surface treatment. Default is subtle; add `timer ui-solid` for filled play/pause controls.
+  Semantic modifiers set palette variables on action triggers.
 
   <!-- tabs-open -->
 
@@ -184,14 +184,6 @@ defmodule Corex.Timer do
   | Info | `timer ui-info` |
   | Success | `timer ui-success` |
 
-  ### Variant
-
-  Visual treatment of `[data-part="action-trigger"]` only. Combine with a semantic modifier for palette-driven ink and fill.
-
-  | Modifier | Classes |
-  | -------- | ------- |
-  | Subtle (default) | `timer` or `timer ui-accent` |
-  | Solid | `timer ui-accent ui-solid` |
 
   ### Size
 

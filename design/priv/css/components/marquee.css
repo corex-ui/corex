@@ -1,23 +1,5 @@
 @import "../main.css";
 
-@keyframes marqueeX {
- 0% {
- transform: translateX(0%);
- }
- 100% {
- transform: translateX(var(--marquee-translate));
- }
-}
-
-@keyframes marqueeY {
- 0% {
- transform: translateY(0%);
- }
- 100% {
- transform: translateY(var(--marquee-translate));
- }
-}
-
 @layer components {
  .marquee {
  width: 100%;

@@ -254,17 +254,17 @@ defmodule Corex.Pagination do
   @import "../corex/corex.css";
   ```
 
-  Stack modifiers on `<.pagination class="pagination ...">`. Combine axes, for example `pagination ui-accent ui-size-lg` or `pagination ui-info ui-solid`.
+  Stack modifiers on `<.pagination class="pagination ...">`. Combine axes, for example `pagination ui-accent ui-size-lg` or `pagination ui-info`.
 
-  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Variant** (`ui-solid`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). See the [modifier guide](modifiers.html).
+  Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). No variant axis. See the [modifier guide](modifiers.html).
 
-  Semantic modifiers set palette variables on item triggers. Variant modifiers control surface treatment. Default is subtle: unselected items use a neutral surface, the active page uses selected with semantic ink text. Add `pagination ui-solid` for filled active and nav triggers.
+  Semantic modifiers set palette variables on item triggers. Unselected items stay neutral; the active page always fills (`--ctl-fill`, or ink when no semantic role is set).
 
   <!-- tabs-open -->
 
   ### Semantic
 
-  Palette variables for pagination ink and fill. Does not change surface treatment by itself.
+  Palette variables for pagination ink and the filled active page.
 
   | Modifier | Classes |
   | -------- | ------- |
@@ -275,14 +275,6 @@ defmodule Corex.Pagination do
   | Success | `pagination ui-success` |
   | Info | `pagination ui-info` |
 
-  ### Variant
-
-  Visual treatment of prev, next, and page item triggers. Combine with a semantic modifier for palette-driven ink and fill.
-
-  | Modifier | Classes |
-  | -------- | ------- |
-  | Subtle (default) | `pagination` or `pagination ui-accent` |
-  | Solid | `pagination ui-accent ui-solid` |
 
   ### Size
 
