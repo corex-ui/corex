@@ -16,35 +16,30 @@ defmodule Corex.Design.Theme.Spec do
   alias Corex.Design.Theme.Spec.Mode
 
   @type t :: %__MODULE__{
-          palette: %{optional(String.t()) => String.t()},
+          seeds: %{optional(String.t()) => String.t()},
           colors: %{light: Mode.t(), dark: Mode.t()},
           dimensions: Dimensions.t(),
           typography: %{optional(String.t()) => term()} | nil
         }
 
-  defstruct palette: %{},
+  defstruct seeds: %{},
             colors: %{light: nil, dark: nil},
             dimensions: nil,
             typography: nil
 
   defmodule Mode do
     @moduledoc """
-    One color mode of a theme spec: the surfaces, roles and on-colors it defines,
-    plus the three flat tokens that are replaced rather than merged.
+    One color mode: a flat map of public token names to Color-native defs
+    (`:l` or `:contrast`).
     """
 
-    @type token :: %{optional(atom()) => term()} | nil
+    @type token :: map()
 
     @type t :: %__MODULE__{
-            surface: %{optional(atom()) => term()},
-            roles: %{optional(atom()) => term()},
-            on: %{optional(atom()) => term()},
-            border: token(),
-            focus: token(),
-            shadow: token()
+            tokens: %{optional(String.t()) => token()}
           }
 
-    defstruct surface: %{}, roles: %{}, on: %{}, border: nil, focus: nil, shadow: nil
+    defstruct tokens: %{}
   end
 
   defmodule Dimensions do
@@ -63,6 +58,15 @@ defmodule Corex.Design.Theme.Spec do
             radius_scale: float() | nil,
             container_scale: float() | nil,
             shadow_scale: float() | nil,
+            blur_scale: float() | nil,
+            ring_width: float() | nil,
+            ring_offset: float() | nil,
+            border_width: float() | nil,
+            duration_fast: float() | nil,
+            duration_normal: float() | nil,
+            duration_slow: float() | nil,
+            opacity_disabled: float() | nil,
+            opacity_backdrop: float() | nil,
             radius: %{optional(atom()) => float()},
             font: %{optional(atom()) => [String.t()]} | nil
           }
@@ -74,6 +78,15 @@ defmodule Corex.Design.Theme.Spec do
               radius_scale: nil,
               container_scale: nil,
               shadow_scale: nil,
+              blur_scale: nil,
+              ring_width: nil,
+              ring_offset: nil,
+              border_width: nil,
+              duration_fast: nil,
+              duration_normal: nil,
+              duration_slow: nil,
+              opacity_disabled: nil,
+              opacity_backdrop: nil,
               radius: %{},
               font: nil
   end

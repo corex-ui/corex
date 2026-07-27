@@ -40,9 +40,6 @@ defmodule Corex.Design.Theme do
   @doc "Themeable Tailwind spacing base (`--spacing`) in rem."
   def spacing(theme), do: Scales.rem_value(@base_unit * dimension_scale(theme, :space_scale))
 
-  @doc "The per-theme base spacing unit in rem (the multiplier source for space/size)."
-  def base(theme), do: @base_unit * dimension_scale(theme, :space_scale)
-
   @doc "Resolved density scale for a theme as `[{step, css}]`."
   def density(_theme) do
     for {step, mult} <- Scales.density_mult(), do: {step, calc_spacing(mult)}
@@ -79,10 +76,49 @@ defmodule Corex.Design.Theme do
 
   @doc "Per-theme multiplier for shadow blur/spread templates (default 1.0)."
   def shadow_scale(theme) when is_atom(theme) do
-    case Map.get(dimensions(theme), :shadow_scale) do
-      n when is_number(n) -> n * 1.0
-      _ -> 1.0
-    end
+    scale_or_default(dimensions(theme).shadow_scale, 1.0)
+  end
+
+  @doc "Per-theme multiplier for blur templates (default 1.0)."
+  def blur_scale(theme) when is_atom(theme) do
+    scale_or_default(dimensions(theme).blur_scale, 1.0)
+  end
+
+  @doc "Focus ring width as a CSS length (default `2px`)."
+  def ring_width(theme) when is_atom(theme) do
+    px_value(dimensions(theme).ring_width, 2.0)
+  end
+
+  @doc "Focus ring offset as a CSS length (default `0px`)."
+  def ring_offset(theme) when is_atom(theme) do
+    px_value(dimensions(theme).ring_offset, 0.0)
+  end
+
+  @doc "Default border width as a CSS length (default `1px`)."
+  def border_width(theme) when is_atom(theme) do
+    px_value(dimensions(theme).border_width, 1.0)
+  end
+
+  @doc "Motion duration token (`:fast` | `:normal` | `:slow`) as a CSS time."
+  def duration(theme, step) when is_atom(theme) and step in [:fast, :normal, :slow] do
+    {key, default} =
+      case step do
+        :fast -> {:duration_fast, 80.0}
+        :normal -> {:duration_normal, 120.0}
+        :slow -> {:duration_slow, 200.0}
+      end
+
+    ms_value(Map.get(dimensions(theme), key), default)
+  end
+
+  @doc "Disabled control opacity (default `0.7`)."
+  def opacity_disabled(theme) when is_atom(theme) do
+    opacity_value(dimensions(theme).opacity_disabled, 0.7)
+  end
+
+  @doc "Dialog / overlay backdrop opacity (default `0.4`)."
+  def opacity_backdrop(theme) when is_atom(theme) do
+    opacity_value(dimensions(theme).opacity_backdrop, 0.4)
   end
 
   def theme_ids do
@@ -148,21 +184,21 @@ defmodule Corex.Design.Theme do
 
   defp normalize_spec(spec) when is_map(spec) do
     %Spec{
-      palette: normalize_palette(Keys.get(spec, :palette, %{})),
+      seeds: normalize_seeds(Keys.get(spec, :seeds) || Keys.get(spec, :palette, %{})),
       colors: normalize_colors(Keys.get(spec, :colors, %{})),
       dimensions: normalize_dimensions(Keys.get(spec, :dimensions, %{})),
       typography: normalize_typography(Keys.get(spec, :typography))
     }
   end
 
-  defp normalize_palette(palette) when is_map(palette) do
-    Map.new(palette, fn {k, v} -> {normalize_palette_key(k), to_string(v)} end)
+  defp normalize_seeds(seeds) when is_map(seeds) do
+    Map.new(seeds, fn {k, v} -> {normalize_seed_key(k), to_string(v)} end)
   end
 
-  defp normalize_palette_key(:neutral), do: "base"
-  defp normalize_palette_key("neutral"), do: "base"
-  defp normalize_palette_key(k) when is_atom(k), do: Atom.to_string(k)
-  defp normalize_palette_key(k) when is_binary(k), do: k
+  defp normalize_seed_key(:base), do: "neutral"
+  defp normalize_seed_key("base"), do: "neutral"
+  defp normalize_seed_key(k) when is_atom(k), do: Atom.to_string(k)
+  defp normalize_seed_key(k) when is_binary(k), do: k
 
   defp normalize_colors(colors) when is_map(colors) do
     %{
@@ -174,18 +210,19 @@ defmodule Corex.Design.Theme do
   defp normalize_mode_colors(%Mode{} = mode), do: mode
 
   defp normalize_mode_colors(mode) when is_map(mode) do
-    %Mode{
-      surface: normalize_key_map(Keys.get(mode, :surface, %{})),
-      roles: normalize_key_map(Keys.get(mode, :roles, %{})),
-      on: normalize_key_map(Keys.get(mode, :on, %{})),
-      border: normalize_flat_token(Keys.get(mode, :border)),
-      focus: normalize_flat_token(Keys.get(mode, :focus)),
-      shadow: normalize_flat_token(Keys.get(mode, :shadow))
-    }
+    tokens =
+      if is_map(Keys.get(mode, :tokens)) do
+        normalize_token_map(Keys.get(mode, :tokens))
+      else
+        normalize_token_map(mode)
+      end
+
+    %Mode{tokens: tokens}
   end
 
-  defp normalize_flat_token(nil), do: nil
-  defp normalize_flat_token(token) when is_map(token), do: normalize_key_map(token)
+  defp normalize_token_map(map) when is_map(map) do
+    Map.new(map, fn {k, v} -> {to_string(k), v} end)
+  end
 
   defp normalize_dimensions(%Dimensions{} = dims), do: dims
 
@@ -200,6 +237,15 @@ defmodule Corex.Design.Theme do
       radius_scale: fetch_float(dims, :radius_scale) || scale,
       container_scale: fetch_float(dims, :container_scale) || scale,
       shadow_scale: fetch_float(dims, :shadow_scale),
+      blur_scale: fetch_float(dims, :blur_scale),
+      ring_width: fetch_float(dims, :ring_width),
+      ring_offset: fetch_float(dims, :ring_offset),
+      border_width: fetch_float(dims, :border_width),
+      duration_fast: fetch_float(dims, :duration_fast),
+      duration_normal: fetch_float(dims, :duration_normal),
+      duration_slow: fetch_float(dims, :duration_slow),
+      opacity_disabled: fetch_float(dims, :opacity_disabled),
+      opacity_backdrop: fetch_float(dims, :opacity_backdrop),
       radius: normalize_radius_overrides(Keys.get(dims, :radius, %{})),
       font: normalize_font(Keys.get(dims, :font))
     }
@@ -252,7 +298,7 @@ defmodule Corex.Design.Theme do
 
   defp deep_merge(%Spec{} = base, %Spec{} = over) do
     %Spec{
-      palette: Map.merge(base.palette, over.palette),
+      seeds: Map.merge(base.seeds, over.seeds),
       colors: %{
         light: deep_merge_mode(base.colors.light, over.colors.light),
         dark: deep_merge_mode(base.colors.dark, over.colors.dark)
@@ -273,18 +319,8 @@ defmodule Corex.Design.Theme do
   end
 
   defp deep_merge_mode(%Mode{} = base, %Mode{} = over) do
-    %Mode{
-      surface: deep_merge_maps(base.surface, over.surface),
-      roles: deep_merge_maps(base.roles, over.roles),
-      on: deep_merge_maps(base.on, over.on),
-      border: pick_flat(base.border, over.border),
-      focus: pick_flat(base.focus, over.focus),
-      shadow: pick_flat(base.shadow, over.shadow)
-    }
+    %Mode{tokens: Map.merge(base.tokens, over.tokens)}
   end
-
-  defp pick_flat(_base, over) when is_map(over), do: over
-  defp pick_flat(base, _over), do: base
 
   defp deep_merge_dims(%Dimensions{} = base, %Dimensions{} = over) do
     %Dimensions{
@@ -295,10 +331,34 @@ defmodule Corex.Design.Theme do
       radius_scale: pick_scale(over, base, :radius_scale),
       container_scale: pick_scale(over, base, :container_scale),
       shadow_scale: pick_scale(over, base, :shadow_scale),
+      blur_scale: pick_scale(over, base, :blur_scale),
+      ring_width: pick_scale(over, base, :ring_width),
+      ring_offset: pick_scale(over, base, :ring_offset),
+      border_width: pick_scale(over, base, :border_width),
+      duration_fast: pick_scale(over, base, :duration_fast),
+      duration_normal: pick_scale(over, base, :duration_normal),
+      duration_slow: pick_scale(over, base, :duration_slow),
+      opacity_disabled: pick_scale(over, base, :opacity_disabled),
+      opacity_backdrop: pick_scale(over, base, :opacity_backdrop),
       radius: Map.merge(base.radius, over.radius),
       font: merge_font(base.font, over.font)
     }
   end
+
+  defp scale_or_default(n, _default) when is_number(n), do: n * 1.0
+  defp scale_or_default(_n, default), do: default
+
+  defp px_value(n, _default) when is_number(n), do: length_px(n)
+  defp px_value(_n, default), do: length_px(default)
+
+  defp ms_value(n, _default) when is_number(n), do: "#{Scales.num(n)}ms"
+  defp ms_value(_n, default), do: "#{Scales.num(default)}ms"
+
+  defp opacity_value(n, _default) when is_number(n), do: Scales.num(n)
+  defp opacity_value(_n, default), do: Scales.num(default)
+
+  defp length_px(n) when n == 0, do: "0px"
+  defp length_px(n) when is_number(n), do: "#{Scales.num(n)}px"
 
   defp merge_font(nil, over), do: over
   defp merge_font(base, nil), do: base
@@ -307,14 +367,6 @@ defmodule Corex.Design.Theme do
   defp pick_scale(over, base, key) do
     Map.get(over, key) || Map.get(base, key)
   end
-
-  defp deep_merge_maps(a, b) do
-    Map.merge(a, b, fn _, va, vb ->
-      if is_map(va) and is_map(vb), do: deep_merge_maps(va, vb), else: vb
-    end)
-  end
-
-  defp normalize_key_map(map) when is_map(map), do: Keys.to_atom_map(map)
 
   defp radius_value(_step, :zero, _s, _override), do: "0"
   defp radius_value(_step, :full, _s, _override), do: "9999px"

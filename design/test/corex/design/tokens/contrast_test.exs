@@ -98,7 +98,7 @@ defmodule Corex.Design.Tokens.ContrastTest do
       "ink-muted" => "#595959",
       "link" => "#0000cc",
       "root" => "#ffffff",
-      "layer" => "#ffffff",
+      "surface" => "#ffffff",
       "ui" => "#ffffff",
       "ui-hover" => "#ffffff",
       "ui-active" => "#ffffff",

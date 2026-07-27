@@ -2,16 +2,28 @@ defmodule Corex.Design.Filter do
   @moduledoc false
 
   alias Corex.Design.Components
+  alias Corex.Design.Config
+  alias Corex.Design.Theme
 
-  @default_semantics ~w(base accent brand alert info success)a
+  @default_semantics ~w(accent brand alert info success)a
 
-  @palette_roles ~w(accent brand alert info success)
+  @structural_strings ~w(root surface ui ink ink-muted link border focus shadow)
+
+  @structural_bridge_strings ~w(root surface ink ink-muted link border focus shadow ui ui-hover ui-active ui-muted)
+
+  @derived_suffixes ~w(-text -contrast)
 
   @semantic_atoms Map.new(@default_semantics, &{Atom.to_string(&1), &1})
 
   def default_semantics, do: @default_semantics
 
   def default_semantic_strings, do: Enum.map(@default_semantics, &Atom.to_string/1)
+
+  def structural_strings, do: @structural_strings
+
+  def structural_bridge_strings, do: @structural_bridge_strings
+
+  def derived_suffixes, do: @derived_suffixes
 
   @doc """
   Maps a semantic role name to its atom through an allowlist.
@@ -34,8 +46,7 @@ defmodule Corex.Design.Filter do
   end
 
   def components do
-    Corex.Design.design_config()
-    |> Map.get(:components)
+    Config.resolved().components
     |> normalize_component_list()
   end
 
@@ -47,13 +58,37 @@ defmodule Corex.Design.Filter do
   where roles index a scale.
   """
   def semantic_strings do
-    Corex.Design.design_config()
-    |> resolved_semantics()
+    Config.resolved().semantics
+    |> resolve_semantic_roles()
     |> Enum.uniq()
   end
 
-  def all_components?, do: is_nil(components())
-  def all_semantics?, do: semantic_strings() == default_semantic_strings()
+  @doc false
+  def theme_semantic_roles do
+    Theme.resolved_themes()
+    |> Map.values()
+    |> Enum.flat_map(&theme_component_roles/1)
+    |> Enum.uniq()
+    |> Enum.sort()
+  end
+
+  defp theme_component_roles(spec) do
+    for mode <- Theme.modes(),
+        tokens = mode_tokens(spec, mode),
+        role <- @default_semantics,
+        role_s = Atom.to_string(role),
+        Map.has_key?(tokens, role_s) do
+      role
+    end
+  end
+
+  defp mode_tokens(spec, mode) do
+    case Map.get(spec.colors, mode) do
+      %{tokens: tokens} when is_map(tokens) -> tokens
+      other when is_map(other) -> other
+      _ -> %{}
+    end
+  end
 
   @doc """
   Validates configured component ids, returning the message a caller reports.
@@ -111,7 +146,7 @@ defmodule Corex.Design.Filter do
         |> Enum.map(&to_string/1)
         |> MapSet.new()
 
-      @palette_roles
+      default_semantic_strings()
       |> Enum.reject(&MapSet.member?(allowed, &1))
       |> Enum.reduce(css, fn role, acc ->
         remove_matching_utility_blocks(acc, ~r/^ui-#{role}$/)
@@ -199,34 +234,15 @@ defmodule Corex.Design.Filter do
     |> Enum.uniq()
   end
 
-  defp resolved_semantics(config) when is_map(config) do
-    resolve_semantic_roles(Map.get(config, :semantics) || scales_semantic(config))
-  end
-
   defp resolve_semantic_roles(roles) when is_list(roles),
-    do: roles |> normalize_semantic_list() |> ensure_base()
+    do: normalize_semantic_list(roles)
 
   defp resolve_semantic_roles(_roles), do: default_semantic_strings()
-
-  defp scales_semantic(config) do
-    config
-    |> Map.get(:scales, [])
-    |> normalize_scales()
-    |> Keyword.get(:semantic)
-  end
-
-  defp normalize_scales(list) when is_list(list), do: list
-  defp normalize_scales(map) when is_map(map), do: Map.to_list(map)
-  defp normalize_scales(_), do: []
 
   defp normalize_semantic_list(list) when is_list(list) do
     Enum.map(list, fn
       role when is_atom(role) -> Atom.to_string(role)
       role when is_binary(role) -> role
     end)
-  end
-
-  defp ensure_base(roles) do
-    if "base" in roles, do: roles, else: ["base" | roles]
   end
 end

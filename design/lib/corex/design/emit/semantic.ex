@@ -2,6 +2,7 @@ defmodule Corex.Design.Emit.Semantic do
   @moduledoc false
 
   alias Corex.Design.Emit.Css
+  alias Corex.Design.Filter
   alias Corex.Design.Scales
   alias Corex.Design.Tokens.Colors
   alias Corex.Design.Tokens.Naming
@@ -23,25 +24,25 @@ defmodule Corex.Design.Emit.Semantic do
   end
 
   defp semantic_role_set do
-    Corex.Design.Filter.semantic_strings() |> MapSet.new()
+    Filter.semantic_strings() |> MapSet.new()
   end
 
-  @structural_roles ~w(root layer ink ink-muted link border focus shadow ui ui-hover ui-active ui-muted)
-
-  @derived_suffixes ~w(-text -contrast)
-
-  defp role_allowed_for_bridge?(role, _allowed) when role in @structural_roles, do: true
-
   defp role_allowed_for_bridge?(role, allowed) do
-    case Enum.find(@derived_suffixes, &String.ends_with?(role, &1)) do
-      nil -> MapSet.member?(allowed, role) or String.starts_with?(role, "surface-")
-      suffix -> MapSet.member?(allowed, String.replace_suffix(role, suffix, ""))
+    cond do
+      role in Filter.structural_bridge_strings() ->
+        true
+
+      true ->
+        case Enum.find(Filter.derived_suffixes(), &String.ends_with?(role, &1)) do
+          nil -> MapSet.member?(allowed, role)
+          suffix -> MapSet.member?(allowed, String.replace_suffix(role, suffix, ""))
+        end
     end
   end
 
   @doc false
   def write_color_bridge!(output_root) do
-    decls = Enum.map(color_roles(), &Css.forward("color-#{&1}", "color-#{&1}"))
+    decls = Enum.map(color_roles(), &identity("color-#{&1}"))
 
     write_bridge!(output_root, "color.css", decls)
   end
@@ -50,13 +51,16 @@ defmodule Corex.Design.Emit.Semantic do
   def write_border_bridge!(output_root) do
     static = [
       Css.declaration("radius-none", "0px"),
-      Css.declaration("radius-full", "9999px")
+      Css.declaration("radius-full", "9999px"),
+      identity("border-width"),
+      identity("ring-width"),
+      identity("ring-offset")
     ]
 
     themed =
       Scales.steps(:radius)
       |> Enum.reject(&(&1 in ~w(none full)))
-      |> Enum.map(&Css.forward("radius-#{&1}", "theme-radius-#{&1}"))
+      |> Enum.map(&identity("radius-#{&1}"))
 
     write_bridge!(output_root, "border.css", static ++ themed)
   end
@@ -67,10 +71,10 @@ defmodule Corex.Design.Emit.Semantic do
 
     decls =
       Naming.breakpoint_theme_decls() ++
-        [Css.forward("spacing", "theme-spacing")] ++
+        [identity("spacing")] ++
         container_bridge_decls() ++
-        Enum.map(steps, &Css.forward("spacing-space-#{&1}", "theme-spacing-space-#{&1}")) ++
-        Enum.map(steps, &Css.forward("spacing-size-#{&1}", "theme-spacing-size-#{&1}")) ++
+        Enum.map(steps, &identity("spacing-space-#{&1}")) ++
+        Enum.map(steps, &identity("spacing-size-#{&1}")) ++
         [
           Css.forward("spacing-space", "spacing-space-md"),
           Css.forward("spacing-size", "spacing-size-md")
@@ -81,13 +85,12 @@ defmodule Corex.Design.Emit.Semantic do
 
   @doc false
   def write_font_bridge!(output_root) do
-    families =
-      Enum.map(~w(sans serif mono code display), &Css.forward("font-#{&1}", "theme-font-#{&1}"))
+    families = Enum.map(~w(sans serif mono code display), &identity("font-#{&1}"))
 
     weights =
       Enum.map(
         ~w(thin extralight light normal medium semibold bold extrabold black),
-        &Css.forward("font-weight-#{&1}", "theme-font-weight-#{&1}")
+        &identity("font-weight-#{&1}")
       )
 
     write_bridge!(output_root, "font.css", families ++ weights)
@@ -103,30 +106,45 @@ defmodule Corex.Design.Emit.Semantic do
     sizes =
       Enum.flat_map(size_steps, fn step ->
         [
-          Css.forward("text-#{step}", "theme-text-#{step}"),
-          Css.forward("text-#{step}--line-height", "theme-text-#{step}--line-height")
+          identity("text-#{step}"),
+          identity("text-#{step}--line-height")
         ]
       end)
 
     display = [
-      Css.forward("text-display-sm", "theme-text-4xl"),
-      Css.forward("text-display-sm--line-height", "theme-text-4xl--line-height")
+      Css.forward("text-display-sm", "text-4xl"),
+      Css.forward("text-display-sm--line-height", "text-4xl--line-height")
     ]
 
-    leadings = forward_steps(TokenScales.leading(), "leading", "theme-text-leading")
-    trackings = forward_steps(TokenScales.tracking(), "tracking", "theme-text-tracking")
+    leadings = identity_steps(TokenScales.leading(), "leading")
+    trackings = identity_steps(TokenScales.tracking(), "tracking")
 
-    write_bridge!(output_root, "text.css", sizes ++ display ++ leadings ++ trackings)
+    path = Path.join([output_root, "tokens", "semantic", "text.css"])
+
+    Write.atomic!(
+      path,
+      Css.document([
+        Css.theme(sizes ++ display),
+        Css.theme_inline(leadings ++ trackings)
+      ])
+    )
   end
 
   @doc false
   def write_effect_bridge!(output_root) do
     decls =
-      forward_steps(TokenScales.shadow(), "shadow", "theme-shadow") ++
-        forward_steps(TokenScales.inset_shadow(), "inset-shadow", "theme-inset-shadow") ++
-        forward_steps(TokenScales.drop_shadow(), "drop-shadow", "theme-drop-shadow") ++
-        forward_steps(TokenScales.text_shadow(), "text-shadow", "theme-text-shadow") ++
-        forward_steps(TokenScales.blur(), "blur", "theme-blur")
+      identity_steps(TokenScales.shadow(), "shadow") ++
+        identity_steps(TokenScales.inset_shadow(), "inset-shadow") ++
+        identity_steps(TokenScales.drop_shadow(), "drop-shadow") ++
+        identity_steps(TokenScales.text_shadow(), "text-shadow") ++
+        identity_steps(TokenScales.blur(), "blur") ++
+        [
+          identity("duration-fast"),
+          identity("duration-normal"),
+          identity("duration-slow"),
+          identity("opacity-disabled"),
+          identity("opacity-backdrop")
+        ]
 
     write_bridge!(output_root, "effect.css", decls)
   end
@@ -137,28 +155,16 @@ defmodule Corex.Design.Emit.Semantic do
     Write.atomic!(path, Css.document([Css.theme_inline(declarations)]))
   end
 
-  defp forward_steps(scale, prefix, target_prefix) do
+  defp identity(name), do: Css.forward(name, name)
+
+  defp identity_steps(scale, prefix) do
     Enum.map(scale, fn {step, _value} ->
-      Css.forward("#{prefix}-#{dash(step)}", "#{target_prefix}-#{dash(step)}")
+      identity("#{prefix}-#{dash(step)}")
     end)
   end
 
   defp container_bridge_decls do
-    Enum.map(
-      Scales.master_ladder_strings(),
-      &Css.forward("container-#{&1}", "theme-container-#{&1}")
-    )
-  end
-
-  @doc false
-  def remove_legacy_color_scope!(output_root) do
-    path = Path.join([output_root, "tokens", "semantic", "color-scope.css"])
-
-    if File.exists?(path) do
-      File.rm!(path)
-    end
-
-    :ok
+    Enum.map(Scales.master_ladder_strings(), &identity("container-#{&1}"))
   end
 
   defp text_token_step(step), do: Naming.text_token_step(step)

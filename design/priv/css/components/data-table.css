@@ -43,7 +43,7 @@
  text-align: start;
  padding-inline: var(--ctl-space, var(--spacing-space));
  white-space: nowrap;
- background-color: var(--color-layer);
+ background-color: var(--color-surface);
  border-bottom: 1px solid var(--color-border);
  font-size: var(--ctl-text, var(--text-base));
  line-height: var(--ctl-leading, var(--text-base--line-height));
@@ -64,7 +64,7 @@
  text-align: center;
  padding-inline: var(--ctl-space, var(--spacing-space));
  white-space: nowrap;
- background-color: var(--color-layer);
+ background-color: var(--color-surface);
  border-bottom: 1px solid var(--color-border);
  font-weight: var(--font-weight-medium);
  }
@@ -80,7 +80,7 @@
  width: 0;
  min-width: max-content;
  max-width: max-content;
- background-color: var(--color-layer);
+ background-color: var(--color-surface);
  border-bottom: 1px solid var(--color-border);
  border-inline-start: 1px solid var(--color-border);
  font-size: var(--ctl-text, var(--text-base));
@@ -187,7 +187,7 @@
  padding: var(--ctl-space, var(--spacing-space));
  vertical-align: middle;
  white-space: nowrap;
- background-color: var(--color-layer);
+ background-color: var(--color-surface);
  font-size: var(--ctl-text, var(--text-base));
  line-height: var(--ctl-leading, var(--text-base--line-height));
  color: var(--color-ink);
@@ -251,7 +251,7 @@
  [data-scope="data-table"][data-part="tbody"]
  tr[data-part="row"]:hover
  [data-part="action-cell"] {
- background-color: var(--color-layer);
+ background-color: var(--color-surface);
  }
 
  .data-table [data-scope="data-table"][data-part="actions"] {

@@ -75,7 +75,7 @@
  width: var(--container-5xs);
  padding: var(--spacing-space);
  gap: var(--spacing-space);
- background-color: var(--color-layer);
+ background-color: var(--color-surface);
 
  & img {
  width: 100%;

@@ -2,14 +2,14 @@ defmodule Corex.MCP.DesignAvailable do
   @moduledoc false
 
   @components :"Elixir.Corex.Design.Components"
-  @axes :"Elixir.Corex.Design.Axes"
+  @scales :"Elixir.Corex.Design.Scales"
   @filter :"Elixir.Corex.Design.Filter"
   @theme :"Elixir.Corex.Design.Theme"
   @theme_options :"Elixir.Corex.Design.Theme.Validator"
 
   def design_available? do
     match?({:module, _}, Code.ensure_loaded(@components)) and
-      match?({:module, _}, Code.ensure_loaded(@axes))
+      match?({:module, _}, Code.ensure_loaded(@scales))
   end
 
   def ensure_design do
@@ -33,10 +33,10 @@ defmodule Corex.MCP.DesignAvailable do
   def fetch_css_id(id) when is_binary(id), do: apply(@components, :fetch_css_id, [id])
 
   def default_semantics, do: apply(@filter, :default_semantics, [])
-  def sizes, do: apply(@axes, :sizes, [])
-  def radii, do: apply(@axes, :radii, [])
-  def max_heights, do: apply(@axes, :max_heights, [])
-  def widths, do: apply(@axes, :widths, [])
+  def sizes, do: apply(@scales, :steps, [:size])
+  def radii, do: apply(@scales, :steps, [:radius])
+  def max_heights, do: apply(@scales, :steps, [:max_height])
+  def widths, do: apply(@scales, :steps, [:width])
 
   def theme_modes, do: apply(@theme, :modes, [])
   def default_theme, do: apply(@theme, :default_theme, [])

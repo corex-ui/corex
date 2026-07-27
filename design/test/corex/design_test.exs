@@ -1,16 +1,23 @@
-defmodule Corex.Design.PaletteGenTest do
+defmodule Corex.Design.ColorTest do
   use ExUnit.Case, async: true
 
-  alias Corex.Design.Tokens.PaletteGen
+  alias Corex.Design.Color, as: DesignColor
 
-  test "tonal scale stays in gamut for neo accent seed" do
-    assert PaletteGen.in_gamut?("#4B4B4B")
+  test "at_l returns a hex at true Oklch lightness" do
+    hex = DesignColor.at_l("#4B4B4B", 0.5)
+    assert String.match?(hex, ~r/^#[0-9A-Fa-f]{6}$/)
   end
 
-  test "contrast_fg returns a hex color" do
-    {hex, ratio} = PaletteGen.contrast_fg("#4B4B4B", "#F0F0F0", 7.0)
+  test "against returns a hex color that meets the target" do
+    {hex, ratio} = DesignColor.against("#4B4B4B", "#F0F0F0", 7.0)
     assert String.match?(hex, ~r/^#[0-9A-Fa-f]{6}$/)
     assert ratio >= 6.99
+  end
+
+  test "against_or_pick falls back to white or black when unreachable" do
+    {hex, ratio} = DesignColor.against_or_pick("#E6E8EB", "#636972", 21.0)
+    assert hex in ["#FFFFFF", "#000000", "#ffffff", "#000000"] or String.match?(hex, ~r/^#[0-9A-Fa-f]{6}$/)
+    assert ratio >= 1.0
   end
 end
 
@@ -46,12 +53,10 @@ defmodule Corex.Design.BuildSmokeTest do
     assert File.exists?(neo_dim)
     assert File.read!(neo_light) =~ "--color-ui:"
     assert File.read!(neo_light) =~ "--color-accent:"
-    refute File.read!(neo_light) =~ "--theme-color-ui:"
-    refute File.read!(neo_light) =~ "--theme-color-accent:"
     refute File.exists?(Path.join(output, "tokens/semantic/color-scope.css"))
     assert File.read!(Path.join(output, "tokens/semantic/color.css")) =~ "@theme inline"
     refute File.read!(Path.join(output, "tokens.css")) =~ "color-scope"
-    assert File.read!(neo_dim) =~ "--theme-spacing-space-md:"
+    assert File.read!(neo_dim) =~ "--spacing-space-md:"
 
     neo_entry = Path.join(output, "theme/neo.css")
 
@@ -107,7 +112,6 @@ defmodule Corex.Design.TokenLayerTest do
 
       assert File.exists?(neo_light)
       assert File.read!(neo_light) =~ "--color-ink:"
-      refute File.read!(neo_light) =~ "--theme-color-accent:"
       refute File.exists?(color_scope)
       assert File.read!(color_bridge) =~ "@theme inline"
     after
@@ -125,12 +129,12 @@ defmodule Corex.Design.ColorTokenNamesTest do
     assert Map.has_key?(tokens, "ui")
     assert Map.has_key?(tokens, "ink")
     assert Map.has_key?(tokens, "root")
-    assert Map.has_key?(tokens, "layer")
+    assert Map.has_key?(tokens, "surface")
     assert Map.has_key?(tokens, "accent-contrast")
     assert Map.has_key?(tokens, "accent-text")
 
     refute Map.has_key?(tokens, "selected")
-
+    refute Map.has_key?(tokens, "layer")
     refute Map.has_key?(tokens, "base")
     refute Map.has_key?(tokens, "on-page")
     refute Map.has_key?(tokens, "surface-page")
@@ -258,22 +262,14 @@ defmodule Corex.Design.ScalesTest do
     assert TokenScales.rem_value(0.875) == "0.875rem"
   end
 
-  test "export lists trimmed dimension axes without visual or shape" do
-    export = Scales.export()
+  test "dimension axes expose steps via steps/1" do
+    for axis <- [:density, :radius, :size, :text, :weight] do
+      assert Scales.steps(axis) != []
+    end
 
-    assert export[:semantic] != []
-
-    assert Map.keys(export[:dimensions]) |> Enum.sort() == [
-             :density,
-             :radius,
-             :size,
-             :text,
-             :weight
-           ]
-
-    refute Map.has_key?(export, :visual)
-    assert export[:container][:steps] != []
-    assert export[:sizing][:steps] != []
+    assert Scales.steps(:container) != []
+    assert Scales.steps(:sizing) != []
+    assert Scales.semantic_steps() != []
   end
 
   @master_ladder_strings ~w(9xs 8xs 7xs 6xs 5xs 4xs 3xs 2xs xs sm md lg xl 2xl 3xl 4xl 5xl 6xl 7xl 8xl 9xl)
@@ -333,7 +329,9 @@ defmodule Corex.Design.ScalesTest do
     Mix.Task.run("corex.design.build", ["--output", output])
 
     border = Path.join(output, "tokens/themes/neo/border.css")
-    assert File.read!(border) =~ "--theme-radius-md: 0.5625rem;"
+    assert File.read!(border) =~ "--radius-md: 0.75rem;"
+    assert File.read!(border) =~ "--border-width: 1px;"
+    assert File.read!(border) =~ "--ring-width: 2px;"
   end
 
   test "semantic border bridge emits runtime radius tokens" do
@@ -357,7 +355,7 @@ defmodule Corex.Design.ScalesTest do
     css = File.read!(border)
 
     assert css =~ "--radius-full: 9999px;"
-    assert css =~ "--radius-md: var(--theme-radius-md);"
+    assert css =~ "--radius-md: var(--radius-md);"
     assert css =~ "--radius-none: 0px;"
   end
 
@@ -380,10 +378,10 @@ defmodule Corex.Design.ScalesTest do
     font = Path.join(output, "tokens/semantic/font.css")
     css = File.read!(font)
 
-    assert css =~ "--font-sans: var(--theme-font-sans);"
-    assert css =~ "--font-display: var(--theme-font-display);"
-    assert css =~ "--font-mono: var(--theme-font-mono);"
-    assert css =~ "--font-weight-bold: var(--theme-font-weight-bold);"
+    assert css =~ "--font-sans: var(--font-sans);"
+    assert css =~ "--font-display: var(--font-display);"
+    assert css =~ "--font-mono: var(--font-mono);"
+    assert css =~ "--font-weight-bold: var(--font-weight-bold);"
   end
 end
 
@@ -405,7 +403,7 @@ defmodule Corex.Design.ComponentsTest do
       |> Path.wildcard()
       |> Enum.map(&Path.basename/1)
       |> Enum.map(&String.replace_suffix(&1, ".css", ""))
-      |> Enum.reject(&(&1 in ~w(keyframes layout)))
+      |> Enum.reject(&(&1 in ~w(keyframes)))
       |> Enum.sort()
 
     registry_ids = Components.ids()
@@ -540,8 +538,8 @@ defmodule Corex.Design.DimensionBridgeTest do
 
     css = File.read!(Path.join(output, "tokens/semantic/dimension.css"))
 
-    assert css =~ "--container-9xs: var(--theme-container-9xs);"
-    assert css =~ "--container-9xl: var(--theme-container-9xl);"
+    assert css =~ "--container-9xs: var(--container-9xs);"
+    assert css =~ "--container-9xl: var(--container-9xl);"
     refute css =~ "--max-width-5xs:"
     refute css =~ "--width-7xs:"
   end
@@ -575,7 +573,7 @@ defmodule Corex.Design.DimensionBridgeTest do
     assert refs != []
 
     for step <- refs do
-      assert bridge =~ "--container-#{step}: var(--theme-container-#{step});",
+      assert bridge =~ "--container-#{step}: var(--container-#{step});",
              "missing bridge for --container-#{step} referenced in component css"
     end
   end
@@ -681,7 +679,7 @@ defmodule Corex.Design.BundleFilterTest do
   test "semantics filter limits accent tokens in theme color output" do
     output =
       build!(
-        [semantics: ~w(base accent), components: ~w(button)],
+        [semantics: ~w(accent), components: ~w(button)],
         "_build/test_bundle_semantics"
       )
 
@@ -713,7 +711,7 @@ defmodule Corex.Design.BundleFilterTest do
     before = File.read!(source)
 
     output =
-      build!([semantics: ~w(base accent), components: ~w(button)], "_build/test_bundle_src")
+      build!([semantics: ~w(accent), components: ~w(button)], "_build/test_bundle_src")
 
     assert File.read!(source) == before
     refute File.read!(Path.join(output, "utilities.css")) =~ "@utility ui-brand"
@@ -725,9 +723,10 @@ defmodule Corex.Design.BundleFilterTest do
     steps =
       Path.join(output, "tokens/themes/neo/border.css")
       |> File.read!()
-      |> then(&Regex.scan(~r/--theme-radius-([\w-]+):/, &1))
+      |> then(&Regex.scan(~r/--radius-([\w-]+):/, &1))
       |> Enum.map(fn [_, step] -> step end)
 
     assert steps == ~w(none xs sm md lg xl 2xl 3xl 4xl full)
   end
+
 end

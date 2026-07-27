@@ -12,7 +12,9 @@ defmodule Corex.Design.Tokens.Publish do
 
   @doc false
   def write_theme_tokens!(output_root) do
+    Colors.clear_cache!()
     colors = Colors.generate()
+    _ = Corex.Design.Tokens.Contrast.check!(colors)
 
     Enum.each(Theme.themes(), fn theme ->
       write_dimension!(output_root, theme)
@@ -33,7 +35,6 @@ defmodule Corex.Design.Tokens.Publish do
     Semantic.write_font_bridge!(output_root)
     Semantic.write_text_bridge!(output_root)
     Semantic.write_effect_bridge!(output_root)
-    Semantic.remove_legacy_color_scope!(output_root)
     write_theme_entries!(output_root)
 
     :ok
@@ -64,7 +65,7 @@ defmodule Corex.Design.Tokens.Publish do
 
   defp write_dimension!(output_root, theme) do
     vars =
-      [{"theme-spacing", Theme.spacing(theme)}] ++
+      [{"spacing", Theme.spacing(theme)}] ++
         space_steps(theme) ++
         size_steps(theme) ++
         container_steps(theme)
@@ -74,28 +75,34 @@ defmodule Corex.Design.Tokens.Publish do
   end
 
   defp write_border!(output_root, theme) do
-    vars =
+    radius_vars =
       for {step, value} <- Theme.radius(theme) do
-        {"theme-radius-#{dash(step)}", value}
+        {"radius-#{dash(step)}", value}
       end
 
+    chrome_vars = [
+      {"border-width", Theme.border_width(theme)},
+      {"ring-width", Theme.ring_width(theme)},
+      {"ring-offset", Theme.ring_offset(theme)}
+    ]
+
     path = Path.join([output_root, "tokens", "themes", Atom.to_string(theme), "border.css"])
-    Write.atomic!(path, theme_block(theme, vars))
+    Write.atomic!(path, theme_block(theme, radius_vars ++ chrome_vars))
   end
 
   defp write_text!(output_root, theme) do
     vars =
       for {step, value} <- Theme.text(theme) do
-        {"theme-text-#{text_token_step(step)}", value}
+        {"text-#{text_token_step(step)}", value}
       end ++
         for {step, value} <- Scales.text_leading() do
-          {"theme-text-#{text_token_step(step)}--line-height", value}
+          {"text-#{text_token_step(step)}--line-height", value}
         end ++
         for {step, value} <- Scales.leading() do
-          {"theme-text-leading-#{dash(step)}", Scales.num(value)}
+          {"leading-#{dash(step)}", Scales.num(value)}
         end ++
         for {step, value} <- Scales.tracking() do
-          {"theme-text-tracking-#{dash(step)}", value}
+          {"tracking-#{dash(step)}", value}
         end
 
     path = Path.join([output_root, "tokens", "themes", Atom.to_string(theme), "text.css"])
@@ -107,12 +114,12 @@ defmodule Corex.Design.Tokens.Publish do
 
     stack_vars =
       for {step, members} <- stacks do
-        {"theme-font-#{dash(step)}", Scales.font_stack(members)}
+        {"font-#{dash(step)}", Scales.font_stack(members)}
       end
 
     weight_vars =
       for {step, value} <- Scales.weight() do
-        {"theme-font-weight-#{dash(step)}", Integer.to_string(value)}
+        {"font-weight-#{dash(step)}", Integer.to_string(value)}
       end
 
     path = Path.join([output_root, "tokens", "themes", Atom.to_string(theme), "font.css"])
@@ -120,38 +127,50 @@ defmodule Corex.Design.Tokens.Publish do
   end
 
   defp write_effect!(output_root, theme) do
-    scale = Theme.shadow_scale(theme)
+    shadow = Theme.shadow_scale(theme)
+    blur = Theme.blur_scale(theme)
 
     shadow_vars =
       for {step, template} <- Scales.shadow() do
-        {"theme-shadow-#{dash(step)}", Scales.scale_shadow_template(template, scale)}
+        {"shadow-#{dash(step)}", Scales.scale_shadow_template(template, shadow)}
       end
 
     inset_vars =
       for {step, template} <- Scales.inset_shadow() do
-        {"theme-inset-shadow-#{dash(step)}", Scales.scale_shadow_template(template, scale)}
+        {"inset-shadow-#{dash(step)}", Scales.scale_shadow_template(template, shadow)}
       end
 
     drop_vars =
       for {step, template} <- Scales.drop_shadow() do
-        {"theme-drop-shadow-#{dash(step)}", Scales.scale_shadow_template(template, scale)}
+        {"drop-shadow-#{dash(step)}", Scales.scale_shadow_template(template, shadow)}
       end
 
     text_shadow_vars =
       for {step, template} <- Scales.text_shadow() do
-        {"theme-text-shadow-#{dash(step)}", Scales.scale_shadow_template(template, scale)}
+        {"text-shadow-#{dash(step)}", Scales.scale_shadow_template(template, shadow)}
       end
 
     blur_vars =
       for {step, value} <- Scales.blur() do
-        {"theme-blur-#{dash(step)}", scale_length(value, scale)}
+        {"blur-#{dash(step)}", scale_length(value, blur)}
       end
+
+    motion_vars = [
+      {"duration-fast", Theme.duration(theme, :fast)},
+      {"duration-normal", Theme.duration(theme, :normal)},
+      {"duration-slow", Theme.duration(theme, :slow)},
+      {"opacity-disabled", Theme.opacity_disabled(theme)},
+      {"opacity-backdrop", Theme.opacity_backdrop(theme)}
+    ]
 
     path = Path.join([output_root, "tokens", "themes", Atom.to_string(theme), "effect.css"])
 
     Write.atomic!(
       path,
-      theme_block(theme, shadow_vars ++ inset_vars ++ drop_vars ++ text_shadow_vars ++ blur_vars)
+      theme_block(
+        theme,
+        shadow_vars ++ inset_vars ++ drop_vars ++ text_shadow_vars ++ blur_vars ++ motion_vars
+      )
     )
   end
 
@@ -183,19 +202,19 @@ defmodule Corex.Design.Tokens.Publish do
 
   defp space_steps(theme) do
     for {step, value} <- Theme.density(theme) do
-      {"theme-spacing-space-#{step}", value}
+      {"spacing-space-#{step}", value}
     end
   end
 
   defp size_steps(theme) do
     for {step, value} <- Theme.size(theme) do
-      {"theme-spacing-size-#{step}", value}
+      {"spacing-size-#{step}", value}
     end
   end
 
   defp container_steps(theme) do
     for {step, value} <- Theme.container(theme) do
-      {"theme-container-#{dash(step)}", value}
+      {"container-#{dash(step)}", value}
     end
   end
 

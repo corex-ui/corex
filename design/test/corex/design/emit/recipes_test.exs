@@ -5,7 +5,25 @@ defmodule Corex.Design.Emit.RecipesTest do
 
   describe "generate/1" do
     test "emits nothing but the layer wrapper for no components" do
-      assert Recipes.generate([]) == "@layer components {\n}\n"
+      assert Recipes.generate([]) == """
+             @layer components {
+             @media (prefers-reduced-motion: reduce) {
+               [data-theme] {
+                 --duration-fast: 0.01ms;
+                 --duration-normal: 0.01ms;
+                 --duration-slow: 0.01ms;
+               }
+             }
+
+             @media (prefers-contrast: more) {
+               [data-theme] {
+                 --ring-width: 3px;
+                 --border-width: 1.5px;
+               }
+             }
+
+             }
+             """
     end
 
     test "wraps every rule in the components layer" do

@@ -7,8 +7,6 @@ defmodule Corex.Design.Config.Schema do
   alias Corex.Design.Scales, as: ConfiguredScales
   alias Corex.Design.Theme.Validator, as: ThemeValidator
 
-  @scale_axes ~w(space size text radius weight semantic)a
-
   @schema NimbleOptions.new!(
             output: [
               type: :string,
@@ -32,14 +30,14 @@ defmodule Corex.Design.Config.Schema do
             ],
             scales: [
               type: :keyword_list,
-              doc:
-                "Per-axis [step: value] overrides for built-in step names; legacy semantic role list (prefer semantics:)"
+              doc: "Per-axis [step: value] overrides for built-in step names"
             ],
             components: [
               doc: "Component css ids to emit (nil = all shipped components)"
             ],
             semantics: [
-              doc: "Semantic palette roles to emit (nil = all; base is always included)"
+              doc:
+                "Semantic palette roles to emit (nil = all; structural root/surface/ui/ink always included)"
             ]
           )
 
@@ -118,6 +116,7 @@ defmodule Corex.Design.Config.Schema do
     {:error, "config :corex_design, modes: must be a list, got: #{inspect(other)}"}
   end
 
+
   defp validate_themes(nil), do: :ok
 
   defp validate_themes(themes) when is_map(themes) do
@@ -183,17 +182,17 @@ defmodule Corex.Design.Config.Schema do
   end
 
   defp validate_scales(scales) when is_list(scales) do
+    allowed = ConfiguredScales.config_axes()
+
     scales
     |> Enum.reduce_while(:ok, fn {axis, spec}, :ok ->
-      if axis in @scale_axes do
+      if axis in allowed do
         case validate_axis_scale(axis, spec) do
           :ok -> {:cont, :ok}
           {:error, message} -> {:halt, {:error, message}}
         end
       else
-        {:halt,
-         {:error,
-          "config :corex_design, scales: unknown axis #{inspect(axis)} (allowed: #{inspect(@scale_axes)})"}}
+        {:halt, {:error, unknown_axis_message(axis)}}
       end
     end)
   end
@@ -230,13 +229,8 @@ defmodule Corex.Design.Config.Schema do
   defp config_entry_string(entry) when is_atom(entry), do: Atom.to_string(entry)
   defp config_entry_string(entry) when is_binary(entry), do: entry
 
-  defp validate_axis_scale(:semantic, spec) when is_list(spec) do
-    if Enum.all?(spec, &(is_atom(&1) or is_binary(&1))) do
-      :ok
-    else
-      {:error,
-       "config :corex_design, scales: semantic must be a list of role atoms, got: #{inspect(spec)}"}
-    end
+  defp validate_axis_scale(:semantic, _spec) do
+    {:error, "config :corex_design, scales: :semantic is removed; use semantics: [...]"}
   end
 
   defp validate_axis_scale(axis, spec) when is_list(spec) do

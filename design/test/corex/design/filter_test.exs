@@ -38,7 +38,7 @@ defmodule Corex.Design.FilterTest do
     end
 
     test "drops the utility block of a role the config omits" do
-      css = Filter.apply_utilities_semantics(@utilities, ~w(base accent))
+      css = Filter.apply_utilities_semantics(@utilities, ~w(accent))
 
       assert css =~ "@utility ui-accent {"
       refute css =~ "@utility ui-brand {"
@@ -47,10 +47,12 @@ defmodule Corex.Design.FilterTest do
     end
 
     test "keeps utilities that are not palette roles" do
-      css = Filter.apply_utilities_semantics(@utilities, ~w(base))
+      css = Filter.apply_utilities_semantics(@utilities, ~w(accent))
 
       assert css =~ "@utility ui-solid {"
       assert css =~ "@utility ui-size-lg {"
+      assert css =~ "@utility ui-accent {"
+      refute css =~ "@utility ui-brand {"
     end
 
     test "matches a role name exactly, so a longer utility survives" do
@@ -64,16 +66,16 @@ defmodule Corex.Design.FilterTest do
       }
       """
 
-      filtered = Filter.apply_utilities_semantics(css, ~w(base))
+      filtered = Filter.apply_utilities_semantics(css, [])
 
       refute filtered =~ "@utility ui-accent {"
       assert filtered =~ "@utility ui-accent-soft {"
     end
 
     test "is idempotent" do
-      once = Filter.apply_utilities_semantics(@utilities, ~w(base accent))
+      once = Filter.apply_utilities_semantics(@utilities, ~w(accent))
 
-      assert Filter.apply_utilities_semantics(once, ~w(base accent)) == once
+      assert Filter.apply_utilities_semantics(once, ~w(accent)) == once
     end
   end
 

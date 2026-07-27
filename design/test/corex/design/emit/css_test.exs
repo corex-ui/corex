@@ -9,7 +9,7 @@ defmodule Corex.Design.Emit.CssTest do
 
   describe "declaration/2" do
     test "renders a number without the caller stringifying it" do
-      assert flat(Css.declaration("theme-spacing", 0.25)) == "  --theme-spacing: 0.25;"
+      assert flat(Css.declaration("spacing", 0.25)) == "  --spacing: 0.25;"
     end
   end
 
@@ -20,10 +20,17 @@ defmodule Corex.Design.Emit.CssTest do
     end
   end
 
+  describe "theme/1" do
+    test "wraps declarations in a non-inline Tailwind theme block" do
+      assert flat(Css.theme([Css.forward("text-base", "text-base")])) ==
+               "@theme {\n  --text-base: var(--text-base);\n}\n"
+    end
+  end
+
   describe "theme_inline/1" do
     test "wraps declarations in the Tailwind entry point" do
-      assert flat(Css.theme_inline([Css.forward("radius-md", "theme-radius-md")])) ==
-               "@theme inline {\n  --radius-md: var(--theme-radius-md);\n}\n"
+      assert flat(Css.theme_inline([Css.forward("radius-md", "radius-md")])) ==
+               "@theme inline {\n  --radius-md: var(--radius-md);\n}\n"
     end
   end
 

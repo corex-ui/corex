@@ -1,10 +1,10 @@
 defmodule Corex.Design.Options do
   @moduledoc false
 
-  alias Corex.Design.Axes
   alias Corex.Design.Components
   alias Corex.Design.Config
   alias Corex.Design.Filter
+  alias Corex.Design.Scales
   alias Corex.Design.Theme
   alias Corex.Design.Theme.Validator, as: ThemeValidator
 
@@ -28,15 +28,16 @@ defmodule Corex.Design.Options do
       format_atoms(ThemeValidator.preset_ids()),
       "Current default_theme: #{Theme.default_theme()}",
       "",
-      "Allowed modes: (default_mode:)",
-      format_atoms(Theme.modes()),
+      "Allowed modes: (modes:, default_mode:)",
+      format_atoms([:light, :dark]),
+      "Current modes: #{format_atoms(Theme.modes())}",
       "Current default_mode: #{Theme.default_mode()}",
       "",
       "Size steps: (scales / ui-size-*)",
-      format_list(Axes.sizes()),
+      format_list(Scales.steps(:size)),
       "",
       "Radius steps: (scales / ui-rounded-*)",
-      format_list(Axes.radii())
+      format_list(Scales.steps(:radius))
     ]
     |> Enum.join("\n")
   end

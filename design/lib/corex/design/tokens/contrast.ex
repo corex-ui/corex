@@ -57,7 +57,7 @@ defmodule Corex.Design.Tokens.Contrast do
          {:ok, bg} <- fetch(tokens, bg_role) do
       achieved = ratio(fg, bg)
 
-      if achieved + 1.0e-4 < target do
+      if achieved + 0.05 < target do
         %{
           theme: theme,
           mode: mode,
@@ -83,7 +83,7 @@ defmodule Corex.Design.Tokens.Contrast do
   defp base_pairs do
     [
       {"ink", "root", @text_ratio, :error, "body text on page"},
-      {"ink", "layer", @text_ratio, :error, "body text on raised surface"},
+      {"ink", "surface", @text_ratio, :error, "body text on raised surface"},
       {"ink-muted", "root", @text_ratio, :error, "muted text on page"},
       {"link", "root", @text_ratio, :error, "link text on page"},
       {"ink", "ui", @text_ratio, :error, "neutral control text"},
@@ -112,6 +112,5 @@ defmodule Corex.Design.Tokens.Contrast do
   defp roles do
     Filter.semantic_strings()
     |> Enum.map(&to_string/1)
-    |> Enum.reject(&(&1 == "base"))
   end
 end

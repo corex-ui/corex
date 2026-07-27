@@ -12,6 +12,10 @@ defmodule Corex.Design.ConfigTest do
       assert :ok = Config.validate!(scales: [radius: [md: 0.625]])
     end
 
+    test "accepts density as a space alias" do
+      assert :ok = Config.validate!(scales: [density: [md: 3]])
+    end
+
     test "reports a scales value that is not a keyword list" do
       assert_raise ArgumentError, ~r/:scales option: expected keyword list/, fn ->
         Config.validate!(scales: %{radius: %{md: 0.625}})
@@ -22,6 +26,8 @@ defmodule Corex.Design.ConfigTest do
       assert_raise ArgumentError, ~r/unknown axis/, fn ->
         Config.validate!(scales: [nope: [md: 1.0]])
       end
+    end
+
     end
   end
 

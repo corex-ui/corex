@@ -26,7 +26,7 @@ defmodule Corex.Design.Theme.ValidatorTest do
     end
 
     test "requires a full spec on a custom theme" do
-      assert {:error, message} = Validator.validate(%{custom: %{palette: %{accent: "#3366ff"}}})
+      assert {:error, message} = Validator.validate(%{custom: %{seeds: %{accent: "#3366ff"}}})
       assert message =~ "themes.custom"
       assert message =~ "require a full spec"
     end
@@ -36,26 +36,26 @@ defmodule Corex.Design.Theme.ValidatorTest do
     end
 
     test "merges a preset override rather than replacing the preset" do
-      assert %{neo: merged} = Validator.validate!(%{neo: %{palette: %{"accent" => "#3366ff"}}})
+      assert %{neo: merged} = Validator.validate!(%{neo: %{seeds: %{"accent" => "#3366ff"}}})
 
       preset = Map.fetch!(Presets.all(), :neo)
 
-      assert merged.palette["accent"] == "#3366ff"
+      assert merged.seeds["accent"] == "#3366ff"
       assert merged.colors == preset.colors
-      assert Map.keys(merged.palette) == Map.keys(preset.palette)
+      assert Map.keys(merged.seeds) == Map.keys(preset.seeds)
     end
 
-    test "rejects a palette anchor that is not a six-digit hex" do
-      assert {:error, message} = Validator.validate(%{neo: %{palette: %{"accent" => "blue"}}})
+    test "rejects a seed that is not a six-digit hex" do
+      assert {:error, message} = Validator.validate(%{neo: %{seeds: %{"accent" => "blue"}}})
 
-      assert message =~ ~s(invalid palette hex "blue")
+      assert message =~ ~s(invalid seed hex "blue")
       assert message =~ "#RRGGBB"
     end
 
     test "rejects a three-digit hex shorthand" do
-      assert {:error, message} = Validator.validate(%{neo: %{palette: %{"accent" => "#36f"}}})
+      assert {:error, message} = Validator.validate(%{neo: %{seeds: %{"accent" => "#36f"}}})
 
-      assert message =~ ~s(invalid palette hex "#36f")
+      assert message =~ ~s(invalid seed hex "#36f")
     end
 
     test "rejects a global scale key set per theme" do
@@ -74,7 +74,7 @@ defmodule Corex.Design.Theme.ValidatorTest do
     end
 
     test "fills the untouched mode from the preset when an override names only one" do
-      spec = %{palette: %{"accent" => "#3366ff"}, colors: %{light: %{}}}
+      spec = %{seeds: %{"accent" => "#3366ff"}, colors: %{light: %{}}}
 
       assert %{neo: merged} = Validator.validate!(%{neo: spec})
 
@@ -83,60 +83,37 @@ defmodule Corex.Design.Theme.ValidatorTest do
       assert merged.colors.dark == preset.colors.dark
     end
 
-    test "accepts a role that names a palette anchor without a lightness" do
-      assert %{neo: _} = Validator.validate!(%{neo: role_spec(%{palette: "accent"})})
+    test "accepts a lightness token" do
+      assert %{neo: _} = Validator.validate!(%{neo: token_spec(%{kind: :l, seed: :accent, l: 0.5})})
     end
 
-    test "rejects a role whose lightness is not an integer" do
-      spec = role_spec(%{palette: "accent", lightness: "50"})
+    test "rejects an invalid lightness" do
+      spec = token_spec(%{kind: :l, seed: :accent, l: 1.4})
 
       assert {:error, message} = Validator.validate(%{neo: spec})
 
-      assert message =~ ~s(themes colors roles :accent requires :lightness or :states)
-    end
-
-    test "rejects a role config that is not a map" do
-      spec = role_spec("accent")
-
-      assert {:error, message} = Validator.validate(%{neo: spec})
-
-      assert message =~ ~s(themes colors roles :accent must be a map)
-    end
-
-    test "rejects a lightness outside 0 to 100" do
-      spec = role_spec(%{palette: "accent", lightness: 140})
-
-      assert {:error, message} = Validator.validate(%{neo: spec})
-
-      assert message =~ "lightness 140 must be from 0 to 100"
+      assert message =~ "invalid lightness"
     end
 
     test "rejects an unknown state name" do
-      spec = role_spec(%{palette: "accent", states: %{hovered: 40}})
+      spec = token_spec(%{kind: :l, seed: :accent, l: 0.4, states: %{hovered: 0.4}})
 
       assert {:error, message} = Validator.validate(%{neo: spec})
 
       assert message =~ ~s(state :hovered must be one of)
     end
 
-    test "rejects a non-integer state lightness" do
-      spec = role_spec(%{palette: "accent", states: %{hover: "40"}})
-
-      assert {:error, message} = Validator.validate(%{neo: spec})
-
-      assert message =~ ~s(state :hover lightness must be an integer)
-    end
-
-    test "accepts a role given as states" do
-      spec = role_spec(%{palette: "accent", states: %{hover: 40}})
+    test "accepts a contrast token" do
+      spec =
+        token_spec(%{kind: :contrast, seed: :accent, against: :root, target: 7.0})
 
       assert %{neo: _} = Validator.validate!(%{neo: spec})
     end
 
     test "requires the dimensions key on a custom theme so radius defaults are explicit" do
       spec = %{
-        palette: %{"accent" => "#3366ff"},
-        colors: %{light: %{roles: %{}}, dark: %{roles: %{}}}
+        seeds: %{"accent" => "#3366ff"},
+        colors: %{light: %{root: %{kind: :l, l: 0.99}}, dark: %{root: %{kind: :l, l: 0.1}}}
       }
 
       assert {:error, message} = Validator.validate(%{custom: spec})
@@ -146,27 +123,45 @@ defmodule Corex.Design.Theme.ValidatorTest do
 
     test "accepts a fully resolved custom theme" do
       spec = %{
-        palette: %{"accent" => "#3366ff"},
-        colors: %{light: %{roles: %{}}, dark: %{roles: %{}}},
+        seeds: %{"accent" => "#3366ff", "neutral" => "#eeeeee"},
+        colors: %{
+          light: %{"root" => %{kind: :l, seed: :neutral, l: 0.99}},
+          dark: %{"root" => %{kind: :l, seed: :accent, l: 0.1}}
+        },
         dimensions: %{}
       }
 
-      assert %{custom: _} = Validator.validate!(%{custom: spec})
+      assert %{custom: %Corex.Design.Theme.Spec{dimensions: %Corex.Design.Theme.Spec.Dimensions{}}} =
+               Validator.validate!(%{custom: spec})
     end
 
-    test "rejects a palette ref no anchor defines" do
+    test "rejects nested legacy surface/roles color maps" do
       spec = %{
-        palette: %{"accent" => "#3366ff"},
+        seeds: %{"neutral" => "#eeeeee"},
         colors: %{
-          light: %{roles: %{accent: %{palette: "brand", lightness: 50}}},
-          dark: %{roles: %{}}
+          light: %{surface: %{page: %{kind: :l, l: 0.99}}, roles: %{accent: %{kind: :l, l: 0.4}}},
+          dark: %{"root" => %{kind: :l, seed: :neutral, l: 0.1}}
+        },
+        dimensions: %{}
+      }
+
+      assert {:error, message} = Validator.validate(%{custom: spec})
+      assert message =~ "nested :surface/:roles/:on"
+    end
+
+    test "rejects a seed ref no anchor defines" do
+      spec = %{
+        seeds: %{"accent" => "#3366ff"},
+        colors: %{
+          light: %{"brand" => %{kind: :l, seed: :brand, l: 0.5}},
+          dark: %{"root" => %{kind: :l, seed: :accent, l: 0.1}}
         },
         dimensions: %{}
       }
 
       resolved = Validator.validate!(%{custom: spec})
 
-      assert_raise ArgumentError, ~r/palette refs \["brand"\] missing from palette/, fn ->
+      assert_raise ArgumentError, ~r/seed refs/, fn ->
         Validator.validate_resolved!(resolved)
       end
     end
@@ -190,10 +185,13 @@ defmodule Corex.Design.Theme.ValidatorTest do
     end
   end
 
-  defp role_spec(accent_cfg) do
+  defp token_spec(accent_cfg) do
     %{
-      palette: %{"accent" => "#3366ff"},
-      colors: %{light: %{roles: %{accent: accent_cfg}}, dark: %{roles: %{}}}
+      seeds: %{"accent" => "#3366ff", "neutral" => "#eeeeee"},
+      colors: %{
+        light: %{"accent" => accent_cfg},
+        dark: %{"root" => %{kind: :l, seed: :accent, l: 0.1}}
+      }
     }
   end
 end

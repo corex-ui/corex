@@ -56,32 +56,9 @@ defmodule Corex.Design.Config do
   def options_docs, do: Schema.options_docs()
 
   @doc false
-  def customization_map do
-    Map.new([
-      {:corex,
-       [
-         {:debug, "Enable Corex debug output"},
-         {:generators, "mix corex.new generator options"}
-       ]},
-      {Corex.Design,
-       [
-         {:output, "Generated assets/corex directory (relative to project root)"},
-         {:default_theme, "Default data-theme id (default :uno)"},
-         {:default_mode, "Default data-mode (default :light)"},
-         {:themes, "Built-in preset subset list or full theme catalog map"},
-         {:modes, "Color modes to emit (default [:light, :dark]; [:light] drops dark packs)"},
-         {:scales,
-          "Per-axis [step: value] overrides for built-in step names; legacy semantic role list (prefer semantics:)"},
-         {:components, "Component css ids to emit (nil = all shipped components)"},
-         {:semantics, "Semantic palette roles to emit (nil = all; base is always included)"}
-       ]}
-    ])
-  end
-
-  @doc false
   def validate_scale_theme_links do
     themes = Corex.Design.Theme.resolved_themes()
-    radius_steps = Corex.Design.Axes.radius_atoms()
+    radius_steps = Corex.Design.Scales.step_atoms(:radius)
 
     errors =
       for {theme_id, spec} <- themes,

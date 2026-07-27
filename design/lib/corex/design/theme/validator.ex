@@ -1,14 +1,20 @@
 defmodule Corex.Design.Theme.Validator do
   @moduledoc false
 
+  alias Corex.Design.Color, as: DesignColor
   alias Corex.Design.Keys
   alias Corex.Design.Theme
   alias Corex.Design.Theme.Presets
-  alias Corex.Design.Tokens.PaletteGen
 
-  @host_scale_keys ~w(scale space_scale size_scale text_scale radius_scale container_scale shadow_scale)a
+  @host_scale_keys ~w(
+    scale space_scale size_scale text_scale radius_scale container_scale
+    shadow_scale blur_scale ring_width ring_offset border_width
+    duration_fast duration_normal duration_slow
+    opacity_disabled opacity_backdrop
+  )a
 
   @hex_regex ~r/^#[0-9A-Fa-f]{6}$/
+  @state_names MapSet.new(DesignColor.state_names())
 
   @doc """
   Validates a themes map. Returns `{:ok, normalized}` or `{:error, message}`.
@@ -82,6 +88,10 @@ defmodule Corex.Design.Theme.Validator do
       {:ok, prepared}
     else
       cond do
+        legacy_color_shapes?(spec) ->
+          {:error,
+           "themes.#{theme_id}: nested :surface/:roles/:on maps are not supported; use flat public token names (root, surface, ui, …)"}
+
         not resolved_spec?(spec) ->
           {:error, custom_theme_error(theme_id)}
 
@@ -90,9 +100,15 @@ defmodule Corex.Design.Theme.Validator do
            "themes.#{theme_id}: custom theme requires :dimensions key (use %{} for built-in radius defaults)"}
 
         true ->
-          {:ok, spec}
+          {:ok, Theme.normalize_input_spec(spec)}
       end
     end
+  end
+
+  defp legacy_color_shapes?(spec) when is_map(spec) do
+    colors = Keys.get(spec, :colors, %{})
+    legacy_nested_mode?(Keys.get(colors, :light, %{})) or
+      legacy_nested_mode?(Keys.get(colors, :dark, %{}))
   end
 
   defp preset_id?(id), do: id in preset_ids()
@@ -103,7 +119,7 @@ defmodule Corex.Design.Theme.Validator do
 
   defp custom_theme_error(theme_id) do
     "themes.#{theme_id}: custom theme ids require a full spec " <>
-      "(palette, colors with :light and :dark, and dimensions)"
+      "(seeds, colors with :light and :dark, and dimensions)"
   end
 
   defp reject_host_scale_keys(spec, theme_id) when is_map(spec) do
@@ -142,24 +158,28 @@ defmodule Corex.Design.Theme.Validator do
 
   defp validate_theme_spec(spec) do
     colors = Keys.get(spec, :colors, %{})
+    seeds = Keys.get(spec, :seeds) || Keys.get(spec, :palette) || %{}
 
-    with :ok <- validate_palette_hex(normalize_palette_for_hex(spec)),
-         :ok <- validate_color_lightness(colors) do
-      {:ok, drop_nil_typography(spec)}
+    with :ok <- validate_palette_hex(normalize_seeds_for_hex(seeds)),
+         :ok <- reject_legacy_mode_shapes(colors),
+         :ok <- validate_mode_tokens(colors) do
+      {:ok, Theme.normalize_input_spec(spec)}
     end
   end
 
-  defp normalize_palette_for_hex(spec) do
-    (Keys.get(spec, :palette) || %{})
-    |> Map.new(fn {k, v} -> {to_string(k), v} end)
+  defp normalize_seeds_for_hex(seeds) when is_map(seeds) do
+    Map.new(seeds, fn {k, v} -> {to_string(k), v} end)
   end
 
   defp resolved_spec?(spec) do
-    case Keys.get(spec, :colors) do
-      %{light: light, dark: dark} when is_map(light) and is_map(dark) ->
+    colors = Keys.get(spec, :colors)
+    seeds = Keys.get(spec, :seeds) || Keys.get(spec, :palette)
+
+    case colors do
+      %{light: light, dark: dark} when is_map(light) and is_map(dark) and is_map(seeds) ->
         normalized_mode?(light) and normalized_mode?(dark)
 
-      %{"light" => light, "dark" => dark} when is_map(light) and is_map(dark) ->
+      %{"light" => light, "dark" => dark} when is_map(light) and is_map(dark) and is_map(seeds) ->
         normalized_mode?(light) and normalized_mode?(dark)
 
       _ ->
@@ -168,88 +188,165 @@ defmodule Corex.Design.Theme.Validator do
   end
 
   defp normalized_mode?(mode) do
-    Enum.any?([:surface, :roles, :on], &Map.has_key?(mode, &1)) or
-      Enum.any?(["surface", "roles", "on"], &Map.has_key?(mode, &1))
-  end
-
-  defp drop_nil_typography(spec) do
-    case Map.get(spec, :typography) do
-      nil -> Map.delete(spec, :typography)
-      _ -> spec
+    cond do
+      is_map(Keys.get(mode, :tokens)) -> true
+      legacy_nested_mode?(mode) -> false
+      Map.has_key?(mode, :root) or Map.has_key?(mode, "root") -> true
+      Map.has_key?(mode, :surface) or Map.has_key?(mode, "surface") -> true
+      true -> map_size(mode) > 0
     end
   end
+
+  defp reject_legacy_mode_shapes(colors) when is_map(colors) do
+    Enum.reduce_while([:light, :dark], :ok, fn mode, :ok ->
+      mode_map = Keys.get(colors, mode, %{})
+
+      if legacy_nested_mode?(mode_map) do
+        {:halt,
+         {:error,
+          "colors.#{mode}: nested :surface/:roles/:on maps are not supported; use flat public token names (root, surface, ui, …)"}}
+      else
+        {:cont, :ok}
+      end
+    end)
+  end
+
+  defp legacy_nested_mode?(mode) when is_map(mode) do
+    cond do
+      is_map(Keys.get(mode, :tokens)) -> false
+      Map.has_key?(mode, :roles) or Map.has_key?(mode, "roles") -> true
+      Map.has_key?(mode, :on) or Map.has_key?(mode, "on") -> true
+      nested_surface_map?(Keys.get(mode, :surface)) -> true
+      true -> false
+    end
+  end
+
+  defp nested_surface_map?(surface) when is_map(surface) do
+    Map.has_key?(surface, :page) or Map.has_key?(surface, "page") or
+      Map.has_key?(surface, :raised) or Map.has_key?(surface, "raised") or
+      Map.has_key?(surface, :control) or Map.has_key?(surface, "control")
+  end
+
+  defp nested_surface_map?(_), do: false
 
   defp validate_palette_hex(palette) when is_map(palette) do
     Enum.reduce_while(palette, :ok, fn {_k, hex}, :ok ->
       if is_binary(hex) and Regex.match?(@hex_regex, hex) do
         {:cont, :ok}
       else
-        {:halt, {:error, "invalid palette hex #{inspect(hex)} (expected #RRGGBB)"}}
+        {:halt, {:error, "invalid seed hex #{inspect(hex)} (expected #RRGGBB)"}}
       end
     end)
   end
 
-  defp validate_color_lightness(colors) when is_map(colors) do
+  defp validate_mode_tokens(colors) when is_map(colors) do
     Enum.reduce_while([:light, :dark], :ok, fn mode, :ok ->
       mode_map = Keys.get(colors, mode, %{})
+      tokens = Keys.get(mode_map, :tokens) || mode_map
 
-      with :ok <- validate_role_lightness(Keys.get(mode_map, :surface, %{}), "surface"),
-           :ok <- validate_role_lightness(Keys.get(mode_map, :roles, %{}), "roles") do
-        {:cont, :ok}
-      else
-        {:error, _} = err -> {:halt, err}
-      end
-    end)
-  end
-
-  defp validate_role_lightness(roles, label) do
-    Enum.reduce_while(roles, :ok, fn {role, cfg}, :ok ->
-      case validate_fill_cfg(role, cfg, label) do
+      case validate_token_defs(tokens) do
         :ok -> {:cont, :ok}
         {:error, _} = err -> {:halt, err}
       end
     end)
   end
 
-  defp validate_fill_cfg(role, cfg, label) when is_map(cfg) do
-    validate_fill(role, label, Keys.get(cfg, :lightness), Keys.get(cfg, :states))
+  defp validate_token_defs(tokens) when is_map(tokens) do
+    Enum.reduce_while(tokens, :ok, fn {name, cfg}, :ok ->
+      case validate_token_def(name, cfg) do
+        :ok -> {:cont, :ok}
+        {:error, _} = err -> {:halt, err}
+      end
+    end)
   end
 
-  defp validate_fill_cfg(role, cfg, label) do
-    {:error, "themes colors #{label} #{inspect(role)} must be a map, got: #{inspect(cfg)}"}
+  defp validate_token_def(_name, %{kind: :l} = cfg) do
+    with :ok <- validate_lightness_value(Map.get(cfg, :l)),
+         :ok <- validate_states(Map.get(cfg, :states, %{})) do
+      :ok
+    end
   end
 
-  defp validate_fill(role, label, _lightness, states) when is_map(states),
-    do: validate_states(role, states, label)
+  defp validate_token_def(_name, %{kind: :contrast} = cfg) do
+    target = Map.get(cfg, :target)
 
-  defp validate_fill(role, label, lightness, _states) when is_integer(lightness),
-    do: validate_lightness(role, lightness, label)
-
-  defp validate_fill(_role, _label, nil, nil), do: :ok
-
-  defp validate_fill(role, label, _lightness, _states) do
-    {:error, "themes colors #{label} #{inspect(role)} requires :lightness or :states"}
+    if is_number(target) and target > 0 do
+      :ok
+    else
+      {:error, "contrast token requires positive :target, got: #{inspect(target)}"}
+    end
   end
 
-  defp validate_states(role, states, label) do
-    allowed = MapSet.new(PaletteGen.state_names())
+  defp validate_token_def(name, {:l, lightness}) do
+    validate_lightness_value(lightness, name)
+  end
 
+  defp validate_token_def(name, {:l, lightness, opts}) when is_list(opts) do
+    with :ok <- validate_lightness_value(lightness, name),
+         :ok <- validate_states(Keyword.get(opts, :states, %{})) do
+      :ok
+    end
+  end
+
+  defp validate_token_def(_name, {:contrast, opts}) when is_list(opts) do
+    target = Keyword.get(opts, :target)
+
+    if is_number(target) and target > 0 do
+      :ok
+    else
+      {:error, "contrast token requires positive :target, got: #{inspect(target)}"}
+    end
+  end
+
+  defp validate_token_def(name, %{} = cfg) do
+    cond do
+      Map.has_key?(cfg, :l) or Map.has_key?(cfg, :lightness) or Map.has_key?(cfg, :states) ->
+        with :ok <- validate_lightness_value(Map.get(cfg, :l) || Map.get(cfg, :lightness)),
+             :ok <- validate_states(Map.get(cfg, :states, %{})) do
+          :ok
+        end
+
+      Map.has_key?(cfg, :target) or Map.has_key?(cfg, :ratio) ->
+        target = Map.get(cfg, :target) || Map.get(cfg, :ratio)
+
+        if is_number(target) and target > 0 do
+          :ok
+        else
+          {:error, "token #{inspect(name)} requires positive :target"}
+        end
+
+      true ->
+        :ok
+    end
+  end
+
+  defp validate_token_def(name, cfg) do
+    {:error, "token #{inspect(name)} has invalid def #{inspect(cfg)}"}
+  end
+
+  defp validate_lightness_value(nil), do: :ok
+
+  defp validate_lightness_value(value, _name \\ nil) do
+    try do
+      _ = DesignColor.normalize_l!(value)
+      :ok
+    rescue
+      e in ArgumentError -> {:error, Exception.message(e)}
+    end
+  end
+
+  defp validate_states(states) when is_map(states) do
     Enum.reduce_while(states, :ok, fn {state, lightness}, :ok ->
-      state_str = if is_atom(state), do: Atom.to_string(state), else: to_string(state)
+      state_str = to_string(state)
 
       cond do
-        not MapSet.member?(allowed, state_str) ->
+        not MapSet.member?(@state_names, state_str) ->
           {:halt,
            {:error,
-            "themes colors #{label} #{inspect(role)} state #{inspect(state)} must be one of #{inspect(PaletteGen.state_names())}"}}
-
-        not is_integer(lightness) ->
-          {:halt,
-           {:error,
-            "themes colors #{label} #{inspect(role)} state #{inspect(state)} lightness must be an integer"}}
+            "state #{inspect(state)} must be one of #{inspect(DesignColor.state_names())}"}}
 
         true ->
-          case validate_lightness(role, lightness, label) do
+          case validate_lightness_value(lightness) do
             :ok -> {:cont, :ok}
             err -> {:halt, err}
           end
@@ -257,45 +354,41 @@ defmodule Corex.Design.Theme.Validator do
     end)
   end
 
-  defp validate_lightness(role, lightness, label) do
-    if lightness in PaletteGen.lightness_range() do
-      :ok
-    else
-      {:error,
-       "themes colors #{label} #{inspect(role)} lightness #{inspect(lightness)} must be from 0 to 100"}
-    end
-  end
+  defp validate_states(_), do: :ok
 
   defp validate_role_palette_refs(resolved) do
     Enum.reduce_while(resolved, :ok, fn {id, spec}, :ok ->
-      palette = Map.get(spec, :palette, %{})
+      seeds = Map.get(spec, :seeds) || Map.get(spec, :palette) || %{}
       colors = Map.get(spec, :colors, %{})
 
-      case validate_theme_palette_refs(id, palette, colors) do
+      case validate_theme_seed_refs(id, seeds, colors) do
         :ok -> {:cont, :ok}
         {:error, _} = err -> {:halt, err}
       end
     end)
   end
 
-  defp validate_theme_palette_refs(id, palette, colors) do
-    palette_keys =
-      palette
+  defp validate_theme_seed_refs(id, seeds, colors) do
+    seed_keys =
+      seeds
       |> Map.keys()
-      |> Enum.map(fn key -> if is_atom(key), do: Atom.to_string(key), else: to_string(key) end)
+      |> Enum.map(&to_string/1)
       |> MapSet.new()
 
     Enum.reduce_while([:light, :dark], :ok, fn mode, :ok ->
       mode_map = Map.get(colors, mode, %{})
+      tokens = Map.get(mode_map, :tokens) || mode_map
 
       refs =
-        collect_palette_refs(mode_map)
+        tokens
+        |> Enum.flat_map(fn {_k, cfg} -> seed_refs(cfg) end)
         |> Enum.reject(&is_nil/1)
 
       invalid =
-        Enum.reject(refs, fn ref ->
-          ref_str = if is_atom(ref), do: Atom.to_string(ref), else: to_string(ref)
-          MapSet.member?(palette_keys, ref_str)
+        refs
+        |> Enum.reject(fn ref ->
+          ref_str = ref |> to_string() |> normalize_seed_ref()
+          MapSet.member?(seed_keys, ref_str) or String.starts_with?(ref_str, "#")
         end)
         |> Enum.uniq()
 
@@ -304,59 +397,36 @@ defmodule Corex.Design.Theme.Validator do
       else
         {:halt,
          {:error,
-          "themes.#{id}.colors.#{mode}: palette refs #{inspect(invalid)} missing from palette #{inspect(Map.keys(palette))}"}}
+          "themes.#{id}.colors.#{mode}: seed refs #{inspect(invalid)} missing from seeds #{inspect(Map.keys(seeds))}"}}
       end
     end)
   end
 
-  defp collect_palette_refs(mode_map) do
-    surface_refs =
-      mode_map
-      |> Map.get(:surface, %{})
-      |> Enum.flat_map(fn {_k, cfg} -> palette_ref(cfg) end)
+  defp normalize_seed_ref("base"), do: "neutral"
+  defp normalize_seed_ref(ref), do: ref
 
-    role_refs =
-      mode_map
-      |> Map.get(:roles, %{})
-      |> Enum.flat_map(fn {_k, cfg} -> palette_ref(cfg) end)
-
-    on_refs =
-      mode_map
-      |> Map.get(:on, %{})
-      |> Enum.flat_map(fn {_k, cfg} -> palette_ref(cfg) end)
-
-    flat_refs =
-      [:border, :focus, :shadow]
-      |> Enum.flat_map(fn key ->
-        case Map.get(mode_map, key) do
-          %{} = cfg -> palette_ref(cfg)
-          _ -> []
-        end
-      end)
-
-    surface_refs ++ role_refs ++ on_refs ++ flat_refs
-  end
-
-  defp palette_ref(cfg) when is_map(cfg) do
-    [Map.get(cfg, :palette), Map.get(cfg, :color), Map.get(cfg, :bg)]
-    |> Enum.reject(&is_nil/1)
-  end
+  defp seed_refs(%{seed: seed}), do: [seed]
+  defp seed_refs(%{palette: seed}), do: [seed]
+  defp seed_refs({:l, _l, opts}) when is_list(opts), do: [Keyword.get(opts, :seed)]
+  defp seed_refs({:contrast, opts}) when is_list(opts), do: [Keyword.get(opts, :seed)]
+  defp seed_refs(%{} = cfg), do: [Map.get(cfg, :seed), Map.get(cfg, :palette)]
+  defp seed_refs(_), do: []
 
   @doc false
   def validate_resolved!(resolved) when is_map(resolved) do
     with :ok <- validate_role_palette_refs(resolved),
-         :ok <- validate_resolved_stops(resolved) do
+         :ok <- validate_resolved_tokens(resolved) do
       :ok
     else
       {:error, message} -> raise ArgumentError, message
     end
   end
 
-  defp validate_resolved_stops(resolved) do
+  defp validate_resolved_tokens(resolved) do
     Enum.reduce_while(resolved, :ok, fn {_id, spec}, :ok ->
       colors = Map.get(spec, :colors, %{})
 
-      case validate_color_lightness(colors) do
+      case validate_mode_tokens(colors) do
         :ok -> {:cont, :ok}
         {:error, _} = err -> {:halt, err}
       end

@@ -22,7 +22,7 @@
  box-shadow: var(--shadow-md);
  background-image: linear-gradient(
  var(--color-root) 50%,
- var(--color-layer) 50%
+ var(--color-surface) 50%
  );
  background-size: 100% 2lh;
  background-origin: content-box;

@@ -70,11 +70,11 @@ defmodule Corex.MCP.Tools.DesignTest do
     json = ok_json!(Design.list_modifiers(%{"axis" => "max_height"}))
     decoded = Corex.MCP.Json.decode!(json)
 
-    assert decoded["max_height"]["steps"] == Corex.Design.Axes.max_heights()
+    assert decoded["max_height"]["steps"] == Corex.Design.Scales.steps(:max_height)
     assert "ui-max-height-9xl" in decoded["max_height"]["classes"]
 
     widths = ok_json!(Design.list_modifiers(%{"axis" => "width"})) |> Corex.MCP.Json.decode!()
-    assert widths["width"]["steps"] == Corex.Design.Axes.widths()
+    assert widths["width"]["steps"] == Corex.Design.Scales.steps(:width)
     assert "ui-width-auto" in widths["width"]["classes"]
   end
 

@@ -29,8 +29,8 @@ defmodule Corex.Design.Emit.Css do
   @doc """
   A custom property that forwards to another one, as the semantic bridges do.
 
-      iex> Corex.Design.Emit.Css.forward("radius-md", "theme-radius-md") |> IO.iodata_to_binary()
-      "  --radius-md: var(--theme-radius-md);"
+      iex> Corex.Design.Emit.Css.forward("radius-md", "radius-md") |> IO.iodata_to_binary()
+      "  --radius-md: var(--radius-md);"
   """
   @spec forward(String.t(), String.t()) :: iolist()
   def forward(name, target), do: ["  --", name, ": var(--", target, ");"]
@@ -51,6 +51,12 @@ defmodule Corex.Design.Emit.Css do
   def block(selector, declarations) do
     [selector, " {\n", Enum.intersperse(declarations, "\n"), "\n}\n"]
   end
+
+  @doc """
+  A `@theme` block. Utilities keep live `var(--*)` references (not inlined).
+  """
+  @spec theme([iodata()]) :: iolist()
+  def theme(declarations), do: block("@theme", declarations)
 
   @doc """
   A `@theme inline` block, the Tailwind entry point for semantic tokens.

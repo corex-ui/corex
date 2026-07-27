@@ -1,288 +1,269 @@
 defmodule Corex.Design.Tokens.Colors do
   @moduledoc false
 
+  alias Corex.Design.Color, as: DesignColor
+  alias Corex.Design.Filter
   alias Corex.Design.Keys
   alias Corex.Design.Theme
-  alias Corex.Design.Tokens.PaletteGen
 
-  @ink_roles ~w(accent brand alert info success)
-  @component_roles ~w(accent brand alert info success)
+  @roles Filter.default_semantic_strings()
+  @structural Filter.structural_strings()
+  @cache_key_normal {__MODULE__, :generate, :normal}
+  @cache_key_more {__MODULE__, :generate, :more}
 
-  @default_on_ink %{palette: "base", ratio: 7.0}
-  @default_on_page_light %{palette: "base", against: :page, ratio: 8.0}
-  @default_on_page_dark %{palette: "base", against: :page, ratio: 12.0}
-  @default_on_muted_light %{palette: "base", against: :page, ratio: 5.15}
-  @default_on_muted_dark %{palette: "base", against: :page, ratio: 6.0}
-  @default_on_link_light %{palette: "info", against: :page, ratio: 6.0}
-  @default_on_link_dark %{palette: "info", against: :page, ratio: 7.5}
+  @more_text_factor 1.4
+  @more_text_floor 4.5
+  @more_chrome_factor 1.5
+  @more_chrome_floor 1.5
 
-  def generate do
+  @doc false
+  def generate(opts \\ []) do
+    contrast = Keyword.get(opts, :contrast, :normal)
+    key = cache_key(contrast)
+
+    case Process.get(key) do
+      nil ->
+        colors = do_generate(contrast)
+        Process.put(key, colors)
+        colors
+
+      cached ->
+        cached
+    end
+  end
+
+  @doc false
+  def clear_cache! do
+    Process.delete(@cache_key_normal)
+    Process.delete(@cache_key_more)
+    :ok
+  end
+
+  defp cache_key(:normal), do: @cache_key_normal
+  defp cache_key(:more), do: @cache_key_more
+
+  defp do_generate(contrast) do
     for {theme_id, spec} <- Theme.resolved_themes(),
         mode <- Theme.modes(),
         into: %{} do
-      mode_map = Map.fetch!(spec.colors, mode)
-      {{theme_id, mode}, build_mode_colors(spec.palette, mode_map, mode)}
+      mode_tokens = mode_token_map(spec, mode)
+      {{theme_id, mode}, resolve_mode(spec.seeds, mode_tokens, contrast)}
     end
   end
 
-  def build_mode_colors(palette, mode_map, mode) when is_map(palette) and is_map(mode_map) do
-    palette = Keys.to_strings(palette)
-    surface = Keys.get(mode_map, :surface, %{})
-    roles = Keys.get(mode_map, :roles, %{})
-    on = Keys.get(mode_map, :on, %{})
-    cache = PaletteGen.new_cache()
-
-    {surface_tokens, cache} = surface_tokens(%{}, palette, surface, cache)
-    {role_tokens, cache} = role_tokens(%{}, palette, roles, cache)
-    on = merge_auto_on(on, roles, mode)
-    {ink_tokens, cache} = ink_tokens(%{}, palette, on, surface_tokens, role_tokens, cache)
-
-    surface_tokens
-    |> public_surface_tokens()
-    |> Map.merge(role_tokens)
-    |> Map.merge(ink_tokens)
-    |> then(fn acc ->
-      acc
-      |> put_flat_token(palette, :border, Keys.get(mode_map, :border, nil), surface_tokens, cache)
-      |> put_flat_token(palette, :focus, Keys.get(mode_map, :focus, nil), surface_tokens, cache)
-      |> put_flat_token(palette, :shadow, Keys.get(mode_map, :shadow, nil), surface_tokens, cache)
-    end)
-    |> Map.merge(decorative_ink_tokens(palette, role_tokens, mode))
+  defp mode_token_map(spec, mode) do
+    case Map.fetch!(spec.colors, mode) do
+      %{tokens: tokens} when is_map(tokens) -> tokens
+      %{} = other -> Map.new(other, fn {k, v} -> {to_string(k), v} end)
+    end
   end
 
-  defp surface_tokens(acc, palette, surface, cache) do
-    Enum.reduce(surface, {acc, cache}, fn {key, cfg}, {tok, c} ->
-      put_surface_token(tok, palette, surface_key(key), cfg, c)
+  defp resolve_mode(seeds, token_defs, contrast) do
+    seeds = normalize_seeds(seeds)
+    defs = normalize_defs(token_defs) |> filter_role_defs()
+
+    {l_defs, contrast_defs} =
+      Enum.split_with(defs, fn {_name, cfg} -> cfg.kind == :l end)
+
+    acc =
+      Enum.reduce(l_defs, %{}, fn {name, cfg}, tokens ->
+        resolve_l_token(tokens, seeds, name, cfg)
+      end)
+
+    Enum.reduce(contrast_defs, acc, fn {name, cfg}, tokens ->
+      resolve_contrast_token(tokens, seeds, name, cfg, contrast)
     end)
   end
 
-  defp surface_key(key) when is_atom(key), do: Atom.to_string(key)
-  defp surface_key(key) when is_binary(key), do: key
+  defp resolve_l_token(tokens, seeds, name, cfg) do
+    seed = seed_hex(seeds, cfg.seed)
 
-  defp put_surface_token(tok, palette, key, cfg, cache) do
-    hex = palette_hex(palette, Map.get(cfg, :palette, Map.get(cfg, :color, "base")))
-    token_prefix = surface_token_prefix(key)
-
-    case Map.get(cfg, :states) do
-      %{} = states ->
-        put_state_tokens(tok, token_prefix, hex, states, cache)
+    case cfg.states do
+      %{} = states when map_size(states) > 0 ->
+        Enum.reduce(states, tokens, fn {state, lightness}, acc ->
+          key = state_key(name, state)
+          Map.put(acc, key, DesignColor.at_l(seed, lightness))
+        end)
+        |> maybe_put_default(name, seed, cfg)
 
       _ ->
-        {hex_out, cache} = at_lightness(hex, Map.fetch!(cfg, :lightness), cache)
-        {Map.put(tok, token_prefix, hex_out), cache}
+        Map.put(tokens, name, DesignColor.at_l(seed, cfg.l))
     end
   end
 
-  defp surface_token_prefix("page"), do: "root"
-  defp surface_token_prefix("raised"), do: "layer"
-  defp surface_token_prefix("control"), do: "surface-control"
-
-  defp public_surface_tokens(surface_tokens) do
-    Map.take(surface_tokens, ["root", "layer"])
-  end
-
-  defp role_tokens(acc, palette, roles, cache) do
-    roles
-    |> filter_roles()
-    |> Enum.reduce({acc, cache}, fn {name, cfg}, {tok, c} ->
-      put_role_token(tok, palette, role_key(name), cfg, c)
-    end)
-  end
-
-  defp filter_roles(roles) when is_map(roles) do
-    allowed = semantic_role_set()
-
-    Map.filter(roles, fn {name, _cfg} ->
-      name_str = role_key(name)
-      name_str == "base" or MapSet.member?(allowed, name_str)
-    end)
-  end
-
-  defp role_key(key) when is_atom(key), do: Atom.to_string(key)
-  defp role_key(key) when is_binary(key), do: key
-
-  defp put_role_token(tok, palette, name, cfg, cache) do
-    hex = palette_hex(palette, Map.get(cfg, :palette, Map.get(cfg, :bg, name)))
-    token_prefix = fill_token_prefix(name)
-
-    case Map.get(cfg, :states) do
-      %{} = states ->
-        put_state_tokens(tok, token_prefix, hex, states, cache)
-
-      _ ->
-        {hex_out, cache} = at_lightness(hex, Map.fetch!(cfg, :lightness), cache)
-        {Map.put(tok, token_prefix, hex_out), cache}
+  defp maybe_put_default(tokens, name, seed, cfg) do
+    if Map.has_key?(tokens, name) do
+      tokens
+    else
+      Map.put(tokens, name, DesignColor.at_l(seed, cfg.l))
     end
   end
 
-  defp fill_token_prefix("base"), do: "ui"
-  defp fill_token_prefix(role), do: role
+  defp resolve_contrast_token(tokens, seeds, name, cfg, contrast) do
+    seed = seed_hex(seeds, cfg.seed)
+    bg = contrast_bg!(tokens, cfg.against)
+    target = boost_target(name, cfg.target, contrast)
 
-  defp put_state_tokens(tok, key, hex, states, cache) do
-    Enum.reduce(states, {tok, cache}, fn {state, lightness}, {acc, c} ->
-      {hex_out, c2} = at_lightness(hex, lightness, c)
-      sk = if to_string(state) == "default", do: key, else: "#{key}-#{state}"
-      {Map.put(acc, sk, hex_out), c2}
-    end)
-  end
-
-  defp ink_tokens(acc, palette, on, surface_tokens, role_tokens, cache) do
-    Enum.reduce(on, {acc, cache}, fn {name, cfg}, {tok, c} ->
-      case ink_token_key(name) do
-        nil ->
-          {tok, c}
-
-        public_key ->
-          bg = contrast_bg(cfg, surface_tokens, role_tokens)
-          seed = palette_hex(palette, Map.get(cfg, :palette, Map.get(cfg, :color, "base")))
-          ratio = Map.get(cfg, :ratio, 7.0) * 1.0
-          {hex, _ach} = PaletteGen.contrast_fg(seed, bg, ratio)
-          {Map.put(tok, public_key, hex), c}
-      end
-    end)
-  end
-
-  defp ink_token_key(:page), do: "ink"
-  defp ink_token_key("page"), do: "ink"
-  defp ink_token_key(:muted), do: "ink-muted"
-  defp ink_token_key("muted"), do: "ink-muted"
-  defp ink_token_key(:link), do: "link"
-  defp ink_token_key("link"), do: "link"
-  defp ink_token_key(role) when role in @component_roles, do: "#{role}-contrast"
-  defp ink_token_key(role) when is_atom(role), do: ink_token_key(Atom.to_string(role))
-  defp ink_token_key(_), do: nil
-
-  defp contrast_bg(cfg, surface_tokens, role_tokens) do
-    against =
-      case Map.get(cfg, :against) do
-        nil -> :page
-        value -> value
+    {hex, _achieved} =
+      if String.ends_with?(name, "-contrast") or String.ends_with?(name, "-text") do
+        DesignColor.against_or_pick(seed, bg, target)
+      else
+        DesignColor.against(seed, bg, target)
       end
 
-    against_str = if is_atom(against), do: Atom.to_string(against), else: to_string(against)
-    fill_key = fill_token_prefix(against_str)
-    surface_key = surface_contrast_key(against_str)
+    Map.put(tokens, name, hex)
+  end
 
+  defp contrast_bg!(tokens, against) do
+    key = to_string(against)
+
+    if Map.has_key?(tokens, key) do
+      Map.fetch!(tokens, key)
+    else
+      raise ArgumentError,
+            "contrast against #{inspect(against)} missing; known: #{inspect(Map.keys(tokens))}"
+    end
+  end
+
+  defp boost_target(_name, target, :normal), do: target * 1.0
+
+  defp boost_target(name, target, :more) do
     cond do
-      Map.has_key?(role_tokens, fill_key) ->
-        Map.fetch!(role_tokens, fill_key)
-
-      Map.has_key?(surface_tokens, surface_key) ->
-        Map.fetch!(surface_tokens, surface_key)
+      name in ~w(border focus shadow) ->
+        max(target * @more_chrome_factor, @more_chrome_floor)
 
       true ->
-        Map.get(surface_tokens, "root") ||
-          Map.get(surface_tokens, "surface-control") ||
-          "#808080"
+        max(target * @more_text_factor, @more_text_floor)
     end
   end
 
-  defp surface_contrast_key("page"), do: "root"
-  defp surface_contrast_key("control"), do: "surface-control"
-  defp surface_contrast_key(key), do: "surface-#{key}"
+  defp state_key(name, :default), do: name
+  defp state_key(name, "default"), do: name
+  defp state_key(name, state), do: "#{name}-#{state}"
 
-  defp put_flat_token(acc, _palette, _name, nil, _surface_tokens, _cache), do: acc
+  defp seed_hex(seeds, seed) do
+    key = seed |> to_string() |> normalize_seed_name()
 
-  defp put_flat_token(acc, palette, name, cfg, surface_tokens, _cache) when is_map(cfg) do
-    bg = flat_contrast_bg(cfg, surface_tokens)
-    seed = palette_hex(palette, Map.get(cfg, :palette, Map.get(cfg, :color, "base")))
-    ratio = Map.get(cfg, :ratio, 1.12) * 1.0
-    {hex, _ach} = PaletteGen.contrast_fg(seed, bg, ratio)
-    Map.put(acc, Atom.to_string(name), hex)
+    if String.starts_with?(key, "#") do
+      key
+    else
+      Map.fetch!(seeds, key)
+    end
   end
 
-  defp flat_contrast_bg(cfg, surface_tokens) do
-    against =
-      case Map.get(cfg, :against) do
-        nil -> :control
-        value -> value
-      end
-
-    against_str = if is_atom(against), do: Atom.to_string(against), else: to_string(against)
-
-    Map.get(surface_tokens, surface_contrast_key(against_str)) ||
-      Map.get(surface_tokens, "root") ||
-      "#808080"
+  defp normalize_seeds(seeds) when is_map(seeds) do
+    Map.new(seeds, fn {k, v} -> {normalize_seed_name(k), to_string(v)} end)
   end
 
-  defp decorative_ink_tokens(palette, role_tokens, mode) do
-    ui_bg = Map.get(role_tokens, "ui") || Map.get(role_tokens, "ui-muted") || "#808080"
-    palette = Map.new(palette, fn {k, v} -> {to_string(k), v} end)
+  defp normalize_seed_name(key) when is_atom(key), do: normalize_seed_name(Atom.to_string(key))
+  defp normalize_seed_name("base"), do: "neutral"
+  defp normalize_seed_name(key) when is_binary(key), do: key
 
-    allowed =
-      semantic_role_set()
-      |> MapSet.delete("base")
+  defp normalize_defs(defs) when is_map(defs) do
+    defs
+    |> Enum.map(fn {name, cfg} -> {to_string(name), normalize_def(cfg)} end)
+    |> Enum.reject(fn {_name, cfg} -> is_nil(cfg) end)
+  end
 
-    @ink_roles
-    |> Enum.filter(&MapSet.member?(allowed, &1))
-    |> Map.new(fn role ->
-      seed = Map.fetch!(palette, role)
-      {hex, _} = PaletteGen.contrast_fg(seed, ui_bg, ink_ratio(mode))
-      {"#{role}-text", hex}
+  defp normalize_def(%{kind: kind} = cfg) when kind in [:l, :contrast] do
+    cfg
+    |> Map.update(:seed, "neutral", &normalize_seed_name/1)
+    |> Map.update(:against, nil, fn
+      nil -> nil
+      value -> to_string(value)
+    end)
+    |> normalize_states()
+  end
+
+  defp normalize_def({:l, lightness}) do
+    %{kind: :l, seed: "neutral", l: DesignColor.normalize_l!(lightness), states: %{}}
+  end
+
+  defp normalize_def({:l, lightness, opts}) when is_list(opts) do
+    seed = Keyword.get(opts, :seed, :neutral)
+    states = Keyword.get(opts, :states, %{})
+
+    %{
+      kind: :l,
+      seed: normalize_seed_name(seed),
+      l: DesignColor.normalize_l!(lightness),
+      states: normalize_state_map(states)
+    }
+  end
+
+  defp normalize_def({:contrast, opts}) when is_list(opts) do
+    %{
+      kind: :contrast,
+      seed: normalize_seed_name(Keyword.fetch!(opts, :seed)),
+      against: opts |> Keyword.fetch!(:against) |> to_string(),
+      target: Keyword.fetch!(opts, :target) * 1.0
+    }
+  end
+
+  defp normalize_def(%{} = cfg) do
+    cond do
+      Map.has_key?(cfg, :l) or Map.has_key?(cfg, "l") ->
+        normalize_def(%{
+          kind: :l,
+          seed: Keys.get(cfg, :seed, Keys.get(cfg, :palette, :neutral)),
+          l: Keys.get(cfg, :l) || Keys.get(cfg, :lightness),
+          states: Keys.get(cfg, :states, %{})
+        })
+
+      Map.has_key?(cfg, :target) or Map.has_key?(cfg, :ratio) ->
+        normalize_def(%{
+          kind: :contrast,
+          seed: Keys.get(cfg, :seed, Keys.get(cfg, :palette, :neutral)),
+          against: Keys.get(cfg, :against, :root),
+          target: Keys.get(cfg, :target) || Keys.get(cfg, :ratio)
+        })
+
+      true ->
+        nil
+    end
+  end
+
+  defp normalize_def(_), do: nil
+
+  defp normalize_states(%{kind: :l} = cfg) do
+    Map.update(cfg, :states, %{}, &normalize_state_map/1)
+  end
+
+  defp normalize_states(cfg), do: cfg
+
+  defp normalize_state_map(states) when is_map(states) do
+    Map.new(states, fn {k, v} -> {k, DesignColor.normalize_l!(v)} end)
+  end
+
+  defp normalize_state_map(_), do: %{}
+
+  defp filter_role_defs(defs) do
+    allowed = Filter.semantic_strings() |> MapSet.new()
+
+    Enum.filter(defs, fn {name, _cfg} ->
+      role_allowed?(name, allowed)
     end)
   end
 
-  defp semantic_role_set do
-    Corex.Design.Filter.semantic_strings() |> MapSet.new()
-  end
+  defp role_allowed?(name, _allowed) when name in @structural, do: true
 
-  defp merge_auto_on(on, roles, mode) do
-    role_on = roles |> Enum.flat_map(&auto_on_entry/1) |> Map.new()
+  defp role_allowed?(name, allowed) do
+    cond do
+      name in @roles -> MapSet.member?(allowed, name)
+      String.ends_with?(name, "-contrast") ->
+        role = String.replace_suffix(name, "-contrast", "")
+        role in @roles and MapSet.member?(allowed, role)
 
-    mode
-    |> default_on()
-    |> Map.merge(role_on)
-    |> Map.merge(on)
-  end
+      String.ends_with?(name, "-text") ->
+        role = String.replace_suffix(name, "-text", "")
+        role in @roles and MapSet.member?(allowed, role)
 
-  defp auto_on_entry({role, cfg}) do
-    case Map.get(cfg, :component, true) do
-      component when component in [nil, false] -> []
-      _component -> [{role, auto_on_default(role_key(role))}]
+      String.contains?(name, "-") ->
+        role = name |> String.split("-") |> hd()
+        role in @roles and MapSet.member?(allowed, role)
+
+      true ->
+        true
     end
-  end
-
-  defp auto_on_default("base"), do: auto_on_default(:ui)
-
-  defp auto_on_default(role) when is_binary(role),
-    do: auto_on_default(Corex.Design.Filter.semantic_atom(role))
-
-  defp auto_on_default(against) when is_atom(against) do
-    %{palette: "base", against: against, ratio: Map.get(@default_on_ink, :ratio)}
-  end
-
-  defp default_on(:light) do
-    %{
-      page: @default_on_page_light,
-      muted: @default_on_muted_light,
-      link: @default_on_link_light
-    }
-  end
-
-  defp default_on(:dark) do
-    %{
-      page: @default_on_page_dark,
-      muted: @default_on_muted_dark,
-      link: @default_on_link_dark
-    }
-  end
-
-  defp default_on(_), do: default_on(:light)
-
-  defp ink_ratio(:light), do: 6.0
-  defp ink_ratio(:dark), do: 6.0
-  defp ink_ratio(_), do: 6.0
-
-  defp palette_hex(palette, key) do
-    s = key |> to_string() |> normalize_palette_ref()
-
-    if String.starts_with?(s, "#"), do: s, else: Map.fetch!(palette, s)
-  end
-
-  defp normalize_palette_ref("neutral"), do: "base"
-  defp normalize_palette_ref(key), do: key
-
-  defp at_lightness(hex, lightness, cache) do
-    PaletteGen.at_lightness(hex, lightness, cache)
   end
 end

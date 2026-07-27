@@ -70,7 +70,7 @@
   --ctl-bg-hover: var(--color-ui-hover);
   --ctl-bg-active: var(--color-ui-active);
   --ctl-ink: var(--ctl-ink-text, var(--color-ink));
-  --ctl-ring: var(--ctl-ink-text, var(--color-ink));
+  --ctl-ring: var(--color-focus);
   --ctl-bg-muted: transparent;
   --ctl-ink-muted: var(--color-ink-muted);
 }
@@ -146,13 +146,6 @@
 @utility ui-icon--* {
   font-size: --value(--text-*, [length]);
   line-height: --value(--text-*--line-height, [length]);
-}
-
-@utility ui-link--* {
-  font-size: --value(--text-*, [length]);
-  line-height: --value(--text-*--line-height, [length]);
-  color: --value(--color-*-text, [color]);
-  gap: calc(--value(--spacing-*, [length]) * 0.5);
 }
 
 @utility ui-readonly {

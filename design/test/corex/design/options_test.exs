@@ -27,5 +27,6 @@ defmodule Corex.Design.OptionsTest do
     assert out =~ "Current default_theme: neo"
     assert out =~ "Current default_mode: light"
     assert out =~ "Current components: all"
+    assert out =~ "Current modes:"
   end
 end

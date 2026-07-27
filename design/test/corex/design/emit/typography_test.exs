@@ -14,7 +14,7 @@ defmodule Corex.Design.Emit.TypographyTest do
     test "scopes each selector to the theme and the typo class" do
       css = generate(%{"h1" => %{font_weight: {:weight, :bold}}})
 
-      assert css =~ ~s|[data-theme="probe"] .typo h1 {|
+      assert css =~ ~s|[data-theme="probe"] .typo h1:not(:where([data-scope] *)) {|
     end
 
     test "dasherizes property names" do
@@ -73,14 +73,14 @@ defmodule Corex.Design.Emit.TypographyTest do
       css = generate(%{"h1" => props})
 
       assert css =~ "@media (min-width: 48rem) {\n"
-      assert css =~ ~s|  [data-theme="probe"] .typo h1 {\n      font-size: var(--text-xl);\n  }\n|
+      assert css =~ ~s|  [data-theme="probe"] .typo h1:not(:where([data-scope] *)) {\n      font-size: var(--text-xl);\n  }\n|
     end
 
     test "emits a media query without a base block when only breakpoints are set" do
       css = generate(%{"h1" => %{"lg" => %{font_size: {:text, :xl}}}})
 
       assert css =~ "@media (min-width: 64rem) {"
-      refute css =~ ~s|[data-theme="probe"] .typo h1 {\n  font-size|
+      refute css =~ ~s|[data-theme="probe"] .typo h1:not(:where([data-scope] *)) {\n  font-size|
     end
 
     test "treats a breakpoint-named key with a scalar value as a plain property" do
@@ -91,7 +91,8 @@ defmodule Corex.Design.Emit.TypographyTest do
     end
 
     test "accepts atom selectors" do
-      assert generate(%{h1: %{color: "red"}}) =~ ~s|[data-theme="probe"] .typo h1 {|
+      assert generate(%{h1: %{color: "red"}}) =~
+               ~s|[data-theme="probe"] .typo h1:not(:where([data-scope] *)) {|
     end
   end
 end

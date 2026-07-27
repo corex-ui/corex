@@ -84,7 +84,7 @@ defmodule Corex.Design.Emit.Typography do
   end
 
   defp typo_selector(theme, selector) do
-    ~s([data-theme="#{theme}"] .typo #{css_selector(selector)})
+    ~s|[data-theme="#{theme}"] .typo #{css_selector(selector)}:not(:where([data-scope] *))|
   end
 
   defp css_selector(selector) when is_binary(selector), do: selector

@@ -32,7 +32,7 @@
 
  .data-list [data-scope="data-list"][data-part="empty"] {
  padding: var(--spacing-space);
- background-color: var(--color-layer);
+ background-color: var(--color-surface);
  color: var(--color-ink-muted);
  }
 
@@ -44,7 +44,7 @@
  justify-content: flex-start;
  transition: background-color 0.2s ease-in-out;
  gap: var(--spacing-space);
- background-color: var(--color-layer);
+ background-color: var(--color-surface);
  color: var(--color-ink);
  }
 

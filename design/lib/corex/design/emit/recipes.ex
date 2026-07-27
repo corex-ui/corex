@@ -17,6 +17,7 @@ defmodule Corex.Design.Emit.Recipes do
 
     [
       "@layer components {\n",
+      reduced_motion(),
       base_palette(hosts),
       soft_idle(action_hosts),
       role_block(grouped, :root, root_chrome()),
@@ -30,11 +31,29 @@ defmodule Corex.Design.Emit.Recipes do
       role_block(grouped, :host_link, link_chrome()),
       role_block(grouped, :host_badge, badge_chrome()),
       role_block(grouped, :error, error_chrome()),
-      disclosure_block(grouped),
-      selection_block(grouped),
       "}\n"
     ]
     |> Enum.join()
+  end
+
+  defp reduced_motion do
+    """
+    @media (prefers-reduced-motion: reduce) {
+      [data-theme] {
+        --duration-fast: 0.01ms;
+        --duration-normal: 0.01ms;
+        --duration-slow: 0.01ms;
+      }
+    }
+
+    @media (prefers-contrast: more) {
+      [data-theme] {
+        --ring-width: 3px;
+        --border-width: 1.5px;
+      }
+    }
+
+    """
   end
 
   defp base_palette([]), do: ""
@@ -70,7 +89,7 @@ defmodule Corex.Design.Emit.Recipes do
       --ctl-bd: var(--color-border);
       --ctl-bg-hover: var(--color-ui-hover);
       --ctl-bg-active: var(--color-ui-active);
-      --ctl-ring: var(--ctl-ink-text, var(--color-ink));
+      --ctl-ring: var(--color-focus);
       --ctl-bg-muted: var(--color-ui-muted);
       --ctl-ink-muted: var(--color-ink-muted);
     }
@@ -85,82 +104,69 @@ defmodule Corex.Design.Emit.Recipes do
 
       selectors ->
         joined = Enum.join(selectors, ",\n")
-        "#{joined} {\n#{chrome}}\n\n"
-    end
-  end
-
-  defp disclosure_block(grouped) do
-    selectors =
-      for role <- [:trigger, :host_trigger],
-          sel <- Map.get(grouped, role, []) do
-        sel
-      end
-
-    case selectors do
-      [] ->
-        ""
-
-      list ->
-        group = ":is(#{Enum.join(list, ", ")})"
 
         """
-        #{group}:is([data-state="open"]) {
-          background-color: var(--ctl-bg-active, var(--color-ui-active));
-          color: var(--ctl-ink, var(--ctl-ink-text, var(--color-ink)));
-          border-color: var(--ctl-bd, var(--color-border));
-        }
-
-        #{group}:is([data-state="open"]):hover,
-        #{group}:is([data-state="open"]):active {
-          background-color: var(--ctl-bg-active, var(--color-ui-active));
-        }
+        #{joined} {
+        #{chrome}#{role_state_rules(role)}}
 
         """
     end
   end
 
-  defp selection_block(grouped) do
-    selectors =
-      for role <- [:trigger, :host_trigger, :control, :item],
-          sel <- Map.get(grouped, role, []) do
-        sel
-      end
+  defp role_state_rules(role) when role in [:trigger, :host_trigger] do
+    disclosure_nested() <> selection_nested()
+  end
 
-    case selectors do
-      [] ->
-        ""
+  defp role_state_rules(role) when role in [:control, :item] do
+    selection_nested()
+  end
 
-      list ->
-        group = ":is(#{Enum.join(list, ", ")})"
-        states = Enum.join(selection_states(), ", ")
-        selected = "#{group}:is(#{states})"
+  defp role_state_rules(_), do: ""
 
-        """
-        #{selected} {
-          background-color: var(--ctl-fill);
-          color: var(--ctl-fill-ink);
-          border-color: transparent;
-        }
+  defp disclosure_nested do
+    """
+      &:is([data-state="open"]) {
+        background-color: var(--ctl-bg-active, var(--color-ui-active));
+        color: var(--ctl-ink, var(--ctl-ink-text, var(--color-ink)));
+        border-color: var(--ctl-bd, var(--color-border));
+      }
 
-        #{selected}:hover,
-        #{selected}[data-highlighted] {
-          background-color: var(--ctl-fill-hover);
-        }
+      &:is([data-state="open"]):hover,
+      &:is([data-state="open"]):active {
+        background-color: var(--ctl-bg-active, var(--color-ui-active));
+      }
 
-        #{selected}:active,
-        #{selected}[data-highlighted]:active {
-          background-color: var(--ctl-fill-active);
-        }
+    """
+  end
 
-        #{selected}:focus-visible,
-        #{selected}[data-highlighted]:not(:hover) {
-          outline: none;
-          box-shadow: inset 0 0 0 2px var(--ctl-fill-ink);
-          background-color: var(--ctl-fill-hover);
-        }
+  defp selection_nested do
+    states = Enum.join(selection_states(), ", ")
 
-        """
-    end
+    """
+      &:is(#{states}) {
+        background-color: var(--ctl-fill);
+        color: var(--ctl-fill-ink);
+        border-color: transparent;
+      }
+
+      &:is(#{states}):hover,
+      &:is(#{states})[data-highlighted] {
+        background-color: var(--ctl-fill-hover);
+      }
+
+      &:is(#{states}):active,
+      &:is(#{states})[data-highlighted]:active {
+        background-color: var(--ctl-fill-active);
+      }
+
+      &:is(#{states}):focus-visible,
+      &:is(#{states})[data-highlighted]:not(:hover) {
+        outline: none;
+        box-shadow: inset 0 0 0 var(--ring-width) var(--ctl-fill-ink);
+        background-color: var(--ctl-fill-hover);
+      }
+
+    """
   end
 
   defp selection_states do
@@ -208,9 +214,9 @@ defmodule Corex.Design.Emit.Recipes do
       gap: var(--ctl-space, var(--spacing-space));
       color: var(--ctl-ink, var(--ctl-ink-text, var(--color-ink)));
       background-color: var(--ctl-bg, var(--color-ui));
-      border: 1px solid var(--ctl-bd, var(--color-border));
+      border: var(--border-width) solid var(--ctl-bd, var(--color-border));
       appearance: none;
-      transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
+      transition: background-color var(--duration-normal) ease, color var(--duration-normal) ease, border-color var(--duration-normal) ease;
     """ <> interactive_idle() <> icon_child()
   end
 
@@ -231,9 +237,9 @@ defmodule Corex.Design.Emit.Recipes do
       gap: var(--ctl-space, var(--spacing-space));
       color: var(--color-ink);
       background-color: var(--color-ui);
-      border: 1px solid var(--color-border);
+      border: var(--border-width) solid var(--color-border);
       appearance: none;
-      transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
+      transition: background-color var(--duration-normal) ease, color var(--duration-normal) ease, border-color var(--duration-normal) ease;
     """ <> neutral_idle() <> icon_child()
   end
 
@@ -252,10 +258,10 @@ defmodule Corex.Design.Emit.Recipes do
       gap: var(--ctl-space, var(--spacing-space));
       color: var(--color-ink);
       background-color: var(--color-ui);
-      border: 1px solid transparent;
+      border: var(--border-width) solid transparent;
       border-radius: var(--radius-none);
       outline: none;
-      transition: background-color 120ms ease, color 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+      transition: background-color var(--duration-normal) ease, color var(--duration-normal) ease, box-shadow var(--duration-normal) ease, border-color var(--duration-normal) ease;
     """ <> neutral_idle() <> item_extras() <> icon_child()
   end
 
@@ -270,7 +276,7 @@ defmodule Corex.Design.Emit.Recipes do
       line-height: var(--ctl-leading, var(--text-base--line-height));
       font-weight: var(--font-weight-normal);
       border-radius: var(--ctl-radius, var(--radius-md));
-      border: 1px solid var(--color-border);
+      border: var(--border-width) solid var(--color-border);
       padding-inline: var(--ctl-space, var(--spacing-space));
       gap: var(--ctl-space, var(--spacing-space));
       min-height: var(--ctl-size, var(--spacing-size));
@@ -279,7 +285,7 @@ defmodule Corex.Design.Emit.Recipes do
       white-space: nowrap;
       color: var(--color-ink);
       background-color: var(--color-ui);
-      transition: background-color 120ms ease, box-shadow 120ms ease;
+      transition: background-color var(--duration-normal) ease, box-shadow var(--duration-normal) ease;
     """ <> input_states() <> icon_child()
   end
 
@@ -304,7 +310,7 @@ defmodule Corex.Design.Emit.Recipes do
       width: 100%;
       padding: var(--ctl-space, var(--spacing-space));
       border-radius: var(--ctl-radius, var(--radius-md));
-      border: 1px solid var(--color-border);
+      border: var(--border-width) solid var(--color-border);
       background-color: var(--color-root);
       color: var(--color-ink);
       box-shadow: var(--shadow-md);
@@ -349,8 +355,8 @@ defmodule Corex.Design.Emit.Recipes do
       gap: var(--ctl-space, var(--spacing-space));
       color: var(--ctl-ink, var(--ctl-ink-text, var(--color-ink)));
       background-color: var(--ctl-bg, var(--color-ui));
-      border: 1px solid var(--ctl-bd, var(--color-border));
-      transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
+      border: var(--border-width) solid var(--ctl-bd, var(--color-border));
+      transition: background-color var(--duration-normal) ease, color var(--duration-normal) ease, border-color var(--duration-normal) ease;
     """ <> interactive_idle() <> icon_child()
   end
 
@@ -382,7 +388,7 @@ defmodule Corex.Design.Emit.Recipes do
 
       &:focus-visible {
         outline: none;
-        box-shadow: inset 0 0 0 2px var(--ctl-ring, var(--color-ink));
+        box-shadow: inset 0 0 0 var(--ring-width) var(--ctl-ring, var(--color-focus));
       }
 
       &:disabled,
@@ -416,7 +422,7 @@ defmodule Corex.Design.Emit.Recipes do
 
       &:focus-visible {
         outline: none;
-        box-shadow: inset 0 0 0 2px var(--color-ink);
+        box-shadow: inset 0 0 0 var(--ring-width) var(--color-focus);
         background-color: var(--color-ui-hover);
       }
 
@@ -444,6 +450,7 @@ defmodule Corex.Design.Emit.Recipes do
       &:focus-within {
         background-color: var(--color-root);
         outline: none;
+        box-shadow: inset 0 0 0 var(--ring-width) var(--color-focus);
       }
 
       &:disabled,
@@ -451,7 +458,7 @@ defmodule Corex.Design.Emit.Recipes do
       &[disabled] {
         color: var(--color-ink-muted);
         background-color: var(--color-ui-muted);
-        opacity: 0.7;
+        opacity: var(--opacity-disabled);
         cursor: not-allowed;
       }
 
@@ -474,7 +481,7 @@ defmodule Corex.Design.Emit.Recipes do
       @media (hover: hover) {
         &[data-highlighted]:not(:hover) {
           outline: none;
-          box-shadow: inset 0 0 0 2px var(--color-ink);
+          box-shadow: inset 0 0 0 var(--ring-width) var(--color-focus);
           background-color: var(--color-ui-hover);
         }
 
@@ -487,14 +494,14 @@ defmodule Corex.Design.Emit.Recipes do
       @media (hover: none) {
         &[data-highlighted] {
           outline: none;
-          box-shadow: inset 0 0 0 2px var(--color-ink);
+          box-shadow: inset 0 0 0 var(--ring-width) var(--color-focus);
           background-color: var(--color-ui-hover);
         }
       }
 
       & [data-part="branch-indicator"],
       & [data-part="item-indicator"] {
-        transition: transform 0.2s ease;
+        transition: transform var(--duration-slow) ease;
       }
 
       & [data-part="branch-indicator"][data-state="open"],
