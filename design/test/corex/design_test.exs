@@ -729,4 +729,55 @@ defmodule Corex.Design.BundleFilterTest do
     assert steps == ~w(none xs sm md lg xl 2xl 3xl 4xl full)
   end
 
+  test "accessibility false emits no preference CSS" do
+    output = build!([components: ~w(button), accessibility: false], "_build/test_a11y_off")
+
+    refute File.exists?(Path.join(output, "preferences.css"))
+    refute File.dir?(Path.join(output, "tokens/preferences"))
+    refute File.read!(Path.join(output, "corex.css")) =~ ~s(@import "./preferences.css";)
+    refute File.read!(Path.join(output, "recipes.css")) =~ ~s([data-motion="reduce"])
+  end
+
+  test "accessibility axes emit only selected preference CSS" do
+    output =
+      build!(
+        [components: ~w(button), accessibility: [:text, :motion, :contrast]],
+        "_build/test_a11y_partial"
+      )
+
+    entry = File.read!(Path.join(output, "corex.css"))
+    assert entry =~ ~s(@import "./preferences.css";)
+
+    prefs = File.read!(Path.join(output, "preferences.css"))
+    assert prefs =~ ~s(@import "./tokens/preferences/text.css";)
+    assert prefs =~ ~s(@import "./tokens/preferences/contrast.css";)
+    assert prefs =~ ~s(@import "./tokens/preferences/motion.css";)
+    refute prefs =~ "cursor.css"
+    refute prefs =~ "focus.css"
+    refute prefs =~ "links.css"
+
+    text = File.read!(Path.join(output, "tokens/preferences/text.css"))
+    assert text =~ ~s([data-text="lg"])
+    assert text =~ "zoom: 1.25;"
+    assert text =~ "@supports not (zoom: 1)"
+    assert text =~ "font-size: 125%;"
+    refute text =~ "theme-text-base"
+    refute text =~ ~s([data-text="xl"])
+
+    text_bridge = File.read!(Path.join(output, "tokens/semantic/text.css"))
+    assert text_bridge =~ ~r/@theme \{/
+    assert text_bridge =~ "--text-base: var(--text-base);"
+    refute text_bridge =~ ~r/@theme inline \{\n  --text-base:/
+
+    contrast = File.read!(Path.join(output, "tokens/preferences/contrast.css"))
+    assert contrast =~ ~s([data-theme="neo"][data-mode="light"][data-contrast="more"])
+    assert contrast =~ "--color-ink:"
+
+    motion = File.read!(Path.join(output, "tokens/preferences/motion.css"))
+    assert motion =~ ~s([data-motion="reduce"])
+
+    recipes = File.read!(Path.join(output, "recipes.css"))
+    refute recipes =~ ~s([data-motion="reduce"])
+    assert recipes =~ "@media (prefers-reduced-motion: reduce)"
+  end
 end

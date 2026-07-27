@@ -36,6 +36,7 @@ defmodule Corex.Design.Tokens.Publish do
     Semantic.write_text_bridge!(output_root)
     Semantic.write_effect_bridge!(output_root)
     write_theme_entries!(output_root)
+    Corex.Design.Emit.Preferences.write!(output_root)
 
     :ok
   end

@@ -22,7 +22,8 @@ defmodule Corex.Design.Config.Resolved do
           modes: term() | nil,
           scales: keyword(),
           components: [String.t()] | nil,
-          semantics: [atom() | String.t()] | nil
+          semantics: [atom() | String.t()] | nil,
+          accessibility: false | true | [atom()]
         }
 
   defstruct output: nil,
@@ -32,7 +33,8 @@ defmodule Corex.Design.Config.Resolved do
             modes: nil,
             scales: [],
             components: nil,
-            semantics: nil
+            semantics: nil,
+            accessibility: false
 
   @doc """
   Builds the resolved config from a keyword list or map.
@@ -49,7 +51,8 @@ defmodule Corex.Design.Config.Resolved do
       modes: Keys.get(config, :modes),
       scales: Keys.get(config, :scales) || [],
       components: Keys.get(config, :components),
-      semantics: Keys.get(config, :semantics)
+      semantics: Keys.get(config, :semantics),
+      accessibility: Keys.get(config, :accessibility, false)
     }
   end
 end

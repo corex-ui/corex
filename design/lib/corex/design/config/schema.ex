@@ -6,6 +6,7 @@ defmodule Corex.Design.Config.Schema do
   alias Corex.Design.Config.Resolved
   alias Corex.Design.Scales, as: ConfiguredScales
   alias Corex.Design.Theme.Validator, as: ThemeValidator
+  alias Corex.Design.Accessibility
 
   @schema NimbleOptions.new!(
             output: [
@@ -38,10 +39,14 @@ defmodule Corex.Design.Config.Schema do
             semantics: [
               doc:
                 "Semantic palette roles to emit (nil = all; structural root/surface/ui/ink always included)"
+            ],
+            accessibility: [
+              doc:
+                "false (default), true (text/focus/links), or axis list: :text :contrast :motion :cursor :focus :links"
             ]
           )
 
-  @known_keys ~w(output default_theme default_mode themes modes scales components semantics)a
+  @known_keys ~w(output default_theme default_mode themes modes scales components semantics accessibility)a
 
   @doc false
   def schema, do: @schema
@@ -65,6 +70,7 @@ defmodule Corex.Design.Config.Schema do
          :ok <- validate_scales(flat.scales),
          :ok <- validate_filter_keys(grouped),
          :ok <- validate_modes(Map.get(grouped, :modes)),
+         :ok <- validate_accessibility(Map.get(grouped, :accessibility)),
          :ok <- validate_themes(flat.themes),
          :ok <- validate_default_theme(flat.default_theme, flat.themes) do
       {:ok, config}
@@ -116,6 +122,35 @@ defmodule Corex.Design.Config.Schema do
     {:error, "config :corex_design, modes: must be a list, got: #{inspect(other)}"}
   end
 
+  defp validate_accessibility(nil), do: :ok
+  defp validate_accessibility(false), do: :ok
+  defp validate_accessibility(true), do: :ok
+
+  defp validate_accessibility(axes) when is_list(axes) do
+    allowed = Accessibility.known_axes()
+    allowed_strings = Enum.map(allowed, &Atom.to_string/1)
+
+    invalid =
+      Enum.reject(axes, fn
+        axis when is_atom(axis) -> axis in allowed
+        axis when is_binary(axis) -> axis in allowed_strings
+        _ -> false
+      end)
+
+    case invalid do
+      [] ->
+        :ok
+
+      _ ->
+        {:error,
+         "config :corex_design, accessibility: must be false, true, or a subset of #{inspect(allowed)}, got invalid #{inspect(invalid)}"}
+    end
+  end
+
+  defp validate_accessibility(other) do
+    {:error,
+     "config :corex_design, accessibility: must be false, true, or an axis list, got: #{inspect(other)}"}
+  end
 
   defp validate_themes(nil), do: :ok
 

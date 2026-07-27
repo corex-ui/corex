@@ -1,6 +1,7 @@
 defmodule Corex.Design.Options do
   @moduledoc false
 
+  alias Corex.Design.Accessibility
   alias Corex.Design.Components
   alias Corex.Design.Config
   alias Corex.Design.Filter
@@ -33,6 +34,10 @@ defmodule Corex.Design.Options do
       "Current modes: #{format_atoms(Theme.modes())}",
       "Current default_mode: #{Theme.default_mode()}",
       "",
+      "Allowed accessibility axes: (accessibility:)",
+      format_atoms(Accessibility.known_axes()),
+      "Current accessibility: #{format_accessibility(Accessibility.axes())}",
+      "",
       "Size steps: (scales / ui-size-*)",
       format_list(Scales.steps(:size)),
       "",
@@ -41,6 +46,9 @@ defmodule Corex.Design.Options do
     ]
     |> Enum.join("\n")
   end
+
+  defp format_accessibility([]), do: "off"
+  defp format_accessibility(axes), do: format_atoms(axes)
 
   defp format_current_components(nil), do: "all"
   defp format_current_components(list), do: format_list(list)

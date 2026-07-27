@@ -28,7 +28,8 @@ defmodule Corex.Design do
       modes: [:light, :dark],
       scales: [],
       components: nil,
-      semantics: nil
+      semantics: nil,
+      accessibility: false
     }
   end
 

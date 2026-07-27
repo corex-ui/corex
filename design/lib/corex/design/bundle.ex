@@ -79,6 +79,8 @@ defmodule Corex.Design.Bundle do
       inspect(themes),
       " modes=",
       inspect(modes),
+      " accessibility=",
+      inspect(Corex.Design.Accessibility.axes()),
       " semantics=",
       inspect(semantics)
     ])
@@ -160,9 +162,17 @@ defmodule Corex.Design.Bundle do
   end
 
   defp write_corex_entry!(output_dir) do
+    prefs =
+      if Corex.Design.Emit.Preferences.entry_import?() do
+        ["./preferences.css"]
+      else
+        []
+      end
+
     paths =
       ["./main.css"] ++
         Enum.map(Theme.themes(), &"./theme/#{&1}.css") ++
+        prefs ++
         ["./recipes.css", "./components.css"]
 
     Write.atomic!(Path.join(output_dir, "corex.css"), [@header, Css.imports(paths)])

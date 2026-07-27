@@ -28,6 +28,22 @@ defmodule Corex.Design.ConfigTest do
       end
     end
 
+    test "accepts accessibility false true and axis lists" do
+      assert :ok = Config.validate!(accessibility: false)
+      assert :ok = Config.validate!(accessibility: true)
+      assert :ok = Config.validate!(accessibility: [:text, :motion])
+    end
+
+    test "reports invalid accessibility axes" do
+      assert_raise ArgumentError, ~r/accessibility/, fn ->
+        Config.validate!(accessibility: [:nope])
+      end
+    end
+
+    test "reports invalid accessibility values" do
+      assert_raise ArgumentError, ~r/accessibility/, fn ->
+        Config.validate!(accessibility: "yes")
+      end
     end
   end
 
