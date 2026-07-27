@@ -22,12 +22,13 @@ defmodule <%= @app_module %>.Mode do
     end
   end
 
+  attr :id, :string, default: "mode-switcher"
   attr :mode, :string, required: true
 
   def mode_toggle(assigns) do
     ~H"""
     <.toggle
-      id="mode-switcher"
+      id={@id}
       class="toggle ui-size-sm shrink-0"
       data-toggle-dual-label
       pressed={@mode == "dark"}

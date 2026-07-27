@@ -119,7 +119,7 @@ defmodule Corex.MCP.Tools.DegradedTest do
     end
 
     test "design_guide accepts specific topic" do
-      for topic <- ~w(setup modifiers theming dark_mode) do
+      for topic <- ~w(setup modifiers theming dark_mode accessibility) do
         case Design.design_guide(%{"topic" => topic}) do
           {:ok, json} ->
             decoded = Corex.MCP.Json.decode!(json)

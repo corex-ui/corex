@@ -42,12 +42,13 @@ defmodule <%= @app_module %>.Theme do
     |> Corex.List.new()
   end
 
+  attr :id, :string, default: "theme-select"
   attr :theme, :string, required: true
 
   def theme_toggle(assigns) do
     ~H"""
     <.select
-      id="theme-select"
+      id={@id}
       class="select ui-size-sm w-auto"
       items={select_items()}
       value={[@theme]}
@@ -57,10 +58,10 @@ defmodule <%= @app_module %>.Theme do
       <:label class="sr-only">Theme</:label>
       <:item :let={item}>{item.label}</:item>
       <:trigger>
-        <.heroicon name="hero-swatch" class="icon" />
+        <.heroicon name="hero-swatch" />
       </:trigger>
       <:item_indicator>
-        <.heroicon name="hero-check" class="icon" />
+        <.heroicon name="hero-check" />
       </:item_indicator>
     </.select>
     """

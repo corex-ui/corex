@@ -381,6 +381,17 @@ defmodule Corex.New.PatchesTest do
       end)
     end
 
+    test "corex_design dep drops only: :dev when a11y: true" do
+      in_tmp(:patch_mix_exs_corex_design_a11y, fn ->
+        File.write!("mix.exs", @mix_exs_with_aliases)
+
+        Patches.patch_mix_exs(File.cwd!(), design: true, a11y: true)
+        body = File.read!("mix.exs")
+        assert body =~ ~r/\{:corex_design,\s*"~> 0.2",\s*runtime:\s*false\}/
+        refute body =~ ~r/\{:corex_design,[^}]*only:\s*:dev\}/
+      end)
+    end
+
     test "skips json_polyfill when dependency is already listed" do
       mix_exs =
         @stock_mix_exs
@@ -468,13 +479,13 @@ defmodule Corex.New.PatchesTest do
     end
   end
 
-  describe "patch_live_view_for_lang/3" do
+  describe "patch_live_view_hooks/3" do
     test "inserts on_mount Hooks.Layout when lang is true" do
       in_tmp(:patch_live_view_lang, fn ->
         File.mkdir_p!("lib")
         File.write!("lib/my_app_web.ex", @stock_web_with_live_view)
 
-        Patches.patch_live_view_for_lang(File.cwd!(), MyAppWeb, lang: true)
+        Patches.patch_live_view_hooks(File.cwd!(), MyAppWeb, lang: true)
         body = File.read!("lib/my_app_web.ex")
 
         assert body =~ "use Phoenix.LiveView"
@@ -488,8 +499,8 @@ defmodule Corex.New.PatchesTest do
         File.mkdir_p!("lib")
         File.write!("lib/my_app_web.ex", @stock_web_with_live_view)
 
-        Patches.patch_live_view_for_lang(File.cwd!(), MyAppWeb, lang: true)
-        Patches.patch_live_view_for_lang(File.cwd!(), MyAppWeb, lang: true)
+        Patches.patch_live_view_hooks(File.cwd!(), MyAppWeb, lang: true)
+        Patches.patch_live_view_hooks(File.cwd!(), MyAppWeb, lang: true)
 
         body = File.read!("lib/my_app_web.ex")
 
@@ -502,7 +513,7 @@ defmodule Corex.New.PatchesTest do
         File.mkdir_p!("lib")
         File.write!("lib/my_app_web.ex", @stock_web_with_live_view)
 
-        Patches.patch_live_view_for_lang(File.cwd!(), MyAppWeb, [])
+        Patches.patch_live_view_hooks(File.cwd!(), MyAppWeb, [])
         body = File.read!("lib/my_app_web.ex")
         assert body == @stock_web_with_live_view
       end)
@@ -530,7 +541,7 @@ defmodule Corex.New.PatchesTest do
         File.mkdir_p!("lib")
         File.write!("lib/my_app_web.ex", with_option)
 
-        Patches.patch_live_view_for_lang(File.cwd!(), MyAppWeb, lang: true)
+        Patches.patch_live_view_hooks(File.cwd!(), MyAppWeb, lang: true)
         body = File.read!("lib/my_app_web.ex")
 
         assert body =~ "use Phoenix.LiveView\n"
@@ -621,6 +632,111 @@ defmodule Corex.New.PatchesTest do
 
         assert body =~ "use Corex"
         assert body =~ "path_prefixes: [{MyAppWeb.Locale, :current, []}]"
+      end)
+    end
+
+    test "removes CoreComponents import" do
+      web = """
+      defmodule MyAppWeb do
+        defp html_helpers do
+          quote do
+            use Gettext, backend: MyAppWeb.Gettext
+            import Phoenix.HTML
+            # Core UI components
+            import MyAppWeb.CoreComponents
+            alias Phoenix.LiveView.JS
+          end
+        end
+      end
+      """
+
+      in_tmp(:patch_web_module_core_components, fn ->
+        File.mkdir_p!("lib")
+        File.write!("lib/my_app_web.ex", web)
+
+        Patches.patch_web_module(File.cwd!(), MyAppWeb)
+        body = File.read!("lib/my_app_web.ex")
+        assert body =~ "use Corex"
+        refute body =~ "CoreComponents"
+        refute body =~ "Core UI components"
+      end)
+    end
+  end
+
+  describe "strip daisyUI helpers" do
+    @daisy_mix_exs """
+    defmodule MyApp.MixProject do
+      use Mix.Project
+
+      def project do
+        [app: :my_app, version: "0.1.0", deps: deps()]
+      end
+
+      defp deps do
+        [
+          {:phoenix, "~> 1.8.1"},
+          {:daisyui,
+           github: "saadeghi/daisyui",
+           tag: "v5.5.20",
+           sparse: "packages/bundle",
+           app: false,
+           compile: false,
+           depth: 1},
+          {:jason, "~> 1.2"}
+        ]
+      end
+    end
+    """
+
+    test "patch_mix_exs removes daisyui dep" do
+      in_tmp(:patch_mix_strip_daisy, fn ->
+        File.write!("mix.exs", @daisy_mix_exs)
+        Patches.patch_mix_exs(File.cwd!(), [])
+        body = File.read!("mix.exs")
+        refute body =~ "{:daisyui"
+        assert body =~ "{:corex,"
+        assert body =~ "{:jason,"
+      end)
+    end
+
+    test "remove_daisyui_vendor! deletes vendor plugins" do
+      in_tmp(:remove_daisy_vendor, fn ->
+        File.mkdir_p!("assets/vendor")
+        File.write!("assets/vendor/daisyui.js", "export default {}")
+        File.write!("assets/vendor/daisyui-theme.js", "export default {}")
+        File.write!("assets/vendor/heroicons.js", "export default {}")
+
+        Patches.remove_daisyui_vendor!(File.cwd!())
+        refute File.exists?("assets/vendor/daisyui.js")
+        refute File.exists?("assets/vendor/daisyui-theme.js")
+        assert File.exists?("assets/vendor/heroicons.js")
+      end)
+    end
+
+    test "patch_agents_md rewrites daisyUI guidance" do
+      in_tmp(:patch_agents_md, fn ->
+        File.write!(
+          "AGENTS.md",
+          """
+          - **Always** manually write your own tailwind-based components instead of using daisyUI for a unique, world-class design
+          """
+        )
+
+        Patches.patch_agents_md(File.cwd!())
+        body = File.read!("AGENTS.md")
+        refute body =~ "daisyUI"
+        assert body =~ "Prefer Corex components"
+        assert body =~ "corex.gen"
+      end)
+    end
+
+    test "remove_core_components! deletes the module file" do
+      in_tmp(:remove_core_components, fn ->
+        File.mkdir_p!("lib/my_app_web/components")
+        File.write!("lib/my_app_web/components/core_components.ex", "defmodule MyAppWeb.CoreComponents do\nend\n")
+
+        Patches.remove_core_components!(File.cwd!(), MyAppWeb, otp_app: :my_app)
+        refute File.exists?("lib/my_app_web/components/core_components.ex")
       end)
     end
   end
@@ -718,14 +834,17 @@ defmodule Corex.New.PatchesTest do
       end)
     end
 
-    test "does not modify router when no feature flags" do
+    test "leaves router unchanged when no feature flags" do
       in_tmp(:patch_router_noop, fn ->
         File.mkdir_p!("lib/my_app_web")
         File.write!("lib/my_app_web/router.ex", @stock_router_ex)
 
         Patches.patch_router(File.cwd!(), MyAppWeb, [])
         body = File.read!("lib/my_app_web/router.ex")
-        assert body == @stock_router_ex
+        refute body =~ ~s(get "/design", PageController, :design)
+        refute body =~ ~s(get "/guides", PageController, :guides)
+        refute body =~ "Plugs.Mode"
+        refute body =~ "scope \"/:locale\""
       end)
     end
   end
@@ -942,6 +1061,26 @@ defmodule Corex.New.PatchesTest do
       end)
     end
 
+    test "adds config :corex generators with a11y layout key" do
+      in_tmp(:patch_config_corex_generators_a11y, fn ->
+        File.mkdir_p!("config")
+        File.write!("config/config.exs", @stock_config_exs)
+
+        Patches.patch_config_exs(
+          File.cwd!(),
+          otp_app: :my_app,
+          a11y: true,
+          design: true
+        )
+
+        body = File.read!("config/config.exs")
+        assert body =~ "config :corex"
+        assert body =~ "layout: [a11y: true]"
+        assert body =~ "accessibility: [:text, :focus, :links]"
+        assert body =~ "toggle-group"
+      end)
+    end
+
     test "adds config :corex_design when design: true" do
       in_tmp(:patch_config_corex_design_build, fn ->
         File.mkdir_p!("config")
@@ -951,12 +1090,34 @@ defmodule Corex.New.PatchesTest do
         body = File.read!("config/config.exs")
         assert body =~ "config :corex_design"
         assert body =~ ~s(output: "assets/corex")
-        assert body =~ ~r/semantics: nil\n\nimport_config/
-        refute body =~ ~r/semantics: nil,\n/
+        assert body =~ "default_theme: :neo"
+        assert body =~ "themes: [:neo]"
+        assert body =~ ~r/semantics: \[:accent, :brand, :alert\]\n\nimport_config/
+        refute body =~ ~r/semantics: \[:accent, :brand, :alert\],\n/
 
         Patches.patch_config_exs(File.cwd!(), otp_app: :my_app, design: true)
         body2 = File.read!("config/config.exs")
         assert Regex.scan(~r/config :corex_design/, body2) |> length() == 1
+      end)
+    end
+
+    test "design config uses resolved themes when theme: true" do
+      in_tmp(:patch_config_corex_design_themes, fn ->
+        File.mkdir_p!("config")
+        File.write!("config/config.exs", @stock_config_exs)
+
+        Patches.patch_config_exs(
+          File.cwd!(),
+          otp_app: :my_app,
+          design: true,
+          theme: true,
+          themes: ["neo", "uno", "duo", "leo"],
+          default_theme: "neo"
+        )
+
+        body = File.read!("config/config.exs")
+        assert body =~ "default_theme: :neo"
+        assert body =~ "themes: [:neo, :uno, :duo, :leo]"
       end)
     end
   end
@@ -1032,7 +1193,7 @@ defmodule Corex.New.PatchesTest do
 
         Patches.patch_page_controller_test(File.cwd!(), MyAppWeb)
         body = File.read!(path)
-        assert body =~ "Corex for Phoenix"
+        assert body =~ "The Phoenix UI"
       end)
     end
   end

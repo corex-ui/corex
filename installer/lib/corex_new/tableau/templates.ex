@@ -18,6 +18,7 @@ defmodule Corex.New.Tableau.Templates do
     md_ex_converter: "corex_tableau/lib/app/md_ex_converter.ex.eex",
     theme_module: "corex_tableau/lib/app/theme.ex.eex",
     mode_module: "corex_tableau/lib/app/mode.ex.eex",
+    accessibility_module: "corex_tableau/lib/app/accessibility.ex.eex",
     gettext_module: "corex_tableau/lib/app/gettext.ex.eex",
     gettext_sigil_module: "corex_tableau/lib/app/gettext_sigil.ex.eex",
     locale_module: "corex_tableau/lib/app/locale.ex.eex",

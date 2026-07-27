@@ -354,10 +354,24 @@ defmodule Corex.Integration.CodeGeneratorCase do
       refute c =~ ~s(@import "../corex/components.css";)
       refute c =~ "toggle-group.css"
       refute c =~ "tags-input.css"
+      refute c =~ "corex-base.css"
     end)
 
     assert_file(app_css, fn c ->
       refute c =~ ~r/@plugin\s+["'][^"']*vendor\/daisyui/
+    end)
+
+    assert_file(Path.join(base, "mix.exs"), fn c ->
+      refute c =~ "{:daisyui"
+    end)
+
+    refute_file(Path.join([base, "assets", "vendor", "daisyui.js"]))
+    refute_file(Path.join([base, "assets", "vendor", "daisyui-theme.js"]))
+    refute_file(Path.join([base, "lib", web, "components", "core_components.ex"]))
+
+    assert_file(Path.join(base, "lib/#{web}.ex"), fn c ->
+      assert c =~ "use Corex"
+      refute c =~ "CoreComponents"
     end)
 
     design_dir = Path.join([base, "assets", "corex"])
@@ -422,7 +436,7 @@ defmodule Corex.Integration.CodeGeneratorCase do
     assert_file(Path.join([base, "priv/gettext/fr/LC_MESSAGES/default.po"]))
 
     home = Path.join([base, "lib", web, "controllers", "page_html", "home.html.heex"])
-    assert_file(home, ~s(~t"Corex for Phoenix"))
+    assert_file(home, ~s(~t"The Phoenix UI with a"))
 
     layouts = Path.join([base, "lib", web, "components", "layouts.ex"])
     assert_file(layouts, ~s(~t"Language"))
@@ -456,6 +470,15 @@ defmodule Corex.Integration.CodeGeneratorCase do
     assert_file(app_css, fn c ->
       refute c =~ ~s(@import "../corex/)
       refute c =~ ~s(@import '../corex/)
+      assert c =~ ~s(@import "./corex-base.css")
+    end)
+
+    assert_file(Path.join([base, "assets", "css", "corex-base.css"]))
+    refute_file(Path.join([base, "lib", web, "components", "core_components.ex"]))
+
+    assert_file(Path.join(base, "lib/#{web}.ex"), fn c ->
+      assert c =~ "use Corex"
+      refute c =~ "CoreComponents"
     end)
 
     home = Path.join([base, "lib", web, "controllers", "page_html", "home.html.heex"])
@@ -488,14 +511,19 @@ defmodule Corex.Integration.CodeGeneratorCase do
     layouts = Path.join([base, "lib", web, "components", "layouts.ex"])
 
     assert_file(layouts, fn c ->
-      assert c =~ ~r/def\s+app\b[\s\S]*?sticky top-0 z-10/,
+      assert c =~ ~r/def\s+app\b[\s\S]*?sticky top-0 z-20/,
              "Layouts.app missing Tailwind header shell"
 
-      assert c =~ ~r/def\s+app\b[\s\S]*?border-b border-border bg-layer/,
+      assert c =~ ~r/def\s+app\b[\s\S]*?border-b border-border bg-surface/,
              "Layouts.app missing header border styling"
 
-      assert c =~ ~r/def\s+app\b[\s\S]*?border-t border-border bg-layer/,
+      assert c =~ ~r/def\s+app\b[\s\S]*?border-t border-border bg-surface/,
              "Layouts.app missing footer shell"
+
+      assert c =~ ~s(id="site-nav-dialog")
+      assert c =~ "Components"
+      assert c =~ "Hexdocs"
+      refute c =~ ~S[~p"/design"]
     end)
   end
 end

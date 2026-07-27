@@ -23,6 +23,7 @@ defmodule Mix.Tasks.Corex.New do
   * **`--tailwind`** / **`--no-tailwind`**  -  Tailwind in the generated Phoenix app defaults **on**. **`--no-tailwind`** is forwarded to **`phx.new`** only together with **`--no-design`**. If **`--design`** is on, **`--no-tailwind` is ignored** (Corex design CSS expects Tailwind).
   * **`--mode`**  -  plugs, mode toggle, root-layout bridge for light/dark. Implies **`--design`**.
   * **`--theme`**  -  themes (Neo/Uno/Duo/Leo), plugs, theme toggle, layout bridge. Implies **`--design`**.
+  * **`--a11y`**  -  preference axes (text, contrast, motion, cursor, focus, links), plug, LiveView hook, root-layout bridge, panel UI. Default **off**. Implies **`--design`**.
   * **`--lang`**  -  Localize + Gettext, path plug, locale scope helpers, `language_switch`.
   * **`--mcp`** / **`--no-mcp`**  -  when **`--mcp`** (default), adds `{:corex_mcp, "~> 0.2", only: [:dev, :test]}` and `plug Corex.MCP` on the endpoint in `:dev` / `:test` after `Plug.Static`.
   * **`--dev PATH`**  -  `{:corex, path: PATH}`, `{:corex_design, path: PATH/design}`, and relative `corex.mjs` import when building JS.
@@ -54,6 +55,7 @@ defmodule Mix.Tasks.Corex.New do
 
       mix corex.new hello_world
       mix corex.new my_app --mode --theme --lang
+      mix corex.new my_app --mode --theme --a11y
       mix corex.new my_app --no-design --no-tailwind
       mix corex.new my_app --dev ../corex
 
@@ -76,6 +78,7 @@ defmodule Mix.Tasks.Corex.New do
     design: :boolean,
     mode: :boolean,
     theme: :boolean,
+    a11y: :boolean,
     lang: :boolean,
     ecto: :boolean,
     app: :string,
@@ -114,6 +117,8 @@ defmodule Mix.Tasks.Corex.New do
       |> Keyword.put_new(:lang, false)
       |> Keyword.put_new(:mcp, true)
       |> Keyword.put_new(:theme, false)
+      |> Keyword.put_new(:a11y, false)
+      |> Keyword.put_new(:mode, false)
       |> Keyword.put_new(:design, true)
       |> Keyword.put_new(:tailwind, true)
       |> Cli.maybe_auto_enable_design()

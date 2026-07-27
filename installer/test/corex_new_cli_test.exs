@@ -61,6 +61,12 @@ defmodule Corex.New.CliTest do
   end
 
   describe "validate_corex_flags!/1 extra branches" do
+    test "rejects a11y without design when design is explicitly false" do
+      assert_raise Mix.Error, ~r/--a11y requires design/, fn ->
+        Cli.validate_corex_flags!(a11y: true, design: false)
+      end
+    end
+
     test "rejects mode without design when design is explicitly false" do
       assert_raise Mix.Error, ~r/--mode requires design/, fn ->
         Cli.validate_corex_flags!(mode: true, design: false)
@@ -87,7 +93,7 @@ defmodule Corex.New.CliTest do
 
       assert_received {:mix_shell, :info,
                        [
-                         "* Corex: enabling --design because --mode/--theme/--lang was set; pass --no-design to opt out."
+                         "* Corex: enabling --design because --mode/--theme/--lang/--a11y was set; pass --no-design to opt out."
                        ]}
     end
 

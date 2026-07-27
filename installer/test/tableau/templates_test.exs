@@ -9,6 +9,8 @@ defmodule Corex.New.Tableau.TemplatesTest do
     assert :root_layout in keys
     assert :post_layout in keys
     assert :home_page in keys
+    refute :design_page in keys
+    refute :guides_page in keys
     assert :blog_index_page in keys
     assert :not_found_page in keys
     assert :config_module in keys
@@ -17,6 +19,7 @@ defmodule Corex.New.Tableau.TemplatesTest do
     assert :md_ex_converter in keys
     assert :theme_module in keys
     assert :mode_module in keys
+    assert :accessibility_module in keys
     assert :root_index_page in keys
     assert :gettext_module in keys
     assert :gettext_sigil_module in keys
@@ -30,7 +33,7 @@ defmodule Corex.New.Tableau.TemplatesTest do
     assert :mix_exs in keys
     assert :sample_post in keys
     assert :gen_post_task in keys
-    assert length(keys) == 24
+    assert length(keys) == 25
   end
 
   @base_assigns [
@@ -38,13 +41,14 @@ defmodule Corex.New.Tableau.TemplatesTest do
     otp_app: :my_blog,
     mode: false,
     theme: false,
+    a11y: false,
     lang: false,
     mcp: true,
     design: true,
     themes: ["neo"],
     default_theme: "neo",
     components: ~w(
-      toast layout-heading typo icon link button button-group dialog password-input
+      toast layout-heading typo icon link button dialog password-input
       scrollbar checkbox data-list data-table date-picker native-input number-input
       select toggle toggle-group
     )a,
@@ -57,7 +61,7 @@ defmodule Corex.New.Tableau.TemplatesTest do
   @lang_assigns Keyword.merge(@base_assigns,
                   lang: true,
                   components: ~w(
-                    toast layout-heading typo icon link button button-group dialog password-input
+                    toast layout-heading typo icon link button dialog password-input
                     scrollbar checkbox data-list data-table date-picker native-input number-input
                     select toggle toggle-group
                   )a
@@ -69,7 +73,13 @@ defmodule Corex.New.Tableau.TemplatesTest do
       assert out =~ "defmodule MyBlog.RootLayout do"
       assert out =~ "use Tableau.Layout"
       assert out =~ "use Corex"
+      assert out =~ ~s(id="site-nav-dialog")
+      assert out =~ "Components"
+      assert out =~ "Hexdocs"
       assert out =~ "Blog"
+      assert out =~ "corex.gigalixirapp.com"
+      refute out =~ ~S[to={"/design"}]
+      refute out =~ ~S[to={"/guides"}]
       assert out =~ "<.toast_group"
       assert out =~ "<.toast_client_error"
     end
@@ -81,6 +91,10 @@ defmodule Corex.New.Tableau.TemplatesTest do
       assert out =~ "MyBlog.Theme.head_script()"
       assert out =~ "MyBlog.Mode.mode_toggle"
       assert out =~ "MyBlog.Theme.theme_toggle"
+      assert out =~ ~s(id="theme-select")
+      assert out =~ ~s(id="theme-select-mobile")
+      assert out =~ ~s(id="mode-switcher")
+      assert out =~ ~s(id="mode-switcher-mobile")
     end
 
     test "omits theme/mode when disabled" do
@@ -91,13 +105,14 @@ defmodule Corex.New.Tableau.TemplatesTest do
       refute out =~ "theme_toggle"
     end
 
-    test "includes language select and locale attrs when lang is on" do
+    test "includes language select under footer brand when lang is on" do
       out = Templates.root_layout(@lang_assigns)
       assert out =~ "data-locale="
       assert out =~ "data-locales="
       assert out =~ "id=\"corex-language-switch\""
       assert out =~ "MyBlog.Locale"
       assert out =~ "corex:set-locale"
+      assert out =~ "Open source. MIT License."
     end
 
     test "omits data-theme when design is off" do
@@ -118,18 +133,26 @@ defmodule Corex.New.Tableau.TemplatesTest do
   end
 
   describe "home_page/1" do
-    test "renders a home page with layout_heading" do
+    test "renders a home page with hero and accordion API" do
       out = Templates.home_page(@base_assigns)
       assert out =~ "defmodule MyBlog.HomePage do"
-      assert out =~ "Corex for Tableau"
-      assert out =~ "<.layout_heading"
+      assert out =~ "The Phoenix UI"
+      assert out =~ "real API"
+      assert out =~ ~s(id="home-accordion")
+      assert out =~ "Corex.Accordion.set_value"
       assert out =~ "permalink: \"/\""
+      refute out =~ "<.layout_heading"
+      refute out =~ ~S[to="/design"]
+      refute out =~ ~S[to="/guides"]
+      refute out =~ "<.button"
     end
 
     test "emits Module.create per locale when lang is on" do
       out = Templates.home_page(@lang_assigns)
       assert out =~ "Module.create"
       assert out =~ ~S[permalink = "/#{locale}/"]
+      assert out =~ "The Phoenix UI"
+      refute out =~ "Locale.swap_path(\"/design\""
       refute out =~ ~S[permalink: "/"]
     end
   end
@@ -177,7 +200,7 @@ defmodule Corex.New.Tableau.TemplatesTest do
     test "omits corex import when design is off" do
       out = Templates.site_css(Keyword.put(@base_assigns, :design, false))
       refute out =~ "corex.css"
-      assert out =~ "@import \"tailwindcss\""
+      assert out =~ ~s(@import "./corex-base.css")
     end
 
     test "includes dark mode variant when mode is on" do
@@ -189,30 +212,42 @@ defmodule Corex.New.Tableau.TemplatesTest do
   describe "site_js/1" do
     test "imports corex hooks and creates LiveSocket" do
       out = Templates.site_js(@base_assigns)
-      assert out =~ "corex/hooks"
+      assert out =~ ~S[import {Toast} from "corex/toast"]
+      assert out =~ ~S[import {Dialog} from "corex/dialog"]
+      assert out =~ ~S[import {Accordion} from "corex/accordion"]
       assert out =~ "LiveSocket"
-      assert out =~ "Toast"
+      assert out =~ "Toast,"
+      assert out =~ "Dialog,"
+      assert out =~ "Accordion,"
+      assert out =~ "disableDebug"
+      refute out =~ "longPollFallbackMs"
+      refute out =~ "corex/hooks"
     end
 
     test "includes Select and Toggle hooks when theme and mode are on" do
       assigns = Keyword.merge(@base_assigns, mode: true, theme: true)
       out = Templates.site_js(assigns)
-      assert out =~ "Select"
-      assert out =~ "Toggle"
+      assert out =~ ~S[import {Select} from "corex/select"]
+      assert out =~ ~S[import {Toggle} from "corex/toggle"]
+      assert out =~ "Select,"
+      assert out =~ "Toggle,"
       assert out =~ "phx:set-mode"
       assert out =~ "phx:set-theme"
     end
 
     test "omits Select/Toggle when mode and theme are off" do
       out = Templates.site_js(@base_assigns)
-      refute out =~ "Select:"
-      refute out =~ "Toggle:"
+      refute out =~ ~S[import {Select}]
+      refute out =~ ~S[import {Toggle}]
+      refute out =~ "Select,"
+      refute out =~ "Toggle,"
     end
 
     test "imports locale.js and Select when lang is on" do
       out = Templates.site_js(@lang_assigns)
       assert out =~ ~S[import "./locale.js"]
-      assert out =~ "Select:"
+      assert out =~ ~S[import {Select} from "corex/select"]
+      assert out =~ "Select,"
     end
   end
 
@@ -332,6 +367,35 @@ defmodule Corex.New.Tableau.TemplatesTest do
       assert out =~ "head_script"
       assert out =~ "mode_toggle"
       assert out =~ "prefers-color-scheme"
+    end
+
+    test "accessibility module derives bridge from Accessibility and localizes with lang" do
+      out = Templates.accessibility_module(Keyword.put(@base_assigns, :a11y, true))
+      assert out =~ "defmodule MyBlog.Accessibility do"
+      assert out =~ "Accessibility.axes()"
+      assert out =~ "Jason.encode!"
+      assert out =~ "accessibility_panel"
+      assert out =~ "p-0! [--ctl-text:var(--ctl-size)]"
+      assert out =~ ~s(viewBox="0 0 512 512")
+      refute out =~ "hero-adjustments-horizontal"
+      refute out =~ ~s(const a11yAxes = ["text")
+
+      lang_out =
+        Templates.accessibility_module(
+          Keyword.merge(@base_assigns, a11y: true, lang: true)
+        )
+
+      assert lang_out =~ "GettextSigil"
+      assert lang_out =~ ~s(~t"Zoom")
+      assert lang_out =~ ~s(~t"Reset")
+    end
+
+    test "config.exs uses assigns for theme list and modes" do
+      out = Templates.config_exs(@base_assigns)
+      assert out =~ "default_theme: :neo"
+      assert out =~ "themes: [:neo]"
+      assert out =~ "modes: [:light, :dark]"
+      refute out =~ "themes: nil"
     end
   end
 end

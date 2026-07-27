@@ -39,13 +39,67 @@ defmodule Corex.New.Patches do
       |> maybe_ensure_mcp_dep(opts)
       |> maybe_add_design_aliases(opts)
       |> maybe_ensure_json_polyfill_dep(opts)
+      |> strip_daisyui_dep()
 
     write_if_changed!(path, content, updated)
   end
 
   @doc """
-  Inserts `use Corex` inside the `html_helpers/0` quote block of `<app>_web.ex`.
-  When `:lang` is true, also adds `path_prefixes` on `Phoenix.VerifiedRoutes`. Idempotent.
+  Deletes stock Phoenix daisyUI vendor plugins when present. Idempotent.
+  """
+  def remove_daisyui_vendor!(install_dir) do
+    for name <- ["daisyui.js", "daisyui-theme.js"] do
+      path = Path.join([install_dir, "assets", "vendor", name])
+
+      if File.exists?(path) do
+        Mix.shell().info([:green, "* removing ", :reset, Path.relative_to_cwd(path)])
+        File.rm!(path)
+      end
+    end
+
+    :ok
+  end
+
+  @doc """
+  Rewrites AGENTS.md daisyUI guidance to Corex Design / corex.gen. Idempotent.
+  """
+  def patch_agents_md(install_dir) do
+    path = Path.join(install_dir, "AGENTS.md")
+
+    if File.exists?(path) do
+      content = File.read!(path)
+      updated = rewrite_agents_daisy_guidance(content)
+      write_if_changed!(path, content, updated)
+    else
+      :ok
+    end
+  end
+
+  @doc """
+  Deletes Phoenix `core_components.ex` when present. Idempotent.
+  """
+  def remove_core_components!(install_dir, web_module, opts \\ []) do
+    path =
+      Path.join([
+        install_dir,
+        "lib",
+        web_lib_dir(web_module, opts),
+        "components",
+        "core_components.ex"
+      ])
+
+    if File.exists?(path) do
+      Mix.shell().info([:green, "* removing ", :reset, Path.relative_to_cwd(path)])
+      File.rm!(path)
+    end
+
+    :ok
+  end
+
+  @doc """
+  Inserts `use Corex` inside the `html_helpers/0` quote block of `<app>_web.ex`,
+  removes `import <Web>.CoreComponents`, and when `:lang` is true adds
+  `path_prefixes` on `Phoenix.VerifiedRoutes`. Idempotent.
   """
   def patch_web_module(install_dir, web_module, opts \\ []) do
     path = web_module_path(install_dir, web_module, opts)
@@ -54,20 +108,26 @@ defmodule Corex.New.Patches do
     updated =
       content
       |> ensure_use_corex_in_html_helpers(path)
+      |> remove_core_components_import(web_module)
       |> maybe_patch_verified_routes_for_lang(web_module, opts)
 
     write_if_changed!(path, content, updated)
   end
 
   @doc """
-  When `:lang` is true, inserts `on_mount Web.Hooks.Layout` on the line after the first bare `use Phoenix.LiveView`.
-  Normalizes `use Phoenix.LiveView, on_mount: [Web.Hooks.Layout]` to that shape. Idempotent.
+  When `:lang` or `:a11y` is true, inserts matching `on_mount` hooks after the first bare
+  `use Phoenix.LiveView`. Idempotent.
   """
-  def patch_live_view_for_lang(install_dir, web_module, opts) do
-    if Keyword.get(opts, :lang, false) do
+  def patch_live_view_hooks(install_dir, web_module, opts) do
+    if Keyword.get(opts, :lang, false) or Keyword.get(opts, :a11y, false) do
       path = web_module_path(install_dir, web_module, opts)
       content = File.read!(path)
-      updated = maybe_insert_hooks_layout_on_mount(content, web_module)
+
+      updated =
+        content
+        |> maybe_insert_on_mount(web_module, :Hooks, :Layout, opts[:lang])
+        |> maybe_insert_on_mount(web_module, :Hooks, :Accessibility, opts[:a11y])
+
       write_if_changed!(path, content, updated)
     else
       :ok
@@ -136,6 +196,7 @@ defmodule Corex.New.Patches do
       |> maybe_insert_localize_plugs(web_module, opts, path)
       |> maybe_insert_mode_plug(web_module, opts, path)
       |> maybe_insert_theme_plug(web_module, opts, path)
+      |> maybe_insert_accessibility_plug(web_module, opts, path)
       |> maybe_duplicate_locale_scope(web_module, opts)
 
     write_if_changed!(path, content, updated)
@@ -238,7 +299,7 @@ defmodule Corex.New.Patches do
     if File.exists?(path) do
       content = File.read!(path)
       old = "Peace of mind from prototype to production"
-      new = "Corex for Phoenix"
+      new = "The Phoenix UI"
 
       updated =
         if String.contains?(content, old), do: String.replace(content, old, new), else: content
@@ -462,16 +523,22 @@ defmodule Corex.New.Patches do
         content
 
       true ->
+        themes = Keyword.get(opts, :themes, ["neo"])
+        default_theme = Keyword.get(opts, :default_theme, List.first(themes) || "neo")
+
+        themes_inline =
+          "[" <> Enum.map_join(themes, ", ", &":#{&1}") <> "]"
+
         block = """
         config :corex_design,
           output: "assets/corex",
-          default_theme: :uno,
+          default_theme: :#{default_theme},
           default_mode: :light,
-          themes: [:uno],
+          themes: #{themes_inline},
           modes: [:light, :dark],
           scales: [],
           components: #{inspect(installer_components(opts))},
-          semantics: nil
+          semantics: [:accent, :brand, :alert]#{if Keyword.get(opts, :a11y, false), do: ",\n          accessibility: [:text, :focus, :links]", else: ""}
 
         """
 
@@ -548,8 +615,8 @@ defmodule Corex.New.Patches do
     end
   end
 
-  defp maybe_insert_hooks_layout_on_mount(content, web_module) do
-    hook_mod = Module.concat([web_module, :Hooks, :Layout])
+  defp maybe_insert_on_mount(content, web_module, namespace, name, true) do
+    hook_mod = Module.concat([web_module, namespace, name])
     mod_txt = inspect(hook_mod)
     standalone = "on_mount #{mod_txt}"
 
@@ -573,6 +640,8 @@ defmodule Corex.New.Patches do
     end
   end
 
+  defp maybe_insert_on_mount(content, _web_module, _namespace, _name, _), do: content
+
   defp ensure_use_corex_in_html_helpers(content, path) do
     cond do
       Regex.match?(~r/^\s*use\s+Corex\b/m, content) ->
@@ -592,6 +661,48 @@ defmodule Corex.New.Patches do
           path,
           "a `defp html_helpers do quote do` block. Without it no Corex component is imported into your templates"
         )
+    end
+  end
+
+  defp remove_core_components_import(content, web_module) do
+    web = Regex.escape(inspect(web_module))
+
+    content
+    |> String.replace(~r/^\s*#\s*Core UI components\s*\n/m, "")
+    |> String.replace(~r/^\s*import\s+#{web}\.CoreComponents\s*\n/m, "")
+  end
+
+  defp strip_daisyui_dep(content) do
+    Regex.replace(
+      ~r/\n[ \t]*\{:daisyui,\n(?:[ \t]+[^\n]+\n)*?[ \t]+[^\n]+\},?/u,
+      content,
+      "\n"
+    )
+  end
+
+  defp rewrite_agents_daisy_guidance(content) do
+    daisy_bullet =
+      "**Always** manually write your own tailwind-based components instead of using daisyUI for a unique, world-class design"
+
+    corex_bullet =
+      "**Prefer Corex components and Corex Design tokens** (`use Corex`, `ui-*` modifiers). Scaffold with `mix corex.gen.html` / `mix corex.gen.live` instead of `mix phx.gen.*`"
+
+    cond do
+      String.contains?(content, corex_bullet) ->
+        content
+
+      String.contains?(content, daisy_bullet) ->
+        String.replace(content, daisy_bullet, corex_bullet)
+
+      String.contains?(content, "daisyUI") ->
+        String.replace(
+          content,
+          ~r/^- \*\*Always\*\*.*daisyUI.*$/m,
+          "- #{corex_bullet}"
+        )
+
+      true ->
+        content
     end
   end
 
@@ -657,6 +768,21 @@ defmodule Corex.New.Patches do
 
       true ->
         insert_after_localize_or_flash(content, line, path, "wire up the theme plug")
+    end
+  end
+
+  defp maybe_insert_accessibility_plug(content, web_module, opts, path) do
+    line = "    plug " <> inspect(web_module) <> ".Plugs.Accessibility\n"
+
+    cond do
+      not Keyword.get(opts, :a11y, false) ->
+        content
+
+      String.contains?(content, String.trim_trailing(line)) ->
+        content
+
+      true ->
+        insert_after_localize_or_flash(content, line, path, "wire up the accessibility plug")
     end
   end
 
@@ -740,7 +866,8 @@ defmodule Corex.New.Patches do
   @generators_layout_keys [
     {:locale, :lang},
     {:mode, :mode},
-    {:theme, :theme}
+    {:theme, :theme},
+    {:a11y, :a11y}
   ]
 
   defp maybe_add_corex_generators_config(content, opts) do

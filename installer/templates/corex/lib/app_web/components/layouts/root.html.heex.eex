@@ -5,6 +5,8 @@
 <% else %> lang="en"<% end %><%= if @design do %>
   data-theme="<%= @default_theme %>"
   data-mode="light"
+<% end %><%= if @a11y do %>
+  {a11y_data_attrs(assigns[:a11y])}
 <% end %>>
   <head>
     <meta charset="utf-8" />
@@ -16,7 +18,7 @@
     <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />
     <script defer phx-track-static type="module" src={~p"/assets/js/app.js"}>
     </script>
-    <%= if @mode or @theme do %>
+    <%= if @mode or @theme or @a11y do %>
     <script>
       (() => {<%= if @mode do %>
         const getSystemMode = () =>
@@ -75,11 +77,101 @@
           const theme = Array.isArray(value) && value[0] ? value[0] : "<%= @default_theme %>";
           setTheme(theme);
         });
+<% end %><%= if @a11y do %>
+        const a11yAxes = <%%= raw(Jason.encode!(Enum.map(Corex.Design.Accessibility.axes(), &Atom.to_string/1))) %>;
+        const a11yDefaults = <%%= raw(Jason.encode!(Corex.Design.Accessibility.defaults())) %>;
+        const a11yValues = <%%= raw(Jason.encode!(Map.new(Corex.Design.Accessibility.axes(), fn axis -> {Atom.to_string(axis), Corex.Design.Accessibility.values(axis)} end))) %>;
+
+        const readA11y = () => {
+          const raw = localStorage.getItem("phx:a11y") || "";
+          const parsed = Object.fromEntries(new URLSearchParams(raw).entries());
+          const next = { ...a11yDefaults };
+          for (const axis of a11yAxes) {
+            const value = parsed[axis];
+            if (value && (a11yValues[axis] || []).includes(value)) next[axis] = value;
+          }
+          return next;
+        };
+
+        const writeA11y = (state) => {
+          const params = new URLSearchParams();
+          for (const axis of a11yAxes) params.set(axis, state[axis]);
+          const encoded = params.toString();
+          localStorage.setItem("phx:a11y", encoded);
+          document.cookie = "phx_a11y=" + encodeURIComponent(encoded) + "; path=/; max-age=31536000";
+          for (const axis of a11yAxes) {
+            document.documentElement.setAttribute("data-" + axis, state[axis]);
+          }
+        };
+
+        const syncA11yControls = (state) => {
+          for (const axis of a11yAxes) {
+            const el = document.getElementById("a11y-" + axis);
+            if (!el) continue;
+            el.dispatchEvent(
+              new CustomEvent("corex:toggle-group:set-value", {
+                bubbles: false,
+                detail: { value: [state[axis]] },
+              })
+            );
+          }
+        };
+
+        if (a11yAxes.length) {
+          const initial = readA11y();
+          writeA11y(initial);
+          const controlReady = (axis) => {
+            const el = document.getElementById("a11y-" + axis);
+            return el && !el.hasAttribute("data-loading");
+          };
+          const syncWhenReady = () => {
+            if (a11yAxes.every(controlReady)) {
+              syncA11yControls(initial);
+              return true;
+            }
+            return false;
+          };
+          if (!syncWhenReady()) {
+            const observer = new MutationObserver(() => {
+              if (syncWhenReady()) observer.disconnect();
+            });
+            observer.observe(document.documentElement, {
+              childList: true,
+              subtree: true,
+              attributes: true,
+              attributeFilter: ["data-loading"],
+            });
+          }
+
+          window.addEventListener("storage", (e) => {
+            if (e.key === "phx:a11y" && e.newValue != null) {
+              const state = readA11y();
+              writeA11y(state);
+              syncA11yControls(state);
+            }
+          });
+
+          for (const axis of a11yAxes) {
+            window.addEventListener("phx:set-a11y-" + axis, (e) => {
+              const value = e.detail?.value;
+              const next = Array.isArray(value) && value[0] ? value[0] : a11yDefaults[axis];
+              if (!(a11yValues[axis] || []).includes(next)) return;
+              writeA11y({ ...readA11y(), [axis]: next });
+            });
+          }
+
+          window.addEventListener("phx:set-a11y-reset", () => {
+            const state = { ...a11yDefaults };
+            writeA11y(state);
+            syncA11yControls(state);
+          });
+        }
 <% end %>      })();
     </script>
 <% end %>
   </head>
   <body<%= if @design do %> class="typo flex min-h-dvh min-w-0 flex-col overflow-x-hidden bg-root text-ink antialiased scrollbar scrollbar--sm [scrollbar-gutter:stable]"<% end %>>
-    {@inner_content}
+<%= if @a11y do %>    <.accessibility_panel />
+<% end %>    {@inner_content}
   </body>
 </html>

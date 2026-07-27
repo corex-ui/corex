@@ -1,10 +1,20 @@
 import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 <%= if @corex_js_import == "corex" do %>
-import {hooks} from "corex/hooks"
-<% else %>
-import {hooks} from <%= inspect(String.replace(@corex_js_import, "corex.mjs", "hooks.mjs")) %>
-<% end %><%= if @lang do %>
+import {Toast} from "corex/toast"
+import {Dialog} from "corex/dialog"
+import {Accordion} from "corex/accordion"
+<%= if @theme or @lang do %>import {Select} from "corex/select"
+<% end %><%= if @mode do %>import {Toggle} from "corex/toggle"
+<% end %><%= if @a11y do %>import {ToggleGroup} from "corex/toggle-group"
+<% end %><% else %>
+import {Toast} from <%= inspect(String.replace(@corex_js_import, "corex.mjs", "toast.mjs")) %>
+import {Dialog} from <%= inspect(String.replace(@corex_js_import, "corex.mjs", "dialog.mjs")) %>
+import {Accordion} from <%= inspect(String.replace(@corex_js_import, "corex.mjs", "accordion.mjs")) %>
+<%= if @theme or @lang do %>import {Select} from <%= inspect(String.replace(@corex_js_import, "corex.mjs", "select.mjs")) %>
+<% end %><%= if @mode do %>import {Toggle} from <%= inspect(String.replace(@corex_js_import, "corex.mjs", "toggle.mjs")) %>
+<% end %><%= if @a11y do %>import {ToggleGroup} from <%= inspect(String.replace(@corex_js_import, "corex.mjs", "toggle-group.mjs")) %>
+<% end %><% end %><%= if @lang do %>
 import "./locale.js"
 <% end %>
 
@@ -13,17 +23,18 @@ const csrfToken = document
   ?.getAttribute("content")
 
 const liveSocket = new LiveSocket("/live", Socket, {
-  longPollFallbackMs: 2500,
   params: {_csrf_token: csrfToken},
   hooks: {
-    ...hooks({
-<%= if @theme or @lang do %>      Select: () => import(<%= if @corex_js_import == "corex" do %>"corex/select"<% else %><%= inspect(String.replace(@corex_js_import, "corex.mjs", "select.mjs")) %><% end %>),
-<% end %><%= if @mode do %>      Toggle: () => import(<%= if @corex_js_import == "corex" do %>"corex/toggle"<% else %><%= inspect(String.replace(@corex_js_import, "corex.mjs", "toggle.mjs")) %><% end %>),
-<% end %>      Toast: () => import(<%= if @corex_js_import == "corex" do %>"corex/toast"<% else %><%= inspect(String.replace(@corex_js_import, "corex.mjs", "toast.mjs")) %><% end %>),
-    }),
-  },
+    Toast,
+    Dialog,
+    Accordion,
+<%= if @theme or @lang do %>    Select,
+<% end %><%= if @mode do %>    Toggle,
+<% end %><%= if @a11y do %>    ToggleGroup,
+<% end %>  },
 })
 
+liveSocket.disableDebug()
 liveSocket.connect()
 <%= if @mode do %>
 window.addEventListener("phx:set-mode", (e) => {

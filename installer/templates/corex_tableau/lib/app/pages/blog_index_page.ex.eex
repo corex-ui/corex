@@ -18,7 +18,7 @@ defmodule <%= @app_module %>.BlogIndexPage do
       <header class="flex flex-col gap-space border-b border-border pb-space-lg">
         <h1 class="m-0">{~t"Blog"}</h1>
         <p class="m-0 max-w-prose leading-relaxed text-ink-muted">
-          {~t"Posts are Markdown files in the"} <code class="rounded-md bg-layer px-1 py-0.5 text-sm">_posts/</code> {~t"directory."}
+          {~t"Posts are Markdown files in the"} <code class="rounded-md bg-surface px-1 py-0.5 text-sm">_posts/</code> {~t"directory."}
         </p>
       </header>
       <ul :if={@sorted_posts != []} class="m-0 flex list-none flex-col gap-space-lg p-0">
@@ -30,7 +30,7 @@ defmodule <%= @app_module %>.BlogIndexPage do
         </li>
       </ul>
       <p :if={@sorted_posts == []} class="m-0 text-ink-muted">
-        {~t"No posts yet. Add Markdown files to"} <code class="rounded-md bg-layer px-1 py-0.5 text-sm">_posts/</code> {~t"to get started."}
+        {~t"No posts yet. Add Markdown files to"} <code class="rounded-md bg-surface px-1 py-0.5 text-sm">_posts/</code> {~t"to get started."}
       </p>
     </div>
     """
@@ -79,7 +79,7 @@ end
       <header class="flex flex-col gap-space border-b border-border pb-space-lg">
         <h1 class="m-0">Blog</h1>
         <p class="m-0 max-w-prose leading-relaxed text-ink-muted">
-          Posts are Markdown files in the <code class="rounded-md bg-layer px-1 py-0.5 text-sm">_posts/</code> directory.
+          Posts are Markdown files in the <code class="rounded-md bg-surface px-1 py-0.5 text-sm">_posts/</code> directory.
         </p>
       </header>
       <ul :if={@sorted_posts != []} class="m-0 flex list-none flex-col gap-space-lg p-0">
@@ -91,7 +91,7 @@ end
         </li>
       </ul>
       <p :if={@sorted_posts == []} class="m-0 text-ink-muted">
-        No posts yet. Add Markdown files to <code class="rounded-md bg-layer px-1 py-0.5 text-sm">_posts/</code> to get started.
+        No posts yet. Add Markdown files to <code class="rounded-md bg-surface px-1 py-0.5 text-sm">_posts/</code> to get started.
       </p>
     </div>
     """

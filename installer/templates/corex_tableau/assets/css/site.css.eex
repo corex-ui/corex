@@ -2,6 +2,10 @@
 @plugin "../vendor/heroicons";
 <%= if @design do %>
 @import "../corex/corex.css";
+@source "../corex";
+@source "../../lib";
+<% else %>
+@import "./corex-base.css";
 <% end %><%= if @mode do %>
 @custom-variant dark (&:where([data-mode=dark], [data-mode=dark] *));
 <% end %>

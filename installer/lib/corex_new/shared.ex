@@ -75,11 +75,19 @@ defmodule Corex.New.Shared do
   end
 
   def corex_design_dep_source(opts) do
-    case dev_path(opts) do
-      nil ->
+    a11y = Keyword.get(opts, :a11y, false)
+
+    case {dev_path(opts), a11y} do
+      {nil, true} ->
+        ~s("#{@minor_constraint}", runtime: false)
+
+      {nil, false} ->
         ~s("#{@minor_constraint}", runtime: false, only: :dev)
 
-      path ->
+      {path, true} ->
+        "[path: #{inspect(Path.join(path, "design"))}, runtime: false]"
+
+      {path, false} ->
         "[path: #{inspect(Path.join(path, "design"))}, runtime: false, only: :dev]"
     end
   end
@@ -134,20 +142,56 @@ defmodule Corex.New.Shared do
     :ok
   end
 
-  defp archive_priv_gettext_root do
+  def bundled_corex_base_css_path do
+    [
+      archive_priv_file("static/corex-base.css"),
+      Path.expand("../../priv/static/corex-base.css", __DIR__),
+      Path.expand("../../../priv/static/corex-base.css", __DIR__)
+    ]
+    |> Enum.reject(&is_nil/1)
+    |> Enum.find(&File.exists?/1)
+  end
+
+  def copy_corex_base_css!(install_dir) do
+    src = bundled_corex_base_css_path()
+
+    unless is_binary(src) and File.exists?(src) do
+      Mix.raise("""
+      Corex base CSS is missing.
+
+      Expected priv/static/corex-base.css in the installer archive or Corex checkout.
+      """)
+    end
+
+    dest = Path.join([install_dir, "assets", "css", "corex-base.css"])
+    Mix.shell().info([:green, "* copying ", :reset, "corex-base.css → assets/css/"])
+    File.mkdir_p!(Path.dirname(dest))
+    File.cp!(src, dest)
+    :ok
+  end
+
+  defp archive_priv_file(rel) do
     case :code.which(__MODULE__) do
       beam when is_list(beam) ->
-        root =
+        path =
           beam
           |> to_beam_path()
           |> Path.dirname()
-          |> Path.join("../priv/gettext")
+          |> Path.join("../priv")
+          |> Path.join(rel)
           |> Path.expand()
 
-        if File.exists?(Path.join(root, "default.pot")), do: root
+        if File.exists?(path), do: path
 
       _ ->
         nil
+    end
+  end
+
+  defp archive_priv_gettext_root do
+    case archive_priv_file("gettext/default.pot") do
+      nil -> nil
+      pot -> Path.dirname(pot)
     end
   end
 

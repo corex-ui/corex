@@ -76,12 +76,14 @@ config :tableau, Tableau.RSSExtension,
 <%= if @design do %>
 config :corex_design,
   output: "assets/corex",
-  default_theme: :neo,
+  default_theme: :<%= @default_theme %>,
   default_mode: :light,
-  themes: nil,
+  themes: <%= "[" <> Enum.map_join(@themes, ", ", &":#{&1}") <> "]" %>,
+  modes: [:light, :dark],
   scales: [],
   components: <%= inspect(@components) %>,
-  semantics: nil
+  semantics: [:accent, :brand, :alert]<%= if @a11y do %>,
+  accessibility: [:text, :focus, :links]<% end %>
 <% end %>
 config :phoenix, json_library: Jason
 <%= if @lang do %>

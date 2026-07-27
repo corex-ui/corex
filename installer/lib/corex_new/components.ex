@@ -8,10 +8,16 @@ defmodule Corex.New.Components do
   """
 
   @default ~w(
-    toast layout-heading typo icon link button button-group dialog password-input
-    scrollbar checkbox data-list data-table date-picker native-input number-input
-    select toggle toggle-group
+    toast layout-heading typo icon link button dialog
+    scrollbar checkbox native-input select toggle badge menu accordion
   )a
 
-  def installer_components(_opts \\ []), do: @default
+  def installer_components(opts \\ []) do
+    if Keyword.get(opts, :a11y, false) do
+      idx = Enum.find_index(@default, &(&1 == :toggle))
+      List.insert_at(@default, idx + 1, :"toggle-group")
+    else
+      @default
+    end
+  end
 end

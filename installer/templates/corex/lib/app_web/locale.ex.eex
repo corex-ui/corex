@@ -44,7 +44,7 @@ defmodule <%= @web_module %>.Locale do
   end
 
   def lang do
-    Localize.get_locale()
+    current()
   end
 
   def dir do

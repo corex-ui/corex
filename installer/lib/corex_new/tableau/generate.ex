@@ -54,6 +54,7 @@ defmodule Corex.New.Tableau.Generate do
     |> Shared.put_theme_opts()
     |> Keyword.put_new(:mode, false)
     |> Keyword.put_new(:theme, false)
+    |> Keyword.put_new(:a11y, false)
     |> Keyword.put_new(:lang, false)
     |> Keyword.put_new(:mcp, true)
     |> Keyword.put_new(:design, true)
@@ -118,6 +119,10 @@ defmodule Corex.New.Tableau.Generate do
       write!(Path.join(app_dir, "mode.ex"), Templates.mode_module(assigns))
     end
 
+    if opts[:a11y] do
+      write!(Path.join(app_dir, "accessibility.ex"), Templates.accessibility_module(assigns))
+    end
+
     if opts[:lang] do
       write!(Path.join(app_dir, "gettext.ex"), Templates.gettext_module(assigns))
       write!(Path.join(app_dir, "gettext_sigil.ex"), Templates.gettext_sigil_module(assigns))
@@ -130,6 +135,10 @@ defmodule Corex.New.Tableau.Generate do
       Path.join([install_dir, "assets", "css", "site.css"]),
       Templates.site_css(assigns)
     )
+
+    unless opts[:design] do
+      Shared.copy_corex_base_css!(install_dir)
+    end
 
     write!(
       Path.join([install_dir, "assets", "js", "site.js"]),
@@ -206,6 +215,7 @@ defmodule Corex.New.Tableau.Generate do
       otp_app: opts[:otp_app],
       mode: !!opts[:mode],
       theme: !!opts[:theme],
+      a11y: !!opts[:a11y],
       lang: !!opts[:lang],
       mcp: Keyword.get(opts, :mcp, true),
       design: !!opts[:design],

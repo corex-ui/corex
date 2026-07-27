@@ -43,6 +43,10 @@ defmodule Corex.New.Tableau.GenerateTest do
       assert File.exists?("lib/my_blog/layouts/root_layout.ex")
       assert File.exists?("lib/my_blog/layouts/post_layout.ex")
       assert File.exists?("lib/my_blog/pages/home_page.ex")
+      assert File.exists?("lib/my_blog/pages/home_page.ex")
+      refute File.exists?("lib/my_blog/pages/design_page.ex")
+      refute File.exists?("lib/my_blog/pages/guides_page.ex")
+      assert File.exists?("lib/my_blog/pages/blog_index_page.ex")
       assert File.exists?("lib/my_blog/pages/blog_index_page.ex")
       assert File.exists?("lib/my_blog/pages/not_found_page.ex")
       assert File.exists?("lib/my_blog/config.ex")
@@ -69,6 +73,36 @@ defmodule Corex.New.Tableau.GenerateTest do
       assert File.read!("config/config.exs") =~ "config :corex_design"
       assert File.read!("config/config.exs") =~ ~S[import_config "#{config_env()}.exs"]
       assert File.read!("assets/css/site.css") =~ "corex.css"
+      assert File.read!("assets/css/site.css") =~ ~s(@source "../corex")
+    end)
+  end
+
+  test "run/2 with a11y writes accessibility module and config" do
+    Corex.New.MixHelper.in_tmp("tableau generate a11y", fn ->
+      install_dir = File.cwd!()
+      File.mkdir_p!(Path.join(install_dir, "assets/js"))
+      File.mkdir_p!(Path.join(install_dir, "assets/css"))
+      File.mkdir_p!(Path.join(install_dir, "config"))
+      File.mkdir_p!(Path.join(install_dir, "lib/layouts"))
+      File.mkdir_p!(Path.join(install_dir, "lib/pages"))
+
+      assert :ok == Generate.run(install_dir, base_opts(a11y: true))
+
+      assert File.exists?("lib/my_blog/accessibility.ex")
+      assert File.read!("config/config.exs") =~ "accessibility: [:text, :focus, :links]"
+      assert File.read!("config/config.exs") =~ "modes: [:light, :dark]"
+      assert File.read!("config/config.exs") =~ "default_theme: :neo"
+      assert File.read!("config/config.exs") =~ "themes: [:neo]"
+      assert File.read!("config/config.exs") =~ "toggle-group"
+      a11y = File.read!("lib/my_blog/accessibility.ex")
+      assert a11y =~ "Accessibility.axes()"
+      assert a11y =~ "p-0! [--ctl-text:var(--ctl-size)]"
+      assert a11y =~ ~s(viewBox="0 0 512 512")
+      refute a11y =~ "hero-adjustments-horizontal"
+      assert File.read!("lib/my_blog/layouts/root_layout.ex") =~ "Accessibility.head_script"
+      assert File.read!("lib/my_blog/layouts/root_layout.ex") =~ "accessibility_panel"
+      assert File.read!("assets/js/site.js") =~ "ToggleGroup"
+      assert File.read!("assets/js/site.js") =~ "Dialog"
     end)
   end
 
@@ -104,6 +138,8 @@ defmodule Corex.New.Tableau.GenerateTest do
       refute File.read!("config/config.exs") =~ "config :corex_design"
       refute File.read!("mix.exs") =~ "corex_design"
       refute File.read!("assets/css/site.css") =~ "corex.css"
+      assert File.exists?("assets/css/corex-base.css")
+      assert File.read!("assets/css/site.css") =~ ~s(@import "./corex-base.css")
     end)
   end
 
@@ -135,8 +171,10 @@ defmodule Corex.New.Tableau.GenerateTest do
       refute File.exists?("lib/my_blog/theme.ex")
       refute File.exists?("lib/my_blog/mode.ex")
       refute File.exists?("lib/my_blog/locale.ex")
-      refute File.read!("assets/js/site.js") =~ "Select:"
-      refute File.read!("assets/js/site.js") =~ "Toggle:"
+      refute File.read!("assets/js/site.js") =~ ~S[import {Select}]
+      refute File.read!("assets/js/site.js") =~ ~S[import {Toggle}]
+      refute File.read!("assets/js/site.js") =~ "Select,"
+      refute File.read!("assets/js/site.js") =~ "Toggle,"
       refute File.read!("assets/js/site.js") =~ "locale.js"
     end)
   end
@@ -192,7 +230,8 @@ defmodule Corex.New.Tableau.GenerateTest do
 
       site_js = File.read!("assets/js/site.js")
       assert site_js =~ ~S[import "./locale.js"]
-      assert site_js =~ "Select:"
+      assert site_js =~ ~S[import {Select} from "corex/select"]
+      assert site_js =~ "Select,"
 
       mix_exs = File.read!("mix.exs")
       assert mix_exs =~ "gettext"
@@ -228,8 +267,8 @@ defmodule Corex.New.Tableau.GenerateTest do
       assert mix =~ ~S[path: "fake_corex/design"]
 
       js = File.read!("assets/js/site.js")
-      assert js =~ "../../fake_corex/priv/static/hooks.mjs"
       assert js =~ "../../fake_corex/priv/static/toast.mjs"
+      refute js =~ "hooks.mjs"
       refute js =~ ~s[from "corex"]
     end)
   end

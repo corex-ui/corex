@@ -56,6 +56,16 @@ defmodule Corex.MCP.Tools.DesignTest do
     assert decoded["topic"] == "all"
     assert is_map(decoded["setup"])
     assert is_map(decoded["modifiers"])
+    assert is_map(decoded["accessibility"])
+    assert decoded["reference_urls"]["accessibility"] =~ "accessibility.html"
+  end
+
+  test "design_guide accessibility topic documents runtime corex_design" do
+    json = ok_json!(Design.design_guide(%{"topic" => "accessibility"}))
+    decoded = Corex.MCP.Json.decode!(json)
+    assert decoded["topic"] == "accessibility"
+    assert decoded["flags"] =~ "--a11y"
+    assert decoded["config"] =~ "accessibility: true"
   end
 
   test "design_guide rejects unknown topic and lists the allowed values" do

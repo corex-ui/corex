@@ -1,22 +1,160 @@
-<Layouts.app flash={@flash}<%= if @mode do %>
-  mode={@mode}<% end %><%= if @theme do %>
-  theme={@theme}<% end %><%= if @lang do %>
-  current_path={@conn.request_path}<% end %>
->
-  <.layout_heading class="layout-heading">
-<%= if @lang do %>    <:title>{~t"Corex for Phoenix"}</:title>
-    <:subtitle>{~t"Accessible and unstyled Phoenix components"}</:subtitle>
-<% else %>    <:title>Corex for Phoenix</:title>
-    <:subtitle>Accessible and unstyled Phoenix components</:subtitle>
-<% end %>    <:actions>
-      <.navigate class="button" external to="https://hexdocs.pm/corex">
-<%= if @lang do %>        {~t"Hex Doc"} <.heroicon name="hero-arrow-top-right-on-square" />
-<% else %>        Hex Doc <.heroicon name="hero-arrow-top-right-on-square" />
-<% end %>      </.navigate>
-      <.navigate class="button" external to="https://corex.gigalixirapp.com/">
-<%= if @lang do %>        {~t"Demo Site"} <.heroicon name="hero-arrow-top-right-on-square" />
-<% else %>        Demo Site <.heroicon name="hero-arrow-top-right-on-square" />
-<% end %>      </.navigate>
-    </:actions>
-  </.layout_heading>
+<Layouts.app
+  flash={@flash}
+<%= if @mode do %>  mode={@mode}
+<% end %><%= if @theme do %>  theme={@theme}
+<% end %><%= if @lang do %>  current_path={@conn.request_path}
+<% end %>>
+  <div id="home" class="w-full text-ink">
+    <section
+      class="relative isolate flex min-h-[calc(100dvh-var(--spacing-size-lg))] w-full flex-col justify-center overflow-x-hidden py-size-xl"
+      aria-labelledby="home-hero-heading"
+    >
+      <div class="relative z-1 mx-auto grid w-full max-w-7xl grid-cols-1 items-start justify-items-center gap-space-xl px-space-xl lg:grid-cols-2 lg:justify-items-start lg:gap-space-xl">
+        <div class="flex w-full max-w-xl flex-col items-center gap-space-lg text-center lg:max-w-none lg:items-start lg:text-start">
+          <h1
+            id="home-hero-heading"
+            class="display m-0 text-balance text-4xl tracking-tighter text-ink sm:text-5xl lg:text-6xl xl:text-7xl"
+          >
+<%= if @lang do %>            {~t"The Phoenix UI with a"} <span class="text-brand-text">{~t"real API"}</span>.
+<% else %>            The Phoenix UI with a <span class="text-brand-text">real API</span>.
+<% end %>          </h1>
+
+          <p class="m-0 max-w-xl text-pretty text-lg text-ink-muted">
+<%= if @lang do %>            {~t"Accessible, unstyled Phoenix components with a full server-and-client API, powered by"}
+<% else %>            Accessible, unstyled Phoenix components with a full server-and-client API, powered by
+<% end %>            <.navigate to="https://zagjs.com" class="link" external>
+              Zag.js <.heroicon name="hero-arrow-top-right-on-square" />
+            </.navigate>
+<%= if @lang do %>            {~t"state machines."}
+<% else %>            state machines.
+<% end %>          </p>
+
+          <ul
+            class="m-0 mt-2 grid w-full max-w-xl list-none grid-cols-1 gap-x-8 gap-y-4 p-0 sm:grid-cols-2"
+<%= if @lang do %>            aria-label={~t"Highlights"}
+<% else %>            aria-label="Highlights"
+<% end %>          >
+            <li class="relative flex items-start gap-x-3 text-pretty text-start text-sm text-ink-muted">
+              <span class="mt-0.5 shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
+              <span>
+                <strong class="font-semibold text-ink"><%= if @lang do %>{~t"Server & client API."}<% else %>Server & client API.<% end %></strong>
+<%= if @lang do %>                {~t"Drive every component from LiveView or JavaScript and listen back from either side."}
+<% else %>                Drive every component from LiveView or JavaScript and listen back from either side.
+<% end %>              </span>
+            </li>
+            <li class="relative flex items-start gap-x-3 text-pretty text-start text-sm text-ink-muted">
+              <span class="mt-0.5 shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
+              <span>
+                <strong class="font-semibold text-ink"><%= if @lang do %>{~t"LiveView-native."}<% else %>LiveView-native.<% end %></strong>
+<%= if @lang do %>                {~t"Update props at runtime without resetting component state."}
+<% else %>                Update props at runtime without resetting component state.
+<% end %>              </span>
+            </li>
+            <li class="relative flex items-start gap-x-3 text-pretty text-start text-sm text-ink-muted">
+              <span class="mt-0.5 shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
+              <span>
+                <strong class="font-semibold text-ink"><%= if @lang do %>{~t"Truly unstyled."}<% else %>Truly unstyled.<% end %></strong>
+<%= if @lang do %>                {~t"Bring your own CSS or opt into Corex Design tokens, themes and modes."}
+<% else %>                Bring your own CSS or opt into Corex Design tokens, themes and modes.
+<% end %>              </span>
+            </li>
+            <li class="relative flex items-start gap-x-3 text-pretty text-start text-sm text-ink-muted">
+              <span class="mt-0.5 shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
+              <span>
+                <strong class="font-semibold text-ink"><%= if @lang do %>{~t"Accessible by default."}<% else %>Accessible by default.<% end %></strong>
+<%= if @lang do %>                {~t"Keyboard, focus and ARIA wired in by Zag.js state machines."}
+<% else %>                Keyboard, focus and ARIA wired in by Zag.js state machines.
+<% end %>              </span>
+            </li>
+          </ul>
+
+          <div class="mt-space-sm flex flex-wrap items-center justify-center gap-space lg:justify-start">
+            <.navigate
+              to="https://corex.gigalixirapp.com/"
+              class="button ui-accent ui-solid ui-size-lg"
+              external
+            >
+<%= if @lang do %>              {~t"Demo site"}
+<% else %>              Demo site
+<% end %>              <.heroicon name="hero-arrow-top-right-on-square" />
+            </.navigate>
+            <.navigate
+              to="https://hexdocs.pm/corex/installation.html"
+              class="button ui-ghost ui-size-lg"
+              external
+            >
+<%= if @lang do %>              {~t"Visit Hexdocs"}
+<% else %>              Visit Hexdocs
+<% end %>              <.heroicon name="hero-arrow-top-right-on-square" />
+            </.navigate>
+          </div>
+        </div>
+
+        <div class="relative flex w-fit max-w-full flex-col gap-space overflow-hidden rounded-md border border-border bg-surface p-space shadow-md lg:justify-self-start">
+          <h2 class="sr-only"><%= if @lang do %>{~t"Interactive preview"}<% else %>Interactive preview<% end %></h2>
+
+          <div class="flex flex-wrap items-center gap-space-sm">
+            <span class="badge ui-ghost ui-size-sm">
+              <.heroicon name="hero-command-line" /> API
+            </span>
+            <.action
+              phx-click={Corex.Accordion.set_value("home-accordion", "anatomy")}
+              class="button ui-size-sm"
+            >
+              <.heroicon name="hero-chevron-right" /> <%= if @lang do %>{~t"Open first"}<% else %>Open first<% end %>
+            </.action>
+            <.action
+              phx-click={
+                Corex.Accordion.set_value("home-accordion", ["anatomy", "machine", "replace"])
+              }
+              class="button ui-size-sm"
+            >
+              <.heroicon name="hero-square-3-stack-3d" /> <%= if @lang do %>{~t"Open all"}<% else %>Open all<% end %>
+            </.action>
+            <.action
+              phx-click={Corex.Accordion.set_value("home-accordion", [])}
+              class="button ui-size-sm"
+            >
+              <.heroicon name="hero-x-mark" /> <%= if @lang do %>{~t"Close all"}<% else %>Close all<% end %>
+            </.action>
+          </div>
+
+          <span class="badge ui-ghost ui-size-sm self-start">
+            <.heroicon name="hero-bars-3-bottom-left" /> Accordion
+          </span>
+
+          <.accordion
+            id="home-accordion"
+            class="accordion"
+            value="machine"
+            items={
+              Corex.Content.new([
+                %{
+                  value: "anatomy",
+                  label: <%= if @lang do %>~t"Anatomy & slots"<% else %>"Anatomy & slots"<% end %>,
+                  content:
+                    <%= if @lang do %>~t"Structure, custom slots, and compound mode for full control."<% else %>"Structure, custom slots, and compound mode for full control."<% end %>
+                },
+                %{
+                  value: "machine",
+                  label: <%= if @lang do %>~t"State machines"<% else %>"State machines"<% end %>,
+                  content: <%= if @lang do %>~t"Zag.js powers accessibility, keyboard, and focus."<% else %>"Zag.js powers accessibility, keyboard, and focus."<% end %>
+                },
+                %{
+                  value: "replace",
+                  label: <%= if @lang do %>~t"Replace this page"<% else %>"Replace this page"<% end %>,
+                  content:
+                    <%= if @lang do %>~t"Keep the shell (header, footer, Design tokens) and ship your product UI."<% else %>"Keep the shell (header, footer, Design tokens) and ship your product UI."<% end %>
+                }
+              ])
+            }
+          >
+            <:indicator>
+              <.heroicon name="hero-chevron-right" />
+            </:indicator>
+          </.accordion>
+        </div>
+      </div>
+    </section>
+  </div>
 </Layouts.app>

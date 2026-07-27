@@ -12,8 +12,8 @@ defmodule Corex.Integration.CodeGeneration.CorexDesignAutoEnableTest do
       end)
     end
 
-    test "corex.new --mode --no-design raises with the new validation" do
-      with_installer_tmp("corex_auto_enable_conflict", fn tmp_dir ->
+    test "corex.new --a11y --no-design raises with the new validation" do
+      with_installer_tmp("corex_auto_enable_a11y_conflict", fn tmp_dir ->
         app_path = Path.expand("my_app", tmp_dir)
         integration_test_root_path = Path.expand("../../", __DIR__)
 
@@ -25,13 +25,13 @@ defmodule Corex.Integration.CodeGeneration.CorexDesignAutoEnableTest do
               "--no-install",
               "--no-version-check",
               "--no-design",
-              "--mode"
+              "--a11y"
             ],
             integration_test_root_path
           )
 
         assert exit_code != 0
-        assert output =~ "--mode requires design"
+        assert output =~ "--a11y requires design"
       end)
     end
   end

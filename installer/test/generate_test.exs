@@ -10,6 +10,22 @@ defmodule Corex.New.GenerateTest do
     assert File.exists?(Path.join(root, "default.pot"))
     assert File.exists?(Path.join(root, "en/LC_MESSAGES/default.po"))
     assert String.ends_with?(root, "priv/gettext")
+
+    pot = File.read!(Path.join(root, "default.pot"))
+    assert pot =~ ~s(msgid "The Phoenix UI with a")
+    assert pot =~ ~s(msgid "real API")
+    assert pot =~ ~s(msgid "Open menu")
+    refute pot =~ ~s(msgid "Corex for Phoenix")
+    refute pot =~ ~s(msgid "Demo Site")
+    refute pot =~ ~s(msgid "Hex Doc")
+
+    fr = File.read!(Path.join(root, "fr/LC_MESSAGES/default.po"))
+    assert fr =~ ~s(msgid "The Phoenix UI with a")
+    assert fr =~ ~s(msgstr "L'UI Phoenix avec une")
+
+    ar = File.read!(Path.join(root, "ar/LC_MESSAGES/default.po"))
+    assert ar =~ ~s(msgid "real API")
+    refute ar =~ ~s(msgstr "real API")
   end
 
   test "archive_priv_gettext_root resolves from compiled module beam path" do
@@ -40,8 +56,44 @@ defmodule Corex.New.GenerateTest do
       mix_exs = File.read!("mix.exs")
       assert mix_exs =~ ~r/\{:corex_design,/
       assert mix_exs =~ ~r/\{:corex_mcp,\s*"~> 0.2",\s*only:\s*\[:dev,\s*:test\]\}/
-      assert File.read!("config/config.exs") =~ "config :corex_design"
+      config = File.read!("config/config.exs")
+      assert config =~ "config :corex_design"
+      assert config =~ "default_theme: :neo"
+      assert config =~ "themes: [:neo]"
       assert File.read!(Path.join("assets/css", "app.css")) =~ "../corex/corex.css"
+      assert File.read!(Path.join("assets/css", "app.css")) =~ ~s(@source "../corex")
+    end)
+  end
+
+  test "run/2 with a11y writes plug, hook, panel, and design config" do
+    Corex.New.MixHelper.in_tmp("generate a11y", fn ->
+      ScaffoldHelper.write_phoenix_scaffold!(File.cwd!())
+
+      assert :ok == Generate.run(File.cwd!(), ScaffoldHelper.base_generate_opts(a11y: true))
+
+      assert File.exists?(Path.join("lib/my_app_web/plugs", "accessibility.ex"))
+      assert File.exists?(Path.join("lib/my_app_web/hooks", "accessibility.ex"))
+
+      layouts = File.read!(Path.join("lib/my_app_web/components", "layouts.ex"))
+      assert layouts =~ "def accessibility_panel(assigns)"
+      assert layouts =~ "p-0! [--ctl-text:var(--ctl-size)]"
+      assert layouts =~ ~s(viewBox="0 0 512 512")
+      refute layouts =~ "hero-adjustments-horizontal"
+      refute layouts =~ ~r/<\/footer>\s*<\.accessibility_panel/
+
+      root = File.read!(Path.join("lib/my_app_web/components/layouts", "root.html.heex"))
+      assert root =~ "phx:a11y"
+      assert root =~ "a11y_data_attrs"
+      assert root =~ "Corex.Design.Accessibility.axes()"
+      assert root =~ "<.accessibility_panel />"
+
+      config = File.read!("config/config.exs")
+      assert config =~ "accessibility: [:text, :focus, :links]"
+      assert config =~ "layout: [a11y: true]"
+      assert config =~ "toggle-group"
+
+      assert File.read!("lib/my_app_web/router.ex") =~ "Plugs.Accessibility"
+      assert File.read!("lib/my_app_web.ex") =~ "on_mount MyAppWeb.Hooks.Accessibility"
     end)
   end
 
@@ -65,6 +117,7 @@ defmodule Corex.New.GenerateTest do
 
       locale_ex = File.read!(Path.join("lib/my_app_web", "locale.ex"))
       assert locale_ex =~ "def current do"
+      assert locale_ex =~ "def lang do\n    current()"
       assert locale_ex =~ "format_language_select_label"
       assert locale_ex =~ "titlecase_word"
 
@@ -89,6 +142,10 @@ defmodule Corex.New.GenerateTest do
       refute File.exists?(Path.join("assets/corex", "main.css"))
       refute File.read!(Path.join("assets/css", "app.css")) =~ "../corex/main.css"
       refute File.read!("mix.exs") =~ ~r/\{:corex_design,/
+      assert File.exists?("assets/css/corex-base.css")
+      assert File.read!("assets/css/app.css") =~ ~s(@import "./corex-base.css")
+      refute File.exists?("lib/my_app_web/components/core_components.ex")
+      refute File.read!("lib/my_app_web.ex") =~ "CoreComponents"
     end)
   end
 
@@ -250,11 +307,16 @@ defmodule Corex.New.GenerateTest do
 
       web_ex = File.read!("lib/my_app_web.ex")
       assert web_ex =~ "use Corex"
+      refute web_ex =~ "CoreComponents"
+      refute File.exists?("lib/my_app_web/components/core_components.ex")
+      refute File.exists?("assets/css/corex-base.css")
+      refute File.read!("assets/css/app.css") =~ "corex-base.css"
 
       mix_exs = File.read!("mix.exs")
       assert mix_exs =~ "{:corex,"
       assert mix_exs =~ "{:corex_design,"
       assert mix_exs =~ "{:corex_mcp,"
+      refute mix_exs =~ "{:daisyui"
 
       endpoint_ex = File.read!("lib/my_app_web/endpoint.ex")
       assert endpoint_ex =~ "plug Corex.MCP"
@@ -264,6 +326,30 @@ defmodule Corex.New.GenerateTest do
 
       app_css = File.read!("assets/css/app.css")
       assert app_css =~ "../corex/corex.css"
+
+      router = File.read!("lib/my_app_web/router.ex")
+      refute router =~ ~s(get "/design", PageController, :design)
+      refute router =~ ~s(get "/guides", PageController, :guides)
+      assert router =~ ~s(get "/", PageController, :home)
+
+      page_controller = File.read!("lib/my_app_web/controllers/page_controller.ex")
+      refute page_controller =~ "def design(conn"
+      refute page_controller =~ "def guides(conn"
+
+      refute File.exists?("lib/my_app_web/controllers/page_html/design.html.heex")
+      refute File.exists?("lib/my_app_web/controllers/page_html/guides.html.heex")
+      assert File.exists?("lib/my_app_web/controllers/page_html/home.html.heex")
+
+      layouts = File.read!("lib/my_app_web/components/layouts.ex")
+      assert layouts =~ ~s(id="site-nav-dialog")
+      assert layouts =~ "Components"
+      assert layouts =~ "Hexdocs"
+      refute layouts =~ ~S[~p"/design"]
+      refute layouts =~ ~S[~p"/guides"]
+
+      home = File.read!("lib/my_app_web/controllers/page_html/home.html.heex")
+      assert home =~ "The Phoenix UI"
+      assert home =~ ~s(id="home-accordion")
     end)
   end
 

@@ -6,7 +6,7 @@ defmodule Corex.MCP.Tools.Design do
   alias Corex.MCP.ToolError
 
   @max_id_length 64
-  @valid_guide_topics ~W(setup modifiers theming dark_mode all)
+  @valid_guide_topics ~W(setup modifiers theming dark_mode accessibility all)
   @axis_keys %{
     "semantic" => :semantic,
     "variant" => :variant,
@@ -80,7 +80,7 @@ defmodule Corex.MCP.Tools.Design do
             topic: %{
               type: "string",
               enum: @valid_guide_topics,
-              description: "setup, modifiers, theming, dark_mode, or all (default)."
+              description: "setup, modifiers, theming, dark_mode, accessibility, or all (default)."
             }
           }
         },
@@ -376,6 +376,7 @@ defmodule Corex.MCP.Tools.Design do
       modifiers: modifiers_section(),
       theming: theming_section(),
       dark_mode: dark_mode_section(),
+      accessibility: accessibility_section(),
       reference_urls: reference_urls()
     }
   end
@@ -387,6 +388,7 @@ defmodule Corex.MCP.Tools.Design do
         "modifiers" -> modifiers_section()
         "theming" -> theming_section()
         "dark_mode" -> dark_mode_section()
+        "accessibility" -> accessibility_section()
       end
 
     Map.merge(%{topic: topic, reference_urls: reference_urls()}, section)
@@ -396,16 +398,18 @@ defmodule Corex.MCP.Tools.Design do
     %{
       intent: "Wire Corex Design CSS into a Phoenix or Tableau app.",
       steps: [
-        "Add {:corex_design, \"~> 0.2\", runtime: false, only: :dev} to mix.exs",
-        "Configure config :corex_design (output, default_theme, default_mode, components)",
+        "Add {:corex_design, \"~> 0.2\", runtime: false, only: :dev} to mix.exs (drop only: :dev when using --a11y / accessibility: true)",
+        "Configure config :corex_design (output, default_theme, default_mode, components, optional accessibility)",
         "Add corex.design.build to assets.build / assets.deploy",
-        "Import in assets/css/app.css: @import \"../corex/corex.css\"; and @source \"../corex\";",
+        "Import in assets/css/app.css (Phoenix) or assets/css/site.css (Tableau): @import \"../corex/corex.css\"; and @source \"../corex\";",
         "Run mix corex.design.build"
       ],
       app_css: """
       @import \"../corex/corex.css\";
       @source \"../corex\";
-      """
+      """,
+      note:
+        "With accessibility preference CSS (--a11y), corex_design must be a runtime dependency so plugs/hooks can call Corex.Design.Accessibility."
     }
   end
 
@@ -435,12 +439,24 @@ defmodule Corex.MCP.Tools.Design do
     }
   end
 
+  defp accessibility_section do
+    %{
+      intent: "Emit preference CSS and wire user axes (text, contrast, motion, cursor, focus, links).",
+      config: "config :corex_design, accessibility: true",
+      flags: "--a11y on mix corex.new / mix corex.tableau.new",
+      tip:
+        "accessibility: true enables text/focus/links; pass an axis list to emit a subset. Requires runtime corex_design.",
+      guide: "https://hexdocs.pm/corex/accessibility.html"
+    }
+  end
+
   defp reference_urls do
     %{
       hexdocs_design: "https://hexdocs.pm/corex/design.html",
       modifiers: "https://hexdocs.pm/corex_design/modifiers.html",
       theming: "https://hexdocs.pm/corex/theming.html",
-      dark_mode: "https://hexdocs.pm/corex/dark_mode.html"
+      dark_mode: "https://hexdocs.pm/corex/dark_mode.html",
+      accessibility: "https://hexdocs.pm/corex/accessibility.html"
     }
   end
 end

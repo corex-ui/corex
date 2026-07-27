@@ -54,6 +54,9 @@ defmodule Corex.MCP.Tools.InstallationTest do
     runs = Enum.map(decoded["commands"], & &1["run"])
     assert Enum.any?(runs, &(&1 =~ "tableau_new"))
     assert Enum.any?(runs, &(&1 =~ "corex.tableau.new"))
+    assert "--lang" in decoded["optional_flags"]
+    assert "--no-design" in decoded["optional_flags"]
+    assert "--a11y" in decoded["optional_flags"]
   end
 
   test "installation_guide existing_project is scoped" do

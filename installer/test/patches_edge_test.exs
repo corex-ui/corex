@@ -324,7 +324,7 @@ defmodule Corex.New.PatchesEdgeTest do
     end
   end
 
-  describe "patch_live_view_for_lang/3 when lang is false" do
+  describe "patch_live_view_hooks/3 when lang is false" do
     test "returns :ok without modifying web module" do
       web_ex = "defmodule MyAppWeb do\nend\n"
 
@@ -332,7 +332,7 @@ defmodule Corex.New.PatchesEdgeTest do
         File.mkdir_p!("lib")
         File.write!("lib/my_app_web.ex", web_ex)
 
-        assert :ok == Patches.patch_live_view_for_lang(File.cwd!(), MyAppWeb, lang: false)
+        assert :ok == Patches.patch_live_view_hooks(File.cwd!(), MyAppWeb, lang: false)
         assert File.read!("lib/my_app_web.ex") == web_ex
       end)
     end

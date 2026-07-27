@@ -3,7 +3,7 @@ defmodule Corex.New.Cli do
 
   @elixir_requirement "~> 1.18"
 
-  @design_dependent_flags [:mode, :theme, :lang]
+  @design_dependent_flags [:mode, :theme, :lang, :a11y]
 
   def elixir_version_check!(installer_version) do
     unless Version.match?(System.version(), @elixir_requirement) do
@@ -44,8 +44,8 @@ defmodule Corex.New.Cli do
   defp validate_dev_flag!(_path), do: :ok
 
   @doc """
-  Auto-enable `--design` when `--mode`, `--theme`, or `--lang` is set
-  (language select needs Design CSS / Select hook).
+  Auto-enable `--design` when `--mode`, `--theme`, `--lang`, or `--a11y` is set
+  (language select and accessibility panel need Design CSS / hooks).
   Prints a one-line notice unless `notify: false` is passed.
   """
   def maybe_auto_enable_design(opts, notify_opts \\ []) when is_list(opts) do
@@ -64,7 +64,7 @@ defmodule Corex.New.Cli do
 
   defp notify_auto_design(true) do
     Mix.shell().info(
-      "* Corex: enabling --design because --mode/--theme/--lang was set; pass --no-design to opt out."
+      "* Corex: enabling --design because --mode/--theme/--lang/--a11y was set; pass --no-design to opt out."
     )
   end
 

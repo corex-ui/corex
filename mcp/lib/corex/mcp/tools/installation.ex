@@ -90,6 +90,16 @@ defmodule Corex.MCP.Tools.Installation do
         %{step: 2, run: "mix archive.install hex corex_new"},
         %{step: 3, run: "mix corex.new my_app"}
       ],
+      optional_flags: [
+        "--mode",
+        "--theme",
+        "--a11y",
+        "--lang",
+        "--mcp",
+        "--no-mcp",
+        "--no-design",
+        "--dev ../corex"
+      ],
       update_generator: %{
         command: "mix local.corex",
         note: "Updates the corex.new archive before generating a project."
@@ -116,7 +126,11 @@ defmodule Corex.MCP.Tools.Installation do
       optional_flags: [
         "--mode",
         "--theme",
+        "--a11y",
+        "--lang",
         "--mcp",
+        "--no-mcp",
+        "--no-design",
         "--dev ../corex"
       ],
       update_generator: %{
@@ -148,7 +162,7 @@ defmodule Corex.MCP.Tools.Installation do
           "Run mix corex.design.build"
         ],
         note:
-          "Generated apps from mix corex.new include these steps by default when --design is on."
+          "Drop only: :dev when enabling accessibility (config accessibility: true / --a11y) so Corex.Design.Accessibility is available at runtime. Generated apps from mix corex.new include these steps by default when --design is on."
       }
     }
   end

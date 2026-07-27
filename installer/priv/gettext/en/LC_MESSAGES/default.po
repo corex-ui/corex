@@ -1,73 +1,277 @@
 ## "msgid"s in this file come from POT (.pot) files.
-###
-### Do not add, change, or remove "msgid"s manually here as
-### they're tied to the ones in the corresponding POT file
-### (with the same domain).
-###
-### Use "mix gettext.extract --merge" or "mix gettext.merge"
-### to merge POT files into PO files.
 msgid ""
 msgstr ""
 "Language: en\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: lib/app_web/components/layouts.ex
-#: lib/app_web/controllers/page_html/home.html.heex
 #, elixir-autogen, elixir-format
-msgid "Accessible and unstyled Phoenix components"
-msgstr "Accessible and unstyled Phoenix components"
+msgid "Accessibility"
+msgstr "Accessibility"
 
-#: lib/app_web/components/layouts.ex
 #, elixir-autogen, elixir-format
-msgid "Corex documentation on HexDocs"
-msgstr "Corex documentation on HexDocs"
+msgid "Accessible Phoenix UI with a real server-and-client API."
+msgstr "Accessible Phoenix UI with a real server-and-client API."
 
-#: lib/app_web/controllers/page_html/home.html.heex
 #, elixir-autogen, elixir-format
-msgid "Corex for Phoenix"
-msgstr "Corex for Phoenix"
+msgid "Accessible by default."
+msgstr "Accessible by default."
 
-#: lib/app_web/components/layouts.ex
 #, elixir-autogen, elixir-format
-msgid "Corex on GitHub"
-msgstr "Corex on GitHub"
+msgid "Accessible, unstyled Phoenix components with a full server-and-client API, powered by"
+msgstr "Accessible, unstyled Phoenix components with a full server-and-client API, powered by"
 
-#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Anatomy & slots"
+msgstr "Anatomy & slots"
+
+#, elixir-autogen, elixir-format
+msgid "Back to blog"
+msgstr "Back to blog"
+
+#, elixir-autogen, elixir-format
+msgid "Blog"
+msgstr "Blog"
+
+#, elixir-autogen, elixir-format
+msgid "Bring your own CSS or opt into Corex Design tokens, themes and modes."
+msgstr "Bring your own CSS or opt into Corex Design tokens, themes and modes."
+
+#, elixir-autogen, elixir-format
+msgid "Close all"
+msgstr "Close all"
+
+#, elixir-autogen, elixir-format
+msgid "Components"
+msgstr "Components"
+
+#, elixir-autogen, elixir-format
+msgid "Contrast"
+msgstr "Contrast"
+
+#, elixir-autogen, elixir-format
+msgid "Cursor"
+msgstr "Cursor"
+
 #, elixir-autogen, elixir-format
 msgid "Dark mode"
 msgstr "Dark mode"
 
-#: lib/app_web/controllers/page_html/home.html.heex
 #, elixir-autogen, elixir-format
-msgid "Demo Site"
-msgstr "Demo Site"
+msgid "Default"
+msgstr "Default"
 
-#: lib/app_web/controllers/page_html/home.html.heex
 #, elixir-autogen, elixir-format
-msgid "Hex Doc"
-msgstr "Hex Doc"
+msgid "Demo site"
+msgstr "Demo site"
 
-#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Design"
+msgstr "Design"
+
+#, elixir-autogen, elixir-format
+msgid "Docs"
+msgstr "Docs"
+
+#, elixir-autogen, elixir-format
+msgid "Drive every component from LiveView or JavaScript and listen back from either side."
+msgstr "Drive every component from LiveView or JavaScript and listen back from either side."
+
+#, elixir-autogen, elixir-format
+msgid "Explore"
+msgstr "Explore"
+
+#, elixir-autogen, elixir-format
+msgid "Focus"
+msgstr "Focus"
+
+#, elixir-autogen, elixir-format
+msgid "Full"
+msgstr "Full"
+
+#, elixir-autogen, elixir-format
+msgid "GitHub"
+msgstr "GitHub"
+
+#, elixir-autogen, elixir-format
+msgid "Hexdocs"
+msgstr "Hexdocs"
+
+#, elixir-autogen, elixir-format
+msgid "High"
+msgstr "High"
+
+#, elixir-autogen, elixir-format
+msgid "Highlights"
+msgstr "Highlights"
+
+#, elixir-autogen, elixir-format
+msgid "Installation"
+msgstr "Installation"
+
+#, elixir-autogen, elixir-format
+msgid "Interactive preview"
+msgstr "Interactive preview"
+
+#, elixir-autogen, elixir-format
+msgid "Keep the shell (header, footer, Design tokens) and ship your product UI."
+msgstr "Keep the shell (header, footer, Design tokens) and ship your product UI."
+
+#, elixir-autogen, elixir-format
+msgid "Keyboard, focus and ARIA wired in by Zag.js state machines."
+msgstr "Keyboard, focus and ARIA wired in by Zag.js state machines."
+
 #, elixir-autogen, elixir-format
 msgid "Language"
 msgstr "Language"
 
-#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Large"
+msgstr "Large"
+
+#, elixir-autogen, elixir-format
+msgid "Larger"
+msgstr "Larger"
+
 #, elixir-autogen, elixir-format
 msgid "Light mode"
 msgstr "Light mode"
 
-#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Links"
+msgstr "Links"
+
+#, elixir-autogen, elixir-format
+msgid "LiveView-native."
+msgstr "LiveView-native."
+
+#, elixir-autogen, elixir-format
+msgid "Motion"
+msgstr "Motion"
+
+#, elixir-autogen, elixir-format
+msgid "No posts yet. Add Markdown files to"
+msgstr "No posts yet. Add Markdown files to"
+
+#, elixir-autogen, elixir-format
+msgid "Open all"
+msgstr "Open all"
+
+#, elixir-autogen, elixir-format
+msgid "Open first"
+msgstr "Open first"
+
+#, elixir-autogen, elixir-format
+msgid "Open menu"
+msgstr "Open menu"
+
+#, elixir-autogen, elixir-format
+msgid "Open source. MIT License."
+msgstr "Open source. MIT License."
+
+#, elixir-autogen, elixir-format
+msgid "Posts are Markdown files in the"
+msgstr "Posts are Markdown files in the"
+
+#, elixir-autogen, elixir-format
+msgid "Reduced"
+msgstr "Reduced"
+
+#, elixir-autogen, elixir-format
+msgid "Replace this page"
+msgstr "Replace this page"
+
+#, elixir-autogen, elixir-format
+msgid "Reset"
+msgstr "Reset"
+
+#, elixir-autogen, elixir-format
+msgid "Server & client API."
+msgstr "Server & client API."
+
+#, elixir-autogen, elixir-format
+msgid "Standard"
+msgstr "Standard"
+
+#, elixir-autogen, elixir-format
+msgid "State machines"
+msgstr "State machines"
+
+#, elixir-autogen, elixir-format
+msgid "Strong"
+msgstr "Strong"
+
+#, elixir-autogen, elixir-format
+msgid "Structure, custom slots, and compound mode for full control."
+msgstr "Structure, custom slots, and compound mode for full control."
+
+#, elixir-autogen, elixir-format
+msgid "The Phoenix UI with a"
+msgstr "The Phoenix UI with a"
+
 #, elixir-autogen, elixir-format
 msgid "Theme"
 msgstr "Theme"
 
-#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Theming"
+msgstr "Theming"
+
+#, elixir-autogen, elixir-format
+msgid "To enable Corex Accessibility, see the"
+msgstr "To enable Corex Accessibility, see the"
+
+#, elixir-autogen, elixir-format
+msgid "Truly unstyled."
+msgstr "Truly unstyled."
+
+#, elixir-autogen, elixir-format
+msgid "Underline"
+msgstr "Underline"
+
+#, elixir-autogen, elixir-format
+msgid "Untitled"
+msgstr "Untitled"
+
+#, elixir-autogen, elixir-format
+msgid "Update props at runtime without resetting component state."
+msgstr "Update props at runtime without resetting component state."
+
+#, elixir-autogen, elixir-format
+msgid "Visit Hexdocs"
+msgstr "Visit Hexdocs"
+
 #, elixir-autogen, elixir-format
 msgid "We lost the connection"
 msgstr "We lost the connection"
 
-#: lib/app_web/components/layouts.ex
 #, elixir-autogen, elixir-format
 msgid "We're trying to reconnect you..."
 msgstr "We're trying to reconnect you..."
+
+#, elixir-autogen, elixir-format
+msgid "Zag.js powers accessibility, keyboard, and focus."
+msgstr "Zag.js powers accessibility, keyboard, and focus."
+
+#, elixir-autogen, elixir-format
+msgid "Zoom"
+msgstr "Zoom"
+
+#, elixir-autogen, elixir-format
+msgid "directory."
+msgstr "directory."
+
+#, elixir-autogen, elixir-format
+msgid "documentation"
+msgstr "documentation"
+
+#, elixir-autogen, elixir-format
+msgid "real API"
+msgstr "real API"
+
+#, elixir-autogen, elixir-format
+msgid "state machines."
+msgstr "state machines."
+
+#, elixir-autogen, elixir-format
+msgid "to get started."
+msgstr "to get started."

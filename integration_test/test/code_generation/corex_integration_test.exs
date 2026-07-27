@@ -47,10 +47,29 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
     end
   end
 
-  describe "app with --mode" do
-    test "compiles, format check passes, and tests pass" do
-      with_installer_tmp("corex_mode", fn tmp_dir ->
-        {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--mode"])
+  describe "app with --a11y" do
+    test "compiles, format check passes, and scaffolds accessibility wiring" do
+      with_installer_tmp("corex_a11y", fn tmp_dir ->
+        {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--a11y"])
+
+        assert File.exists?(Path.join(app_root_path, "lib/my_app_web/plugs/accessibility.ex"))
+        assert File.exists?(Path.join(app_root_path, "lib/my_app_web/hooks/accessibility.ex"))
+
+        config = File.read!(Path.join(app_root_path, "config/config.exs"))
+        assert config =~ "accessibility: [:text, :focus, :links]"
+        assert config =~ "toggle-group"
+
+        layouts = File.read!(Path.join(app_root_path, "lib/my_app_web/components/layouts.ex"))
+        assert layouts =~ "def accessibility_panel(assigns)"
+        assert layouts =~ ~s(viewBox="0 0 512 512")
+        refute layouts =~ "hero-adjustments-horizontal"
+        refute layouts =~ ~r/<\/footer>\s*<\.accessibility_panel/
+
+        root =
+          File.read!(Path.join(app_root_path, "lib/my_app_web/components/layouts/root.html.heex"))
+
+        assert root =~ "<.accessibility_panel />"
+        assert File.read!(Path.join(app_root_path, "lib/my_app_web/router.ex")) =~ "Plugs.Accessibility"
 
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)
