@@ -254,7 +254,7 @@ defmodule Corex.AngleSliderTest do
         render_component(
           fn assigns ->
             ~H"""
-            <AngleSlider.angle_slider field={@form[:angle]} class="angle-slider">
+            <AngleSlider.angle_slider field={@form[:angle]} class="angle-slider" auto_invalid={false}>
               <:label>Angle</:label>
               <:error :let={msg}>{msg}</:error>
             </AngleSlider.angle_slider>

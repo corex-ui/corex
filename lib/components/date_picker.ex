@@ -681,7 +681,7 @@ defmodule Corex.DatePicker do
           {Connect.mounted_positioner(%Anatomy.Positioner{id: @id, dir: @dir, positioning: @positioning})}
         >
           <div {Connect.mounted_content(%Anatomy.Content{id: @id, dir: @dir})}>
-            <div id={@id <> "-day-view"} data-scope="date-picker" data-part="day-view">
+            <div id={@id <> "-day-view"} data-scope="date-picker" data-part="day-view" hidden>
               <div data-scope="date-picker" data-part="view-control" data-view="day">
                 <button
                   phx-mounted={Connect.ignore_view_prev(%{id: @id, view: "day"})}

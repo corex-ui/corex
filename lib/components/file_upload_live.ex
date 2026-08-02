@@ -56,7 +56,9 @@ defmodule Corex.FileUploadLive do
   ### Form with submit
 
   ```heex
-  <form phx-change="validate" phx-submit="save">
+  <form phx-change="validate" phx-submit="save"
+    class="flex flex-col gap-space-lg w-full max-w-xl"
+  >
     <.file_upload_live upload={@uploads.attachment} upload_name={:attachment} class="file-upload">
       <:label>Attachment</:label>
       <:close>

@@ -147,8 +147,8 @@ defmodule Mix.Tasks.Corex.Gen.LiveTest do
             loud: true
           )
 
-        assert output =~ ~s(scope "/:locale")
-        assert output =~ ~s(not scope "/")
+        assert output =~ ~S(scope "/:locale")
+        assert output =~ ~S(not scope "/")
         assert output =~ ~s(~p"/#{plural}")
         assert output =~ "/<locale>/#{plural}"
 
@@ -168,7 +168,12 @@ defmodule Mix.Tasks.Corex.Gen.LiveTest do
     with_test_output(fn tmp ->
       web_ex = Path.join(File.cwd!(), "lib/corex_web.ex")
       prev_generators = Application.get_env(:corex, :generators)
-      prev_web = if File.exists?(web_ex), do: File.read!(web_ex)
+
+      prev_web =
+        case File.read(web_ex) do
+          {:ok, contents} -> contents
+          {:error, _} -> nil
+        end
 
       Application.put_env(:corex, :generators, layout: [locale: true, mode: true, theme: true])
 
@@ -196,8 +201,8 @@ defmodule Mix.Tasks.Corex.Gen.LiveTest do
             loud: true
           )
 
-        assert output =~ ~s(scope "/:locale")
-        assert output =~ ~s(not scope "/")
+        assert output =~ ~S(scope "/:locale")
+        assert output =~ ~S(not scope "/")
 
         index = File.read!(Path.join([tmp, "web/live", "#{singular}_live", "index.ex"]))
         assert index =~ "current_path={@current_path}"

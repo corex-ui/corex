@@ -165,12 +165,12 @@ defmodule Corex.Component do
         except,
         quote do
           attr(:auto_invalid, :boolean,
-            default: false,
+            default: true,
             doc:
               unquote(
                 doc.(
                   :auto_invalid,
-                  "When true with `field`, set invalid from visible changeset errors"
+                  "When true with `field`, set invalid from visible changeset errors (default true)"
                 )
               )
           )

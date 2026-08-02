@@ -223,6 +223,7 @@ defmodule Corex.ColorPicker do
         for={@form}
         action="/color-picker/form"
         method="post"
+        class="flex flex-col gap-space-lg w-full max-w-xl"
       >
         <.color_picker
           field={f[:color]}
@@ -275,6 +276,7 @@ defmodule Corex.ColorPicker do
         for={@form}
         action="/color-picker/form"
         method="post"
+        class="flex flex-col gap-space-lg w-full max-w-xl"
       >
         <.color_picker
           field={f[:color]}
@@ -376,6 +378,7 @@ defmodule Corex.ColorPicker do
       <form
         action="/color-picker/form"
         method="post"
+        class="flex flex-col gap-space-lg w-full max-w-xl"
       >
         <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
         <.color_picker

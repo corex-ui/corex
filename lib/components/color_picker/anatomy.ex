@@ -56,7 +56,8 @@ defmodule Corex.ColorPicker.Anatomy.Swatch do
     "data-value",
     "data-state",
     "data-scope",
-    "data-part"
+    "data-part",
+    "data-checked"
   ]
   def ignored_attrs, do: @ignored_attrs
 end

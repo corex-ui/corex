@@ -3,7 +3,7 @@ defmodule Mix.Corex.DesignComponentsTest do
 
   alias Mix.Corex.DesignComponents
 
-  @required_hosts ~w(
+  @required_hosts ~W(
     data-table data-list number-input date-picker password-input
     dialog checkbox native-input select
     layout-heading button link icon
@@ -44,8 +44,8 @@ defmodule Mix.Corex.DesignComponentsTest do
                )
 
       body = File.read!("config/config.exs")
-      assert body =~ ~s(:"data-table")
-      assert body =~ ~s(:"number-input")
+      assert body =~ ~S(:"data-table")
+      assert body =~ ~S(:"number-input")
       assert Regex.scan(~r/:button/, body) |> length() == 1
     end)
   end
@@ -59,10 +59,10 @@ defmodule Mix.Corex.DesignComponentsTest do
     File.cd!(tmp, fn ->
       assert :ok = DesignComponents.ensure_for_live!(build: false)
       body = File.read!("config/config.exs")
-      assert body =~ ~s(:"data-list")
-      assert body =~ ~s(:"data-table")
-      assert body =~ ~s(:"date-picker")
-      assert body =~ ~s(:"password-input")
+      assert body =~ ~S(:"data-list")
+      assert body =~ ~S(:"data-table")
+      assert body =~ ~S(:"date-picker")
+      assert body =~ ~S(:"password-input")
       assert body =~ ":select"
       assert body =~ ":icon"
     end)
@@ -86,6 +86,23 @@ defmodule Mix.Corex.DesignComponentsTest do
     File.cd!(tmp, fn ->
       assert :ok = DesignComponents.ensure!([:"data-list"], build: false)
       refute File.read!("config/config.exs") =~ "data-list"
+    end)
+  end
+
+  test "ensure!/2 rebuilds empty or trailing-comma component lists without leading comma", %{
+    tmp: tmp
+  } do
+    File.write!(Path.join(tmp, "config/config.exs"), """
+    config :corex_design,
+      components: [
+      ]
+    """)
+
+    File.cd!(tmp, fn ->
+      assert :ok = DesignComponents.ensure!([:"data-table", :button], build: false)
+      body = File.read!("config/config.exs")
+      assert body =~ ~S(components: [:"data-table", :button])
+      refute body =~ "[,"
     end)
   end
 end

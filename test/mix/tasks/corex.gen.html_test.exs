@@ -263,8 +263,8 @@ defmodule Mix.Tasks.Corex.Gen.HtmlTest do
           loud: true
         )
 
-      assert output =~ ~s(scope "/:locale")
-      assert output =~ ~s(not scope "/")
+      assert output =~ ~S(scope "/:locale")
+      assert output =~ ~S(not scope "/")
       assert output =~ ~s(~p"/#{plural}")
       assert output =~ "/<locale>/#{plural}"
       assert File.exists?(Path.join([tmp, "web/controllers", "#{singular}_controller.ex"]))

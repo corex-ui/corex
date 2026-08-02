@@ -292,7 +292,7 @@ defmodule Corex.DataTableTest do
       stream = %Phoenix.LiveView.LiveStream{
         name: :users,
         dom_id: & &1,
-        inserts: [{"user-1", %{id: 1, name: "Alice"}}],
+        inserts: [{"user-1", -1, %{id: 1, name: "Alice"}, nil, false}],
         deletes: [],
         reset?: false
       }
@@ -301,10 +301,17 @@ defmodule Corex.DataTableTest do
         render_component(&DataTable.data_table/1,
           id: "users",
           rows: stream,
-          col: cols()
+          col: [
+            %{
+              label: "Name",
+              name: :name,
+              inner_block: fn _assigns, {_id, row} -> row.name end
+            }
+          ]
         )
 
       assert html =~ ~S(phx-update="stream")
+      assert html =~ "Alice"
     end
 
     test "renders custom translation strings" do

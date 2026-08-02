@@ -227,7 +227,8 @@ defmodule Corex.Editable.Connect do
       "data-part" => "control",
       "dir" => assigns.dir,
       "data-orientation" => orientation(assigns),
-      "id" => "editable:#{assigns.id}:control"
+      "id" => "editable:#{assigns.id}:control",
+      "data-readonly" => presence_attr(Map.get(assigns, :read_only, false))
     }
   end
 

@@ -16,7 +16,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>
     >
     <% else %><Layouts.app flash={@flash}><% end %>
-      <article class="mx-auto flex w-full min-w-0 max-w-6xl flex-col items-center gap-size-lg text-ink rounded-md">
+      <article class="mx-auto flex w-full min-w-0 max-w-6xl flex-col items-center gap-size-lg pt-space-xl text-ink rounded-md">
         <.layout_heading class="layout-heading">
           <:title><%= maybe_heex_slot_translate.("Listing #{schema.human_plural}", @gettext_mode) %></:title>
           <:subtitle><%= maybe_heex_slot_translate.("Add and manage #{schema.singular} records", @gettext_mode) %></:subtitle>

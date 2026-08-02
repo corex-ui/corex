@@ -424,6 +424,7 @@ For cross-cutting invalid styling and error presentation, see the [Forms](forms.
       for={@form}
       action="/account/terms"
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.checkbox field={f[:terms]} class="checkbox">
         <:label>Accept terms</:label>
@@ -516,6 +517,7 @@ For cross-cutting invalid styling and error presentation, see the [Forms](forms.
       for={@form}
       action="/account/terms"
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.checkbox field={f[:terms]} class="checkbox">
         <:label>Accept terms (strict messages)</:label>
@@ -605,6 +607,7 @@ For cross-cutting invalid styling and error presentation, see the [Forms](forms.
     <form
       action="/register"
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.checkbox

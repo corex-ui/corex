@@ -321,7 +321,7 @@ defmodule Corex.Editable do
       >
         {render_slot(@label)}
       </label>
-        <div {Connect.mounted_control(%Control{id: @id, dir: @dir, orientation: @orientation})}>
+        <div {Connect.mounted_control(%Control{id: @id, dir: @dir, orientation: @orientation, read_only: @read_only})}>
           <div {Connect.mounted_area(%Area{id: @id, dir: @dir, empty: @empty, editing: @editing, auto_resize: false, orientation: @orientation})}>
             <input type="text" {Connect.mounted_input(%Input{id: @id, disabled: @disabled, value: @content_value, placeholder: @placeholder, name: if(@name, do: nil, else: @name), form: if(@name, do: nil, else: @form), required: @required, read_only: @read_only, editing: @editing, aria_label: @translation.input, dir: @dir, orientation: @orientation})} />
             <span {Connect.mounted_preview(%Preview{id: @id, dir: @dir, value_text: @value_text, empty: @empty, editing: @editing, aria_label: @translation.edit, orientation: @orientation})}>

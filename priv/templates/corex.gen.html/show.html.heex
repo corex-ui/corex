@@ -8,7 +8,7 @@
   <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>
 >
 <% else %><Layouts.app flash={@flash}><% end %>
-  <article class="mx-auto flex w-full min-w-0 max-w-6xl flex-col items-center gap-size-lg text-ink rounded-md">
+  <article class="mx-auto flex w-full min-w-0 max-w-6xl flex-col items-center gap-size-lg pt-space-xl text-ink rounded-md">
   <.layout_heading class="layout-heading">
     <:title><%= schema.human_singular %> {@<%= schema.singular %>.<%= primary_key %>}</:title>
     <:subtitle>This is a <%= schema.singular %> record from your database.</:subtitle>

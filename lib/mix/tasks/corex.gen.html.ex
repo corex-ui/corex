@@ -143,6 +143,7 @@ defmodule Mix.Tasks.Corex.Gen.Html do
   use Mix.Task
 
   alias Mix.Corex, as: Corex
+  alias Mix.Corex.DesignComponents
   alias Mix.Corex.Gen.Inputs
   alias Mix.Phoenix.{Context, Schema, Scope}
   alias Mix.Tasks.Phx.Gen
@@ -213,7 +214,7 @@ defmodule Mix.Tasks.Corex.Gen.Html do
 
     context
     |> copy_new_files(binding)
-    |> tap(fn _ -> Mix.Corex.DesignComponents.ensure_for_html!() end)
+    |> tap(fn _ -> DesignComponents.ensure_for_html!(build: false) end)
     |> print_shell_instructions()
   end
 

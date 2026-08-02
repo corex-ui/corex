@@ -35,6 +35,7 @@ defmodule Corex.Timer.Connect do
       "data-on-tick-client" => assigns.on_tick_client,
       "data-on-complete" => assigns.on_complete,
       "data-on-complete-client" => assigns.on_complete_client,
+      "dir" => Map.get(assigns, :dir),
       "data-dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "data-collapse-leading-zeros" => collapse_dataset(assigns),

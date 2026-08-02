@@ -52,7 +52,7 @@ defmodule Corex.Timer.Anatomy do
             orientation: String.t()
           }
 
-    @ignored_attrs ["data-orientation", "dir", "id", "data-scope", "data-part"]
+    @ignored_attrs ["data-orientation", "id", "data-scope", "data-part"]
     def ignored_attrs, do: @ignored_attrs
   end
 
@@ -68,7 +68,6 @@ defmodule Corex.Timer.Anatomy do
 
     @ignored_attrs [
       "data-orientation",
-      "dir",
       "id",
       "role",
       "aria-label",
@@ -90,7 +89,7 @@ defmodule Corex.Timer.Anatomy do
             orientation: String.t()
           }
 
-    @ignored_attrs ["data-orientation", "dir", "id", "data-scope", "data-part"]
+    @ignored_attrs ["data-orientation", "id", "data-scope", "data-part"]
     def ignored_attrs, do: @ignored_attrs
   end
 
@@ -112,7 +111,6 @@ defmodule Corex.Timer.Anatomy do
       "data-type",
       "style",
       "data-orientation",
-      "dir",
       "data-scope",
       "data-part",
       "data-value",
@@ -140,7 +138,6 @@ defmodule Corex.Timer.Anatomy do
       "id",
       "data-type",
       "data-orientation",
-      "dir",
       "data-part",
       "data-scope",
       "aria-labelledby",
@@ -179,7 +176,6 @@ defmodule Corex.Timer.Anatomy do
       "id",
       "aria-hidden",
       "data-orientation",
-      "dir",
       "hidden",
       "data-scope",
       "data-part"
@@ -206,7 +202,6 @@ defmodule Corex.Timer.Anatomy do
       "aria-label",
       "data-action",
       "data-orientation",
-      "dir",
       "id",
       "disabled",
       "data-disabled",

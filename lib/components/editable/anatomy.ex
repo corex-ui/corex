@@ -249,11 +249,16 @@ defmodule Corex.Editable.Anatomy do
 
   defmodule Control do
     @moduledoc false
-    defstruct [:id, :dir, orientation: "horizontal"]
+    defstruct [:id, :dir, orientation: "horizontal", read_only: false]
 
-    @type t :: %__MODULE__{id: String.t(), dir: String.t(), orientation: String.t()}
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            orientation: String.t(),
+            read_only: boolean()
+          }
 
-    @ignored_attrs ["id", "dir", "data-orientation"]
+    @ignored_attrs ["id", "dir", "data-orientation", "data-readonly"]
     def ignored_attrs, do: @ignored_attrs
   end
 
