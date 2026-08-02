@@ -24,6 +24,11 @@
  padding: var(--spacing-space);
  }
 
+ .angle-slider [data-scope="angle-slider"][data-part="root"][data-readonly] {
+ @apply ui-readonly;
+ padding-inline-end: var(--spacing-space);
+ }
+
  .angle-slider [data-scope="angle-slider"][data-part="root"][data-orientation="horizontal"] {
  flex-direction: row;
  flex-wrap: nowrap;
@@ -43,7 +48,7 @@
  width: auto;
  flex: 0 0 auto;
  flex-shrink: 0;
- min-inline-size: calc(var(--angle-slider-value-ch, 6) * 1ch);
+ min-inline-size: calc(var(--angle-slider-value-ch, 6) * 1ch + 2ch);
  }
 
  .angle-slider
@@ -199,6 +204,7 @@
  width: 100%;
  flex: 1;
  text-align: center;
+ min-inline-size: calc(var(--angle-slider-value-ch, 6) * 1ch + 2ch);
  }
 
  .angle-slider
@@ -218,8 +224,13 @@
  [data-scope="angle-slider"][data-part="value-text"]
  [data-part="value"] {
  display: inline-block;
+ width: calc(var(--angle-slider-value-ch, 6) * 1ch);
  min-inline-size: calc(var(--angle-slider-value-ch, 6) * 1ch);
+ max-inline-size: calc(var(--angle-slider-value-ch, 6) * 1ch);
  text-align: center;
+ overflow: hidden;
+ text-overflow: clip;
+ white-space: nowrap;
  }
  .angle-slider
  [data-scope="angle-slider"][data-part="root"][data-invalid]
@@ -248,10 +259,6 @@
  [data-scope="angle-slider"][data-part="root"][data-invalid]
  [data-scope="angle-slider"][data-part="marker"][data-state="under-value"] {
  --marker-color: var(--color-alert);
- }
-
- .angle-slider [data-scope="angle-slider"][data-part="root"][data-readonly] {
- @apply ui-readonly;
  }
 
  .angle-slider [data-scope="angle-slider"][data-part="hidden-input"] {

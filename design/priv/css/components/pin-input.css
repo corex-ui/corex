@@ -13,16 +13,11 @@
  .pin-input [data-scope="pin-input"][data-part="root"] {
  gap: var(--spacing-space);
  position: relative;
- padding-inline-end: var(--spacing-space);
  }
 
  .pin-input [data-scope="pin-input"][data-part="root"][data-disabled] {
  opacity: 0.6;
  pointer-events: none;
- }
-
- .pin-input [data-scope="pin-input"][data-part="root"][data-readonly] {
- @apply ui-readonly;
  }
 
  .pin-input [data-scope="pin-input"][data-part="label"][data-invalid] {
@@ -47,6 +42,12 @@
  gap: var(--spacing-space);
  align-items: center;
  justify-content: flex-start;
+ position: relative;
+ }
+
+ .pin-input [data-scope="pin-input"][data-part="control"][data-readonly] {
+ @apply ui-readonly;
+ padding-inline-end: var(--spacing-space);
  }
 
  .pin-input [data-scope="pin-input"][data-part="input"] {

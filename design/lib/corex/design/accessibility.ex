@@ -95,7 +95,7 @@ defmodule Corex.Design.Accessibility do
 
   defp normalize_axes(false), do: []
   defp normalize_axes(nil), do: []
-  defp normalize_axes(true), do: [:text, :focus, :links]
+  defp normalize_axes(true), do: @axes
 
   defp normalize_axes(axes) when is_list(axes) do
     allowed = MapSet.new(@axes)
@@ -109,7 +109,7 @@ defmodule Corex.Design.Accessibility do
   defp normalize_axes(_), do: []
 
   @doc false
-  def preferred_axes, do: [:text, :focus, :links]
+  def preferred_axes, do: @axes
 
   defp normalize_axis(axis) when is_atom(axis), do: axis
 

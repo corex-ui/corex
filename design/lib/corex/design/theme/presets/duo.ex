@@ -67,8 +67,8 @@ defmodule Corex.Design.Theme.Presets.Duo do
   defp dimensions do
     Shared.dimensions(
       %{
-        space_scale: 1.55,
-        size_scale: 1.35,
+        space_scale: 1.35,
+        size_scale: 1.2,
         text_scale: 1.18,
         radius_scale: 1.9,
         container_scale: 1.22,

@@ -42,10 +42,6 @@
  width: 100%;
  }
 
- .file-upload [data-scope="file-upload"][data-part="root"][data-readonly] {
- @apply ui-readonly;
- }
-
  .file-upload [data-scope="file-upload"][data-part="label"] {
  align-self: stretch;
  text-align: center;
@@ -79,6 +75,12 @@
  min-height: 0;
  cursor: pointer;
  text-align: center;
+ position: relative;
+ }
+
+ .file-upload [data-scope="file-upload"][data-part="dropzone"][data-readonly] {
+ @apply ui-readonly;
+ padding-inline-end: var(--spacing-space);
  }
 
  .file-upload [data-scope="file-upload"][data-part="item-group"] {

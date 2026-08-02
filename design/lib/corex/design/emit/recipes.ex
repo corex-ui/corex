@@ -136,6 +136,15 @@ defmodule Corex.Design.Emit.Recipes do
         background-color: var(--ctl-bg-active, var(--color-ui-active));
       }
 
+      &:is([data-state="open"]):disabled,
+      &:is([data-state="open"])[data-disabled],
+      &:is([data-state="open"])[disabled] {
+        color: var(--ctl-ink-muted, var(--color-ink-muted));
+        background-color: var(--ctl-bg-muted, var(--color-ui-muted));
+        cursor: not-allowed;
+        opacity: 1;
+      }
+
     """
   end
 

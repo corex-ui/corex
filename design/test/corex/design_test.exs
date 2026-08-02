@@ -418,13 +418,13 @@ defmodule Corex.Design.ComponentsTest do
 
   test "registry host width and default max match component css for key components" do
     checks = [
-      {"select", :fill, {:container, "3xs"}},
+      {"select", :fill, {:container, "4xs"}},
       {"native-input", :fill, {:container, "xs"}},
       {"angle-slider", :fit, {:container, "6xs"}},
       {"toggle-group", :fit, {:container, "5xs"}},
       {"pin-input", :fit, {:container, "md"}},
       {"timer", :fit, :none},
-      {"editable", :fit, :none},
+      {"editable", :fill, {:container, "3xs"}},
       {"layout-heading", :fill, :none}
     ]
 
@@ -761,9 +761,8 @@ defmodule Corex.Design.BundleFilterTest do
 
     text = File.read!(Path.join(output, "tokens/preferences/text.css"))
     assert text =~ ~s([data-text="lg"])
-    assert text =~ "zoom: 1.25;"
-    assert text =~ "@supports not (zoom: 1)"
     assert text =~ "font-size: 125%;"
+    refute text =~ "zoom:"
     refute text =~ "theme-text-base"
     refute text =~ ~s([data-text="xl"])
 

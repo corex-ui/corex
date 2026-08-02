@@ -149,11 +149,14 @@
 }
 
 @utility ui-readonly {
+  position: relative;
+
   &::after {
     content: "";
     position: absolute;
-    inset-block-end: --spacing(1);
+    inset-block-start: 50%;
     inset-inline-end: --spacing(1);
+    translate: 0 -50%;
     width: 1em;
     height: 1em;
     background-color: var(--color-ink-muted);
@@ -161,6 +164,7 @@
     mask-size: contain;
     mask-repeat: no-repeat;
     mask-position: center;
+    pointer-events: none;
   }
 }
 

@@ -45,23 +45,15 @@ defmodule Corex.Design.Emit.Preferences do
     blocks =
       Accessibility.values(:text)
       |> Enum.flat_map(fn value ->
-        zoom = Accessibility.text_zoom(value)
+        scale = Accessibility.text_zoom(value)
 
-        if zoom == 1.0 do
+        if scale == 1.0 do
           []
         else
-          zoom_css = format_zoom(zoom)
-          font_pct = format_zoom_percent(zoom)
+          font_pct = format_zoom_percent(scale)
           selector = ~s([data-text="#{value}"])
 
-          [
-            Css.block(selector, [Css.property("zoom", zoom_css)]),
-            [
-              "@supports not (zoom: 1) {\n",
-              Css.block(selector, [Css.property("font-size", font_pct)]),
-              "}\n"
-            ]
-          ]
+          [Css.block(selector, [Css.property("font-size", font_pct)])]
         end
       end)
 
@@ -69,9 +61,6 @@ defmodule Corex.Design.Emit.Preferences do
     Write.atomic!(Path.join(output_root, path), Css.document(blocks))
     path
   end
-
-  defp format_zoom(zoom) when is_integer(zoom), do: Integer.to_string(zoom)
-  defp format_zoom(zoom) when is_float(zoom), do: :erlang.float_to_binary(zoom * 1.0, decimals: 2)
 
   defp format_zoom_percent(zoom) when is_number(zoom) do
     pct = zoom * 100

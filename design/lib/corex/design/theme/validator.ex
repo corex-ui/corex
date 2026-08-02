@@ -327,13 +327,14 @@ defmodule Corex.Design.Theme.Validator do
 
   defp validate_lightness_value(nil), do: :ok
 
-  defp validate_lightness_value(value, _name \\ nil) do
-    try do
-      _ = DesignColor.normalize_l!(value)
-      :ok
-    rescue
-      e in ArgumentError -> {:error, Exception.message(e)}
-    end
+  defp validate_lightness_value(value, _name \\ nil), do: soft_normalize_l(value)
+
+  defp soft_normalize_l(value) when is_integer(value) and value >= 0 and value <= 100, do: :ok
+  defp soft_normalize_l(value) when is_float(value) and value >= 0.0 and value <= 1.0, do: :ok
+  defp soft_normalize_l(value) when is_integer(value) and value >= 0 and value <= 1, do: :ok
+
+  defp soft_normalize_l(value) do
+    {:error, "invalid lightness #{inspect(value)} (expected 0.0..1.0 or integer 0..100)"}
   end
 
   defp validate_states(states) when is_map(states) do

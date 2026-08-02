@@ -17,11 +17,6 @@
  min-width: 0;
  gap: var(--spacing-space);
  position: relative;
- padding-inline-end: var(--spacing-space);
- }
-
- .number-input [data-scope="number-input"][data-part="root"][data-readonly] {
- @apply ui-readonly;
  }
 
  .number-input [data-scope="number-input"][data-part="control"] {
@@ -30,6 +25,11 @@
  align-items: stretch;
  position: relative;
  width: 100%;
+ }
+
+ .number-input [data-scope="number-input"][data-part="control"][data-readonly] {
+ @apply ui-readonly;
+ padding-inline-end: var(--spacing-space);
  }
 
  .number-input [data-scope="number-input"][data-part="input"] {
@@ -41,6 +41,13 @@
  border-inline-end: 0;
  border-end-end-radius: 0;
  border-start-end-radius: 0;
+ }
+
+ .number-input [data-scope="number-input"][data-part="input"][data-invalid],
+ .number-input [data-scope="number-input"][data-part="control"][data-invalid]
+ > [data-scope="number-input"][data-part="input"] {
+ border-color: var(--color-alert);
+ box-shadow: none;
  }
 
  .number-input [data-part="trigger-group"] {

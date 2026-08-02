@@ -21,12 +21,28 @@
     overflow: hidden;
   }
 
+  .toggle-group [data-scope="toggle-group"][data-part="root"][data-orientation="vertical"] {
+    flex-direction: column;
+  }
+
+  .toggle-group [data-scope="toggle-group"][data-part="root"][data-orientation="horizontal"] {
+    flex-direction: row;
+  }
+
   .toggle-group [data-scope="toggle-group"][data-part="item"] {
     flex: 1 1 0;
     min-width: 0;
     justify-content: center;
-    padding-inline: var(--spacing-space);
+    padding-inline: calc(var(--ctl-space, var(--spacing-space)) * 1.25);
+    padding-block: calc(var(--ctl-space, var(--spacing-space)) * 0.25);
     gap: var(--spacing-space-sm);
+  }
+
+  .toggle-group
+    [data-scope="toggle-group"][data-part="root"][data-orientation="vertical"]
+    [data-scope="toggle-group"][data-part="item"] {
+    width: 100%;
+    padding-inline: calc(var(--ctl-space, var(--spacing-space)) * 1.25);
   }
 
   .toggle-group [data-scope="toggle-group"][data-part="item"][data-state="on"] .icon.state-on {

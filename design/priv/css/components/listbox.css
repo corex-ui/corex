@@ -30,6 +30,8 @@
  }
 
  .listbox [data-scope="listbox"][data-part="root"] > [data-scope="listbox"][data-part="content"] {
+ @apply scrollbar scrollbar--sm;
+
  width: 100%;
  min-width: 0;
  max-height: var(--ctl-max-height, none);
@@ -54,13 +56,15 @@
  .listbox [data-scope="listbox"][data-part="item-group-label"] {
  display: flex;
  align-items: center;
- font-size: var(--text-base);
- line-height: var(--text-base--line-height);
+ font-size: var(--text-sm);
+ line-height: var(--text-sm--line-height);
+ font-weight: var(--font-weight-medium);
  text-align: start;
- min-height: var(--spacing-size);
+ min-height: var(--spacing-size-sm);
+ padding-block: calc(var(--spacing-space) * 0.5);
  padding-inline: var(--spacing-space);
- background-color: var(--color-root);
- color: var(--color-ink);
+ background-color: var(--color-ui-muted);
+ color: var(--color-ink-muted);
  border-bottom: 1px solid var(--color-border);
  }
 

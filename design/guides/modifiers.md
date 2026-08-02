@@ -87,7 +87,7 @@ Not every component exposes a radius axis (for example `icon`, `link`, `typo`).
 | Auto | `select ui-width-auto` |
 | Fit | `button ui-width-fit` |
 | Full | `accordion ui-width-full` |
-| Container step | `select ui-width-3xs` |
+| Container step | `select ui-width-4xs` |
 
 ## Max height
 

@@ -41,7 +41,7 @@ mix assets.build
 
 | Axis | Attribute | Values | Effect |
 | ---- | --------- | ------ | ------ |
-| Text | `data-text` | `md` (default), `lg` | Page zoom (`zoom: 1.25`; `font-size: 125%` fallback) |
+| Text | `data-text` | `md` (default), `lg` | Larger text (`font-size: 125%`) |
 | Contrast | `data-contrast` | `normal`, `more` | Higher-contrast palette overrides |
 | Motion | `data-motion` | `system`, `reduce` | Near-zero theme durations |
 | Cursor | `data-cursor` | `normal`, `large` | Larger custom cursor |

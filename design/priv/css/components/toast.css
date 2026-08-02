@@ -1,23 +1,16 @@
 @import "../main.css";
 
 @layer components {
- 
  .toast [data-scope="toast"][data-part="group"] {
- position: fixed;
- 
- inset-inline-start: var(--viewport-offset-left);
- inset-inline-end: var(--viewport-offset-right);
- bottom: max(env(safe-area-inset-bottom, 0px), var(--viewport-offset-bottom));
- top: auto;
- 
- display: flex;
- flex-direction: column;
- align-items: stretch;
  max-width: 100%;
+ pointer-events: none;
  }
 
  .toast [data-scope="toast"][data-part="root"] {
+ pointer-events: auto;
  max-width: var(--container-xs);
+ padding: 0;
+ overflow: hidden;
  translate: var(--x) var(--y);
  scale: var(--scale);
  z-index: var(--z-index);
@@ -50,11 +43,14 @@
 
  .toast [data-scope="toast"][data-part="header"] {
  display: flex;
+ justify-content: space-between;
  align-items: center;
+ flex-wrap: wrap;
  gap: var(--spacing-space);
  border-block-end: 1px solid var(--color-border);
+ padding-block: var(--spacing-space-sm);
  padding-inline: var(--spacing-space);
- padding-block: calc(var(--spacing-space) * 0.5);
+ background-color: var(--color-surface);
  }
 
  .toast [data-scope="toast"][data-part="title"] {
@@ -67,19 +63,21 @@
  font-size: var(--text-base);
  line-height: var(--text-base--line-height);
  font-weight: var(--font-weight-medium);
- padding: var(--spacing-space-lg);
+ padding: var(--spacing-space);
  min-height: var(--spacing-size-lg);
  white-space: pre-line;
+ background-color: var(--color-root);
  }
 
  .toast [data-scope="toast"][data-part="actions"] {
  display: flex;
- flex-direction: row;
+ flex-flow: row nowrap;
  justify-content: flex-end;
  align-items: center;
  gap: var(--spacing-space);
- padding-inline: var(--spacing-space-lg);
+ padding-inline: var(--spacing-space);
  padding-block-end: var(--spacing-space);
+ background-color: var(--color-root);
  }
 
  .toast [data-scope="toast"][data-part="action-trigger"] {
@@ -99,6 +97,14 @@
  --ctl-radius: var(--radius-sm);
  @apply ui-size-sm;
 
+ width: calc(var(--spacing-size-sm) * 0.8);
+ min-width: calc(var(--spacing-size-sm) * 0.8);
+ max-width: calc(var(--spacing-size-sm) * 0.8);
+ min-height: calc(var(--spacing-size-sm) * 0.8);
+ max-height: calc(var(--spacing-size-sm) * 0.8);
+ padding: 0;
+ font-size: var(--text-xs);
+ line-height: var(--text-xs--line-height);
  flex-shrink: 0;
  }
 

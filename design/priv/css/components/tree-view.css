@@ -34,6 +34,15 @@
  background-color: var(--color-ui-active);
  }
 
+ .tree-view
+ [data-scope="tree-view"][data-part="branch-control"][data-selected]
+ [data-scope="tree-view"][data-part="branch-text"],
+ .tree-view
+ [data-scope="tree-view"][data-part="item"][data-selected]
+ [data-scope="tree-view"][data-part="item-text"] {
+ color: inherit;
+ }
+
  .tree-view [data-scope="tree-view"][data-part="branch-indicator"][dir="rtl"][data-state="open"],
  .tree-view [data-scope="tree-view"][data-part="item-indicator"][dir="rtl"][data-state="open"] {
  transform: rotate(-90deg) !important;

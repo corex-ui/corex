@@ -3,6 +3,28 @@
 @layer components {
   .timer {
     width: fit-content;
+    --timer-digit: var(--text-4xl);
+    --timer-digit-leading: var(--text-4xl--line-height);
+  }
+
+  .timer.ui-size-sm {
+    --timer-digit: var(--text-3xl);
+    --timer-digit-leading: var(--text-3xl--line-height);
+  }
+
+  .timer.ui-size-md {
+    --timer-digit: var(--text-4xl);
+    --timer-digit-leading: var(--text-4xl--line-height);
+  }
+
+  .timer.ui-size-lg {
+    --timer-digit: var(--text-5xl);
+    --timer-digit-leading: var(--text-5xl--line-height);
+  }
+
+  .timer.ui-size-xl {
+    --timer-digit: var(--text-6xl);
+    --timer-digit-leading: var(--text-6xl--line-height);
   }
 
   .timer [data-scope="timer"][data-part="area"] {
@@ -28,8 +50,8 @@
 
   .timer [data-scope="timer"][data-part="item"] {
     justify-content: center;
-    font-size: var(--ctl-text, var(--text-4xl));
-    line-height: var(--ctl-leading, var(--text-4xl--line-height));
+    font-size: var(--timer-digit);
+    line-height: var(--timer-digit-leading);
     font-weight: var(--font-weight-semibold);
     font-variation-settings: "tnum";
     font-variant-numeric: tabular-nums;
@@ -92,8 +114,8 @@
   .timer [data-scope="timer"][data-part="separator"] {
     justify-content: center;
     align-self: flex-start;
-    font-size: var(--ctl-text, var(--text-4xl));
-    line-height: var(--ctl-leading, var(--text-4xl--line-height));
+    font-size: var(--timer-digit);
+    line-height: var(--timer-digit-leading);
     font-weight: var(--font-weight-semibold);
     color: var(--color-ink);
     padding-inline: var(--spacing-space-xs);
@@ -110,13 +132,24 @@
   }
 
   .timer [data-scope="timer"][data-part="action-trigger"] {
-    font-size: calc(var(--ctl-text, var(--text-base)) * 0.5);
-    line-height: var(--ctl-leading, var(--text-base--line-height));
-    padding: 0 !important;
-    min-height: calc(2em * 0.8) !important;
-    height: calc(2em * 0.8);
-    aspect-ratio: 1 / 1;
+    display: inline-flex;
+    align-items: center;
     justify-content: center;
-    width: auto;
+    width: fit-content;
+    min-width: calc(var(--ctl-size, var(--spacing-size)) * 0.75);
+    min-height: calc(var(--ctl-size, var(--spacing-size)) * 0.75);
+    height: calc(var(--ctl-size, var(--spacing-size)) * 0.75);
+    aspect-ratio: 1 / 1;
+    padding: calc(var(--ctl-space, var(--spacing-space)) * 0.5);
+    font-size: calc(var(--ctl-text, var(--text-base)) * 0.75);
+    line-height: 1;
+    gap: calc(var(--ctl-space, var(--spacing-space)) * 0.25);
+  }
+
+  .timer [data-scope="timer"][data-part="action-trigger"] .icon,
+  .timer [data-scope="timer"][data-part="action-trigger"] [class^="hero-"],
+  .timer [data-scope="timer"][data-part="action-trigger"] svg {
+    padding: 0;
+    margin: 0;
   }
 }

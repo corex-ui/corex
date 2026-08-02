@@ -21,15 +21,15 @@
  .checkbox [data-scope="checkbox"][data-part="root"] {
  gap: var(--spacing-space); 
  position: relative;
+ }
+
+ .checkbox [data-scope="checkbox"][data-part="root"][data-readonly] {
+ @apply ui-readonly;
  padding-inline-end: var(--spacing-space);
  }
 
  .checkbox [data-scope="checkbox"][data-part="root"][data-orientation="vertical"] {
  flex-direction: column-reverse ;
- }
-
- .checkbox [data-scope="checkbox"][data-part="root"][data-readonly] {
- @apply ui-readonly;
  }
 
  .checkbox [data-scope="checkbox"][data-part="root"][data-loading],
@@ -108,6 +108,7 @@
  min-width: unset;
  height: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
  width: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ position: relative;
 
  &:disabled,
  &[data-disabled],

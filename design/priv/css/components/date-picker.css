@@ -6,7 +6,31 @@
  }
 
  .date-picker
- [data-scope="date-picker"][data-part="content"][hidden] {
+ [data-scope="date-picker"][data-part="content"][hidden],
+ .date-picker
+ [data-scope="date-picker"][data-part="content"][data-state="closed"] {
+ display: none !important;
+ }
+
+ /* Open-state gating (same idea as color-picker): hide positioner when closed
+    so day/month/year view-controls cannot flash after select-and-close. */
+ .date-picker [data-scope="date-picker"][data-part="positioner"] {
+ display: none;
+ }
+
+ .date-picker
+ [data-scope="date-picker"][data-part="positioner"]:has(
+ [data-scope="date-picker"][data-part="content"][data-state="open"]
+ ) {
+ display: block;
+ }
+
+ .date-picker
+ [data-scope="date-picker"][data-part="day-view"][hidden],
+ .date-picker
+ [data-scope="date-picker"][data-part="month-view"][hidden],
+ .date-picker
+ [data-scope="date-picker"][data-part="year-view"][hidden] {
  display: none !important;
  }
 
@@ -18,11 +42,6 @@
  width: fit-content;
  gap: var(--spacing-space);
  position: relative;
- padding-inline-end: var(--spacing-space);
- }
-
- .date-picker [data-scope="date-picker"][data-part="root"][data-readonly] {
- @apply ui-readonly;
  }
 
  .date-picker [data-scope="date-picker"][data-part="label"] {
@@ -41,6 +60,18 @@
  gap: 0;
  justify-content: flex-start;
  border-radius: var(--ctl-radius, var(--radius-md));
+ }
+
+ .date-picker [data-scope="date-picker"][data-part="control"][data-readonly] {
+ @apply ui-readonly;
+ padding-inline-end: var(--spacing-space);
+ }
+
+ .date-picker [data-scope="date-picker"][data-part="control"][data-invalid]
+ > [data-scope="date-picker"][data-part="input"],
+ .date-picker [data-scope="date-picker"][data-part="input"][data-invalid] {
+ border-color: var(--color-alert);
+ box-shadow: none;
  }
 
  .date-picker [data-scope="date-picker"][data-part="trigger"] {
@@ -109,6 +140,7 @@
  z-index: 30;
  width: max-content;
  max-width: max-content;
+ /* display gated above via open-state :has() rules */
  }
 
  .date-picker [data-scope="date-picker"][data-part="content"] {

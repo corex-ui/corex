@@ -39,10 +39,11 @@ defmodule Corex.Design.Color do
   @doc false
   def against_or_pick(seed_hex, bg_hex, target)
       when is_binary(seed_hex) and is_binary(bg_hex) and is_number(target) do
-    try do
-      against(seed_hex, bg_hex, target)
-    rescue
-      ArgumentError ->
+    case against_result(seed_hex, bg_hex, target) do
+      {:ok, result} ->
+        result
+
+      :unreachable ->
         case Color.Contrast.pick_contrasting(bg_hex, ["#FFFFFF", "#000000"]) do
           {:ok, color} ->
             hex = Color.to_hex(color)
@@ -52,6 +53,13 @@ defmodule Corex.Design.Color do
             raise ArgumentError, "pick_contrasting failed for #{bg_hex}: #{inspect(other)}"
         end
     end
+  end
+
+  # credo:disable-for-next-line ExSlop.Check.Warning.RescueWithoutReraise
+  defp against_result(seed_hex, bg_hex, target) do
+    {:ok, against(seed_hex, bg_hex, target)}
+  rescue
+    ArgumentError -> :unreachable
   end
 
   @doc false

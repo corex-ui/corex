@@ -95,7 +95,6 @@ defmodule Corex.Design.Components do
     {"color-picker", "trigger", :trigger},
     {"color-picker", "channel-input", :input},
     {"color-picker", "content", :content},
-    {"color-picker", "transparency-grid", :trigger},
     {"color-picker", "eye-dropper-trigger", :trigger},
     {"color-picker", "swatch-trigger", :trigger},
     {"color-picker", "error", :error},
@@ -125,7 +124,6 @@ defmodule Corex.Design.Components do
     {"dialog", "content", :content},
     {"editable", "root", :root},
     {"editable", "label", :label},
-    {"editable", "area", :input},
     {"editable", "input", :input},
     {"editable", "edit-trigger", :trigger},
     {"editable", "submit-trigger", :trigger},
@@ -142,13 +140,17 @@ defmodule Corex.Design.Components do
     {"floating-panel", "title", :label},
     {"floating-panel", "minimize-trigger", :trigger},
     {"floating-panel", "maximize-trigger", :trigger},
+    {"floating-panel", "stage-trigger", :trigger},
+    {"floating-panel", "close-trigger", :trigger},
+    {"layout-heading", "title", :label},
+    {"layout-heading", "subtitle", :label},
     {"link", :host, :host_link},
     {"listbox", "root", :root},
     {"listbox", "label", :label},
     {"listbox", "item", :item},
     {"menu", "content", :content},
     {"menu", "trigger", :trigger},
-    {"menu", "item-trigger", :trigger},
+    {"menu", "trigger-item", :item},
     {"menu", "item", :item},
     {"native-input", "root", :root},
     {"native-input", "label", :label},
@@ -194,16 +196,11 @@ defmodule Corex.Design.Components do
     {"tabs", "content", :content},
     {"tabs", "trigger", :item},
     {"tags-input", "root", :root},
-    {"tags-input", "control", :root},
     {"tags-input", "label", :label},
-    {"tags-input", "item-preview", :input},
     {"tags-input", "item-delete-trigger", :trigger},
-    {"tags-input", "input", :input},
     {"tags-input", "clear-trigger", :trigger},
     {"tags-input", "error", :error},
     {"timer", "root", :root},
-    {"timer", "item", :label},
-    {"timer", "separator", :label},
     {"timer", "action-trigger", :trigger},
     {"toast", "group", :root},
     {"toast", "root", :content},
@@ -249,7 +246,7 @@ defmodule Corex.Design.Components do
   end
 
   @max_height_hosts ~w(
-    accordion collapsible color-picker combobox date-picker dialog
+    accordion collapsible color-picker combobox data-table date-picker dialog
     floating-panel listbox menu select
   )
 

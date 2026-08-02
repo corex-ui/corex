@@ -18,11 +18,11 @@
  position: relative;
  width: fit-content;
  gap: var(--ctl-space, var(--spacing-space));
- padding-inline-end: var(--ctl-space, var(--spacing-space));
  }
 
  .switch [data-scope="switch"][data-part="root"][data-readonly] {
  @apply ui-readonly;
+ padding-inline-end: var(--spacing-space);
  }
 
  .switch [data-scope="switch"][data-part="control"] {
@@ -41,6 +41,7 @@
  transform;
  transition-duration: 150ms;
  background: var(--color-ui);
+ position: relative;
  }
 
  .switch [data-scope="switch"][data-part="control"][data-disabled] {

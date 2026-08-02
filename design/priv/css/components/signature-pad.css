@@ -3,7 +3,7 @@
 @layer components {
  .signature-pad {
  width: 100%;
- max-width: var(--container-xs);
+ max-width: var(--container-lg);
  gap: var(--spacing-space);
  display: flex;
  flex-direction: column;
@@ -17,20 +17,23 @@
  width: 100%;
  gap: var(--spacing-space);
  position: relative;
- padding-inline-end: var(--spacing-space);
- }
-
- .signature-pad [data-scope="signature-pad"][data-part="root"][data-readonly] {
- @apply ui-readonly;
  }
 
  .signature-pad [data-scope="signature-pad"][data-part="control"] {
  position: relative;
  width: 100%;
- height: calc(var(--container-5xs) * 0.7);
+ height: calc(var(--container-5xs) * 1.1);
  background-color: var(--color-ui);
  border-radius: var(--radius-md);
  border: 1px solid var(--color-border);
+ }
+
+ .signature-pad [data-scope="signature-pad"][data-part="control"][data-readonly] {
+ @apply ui-readonly;
+ }
+
+ .signature-pad [data-scope="signature-pad"][data-part="control"][data-invalid] {
+ border-color: var(--color-alert);
  }
 
  .signature-pad [data-scope="signature-pad"][data-part="guide"] {

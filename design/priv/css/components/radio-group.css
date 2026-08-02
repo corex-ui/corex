@@ -13,11 +13,6 @@
  .radio-group [data-scope="radio-group"][data-part="root"] {
  gap: var(--spacing-space);
  position: relative;
- padding-inline-end: var(--spacing-space);
- }
-
- .radio-group [data-scope="radio-group"][data-part="root"][data-readonly] {
- @apply ui-readonly;
  }
 
  [data-scope="radio-group"][data-part="item"] {
@@ -53,6 +48,7 @@
  height: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
  width: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
  padding: calc(var(--ctl-space, var(--spacing-space)) * 0.25);
+ position: relative;
 
  &:disabled,
  &[data-disabled],
@@ -71,6 +67,11 @@
  color: var(--color-alert);
  border-color: var(--color-alert);
  }
+ }
+
+ .radio-group [data-scope="radio-group"][data-part="root"][data-readonly] {
+ @apply ui-readonly;
+ padding-inline-end: var(--spacing-space);
  }
 
  .radio-group [data-scope="radio-group"][data-part="item-control"][data-state="unchecked"] {

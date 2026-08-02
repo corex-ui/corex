@@ -10,7 +10,7 @@
  }
 
  .tooltip [data-scope="tooltip"][data-part="positioner"] {
- z-index: 50;
+ z-index: 100;
  position: absolute;
  left: 0;
  top: 0;
@@ -31,9 +31,16 @@
  position: relative;
  z-index: 1;
  color: var(--ctl-ink-text, var(--color-ink));
- background-color: var(--color-ui);
+ background-color: var(--ctl-muted, var(--color-surface));
  border: 1px solid var(--color-border);
  box-shadow: var(--shadow-ui);
+ opacity: 1;
+ }
+
+ .tooltip.ui-solid [data-scope="tooltip"][data-part="content"] {
+ background-color: var(--ctl-fill, var(--color-ink));
+ color: var(--ctl-fill-ink, var(--color-root));
+ border-color: transparent;
  }
 
  .tooltip [data-scope="tooltip"][data-part="content"][data-state="closed"] {
@@ -50,12 +57,20 @@
 
  .tooltip [data-scope="tooltip"][data-part="arrow"] {
  --arrow-size: var(--spacing-space);
- --arrow-background: var(--color-ui);
+ --arrow-background: var(--ctl-muted, var(--color-surface));
  z-index: 0;
+ }
+
+ .tooltip.ui-solid [data-scope="tooltip"][data-part="arrow"] {
+ --arrow-background: var(--ctl-fill, var(--color-ink));
  }
 
  .tooltip [data-scope="tooltip"][data-part="arrow-tip"] {
  background: var(--arrow-background);
  border: 1px solid var(--color-border);
+ }
+
+ .tooltip.ui-solid [data-scope="tooltip"][data-part="arrow-tip"] {
+ border-color: transparent;
  }
 }

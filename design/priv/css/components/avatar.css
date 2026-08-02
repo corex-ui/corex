@@ -15,30 +15,33 @@
  }
 
  .avatar[dir="rtl"] [data-scope="avatar"][data-part="fallback"] {
- text-align: end;
+ text-align: center;
  }
 
  .avatar [data-scope="avatar"][data-part="root"] {
  position: relative;
  display: inline-grid;
  place-items: center;
+ vertical-align: middle;
  width: var(--ctl-size, var(--spacing-size));
  height: var(--ctl-size, var(--spacing-size));
  aspect-ratio: 1 / 1;
  max-width: 100%;
  border-radius: var(--ctl-radius, var(--radius-full));
  overflow: hidden;
+ align-self: center;
  }
 
  .avatar [data-scope="avatar"][data-part="fallback"] {
  display: inline-flex;
  align-items: center;
  justify-content: center;
- text-align: start;
+ text-align: center;
+ vertical-align: middle;
  width: 100%;
  height: 100%;
  font-size: var(--ctl-text, var(--text-base));
- line-height: var(--ctl-leading, var(--text-base--line-height));
+ line-height: 1;
  font-weight: var(--font-weight-normal);
  border-radius: inherit;
  border: 1px solid var(--color-border);

@@ -7,12 +7,17 @@
  position: relative;
  width: 100%;
  max-width: var(--container-md);
- max-height: var(--container-md);
+ max-height: var(--ctl-max-height, var(--container-md));
  min-width: 0;
  overflow-x: auto;
  overflow-y: auto;
  border-radius: var(--radius-md);
  border: 1px solid var(--color-border);
+ }
+
+ .data-table[class*="ui-max-height-"] {
+ @apply scrollbar scrollbar--sm;
+ overflow-y: var(--ctl-max-height-overflow, auto);
  }
 
  .data-table [data-scope="data-table"][data-part="root"] {
@@ -155,8 +160,18 @@
  padding: 0;
  justify-content: center;
  width: auto;
+ cursor: pointer;
  border-radius: var(--radius-full) !important;
+ background-color: transparent;
+ border-color: transparent;
+ color: var(--ctl-ink-text, var(--color-ink));
+ @apply ui-ghost;
  @apply ui-size-sm;
+ @apply ui-trigger--circle;
+ }
+
+ .data-table [data-scope="data-table"][data-part="sort-trigger"]:hover {
+ background-color: var(--color-ui-hover);
  }
 
  .data-table [data-scope="data-table"][data-part="sort-text"] {
@@ -262,6 +277,16 @@
  max-width: 100%;
  gap: var(--spacing-space);
  margin-inline: auto;
+ min-height: 0;
+ padding: 0;
+ padding-inline: 0;
+ background-color: transparent;
+ background: transparent;
+ border: none;
+ border-radius: 0;
+ box-shadow: none;
+ color: inherit;
+ cursor: default;
  --ctl-fill: initial;
  --ctl-fill-hover: initial;
  --ctl-fill-active: initial;
@@ -269,17 +294,28 @@
  --ctl-ink-text: initial;
  --ctl-muted: initial;
  --ctl-ink: initial;
- --ctl-bg: initial;
- --ctl-bg-hover: initial;
- --ctl-bg-active: initial;
- --ctl-bd: initial;
+ --ctl-bg: transparent;
+ --ctl-bg-hover: transparent;
+ --ctl-bg-active: transparent;
+ --ctl-bd: transparent;
  --ctl-ring: initial;
- --ctl-bg-muted: initial;
+ --ctl-bg-muted: transparent;
  --ctl-ink-muted: initial;
  --ctl-text: initial;
  --ctl-leading: initial;
  --ctl-space: initial;
  --ctl-size: initial;
+ }
+
+ .data-table [data-scope="data-table"][data-part="actions"]:hover,
+ .data-table [data-scope="data-table"][data-part="actions"]:active,
+ .data-table [data-scope="data-table"][data-part="actions"]:focus,
+ .data-table [data-scope="data-table"][data-part="actions"]:focus-visible {
+ background-color: transparent;
+ background: transparent;
+ border-color: transparent;
+ box-shadow: none;
+ outline: none;
  }
 
  .data-table[dir="rtl"]
