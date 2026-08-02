@@ -75,7 +75,7 @@
     background-color: var(--color-surface);
     border-top: 1px solid var(--color-border);
     padding-block: --spacing(11);
-    padding-inline: var(--spacing-space);
+    padding-inline: var(--spacing-space-sm);
   }
 
   @media (min-width: 64rem) {
@@ -93,7 +93,8 @@
     flex-direction: row;
     flex-wrap: wrap;
     gap: var(--spacing-size);
-    padding: var(--spacing-space);
+    padding-block: var(--spacing-space);
+    padding-inline: var(--spacing-space-sm);
     
     overflow-x: auto;
     width: 100%;
@@ -106,7 +107,8 @@
       overflow-x: visible;
       width: 18rem;
       flex-shrink: 0;
-      padding: --spacing(11);
+      padding-block: --spacing(11);
+      padding-inline: --spacing(6);
       gap: var(--spacing-space);
     }
   }

@@ -36,6 +36,15 @@ defmodule E2eWeb.TailwindSizingLiterals do
     min-h-2xl min-h-3xl min-h-4xl min-h-5xl min-h-6xl min-h-7xl min-h-8xl min-h-9xl
   )
 
+  # Complete literals so Tailwind emits @utility ui-max-height-* (no interpolation).
+  @ui_max_height_literals ~W(
+    ui-max-height-9xs ui-max-height-8xs ui-max-height-7xs ui-max-height-6xs
+    ui-max-height-5xs ui-max-height-4xs ui-max-height-3xs ui-max-height-2xs
+    ui-max-height-xs ui-max-height-sm ui-max-height-md ui-max-height-lg ui-max-height-xl
+    ui-max-height-2xl ui-max-height-3xl ui-max-height-4xl ui-max-height-5xl
+    ui-max-height-6xl ui-max-height-7xl ui-max-height-8xl ui-max-height-9xl
+  )
+
   @max_width_map %{
     "none" => "max-w-none",
     "full" => "max-w-full",
@@ -169,15 +178,41 @@ defmodule E2eWeb.TailwindSizingLiterals do
     "9xl" => "min-h-9xl"
   }
 
+  @ui_max_height_map %{
+    "9xs" => "ui-max-height-9xs",
+    "8xs" => "ui-max-height-8xs",
+    "7xs" => "ui-max-height-7xs",
+    "6xs" => "ui-max-height-6xs",
+    "5xs" => "ui-max-height-5xs",
+    "4xs" => "ui-max-height-4xs",
+    "3xs" => "ui-max-height-3xs",
+    "2xs" => "ui-max-height-2xs",
+    "xs" => "ui-max-height-xs",
+    "sm" => "ui-max-height-sm",
+    "md" => "ui-max-height-md",
+    "lg" => "ui-max-height-lg",
+    "xl" => "ui-max-height-xl",
+    "2xl" => "ui-max-height-2xl",
+    "3xl" => "ui-max-height-3xl",
+    "4xl" => "ui-max-height-4xl",
+    "5xl" => "ui-max-height-5xl",
+    "6xl" => "ui-max-height-6xl",
+    "7xl" => "ui-max-height-7xl",
+    "8xl" => "ui-max-height-8xl",
+    "9xl" => "ui-max-height-9xl"
+  }
+
   def max_width_literals, do: @max_width_literals
   def min_width_literals, do: @min_width_literals
   def width_literals, do: @width_literals
   def max_height_literals, do: @max_height_literals
   def min_height_literals, do: @min_height_literals
+  def ui_max_height_literals, do: @ui_max_height_literals
 
   def max_width(step), do: Map.fetch!(@max_width_map, step)
   def min_width(step), do: Map.fetch!(@min_width_map, step)
   def width(step), do: Map.fetch!(@width_map, step)
   def max_height(step), do: Map.fetch!(@max_height_map, step)
   def min_height(step), do: Map.fetch!(@min_height_map, step)
+  def ui_max_height(step), do: Map.fetch!(@ui_max_height_map, step)
 end

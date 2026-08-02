@@ -307,6 +307,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       for={@form}
       action="/color-picker/form"
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.color_picker
         field={f[:color]}
@@ -352,7 +353,9 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@form} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.color_picker
         name={@form[:color].name}
         value={@form[:color].value || "#3b82f6"}
@@ -372,7 +375,8 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       for={@form}
       action={~p"/color-picker/form"}
       method="post"
-          >
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.color_picker
         name={@form[:color].name}
         value={@form[:color].value || "#3b82f6"}
@@ -441,6 +445,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       for={@form}
       action="/color-picker/form"
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.color_picker
         field={f[:color]}
@@ -504,6 +509,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     <form
       action="/color-picker/form"
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.color_picker
@@ -538,7 +544,8 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
      
       phx-change="validate_basic"
       phx-submit="save_basic"
-          >
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.color_picker
         name={@form[:color].name}
         value={@color}
@@ -586,7 +593,8 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
      
       phx-change="validate_validate"
       phx-submit="save_validate"
-          >
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.color_picker
         name={@form[:color].name}
         value={@color}
@@ -659,6 +667,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       for={@form}
       action={~p"/color-picker/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.color_picker
         field={@form[:color]}
@@ -691,6 +700,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       for={@form}
       action={~p"/color-picker/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.color_picker
         field={@form[:color]}
@@ -723,6 +733,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       action={~p"/color-picker/form"}
       method="post"
       id="color-picker-plain-form"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.color_picker
@@ -753,6 +764,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       for={@form}
       phx-change="validate_basic"
       phx-submit="save_basic"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.color_picker
         field={@form[:color]}
@@ -786,6 +798,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       for={@form}
       phx-change="validate_validate"
       phx-submit="save_validate"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.color_picker
         field={@form[:color]}
@@ -819,6 +832,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       for={@form}
       action={~p"/color-picker/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.color_picker
         field={@form[:color]}
@@ -850,7 +864,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
 
   def form_preview_live_phoenix(assigns) do
     ~H"""
-    <.form for={@form} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix" class="flex flex-col gap-space-lg w-full max-w-xl">
       <.color_picker
         field={@form[:color]}
         class="color-picker"
@@ -1346,6 +1360,45 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
         <.color_picker
           id={"color-picker-style-max-#{variant.id}"}
           class={DemoScales.join_block_modifiers("color-picker", variant.modifier)}
+          value="#3b82f6"
+          presets={@presets}
+        >
+          <:label>{DemoScales.block_demo_label()}</:label>
+        </.color_picker>
+      </div>
+    </div>
+    """
+  end
+
+  def styling_max_height_code do
+    label = DemoScales.block_demo_label()
+
+    DemoScales.max_height_variants("color-picker")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("color-picker", modifier)
+
+      """
+      <.color_picker class="#{class}" value="#3b82f6" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}>
+        <:label>#{label}</:label>
+      </.color_picker>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_max_height_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:presets, @presets)
+      |> assign(:max_height_variants, DemoScales.max_height_variants("color-picker"))
+
+    ~H"""
+    <div {DemoScales.preview_scroll_attrs()}>
+      <div :for={variant <- @max_height_variants} class="flex flex-col gap-2">
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
+        <.color_picker
+          id={"color-picker-style-max-h-#{variant.id}"}
+          class={DemoScales.join_modifiers("color-picker", variant.modifier)}
           value="#3b82f6"
           presets={@presets}
         >

@@ -448,6 +448,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       for={@form}
       action={~p"/password-input/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.password_input field={@form[:password]} class="password-input">
         <:label>Password</:label>
@@ -488,7 +489,9 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@form} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.password_input field={@form[:password]} class="password-input">
         <:label>Password</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
@@ -511,7 +514,8 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       for={@form}
       action={~p"/password-input/form"}
       method="post"
-          >
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.password_input field={@form[:password]} class="password-input">
         <:label>Password</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
@@ -572,7 +576,8 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       for={@form}
       action={~p"/password-input/form"}
       method="post"
-          >
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.password_input field={@form[:password]} class="password-input">
         <:label>Password</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
@@ -633,6 +638,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     <form
       action={~p"/password-input/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.password_input
@@ -671,7 +677,8 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
      
       phx-change="validate"
       phx-submit="save"
-          >
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.password_input field={@form[:password]} class="password-input">
         <:label>Password</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
@@ -746,7 +753,8 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
      
       phx-change="validate_strict"
       phx-submit="save_strict"
-          >
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.password_input field={@form[:password]} class="password-input">
         <:label>Password</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
@@ -829,6 +837,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       for={@form}
       action={~p"/password-input/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.password_input field={f[:password]} class="password-input" id="password-input-changeset-field">
         <:label>Password</:label>
@@ -860,6 +869,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       for={@form}
       action={~p"/password-input/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.password_input field={f[:password]} class="password-input" id="password-input-validate-field">
         <:label>Password</:label>
@@ -890,6 +900,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       action={~p"/password-input/form"}
       method="post"
       id="password-input-plain-form"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.password_input
@@ -919,6 +930,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       for={@form}
       phx-change="validate"
       phx-submit="save"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.password_input
         field={@form[:password]}
@@ -947,6 +959,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       for={@form}
       phx-change="validate"
       phx-submit="save"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.password_input
         field={@form[:password]}
@@ -982,6 +995,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       for={@form}
       action={~p"/password-input/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.password_input field={f[:password]} class="password-input">
         <:label>Password</:label>
@@ -1006,7 +1020,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
 
   def form_preview_live_phoenix(assigns) do
     ~H"""
-    <.form for={@form} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix" class="flex flex-col gap-space-lg w-full max-w-xl">
       <.password_input
         field={@form[:password]}
         class="password-input"

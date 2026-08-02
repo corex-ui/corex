@@ -5,7 +5,7 @@ defmodule E2eWeb.UserControllerTest do
 
   @create_attrs %{
     name: "some name",
-    country: "some country",
+    country: "fra",
     birth_date: "1990-01-15",
     signature: ["M0,0L1,1Z"],
     terms: true,
@@ -18,11 +18,12 @@ defmodule E2eWeb.UserControllerTest do
     pin: "1234",
     accent_color: "#3b82f6",
     heading_angle: 90.0,
-    title: "some title"
+    title: "some title",
+    avatar: "avatar.png"
   }
   @update_attrs %{
     name: "some updated name",
-    country: "some updated country",
+    country: "deu",
     birth_date: "1995-06-20",
     signature: ["M0,0L1,1Z"],
     terms: true,
@@ -35,7 +36,8 @@ defmodule E2eWeb.UserControllerTest do
     pin: "5678",
     accent_color: "#00ff00",
     heading_angle: 180.0,
-    title: "updated title"
+    title: "updated title",
+    avatar: "updated.png"
   }
   @invalid_attrs %{
     name: nil,
@@ -48,7 +50,12 @@ defmodule E2eWeb.UserControllerTest do
     tags: nil,
     password: nil,
     notifications: nil,
-    role: nil
+    role: nil,
+    pin: nil,
+    accent_color: nil,
+    heading_angle: nil,
+    title: nil,
+    avatar: nil
   }
 
   describe "index" do

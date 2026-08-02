@@ -28,17 +28,17 @@ defmodule E2eWeb.HomePageTest do
     assert html =~ "lg:grid-cols-2"
     refute html =~ "md:grid-cols-2"
     refute html =~ "max-h-28"
-    assert html =~ ~s(id="site-nav-menu")
+    assert html =~ ~S(id="site-nav-menu")
     assert html =~ "phx-hook=\"HomeHero\""
     assert html =~ "hero-accordion-changed"
     assert html =~ "data-hero-accordion-value"
-    refute html =~ ~s(id="hero-code")
+    refute html =~ ~S(id="hero-code")
     refute html =~ "min-h-72"
-    refute html =~ ~s(id="home-hero-demo")
-    refute html =~ ~s(id="home-anatomy")
-    refute html =~ ~s(id="home-api")
-    refute html =~ ~s(id="home-cta")
-    refute html =~ ~s(id="home-catalog")
+    refute html =~ ~S(id="home-hero-demo")
+    refute html =~ ~S(id="home-anatomy")
+    refute html =~ ~S(id="home-api")
+    refute html =~ ~S(id="home-cta")
+    refute html =~ ~S(id="home-catalog")
     refute html =~ "dialog--side"
   end
 
@@ -46,10 +46,10 @@ defmodule E2eWeb.HomePageTest do
     conn = get(conn, ~p"/accordion/anatomy")
     html = html_response(conn, 200)
 
-    refute html =~ ~s(id="home-header")
-    refute html =~ ~s(id="home-footer")
+    refute html =~ ~S(id="home-header")
+    refute html =~ ~S(id="home-footer")
     refute html =~ "dialog--side"
-    assert html =~ ~s(id="site-nav-menu")
+    assert html =~ ~S(id="site-nav-menu")
     assert html =~ "sticky top-0"
     assert html =~ "border-b border-border"
   end

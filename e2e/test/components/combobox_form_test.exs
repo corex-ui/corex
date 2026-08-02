@@ -14,7 +14,7 @@ defmodule E2eWeb.ComboboxFormTest do
     |> Combobox.click_form_combobox_trigger(:live, :phoenix)
     |> Combobox.select_item("bel")
     |> Combobox.submit_form(:live, :phoenix)
-    |> Combobox.see_flash(~s(country="bel"))
+    |> Combobox.see_flash(~S(country="bel"))
   end
 
   for {path, ready} <- [

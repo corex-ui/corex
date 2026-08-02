@@ -26,13 +26,13 @@ defmodule E2eWeb.SwitchModel do
   end
 
   def wait_state(session, host_dom_id, expected, opts \\ [])
-      when expected in ~w(checked unchecked) do
+      when expected in ~W(checked unchecked) do
     timeout = Keyword.get(opts, :timeout, 8_000)
 
     wait_for_has(
       session,
       css(
-        "##{host_dom_id} [data-scope=\"switch\"][data-part=\"root\"][data-state=\"#{expected}\"]",
+        ~s|##{host_dom_id} [data-scope="switch"][data-part="root"][data-state="#{expected}"]|,
         visible: :any
       ),
       timeout: timeout

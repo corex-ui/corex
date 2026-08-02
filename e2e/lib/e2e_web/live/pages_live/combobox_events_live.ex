@@ -130,7 +130,9 @@ defmodule E2eWeb.ComboboxEventsLive do
               <.combobox
                 id="combobox-events-server-field"
                 class="combobox"
-                placeholder={~t"Select"}
+                translation={
+                  %Corex.Combobox.Translation{placeholder: ~t"Select", empty: ~t"No results"}
+                }
                 items={@items}
                 on_value_change="combobox_changed"
               >
@@ -168,7 +170,9 @@ defmodule E2eWeb.ComboboxEventsLive do
               <.combobox
                 id="combobox-events-client-field"
                 class="combobox"
-                placeholder={~t"Select"}
+                translation={
+                  %Corex.Combobox.Translation{placeholder: ~t"Select", empty: ~t"No results"}
+                }
                 items={@items}
                 on_value_change_client="combobox-changed"
               >
@@ -226,7 +230,9 @@ defmodule E2eWeb.ComboboxEventsLive do
               <.combobox
                 id="combobox-events-open-server-field"
                 class="combobox"
-                placeholder={~t"Select"}
+                translation={
+                  %Corex.Combobox.Translation{placeholder: ~t"Select", empty: ~t"No results"}
+                }
                 items={@items}
                 on_open_change="combobox_open_changed"
               >
@@ -263,7 +269,9 @@ defmodule E2eWeb.ComboboxEventsLive do
               <.combobox
                 id="combobox-events-open-client-field"
                 class="combobox"
-                placeholder={~t"Select"}
+                translation={
+                  %Corex.Combobox.Translation{placeholder: ~t"Select", empty: ~t"No results"}
+                }
                 items={@items}
                 on_open_change_client="combobox-open-changed"
               >
@@ -323,7 +331,9 @@ defmodule E2eWeb.ComboboxEventsLive do
               <.combobox
                 id="combobox-events-input-server-field"
                 class="combobox"
-                placeholder={~t"Select"}
+                translation={
+                  %Corex.Combobox.Translation{placeholder: ~t"Select", empty: ~t"No results"}
+                }
                 filter={false}
                 items={@items}
                 on_input_value_change="combobox_input_changed"
@@ -361,7 +371,9 @@ defmodule E2eWeb.ComboboxEventsLive do
               <.combobox
                 id="combobox-events-highlight-server-field"
                 class="combobox"
-                placeholder={~t"Select"}
+                translation={
+                  %Corex.Combobox.Translation{placeholder: ~t"Select", empty: ~t"No results"}
+                }
                 items={@items}
                 on_highlight_change="combobox_highlight_changed"
               >
@@ -398,7 +410,9 @@ defmodule E2eWeb.ComboboxEventsLive do
               <.combobox
                 id="combobox-events-select-server-field"
                 class="combobox"
-                placeholder={~t"Select"}
+                translation={
+                  %Corex.Combobox.Translation{placeholder: ~t"Select", empty: ~t"No results"}
+                }
                 items={@items}
                 on_select="combobox_selected"
               >

@@ -51,6 +51,8 @@ defmodule E2eWeb.FormPatternsLive do
   end
 
   defp assign_form(socket, form_key, params, form_as, form_id) do
+    params = PatternsForm.normalize_avatar_params(params)
+
     form =
       %PatternsForm{}
       |> PatternsForm.changeset_validate(params)
@@ -60,6 +62,8 @@ defmodule E2eWeb.FormPatternsLive do
   end
 
   defp save_form(socket, params, form_key, form_id, form_as) do
+    params = PatternsForm.normalize_avatar_params(params)
+
     case PatternsForm.changeset_validate(%PatternsForm{}, params) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)

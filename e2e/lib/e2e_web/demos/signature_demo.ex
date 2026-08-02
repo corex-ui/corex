@@ -292,8 +292,9 @@ defmodule E2eWeb.Demos.SignatureDemo do
       for={@form}
       action={~p"/signature-pad/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
-      <.signature_pad field={@form[:signature]} class="signature-pad">
+      <.signature_pad field={@form[:signature]} class="signature-pad w-full max-w-none">
         <:label>Sign here</:label>
         <:clear_trigger>
           <.heroicon name="hero-x-mark" />
@@ -337,9 +338,10 @@ defmodule E2eWeb.Demos.SignatureDemo do
       for={@form}
       action={~p"/signature-pad/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="signature_ecto[_sent]" value="1" />
-      <.signature_pad field={@form[:signature]} class="signature-pad">
+      <.signature_pad field={@form[:signature]} class="signature-pad w-full max-w-none">
         <:label>Sign here</:label>
         <:clear_trigger>
           <.heroicon name="hero-x-mark" />
@@ -389,8 +391,10 @@ defmodule E2eWeb.Demos.SignatureDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@form} phx-submit="save_phoenix">
-      <.signature_pad field={@form[:signature]} class="signature-pad">
+    <.form for={@form} phx-submit="save_phoenix"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
+      <.signature_pad field={@form[:signature]} class="signature-pad w-full max-w-none">
         <:label>Sign here</:label>
         <:clear_trigger>
           <.heroicon name="hero-x-mark" />
@@ -435,9 +439,11 @@ defmodule E2eWeb.Demos.SignatureDemo do
 
   def form_doc_live_ecto_heex do
     ~S"""
-    <.form for={@form} phx-change="validate" phx-submit="save">
+    <.form for={@form} phx-change="validate" phx-submit="save"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <input type="hidden" name="signature_ecto[_sent]" value="1" />
-      <.signature_pad field={@form[:signature]} class="signature-pad" on_draw_end="signature_drawn">
+      <.signature_pad field={@form[:signature]} class="signature-pad w-full max-w-none" on_draw_end="signature_drawn">
         <:label>Sign here</:label>
         <:clear_trigger>
           <.heroicon name="hero-x-mark" />
@@ -544,9 +550,10 @@ defmodule E2eWeb.Demos.SignatureDemo do
       for={@form}
       action={~p"/signature-pad/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="signature_changeset[_sent]" value="1" />
-      <.signature_pad field={@form[:signature]} class="signature-pad">
+      <.signature_pad field={@form[:signature]} class="signature-pad w-full max-w-none">
         <:label>Sign here</:label>
         <:clear_trigger>
           <.heroicon name="hero-x-mark" />
@@ -582,9 +589,10 @@ defmodule E2eWeb.Demos.SignatureDemo do
       for={@form}
       action={~p"/signature-pad/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="signature_validate[_sent]" value="1" />
-      <.signature_pad field={@form[:signature]} class="signature-pad">
+      <.signature_pad field={@form[:signature]} class="signature-pad w-full max-w-none">
         <:label>Sign here</:label>
         <:clear_trigger>
           <.heroicon name="hero-x-mark" />
@@ -623,9 +631,10 @@ defmodule E2eWeb.Demos.SignatureDemo do
       for={@form}
       action={~p"/signature-pad/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="signature_changeset[_sent]" value="1" />
-      <.signature_pad field={f[:signature]} class="signature-pad">
+      <.signature_pad field={f[:signature]} class="signature-pad w-full max-w-none">
         <:label>Sign here</:label>
         <:clear_trigger>
           <.heroicon name="hero-x-mark" />
@@ -651,9 +660,10 @@ defmodule E2eWeb.Demos.SignatureDemo do
       for={@form}
       action={~p"/signature-pad/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="signature_ecto[_sent]" value="1" />
-      <.signature_pad field={f[:signature]} class="signature-pad">
+      <.signature_pad field={f[:signature]} class="signature-pad w-full max-w-none">
         <:label>Sign here</:label>
         <:clear_trigger>
           <.heroicon name="hero-x-mark" />
@@ -679,8 +689,9 @@ defmodule E2eWeb.Demos.SignatureDemo do
       for={@form}
       action={~p"/signature-pad/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
-      <.signature_pad field={f[:signature]} class="signature-pad">
+      <.signature_pad field={f[:signature]} class="signature-pad w-full max-w-none">
         <:label>Sign here</:label>
         <:clear_trigger>
           <.heroicon name="hero-x-mark" />
@@ -699,9 +710,18 @@ defmodule E2eWeb.Demos.SignatureDemo do
     _ = assigns
 
     ~H"""
-    <form action={~p"/signature-pad/form"} method="post" id="signature-form-native">
+    <form
+      action={~p"/signature-pad/form"}
+      method="post"
+      id="signature-form-native"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-      <.signature_pad name="user[signature]" class="signature-pad" id="signature-form-native-pad">
+      <.signature_pad
+        name="user[signature]"
+        class="signature-pad w-full max-w-none"
+        id="signature-form-native-pad"
+      >
         <:label>Sign here</:label>
         <:clear_trigger>
           <.heroicon name="hero-x-mark" />
@@ -716,9 +736,9 @@ defmodule E2eWeb.Demos.SignatureDemo do
 
   def form_native_heex do
     ~S"""
-    <form action={~p"/signature-pad/form"} method="post">
+    <form action={~p"/signature-pad/form"} method="post" class="flex flex-col gap-space-lg w-full max-w-xl">
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-      <.signature_pad name="user[signature]" class="signature-pad">
+      <.signature_pad name="user[signature]" class="signature-pad w-full max-w-none">
         <:label>Sign here</:label>
         <:clear_trigger>
           <.heroicon name="hero-x-mark" />
@@ -755,10 +775,10 @@ defmodule E2eWeb.Demos.SignatureDemo do
 
   def form_preview_live_phoenix(assigns) do
     ~H"""
-    <.form for={@form} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix" class="flex flex-col gap-space-lg w-full max-w-xl">
       <.signature_pad
         field={@form[:signature]}
-        class="signature-pad"
+        class="signature-pad w-full max-w-none"
         id="signature-live-form-phoenix-pad"
       >
         <:label>Sign here</:label>
@@ -777,11 +797,16 @@ defmodule E2eWeb.Demos.SignatureDemo do
 
   def form_preview_live_ecto(assigns) do
     ~H"""
-    <.form for={@form} phx-change="validate" phx-submit="save">
+    <.form
+      for={@form}
+      phx-change="validate"
+      phx-submit="save"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <input type="hidden" name="signature_ecto[_sent]" value="1" />
       <.signature_pad
         field={@form[:signature]}
-        class="signature-pad"
+        class="signature-pad w-full max-w-none"
         id="signature-live-form-ecto-pad"
         on_draw_end="signature_drawn"
       >

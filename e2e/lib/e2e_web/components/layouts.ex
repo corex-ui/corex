@@ -8,7 +8,7 @@ defmodule E2eWeb.Layouts do
   import E2eWeb.App.{Footer, Header, Pagination, Aside}
   alias E2eWeb.App.Shell
 
-  import E2eWeb.{AccessibilityToggle, ModeToggle, ThemeToggle}
+  import E2eWeb.{ModeToggle, ThemeToggle}
 
   embed_templates("layouts/*")
 

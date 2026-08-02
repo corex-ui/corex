@@ -11,13 +11,17 @@ defmodule E2eWeb.SelectPatternsLive do
     %{value: "donec", label: "Donec condimentum ex mi"}
   ]
 
+  @dynamic_id "patterns-dynamic"
+
   @impl true
   def mount(_params, _session, socket) do
     {:ok,
      socket
+     |> assign(:dynamic_id, @dynamic_id)
      |> assign(:dynamic_items, @initial_items)
      |> assign(:next_id, 1)
      |> assign(:value, [])
+     |> assign(:dynamic_value, [])
      |> assign(:items, Demo.patterns_items_flat())
      |> assign(:controlled_heex, Demo.patterns_controlled_heex())
      |> assign(:controlled_elixir, Demo.patterns_controlled_elixir())}
@@ -29,6 +33,14 @@ defmodule E2eWeb.SelectPatternsLive do
   end
 
   def handle_event("value_changed", _params, socket) do
+    {:noreply, socket}
+  end
+
+  def handle_event("dynamic_value_changed", %{"value" => value}, socket) when is_list(value) do
+    {:noreply, assign(socket, :dynamic_value, value)}
+  end
+
+  def handle_event("dynamic_value_changed", _params, socket) do
     {:noreply, socket}
   end
 
@@ -46,7 +58,9 @@ defmodule E2eWeb.SelectPatternsLive do
     {:noreply,
      socket
      |> assign(:dynamic_items, @initial_items)
-     |> assign(:next_id, 1)}
+     |> assign(:next_id, 1)
+     |> assign(:dynamic_value, [])
+     |> Corex.Select.set_value(@dynamic_id, [])}
   end
 
   @impl true
@@ -112,7 +126,13 @@ defmodule E2eWeb.SelectPatternsLive do
                   Reset
                 </.action>
               </div>
-              <.select id="patterns-dynamic" class="select" items={Corex.List.new(@dynamic_items)}>
+              <.select
+                id={@dynamic_id}
+                class="select"
+                items={Corex.List.new(@dynamic_items)}
+                value={@dynamic_value}
+                on_value_change="dynamic_value_changed"
+              >
                 <:label>Country</:label>
                 <:trigger>
                   <.heroicon name="hero-chevron-down" class="icon" />

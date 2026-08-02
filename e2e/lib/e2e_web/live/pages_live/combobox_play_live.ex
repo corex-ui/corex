@@ -39,7 +39,6 @@ defmodule E2eWeb.ComboboxPlayLive do
       dir: "ltr",
       orientation: "vertical",
       close_on_select: true,
-      allow_custom_value: false,
       clear_on_empty: false,
       disabled_item_ids: []
     }
@@ -133,9 +132,6 @@ defmodule E2eWeb.ComboboxPlayLive do
   defp update_control(socket, "close_on_select", v),
     do: update(socket, :controls, &Map.put(&1, :close_on_select, v))
 
-  defp update_control(socket, "allow_custom_value", v),
-    do: update(socket, :controls, &Map.put(&1, :allow_custom_value, v))
-
   defp update_control(socket, "clear_on_empty", v),
     do: update(socket, :controls, &Map.put(&1, :clear_on_empty, v))
 
@@ -227,14 +223,6 @@ defmodule E2eWeb.ComboboxPlayLive do
           </.switch>
           <.switch
             class="switch ui-size-sm"
-            id="allow_custom_value"
-            checked={@controls.allow_custom_value}
-            on_checked_change="control_changed"
-          >
-            <:label>Allow custom value</:label>
-          </.switch>
-          <.switch
-            class="switch ui-size-sm"
             id="clear_on_empty"
             checked={@controls.clear_on_empty}
             on_checked_change="control_changed"
@@ -250,7 +238,6 @@ defmodule E2eWeb.ComboboxPlayLive do
             items={@items}
             value={@play_value}
             close_on_select={@controls.close_on_select}
-            allow_custom_value={@controls.allow_custom_value}
             clear_on_empty={@controls.clear_on_empty}
             on_value_change="combobox_play_value_changed"
             disabled={@controls.disabled}

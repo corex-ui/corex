@@ -974,4 +974,87 @@ defmodule E2eWeb.Demos.MenuDemo do
     </div>
     """
   end
+
+  def demo_scroll_leaf_items do
+    [
+      %Corex.Tree.Item{value: "fra", label: "France"},
+      %Corex.Tree.Item{value: "bel", label: "Belgium"},
+      %Corex.Tree.Item{value: "deu", label: "Germany"},
+      %Corex.Tree.Item{value: "nld", label: "Netherlands"},
+      %Corex.Tree.Item{value: "che", label: "Switzerland"},
+      %Corex.Tree.Item{value: "aut", label: "Austria"},
+      %Corex.Tree.Item{value: "ita", label: "Italy"},
+      %Corex.Tree.Item{value: "esp", label: "Spain"},
+      %Corex.Tree.Item{value: "prt", label: "Portugal"},
+      %Corex.Tree.Item{value: "pol", label: "Poland"},
+      %Corex.Tree.Item{value: "swe", label: "Sweden"},
+      %Corex.Tree.Item{value: "nor", label: "Norway"},
+      %Corex.Tree.Item{value: "dnk", label: "Denmark"},
+      %Corex.Tree.Item{value: "fin", label: "Finland"},
+      %Corex.Tree.Item{value: "irl", label: "Ireland"},
+      %Corex.Tree.Item{value: "grc", label: "Greece"}
+    ]
+  end
+
+  defp styling_max_height_items_attr do
+    ~S|items={[
+      %Corex.Tree.Item{value: "fra", label: "France"},
+      %Corex.Tree.Item{value: "bel", label: "Belgium"},
+      %Corex.Tree.Item{value: "deu", label: "Germany"},
+      %Corex.Tree.Item{value: "nld", label: "Netherlands"},
+      %Corex.Tree.Item{value: "che", label: "Switzerland"},
+      %Corex.Tree.Item{value: "aut", label: "Austria"},
+      %Corex.Tree.Item{value: "ita", label: "Italy"},
+      %Corex.Tree.Item{value: "esp", label: "Spain"},
+      %Corex.Tree.Item{value: "prt", label: "Portugal"},
+      %Corex.Tree.Item{value: "pol", label: "Poland"},
+      %Corex.Tree.Item{value: "swe", label: "Sweden"},
+      %Corex.Tree.Item{value: "nor", label: "Norway"},
+      %Corex.Tree.Item{value: "dnk", label: "Denmark"},
+      %Corex.Tree.Item{value: "fin", label: "Finland"},
+      %Corex.Tree.Item{value: "irl", label: "Ireland"},
+      %Corex.Tree.Item{value: "grc", label: "Greece"}
+    ]}|
+  end
+
+  def styling_max_height_code do
+    items = styling_max_height_items_attr()
+
+    DemoScales.max_height_variants("menu")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("menu", modifier)
+
+      """
+      <.menu class="#{class} w-full" value="fra" #{items}>
+        <:trigger>Menu</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_max_height_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:items, demo_scroll_leaf_items())
+      |> assign(:max_height_variants, DemoScales.max_height_variants("menu"))
+
+    ~H"""
+    <div {DemoScales.preview_scroll_attrs()}>
+      <div :for={variant <- @max_height_variants} class="flex flex-col gap-2">
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
+        <.menu
+          id={"menu-style-max-h-#{variant.id}"}
+          class={"#{DemoScales.join_modifiers("menu", variant.modifier)} w-full"}
+          items={@items}
+          value="fra"
+        >
+          <:trigger>{variant.label}</:trigger>
+          <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+        </.menu>
+      </div>
+    </div>
+    """
+  end
 end

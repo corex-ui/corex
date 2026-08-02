@@ -15,7 +15,7 @@
   <.select
     class="select max-w-none"
     field={f[:country]}
-    placeholder={~t"Select a country"}
+    translation={%Corex.Select.Translation{placeholder: ~t"Select a country"}}
     items={[
       %{label: "France", value: "fra"},
       %{label: "Belgium", value: "bel"},
@@ -39,7 +39,9 @@
   <.combobox
     field={f[:currency]}
     class="combobox max-w-none"
-    placeholder={~t"Search currency"}
+    translation={
+      %Corex.Combobox.Translation{placeholder: ~t"Search currency", empty: ~t"No results"}
+    }
     items={currency_items()}
   >
     <:label>Preferred currency</:label>
@@ -82,7 +84,7 @@
       {msg}
     </:error>
   </.date_picker>
-  <.signature_pad field={f[:signature]} class="signature-pad max-w-none">
+  <.signature_pad field={f[:signature]} class="signature-pad w-full max-w-none">
     <:label>Sign here</:label>
     <:clear_trigger>
       <.heroicon name="hero-x-mark" />
@@ -219,6 +221,17 @@
       {msg}
     </:error>
   </.editable>
+
+  <.file_upload field={f[:avatar]} class="file-upload max-w-none">
+    <:label>Avatar</:label>
+    <:close>
+      <.heroicon name="hero-x-mark" />
+    </:close>
+    <:error :let={msg}>
+      <.heroicon name="hero-exclamation-circle" class="icon" />
+      {msg}
+    </:error>
+  </.file_upload>
 
   <footer class="flex w-full justify-between gap-2">
     <.navigate :if={@return_to} to={@return_to} type="navigate" class="button ui-size-sm">

@@ -81,7 +81,9 @@ defmodule E2eWeb.ComboboxApiLive do
             <.combobox
               id="combobox-api-sv-client"
               class="combobox"
-              placeholder={~t"Select"}
+              translation={
+                %Corex.Combobox.Translation{placeholder: ~t"Select", empty: ~t"No results"}
+              }
               items={Corex.List.new(Demo.items_minimal())}
             >
               <:empty>No results</:empty>
@@ -111,7 +113,9 @@ defmodule E2eWeb.ComboboxApiLive do
             <.combobox
               id="combobox-api-sv-server"
               class="combobox"
-              placeholder={~t"Select"}
+              translation={
+                %Corex.Combobox.Translation{placeholder: ~t"Select", empty: ~t"No results"}
+              }
               items={Corex.List.new(Demo.items_minimal())}
             >
               <:empty>No results</:empty>
@@ -159,7 +163,9 @@ defmodule E2eWeb.ComboboxApiLive do
             <.combobox
               id="combobox-api-sv-js"
               class="combobox"
-              placeholder={~t"Select"}
+              translation={
+                %Corex.Combobox.Translation{placeholder: ~t"Select", empty: ~t"No results"}
+              }
               items={Corex.List.new(Demo.items_minimal())}
             >
               <:empty>No results</:empty>
@@ -193,7 +199,9 @@ defmodule E2eWeb.ComboboxApiLive do
             <.combobox
               id="combobox-api-open-client"
               class="combobox"
-              placeholder={~t"Select"}
+              translation={
+                %Corex.Combobox.Translation{placeholder: ~t"Select", empty: ~t"No results"}
+              }
               items={Corex.List.new(Demo.items_minimal())}
             >
               <:empty>No results</:empty>
@@ -223,7 +231,9 @@ defmodule E2eWeb.ComboboxApiLive do
             <.combobox
               id="combobox-api-open-server"
               class="combobox"
-              placeholder={~t"Select"}
+              translation={
+                %Corex.Combobox.Translation{placeholder: ~t"Select", empty: ~t"No results"}
+              }
               items={Corex.List.new(Demo.items_minimal())}
             >
               <:empty>No results</:empty>

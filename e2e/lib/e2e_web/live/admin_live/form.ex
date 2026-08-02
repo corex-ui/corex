@@ -76,6 +76,7 @@ defmodule E2eWeb.AdminLive.Form do
         id={@form.id}
         phx-change="validate"
         phx-submit="save"
+        multipart
       >
         <.native_input field={@form[:name]} type="text" class="native-input">
           <:label>Name</:label>
@@ -111,7 +112,9 @@ defmodule E2eWeb.AdminLive.Form do
         <.combobox
           field={@form[:currency]}
           class="combobox max-w-none"
-          placeholder="Search currency"
+          translation={
+            %Corex.Combobox.Translation{placeholder: "Search currency", empty: "No results"}
+          }
           items={currency_items()}
         >
           <:label>Preferred currency</:label>
@@ -156,7 +159,7 @@ defmodule E2eWeb.AdminLive.Form do
             {msg}
           </:error>
         </.date_picker>
-        <.signature_pad field={@form[:signature]} class="signature-pad">
+        <.signature_pad field={@form[:signature]} class="signature-pad w-full max-w-none">
           <:label>Sign here</:label>
           <:clear_trigger>
             <.heroicon name="hero-x-mark" />
@@ -294,6 +297,17 @@ defmodule E2eWeb.AdminLive.Form do
           </:error>
         </.editable>
 
+        <.file_upload field={@form[:avatar]} class="file-upload max-w-none">
+          <:label>Avatar</:label>
+          <:close>
+            <.heroicon name="hero-x-mark" />
+          </:close>
+          <:error :let={msg}>
+            <.heroicon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.file_upload>
+
         <footer class="flex w-full justify-between gap-2">
           <.navigate to={return_path(@return_to, @admin)} type="navigate" class="button">
             Cancel
@@ -340,7 +354,7 @@ defmodule E2eWeb.AdminLive.Form do
   def handle_event("validate", %{"admin" => admin_params}, socket) do
     changeset =
       socket.assigns.admin
-      |> Accounts.change_admin(admin_params)
+      |> Accounts.change_admin(normalize_avatar_params(admin_params))
       |> Map.put(:action, :validate)
 
     {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
@@ -349,12 +363,12 @@ defmodule E2eWeb.AdminLive.Form do
   def handle_event("validate", _params, socket), do: {:noreply, socket}
 
   def handle_event("save", %{"admin" => admin_params}, socket) do
-    save_admin(socket, socket.assigns.live_action, admin_params)
+    save_admin(socket, socket.assigns.live_action, normalize_avatar_params(admin_params))
   end
 
   def handle_event("save", params, socket) do
     admin_params = Map.get(params, "admin", %{})
-    save_admin(socket, socket.assigns.live_action, admin_params)
+    save_admin(socket, socket.assigns.live_action, normalize_avatar_params(admin_params))
   end
 
   def handle_event("delete", %{"id" => id}, socket) do
@@ -400,6 +414,30 @@ defmodule E2eWeb.AdminLive.Form do
 
   defp return_path("index", _admin), do: ~p"/admins"
   defp return_path("show", admin), do: ~p"/admins/#{admin}"
+
+  defp normalize_avatar_params(params) when is_map(params) do
+    case Map.get(params, "avatar") do
+      %Plug.Upload{filename: name} when is_binary(name) and name != "" ->
+        Map.put(params, "avatar", name)
+
+      _ ->
+        case Map.get(params, "avatar_label") do
+          label when is_binary(label) ->
+            trimmed = String.trim(label)
+
+            if trimmed != "" do
+              Map.put(params, "avatar", trimmed)
+            else
+              params
+            end
+
+          _ ->
+            params
+        end
+    end
+  end
+
+  defp normalize_avatar_params(params), do: params
 
   defp currency_items do
     [

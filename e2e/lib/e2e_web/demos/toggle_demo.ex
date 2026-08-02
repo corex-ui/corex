@@ -3,8 +3,6 @@ defmodule E2eWeb.Demos.ToggleDemo do
 
   alias E2eWeb.DemoScales
 
-  import E2eWeb.ModeToggle
-
   def minimal_code do
     ~S"""
     <.toggle class="toggle">
@@ -60,16 +58,13 @@ defmodule E2eWeb.Demos.ToggleDemo do
   end
 
   def dual_label_example(assigns) do
-    assigns = assign_new(assigns, :mode, fn -> "light" end)
+    _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-center justify-center">
-      <.toggle id="toggle-anatomy-switching-label" class="toggle" data-toggle-dual-label>
-        <span>lorem</span>
-        <span data-pressed>donec</span>
-      </.toggle>
-      <.mode_toggle id="toggle-anatomy-mode" mode={@mode} />
-    </div>
+    <.toggle id="toggle-anatomy-switching-label" class="toggle" data-toggle-dual-label>
+      <span>lorem</span>
+      <span data-pressed>donec</span>
+    </.toggle>
     """
   end
 

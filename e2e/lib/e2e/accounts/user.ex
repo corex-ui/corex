@@ -4,9 +4,11 @@ defmodule E2e.Accounts.User do
 
   @currencies ~W(eur usd gbp jpy chf cad aud sek nok sgd)
   @roles ~W(admin editor viewer)
+  @countries ~W(fra bel deu nld che aut)
 
   def currencies, do: @currencies
   def roles, do: @roles
+  def countries, do: @countries
 
   schema "users" do
     field :name, :string
@@ -61,17 +63,26 @@ defmodule E2e.Accounts.User do
       :currency,
       :tags,
       :password,
-      :role
+      :role,
+      :pin,
+      :accent_color,
+      :heading_angle,
+      :title,
+      :avatar
     ])
     |> validate_acceptance(:terms)
     |> validate_acceptance(:notifications)
+    |> validate_inclusion(:country, @countries)
     |> validate_number(:level, greater_than_or_equal_to: 1, less_than_or_equal_to: 5)
     |> validate_inclusion(:currency, @currencies)
     |> validate_length(:password, min: 8)
     |> validate_inclusion(:role, @roles)
+    |> validate_length(:pin, is: 4)
+    |> validate_format(:pin, ~r/^\d+$/, message: "must be digits")
     |> validate_number(:heading_angle, greater_than_or_equal_to: 0, less_than_or_equal_to: 360)
     |> validate_signature_present()
     |> validate_tags_present()
+    |> validate_avatar_present()
   end
 
   defp normalize_pin_attrs(%{} = attrs) do
@@ -103,5 +114,15 @@ defmodule E2e.Accounts.User do
       |> Enum.reject(&(&1 == ""))
 
     if tags == [], do: add_error(changeset, :tags, "can't be blank"), else: changeset
+  end
+
+  defp validate_avatar_present(changeset) do
+    avatar = get_field(changeset, :avatar)
+
+    if is_binary(avatar) and String.trim(avatar) != "" do
+      changeset
+    else
+      add_error(changeset, :avatar, "can't be blank")
+    end
   end
 end

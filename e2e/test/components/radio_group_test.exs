@@ -79,40 +79,40 @@ defmodule E2eWeb.RadioGroupTest do
       RadioGroup.assert_focus_inside(session, "radio-group-api-focus")
     end
 
-    feature "set value (server)  -  Set Duis selects item", %{session: session} do
+    feature "set value (server)  -  Duis selects item", %{session: session} do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(RadioGroup, :radio_group, :api)
         |> RadioGroup.prepare_live_form()
-        |> RadioGroup.wait_root_radio_group_ready("radio-group-api-server")
+        |> RadioGroup.wait_root_radio_group_ready("radio-group-api-srv")
 
-      refute RadioGroup.item_checked_by_host_id?(session, "radio-group-api-server", "duis")
+      refute RadioGroup.item_checked_by_host_id?(session, "radio-group-api-srv", "duis")
 
       session
-      |> RadioGroup.click_button_in_section("radio-group-api-server-section", "Set Duis")
+      |> RadioGroup.click_button_in_section("radio-group-api-set-value-server", "Duis")
 
-      RadioGroup.wait_item_checked_by_host_id(session, "radio-group-api-server", "duis",
+      RadioGroup.wait_item_checked_by_host_id(session, "radio-group-api-srv", "duis",
         timeout: 8_000
       )
     end
 
-    feature "binding section mounts radio group hook", %{session: session} do
+    feature "client binding section mounts radio group hook", %{session: session} do
       session
       |> ComponentBehaviorSpec.visit_ready(RadioGroup, :radio_group, :api)
-      |> RadioGroup.wait_root_radio_group_ready("radio-group-api-binding")
+      |> RadioGroup.wait_root_radio_group_ready("radio-group-api-cb")
     end
 
     feature "client JS  -  dispatching custom event changes value", %{session: session} do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(RadioGroup, :radio_group, :api)
-        |> RadioGroup.wait_root_radio_group_ready("radio-group-api-client")
+        |> RadioGroup.wait_root_radio_group_ready("radio-group-api-cjs")
 
-      refute RadioGroup.item_checked_by_host_id?(session, "radio-group-api-client", "duis")
+      refute RadioGroup.item_checked_by_host_id?(session, "radio-group-api-cjs", "duis")
 
-      RadioGroup.dispatch_set_value_js(session, "radio-group-api-client", "duis")
+      RadioGroup.dispatch_set_value_js(session, "radio-group-api-cjs", "duis")
 
-      RadioGroup.wait_item_checked_by_host_id(session, "radio-group-api-client", "duis",
+      RadioGroup.wait_item_checked_by_host_id(session, "radio-group-api-cjs", "duis",
         timeout: 8_000
       )
     end

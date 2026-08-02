@@ -156,4 +156,22 @@ defmodule E2eWeb.PinInputTest do
       |> PinInput.wait_log_rows_grew("pin-input-events-log-client", before, timeout: 10_000)
     end
   end
+
+  describe "a11y (post-interaction)" do
+    @describetag :e2e
+
+    feature "anatomy minimal passes axe after pin entry", %{session: session} do
+      section = "pin-input-anatomy-minimal"
+      host = PinInput.pin_host_id_for_section(section)
+
+      session
+      |> ComponentBehaviorSpec.visit_ready(PinInput, :pin_input, :anatomy)
+      |> PinInput.wait_section_pin_input_ready(section)
+      |> PinInput.fill_pin_in_section(section, "1234", host)
+      |> PinInput.wait_pin_complete_in_section(host, "1234", timeout: 8_000)
+      |> PinInput.check_accessibility(Wallaby.Query.css("##{section}"),
+        filter: E2eWeb.A11yDocPageFilter
+      )
+    end
+  end
 end

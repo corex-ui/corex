@@ -1663,6 +1663,89 @@ defmodule E2eWeb.Demos.AccordionDemo do
     |> DemoScales.join_code()
   end
 
+  @styling_max_height_paragraph "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sodales ullamcorper tristique. Praesent vel sapien at lacus efficitur volutpat. Mauris vitae urna eu nibh fermentum faucibus. Donec condimentum ex mi, congue molestie ipsum gravida a. Sed ac eros luctus, finibus libero non, laoreet lectus."
+
+  def styling_max_height_items do
+    Corex.Content.new([
+      %{
+        value: "item-1",
+        label: "Lorem ipsum dolor sit amet",
+        content: @styling_max_height_paragraph
+      },
+      %{
+        value: "item-2",
+        label: "Duis dictum gravida odio ac pharetra?",
+        content: @styling_max_height_paragraph
+      },
+      %{
+        value: "item-3",
+        label: "Donec condimentum ex mi",
+        content: @styling_max_height_paragraph
+      },
+      %{
+        value: "item-4",
+        label: "Praesent fermentum sapien",
+        content: @styling_max_height_paragraph
+      },
+      %{
+        value: "item-5",
+        label: "Mauris vitae urna eu nibh",
+        content: @styling_max_height_paragraph
+      }
+    ])
+  end
+
+  defp styling_max_height_accordion_items_heex do
+    paragraph = @styling_max_height_paragraph
+
+    ~S"""
+    items={Corex.Content.new([
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "PARAGRAPH_PLACEHOLDER"},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "PARAGRAPH_PLACEHOLDER"},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "PARAGRAPH_PLACEHOLDER"},
+      %{value: "item-4", label: "Praesent fermentum sapien", content: "PARAGRAPH_PLACEHOLDER"},
+      %{value: "item-5", label: "Mauris vitae urna eu nibh", content: "PARAGRAPH_PLACEHOLDER"}
+    ])}
+    """
+    |> String.replace("PARAGRAPH_PLACEHOLDER", paragraph)
+  end
+
+  def styling_max_height_code do
+    items = styling_max_height_accordion_items_heex()
+
+    DemoScales.max_height_variants("accordion")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("accordion", modifier)
+
+      """
+      <.accordion class="#{class}" value="item-1" #{items}>
+        <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+      </.accordion>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_max_height_example(assigns) do
+    assigns = assign(assigns, :max_height_variants, DemoScales.max_height_variants("accordion"))
+
+    ~H"""
+    <div {DemoScales.preview_scroll_attrs()}>
+      <div :for={variant <- @max_height_variants} class="flex flex-col gap-2">
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
+        <.accordion
+          id={"accordion-style-max-h-#{variant.id}"}
+          class={DemoScales.join_modifiers("accordion", variant.modifier)}
+          value="item-1"
+          items={styling_max_height_items()}
+        >
+          <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+        </.accordion>
+      </div>
+    </div>
+    """
+  end
+
   defp styling_accordion_items_heex do
     ~S"""
     items={Corex.Content.new([

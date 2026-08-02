@@ -56,7 +56,6 @@ defmodule E2eWeb.StylePageExpectations do
     pin-input
     timer
     dialog
-    menu
     listbox
     tree-view
     date-picker

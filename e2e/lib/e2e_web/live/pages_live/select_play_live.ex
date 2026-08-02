@@ -30,6 +30,7 @@ defmodule E2eWeb.SelectPlayLive do
       disabled: false,
       invalid: false,
       read_only: false,
+      multiple: false,
       dir: "ltr",
       disabled_item_ids: ["fra"]
     }
@@ -82,6 +83,18 @@ defmodule E2eWeb.SelectPlayLive do
   defp update_control(socket, "select-playground-read-only", v),
     do: update(socket, :controls, &Map.put(&1, :read_only, v))
 
+  defp update_control(socket, "select-playground-multiple", true) do
+    socket
+    |> update(:controls, &%{&1 | multiple: true})
+    |> assign(:value, [])
+  end
+
+  defp update_control(socket, "select-playground-multiple", false) do
+    socket
+    |> update(:controls, &Map.put(&1, :multiple, false))
+    |> assign(:value, [])
+  end
+
   defp update_control(socket, "select-playground-dir", value),
     do: update(socket, :controls, &%{&1 | dir: value})
 
@@ -120,6 +133,14 @@ defmodule E2eWeb.SelectPlayLive do
           </.select>
           <.switch
             class="switch ui-size-sm"
+            id="select-playground-multiple"
+            checked={@controls.multiple}
+            on_checked_change="control_changed"
+          >
+            <:label>Multiple</:label>
+          </.switch>
+          <.switch
+            class="switch ui-size-sm"
             id="select-playground-disabled"
             checked={@controls.disabled}
             on_checked_change="control_changed"
@@ -151,10 +172,17 @@ defmodule E2eWeb.SelectPlayLive do
             items={@items}
             dir={@controls.dir}
             value={@value}
+            multiple={@controls.multiple}
+            deselectable={@controls.multiple}
+            close_on_select={!@controls.multiple}
             disabled={@controls.disabled}
             read_only={@controls.read_only}
             invalid={@controls.invalid}
           >
+            <:item :let={item}>
+              <Flagpack.flag name={String.to_existing_atom(to_string(item.value))} />
+              {item.label}
+            </:item>
             <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
             <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
           </.select>

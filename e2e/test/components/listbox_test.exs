@@ -199,7 +199,7 @@ defmodule E2eWeb.ListboxTest do
         |> Listbox.click_button_in_section(section, "Reset")
         |> Listbox.wait_root_no_loading("#patterns-dynamic")
         |> assert_has(
-          css(~s|#patterns-dynamic [data-scope="listbox"][data-part="item"][data-value="4"]|,
+          css(~S|#patterns-dynamic [data-scope="listbox"][data-part="item"][data-value="4"]|,
             count: 0,
             visible: :any
           )

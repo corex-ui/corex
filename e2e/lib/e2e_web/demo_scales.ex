@@ -30,6 +30,12 @@ defmodule E2eWeb.DemoScales do
     [class: preview_scroll_class(), tabindex: "0"]
   end
 
+  @form_shell_class "flex flex-col gap-space-lg w-full max-w-xl"
+
+  def form_shell_class, do: @form_shell_class
+
+  def form_field_fill(base) when is_binary(base), do: base
+
   def join_code(blocks), do: Enum.join(blocks, "\n")
 
   def default_max_width_label(component_id) do
@@ -72,6 +78,37 @@ defmodule E2eWeb.DemoScales do
   def max_width_variants_from(component_id, min_step) when is_binary(min_step) do
     component_id
     |> max_width_variants()
+    |> Enum.reject(fn
+      %{id: "default"} -> false
+      %{id: id} -> container_step_index(id) < container_step_index(min_step)
+    end)
+  end
+
+  def ui_max_height_modifier(step) when is_binary(step),
+    do: TailwindSizingLiterals.ui_max_height(step)
+
+  @doc """
+  Style-page variants for `ui-max-height-*` content clamps (container ladder).
+  """
+  def max_height_variants(component_id \\ nil) do
+    default_label =
+      if component_id do
+        "default (#{component_id})"
+      else
+        "default"
+      end
+
+    [
+      %{id: "default", label: default_label, modifier: ""}
+      | Enum.map(container_steps(), fn step ->
+          %{id: step, label: step, modifier: ui_max_height_modifier(step)}
+        end)
+    ]
+  end
+
+  def max_height_variants_from(component_id, min_step) when is_binary(min_step) do
+    component_id
+    |> max_height_variants()
     |> Enum.reject(fn
       %{id: "default"} -> false
       %{id: id} -> container_step_index(id) < container_step_index(min_step)

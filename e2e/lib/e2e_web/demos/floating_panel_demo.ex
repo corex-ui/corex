@@ -1119,6 +1119,60 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     """
   end
 
+  @styling_max_height_content "Drag, resize, and minimize this panel while you work. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sodales ullamcorper tristique. Praesent vel sapien at lacus efficitur volutpat. Mauris vitae urna eu nibh fermentum faucibus. Donec condimentum ex mi, congue molestie ipsum gravida a. Sed ac eros luctus, finibus libero non, laoreet lectus."
+
+  def styling_max_height_code do
+    content = @styling_max_height_content
+
+    DemoScales.max_height_variants("floating-panel")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("floating-panel", modifier)
+
+      """
+      <.floating_panel class="#{class}">
+        <:trigger class="button ui-size-sm">Open</:trigger>
+        <:title>Notes</:title>
+        #{styling_panel_controls_code()}
+        <:content><p>#{content}</p></:content>
+      </.floating_panel>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_max_height_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:max_height_variants, DemoScales.max_height_variants("floating-panel"))
+      |> assign(:max_height_content, @styling_max_height_content)
+
+    ~H"""
+    <div {DemoScales.preview_scroll_attrs()}>
+      <div :for={variant <- @max_height_variants} class="flex flex-col gap-2">
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
+        <.floating_panel
+          id={"floating-panel-style-max-h-#{variant.id}"}
+          class={DemoScales.join_modifiers("floating-panel", variant.modifier)}
+        >
+          <:trigger class="button ui-size-sm">Open {variant.label}</:trigger>
+          <:title>Notes</:title>
+          <:minimize_trigger>
+            <.heroicon name="hero-arrow-down-left" class="icon" />
+          </:minimize_trigger>
+          <:maximize_trigger>
+            <.heroicon name="hero-arrows-pointing-out" class="icon" />
+          </:maximize_trigger>
+          <:default_trigger><.heroicon name="hero-rectangle-stack" class="icon" /></:default_trigger>
+          <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+          <:content>
+            <p>{@max_height_content}</p>
+          </:content>
+        </.floating_panel>
+      </div>
+    </div>
+    """
+  end
+
   defp styling_panel_controls_code do
     """
       <:minimize_trigger>

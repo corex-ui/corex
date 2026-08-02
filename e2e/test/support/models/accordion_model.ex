@@ -455,7 +455,7 @@ defmodule E2eWeb.AccordionModel do
   end
 
   def click_playground_collapsible(session) do
-    click(session, css(~s|[id^="playground-collapsible-"] [data-part="control"]|))
+    click(session, css(~S|[id^="playground-collapsible-"] [data-part="control"]|))
     session
   end
 

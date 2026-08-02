@@ -6,9 +6,21 @@ defmodule E2eWeb.FormPatternsFields do
 
   def custom_fields(assigns) do
     ~H"""
+    <.native_input
+      field={@form[:name]}
+      type="text"
+      class="native-input relative"
+      id={"#{@prefix}-name"}
+    >
+      <:label>Name</:label>
+      <:error :let={msg} class="absolute top-0 end-0">
+        <.custom_error_tip id={"#{@prefix}-name-tip"} msg={msg} />
+      </:error>
+    </.native_input>
+
     <.select
       field={@form[:country]}
-      class="select max-w-none w-full relative"
+      class="select relative"
       id={"#{@prefix}-country"}
       deselectable
       translation={%Corex.Select.Translation{placeholder: "Select a country"}}
@@ -19,24 +31,15 @@ defmodule E2eWeb.FormPatternsFields do
         <.heroicon name="hero-chevron-down" />
       </:trigger>
       <:error :let={msg} class="absolute top-0 end-0">
-        <.tooltip
-          id={"#{@prefix}-country-tip"}
-          class="tooltip ui-size-sm"
-          positioning={%Corex.Positioning{placement: "top-end"}}
-        >
-          <:trigger>
-            <.heroicon name="hero-exclamation-circle" class="icon text-alert-text" />
-          </:trigger>
-          <:content>{msg}</:content>
-        </.tooltip>
+        <.custom_error_tip id={"#{@prefix}-country-tip"} msg={msg} />
       </:error>
     </.select>
 
     <.combobox
       field={@form[:currency]}
-      class="combobox max-w-none w-full relative"
+      class="combobox relative"
       id={"#{@prefix}-currency"}
-      placeholder="Search currency"
+      translation={%Corex.Combobox.Translation{placeholder: "Search currency", empty: "No results"}}
       items={currency_items()}
     >
       <:label>Preferred currency</:label>
@@ -49,22 +52,13 @@ defmodule E2eWeb.FormPatternsFields do
         <.heroicon name="hero-chevron-down" />
       </:trigger>
       <:error :let={msg} class="absolute top-0 end-0">
-        <.tooltip
-          id={"#{@prefix}-currency-tip"}
-          class="tooltip ui-size-sm"
-          positioning={%Corex.Positioning{placement: "top-end"}}
-        >
-          <:trigger>
-            <.heroicon name="hero-exclamation-circle" class="icon text-alert-text" />
-          </:trigger>
-          <:content>{msg}</:content>
-        </.tooltip>
+        <.custom_error_tip id={"#{@prefix}-currency-tip"} msg={msg} />
       </:error>
     </.combobox>
 
     <.tags_input
       field={@form[:tags]}
-      class="tags-input max-w-none w-full relative"
+      class="tags-input relative"
       id={"#{@prefix}-tags"}
     >
       <:label>Tags</:label>
@@ -72,22 +66,67 @@ defmodule E2eWeb.FormPatternsFields do
         <.heroicon name="hero-x-mark" />
       </:close>
       <:error :let={msg} class="absolute top-0 end-0">
-        <.tooltip
-          id={"#{@prefix}-tags-tip"}
-          class="tooltip ui-size-sm"
-          positioning={%Corex.Positioning{placement: "top-end"}}
-        >
-          <:trigger>
-            <.heroicon name="hero-exclamation-circle" class="icon text-alert-text" />
-          </:trigger>
-          <:content>{msg}</:content>
-        </.tooltip>
+        <.custom_error_tip id={"#{@prefix}-tags-tip"} msg={msg} />
       </:error>
     </.tags_input>
 
+    <.date_picker
+      field={@form[:birth_date]}
+      class="date-picker relative"
+      id={"#{@prefix}-birth-date"}
+    >
+      <:label>Select a date</:label>
+      <:trigger>
+        <.heroicon name="hero-calendar" class="icon" />
+      </:trigger>
+      <:prev_trigger>
+        <.heroicon name="hero-chevron-left" class="icon" />
+      </:prev_trigger>
+      <:next_trigger>
+        <.heroicon name="hero-chevron-right" class="icon" />
+      </:next_trigger>
+      <:error :let={msg} class="absolute top-0 end-0">
+        <.custom_error_tip id={"#{@prefix}-birth-date-tip"} msg={msg} />
+      </:error>
+    </.date_picker>
+
+    <.signature_pad
+      field={@form[:signature]}
+      class="signature-pad relative"
+      id={"#{@prefix}-signature"}
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger>
+        <.heroicon name="hero-x-mark" />
+      </:clear_trigger>
+      <:error :let={msg} class="absolute top-0 end-0">
+        <.custom_error_tip id={"#{@prefix}-signature-tip"} msg={msg} />
+      </:error>
+    </.signature_pad>
+
+    <.number_input
+      field={@form[:level]}
+      min={1.0}
+      max={5.0}
+      step={1.0}
+      class="number-input relative"
+      id={"#{@prefix}-level"}
+    >
+      <:label>Level</:label>
+      <:decrement_trigger>
+        <.heroicon name="hero-chevron-down" class="icon" />
+      </:decrement_trigger>
+      <:increment_trigger>
+        <.heroicon name="hero-chevron-up" class="icon" />
+      </:increment_trigger>
+      <:error :let={msg} class="absolute top-0 end-0">
+        <.custom_error_tip id={"#{@prefix}-level-tip"} msg={msg} />
+      </:error>
+    </.number_input>
+
     <.password_input
       field={@form[:password]}
-      class="password-input max-w-none w-full relative"
+      class="password-input relative"
       id={"#{@prefix}-password"}
     >
       <:label>Password</:label>
@@ -98,36 +137,18 @@ defmodule E2eWeb.FormPatternsFields do
         <.heroicon name="hero-eye-slash" />
       </:hidden_indicator>
       <:error :let={msg} class="absolute top-0 end-0">
-        <.tooltip
-          id={"#{@prefix}-password-tip"}
-          class="tooltip ui-size-sm"
-          positioning={%Corex.Positioning{placement: "top-end"}}
-        >
-          <:trigger>
-            <.heroicon name="hero-exclamation-circle" class="icon text-alert-text" />
-          </:trigger>
-          <:content>{msg}</:content>
-        </.tooltip>
+        <.custom_error_tip id={"#{@prefix}-password-tip"} msg={msg} />
       </:error>
     </.password_input>
 
     <.switch
       field={@form[:notifications]}
-      class="switch max-w-none w-full relative"
+      class="switch relative"
       id={"#{@prefix}-notifications"}
     >
       <:label>Email notifications</:label>
       <:error :let={msg} class="absolute top-0 end-0">
-        <.tooltip
-          id={"#{@prefix}-notifications-tip"}
-          class="tooltip ui-size-sm"
-          positioning={%Corex.Positioning{placement: "top-end"}}
-        >
-          <:trigger>
-            <.heroicon name="hero-exclamation-circle" class="icon text-alert-text" />
-          </:trigger>
-          <:content>{msg}</:content>
-        </.tooltip>
+        <.custom_error_tip id={"#{@prefix}-notifications-tip"} msg={msg} />
       </:error>
     </.switch>
 
@@ -141,26 +162,119 @@ defmodule E2eWeb.FormPatternsFields do
         <.heroicon name="hero-check" />
       </:indicator>
       <:error :let={msg} class="absolute top-0 end-0">
-        <.tooltip
-          id={"#{@prefix}-terms-tip"}
-          class="tooltip ui-size-sm"
-          positioning={%Corex.Positioning{placement: "top-end"}}
-        >
-          <:trigger>
-            <.heroicon name="hero-exclamation-circle" class="icon text-alert-text" />
-          </:trigger>
-          <:content>{msg}</:content>
-        </.tooltip>
+        <.custom_error_tip id={"#{@prefix}-terms-tip"} msg={msg} />
       </:error>
     </.checkbox>
+
+    <.radio_group
+      field={@form[:role]}
+      class="radio-group relative"
+      id={"#{@prefix}-role"}
+      items={role_items()}
+    >
+      <:label>Role</:label>
+      <:item_control>
+        <.heroicon name="hero-check" class="data-checked" />
+      </:item_control>
+      <:error :let={msg} class="absolute top-0 end-0">
+        <.custom_error_tip id={"#{@prefix}-role-tip"} msg={msg} />
+      </:error>
+    </.radio_group>
+
+    <.pin_input
+      field={@form[:pin]}
+      count={4}
+      class="pin-input relative"
+      id={"#{@prefix}-pin"}
+    >
+      <:label>PIN</:label>
+      <:error :let={msg} class="absolute top-0 end-0">
+        <.custom_error_tip id={"#{@prefix}-pin-tip"} msg={msg} />
+      </:error>
+    </.pin_input>
+
+    <.color_picker
+      field={@form[:accent_color]}
+      class="color-picker relative"
+      id={"#{@prefix}-accent-color"}
+      presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
+    >
+      <:label>Accent color</:label>
+      <:error :let={msg} class="absolute top-0 end-0">
+        <.custom_error_tip id={"#{@prefix}-accent-color-tip"} msg={msg} />
+      </:error>
+    </.color_picker>
+
+    <.angle_slider
+      field={@form[:heading_angle]}
+      marker_values={[0, 90, 180, 270]}
+      class="angle-slider relative"
+      id={"#{@prefix}-heading-angle"}
+    >
+      <:label>Heading angle</:label>
+      <:error :let={msg} class="absolute top-0 end-0">
+        <.custom_error_tip id={"#{@prefix}-heading-angle-tip"} msg={msg} />
+      </:error>
+    </.angle_slider>
+
+    <.editable
+      field={@form[:title]}
+      placeholder="Enter title"
+      activation_mode="dblclick"
+      select_on_focus
+      class="editable relative"
+      id={"#{@prefix}-title"}
+    >
+      <:label>Title</:label>
+      <:edit_trigger>
+        <.heroicon name="hero-pencil-square" class="icon" />
+      </:edit_trigger>
+      <:submit_trigger>
+        <.heroicon name="hero-check" class="icon" />
+      </:submit_trigger>
+      <:cancel_trigger>
+        <.heroicon name="hero-x-mark" class="icon" />
+      </:cancel_trigger>
+      <:error :let={msg} class="absolute top-0 end-0">
+        <.custom_error_tip id={"#{@prefix}-title-tip"} msg={msg} />
+      </:error>
+    </.editable>
+
+    <.file_upload
+      field={@form[:avatar]}
+      class="file-upload relative"
+      id={"#{@prefix}-avatar"}
+    >
+      <:label>Avatar</:label>
+      <:close>
+        <.heroicon name="hero-x-mark" />
+      </:close>
+      <:error :let={msg} class="absolute top-0 end-0">
+        <.custom_error_tip id={"#{@prefix}-avatar-tip"} msg={msg} />
+      </:error>
+    </.file_upload>
     """
   end
 
   def invalid_fields(assigns) do
     ~H"""
+    <.native_input
+      field={@form[:name]}
+      type="text"
+      class="native-input"
+      id={"#{@prefix}-name"}
+      auto_invalid
+    >
+      <:label>Name</:label>
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
+    </.native_input>
+
     <.select
       field={@form[:country]}
-      class="select max-w-none w-full"
+      class="select"
       id={"#{@prefix}-country"}
       deselectable
       auto_invalid
@@ -179,9 +293,9 @@ defmodule E2eWeb.FormPatternsFields do
 
     <.combobox
       field={@form[:currency]}
-      class="combobox max-w-none w-full"
+      class="combobox"
       id={"#{@prefix}-currency"}
-      placeholder="Search currency"
+      translation={%Corex.Combobox.Translation{placeholder: "Search currency", empty: "No results"}}
       auto_invalid
       items={currency_items()}
     >
@@ -202,7 +316,7 @@ defmodule E2eWeb.FormPatternsFields do
 
     <.tags_input
       field={@form[:tags]}
-      class="tags-input max-w-none w-full"
+      class="tags-input"
       id={"#{@prefix}-tags"}
       auto_invalid
     >
@@ -216,9 +330,69 @@ defmodule E2eWeb.FormPatternsFields do
       </:error>
     </.tags_input>
 
+    <.date_picker
+      field={@form[:birth_date]}
+      class="date-picker"
+      id={"#{@prefix}-birth-date"}
+      auto_invalid
+    >
+      <:label>Select a date</:label>
+      <:trigger>
+        <.heroicon name="hero-calendar" class="icon" />
+      </:trigger>
+      <:prev_trigger>
+        <.heroicon name="hero-chevron-left" class="icon" />
+      </:prev_trigger>
+      <:next_trigger>
+        <.heroicon name="hero-chevron-right" class="icon" />
+      </:next_trigger>
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
+    </.date_picker>
+
+    <.signature_pad
+      field={@form[:signature]}
+      class="signature-pad"
+      id={"#{@prefix}-signature"}
+      auto_invalid
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger>
+        <.heroicon name="hero-x-mark" />
+      </:clear_trigger>
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
+    </.signature_pad>
+
+    <.number_input
+      field={@form[:level]}
+      min={1.0}
+      max={5.0}
+      step={1.0}
+      class="number-input"
+      id={"#{@prefix}-level"}
+      auto_invalid
+    >
+      <:label>Level</:label>
+      <:decrement_trigger>
+        <.heroicon name="hero-chevron-down" class="icon" />
+      </:decrement_trigger>
+      <:increment_trigger>
+        <.heroicon name="hero-chevron-up" class="icon" />
+      </:increment_trigger>
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
+    </.number_input>
+
     <.password_input
       field={@form[:password]}
-      class="password-input max-w-none w-full"
+      class="password-input"
       id={"#{@prefix}-password"}
       auto_invalid
     >
@@ -237,7 +411,7 @@ defmodule E2eWeb.FormPatternsFields do
 
     <.switch
       field={@form[:notifications]}
-      class="switch max-w-none w-full"
+      class="switch"
       id={"#{@prefix}-notifications"}
       auto_invalid
     >
@@ -263,6 +437,124 @@ defmodule E2eWeb.FormPatternsFields do
         {msg}
       </:error>
     </.checkbox>
+
+    <.radio_group
+      field={@form[:role]}
+      class="radio-group"
+      id={"#{@prefix}-role"}
+      auto_invalid
+      items={role_items()}
+    >
+      <:label>Role</:label>
+      <:item_control>
+        <.heroicon name="hero-check" class="data-checked" />
+      </:item_control>
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
+    </.radio_group>
+
+    <.pin_input
+      field={@form[:pin]}
+      count={4}
+      class="pin-input"
+      id={"#{@prefix}-pin"}
+      auto_invalid
+    >
+      <:label>PIN</:label>
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
+    </.pin_input>
+
+    <.color_picker
+      field={@form[:accent_color]}
+      class="color-picker"
+      id={"#{@prefix}-accent-color"}
+      auto_invalid
+      presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
+    >
+      <:label>Accent color</:label>
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
+    </.color_picker>
+
+    <.angle_slider
+      field={@form[:heading_angle]}
+      marker_values={[0, 90, 180, 270]}
+      class="angle-slider"
+      id={"#{@prefix}-heading-angle"}
+      auto_invalid
+    >
+      <:label>Heading angle</:label>
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
+    </.angle_slider>
+
+    <.editable
+      field={@form[:title]}
+      placeholder="Enter title"
+      activation_mode="dblclick"
+      select_on_focus
+      class="editable"
+      id={"#{@prefix}-title"}
+      auto_invalid
+    >
+      <:label>Title</:label>
+      <:edit_trigger>
+        <.heroicon name="hero-pencil-square" class="icon" />
+      </:edit_trigger>
+      <:submit_trigger>
+        <.heroicon name="hero-check" class="icon" />
+      </:submit_trigger>
+      <:cancel_trigger>
+        <.heroicon name="hero-x-mark" class="icon" />
+      </:cancel_trigger>
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
+    </.editable>
+
+    <.file_upload
+      field={@form[:avatar]}
+      class="file-upload"
+      id={"#{@prefix}-avatar"}
+      auto_invalid
+    >
+      <:label>Avatar</:label>
+      <:close>
+        <.heroicon name="hero-x-mark" />
+      </:close>
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
+    </.file_upload>
+    """
+  end
+
+  attr(:id, :string, required: true)
+  attr(:msg, :string, required: true)
+
+  defp custom_error_tip(assigns) do
+    ~H"""
+    <.tooltip
+      id={@id}
+      class="tooltip ui-size-sm"
+      positioning={%Corex.Positioning{placement: "top-end"}}
+    >
+      <:trigger>
+        <.heroicon name="hero-exclamation-circle" class="icon text-alert-text" />
+      </:trigger>
+      <:content>{@msg}</:content>
+    </.tooltip>
     """
   end
 
@@ -271,6 +563,14 @@ defmodule E2eWeb.FormPatternsFields do
       %{label: "France", value: "fra"},
       %{label: "Belgium", value: "bel"},
       %{label: "Germany", value: "deu"}
+    ]
+  end
+
+  defp role_items do
+    [
+      %{label: "Admin", value: "admin"},
+      %{label: "Editor", value: "editor"},
+      %{label: "Viewer", value: "viewer"}
     ]
   end
 

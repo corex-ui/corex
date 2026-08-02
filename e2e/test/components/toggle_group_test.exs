@@ -143,4 +143,21 @@ defmodule E2eWeb.ToggleGroupTest do
       |> ToggleGroup.wait_item_on_in_host(host, "duis", timeout: 8_000)
     end
   end
+
+  describe "a11y (post-interaction)" do
+    @describetag :e2e
+
+    feature "anatomy minimal passes axe after toggle", %{session: session} do
+      host = "toggle-group-anatomy-minimal"
+
+      session
+      |> ComponentBehaviorSpec.visit_ready(ToggleGroup, :toggle_group, :anatomy)
+      |> ToggleGroup.wait_section_toggle_group_ready("toggle-group-anatomy-minimal")
+      |> ToggleGroup.click_item_by_value_in_host(host, "duis")
+      |> ToggleGroup.wait_item_on_in_host(host, "duis", timeout: 8_000)
+      |> ToggleGroup.check_accessibility(css("#toggle-group-anatomy-minimal"),
+        filter: E2eWeb.A11yDocPageFilter
+      )
+    end
+  end
 end

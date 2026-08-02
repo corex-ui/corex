@@ -77,7 +77,7 @@ defmodule E2eWeb.FileUploadTest do
       assert has?(
                session,
                css(
-                 ~s|#file-upload-playground [data-scope="file-upload"][data-part="item"]|,
+                 ~S|#file-upload-playground [data-scope="file-upload"][data-part="item"]|,
                  count: 1,
                  visible: :any
                )

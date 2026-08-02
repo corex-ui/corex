@@ -116,7 +116,7 @@ defmodule E2eWeb.TreeViewTest do
         |> TreeView.wait_host_tree_view_ready(host)
 
       session
-      |> TreeView.click_in_section("tree-view-api-set-selected-client", "Select mix.exs")
+      |> TreeView.click_in_section("tree-view-api-set-selected-client", "Select tree_view.ex")
       |> TreeView.wait_item_selected_in_host(host, "repo-mix", timeout: 8_000)
     end
 
@@ -131,7 +131,7 @@ defmodule E2eWeb.TreeViewTest do
         |> TreeView.wait_host_tree_view_ready(host)
 
       session
-      |> TreeView.click_in_section("tree-view-api-set-selected-js", "Select mix.exs")
+      |> TreeView.click_in_section("tree-view-api-set-selected-js", "Select tree_view.ex")
       |> TreeView.wait_item_selected_in_host(host, "repo-mix", timeout: 8_000)
     end
 
@@ -147,7 +147,7 @@ defmodule E2eWeb.TreeViewTest do
         |> TreeView.wait_host_tree_view_ready(host)
 
       session
-      |> TreeView.click_in_section("tree-view-api-set-selected-server", "Select mix.exs")
+      |> TreeView.click_in_section("tree-view-api-set-selected-server", "Select tree_view.ex")
       |> TreeView.wait_item_selected_in_host(host, "repo-mix", timeout: 8_000)
     end
   end

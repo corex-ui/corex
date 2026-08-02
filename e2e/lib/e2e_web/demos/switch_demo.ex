@@ -630,6 +630,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
       for={@form}
       action={~p"/switch/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.switch field={@form[:notifications]} class="switch">
         <:label>Enable notifications</:label>
@@ -664,6 +665,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
       for={@form}
       action={~p"/switch/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.switch field={@form[:notifications]} class="switch">
         <:label>Enable notifications</:label>
@@ -701,6 +703,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
       for={@form}
       action={~p"/switch/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.switch field={f[:notifications]} class="switch">
         <:label>Enable notifications</:label>
@@ -725,6 +728,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
       for={@form}
       action={~p"/switch/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.switch field={f[:notifications]} class="switch">
         <:label>Enable notifications</:label>
@@ -745,7 +749,8 @@ defmodule E2eWeb.Demos.SwitchDemo do
     <form
       action={~p"/switch/form"}
       method="post"
-          >
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.switch
         name="user[notifications]"
@@ -780,7 +785,8 @@ defmodule E2eWeb.Demos.SwitchDemo do
      
       phx-change="validate"
       phx-submit="save"
-          >
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.switch
         field={@form[:notifications]}
         class="switch"
@@ -856,7 +862,8 @@ defmodule E2eWeb.Demos.SwitchDemo do
      
       phx-change="validate_strict"
       phx-submit="save_strict"
-          >
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.switch
         field={@form[:notifications]}
         class="switch"
@@ -939,6 +946,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
       for={@form}
       phx-change="validate"
       phx-submit="save"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.switch
         field={@form[:notifications]}
@@ -964,6 +972,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
       for={@form}
       phx-change="validate_strict"
       phx-submit="save_strict"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.switch
         field={@form[:notifications]}
@@ -991,6 +1000,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
       action={~p"/switch/form"}
       method="post"
       id="switch-form-native"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.switch
@@ -1013,6 +1023,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
       for={@form}
       action={~p"/switch/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.switch field={@form[:notifications]} class="switch">
         <:label>Enable notifications</:label>
@@ -1058,6 +1069,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
       for={@form}
       action={~p"/switch/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.switch field={@form[:notifications]} class="switch">
         <:label>Enable notifications</:label>
@@ -1108,7 +1120,9 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@form} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.switch field={@form[:notifications]} class="switch">
         <:label>Enable notifications</:label>
         <:error :let={msg}>
@@ -1125,7 +1139,9 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def form_doc_live_ecto_heex do
     ~S"""
-    <.form for={@form} phx-change="validate" phx-submit="save">
+    <.form for={@form} phx-change="validate" phx-submit="save"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.switch field={@form[:notifications]} class="switch">
         <:label>Enable notifications</:label>
         <:error :let={msg}>
@@ -1142,7 +1158,9 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def form_doc_live_ecto_controlled_heex do
     ~S"""
-    <.form for={@ecto_controlled_form} phx-change="validate_controlled" phx-submit="save_controlled">
+    <.form for={@ecto_controlled_form} phx-change="validate_controlled" phx-submit="save_controlled"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.switch
         field={@ecto_controlled_form[:notifications]}
         class="switch"
@@ -1164,7 +1182,9 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def form_doc_live_ecto_invalid_heex do
     ~S"""
-    <.form for={@ecto_invalid_form} phx-change="validate_invalid" phx-submit="save_invalid">
+    <.form for={@ecto_invalid_form} phx-change="validate_invalid" phx-submit="save_invalid"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.switch
         field={@ecto_invalid_form[:notifications]}
         class="switch"
@@ -1193,6 +1213,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
       for={@form}
       action={~p"/switch/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.switch field={f[:notifications]} class="switch" id="switch-form-phoenix-notifications">
         <:label>Enable notifications</:label>
@@ -1213,6 +1234,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
       for={@form}
       action={~p"/switch/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.switch
         field={f[:notifications]}
@@ -1236,7 +1258,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def form_preview_live_phoenix(assigns) do
     ~H"""
-    <.form for={@form} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix" class="flex flex-col gap-space-lg w-full max-w-xl">
       <.switch
         field={@form[:notifications]}
         class="switch"
@@ -1255,7 +1277,12 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def form_preview_live_ecto(assigns) do
     ~H"""
-    <.form for={@form} phx-change="validate" phx-submit="save">
+    <.form
+      for={@form}
+      phx-change="validate"
+      phx-submit="save"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.switch
         field={@form[:notifications]}
         class="switch"
@@ -1282,6 +1309,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
       for={@form}
       phx-change="validate_controlled"
       phx-submit="save_controlled"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.switch
         field={@form[:notifications]}
@@ -1314,6 +1342,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
       for={@form}
       phx-change="validate_invalid"
       phx-submit="save_invalid"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.switch
         field={@form[:notifications]}

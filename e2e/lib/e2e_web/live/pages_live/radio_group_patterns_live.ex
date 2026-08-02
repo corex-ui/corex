@@ -14,6 +14,7 @@ defmodule E2eWeb.RadioGroupPatternsLive do
      |> assign(:items, @initial_items)
      |> assign(:dynamic_value, "lorem")
      |> assign(:next_id, 1)
+     |> assign(:items_version, 0)
      |> assign(:value, "lorem")}
   end
 
@@ -33,7 +34,8 @@ defmodule E2eWeb.RadioGroupPatternsLive do
     {:noreply,
      socket
      |> assign(:items, socket.assigns.items ++ [item])
-     |> assign(:next_id, socket.assigns.next_id + 1)}
+     |> assign(:next_id, socket.assigns.next_id + 1)
+     |> update(:items_version, &(&1 + 1))}
   end
 
   def handle_event("reset", _params, socket) do
@@ -41,7 +43,8 @@ defmodule E2eWeb.RadioGroupPatternsLive do
      socket
      |> assign(:items, @initial_items)
      |> assign(:dynamic_value, "lorem")
-     |> assign(:next_id, 1)}
+     |> assign(:next_id, 1)
+     |> update(:items_version, &(&1 + 1))}
   end
 
   @impl true
@@ -117,7 +120,7 @@ defmodule E2eWeb.RadioGroupPatternsLive do
                 </.action>
               </div>
               <.radio_group
-                id="patterns-dynamic"
+                id={"patterns-dynamic-#{@items_version}"}
                 name="dynamic-rg"
                 class="radio-group"
                 items={@items}

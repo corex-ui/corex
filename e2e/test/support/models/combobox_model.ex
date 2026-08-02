@@ -297,6 +297,61 @@ defmodule E2eWeb.ComboboxModel do
     session
   end
 
+  def disable_playground_item(session, value) when is_binary(value) do
+    if not safe_dom_token?(value), do: raise(ArgumentError, "invalid item value")
+
+    session
+    |> click(
+      css(
+        ~S|#combobox-playground-disabled-items [data-scope="select"][data-part="trigger"]|,
+        visible: :any
+      )
+    )
+    |> assert_has(
+      css(
+        ~S|#combobox-playground-disabled-items [data-scope="select"][data-part="content"][data-state="open"]|,
+        visible: :any
+      )
+    )
+    |> click(
+      css(
+        ~s|#combobox-playground-disabled-items [data-scope="select"][data-part="item"][data-value="#{value}"]|,
+        visible: :any
+      )
+    )
+  end
+
+  def assert_playground_item_keeps_custom_slot(session, host_dom_id, value)
+      when is_binary(host_dom_id) and is_binary(value) do
+    if not (safe_dom_token?(host_dom_id) and safe_dom_token?(value)) do
+      raise ArgumentError, "invalid host or value"
+    end
+
+    key = {:e2e_combobox_slot, self(), make_ref()}
+
+    _ =
+      execute_script(
+        session,
+        """
+        const root = document.getElementById(arguments[0]);
+        const item = root?.querySelector(
+          '[data-scope="combobox"][data-part="item"][data-value="' + arguments[1] + '"]:not([data-template])'
+        );
+        const text = item?.querySelector('[data-scope="combobox"][data-part="item-text"]');
+        const hasMedia = !!(text && (text.querySelector('svg') || text.querySelector('img') || text.children.length > 0));
+        const label = (text?.textContent || '').trim();
+        return hasMedia && label.length > 0;
+        """,
+        [host_dom_id, value],
+        fn ok -> Process.put(key, ok == true) end
+      )
+
+    assert Process.get(key, false),
+           "expected ##{host_dom_id} item #{value} to keep custom slot media + label"
+
+    session
+  end
+
   def first_item_value(session, host_dom_id) when is_binary(host_dom_id) do
     key = {:e2e_combobox_first_item, self(), make_ref()}
 

@@ -192,7 +192,20 @@ defmodule E2eWeb.Demos.DataTableDemo do
   @style_users [
     %{id: 1, name: "Alice", email: "alice@example.com", role: "Admin", status: "Active"},
     %{id: 2, name: "Bob", email: "bob@example.com", role: "User", status: "Inactive"},
-    %{id: 3, name: "Charlie", email: "charlie@example.com", role: "User", status: "Active"}
+    %{id: 3, name: "Charlie", email: "charlie@example.com", role: "User", status: "Active"},
+    %{id: 4, name: "Diana", email: "diana@example.com", role: "Manager", status: "Active"},
+    %{id: 5, name: "Eve", email: "eve@example.com", role: "Admin", status: "Inactive"},
+    %{id: 6, name: "Frank", email: "frank@example.com", role: "User", status: "Active"},
+    %{id: 7, name: "Grace", email: "grace@example.com", role: "Manager", status: "Active"},
+    %{id: 8, name: "Henry", email: "henry@example.com", role: "User", status: "Inactive"},
+    %{id: 9, name: "Ivy", email: "ivy@example.com", role: "Admin", status: "Active"},
+    %{id: 10, name: "Jack", email: "jack@example.com", role: "User", status: "Active"},
+    %{id: 11, name: "Kate", email: "kate@example.com", role: "Manager", status: "Inactive"},
+    %{id: 12, name: "Leo", email: "leo@example.com", role: "User", status: "Active"},
+    %{id: 13, name: "Mia", email: "mia@example.com", role: "Admin", status: "Active"},
+    %{id: 14, name: "Noah", email: "noah@example.com", role: "User", status: "Inactive"},
+    %{id: 15, name: "Olivia", email: "olivia@example.com", role: "Manager", status: "Active"},
+    %{id: 16, name: "Paul", email: "paul@example.com", role: "User", status: "Active"}
   ]
 
   def styling_rows, do: @style_users
@@ -217,6 +230,13 @@ defmodule E2eWeb.Demos.DataTableDemo do
     )
   end
 
+  def styling_max_height_code_tabs do
+    styling_code_tabs(
+      "data-table-styling-max-h-xs",
+      DemoScales.join_modifiers("data-table", DemoScales.ui_max_height_modifier("xs"))
+    )
+  end
+
   def styling_code_tabs(table_id, class) do
     [
       %{value: "heex", label: "Heex", language: :heex, code: styling_heex(table_id, class)},
@@ -233,7 +253,20 @@ defmodule E2eWeb.Demos.DataTableDemo do
     @list_users [
       %{id: 1, name: "Alice", email: "alice@example.com", role: "Admin", status: "Active"},
       %{id: 2, name: "Bob", email: "bob@example.com", role: "User", status: "Inactive"},
-      %{id: 3, name: "Charlie", email: "charlie@example.com", role: "User", status: "Active"}
+      %{id: 3, name: "Charlie", email: "charlie@example.com", role: "User", status: "Active"},
+      %{id: 4, name: "Diana", email: "diana@example.com", role: "Manager", status: "Active"},
+      %{id: 5, name: "Eve", email: "eve@example.com", role: "Admin", status: "Inactive"},
+      %{id: 6, name: "Frank", email: "frank@example.com", role: "User", status: "Active"},
+      %{id: 7, name: "Grace", email: "grace@example.com", role: "Manager", status: "Active"},
+      %{id: 8, name: "Henry", email: "henry@example.com", role: "User", status: "Inactive"},
+      %{id: 9, name: "Ivy", email: "ivy@example.com", role: "Admin", status: "Active"},
+      %{id: 10, name: "Jack", email: "jack@example.com", role: "User", status: "Active"},
+      %{id: 11, name: "Kate", email: "kate@example.com", role: "Manager", status: "Inactive"},
+      %{id: 12, name: "Leo", email: "leo@example.com", role: "User", status: "Active"},
+      %{id: 13, name: "Mia", email: "mia@example.com", role: "Admin", status: "Active"},
+      %{id: 14, name: "Noah", email: "noah@example.com", role: "User", status: "Inactive"},
+      %{id: 15, name: "Olivia", email: "olivia@example.com", role: "Manager", status: "Active"},
+      %{id: 16, name: "Paul", email: "paul@example.com", role: "User", status: "Active"}
     ]
 
     @style_sort_columns [:id, :name, :role, :status]

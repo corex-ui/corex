@@ -188,13 +188,26 @@ defmodule E2eWeb.Demos.TabsDemo do
 
   def api_set_value_client_js_heex do
     ~S"""
-    <button
-      type="button"
-      class="button ui-size-sm"
-      onclick="document.getElementById('tabs-api-cjs')?.dispatchEvent(new CustomEvent('corex:tabs:set-value', {bubbles: false, detail: { value: 'lorem' } }))"
-    >
-      Lorem (client JS)
-    </button>
+    <div class="flex flex-wrap items-center gap-space">
+      <.action
+        phx-click={JS.dispatch("corex:tabs:set-value", to: "#tabs-api-cjs", bubbles: false, detail: %{value: "lorem"})}
+        class="button ui-size-sm"
+      >
+        Lorem
+      </.action>
+      <.action
+        phx-click={JS.dispatch("corex:tabs:set-value", to: "#tabs-api-cjs", bubbles: false, detail: %{value: "duis"})}
+        class="button ui-size-sm"
+      >
+        Duis
+      </.action>
+      <.action
+        phx-click={JS.dispatch("corex:tabs:set-value", to: "#tabs-api-cjs", bubbles: false, detail: %{value: nil})}
+        class="button ui-size-sm"
+      >
+        Close all
+      </.action>
+    </div>
     <.tabs id="tabs-api-cjs" class="tabs" value="lorem" items={Corex.Content.new([
       %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
@@ -209,6 +222,12 @@ defmodule E2eWeb.Demos.TabsDemo do
     el?.dispatchEvent(
       new CustomEvent("corex:tabs:set-value", { bubbles: false, detail: { value: "lorem" } })
     );
+    el?.dispatchEvent(
+      new CustomEvent("corex:tabs:set-value", { bubbles: false, detail: { value: "duis" } })
+    );
+    el?.dispatchEvent(
+      new CustomEvent("corex:tabs:set-value", { bubbles: false, detail: { value: null } })
+    );
     """
   end
 
@@ -217,6 +236,12 @@ defmodule E2eWeb.Demos.TabsDemo do
     const el: HTMLElement | null = document.getElementById("tabs-api-cjs");
     el?.dispatchEvent(
       new CustomEvent("corex:tabs:set-value", { bubbles: false, detail: { value: "lorem" } })
+    );
+    el?.dispatchEvent(
+      new CustomEvent("corex:tabs:set-value", { bubbles: false, detail: { value: "duis" } })
+    );
+    el?.dispatchEvent(
+      new CustomEvent("corex:tabs:set-value", { bubbles: false, detail: { value: null } })
     );
     """
   end
@@ -227,13 +252,42 @@ defmodule E2eWeb.Demos.TabsDemo do
     ~H"""
     <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
       <div class="flex flex-wrap items-center gap-space">
-        <button
-          type="button"
+        <.action
+          phx-click={
+            JS.dispatch("corex:tabs:set-value",
+              to: "#tabs-api-cjs",
+              bubbles: false,
+              detail: %{value: "lorem"}
+            )
+          }
           class="button ui-size-sm"
-          onclick="document.getElementById('tabs-api-cjs')?.dispatchEvent(new CustomEvent('corex:tabs:set-value', {bubbles: false, detail: { value: 'lorem' } }))"
         >
-          Lorem (client JS)
-        </button>
+          Lorem
+        </.action>
+        <.action
+          phx-click={
+            JS.dispatch("corex:tabs:set-value",
+              to: "#tabs-api-cjs",
+              bubbles: false,
+              detail: %{value: "duis"}
+            )
+          }
+          class="button ui-size-sm"
+        >
+          Duis
+        </.action>
+        <.action
+          phx-click={
+            JS.dispatch("corex:tabs:set-value",
+              to: "#tabs-api-cjs",
+              bubbles: false,
+              detail: %{value: nil}
+            )
+          }
+          class="button ui-size-sm"
+        >
+          Close all
+        </.action>
       </div>
       <.tabs
         id="tabs-api-cjs"

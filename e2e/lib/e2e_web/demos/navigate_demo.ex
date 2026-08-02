@@ -163,8 +163,6 @@ defmodule E2eWeb.Demos.NavigateDemo do
     ~S"""
     <.navigate class="link" to="#">Subtle (default)</.navigate>
     <.navigate class="link ui-solid" to="#">Solid</.navigate>
-    <.navigate class="link ui-nav" to="#">Nav</.navigate>
-    <.navigate class="link ui-nav" to="#" aria-current="page">Nav current</.navigate>
     """
   end
 
@@ -175,16 +173,45 @@ defmodule E2eWeb.Demos.NavigateDemo do
       <.navigate id="navigate-style-variant-solid" class="link ui-solid" to="#">
         Solid
       </.navigate>
-      <.navigate id="navigate-style-variant-nav" class="link ui-nav" to="#">Nav</.navigate>
+    </div>
+    """
+  end
+
+  def styling_nav_code do
+    ~S"""
+    <nav class="flex flex-wrap items-center gap-space" aria-label="Example">
+      <.navigate class="link ui-nav" to="#" aria-current="page">Overview</.navigate>
+      <.navigate class="link ui-nav" to="#">Docs</.navigate>
+      <.navigate class="link ui-nav" to="#" aria-current="location">API</.navigate>
+      <.navigate class="link ui-nav ui-accent" to="#" aria-current="page">Accent current</.navigate>
+    </nav>
+    """
+  end
+
+  def styling_nav_example(assigns) do
+    ~H"""
+    <nav class="flex flex-wrap items-center gap-space" aria-label="Example">
+      <.navigate id="navigate-style-nav-current" class="link ui-nav" to="#" aria-current="page">
+        Overview
+      </.navigate>
+      <.navigate id="navigate-style-nav" class="link ui-nav" to="#">Docs</.navigate>
       <.navigate
-        id="navigate-style-variant-nav-current"
+        id="navigate-style-nav-location"
         class="link ui-nav"
+        to="#"
+        aria-current="location"
+      >
+        API
+      </.navigate>
+      <.navigate
+        id="navigate-style-nav-accent-current"
+        class="link ui-nav ui-accent"
         to="#"
         aria-current="page"
       >
-        Nav current
+        Accent current
       </.navigate>
-    </div>
+    </nav>
     """
   end
 

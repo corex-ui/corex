@@ -98,6 +98,29 @@ defmodule E2eWeb.ComboboxTest do
       |> Combobox.wait_combobox_content_open("combobox-playground", timeout: 8_000)
       |> Combobox.assert_positioner_anchored("combobox-playground")
     end
+
+    feature "disabling an item keeps custom item slots", %{session: session} do
+      host = "combobox-playground"
+
+      session
+      |> ComponentBehaviorSpec.visit_ready(Combobox, :combobox, :playground)
+      |> Combobox.prepare_live_form()
+      |> Combobox.wait_playground_combobox_ready()
+      |> Combobox.disable_playground_close_on_select()
+      |> Combobox.open_combobox_by_host_id(host, timeout: 8_000)
+      |> Combobox.assert_playground_item_keeps_custom_slot(host, "fra")
+      |> Combobox.disable_playground_item("bel")
+      |> Combobox.wait_root_combobox_ready(host)
+      |> Combobox.open_combobox_by_host_id(host, timeout: 8_000)
+      |> Combobox.assert_playground_item_keeps_custom_slot(host, "fra")
+      |> Combobox.assert_playground_item_keeps_custom_slot(host, "deu")
+      |> Combobox.click_item_by_host_id(host, "deu", timeout: 8_000)
+      |> Combobox.wait_hidden_value_by_host_id(host, "deu", timeout: 8_000)
+      |> Combobox.open_combobox_by_host_id(host, timeout: 8_000)
+      |> Combobox.assert_playground_item_keeps_custom_slot(host, "fra")
+      |> Combobox.assert_playground_item_keeps_custom_slot(host, "deu")
+      |> Combobox.assert_playground_item_keeps_custom_slot(host, "nld")
+    end
   end
 
   describe "patterns" do

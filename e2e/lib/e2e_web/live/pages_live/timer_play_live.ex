@@ -5,17 +5,13 @@ defmodule E2eWeb.TimerPlayLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok,
-     socket
-     |> assign(:remount, 0)
-     |> assign(:dir, "ltr")}
+    {:ok, assign(socket, :dir, "ltr")}
   end
 
   @impl true
   def handle_event("control_changed", %{"value" => [value], "id" => "dir"}, socket)
       when is_binary(value) do
-    r = socket.assigns.remount + 1
-    {:noreply, assign(socket, dir: value, remount: r)}
+    {:noreply, assign(socket, :dir, value)}
   end
 
   @impl true
@@ -43,7 +39,7 @@ defmodule E2eWeb.TimerPlayLive do
         </:controls>
         <:canvas>
           <.timer
-            id={"timer-play-#{@remount}"}
+            id="timer-play"
             countdown
             start_ms={60_000}
             target_ms={0}

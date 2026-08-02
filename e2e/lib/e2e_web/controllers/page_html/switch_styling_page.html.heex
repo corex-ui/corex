@@ -8,7 +8,7 @@
     path={@path}
     id="switch-styling-page"
     title={~t"Switch · Style"}
-    subtitle={~t"Semantic colors, density, and corner radius via modifier classes on the root."}
+    subtitle={~t"Semantic colors and density via modifier classes on the root."}
   >
     <.demo_section
       id="switch-styling-color"
@@ -33,32 +33,6 @@
       </:description>
       <:preview>
         <E2eWeb.Demos.SwitchDemo.styling_size_example />
-      </:preview>
-    </.demo_section>
-
-    <.demo_section
-      id="switch-styling-rounded"
-      title={~t"Rounded"}
-      code={E2eWeb.Demos.SwitchDemo.styling_rounded_code()}
-    >
-      <:description>
-        <.demo_modifier_axis name="switch" axis={:radius} />
-      </:description>
-      <:preview>
-        <E2eWeb.Demos.SwitchDemo.styling_rounded_example />
-      </:preview>
-    </.demo_section>
-
-    <.demo_section
-      id="switch-styling-width"
-      title={~t"Width"}
-      code={E2eWeb.Demos.SwitchDemo.styling_width_code()}
-    >
-      <:description>
-        <.demo_modifier_axis name="switch" axis={:width} />
-      </:description>
-      <:preview>
-        <E2eWeb.Demos.SwitchDemo.styling_width_example />
       </:preview>
     </.demo_section>
 

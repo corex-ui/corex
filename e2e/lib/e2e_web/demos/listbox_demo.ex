@@ -1001,6 +1001,78 @@ defmodule E2eWeb.Demos.ListboxDemo do
     """
   end
 
+  def items_scrollable do
+    Corex.List.new([
+      %{label: "France", value: "fra"},
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"},
+      %{label: "Netherlands", value: "nld"},
+      %{label: "Switzerland", value: "che"},
+      %{label: "Austria", value: "aut"},
+      %{label: "Italy", value: "ita"},
+      %{label: "Spain", value: "esp"},
+      %{label: "Portugal", value: "prt"},
+      %{label: "Poland", value: "pol"},
+      %{label: "Sweden", value: "swe"},
+      %{label: "Norway", value: "nor"},
+      %{label: "Denmark", value: "dnk"},
+      %{label: "Finland", value: "fin"},
+      %{label: "Ireland", value: "irl"},
+      %{label: "Greece", value: "grc"}
+    ])
+  end
+
+  defp styling_max_height_items_attr do
+    ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}, %{label: "Netherlands", value: "nld"}, %{label: "Switzerland", value: "che"}, %{label: "Austria", value: "aut"}, %{label: "Italy", value: "ita"}, %{label: "Spain", value: "esp"}, %{label: "Portugal", value: "prt"}, %{label: "Poland", value: "pol"}, %{label: "Sweden", value: "swe"}, %{label: "Norway", value: "nor"}, %{label: "Denmark", value: "dnk"}, %{label: "Finland", value: "fin"}, %{label: "Ireland", value: "irl"}, %{label: "Greece", value: "grc"}])}|
+  end
+
+  def styling_max_height_code do
+    items = styling_max_height_items_attr()
+    value = styling_value_attr()
+
+    slots = """
+      <:label>Label</:label>
+      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+    """
+
+    DemoScales.max_height_variants("listbox")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("listbox", modifier)
+
+      """
+      <.listbox class="#{class}" #{items} #{value}>
+      #{slots}
+      </.listbox>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_max_height_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:items, items_scrollable())
+      |> assign(:value, ["fra"])
+      |> assign(:max_height_variants, DemoScales.max_height_variants("listbox"))
+
+    ~H"""
+    <div {DemoScales.preview_scroll_attrs()}>
+      <div :for={variant <- @max_height_variants} class="flex flex-col gap-2">
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
+        <.listbox
+          id={"listbox-style-max-h-#{variant.id}"}
+          class={DemoScales.join_modifiers("listbox", variant.modifier)}
+          items={@items}
+          value={@value}
+        >
+          <:label>{variant.label}</:label>
+          <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+        </.listbox>
+      </div>
+    </div>
+    """
+  end
+
   def styling_rounded_code do
     items = styling_items_attr()
 

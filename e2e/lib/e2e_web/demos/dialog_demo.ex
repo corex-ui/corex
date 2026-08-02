@@ -914,6 +914,51 @@ defmodule E2eWeb.Demos.DialogDemo do
     """
   end
 
+  def styling_max_height_code do
+    body = style_dialog_max_height_body()
+
+    DemoScales.max_height_variants("dialog")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("dialog", modifier)
+
+      """
+      <.dialog class="#{class}" modal>
+        <:trigger>Open</:trigger>
+        <:title>#{style_dialog_title()}</:title>
+        <:description>#{style_dialog_description()}</:description>
+        <:content><p>#{body}</p></:content>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+      </.dialog>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_max_height_example(assigns) do
+    assigns = assign(assigns, :max_height_variants, DemoScales.max_height_variants("dialog"))
+
+    ~H"""
+    <div {DemoScales.preview_scroll_attrs()}>
+      <div :for={variant <- @max_height_variants} class="flex flex-col gap-2">
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
+        <.dialog
+          id={"dialog-style-max-h-#{variant.id}"}
+          class={DemoScales.join_modifiers("dialog", variant.modifier)}
+          modal
+        >
+          <:trigger>Open {variant.label}</:trigger>
+          <:title>{style_dialog_title()}</:title>
+          <:description>{style_dialog_description()}</:description>
+          <:content>
+            <p>{style_dialog_max_height_body()}</p>
+          </:content>
+          <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+        </.dialog>
+      </div>
+    </div>
+    """
+  end
+
   def animation_custom_js do
     ~S"""
     import { animate } from "motion"
@@ -1092,6 +1137,10 @@ defmodule E2eWeb.Demos.DialogDemo do
 
   defp style_dialog_body,
     do: "Your display name is shown on comments, mentions, and shared documents."
+
+  defp style_dialog_max_height_body,
+    do:
+      "Your display name is shown on comments, mentions, and shared documents. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sodales ullamcorper tristique. Praesent vel sapien at lacus efficitur volutpat. Mauris vitae urna eu nibh fermentum faucibus. Donec condimentum ex mi, congue molestie ipsum gravida a. Sed ac eros luctus, finibus libero non, laoreet lectus."
 
   defp style_dialog_sidebar_title, do: "Filters"
 

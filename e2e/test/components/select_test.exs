@@ -176,7 +176,7 @@ defmodule E2eWeb.SelectTest do
       |> Select.wait_root_select_ready("patterns-dynamic")
       |> assert_has(
         css(
-          ~s|#patterns-dynamic [data-scope="select"][data-part="item"][data-value="item-1"]|,
+          ~S|#patterns-dynamic [data-scope="select"][data-part="item"][data-value="item-1"]|,
           count: 0,
           visible: :any
         )
@@ -234,8 +234,8 @@ defmodule E2eWeb.SelectTest do
         timeout: 5_000
       )
 
+      # Zag highlights the first item on open; Down moves to the next.
       session
-      |> Select.press_key_on_active(:down_arrow)
       |> Select.assert_highlighted_item_in_section(section, "fra")
       |> Select.press_key_on_active(:down_arrow)
       |> Select.assert_highlighted_item_in_section(section, "bel")
@@ -278,7 +278,7 @@ defmodule E2eWeb.SelectTest do
       )
 
       session
-      |> Select.press_key_on_active(:down_arrow)
+      |> Select.assert_highlighted_item_in_section(section, "fra")
       |> Select.press_key_on_active(:enter)
 
       Select.wait_hidden_value_in_anatomy_section(session, section, "fra", timeout: 5_000)

@@ -32,7 +32,7 @@ defmodule E2eWeb.ToastModel do
   def assert_toast_visible(session) do
     wait_for_has(
       session,
-      css(~s|#layout-toast [data-scope="toast"]|, minimum: 1, visible: :any),
+      css(~S|#layout-toast [data-scope="toast"]|, minimum: 1, visible: :any),
       timeout: 8_000
     )
   end
@@ -46,24 +46,24 @@ defmodule E2eWeb.ToastModel do
   end
 
   def create_via_playground(session) do
-    click(session, css(~s|#toast-playground form [type="submit"]|))
+    click(session, css(~S|#toast-playground form [type="submit"]|))
     session
   end
 
   def click_server_info(session) do
-    click(session, css(~s|#toast-api-create-server .button|, at: 0))
+    click(session, css(~S|#toast-api-create-server .button|, at: 0))
     session
   end
 
   def dismiss_first_toast(session) do
-    click(session, css(~s|#layout-toast [data-scope="toast"] [data-part="close-trigger"]|, at: 0))
+    click(session, css(~S|#layout-toast [data-scope="toast"] [data-part="close-trigger"]|, at: 0))
     session
   end
 
   def has_close_trigger?(session) do
     has?(
       session,
-      css(~s|#layout-toast [data-scope="toast"] [data-part="close-trigger"]|, visible: :any)
+      css(~S|#layout-toast [data-scope="toast"] [data-part="close-trigger"]|, visible: :any)
     )
   end
 

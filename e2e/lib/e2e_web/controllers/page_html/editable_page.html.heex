@@ -8,7 +8,7 @@
     path={@path}
     id="editable-anatomy-page"
     title={~t"Editable · Anatomy"}
-    subtitle={~t"Basic setup and trigger slots."}
+    subtitle={~t"Basic setup, edit triggers, and activation without an edit button."}
   >
     <.demo_section
       id="editable-anatomy-minimal"
@@ -24,6 +24,14 @@
       code={E2eWeb.Demos.EditableDemo.with_triggers_code()}
     >
       <:preview><E2eWeb.Demos.EditableDemo.with_triggers_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="editable-anatomy-without-trigger"
+      title={~t"Without edit trigger"}
+      code={E2eWeb.Demos.EditableDemo.without_trigger_code()}
+    >
+      <:preview><E2eWeb.Demos.EditableDemo.without_trigger_example /></:preview>
     </.demo_section>
   </.demo_page>
 </Layouts.app>

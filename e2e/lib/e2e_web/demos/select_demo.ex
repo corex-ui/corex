@@ -204,7 +204,7 @@ defmodule E2eWeb.Demos.SelectDemo do
     >
       <:label>Country of residence</:label>
       <:item :let={item}>
-        <Flagpack.flag name={String.to_atom(item.value)} />
+        <Flagpack.flag name={String.to_existing_atom(to_string(item.value))} />
         {item.label}
       </:item>
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
@@ -249,7 +249,7 @@ defmodule E2eWeb.Demos.SelectDemo do
     >
       <:label>Country of residence</:label>
       <:item :let={item}>
-        <Flagpack.flag name={String.to_atom(item.value)} />
+        <Flagpack.flag name={String.to_existing_atom(to_string(item.value))} />
         {item.label}
       </:item>
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
@@ -598,6 +598,66 @@ defmodule E2eWeb.Demos.SelectDemo do
     """
   end
 
+  defp styling_scroll_items do
+    Corex.List.new([
+      %{label: "France", value: "fra"},
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"},
+      %{label: "Netherlands", value: "nld"},
+      %{label: "Switzerland", value: "che"},
+      %{label: "Austria", value: "aut"},
+      %{label: "Italy", value: "ita"},
+      %{label: "Spain", value: "esp"},
+      %{label: "Portugal", value: "prt"},
+      %{label: "Poland", value: "pol"},
+      %{label: "Sweden", value: "swe"},
+      %{label: "Norway", value: "nor"},
+      %{label: "Denmark", value: "dnk"},
+      %{label: "Finland", value: "fin"},
+      %{label: "Ireland", value: "irl"},
+      %{label: "Greece", value: "grc"}
+    ])
+  end
+
+  defp styling_max_height_items_attr do
+    ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}, %{label: "Netherlands", value: "nld"}, %{label: "Switzerland", value: "che"}, %{label: "Austria", value: "aut"}, %{label: "Italy", value: "ita"}, %{label: "Spain", value: "esp"}, %{label: "Portugal", value: "prt"}, %{label: "Poland", value: "pol"}, %{label: "Sweden", value: "swe"}, %{label: "Norway", value: "nor"}, %{label: "Denmark", value: "dnk"}, %{label: "Finland", value: "fin"}, %{label: "Ireland", value: "irl"}, %{label: "Greece", value: "grc"}])}|
+  end
+
+  def styling_max_height_code do
+    items_attr = styling_max_height_items_attr()
+
+    DemoScales.max_height_variants("select")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("select", modifier)
+
+      """
+      <.select class="#{class}" #{items_attr}>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.select>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_max_height_example(assigns) do
+    assigns = assign(assigns, :max_height_variants, DemoScales.max_height_variants("select"))
+
+    ~H"""
+    <div {DemoScales.preview_scroll_attrs()}>
+      <div :for={variant <- @max_height_variants} class="flex flex-col gap-2">
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
+        <.select
+          id={"select-style-max-h-#{variant.id}"}
+          class={DemoScales.join_modifiers("select", variant.modifier)}
+          items={styling_scroll_items()}
+        >
+          <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        </.select>
+      </div>
+    </div>
+    """
+  end
+
   def items_minimal do
     [
       %{label: "France", value: "fra"},
@@ -776,6 +836,7 @@ defmodule E2eWeb.Demos.SelectDemo do
       for={@form}
       action={~p"/select/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.select
         field={@form[:country]}
@@ -826,6 +887,7 @@ defmodule E2eWeb.Demos.SelectDemo do
       for={@form}
       action={~p"/select/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.select
         field={@form[:country]}
@@ -872,7 +934,7 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def form_native_heex do
     ~S"""
-    <form action={~p"/select/form"} method="post">
+    <form action={~p"/select/form"} method="post" class="flex flex-col gap-space-lg w-full max-w-xl">
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.select
         name="user[country]"
@@ -920,6 +982,7 @@ defmodule E2eWeb.Demos.SelectDemo do
      
       phx-change="validate"
       phx-submit="save"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.select
         class="select"
@@ -959,6 +1022,7 @@ defmodule E2eWeb.Demos.SelectDemo do
      
       phx-change="validate_strict"
       phx-submit="save_strict"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.select
         class="select"
@@ -1145,6 +1209,7 @@ defmodule E2eWeb.Demos.SelectDemo do
       for={@form}
       action={~p"/select/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.select
         field={@form[:country]}
@@ -1199,7 +1264,9 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@form} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.select
         class="select"
         field={@form[:country]}
@@ -1322,6 +1389,7 @@ defmodule E2eWeb.Demos.SelectDemo do
       for={@form}
       action={~p"/select/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.select
         field={f[:country]}
@@ -1355,6 +1423,7 @@ defmodule E2eWeb.Demos.SelectDemo do
       for={@form}
       action={~p"/select/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.select
         field={f[:country]}
@@ -1387,6 +1456,7 @@ defmodule E2eWeb.Demos.SelectDemo do
       action={~p"/select/form"}
       method="post"
       id="select-plain-form"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.select
@@ -1418,6 +1488,7 @@ defmodule E2eWeb.Demos.SelectDemo do
       for={@form}
       phx-change="validate"
       phx-submit="save"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.select
         id="select-form-live-country"
@@ -1452,6 +1523,7 @@ defmodule E2eWeb.Demos.SelectDemo do
       for={@form}
       phx-change="validate_strict"
       phx-submit="save_strict"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.select
         id="select-form-live-strict"
@@ -1554,7 +1626,12 @@ defmodule E2eWeb.Demos.SelectDemo do
           Reset
         </.action>
       </div>
-      <.select class="select" items={Corex.List.new(@items)}>
+      <.select
+        class="select"
+        items={Corex.List.new(@items)}
+        value={@value}
+        on_value_change="value_changed"
+      >
         <:label>Country</:label>
         <:trigger>
           <.heroicon name="hero-chevron-down" class="icon" />
@@ -1577,7 +1654,11 @@ defmodule E2eWeb.Demos.SelectDemo do
           %{value: "donec", label: "Donec condimentum ex mi"}
         ]
 
-        {:ok, socket |> assign(:items, initial) |> assign(:next_id, 1)}
+        {:ok,
+         socket
+         |> assign(:items, initial)
+         |> assign(:value, [])
+         |> assign(:next_id, 1)}
       end
 
       @impl true
@@ -1599,7 +1680,16 @@ defmodule E2eWeb.Demos.SelectDemo do
           %{value: "donec", label: "Donec condimentum ex mi"}
         ]
 
-        {:noreply, socket |> assign(:items, initial) |> assign(:next_id, 1)}
+        {:noreply,
+         socket
+         |> assign(:items, initial)
+         |> assign(:value, [])
+         |> assign(:next_id, 1)
+         |> Corex.Select.set_value("patterns-dynamic", [])}
+      end
+
+      def handle_event("value_changed", %{"value" => value}, socket) when is_list(value) do
+        {:noreply, assign(socket, :value, value)}
       end
 
       @impl true
@@ -1614,7 +1704,13 @@ defmodule E2eWeb.Demos.SelectDemo do
               Reset
             </.action>
           </div>
-          <.select id="patterns-dynamic" class="select" items={Corex.List.new(@items)}>
+          <.select
+            id="patterns-dynamic"
+            class="select"
+            items={Corex.List.new(@items)}
+            value={@value}
+            on_value_change="value_changed"
+          >
             <:label>Country</:label>
             <:trigger>
               <.heroicon name="hero-chevron-down" class="icon" />
@@ -1816,6 +1912,7 @@ defmodule E2eWeb.Demos.SelectDemo do
       for={@form}
       action={~p"/select/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.select
         field={f[:country]}
@@ -1844,7 +1941,7 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def form_preview_live_phoenix(assigns) do
     ~H"""
-    <.form for={@form} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix" class="flex flex-col gap-space-lg w-full max-w-xl">
       <.select
         id="select-live-form-phoenix-country"
         class="select"
@@ -1867,7 +1964,12 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def form_preview_live_ecto(assigns) do
     ~H"""
-    <.form for={@form} phx-change="validate" phx-submit="save">
+    <.form
+      for={@form}
+      phx-change="validate"
+      phx-submit="save"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.select
         id="select-live-form-ecto-country"
         class="select"
@@ -1894,7 +1996,9 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def form_doc_live_ecto_heex do
     ~S"""
-    <.form for={@ecto_form} phx-change="validate" phx-submit="save">
+    <.form for={@ecto_form} phx-change="validate" phx-submit="save"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.select
         id="select-live-form-ecto-country"
         class="select"
@@ -1921,7 +2025,9 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def form_doc_live_ecto_controlled_heex do
     ~S"""
-    <.form for={@ecto_controlled_form} phx-change="validate_controlled" phx-submit="save_controlled">
+    <.form for={@ecto_controlled_form} phx-change="validate_controlled" phx-submit="save_controlled"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.select
         id="select-live-form-ecto-controlled-country"
         class="select"
@@ -1949,7 +2055,9 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def form_doc_live_ecto_invalid_heex do
     ~S"""
-    <.form for={@ecto_invalid_form} phx-change="validate_invalid" phx-submit="save_invalid">
+    <.form for={@ecto_invalid_form} phx-change="validate_invalid" phx-submit="save_invalid"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.select
         id="select-live-form-ecto-invalid-country"
         class="select"
@@ -1979,7 +2087,12 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def form_preview_live_ecto_controlled(assigns) do
     ~H"""
-    <.form for={@form} phx-change="validate_controlled" phx-submit="save_controlled">
+    <.form
+      for={@form}
+      phx-change="validate_controlled"
+      phx-submit="save_controlled"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.select
         id="select-live-form-ecto-controlled-country"
         class="select"
@@ -2013,7 +2126,12 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def form_preview_live_ecto_invalid(assigns) do
     ~H"""
-    <.form for={@form} phx-change="validate_invalid" phx-submit="save_invalid">
+    <.form
+      for={@form}
+      phx-change="validate_invalid"
+      phx-submit="save_invalid"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.select
         id="select-live-form-ecto-invalid-country"
         class="select"

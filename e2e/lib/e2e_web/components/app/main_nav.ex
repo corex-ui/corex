@@ -3,8 +3,6 @@ defmodule E2eWeb.App.MainNav do
 
   use E2eWeb, :html
 
-  import E2eWeb.Helpers, only: [hexdocs_url: 0]
-
   attr(:path, :string, required: true)
   attr(:orientation, :atom, default: :horizontal, values: [:horizontal, :vertical])
 
@@ -52,15 +50,6 @@ defmodule E2eWeb.App.MainNav do
         aria-current={nav_blog_aria_current(@path)}
       >
         {~t"Blog"}
-      </.navigate>
-      <.navigate
-        :if={@placement == :header}
-        to={hexdocs_url()}
-        class={[@link_class, "inline-flex items-center gap-1"]}
-        external
-      >
-        {~t"Hex Doc"}
-        <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
       </.navigate>
     </nav>
     """

@@ -20,7 +20,8 @@ defmodule E2eWeb.AdminLiveTest do
     pin: "1234",
     accent_color: "#3b82f6",
     heading_angle: 90.0,
-    title: "some title"
+    title: "some title",
+    avatar: "avatar.png"
   }
   @update_attrs %{
     name: "some updated name",
@@ -36,7 +37,8 @@ defmodule E2eWeb.AdminLiveTest do
     pin: "5678",
     accent_color: "#00ff00",
     heading_angle: 180.0,
-    title: "updated title"
+    title: "updated title",
+    avatar: "updated.png"
   }
   @invalid_attrs %{
     name: "",
@@ -49,7 +51,12 @@ defmodule E2eWeb.AdminLiveTest do
     tags: [""],
     password: "",
     notifications: false,
-    role: ""
+    role: "",
+    pin: "",
+    accent_color: "",
+    heading_angle: nil,
+    title: "",
+    avatar: ""
   }
   @invalid_attrs_edit %{
     name: "",
@@ -61,7 +68,12 @@ defmodule E2eWeb.AdminLiveTest do
     tags: ["alpha", "beta"],
     password: "password1",
     notifications: false,
-    role: "admin"
+    role: "admin",
+    pin: "1234",
+    accent_color: "#3b82f6",
+    heading_angle: 90.0,
+    title: "some title",
+    avatar: "avatar.png"
   }
 
   defp create_admin(_) do
@@ -505,7 +517,12 @@ defmodule E2eWeb.AdminLiveTest do
         "tags" => ["alpha"],
         "password" => "password1",
         "notifications" => "true",
-        "role" => "admin"
+        "role" => "admin",
+        "pin" => "1234",
+        "accent_color" => "#3b82f6",
+        "heading_angle" => "90.0",
+        "title" => "some title",
+        "avatar" => "avatar.png"
       }
 
       form_live

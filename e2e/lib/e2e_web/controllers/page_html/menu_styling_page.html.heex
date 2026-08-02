@@ -13,16 +13,6 @@
     }
   >
     <.demo_section
-      id="menu-styling-preview"
-      title={~t"Preview"}
-      code={E2eWeb.Demos.MenuDemo.styling_canonical_code()}
-    >
-      <:preview>
-        <E2eWeb.Demos.MenuDemo.styling_canonical_example />
-      </:preview>
-    </.demo_section>
-
-    <.demo_section
       id="menu-styling-color"
       title={~t"Semantic"}
       code={E2eWeb.Demos.MenuDemo.styling_color_code()}
@@ -80,6 +70,19 @@
       </:description>
       <:preview>
         <E2eWeb.Demos.MenuDemo.styling_rounded_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="menu-styling-max-height"
+      title={~t"Max height"}
+      code={E2eWeb.Demos.MenuDemo.styling_max_height_code()}
+    >
+      <:description>
+        <.demo_modifier_axis name="menu" axis={:max_height} />
+      </:description>
+      <:preview>
+        <E2eWeb.Demos.MenuDemo.styling_max_height_example />
       </:preview>
     </.demo_section>
   </.demo_page>

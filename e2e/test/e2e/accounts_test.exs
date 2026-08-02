@@ -18,13 +18,23 @@ defmodule E2e.AccountsTest do
       tags: nil,
       password: nil,
       notifications: nil,
-      role: nil
+      role: nil,
+      pin: nil,
+      accent_color: nil,
+      heading_angle: nil,
+      title: nil,
+      avatar: nil
     }
 
     @suite_attrs %{
       password: "password1",
       notifications: true,
-      role: "editor"
+      role: "editor",
+      pin: "1234",
+      accent_color: "#3b82f6",
+      heading_angle: 90.0,
+      title: "some title",
+      avatar: "avatar.png"
     }
 
     test "list_users/0 returns all users" do
@@ -42,7 +52,7 @@ defmodule E2e.AccountsTest do
         Map.merge(
           %{
             name: "some name",
-            country: "some country",
+            country: "fra",
             birth_date: "1990-01-15",
             signature: ["M0,0L1,1Z"],
             terms: true,
@@ -55,7 +65,7 @@ defmodule E2e.AccountsTest do
 
       assert {:ok, %User{} = user} = Accounts.create_user(valid_attrs)
       assert user.name == "some name"
-      assert user.country == "some country"
+      assert user.country == "fra"
       assert user.birth_date == ~D[1990-01-15]
       assert user.terms == true
       assert user.level == 5
@@ -64,10 +74,55 @@ defmodule E2e.AccountsTest do
       assert user.password == "password1"
       assert user.notifications == true
       assert user.role == "editor"
+      assert user.pin == "1234"
+      assert user.accent_color == "#3b82f6"
+      assert user.heading_angle == 90.0
+      assert user.title == "some title"
+      assert user.avatar == "avatar.png"
     end
 
     test "create_user/1 with invalid data returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = Accounts.create_user(@invalid_attrs)
+    end
+
+    test "create_user/1 with unsupported country returns error changeset" do
+      attrs =
+        Map.merge(
+          %{
+            name: "some name",
+            country: "some country",
+            birth_date: "1990-01-15",
+            signature: ["M0,0L1,1Z"],
+            terms: true,
+            level: 1,
+            currency: "eur",
+            tags: ["alpha"]
+          },
+          @suite_attrs
+        )
+
+      assert {:error, %Ecto.Changeset{errors: errors}} = Accounts.create_user(attrs)
+      assert Keyword.has_key?(errors, :country)
+    end
+
+    test "create_user/1 with invalid pin returns error changeset" do
+      attrs =
+        Map.merge(
+          %{
+            name: "some name",
+            country: "fra",
+            birth_date: "1990-01-15",
+            signature: ["M0,0L1,1Z"],
+            terms: true,
+            level: 1,
+            currency: "eur",
+            tags: ["alpha"]
+          },
+          Map.put(@suite_attrs, :pin, "12ab")
+        )
+
+      assert {:error, %Ecto.Changeset{errors: errors}} = Accounts.create_user(attrs)
+      assert Keyword.has_key?(errors, :pin)
     end
 
     test "create_user/1 with out-of-range level returns error changeset" do
@@ -75,7 +130,7 @@ defmodule E2e.AccountsTest do
         Map.merge(
           %{
             name: "some name",
-            country: "some country",
+            country: "fra",
             birth_date: "1990-01-15",
             signature: ["M0,0L1,1Z"],
             terms: true,
@@ -95,7 +150,7 @@ defmodule E2e.AccountsTest do
         Map.merge(
           %{
             name: "some name",
-            country: "some country",
+            country: "fra",
             birth_date: "1990-01-15",
             signature: ["M0,0L1,1Z"],
             terms: true,
@@ -115,23 +170,31 @@ defmodule E2e.AccountsTest do
 
       update_attrs = %{
         name: "some updated name",
-        country: "some updated country",
+        country: "deu",
         birth_date: "1995-06-20",
         terms: true,
         level: 3,
         currency: "usd",
         password: "password2",
         notifications: true,
-        role: "viewer"
+        role: "viewer",
+        pin: "5678",
+        accent_color: "#00ff00",
+        heading_angle: 180.0,
+        title: "updated title",
+        avatar: "updated.png"
       }
 
       assert {:ok, %User{} = user} = Accounts.update_user(user, update_attrs)
       assert user.name == "some updated name"
-      assert user.country == "some updated country"
+      assert user.country == "deu"
       assert user.birth_date == ~D[1995-06-20]
       assert user.terms == true
       assert user.level == 3
       assert user.currency == "usd"
+      assert user.pin == "5678"
+      assert user.title == "updated title"
+      assert user.avatar == "updated.png"
     end
 
     test "update_user/2 with invalid data returns error changeset" do
@@ -167,13 +230,23 @@ defmodule E2e.AccountsTest do
       tags: nil,
       password: nil,
       notifications: nil,
-      role: nil
+      role: nil,
+      pin: nil,
+      accent_color: nil,
+      heading_angle: nil,
+      title: nil,
+      avatar: nil
     }
 
     @suite_attrs %{
       password: "password1",
       notifications: true,
-      role: "admin"
+      role: "admin",
+      pin: "1234",
+      accent_color: "#3b82f6",
+      heading_angle: 90.0,
+      title: "some title",
+      avatar: "avatar.png"
     }
 
     test "list_admins/0 returns all admins" do
@@ -213,6 +286,11 @@ defmodule E2e.AccountsTest do
       assert admin.password == "password1"
       assert admin.notifications == true
       assert admin.role == "admin"
+      assert admin.pin == "1234"
+      assert admin.accent_color == "#3b82f6"
+      assert admin.heading_angle == 90.0
+      assert admin.title == "some title"
+      assert admin.avatar == "avatar.png"
     end
 
     test "create_admin/1 accepts signature paths longer than 255 characters" do
@@ -294,7 +372,12 @@ defmodule E2e.AccountsTest do
         currency: "usd",
         password: "password2",
         notifications: true,
-        role: "editor"
+        role: "editor",
+        pin: "5678",
+        accent_color: "#00ff00",
+        heading_angle: 180.0,
+        title: "updated title",
+        avatar: "updated.png"
       }
 
       assert {:ok, %Admin{} = admin} = Accounts.update_admin(admin, update_attrs)
@@ -304,6 +387,9 @@ defmodule E2e.AccountsTest do
       assert admin.terms == true
       assert admin.level == 3
       assert admin.currency == "usd"
+      assert admin.pin == "5678"
+      assert admin.title == "updated title"
+      assert admin.avatar == "updated.png"
     end
 
     test "update_admin/2 with invalid data returns error changeset" do

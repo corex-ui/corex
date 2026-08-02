@@ -165,93 +165,280 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     """
   end
 
-  def api_binding_heex do
+  def api_set_value_client_binding_heex do
     ~S"""
+    <div class="flex flex-wrap items-center gap-space">
+      <.action phx-click={Corex.RadioGroup.set_value("radio-group-api-cb", "lorem")} class="button ui-size-sm">Lorem</.action>
+      <.action phx-click={Corex.RadioGroup.set_value("radio-group-api-cb", "duis")} class="button ui-size-sm">Duis</.action>
+      <.action phx-click={Corex.RadioGroup.set_value("radio-group-api-cb", "donec")} class="button ui-size-sm">Donec</.action>
+      <.action phx-click={Corex.RadioGroup.clear_value("radio-group-api-cb")} class="button ui-size-sm">Clear</.action>
+    </div>
     <.radio_group
-      name="rg-api-binding"
+      id="radio-group-api-cb"
+      name="rg-api-cb"
       class="radio-group"
+      value="lorem"
       items={[
         %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
         %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
         %{value: "donec", label: "Donec condimentum ex mi"}
       ]}
-      on_value_change="radio_group_api_binding"
     >
-      <:label>Pick</:label>
+      <:label>Choose one</:label>
       <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
     </.radio_group>
     """
   end
 
-  def api_binding_elixir do
+  def api_set_value_client_binding_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+      <div class="flex flex-wrap items-center gap-space">
+        <.action
+          phx-click={Corex.RadioGroup.set_value("radio-group-api-cb", "lorem")}
+          class="button ui-size-sm"
+        >
+          Lorem
+        </.action>
+        <.action
+          phx-click={Corex.RadioGroup.set_value("radio-group-api-cb", "duis")}
+          class="button ui-size-sm"
+        >
+          Duis
+        </.action>
+        <.action
+          phx-click={Corex.RadioGroup.set_value("radio-group-api-cb", "donec")}
+          class="button ui-size-sm"
+        >
+          Donec
+        </.action>
+        <.action
+          phx-click={Corex.RadioGroup.clear_value("radio-group-api-cb")}
+          class="button ui-size-sm"
+        >
+          Clear
+        </.action>
+      </div>
+      <.radio_group
+        id="radio-group-api-cb"
+        name="rg-api-cb"
+        class="radio-group"
+        value="lorem"
+        items={items()}
+      >
+        <:label>Choose one</:label>
+        <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+      </.radio_group>
+    </div>
+    """
+  end
+
+  def api_set_value_client_js_heex do
     ~S"""
-    def handle_event("radio_group_api_binding", %{"id" => id, "value" => value}, socket) do
-      {:noreply, socket}
+    <div class="flex flex-wrap items-center gap-space">
+      <.action
+        phx-click={JS.dispatch("corex:radio-group:set-value", to: "#radio-group-api-cjs", bubbles: false, detail: %{value: "lorem"})}
+        class="button ui-size-sm"
+      >
+        Lorem
+      </.action>
+      <.action
+        phx-click={JS.dispatch("corex:radio-group:set-value", to: "#radio-group-api-cjs", bubbles: false, detail: %{value: "duis"})}
+        class="button ui-size-sm"
+      >
+        Duis
+      </.action>
+      <.action
+        phx-click={JS.dispatch("corex:radio-group:set-value", to: "#radio-group-api-cjs", bubbles: false, detail: %{value: "donec"})}
+        class="button ui-size-sm"
+      >
+        Donec
+      </.action>
+      <.action
+        phx-click={JS.dispatch("corex:radio-group:clear-value", to: "#radio-group-api-cjs", bubbles: false)}
+        class="button ui-size-sm"
+      >
+        Clear
+      </.action>
+    </div>
+    <.radio_group
+      id="radio-group-api-cjs"
+      name="rg-api-cjs"
+      class="radio-group"
+      value="lorem"
+      items={[
+        %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
+        %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
+        %{value: "donec", label: "Donec condimentum ex mi"}
+      ]}
+    >
+      <:label>Choose one</:label>
+      <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+    </.radio_group>
+    """
+  end
+
+  def api_set_value_client_js_js do
+    ~S"""
+    const el = document.getElementById("radio-group-api-cjs");
+    el?.dispatchEvent(
+      new CustomEvent("corex:radio-group:set-value", { bubbles: false, detail: { value: "lorem" } })
+    );
+    el?.dispatchEvent(
+      new CustomEvent("corex:radio-group:clear-value", { bubbles: false })
+    );
+    """
+  end
+
+  def api_set_value_client_js_ts do
+    ~S"""
+    const el: HTMLElement | null = document.getElementById("radio-group-api-cjs");
+    el?.dispatchEvent(
+      new CustomEvent("corex:radio-group:set-value", { bubbles: false, detail: { value: "lorem" } })
+    );
+    el?.dispatchEvent(
+      new CustomEvent("corex:radio-group:clear-value", { bubbles: false })
+    );
+    """
+  end
+
+  def api_set_value_client_js_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+      <div class="flex flex-wrap items-center gap-space">
+        <.action
+          phx-click={
+            JS.dispatch("corex:radio-group:set-value",
+              to: "#radio-group-api-cjs",
+              bubbles: false,
+              detail: %{value: "lorem"}
+            )
+          }
+          class="button ui-size-sm"
+        >
+          Lorem
+        </.action>
+        <.action
+          phx-click={
+            JS.dispatch("corex:radio-group:set-value",
+              to: "#radio-group-api-cjs",
+              bubbles: false,
+              detail: %{value: "duis"}
+            )
+          }
+          class="button ui-size-sm"
+        >
+          Duis
+        </.action>
+        <.action
+          phx-click={
+            JS.dispatch("corex:radio-group:set-value",
+              to: "#radio-group-api-cjs",
+              bubbles: false,
+              detail: %{value: "donec"}
+            )
+          }
+          class="button ui-size-sm"
+        >
+          Donec
+        </.action>
+        <.action
+          phx-click={
+            JS.dispatch("corex:radio-group:clear-value",
+              to: "#radio-group-api-cjs",
+              bubbles: false
+            )
+          }
+          class="button ui-size-sm"
+        >
+          Clear
+        </.action>
+      </div>
+      <.radio_group
+        id="radio-group-api-cjs"
+        name="rg-api-cjs"
+        class="radio-group"
+        value="lorem"
+        items={items()}
+      >
+        <:label>Choose one</:label>
+        <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+      </.radio_group>
+    </div>
+    """
+  end
+
+  def api_set_value_server_heex do
+    ~S"""
+    <div class="flex flex-wrap items-center gap-space">
+      <.action phx-click="radio_group_api_lorem" class="button ui-size-sm">Lorem</.action>
+      <.action phx-click="radio_group_api_duis" class="button ui-size-sm">Duis</.action>
+      <.action phx-click="radio_group_api_donec" class="button ui-size-sm">Donec</.action>
+      <.action phx-click="radio_group_api_clear_server" class="button ui-size-sm">Clear</.action>
+    </div>
+    <.radio_group
+      id="radio-group-api-srv"
+      name="rg-api-srv"
+      class="radio-group"
+      value="lorem"
+      items={[
+        %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
+        %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
+        %{value: "donec", label: "Donec condimentum ex mi"}
+      ]}
+    >
+      <:label>Choose one</:label>
+      <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+    </.radio_group>
+    """
+  end
+
+  def api_set_value_server_elixir do
+    ~S"""
+    def handle_event("radio_group_api_lorem", _params, socket) do
+      {:noreply, Corex.RadioGroup.set_value(socket, "radio-group-api-srv", "lorem")}
+    end
+
+    def handle_event("radio_group_api_duis", _params, socket) do
+      {:noreply, Corex.RadioGroup.set_value(socket, "radio-group-api-srv", "duis")}
+    end
+
+    def handle_event("radio_group_api_donec", _params, socket) do
+      {:noreply, Corex.RadioGroup.set_value(socket, "radio-group-api-srv", "donec")}
+    end
+
+    def handle_event("radio_group_api_clear_server", _params, socket) do
+      {:noreply, Corex.RadioGroup.clear_value(socket, "radio-group-api-srv")}
     end
     """
   end
 
-  def api_binding_example(assigns) do
+  def api_set_value_server_example(assigns) do
+    _ = assigns
+
     ~H"""
-    <.radio_group
-      id="radio-group-api-binding"
-      name="rg-api-binding"
-      class="radio-group"
-      items={items()}
-      on_value_change="radio_group_api_binding"
-    >
-      <:label>Pick</:label>
-      <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
-    </.radio_group>
-    """
-  end
-
-  def api_client_heex do
-    ~S"""
-    <.radio_group
-      name="rg-api-client"
-      class="radio-group"
-      items={[
-        %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
-        %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
-        %{value: "donec", label: "Donec condimentum ex mi"}
-      ]}
-      on_value_change_client="radio-group-api-changed"
-    >
-      <:label>Pick</:label>
-      <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
-    </.radio_group>
-    """
-  end
-
-  def api_client_js do
-    ~S"""
-    const el = document.getElementById("radio-group-api-client");
-    el?.addEventListener("radio-group-api-changed", (event) => console.log(event.detail));
-    """
-  end
-
-  def api_client_ts do
-    ~S"""
-    const el = document.getElementById("radio-group-api-client");
-    el?.addEventListener("radio-group-api-changed", (event: Event) => {
-      console.log((event as CustomEvent<{ id?: string; value?: string | null }>).detail);
-    });
-    """
-  end
-
-  def api_client_example(assigns) do
-    ~H"""
-    <.radio_group
-      id="radio-group-api-client"
-      name="rg-api-client"
-      class="radio-group"
-      items={items()}
-      on_value_change_client="radio-group-api-changed"
-    >
-      <:label>Pick</:label>
-      <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
-    </.radio_group>
+    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+      <div class="flex flex-wrap items-center gap-space">
+        <.action phx-click="radio_group_api_lorem" class="button ui-size-sm">Lorem</.action>
+        <.action phx-click="radio_group_api_duis" class="button ui-size-sm">Duis</.action>
+        <.action phx-click="radio_group_api_donec" class="button ui-size-sm">Donec</.action>
+        <.action phx-click="radio_group_api_clear_server" class="button ui-size-sm">Clear</.action>
+      </div>
+      <.radio_group
+        id="radio-group-api-srv"
+        name="rg-api-srv"
+        class="radio-group"
+        value="lorem"
+        items={items()}
+      >
+        <:label>Choose one</:label>
+        <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+      </.radio_group>
+    </div>
     """
   end
 
@@ -261,6 +448,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       Clear
     </.action>
     <.radio_group
+      id="radio-group-api-clear"
       name="rg-api-clear"
       class="radio-group"
       value="lorem"
@@ -270,29 +458,25 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
         %{value: "donec", label: "Donec condimentum ex mi"}
       ]}
     >
-      <:label>Pick</:label>
+      <:label>Choose one</:label>
       <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
     </.radio_group>
     """
   end
 
-  def api_clear_value_elixir do
-    ~S"""
-    def handle_event("clear_choice", _params, socket) do
-      {:noreply, Corex.RadioGroup.clear_value(socket, "radio-group-api-clear")}
-    end
-    """
-  end
-
   def api_clear_value_example(assigns) do
+    _ = assigns
+
     ~H"""
-    <div class="flex flex-col gap-4 w-full max-w-md">
-      <.action
-        phx-click={Corex.RadioGroup.clear_value("radio-group-api-clear")}
-        class="button ui-size-sm ui-alert"
-      >
-        Clear
-      </.action>
+    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+      <div class="flex flex-wrap items-center gap-space">
+        <.action
+          phx-click={Corex.RadioGroup.clear_value("radio-group-api-clear")}
+          class="button ui-size-sm"
+        >
+          Clear
+        </.action>
+      </div>
       <.radio_group
         id="radio-group-api-clear"
         name="rg-api-clear"
@@ -300,7 +484,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
         value="lorem"
         items={items()}
       >
-        <:label>Pick</:label>
+        <:label>Choose one</:label>
         <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
       </.radio_group>
     </div>
@@ -313,6 +497,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       Focus group
     </.action>
     <.radio_group
+      id="radio-group-api-focus"
       name="rg-api-focus"
       class="radio-group"
       items={[
@@ -321,147 +506,46 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
         %{value: "donec", label: "Donec condimentum ex mi"}
       ]}
     >
-      <:label>Pick</:label>
+      <:label>Choose one</:label>
       <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
     </.radio_group>
-    """
-  end
-
-  def api_focus_elixir do
-    ~S"""
-    def handle_event("focus_choice", _params, socket) do
-      {:noreply, Corex.RadioGroup.focus(socket, "radio-group-api-focus")}
-    end
     """
   end
 
   def api_focus_example(assigns) do
+    _ = assigns
+
     ~H"""
-    <div class="flex flex-col gap-4 w-full max-w-md">
-      <.action phx-click={Corex.RadioGroup.focus("radio-group-api-focus")} class="button ui-size-sm">
-        Focus group
-      </.action>
-      <.radio_group id="radio-group-api-focus" name="rg-api-focus" class="radio-group" items={items()}>
-        <:label>Pick</:label>
-        <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
-      </.radio_group>
-    </div>
-    """
-  end
-
-  def api_server_heex do
-    ~S"""
-    <.action phx-click={Corex.RadioGroup.set_value("radio-group-api-server", "duis")} class="button ui-size-sm">
-      Set Duis
-    </.action>
-    <.action phx-click={Corex.RadioGroup.set_value("radio-group-api-server", "donec")} class="button ui-size-sm">
-      Set Donec
-    </.action>
-    <.radio_group
-      name="rg-api-server"
-      class="radio-group"
-      value="lorem"
-      items={[
-        %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
-        %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
-        %{value: "donec", label: "Donec condimentum ex mi"}
-      ]}
-    >
-      <:label>Pick</:label>
-      <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
-    </.radio_group>
-    """
-  end
-
-  def api_server_elixir do
-    ~S"""
-    def handle_event("radio_group_api_set", %{"value" => value}, socket) do
-      {:noreply, Corex.RadioGroup.set_value(socket, "radio-group-api-server", value)}
-    end
-    """
-  end
-
-  def api_server_example(assigns) do
-    ~H"""
-    <div class="flex flex-col gap-4 w-full max-w-md">
-      <div class="flex flex-wrap gap-2">
-        <.action
-          phx-click={Corex.RadioGroup.set_value("radio-group-api-server", "duis")}
-          class="button ui-size-sm"
-        >
-          Set Duis
-        </.action>
-        <.action
-          phx-click={Corex.RadioGroup.set_value("radio-group-api-server", "donec")}
-          class="button ui-size-sm"
-        >
-          Set Donec
+    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+      <div class="flex flex-wrap items-center gap-space">
+        <.action phx-click={Corex.RadioGroup.focus("radio-group-api-focus")} class="button ui-size-sm">
+          Focus group
         </.action>
       </div>
-      <.radio_group
-        id="radio-group-api-server"
-        name="rg-api-server"
-        class="radio-group"
-        value="lorem"
-        items={items()}
-      >
-        <:label>Pick</:label>
+      <.radio_group id="radio-group-api-focus" name="rg-api-focus" class="radio-group" items={items()}>
+        <:label>Choose one</:label>
         <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
       </.radio_group>
     </div>
     """
   end
 
-  def api_controlled_heex do
-    ~S"""
-    <.radio_group
-      name="rg-api-controlled"
-      class="radio-group"
-      items={[
-        %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
-        %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
-        %{value: "donec", label: "Donec condimentum ex mi"}
-      ]}
-      value={@value}
-      controlled
-      on_value_change="radio_group_api_controlled"
-    >
-      <:label>Pick</:label>
-      <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
-    </.radio_group>
-    """
+  def api_codes do
+    %{
+      set_value_client_binding: api_set_value_client_binding_heex(),
+      set_value_client_js_heex: api_set_value_client_js_heex(),
+      set_value_client_js: api_set_value_client_js_js(),
+      set_value_client_ts: api_set_value_client_js_ts(),
+      set_value_server_heex: api_set_value_server_heex(),
+      set_value_server_elixir: api_set_value_server_elixir(),
+      clear_value_binding: api_clear_value_heex(),
+      focus_binding: api_focus_heex()
+    }
   end
 
-  def api_controlled_elixir do
-    ~S"""
-    # With controlled={true}, pass value={...} and update it from handle_event.
-    # The hook reapplies value on LiveView patches (see updated() in the RadioGroup hook).
-    def handle_event("radio_group_api_controlled", %{"value" => v}, socket) do
-      {:noreply, assign(socket, :value, v)}
-    end
-    """
-  end
+  def api_overview_code, do: api_set_value_client_binding_heex()
 
-  def api_controlled_example(assigns) do
-    ~H"""
-    <.radio_group
-      id="radio-group-api-controlled"
-      name="rg-api-controlled"
-      class="radio-group"
-      items={items()}
-      value={@value}
-      controlled
-      on_value_change="radio_group_api_controlled"
-    >
-      <:label>Pick</:label>
-      <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
-    </.radio_group>
-    """
-  end
-
-  def api_overview_code, do: api_binding_heex()
-
-  def api_overview_example(assigns), do: api_binding_example(assigns)
+  def api_overview_example(assigns), do: api_set_value_client_binding_example(assigns)
 
   def events_server_heex do
     ~S"""
@@ -564,6 +648,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
         </.action>
       </div>
       <.radio_group
+        id={"patterns-dynamic-#{@items_version}"}
         name="dynamic-rg"
         class="radio-group"
         items={@items}
@@ -595,7 +680,8 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
          socket
          |> assign(:items, initial)
          |> assign(:value, "lorem")
-         |> assign(:next_id, 1)}
+         |> assign(:next_id, 1)
+         |> assign(:items_version, 0)}
       end
 
       @impl true
@@ -606,7 +692,8 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
         {:noreply,
          socket
          |> assign(:items, socket.assigns.items ++ [item])
-         |> assign(:next_id, socket.assigns.next_id + 1)}
+         |> assign(:next_id, socket.assigns.next_id + 1)
+         |> update(:items_version, &(&1 + 1))}
       end
 
       @impl true
@@ -621,7 +708,8 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
          socket
          |> assign(:items, initial)
          |> assign(:value, "lorem")
-         |> assign(:next_id, 1)}
+         |> assign(:next_id, 1)
+         |> update(:items_version, &(&1 + 1))}
       end
 
       @impl true
@@ -642,7 +730,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
             </.action>
           </div>
           <.radio_group
-            id="patterns-dynamic"
+            id={"patterns-dynamic-#{@items_version}"}
             name="dynamic-rg"
             class="radio-group"
             items={@items}
@@ -691,6 +779,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       for={@form}
       action={~p"/radio-group/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.radio_group field={@form[:choice]} class="radio-group" items={Corex.List.new(#{@form_items_code})}>
         <:label>Choose one</:label>
@@ -730,7 +819,9 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
 
   def form_doc_live_phoenix_heex do
     ~s"""
-    <.form for={@form} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.radio_group field={@form[:choice]} class="radio-group" items={Corex.List.new(#{@form_items_code})}>
         <:label>Choose one</:label>
         <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
@@ -752,6 +843,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       for={@form}
       action="/account/choice"
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.radio_group
         field={@form[:choice]}
@@ -820,6 +912,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       for={@form}
       action="/account/choice"
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.radio_group
         field={@form[:choice]}
@@ -885,7 +978,9 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
 
   def form_doc_native_heex do
     ~s"""
-    <form action={~p"/radio-group/form"} method="post">
+    <form action={~p"/radio-group/form"} method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.radio_group
         name="user[choice]"
@@ -919,6 +1014,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
      
       phx-change="validate"
       phx-submit="save"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.radio_group
         field={@form[:choice]}
@@ -1031,6 +1127,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
      
       phx-change="validate_strict"
       phx-submit="save_strict"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.radio_group
         field={@form[:choice]}
@@ -1151,6 +1248,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       for={@form}
       action={~p"/radio-group/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.radio_group
         field={f[:choice]}
@@ -1185,6 +1283,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       for={@form}
       action={~p"/radio-group/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.radio_group
         field={f[:choice]}
@@ -1218,6 +1317,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       action={~p"/radio-group/form"}
       method="post"
       id="radio-group-plain-form"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.radio_group
@@ -1244,6 +1344,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       for={@form}
       phx-change="validate"
       phx-submit="save"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.radio_group
         field={@form[:choice]}
@@ -1274,6 +1375,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       for={@form}
       phx-change="validate"
       phx-submit="save"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.radio_group
         field={@form[:choice]}
@@ -1691,6 +1793,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       for={@form}
       action={~p"/radio-group/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.radio_group field={f[:choice]} class="radio-group" items={items()}>
         <:label>Choose one</:label>
@@ -1714,7 +1817,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
 
   def form_preview_live_phoenix(assigns) do
     ~H"""
-    <.form for={@form} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix" class="flex flex-col gap-space-lg w-full max-w-xl">
       <.radio_group field={@form[:choice]} class="radio-group" items={items()}>
         <:label>Choose one</:label>
         <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
@@ -1821,7 +1924,9 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
 
   def form_doc_live_ecto_controlled_heex do
     ~S"""
-    <.form for={@ecto_controlled_form} phx-change="validate_controlled" phx-submit="save_controlled">
+    <.form for={@ecto_controlled_form} phx-change="validate_controlled" phx-submit="save_controlled"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.radio_group
         id="radio-group-live-form-ecto-controlled-choice"
         field={@ecto_controlled_form[:choice]}
@@ -1845,7 +1950,9 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
 
   def form_doc_live_ecto_invalid_heex do
     ~S"""
-    <.form for={@ecto_invalid_form} phx-change="validate_invalid" phx-submit="save_invalid">
+    <.form for={@ecto_invalid_form} phx-change="validate_invalid" phx-submit="save_invalid"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.radio_group
         id="radio-group-live-form-ecto-invalid-choice"
         field={@ecto_invalid_form[:choice]}
@@ -1871,7 +1978,12 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
 
   def form_preview_live_ecto_controlled(assigns) do
     ~H"""
-    <.form for={@form} phx-change="validate_controlled" phx-submit="save_controlled">
+    <.form
+      for={@form}
+      phx-change="validate_controlled"
+      phx-submit="save_controlled"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.radio_group
         id="radio-group-live-form-ecto-controlled-choice"
         field={@form[:choice]}
@@ -1901,7 +2013,12 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
 
   def form_preview_live_ecto_invalid(assigns) do
     ~H"""
-    <.form for={@form} phx-change="validate_invalid" phx-submit="save_invalid">
+    <.form
+      for={@form}
+      phx-change="validate_invalid"
+      phx-submit="save_invalid"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.radio_group
         id="radio-group-live-form-ecto-invalid-choice"
         field={@form[:choice]}

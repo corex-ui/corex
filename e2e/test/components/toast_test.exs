@@ -19,8 +19,8 @@ defmodule E2eWeb.ToastTest do
 
   import Wallaby.Query
 
-  alias E2eWeb.ToastModel, as: Toast
   alias E2eWeb.ComponentBehaviorSpec
+  alias E2eWeb.ToastModel, as: Toast
 
   setup do
     Localize.put_locale(:en)

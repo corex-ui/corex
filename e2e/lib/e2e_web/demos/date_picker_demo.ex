@@ -566,6 +566,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       for={@form}
       action={~p"/date-picker/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.date_picker
         field={@form[:date]}
@@ -598,6 +599,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       for={@form}
       action={~p"/date-picker/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.date_picker
         field={@form[:date]}
@@ -647,7 +649,9 @@ defmodule E2eWeb.Demos.DatePickerDemo do
 
   def form_doc_controller_phoenix_multiple_heex do
     ~S"""
-    <.form for={@form} action={~p"/date-picker/form"} method="post">
+    <.form for={@form} action={~p"/date-picker/form"} method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.date_picker
         field={@form[:dates]}
         selection_mode="multiple"
@@ -691,7 +695,9 @@ defmodule E2eWeb.Demos.DatePickerDemo do
 
   def form_doc_controller_phoenix_range_heex do
     ~S"""
-    <.form for={@form} action={~p"/date-picker/form"} method="post">
+    <.form for={@form} action={~p"/date-picker/form"} method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.date_picker
         field={@form[:date_range]}
         selection_mode="range"
@@ -753,6 +759,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       for={@form}
       action={~p"/date-picker/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.date_picker
         field={@form[:date]}
@@ -894,7 +901,9 @@ defmodule E2eWeb.Demos.DatePickerDemo do
 
   def form_doc_native_heex do
     ~S"""
-    <form action={~p"/date-picker/form"} method="post">
+    <form action={~p"/date-picker/form"} method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.date_picker
         name="date_picker_form[date]"
@@ -931,7 +940,9 @@ defmodule E2eWeb.Demos.DatePickerDemo do
 
   def form_doc_native_multiple_heex do
     ~S"""
-    <form action={~p"/date-picker/form"} method="post">
+    <form action={~p"/date-picker/form"} method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.date_picker
         name="date_picker_form_multiple[dates]"
@@ -964,7 +975,9 @@ defmodule E2eWeb.Demos.DatePickerDemo do
 
   def form_doc_native_range_heex do
     ~S"""
-    <form action={~p"/date-picker/form"} method="post">
+    <form action={~p"/date-picker/form"} method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.date_picker
         name="date_picker_form_range[date_range]"
@@ -1001,6 +1014,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
      
       phx-change="validate_basic"
       phx-submit="save_basic"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.date_picker
         field={@form[:date]}
@@ -1025,7 +1039,9 @@ defmodule E2eWeb.Demos.DatePickerDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@form} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.date_picker
         field={@form[:date]}
         translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
@@ -1169,6 +1185,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
      
       phx-change="validate_validate"
       phx-submit="save_validate"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.date_picker
         field={@form[:date]}
@@ -1257,7 +1274,9 @@ defmodule E2eWeb.Demos.DatePickerDemo do
 
   def form_doc_live_phoenix_multiple_heex do
     ~S"""
-    <.form for={@form} phx-submit="save_phoenix_multiple">
+    <.form for={@form} phx-submit="save_phoenix_multiple"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.date_picker
         field={@form[:dates]}
         selection_mode="multiple"
@@ -1309,7 +1328,9 @@ defmodule E2eWeb.Demos.DatePickerDemo do
 
   def form_doc_live_phoenix_range_heex do
     ~S"""
-    <.form for={@form} phx-submit="save_phoenix_range">
+    <.form for={@form} phx-submit="save_phoenix_range"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.date_picker
         field={@form[:date_range]}
         selection_mode="range"
@@ -1360,7 +1381,9 @@ defmodule E2eWeb.Demos.DatePickerDemo do
 
   def form_doc_live_ecto_multiple_heex do
     ~S"""
-    <.form for={@form} phx-change="validate_dates" phx-submit="save_dates">
+    <.form for={@form} phx-change="validate_dates" phx-submit="save_dates"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.date_picker
         field={@form[:dates]}
         selection_mode="multiple"
@@ -1439,7 +1462,9 @@ defmodule E2eWeb.Demos.DatePickerDemo do
 
   def form_doc_live_ecto_range_heex do
     ~S"""
-    <.form for={@form} phx-change="validate_range" phx-submit="save_range">
+    <.form for={@form} phx-change="validate_range" phx-submit="save_range"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.date_picker
         field={@form[:date_range]}
         selection_mode="range"
@@ -1552,7 +1577,14 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       )
 
     ~H"""
-    <.form :let={f} for={@form} action={~p"/date-picker/form"} method="post" id={@form_id}>
+    <.form
+      :let={f}
+      for={@form}
+      action={~p"/date-picker/form"}
+      method="post"
+      id={@form_id}
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.form_date_picker
         id={@picker_id}
         field={f[form_field_key(@selection_mode)]}
@@ -1645,6 +1677,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       action={~p"/date-picker/form"}
       method="post"
       id={"date-picker-plain-form-#{@selection_mode}"}
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.form_date_picker
@@ -1687,7 +1720,13 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       )
 
     ~H"""
-    <.form for={@form} id={@form_id} phx-change={@phx_change} phx-submit={@phx_submit}>
+    <.form
+      for={@form}
+      id={@form_id}
+      phx-change={@phx_change}
+      phx-submit={@phx_submit}
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.form_date_picker
         id={@picker_id}
         field={@form[@form_field_key]}
@@ -1768,7 +1807,9 @@ defmodule E2eWeb.Demos.DatePickerDemo do
 
   def form_doc_live_ecto_invalid_heex do
     ~S"""
-    <.form for={@validate_invalid_form} id="date-picker-validate-form-live-invalid" phx-change="validate_invalid" phx-submit="save_invalid">
+    <.form for={@validate_invalid_form} id="date-picker-validate-form-live-invalid" phx-change="validate_invalid" phx-submit="save_invalid"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.date_picker
         id="date-picker-validate-live-invalid"
         field={@validate_invalid_form[:date]}
@@ -2380,6 +2421,46 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         <.date_picker
           id={"date-picker-style-max-#{variant.id}"}
           class={DemoScales.join_block_modifiers("date-picker", variant.modifier)}
+          value="2024-06-15"
+          focused_value="2024-06-01"
+          translation={styling_translation()}
+        >
+          <:label>{DemoScales.block_demo_label()}</:label>
+          <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
+          <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
+          <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+        </.date_picker>
+      </div>
+    </div>
+    """
+  end
+
+  def styling_max_height_code do
+    slots = styling_block_slots_code()
+
+    DemoScales.max_height_variants("date-picker")
+    |> Enum.map(fn %{modifier: modifier} ->
+      class = DemoScales.join_modifiers("date-picker", modifier)
+
+      """
+      <.date_picker class="#{class}" value="2024-06-15">
+      #{slots}
+      </.date_picker>
+      """
+    end)
+    |> DemoScales.join_code()
+  end
+
+  def styling_max_height_example(assigns) do
+    assigns = assign(assigns, :max_height_variants, DemoScales.max_height_variants("date-picker"))
+
+    ~H"""
+    <div {DemoScales.preview_scroll_attrs()}>
+      <div :for={variant <- @max_height_variants} class="flex flex-col gap-2">
+        <p class="typo ui-size-sm font-medium">{variant.label}</p>
+        <.date_picker
+          id={"date-picker-style-max-h-#{variant.id}"}
+          class={DemoScales.join_modifiers("date-picker", variant.modifier)}
           value="2024-06-15"
           focused_value="2024-06-01"
           translation={styling_translation()}

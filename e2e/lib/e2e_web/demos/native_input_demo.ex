@@ -221,7 +221,9 @@ defmodule E2eWeb.Demos.NativeInputDemo do
 
   def form_field_code do
     ~S"""
-    <.form for={@form}>
+    <.form for={@form}
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <.native_input type="email" field={@form[:email]} class="native-input">
         <:label>Email</:label>
         <:error :let={msg}>{msg}</:error>
@@ -730,7 +732,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
       action={~p"/native-input/form"}
       method="post"
       id="native-input-form-phoenix"
-      class="flex flex-col gap-6 w-full max-w-md"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.form_full_fields variant={:ecto} id_prefix="native-input-phoenix" f={@form} />
@@ -767,7 +769,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
       for={@form}
       id="native-input-live-form-phoenix"
       phx-submit="save_phoenix"
-      class="flex flex-col gap-6 w-full max-w-md"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.form_full_fields variant={:ecto} id_prefix="native-input-live-phoenix" f={@form} />
       <.action type="submit" id="native-input-live-form-phoenix-submit" class="button ui-accent">
@@ -783,6 +785,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
       for={@form}
       action={~p"/native-input/form"}
       method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <div class="flex flex-col gap-3">
@@ -978,7 +981,9 @@ defmodule E2eWeb.Demos.NativeInputDemo do
 
   def form_doc_native_heex do
     ~S"""
-    <form action={~p"/native-input/form"} method="post">
+    <form action={~p"/native-input/form"} method="post"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
+    >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <div class="flex flex-col gap-3">
         <p class="typo ui-size-sm font-medium">Text</p>
@@ -1086,7 +1091,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
       action={~p"/native-input/form"}
       method="post"
       id="native-input-form-ecto"
-      class="flex flex-col gap-6 w-full max-w-md"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.form_full_fields variant={:ecto} id_prefix="native-input-form" f={f} />
@@ -1107,7 +1112,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
       action={~p"/native-input/form"}
       method="post"
       id="native-input-native-form"
-      class="flex flex-col gap-6 w-full max-w-md"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.form_full_fields variant={:native} id_prefix="native-input-native" name_prefix="profile" />
@@ -1127,7 +1132,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
       id="native-input-live-form-ecto"
       phx-change="validate"
       phx-submit="save"
-      class="flex flex-col gap-6 w-full max-w-md"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.form_full_fields variant={:ecto} id_prefix="native-input-live" f={@form} />
       <.action type="submit" id="native-input-live-submit" class="button ui-accent">
@@ -1155,7 +1160,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
       action={~p"/native-input/form"}
       method="post"
       id="native-input-form-phoenix"
-      class="flex flex-col gap-6 w-full max-w-md"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.form_full_fields variant={:ecto} id_prefix="native-input-phoenix" f={f} />
@@ -1178,6 +1183,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
       id="native-input-live-form-ecto"
       phx-change="validate"
       phx-submit="save"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.form_full_fields variant={:ecto} id_prefix="native-input-live" f={@form} />
       <.action type="submit" id="native-input-live-submit" class="button ui-accent">
@@ -1197,7 +1203,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
       for={@form}
       id="native-input-live-form-phoenix"
       phx-submit="save_phoenix"
-      class="flex flex-col gap-6 w-full max-w-md"
+      class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <.form_full_fields variant={:ecto} id_prefix="native-input-live-phoenix" f={@form} />
       <.action type="submit" id="native-input-live-form-phoenix-submit" class="button ui-accent">
