@@ -10,22 +10,22 @@ import {
   getPlacement,
   getPlacementSide,
   getPlacementStyles
-} from "./chunks/chunk-EDPLM4FN.mjs";
+} from "./chunks/chunk-X7GOMWQ5.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-UNSII3TK.mjs";
-import "./chunks/chunk-KZTSFVJI.mjs";
+} from "./chunks/chunk-CI7ZMY4G.mjs";
+import "./chunks/chunk-F544AH56.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-QU3L6FP6.mjs";
+} from "./chunks/chunk-VOKBRZCH.mjs";
 import {
   notifyPhoenixFormChange,
   syncHiddenInputValue
-} from "./chunks/chunk-245LPPAG.mjs";
+} from "./chunks/chunk-QZUKCXYH.mjs";
 import {
   mountStringBinding,
   readUpdatedServerString
-} from "./chunks/chunk-ILSEF4XK.mjs";
+} from "./chunks/chunk-ATDXW7VQ.mjs";
 import {
   idMatches,
   notifyChange,
@@ -60,7 +60,7 @@ import {
   trackPointerMove,
   tryCatch,
   visuallyHiddenStyle
-} from "./chunks/chunk-RRN4KZDI.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
 // ../node_modules/.pnpm/@zag-js+color-picker@1.42.0/node_modules/@zag-js/color-picker/dist/color-picker.anatomy.mjs
 var anatomy = createAnatomy("color-picker", [
@@ -2234,6 +2234,22 @@ var ColorPicker = class extends Component {
   initApi() {
     return this.zagConnect(connect);
   }
+  reassertSwatchColor(swatchEl, colorValue) {
+    this.spreadProps(swatchEl, this.api.getSwatchProps({ value: colorValue }));
+    let color = typeof colorValue === "string" ? colorValue : colorValue?.toString?.("css") ?? "";
+    if (!color && colorValue && typeof colorValue.toString === "function") {
+      try {
+        color = String(colorValue.toString());
+      } catch {
+        color = "";
+      }
+    }
+    if (!color && this.api.valueAsString) color = this.api.valueAsString;
+    if (color) {
+      swatchEl.style.setProperty("--color", color);
+      swatchEl.style.background = color;
+    }
+  }
   render() {
     const rootEl = this.el.querySelector('[data-part="root"]');
     if (rootEl) this.spreadProps(rootEl, this.api.getRootProps());
@@ -2256,12 +2272,14 @@ var ColorPicker = class extends Component {
     const transparencyGrids = this.el.querySelectorAll(
       '[data-part="transparency-grid"]'
     );
-    transparencyGrids.forEach(
-      (el) => this.spreadProps(el, this.api.getTransparencyGridProps({ size: "12px" }))
-    );
+    transparencyGrids.forEach((el) => {
+      const size = el.getAttribute("data-size") || "12px";
+      this.spreadProps(el, this.api.getTransparencyGridProps({ size }));
+    });
     const triggerSwatch = triggerEl?.querySelector('[data-part="swatch"]');
-    if (triggerSwatch)
-      this.spreadProps(triggerSwatch, this.api.getSwatchProps({ value: this.api.value }));
+    if (triggerSwatch) {
+      this.reassertSwatchColor(triggerSwatch, this.api.value);
+    }
     const hexInputs = this.el.querySelectorAll(
       '[data-part="channel-input"][data-channel="hex"]'
     );
@@ -2293,12 +2311,18 @@ var ColorPicker = class extends Component {
       '[data-part="channel-slider-track"][data-channel="hue"]'
     );
     if (hueTrackEl)
-      this.spreadProps(hueTrackEl, this.api.getChannelSliderTrackProps({ channel: "hue" }));
+      this.spreadProps(
+        hueTrackEl,
+        this.api.getChannelSliderTrackProps({ channel: "hue", format: "hsba" })
+      );
     const hueThumbEl = this.el.querySelector(
       '[data-part="channel-slider-thumb"][data-channel="hue"]'
     );
     if (hueThumbEl)
-      this.spreadProps(hueThumbEl, this.api.getChannelSliderThumbProps({ channel: "hue" }));
+      this.spreadProps(
+        hueThumbEl,
+        this.api.getChannelSliderThumbProps({ channel: "hue", format: "hsba" })
+      );
     const alphaSliderEl = this.el.querySelector(
       '[data-part="channel-slider"][data-channel="alpha"]'
     );
@@ -2308,12 +2332,18 @@ var ColorPicker = class extends Component {
       '[data-part="channel-slider-track"][data-channel="alpha"]'
     );
     if (alphaTrackEl)
-      this.spreadProps(alphaTrackEl, this.api.getChannelSliderTrackProps({ channel: "alpha" }));
+      this.spreadProps(
+        alphaTrackEl,
+        this.api.getChannelSliderTrackProps({ channel: "alpha", format: "hsba" })
+      );
     const alphaThumbEl = this.el.querySelector(
       '[data-part="channel-slider-thumb"][data-channel="alpha"]'
     );
     if (alphaThumbEl)
-      this.spreadProps(alphaThumbEl, this.api.getChannelSliderThumbProps({ channel: "alpha" }));
+      this.spreadProps(
+        alphaThumbEl,
+        this.api.getChannelSliderThumbProps({ channel: "alpha", format: "hsba" })
+      );
     const redInputs = this.el.querySelectorAll(
       '[data-part="channel-input"][data-channel="red"]'
     );
@@ -2343,8 +2373,7 @@ var ColorPicker = class extends Component {
       const swatchEl = trigger.querySelector('[data-part="swatch"][data-value]');
       if (swatchEl) {
         const swatchValue = swatchEl.getAttribute("data-value");
-        if (swatchValue)
-          this.spreadProps(swatchEl, this.api.getSwatchProps({ value: swatchValue }));
+        if (swatchValue) this.reassertSwatchColor(swatchEl, swatchValue);
       }
     });
   }
@@ -2517,6 +2546,7 @@ var ColorPickerHook = createZagLiveHook({
       positioning: readPositioningOptions(el),
       ...parsedValue !== void 0 ? { value: parsedValue } : {}
     });
+    zag.render();
   }
 });
 export {

@@ -10,14 +10,14 @@ import {
   redirectCollectionItem,
   refreshItemsIfChanged,
   zagListCollectionConfig
-} from "./chunks/chunk-OGB72GJ7.mjs";
-import "./chunks/chunk-ARXPSEL2.mjs";
+} from "./chunks/chunk-ZGNXOXFS.mjs";
+import "./chunks/chunk-NU3NDRI3.mjs";
 import "./chunks/chunk-HZLPIQBD.mjs";
-import "./chunks/chunk-QZ6HS4MI.mjs";
+import "./chunks/chunk-QCFVFTGB.mjs";
 import {
   readStringListControlledZagProps,
   readStringListControlledZagUpdate
-} from "./chunks/chunk-ILSEF4XK.mjs";
+} from "./chunks/chunk-ATDXW7VQ.mjs";
 import {
   createValueEmitter,
   idMatches,
@@ -33,7 +33,7 @@ import {
   getBoolean,
   getDir,
   getString
-} from "./chunks/chunk-RRN4KZDI.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
 // components/listbox.ts
 var Listbox = class extends Component {
@@ -195,13 +195,16 @@ var ListboxHook = createZagLiveHook({
     return zag;
   },
   update(hook, zag) {
-    refreshItemsIfChanged(hook.el, hook, zag);
-    const propsApplied = zag.updateProps({
-      ...listboxZagPropsBase(hook.el, hook.liveSocket, hook.pushEvent.bind(hook)),
-      collection: zag.getCollection(),
-      ...readStringListControlledZagUpdate(hook.el, "value", "defaultValue", hook.beforeAttrs)
-    });
-    if (!propsApplied) {
+    const itemsChanged = refreshItemsIfChanged(hook.el, hook, zag);
+    const propsApplied = zag.updateProps(
+      {
+        ...listboxZagPropsBase(hook.el, hook.liveSocket, hook.pushEvent.bind(hook)),
+        collection: zag.getCollection(),
+        ...readStringListControlledZagUpdate(hook.el, "value", "defaultValue", hook.beforeAttrs)
+      },
+      { force: itemsChanged }
+    );
+    if (!propsApplied || itemsChanged) {
       zag.render();
     }
   }

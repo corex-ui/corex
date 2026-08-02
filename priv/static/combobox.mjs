@@ -1,6 +1,6 @@
 import {
   stripZagSubmitNames
-} from "./chunks/chunk-XKTL3SPR.mjs";
+} from "./chunks/chunk-L37AOZQG.mjs";
 import {
   createLiveRegion
 } from "./chunks/chunk-UFCM6256.mjs";
@@ -8,43 +8,45 @@ import {
   getPlacement,
   getPlacementSide,
   getPlacementStyles
-} from "./chunks/chunk-EDPLM4FN.mjs";
+} from "./chunks/chunk-X7GOMWQ5.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-UNSII3TK.mjs";
-import "./chunks/chunk-KZTSFVJI.mjs";
+} from "./chunks/chunk-CI7ZMY4G.mjs";
+import "./chunks/chunk-F544AH56.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-QU3L6FP6.mjs";
+} from "./chunks/chunk-VOKBRZCH.mjs";
 import {
   firstSelectedValue,
   initCollectionItems,
   itemValue,
+  itemsMembershipKey,
+  parseItemsJson,
   redirectCollectionItem,
   refreshItemsIfChanged,
   zagListCollectionConfig
-} from "./chunks/chunk-OGB72GJ7.mjs";
+} from "./chunks/chunk-ZGNXOXFS.mjs";
 import {
   ListCollection,
   createSelectedItemMap,
   deriveSelectionState,
   resolveSelectedItems
-} from "./chunks/chunk-ARXPSEL2.mjs";
+} from "./chunks/chunk-NU3NDRI3.mjs";
 import "./chunks/chunk-HZLPIQBD.mjs";
 import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunks/chunk-QZ6HS4MI.mjs";
+} from "./chunks/chunk-QCFVFTGB.mjs";
 import {
   markUsed,
   setArrayValues,
   syncFormInput
-} from "./chunks/chunk-245LPPAG.mjs";
+} from "./chunks/chunk-QZUKCXYH.mjs";
 import {
   mountStringListBinding,
   readUpdatedServerStringList
-} from "./chunks/chunk-ILSEF4XK.mjs";
+} from "./chunks/chunk-ATDXW7VQ.mjs";
 import {
   idMatches,
   notifyChange,
@@ -87,7 +89,7 @@ import {
   setCaretToEnd,
   setup,
   templatesContentRoot
-} from "./chunks/chunk-RRN4KZDI.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
 // ../node_modules/.pnpm/@zag-js+combobox@1.42.0/node_modules/@zag-js/combobox/dist/combobox.anatomy.mjs
 var anatomy = createAnatomy("combobox").parts(
@@ -1894,7 +1896,24 @@ var Combobox = class extends Component {
     const multiple = this.el.hasAttribute("data-multiple");
     return values.length === 0 ? "" : multiple ? values.join(",") : values[0] ?? "";
   }
-  render() {
+  /**
+   * Hide/show LiveView-owned item nodes for the active (filtered) option set.
+   * Prefer this over remove/clone so custom :item slots survive filter + select.
+   */
+  applyFilterVisibility() {
+    const listEl = this.el.querySelector('[data-scope="combobox"][data-part="list"]');
+    if (!listEl) return;
+    const desired = new Set(this.activeItems().map((item) => this.getItemValue(item)));
+    const allValues = new Set(this.allOptions.map((item) => this.getItemValue(item)));
+    listEl.querySelectorAll('[data-scope="combobox"][data-part="item"]:not([data-template])').forEach((itemEl) => {
+      if (itemEl.closest('[data-scope="combobox"][data-part="list"]') !== listEl) return;
+      const value = itemEl.dataset.value ?? "";
+      if (!allValues.has(value)) return;
+      itemEl.hidden = !desired.has(value);
+    });
+  }
+  render(options = {}) {
+    const syncList = options.syncList === true;
     const root = this.el.querySelector('[data-scope="combobox"][data-part="root"]');
     if (!root) return;
     this.spreadProps(root, this.api.getRootProps());
@@ -1924,7 +1943,10 @@ var Combobox = class extends Component {
       if (!el) return;
       this.spreadProps(el, this.api[partPropsMethod(part)]());
     });
-    this.renderItems();
+    if (syncList) {
+      this.renderItems();
+    }
+    this.applyFilterVisibility();
     this.applyItemProps();
   }
 };
@@ -2157,28 +2179,41 @@ var ComboboxHook = createZagLiveHook({
     return combobox;
   },
   update(hook, combobox) {
-    refreshItemsIfChanged(hook.el, hook, combobox);
+    const prevMembership = itemsMembershipKey(
+      parseItemsJson(hook.lastItemsJson ?? hook.el.getAttribute("data-items") ?? "[]")
+    );
+    const itemsChanged = refreshItemsIfChanged(hook.el, hook, combobox);
+    const nextMembership = itemsMembershipKey(
+      parseItemsJson(hook.lastItemsJson ?? "[]")
+    );
+    const membershipChanged = itemsChanged && prevMembership !== nextMembership;
     const pushEvent = hook.pushEvent.bind(hook);
     const canPush = () => canPushEvent(hook.liveSocket);
     const valuePatch = readUpdatedServerStringList(hook.el, hook.beforeAttrs);
-    const propsApplied = combobox.updateProps({
-      ...comboboxMachineDomPropsForUpdate(
-        hook.el,
-        pushEvent,
-        canPush,
-        hook.liveSocket,
-        () => combobox,
-        () => {
-          hook.fieldTouched = true;
-        }
-      ),
-      ...valuePatch.value !== void 0 ? { value: valuePatch.value } : {}
-    });
+    const propsApplied = combobox.updateProps(
+      {
+        ...comboboxMachineDomPropsForUpdate(
+          hook.el,
+          pushEvent,
+          canPush,
+          hook.liveSocket,
+          () => combobox,
+          () => {
+            hook.fieldTouched = true;
+          }
+        ),
+        ...valuePatch.value !== void 0 ? { value: valuePatch.value } : {}
+      },
+      { force: itemsChanged }
+    );
     if (combobox.api.open) {
       combobox.api.reposition();
     }
-    if (!propsApplied) {
-      combobox.render();
+    if (!propsApplied || itemsChanged) {
+      combobox.render({ syncList: membershipChanged });
+    } else {
+      combobox.applyFilterVisibility();
+      combobox.applyItemProps();
     }
   }
 });

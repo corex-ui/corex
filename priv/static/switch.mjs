@@ -1,15 +1,15 @@
 import {
   isFocusVisible,
   trackFocusVisible
-} from "./chunks/chunk-QZ6HS4MI.mjs";
+} from "./chunks/chunk-QCFVFTGB.mjs";
 import {
   syncCheckableHiddenInput,
   syncCheckedHiddenInput
-} from "./chunks/chunk-245LPPAG.mjs";
+} from "./chunks/chunk-QZUKCXYH.mjs";
 import {
   mountCheckedBinding,
   readUpdatedServerChecked
-} from "./chunks/chunk-ILSEF4XK.mjs";
+} from "./chunks/chunk-ATDXW7VQ.mjs";
 import {
   checkedChangePayload,
   idMatches,
@@ -36,7 +36,7 @@ import {
   trackFormControl,
   trackPress,
   visuallyHiddenStyle
-} from "./chunks/chunk-RRN4KZDI.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
 // ../node_modules/.pnpm/@zag-js+switch@1.42.0/node_modules/@zag-js/switch/dist/switch.anatomy.mjs
 var anatomy = createAnatomy("switch").parts("root", "label", "control", "thumb");

@@ -6,24 +6,24 @@ import {
   getPlacement,
   getPlacementSide,
   getPlacementStyles
-} from "./chunks/chunk-EDPLM4FN.mjs";
+} from "./chunks/chunk-X7GOMWQ5.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-UNSII3TK.mjs";
-import "./chunks/chunk-KZTSFVJI.mjs";
+} from "./chunks/chunk-CI7ZMY4G.mjs";
+import "./chunks/chunk-F544AH56.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-QU3L6FP6.mjs";
+} from "./chunks/chunk-VOKBRZCH.mjs";
 import {
   redirectCollectionItem
-} from "./chunks/chunk-OGB72GJ7.mjs";
-import "./chunks/chunk-ARXPSEL2.mjs";
+} from "./chunks/chunk-ZGNXOXFS.mjs";
+import "./chunks/chunk-NU3NDRI3.mjs";
 import "./chunks/chunk-HZLPIQBD.mjs";
 import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunks/chunk-QZ6HS4MI.mjs";
+} from "./chunks/chunk-QCFVFTGB.mjs";
 import {
   notifyChange,
   readPayloadId
@@ -73,7 +73,7 @@ import {
   queryAll,
   raf,
   scrollIntoView
-} from "./chunks/chunk-RRN4KZDI.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
 // ../node_modules/.pnpm/@zag-js+menu@1.42.0/node_modules/@zag-js/menu/dist/menu.anatomy.mjs
 var anatomy = createAnatomy("menu").parts(
@@ -1679,12 +1679,10 @@ var Menu = class extends Component {
       if (!childMenu) continue;
       const applyProps = () => {
         const disabled = triggerEl.hasAttribute("disabled");
-        const childTriggerProps = childMenu.api.getTriggerProps();
-        const itemProps = this.api.getItemProps({
-          value: childTriggerProps.id,
-          disabled: disabled || void 0
+        this.spreadProps(triggerEl, {
+          ...this.api.getTriggerItemProps(childMenu.api),
+          ...triggerDisabledAttrs(disabled)
         });
-        this.spreadProps(triggerEl, { ...itemProps, ...childTriggerProps });
       };
       applyProps();
       this.submenuTriggerUnsubs.push(this.machine.subscribe(applyProps));

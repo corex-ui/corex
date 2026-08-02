@@ -4,17 +4,17 @@ import {
 import {
   isFocusVisible,
   trackFocusVisible
-} from "./chunks/chunk-QZ6HS4MI.mjs";
+} from "./chunks/chunk-QCFVFTGB.mjs";
 import {
   dispatchFormInputEvents,
   hiddenInputPropsWithoutChecked,
   notifyPhoenixFormChange,
   reapplyLiveViewValueInputUsage
-} from "./chunks/chunk-245LPPAG.mjs";
+} from "./chunks/chunk-QZUKCXYH.mjs";
 import {
   readStringControlledZagProps,
   readUpdatedServerString
-} from "./chunks/chunk-ILSEF4XK.mjs";
+} from "./chunks/chunk-ATDXW7VQ.mjs";
 import {
   createValueEmitter,
   idMatches,
@@ -43,7 +43,7 @@ import {
   syncInputFormAssociation,
   trackFormControl,
   visuallyHiddenStyle
-} from "./chunks/chunk-RRN4KZDI.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
 // ../node_modules/.pnpm/@zag-js+radio-group@1.42.0/node_modules/@zag-js/radio-group/dist/radio-group.anatomy.mjs
 var anatomy = createAnatomy("radio-group").parts(
@@ -692,6 +692,7 @@ var RadioGroupHook = createZagLiveHook({
       orientation: getString(el, "orientation"),
       dir: getDir(el)
     });
+    zag.render();
     if ("value" in valuePatch) {
       syncRadioGroupValueInputForPhoenix(el, valuePatch.value ?? null, { markUsed: false });
     }

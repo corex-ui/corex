@@ -6,7 +6,7 @@ import {
   deriveSelectionState,
   isGridCollection,
   resolveSelectedItems
-} from "./chunk-ARXPSEL2.mjs";
+} from "./chunk-NU3NDRI3.mjs";
 import {
   performRedirect,
   readDomItemRedirect
@@ -15,7 +15,7 @@ import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunk-QZ6HS4MI.mjs";
+} from "./chunk-QCFVFTGB.mjs";
 import {
   ariaAttr,
   contains,
@@ -38,7 +38,7 @@ import {
   safeParseJson,
   scrollIntoView,
   setup
-} from "./chunk-RRN4KZDI.mjs";
+} from "./chunk-6L36XW7I.mjs";
 
 // ../node_modules/.pnpm/@zag-js+listbox@1.42.0/node_modules/@zag-js/listbox/dist/listbox.anatomy.mjs
 var anatomy = createAnatomy("listbox").parts(
@@ -865,6 +865,9 @@ function invokeOnSelect(current, next, onSelect) {
 function itemValue(item) {
   return item.value ?? "";
 }
+function itemsMembershipKey(items) {
+  return items.map((item) => itemValue(item)).join("\0");
+}
 function zagListCollectionConfig(items, hasGroups) {
   if (hasGroups) {
     return {
@@ -938,8 +941,10 @@ export {
   connect,
   machine,
   itemValue,
+  itemsMembershipKey,
   zagListCollectionConfig,
   buildCollection,
+  parseItemsJson,
   applyItems,
   refreshItemsIfChanged,
   firstSelectedValue,

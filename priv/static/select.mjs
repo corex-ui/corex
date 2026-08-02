@@ -2,14 +2,14 @@ import {
   getPlacement,
   getPlacementSide,
   getPlacementStyles
-} from "./chunks/chunk-EDPLM4FN.mjs";
+} from "./chunks/chunk-X7GOMWQ5.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-UNSII3TK.mjs";
-import "./chunks/chunk-KZTSFVJI.mjs";
+} from "./chunks/chunk-CI7ZMY4G.mjs";
+import "./chunks/chunk-F544AH56.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-QU3L6FP6.mjs";
+} from "./chunks/chunk-VOKBRZCH.mjs";
 import {
   applyItems,
   firstSelectedValue,
@@ -18,26 +18,26 @@ import {
   redirectCollectionItem,
   refreshItemsIfChanged,
   zagListCollectionConfig
-} from "./chunks/chunk-OGB72GJ7.mjs";
+} from "./chunks/chunk-ZGNXOXFS.mjs";
 import {
   ListCollection,
   createSelectedItemMap,
   deriveSelectionState,
   resolveSelectedItems
-} from "./chunks/chunk-ARXPSEL2.mjs";
+} from "./chunks/chunk-NU3NDRI3.mjs";
 import "./chunks/chunk-HZLPIQBD.mjs";
 import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunks/chunk-QZ6HS4MI.mjs";
+} from "./chunks/chunk-QCFVFTGB.mjs";
 import {
   notifyPhoenixFormChange
-} from "./chunks/chunk-245LPPAG.mjs";
+} from "./chunks/chunk-QZUKCXYH.mjs";
 import {
   readStringListControlledZagProps,
   readUpdatedServerStringList
-} from "./chunks/chunk-ILSEF4XK.mjs";
+} from "./chunks/chunk-ATDXW7VQ.mjs";
 import {
   idMatches,
   notifyChange,
@@ -76,7 +76,7 @@ import {
   syncInputFormAssociation,
   trackFormControl,
   visuallyHiddenStyle
-} from "./chunks/chunk-RRN4KZDI.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
 // ../node_modules/.pnpm/@zag-js+select@1.42.0/node_modules/@zag-js/select/dist/select.anatomy.mjs
 var anatomy = createAnatomy("select").parts(
@@ -1274,6 +1274,10 @@ var Select = class extends Component {
   setOptions(options) {
     this._options = Array.isArray(options) ? options : [];
   }
+  /** Refresh placeholder from host dataset (may change across LiveView morphs). */
+  refreshPlaceholder() {
+    this.placeholder = getString(this.el, "placeholder") || "";
+  }
   getCollection() {
     return collection(zagListCollectionConfig(this.options, this.hasGroups));
   }
@@ -1382,9 +1386,10 @@ var Select = class extends Component {
       this.spreadProps(el, this.api[partPropsMethod(part)]());
     });
     const valueText = this.el.querySelector(
-      '[data-scope="select"][data-part="item-text"]'
+      '[data-scope="select"][data-part="trigger"] [data-scope="select"][data-part="item-text"]'
     );
     if (valueText && this.el.dataset.updateTrigger !== "false") {
+      this.refreshPlaceholder();
       const valueAsString = this.api.valueAsString;
       if (this.api.value && this.api.value.length > 0 && !valueAsString) {
         const selectedValue = this.api.value[0];
@@ -1563,17 +1568,28 @@ var SelectHook = createZagLiveHook({
     return selectComponent;
   },
   update(hook, select) {
-    refreshItemsIfChanged(hook.el, hook, select);
+    const itemsChanged = refreshItemsIfChanged(hook.el, hook, select);
     const valuePatch = readUpdatedServerStringList(hook.el, hook.beforeAttrs);
     if (valuePatch.value !== void 0) {
       syncControlledValueInputFromServer(hook.el, valuePatch.value);
     }
-    const propsApplied = select.updateProps({
-      ...selectLayoutProps(hook.el),
-      collection: select.getCollection(),
-      ...valuePatch.value !== void 0 ? { value: valuePatch.value } : {}
-    });
-    if (!propsApplied) {
+    if (itemsChanged && valuePatch.value === void 0) {
+      const available = new Set(select.options.map((i) => String(itemValue(i))));
+      const current = (select.api.value ?? []).map(String);
+      const next = current.filter((v) => available.has(v));
+      if (next.length !== current.length) {
+        select.api.setValue(next);
+      }
+    }
+    const propsApplied = select.updateProps(
+      {
+        ...selectLayoutProps(hook.el),
+        collection: select.getCollection(),
+        ...valuePatch.value !== void 0 ? { value: valuePatch.value } : {}
+      },
+      { force: itemsChanged }
+    );
+    if (!propsApplied || itemsChanged) {
       select.render();
     }
     reapplySelectInteractiveState(hook.el);

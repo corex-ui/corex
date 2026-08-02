@@ -3,17 +3,17 @@ import {
 } from "./chunks/chunk-KHEHQE65.mjs";
 import {
   stripZagSubmitNames
-} from "./chunks/chunk-XKTL3SPR.mjs";
+} from "./chunks/chunk-L37AOZQG.mjs";
 import {
   setArrayValues,
   setScalarValue,
   syncHiddenInputValue
-} from "./chunks/chunk-245LPPAG.mjs";
+} from "./chunks/chunk-QZUKCXYH.mjs";
 import {
   getJsonStringList,
   mountStringListBinding,
   readUpdatedServerStringList
-} from "./chunks/chunk-ILSEF4XK.mjs";
+} from "./chunks/chunk-ATDXW7VQ.mjs";
 import {
   emitResponse,
   idMatches,
@@ -46,7 +46,7 @@ import {
   raf,
   setup,
   visuallyHiddenStyle
-} from "./chunks/chunk-RRN4KZDI.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
 // ../node_modules/.pnpm/@zag-js+pin-input@1.42.0/node_modules/@zag-js/pin-input/dist/pin-input.anatomy.mjs
 var anatomy = createAnatomy("pinInput").parts("root", "label", "input", "control");
@@ -648,12 +648,16 @@ var PinInput = class extends Component {
       '[data-scope="pin-input"][data-part="control"]'
     );
     if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
-    this.api.items.forEach((i) => {
-      const inputEl = this.el.querySelector(
+    const inputEls = Array.from(
+      this.el.querySelectorAll('[data-scope="pin-input"][data-part="input"]')
+    );
+    const count = Math.max(this.api.items?.length ?? 0, inputEls.length);
+    for (let i = 0; i < count; i += 1) {
+      const inputEl = inputEls[i] ?? this.el.querySelector(
         `[data-scope="pin-input"][data-part="input"][data-index="${i}"]`
       );
       if (inputEl) this.spreadProps(inputEl, this.api.getInputProps({ index: i }));
-    });
+    }
   }
 };
 
@@ -740,8 +744,10 @@ function buildMachineProps(el, pushEvent, canPush, initialValues, isFieldTouched
       if (!isMountEcho) {
         markFieldTouched();
       }
-      syncPinInputFormForPhoenix(el, details.value, void 0, {
-        notifyLiveView: !isMountEcho
+      queueMicrotask(() => {
+        syncPinInputFormForPhoenix(el, details.value, void 0, {
+          notifyLiveView: !isMountEcho
+        });
       });
       notifyChange({
         el,

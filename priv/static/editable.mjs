@@ -1,13 +1,13 @@
 import {
   trackInteractOutside
-} from "./chunks/chunk-KZTSFVJI.mjs";
+} from "./chunks/chunk-F544AH56.mjs";
 import {
   setScalarValue
-} from "./chunks/chunk-245LPPAG.mjs";
+} from "./chunks/chunk-QZUKCXYH.mjs";
 import {
   mountStringBinding,
   readUpdatedServerString
-} from "./chunks/chunk-ILSEF4XK.mjs";
+} from "./chunks/chunk-ATDXW7VQ.mjs";
 import {
   idMatches,
   notifyChange,
@@ -32,7 +32,7 @@ import {
   raf,
   setElementValue,
   syncInputFormAssociation
-} from "./chunks/chunk-RRN4KZDI.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
 // ../node_modules/.pnpm/@zag-js+editable@1.42.0/node_modules/@zag-js/editable/dist/editable.anatomy.mjs
 var anatomy = createAnatomy("editable").parts(
@@ -534,7 +534,14 @@ var Editable = class extends Component {
     const controlEl = this.el.querySelector(
       '[data-scope="editable"][data-part="control"]'
     );
-    if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
+    if (controlEl) {
+      this.spreadProps(controlEl, this.api.getControlProps());
+      if (this.el.hasAttribute("data-readonly")) {
+        controlEl.setAttribute("data-readonly", "");
+      } else {
+        controlEl.removeAttribute("data-readonly");
+      }
+    }
     const areaEl = this.el.querySelector('[data-scope="editable"][data-part="area"]');
     if (areaEl) this.spreadProps(areaEl, this.api.getAreaProps());
     const labelEl = this.el.querySelector(

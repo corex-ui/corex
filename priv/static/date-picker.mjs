@@ -1,6 +1,6 @@
 import {
   memo
-} from "./chunks/chunk-COKNR45R.mjs";
+} from "./chunks/chunk-Z3EQ3GCO.mjs";
 import {
   clampValue,
   isValueWithinRange
@@ -12,23 +12,23 @@ import {
   getPlacement,
   getPlacementSide,
   getPlacementStyles
-} from "./chunks/chunk-EDPLM4FN.mjs";
+} from "./chunks/chunk-X7GOMWQ5.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-UNSII3TK.mjs";
-import "./chunks/chunk-KZTSFVJI.mjs";
+} from "./chunks/chunk-CI7ZMY4G.mjs";
+import "./chunks/chunk-F544AH56.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-QU3L6FP6.mjs";
+} from "./chunks/chunk-VOKBRZCH.mjs";
 import {
   setArrayValues,
   setScalarValue
-} from "./chunks/chunk-245LPPAG.mjs";
+} from "./chunks/chunk-QZUKCXYH.mjs";
 import {
   mountStringListBinding,
   readDatasetStringList,
   readUpdatedServerStringList
-} from "./chunks/chunk-ILSEF4XK.mjs";
+} from "./chunks/chunk-ATDXW7VQ.mjs";
 import {
   notifyChange
 } from "./chunks/chunk-EAQ6WQNO.mjs";
@@ -56,7 +56,7 @@ import {
   raf,
   restoreTextSelection,
   setElementValue
-} from "./chunks/chunk-RRN4KZDI.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
 // ../node_modules/.pnpm/@zag-js+date-picker@1.42.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-picker/dist/date-picker.anatomy.mjs
 var anatomy = createAnatomy("date-picker").parts(
@@ -4397,69 +4397,73 @@ var DatePicker = class extends Component {
       '[data-scope="date-picker"][data-part="content"]'
     );
     if (content) this.spreadProps(content, this.api.getContentProps());
-    if (this.api.open) {
-      const dayView = this.getDayView();
-      const monthView = this.getMonthView();
-      const yearView = this.getYearView();
-      if (dayView) dayView.hidden = this.api.view !== "day";
-      if (monthView) monthView.hidden = this.api.view !== "month";
-      if (yearView) yearView.hidden = this.api.view !== "year";
-      if (this.api.view === "day" && dayView) {
-        const viewControl = dayView.querySelector('[data-part="view-control"]');
-        if (viewControl)
-          this.spreadProps(viewControl, this.api.getViewControlProps({ view: "year" }));
-        const prevTrigger = dayView.querySelector('[data-part="prev-trigger"]');
-        if (prevTrigger) this.spreadProps(prevTrigger, this.api.getPrevTriggerProps());
-        const viewTrigger = dayView.querySelector('[data-part="view-trigger"]');
-        if (viewTrigger) {
-          this.spreadProps(viewTrigger, this.api.getViewTriggerProps());
-          viewTrigger.textContent = this.api.visibleRangeText.start;
-        }
-        const nextTrigger = dayView.querySelector('[data-part="next-trigger"]');
-        if (nextTrigger) this.spreadProps(nextTrigger, this.api.getNextTriggerProps());
-        const table = dayView.querySelector("table");
-        if (table) this.spreadProps(table, this.api.getTableProps({ view: "day" }));
-        const thead = dayView.querySelector("thead");
-        if (thead) this.spreadProps(thead, this.api.getTableHeaderProps({ view: "day" }));
-        this.renderDayTableHeader();
-        this.renderDayTableBody();
-      } else if (this.api.view === "month" && monthView) {
-        const viewControl = monthView.querySelector('[data-part="view-control"]');
-        if (viewControl)
-          this.spreadProps(viewControl, this.api.getViewControlProps({ view: "month" }));
-        const prevTrigger = monthView.querySelector('[data-part="prev-trigger"]');
-        if (prevTrigger)
-          this.spreadProps(prevTrigger, this.api.getPrevTriggerProps({ view: "month" }));
-        const viewTrigger = monthView.querySelector('[data-part="view-trigger"]');
-        if (viewTrigger) {
-          this.spreadProps(viewTrigger, this.api.getViewTriggerProps({ view: "month" }));
-          viewTrigger.textContent = String(this.api.visibleRange.start.year);
-        }
-        const nextTrigger = monthView.querySelector('[data-part="next-trigger"]');
-        if (nextTrigger)
-          this.spreadProps(nextTrigger, this.api.getNextTriggerProps({ view: "month" }));
-        const table = monthView.querySelector("table");
-        if (table) this.spreadProps(table, this.api.getTableProps({ view: "month", columns: 4 }));
-        this.renderMonthTableBody();
-      } else if (this.api.view === "year" && yearView) {
-        const viewControl = yearView.querySelector('[data-part="view-control"]');
-        if (viewControl)
-          this.spreadProps(viewControl, this.api.getViewControlProps({ view: "year" }));
-        const prevTrigger = yearView.querySelector('[data-part="prev-trigger"]');
-        if (prevTrigger)
-          this.spreadProps(prevTrigger, this.api.getPrevTriggerProps({ view: "year" }));
-        const decadeText = yearView.querySelector('[data-part="decade"]');
-        if (decadeText) {
-          const decade = this.api.getDecade();
-          decadeText.textContent = `${decade.start} - ${decade.end}`;
-        }
-        const nextTrigger = yearView.querySelector('[data-part="next-trigger"]');
-        if (nextTrigger)
-          this.spreadProps(nextTrigger, this.api.getNextTriggerProps({ view: "year" }));
-        const table = yearView.querySelector("table");
-        if (table) this.spreadProps(table, this.api.getTableProps({ view: "year", columns: 4 }));
-        this.renderYearTableBody();
+    const dayView = this.getDayView();
+    const monthView = this.getMonthView();
+    const yearView = this.getYearView();
+    if (!this.api.open) {
+      if (dayView) dayView.hidden = true;
+      if (monthView) monthView.hidden = true;
+      if (yearView) yearView.hidden = true;
+      return;
+    }
+    if (dayView) dayView.hidden = this.api.view !== "day";
+    if (monthView) monthView.hidden = this.api.view !== "month";
+    if (yearView) yearView.hidden = this.api.view !== "year";
+    if (this.api.view === "day" && dayView) {
+      const viewControl = dayView.querySelector('[data-part="view-control"]');
+      if (viewControl)
+        this.spreadProps(viewControl, this.api.getViewControlProps({ view: "year" }));
+      const prevTrigger = dayView.querySelector('[data-part="prev-trigger"]');
+      if (prevTrigger) this.spreadProps(prevTrigger, this.api.getPrevTriggerProps());
+      const viewTrigger = dayView.querySelector('[data-part="view-trigger"]');
+      if (viewTrigger) {
+        this.spreadProps(viewTrigger, this.api.getViewTriggerProps());
+        viewTrigger.textContent = this.api.visibleRangeText.start;
       }
+      const nextTrigger = dayView.querySelector('[data-part="next-trigger"]');
+      if (nextTrigger) this.spreadProps(nextTrigger, this.api.getNextTriggerProps());
+      const table = dayView.querySelector("table");
+      if (table) this.spreadProps(table, this.api.getTableProps({ view: "day" }));
+      const thead = dayView.querySelector("thead");
+      if (thead) this.spreadProps(thead, this.api.getTableHeaderProps({ view: "day" }));
+      this.renderDayTableHeader();
+      this.renderDayTableBody();
+    } else if (this.api.view === "month" && monthView) {
+      const viewControl = monthView.querySelector('[data-part="view-control"]');
+      if (viewControl)
+        this.spreadProps(viewControl, this.api.getViewControlProps({ view: "month" }));
+      const prevTrigger = monthView.querySelector('[data-part="prev-trigger"]');
+      if (prevTrigger)
+        this.spreadProps(prevTrigger, this.api.getPrevTriggerProps({ view: "month" }));
+      const viewTrigger = monthView.querySelector('[data-part="view-trigger"]');
+      if (viewTrigger) {
+        this.spreadProps(viewTrigger, this.api.getViewTriggerProps({ view: "month" }));
+        viewTrigger.textContent = String(this.api.visibleRange.start.year);
+      }
+      const nextTrigger = monthView.querySelector('[data-part="next-trigger"]');
+      if (nextTrigger)
+        this.spreadProps(nextTrigger, this.api.getNextTriggerProps({ view: "month" }));
+      const table = monthView.querySelector("table");
+      if (table) this.spreadProps(table, this.api.getTableProps({ view: "month", columns: 4 }));
+      this.renderMonthTableBody();
+    } else if (this.api.view === "year" && yearView) {
+      const viewControl = yearView.querySelector('[data-part="view-control"]');
+      if (viewControl)
+        this.spreadProps(viewControl, this.api.getViewControlProps({ view: "year" }));
+      const prevTrigger = yearView.querySelector('[data-part="prev-trigger"]');
+      if (prevTrigger)
+        this.spreadProps(prevTrigger, this.api.getPrevTriggerProps({ view: "year" }));
+      const decadeText = yearView.querySelector('[data-part="decade"]');
+      if (decadeText) {
+        const decade = this.api.getDecade();
+        decadeText.textContent = `${decade.start} - ${decade.end}`;
+      }
+      const nextTrigger = yearView.querySelector('[data-part="next-trigger"]');
+      if (nextTrigger)
+        this.spreadProps(nextTrigger, this.api.getNextTriggerProps({ view: "year" }));
+      const table = yearView.querySelector("table");
+      if (table) this.spreadProps(table, this.api.getTableProps({ view: "year", columns: 4 }));
+      this.renderYearTableBody();
     }
   }
 };

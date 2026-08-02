@@ -2881,9 +2881,9 @@ var Component = class {
     const cleanup = spreadProps(el, props, this.machine.scope.id);
     this.spreadCleanups.set(el, cleanup);
   };
-  updateProps(props) {
+  updateProps(props, opts) {
     const key = stableUpdatePropsKey(props);
-    if (key === this.lastUpdatePropsKey) return false;
+    if (!opts?.force && key === this.lastUpdatePropsKey) return false;
     this.lastUpdatePropsKey = key;
     this.machine.updateProps(props);
     return true;

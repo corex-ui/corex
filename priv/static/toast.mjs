@@ -1,10 +1,10 @@
 import {
   setRafTimeout
-} from "./chunks/chunk-JTNPM7GV.mjs";
+} from "./chunks/chunk-V2LDXRRO.mjs";
 import {
   trackDismissableBranch
-} from "./chunks/chunk-UNSII3TK.mjs";
-import "./chunks/chunk-KZTSFVJI.mjs";
+} from "./chunks/chunk-CI7ZMY4G.mjs";
+import "./chunks/chunk-F544AH56.mjs";
 import {
   AnimationFrame,
   Component,
@@ -30,7 +30,7 @@ import {
   setup,
   uuid,
   warn
-} from "./chunks/chunk-RRN4KZDI.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
 // ../node_modules/.pnpm/@zag-js+toast@1.42.0/node_modules/@zag-js/toast/dist/toast.anatomy.mjs
 var anatomy = createAnatomy("toast").parts(
@@ -1377,11 +1377,11 @@ function createToastGroup(container, options) {
     disposeToastGroup(groupId);
   }
   const store = options?.store ?? createToastStore({
-    placement: options?.placement ?? "bottom",
+    placement: options?.placement ?? "bottom-end",
     overlap: options?.overlap,
     max: options?.max,
     gap: options?.gap,
-    offsets: options?.offsets,
+    offsets: options?.offsets ?? "1rem",
     pauseOnPageIdle: options?.pauseOnPageIdle
   });
   const group2 = new ToastGroup(container, { id: groupId, store, dir: getDir(container) });

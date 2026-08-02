@@ -1,10 +1,10 @@
 import {
   memo
-} from "./chunks/chunk-COKNR45R.mjs";
+} from "./chunks/chunk-Z3EQ3GCO.mjs";
 import {
   setRafInterval,
   setRafTimeout
-} from "./chunks/chunk-JTNPM7GV.mjs";
+} from "./chunks/chunk-V2LDXRRO.mjs";
 import {
   clampValue
 } from "./chunks/chunk-KHEHQE65.mjs";
@@ -27,7 +27,7 @@ import {
   getString,
   getStringList,
   match
-} from "./chunks/chunk-RRN4KZDI.mjs";
+} from "./chunks/chunk-6L36XW7I.mjs";
 
 // ../node_modules/.pnpm/@zag-js+timer@1.42.0/node_modules/@zag-js/timer/dist/timer.anatomy.mjs
 var anatomy = createAnatomy("timer").parts(
@@ -573,6 +573,20 @@ function buildTimerCallbacks(el, pushEvent, canPush) {
     }
   };
 }
+function syncTimerDir(el) {
+  const dir = getDir(el);
+  if (dir) {
+    el.setAttribute("dir", dir);
+    el.querySelectorAll("[data-scope='timer']").forEach((node) => {
+      node.setAttribute("dir", dir);
+    });
+  } else {
+    el.removeAttribute("dir");
+    el.querySelectorAll("[data-scope='timer'][dir]").forEach((node) => {
+      node.removeAttribute("dir");
+    });
+  }
+}
 function buildTimerProps(el, pushEvent, canPush) {
   return {
     id: el.id,
@@ -581,7 +595,6 @@ function buildTimerProps(el, pushEvent, canPush) {
     targetMs: getNumber(el, "targetMs"),
     autoStart: getBoolean(el, "autoStart"),
     interval: getNumber(el, "interval"),
-    dir: getDir(el),
     orientation: getString(el, "orientation"),
     translations: parseTimerTranslations(el),
     ...buildTimerCallbacks(el, pushEvent, canPush)
@@ -599,6 +612,7 @@ var TimerHook = createZagLiveHook({
     hook.lastCountdownRaw = identity.countdown;
     hook.lastIntervalRaw = identity.interval;
     const zag = new Timer(el, buildTimerProps(el, pushEvent, canPush));
+    syncTimerDir(el);
     const emitState = (respondTo) => {
       const snapshot = machineState(zag.api);
       emitResponse({
@@ -662,6 +676,7 @@ var TimerHook = createZagLiveHook({
     const canPush = () => canPushEvent(hook.liveSocket);
     const patch = {
       id: el.id,
+      orientation: getString(el, "orientation"),
       translations: parseTimerTranslations(el),
       ...buildTimerCallbacks(el, pushEvent, canPush)
     };
@@ -685,6 +700,7 @@ var TimerHook = createZagLiveHook({
       patch.interval = getNumber(el, "interval");
       hook.lastIntervalRaw = intervalRaw;
     }
+    syncTimerDir(el);
     zag.updateProps(patch);
   }
 });

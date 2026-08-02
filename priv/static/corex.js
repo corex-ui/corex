@@ -120,7 +120,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-RRN4KZDI.mjs
+  // ../priv/static/chunks/chunk-6L36XW7I.mjs
   function getDir(element) {
     const fromEl = element.dataset.dir;
     if (fromEl !== void 0 && DIR_VALUES.includes(fromEl)) {
@@ -2005,8 +2005,8 @@ var Corex = (() => {
     return out;
   }
   var DIR_VALUES, getString, getStringList, getNumber, getBoolean, getBooleanValue, generateId, REGISTRIES, __defProp2, __defNormalProp2, __publicField2, __defProp22, __typeError2, __defNormalProp22, __publicField22, __accessCheck, __privateGet, __privateAdd2, first, last, has, add, remove, removeAt, uniq, diff, addOrRemove, isArrayLike, isArrayEqual, isEqual, isArray, isBoolean, isObjectLike, isObject, isNumber, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop, callAll, uuid, tryCatch, toChar, hash, STATE_DELIMITER, ABSOLUTE_PREFIX, stateIndexCache, stateIdIndexCache, MachineStatus, INIT_STATE, __defProp3, __defNormalProp3, __publicField3, clamp, wrap, pipe, noop2, isObject2, MAX_Z_INDEX, dataAttr, ariaAttr, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, pageKeys, arrowKeys, addDomEvent, INTERNAL_CHANGE_EVENT, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match2, getByTypeahead, visuallyHiddenStyle, refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack, proxyStateMap, buildProxyFunction, proxyFunction, VanillaMachine, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, HEAVY_PROP_KEYS, objectRefIds, nextObjectRefId, Component, createAnatomy, toKebabCase, isEmpty;
-  var init_chunk_RRN4KZDI = __esm({
-    "../priv/static/chunks/chunk-RRN4KZDI.mjs"() {
+  var init_chunk_6L36XW7I = __esm({
+    "../priv/static/chunks/chunk-6L36XW7I.mjs"() {
       "use strict";
       DIR_VALUES = ["ltr", "rtl"];
       getString = (element, attrName, validValues) => {
@@ -2955,9 +2955,9 @@ var Corex = (() => {
           this.machine = this.initMachine(props);
           this.api = this.initApi();
         }
-        updateProps(props) {
+        updateProps(props, opts) {
           const key = stableUpdatePropsKey(props);
-          if (key === this.lastUpdatePropsKey) return false;
+          if (!(opts == null ? void 0 : opts.force) && key === this.lastUpdatePropsKey) return false;
           this.lastUpdatePropsKey = key;
           this.machine.updateProps(props);
           return true;
@@ -2995,7 +2995,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-CE52IH4H.mjs
+  // ../priv/static/chunks/chunk-PWP4CBA7.mjs
   function prefersReducedMotion() {
     return typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
@@ -3317,15 +3317,15 @@ var Corex = (() => {
     return anim;
   }
   var rootPointerBlockCount;
-  var init_chunk_CE52IH4H = __esm({
-    "../priv/static/chunks/chunk-CE52IH4H.mjs"() {
+  var init_chunk_PWP4CBA7 = __esm({
+    "../priv/static/chunks/chunk-PWP4CBA7.mjs"() {
       "use strict";
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       rootPointerBlockCount = /* @__PURE__ */ new WeakMap();
     }
   });
 
-  // ../priv/static/chunks/chunk-ILSEF4XK.mjs
+  // ../priv/static/chunks/chunk-ATDXW7VQ.mjs
   function fractionDigitsForStep(step) {
     var _a4;
     if (!Number.isFinite(step) || step === Math.trunc(step)) {
@@ -3554,10 +3554,10 @@ var Corex = (() => {
     return (_a4 = getBoolean(el, "controlled") ? getStringList(el, valueKey) : getStringList(el, defaultValueKey)) != null ? _a4 : [];
   }
   var MAX_FRACTION_DIGITS, z;
-  var init_chunk_ILSEF4XK = __esm({
-    "../priv/static/chunks/chunk-ILSEF4XK.mjs"() {
+  var init_chunk_ATDXW7VQ = __esm({
+    "../priv/static/chunks/chunk-ATDXW7VQ.mjs"() {
       "use strict";
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       MAX_FRACTION_DIGITS = 10;
       z = (s2) => s2 === void 0 ? null : s2;
     }
@@ -3861,10 +3861,10 @@ var Corex = (() => {
     "../priv/static/accordion.mjs"() {
       "use strict";
       init_chunk_JDGMEOQK();
-      init_chunk_CE52IH4H();
-      init_chunk_ILSEF4XK();
+      init_chunk_PWP4CBA7();
+      init_chunk_ATDXW7VQ();
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
       parts = anatomy.build();
       getRootId = (ctx) => {
@@ -4372,7 +4372,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-245LPPAG.mjs
+  // ../priv/static/chunks/chunk-QZUKCXYH.mjs
   function reapplyLiveViewValueInputUsage(input) {
     const p2 = input;
     if (!p2.phxPrivate) p2.phxPrivate = {};
@@ -4561,10 +4561,10 @@ var Corex = (() => {
     syncLiveViewFormInput(input, getValue, onTouched);
   }
   var PHX_HAS_FOCUSED;
-  var init_chunk_245LPPAG = __esm({
-    "../priv/static/chunks/chunk-245LPPAG.mjs"() {
+  var init_chunk_QZUKCXYH = __esm({
+    "../priv/static/chunks/chunk-QZUKCXYH.mjs"() {
       "use strict";
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       PHX_HAS_FOCUSED = "phx-has-focused";
     }
   });
@@ -4823,10 +4823,10 @@ var Corex = (() => {
       "use strict";
       init_chunk_SBGJ6WBJ();
       init_chunk_KHEHQE65();
-      init_chunk_245LPPAG();
-      init_chunk_ILSEF4XK();
+      init_chunk_QZUKCXYH();
+      init_chunk_ATDXW7VQ();
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       anatomy2 = createAnatomy("angle-slider").parts(
         "root",
         "label",
@@ -5242,7 +5242,7 @@ var Corex = (() => {
     "../priv/static/avatar.mjs"() {
       "use strict";
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       anatomy3 = createAnatomy("avatar").parts("root", "image", "fallback");
       parts3 = anatomy3.build();
       getRootId3 = (ctx) => {
@@ -5906,7 +5906,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_KHEHQE65();
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       anatomy4 = createAnatomy("carousel").parts(
         "root",
         "itemGroup",
@@ -6649,7 +6649,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-QZ6HS4MI.mjs
+  // ../priv/static/chunks/chunk-QCFVFTGB.mjs
   function isValidKey(e2) {
     return !(e2.metaKey || !isMac() && e2.altKey || e2.ctrlKey || e2.key === "Control" || e2.key === "Shift" || e2.key === "Meta");
   }
@@ -6768,10 +6768,10 @@ var Corex = (() => {
     };
   }
   var nonTextInputTypes, currentModality, changeHandlers, listenerMap, hasEventBeforeFocus, hasBlurredWindowRecently, ignoreFocusEvent, FOCUS_VISIBLE_INPUT_KEYS, tearDownWindowFocusTracking;
-  var init_chunk_QZ6HS4MI = __esm({
-    "../priv/static/chunks/chunk-QZ6HS4MI.mjs"() {
+  var init_chunk_QCFVFTGB = __esm({
+    "../priv/static/chunks/chunk-QCFVFTGB.mjs"() {
       "use strict";
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       nonTextInputTypes = /* @__PURE__ */ new Set(["checkbox", "radio", "range", "color", "file", "image", "button", "submit", "reset"]);
       currentModality = null;
       changeHandlers = /* @__PURE__ */ new Set();
@@ -6941,11 +6941,11 @@ var Corex = (() => {
   var init_checkbox = __esm({
     "../priv/static/checkbox.mjs"() {
       "use strict";
-      init_chunk_QZ6HS4MI();
-      init_chunk_245LPPAG();
-      init_chunk_ILSEF4XK();
+      init_chunk_QCFVFTGB();
+      init_chunk_QZUKCXYH();
+      init_chunk_ATDXW7VQ();
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       anatomy5 = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
       parts5 = anatomy5.build();
       getRootId5 = (ctx) => {
@@ -7264,7 +7264,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-JTNPM7GV.mjs
+  // ../priv/static/chunks/chunk-V2LDXRRO.mjs
   function setRafInterval(fn, intervalMs) {
     const timer = new Timer(({ now, deltaMs }) => {
       if (deltaMs >= intervalMs) {
@@ -7287,10 +7287,10 @@ var Corex = (() => {
     return () => timer.stop();
   }
   var currentTime, _tick, Timer;
-  var init_chunk_JTNPM7GV = __esm({
-    "../priv/static/chunks/chunk-JTNPM7GV.mjs"() {
+  var init_chunk_V2LDXRRO = __esm({
+    "../priv/static/chunks/chunk-V2LDXRRO.mjs"() {
       "use strict";
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       currentTime = () => performance.now();
       Timer = class {
         constructor(onTick) {
@@ -7468,9 +7468,9 @@ var Corex = (() => {
   var init_clipboard = __esm({
     "../priv/static/clipboard.mjs"() {
       "use strict";
-      init_chunk_JTNPM7GV();
+      init_chunk_V2LDXRRO();
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       anatomy6 = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");
       parts6 = anatomy6.build();
       getRootId6 = (ctx) => {
@@ -7782,9 +7782,9 @@ var Corex = (() => {
     "../priv/static/collapsible.mjs"() {
       "use strict";
       init_chunk_KHEHQE65();
-      init_chunk_ILSEF4XK();
+      init_chunk_ATDXW7VQ();
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       anatomy7 = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
       parts7 = anatomy7.build();
       getRootId7 = (ctx) => {
@@ -8151,7 +8151,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-XKTL3SPR.mjs
+  // ../priv/static/chunks/chunk-L37AOZQG.mjs
   function hasArraySubmitName(el) {
     return getString(el, "submitName") !== void 0;
   }
@@ -8164,10 +8164,10 @@ var Corex = (() => {
       node.removeAttribute("form");
     }
   }
-  var init_chunk_XKTL3SPR = __esm({
-    "../priv/static/chunks/chunk-XKTL3SPR.mjs"() {
+  var init_chunk_L37AOZQG = __esm({
+    "../priv/static/chunks/chunk-L37AOZQG.mjs"() {
       "use strict";
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
     }
   });
 
@@ -8243,7 +8243,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-EDPLM4FN.mjs
+  // ../priv/static/chunks/chunk-X7GOMWQ5.mjs
   function getPlacementDetails(placement) {
     const [side, align] = placement.split("-");
     return { side, align, hasAlign: align != null };
@@ -9620,10 +9620,10 @@ var Corex = (() => {
     };
   }
   var sides, min2, max2, round2, floor2, createCoords, oppositeSideMap, lrPlacement, rlPlacement, tbPlacement, btPlacement, MAX_RESET_COUNT, computePosition, arrow, flip, hide, originSides, offset, shift, limitShift, size, willChangeRe, containRe, isNotNone, isWebKitValue, noOffsets, SCROLLBAR_MAX, getElementRects, platform, offset2, shift2, flip2, size2, hide2, arrow2, limitShift2, computePosition2, toVar, cssVars, getSideAxis2, rectMiddleware, shiftArrowMiddleware, defaultOptions, floatingStyleProps, arrowStyleProps, ARROW_FLOATING_STYLE;
-  var init_chunk_EDPLM4FN = __esm({
-    "../priv/static/chunks/chunk-EDPLM4FN.mjs"() {
+  var init_chunk_X7GOMWQ5 = __esm({
+    "../priv/static/chunks/chunk-X7GOMWQ5.mjs"() {
       "use strict";
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       sides = ["top", "right", "bottom", "left"];
       min2 = Math.min;
       max2 = Math.max;
@@ -10333,7 +10333,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-KZTSFVJI.mjs
+  // ../priv/static/chunks/chunk-F544AH56.mjs
   function getWindowFrames(win) {
     const frames = {
       each(cb) {
@@ -10558,17 +10558,17 @@ var Corex = (() => {
     return el.dispatchEvent(event);
   }
   var POINTER_OUTSIDE_EVENT, FOCUS_OUTSIDE_EVENT, isPointerEvent;
-  var init_chunk_KZTSFVJI = __esm({
-    "../priv/static/chunks/chunk-KZTSFVJI.mjs"() {
+  var init_chunk_F544AH56 = __esm({
+    "../priv/static/chunks/chunk-F544AH56.mjs"() {
       "use strict";
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       POINTER_OUTSIDE_EVENT = "pointerdown.outside";
       FOCUS_OUTSIDE_EVENT = "focus.outside";
       isPointerEvent = (event) => "clientY" in event;
     }
   });
 
-  // ../priv/static/chunks/chunk-UNSII3TK.mjs
+  // ../priv/static/chunks/chunk-CI7ZMY4G.mjs
   function trackEscapeKeydown(node, fn) {
     const handleKeyDown = (event) => {
       if (event.key !== "Escape") return;
@@ -10797,11 +10797,11 @@ var Corex = (() => {
     };
   }
   var LAYER_REQUEST_DISMISS_EVENT, layerStack, originalBodyPointerEvents, layerObservers;
-  var init_chunk_UNSII3TK = __esm({
-    "../priv/static/chunks/chunk-UNSII3TK.mjs"() {
+  var init_chunk_CI7ZMY4G = __esm({
+    "../priv/static/chunks/chunk-CI7ZMY4G.mjs"() {
       "use strict";
-      init_chunk_KZTSFVJI();
-      init_chunk_RRN4KZDI();
+      init_chunk_F544AH56();
+      init_chunk_6L36XW7I();
       LAYER_REQUEST_DISMISS_EVENT = "layer:request-dismiss";
       layerStack = {
         layers: [],
@@ -10936,7 +10936,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-QU3L6FP6.mjs
+  // ../priv/static/chunks/chunk-VOKBRZCH.mjs
   function readFlipAttr(el) {
     const raw = el.dataset.positionFlip;
     if (raw == null) return void 0;
@@ -10981,14 +10981,14 @@ var Corex = (() => {
     if (hideWhenDetached !== void 0) options.hideWhenDetached = hideWhenDetached;
     return Object.keys(options).length > 0 ? options : void 0;
   }
-  var init_chunk_QU3L6FP6 = __esm({
-    "../priv/static/chunks/chunk-QU3L6FP6.mjs"() {
+  var init_chunk_VOKBRZCH = __esm({
+    "../priv/static/chunks/chunk-VOKBRZCH.mjs"() {
       "use strict";
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
     }
   });
 
-  // ../priv/static/chunks/chunk-ARXPSEL2.mjs
+  // ../priv/static/chunks/chunk-NU3NDRI3.mjs
   function insert(items, index, ...values) {
     return [...items.slice(0, index), ...values, ...items.slice(index)];
   }
@@ -11388,10 +11388,10 @@ var Corex = (() => {
     }
   }
   var __defProp5, __defNormalProp5, __publicField5, fallback, ListCollection, match3, GridCollection, Selection, TreeCollection, fallbackMethods;
-  var init_chunk_ARXPSEL2 = __esm({
-    "../priv/static/chunks/chunk-ARXPSEL2.mjs"() {
+  var init_chunk_NU3NDRI3 = __esm({
+    "../priv/static/chunks/chunk-NU3NDRI3.mjs"() {
       "use strict";
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       __defProp5 = Object.defineProperty;
       __defNormalProp5 = (obj, key, value) => key in obj ? __defProp5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
       __publicField5 = (obj, key, value) => __defNormalProp5(obj, typeof key !== "symbol" ? key + "" : key, value);
@@ -12444,7 +12444,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-OGB72GJ7.mjs
+  // ../priv/static/chunks/chunk-ZGNXOXFS.mjs
   function connect8(service, normalize) {
     const { context, prop, scope, computed, send, refs } = service;
     const disabled = prop("disabled");
@@ -12837,6 +12837,9 @@ var Corex = (() => {
     var _a4;
     return (_a4 = item.value) != null ? _a4 : "";
   }
+  function itemsMembershipKey(items) {
+    return items.map((item) => itemValue(item)).join("\0");
+  }
   function zagListCollectionConfig(items, hasGroups) {
     if (hasGroups) {
       return {
@@ -12907,13 +12910,13 @@ var Corex = (() => {
     return result;
   }
   var anatomy8, parts8, collection, gridCollection, getRootId8, getContentId2, getLabelId4, getItemId3, getItemGroupId2, getItemGroupLabelId, getContentEl2, getItemEl, guards, createMachine2, or, machine8, diff2;
-  var init_chunk_OGB72GJ7 = __esm({
-    "../priv/static/chunks/chunk-OGB72GJ7.mjs"() {
+  var init_chunk_ZGNXOXFS = __esm({
+    "../priv/static/chunks/chunk-ZGNXOXFS.mjs"() {
       "use strict";
-      init_chunk_ARXPSEL2();
+      init_chunk_NU3NDRI3();
       init_chunk_HZLPIQBD();
-      init_chunk_QZ6HS4MI();
-      init_chunk_RRN4KZDI();
+      init_chunk_QCFVFTGB();
+      init_chunk_6L36XW7I();
       anatomy8 = createAnatomy("listbox").parts(
         "label",
         "input",
@@ -13978,20 +13981,20 @@ var Corex = (() => {
   var init_combobox = __esm({
     "../priv/static/combobox.mjs"() {
       "use strict";
-      init_chunk_XKTL3SPR();
+      init_chunk_L37AOZQG();
       init_chunk_UFCM6256();
-      init_chunk_EDPLM4FN();
-      init_chunk_UNSII3TK();
-      init_chunk_KZTSFVJI();
-      init_chunk_QU3L6FP6();
-      init_chunk_OGB72GJ7();
-      init_chunk_ARXPSEL2();
+      init_chunk_X7GOMWQ5();
+      init_chunk_CI7ZMY4G();
+      init_chunk_F544AH56();
+      init_chunk_VOKBRZCH();
+      init_chunk_ZGNXOXFS();
+      init_chunk_NU3NDRI3();
       init_chunk_HZLPIQBD();
-      init_chunk_QZ6HS4MI();
-      init_chunk_245LPPAG();
-      init_chunk_ILSEF4XK();
+      init_chunk_QCFVFTGB();
+      init_chunk_QZUKCXYH();
+      init_chunk_ATDXW7VQ();
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       anatomy9 = createAnatomy("combobox").parts(
         "root",
         "clearTrigger",
@@ -15406,7 +15409,25 @@ var Corex = (() => {
           const multiple = this.el.hasAttribute("data-multiple");
           return values.length === 0 ? "" : multiple ? values.join(",") : (_c = values[0]) != null ? _c : "";
         }
-        render() {
+        /**
+         * Hide/show LiveView-owned item nodes for the active (filtered) option set.
+         * Prefer this over remove/clone so custom :item slots survive filter + select.
+         */
+        applyFilterVisibility() {
+          const listEl = this.el.querySelector('[data-scope="combobox"][data-part="list"]');
+          if (!listEl) return;
+          const desired = new Set(this.activeItems().map((item) => this.getItemValue(item)));
+          const allValues = new Set(this.allOptions.map((item) => this.getItemValue(item)));
+          listEl.querySelectorAll('[data-scope="combobox"][data-part="item"]:not([data-template])').forEach((itemEl) => {
+            var _a4;
+            if (itemEl.closest('[data-scope="combobox"][data-part="list"]') !== listEl) return;
+            const value = (_a4 = itemEl.dataset.value) != null ? _a4 : "";
+            if (!allValues.has(value)) return;
+            itemEl.hidden = !desired.has(value);
+          });
+        }
+        render(options = {}) {
+          const syncList = options.syncList === true;
           const root = this.el.querySelector('[data-scope="combobox"][data-part="root"]');
           if (!root) return;
           this.spreadProps(root, this.api.getRootProps());
@@ -15436,7 +15457,10 @@ var Corex = (() => {
             if (!el) return;
             this.spreadProps(el, this.api[partPropsMethod(part)]());
           });
-          this.renderItems();
+          if (syncList) {
+            this.renderItems();
+          }
+          this.applyFilterVisibility();
           this.applyItemProps();
         }
       };
@@ -15487,25 +15511,39 @@ var Corex = (() => {
           return combobox;
         },
         update(hook, combobox) {
-          refreshItemsIfChanged(hook.el, hook, combobox);
+          var _a4, _b, _c;
+          const prevMembership = itemsMembershipKey(
+            parseItemsJson((_b = (_a4 = hook.lastItemsJson) != null ? _a4 : hook.el.getAttribute("data-items")) != null ? _b : "[]")
+          );
+          const itemsChanged = refreshItemsIfChanged(hook.el, hook, combobox);
+          const nextMembership = itemsMembershipKey(
+            parseItemsJson((_c = hook.lastItemsJson) != null ? _c : "[]")
+          );
+          const membershipChanged = itemsChanged && prevMembership !== nextMembership;
           const pushEvent = hook.pushEvent.bind(hook);
           const canPush = () => canPushEvent(hook.liveSocket);
           const valuePatch = readUpdatedServerStringList(hook.el, hook.beforeAttrs);
-          const propsApplied = combobox.updateProps(__spreadValues(__spreadValues({}, comboboxMachineDomPropsForUpdate(
-            hook.el,
-            pushEvent,
-            canPush,
-            hook.liveSocket,
-            () => combobox,
-            () => {
-              hook.fieldTouched = true;
-            }
-          )), valuePatch.value !== void 0 ? { value: valuePatch.value } : {}));
+          const propsApplied = combobox.updateProps(
+            __spreadValues(__spreadValues({}, comboboxMachineDomPropsForUpdate(
+              hook.el,
+              pushEvent,
+              canPush,
+              hook.liveSocket,
+              () => combobox,
+              () => {
+                hook.fieldTouched = true;
+              }
+            )), valuePatch.value !== void 0 ? { value: valuePatch.value } : {}),
+            { force: itemsChanged }
+          );
           if (combobox.api.open) {
             combobox.api.reposition();
           }
-          if (!propsApplied) {
-            combobox.render();
+          if (!propsApplied || itemsChanged) {
+            combobox.render({ syncList: membershipChanged });
+          } else {
+            combobox.applyFilterVisibility();
+            combobox.applyItemProps();
           }
         }
       });
@@ -16329,14 +16367,14 @@ var Corex = (() => {
     "../priv/static/color-picker.mjs"() {
       "use strict";
       init_chunk_KHEHQE65();
-      init_chunk_EDPLM4FN();
-      init_chunk_UNSII3TK();
-      init_chunk_KZTSFVJI();
-      init_chunk_QU3L6FP6();
-      init_chunk_245LPPAG();
-      init_chunk_ILSEF4XK();
+      init_chunk_X7GOMWQ5();
+      init_chunk_CI7ZMY4G();
+      init_chunk_F544AH56();
+      init_chunk_VOKBRZCH();
+      init_chunk_QZUKCXYH();
+      init_chunk_ATDXW7VQ();
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       anatomy10 = createAnatomy("color-picker", [
         "root",
         "label",
@@ -17735,6 +17773,23 @@ var Corex = (() => {
         initApi() {
           return this.zagConnect(connect10);
         }
+        reassertSwatchColor(swatchEl, colorValue) {
+          var _a4, _b;
+          this.spreadProps(swatchEl, this.api.getSwatchProps({ value: colorValue }));
+          let color = typeof colorValue === "string" ? colorValue : (_b = (_a4 = colorValue == null ? void 0 : colorValue.toString) == null ? void 0 : _a4.call(colorValue, "css")) != null ? _b : "";
+          if (!color && colorValue && typeof colorValue.toString === "function") {
+            try {
+              color = String(colorValue.toString());
+            } catch (e2) {
+              color = "";
+            }
+          }
+          if (!color && this.api.valueAsString) color = this.api.valueAsString;
+          if (color) {
+            swatchEl.style.setProperty("--color", color);
+            swatchEl.style.background = color;
+          }
+        }
         render() {
           var _a4;
           const rootEl = this.el.querySelector('[data-part="root"]');
@@ -17758,12 +17813,14 @@ var Corex = (() => {
           const transparencyGrids = this.el.querySelectorAll(
             '[data-part="transparency-grid"]'
           );
-          transparencyGrids.forEach(
-            (el) => this.spreadProps(el, this.api.getTransparencyGridProps({ size: "12px" }))
-          );
+          transparencyGrids.forEach((el) => {
+            const size3 = el.getAttribute("data-size") || "12px";
+            this.spreadProps(el, this.api.getTransparencyGridProps({ size: size3 }));
+          });
           const triggerSwatch = triggerEl == null ? void 0 : triggerEl.querySelector('[data-part="swatch"]');
-          if (triggerSwatch)
-            this.spreadProps(triggerSwatch, this.api.getSwatchProps({ value: this.api.value }));
+          if (triggerSwatch) {
+            this.reassertSwatchColor(triggerSwatch, this.api.value);
+          }
           const hexInputs = this.el.querySelectorAll(
             '[data-part="channel-input"][data-channel="hex"]'
           );
@@ -17795,12 +17852,18 @@ var Corex = (() => {
             '[data-part="channel-slider-track"][data-channel="hue"]'
           );
           if (hueTrackEl)
-            this.spreadProps(hueTrackEl, this.api.getChannelSliderTrackProps({ channel: "hue" }));
+            this.spreadProps(
+              hueTrackEl,
+              this.api.getChannelSliderTrackProps({ channel: "hue", format: "hsba" })
+            );
           const hueThumbEl = this.el.querySelector(
             '[data-part="channel-slider-thumb"][data-channel="hue"]'
           );
           if (hueThumbEl)
-            this.spreadProps(hueThumbEl, this.api.getChannelSliderThumbProps({ channel: "hue" }));
+            this.spreadProps(
+              hueThumbEl,
+              this.api.getChannelSliderThumbProps({ channel: "hue", format: "hsba" })
+            );
           const alphaSliderEl = this.el.querySelector(
             '[data-part="channel-slider"][data-channel="alpha"]'
           );
@@ -17810,12 +17873,18 @@ var Corex = (() => {
             '[data-part="channel-slider-track"][data-channel="alpha"]'
           );
           if (alphaTrackEl)
-            this.spreadProps(alphaTrackEl, this.api.getChannelSliderTrackProps({ channel: "alpha" }));
+            this.spreadProps(
+              alphaTrackEl,
+              this.api.getChannelSliderTrackProps({ channel: "alpha", format: "hsba" })
+            );
           const alphaThumbEl = this.el.querySelector(
             '[data-part="channel-slider-thumb"][data-channel="alpha"]'
           );
           if (alphaThumbEl)
-            this.spreadProps(alphaThumbEl, this.api.getChannelSliderThumbProps({ channel: "alpha" }));
+            this.spreadProps(
+              alphaThumbEl,
+              this.api.getChannelSliderThumbProps({ channel: "alpha", format: "hsba" })
+            );
           const redInputs = this.el.querySelectorAll(
             '[data-part="channel-input"][data-channel="red"]'
           );
@@ -17845,8 +17914,7 @@ var Corex = (() => {
             const swatchEl = trigger.querySelector('[data-part="swatch"][data-value]');
             if (swatchEl) {
               const swatchValue = swatchEl.getAttribute("data-value");
-              if (swatchValue)
-                this.spreadProps(swatchEl, this.api.getSwatchProps({ value: swatchValue }));
+              if (swatchValue) this.reassertSwatchColor(swatchEl, swatchValue);
             }
           });
         }
@@ -17981,12 +18049,13 @@ var Corex = (() => {
             dir: getDir(el),
             positioning: readPositioningOptions(el)
           }, parsedValue !== void 0 ? { value: parsedValue } : {}));
+          zag.render();
         }
       });
     }
   });
 
-  // ../priv/static/chunks/chunk-COKNR45R.mjs
+  // ../priv/static/chunks/chunk-Z3EQ3GCO.mjs
   function memo(getDeps, fn, opts) {
     let deps = [];
     let result;
@@ -18001,10 +18070,10 @@ var Corex = (() => {
       return result;
     };
   }
-  var init_chunk_COKNR45R = __esm({
-    "../priv/static/chunks/chunk-COKNR45R.mjs"() {
+  var init_chunk_Z3EQ3GCO = __esm({
+    "../priv/static/chunks/chunk-Z3EQ3GCO.mjs"() {
       "use strict";
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
     }
   });
 
@@ -20380,17 +20449,17 @@ var Corex = (() => {
   var init_date_picker = __esm({
     "../priv/static/date-picker.mjs"() {
       "use strict";
-      init_chunk_COKNR45R();
+      init_chunk_Z3EQ3GCO();
       init_chunk_KHEHQE65();
       init_chunk_UFCM6256();
-      init_chunk_EDPLM4FN();
-      init_chunk_UNSII3TK();
-      init_chunk_KZTSFVJI();
-      init_chunk_QU3L6FP6();
-      init_chunk_245LPPAG();
-      init_chunk_ILSEF4XK();
+      init_chunk_X7GOMWQ5();
+      init_chunk_CI7ZMY4G();
+      init_chunk_F544AH56();
+      init_chunk_VOKBRZCH();
+      init_chunk_QZUKCXYH();
+      init_chunk_ATDXW7VQ();
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       anatomy11 = createAnatomy("date-picker").parts(
         "clearTrigger",
         "content",
@@ -22481,69 +22550,73 @@ var Corex = (() => {
             '[data-scope="date-picker"][data-part="content"]'
           );
           if (content) this.spreadProps(content, this.api.getContentProps());
-          if (this.api.open) {
-            const dayView = this.getDayView();
-            const monthView = this.getMonthView();
-            const yearView = this.getYearView();
-            if (dayView) dayView.hidden = this.api.view !== "day";
-            if (monthView) monthView.hidden = this.api.view !== "month";
-            if (yearView) yearView.hidden = this.api.view !== "year";
-            if (this.api.view === "day" && dayView) {
-              const viewControl = dayView.querySelector('[data-part="view-control"]');
-              if (viewControl)
-                this.spreadProps(viewControl, this.api.getViewControlProps({ view: "year" }));
-              const prevTrigger = dayView.querySelector('[data-part="prev-trigger"]');
-              if (prevTrigger) this.spreadProps(prevTrigger, this.api.getPrevTriggerProps());
-              const viewTrigger = dayView.querySelector('[data-part="view-trigger"]');
-              if (viewTrigger) {
-                this.spreadProps(viewTrigger, this.api.getViewTriggerProps());
-                viewTrigger.textContent = this.api.visibleRangeText.start;
-              }
-              const nextTrigger = dayView.querySelector('[data-part="next-trigger"]');
-              if (nextTrigger) this.spreadProps(nextTrigger, this.api.getNextTriggerProps());
-              const table = dayView.querySelector("table");
-              if (table) this.spreadProps(table, this.api.getTableProps({ view: "day" }));
-              const thead = dayView.querySelector("thead");
-              if (thead) this.spreadProps(thead, this.api.getTableHeaderProps({ view: "day" }));
-              this.renderDayTableHeader();
-              this.renderDayTableBody();
-            } else if (this.api.view === "month" && monthView) {
-              const viewControl = monthView.querySelector('[data-part="view-control"]');
-              if (viewControl)
-                this.spreadProps(viewControl, this.api.getViewControlProps({ view: "month" }));
-              const prevTrigger = monthView.querySelector('[data-part="prev-trigger"]');
-              if (prevTrigger)
-                this.spreadProps(prevTrigger, this.api.getPrevTriggerProps({ view: "month" }));
-              const viewTrigger = monthView.querySelector('[data-part="view-trigger"]');
-              if (viewTrigger) {
-                this.spreadProps(viewTrigger, this.api.getViewTriggerProps({ view: "month" }));
-                viewTrigger.textContent = String(this.api.visibleRange.start.year);
-              }
-              const nextTrigger = monthView.querySelector('[data-part="next-trigger"]');
-              if (nextTrigger)
-                this.spreadProps(nextTrigger, this.api.getNextTriggerProps({ view: "month" }));
-              const table = monthView.querySelector("table");
-              if (table) this.spreadProps(table, this.api.getTableProps({ view: "month", columns: 4 }));
-              this.renderMonthTableBody();
-            } else if (this.api.view === "year" && yearView) {
-              const viewControl = yearView.querySelector('[data-part="view-control"]');
-              if (viewControl)
-                this.spreadProps(viewControl, this.api.getViewControlProps({ view: "year" }));
-              const prevTrigger = yearView.querySelector('[data-part="prev-trigger"]');
-              if (prevTrigger)
-                this.spreadProps(prevTrigger, this.api.getPrevTriggerProps({ view: "year" }));
-              const decadeText = yearView.querySelector('[data-part="decade"]');
-              if (decadeText) {
-                const decade = this.api.getDecade();
-                decadeText.textContent = `${decade.start} - ${decade.end}`;
-              }
-              const nextTrigger = yearView.querySelector('[data-part="next-trigger"]');
-              if (nextTrigger)
-                this.spreadProps(nextTrigger, this.api.getNextTriggerProps({ view: "year" }));
-              const table = yearView.querySelector("table");
-              if (table) this.spreadProps(table, this.api.getTableProps({ view: "year", columns: 4 }));
-              this.renderYearTableBody();
+          const dayView = this.getDayView();
+          const monthView = this.getMonthView();
+          const yearView = this.getYearView();
+          if (!this.api.open) {
+            if (dayView) dayView.hidden = true;
+            if (monthView) monthView.hidden = true;
+            if (yearView) yearView.hidden = true;
+            return;
+          }
+          if (dayView) dayView.hidden = this.api.view !== "day";
+          if (monthView) monthView.hidden = this.api.view !== "month";
+          if (yearView) yearView.hidden = this.api.view !== "year";
+          if (this.api.view === "day" && dayView) {
+            const viewControl = dayView.querySelector('[data-part="view-control"]');
+            if (viewControl)
+              this.spreadProps(viewControl, this.api.getViewControlProps({ view: "year" }));
+            const prevTrigger = dayView.querySelector('[data-part="prev-trigger"]');
+            if (prevTrigger) this.spreadProps(prevTrigger, this.api.getPrevTriggerProps());
+            const viewTrigger = dayView.querySelector('[data-part="view-trigger"]');
+            if (viewTrigger) {
+              this.spreadProps(viewTrigger, this.api.getViewTriggerProps());
+              viewTrigger.textContent = this.api.visibleRangeText.start;
             }
+            const nextTrigger = dayView.querySelector('[data-part="next-trigger"]');
+            if (nextTrigger) this.spreadProps(nextTrigger, this.api.getNextTriggerProps());
+            const table = dayView.querySelector("table");
+            if (table) this.spreadProps(table, this.api.getTableProps({ view: "day" }));
+            const thead = dayView.querySelector("thead");
+            if (thead) this.spreadProps(thead, this.api.getTableHeaderProps({ view: "day" }));
+            this.renderDayTableHeader();
+            this.renderDayTableBody();
+          } else if (this.api.view === "month" && monthView) {
+            const viewControl = monthView.querySelector('[data-part="view-control"]');
+            if (viewControl)
+              this.spreadProps(viewControl, this.api.getViewControlProps({ view: "month" }));
+            const prevTrigger = monthView.querySelector('[data-part="prev-trigger"]');
+            if (prevTrigger)
+              this.spreadProps(prevTrigger, this.api.getPrevTriggerProps({ view: "month" }));
+            const viewTrigger = monthView.querySelector('[data-part="view-trigger"]');
+            if (viewTrigger) {
+              this.spreadProps(viewTrigger, this.api.getViewTriggerProps({ view: "month" }));
+              viewTrigger.textContent = String(this.api.visibleRange.start.year);
+            }
+            const nextTrigger = monthView.querySelector('[data-part="next-trigger"]');
+            if (nextTrigger)
+              this.spreadProps(nextTrigger, this.api.getNextTriggerProps({ view: "month" }));
+            const table = monthView.querySelector("table");
+            if (table) this.spreadProps(table, this.api.getTableProps({ view: "month", columns: 4 }));
+            this.renderMonthTableBody();
+          } else if (this.api.view === "year" && yearView) {
+            const viewControl = yearView.querySelector('[data-part="view-control"]');
+            if (viewControl)
+              this.spreadProps(viewControl, this.api.getViewControlProps({ view: "year" }));
+            const prevTrigger = yearView.querySelector('[data-part="prev-trigger"]');
+            if (prevTrigger)
+              this.spreadProps(prevTrigger, this.api.getPrevTriggerProps({ view: "year" }));
+            const decadeText = yearView.querySelector('[data-part="decade"]');
+            if (decadeText) {
+              const decade = this.api.getDecade();
+              decadeText.textContent = `${decade.start} - ${decade.end}`;
+            }
+            const nextTrigger = yearView.querySelector('[data-part="next-trigger"]');
+            if (nextTrigger)
+              this.spreadProps(nextTrigger, this.api.getNextTriggerProps({ view: "year" }));
+            const table = yearView.querySelector("table");
+            if (table) this.spreadProps(table, this.api.getTableProps({ view: "year", columns: 4 }));
+            this.renderYearTableBody();
           }
         }
       };
@@ -23071,12 +23144,12 @@ var Corex = (() => {
   var init_dialog = __esm({
     "../priv/static/dialog.mjs"() {
       "use strict";
-      init_chunk_CE52IH4H();
-      init_chunk_UNSII3TK();
-      init_chunk_KZTSFVJI();
-      init_chunk_ILSEF4XK();
+      init_chunk_PWP4CBA7();
+      init_chunk_CI7ZMY4G();
+      init_chunk_F544AH56();
+      init_chunk_ATDXW7VQ();
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       anatomy12 = createAnatomy("dialog").parts(
         "trigger",
         "backdrop",
@@ -24487,11 +24560,11 @@ var Corex = (() => {
   var init_editable = __esm({
     "../priv/static/editable.mjs"() {
       "use strict";
-      init_chunk_KZTSFVJI();
-      init_chunk_245LPPAG();
-      init_chunk_ILSEF4XK();
+      init_chunk_F544AH56();
+      init_chunk_QZUKCXYH();
+      init_chunk_ATDXW7VQ();
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       anatomy13 = createAnatomy("editable").parts(
         "root",
         "area",
@@ -24787,7 +24860,14 @@ var Corex = (() => {
           const controlEl = this.el.querySelector(
             '[data-scope="editable"][data-part="control"]'
           );
-          if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
+          if (controlEl) {
+            this.spreadProps(controlEl, this.api.getControlProps());
+            if (this.el.hasAttribute("data-readonly")) {
+              controlEl.setAttribute("data-readonly", "");
+            } else {
+              controlEl.removeAttribute("data-readonly");
+            }
+          }
           const areaEl = this.el.querySelector('[data-scope="editable"][data-part="area"]');
           if (areaEl) this.spreadProps(areaEl, this.api.getAreaProps());
           const labelEl = this.el.querySelector(
@@ -25401,9 +25481,9 @@ var Corex = (() => {
   var init_file_upload = __esm({
     "../priv/static/file-upload.mjs"() {
       "use strict";
-      init_chunk_245LPPAG();
+      init_chunk_QZUKCXYH();
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       anatomy14 = createAnatomy("file-upload").parts(
         "root",
         "dropzone",
@@ -26739,9 +26819,9 @@ ${err}`);
       "use strict";
       init_chunk_SBGJ6WBJ();
       init_chunk_KHEHQE65();
-      init_chunk_QU3L6FP6();
+      init_chunk_VOKBRZCH();
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       anatomy15 = createAnatomy("floating-panel").parts(
         "trigger",
         "positioner",
@@ -27779,13 +27859,13 @@ ${err}`);
   var init_listbox = __esm({
     "../priv/static/listbox.mjs"() {
       "use strict";
-      init_chunk_OGB72GJ7();
-      init_chunk_ARXPSEL2();
+      init_chunk_ZGNXOXFS();
+      init_chunk_NU3NDRI3();
       init_chunk_HZLPIQBD();
-      init_chunk_QZ6HS4MI();
-      init_chunk_ILSEF4XK();
+      init_chunk_QCFVFTGB();
+      init_chunk_ATDXW7VQ();
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       Listbox = class extends Component {
         constructor(el, props) {
           var _a4;
@@ -27908,11 +27988,14 @@ ${err}`);
           return zag;
         },
         update(hook, zag) {
-          refreshItemsIfChanged(hook.el, hook, zag);
-          const propsApplied = zag.updateProps(__spreadValues(__spreadProps(__spreadValues({}, listboxZagPropsBase(hook.el, hook.liveSocket, hook.pushEvent.bind(hook))), {
-            collection: zag.getCollection()
-          }), readStringListControlledZagUpdate(hook.el, "value", "defaultValue", hook.beforeAttrs)));
-          if (!propsApplied) {
+          const itemsChanged = refreshItemsIfChanged(hook.el, hook, zag);
+          const propsApplied = zag.updateProps(
+            __spreadValues(__spreadProps(__spreadValues({}, listboxZagPropsBase(hook.el, hook.liveSocket, hook.pushEvent.bind(hook))), {
+              collection: zag.getCollection()
+            }), readStringListControlledZagUpdate(hook.el, "value", "defaultValue", hook.beforeAttrs)),
+            { force: itemsChanged }
+          );
+          if (!propsApplied || itemsChanged) {
             zag.render();
           }
         }
@@ -28117,7 +28200,7 @@ ${err}`);
     "../priv/static/marquee.mjs"() {
       "use strict";
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       anatomy16 = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");
       parts16 = anatomy16.build();
       dom = {
@@ -29174,16 +29257,16 @@ ${err}`);
     "../priv/static/menu.mjs"() {
       "use strict";
       init_chunk_SBGJ6WBJ();
-      init_chunk_EDPLM4FN();
-      init_chunk_UNSII3TK();
-      init_chunk_KZTSFVJI();
-      init_chunk_QU3L6FP6();
-      init_chunk_OGB72GJ7();
-      init_chunk_ARXPSEL2();
+      init_chunk_X7GOMWQ5();
+      init_chunk_CI7ZMY4G();
+      init_chunk_F544AH56();
+      init_chunk_VOKBRZCH();
+      init_chunk_ZGNXOXFS();
+      init_chunk_NU3NDRI3();
       init_chunk_HZLPIQBD();
-      init_chunk_QZ6HS4MI();
+      init_chunk_QCFVFTGB();
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       anatomy17 = createAnatomy("menu").parts(
         "arrow",
         "arrowTip",
@@ -30262,12 +30345,7 @@ ${err}`);
             if (!childMenu) continue;
             const applyProps = () => {
               const disabled = triggerEl.hasAttribute("disabled");
-              const childTriggerProps = childMenu.api.getTriggerProps();
-              const itemProps = this.api.getItemProps({
-                value: childTriggerProps.id,
-                disabled: disabled || void 0
-              });
-              this.spreadProps(triggerEl, __spreadValues(__spreadValues({}, itemProps), childTriggerProps));
+              this.spreadProps(triggerEl, __spreadValues(__spreadValues({}, this.api.getTriggerItemProps(childMenu.api)), triggerDisabledAttrs(disabled)));
             };
             applyProps();
             this.submenuTriggerUnsubs.push(this.machine.subscribe(applyProps));
@@ -31084,12 +31162,12 @@ ${err}`);
   var init_number_input = __esm({
     "../priv/static/number-input.mjs"() {
       "use strict";
-      init_chunk_COKNR45R();
+      init_chunk_Z3EQ3GCO();
       init_chunk_KHEHQE65();
-      init_chunk_245LPPAG();
-      init_chunk_ILSEF4XK();
+      init_chunk_QZUKCXYH();
+      init_chunk_ATDXW7VQ();
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       anatomy18 = createAnatomy("numberInput").parts(
         "root",
         "label",
@@ -32382,10 +32460,10 @@ ${err}`);
   var init_pagination = __esm({
     "../priv/static/pagination.mjs"() {
       "use strict";
-      init_chunk_COKNR45R();
+      init_chunk_Z3EQ3GCO();
       init_chunk_HZLPIQBD();
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       anatomy19 = createAnatomy("pagination").parts(
         "root",
         "item",
@@ -32870,7 +32948,7 @@ ${err}`);
     "../priv/static/password-input.mjs"() {
       "use strict";
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       anatomy20 = createAnatomy("password-input").parts(
         "root",
         "input",
@@ -33417,8 +33495,10 @@ ${err}`);
         if (!isMountEcho) {
           markFieldTouched();
         }
-        syncPinInputFormForPhoenix(el, details.value, void 0, {
-          notifyLiveView: !isMountEcho
+        queueMicrotask(() => {
+          syncPinInputFormForPhoenix(el, details.value, void 0, {
+            notifyLiveView: !isMountEcho
+          });
         });
         notifyChange({
           el,
@@ -33454,11 +33534,11 @@ ${err}`);
     "../priv/static/pin-input.mjs"() {
       "use strict";
       init_chunk_KHEHQE65();
-      init_chunk_XKTL3SPR();
-      init_chunk_245LPPAG();
-      init_chunk_ILSEF4XK();
+      init_chunk_L37AOZQG();
+      init_chunk_QZUKCXYH();
+      init_chunk_ATDXW7VQ();
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       anatomy21 = createAnatomy("pinInput").parts("root", "label", "input", "control");
       parts21 = anatomy21.build();
       getRootId16 = (ctx) => {
@@ -33808,7 +33888,7 @@ ${err}`);
           return this.zagConnect(connect21);
         }
         render() {
-          var _a4, _b;
+          var _a4, _b, _c, _d, _e;
           const rootEl = (_a4 = this.el.querySelector('[data-scope="pin-input"][data-part="root"]')) != null ? _a4 : this.el;
           this.spreadProps(rootEl, this.api.getRootProps());
           const labelEl = this.el.querySelector(
@@ -33836,12 +33916,16 @@ ${err}`);
             '[data-scope="pin-input"][data-part="control"]'
           );
           if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
-          this.api.items.forEach((i2) => {
-            const inputEl = this.el.querySelector(
+          const inputEls = Array.from(
+            this.el.querySelectorAll('[data-scope="pin-input"][data-part="input"]')
+          );
+          const count = Math.max((_d = (_c = this.api.items) == null ? void 0 : _c.length) != null ? _d : 0, inputEls.length);
+          for (let i2 = 0; i2 < count; i2 += 1) {
+            const inputEl = (_e = inputEls[i2]) != null ? _e : this.el.querySelector(
               `[data-scope="pin-input"][data-part="input"][data-index="${i2}"]`
             );
             if (inputEl) this.spreadProps(inputEl, this.api.getInputProps({ index: i2 }));
-          });
+          }
         }
       };
       PinInputHook = createZagLiveHook({
@@ -34188,11 +34272,11 @@ ${err}`);
     "../priv/static/radio-group.mjs"() {
       "use strict";
       init_chunk_KHEHQE65();
-      init_chunk_QZ6HS4MI();
-      init_chunk_245LPPAG();
-      init_chunk_ILSEF4XK();
+      init_chunk_QCFVFTGB();
+      init_chunk_QZUKCXYH();
+      init_chunk_ATDXW7VQ();
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       anatomy22 = createAnatomy("radio-group").parts(
         "root",
         "label",
@@ -34620,6 +34704,7 @@ ${err}`);
             orientation: getString(el, "orientation"),
             dir: getDir(el)
           }));
+          zag.render();
           if ("value" in valuePatch) {
             syncRadioGroupValueInputForPhoenix(el, (_a4 = valuePatch.value) != null ? _a4 : null, { markUsed: false });
           }
@@ -35183,18 +35268,18 @@ ${err}`);
   var init_select = __esm({
     "../priv/static/select.mjs"() {
       "use strict";
-      init_chunk_EDPLM4FN();
-      init_chunk_UNSII3TK();
-      init_chunk_KZTSFVJI();
-      init_chunk_QU3L6FP6();
-      init_chunk_OGB72GJ7();
-      init_chunk_ARXPSEL2();
+      init_chunk_X7GOMWQ5();
+      init_chunk_CI7ZMY4G();
+      init_chunk_F544AH56();
+      init_chunk_VOKBRZCH();
+      init_chunk_ZGNXOXFS();
+      init_chunk_NU3NDRI3();
       init_chunk_HZLPIQBD();
-      init_chunk_QZ6HS4MI();
-      init_chunk_245LPPAG();
-      init_chunk_ILSEF4XK();
+      init_chunk_QCFVFTGB();
+      init_chunk_QZUKCXYH();
+      init_chunk_ATDXW7VQ();
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       anatomy23 = createAnatomy("select").parts(
         "label",
         "positioner",
@@ -36010,6 +36095,10 @@ ${err}`);
         setOptions(options) {
           this._options = Array.isArray(options) ? options : [];
         }
+        /** Refresh placeholder from host dataset (may change across LiveView morphs). */
+        refreshPlaceholder() {
+          this.placeholder = getString(this.el, "placeholder") || "";
+        }
         getCollection() {
           return collection3(zagListCollectionConfig(this.options, this.hasGroups));
         }
@@ -36120,9 +36209,10 @@ ${err}`);
             this.spreadProps(el, this.api[partPropsMethod(part)]());
           });
           const valueText = this.el.querySelector(
-            '[data-scope="select"][data-part="item-text"]'
+            '[data-scope="select"][data-part="trigger"] [data-scope="select"][data-part="item-text"]'
           );
           if (valueText && this.el.dataset.updateTrigger !== "false") {
+            this.refreshPlaceholder();
             const valueAsString = this.api.valueAsString;
             if (this.api.value && this.api.value.length > 0 && !valueAsString) {
               const selectedValue = this.api.value[0];
@@ -36180,15 +36270,27 @@ ${err}`);
           return selectComponent;
         },
         update(hook, select) {
-          refreshItemsIfChanged(hook.el, hook, select);
+          var _a4;
+          const itemsChanged = refreshItemsIfChanged(hook.el, hook, select);
           const valuePatch = readUpdatedServerStringList(hook.el, hook.beforeAttrs);
           if (valuePatch.value !== void 0) {
             syncControlledValueInputFromServer(hook.el, valuePatch.value);
           }
-          const propsApplied = select.updateProps(__spreadValues(__spreadProps(__spreadValues({}, selectLayoutProps(hook.el)), {
-            collection: select.getCollection()
-          }), valuePatch.value !== void 0 ? { value: valuePatch.value } : {}));
-          if (!propsApplied) {
+          if (itemsChanged && valuePatch.value === void 0) {
+            const available = new Set(select.options.map((i2) => String(itemValue(i2))));
+            const current = ((_a4 = select.api.value) != null ? _a4 : []).map(String);
+            const next2 = current.filter((v2) => available.has(v2));
+            if (next2.length !== current.length) {
+              select.api.setValue(next2);
+            }
+          }
+          const propsApplied = select.updateProps(
+            __spreadValues(__spreadProps(__spreadValues({}, selectLayoutProps(hook.el)), {
+              collection: select.getCollection()
+            }), valuePatch.value !== void 0 ? { value: valuePatch.value } : {}),
+            { force: itemsChanged }
+          );
+          if (!propsApplied || itemsChanged) {
             select.render();
           }
           reapplySelectInteractiveState(hook.el);
@@ -36576,11 +36678,11 @@ ${err}`);
   var init_signature_pad = __esm({
     "../priv/static/signature-pad.mjs"() {
       "use strict";
-      init_chunk_XKTL3SPR();
-      init_chunk_245LPPAG();
-      init_chunk_ILSEF4XK();
+      init_chunk_L37AOZQG();
+      init_chunk_QZUKCXYH();
+      init_chunk_ATDXW7VQ();
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       anatomy24 = createAnatomy("signature-pad").parts(
         "root",
         "control",
@@ -37105,11 +37207,11 @@ ${err}`);
   var init_switch = __esm({
     "../priv/static/switch.mjs"() {
       "use strict";
-      init_chunk_QZ6HS4MI();
-      init_chunk_245LPPAG();
-      init_chunk_ILSEF4XK();
+      init_chunk_QCFVFTGB();
+      init_chunk_QZUKCXYH();
+      init_chunk_ATDXW7VQ();
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       anatomy25 = createAnatomy("switch").parts("root", "label", "control", "thumb");
       parts25 = anatomy25.build();
       getRootId20 = (ctx) => {
@@ -37885,11 +37987,11 @@ ${err}`);
     "../priv/static/tags-input.mjs"() {
       "use strict";
       init_chunk_UFCM6256();
-      init_chunk_KZTSFVJI();
-      init_chunk_245LPPAG();
-      init_chunk_ILSEF4XK();
+      init_chunk_F544AH56();
+      init_chunk_QZUKCXYH();
+      init_chunk_ATDXW7VQ();
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       anatomy26 = createAnatomy("tagsInput").parts(
         "root",
         "label",
@@ -39178,9 +39280,9 @@ ${err}`);
     "../priv/static/tabs.mjs"() {
       "use strict";
       init_chunk_KHEHQE65();
-      init_chunk_ILSEF4XK();
+      init_chunk_ATDXW7VQ();
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       anatomy27 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
       parts27 = anatomy27.build();
       getRootId22 = (ctx) => {
@@ -39938,6 +40040,20 @@ ${err}`);
       }
     };
   }
+  function syncTimerDir(el) {
+    const dir = getDir(el);
+    if (dir) {
+      el.setAttribute("dir", dir);
+      el.querySelectorAll("[data-scope='timer']").forEach((node) => {
+        node.setAttribute("dir", dir);
+      });
+    } else {
+      el.removeAttribute("dir");
+      el.querySelectorAll("[data-scope='timer'][dir]").forEach((node) => {
+        node.removeAttribute("dir");
+      });
+    }
+  }
   function buildTimerProps(el, pushEvent, canPush) {
     return __spreadValues({
       id: el.id,
@@ -39946,7 +40062,6 @@ ${err}`);
       targetMs: getNumber(el, "targetMs"),
       autoStart: getBoolean(el, "autoStart"),
       interval: getNumber(el, "interval"),
-      dir: getDir(el),
       orientation: getString(el, "orientation"),
       translations: parseTimerTranslations(el)
     }, buildTimerCallbacks(el, pushEvent, canPush));
@@ -39955,11 +40070,11 @@ ${err}`);
   var init_timer = __esm({
     "../priv/static/timer.mjs"() {
       "use strict";
-      init_chunk_COKNR45R();
-      init_chunk_JTNPM7GV();
+      init_chunk_Z3EQ3GCO();
+      init_chunk_V2LDXRRO();
       init_chunk_KHEHQE65();
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       anatomy28 = createAnatomy("timer").parts(
         "root",
         "area",
@@ -40204,6 +40319,7 @@ ${err}`);
           hook.lastCountdownRaw = identity2.countdown;
           hook.lastIntervalRaw = identity2.interval;
           const zag = new Timer2(el, buildTimerProps(el, pushEvent, canPush));
+          syncTimerDir(el);
           const emitState = (respondTo) => {
             const snapshot2 = machineState2(zag.api);
             emitResponse({
@@ -40267,6 +40383,7 @@ ${err}`);
           const canPush = () => canPushEvent(hook.liveSocket);
           const patch = __spreadValues({
             id: el.id,
+            orientation: getString(el, "orientation"),
             translations: parseTimerTranslations(el)
           }, buildTimerCallbacks(el, pushEvent, canPush));
           const startMsRaw = el.dataset.startMs;
@@ -40289,6 +40406,7 @@ ${err}`);
             patch.interval = getNumber(el, "interval");
             hook.lastIntervalRaw = intervalRaw;
           }
+          syncTimerDir(el);
           zag.updateProps(patch);
         }
       });
@@ -40878,17 +40996,17 @@ ${err}`);
     return action != null && typeof action === "object" && action.labelHtml === true;
   }
   function createToastGroup(container, options) {
-    var _a4, _b, _c;
+    var _a4, _b, _c, _d;
     const groupId = (_a4 = options == null ? void 0 : options.id) != null ? _a4 : container.id;
     if (toastGroups.has(groupId)) {
       disposeToastGroup(groupId);
     }
-    const store2 = (_c = options == null ? void 0 : options.store) != null ? _c : createToastStore({
-      placement: (_b = options == null ? void 0 : options.placement) != null ? _b : "bottom",
+    const store2 = (_d = options == null ? void 0 : options.store) != null ? _d : createToastStore({
+      placement: (_b = options == null ? void 0 : options.placement) != null ? _b : "bottom-end",
       overlap: options == null ? void 0 : options.overlap,
       max: options == null ? void 0 : options.max,
       gap: options == null ? void 0 : options.gap,
-      offsets: options == null ? void 0 : options.offsets,
+      offsets: (_c = options == null ? void 0 : options.offsets) != null ? _c : "1rem",
       pauseOnPageIdle: options == null ? void 0 : options.pauseOnPageIdle
     });
     const group2 = new ToastGroup(container, { id: groupId, store: store2, dir: getDir(container) });
@@ -40998,10 +41116,10 @@ ${err}`);
   var init_toast = __esm({
     "../priv/static/toast.mjs"() {
       "use strict";
-      init_chunk_JTNPM7GV();
-      init_chunk_UNSII3TK();
-      init_chunk_KZTSFVJI();
-      init_chunk_RRN4KZDI();
+      init_chunk_V2LDXRRO();
+      init_chunk_CI7ZMY4G();
+      init_chunk_F544AH56();
+      init_chunk_6L36XW7I();
       anatomy29 = createAnatomy("toast").parts(
         "group",
         "root",
@@ -42194,11 +42312,11 @@ ${err}`);
   var init_tooltip = __esm({
     "../priv/static/tooltip.mjs"() {
       "use strict";
-      init_chunk_EDPLM4FN();
-      init_chunk_QU3L6FP6();
-      init_chunk_QZ6HS4MI();
+      init_chunk_X7GOMWQ5();
+      init_chunk_VOKBRZCH();
+      init_chunk_QCFVFTGB();
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       anatomy30 = createAnatomy("tooltip").parts("trigger", "arrow", "arrowTip", "positioner", "content");
       parts30 = anatomy30.build();
       getTriggerId11 = (scope, value) => {
@@ -42756,9 +42874,9 @@ ${err}`);
   var init_toggle = __esm({
     "../priv/static/toggle.mjs"() {
       "use strict";
-      init_chunk_ILSEF4XK();
+      init_chunk_ATDXW7VQ();
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       anatomy31 = createAnatomy("toggle", ["root", "indicator"]);
       parts31 = anatomy31.build();
       machine31 = createMachine({
@@ -43039,9 +43157,9 @@ ${err}`);
   var init_toggle_group = __esm({
     "../priv/static/toggle-group.mjs"() {
       "use strict";
-      init_chunk_ILSEF4XK();
+      init_chunk_ATDXW7VQ();
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       anatomy32 = createAnatomy("toggle-group").parts("root", "item");
       parts32 = anatomy32.build();
       getRootId25 = (ctx) => {
@@ -43943,11 +44061,11 @@ ${err}`);
     "../priv/static/tree-view.mjs"() {
       "use strict";
       init_chunk_JDGMEOQK();
-      init_chunk_CE52IH4H();
-      init_chunk_ARXPSEL2();
+      init_chunk_PWP4CBA7();
+      init_chunk_NU3NDRI3();
       init_chunk_HZLPIQBD();
       init_chunk_EAQ6WQNO();
-      init_chunk_RRN4KZDI();
+      init_chunk_6L36XW7I();
       anatomy33 = createAnatomy("tree-view").parts(
         "branch",
         "branchContent",
