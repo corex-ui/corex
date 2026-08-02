@@ -22,6 +22,11 @@ export function itemValue(item: ValueLabelItem): string {
   return item.value ?? "";
 }
 
+/** Ordered value fingerprint — ignores disabled/label/meta, used to skip DOM rebuilds. */
+export function itemsMembershipKey(items: ReadonlyArray<ValueLabelItem>): string {
+  return items.map((item) => itemValue(item)).join("\0");
+}
+
 export function zagListCollectionConfig<T extends ValueLabelItem>(items: T[], hasGroups: boolean) {
   if (hasGroups) {
     return {

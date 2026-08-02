@@ -34,6 +34,11 @@ export class Select extends Component<Props, Api, Schema> {
     this._options = Array.isArray(options) ? options : [];
   }
 
+  /** Refresh placeholder from host dataset (may change across LiveView morphs). */
+  refreshPlaceholder(): void {
+    this.placeholder = getString(this.el, "placeholder") || "";
+  }
+
   getCollection(): ListCollection<Item> {
     return collection(zagListCollectionConfig(this.options, this.hasGroups));
   }
@@ -176,9 +181,10 @@ export class Select extends Component<Props, Api, Schema> {
     });
 
     const valueText = this.el.querySelector<HTMLElement>(
-      '[data-scope="select"][data-part="item-text"]'
+      '[data-scope="select"][data-part="trigger"] [data-scope="select"][data-part="item-text"]'
     );
     if (valueText && this.el.dataset.updateTrigger !== "false") {
+      this.refreshPlaceholder();
       const valueAsString = this.api.valueAsString;
       if (this.api.value && this.api.value.length > 0 && !valueAsString) {
         const selectedValue = this.api.value[0];

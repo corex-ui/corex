@@ -22,7 +22,15 @@ export class Editable extends Component<Props, Api, Schema> {
     const controlEl = this.el.querySelector<HTMLElement>(
       '[data-scope="editable"][data-part="control"]'
     );
-    if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
+    if (controlEl) {
+      this.spreadProps(controlEl, this.api.getControlProps());
+      // Zag control props omit data-readonly; keep host/SSR signal for ui-readonly.
+      if (this.el.hasAttribute("data-readonly")) {
+        controlEl.setAttribute("data-readonly", "");
+      } else {
+        controlEl.removeAttribute("data-readonly");
+      }
+    }
 
     const areaEl = this.el.querySelector<HTMLElement>('[data-scope="editable"][data-part="area"]');
     if (areaEl) this.spreadProps(areaEl, this.api.getAreaProps());

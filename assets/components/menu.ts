@@ -70,12 +70,10 @@ export class Menu extends Component<Props, Api, Schema> {
 
       const applyProps = () => {
         const disabled = triggerEl.hasAttribute("disabled");
-        const childTriggerProps = childMenu.api.getTriggerProps();
-        const itemProps = this.api.getItemProps({
-          value: childTriggerProps.id,
-          disabled: disabled || undefined,
+        this.spreadProps(triggerEl, {
+          ...this.api.getTriggerItemProps(childMenu.api),
+          ...triggerDisabledAttrs(disabled),
         });
-        this.spreadProps(triggerEl, { ...itemProps, ...childTriggerProps });
       };
 
       applyProps();

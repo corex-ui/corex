@@ -123,15 +123,18 @@ const ListboxHook = createZagLiveHook<ListboxHookState, Listbox>({
   },
 
   update(hook, zag) {
-    refreshItemsIfChanged(hook.el, hook, zag);
+    const itemsChanged = refreshItemsIfChanged(hook.el, hook, zag);
 
-    const propsApplied = zag.updateProps({
-      ...listboxZagPropsBase(hook.el, hook.liveSocket, hook.pushEvent.bind(hook)),
-      collection: zag.getCollection(),
-      ...readStringListControlledZagUpdate(hook.el, "value", "defaultValue", hook.beforeAttrs),
-    } as Partial<Props<ListboxItem>>);
+    const propsApplied = zag.updateProps(
+      {
+        ...listboxZagPropsBase(hook.el, hook.liveSocket, hook.pushEvent.bind(hook)),
+        collection: zag.getCollection(),
+        ...readStringListControlledZagUpdate(hook.el, "value", "defaultValue", hook.beforeAttrs),
+      } as Partial<Props<ListboxItem>>,
+      { force: itemsChanged }
+    );
 
-    if (!propsApplied) {
+    if (!propsApplied || itemsChanged) {
       zag.render();
     }
   },

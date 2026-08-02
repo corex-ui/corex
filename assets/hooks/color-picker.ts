@@ -198,6 +198,10 @@ const ColorPickerHook = createZagLiveHook<ColorPickerHookState, ColorPicker>({
       positioning: readPositioningOptions(el),
       ...(parsedValue !== undefined ? { value: parsedValue } : {}),
     } as Partial<Props>);
+
+    // Morphdom can clear Zag-owned styles (area-background gradients, thumbs)
+    // when the server re-renders after on_value_change; re-spread props.
+    zag.render();
   },
 });
 

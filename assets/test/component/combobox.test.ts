@@ -133,7 +133,7 @@ describe("Combobox", () => {
     const root = comboboxTreeWithTemplates(items);
     const c = new Combobox(root, { id: "cb" }, items, false);
     c.init();
-    c.render();
+    c.render({ syncList: true });
 
     const list = root.querySelector('[data-part="list"]');
     const firstItem = list?.querySelector('[data-part="item"]:not([data-template])');
@@ -145,21 +145,22 @@ describe("Combobox", () => {
     c.destroy();
   });
 
-  it("removes filtered-out flat list items without rebuilding survivors", () => {
+  it("hides filtered-out flat list items without removing survivors", () => {
     const root = comboboxTreeWithTemplates(items);
     const c = new Combobox(root, { id: "cb" }, items, false);
     c.init();
-    c.render();
+    c.render({ syncList: true });
 
     const list = root.querySelector('[data-part="list"]')!;
-    const alpha = list.querySelector('[data-value="a"]');
+    const alpha = list.querySelector<HTMLElement>('[data-value="a"]');
     expect(alpha).toBeTruthy();
 
     c.options = [{ label: "Beta", value: "b" }];
     c.render();
 
-    expect(list.querySelector('[data-value="a"]')).toBeNull();
-    expect(list.querySelector('[data-value="b"]')).toBeTruthy();
+    expect(alpha?.hidden).toBe(true);
+    expect(list.querySelector<HTMLElement>('[data-value="b"]')?.hidden).toBe(false);
+    expect(list.querySelector('[data-value="a"]')).toBe(alpha);
 
     c.destroy();
   });
@@ -172,7 +173,7 @@ describe("Combobox", () => {
     const root = comboboxGroupedTreeWithTemplates(grouped);
     const c = new Combobox(root, { id: "cb" }, grouped, true);
     c.init();
-    c.render();
+    c.render({ syncList: true });
 
     const list = root.querySelector('[data-part="list"]');
     const firstGroup = list?.querySelector('[data-part="item-group"]:not([data-template])');

@@ -152,9 +152,9 @@ export abstract class Component<
     this.spreadCleanups.set(el, cleanup);
   };
 
-  updateProps(props: Partial<Props>): boolean {
+  updateProps(props: Partial<Props>, opts?: { force?: boolean }): boolean {
     const key = stableUpdatePropsKey(props as Record<string, unknown>);
-    if (key === this.lastUpdatePropsKey) return false;
+    if (!opts?.force && key === this.lastUpdatePropsKey) return false;
     this.lastUpdatePropsKey = key;
     this.machine.updateProps(props);
     return true;

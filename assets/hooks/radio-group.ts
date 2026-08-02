@@ -178,6 +178,9 @@ const RadioGroupHook = createZagLiveHook<RadioGroupHookState, RadioGroup>({
       dir: getDir(el),
     } as Partial<Props>);
 
+    // Always re-render so newly morphed items get Zag props (radio has no collection).
+    zag.render();
+
     if ("value" in valuePatch) {
       syncRadioGroupValueInputForPhoenix(el, valuePatch.value ?? null, { markUsed: false });
     }

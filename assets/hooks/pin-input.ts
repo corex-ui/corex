@@ -126,8 +126,12 @@ function buildMachineProps(
       if (!isMountEcho) {
         markFieldTouched();
       }
-      syncPinInputFormForPhoenix(el, details.value, undefined, {
-        notifyLiveView: !isMountEcho,
+      // Defer form sync so Zag can advance focus (microtask) before Phoenix/LiveView
+      // input events run and potentially interrupt the next-cell focus.
+      queueMicrotask(() => {
+        syncPinInputFormForPhoenix(el, details.value, undefined, {
+          notifyLiveView: !isMountEcho,
+        });
       });
       notifyChange({
         el,

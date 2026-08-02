@@ -50,11 +50,19 @@ export class PinInput extends Component<Props, Api, Schema> {
     );
     if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
 
-    this.api.items.forEach((i) => {
-      const inputEl = this.el.querySelector<HTMLElement>(
-        `[data-scope="pin-input"][data-part="input"][data-index="${i}"]`
-      );
+    // Prefer DOM order over data-index lookup so props (incl. data-ownedby) are
+    // always applied — Zag focus advance queries inputs by [data-ownedby].
+    const inputEls = Array.from(
+      this.el.querySelectorAll<HTMLElement>('[data-scope="pin-input"][data-part="input"]')
+    );
+    const count = Math.max(this.api.items?.length ?? 0, inputEls.length);
+    for (let i = 0; i < count; i += 1) {
+      const inputEl =
+        inputEls[i] ??
+        this.el.querySelector<HTMLElement>(
+          `[data-scope="pin-input"][data-part="input"][data-index="${i}"]`
+        );
       if (inputEl) this.spreadProps(inputEl, this.api.getInputProps({ index: i }));
-    });
+    }
   }
 }

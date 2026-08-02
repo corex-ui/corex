@@ -13,6 +13,7 @@ import {
   applyItems,
   firstSelectedValue,
   initCollectionItems,
+  itemValue,
   redirectCollectionItem,
   refreshItemsIfChanged,
   zagListCollectionConfig,
@@ -240,7 +241,7 @@ const SelectHook = createZagLiveHook<SelectHookState, Select>({
   },
 
   update(hook, select) {
-    refreshItemsIfChanged(hook.el, hook, select);
+    const itemsChanged = refreshItemsIfChanged(hook.el, hook, select);
 
     const valuePatch = readUpdatedServerStringList(hook.el, hook.beforeAttrs);
 
@@ -248,13 +249,26 @@ const SelectHook = createZagLiveHook<SelectHookState, Select>({
       syncControlledValueInputFromServer(hook.el, valuePatch.value);
     }
 
-    const propsApplied = select.updateProps({
-      ...selectLayoutProps(hook.el),
-      collection: select.getCollection(),
-      ...(valuePatch.value !== undefined ? { value: valuePatch.value } : {}),
-    } as Props);
+    // Drop selections whose items were removed from the collection (e.g. reset).
+    if (itemsChanged && valuePatch.value === undefined) {
+      const available = new Set(select.options.map((i) => String(itemValue(i))));
+      const current = (select.api.value ?? []).map(String);
+      const next = current.filter((v) => available.has(v));
+      if (next.length !== current.length) {
+        select.api.setValue(next);
+      }
+    }
 
-    if (!propsApplied) {
+    const propsApplied = select.updateProps(
+      {
+        ...selectLayoutProps(hook.el),
+        collection: select.getCollection(),
+        ...(valuePatch.value !== undefined ? { value: valuePatch.value } : {}),
+      } as Props,
+      { force: itemsChanged }
+    );
+
+    if (!propsApplied || itemsChanged) {
       select.render();
     }
 

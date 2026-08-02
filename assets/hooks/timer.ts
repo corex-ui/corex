@@ -113,6 +113,22 @@ function buildTimerCallbacks(
   };
 }
 
+function syncTimerDir(el: HTMLElement): void {
+  // Zag timer has no dir prop — HTML dir drives RTL flex/layout.
+  const dir = getDir(el);
+  if (dir) {
+    el.setAttribute("dir", dir);
+    el.querySelectorAll<HTMLElement>("[data-scope='timer']").forEach((node) => {
+      node.setAttribute("dir", dir);
+    });
+  } else {
+    el.removeAttribute("dir");
+    el.querySelectorAll<HTMLElement>("[data-scope='timer'][dir]").forEach((node) => {
+      node.removeAttribute("dir");
+    });
+  }
+}
+
 function buildTimerProps(
   el: HTMLElement,
   pushEvent: (name: string, payload: Record<string, unknown>) => void,
@@ -125,7 +141,6 @@ function buildTimerProps(
     targetMs: getNumber(el, "targetMs"),
     autoStart: getBoolean(el, "autoStart"),
     interval: getNumber(el, "interval"),
-    dir: getDir(el),
     orientation: getString<Orientation>(el, "orientation"),
     translations: parseTimerTranslations(el),
     ...buildTimerCallbacks(el, pushEvent, canPush),
@@ -146,6 +161,7 @@ const TimerHook = createZagLiveHook<TimerHookState, Timer>({
     hook.lastIntervalRaw = identity.interval;
 
     const zag = new Timer(el, buildTimerProps(el, pushEvent, canPush));
+    syncTimerDir(el);
 
     const emitState = (respondTo: RespondTo) => {
       const snapshot = machineState(zag.api);
@@ -225,6 +241,7 @@ const TimerHook = createZagLiveHook<TimerHookState, Timer>({
 
     const patch: Partial<Props> = {
       id: el.id,
+      orientation: getString<Orientation>(el, "orientation"),
       translations: parseTimerTranslations(el),
       ...buildTimerCallbacks(el, pushEvent, canPush),
     };
@@ -252,6 +269,9 @@ const TimerHook = createZagLiveHook<TimerHookState, Timer>({
       patch.interval = getNumber(el, "interval");
       hook.lastIntervalRaw = intervalRaw;
     }
+
+    // Zag timer has no dir prop — sync HTML dir from data-dir for RTL layout.
+    syncTimerDir(el);
 
     zag.updateProps(patch);
   },

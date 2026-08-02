@@ -323,11 +323,11 @@ export function createToastGroup(
   const store =
     options?.store ??
     createStore({
-      placement: options?.placement ?? "bottom",
+      placement: options?.placement ?? "bottom-end",
       overlap: options?.overlap,
       max: options?.max,
       gap: options?.gap,
-      offsets: options?.offsets,
+      offsets: options?.offsets ?? "1rem",
       pauseOnPageIdle: options?.pauseOnPageIdle,
     });
 

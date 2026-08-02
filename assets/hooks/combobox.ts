@@ -27,6 +27,8 @@ import { markUsed, setArrayValues, syncFormInput } from "../lib/phoenix-form-bri
 import {
   firstSelectedValue,
   initCollectionItems,
+  itemsMembershipKey,
+  parseItemsJson,
   redirectCollectionItem,
   refreshItemsIfChanged,
 } from "../lib/collection-hook";
@@ -312,32 +314,47 @@ const ComboboxHook = createZagLiveHook<ComboboxHookState, Combobox>({
   },
 
   update(hook, combobox) {
-    refreshItemsIfChanged(hook.el, hook, combobox);
+    const prevMembership = itemsMembershipKey(
+      parseItemsJson(hook.lastItemsJson ?? hook.el.getAttribute("data-items") ?? "[]")
+    );
+    const itemsChanged = refreshItemsIfChanged(hook.el, hook, combobox);
+    const nextMembership = itemsMembershipKey(
+      parseItemsJson(hook.lastItemsJson ?? "[]")
+    );
+    const membershipChanged = itemsChanged && prevMembership !== nextMembership;
 
     const pushEvent = hook.pushEvent.bind(hook);
     const canPush = () => canPushEvent(hook.liveSocket);
     const valuePatch = readUpdatedServerStringList(hook.el, hook.beforeAttrs);
 
-    const propsApplied = combobox.updateProps({
-      ...comboboxMachineDomPropsForUpdate(
-        hook.el,
-        pushEvent,
-        canPush,
-        hook.liveSocket,
-        () => combobox,
-        () => {
-          hook.fieldTouched = true;
-        }
-      ),
-      ...(valuePatch.value !== undefined ? { value: valuePatch.value } : {}),
-    } as Props);
+    const propsApplied = combobox.updateProps(
+      {
+        ...comboboxMachineDomPropsForUpdate(
+          hook.el,
+          pushEvent,
+          canPush,
+          hook.liveSocket,
+          () => combobox,
+          () => {
+            hook.fieldTouched = true;
+          }
+        ),
+        ...(valuePatch.value !== undefined ? { value: valuePatch.value } : {}),
+      } as Props,
+      { force: itemsChanged }
+    );
 
     if (combobox.api.open) {
       combobox.api.reposition();
     }
 
-    if (!propsApplied) {
-      combobox.render();
+    if (!propsApplied || itemsChanged) {
+      // Membership change → rebuild; metadata-only → applyItemProps + filter visibility.
+      // Zag subscribe already calls render() with syncList false after updateProps.
+      combobox.render({ syncList: membershipChanged });
+    } else {
+      combobox.applyFilterVisibility();
+      combobox.applyItemProps();
     }
   },
 });

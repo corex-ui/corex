@@ -461,7 +461,31 @@ export class Combobox extends Component<Props, Api, Schema> {
     return values.length === 0 ? "" : multiple ? values.join(",") : (values[0] ?? "");
   }
 
-  render(): void {
+  /**
+   * Hide/show LiveView-owned item nodes for the active (filtered) option set.
+   * Prefer this over remove/clone so custom :item slots survive filter + select.
+   */
+  applyFilterVisibility(): void {
+    const listEl = this.el.querySelector<HTMLElement>('[data-scope="combobox"][data-part="list"]');
+    if (!listEl) return;
+
+    const desired = new Set(this.activeItems().map((item) => this.getItemValue(item)));
+    const allValues = new Set(this.allOptions.map((item) => this.getItemValue(item)));
+
+    listEl
+      .querySelectorAll<HTMLElement>('[data-scope="combobox"][data-part="item"]:not([data-template])')
+      .forEach((itemEl) => {
+        if (itemEl.closest('[data-scope="combobox"][data-part="list"]') !== listEl) return;
+        const value = itemEl.dataset.value ?? "";
+        if (!allValues.has(value)) return;
+        itemEl.hidden = !desired.has(value);
+      });
+  }
+
+  render(options: { syncList?: boolean } = {}): void {
+    // Default false: Zag subscribe + metadata updates must not rebuild list DOM.
+    // Opt in only for real membership changes (hook) or empty→items sync.
+    const syncList = options.syncList === true;
     const root = this.el.querySelector<HTMLElement>('[data-scope="combobox"][data-part="root"]');
     if (!root) return;
     this.spreadProps(root, this.api.getRootProps());
@@ -497,7 +521,13 @@ export class Combobox extends Component<Props, Api, Schema> {
       this.spreadProps(el, this.api[partPropsMethod(part)]());
     });
 
-    this.renderItems();
+    // Rebuild list DOM only when membership requires it. Metadata-only
+    // data-items updates (e.g. disabled) must not syncFlatItems — that fights
+    // LiveView morph and strips custom :item slots. Filtering uses hide/show.
+    if (syncList) {
+      this.renderItems();
+    }
+    this.applyFilterVisibility();
     this.applyItemProps();
   }
 }
