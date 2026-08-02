@@ -209,6 +209,46 @@ defmodule Corex.New.PatchesTest do
       end)
     end
 
+    test "adds usage_rules dep and project helper by default" do
+      in_tmp(:patch_mix_exs_usage_rules, fn ->
+        File.write!("mix.exs", @stock_mix_exs)
+        Patches.patch_mix_exs(File.cwd!(), [])
+        body = File.read!("mix.exs")
+        assert body =~ ~r/\{:usage_rules,\s*"~> 1.1",\s*only:\s*:dev\}/
+        assert body =~ "usage_rules: usage_rules()"
+        assert body =~ "package_skills: [:corex]"
+
+        Patches.patch_mix_exs(File.cwd!(), [])
+        body2 = File.read!("mix.exs")
+        assert length(String.split(body2, "{:usage_rules,")) == 2
+        assert length(String.split(body2, "defp usage_rules do")) == 2
+      end)
+    end
+
+    test "skips usage_rules when usage_rules: false" do
+      in_tmp(:patch_mix_exs_no_usage_rules, fn ->
+        File.write!("mix.exs", @stock_mix_exs)
+        Patches.patch_mix_exs(File.cwd!(), usage_rules: false)
+        body = File.read!("mix.exs")
+        refute body =~ "{:usage_rules,"
+        refute body =~ "usage_rules: usage_rules()"
+      end)
+    end
+
+    test "adds corex_design compiler when design: true" do
+      in_tmp(:patch_mix_exs_design_compilers, fn ->
+        File.write!("mix.exs", @mix_exs_with_aliases)
+        Patches.patch_mix_exs(File.cwd!(), design: true, usage_rules: false)
+        body = File.read!("mix.exs")
+        assert body =~ "compilers: Mix.compilers() ++ [:corex_design]"
+
+        Patches.patch_mix_exs(File.cwd!(), design: true, usage_rules: false)
+        body2 = File.read!("mix.exs")
+        assert Regex.scan(~r/:corex_design/, body2) |> length() >= 1
+        assert length(String.split(body2, "Mix.compilers() ++ [:corex_design]")) == 2
+      end)
+    end
+
     test "uses path corex_mcp dep when --dev and mcp are on" do
       in_tmp(:patch_mix_exs_mcp_dev, fn ->
         File.write!("mix.exs", @stock_mix_exs)
@@ -1080,7 +1120,10 @@ defmodule Corex.New.PatchesTest do
         body = File.read!("config/config.exs")
         assert body =~ "config :corex"
         assert body =~ "layout: [a11y: true]"
-        assert body =~ "accessibility: [:text, :focus, :links]"
+
+        assert body =~
+                 "accessibility: [:text, :contrast, :motion, :cursor, :focus, :links]"
+
         assert body =~ "toggle-group"
       end)
     end

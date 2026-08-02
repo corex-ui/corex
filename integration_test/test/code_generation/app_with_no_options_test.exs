@@ -8,7 +8,7 @@ defmodule Corex.Integration.CodeGeneration.AppWithNoOptionsTest do
   test "newly generated app has no warnings or errors" do
     with_installer_tmp("app_with_no_options", fn tmp_dir ->
       {app_root_path, _} =
-        generate_corex_app(tmp_dir, "phx_blog", [
+        generate_corex_app(tmp_dir, "corex_blog", [
           "--no-dashboard"
         ])
 
@@ -21,13 +21,13 @@ defmodule Corex.Integration.CodeGeneration.AppWithNoOptionsTest do
   test "development workflow works as expected" do
     with_installer_tmp("development_workflow", [autoremove?: false], fn tmp_dir ->
       {app_root_path, _} =
-        generate_corex_app(tmp_dir, "phx_blog", [
+        generate_corex_app(tmp_dir, "corex_blog", [
           "--no-dashboard"
         ])
 
       assert_no_compilation_warnings(app_root_path)
 
-      File.touch!(Path.join(app_root_path, "lib/phx_blog_web/controllers/page_html.ex"), @epoch)
+      File.touch!(Path.join(app_root_path, "lib/corex_blog_web/controllers/page_html.ex"), @epoch)
 
       port = run_phx_server(app_root_path)
 
@@ -42,7 +42,7 @@ defmodule Corex.Integration.CodeGeneration.AppWithNoOptionsTest do
           flunk("expected HTTP 200, got #{inspect(other)}")
       end
 
-      assert File.stat!(Path.join(app_root_path, "lib/phx_blog_web/controllers/page_html.ex")) >
+      assert File.stat!(Path.join(app_root_path, "lib/corex_blog_web/controllers/page_html.ex")) >
                @epoch
 
       assert_tests_pass(app_root_path)

@@ -649,7 +649,7 @@ jobs:
         working-directory: integration_test
         env:
           MIX_ENV: test
-        run: mix test --exclude extended --timeout 1200000
+        run: mix test --exclude extended --exclude database --timeout 1200000
 
       - name: Run integration tests (database)
         working-directory: integration_test

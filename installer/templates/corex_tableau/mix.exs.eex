@@ -9,7 +9,8 @@ defmodule <%= @app_module %>.MixProject do
       start_permanent: Mix.env() == :prod,
 <%= if @design do %>      compilers: Mix.compilers() ++ [:corex_design],
 <% end %>      aliases: aliases(),
-      deps: deps()
+      deps: deps()<%= if @usage_rules do %>,
+      usage_rules: usage_rules()<% end %>
     ]
   end
 
@@ -38,6 +39,7 @@ defmodule <%= @app_module %>.MixProject do
       {:corex, <%= @corex_dep_source %>},
 <%= if @design do %>      {:corex_design, <%= @corex_design_dep_source %>},
 <% end %><%= if @mcp do %>      {:corex_mcp, <%= @corex_mcp_dep_source %>},
+<% end %><%= if @usage_rules do %>      {:usage_rules, "~> 1.1", only: :dev},
 <% end %><%= if @lang do %>      {:gettext, "~> 1.0"},
       {:gettext_sigils, "~> 0.5"},
       {:localize_web, "~> 0.5"},
@@ -45,7 +47,16 @@ defmodule <%= @app_module %>.MixProject do
       {:mdex, "~> 0.4"}
     ]
   end
-
+<%= if @usage_rules do %>
+  defp usage_rules do
+    [
+      skills: [
+        location: ".cursor/skills",
+        package_skills: [:corex]
+      ]
+    ]
+  end
+<% end %>
   defp aliases do
     [
       setup: ["deps.get"<%= if @lang do %>, "localize.download_locales"<% end %><%= if @design do %>, "corex.design.build"<% end %>],

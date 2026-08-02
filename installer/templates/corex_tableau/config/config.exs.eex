@@ -83,7 +83,7 @@ config :corex_design,
   scales: [],
   components: <%= inspect(@components) %>,
   semantics: [:accent, :brand, :alert]<%= if @a11y do %>,
-  accessibility: [:text, :focus, :links]<% end %>
+  accessibility: [:text, :contrast, :motion, :cursor, :focus, :links]<% end %>
 <% end %>
 config :phoenix, json_library: Jason
 <%= if @lang do %>

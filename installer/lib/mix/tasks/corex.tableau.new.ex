@@ -18,6 +18,7 @@ defmodule Mix.Tasks.Corex.Tableau.New do
   * **`--a11y`** - preference axes, head script, panel UI. Default **off**. Implies **`--design`**.
   * **`--lang`** - Gettext, Localize, per-locale pages (`en` / `fr` / `ar`), language `<.select>`. Implies **`--design`**.
   * **`--mcp`** / **`--no-mcp`** - when **`--mcp`** (default), a Bandit MCP server starts in dev.
+  * **`--usage-rules`** / **`--no-usage-rules`** - when **`--usage-rules`** (default), adds `{:usage_rules, "~> 1.1", only: :dev}` and skills sync config.
   * **`--dev PATH`** - `{:corex, path: PATH}`, `{:corex_design, path: PATH/design}`, and relative `corex.mjs` import when building JS.
   * **`--install`** / **`--no-install`** - whether Corex runs **`mix deps.get`** in the new project after generation (prompt if omitted).
 
@@ -53,7 +54,8 @@ defmodule Mix.Tasks.Corex.Tableau.New do
     a11y: :boolean,
     lang: :boolean,
     install: :boolean,
-    mcp: :boolean
+    mcp: :boolean,
+    usage_rules: :boolean
   ]
 
   @reserved_app_names ~W(server table)
@@ -71,6 +73,7 @@ defmodule Mix.Tasks.Corex.Tableau.New do
     opts =
       opts
       |> Keyword.put_new(:mcp, true)
+      |> Keyword.put_new(:usage_rules, true)
       |> Keyword.put_new(:theme, false)
       |> Keyword.put_new(:mode, false)
       |> Keyword.put_new(:a11y, false)

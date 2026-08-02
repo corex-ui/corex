@@ -118,8 +118,7 @@ defmodule <%= @app_module %>.RootLayout do
       </head>
 
       <body<%= if @design do %> class="typo flex min-h-dvh min-w-0 flex-col overflow-x-hidden bg-root text-ink antialiased scrollbar scrollbar--sm [scrollbar-gutter:stable]"<% end %>>
-<%= if @a11y do %>        <<%= @app_module %>.Accessibility.accessibility_panel />
-<% end %>        <header class="sticky top-0 z-20 flex h-size-lg items-center border-b border-border bg-surface">
+        <header class="sticky top-0 z-20 flex h-size-lg items-center border-b border-border bg-surface">
           <div class="mx-auto flex h-size-lg w-full max-w-9xl items-center justify-between gap-space-lg px-space-xl">
             <div class="flex min-w-0 items-center gap-space-xl">
               <.dialog id="site-nav-dialog" class="dialog dialog--side md:hidden" modal>
@@ -158,14 +157,11 @@ defmodule <%= @app_module %>.RootLayout do
 <%= if @lang do %>                      {~t"Components"} <.heroicon name="hero-arrow-top-right-on-square" />
 <% else %>                      Components <.heroicon name="hero-arrow-top-right-on-square" />
 <% end %>                    </.navigate>
-                    <.navigate class="link ui-nav ui-size-sm" external to={@hexdocs}>
-<%= if @lang do %>                      {~t"Hexdocs"} <.heroicon name="hero-arrow-top-right-on-square" />
-<% else %>                      Hexdocs <.heroicon name="hero-arrow-top-right-on-square" />
-<% end %>                    </.navigate>
                   </nav>
-<%= if @mode or @theme do %>                  <div class="mt-auto flex shrink-0 items-center gap-space border-t border-border px-space-xl py-space">
+<%= if @mode or @theme or @a11y do %>                  <div class="mt-auto flex shrink-0 items-center gap-space border-t border-border px-space-xl py-space">
 <%= if @theme do %>                    <<%= @app_module %>.Theme.theme_toggle id="theme-select-mobile" theme={@theme} />
 <% end %><%= if @mode do %>                    <<%= @app_module %>.Mode.mode_toggle id="mode-switcher-mobile" mode={@mode} />
+<% end %><%= if @a11y do %>                    <<%= @app_module %>.Accessibility.accessibility_open_button />
 <% end %>                  </div>
 <% end %>                </:content>
               </.dialog>
@@ -189,20 +185,19 @@ defmodule <%= @app_module %>.RootLayout do
 <%= if @lang do %>                  {~t"Components"} <.heroicon name="hero-arrow-top-right-on-square" />
 <% else %>                  Components <.heroicon name="hero-arrow-top-right-on-square" />
 <% end %>                </.navigate>
-                <.navigate class="link ui-nav ui-size-sm" external to={@hexdocs}>
-<%= if @lang do %>                  {~t"Hexdocs"} <.heroicon name="hero-arrow-top-right-on-square" />
-<% else %>                  Hexdocs <.heroicon name="hero-arrow-top-right-on-square" />
-<% end %>                </.navigate>
               </nav>
             </div>
-<%= if @mode or @theme do %>            <div class="hidden shrink-0 items-center gap-space md:flex">
-<%= if @theme do %>              <<%= @app_module %>.Theme.theme_toggle id="theme-select" theme={@theme} />
-<% end %><%= if @mode do %>              <<%= @app_module %>.Mode.mode_toggle id="mode-switcher" mode={@mode} />
+<%= if @mode or @theme or @a11y do %>            <div class="flex shrink-0 items-center gap-space-sm">
+<%= if @mode or @theme do %>              <div class="hidden sm:flex items-center gap-space-sm">
+<%= if @theme do %>                <<%= @app_module %>.Theme.theme_toggle id="theme-select" theme={@theme} />
+<% end %><%= if @mode do %>                <<%= @app_module %>.Mode.mode_toggle id="mode-switcher" mode={@mode} />
+<% end %>              </div>
+<% end %><%= if @a11y do %>              <<%= @app_module %>.Accessibility.accessibility_panel trigger_class="button ui-ghost ui-size-sm ui-trigger--circle p-0 [--ctl-text:calc(var(--spacing-size-sm)*0.65)] hidden sm:inline-flex" />
 <% end %>            </div>
 <% end %>          </div>
         </header>
 
-        <main class="relative flex w-full min-w-0 flex-1 flex-col">
+        <main class="relative flex w-full min-w-0 flex-1 flex-col pt-space-xl">
           {render(@inner_content)}
         </main>
 

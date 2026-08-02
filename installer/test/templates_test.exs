@@ -94,11 +94,16 @@ defmodule Corex.New.TemplatesTest do
     test "includes accessibility_panel/1 when a11y: true" do
       out = Templates.layouts_ex(Keyword.put(@base_assigns, :a11y, true))
       assert out =~ "def accessibility_panel(assigns)"
+      assert out =~ "def accessibility_open_button(assigns)"
       assert out =~ "a11y_data_attrs"
-      assert out =~ "p-0! [--ctl-text:var(--ctl-size)]"
+      assert out =~ "[--ctl-text:calc(var(--spacing-size-sm)*0.65)]"
       assert out =~ ~s(viewBox="0 0 512 512")
+      refute out =~ "fixed bottom-space end-space"
+      refute out =~ "h-size-md"
       refute out =~ "hero-adjustments-horizontal"
       refute out =~ ~r/<\/footer>\s*<\.accessibility_panel/
+      assert out =~ "<.accessibility_panel"
+      assert out =~ "<.accessibility_open_button"
     end
   end
 
@@ -116,7 +121,7 @@ defmodule Corex.New.TemplatesTest do
       out = Templates.root_heex(Keyword.put(@base_assigns, :a11y, true))
       assert out =~ "phx:a11y"
       assert out =~ "phx:set-a11y-reset"
-      assert out =~ "accessibility_panel"
+      refute out =~ "accessibility_panel"
     end
 
     test "omits the bridge script when neither mode nor theme nor a11y is enabled" do

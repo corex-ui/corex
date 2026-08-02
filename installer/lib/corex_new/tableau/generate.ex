@@ -57,6 +57,7 @@ defmodule Corex.New.Tableau.Generate do
     |> Keyword.put_new(:a11y, false)
     |> Keyword.put_new(:lang, false)
     |> Keyword.put_new(:mcp, true)
+    |> Keyword.put_new(:usage_rules, true)
     |> Keyword.put_new(:design, true)
   end
 
@@ -218,6 +219,7 @@ defmodule Corex.New.Tableau.Generate do
       a11y: !!opts[:a11y],
       lang: !!opts[:lang],
       mcp: Keyword.get(opts, :mcp, true),
+      usage_rules: Keyword.get(opts, :usage_rules, true),
       design: !!opts[:design],
       themes: opts[:themes],
       default_theme: opts[:default_theme],

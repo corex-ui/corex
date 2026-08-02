@@ -15,7 +15,7 @@ defmodule Corex.Integration.CodeGeneration.CorexReplaceTest do
         assert home =~ "flash={@flash}"
         assert home =~ "The Phoenix UI"
         assert home =~ "real API"
-        assert home =~ ~s|<.accordion id="home-accordion"|
+        assert home =~ ~r/<\.accordion\s+id="home-accordion"/
         refute home =~ "corex.html.heex"
         refute layouts =~ "def flash_group"
         refute layouts =~ "def theme_toggle"

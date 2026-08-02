@@ -24,7 +24,11 @@ defmodule Corex.New.Patches do
   Adds `{:corex, ...}` (and `{:localize_web, "~> 0.5"}` when `--lang`)
   to the `deps/0` list in `mix.exs`. When `--lang` or `--design` and Erlang
   `:json` is not loaded, adds `{:json_polyfill, ...}` like `localize_web`.
-  When `--mcp`, adds `{:corex_mcp, ..., only: [:dev, :test]}`. Idempotent.
+  When `--mcp`, adds `{:corex_mcp, ..., only: [:dev, :test]}`.
+  When `--usage-rules` (default), adds `{:usage_rules, "~> 1.1", only: :dev}`
+  and `usage_rules: usage_rules()` in `project/0`.
+  When `--design`, ensures `compilers: Mix.compilers() ++ [:corex_design]`.
+  Idempotent.
   """
   def patch_mix_exs(install_dir, opts) do
     path = Path.join(install_dir, "mix.exs")
@@ -37,7 +41,10 @@ defmodule Corex.New.Patches do
       |> maybe_ensure_gettext_sigils_dep(opts)
       |> maybe_ensure_design_dep(opts)
       |> maybe_ensure_mcp_dep(opts)
+      |> maybe_ensure_usage_rules_dep(opts)
       |> maybe_add_design_aliases(opts)
+      |> maybe_ensure_design_compilers(opts)
+      |> maybe_ensure_usage_rules_project(opts)
       |> maybe_ensure_json_polyfill_dep(opts)
       |> strip_daisyui_dep()
 
@@ -372,6 +379,175 @@ defmodule Corex.New.Patches do
     end
   end
 
+  defp maybe_ensure_usage_rules_dep(content, opts) do
+    if Keyword.get(opts, :usage_rules, true) == false do
+      content
+    else
+      if Regex.match?(~r/\{:usage_rules\s*,/u, content) do
+        content
+      else
+        insert_before_closing_deps(
+          content,
+          "      {:usage_rules, \"~> 1.1\", only: :dev},\n"
+        )
+      end
+    end
+  end
+
+  defp maybe_ensure_design_compilers(content, opts) do
+    cond do
+      not Keyword.get(opts, :design, false) ->
+        content
+
+      Regex.match?(~r/\bcompilers:[\s\S]*?:corex_design\b/u, content) ->
+        content
+
+      Regex.match?(~r/\bcompilers:\s*/u, content) ->
+        prepend_corex_design_compiler(content)
+
+      true ->
+        insert_design_compilers_into_project(content)
+    end
+  end
+
+  defp prepend_corex_design_compiler(content) do
+    replaced =
+      Regex.replace(
+        ~r/(compilers:\s*)\[/u,
+        content,
+        "\\1[:corex_design, ",
+        global: false
+      )
+
+    if replaced != content do
+      replaced
+    else
+      Regex.replace(
+        ~r/(compilers:\s*)(Mix\.compilers\(\))/u,
+        content,
+        "\\1\\2 ++ [:corex_design]",
+        global: false
+      )
+    end
+  end
+
+  defp insert_design_compilers_into_project(content) do
+    line = "      compilers: Mix.compilers() ++ [:corex_design],\n"
+
+    replaced =
+      Regex.replace(
+        ~r/(start_permanent:\s*Mix\.env\(\)\s*==\s*:prod,?\s*\n)/u,
+        content,
+        "\\1" <> line,
+        global: false
+      )
+
+    cond do
+      replaced != content ->
+        replaced
+
+      Regex.match?(~r/def project do\s*\n\s*\[\s*\n/u, content) ->
+        Regex.replace(
+          ~r/(def project do\s*\n\s*\[\s*\n)/u,
+          content,
+          "\\1" <> line,
+          global: false
+        )
+
+      true ->
+        Regex.replace(
+          ~r/(def project do\s*\n\s*\[)/u,
+          content,
+          "\\1compilers: Mix.compilers() ++ [:corex_design], ",
+          global: false
+        )
+    end
+  end
+
+  defp maybe_ensure_usage_rules_project(content, opts) do
+    if Keyword.get(opts, :usage_rules, true) == false do
+      content
+    else
+      content
+      |> ensure_usage_rules_project_key()
+      |> ensure_usage_rules_helper()
+    end
+  end
+
+  defp ensure_usage_rules_project_key(content) do
+    cond do
+      Regex.match?(~r/\busage_rules:\s*usage_rules\(\)/u, content) ->
+        content
+
+      Regex.match?(~r/\busage_rules:/u, content) ->
+        content
+
+      true ->
+        insert_usage_rules_into_project(content)
+    end
+  end
+
+  defp insert_usage_rules_into_project(content) do
+    multiline =
+      Regex.replace(
+        ~r/(deps:\s*deps\(\))(,?)(\s*\n)/u,
+        content,
+        fn _, deps, comma, nl ->
+          "#{deps}#{if comma == "", do: ",", else: comma}#{nl}      usage_rules: usage_rules(),\n"
+        end,
+        global: false
+      )
+
+    cond do
+      multiline != content ->
+        multiline
+
+      Regex.match?(~r/deps:\s*deps\(\)\s*\]/u, content) ->
+        Regex.replace(
+          ~r/(deps:\s*deps\(\))\s*\]/u,
+          content,
+          "\\1, usage_rules: usage_rules()]",
+          global: false
+        )
+
+      true ->
+        Regex.replace(
+          ~r/(def project do\s*\n\s*\[\s*\n)/u,
+          content,
+          "\\1      usage_rules: usage_rules(),\n",
+          global: false
+        )
+    end
+  end
+
+  defp ensure_usage_rules_helper(content) do
+    if Regex.match?(~r/defp\s+usage_rules\s+do/u, content) do
+      content
+    else
+      helper = """
+
+        defp usage_rules do
+          [
+            skills: [
+              location: ".cursor/skills",
+              package_skills: [:corex]
+            ]
+          ]
+        end
+      """
+
+      case Regex.run(~r/\nend\s*\z/u, content, return: :index) do
+        [{s, _l}] ->
+          before = binary_part(content, 0, s)
+          rest = binary_part(content, s, byte_size(content) - s)
+          before <> helper <> rest
+
+        nil ->
+          String.trim_trailing(content) <> helper <> "\n"
+      end
+    end
+  end
+
   defp maybe_ensure_json_polyfill_dep(content, opts) do
     needs_json? =
       Keyword.get(opts, :lang, false) or Keyword.get(opts, :design, false) or
@@ -538,7 +714,7 @@ defmodule Corex.New.Patches do
           modes: [:light, :dark],
           scales: [],
           components: #{inspect(installer_components(opts))},
-          semantics: [:accent, :brand, :alert]#{if Keyword.get(opts, :a11y, false), do: ",\n          accessibility: [:text, :focus, :links]", else: ""}
+          semantics: [:accent, :brand, :alert]#{if Keyword.get(opts, :a11y, false), do: ",\n          accessibility: [:text, :contrast, :motion, :cursor, :focus, :links]", else: ""}
 
         """
 

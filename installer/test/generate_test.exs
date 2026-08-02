@@ -56,6 +56,10 @@ defmodule Corex.New.GenerateTest do
       mix_exs = File.read!("mix.exs")
       assert mix_exs =~ ~r/\{:corex_design,/
       assert mix_exs =~ ~r/\{:corex_mcp,\s*"~> 0.2",\s*only:\s*\[:dev,\s*:test\]\}/
+      assert mix_exs =~ ~r/\{:usage_rules,\s*"~> 1.1",\s*only:\s*:dev\}/
+      assert mix_exs =~ "usage_rules: usage_rules()"
+      assert mix_exs =~ "compilers: Mix.compilers() ++ [:corex_design]"
+      assert mix_exs =~ "package_skills: [:corex]"
       config = File.read!("config/config.exs")
       assert config =~ "config :corex_design"
       assert config =~ "default_theme: :neo"
@@ -76,19 +80,27 @@ defmodule Corex.New.GenerateTest do
 
       layouts = File.read!(Path.join("lib/my_app_web/components", "layouts.ex"))
       assert layouts =~ "def accessibility_panel(assigns)"
-      assert layouts =~ "p-0! [--ctl-text:var(--ctl-size)]"
+      assert layouts =~ "def accessibility_open_button(assigns)"
+      assert layouts =~ "[--ctl-text:calc(var(--spacing-size-sm)*0.65)]"
       assert layouts =~ ~s(viewBox="0 0 512 512")
+      refute layouts =~ "fixed bottom-space end-space"
+      refute layouts =~ "h-size-md"
       refute layouts =~ "hero-adjustments-horizontal"
       refute layouts =~ ~r/<\/footer>\s*<\.accessibility_panel/
+      assert layouts =~ "<.accessibility_panel"
+      assert layouts =~ "<.accessibility_open_button"
 
       root = File.read!(Path.join("lib/my_app_web/components/layouts", "root.html.heex"))
       assert root =~ "phx:a11y"
       assert root =~ "a11y_data_attrs"
       assert root =~ "Corex.Design.Accessibility.axes()"
-      assert root =~ "<.accessibility_panel />"
+      refute root =~ "<.accessibility_panel"
 
       config = File.read!("config/config.exs")
-      assert config =~ "accessibility: [:text, :focus, :links]"
+
+      assert config =~
+               "accessibility: [:text, :contrast, :motion, :cursor, :focus, :links]"
+
       assert config =~ "layout: [a11y: true]"
       assert config =~ "toggle-group"
 
@@ -228,6 +240,22 @@ defmodule Corex.New.GenerateTest do
 
       refute File.read!(Path.join("lib/my_app_web", "endpoint.ex")) =~ "plug Corex.MCP"
       refute File.read!("mix.exs") =~ "{:corex_mcp,"
+    end)
+  end
+
+  test "run/2 with usage_rules false skips usage_rules dep and helper" do
+    Corex.New.MixHelper.in_tmp("generate no usage rules", fn ->
+      ScaffoldHelper.write_phoenix_scaffold!(File.cwd!())
+
+      assert :ok ==
+               Generate.run(
+                 File.cwd!(),
+                 ScaffoldHelper.base_generate_opts(usage_rules: false)
+               )
+
+      mix_exs = File.read!("mix.exs")
+      refute mix_exs =~ "{:usage_rules,"
+      refute mix_exs =~ "usage_rules: usage_rules()"
     end)
   end
 

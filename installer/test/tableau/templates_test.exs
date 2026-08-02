@@ -44,6 +44,7 @@ defmodule Corex.New.Tableau.TemplatesTest do
     a11y: false,
     lang: false,
     mcp: true,
+    usage_rules: true,
     design: true,
     themes: ["neo"],
     default_theme: "neo",
@@ -280,6 +281,8 @@ defmodule Corex.New.Tableau.TemplatesTest do
       assert out =~ ":my_blog"
       assert out =~ "corex_design"
       assert out =~ "corex_mcp"
+      assert out =~ "usage_rules"
+      assert out =~ "package_skills: [:corex]"
     end
 
     test "includes corex_design compiler when design is on" do
@@ -295,6 +298,12 @@ defmodule Corex.New.Tableau.TemplatesTest do
     test "omits corex_mcp dep when mcp is off" do
       out = Templates.mix_exs(Keyword.put(@base_assigns, :mcp, false))
       refute out =~ "corex_mcp"
+    end
+
+    test "omits usage_rules when usage_rules is off" do
+      out = Templates.mix_exs(Keyword.put(@base_assigns, :usage_rules, false))
+      refute out =~ "usage_rules"
+      refute out =~ "package_skills"
     end
 
     test "includes gettext and localize when lang is on" do
@@ -375,8 +384,11 @@ defmodule Corex.New.Tableau.TemplatesTest do
       assert out =~ "Accessibility.axes()"
       assert out =~ "Jason.encode!"
       assert out =~ "accessibility_panel"
-      assert out =~ "p-0! [--ctl-text:var(--ctl-size)]"
+      assert out =~ "accessibility_open_button"
       assert out =~ ~s(viewBox="0 0 512 512")
+      assert out =~ "[--ctl-text:calc(var(--spacing-size-sm)*0.65)]"
+      refute out =~ "fixed bottom-space end-space"
+      refute out =~ "h-size-md"
       refute out =~ "hero-adjustments-horizontal"
       refute out =~ ~s(const a11yAxes = ["text")
 

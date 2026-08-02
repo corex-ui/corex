@@ -11,7 +11,8 @@ defmodule Corex.New.Tableau.GenerateTest do
         mode: false,
         theme: false,
         design: true,
-        mcp: true
+        mcp: true,
+        usage_rules: true
       ],
       overrides
     )
@@ -70,6 +71,8 @@ defmodule Corex.New.Tableau.GenerateTest do
       assert File.read!("lib/mix/tasks/post.ex") =~ "layout: MyBlog.PostLayout"
       assert File.read!("mix.exs") =~ ":tableau"
       assert File.read!("mix.exs") =~ "corex_mcp"
+      assert File.read!("mix.exs") =~ "usage_rules"
+      assert File.read!("mix.exs") =~ "compilers: Mix.compilers() ++ [:corex_design]"
       assert File.read!("config/config.exs") =~ "config :corex_design"
       assert File.read!("config/config.exs") =~ ~S[import_config "#{config_env()}.exs"]
       assert File.read!("assets/css/site.css") =~ "corex.css"
@@ -89,18 +92,27 @@ defmodule Corex.New.Tableau.GenerateTest do
       assert :ok == Generate.run(install_dir, base_opts(a11y: true))
 
       assert File.exists?("lib/my_blog/accessibility.ex")
-      assert File.read!("config/config.exs") =~ "accessibility: [:text, :focus, :links]"
+
+      assert File.read!("config/config.exs") =~
+               "accessibility: [:text, :contrast, :motion, :cursor, :focus, :links]"
+
       assert File.read!("config/config.exs") =~ "modes: [:light, :dark]"
       assert File.read!("config/config.exs") =~ "default_theme: :neo"
       assert File.read!("config/config.exs") =~ "themes: [:neo]"
       assert File.read!("config/config.exs") =~ "toggle-group"
       a11y = File.read!("lib/my_blog/accessibility.ex")
       assert a11y =~ "Accessibility.axes()"
-      assert a11y =~ "p-0! [--ctl-text:var(--ctl-size)]"
+      assert a11y =~ "def accessibility_open_button(assigns)"
       assert a11y =~ ~s(viewBox="0 0 512 512")
+      assert a11y =~ "[--ctl-text:calc(var(--spacing-size-sm)*0.65)]"
+      refute a11y =~ "fixed bottom-space end-space"
+      refute a11y =~ "h-size-md"
       refute a11y =~ "hero-adjustments-horizontal"
-      assert File.read!("lib/my_blog/layouts/root_layout.ex") =~ "Accessibility.head_script"
-      assert File.read!("lib/my_blog/layouts/root_layout.ex") =~ "accessibility_panel"
+      root_layout = File.read!("lib/my_blog/layouts/root_layout.ex")
+      assert root_layout =~ "Accessibility.head_script"
+      assert root_layout =~ "accessibility_panel"
+      assert root_layout =~ "accessibility_open_button"
+      assert root_layout =~ "hidden sm:inline-flex"
       assert File.read!("assets/js/site.js") =~ "ToggleGroup"
       assert File.read!("assets/js/site.js") =~ "Dialog"
     end)
@@ -156,6 +168,21 @@ defmodule Corex.New.Tableau.GenerateTest do
       refute File.exists?("lib/my_blog/mcp.ex")
       refute File.read!("config/dev.exs") =~ "mcp_enabled"
       refute File.read!("mix.exs") =~ "corex_mcp"
+    end)
+  end
+
+  test "run/2 without usage_rules skips usage_rules dep and helper" do
+    Corex.New.MixHelper.in_tmp("tableau generate no usage rules", fn ->
+      install_dir = File.cwd!()
+      File.mkdir_p!(Path.join(install_dir, "assets/js"))
+      File.mkdir_p!(Path.join(install_dir, "assets/css"))
+      File.mkdir_p!(Path.join(install_dir, "config"))
+
+      assert :ok == Generate.run(install_dir, base_opts(usage_rules: false))
+
+      mix_exs = File.read!("mix.exs")
+      refute mix_exs =~ "usage_rules"
+      refute mix_exs =~ "package_skills"
     end)
   end
 

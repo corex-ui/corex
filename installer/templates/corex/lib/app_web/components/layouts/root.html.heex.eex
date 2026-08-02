@@ -171,7 +171,6 @@
 <% end %>
   </head>
   <body<%= if @design do %> class="typo flex min-h-dvh min-w-0 flex-col overflow-x-hidden bg-root text-ink antialiased scrollbar scrollbar--sm [scrollbar-gutter:stable]"<% end %>>
-<%= if @a11y do %>    <.accessibility_panel />
-<% end %>    {@inner_content}
+    {@inner_content}
   </body>
 </html>

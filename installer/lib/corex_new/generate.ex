@@ -10,7 +10,7 @@ defmodule Corex.New.Generate do
     * `:otp_app` (atom, required)  -  e.g. `:my_app`
     * `:web_module` (atom, required)  -  e.g. `MyAppWeb`
     * `:app_module` (atom, required)  -  e.g. `MyApp`
-    * `:mode`, `:theme`, `:a11y`, `:lang`, `:design`, `:tailwind`, `:mcp` (bool)
+    * `:mode`, `:theme`, `:a11y`, `:lang`, `:design`, `:tailwind`, `:mcp`, `:usage_rules` (bool)
     * `:themes` (list of strings)  -  only used when `:theme` is true
     * `:dev` (string | nil)  -  path to local Corex checkout for `--dev PATH`
   """
@@ -63,6 +63,7 @@ defmodule Corex.New.Generate do
     |> Keyword.put_new(:a11y, false)
     |> Keyword.put_new(:lang, false)
     |> Keyword.put_new(:mcp, true)
+    |> Keyword.put_new(:usage_rules, true)
     |> Keyword.put_new(:design, true)
     |> Keyword.put_new(:tailwind, true)
   end

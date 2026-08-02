@@ -56,19 +56,26 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
         assert File.exists?(Path.join(app_root_path, "lib/my_app_web/hooks/accessibility.ex"))
 
         config = File.read!(Path.join(app_root_path, "config/config.exs"))
-        assert config =~ "accessibility: [:text, :focus, :links]"
+
+        assert config =~
+                 "accessibility: [:text, :contrast, :motion, :cursor, :focus, :links]"
+
         assert config =~ "toggle-group"
 
         layouts = File.read!(Path.join(app_root_path, "lib/my_app_web/components/layouts.ex"))
         assert layouts =~ "def accessibility_panel(assigns)"
+        assert layouts =~ "def accessibility_open_button(assigns)"
+        assert layouts =~ "hidden sm:inline-flex"
         assert layouts =~ ~s(viewBox="0 0 512 512")
+        refute layouts =~ "fixed bottom-space end-space"
         refute layouts =~ "hero-adjustments-horizontal"
         refute layouts =~ ~r/<\/footer>\s*<\.accessibility_panel/
+        assert layouts =~ "<.accessibility_panel"
 
         root =
           File.read!(Path.join(app_root_path, "lib/my_app_web/components/layouts/root.html.heex"))
 
-        assert root =~ "<.accessibility_panel />"
+        refute root =~ "<.accessibility_panel"
 
         assert File.read!(Path.join(app_root_path, "lib/my_app_web/router.ex")) =~
                  "Plugs.Accessibility"
@@ -146,7 +153,7 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
     test "compiles, format check passes, and test suite passes (sqlite3)" do
       with_installer_tmp("corex_mode_theme_lang_sqlite3", fn tmp_dir ->
         {app_root_path, _} =
-          generate_corex_app(tmp_dir, "phx_blog", [
+          generate_corex_app(tmp_dir, "corex_blog", [
             "--database",
             "sqlite3",
             "--mode",
