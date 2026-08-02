@@ -11,7 +11,7 @@ defmodule E2e.MixProject do
       aliases: aliases(),
       deps: deps(),
       usage_rules: usage_rules(),
-      compilers: [:phoenix_live_view] ++ Mix.compilers(),
+      compilers: [:phoenix_live_view, :corex_design] ++ Mix.compilers(),
       listeners: [Phoenix.CodeReloader],
       releases: releases(),
       default_release: :corex_web
