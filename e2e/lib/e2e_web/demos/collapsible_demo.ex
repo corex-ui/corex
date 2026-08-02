@@ -363,11 +363,11 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
   end
 
   def styling_canonical_example(assigns) do
-        ~H"""
-      <.collapsible id="collapsible-style-canonical" class="collapsible ui-size-md">
-        <:trigger>Subtle (default)</:trigger>
-        <:content>Content</:content>
-      </.collapsible>
+    ~H"""
+    <.collapsible id="collapsible-style-canonical" class="collapsible ui-size-md">
+      <:trigger>Subtle (default)</:trigger>
+      <:content>Content</:content>
+    </.collapsible>
     """
   end
 

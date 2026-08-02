@@ -11,7 +11,7 @@ defmodule Corex.Design.Theme.Presets.Uno do
         dark: dark_colors()
       },
       dimensions: dimensions(),
-      typography: typography(),
+      typography: typography()
     }
   end
 
@@ -81,7 +81,7 @@ defmodule Corex.Design.Theme.Presets.Uno do
         duration_normal: 85,
         duration_slow: 140,
         opacity_disabled: 0.62,
-        opacity_backdrop: 0.35,
+        opacity_backdrop: 0.35
       },
       %{
         xs: 0.08,

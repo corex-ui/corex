@@ -11,7 +11,7 @@ defmodule Corex.Design.Theme.Presets.Duo do
         dark: dark_colors()
       },
       dimensions: dimensions(),
-      typography: typography(),
+      typography: typography()
     }
   end
 
@@ -81,7 +81,7 @@ defmodule Corex.Design.Theme.Presets.Duo do
         duration_normal: 180,
         duration_slow: 280,
         opacity_disabled: 0.72,
-        opacity_backdrop: 0.48,
+        opacity_backdrop: 0.48
       },
       %{
         xs: 0.28,

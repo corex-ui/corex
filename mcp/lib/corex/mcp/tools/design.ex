@@ -80,7 +80,8 @@ defmodule Corex.MCP.Tools.Design do
             topic: %{
               type: "string",
               enum: @valid_guide_topics,
-              description: "setup, modifiers, theming, dark_mode, accessibility, or all (default)."
+              description:
+                "setup, modifiers, theming, dark_mode, accessibility, or all (default)."
             }
           }
         },
@@ -441,7 +442,8 @@ defmodule Corex.MCP.Tools.Design do
 
   defp accessibility_section do
     %{
-      intent: "Emit preference CSS and wire user axes (text, contrast, motion, cursor, focus, links).",
+      intent:
+        "Emit preference CSS and wire user axes (text, contrast, motion, cursor, focus, links).",
       config: "config :corex_design, accessibility: true",
       flags: "--a11y on mix corex.new / mix corex.tableau.new",
       tip:

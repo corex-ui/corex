@@ -74,7 +74,8 @@ defmodule E2eWeb.DataListTest do
       |> DataList.see_in_section("data-list-patterns-dynamic", "Row 4")
       |> DataList.click_in_section("data-list-patterns-dynamic", "Reset")
       |> DataList.see_in_section("data-list-patterns-dynamic", "No items")
-    end  end
+    end
+  end
 
   describe "playground" do
     feature "orientation toggle switches layout", %{session: session} do

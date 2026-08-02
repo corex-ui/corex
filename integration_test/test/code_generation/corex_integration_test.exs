@@ -69,7 +69,9 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
           File.read!(Path.join(app_root_path, "lib/my_app_web/components/layouts/root.html.heex"))
 
         assert root =~ "<.accessibility_panel />"
-        assert File.read!(Path.join(app_root_path, "lib/my_app_web/router.ex")) =~ "Plugs.Accessibility"
+
+        assert File.read!(Path.join(app_root_path, "lib/my_app_web/router.ex")) =~
+                 "Plugs.Accessibility"
 
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)

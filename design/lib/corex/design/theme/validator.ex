@@ -107,6 +107,7 @@ defmodule Corex.Design.Theme.Validator do
 
   defp legacy_color_shapes?(spec) when is_map(spec) do
     colors = Keys.get(spec, :colors, %{})
+
     legacy_nested_mode?(Keys.get(colors, :light, %{})) or
       legacy_nested_mode?(Keys.get(colors, :dark, %{}))
   end

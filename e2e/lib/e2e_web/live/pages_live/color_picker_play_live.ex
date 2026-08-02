@@ -99,7 +99,8 @@ defmodule E2eWeb.ColorPickerPlayLive do
             disabled={@controls.disabled}
             read_only={@controls.read_only}
             invalid={@controls.invalid}
-            on_value_change="play_value">
+            on_value_change="play_value"
+          >
             <:label>Pick a color</:label>
           </.color_picker>
         </:canvas>

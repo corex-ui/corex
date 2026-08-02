@@ -90,6 +90,7 @@ defmodule Corex.New.TemplatesTest do
       assert out =~ "MyAppWeb.Locale.swap_path"
       assert out =~ "MyAppWeb.Locale.current()"
     end
+
     test "includes accessibility_panel/1 when a11y: true" do
       out = Templates.layouts_ex(Keyword.put(@base_assigns, :a11y, true))
       assert out =~ "def accessibility_panel(assigns)"

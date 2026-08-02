@@ -25,7 +25,8 @@ defmodule E2eWeb.SwitchModel do
     wait_state(session, host_dom_id, "unchecked")
   end
 
-  def wait_state(session, host_dom_id, expected, opts \\ []) when expected in ~w(checked unchecked) do
+  def wait_state(session, host_dom_id, expected, opts \\ [])
+      when expected in ~w(checked unchecked) do
     timeout = Keyword.get(opts, :timeout, 8_000)
 
     wait_for_has(

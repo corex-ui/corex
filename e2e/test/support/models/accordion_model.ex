@@ -447,6 +447,7 @@ defmodule E2eWeb.AccordionModel do
   def assert_events_log_mentions(session, log_dom_id, substring)
       when is_binary(log_dom_id) and is_binary(substring) do
     text = events_log_text(session, log_dom_id)
+
     assert String.contains?(text, substring),
            "expected ##{log_dom_id} to mention #{inspect(substring)}, got: #{inspect(text)}"
 
@@ -465,7 +466,8 @@ defmodule E2eWeb.AccordionModel do
 
   def set_playground_disabled_item(session, value) when is_binary(value) do
     item_q =
-      css(~s|[id="select:playground-disabled-items:content"] [data-part="item"][data-value="#{value}"]|,
+      css(
+        ~s|[id="select:playground-disabled-items:content"] [data-part="item"][data-value="#{value}"]|,
         visible: :any
       )
 

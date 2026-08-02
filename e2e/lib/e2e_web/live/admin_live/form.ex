@@ -250,7 +250,8 @@ defmodule E2eWeb.AdminLive.Form do
         <.color_picker
           field={@form[:accent_color]}
           class="color-picker max-w-none"
-          presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}>
+          presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
+        >
           <:label>Accent color</:label>
           <:error :let={msg}>
             <.heroicon name="hero-exclamation-circle" class="icon" />

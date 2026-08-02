@@ -326,9 +326,7 @@ defmodule E2eWeb.SelectTest do
 
       session = Select.wait(session, 400)
 
-      Select.check_accessibility(session, css("##{section}"),
-        filter: E2eWeb.A11yDocPageFilter
-      )
+      Select.check_accessibility(session, css("##{section}"), filter: E2eWeb.A11yDocPageFilter)
     end
   end
 end

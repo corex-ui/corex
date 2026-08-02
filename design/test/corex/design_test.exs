@@ -16,7 +16,10 @@ defmodule Corex.Design.ColorTest do
 
   test "against_or_pick falls back to white or black when unreachable" do
     {hex, ratio} = DesignColor.against_or_pick("#E6E8EB", "#636972", 21.0)
-    assert hex in ["#FFFFFF", "#000000", "#ffffff", "#000000"] or String.match?(hex, ~r/^#[0-9A-Fa-f]{6}$/)
+
+    assert hex in ["#FFFFFF", "#000000", "#ffffff", "#000000"] or
+             String.match?(hex, ~r/^#[0-9A-Fa-f]{6}$/)
+
     assert ratio >= 1.0
   end
 end

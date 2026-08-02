@@ -381,9 +381,7 @@ defmodule Corex.New.Tableau.TemplatesTest do
       refute out =~ ~s(const a11yAxes = ["text")
 
       lang_out =
-        Templates.accessibility_module(
-          Keyword.merge(@base_assigns, a11y: true, lang: true)
-        )
+        Templates.accessibility_module(Keyword.merge(@base_assigns, a11y: true, lang: true))
 
       assert lang_out =~ "GettextSigil"
       assert lang_out =~ ~s(~t"Zoom")

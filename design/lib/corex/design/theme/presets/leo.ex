@@ -11,7 +11,7 @@ defmodule Corex.Design.Theme.Presets.Leo do
         dark: dark_colors()
       },
       dimensions: dimensions(),
-      typography: typography(),
+      typography: typography()
     }
   end
 
@@ -83,7 +83,7 @@ defmodule Corex.Design.Theme.Presets.Leo do
         duration_normal: 70,
         duration_slow: 120,
         opacity_disabled: 0.55,
-        opacity_backdrop: 0.55,
+        opacity_backdrop: 0.55
       },
       %{
         xs: 0,

@@ -930,5 +930,4 @@ defmodule Corex.Menu do
   """)
 
   defdelegate set_open(socket, menu_id, open), to: Api
-
 end

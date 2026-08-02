@@ -103,7 +103,8 @@ defmodule E2eWeb.ColorPickerEventsLive do
                 value="#3b82f6"
                 presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
                 class="color-picker"
-                on_value_change="cp_ev_server_value">
+                on_value_change="cp_ev_server_value"
+              >
                 <:label>Value (server)</:label>
               </.color_picker>
 
@@ -138,7 +139,8 @@ defmodule E2eWeb.ColorPickerEventsLive do
                 value="#3b82f6"
                 presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
                 class="color-picker"
-                on_open_change="cp_ev_server_open">
+                on_open_change="cp_ev_server_open"
+              >
                 <:label>Open (server)</:label>
               </.color_picker>
 
@@ -174,7 +176,8 @@ defmodule E2eWeb.ColorPickerEventsLive do
                 value="#3b82f6"
                 presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
                 class="color-picker"
-                on_value_change_client="color-picker-cv">
+                on_value_change_client="color-picker-cv"
+              >
                 <:label>Value (client only)</:label>
               </.color_picker>
 
@@ -232,7 +235,8 @@ defmodule E2eWeb.ColorPickerEventsLive do
                 value="#3b82f6"
                 presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
                 class="color-picker"
-                on_open_change_client="color-picker-co">
+                on_open_change_client="color-picker-co"
+              >
                 <:label>Open (client only)</:label>
               </.color_picker>
 

@@ -503,7 +503,6 @@ defmodule E2eWeb.Demos.DialogDemo do
     """
   end
 
-
   def styling_canonical_code do
     """
     <.dialog class="dialog" modal>

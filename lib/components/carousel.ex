@@ -838,6 +838,4 @@ defmodule Corex.Carousel do
   """)
 
   defdelegate scroll_prev(socket, carousel_id, instant), to: Api
-
-
 end

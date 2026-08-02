@@ -733,7 +733,11 @@ defmodule Corex.New.PatchesTest do
     test "remove_core_components! deletes the module file" do
       in_tmp(:remove_core_components, fn ->
         File.mkdir_p!("lib/my_app_web/components")
-        File.write!("lib/my_app_web/components/core_components.ex", "defmodule MyAppWeb.CoreComponents do\nend\n")
+
+        File.write!(
+          "lib/my_app_web/components/core_components.ex",
+          "defmodule MyAppWeb.CoreComponents do\nend\n"
+        )
 
         Patches.remove_core_components!(File.cwd!(), MyAppWeb, otp_app: :my_app)
         refute File.exists?("lib/my_app_web/components/core_components.ex")

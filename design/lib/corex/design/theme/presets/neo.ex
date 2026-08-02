@@ -11,7 +11,7 @@ defmodule Corex.Design.Theme.Presets.Neo do
         dark: dark_colors()
       },
       dimensions: dimensions(),
-      typography: typography(),
+      typography: typography()
     }
   end
 
@@ -91,7 +91,7 @@ defmodule Corex.Design.Theme.Presets.Neo do
         duration_normal: 120,
         duration_slow: 200,
         opacity_disabled: 0.7,
-        opacity_backdrop: 0.4,
+        opacity_backdrop: 0.4
       },
       %{
         xs: 0.3,

@@ -249,7 +249,9 @@ defmodule Corex.Design.Tokens.Colors do
 
   defp role_allowed?(name, allowed) do
     cond do
-      name in @roles -> MapSet.member?(allowed, name)
+      name in @roles ->
+        MapSet.member?(allowed, name)
+
       String.ends_with?(name, "-contrast") ->
         role = String.replace_suffix(name, "-contrast", "")
         role in @roles and MapSet.member?(allowed, role)

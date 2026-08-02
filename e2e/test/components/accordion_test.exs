@@ -530,7 +530,10 @@ defmodule E2eWeb.AccordionTest do
         session
         |> Accordion.click_in_section(section, "Reset")
         |> assert_has(
-          css(~s|##{section} [id="accordion:patterns-dynamic:trigger:4"]|, count: 0, visible: :any)
+          css(~s|##{section} [id="accordion:patterns-dynamic:trigger:4"]|,
+            count: 0,
+            visible: :any
+          )
         )
         |> Accordion.wait_root_no_loading("#patterns-dynamic")
 
@@ -711,9 +714,7 @@ defmodule E2eWeb.AccordionTest do
         |> Accordion.press_key_on_active(:space)
         |> Accordion.wait(400)
 
-      Accordion.check_accessibility(session, css("##{section}"),
-        filter: E2eWeb.A11yDocPageFilter
-      )
+      Accordion.check_accessibility(session, css("##{section}"), filter: E2eWeb.A11yDocPageFilter)
     end
   end
 

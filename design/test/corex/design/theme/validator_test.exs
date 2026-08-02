@@ -84,7 +84,8 @@ defmodule Corex.Design.Theme.ValidatorTest do
     end
 
     test "accepts a lightness token" do
-      assert %{neo: _} = Validator.validate!(%{neo: token_spec(%{kind: :l, seed: :accent, l: 0.5})})
+      assert %{neo: _} =
+               Validator.validate!(%{neo: token_spec(%{kind: :l, seed: :accent, l: 0.5})})
     end
 
     test "rejects an invalid lightness" do
@@ -131,7 +132,9 @@ defmodule Corex.Design.Theme.ValidatorTest do
         dimensions: %{}
       }
 
-      assert %{custom: %Corex.Design.Theme.Spec{dimensions: %Corex.Design.Theme.Spec.Dimensions{}}} =
+      assert %{
+               custom: %Corex.Design.Theme.Spec{dimensions: %Corex.Design.Theme.Spec.Dimensions{}}
+             } =
                Validator.validate!(%{custom: spec})
     end
 

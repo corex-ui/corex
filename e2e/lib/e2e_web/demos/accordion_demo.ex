@@ -1328,7 +1328,6 @@ defmodule E2eWeb.Demos.AccordionDemo do
     ])
   end
 
-
   def styling_canonical_code do
     ~S"""
     <.accordion class="accordion" value="item-1" items={Corex.Content.new([

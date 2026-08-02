@@ -74,7 +74,8 @@ defmodule E2eWeb.ColorPickerApiLive do
               id="color-picker-api-value-s"
               value="#3b82f6"
               presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
-              class="color-picker">
+              class="color-picker"
+            >
               <:label>Set the color (Server)</:label>
             </.color_picker>
           </:preview>

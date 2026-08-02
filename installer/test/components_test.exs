@@ -22,7 +22,13 @@ defmodule Corex.New.ComponentsTest do
   end
 
   test "the list has no duplicates regardless of flags" do
-    for opts <- [[], [theme: true], [lang: true], [a11y: true], [theme: true, lang: true, a11y: true]] do
+    for opts <- [
+          [],
+          [theme: true],
+          [lang: true],
+          [a11y: true],
+          [theme: true, lang: true, a11y: true]
+        ] do
       ids = Components.installer_components(opts)
       assert ids == Enum.uniq(ids)
     end

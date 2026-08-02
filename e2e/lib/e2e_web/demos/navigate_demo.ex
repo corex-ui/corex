@@ -176,7 +176,12 @@ defmodule E2eWeb.Demos.NavigateDemo do
         Solid
       </.navigate>
       <.navigate id="navigate-style-variant-nav" class="link ui-nav" to="#">Nav</.navigate>
-      <.navigate id="navigate-style-variant-nav-current" class="link ui-nav" to="#" aria-current="page">
+      <.navigate
+        id="navigate-style-variant-nav-current"
+        class="link ui-nav"
+        to="#"
+        aria-current="page"
+      >
         Nav current
       </.navigate>
     </div>

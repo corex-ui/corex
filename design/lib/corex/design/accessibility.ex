@@ -44,7 +44,9 @@ defmodule Corex.Design.Accessibility do
   @doc false
   def defaults do
     axes()
-    |> Enum.map(fn axis -> {Atom.to_string(axis), Map.fetch!(@defaults, Atom.to_string(axis))} end)
+    |> Enum.map(fn axis ->
+      {Atom.to_string(axis), Map.fetch!(@defaults, Atom.to_string(axis))}
+    end)
     |> Map.new()
   end
 

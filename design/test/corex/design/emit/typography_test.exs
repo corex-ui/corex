@@ -73,7 +73,9 @@ defmodule Corex.Design.Emit.TypographyTest do
       css = generate(%{"h1" => props})
 
       assert css =~ "@media (min-width: 48rem) {\n"
-      assert css =~ ~s|  [data-theme="probe"] .typo h1:not(:where([data-scope] *)) {\n      font-size: var(--text-xl);\n  }\n|
+
+      assert css =~
+               ~s|  [data-theme="probe"] .typo h1:not(:where([data-scope] *)) {\n      font-size: var(--text-xl);\n  }\n|
     end
 
     test "emits a media query without a base block when only breakpoints are set" do

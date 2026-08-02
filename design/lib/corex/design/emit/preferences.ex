@@ -83,6 +83,7 @@ defmodule Corex.Design.Emit.Preferences do
       :erlang.float_to_binary(pct * 1.0, decimals: 2) <> "%"
     end
   end
+
   defp write_contrast!(output_root) do
     colors = Colors.generate(contrast: :more)
     _ = Corex.Design.Tokens.Contrast.check!(colors)
@@ -147,7 +148,12 @@ defmodule Corex.Design.Emit.Preferences do
     ]
 
     path = "tokens/preferences/focus.css"
-    Write.atomic!(Path.join(output_root, path), Css.document([Css.block(~s([data-focus="strong"]), decls)]))
+
+    Write.atomic!(
+      Path.join(output_root, path),
+      Css.document([Css.block(~s([data-focus="strong"]), decls)])
+    )
+
     path
   end
 
