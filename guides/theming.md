@@ -87,6 +87,44 @@ With LiveViews, ensure `:theme` is on the socket (session via `Plugs.Theme`, or 
 
 `corex.css` loads utilities, configured themes, and `components.css`. Include `select` in `components:` when you use a theme picker. For layered imports, see [Design](design.html).
 
+## Bridge {: #bridge}
+
+Before-paint script in `<head>` (merge into the same IIFE as [Dark mode](dark_mode.html#bridge) when you use both):
+
+```heex
+<script>
+  (() => {
+    const validThemes = ["neo", "uno", "duo", "leo"];
+
+    const setTheme = (theme) => {
+      const resolved = validThemes.includes(theme) ? theme : "neo";
+      localStorage.setItem("phx:theme", resolved);
+      document.cookie = "phx_theme=" + resolved + "; path=/; max-age=31536000";
+      document.documentElement.setAttribute("data-theme", resolved);
+    };
+
+    setTheme(
+      localStorage.getItem("phx:theme") ||
+        document.documentElement.getAttribute("data-theme") ||
+        "neo"
+    );
+
+    window.addEventListener(
+      "storage",
+      (e) => e.key === "phx:theme" && e.newValue && setTheme(e.newValue)
+    );
+
+    window.addEventListener("phx:set-theme", (e) => {
+      const value = e.detail?.value;
+      const theme = Array.isArray(value) && value[0] ? value[0] : "neo";
+      setTheme(theme);
+    });
+  })();
+</script>
+```
+
+Keep `validThemes` in sync with `config :my_app, :themes` and the picker `items`.
+
 ## Troubleshooting
 
 | Symptom | Check |

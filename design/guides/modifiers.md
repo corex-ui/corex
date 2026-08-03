@@ -37,11 +37,11 @@ Add `ui-solid` or `ui-ghost` for an explicit surface. Subtle needs no class.
 
 **Selection hosts** (`toggle`, `toggle-group`, `checkbox`, `radio-group`, `switch`, `tabs`, `pagination`, `tree-view`, `angle-slider`) and **Field hosts** (`native-input`, `number-input`, `password-input`, `pin-input`, `tags-input`) have **no variant axis**. Use semantic, size, and radius only.
 
-**Paint contract (all interactive surfaces):**
+How surfaces behave:
 
-1. Idle chrome follows the variant axis (Action) or stays neutral (Selection / Field).
-2. Disclosure (`data-state="open"`) darkens to `--color-ui-active`; it never fills.
-3. Selection (`on`, `checked`, `selected`, `in-range`, `indeterminate`) always fills with `--ctl-fill` / `--ctl-fill-ink`.
+1. Idle chrome follows the variant (buttons and similar) or stays neutral (checkboxes, toggles, fields).
+2. Open / disclosed panels darken slightly; they do not fill with the semantic color.
+3. Selected / checked / on states use the semantic fill color.
 
 **Link** also supports `ui-nav` for chrome-less nav items: no underline, ink by default, link-colored hover, and `aria-current="page"|"location"` for current weight and color (`class="link ui-nav"`).
 
@@ -111,7 +111,7 @@ Each component Hexdocs **Style** section lists supported classes for that compon
 
 ## Custom themes
 
-`config :corex_design, themes: %{my_theme: spec}` accepts a full theme map (`seeds`, flat Color-native mode tokens (`:l` / `:contrast`), `dimensions`, optional `typography`). See preset modules under `Corex.Design.Theme.Presets` for the shape. `mix corex.new` without `--theme` scaffolds `themes: [:neo]` and `default_theme: :neo`.
+`config :corex_design, themes: %{my_theme: spec}` accepts a full theme map (`seeds`, flat Color-native mode tokens (`:l` / `:contrast`), `dimensions`, optional `typography`). Copy the shape from a built-in preset (`neo`, `uno`, `duo`, `leo`). `mix corex.new` without `--theme` scaffolds `themes: [:neo]` and `default_theme: :neo`.
 
 ## Overrides
 

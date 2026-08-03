@@ -49,7 +49,7 @@ In `config/config.exs`, keys under `config :corex_design` control the **build-ti
 | `components` | `nil` (all) | Emit only listed component recipe files |
 | `semantics` | `nil` (all) | Emit only listed palette roles (roles filtered by semantics); trims unused `ui-{role}` utilities |
 | `themes` | `nil` (all presets) | Emit only listed theme CSS (`neo`, `uno`, `duo`, `leo`) |
-| `default_theme` | `:uno` (package fallback when omitted) | Build default theme id. `mix corex.new` scaffolds `neo` without `--theme`. |
+| `default_theme` | `:uno` if omitted | Theme id used when CSS loads with no `data-theme`. New apps from `mix corex.new` set `default_theme: :neo` (and `themes: [:neo]`). Pass `--theme` to scaffold every preset. |
 | `default_mode` | `:light` | Build default mode (`:light` / `:dark`) |
 | `accessibility` | `false` | Preference CSS: `false`, `true` (text/focus/links), or `[:text, :contrast, …]` |
 

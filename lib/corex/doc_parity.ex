@@ -5,7 +5,6 @@ defmodule Corex.DocParity do
 
   @root Path.expand("../..", __DIR__)
   @components_dir Path.join(@root, "lib/components")
-  @guides_components_dir Path.join(@root, "guides/components")
   @demos_dir Path.join(@root, "e2e/lib/e2e_web/demos")
 
   @type status :: :pass | :drift | :missing_demo | :missing_moduledoc | :ellipsis
@@ -212,30 +211,18 @@ defmodule Corex.DocParity do
     end
   end
 
-  defp doc_with_anatomy(slug, source) do
+  defp doc_with_anatomy(_slug, source) do
     moduledoc = extract_moduledoc(source)
 
     cond do
       is_binary(moduledoc) and String.contains?(moduledoc, "## Anatomy") ->
         moduledoc
 
-      guide = component_guide_doc(slug) ->
-        guide
-
       true ->
         case extract_component_doc(source) do
           doc when is_binary(doc) -> doc
           _ -> moduledoc
         end
-    end
-  end
-
-  defp component_guide_doc(slug) when is_binary(slug) do
-    guide_path = Path.join(@guides_components_dir, "#{slug}.md")
-
-    case File.read(guide_path) do
-      {:ok, doc} -> if String.contains?(doc, "## Anatomy"), do: doc
-      _ -> nil
     end
   end
 

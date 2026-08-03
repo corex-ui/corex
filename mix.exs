@@ -219,22 +219,10 @@ defmodule Corex.MixProject do
         "guides/accessibility.md",
         "guides/localize.md",
         "guides/MCP.md",
-        "guides/usage_rules.md",
         "guides/production.md",
         "guides/configuration.md",
         "guides/update.md",
-        "guides/components/accordion.md": [
-          filename: "components-accordion",
-          title: "Accordion"
-        ],
-        "guides/components/checkbox.md": [
-          filename: "components-checkbox",
-          title: "Checkbox"
-        ],
-        "guides/components/tree_view.md": [
-          filename: "components-tree_view",
-          title: "Tree view"
-        ]
+        "guides/usage_rules.md"
       ],
       formatters: ["html", "epub"],
       groups_for_modules: groups_for_modules(),
@@ -256,14 +244,14 @@ defmodule Corex.MixProject do
          [
            "guides/forms.md",
            "guides/MCP.md",
-           "guides/usage_rules.md",
            "guides/dark_mode.md",
            "guides/theming.md",
            "guides/accessibility.md",
            "guides/localize.md",
            "guides/production.md",
            "guides/configuration.md",
-           "guides/update.md"
+           "guides/update.md",
+           "guides/usage_rules.md"
          ]},
         {"Tableau Guides",
          [
@@ -271,12 +259,6 @@ defmodule Corex.MixProject do
            "guides/tableau_theming.md",
            "guides/tableau_mode.md",
            "guides/tableau_localize.md"
-         ]},
-        {"Components",
-         [
-           "guides/components/accordion.md",
-           "guides/components/checkbox.md",
-           "guides/components/tree_view.md"
          ]}
       ]
     ]

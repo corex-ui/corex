@@ -286,7 +286,7 @@ Static demos without a changeset can pass `invalid` directly on the component.
 
 Corex form hooks sync values into named inputs and notify LiveView so `used_input?/1` and `_unused_*` omission stay correct. Use `phoenix_live_view` `~> 1.1`.
 
-Pass `field={@form[:name]}` (or an explicit stable `id`) so morphdom patches keep the same input nodes across LiveView updates. Without a stable id, remounts can drop client-side used state until the next interaction. Form components raise at render time when neither `field` nor a non-empty `id` is provided (including styling demos and Hexdocs samples you copy into LiveView).
+Pass `field={@form[:name]}` (or an explicit stable `id`) so LiveView updates keep the same input nodes across patches. Without a stable id, remounts can drop client-side used state until the next interaction. Form components raise at render time when neither `field` nor a non-empty `id` is provided (including styling demos and Hexdocs samples you copy into LiveView).
 
 ## Custom error presentation
 

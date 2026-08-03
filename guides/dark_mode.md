@@ -94,7 +94,52 @@ With LiveViews, ensure `:mode` is on the socket (session via `Plugs.Mode`, or `o
 
 Corex Design themes define `[data-mode=dark]` overrides. Custom CSS can target `[data-mode="dark"]` the same way.
 
+## Bridge {: #bridge}
+
+Before-paint script in `<head>` (merge into the same IIFE as [Theming](theming.html#bridge) when you use both):
+
+```heex
+<script>
+  (() => {
+    const getSystemMode = () =>
+      window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+
+    const setMode = (mode) => {
+      const resolved = mode === "dark" || mode === "light" ? mode : getSystemMode();
+      localStorage.setItem("phx:mode", resolved);
+      document.cookie = "phx_mode=" + resolved + "; path=/; max-age=31536000";
+      document.documentElement.setAttribute("data-mode", resolved);
+    };
+
+    setMode(
+      localStorage.getItem("phx:mode") ||
+        document.documentElement.getAttribute("data-mode") ||
+        getSystemMode()
+    );
+
+    window.addEventListener(
+      "storage",
+      (e) => e.key === "phx:mode" && e.newValue && setMode(e.newValue)
+    );
+
+    window.addEventListener("phx:set-mode", (e) => {
+      const detail = e.detail;
+      if (typeof detail?.pressed === "boolean") {
+        setMode(detail.pressed ? "dark" : "light");
+        return;
+      }
+      const value = detail?.value;
+      const mode = Array.isArray(value) && value[0] ? value[0] : "light";
+      setMode(mode);
+    });
+  })();
+</script>
+```
+
+Resolution order: `localStorage["phx:mode"]`, then `data-mode` from the server, then `prefers-color-scheme`.
+
 ## Troubleshooting
+
 
 | Symptom | Check |
 | ------- | ----- |

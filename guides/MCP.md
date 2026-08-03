@@ -12,10 +12,11 @@ Do not enable MCP in production. The tools are read-only, but the endpoint still
 
 | Requirement | Notes |
 | ----------- | ----- |
+| Elixir `~> 1.17` | Required by Corex packages (and `corex_design` / Hex `color`) |
 | `{:corex, "~> 0.2"}` | Host app dependency (MCP soft-loads it; not a dep of `corex_mcp`) |
 | `{:corex_mcp, "~> 0.2", only: [:dev, :test]}` | This package (`plug` only; uses OTP `:json`) |
 | OTP 27+ (or `json_polyfill` on OTP 24–26) | Stdlib `:json` on OTP 27+; on OTP 24–26 add `{:json_polyfill, "~> 0.2 or ~> 1.0"}` to the host app |
-| `{:corex_design, "~> 0.2", runtime: false, only:dev}` | Optional host dep; enables design tools and richer `get_component` fields |
+| `{:corex_design, "~> 0.2", runtime: false, only: :dev}` | Optional host dep; enables design tools and richer `get_component` fields |
 | Running HTTP server | Phoenix endpoint or Tableau Bandit child |
 
 ## Mount the endpoint
@@ -90,7 +91,7 @@ All tools are read-only.
 | Tool | Purpose |
 | ---- | ------- |
 | `list_components` | All component ids (`accordion`, `date_picker`, …) |
-| `get_component` | Module, attrs/slots, docs, design modifiers when available, `source_path` |
+| `get_component` | Module, attrs/slots, docs, and design modifiers when available |
 | `list_modifiers` | Shared `ui-*` vocabulary (optional `axis` filter) |
 | `get_component_style` | CSS id, axes, examples, layout for one id (needs `corex_design`) |
 | `list_themes` | Theme presets and modes (needs `corex_design`) |
@@ -126,7 +127,7 @@ Optional application config:
 config :corex_mcp, mcp_root: "/path/to/project"
 ```
 
-`mcp_root` sets the directory used to relativize `source_path` in `get_component` (defaults to `File.cwd!()`).
+`mcp_root` is the project root used when resolving paths for tooling (defaults to `File.cwd!()`).
 
 Verbose MCP logging:
 

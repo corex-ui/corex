@@ -144,9 +144,9 @@ Bridge (merge into the same IIFE as [Theming](theming.html) / [Dark mode](dark_m
 ```heex
 <script>
   (() => {
-    const a11yAxes = <%= raw(Jason.encode!(Enum.map(Corex.Design.Accessibility.axes(), &Atom.to_string/1))) %>;
-    const a11yDefaults = <%= raw(Jason.encode!(Corex.Design.Accessibility.defaults())) %>;
-    const a11yValues = <%= raw(Jason.encode!(Map.new(Corex.Design.Accessibility.axes(), fn axis ->
+    const a11yAxes = <%= raw(Corex.Json.encode!(Enum.map(Corex.Design.Accessibility.axes(), &Atom.to_string/1))) %>;
+    const a11yDefaults = <%= raw(Corex.Json.encode!(Corex.Design.Accessibility.defaults())) %>;
+    const a11yValues = <%= raw(Corex.Json.encode!(Map.new(Corex.Design.Accessibility.axes(), fn axis ->
       {Atom.to_string(axis), Corex.Design.Accessibility.values(axis)}
     end))) %>;
 
