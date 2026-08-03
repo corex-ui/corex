@@ -116,7 +116,7 @@ defmodule E2eWeb.ComboboxTest do
       |> Combobox.assert_playground_item_keeps_custom_slot(host, "deu")
       |> Combobox.click_item_by_host_id(host, "deu", timeout: 8_000)
       |> Combobox.wait_hidden_value_by_host_id(host, "deu", timeout: 8_000)
-      |> Combobox.open_combobox_by_host_id(host, timeout: 8_000)
+      |> Combobox.wait_combobox_content_open(host, timeout: 8_000)
       |> Combobox.assert_playground_item_keeps_custom_slot(host, "fra")
       |> Combobox.assert_playground_item_keeps_custom_slot(host, "deu")
       |> Combobox.assert_playground_item_keeps_custom_slot(host, "nld")

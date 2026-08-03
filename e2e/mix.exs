@@ -149,6 +149,8 @@ defmodule E2e.MixProject do
         "corex.design.build",
         "tailwind e2e --minify",
         "esbuild e2e  --minify",
+        # Drop stale gzip digests so Plug.Static does not serve outdated CSS/JS in test.
+        "cmd rm -f priv/static/assets/css/app.css.gz priv/static/assets/js/*.gz",
         "test"
       ],
       "assets.setup": [
@@ -162,7 +164,8 @@ defmodule E2e.MixProject do
         "compile",
         "corex.design.build",
         "tailwind e2e",
-        "esbuild e2e"
+        "esbuild e2e",
+        "cmd rm -f priv/static/assets/css/app.css.gz priv/static/assets/js/*.gz"
       ],
       "assets.deploy": [
         "localize.download_locales",

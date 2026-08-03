@@ -26,7 +26,7 @@ defmodule E2eWeb.MarqueeTest do
 
   describe "api" do
     feature "pause (binding)  -  host becomes paused", %{session: session} do
-      host = "api-pause-client"
+      host = "api-controls-client"
 
       session =
         session
@@ -37,14 +37,14 @@ defmodule E2eWeb.MarqueeTest do
 
       session =
         session
-        |> Marquee.click_in_section("marquee-api-pause-binding", "Pause")
+        |> Marquee.click_in_section("marquee-api-controls-binding", "Pause")
         |> Marquee.wait_host_paused(host, timeout: 8_000)
 
       assert Marquee.host_paused?(session, host)
     end
 
     feature "pause (server)  -  host becomes paused", %{session: session} do
-      host = "api-pause-server"
+      host = "api-controls-server"
 
       session =
         session
@@ -54,7 +54,7 @@ defmodule E2eWeb.MarqueeTest do
 
       session =
         session
-        |> Marquee.click_in_section("marquee-api-pause-server", "Pause")
+        |> Marquee.click_in_section("marquee-api-controls-server", "Pause")
         |> Marquee.wait_host_paused(host, timeout: 8_000)
 
       assert Marquee.host_paused?(session, host)
