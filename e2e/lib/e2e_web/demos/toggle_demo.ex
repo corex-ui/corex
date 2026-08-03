@@ -219,20 +219,6 @@ defmodule E2eWeb.Demos.ToggleDemo do
     """
   end
 
-  def styling_width_code do
-    label = DemoScales.block_demo_label()
-
-    DemoScales.width_layout_variants("toggle")
-    |> Enum.map(fn %{modifier: modifier} ->
-      class = DemoScales.join_modifiers("toggle", modifier)
-
-      """
-      <.toggle class="#{class}" pressed>#{label}</.toggle>
-      """
-    end)
-    |> DemoScales.join_code()
-  end
-
   def styling_max_width_code do
     label = DemoScales.block_demo_label()
 
@@ -245,25 +231,6 @@ defmodule E2eWeb.Demos.ToggleDemo do
       """
     end)
     |> DemoScales.join_code()
-  end
-
-  def styling_width_example(assigns) do
-    assigns = assign(assigns, :width_variants, DemoScales.width_layout_variants("toggle"))
-
-    ~H"""
-    <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @width_variants} class="flex flex-col gap-2">
-        <p class="typo ui-size-sm font-medium">{variant.label}</p>
-        <.toggle
-          id={"toggle-style-width-#{variant.id}"}
-          class={DemoScales.join_modifiers("toggle", variant.modifier)}
-          pressed
-        >
-          {DemoScales.block_demo_label()}
-        </.toggle>
-      </div>
-    </div>
-    """
   end
 
   def styling_max_width_example(assigns) do

@@ -435,22 +435,6 @@ defmodule E2eWeb.Demos.EditableDemo do
     |> DemoScales.join_code()
   end
 
-  def styling_width_code do
-    slots = styling_slots_code()
-
-    DemoScales.width_layout_variants("editable")
-    |> Enum.map(fn %{id: id, modifier: modifier} ->
-      class = DemoScales.join_modifiers("editable", modifier)
-
-      """
-      <.editable class="#{class}" value="#{id}">
-      #{slots}
-      </.editable>
-      """
-    end)
-    |> DemoScales.join_code()
-  end
-
   def styling_max_width_example(assigns) do
     assigns = assign(assigns, :max_width_variants, DemoScales.max_width_variants("editable"))
 
@@ -460,28 +444,6 @@ defmodule E2eWeb.Demos.EditableDemo do
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.editable
           id={"editable-style-max-#{variant.id}"}
-          class={DemoScales.join_modifiers("editable", variant.modifier)}
-          value={variant.label}
-        >
-          <:label>Label</:label>
-          <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
-          <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
-          <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
-        </.editable>
-      </div>
-    </div>
-    """
-  end
-
-  def styling_width_example(assigns) do
-    assigns = assign(assigns, :width_variants, DemoScales.width_layout_variants("editable"))
-
-    ~H"""
-    <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @width_variants} class="flex flex-col gap-2">
-        <p class="typo ui-size-sm font-medium">{variant.label}</p>
-        <.editable
-          id={"editable-style-width-#{variant.id}"}
           class={DemoScales.join_modifiers("editable", variant.modifier)}
           value={variant.label}
         >
