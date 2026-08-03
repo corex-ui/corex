@@ -183,12 +183,7 @@ function buildComboboxProps(
     },
     onValueChange: (details: ValueChangeDetails) => {
       if (redirectOn) {
-        redirectCollectionItem(
-          el,
-          "combobox",
-          firstSelectedValue(details.value),
-          liveSocket
-        );
+        redirectCollectionItem(el, "combobox", firstSelectedValue(details.value), liveSocket);
       }
       syncComboboxHiddenInputForPhoenix(el, details.value, markFieldTouched);
       getCombobox()?.restoreFilteredOptions();
@@ -318,9 +313,7 @@ const ComboboxHook = createZagLiveHook<ComboboxHookState, Combobox>({
       parseItemsJson(hook.lastItemsJson ?? hook.el.getAttribute("data-items") ?? "[]")
     );
     const itemsChanged = refreshItemsIfChanged(hook.el, hook, combobox);
-    const nextMembership = itemsMembershipKey(
-      parseItemsJson(hook.lastItemsJson ?? "[]")
-    );
+    const nextMembership = itemsMembershipKey(parseItemsJson(hook.lastItemsJson ?? "[]"));
     const membershipChanged = itemsChanged && prevMembership !== nextMembership;
 
     const pushEvent = hook.pushEvent.bind(hook);

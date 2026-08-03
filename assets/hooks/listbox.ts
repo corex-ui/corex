@@ -49,12 +49,7 @@ function listboxZagPropsBase(
     typeahead: getBoolean(el, "typeahead"),
     onValueChange: (details: ValueChangeDetails<ListboxItem>) => {
       if (redirectOn) {
-        redirectCollectionItem(
-          el,
-          "listbox",
-          firstSelectedValue(details.value),
-          liveSocket
-        );
+        redirectCollectionItem(el, "listbox", firstSelectedValue(details.value), liveSocket);
       }
       notifyChange({
         el,

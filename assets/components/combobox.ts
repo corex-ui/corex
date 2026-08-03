@@ -473,7 +473,9 @@ export class Combobox extends Component<Props, Api, Schema> {
     const allValues = new Set(this.allOptions.map((item) => this.getItemValue(item)));
 
     listEl
-      .querySelectorAll<HTMLElement>('[data-scope="combobox"][data-part="item"]:not([data-template])')
+      .querySelectorAll<HTMLElement>(
+        '[data-scope="combobox"][data-part="item"]:not([data-template])'
+      )
       .forEach((itemEl) => {
         if (itemEl.closest('[data-scope="combobox"][data-part="list"]') !== listEl) return;
         const value = itemEl.dataset.value ?? "";

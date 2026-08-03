@@ -28,15 +28,9 @@ export {
   type SyncArrayHiddenInputsOptions,
 } from "./form-array-submit";
 
-export {
-  hiddenInputPropsWithoutChecked,
-  syncCheckableHiddenInput,
-} from "./checkable-form-sync";
+export { hiddenInputPropsWithoutChecked, syncCheckableHiddenInput } from "./checkable-form-sync";
 
-export {
-  hiddenInputPropsWithoutValue,
-  syncHiddenInputValue,
-} from "./value-form-sync";
+export { hiddenInputPropsWithoutValue, syncHiddenInputValue } from "./value-form-sync";
 
 export function markUsed(input: HTMLInputElement): void {
   reapplyLiveViewValueInputUsage(input);

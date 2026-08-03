@@ -55,9 +55,7 @@ describe("refreshItemsIfChanged", () => {
 describe("redirectCollectionItem", () => {
   it("no-ops without a value", () => {
     const el = document.createElement("div");
-    expect(redirectCollectionItem(el, "select", null, mockLiveSocket().ctx.liveSocket)).toBe(
-      false
-    );
+    expect(redirectCollectionItem(el, "select", null, mockLiveSocket().ctx.liveSocket)).toBe(false);
   });
 
   it("opens a new tab when the item declares data-new-tab", () => {

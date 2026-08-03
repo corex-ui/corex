@@ -1,8 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import {
-  hiddenInputPropsWithoutValue,
-  syncHiddenInputValue,
-} from "../../lib/value-form-sync";
+import { hiddenInputPropsWithoutValue, syncHiddenInputValue } from "../../lib/value-form-sync";
 import { el } from "../helpers/dom";
 
 describe("hiddenInputPropsWithoutValue", () => {

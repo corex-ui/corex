@@ -367,10 +367,7 @@ describe("Accordion value / focused / item-state emit", () => {
     expect(handler).toBeDefined();
 
     handler!({ id: "other" });
-    expect(hook.pushEvent).not.toHaveBeenCalledWith(
-      "accordion_value_response",
-      expect.anything()
-    );
+    expect(hook.pushEvent).not.toHaveBeenCalledWith("accordion_value_response", expect.anything());
 
     handler!({ id: "acc-value" });
     expect(hook.pushEvent).toHaveBeenCalledWith("accordion_value_response", {
