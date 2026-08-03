@@ -258,6 +258,25 @@ defmodule Corex.New.Patches do
       |> patch_env_path_lists()
 
     write_if_changed!(path, content, updated)
+    format_elixir_source!(path)
+  end
+
+  defp format_elixir_source!(path) do
+    original = File.read!(path)
+
+    formatted =
+      original
+      |> Code.format_string!()
+      |> IO.iodata_to_binary()
+      |> then(fn source ->
+        if String.ends_with?(source, "\n"), do: source, else: source <> "\n"
+      end)
+
+    if formatted != original do
+      File.write!(path, formatted)
+    end
+
+    :ok
   end
 
   @doc """

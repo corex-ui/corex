@@ -47,6 +47,7 @@ defmodule Mix.Corex.DesignComponents do
       """)
     else
       File.write!(path, updated)
+      format_elixir_source!(path)
 
       Mix.shell().info([
         :green,
@@ -56,6 +57,24 @@ defmodule Mix.Corex.DesignComponents do
       ])
 
       maybe_build!(missing, opts)
+    end
+
+    :ok
+  end
+
+  defp format_elixir_source!(path) do
+    original = File.read!(path)
+
+    formatted =
+      original
+      |> Code.format_string!()
+      |> IO.iodata_to_binary()
+      |> then(fn source ->
+        if String.ends_with?(source, "\n"), do: source, else: source <> "\n"
+      end)
+
+    if formatted != original do
+      File.write!(path, formatted)
     end
 
     :ok

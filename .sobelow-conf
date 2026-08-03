@@ -1,5 +1,6 @@
 [exit: false, format: "txt", ignore_files: [
    "lib/mix/corex.ex",
+   "lib/mix/corex/design_components.ex",
    "lib/mix/corex/gen/context.ex",
    "lib/corex/doc_parity.ex",
    "lib/corex/connect/mounted.ex",
