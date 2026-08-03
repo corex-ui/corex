@@ -142,8 +142,7 @@ describe("Marquee", () => {
   });
 
   it("syncClonesFromPrimary keeps primary and clone item trees in sync after images", async () => {
-    const pixel =
-      "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
+    const pixel = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
     const el = document.createElement("div");
     el.id = "marquee-images";
     el.dataset.duration = "20";
@@ -228,9 +227,7 @@ describe("Marquee", () => {
     c.render();
 
     expect(c.api.contentCount).toBeGreaterThanOrEqual(2);
-    const clones = el.querySelectorAll<HTMLElement>(
-      '[data-part="content"]:not([data-index="0"])'
-    );
+    const clones = el.querySelectorAll<HTMLElement>('[data-part="content"]:not([data-index="0"])');
     expect(clones.length).toBeGreaterThan(0);
     clones.forEach((content) => {
       expect(content.inert).toBe(false);
