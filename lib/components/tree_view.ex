@@ -2,7 +2,7 @@ defmodule Corex.TreeView do
   @moduledoc ~S'''
   Tree view for Phoenix LiveView. Behavior follows [Zag.js Tree View](https://zagjs.com/components/react/tree-view).
 
-  Examples, events, patterns, and styling: [Tree view guide](components/tree_view.html).
+  Examples, events, patterns, and styling: [Tree view guide](components-tree_view.html).
   '''
 
   @doc type: :component

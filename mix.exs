@@ -87,8 +87,9 @@ defmodule Corex.MixProject do
     [
       plt_local_path: "priv/plts",
       plt_core_path: "priv/plts",
-      plt_add_apps: [:mix, :ex_unit, :phoenix],
-      flags: [:error_handling, :extra_return, :missing_return, :unmatched_returns]
+      plt_add_apps: [:mix, :ex_unit, :phoenix, :phoenix_live_view],
+      flags: [:error_handling, :extra_return, :missing_return, :unmatched_returns],
+      ignore_warnings: ".dialyzer_ignore.exs"
     ]
   end
 
@@ -215,15 +216,15 @@ defmodule Corex.MixProject do
         "guides/configuration.md",
         "guides/update.md",
         "guides/components/accordion.md": [
-          filename: "components/accordion",
+          filename: "components-accordion",
           title: "Accordion"
         ],
         "guides/components/checkbox.md": [
-          filename: "components/checkbox",
+          filename: "components-checkbox",
           title: "Checkbox"
         ],
         "guides/components/tree_view.md": [
-          filename: "components/tree_view",
+          filename: "components-tree_view",
           title: "Tree view"
         ]
       ],

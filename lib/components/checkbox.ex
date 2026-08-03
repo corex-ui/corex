@@ -2,7 +2,7 @@ defmodule Corex.Checkbox do
   @moduledoc ~S'''
   Checkbox for Phoenix LiveView forms. Behavior follows [Zag.js Checkbox](https://zagjs.com/components/react/checkbox).
 
-  Examples, events, patterns, form wiring, and styling: [Checkbox guide](components/checkbox.html).
+  Examples, events, patterns, form wiring, and styling: [Checkbox guide](components-checkbox.html).
   '''
 
   @doc type: :component

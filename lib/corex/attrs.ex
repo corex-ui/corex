@@ -4,7 +4,7 @@ defmodule Corex.Attrs do
 
   Presence attributes follow the HTML convention where the attribute's mere
   presence is the signal: `""` renders as a bare attribute and `nil` omits it.
-  That is deliberately different from `Corex.Checkable.Helpers`, which emits the
+  That is deliberately different from Checkable.Helpers, which emits the
   `"true" | "false" | "indeterminate"` enum a tri-state control needs, and from
   `Corex.FormField.dataset_default_boolean/1`, which always emits a string.
   """

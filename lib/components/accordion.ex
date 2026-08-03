@@ -2,7 +2,7 @@ defmodule Corex.Accordion do
   @moduledoc ~S'''
   Expandable panels for Phoenix LiveView. Behavior follows [Zag.js Accordion](https://zagjs.com/components/react/accordion).
 
-  Examples, events, patterns, and styling: [Accordion guide](components/accordion.html).
+  Examples, events, patterns, and styling: [Accordion guide](components-accordion.html).
   '''
 
   @doc type: :component
