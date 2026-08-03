@@ -1048,7 +1048,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
               document.querySelector("#layout-toast")?.dispatchEvent(
                 new CustomEvent("corex:toast:create", {
                   bubbles: true,
-                  detail: { title, description, type: "info", duration: 5000 },
+                  detail: { group_id: "layout-toast", title, description, type: "info", duration: 5000 },
                 })
               );
             };
@@ -1114,7 +1114,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       document.querySelector("#layout-toast")?.dispatchEvent(
         new CustomEvent("corex:toast:create", {
           bubbles: true,
-          detail: { title, description, type: "info", duration: 5000 },
+          detail: { group_id: "layout-toast", title, description, type: "info", duration: 5000 },
         })
       );
     };
@@ -1143,7 +1143,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       document.querySelector("#layout-toast")?.dispatchEvent(
         new CustomEvent("corex:toast:create", {
           bubbles: true,
-          detail: { title, description, type: "info", duration: 5000 },
+          detail: { group_id: "layout-toast", title, description, type: "info", duration: 5000 },
         })
       );
     };
@@ -1222,7 +1222,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       document.querySelector("#layout-toast")?.dispatchEvent(
         new CustomEvent("corex:toast:create", {
           bubbles: true,
-          detail: { title, description, type: "info", duration: 5000 },
+          detail: { group_id: "layout-toast", title, description, type: "info", duration: 5000 },
         })
       );
     };
@@ -1251,7 +1251,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       document.querySelector("#layout-toast")?.dispatchEvent(
         new CustomEvent("corex:toast:create", {
           bubbles: true,
-          detail: { title, description, type: "info", duration: 5000 },
+          detail: { group_id: "layout-toast", title, description, type: "info", duration: 5000 },
         })
       );
     };
@@ -1331,7 +1331,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       document.querySelector("#layout-toast")?.dispatchEvent(
         new CustomEvent("corex:toast:create", {
           bubbles: true,
-          detail: { title, description, type: "info", duration: 5000 },
+          detail: { group_id: "layout-toast", title, description, type: "info", duration: 5000 },
         })
       );
     };
@@ -1351,7 +1351,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       document.querySelector("#layout-toast")?.dispatchEvent(
         new CustomEvent("corex:toast:create", {
           bubbles: true,
-          detail: { title, description, type: "info", duration: 5000 },
+          detail: { group_id: "layout-toast", title, description, type: "info", duration: 5000 },
         })
       );
     };
@@ -1402,7 +1402,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       document.querySelector("#layout-toast")?.dispatchEvent(
         new CustomEvent("corex:toast:create", {
           bubbles: true,
-          detail: { title, description, type: "info", duration: 5000 },
+          detail: { group_id: "layout-toast", title, description, type: "info", duration: 5000 },
         })
       );
     };
@@ -1431,7 +1431,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       document.querySelector("#layout-toast")?.dispatchEvent(
         new CustomEvent("corex:toast:create", {
           bubbles: true,
-          detail: { title, description, type: "info", duration: 5000 },
+          detail: { group_id: "layout-toast", title, description, type: "info", duration: 5000 },
         })
       );
     };
@@ -1505,7 +1505,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       document.querySelector("#layout-toast")?.dispatchEvent(
         new CustomEvent("corex:toast:create", {
           bubbles: true,
-          detail: { title, description, type: "info", duration: 5000 },
+          detail: { group_id: "layout-toast", title, description, type: "info", duration: 5000 },
         })
       );
     };
@@ -1534,7 +1534,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       document.querySelector("#layout-toast")?.dispatchEvent(
         new CustomEvent("corex:toast:create", {
           bubbles: true,
-          detail: { title, description, type: "info", duration: 5000 },
+          detail: { group_id: "layout-toast", title, description, type: "info", duration: 5000 },
         })
       );
     };
@@ -1615,7 +1615,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       document.querySelector("#layout-toast")?.dispatchEvent(
         new CustomEvent("corex:toast:create", {
           bubbles: true,
-          detail: { title, description, type: "info", duration: 5000 },
+          detail: { group_id: "layout-toast", title, description, type: "info", duration: 5000 },
         })
       );
     };
@@ -1635,7 +1635,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       document.querySelector("#layout-toast")?.dispatchEvent(
         new CustomEvent("corex:toast:create", {
           bubbles: true,
-          detail: { title, description, type: "info", duration: 5000 },
+          detail: { group_id: "layout-toast", title, description, type: "info", duration: 5000 },
         })
       );
     };

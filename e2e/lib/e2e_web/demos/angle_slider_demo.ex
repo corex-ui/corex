@@ -714,7 +714,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       marker_values={[0.0, 90.0, 180.0, 270.0]}
       on_value_change="angle_slider_changed"
     >
-      <:label>on change</:label>
+      <:label>On Change</:label>
     </.angle_slider>
 
     <.angle_slider
@@ -723,7 +723,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       value={90.0}
       on_value_change_end="angle_slider_change_ended"
     >
-      <:label>on end</:label>
+      <:label>On End</:label>
     </.angle_slider>
     """
   end
@@ -742,7 +742,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       marker_values={[0.0, 90.0, 180.0, 270.0]}
       on_value_change_client="angle-slider-changed"
     >
-      <:label>on_value_change_client</:label>
+      <:label>On Change</:label>
     </.angle_slider>
 
     <.angle_slider
@@ -751,7 +751,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       value={90.0}
       on_value_change_end_client="angle-slider-change-ended"
     >
-      <:label>on_value_change_end_client</:label>
+      <:label>On End</:label>
     </.angle_slider>
     """
   end
