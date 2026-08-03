@@ -9,7 +9,7 @@ defmodule Corex.MixProject do
   end
 
   @version "0.2.0"
-  @elixir_requirement "~> 1.18"
+  @elixir_requirement "~> 1.17"
 
   def project do
     [
@@ -72,15 +72,14 @@ defmodule Corex.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:oeditus_credo, "~> 0.6.3", only: [:dev, :test], runtime: false},
       {:floki, "~> 0.38.0", only: :test},
-      {:corex_design, path: "design", runtime: false, only: :test},
       {:phoenix_ecto, "~> 4.0", only: :test},
       {:excoveralls, "~> 0.18", only: :test},
       {:bandit, "~> 1.0", only: :dev},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
-      {:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
-      {:tidewave, "~> 0.5.5", only: :dev}
-    ] ++ maybe_json_polyfill()
+      {:tidewave, "~> 0.5.5", only: :dev},
+      {:corex_design, path: "design", runtime: false, only: :test}
+    ] ++ maybe_ex_slop() ++ maybe_json_polyfill()
   end
 
   defp dialyzer do
@@ -91,6 +90,15 @@ defmodule Corex.MixProject do
       flags: [:error_handling, :extra_return, :missing_return, :unmatched_returns],
       ignore_warnings: ".dialyzer_ignore.exs"
     ]
+  end
+
+  # `ex_slop` requires Elixir ~> 1.18; lint/primary legs still get it.
+  defp maybe_ex_slop do
+    if Version.match?(System.version(), "~> 1.18") do
+      [{:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false}]
+    else
+      []
+    end
   end
 
   defp maybe_json_polyfill do

@@ -47,7 +47,7 @@ If you want the full feature set:
 mix corex.new my_app --mode --theme --lang
 ```
 
-Corex encodes JSON with OTP `:json` (OTP 27+). On OTP 26, add `{:json_polyfill, "~> 0.2 or ~> 1.0"}` to your app (the installer adds it when you pass `--lang`).
+Corex encodes JSON with OTP `:json` (OTP 27+). On OTP 24–26, add `{:json_polyfill, "~> 0.2 or ~> 1.0"}` to your app (the installer adds it when you pass `--lang` or `--design`). Elixir support is `~> 1.17` (required by `corex_design` / Hex `color`).
 
 Run **`mix help corex.new`** or see **`Mix.Tasks.Corex.New`** in Hexdocs for every Corex-only flag.
 

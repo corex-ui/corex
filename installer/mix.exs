@@ -10,7 +10,7 @@ defmodule Corex.New.MixProject do
   @phoenix_version "1.8.7"
   @scm_url "https://github.com/corex-ui/corex"
 
-  @elixir_requirement "~> 1.18"
+  @elixir_requirement "~> 1.17"
 
   def project do
     [
@@ -59,10 +59,17 @@ defmodule Corex.New.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:oeditus_credo, "~> 0.6.3", only: [:dev, :test], runtime: false},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
-      {:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:corex_design, path: "../design", only: :test, runtime: false}
-    ]
+    ] ++ maybe_ex_slop()
+  end
+
+  defp maybe_ex_slop do
+    if Version.match?(System.version(), "~> 1.18") do
+      [{:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false}]
+    else
+      []
+    end
   end
 
   defp dialyzer do

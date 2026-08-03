@@ -15,7 +15,7 @@ For large features (new components, API changes), open an issue first so we can 
 
 ### Requirements
 
-- **Elixir** `~> 1.18` and a compatible **Erlang/OTP** (CI runs 1.18 / OTP 27–28 and 1.19.5 / OTP 28, plus a LiveView 1.2 leg).
+- **Elixir** `~> 1.17` and a compatible **Erlang/OTP** (CI: min **1.17.3 / OTP 25** with `json_polyfill`; mid **1.18.4 / OTP 27**; primary **1.19.5 / OTP 28**). OTP 27+ uses native `:json`; OTP 24–26 need `json_polyfill`.
 - **Node.js** 24 and **npm** (root package: hooks, esbuild, lint).
 - **pnpm** 10.x for the e2e app assets.
 - **PostgreSQL** for e2e and some integration tests.
@@ -130,7 +130,7 @@ Design CSS is copied into the installer on `mix assets.build` (`installer/priv/c
 2. Keep changes focused; one logical change per PR when possible.
 3. Run the checks that match your change (see below).
 4. Open a PR against `main` with a short summary and a test plan (what you ran, what you clicked).
-5. CI must pass on [GitHub Actions](.github/workflows/elixir.yml): **Lint** (Elixir + TypeScript static checks), **Hooks** (Vitest), **Unit tests**, **E2E tests**, **Installer tests**, **Integration tests**.
+5. CI must pass on [GitHub Actions](.github/workflows/elixir.yml): **Lint**, **Dialyzer**, **Hooks**, and the matrix jobs for **Unit** / **E2E** / **Installer** / **Design** / **MCP** / **Integration**. Job titles include OTP and Elixir (and LiveView locked|latest for unit). After matrix changes, update GitHub **required status checks** so stale names (for example Elixir `1.15.8` or OTP `28.0.1` / `28.3.1` cells) are removed and the current min (`1.17.3` / OTP `25.3`), mid (`1.18.4` / OTP `27.3`), and primary (`1.19.5` / OTP `28.3`) names are required.
 
 We use [Conventional Commits](https://www.conventionalcommits.org/) style when it helps reviewers scan history, but it is not enforced by tooling.
 

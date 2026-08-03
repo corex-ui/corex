@@ -24,7 +24,7 @@ jobs:
         uses: erlef/setup-beam@3580539ceec3dc05b0ed51e9e10b08eb7a7c2bb4
         with:
           elixir-version: "1.19.5"
-          otp-version: "28.3.1"
+          otp-version: "28.3"
 
       - name: Restore Corex dependencies cache
         uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306
@@ -32,9 +32,9 @@ jobs:
           path: |
             deps
             _build
-          key: deps-${{ runner.os }}-28.3.1-1.19.5-${{ hashFiles('**/mix.lock') }}
+          key: deps-${{ runner.os }}-28.3-1.19.5-${{ hashFiles('**/mix.lock') }}
           restore-keys: |
-            deps-${{ runner.os }}-28.3.1-1.19.5
+            deps-${{ runner.os }}-28.3-1.19.5
 
       - name: Install Corex dependencies
         run: mix deps.get
@@ -57,9 +57,9 @@ jobs:
           path: |
             e2e/deps
             e2e/_build
-          key: deps-e2e-${{ runner.os }}-28.3.1-1.19.5-${{ hashFiles('e2e/mix.lock') }}
+          key: deps-e2e-${{ runner.os }}-28.3-1.19.5-${{ hashFiles('e2e/mix.lock') }}
           restore-keys: |
-            deps-e2e-${{ runner.os }}-28.3.1-1.19.5
+            deps-e2e-${{ runner.os }}-28.3-1.19.5
 
       - name: Install E2E dependencies
         working-directory: e2e
@@ -161,7 +161,7 @@ jobs:
         uses: erlef/setup-beam@3580539ceec3dc05b0ed51e9e10b08eb7a7c2bb4
         with:
           elixir-version: "1.19.5"
-          otp-version: "28.3.1"
+          otp-version: "28.3"
 
       - name: Restore dependencies cache
         uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306
@@ -175,9 +175,9 @@ jobs:
             mcp/_build
             installer/deps
             installer/_build
-          key: dialyzer-deps-${{ runner.os }}-28.3.1-1.19.5-${{ hashFiles('mix.lock', 'design/mix.lock', 'mcp/mix.lock', 'installer/mix.lock') }}
+          key: dialyzer-deps-${{ runner.os }}-28.3-1.19.5-${{ hashFiles('mix.lock', 'design/mix.lock', 'mcp/mix.lock', 'installer/mix.lock') }}
           restore-keys: |
-            dialyzer-deps-${{ runner.os }}-28.3.1-1.19.5
+            dialyzer-deps-${{ runner.os }}-28.3-1.19.5
 
       - name: Restore PLT cache
         uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306
@@ -187,9 +187,9 @@ jobs:
             design/priv/plts
             mcp/priv/plts
             installer/priv/plts
-          key: plt-${{ runner.os }}-28.3.1-1.19.5-${{ hashFiles('mix.lock', 'design/mix.lock', 'mcp/mix.lock', 'installer/mix.lock') }}
+          key: plt-${{ runner.os }}-28.3-1.19.5-${{ hashFiles('mix.lock', 'design/mix.lock', 'mcp/mix.lock', 'installer/mix.lock') }}
           restore-keys: |
-            plt-${{ runner.os }}-28.3.1-1.19.5
+            plt-${{ runner.os }}-28.3-1.19.5
 
       - name: Dialyzer — Corex
         run: mix deps.get && mix dialyzer
@@ -241,22 +241,29 @@ jobs:
     strategy:
       matrix:
         include:
+          # Min: Elixir floor + OTP < 27 pulls json_polyfill
+          - elixir: 1.17.3
+            otp: "25.3"
+            coveralls: false
+            live_view: locked
+            expect_json_polyfill: true
+          # Mid: Elixir 1.18 + OTP 27 native :json
+          - elixir: 1.18.4
+            otp: "27.3"
+            coveralls: false
+            live_view: locked
+            expect_json_polyfill: false
+          # Primary: lint/coveralls toolchain
           - elixir: 1.19.5
-            otp: 28.3.1
+            otp: "28.3"
             coveralls: true
             live_view: locked
+            expect_json_polyfill: false
           - elixir: 1.19.5
-            otp: 28.3.1
+            otp: "28.3"
             coveralls: false
             live_view: latest
-          - elixir: 1.18.4
-            otp: 27.3
-            coveralls: false
-            live_view: locked
-          - elixir: 1.18.4
-            otp: 28.0.1
-            coveralls: false
-            live_view: locked
+            expect_json_polyfill: false
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -281,6 +288,10 @@ jobs:
 
       - name: Install dependencies
         run: mix deps.get
+
+      - name: Assert json_polyfill on OTP without native :json
+        if: matrix.expect_json_polyfill
+        run: mix deps | grep -q json_polyfill
 
       - name: Resolve latest LiveView
         if: matrix.live_view == 'latest'
@@ -332,11 +343,7 @@ jobs:
       matrix:
         include:
           - elixir: 1.19.5
-            otp: 28.3.1
-          - elixir: 1.18.4
-            otp: 27.3
-          - elixir: 1.18.4
-            otp: 28.0.1
+            otp: "28.3"
 
     services:
       postgres:
@@ -415,12 +422,10 @@ jobs:
     strategy:
       matrix:
         include:
+          - elixir: 1.17.3
+            otp: "25.3"
           - elixir: 1.19.5
-            otp: 28.3.1
-          - elixir: 1.18.4
-            otp: 27.3
-          - elixir: 1.18.4
-            otp: 28.0.1
+            otp: "28.3"
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -470,11 +475,7 @@ jobs:
       matrix:
         include:
           - elixir: 1.19.5
-            otp: 28.3.1
-          - elixir: 1.18.4
-            otp: 27.3
-          - elixir: 1.18.4
-            otp: 28.0.1
+            otp: "28.3"
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -515,11 +516,7 @@ jobs:
       matrix:
         include:
           - elixir: 1.19.5
-            otp: 28.3.1
-          - elixir: 1.18.4
-            otp: 27.3
-          - elixir: 1.18.4
-            otp: 28.0.1
+            otp: "28.3"
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -565,27 +562,20 @@ jobs:
       matrix:
         include:
           - elixir: 1.19.5
-            otp: 28.3.1
+            otp: "28.3"
             phx_new_version: ""
             phx_new_suffix: ""
-          - elixir: 1.18.4
-            otp: 27.3
-            phx_new_version: ""
-            phx_new_suffix: ""
-          - elixir: 1.18.4
-            otp: 28.0.1
+          # Min: OTP 25 + json_polyfill (Elixir floor ~> 1.17)
+          - elixir: 1.17.3
+            otp: "25.3"
             phx_new_version: ""
             phx_new_suffix: ""
           - elixir: 1.19.5
-            otp: 28.3.1
+            otp: "28.3"
             phx_new_version: "1.8.7"
             phx_new_suffix: " | phx_new 1.8.7"
-          - elixir: 1.18.4
-            otp: 27.3
-            phx_new_version: "1.8.7"
-            phx_new_suffix: " | phx_new 1.8.7"
-          - elixir: 1.18.4
-            otp: 28.0.1
+          - elixir: 1.17.3
+            otp: "25.3"
             phx_new_version: "1.8.7"
             phx_new_suffix: " | phx_new 1.8.7"
 

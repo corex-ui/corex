@@ -40,7 +40,7 @@ Point your MCP client at `http://localhost:4000/corex/mcp`.
 }
 ```
 
-Uses OTP `:json` (OTP 27+). On OTP 26, add `{:json_polyfill, "~> 0.2 or ~> 1.0"}` to the host app (the installer already does this for `--lang`).
+Uses OTP `:json` (OTP 27+). On OTP 24–26, add `{:json_polyfill, "~> 0.2 or ~> 1.0"}` to the host app (the installer already does this for `--lang` / `--design`).
 
 See the [MCP guide](guides/MCP.md) for Claude Desktop, VS Code, Tableau Bandit wiring, tools, and security.
 

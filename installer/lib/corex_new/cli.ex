@@ -1,7 +1,7 @@
 defmodule Corex.New.Cli do
   @moduledoc false
 
-  @elixir_requirement "~> 1.18"
+  @elixir_requirement "~> 1.17"
 
   @design_dependent_flags [:mode, :theme, :lang, :a11y]
 

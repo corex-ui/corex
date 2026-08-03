@@ -4,6 +4,10 @@
 
 ### Breaking changes
 
+#### Runtime / toolchain
+
+- **Elixir floor `~> 1.17`** (aligned with `corex_design` / Hex `color`). OTP 27+ uses native `:json`; OTP 24–26 require `json_polyfill` (pulled automatically in Corex packages when `:json` is missing; the installer adds it to generated apps for `--lang` / `--design`).
+
 #### Design system
 
 - **Color-native tokens:** seeds + Oklch lightness / `Color.Palette.contrast` (no PaletteGen sampling). Public names end-to-end: `root`, `surface`, `ui`, `ink`, roles `accent`/`brand`/`alert`/`info`/`success`.

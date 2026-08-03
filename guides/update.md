@@ -4,7 +4,7 @@ How to pull a newer Corex release into your app and refresh design assets.
 
 ## JSON / OTP
 
-`corex`, `corex_design`, and `corex_mcp` use OTP `:json` instead of Jason. OTP 27+ needs no extra dep. On OTP 26, add:
+`corex`, `corex_design`, and `corex_mcp` use OTP `:json` instead of Jason. OTP 27+ needs no extra dep. On OTP 24–26, add:
 
 ```elixir
 {:json_polyfill, "~> 0.2 or ~> 1.0"}

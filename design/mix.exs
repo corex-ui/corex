@@ -8,7 +8,7 @@ defmodule CorexDesign.MixProject do
     [
       app: :corex_design,
       version: @version,
-      elixir: "~> 1.18",
+      elixir: "~> 1.17",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -49,9 +49,8 @@ defmodule CorexDesign.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:oeditus_credo, "~> 0.6.3", only: [:dev, :test], runtime: false},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
-      {:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false}
-    ] ++ maybe_json_polyfill()
+    ] ++ maybe_ex_slop() ++ maybe_json_polyfill()
   end
 
   defp dialyzer do
@@ -61,6 +60,14 @@ defmodule CorexDesign.MixProject do
       plt_add_apps: [:mix, :ex_unit],
       flags: [:error_handling, :extra_return, :missing_return, :unmatched_returns]
     ]
+  end
+
+  defp maybe_ex_slop do
+    if Version.match?(System.version(), "~> 1.18") do
+      [{:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false}]
+    else
+      []
+    end
   end
 
   defp maybe_json_polyfill do

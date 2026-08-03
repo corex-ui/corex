@@ -8,7 +8,7 @@ defmodule CorexMcp.MixProject do
     [
       app: :corex_mcp,
       version: @version,
-      elixir: "~> 1.18",
+      elixir: "~> 1.17",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       deps: deps(),
