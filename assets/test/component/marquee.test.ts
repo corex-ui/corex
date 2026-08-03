@@ -196,10 +196,12 @@ describe("Marquee", () => {
     expect(cloneImgs.length).toBe(3);
 
     primaryImgs.forEach((img, i) => {
-      expect(cloneImgs[i].getAttribute("title")).toBe(img.getAttribute("title"));
-      expect(cloneImgs[i].getAttribute("width")).toBe(img.getAttribute("width"));
-      expect(cloneImgs[i].getAttribute("height")).toBe(img.getAttribute("height"));
-      expect(cloneImgs[i].getAttribute("style")).toBe(img.getAttribute("style"));
+      const cloneImg = cloneImgs[i];
+      expect(cloneImg).toBeDefined();
+      expect(cloneImg!.getAttribute("title")).toBe(img.getAttribute("title"));
+      expect(cloneImg!.getAttribute("width")).toBe(img.getAttribute("width"));
+      expect(cloneImg!.getAttribute("height")).toBe(img.getAttribute("height"));
+      expect(cloneImg!.getAttribute("style")).toBe(img.getAttribute("style"));
     });
 
     // Stale template sizes must not remain on clones after sync from primary.
