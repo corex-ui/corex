@@ -16,7 +16,7 @@ defmodule Corex.Slot do
   def default_fallback(index), do: "item-#{index}"
 
   @doc "Default disabled predicate when callers omit `:disabled`."
-  @spec default_disabled(term()) :: boolean()
+  @spec default_disabled(term()) :: false
   def default_disabled(_entries), do: false
 
   @doc """
