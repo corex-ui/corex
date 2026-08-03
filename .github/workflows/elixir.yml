@@ -232,7 +232,7 @@ jobs:
         run: pnpm test
 
   unit-tests:
-    name: Unit tests (OTP ${{ matrix.otp }} | Elixir ${{ matrix.elixir }})
+    name: Unit tests (OTP ${{ matrix.otp }} | Elixir ${{ matrix.elixir }} | ${{ matrix.live_view }})
     runs-on: ubuntu-24.04
     env:
       MIX_ENV: test
