@@ -595,7 +595,6 @@ function buildTimerProps(el, pushEvent, canPush) {
     targetMs: getNumber(el, "targetMs"),
     autoStart: getBoolean(el, "autoStart"),
     interval: getNumber(el, "interval"),
-    orientation: getString(el, "orientation"),
     translations: parseTimerTranslations(el),
     ...buildTimerCallbacks(el, pushEvent, canPush)
   };
@@ -676,7 +675,6 @@ var TimerHook = createZagLiveHook({
     const canPush = () => canPushEvent(hook.liveSocket);
     const patch = {
       id: el.id,
-      orientation: getString(el, "orientation"),
       translations: parseTimerTranslations(el),
       ...buildTimerCallbacks(el, pushEvent, canPush)
     };

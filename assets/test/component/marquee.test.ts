@@ -67,11 +67,16 @@ describe("Marquee", () => {
     );
     expect(clones.length).toBeGreaterThan(0);
     for (const clone of clones) {
-      expect(clone.inert).toBe(true);
+      expect(clone.inert).toBe(false);
+      expect(clone.getAttribute("aria-hidden")).toBe("true");
       expect(clone.querySelector("#live-item-a")).toBeNull();
       expect(clone.querySelector("#live-btn")).toBeNull();
       expect(clone.querySelector("[phx-hook]")).toBeNull();
       expect(clone.querySelector("[name]")).toBeNull();
+      const cloneBtn = clone.querySelector("button");
+      expect(cloneBtn).toBeTruthy();
+      expect((cloneBtn as HTMLButtonElement).disabled).toBe(true);
+      expect((cloneBtn as HTMLButtonElement).tabIndex).toBe(-1);
     }
 
     const ids = collectIds(el);
@@ -109,7 +114,8 @@ describe("Marquee", () => {
       '[data-part="content"]:not([data-index="0"])'
     );
     cloneContents.forEach((content) => {
-      expect(content.inert).toBe(true);
+      expect(content.inert).toBe(false);
+      expect(content.getAttribute("aria-hidden")).toBe("true");
     });
 
     c.destroy();
@@ -132,6 +138,103 @@ describe("Marquee", () => {
     c.ensureDom();
     expect(el.querySelector('[data-scope="marquee"][data-part="root"]')).toBeTruthy();
     expect(el.querySelectorAll('[data-part="item"]').length).toBeGreaterThan(0);
+    c.destroy();
+  });
+
+  it("syncClonesFromPrimary keeps primary and clone item trees in sync after images", async () => {
+    const pixel =
+      "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
+    const el = document.createElement("div");
+    el.id = "marquee-images";
+    el.dataset.duration = "20";
+    el.style.width = "240px";
+    el.innerHTML = `
+      <div data-part="ssr-preview" data-orientation="horizontal">
+        <div data-part="item">
+          <img src="${pixel}" width="48" height="44" alt="" title="Elixir" style="width:48px;height:44px" />
+        </div>
+        <div data-part="item">
+          <img src="${pixel}" width="64" height="44" alt="" title="Phoenix" style="width:64px;height:44px" />
+        </div>
+        <div data-part="item">
+          <img src="${pixel}" width="40" height="44" alt="" title="Tableau" style="width:40px;height:44px" />
+        </div>
+      </div>
+      <template data-part="items-template">
+        <div data-part="item">
+          <img src="${pixel}" width="16" height="16" alt="" title="Elixir" />
+        </div>
+        <div data-part="item">
+          <img src="${pixel}" width="16" height="16" alt="" title="Phoenix" />
+        </div>
+        <div data-part="item">
+          <img src="${pixel}" width="16" height="16" alt="" title="Tableau" />
+        </div>
+      </template>
+    `;
+
+    const c = new Marquee(el, { id: el.id, autoFill: false });
+    c.buildDom();
+    c.init();
+
+    await Promise.resolve();
+    await Promise.resolve();
+
+    c.syncClonesFromPrimary();
+    c.render();
+
+    const primary = el.querySelector<HTMLElement>('[data-part="content"][data-index="0"]');
+    const clone = el.querySelector<HTMLElement>('[data-part="content"]:not([data-index="0"])');
+    expect(primary).toBeTruthy();
+    expect(clone).toBeTruthy();
+    expect(clone!.inert).toBe(false);
+    expect(clone!.getAttribute("aria-hidden")).toBe("true");
+
+    const primaryImgs = Array.from(primary!.querySelectorAll("img"));
+    const cloneImgs = Array.from(clone!.querySelectorAll("img"));
+    expect(cloneImgs.length).toBe(primaryImgs.length);
+    expect(cloneImgs.length).toBe(3);
+
+    primaryImgs.forEach((img, i) => {
+      expect(cloneImgs[i].getAttribute("title")).toBe(img.getAttribute("title"));
+      expect(cloneImgs[i].getAttribute("width")).toBe(img.getAttribute("width"));
+      expect(cloneImgs[i].getAttribute("height")).toBe(img.getAttribute("height"));
+      expect(cloneImgs[i].getAttribute("style")).toBe(img.getAttribute("style"));
+    });
+
+    // Stale template sizes must not remain on clones after sync from primary.
+    expect(cloneImgs.every((img) => img.getAttribute("width") !== "16")).toBe(true);
+
+    c.destroy();
+  });
+
+  it("autoFill true still yields aria-hidden clones after sync", async () => {
+    const el = document.createElement("div");
+    el.id = "marquee-autofill";
+    el.dataset.duration = "20";
+    el.style.width = "80px";
+    el.innerHTML = `
+      <template data-part="items-template">
+        <span data-part="item" style="display:inline-block;width:60px">A</span>
+        <span data-part="item" style="display:inline-block;width:60px">B</span>
+      </template>
+    `;
+    const c = new Marquee(el, { id: el.id, autoFill: true });
+    c.buildDom();
+    c.init();
+    c.syncClonesFromPrimary();
+    c.render();
+
+    expect(c.api.contentCount).toBeGreaterThanOrEqual(2);
+    const clones = el.querySelectorAll<HTMLElement>(
+      '[data-part="content"]:not([data-index="0"])'
+    );
+    expect(clones.length).toBeGreaterThan(0);
+    clones.forEach((content) => {
+      expect(content.inert).toBe(false);
+      expect(content.getAttribute("aria-hidden")).toBe("true");
+    });
+
     c.destroy();
   });
 });

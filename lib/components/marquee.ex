@@ -53,8 +53,9 @@ defmodule Corex.Marquee do
 
   The marquee keeps a seamless loop by rendering duplicate copies of each item.
   Only the primary copy stays live: nested Corex components keep their ids and hooks.
-  Duplicate copies are decorative (`inert`), with ids, `phx-hook`, and form `name`
-  attributes stripped so they cannot steal focus or confuse Zag wiring.
+  Duplicate copies are decorative (`aria-hidden`), with ids, `phx-hook`, and form `name`
+  attributes stripped and focusable controls disabled so they cannot steal focus or
+  confuse Zag wiring. Clones stay hoverable so native `title` tooltips still work.
 
   Prefer non-interactive chips or static markup in a scrolling marquee when every
   card on screen must respond to input. Put interactive demos in a static grid instead.
@@ -110,6 +111,8 @@ defmodule Corex.Marquee do
 
   Stack modifiers on the host (`class` on `<.marquee>`).
 
+  Attrs: `duration`, `speed`, `spacing`, `auto_fill`, `pause_on_interaction`, `paused`, `delay`, `loop_count`, `reverse`, `respect_reduced_motion`, and the `on_*` event hooks above.
+
   Axes: **Semantic** (`ui-accent`, `ui-brand`, `ui-alert`, `ui-info`, `ui-success`), **Size** (`ui-size-sm` … `ui-size-xl`), **Radius** (`ui-rounded-*`). No variant axis. See the [modifier guide](modifiers.html).
 
   <!-- tabs-open -->
@@ -161,6 +164,11 @@ defmodule Corex.Marquee do
   attr(:side, :string, default: "end", values: ["start", "end", "top", "bottom"])
   attr(:speed, :integer, default: 100, doc: "Animation speed in pixels per second")
   attr(:spacing, :string, default: "1rem", doc: "Spacing between items")
+
+  attr(:auto_fill, :boolean,
+    default: true,
+    doc: "When true, duplicates content tracks until the viewport is filled for a seamless loop"
+  )
 
   attr(:pause_on_interaction, :boolean,
     default: false,
@@ -235,6 +243,7 @@ defmodule Corex.Marquee do
       side: assigns.side,
       speed: assigns.speed,
       spacing: assigns.spacing,
+      auto_fill: assigns.auto_fill,
       pause_on_interaction: assigns.pause_on_interaction,
       paused: assigns.paused,
       delay: assigns.delay,

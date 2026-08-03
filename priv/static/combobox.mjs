@@ -1905,7 +1905,9 @@ var Combobox = class extends Component {
     if (!listEl) return;
     const desired = new Set(this.activeItems().map((item) => this.getItemValue(item)));
     const allValues = new Set(this.allOptions.map((item) => this.getItemValue(item)));
-    listEl.querySelectorAll('[data-scope="combobox"][data-part="item"]:not([data-template])').forEach((itemEl) => {
+    listEl.querySelectorAll(
+      '[data-scope="combobox"][data-part="item"]:not([data-template])'
+    ).forEach((itemEl) => {
       if (itemEl.closest('[data-scope="combobox"][data-part="list"]') !== listEl) return;
       const value = itemEl.dataset.value ?? "";
       if (!allValues.has(value)) return;
@@ -2067,12 +2069,7 @@ function buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox, mar
     },
     onValueChange: (details) => {
       if (redirectOn) {
-        redirectCollectionItem(
-          el,
-          "combobox",
-          firstSelectedValue(details.value),
-          liveSocket
-        );
+        redirectCollectionItem(el, "combobox", firstSelectedValue(details.value), liveSocket);
       }
       syncComboboxHiddenInputForPhoenix(el, details.value, markFieldTouched);
       getCombobox()?.restoreFilteredOptions();
@@ -2183,9 +2180,7 @@ var ComboboxHook = createZagLiveHook({
       parseItemsJson(hook.lastItemsJson ?? hook.el.getAttribute("data-items") ?? "[]")
     );
     const itemsChanged = refreshItemsIfChanged(hook.el, hook, combobox);
-    const nextMembership = itemsMembershipKey(
-      parseItemsJson(hook.lastItemsJson ?? "[]")
-    );
+    const nextMembership = itemsMembershipKey(parseItemsJson(hook.lastItemsJson ?? "[]"));
     const membershipChanged = itemsChanged && prevMembership !== nextMembership;
     const pushEvent = hook.pushEvent.bind(hook);
     const canPush = () => canPushEvent(hook.liveSocket);

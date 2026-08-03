@@ -134,12 +134,7 @@ function listboxZagPropsBase(el, liveSocket, pushEvent) {
     typeahead: getBoolean(el, "typeahead"),
     onValueChange: (details) => {
       if (redirectOn) {
-        redirectCollectionItem(
-          el,
-          "listbox",
-          firstSelectedValue(details.value),
-          liveSocket
-        );
+        redirectCollectionItem(el, "listbox", firstSelectedValue(details.value), liveSocket);
       }
       notifyChange({
         el,

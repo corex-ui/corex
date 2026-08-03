@@ -416,17 +416,52 @@ function sanitizeClone(source) {
         node.removeAttribute(attr.name);
       }
     }
+    if (node instanceof HTMLButtonElement || node instanceof HTMLInputElement || node instanceof HTMLSelectElement || node instanceof HTMLTextAreaElement) {
+      node.disabled = true;
+      node.tabIndex = -1;
+    } else if (node instanceof HTMLAnchorElement) {
+      node.removeAttribute("href");
+      node.tabIndex = -1;
+    } else if (node.hasAttribute("tabindex")) {
+      node.tabIndex = -1;
+    }
   }
   return clone;
 }
 var Marquee = class extends Component {
   items = null;
+  contentResizeObserver = null;
+  resizeRaf = 0;
+  settleGeneration = 0;
   initMachine(props) {
     return new VanillaMachine(machine, props);
   }
   initApi() {
     return this.zagConnect(connect);
   }
+  init = () => {
+    try {
+      this.machine.start();
+      this.api = this.initApi();
+      this.render();
+      this.unsubscribe = this.machine.subscribe(() => {
+        this.api = this.initApi();
+        this.render();
+      });
+      void this.settleAndSyncClones();
+    } finally {
+      this.el.removeAttribute("data-loading");
+    }
+  };
+  destroy = () => {
+    this.settleGeneration += 1;
+    this.teardownContentObserver();
+    this.el.removeAttribute("data-loading");
+    this.unsubscribe?.();
+    this.unsubscribe = void 0;
+    this.clearSpreadPropsCleanups();
+    this.machine.stop();
+  };
   buildDom() {
     const templateEl = this.el.querySelector(
       'template[data-part="items-template"]'
@@ -470,6 +505,7 @@ var Marquee = class extends Component {
       this.buildDom();
     }
     this.render();
+    void this.settleAndSyncClones();
   }
   render() {
     if (!this.items) return;
@@ -507,17 +543,83 @@ var Marquee = class extends Component {
         }
       }
       this.spreadProps(contentEl, this.api.getContentProps({ index: i }));
-      if (i > 0) {
-        contentEl.inert = true;
-      } else {
-        contentEl.inert = false;
-      }
+      contentEl.inert = false;
       contentEl.querySelectorAll('[data-part="item"]').forEach((itemEl) => {
         this.spreadProps(itemEl, this.api.getItemProps());
       });
     });
     const edgeEnd = root.querySelector('[data-part="edge"][data-side="end"]');
     if (edgeEnd) this.spreadProps(edgeEnd, this.api.getEdgeProps({ side: "end" }));
+  }
+  /** Rebuild clone tracks from the live primary items after layout/media settle. */
+  syncClonesFromPrimary() {
+    const primary = this.primaryContent();
+    if (!primary) return;
+    const liveItems = Array.from(
+      primary.querySelectorAll(':scope > [data-part="item"]')
+    );
+    if (liveItems.length === 0) return;
+    this.items = liveItems.map((el) => sanitizeClone(el));
+    const viewport = this.el.querySelector('[data-part="viewport"]');
+    if (!viewport) return;
+    const clones = Array.from(
+      viewport.querySelectorAll(':scope > [data-part="content"]:not([data-index="0"])')
+    );
+    for (const clone of clones) {
+      while (clone.firstChild) clone.removeChild(clone.firstChild);
+      this.fillCloneContent(clone);
+    }
+  }
+  async settleAndSyncClones() {
+    const generation = ++this.settleGeneration;
+    await this.waitForMedia();
+    if (generation !== this.settleGeneration) return;
+    this.syncClonesFromPrimary();
+    this.render();
+    this.observePrimaryContent();
+  }
+  async waitForMedia() {
+    const primary = this.primaryContent();
+    if (!primary) return;
+    const imgs = Array.from(primary.querySelectorAll("img"));
+    await Promise.all(
+      imgs.map((img) => {
+        if (typeof img.decode === "function") {
+          return img.decode().catch(() => void 0);
+        }
+        if (img.complete) return Promise.resolve();
+        return new Promise((resolve) => {
+          img.addEventListener("load", () => resolve(), { once: true });
+          img.addEventListener("error", () => resolve(), { once: true });
+        });
+      })
+    );
+    const fonts = document.fonts;
+    if (fonts?.ready) {
+      await fonts.ready.catch(() => void 0);
+    }
+  }
+  observePrimaryContent() {
+    this.teardownContentObserver();
+    const primary = this.primaryContent();
+    if (!primary || typeof ResizeObserver === "undefined") return;
+    this.contentResizeObserver = new ResizeObserver(() => {
+      cancelAnimationFrame(this.resizeRaf);
+      this.resizeRaf = requestAnimationFrame(() => {
+        this.syncClonesFromPrimary();
+        this.render();
+      });
+    });
+    this.contentResizeObserver.observe(primary);
+  }
+  teardownContentObserver() {
+    this.contentResizeObserver?.disconnect();
+    this.contentResizeObserver = null;
+    cancelAnimationFrame(this.resizeRaf);
+    this.resizeRaf = 0;
+  }
+  primaryContent() {
+    return this.el.querySelector('[data-part="content"][data-index="0"]');
   }
   fillPrimaryContent(contentEl) {
     if (!this.items) return;

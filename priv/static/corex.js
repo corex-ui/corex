@@ -13916,12 +13916,7 @@ var Corex = (() => {
       onValueChange: (details) => {
         var _a5;
         if (redirectOn) {
-          redirectCollectionItem(
-            el,
-            "combobox",
-            firstSelectedValue(details.value),
-            liveSocket
-          );
+          redirectCollectionItem(el, "combobox", firstSelectedValue(details.value), liveSocket);
         }
         syncComboboxHiddenInputForPhoenix(el, details.value, markFieldTouched);
         (_a5 = getCombobox()) == null ? void 0 : _a5.restoreFilteredOptions();
@@ -15418,7 +15413,9 @@ var Corex = (() => {
           if (!listEl) return;
           const desired = new Set(this.activeItems().map((item) => this.getItemValue(item)));
           const allValues = new Set(this.allOptions.map((item) => this.getItemValue(item)));
-          listEl.querySelectorAll('[data-scope="combobox"][data-part="item"]:not([data-template])').forEach((itemEl) => {
+          listEl.querySelectorAll(
+            '[data-scope="combobox"][data-part="item"]:not([data-template])'
+          ).forEach((itemEl) => {
             var _a4;
             if (itemEl.closest('[data-scope="combobox"][data-part="list"]') !== listEl) return;
             const value = (_a4 = itemEl.dataset.value) != null ? _a4 : "";
@@ -15516,9 +15513,7 @@ var Corex = (() => {
             parseItemsJson((_b = (_a4 = hook.lastItemsJson) != null ? _a4 : hook.el.getAttribute("data-items")) != null ? _b : "[]")
           );
           const itemsChanged = refreshItemsIfChanged(hook.el, hook, combobox);
-          const nextMembership = itemsMembershipKey(
-            parseItemsJson((_c = hook.lastItemsJson) != null ? _c : "[]")
-          );
+          const nextMembership = itemsMembershipKey(parseItemsJson((_c = hook.lastItemsJson) != null ? _c : "[]"));
           const membershipChanged = itemsChanged && prevMembership !== nextMembership;
           const pushEvent = hook.pushEvent.bind(hook);
           const canPush = () => canPushEvent(hook.liveSocket);
@@ -27833,12 +27828,7 @@ ${err}`);
       typeahead: getBoolean(el, "typeahead"),
       onValueChange: (details) => {
         if (redirectOn) {
-          redirectCollectionItem(
-            el,
-            "listbox",
-            firstSelectedValue(details.value),
-            liveSocket
-          );
+          redirectCollectionItem(el, "listbox", firstSelectedValue(details.value), liveSocket);
         }
         notifyChange({
           el,
@@ -28175,6 +28165,15 @@ ${err}`);
           node.removeAttribute(attr.name);
         }
       }
+      if (node instanceof HTMLButtonElement || node instanceof HTMLInputElement || node instanceof HTMLSelectElement || node instanceof HTMLTextAreaElement) {
+        node.disabled = true;
+        node.tabIndex = -1;
+      } else if (node instanceof HTMLAnchorElement) {
+        node.removeAttribute("href");
+        node.tabIndex = -1;
+      } else if (node.hasAttribute("tabindex")) {
+        node.tabIndex = -1;
+      }
     }
     return clone;
   }
@@ -28434,6 +28433,33 @@ ${err}`);
         constructor() {
           super(...arguments);
           __publicField(this, "items", null);
+          __publicField(this, "contentResizeObserver", null);
+          __publicField(this, "resizeRaf", 0);
+          __publicField(this, "settleGeneration", 0);
+          __publicField(this, "init", () => {
+            try {
+              this.machine.start();
+              this.api = this.initApi();
+              this.render();
+              this.unsubscribe = this.machine.subscribe(() => {
+                this.api = this.initApi();
+                this.render();
+              });
+              void this.settleAndSyncClones();
+            } finally {
+              this.el.removeAttribute("data-loading");
+            }
+          });
+          __publicField(this, "destroy", () => {
+            var _a4;
+            this.settleGeneration += 1;
+            this.teardownContentObserver();
+            this.el.removeAttribute("data-loading");
+            (_a4 = this.unsubscribe) == null ? void 0 : _a4.call(this);
+            this.unsubscribe = void 0;
+            this.clearSpreadPropsCleanups();
+            this.machine.stop();
+          });
         }
         initMachine(props) {
           return new VanillaMachine(machine16, props);
@@ -28484,6 +28510,7 @@ ${err}`);
             this.buildDom();
           }
           this.render();
+          void this.settleAndSyncClones();
         }
         render() {
           if (!this.items) return;
@@ -28521,17 +28548,88 @@ ${err}`);
               }
             }
             this.spreadProps(contentEl, this.api.getContentProps({ index: i2 }));
-            if (i2 > 0) {
-              contentEl.inert = true;
-            } else {
-              contentEl.inert = false;
-            }
+            contentEl.inert = false;
             contentEl.querySelectorAll('[data-part="item"]').forEach((itemEl) => {
               this.spreadProps(itemEl, this.api.getItemProps());
             });
           });
           const edgeEnd = root.querySelector('[data-part="edge"][data-side="end"]');
           if (edgeEnd) this.spreadProps(edgeEnd, this.api.getEdgeProps({ side: "end" }));
+        }
+        /** Rebuild clone tracks from the live primary items after layout/media settle. */
+        syncClonesFromPrimary() {
+          const primary = this.primaryContent();
+          if (!primary) return;
+          const liveItems = Array.from(
+            primary.querySelectorAll(':scope > [data-part="item"]')
+          );
+          if (liveItems.length === 0) return;
+          this.items = liveItems.map((el) => sanitizeClone(el));
+          const viewport = this.el.querySelector('[data-part="viewport"]');
+          if (!viewport) return;
+          const clones = Array.from(
+            viewport.querySelectorAll(':scope > [data-part="content"]:not([data-index="0"])')
+          );
+          for (const clone of clones) {
+            while (clone.firstChild) clone.removeChild(clone.firstChild);
+            this.fillCloneContent(clone);
+          }
+        }
+        settleAndSyncClones() {
+          return __async(this, null, function* () {
+            const generation = ++this.settleGeneration;
+            yield this.waitForMedia();
+            if (generation !== this.settleGeneration) return;
+            this.syncClonesFromPrimary();
+            this.render();
+            this.observePrimaryContent();
+          });
+        }
+        waitForMedia() {
+          return __async(this, null, function* () {
+            const primary = this.primaryContent();
+            if (!primary) return;
+            const imgs = Array.from(primary.querySelectorAll("img"));
+            yield Promise.all(
+              imgs.map((img) => {
+                if (typeof img.decode === "function") {
+                  return img.decode().catch(() => void 0);
+                }
+                if (img.complete) return Promise.resolve();
+                return new Promise((resolve) => {
+                  img.addEventListener("load", () => resolve(), { once: true });
+                  img.addEventListener("error", () => resolve(), { once: true });
+                });
+              })
+            );
+            const fonts = document.fonts;
+            if (fonts == null ? void 0 : fonts.ready) {
+              yield fonts.ready.catch(() => void 0);
+            }
+          });
+        }
+        observePrimaryContent() {
+          this.teardownContentObserver();
+          const primary = this.primaryContent();
+          if (!primary || typeof ResizeObserver === "undefined") return;
+          this.contentResizeObserver = new ResizeObserver(() => {
+            cancelAnimationFrame(this.resizeRaf);
+            this.resizeRaf = requestAnimationFrame(() => {
+              this.syncClonesFromPrimary();
+              this.render();
+            });
+          });
+          this.contentResizeObserver.observe(primary);
+        }
+        teardownContentObserver() {
+          var _a4;
+          (_a4 = this.contentResizeObserver) == null ? void 0 : _a4.disconnect();
+          this.contentResizeObserver = null;
+          cancelAnimationFrame(this.resizeRaf);
+          this.resizeRaf = 0;
+        }
+        primaryContent() {
+          return this.el.querySelector('[data-part="content"][data-index="0"]');
         }
         fillPrimaryContent(contentEl) {
           if (!this.items) return;
@@ -40062,7 +40160,6 @@ ${err}`);
       targetMs: getNumber(el, "targetMs"),
       autoStart: getBoolean(el, "autoStart"),
       interval: getNumber(el, "interval"),
-      orientation: getString(el, "orientation"),
       translations: parseTimerTranslations(el)
     }, buildTimerCallbacks(el, pushEvent, canPush));
   }
@@ -40383,7 +40480,6 @@ ${err}`);
           const canPush = () => canPushEvent(hook.liveSocket);
           const patch = __spreadValues({
             id: el.id,
-            orientation: getString(el, "orientation"),
             translations: parseTimerTranslations(el)
           }, buildTimerCallbacks(el, pushEvent, canPush));
           const startMsRaw = el.dataset.startMs;

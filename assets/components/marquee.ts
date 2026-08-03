@@ -20,6 +20,22 @@ function sanitizeClone(source: Element): HTMLElement {
         node.removeAttribute(attr.name);
       }
     }
+
+    // Keep clones hoverable for native title tooltips, but out of the tab order.
+    if (
+      node instanceof HTMLButtonElement ||
+      node instanceof HTMLInputElement ||
+      node instanceof HTMLSelectElement ||
+      node instanceof HTMLTextAreaElement
+    ) {
+      node.disabled = true;
+      node.tabIndex = -1;
+    } else if (node instanceof HTMLAnchorElement) {
+      node.removeAttribute("href");
+      node.tabIndex = -1;
+    } else if (node.hasAttribute("tabindex")) {
+      node.tabIndex = -1;
+    }
   }
 
   return clone;
@@ -29,6 +45,9 @@ type Schema = SchemaOf<typeof machine>;
 
 export class Marquee extends Component<Props, Api, Schema> {
   private items: HTMLElement[] | null = null;
+  private contentResizeObserver: ResizeObserver | null = null;
+  private resizeRaf = 0;
+  private settleGeneration = 0;
 
   initMachine(props: Props): VanillaMachine<Schema> {
     return new VanillaMachine(machine, props);
@@ -37,6 +56,31 @@ export class Marquee extends Component<Props, Api, Schema> {
   initApi(): Api {
     return this.zagConnect(connect);
   }
+
+  init = () => {
+    try {
+      this.machine.start();
+      this.api = this.initApi();
+      this.render();
+      this.unsubscribe = this.machine.subscribe(() => {
+        this.api = this.initApi();
+        this.render();
+      });
+      void this.settleAndSyncClones();
+    } finally {
+      this.el.removeAttribute("data-loading");
+    }
+  };
+
+  destroy = () => {
+    this.settleGeneration += 1;
+    this.teardownContentObserver();
+    this.el.removeAttribute("data-loading");
+    this.unsubscribe?.();
+    this.unsubscribe = undefined;
+    this.clearSpreadPropsCleanups();
+    this.machine.stop();
+  };
 
   buildDom(): void {
     const templateEl = this.el.querySelector<HTMLTemplateElement>(
@@ -89,6 +133,7 @@ export class Marquee extends Component<Props, Api, Schema> {
       this.buildDom();
     }
     this.render();
+    void this.settleAndSyncClones();
   }
 
   render(): void {
@@ -134,11 +179,10 @@ export class Marquee extends Component<Props, Api, Schema> {
       }
 
       this.spreadProps(contentEl, this.api.getContentProps({ index: i }));
-      if (i > 0) {
-        contentEl.inert = true;
-      } else {
-        contentEl.inert = false;
-      }
+      // Do not set inert on clones: it blocks native title tooltips on the
+      // duplicate strip users actually hover. Clones stay aria-hidden via
+      // content props; sanitizeClone strips ids/hooks and disables controls.
+      contentEl.inert = false;
 
       contentEl.querySelectorAll<HTMLElement>('[data-part="item"]').forEach((itemEl) => {
         this.spreadProps(itemEl, this.api.getItemProps());
@@ -147,6 +191,92 @@ export class Marquee extends Component<Props, Api, Schema> {
 
     const edgeEnd = root.querySelector<HTMLElement>('[data-part="edge"][data-side="end"]');
     if (edgeEnd) this.spreadProps(edgeEnd, this.api.getEdgeProps({ side: "end" }));
+  }
+
+  /** Rebuild clone tracks from the live primary items after layout/media settle. */
+  syncClonesFromPrimary(): void {
+    const primary = this.primaryContent();
+    if (!primary) return;
+
+    const liveItems = Array.from(
+      primary.querySelectorAll<HTMLElement>(':scope > [data-part="item"]')
+    );
+    if (liveItems.length === 0) return;
+
+    this.items = liveItems.map((el) => sanitizeClone(el));
+
+    const viewport = this.el.querySelector<HTMLElement>('[data-part="viewport"]');
+    if (!viewport) return;
+
+    const clones = Array.from(
+      viewport.querySelectorAll<HTMLElement>(':scope > [data-part="content"]:not([data-index="0"])')
+    );
+
+    for (const clone of clones) {
+      while (clone.firstChild) clone.removeChild(clone.firstChild);
+      this.fillCloneContent(clone);
+    }
+  }
+
+  private async settleAndSyncClones(): Promise<void> {
+    const generation = ++this.settleGeneration;
+    await this.waitForMedia();
+    if (generation !== this.settleGeneration) return;
+
+    this.syncClonesFromPrimary();
+    this.render();
+    this.observePrimaryContent();
+  }
+
+  private async waitForMedia(): Promise<void> {
+    const primary = this.primaryContent();
+    if (!primary) return;
+
+    const imgs = Array.from(primary.querySelectorAll("img"));
+    await Promise.all(
+      imgs.map((img) => {
+        if (typeof img.decode === "function") {
+          return img.decode().catch(() => undefined);
+        }
+        if (img.complete) return Promise.resolve();
+        return new Promise<void>((resolve) => {
+          img.addEventListener("load", () => resolve(), { once: true });
+          img.addEventListener("error", () => resolve(), { once: true });
+        });
+      })
+    );
+
+    const fonts = document.fonts;
+    if (fonts?.ready) {
+      await fonts.ready.catch(() => undefined);
+    }
+  }
+
+  private observePrimaryContent(): void {
+    this.teardownContentObserver();
+
+    const primary = this.primaryContent();
+    if (!primary || typeof ResizeObserver === "undefined") return;
+
+    this.contentResizeObserver = new ResizeObserver(() => {
+      cancelAnimationFrame(this.resizeRaf);
+      this.resizeRaf = requestAnimationFrame(() => {
+        this.syncClonesFromPrimary();
+        this.render();
+      });
+    });
+    this.contentResizeObserver.observe(primary);
+  }
+
+  private teardownContentObserver(): void {
+    this.contentResizeObserver?.disconnect();
+    this.contentResizeObserver = null;
+    cancelAnimationFrame(this.resizeRaf);
+    this.resizeRaf = 0;
+  }
+
+  private primaryContent(): HTMLElement | null {
+    return this.el.querySelector<HTMLElement>('[data-part="content"][data-index="0"]');
   }
 
   private fillPrimaryContent(contentEl: HTMLElement): void {
