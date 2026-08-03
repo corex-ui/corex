@@ -49,7 +49,7 @@
  font-size: var(--text-base);
  line-height: var(--text-base--line-height);
  font-weight: var(--font-weight-normal);
- color: color-mix(in oklab, var(--ctl-ink-text, var(--color-ink)) 72%, transparent);
+ color: var(--ctl-ink-text, var(--color-ink-muted));
  }
 
  .layout-heading [data-scope="layout-heading"][data-part="actions"] {
