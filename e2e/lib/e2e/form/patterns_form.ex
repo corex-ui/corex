@@ -62,8 +62,7 @@ defmodule E2e.Form.PatternsForm do
         :pin,
         :accent_color,
         :heading_angle,
-        :title,
-        :avatar
+        :title
       ],
       message: "can't be blank"
     )
