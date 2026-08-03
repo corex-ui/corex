@@ -15,7 +15,7 @@ defmodule E2eWeb.App.Shell do
   def footer, do: "bg-surface border-t border-border flex items-center min-h-size-lg"
 
   def footer_content,
-    do: "mx-auto w-full max-w-9xl flex flex-col gap-size-lg px-space-xl py-space min-h-size-lg"
+    do: "mx-auto w-full max-w-9xl flex flex-col gap-space-xl px-space-xl pt-space-xl pb-space min-h-size-lg"
 
   def wrapper, do: "flex flex-1 min-h-0 w-full min-w-0 bg-root relative mx-auto"
 
@@ -25,7 +25,7 @@ defmodule E2eWeb.App.Shell do
 
   def main, do: "flex flex-1 flex-col min-w-0 w-full relative mx-auto"
 
-  def docs_body, do: "flex flex-1 flex-col min-h-dvh w-full"
+  def docs_body, do: "flex flex-1 flex-col min-h-dvh w-full pb-size-xl"
 
   def content,
     do: "mx-auto flex w-full max-w-6xl flex-1 flex-col items-center gap-size px-space-xl py-size"
@@ -34,10 +34,10 @@ defmodule E2eWeb.App.Shell do
     do:
       "mx-auto flex w-full min-w-0 max-w-6xl flex-col items-center gap-size-lg text-ink rounded-md"
 
-  def content_marketing, do: "w-full px-space-xl"
+  def content_marketing, do: "w-full px-space-xl pb-size-xl"
 
   def content_blog,
-    do: "mx-auto w-full max-w-none px-space-xl py-size"
+    do: "mx-auto w-full max-w-none px-space-xl py-size pb-size-xl"
 
   def row, do: "flex items-center gap-space"
 

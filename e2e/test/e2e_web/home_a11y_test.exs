@@ -17,6 +17,10 @@ defmodule E2eWeb.HomeA11yTest do
     |> assert_has(css("#home-hero-interactive", visible: :any))
     |> assert_has(css("#hero-accordion", visible: :any))
     |> assert_has(css("#hero-events-table", visible: :any))
+    |> assert_has(css("#home-highlights", visible: :any))
+    |> assert_has(css("#home-tech-marquee", visible: :any))
+    |> assert_has(css("#home-installer", visible: :any))
+    |> assert_has(css("#home-installer-clipboard", visible: :any))
     |> assert_has(css("#home-footer", visible: :any))
     |> SiteModel.check_accessibility()
   end

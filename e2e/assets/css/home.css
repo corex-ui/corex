@@ -1,0 +1,24 @@
+/* Keep tip popovers above Code / sticky stacks on the installer */
+#home-installer .tooltip [data-scope="tooltip"][data-part="positioner"] {
+  z-index: 40;
+}
+
+/* Highlights marquee: soft edges against the page root */
+.home-highlights-marquee .marquee [data-scope="marquee"][data-part="edge"] {
+  --edge-background: var(--color-root);
+}
+
+/* Homepage section stacks need more air than space-* tokens alone */
+#home > section {
+  padding-block: var(--spacing-size-xl);
+}
+
+#home-highlights > div,
+#home-installer > div {
+  gap: var(--spacing-size-xl);
+}
+
+#home-highlights .home-highlights-marquee {
+  gap: var(--spacing-size-sm);
+  padding-block: var(--spacing-size-sm);
+}

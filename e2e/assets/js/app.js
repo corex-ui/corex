@@ -29,12 +29,13 @@ import "./doc_animation_custom.js"
 import AsideNavScroll from "./aside_nav_scroll.js"
 import GameBoard from "./game_board.js"
 import HomeHero from "./home_hero.js"
+import HomeInstaller from "./home_installer.js"
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: {_csrf_token: csrfToken},
-  hooks: {...colocatedHooks, ...corex, AsideNavScroll, GameBoard, HomeHero},
+  hooks: {...colocatedHooks, ...corex, AsideNavScroll, GameBoard, HomeHero, HomeInstaller},
 })
 
 topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})

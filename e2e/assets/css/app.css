@@ -16,6 +16,7 @@
 @import "./prose.css";
 @import "./blog.css";
 @import "./tetrex.css";
+@import "./home.css";
 
 @custom-variant phx-click-loading (.phx-click-loading&, .phx-click-loading &);
 @custom-variant phx-submit-loading (.phx-submit-loading&, .phx-submit-loading &);
