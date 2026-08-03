@@ -391,13 +391,9 @@ defmodule E2eWeb.Home.Page do
       trigger_tag={:span}
       positioning={%Corex.Positioning{placement: "top"}}
     >
-      <:trigger>
-        <span
-          class="inline-flex size-4 shrink-0 items-center justify-center text-ink-muted transition-colors hover:text-brand-text"
-          aria-label={~t"More info"}
-        >
-          <.heroicon name="hero-question-mark-circle" class="size-4" />
-        </span>
+      <:trigger class="inline-flex size-4 shrink-0 items-center justify-center text-ink-muted transition-colors hover:text-brand-text">
+        <.heroicon name="hero-question-mark-circle" class="size-4" />
+        <span class="sr-only">{~t"More info"}</span>
       </:trigger>
       <:content>
         <p class="m-0 max-w-xs text-pretty text-sm">{@content}</p>
