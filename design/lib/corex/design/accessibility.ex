@@ -25,8 +25,10 @@ defmodule Corex.Design.Accessibility do
 
   @doc false
   def axes do
-    Corex.Design.Config.resolved().accessibility
-    |> normalize_axes()
+    case Corex.Design.Config.resolved().accessibility do
+      axes when is_boolean(axes) or is_list(axes) -> normalize_axes(axes)
+      _other -> []
+    end
   end
 
   @doc false
@@ -94,7 +96,6 @@ defmodule Corex.Design.Accessibility do
   end
 
   defp normalize_axes(false), do: []
-  defp normalize_axes(nil), do: []
   defp normalize_axes(true), do: @axes
 
   defp normalize_axes(axes) when is_list(axes) do
@@ -105,8 +106,6 @@ defmodule Corex.Design.Accessibility do
     |> Enum.filter(&(&1 in allowed))
     |> Enum.uniq()
   end
-
-  defp normalize_axes(_), do: []
 
   @doc false
   def preferred_axes, do: @axes

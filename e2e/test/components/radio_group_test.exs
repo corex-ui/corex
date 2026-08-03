@@ -208,7 +208,7 @@ defmodule E2eWeb.RadioGroupTest do
       |> RadioGroup.wait_root_radio_group_ready("patterns-dynamic-2")
       |> assert_has(
         css(
-          ~s|#patterns-dynamic-2 [data-scope="radio-group"][data-part="item"][data-value="item-1"]|,
+          ~S|#patterns-dynamic-2 [data-scope="radio-group"][data-part="item"][data-value="item-1"]|,
           count: 0,
           visible: :any
         )

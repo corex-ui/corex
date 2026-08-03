@@ -179,8 +179,8 @@ defmodule Corex.Design.Emit.Preferences do
     entry = Path.join(output_root, "preferences.css")
     dir = Path.join(output_root, "tokens/preferences")
 
-    if File.exists?(entry), do: File.rm!(entry)
-    if File.dir?(dir), do: File.rm_rf!(dir)
+    _ = if File.exists?(entry), do: File.rm!(entry)
+    _ = if File.dir?(dir), do: File.rm_rf!(dir)
 
     :ok
   end
