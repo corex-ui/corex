@@ -76,6 +76,7 @@ defmodule Corex.Collapsible.Connect do
       "data-part" => "content",
       "data-collapsible" => "",
       "id" => "collapsible:#{assigns.id}:content",
+      "tabindex" => "0",
       "data-state" => data_state(assigns.open, "open", "closed"),
       "data-disabled" => assigns.disabled,
       "hidden" => !assigns.open,

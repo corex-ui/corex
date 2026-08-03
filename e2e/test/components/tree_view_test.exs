@@ -117,7 +117,7 @@ defmodule E2eWeb.TreeViewTest do
 
       session
       |> TreeView.click_in_section("tree-view-api-set-selected-client", "Select tree_view.ex")
-      |> TreeView.wait_item_selected_in_host(host, "repo-mix", timeout: 8_000)
+      |> TreeView.wait_item_selected_in_host(host, "repo-lib-tree-view-ex", timeout: 8_000)
     end
 
     feature "set selected (js)  -  Select leaf via CustomEvent sets selection", %{
@@ -132,7 +132,7 @@ defmodule E2eWeb.TreeViewTest do
 
       session
       |> TreeView.click_in_section("tree-view-api-set-selected-js", "Select tree_view.ex")
-      |> TreeView.wait_item_selected_in_host(host, "repo-mix", timeout: 8_000)
+      |> TreeView.wait_item_selected_in_host(host, "repo-lib-tree-view-ex", timeout: 8_000)
     end
 
     feature "set selected (server)  -  Select leaf via server sets selection", %{
@@ -148,7 +148,7 @@ defmodule E2eWeb.TreeViewTest do
 
       session
       |> TreeView.click_in_section("tree-view-api-set-selected-server", "Select tree_view.ex")
-      |> TreeView.wait_item_selected_in_host(host, "repo-mix", timeout: 8_000)
+      |> TreeView.wait_item_selected_in_host(host, "repo-lib-tree-view-ex", timeout: 8_000)
     end
   end
 

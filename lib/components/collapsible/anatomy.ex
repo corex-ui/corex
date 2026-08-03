@@ -92,7 +92,8 @@ defmodule Corex.Collapsible.Anatomy do
       "aria-labelledby",
       "style",
       "data-collapsible",
-      "data-has-collapsed-size"
+      "data-has-collapsed-size",
+      "tabindex"
     ]
     def ignored_attrs, do: @ignored_attrs
   end

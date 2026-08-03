@@ -132,6 +132,7 @@ defmodule Corex.Accordion.Connect do
       "data-scope" => "accordion",
       "data-part" => "item-content",
       "role" => "region",
+      "tabindex" => "0",
       "data-state" => if(expanded, do: "open", else: "closed"),
       "data-disabled" => presence_attr(assigns.disabled),
       "data-focus" => presence_attr(false),

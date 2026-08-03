@@ -626,6 +626,7 @@ defmodule Corex.AccordionTest do
       content_attrs = Connect.content(assigns)
 
       assert content_attrs["data-state"] == "open"
+      assert content_attrs["tabindex"] == "0"
       assert content_attrs["data-disabled"] == nil
       assert content_attrs["data-focus"] == nil
       assert content_attrs["data-orientation"] == "vertical"

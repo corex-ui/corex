@@ -184,6 +184,7 @@ defmodule Corex.CollapsibleTest do
       assert result["id"] == "collapsible:test-collapsible:content"
       assert result["data-state"] == "closed"
       assert result["hidden"] == true
+      assert result["tabindex"] == "0"
     end
 
     test "returns content attributes when open" do
@@ -191,6 +192,7 @@ defmodule Corex.CollapsibleTest do
       result = Connect.content(assigns)
       assert result["data-state"] == "open"
       assert result["hidden"] == false
+      assert result["tabindex"] == "0"
     end
   end
 
