@@ -55,7 +55,7 @@ defmodule Corex.New.MixProject do
 
   def deps do
     [
-      {:ex_doc, "~> 0.24", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.40", only: :docs, runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:oeditus_credo, "~> 0.6.3", only: [:dev, :test], runtime: false},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
@@ -83,6 +83,8 @@ defmodule Corex.New.MixProject do
 
   defp docs do
     [
+      main: "readme",
+      extras: ["README.md"],
       source_url_pattern: "#{@scm_url}/blob/v#{@version}/installer/%{path}#L%{line}"
     ]
   end

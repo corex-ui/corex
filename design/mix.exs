@@ -128,6 +128,7 @@ defmodule CorexDesign.MixProject do
         Design: [
           Corex.Design,
           Corex.Design.Config,
+          Corex.Design.Config.Resolved,
           Corex.Design.Config.Schema,
           Mix.Tasks.Corex.Design.Build,
           Mix.Tasks.Corex.Design.Options,
@@ -143,6 +144,7 @@ defmodule CorexDesign.MixProject do
       MapSet.new([
         Corex.Design,
         Corex.Design.Config,
+        Corex.Design.Config.Resolved,
         Corex.Design.Config.Schema,
         Mix.Tasks.Corex.Design.Build,
         Mix.Tasks.Corex.Design.Options,

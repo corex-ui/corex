@@ -1,15 +1,6 @@
 defmodule Corex.Design.Config.Resolved do
   @moduledoc """
   The `config :corex_design` entry after defaults are applied.
-
-  A config may arrive as a keyword list or a map, with keys absent or set to
-  `nil`. Every consumer used to re-derive the same defaults through
-  `Keyword.get(flat, :default_theme, :uno)`, so the fallback lived in as many
-  places as it was read and could drift between them. The struct   fixes the shape
-  and the defaults in one place, and a typo in a key now fails to compile.
-
-  `:scales` is a keyword list, which the schema enforces before this struct is
-  built; an absent or `nil` value reads as no overrides.
   """
 
   alias Corex.Design.Keys

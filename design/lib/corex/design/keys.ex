@@ -1,11 +1,5 @@
 defmodule Corex.Design.Keys do
-  @moduledoc """
-  Key handling for the theme spec maps that arrive from user config.
-
-  A spec written in `config.exs` may use atom or string keys at any level, and
-  before this module each consumer carried its own `map_get/3`. Everything that
-  reads a spec goes through here instead.
-  """
+  @moduledoc false
 
   @doc """
   Reads `key` from a spec map, accepting either an atom or a string key.

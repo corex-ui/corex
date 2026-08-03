@@ -1,13 +1,5 @@
 defmodule Corex.Design.Emit.Css do
-  @moduledoc """
-  The CSS shapes every emitter writes: the generated-file banner, a custom
-  property declaration, and a block of them under a selector.
-
-  Each emitter used to spell these out with `<>` and `Enum.map_join/3`, which
-  copies the whole document once per join and had the two-space indent and the
-  `\\n}\\n` terminator repeated at a dozen call sites. These return iodata, which
-  `Corex.Design.Write.atomic!/2` writes without flattening.
-  """
+  @moduledoc false
 
   @header "/**\n * Do not edit directly, this file was auto-generated.\n */\n\n"
 

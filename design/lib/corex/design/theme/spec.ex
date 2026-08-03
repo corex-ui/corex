@@ -1,16 +1,5 @@
 defmodule Corex.Design.Theme.Spec do
-  @moduledoc """
-  The normalized shape of one theme, as the emitters read it.
-
-  A theme is authored as a nested map with atom or string keys and any subset of
-  the keys present, so before normalization every reader guessed at the shape with
-  `Map.get(spec, :dimensions, %{})`. The guess made two failures look alike: a key
-  the author genuinely omitted, and a key a normalization bug dropped. These
-  structs make the shape total, so an omitted key reads as `nil` or an empty map
-  by construction and a wrong key raises at the point it is written.
-
-  `Corex.Design.Theme.normalize_input_spec/1` is the only way in.
-  """
+  @moduledoc false
 
   alias Corex.Design.Theme.Spec.Dimensions
   alias Corex.Design.Theme.Spec.Mode
@@ -28,10 +17,7 @@ defmodule Corex.Design.Theme.Spec do
             typography: nil
 
   defmodule Mode do
-    @moduledoc """
-    One color mode: a flat map of public token names to Color-native defs
-    (`:l` or `:contrast`).
-    """
+    @moduledoc false
 
     @type token :: map()
 
@@ -43,12 +29,7 @@ defmodule Corex.Design.Theme.Spec do
   end
 
   defmodule Dimensions do
-    @moduledoc """
-    The per-theme scale multipliers, radius overrides and font stacks.
-
-    Every scale defaults to `nil` rather than `1.0`: `nil` means "inherit from
-    `:scale`", which is not the same as an explicit `1.0` when `:scale` is set.
-    """
+    @moduledoc false
 
     @type t :: %__MODULE__{
             scale: float() | nil,

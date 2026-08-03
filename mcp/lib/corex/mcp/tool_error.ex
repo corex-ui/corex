@@ -1,14 +1,5 @@
 defmodule Corex.MCP.ToolError do
-  @moduledoc """
-  Two error shapes, both naming the tool and the offending parameter.
-
-  `invalid_arguments/2` and `unknown_value/3` return a JSON-RPC error map: the
-  request violates the tool's `inputSchema`, so the caller has a bug to fix.
-
-  `unknown_id/3` and `unavailable/2` return a message string, which the server
-  turns into an `isError: true` tool result: the request was well formed but the
-  tool could not answer it, and the agent is expected to read the hint and retry.
-  """
+  @moduledoc false
 
   @invalid_params -32_602
 

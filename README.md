@@ -1,12 +1,10 @@
-# Installation
+# Corex
 
 ![Hex.pm License](https://img.shields.io/hexpm/l/corex)
 ![Hex.pm Version](https://img.shields.io/hexpm/v/corex)
 [![Coverage Status](https://coveralls.io/repos/github/corex-ui/corex/badge.svg?branch=main)](https://coveralls.io/github/corex-ui/corex?branch=main)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/corex-ui/corex/elixir.yml)
 ![GitHub branch check runs](https://img.shields.io/github/check-runs/corex-ui/corex/main)
-
-## Introduction
 
 **The Phoenix UI with a real API.** Accessible, unstyled Phoenix components with a full server-and-client API, powered by [Zag.js](https://zagjs.com) state machines.
 
@@ -17,6 +15,11 @@
 
 With `{:corex, "~> 0.2.0"}`, patch releases stay backward compatible within 0.2.x. See [Updating Corex](https://hexdocs.pm/corex/update.html).
 
+## Requirements
+
+- **Elixir** `~> 1.17`
+- **JSON:** OTP 27+ uses native `:json`. On OTP 24–26, add `{:json_polyfill, "~> 0.2 or ~> 1.0"}` (the installer adds it for `--lang` / `--design`).
+
 ## Packages
 
 | Package | Kind | Purpose | `mix corex.new` |
@@ -26,7 +29,9 @@ With `{:corex, "~> 0.2.0"}`, patch releases stay backward compatible within 0.2.
 | [`corex_mcp`](https://hex.pm/packages/corex_mcp) | Hex dep (`only: [:dev, :test]`) | Dev MCP server for AI component and design discovery ([MCP](https://hexdocs.pm/corex/MCP.html)); never enable in `:prod` | On by default; `--no-mcp` to skip |
 | [`corex_new`](https://hex.pm/packages/corex_new) | Mix archive | Greenfield generator (`mix corex.new`) | Install once with `mix archive.install hex corex_new` |
 
-## New Corex application
+## Installation
+
+### New Corex application
 
 Install the archives once:
 
@@ -51,9 +56,9 @@ mix corex.new my_app --mode --theme --lang
 
 Run **`mix help corex.new`** or see **`Mix.Tasks.Corex.New`** in Hexdocs for every Corex-only flag.
 
-## Existing Phoenix application
+### Existing Phoenix application
 
-Follow the [manual installation guide](https://hexdocs.pm/corex/manual_installation.html)
+Follow the [manual installation guide](https://hexdocs.pm/corex/manual_installation.html).
 
 ## Try your first component
 
