@@ -28,7 +28,8 @@ defmodule E2eWeb.HomePageTest do
     assert html =~ "lg:grid-cols-2"
     refute html =~ "md:grid-cols-2"
     refute html =~ "max-h-28"
-    assert html =~ ~S(id="site-nav-menu")
+    assert html =~ ~S(id="site-nav-dialog")
+    assert html =~ "aria-label=\"Main navigation\""
     assert html =~ "phx-hook=\"HomeHero\""
     assert html =~ "hero-accordion-changed"
     assert html =~ "data-hero-accordion-value"
@@ -39,7 +40,6 @@ defmodule E2eWeb.HomePageTest do
     refute html =~ ~S(id="home-api")
     refute html =~ ~S(id="home-cta")
     refute html =~ ~S(id="home-catalog")
-    refute html =~ "dialog--side"
   end
 
   test "docs page uses classic sticky header chrome", %{conn: conn} do
@@ -48,8 +48,9 @@ defmodule E2eWeb.HomePageTest do
 
     refute html =~ ~S(id="home-header")
     refute html =~ ~S(id="home-footer")
-    refute html =~ "dialog--side"
-    assert html =~ ~S(id="site-nav-menu")
+    assert html =~ ~S(id="site-nav-dialog")
+    assert html =~ "dialog--side"
+    assert html =~ "aria-label=\"Main navigation\""
     assert html =~ "sticky top-0"
     assert html =~ "border-b border-border"
   end

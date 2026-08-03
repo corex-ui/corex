@@ -82,7 +82,7 @@ defmodule E2eWeb.TabsTest do
         |> Tabs.wait_host_tabs_ready(host)
 
       session
-      |> Tabs.click_in_section("tabs-api-set-value-client-js", "Lorem (client JS)")
+      |> Tabs.click_in_section("tabs-api-set-value-client-js", "Lorem")
       |> Tabs.wait_trigger_selected_by_label_in_host(host, "Lorem", timeout: 8_000)
     end
 

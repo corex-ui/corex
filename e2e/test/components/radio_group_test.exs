@@ -188,28 +188,27 @@ defmodule E2eWeb.RadioGroupTest do
 
     feature "dynamic  -  Add item then select it; Reset removes it", %{session: session} do
       section = "radio-group-patterns-dynamic"
-      host = "patterns-dynamic"
 
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(RadioGroup, :radio_group, :patterns)
         |> RadioGroup.wait_patterns_page()
-        |> RadioGroup.wait_root_radio_group_ready(host)
+        |> RadioGroup.wait_root_radio_group_ready("patterns-dynamic-0")
 
       session =
         session
         |> RadioGroup.click_button_in_section(section, "Add item")
-        |> RadioGroup.wait_root_radio_group_ready(host)
-        |> RadioGroup.click_item_by_host_id(host, "item-1")
+        |> RadioGroup.wait_root_radio_group_ready("patterns-dynamic-1")
+        |> RadioGroup.click_item_by_host_id("patterns-dynamic-1", "item-1")
 
-      assert RadioGroup.item_checked_by_host_id?(session, host, "item-1")
+      assert RadioGroup.item_checked_by_host_id?(session, "patterns-dynamic-1", "item-1")
 
       session
       |> RadioGroup.click_button_in_section(section, "Reset")
-      |> RadioGroup.wait_root_radio_group_ready(host)
+      |> RadioGroup.wait_root_radio_group_ready("patterns-dynamic-2")
       |> assert_has(
         css(
-          ~s|##{host} [data-scope="radio-group"][data-part="item"][data-value="item-1"]|,
+          ~s|#patterns-dynamic-2 [data-scope="radio-group"][data-part="item"][data-value="item-1"]|,
           count: 0,
           visible: :any
         )

@@ -31,11 +31,14 @@ defmodule E2eWeb.DataListTest do
       )
     end
 
-    feature "custom slots section renders tags", %{session: session} do
-      session =
-        ComponentBehaviorSpec.visit_ready(session, DataList, :data_list, :anatomy)
-
-      assert_has(session, css("#data-list-anatomy-custom-slots .badge", minimum: 1))
+    feature "custom slots section renders icons and content", %{session: session} do
+      session
+      |> ComponentBehaviorSpec.visit_ready(DataList, :data_list, :anatomy)
+      |> DataList.see_in_section("data-list-anatomy-custom-slots", "Lorem ipsum dolor sit amet")
+      |> DataList.see_in_section(
+        "data-list-anatomy-custom-slots",
+        "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
+      )
     end
 
     feature "empty section renders empty message", %{session: session} do
