@@ -101,17 +101,68 @@ defmodule Corex.Design.Tokens.Colors do
 
   defp resolve_contrast_token(tokens, seeds, name, cfg, contrast) do
     seed = seed_hex(seeds, cfg.seed)
-    bg = contrast_bg!(tokens, cfg.against)
     target = boost_target(name, cfg.target, contrast)
 
-    {hex, _achieved} =
-      if String.ends_with?(name, "-contrast") or String.ends_with?(name, "-text") do
-        DesignColor.against_or_pick(seed, bg, target)
+    hex =
+      if String.ends_with?(name, "-text") do
+        resolve_text_hex(tokens, seed, cfg.against, target)
       else
-        DesignColor.against(seed, bg, target)
+        bg = contrast_bg!(tokens, cfg.against)
+
+        {hex, _achieved} =
+          if String.ends_with?(name, "-contrast") do
+            DesignColor.against_or_pick(seed, bg, target)
+          else
+            DesignColor.against(seed, bg, target)
+          end
+
+        hex
       end
 
     Map.put(tokens, name, hex)
+  end
+
+  defp resolve_text_hex(tokens, seed, against, target) do
+    bgs =
+      [to_string(against), "ui", "ui-hover", "ui-active"]
+      |> Enum.uniq()
+      |> Enum.filter(&Map.has_key?(tokens, &1))
+      |> Enum.map(&Map.fetch!(tokens, &1))
+      |> Enum.uniq()
+
+    if bgs == [] do
+      raise ArgumentError,
+            "contrast against #{inspect(against)} missing; known: #{inspect(Map.keys(tokens))}"
+    end
+
+    Enum.find_value(text_targets(target), fn try_target ->
+      candidates =
+        Enum.map(bgs, fn bg ->
+          {hex, _} = DesignColor.against_or_pick(seed, bg, try_target)
+          hex
+        end)
+
+      best = Enum.max_by(candidates, &min_contrast_ratio(&1, bgs))
+
+      if min_contrast_ratio(best, bgs) >= 4.5 do
+        best
+      else
+        nil
+      end
+    end) ||
+      Enum.max_by(["#000000", "#FFFFFF"], &min_contrast_ratio(&1, bgs))
+  end
+
+  defp text_targets(target) do
+    [target, target * 1.15, target * 1.3, target * 1.5, target * 1.75, 9.0]
+    |> Enum.map(&(&1 * 1.0))
+    |> Enum.uniq()
+  end
+
+  defp min_contrast_ratio(hex, bgs) do
+    bgs
+    |> Enum.map(&Color.Contrast.wcag_ratio(hex, &1))
+    |> Enum.min()
   end
 
   defp contrast_bg!(tokens, against) do
