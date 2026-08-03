@@ -15,7 +15,8 @@ defmodule E2eWeb.App.Shell do
   def footer, do: "bg-surface border-t border-border flex items-center min-h-size-lg"
 
   def footer_content,
-    do: "mx-auto w-full max-w-9xl flex flex-col gap-space-xl px-space-xl pt-space-xl pb-space min-h-size-lg"
+    do:
+      "mx-auto w-full max-w-9xl flex flex-col gap-space-xl px-space-xl pt-space-xl pb-space min-h-size-lg"
 
   def wrapper, do: "flex flex-1 min-h-0 w-full min-w-0 bg-root relative mx-auto"
 

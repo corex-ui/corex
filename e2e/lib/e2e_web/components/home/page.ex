@@ -200,8 +200,8 @@ defmodule E2eWeb.Home.Page do
         class="relative isolate flex min-h-dvh w-full flex-col justify-center overflow-x-hidden border-t border-border py-size-xl"
         aria-labelledby="home-installer-heading"
         phx-hook="HomeInstaller"
-        data-archives-phoenix={"mix archive.install hex phx_new\nmix archive.install hex corex_new"}
-        data-archives-tableau={"mix archive.install hex tableau_new\nmix archive.install hex corex_new"}
+        data-archives-phoenix="mix archive.install hex phx_new\nmix archive.install hex corex_new"
+        data-archives-tableau="mix archive.install hex tableau_new\nmix archive.install hex corex_new"
       >
         <div class="relative z-1 mx-auto flex w-full max-w-6xl flex-col gap-size-xl px-space">
           <div class="flex flex-col gap-space-lg text-center lg:text-start">
@@ -226,7 +226,9 @@ defmodule E2eWeb.Home.Page do
                   <span class="text-sm font-semibold text-ink">{~t"Generator"}</span>
                   <.installer_tip
                     id="home-installer-tip-generator"
-                    content={~t"Phoenix scaffolds a LiveView server app. Tableau scaffolds a static site."}
+                    content={
+                      ~t"Phoenix scaffolds a LiveView server app. Tableau scaffolds a static site."
+                    }
                   />
                 </div>
                 <.toggle_group
@@ -248,7 +250,9 @@ defmodule E2eWeb.Home.Page do
                   <span class="text-sm font-semibold text-ink">{~t"App name"}</span>
                   <.installer_tip
                     id="home-installer-tip-name"
-                    content={~t"Project folder name. Use lowercase letters, numbers, and underscores."}
+                    content={
+                      ~t"Project folder name. Use lowercase letters, numbers, and underscores."
+                    }
                   />
                 </div>
                 <.native_input
@@ -268,7 +272,9 @@ defmodule E2eWeb.Home.Page do
                   <span class="text-sm font-semibold text-ink">{~t"Defaults"}</span>
                   <.installer_tip
                     id="home-installer-tip-defaults"
-                    content={~t"Included unless you turn them off. Deselecting adds the matching --no-* flag."}
+                    content={
+                      ~t"Included unless you turn them off. Deselecting adds the matching --no-* flag."
+                    }
                   />
                 </div>
                 <.toggle_group
@@ -293,7 +299,9 @@ defmodule E2eWeb.Home.Page do
                   <span class="text-sm font-semibold text-ink">{~t"Add-ons"}</span>
                   <.installer_tip
                     id="home-installer-tip-addons"
-                    content={~t"Extra capabilities you opt into. Each selection appends its --flag to the command."}
+                    content={
+                      ~t"Extra capabilities you opt into. Each selection appends its --flag to the command."
+                    }
                   />
                 </div>
                 <.toggle_group
@@ -318,15 +326,19 @@ defmodule E2eWeb.Home.Page do
               <.installer_terminal
                 id_prefix="home-installer-archives"
                 label={~t"Archives"}
-                tip={~t"One-time Mix archive install so the generators are available on your machine."}
-                code={"mix archive.install hex phx_new\nmix archive.install hex corex_new"}
+                tip={
+                  ~t"One-time Mix archive install so the generators are available on your machine."
+                }
+                code="mix archive.install hex phx_new\nmix archive.install hex corex_new"
                 clipboard_id="home-installer-archives-clipboard"
               />
 
               <.installer_terminal
                 id_prefix="home-installer-command"
                 label={~t"Command"}
-                tip={~t"Live preview of mix corex.new / mix corex.tableau.new from your selections. Copy and paste into a terminal."}
+                tip={
+                  ~t"Live preview of mix corex.new / mix corex.tableau.new from your selections. Copy and paste into a terminal."
+                }
                 code="mix corex.new my_app"
                 clipboard_id="home-installer-clipboard"
               />

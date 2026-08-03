@@ -105,8 +105,10 @@ defmodule Corex.Design.Tokens.Contrast do
       {"#{role}-contrast", "#{role}-hover", @text_ratio, :error, "#{role} solid text (hover)"},
       {"#{role}-contrast", "#{role}-active", @text_ratio, :error, "#{role} solid text (active)"},
       {"#{role}-text", "ui", @text_ratio, :error, "#{role} text on neutral control"},
-      {"#{role}-text", "ui-hover", @text_ratio, :error, "#{role} text on neutral control (hover)"},
-      {"#{role}-text", "ui-active", @text_ratio, :error, "#{role} text on neutral control (active/open)"},
+      {"#{role}-text", "ui-hover", @text_ratio, :error,
+       "#{role} text on neutral control (hover)"},
+      {"#{role}-text", "ui-active", @text_ratio, :error,
+       "#{role} text on neutral control (active/open)"},
       {"#{role}-contrast", "#{role}-muted", @ui_ratio, :warning, "#{role} disabled solid text"}
     ]
   end

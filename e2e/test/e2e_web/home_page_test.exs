@@ -122,15 +122,15 @@ defmodule E2eWeb.HomePageTest do
     assert html =~ "tableau_new"
     assert html =~ "data-archives-phoenix"
     assert html =~ "data-archives-tableau"
-    assert html =~ ~s(data-value="phoenix")
-    assert html =~ ~s(data-value="tableau")
-    assert html =~ ~s(data-value="design")
-    assert html =~ ~s(data-value="mcp")
-    assert html =~ ~s(data-value="usage-rules")
-    assert html =~ ~s(data-value="mode")
-    assert html =~ ~s(data-value="theme")
-    assert html =~ ~s(data-value="a11y")
-    assert html =~ ~s(data-value="lang")
+    assert html =~ ~S(data-value="phoenix")
+    assert html =~ ~S(data-value="tableau")
+    assert html =~ ~S(data-value="design")
+    assert html =~ ~S(data-value="mcp")
+    assert html =~ ~S(data-value="usage-rules")
+    assert html =~ ~S(data-value="mode")
+    assert html =~ ~S(data-value="theme")
+    assert html =~ ~S(data-value="a11y")
+    assert html =~ ~S(data-value="lang")
     assert html =~ "for=\"home-installer-name-input\""
     assert html =~ "data-scope=\"code\""
     assert html =~ "data-part=\"content\""

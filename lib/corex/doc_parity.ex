@@ -214,15 +214,13 @@ defmodule Corex.DocParity do
   defp doc_with_anatomy(_slug, source) do
     moduledoc = extract_moduledoc(source)
 
-    cond do
-      is_binary(moduledoc) and String.contains?(moduledoc, "## Anatomy") ->
-        moduledoc
-
-      true ->
-        case extract_component_doc(source) do
-          doc when is_binary(doc) -> doc
-          _ -> moduledoc
-        end
+    if is_binary(moduledoc) and String.contains?(moduledoc, "## Anatomy") do
+      moduledoc
+    else
+      case extract_component_doc(source) do
+        doc when is_binary(doc) -> doc
+        _ -> moduledoc
+      end
     end
   end
 
