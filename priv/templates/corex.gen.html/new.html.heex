@@ -4,7 +4,7 @@
   theme={@theme}<% end %><%= if layout_locale_paths do %>
   locale={@locale}
 <% end %><%= if layout_locale_assigns do %>
-  current_path={@current_path}<% end %><%= if scope do %>
+  current_path={@conn.request_path}<% end %><%= if scope do %>
   <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>
 >
 <% else %><Layouts.app flash={@flash}><% end %>

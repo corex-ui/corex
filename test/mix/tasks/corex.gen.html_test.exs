@@ -272,7 +272,7 @@ defmodule Mix.Tasks.Corex.Gen.HtmlTest do
       index =
         File.read!(Path.join([tmp, "web/controllers", "#{singular}_html", "index.html.heex"]))
 
-      assert index =~ "current_path={@current_path}"
+      assert index =~ "current_path={@conn.request_path}"
       assert index =~ ~s(~p"/\#{@locale}/#{plural}/new")
     end)
   end

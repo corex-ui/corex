@@ -76,13 +76,13 @@ defmodule Corex.Integration.CodeGeneration.FullStackWithOptionsTest do
         modify_file(router_path, fn file ->
           inject_before_final_end(file, """
 
-            scope "/", PhxBlogWeb do
+            scope "/", CorexBlogWeb do
               pipe_through [:browser]
 
               resources "/users", UserController
             end
 
-            scope "/", PhxBlogWeb do
+            scope "/", CorexBlogWeb do
               pipe_through [:browser]
 
               live "/admins", AdminLive.Index, :index

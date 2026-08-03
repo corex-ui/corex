@@ -39,7 +39,7 @@ defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
         modify_file(Path.join(app_root_path, "lib/corex_blog_web/router.ex"), fn file ->
           inject_before_final_end(file, """
 
-            scope "/", PhxBlogWeb do
+            scope "/", CorexBlogWeb do
               pipe_through [:browser]
 
               resources "/posts", PostController
@@ -65,7 +65,7 @@ defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
         modify_file(Path.join(app_root_path, "lib/corex_blog_web/router.ex"), fn file ->
           inject_before_final_end(file, """
 
-            scope "/", PhxBlogWeb do
+            scope "/", CorexBlogWeb do
               pipe_through [:browser]
 
               resources "/posts", PostController
@@ -93,7 +93,7 @@ defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
         modify_file(Path.join(app_root_path, "lib/corex_blog_web/router.ex"), fn file ->
           inject_before_final_end(file, """
 
-            scope "/api", PhxBlogWeb do
+            scope "/api", CorexBlogWeb do
               pipe_through [:api]
 
               resources "/posts", PostController, except: [:new, :edit]
@@ -119,7 +119,7 @@ defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
         modify_file(Path.join(app_root_path, "lib/corex_blog_web/router.ex"), fn file ->
           inject_before_final_end(file, """
 
-            scope "/api", PhxBlogWeb do
+            scope "/api", CorexBlogWeb do
               pipe_through [:api]
 
               resources "/posts", PostController, except: [:new, :edit]
@@ -146,7 +146,7 @@ defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
         modify_file(Path.join(app_root_path, "lib/corex_blog_web/router.ex"), fn file ->
           inject_before_final_end(file, """
 
-            scope "/", PhxBlogWeb do
+            scope "/", CorexBlogWeb do
               pipe_through [:browser]
 
               live "/posts", PostLive.Index, :index
@@ -175,7 +175,7 @@ defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
         modify_file(Path.join(app_root_path, "lib/corex_blog_web/router.ex"), fn file ->
           inject_before_final_end(file, """
 
-            scope "/", PhxBlogWeb do
+            scope "/", CorexBlogWeb do
               pipe_through [:browser]
 
               live "/posts", PostLive.Index, :index
