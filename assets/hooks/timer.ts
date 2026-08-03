@@ -1,6 +1,5 @@
 import { Timer } from "../components/timer";
 import type { Api, Props, TickDetails } from "@zag-js/timer";
-import type { Orientation } from "@zag-js/types";
 
 import { getString, getBoolean, getNumber, getDir, canPushEvent } from "../lib/util";
 import { createZagLiveHook } from "../lib/zag-live-hook";
@@ -141,7 +140,6 @@ function buildTimerProps(
     targetMs: getNumber(el, "targetMs"),
     autoStart: getBoolean(el, "autoStart"),
     interval: getNumber(el, "interval"),
-    orientation: getString<Orientation>(el, "orientation"),
     translations: parseTimerTranslations(el),
     ...buildTimerCallbacks(el, pushEvent, canPush),
   } as Props;
@@ -241,7 +239,6 @@ const TimerHook = createZagLiveHook<TimerHookState, Timer>({
 
     const patch: Partial<Props> = {
       id: el.id,
-      orientation: getString<Orientation>(el, "orientation"),
       translations: parseTimerTranslations(el),
       ...buildTimerCallbacks(el, pushEvent, canPush),
     };
