@@ -101,11 +101,13 @@ defmodule Corex.MixProject do
     end
   end
 
+  # Gate on OTP release, not Code.ensure_loaded?(:json). After json_polyfill
+  # compiles it defines :json, so an ensure_loaded? check can drop the dep on
+  # Mix reload and raise "Unknown dependency json_polyfill for environment …".
   defp maybe_json_polyfill do
-    if Code.ensure_loaded?(:json) do
-      []
-    else
-      [{:json_polyfill, "~> 0.2 or ~> 1.0"}]
+    case Integer.parse(System.otp_release()) do
+      {otp, _} when otp >= 27 -> []
+      _ -> [{:json_polyfill, "~> 0.2 or ~> 1.0"}]
     end
   end
 
@@ -160,6 +162,7 @@ defmodule Corex.MixProject do
         "cmd npm run check"
       ],
       "release.check": ["hex.audit", "lint", "test", "assets.build"],
+      # CVE/outdated Hex+npm PRs: .github/dependabot.yml (weekly)
       "pre.publish": ["release.check"],
       "hex.build": ["hex.build"],
       tidewave:
