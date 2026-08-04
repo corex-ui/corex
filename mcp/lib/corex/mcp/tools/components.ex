@@ -282,16 +282,16 @@ defmodule Corex.MCP.Tools.Components do
   defp api_functions(mod) do
     case Code.ensure_loaded(mod) do
       {:module, ^mod} ->
-        heex =
+        components =
           if function_exported?(mod, :__components__, 0) do
-            MapSet.new(Map.keys(mod.__components__()))
+            mod.__components__()
           else
-            MapSet.new()
+            %{}
           end
 
         mod.__info__(:functions)
         |> Enum.filter(fn {name, arity} ->
-          arity in 2..4 and not MapSet.member?(heex, name) and api_name?(name)
+          arity in 2..4 and not Map.has_key?(components, name) and api_name?(name)
         end)
         |> Enum.group_by(&elem(&1, 0), &elem(&1, 1))
         |> Enum.map(fn {name, arities} ->
