@@ -10,11 +10,13 @@
  pointer-events: auto;
  max-width: var(--container-xs);
  padding: 0;
- overflow: hidden;
+ /* visible so Zag ghost-after can bridge gaps between stacked toasts */
+ overflow: visible;
  translate: var(--x) var(--y);
- scale: var(--scale);
+ scale: var(--scale, 1);
  z-index: var(--z-index);
- height: var(--height);
+ /* Stable height — avoid first-height → initial-height snap on expand */
+ height: var(--initial-height);
  opacity: var(--opacity);
  will-change: translate, opacity, scale;
 
@@ -22,7 +24,6 @@
  translate 400ms cubic-bezier(0.21, 1.02, 0.73, 1),
  scale 400ms cubic-bezier(0.21, 1.02, 0.73, 1),
  opacity 400ms cubic-bezier(0.21, 1.02, 0.73, 1),
- height 400ms cubic-bezier(0.21, 1.02, 0.73, 1),
  box-shadow 200ms;
 
  &[data-state="closed"] {
@@ -31,6 +32,12 @@
  scale 400ms cubic-bezier(0.06, 0.71, 0.55, 1),
  opacity 200ms cubic-bezier(0.06, 0.71, 0.55, 1);
  }
+ }
+
+ /* Expanded stack: bridge full spacing (overrides Zag's gap+2px inline height) */
+ .toast [data-scope="toast"][data-part="root"][data-stack] [data-ghost="after"] {
+ height: max(calc(var(--gap) + 2px), var(--offset)) !important;
+ pointer-events: auto;
  }
 
  .toast [data-scope="toast"][data-part="content"] {

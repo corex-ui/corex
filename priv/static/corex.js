@@ -41942,7 +41942,21 @@ ${err}`);
           return this.zagConnect(group.connect);
         }
         render() {
-          this.spreadProps(this.groupEl, this.api.getGroupProps());
+          const groupProps = this.api.getGroupProps();
+          const onMouseLeave = groupProps.onMouseLeave;
+          this.spreadProps(this.groupEl, __spreadProps(__spreadValues({}, groupProps), {
+            // Zag expands on enter and collapses on leave. During the expand
+            // animation, gaps between absolutely positioned toasts can fire a
+            // brief mouseleave → collapse → re-enter flash. Defer leave until
+            // the pointer is actually outside the group.
+            onMouseLeave: (event) => {
+              requestAnimationFrame(() => {
+                if (!this.groupEl.matches(":hover")) {
+                  onMouseLeave == null ? void 0 : onMouseLeave(event);
+                }
+              });
+            }
+          }));
           const toasts = this.api.getToasts().filter((t2) => typeof t2.id === "string");
           const nextIds = new Set(toasts.map((t2) => t2.id));
           toasts.forEach((toastData, index) => {
