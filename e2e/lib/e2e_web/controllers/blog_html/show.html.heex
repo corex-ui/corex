@@ -13,6 +13,7 @@
     <section class="blog__post-body" aria-label={~t"Article"}>
       <div class="blog__inner">
         <div class="blog__article-shell typo markdown prose max-w-none">
+          <%!-- Trusted markdown HTML only; sanitize if posts are user-authored. --%>
           {@post.html |> Phoenix.HTML.raw()}
         </div>
       </div>

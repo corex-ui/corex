@@ -1,4 +1,10 @@
 defmodule E2e.Accounts.User do
+  @moduledoc """
+  Demo-only user schema for the Corex e2e app.
+
+  Passwords are stored in **plaintext** on purpose for form demos — do not copy
+  this pattern into production apps (use `phx.gen.auth` / hashing instead).
+  """
   use Ecto.Schema
   import Ecto.Changeset
 

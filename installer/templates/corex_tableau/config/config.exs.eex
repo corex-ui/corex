@@ -62,7 +62,7 @@ config :tableau, :config,
         autolink: true,
         footnotes: true
       ],
-      render: [unsafe: true],
+      render: [unsafe: true], # trusted authors only — sanitize or set unsafe: false for user content
       syntax_highlight: nil
     ]
   ]

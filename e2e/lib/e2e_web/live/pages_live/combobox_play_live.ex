@@ -251,7 +251,7 @@ defmodule E2eWeb.ComboboxPlayLive do
             <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
             <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
             <:item :let={item}>
-              <Flagpack.flag name={String.to_atom(item.value)} />
+              <Flagpack.flag name={String.to_existing_atom(to_string(item.value))} />
               {item.label}
             </:item>
             <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>

@@ -10,6 +10,11 @@ defmodule Mix.Tasks.Corex.Design.Build do
 
     * `--output` — destination directory (default from `config :corex_design` or `assets/corex`)
     * `--config` — path to an Elixir config script whose keyword list is applied as `config :corex_design`
+
+  ## Security
+
+  `--config` is loaded with `Code.eval_file/1`. Only pass a **trusted** local path
+  (your own project config). Never evaluate untrusted or user-uploaded files.
   """
 
   @impl Mix.Task

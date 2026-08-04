@@ -21,6 +21,7 @@ config :corex_web,
       alerts: true,
       footnotes: true
     ],
+    # trusted authors only — sanitize or set unsafe: false for user content
     render: [unsafe: true],
     syntax_highlight: nil
   ]

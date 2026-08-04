@@ -1,4 +1,10 @@
 defmodule E2e.Accounts.Admin do
+  @moduledoc """
+  Demo-only admin schema for the Corex e2e app.
+
+  Passwords are stored in **plaintext** and `/admins` routes are unauthenticated —
+  do not copy this into production apps.
+  """
   use Ecto.Schema
   import Ecto.Changeset
 

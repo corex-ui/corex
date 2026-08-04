@@ -56,6 +56,7 @@ defmodule E2eWeb.Router do
       live("/showcases/tetrex/:id/watch", TetrexLive, :watch)
       live("/showcases/tetrex/:id", TetrexLive, :show)
 
+      # Demo-only CRUD — no auth. Do not copy into production apps.
       live("/admins", AdminLive.Index, :index)
       live("/admins/new", AdminLive.Form, :new)
       live("/admins/:id", AdminLive.Show, :show)
