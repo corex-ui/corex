@@ -34,28 +34,36 @@ defmodule <%= @app_module %>.HomePage do
               aria-label={~t"Highlights"}
             >
               <li class="relative flex items-start gap-x-space text-pretty text-start text-sm text-ink-muted">
-                <span class="mt-space-xs shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
+                <span class="mt-space-xs shrink-0 text-success-text">
+                  <.heroicon name="hero-check" />
+                </span>
                 <span>
                   <strong class="font-semibold text-ink">{~t"Server & client API."}</strong>
                   {~t"Drive every component from LiveView or JavaScript and listen back from either side."}
                 </span>
               </li>
               <li class="relative flex items-start gap-x-space text-pretty text-start text-sm text-ink-muted">
-                <span class="mt-space-xs shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
+                <span class="mt-space-xs shrink-0 text-success-text">
+                  <.heroicon name="hero-check" />
+                </span>
                 <span>
                   <strong class="font-semibold text-ink">{~t"LiveView-native."}</strong>
                   {~t"Update props at runtime without resetting component state."}
                 </span>
               </li>
               <li class="relative flex items-start gap-x-space text-pretty text-start text-sm text-ink-muted">
-                <span class="mt-space-xs shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
+                <span class="mt-space-xs shrink-0 text-success-text">
+                  <.heroicon name="hero-check" />
+                </span>
                 <span>
                   <strong class="font-semibold text-ink">{~t"Truly unstyled."}</strong>
                   {~t"Bring your own CSS or opt into Corex Design tokens, themes and modes."}
                 </span>
               </li>
               <li class="relative flex items-start gap-x-space text-pretty text-start text-sm text-ink-muted">
-                <span class="mt-space-xs shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
+                <span class="mt-space-xs shrink-0 text-success-text">
+                  <.heroicon name="hero-check" />
+                </span>
                 <span>
                   <strong class="font-semibold text-ink">{~t"Accessible by default."}</strong>
                   {~t"Keyboard, focus and ARIA wired in by Zag.js state machines."}
@@ -211,28 +219,36 @@ end
               aria-label="Highlights"
             >
               <li class="relative flex items-start gap-x-space text-pretty text-start text-sm text-ink-muted">
-                <span class="mt-space-xs shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
+                <span class="mt-space-xs shrink-0 text-success-text">
+                  <.heroicon name="hero-check" />
+                </span>
                 <span>
                   <strong class="font-semibold text-ink">Server & client API.</strong>
                   Drive every component from LiveView or JavaScript and listen back from either side.
                 </span>
               </li>
               <li class="relative flex items-start gap-x-space text-pretty text-start text-sm text-ink-muted">
-                <span class="mt-space-xs shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
+                <span class="mt-space-xs shrink-0 text-success-text">
+                  <.heroicon name="hero-check" />
+                </span>
                 <span>
                   <strong class="font-semibold text-ink">LiveView-native.</strong>
                   Update props at runtime without resetting component state.
                 </span>
               </li>
               <li class="relative flex items-start gap-x-space text-pretty text-start text-sm text-ink-muted">
-                <span class="mt-space-xs shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
+                <span class="mt-space-xs shrink-0 text-success-text">
+                  <.heroicon name="hero-check" />
+                </span>
                 <span>
                   <strong class="font-semibold text-ink">Truly unstyled.</strong>
                   Bring your own CSS or opt into Corex Design tokens, themes and modes.
                 </span>
               </li>
               <li class="relative flex items-start gap-x-space text-pretty text-start text-sm text-ink-muted">
-                <span class="mt-space-xs shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
+                <span class="mt-space-xs shrink-0 text-success-text">
+                  <.heroicon name="hero-check" />
+                </span>
                 <span>
                   <strong class="font-semibold text-ink">Accessible by default.</strong>
                   Keyboard, focus and ARIA wired in by Zag.js state machines.
