@@ -73,12 +73,14 @@ Corner radius on roundable surfaces. Orthogonal to size and semantic role.
 
 Not every component exposes a radius axis (for example `icon`, `link`, `typo`).
 
-## Shape (buttons and badges)
+## Shape (buttons, badges, and toggles)
 
 | Class | Example |
 | ----- | ------- |
-| Square | `button ui-trigger--square` |
-| Circle | `button ui-trigger--circle` |
+| Square | `button ui-trigger--square`, `toggle ui-trigger--square` |
+| Circle | `button ui-trigger--circle`, `toggle ui-ghost ui-size-sm ui-trigger--circle` |
+
+For `toggle` and `select`, put the shape modifier on the **host** (`.toggle` / `.select`); design recipes forward it to the nested trigger part.
 
 ## Width
 

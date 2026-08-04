@@ -41,4 +41,21 @@
     > span:not([data-scope]):not([data-pressed]) {
     display: none;
   }
+
+  .toggle.ui-trigger--square [data-scope="toggle"][data-part="root"] {
+    aspect-ratio: 1 / 1;
+    padding: 0;
+    justify-content: center;
+    width: auto;
+    border-radius: var(--radius-sm);
+    --ctl-radius: var(--radius-sm);
+  }
+
+  .toggle.ui-trigger--circle [data-scope="toggle"][data-part="root"] {
+    aspect-ratio: 1 / 1;
+    padding: 0;
+    justify-content: center;
+    width: auto;
+    border-radius: var(--radius-full) !important;
+  }
 }
