@@ -23,6 +23,11 @@ defmodule Corex.DocParity.Markers do
       "minimal" => ["minimal_code"],
       "title and description" => ["with_title_description_code"]
     },
+    "layout_heading" => %{
+      "basic" => ["with_actions_code"],
+      "heading tags" => ["heading_tags_code"],
+      "title and subtitle only" => ["title_and_subtitle_code"]
+    },
     "avatar" => %{
       "fallback" => ["anatomy_fallback_code"],
       "pending" => ["anatomy_pending_code"],

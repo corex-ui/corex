@@ -245,7 +245,8 @@ defmodule Corex.DocParity do
     end
   end
 
-  defp valid_basename?(name), do: name =~ ~r/^[a-z][a-z0-9_.-]*$/
+  # Allow nested component paths like "layout/heading.ex" while blocking traversal.
+  defp valid_basename?(name), do: name =~ ~r/^[a-z][a-z0-9_.-]*(\/[a-z][a-z0-9_.-]*)*$/
 
   defp safe_read(path, base) do
     expanded_base = Path.expand(base) <> "/"

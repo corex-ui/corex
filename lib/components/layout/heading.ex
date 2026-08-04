@@ -11,9 +11,11 @@ defmodule Corex.Layout.Heading do
   ```heex
   <.layout_heading class="layout-heading">
     <:title>Page Title</:title>
-    <:subtitle>Optional subtitle or context</:subtitle>
+    <:subtitle>Controller View</:subtitle>
     <:actions>
-      <.action phx-click="save" class="button ui-accent">Save</.action>
+      <.navigate to={~p"/"} type="href" class="button">
+        <.heroicon name="hero-arrow-left" class="icon" /> Back
+      </.navigate>
     </:actions>
   </.layout_heading>
   ```
@@ -24,8 +26,8 @@ defmodule Corex.Layout.Heading do
 
   ```heex
   <.layout_heading class="layout-heading">
-    <:title>Settings</:title>
-    <:subtitle>Manage your preferences</:subtitle>
+    <:title>Page Title</:title>
+    <:subtitle>Controller View</:subtitle>
   </.layout_heading>
   ```
 
