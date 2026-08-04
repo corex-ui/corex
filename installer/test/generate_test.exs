@@ -393,7 +393,7 @@ defmodule Corex.New.GenerateTest do
       router = File.read!("lib/my_app_web/router.ex")
       refute router =~ ~s(get "/design", PageController, :design)
       refute router =~ ~s(get "/guides", PageController, :guides)
-      assert router =~ ~s|get("/", PageController, :home)|
+      assert router =~ ~s(get "/", PageController, :home)
 
       page_controller = File.read!("lib/my_app_web/controllers/page_controller.ex")
       refute page_controller =~ "def design(conn"
@@ -447,8 +447,8 @@ defmodule Corex.New.GenerateTest do
       assert web_ex =~ "path_prefixes"
 
       router = File.read!("lib/my_app_web/router.ex")
-      assert router =~ "plug(MyAppWeb.Plugs.Mode)"
-      assert router =~ "plug(MyAppWeb.Plugs.Theme)"
+      assert router =~ "plug MyAppWeb.Plugs.Mode"
+      assert router =~ "plug MyAppWeb.Plugs.Theme"
 
       config = File.read!("config/config.exs")
       assert config =~ "config :corex"

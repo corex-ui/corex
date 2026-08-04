@@ -201,9 +201,11 @@ defmodule Corex.New.Patches do
       |> maybe_insert_theme_plug(web_module, opts, path)
       |> maybe_insert_accessibility_plug(web_module, opts, path)
       |> maybe_duplicate_locale_scope(web_module, opts)
+      |> normalize_router_whitespace()
 
+    # Match phx_new / phx.gen.auth: inject plugs without Code.format_string!,
+    # which would add parentheses and fail the app's Phoenix formatter check.
     write_if_changed!(path, content, updated)
-    Shared.format_elixir_source!(path)
   end
 
   @doc """
@@ -978,6 +980,13 @@ defmodule Corex.New.Patches do
   # Matches both `plug Mod` and formatter output `plug(Mod)`.
   defp router_plug_present?(content, plug_ref) do
     Regex.match?(~r/plug\s*\(?\s*#{Regex.escape(plug_ref)}\b/u, content)
+  end
+
+  # Drop blank lines immediately after `do` (e.g. phx.new --no-dashboard
+  # leaves an empty line before `scope "/dev"`). Avoids bare Code.format_string!
+  # which parenthesizes plugs and breaks `mix format --check-formatted`.
+  defp normalize_router_whitespace(content) do
+    Regex.replace(~r/ do\n\n(\s+\S)/u, content, " do\n\\1")
   end
 
   defp insert_after_fetch_live_flash(content, addition, path, what) do
