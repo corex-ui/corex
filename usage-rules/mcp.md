@@ -26,7 +26,7 @@ URL: `http://localhost:4000/corex/mcp`
 
 ## Cursor
 
-`.cursor/mcp.json`:
+`.cursor/mcp.json` (written by `mix corex.new` / `mix corex.tableau.new` when `--mcp`):
 
 ```json
 {
@@ -37,6 +37,8 @@ URL: `http://localhost:4000/corex/mcp`
   }
 }
 ```
+
+Prefer `--no-mcp` for locked-down scaffolds. Never set `allow_remote_access: true` casually.
 
 ## Claude Desktop
 
@@ -57,11 +59,15 @@ URL: `http://localhost:4000/corex/mcp`
 
 | Tool | When |
 |------|------|
-| `list_components` | First |
-| `get_component` | Second — valid `id` only (attrs, slots, modifiers when design loaded) |
+| `list_components` | First — ids plus `form_capable` |
+| `get_component` | Second — structured hook/events/api/data_builders/form/attrs/slots (optional `include_docs`) |
+| `search_docs` | Usage-rules / Hexdocs search in-process |
+| `navigation_guide` | Links, actions, redirect-on-select patterns |
 | `list_modifiers` / `get_component_style` | Styling / `ui-*` classes |
 | `list_themes` / `design_guide` | Theme and design setup |
-| `installation_guide` | Install questions — `scenario`: `new_project`, `existing_project`, `all` |
+| `installation_guide` | Install questions — `scenario`: `new_project`, `existing_project`, `tableau_new`, or omit for `all` |
+
+Prompts: `corex_form`, `corex_controlled`, `corex_style`.
 
 ## Troubleshooting
 

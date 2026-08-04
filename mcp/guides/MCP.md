@@ -48,7 +48,7 @@ Point any client that supports streamable HTTP MCP at the running URL above.
 
 ### Cursor
 
-Create or edit `.cursor/mcp.json` in your project:
+Create or edit `.cursor/mcp.json` in your project (`mix corex.new` / `mix corex.tableau.new` write this when `--mcp` is on):
 
 ```json
 {
@@ -60,7 +60,7 @@ Create or edit `.cursor/mcp.json` in your project:
 }
 ```
 
-For Tableau Bandit, use `http://localhost:4004` (or your configured port) instead.
+For Tableau Bandit, use `http://localhost:4004/corex/mcp` (or your configured port). Prefer `--no-mcp` for locked-down scaffolds. Never set `allow_remote_access: true` casually.
 
 ### Claude Desktop
 
@@ -89,13 +89,17 @@ All tools are read-only.
 
 | Tool | Purpose |
 | ---- | ------- |
-| `list_components` | All component ids (`accordion`, `date_picker`, …) |
-| `get_component` | Module, attrs/slots, docs, and design modifiers when available |
+| `list_components` | All component ids plus `form_capable` summary |
+| `get_component` | Hook, events, api, data_builders, form, attrs/slots; optional `include_docs`; snake or kebab `id` |
+| `search_docs` | Search usage-rules / guide markdown (`query`) |
+| `navigation_guide` | Links, actions, redirect-on-select patterns |
 | `list_modifiers` | Shared `ui-*` vocabulary (optional `axis` filter) |
 | `get_component_style` | CSS id, axes, examples, layout for one id (needs `corex_design`) |
 | `list_themes` | Theme presets and modes (needs `corex_design`) |
 | `design_guide` | Setup / modifiers / theming / dark mode copy-paste (`topic`) |
 | `installation_guide` | Install steps (`scenario`: `new_project`, `existing_project`, `tableau_new`, or omit for `all`) |
+
+Prompts: `corex_form`, `corex_controlled`, `corex_style` (via `prompts/list` / `prompts/get`).
 
 Call `list_components` before `get_component` when you need a valid `id`. Invalid tool arguments return an MCP error instead of being silently ignored.
 

@@ -4,7 +4,7 @@
 
 **API** (`corex:api`) = imperative commands (`Corex.Accordion.set_value/3`, `<.action phx-click={…}>`).
 
-Event names and payloads differ per component. Always read Hexdocs **Events** section or MCP `get_component` — never invent attrs.
+Event names and payloads differ per component. Always read Hexdocs **Events**, or MCP `get_component` structured `events` / `on_*` attrs — never invent attrs.
 
 ## Server events (LiveView)
 

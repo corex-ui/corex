@@ -287,11 +287,11 @@ If your `app.css` still imports the stock **daisyUI** plugin from `phx.new`, rem
 
 Finally, set **`data-theme`** and **`data-mode`** on **`<html>`** so token files such as `theme/neo.css` and light/dark palettes apply. Use values that match your imports and toggles (for example `data-theme="neo"` when you import `../corex/theme/neo.css`, and `data-mode="light"` or `data-mode="dark"`). Sections [8](#8-optional-theme-wiring) and [9](#9-optional-mode-wiring) wire these from plugs and bridge scripts; the picker UI is in [Theming](theming.html) and [Dark mode](dark_mode.html).
 
-Give **`<body>`** the **`typo`** and **`layout`** classes so base typography and the layout shell apply:
+Give **`<body>`** the **`typo`** class so base typography applies (use Tailwind utilities for page layout):
 
 ```heex
 <html lang="en" data-theme="neo" data-mode="light">
-  <body class="typo layout">
+  <body class="typo">
     {@inner_content}
   </body>
 </html>
@@ -306,10 +306,10 @@ To render Phoenix flash (and LiveView flash) as Corex toasts instead of the defa
 ```heex
 <.toast_group id="layout-toast" class="toast" flash={@flash}>
   <:loading>
-    <.heroicon name="hero-arrow-path" class="icon" />
+    <.heroicon name="hero-arrow-path" />
   </:loading>
   <:close>
-    <.heroicon name="hero-x-mark" class="icon" />
+    <.heroicon name="hero-x-mark" />
   </:close>
 </.toast_group>
 ```
@@ -335,7 +335,7 @@ Optionally, add the connection-state toasts so users see feedback when the socke
 
 Make sure every LiveView and controller view that uses this layout passes `flash={@flash}` into it (e.g. `<Layouts.app flash={@flash} ...>`).
 
-See `Corex.Toast` for `create/5`, `create/6`, `update/3`, `update/4`, `remove/2`, `remove/3`, and `dismiss/2` / `dismiss/3`. Pass `action: %{label: "…", js: %Phoenix.LiveView.JS{}}` with `JS.push`, `JS.patch`, or `JS.navigate` composed in `js`.
+See `Corex.Toast` for `create/5`, `create/6`, `update/3`, `update/4`, `remove/2`, `remove/3`, and `dismiss/2` / `dismiss/3`. Pass `action: %{label: "…", js: %Phoenix.LiveView.JS{}}` on **server** `create/6` / `update/4` only (client bindings ignore `:action`). Compose `js` with `JS.push`, `JS.patch`, or `JS.navigate`.
 
 ## Optional: Theme wiring {: #optional-theme-wiring}
 
@@ -460,6 +460,14 @@ Also:
 
 - [Design](design.html) modifiers, bundle filtering, and themes
 - [Forms](forms.html) `field`, validation, and `auto_invalid`
-- [MCP](https://hexdocs.pm/corex_mcp/MCP.html) AI tooling in development
+- [MCP](https://hexdocs.pm/corex_mcp/MCP.html) AI tooling in development (`mix corex.new` writes `.cursor/mcp.json`; use `--no-mcp` to skip)
 - [Production](production.html) prod build and run
 - [Updating Corex](update.html) migrate an existing app
+
+### Logger parameter filtering
+
+Phoenix only filters params containing `"password"` by default. Expand the filter for tokens and secrets:
+
+```elixir
+config :phoenix, :filter_parameters, ["password", "secret", "token", "otp", "_key", "api_key"]
+```

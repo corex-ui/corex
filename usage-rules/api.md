@@ -68,13 +68,15 @@ Use `assign_async/3` in `mount/3`.
 </.toast_group>
 ```
 
-Programmatic: `Corex.Toast.create/5`, `update/3`, `remove/2`, `dismiss/2`.
+Programmatic (JS commands): `create/5`, `update/3`, `remove/2`, `dismiss/2`. Socket helpers: `create/6`, `update/4`, `remove/3`, `dismiss/3` (socket first).
+
+Toast `:action` (label + `js`, optional HTML label) works only on server `create/6` / `update/4`. Client bindings and DOM events ignore actions. HTML labels must be developer-controlled — never pass user input.
 
 ## Discovery
 
-1. MCP `get_component { id: "<name>" }`
+1. MCP `get_component { id: "<name>" }` — structured `api` field (and markdown `docs` if `include_docs: true`)
 2. Hexdocs `Corex.<Name>` API section
-3. `mix usage_rules.search_docs "<name> set_value" -p corex`
+3. MCP `search_docs` or `mix usage_rules.search_docs "<name> set_value" -p corex`
 
 Never invent helper names.
 

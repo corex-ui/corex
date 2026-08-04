@@ -38,6 +38,6 @@ Pair `controlled`, `value`, and `on_value_change`:
 
 ## Discovery
 
-MCP `get_component { id: "<name>" }` → API section, or `mix usage_rules.search_docs "set_value" -p corex`.
+MCP `get_component { id: "<name>" }` → structured `api`, or `search_docs` / `mix usage_rules.search_docs "set_value" -p corex`.
 
 Full checklist: sub-rule `corex:api`.

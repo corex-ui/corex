@@ -33,7 +33,7 @@ Actions and form submit. Can bind imperative API:
 
 ## Redirect on select — list components
 
-Set `redirect` on the component. Build items with `Corex.List.new/1` or `Corex.List.Item.new/1`.
+Set `redirect` on the component. Build flat list items with `Corex.List.new/1` or `Corex.List.Item.new/1`; build `menu` / `tree_view` items with `Corex.Tree.new/1` or `Corex.Tree.Item.new/1`.
 
 **Component attr:** `redirect` (boolean) — navigate when user selects an item.
 
@@ -45,7 +45,7 @@ Set `redirect` on the component. Build items with `Corex.List.new/1` or `Corex.L
 | `:redirect` | `:href` (default), `:patch`, `:navigate`, or `false` |
 | `:new_tab` | Open external link in new tab |
 
-Components supporting `redirect`: `select`, `menu`, `combobox`, `listbox`, `pagination`.
+Components supporting `redirect`: `select`, `menu`, `combobox`, `listbox`, `tree_view`, `pagination`.
 
 ### Language switcher example
 
@@ -111,7 +111,7 @@ Corex.List.Item.new(%{
 |------|-----|
 | Static link in markup | `<.navigate>` |
 | Button action / submit | `<.action>` |
-| Pick destination from list (locale, menu, theme) | `redirect` on select/menu/combobox |
+| Pick destination from list (locale, menu, theme, tree) | `redirect` on select/menu/combobox/tree_view |
 | Server logic before navigate | `on_value_change` + `redirect/2` in `handle_event` instead of `redirect` attr |
 
 ## References

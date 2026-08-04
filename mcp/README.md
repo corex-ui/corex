@@ -39,9 +39,11 @@ if Mix.env() in [:dev, :test] do
 end
 ```
 
-Point your MCP client at `http://localhost:4000/corex/mcp`.
+Point your MCP client at `http://localhost:4000/corex/mcp`. Prefer `--no-mcp` when scaffolding apps that should not expose the endpoint. Never set `allow_remote_access: true` casually.
 
 ### Cursor
+
+`mix corex.new` / `mix corex.tableau.new` write `.cursor/mcp.json` when `--mcp` is on (default). Manual example:
 
 `.cursor/mcp.json`:
 
@@ -55,7 +57,7 @@ Point your MCP client at `http://localhost:4000/corex/mcp`.
 }
 ```
 
-See the [MCP guide](guides/MCP.md) for Claude Desktop, VS Code, Tableau Bandit wiring, tools, and security. Also on Corex Hexdocs: [MCP](https://hexdocs.pm/corex/MCP.html).
+Canonical guide (tools, security, Tableau Bandit): [MCP on Hexdocs](https://hexdocs.pm/corex/MCP.html) / repo [`guides/MCP.md`](https://github.com/corex-ui/corex/blob/main/guides/MCP.md).
 
 ## License
 

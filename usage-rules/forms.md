@@ -87,6 +87,25 @@ Both Corex `select` (with `multiple`) and `tags_input` submit `name[]` automatic
 - Import matching CSS: `native-input.css`, `checkbox.css`, etc.
 - Register hooks for interactive inputs in `app.js`
 
+## Error messages and `invalid` styling
+
+Pass `field={@form[:name]}` so the component picks up ids, names, and errors.
+
+- **Messages** render through the `:error` slot when the field has errors and was used.
+- **Alert borders** (`data-invalid`) stay off by default. Pass `auto_invalid` to derive them from visible errors, `invalid={true}` to force, or `invalid={false}` to suppress when `auto_invalid` is also set.
+
+```heex
+<.checkbox field={@form[:terms]} auto_invalid class="checkbox">
+  <:label>Accept terms</:label>
+</.checkbox>
+
+<.select field={@form[:country]} auto_invalid controlled class="select" items={Corex.List.new([…])}>
+  <:label>Country</:label>
+</.select>
+```
+
+Form-bound `select` / `combobox` / `listbox` need `controlled` when using `field={…}` with LiveView.
+
 ## References
 
 - https://hexdocs.pm/corex/manual_installation.html

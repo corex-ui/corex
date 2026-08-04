@@ -3,7 +3,7 @@ name: corex-design
 description: >-
   Load when styling with ui-accent ui-solid ui-size-lg ui-rounded-xl
   modifiers, editing site.css app.css @import @source "../corex",
-  data-theme data-mode on html, typo layout on body, calling Corex MCP
+  data-theme data-mode on html, typo on body, calling Corex MCP
   list_modifiers get_component_style list_themes, or when tempted to
   add custom BEM CSS in templates. Never invent class names.
 ---
@@ -12,7 +12,7 @@ description: >-
 
 ## Rules
 
-No custom CSS in templates — modifiers only. `.typo layout` on body. Remove daisyUI.
+No custom CSS in templates — modifiers only. `.typo` on body. Remove daisyUI.
 
 ```css
 @import "../corex/corex.css";

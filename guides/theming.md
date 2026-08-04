@@ -49,10 +49,10 @@ def theme_toggle(assigns) do
     <:label class="sr-only">Theme</:label>
     <:item :let={item}>{item.label}</:item>
     <:trigger>
-      <.heroicon name="hero-swatch" class="icon" />
+      <.heroicon name="hero-swatch" />
     </:trigger>
     <:item_indicator>
-      <.heroicon name="hero-check" class="icon" />
+      <.heroicon name="hero-check" />
     </:item_indicator>
   </.select>
   """

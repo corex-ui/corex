@@ -49,11 +49,15 @@ mix corex.design.build
 | Axis | Examples | Notes |
 |------|----------|-------|
 | Semantic | `ui-accent`, `ui-brand`, `ui-success` | palette roles on the host |
-| Variant | `ui-solid`, `ui-ghost` | surface treatment; subtle is default (no class). Not used on switch, checkbox, radio-group, input fields, or selection hosts (toggle, toggle-group, etc.) |
-| Size | `ui-size-sm`, `ui-size-md`, `ui-size-lg`, `ui-size-xl` | padding, control height, and font size |
+| Variant | `ui-solid`, `ui-ghost` | surface treatment; subtle is default (no class). Not used on switch, checkbox, radio-group, input fields, or selection hosts |
+| Size | `ui-size-sm` … `ui-size-xl` | padding, control height, and font size |
 | Radius | `ui-rounded-sm`, `ui-rounded-xl` | corner radius on roundable surfaces |
+| Width | `ui-width-auto`, `ui-width-full`, `ui-width-4xs` | container ladder on hosts |
+| Max height | `ui-max-height-xs` … | scrollable panel clamp on host |
+| Shape | `ui-trigger--square`, `ui-trigger--circle` | buttons, badges, toggles (on host) |
+| Nav link | `ui-nav` | chrome-less `<.navigate class="link ui-nav">` |
 
-Size scales text; there is no separate text modifier axis. See the [modifier guide](modifiers.html). Use Tailwind `w-*` and `max-w-*` with the container ladder on layout components; each component also has an intrinsic default width in its CSS.
+Size scales text; there is no separate text modifier axis. Full vocabulary: Hexdocs [modifier guide](https://hexdocs.pm/corex_design/modifiers.html) and MCP `list_modifiers` / `get_component_style`. Use Tailwind `w-*` / `max-w-*` with the container ladder on layout components.
 
 ## Semantic ink tokens
 

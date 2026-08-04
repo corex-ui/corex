@@ -2,9 +2,10 @@
 name: corex-forms
 description: >-
   Load when building Phoenix forms with to_form, phx-change validate, phx-submit,
-  field={@form[:name]}, native_input checkbox select switch radio_group in
-  lib/*_web/*_form_live.ex or *_form_live.ex, or when asked about Corex form
-  inputs. Corex has no .form component — use Phoenix.Component.to_form/1.
+  field={@form[:name]}, auto_invalid, controlled select/combobox/listbox,
+  native_input checkbox select switch radio_group in lib/*_web/*_form_live.ex
+  or *_form_live.ex, or when asked about Corex form inputs. Corex has no .form
+  component — use Phoenix.Component.to_form/1.
 ---
 
 # Corex forms
@@ -28,6 +29,8 @@ def handle_event("validate", %{"profile" => params}, socket) do
   {:noreply, assign(socket, :form, to_form(changeset, action: :validate, as: :profile, id: "profile-form"))}
 end
 ```
+
+Pass `auto_invalid` on inputs when you want `data-invalid` borders from visible changeset errors. Form-bound `select`, `combobox`, and `listbox` need `controlled` with `field={@form[:…]}`.
 
 Import matching CSS (`native-input.css`, etc.) and register hooks. MCP `get_component` for `field` attr on each input.
 

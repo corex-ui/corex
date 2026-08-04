@@ -77,7 +77,7 @@ Runtime pickers use `config :my_app, :themes` (and cookies / localStorage). Keep
 
 ```heex
 <html lang="en" data-theme="neo" data-mode="light">
-  <body class="typo layout">
+  <body class="typo">
     {@inner_content}
   </body>
 </html>

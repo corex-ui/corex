@@ -34,6 +34,6 @@ end
 
 `on_value_change_client="accordion-value-changed"` → `CustomEvent` on component root. Listener wrapper needs `phx-update="ignore"`.
 
-Never invent event names — MCP `get_component` lists them per component.
+Never invent event names — MCP `get_component` returns structured `events` plus `on_*` attrs.
 
 Full checklist: sub-rule `corex:events`.

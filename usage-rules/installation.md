@@ -14,7 +14,7 @@ Defaults: Corex Design, `corex_mcp` + MCP plug in `:dev`/`:test` only.
 | Flag | Effect |
 |------|--------|
 | `--no-design` | Skip `corex_design` dep; ship static neo/light `assets/corex/` (not compatible with `--mode`/`--theme`/`--a11y`) |
-| `--no-mcp` | Skip `corex_mcp` dep and MCP plug |
+| `--no-mcp` | Skip `corex_mcp` dep, MCP plug, and `.cursor/mcp.json` |
 | `--mode` / `--theme` / `--lang` / `--a11y` | Mode, theme, localization, accessibility (mode/theme/a11y need Design) |
 
 Run `mix help corex.new`. Update generator: `mix local.corex`.
@@ -128,6 +128,14 @@ end
 ```
 
 After `Plug.Static`, before code reloader. See `corex:mcp`.
+
+### Logger parameter filtering
+
+Phoenix only filters params containing `"password"` by default. Expand the filter for tokens and secrets in generated apps:
+
+```elixir
+config :phoenix, :filter_parameters, ["password", "secret", "token", "otp", "_key", "api_key"]
+```
 
 ## Troubleshooting
 

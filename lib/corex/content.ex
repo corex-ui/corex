@@ -3,6 +3,7 @@ defmodule Corex.Content do
   Content items for components with trigger/content patterns to be used with:
 
   - [Accordion](Corex.Accordion.html)
+  - [DataList](Corex.DataList.html)
   - [Tabs](Corex.Tabs.html)
 
   Use `Corex.Content.new/1` to build a list of items from maps or keyword lists.
@@ -25,6 +26,7 @@ defmodule Corex.Content do
     Content item structure.
     Use it to create content items for components with trigger/content patterns:
     - [Accordion](Corex.Accordion.html)
+    - [DataList](Corex.DataList.html)
     - [Tabs](Corex.Tabs.html)
 
     ## Examples

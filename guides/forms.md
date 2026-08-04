@@ -70,7 +70,7 @@ end
   <.checkbox field={f[:terms]} class="checkbox">
     <:label>Accept terms</:label>
     <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
+      <.heroicon name="hero-exclamation-circle" />
       {msg}
     </:error>
   </.checkbox>
@@ -87,7 +87,7 @@ end
     <:label>Country</:label>
     <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
+      <.heroicon name="hero-exclamation-circle" />
       {msg}
     </:error>
   </.select>
@@ -140,7 +140,7 @@ end
   >
     <:label>Accept terms</:label>
     <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
+      <.heroicon name="hero-exclamation-circle" />
       {msg}
     </:error>
   </.checkbox>
@@ -158,7 +158,7 @@ end
     <:label>Country</:label>
     <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
+      <.heroicon name="hero-exclamation-circle" />
       {msg}
     </:error>
   </.select>
@@ -255,7 +255,7 @@ Pass `field={@form[:name]}` so the component picks up ids, names, and errors.
 <.checkbox field={@form[:terms]} auto_invalid class="checkbox">
   <:label>Accept terms</:label>
   <:error :let={msg}>
-    <.heroicon name="hero-exclamation-circle" class="icon" />
+    <.heroicon name="hero-exclamation-circle" />
     {msg}
   </:error>
 </.checkbox>
@@ -274,7 +274,7 @@ Pass `field={@form[:name]}` so the component picks up ids, names, and errors.
   <:label>Country</:label>
   <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
   <:error :let={msg}>
-    <.heroicon name="hero-exclamation-circle" class="icon" />
+    <.heroicon name="hero-exclamation-circle" />
     {msg}
   </:error>
 </.select>

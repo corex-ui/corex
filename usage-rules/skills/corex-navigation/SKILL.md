@@ -2,9 +2,9 @@
 name: corex-navigation
 description: >-
   Load when using .navigate with type navigate or patch, .action for buttons,
-  redirect on select menu combobox listbox pagination, Corex.List.Item.new with
-  to redirect :href :navigate :patch, language_switch locale paths, or
-  guides/localize language switcher pattern.
+  redirect on select menu combobox listbox tree_view pagination, Corex.List.Item.new or
+  Corex.Tree.Item.new with to redirect :href :navigate :patch, language_switch locale
+  paths, or guides/localize language switcher pattern.
 ---
 
 # Corex navigation
@@ -30,6 +30,10 @@ Three patterns: links, buttons, redirect-on-select.
 Corex.List.Item.new(%{value: dest, label: "English", to: dest, redirect: :navigate})
 ```
 
-Per-item `:redirect` — `:href`, `:patch`, `:navigate`, or `false`. Server logic before navigate → `on_value_change` + `redirect/2` instead.
+```heex
+<.tree_view id="docs-tree" class="tree-view" redirect items={Corex.Tree.new([…])} />
+```
+
+Per-item `:redirect` — `:href`, `:patch`, `:navigate`, or `false` (atom on the item). Build `menu` / `tree_view` with `Corex.Tree`. Server logic before navigate → `on_value_change` + `redirect/2` instead.
 
 Full checklist: sub-rule `corex:navigation`.
