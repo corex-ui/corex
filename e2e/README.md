@@ -16,7 +16,7 @@ cd corex/e2e
 ## Requirements
 
 - Elixir ~> 1.17
-- Erlang/OTP compatible with Elixir 1.17 (CI primary is 1.19.5 / OTP 28; OTP 24–26 need `json_polyfill`)
+- Erlang/OTP compatible with Elixir 1.17 (CI primary is 1.19.5 / OTP 28)
 - PostgreSQL (running locally)
 
 Make sure PostgreSQL is running before continuing.

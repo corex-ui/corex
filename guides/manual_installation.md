@@ -16,7 +16,6 @@ If you are creating a new project instead, see the [Installation guide](installa
 - **Elixir** `~> 1.17`
 - **Phoenix** and **LiveView**
 - A standard **Esbuild** asset pipeline
-- **JSON:** OTP 27+ native `:json`, or `json_polyfill` on OTP 24–26
 
 ## 1. Add the dependency
 

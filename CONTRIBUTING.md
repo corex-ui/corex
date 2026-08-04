@@ -15,7 +15,7 @@ For large features (new components, API changes), open an issue first so we can 
 
 ### Requirements
 
-- **Elixir** `~> 1.17` and a compatible **Erlang/OTP** (CI: min **1.17.3 / OTP 25** with `json_polyfill`; mid **1.18.4 / OTP 27**; primary **1.19.5 / OTP 28**). OTP 27+ uses native `:json`; OTP 24–26 need `json_polyfill`.
+- Elixir `~> 1.17` and a compatible **Erlang/OTP** (CI: min **1.17.3 / OTP 25**; mid **1.18.4 / OTP 27**; primary **1.19.5 / OTP 28**).
 - **Node.js** 24 and **npm** (root package: hooks, esbuild, lint).
 - **pnpm** 10.x for the e2e app assets.
 - **PostgreSQL** for e2e and some integration tests.

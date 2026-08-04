@@ -33,13 +33,6 @@ For day-to-day patch notes, see [CHANGELOG.md](https://github.com/corex-ui/corex
 ### Requirements
 
 - **Elixir** `~> 1.17`
-- **JSON:** `corex`, `corex_design`, and `corex_mcp` use OTP `:json` (no Jason). OTP 27+ needs nothing extra. On OTP 24–26, add:
-
-```elixir
-{:json_polyfill, "~> 0.2 or ~> 1.0"}
-```
-
-The installer adds the polyfill when you pass `--lang` or `--design`.
 
 ### Packages
 

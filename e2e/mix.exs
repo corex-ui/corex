@@ -93,7 +93,7 @@ defmodule E2e.MixProject do
       {:makeup_css, "~> 0.2"},
       {:makeup_js, "~> 0.1.0"},
       {:makeup_syntect, "~> 0.1"},
-      {:mdex, "~> 0.11"},
+      {:mdex, "~> 0.13.5"},
       {:floki, "~> 0.38"},
       {:yaml_elixir, "~> 2.9"},
       {:html_entities, "~> 0.5"},
@@ -106,15 +106,7 @@ defmodule E2e.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:oeditus_credo, "~> 0.6.3", only: [:dev, :test], runtime: false},
       {:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false}
-    ] ++ maybe_json_polyfill()
-  end
-
-  defp maybe_json_polyfill do
-    if Code.ensure_loaded?(:json) do
-      []
-    else
-      [{:json_polyfill, "~> 0.2 or ~> 1.0"}]
-    end
+    ]
   end
 
   defp usage_rules do

@@ -25,7 +25,7 @@ Design and MCP ship as separate Hex packages. Theming is config-driven through a
 
 ### Requirements
 
-- Elixir `~> 1.17`. OTP 27+ uses native `:json`; OTP 24–26 need `json_polyfill`.
+- Elixir `~> 1.17`.
 
 See the [update guide](guides/update.md) when upgrading from 0.1.x.
 

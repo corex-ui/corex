@@ -8,7 +8,6 @@ Upgrading an existing app from 0.1.x: [Updating Corex](https://hexdocs.pm/corex/
 
 - **Elixir** `~> 1.17`
 - **`phx_new` archive** installed (`mix archive.install hex phx_new`)
-- **JSON:** OTP 27+ uses native `:json`. On OTP 24–26, `json_polyfill` is added when you pass `--lang` or `--design`.
 
 LiveView, HTML, esbuild, and full Phoenix assets stay enabled — there are no `--no-live` / `--no-html` / `--no-esbuild` / `--no-assets` switches here.
 

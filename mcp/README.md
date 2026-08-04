@@ -7,7 +7,6 @@ Never enable in production. Upgrading from 0.1.x: [Updating Corex](https://hexdo
 ## Requirements
 
 - **Elixir** `~> 1.17`
-- **JSON:** OTP 27+ uses native `:json`. On OTP 24–26, add `{:json_polyfill, "~> 0.2 or ~> 1.0"}` to the host app (the installer adds it for `--lang` / `--design`).
 
 ## Packages
 
