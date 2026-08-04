@@ -928,13 +928,14 @@ defmodule Corex.New.Patches do
   end
 
   defp maybe_insert_mode_plug(content, web_module, opts, path) do
-    line = "    plug " <> inspect(web_module) <> ".Plugs.Mode\n"
+    plug_mod = inspect(web_module) <> ".Plugs.Mode"
+    line = "    plug " <> plug_mod <> "\n"
 
     cond do
       not Keyword.get(opts, :mode, false) ->
         content
 
-      String.contains?(content, String.trim_trailing(line)) ->
+      router_plug_present?(content, plug_mod) ->
         content
 
       true ->
@@ -943,13 +944,14 @@ defmodule Corex.New.Patches do
   end
 
   defp maybe_insert_theme_plug(content, web_module, opts, path) do
-    line = "    plug " <> inspect(web_module) <> ".Plugs.Theme\n"
+    plug_mod = inspect(web_module) <> ".Plugs.Theme"
+    line = "    plug " <> plug_mod <> "\n"
 
     cond do
       not Keyword.get(opts, :theme, false) ->
         content
 
-      String.contains?(content, String.trim_trailing(line)) ->
+      router_plug_present?(content, plug_mod) ->
         content
 
       true ->
@@ -958,13 +960,14 @@ defmodule Corex.New.Patches do
   end
 
   defp maybe_insert_accessibility_plug(content, web_module, opts, path) do
-    line = "    plug " <> inspect(web_module) <> ".Plugs.Accessibility\n"
+    plug_mod = inspect(web_module) <> ".Plugs.Accessibility"
+    line = "    plug " <> plug_mod <> "\n"
 
     cond do
       not Keyword.get(opts, :a11y, false) ->
         content
 
-      String.contains?(content, String.trim_trailing(line)) ->
+      router_plug_present?(content, plug_mod) ->
         content
 
       true ->
@@ -972,10 +975,15 @@ defmodule Corex.New.Patches do
     end
   end
 
+  # Matches both `plug Mod` and formatter output `plug(Mod)`.
+  defp router_plug_present?(content, plug_ref) do
+    Regex.match?(~r/plug\s*\(?\s*#{Regex.escape(plug_ref)}\b/u, content)
+  end
+
   defp insert_after_fetch_live_flash(content, addition, path, what) do
-    if Regex.match?(~r/plug :fetch_live_flash\s*\n/u, content) do
+    if Regex.match?(~r/plug\s*\(?\s*:fetch_live_flash\s*\)?\s*\n/u, content) do
       Regex.replace(
-        ~r/(plug :fetch_live_flash\s*\n)/u,
+        ~r/(plug\s*\(?\s*:fetch_live_flash\s*\)?\s*\n)/u,
         content,
         "\\1" <> addition,
         global: false
@@ -986,9 +994,9 @@ defmodule Corex.New.Patches do
   end
 
   defp insert_after_localize_or_flash(content, addition, path, what) do
-    if Regex.match?(~r/plug Localize\.Plug\.PutSession[^\n]*\n/u, content) do
+    if Regex.match?(~r/plug\s*\(?\s*Localize\.Plug\.PutSession[^\n]*\n/u, content) do
       Regex.replace(
-        ~r/(plug Localize\.Plug\.PutSession[^\n]*\n)/u,
+        ~r/(plug\s*\(?\s*Localize\.Plug\.PutSession[^\n]*\n)/u,
         content,
         "\\1" <> addition,
         global: false
@@ -1003,7 +1011,7 @@ defmodule Corex.New.Patches do
       web_str = inspect(web_module)
 
       pattern =
-        ~r/scope\s+"\/",\s+#{Regex.escape(web_str)}\s+do\s*\n\s*pipe_through\s+:browser\s*\n[\s\S]*?\n\s*end/u
+        ~r/scope\s+"\/",\s+#{Regex.escape(web_str)}\s+do\s*\n\s*pipe_through\s*\(?\s*:browser\s*\)?\s*\n[\s\S]*?\n\s*end/u
 
       case Regex.run(pattern, content) do
         [full] ->

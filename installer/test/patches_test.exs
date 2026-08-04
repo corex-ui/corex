@@ -738,9 +738,9 @@ defmodule Corex.New.PatchesTest do
         Patches.patch_router(File.cwd!(), MyAppWeb, mode: true, theme: true, lang: true)
         body = File.read!("lib/my_app_web/router.ex")
 
-        assert body =~ "plug MyAppWeb.Plugs.Mode"
-        assert body =~ "plug MyAppWeb.Plugs.Theme"
-        refute body =~ "plug MyAppWeb.Plugs.Path"
+        assert body =~ "plug(MyAppWeb.Plugs.Mode)"
+        assert body =~ "plug(MyAppWeb.Plugs.Theme)"
+        refute body =~ "Plugs.Path"
         assert body =~ "use Localize.Routes"
         assert body =~ "Localize.Plug.PutLocale"
         assert body =~ ~s(scope "/:locale")
@@ -781,7 +781,7 @@ defmodule Corex.New.PatchesTest do
         Patches.patch_router(File.cwd!(), MyAppWeb, mode: true)
 
         body = File.read!("lib/my_app_web/router.ex")
-        assert length(String.split(body, "plug MyAppWeb.Plugs.Mode")) == 2
+        assert length(String.split(body, "MyAppWeb.Plugs.Mode")) == 2
       end)
     end
 
@@ -795,7 +795,7 @@ defmodule Corex.New.PatchesTest do
 
         body = File.read!("lib/my_app_web/router.ex")
         assert body =~ "Localize.Plug.PutSession"
-        assert body =~ "plug MyAppWeb.Plugs.Mode"
+        assert body =~ "plug(MyAppWeb.Plugs.Mode)"
       end)
     end
 

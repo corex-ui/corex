@@ -127,20 +127,21 @@ defmodule Corex.New.Shared do
   def format_elixir_source!(path) do
     original = File.read!(path)
 
-    try do
-      formatted =
-        original
-        |> Code.format_string!()
-        |> IO.iodata_to_binary()
-        |> then(fn source ->
-          if String.ends_with?(source, "\n"), do: source, else: source <> "\n"
-        end)
+    case Code.string_to_quoted(original, file: path) do
+      {:ok, _} ->
+        formatted =
+          original
+          |> Code.format_string!()
+          |> IO.iodata_to_binary()
+          |> then(fn source ->
+            if String.ends_with?(source, "\n"), do: source, else: source <> "\n"
+          end)
 
-      if formatted != original do
-        File.write!(path, formatted)
-      end
-    rescue
-      _e in [SyntaxError, TokenMissingError] ->
+        if formatted != original do
+          File.write!(path, formatted)
+        end
+
+      {:error, _} ->
         :ok
     end
 
