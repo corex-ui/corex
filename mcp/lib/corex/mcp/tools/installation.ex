@@ -170,7 +170,7 @@ defmodule Corex.MCP.Tools.Installation do
   defp corex_hex_version do
     case Application.spec(:corex, :vsn) do
       nil ->
-        Mix.raise("corex application version is not available")
+        "0.2"
 
       v when is_list(v) ->
         List.to_string(v)

@@ -9,7 +9,7 @@ defmodule Corex.MCP.Tools.ComponentsTest do
     assert "get_component" in names
   end
 
-  test "list_components returns encoded ids" do
+  test "list_components returns encoded ids and form_capable" do
     json =
       case Components.list_components(%{}) do
         {:ok, j} -> j
@@ -20,6 +20,8 @@ defmodule Corex.MCP.Tools.ComponentsTest do
     assert is_list(decoded["components"])
     assert "accordion" in decoded["components"]
     assert decoded["components"] == Enum.map(Corex.component_ids(), &to_string/1)
+    assert is_list(decoded["form_capable"])
+    assert Enum.any?(decoded["form_capable"], &(&1["id"] == "select"))
   end
 
   test "list_components rejects non-empty arguments" do
@@ -43,7 +45,7 @@ defmodule Corex.MCP.Tools.ComponentsTest do
     assert expected =~ "64 bytes"
   end
 
-  test "get_component returns spec, docs, attrs, slots, and source metadata for a known id" do
+  test "get_component returns structured metadata without docs by default" do
     json =
       case Components.get_component(%{"id" => "accordion"}) do
         {:ok, j} -> j
@@ -53,6 +55,12 @@ defmodule Corex.MCP.Tools.ComponentsTest do
     decoded = Corex.MCP.Json.decode!(json)
     assert decoded["id"] == "accordion"
     assert decoded["module"] =~ "Accordion"
+    assert decoded["hook"] == "Accordion"
+    assert is_map(decoded["events"])
+    assert is_list(decoded["events"]["server"])
+    assert is_list(decoded["api"])
+    assert decoded["data_builders"] == ["Corex.Content.new/1"]
+    assert is_map(decoded["form"])
     assert decoded["function_components"] != []
     assert is_list(decoded["attrs"])
     assert is_list(decoded["slots"])
@@ -61,14 +69,26 @@ defmodule Corex.MCP.Tools.ComponentsTest do
     assert decoded["design_available"] == true
     assert decoded["css_id"] == "accordion"
     assert is_map(decoded["modifiers"])
-    assert is_binary(decoded["docs"])
-    assert String.starts_with?(decoded["docs"], "# ")
-    assert String.starts_with?(decoded["docs"], "# #{decoded["module"]}\n\n")
-    assert is_nil(decoded["docs_note"])
+    assert is_nil(decoded["docs"])
+    assert decoded["docs_note"] =~ "include_docs"
     assert is_binary(decoded["source_path"])
     assert decoded["source_path"] =~ "accordion.ex"
     refute String.starts_with?(decoded["source_path"], "/")
     assert is_integer(decoded["source_line"])
+  end
+
+  test "get_component include_docs true returns markdown" do
+    json = ok_json!(Components.get_component(%{"id" => "accordion", "include_docs" => true}))
+    decoded = Corex.MCP.Json.decode!(json)
+    assert is_binary(decoded["docs"])
+    assert String.starts_with?(decoded["docs"], "# ")
+  end
+
+  test "get_component accepts kebab-case ids" do
+    json = ok_json!(Components.get_component(%{"id" => "date-picker"}))
+    decoded = Corex.MCP.Json.decode!(json)
+    assert decoded["id"] == "date_picker"
+    assert decoded["hook"] == "DatePicker"
   end
 
   test "get_component rejects unknown id with guidance" do
@@ -85,18 +105,6 @@ defmodule Corex.MCP.Tools.ComponentsTest do
              Components.get_component(%{"id" => 1})
   end
 
-  test "get_component includes markdown docs and source metadata when available" do
-    for id <- ["accordion", "code", "marquee"] do
-      json = ok_json!(Components.get_component(%{"id" => id}))
-      decoded = Corex.MCP.Json.decode!(json)
-      assert decoded["id"] == id
-      assert is_binary(decoded["docs"])
-      assert decoded["docs"] =~ "# "
-      assert is_binary(decoded["source_path"])
-      assert is_integer(decoded["source_line"])
-    end
-  end
-
   test "get_component returns spec for representative registry ids" do
     ids = [:accordion, :toast, :tree_view, :menu, :date_picker, :select, :dialog]
 
@@ -105,6 +113,7 @@ defmodule Corex.MCP.Tools.ComponentsTest do
       decoded = Corex.MCP.Json.decode!(json)
       assert decoded["id"] == to_string(id)
       assert is_binary(decoded["module"])
+      assert is_binary(decoded["hook"])
     end
   end
 
