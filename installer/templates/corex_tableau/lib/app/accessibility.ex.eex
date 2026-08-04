@@ -129,8 +129,9 @@ defmodule <%= @app_module %>.Accessibility do
     >
       <:trigger
         class={@trigger_class}
-        aria_label={<%= if @lang do %>~t"Accessibility"<% else %>"Accessibility"<% end %>}
-      >
+<%= if @lang do %>        aria_label={~t"Accessibility"}
+<% else %>        aria_label="Accessibility"
+<% end %>      >
         <.accessibility_icon />
       </:trigger>
       <:title><%= if @lang do %>{~t"Accessibility"}<% else %>Accessibility<% end %></:title>
@@ -193,8 +194,9 @@ defmodule <%= @app_module %>.Accessibility do
     <.action
       type="button"
       class={@class}
-      aria-label={<%= if @lang do %>~t"Accessibility"<% else %>"Accessibility"<% end %>}
-      phx-click={Corex.Dialog.set_open(accessibility_dialog_id(), true)}
+<%= if @lang do %>      aria-label={~t"Accessibility"}
+<% else %>      aria-label="Accessibility"
+<% end %>      phx-click={Corex.Dialog.set_open(accessibility_dialog_id(), true)}
     >
       <.accessibility_icon />
     </.action>

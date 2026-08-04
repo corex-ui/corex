@@ -22,12 +22,15 @@ defmodule Corex.Integration.CodeGeneration.TableauScaffoldTest do
           assert body =~ "Tableau.TagExtension"
         end)
 
-        assert_file(Path.join(app_root_path, "lib/tableau_blog/layouts/root_layout.ex"), fn body ->
-          assert body =~ ~s(to={@home_path})
-          assert body =~ ~s(to={@blog_path})
-          assert body =~ ~s(to={@tags_path})
-          assert body =~ "defp page_path_from_page"
-        end)
+        assert_file(
+          Path.join(app_root_path, "lib/tableau_blog/layouts/root_layout.ex"),
+          fn body ->
+            assert body =~ ~s(to={@home_path})
+            assert body =~ ~s(to={@blog_path})
+            assert body =~ ~s(to={@tags_path})
+            assert body =~ "defp page_path_from_page"
+          end
+        )
 
         assert_file(Path.join(app_root_path, "lib/tableau_blog/pages/tags_index_page.ex"))
         assert_file(Path.join(app_root_path, "lib/tableau_blog/layouts/tag_layout.ex"))
@@ -52,16 +55,22 @@ defmodule Corex.Integration.CodeGeneration.TableauScaffoldTest do
             "--a11y"
           ])
 
-        assert_file(Path.join(app_root_path, "lib/tableau_full/layouts/root_layout.ex"), fn body ->
-          refute body =~ "defp page_path_from_page"
-          refute body =~ ":tags_path"
-          refute body =~ "Locale.swap_path(\"/tags\""
-        end)
+        assert_file(
+          Path.join(app_root_path, "lib/tableau_full/layouts/root_layout.ex"),
+          fn body ->
+            refute body =~ "defp page_path_from_page"
+            refute body =~ ":tags_path"
+            refute body =~ "Locale.swap_path(\"/tags\""
+          end
+        )
 
-        assert_file(Path.join(app_root_path, "lib/tableau_full/pages/blog_index_page.ex"), fn body ->
-          assert body =~ "Layouts.Shell"
-          refute body =~ "Browse tags"
-        end)
+        assert_file(
+          Path.join(app_root_path, "lib/tableau_full/pages/blog_index_page.ex"),
+          fn body ->
+            assert body =~ "Layouts.Shell"
+            refute body =~ "Browse tags"
+          end
+        )
 
         refute File.exists?(Path.join(app_root_path, "lib/tableau_full/pages/tags_index_page.ex"))
         refute File.exists?(Path.join(app_root_path, "lib/tableau_full/layouts/tag_layout.ex"))

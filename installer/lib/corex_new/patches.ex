@@ -203,6 +203,7 @@ defmodule Corex.New.Patches do
       |> maybe_duplicate_locale_scope(web_module, opts)
 
     write_if_changed!(path, content, updated)
+    Shared.format_elixir_source!(path)
   end
 
   @doc """

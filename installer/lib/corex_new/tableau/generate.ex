@@ -237,18 +237,20 @@ defmodule Corex.New.Tableau.Generate do
 
   defp write_sample_post(install_dir, assigns) do
     if Keyword.get(assigns, :lang) do
-      for {locale, suffix} <- [{"en", ""}, {"fr", "-fr"}, {"ar", "-ar"}] do
+      Enum.each([{"en", ""}, {"fr", "-fr"}, {"ar", "-ar"}], fn {locale, suffix} ->
         write!(
           Path.join([install_dir, "_posts", "2026-01-01-welcome#{suffix}.md"]),
           Templates.sample_post(Keyword.put(assigns, :locale, locale))
         )
-      end
+      end)
     else
       write!(
         Path.join([install_dir, "_posts", "2026-01-01-welcome.md"]),
         Templates.sample_post(assigns)
       )
     end
+
+    :ok
   end
 
   defp write_extra_dir(install_dir) do

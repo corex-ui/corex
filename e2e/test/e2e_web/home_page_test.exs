@@ -20,7 +20,7 @@ defmodule E2eWeb.HomePageTest do
 
     assert html =~ "real API"
     assert html =~ "Browse components"
-    assert html =~ "ui-rounded-full"
+    assert html =~ "rounded-md"
     assert html =~ "ui-ghost"
     assert html =~ "text-success-text"
     assert html =~ "min-h-0"

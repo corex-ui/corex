@@ -1,8 +1,6 @@
 defmodule Corex.New.Shared do
   @moduledoc false
 
-  require Logger
-
   @version Mix.Project.config()[:version]
   @minor_constraint @version |> Version.parse!() |> then(&"~> #{&1.major}.#{&1.minor}")
 
@@ -142,8 +140,7 @@ defmodule Corex.New.Shared do
         File.write!(path, formatted)
       end
     rescue
-      e in [SyntaxError, TokenMissingError] ->
-        Logger.debug("Skipping format for #{path}: #{Exception.message(e)}")
+      _e in [SyntaxError, TokenMissingError] ->
         :ok
     end
 
@@ -208,7 +205,7 @@ defmodule Corex.New.Shared do
 
     dest = Path.join([install_dir, "assets", "corex"])
     Mix.shell().info([:green, "* copying ", :reset, "corex design export → assets/corex/"])
-    File.rm_rf!(dest)
+    _ = File.rm_rf!(dest)
     File.mkdir_p!(Path.dirname(dest))
     _copied = File.cp_r!(src, dest)
     :ok
