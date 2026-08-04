@@ -156,9 +156,11 @@ Avoid extra `class` on `<.heroicon>` when it sits inside another Corex component
 
 ## Without Corex Design
 
-Use `mix corex.new my_app --no-design`, or skip the `corex_design` dependency in manual installs. Generated apps copy `corex-base.css` into `assets/css/` and import it from `app.css` (or Tableau `site.css`) so starter components keep basic anatomy and a lite skin. Replace or extend that file with your own CSS (`data-scope` / `data-part`, or another system). Component behavior and the LiveView/JS API are unchanged.
+Use `mix corex.new my_app --no-design`, or skip the `corex_design` dependency in manual installs. Generated apps copy a static neo/light Design export into `assets/corex/` (same layout as a live build: `corex.css`, tokens, components) and import it from `app.css` (or Tableau `site.css`). Edit or delete that folder to bring your own CSS. Component behavior and the LiveView/JS API are unchanged.
 
-For a manual install without Design, copy [`priv/static/corex-base.css`](https://github.com/corex-ui/corex/blob/main/priv/static/corex-base.css) from the Corex package into your assets and import it the same way.
+`--mode`, `--theme`, and `--a11y` require Design (`corex_design`); they cannot combine with `--no-design`. `--lang` is allowed with `--no-design`.
+
+For a manual install without Design, either use `mix corex.new --no-design` or add `corex_design` and run `mix corex.design.build` with a neo/light config, then import `../corex/corex.css`. The static snapshot is installer-only (not shipped in the `:corex` Hex package).
 
 ## See also
 

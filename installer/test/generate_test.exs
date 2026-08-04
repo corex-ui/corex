@@ -173,7 +173,7 @@ defmodule Corex.New.GenerateTest do
     end)
   end
 
-  test "run/2 without design skips corex css imports and design config" do
+  test "run/2 without design ships static corex export and skips corex_design dep" do
     Corex.New.MixHelper.in_tmp("generate no design", fn ->
       ScaffoldHelper.write_phoenix_scaffold!(File.cwd!())
 
@@ -184,11 +184,11 @@ defmodule Corex.New.GenerateTest do
                )
 
       refute File.exists?(Path.join("assets", "corex_design.exs"))
-      refute File.exists?(Path.join("assets/corex", "main.css"))
-      refute File.read!(Path.join("assets/css", "app.css")) =~ "../corex/main.css"
+      assert File.exists?(Path.join("assets/corex", "corex.css"))
+      assert File.read!(Path.join("assets/css", "app.css")) =~ "../corex/corex.css"
       refute File.read!("mix.exs") =~ ~r/\{:corex_design,/
-      assert File.exists?("assets/css/corex-base.css")
-      assert File.read!("assets/css/app.css") =~ ~s(@import "./corex-base.css")
+      refute File.exists?("assets/css/corex-base.css")
+      refute File.read!("assets/css/app.css") =~ "corex-base.css"
       refute File.exists?("lib/my_app_web/components/core_components.ex")
       refute File.read!("lib/my_app_web.ex") =~ "CoreComponents"
     end)

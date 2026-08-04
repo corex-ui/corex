@@ -196,7 +196,7 @@ defmodule Corex.New.Generate do
     write!(target, Templates.app_css(template_assigns(install_dir, opts)))
 
     unless opts[:design] do
-      Shared.copy_corex_base_css!(install_dir)
+      Shared.copy_corex_export!(install_dir)
     end
   end
 

@@ -1,0 +1,48 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+[data-theme="neo"][data-mode="light"] {
+  --color-accent: #242424;
+  --color-accent-active: #141414;
+  --color-accent-contrast: #cacaca;
+  --color-accent-hover: #1b1b1b;
+  --color-accent-muted: #2b2b2b;
+  --color-accent-text: #5b5b5b;
+  --color-alert: #9e0300;
+  --color-alert-active: #7f0000;
+  --color-alert-contrast: #ffffff;
+  --color-alert-hover: #8d0000;
+  --color-alert-muted: #a9140b;
+  --color-alert-text: #b11f15;
+  --color-border: #d6d6d6;
+  --color-brand: #2f4498;
+  --color-brand-active: #1f2f82;
+  --color-brand-contrast: #ffffff;
+  --color-brand-hover: #26388c;
+  --color-brand-muted: #374da2;
+  --color-brand-text: #3e55ab;
+  --color-focus: #7e9cf9;
+  --color-info: #00544e;
+  --color-info-active: #00403b;
+  --color-info-contrast: #ffffff;
+  --color-info-hover: #004842;
+  --color-info-muted: #005d56;
+  --color-info-text: #00665f;
+  --color-ink: #353535;
+  --color-ink-muted: #646464;
+  --color-link: #4962b9;
+  --color-root: #fcfcfc;
+  --color-shadow: #f3f3f3;
+  --color-success: #005124;
+  --color-success-active: #003d15;
+  --color-success-contrast: #ffffff;
+  --color-success-hover: #00451c;
+  --color-success-muted: #025a2a;
+  --color-success-text: #1a6837;
+  --color-surface: #f5f5f5;
+  --color-ui: #ebebeb;
+  --color-ui-active: #d4d4d4;
+  --color-ui-hover: #dedede;
+  --color-ui-muted: #f5f5f5;
+}

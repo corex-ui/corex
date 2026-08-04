@@ -104,8 +104,8 @@ defmodule Corex.New.TemplatesTest do
 
     test "keeps plain English nav aria labels when lang is off" do
       out = Templates.layouts_ex(@base_assigns)
-      assert out =~ ~s(aria-label={"Site"})
-      assert out =~ ~s(aria-label={"Primary"})
+      assert out =~ ~s(aria-label="Site")
+      assert out =~ ~s(aria-label="Primary")
       refute out =~ ~S[~t"Site"]
     end
 
@@ -151,10 +151,11 @@ defmodule Corex.New.TemplatesTest do
       assert out =~ ~s(data-mode="light")
     end
 
-    test "omits data-theme and data-mode on html when design is off" do
+    test "keeps neo/light data attrs when design is off" do
       out = Templates.root_heex(Keyword.put(@base_assigns, :design, false))
-      refute out =~ ~s(data-theme=)
-      refute out =~ ~s(data-mode=)
+      assert out =~ ~s(data-theme="neo")
+      assert out =~ ~s(data-mode="light")
+      assert out =~ "typo flex min-h-dvh"
     end
 
     test "uses Locale.lang/dir when lang: true" do
@@ -310,21 +311,22 @@ defmodule Corex.New.TemplatesTest do
       refute out =~ "tags-input.css"
     end
 
-    test "omits design imports when design: false but keeps Tailwind" do
+    test "imports corex export when design: false but keeps Tailwind" do
       out = Templates.app_css(Keyword.put(@base_assigns, :design, false))
-      refute out =~ "@import \"../corex/main.css\""
-      refute out =~ "@import \"../corex/corex.css\""
+      assert out =~ "@import \"../corex/corex.css\""
+      assert out =~ "@source \"../corex\""
       assert out =~ "@import \"tailwindcss\""
-      assert out =~ ~s(@import "./corex-base.css")
+      refute out =~ "corex-base.css"
     end
 
     test "minimal css when tailwind: false" do
       out = Templates.app_css(Keyword.put(@base_assigns, :tailwind, false))
       refute out =~ "@import \"tailwindcss\""
       assert out =~ "[data-phx-session]"
+      assert out =~ "@import \"../corex/corex.css\""
     end
 
-    test "imports corex-base when design and tailwind are both off" do
+    test "imports corex export when design and tailwind are both off" do
       out =
         Templates.app_css(
           @base_assigns
@@ -332,8 +334,9 @@ defmodule Corex.New.TemplatesTest do
           |> Keyword.put(:tailwind, false)
         )
 
-      assert out =~ ~s(@import "./corex-base.css")
+      assert out =~ ~s(@import "../corex/corex.css")
       refute out =~ "@import \"tailwindcss\""
+      refute out =~ "corex-base.css"
     end
   end
 end

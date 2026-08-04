@@ -1,0 +1,175 @@
+@utility ui-base {
+  --ctl-fill: var(--color-ink);
+  --ctl-fill-hover: color-mix(in oklab, var(--color-ink) 88%, black);
+  --ctl-fill-active: color-mix(in oklab, var(--color-ink) 76%, black);
+  --ctl-fill-ink: var(--color-root);
+  --ctl-ink-text: var(--color-ink);
+  --ctl-muted: var(--color-ui-muted);
+}
+
+@utility ui-accent {
+  --ctl-fill: var(--color-accent);
+  --ctl-fill-hover: var(--color-accent-hover);
+  --ctl-fill-active: var(--color-accent-active);
+  --ctl-fill-ink: var(--color-accent-contrast);
+  --ctl-ink-text: var(--color-accent-text);
+  --ctl-muted: var(--color-accent-muted);
+}
+
+@utility ui-brand {
+  --ctl-fill: var(--color-brand);
+  --ctl-fill-hover: var(--color-brand-hover);
+  --ctl-fill-active: var(--color-brand-active);
+  --ctl-fill-ink: var(--color-brand-contrast);
+  --ctl-ink-text: var(--color-brand-text);
+  --ctl-muted: var(--color-brand-muted);
+}
+
+@utility ui-alert {
+  --ctl-fill: var(--color-alert);
+  --ctl-fill-hover: var(--color-alert-hover);
+  --ctl-fill-active: var(--color-alert-active);
+  --ctl-fill-ink: var(--color-alert-contrast);
+  --ctl-ink-text: var(--color-alert-text);
+  --ctl-muted: var(--color-alert-muted);
+}
+
+@utility ui-info {
+  --ctl-fill: var(--color-info);
+  --ctl-fill-hover: var(--color-info-hover);
+  --ctl-fill-active: var(--color-info-active);
+  --ctl-fill-ink: var(--color-info-contrast);
+  --ctl-ink-text: var(--color-info-text);
+  --ctl-muted: var(--color-info-muted);
+}
+
+@utility ui-success {
+  --ctl-fill: var(--color-success);
+  --ctl-fill-hover: var(--color-success-hover);
+  --ctl-fill-active: var(--color-success-active);
+  --ctl-fill-ink: var(--color-success-contrast);
+  --ctl-ink-text: var(--color-success-text);
+  --ctl-muted: var(--color-success-muted);
+}
+
+@utility ui-solid {
+  --ctl-bg: var(--ctl-fill);
+  --ctl-ink: var(--ctl-fill-ink);
+  --ctl-bd: transparent;
+  --ctl-bg-hover: var(--ctl-fill-hover);
+  --ctl-bg-active: var(--ctl-fill-active);
+  --ctl-ring: var(--ctl-fill-ink);
+  --ctl-bg-muted: var(--ctl-muted, var(--color-ui-muted));
+  --ctl-ink-muted: var(--ctl-fill-ink);
+  font-weight: var(--font-weight-medium);
+}
+
+@utility ui-ghost {
+  --ctl-bg: transparent;
+  --ctl-bd: transparent;
+  --ctl-bg-hover: var(--color-ui-hover);
+  --ctl-bg-active: var(--color-ui-active);
+  --ctl-ink: var(--ctl-ink-text, var(--color-ink));
+  --ctl-ring: var(--color-focus);
+  --ctl-bg-muted: transparent;
+  --ctl-ink-muted: var(--color-ink-muted);
+}
+
+@utility ui-size-* {
+  --ctl-text: --value(--text-*, [length]);
+  --ctl-leading: --value(--text-*--line-height, [length]);
+  --ctl-space: --value(--spacing-space-*, [length]);
+  --ctl-size: --value(--spacing-size-*, [length]);
+}
+
+@utility ui-rounded-* {
+  --ctl-radius: --value(--radius-*, [length]);
+}
+
+@utility ui-max-height-* {
+  --ctl-max-height: --value(--container-*, [length]);
+  --ctl-max-height-overflow: auto;
+}
+
+@utility ui-width-* {
+  --ctl-width: --value(--container-*, [length], [length]);
+  width: var(--ctl-width);
+  max-width: var(--ctl-width);
+}
+
+@utility ui-width-auto {
+  width: auto;
+  max-width: none;
+}
+
+@utility ui-width-fit {
+  width: fit-content;
+  max-width: fit-content;
+}
+
+@utility ui-width-full {
+  width: 100%;
+  max-width: 100%;
+}
+
+@utility ui-trigger--square {
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  justify-content: center;
+  width: auto;
+  border-radius: var(--radius-sm);
+  --ctl-radius: var(--radius-sm);
+}
+
+@utility ui-trigger--circle {
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  justify-content: center;
+  width: auto;
+  border-radius: var(--radius-full) !important;
+}
+
+@utility ui-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 1em !important;
+  width: 1em !important;
+  color: currentcolor;
+  flex-shrink: 0;
+
+  [dir="rtl"] & {
+    transform: scaleX(-1);
+  }
+}
+
+@utility ui-icon--* {
+  font-size: --value(--text-*, [length]);
+  line-height: --value(--text-*--line-height, [length]);
+}
+
+@utility ui-readonly {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-end: --spacing(1);
+    translate: 0 -50%;
+    width: 1em;
+    height: 1em;
+    background-color: var(--color-ink-muted);
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M10 1a4.5 4.5 0 0 0-4.5 4.5V9H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-.5V5.5A4.5 4.5 0 0 0 10 1ZM8.5 5.5V9H14V5.5a3.5 3.5 0 1 0-7 0Z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    pointer-events: none;
+  }
+}
+
+@utility ui-loading {
+  pointer-events: none !important;
+  cursor: wait;
+  user-select: none;
+}

@@ -1,0 +1,18 @@
+@import "../main.css";
+
+@layer components {
+  .icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 1em !important;
+    width: 1em !important;
+    color: currentcolor;
+    flex-shrink: 0;
+    font-size: var(--ctl-text, var(--text-base));
+  }
+
+  [dir="rtl"] .icon {
+    transform: scaleX(-1);
+  }
+}

@@ -1,0 +1,153 @@
+@import "../main.css";
+
+@layer components {
+ .editable {
+ width: 100%;
+ min-width: var(--container-3xs);
+ max-width: var(--container-3xs);
+ }
+
+ .editable[data-loading] [data-scope="editable"][data-part="root"] {
+ @apply ui-loading;
+ }
+
+ .editable [data-scope="editable"][data-part="root"] {
+ width: 100%;
+ min-width: 0;
+ position: relative;
+ }
+
+ .editable [data-scope="editable"][data-part="control"] {
+ display: flex;
+ flex-direction: row;
+ gap: var(--spacing-space);
+ width: 100%;
+ min-width: 0;
+ min-height: var(--ctl-size, var(--spacing-size));
+ align-items: center;
+ justify-content: flex-start;
+ position: relative;
+ }
+
+ .editable[data-readonly] [data-scope="editable"][data-part="control"],
+ .editable [data-scope="editable"][data-part="control"][data-readonly] {
+ @apply ui-readonly;
+ padding-inline-end: var(--spacing-space);
+ }
+
+ .editable [data-scope="editable"][data-part="area"] {
+ display: flex;
+ flex: 1 1 0%;
+ min-width: 0;
+ max-width: 100%;
+ overflow: hidden;
+ align-items: center;
+ justify-content: flex-start;
+ gap: var(--spacing-space);
+ outline: none;
+ box-shadow: none;
+ background: transparent;
+ border: none;
+ padding: 0;
+ min-height: var(--ctl-size, var(--spacing-size));
+ position: relative;
+ }
+
+ .editable [data-scope="editable"][data-part="area"][data-readonly],
+ .editable [data-scope="editable"][data-part="input"][data-readonly] {
+ padding-inline-end: var(--spacing-space);
+ }
+
+ .editable [data-scope="editable"][data-part="area"]:focus,
+ .editable [data-scope="editable"][data-part="area"]:focus-within {
+ outline: none;
+ box-shadow: none;
+ }
+
+ .editable [data-scope="editable"][data-part="input"] {
+ flex: 1 1 0%;
+ min-width: 0;
+ width: 100%;
+ max-width: 100%;
+ box-sizing: border-box;
+ text-align: start;
+ justify-content: flex-start;
+ }
+
+ .editable [data-scope="editable"][data-part="preview"] {
+ flex: 1 1 0%;
+ min-width: 0;
+ width: 100%;
+ max-width: 100%;
+ text-align: start;
+ overflow: hidden;
+ text-overflow: ellipsis;
+ white-space: nowrap;
+ }
+
+ .editable [data-part="triggers"] {
+ display: inline-flex;
+ align-items: center;
+ justify-content: center;
+ flex: 0 0 auto;
+ flex-shrink: 0;
+ position: relative;
+ z-index: 1;
+ min-height: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ gap: var(--spacing-space-sm);
+ }
+
+ .editable [data-scope="editable"][data-part="edit-trigger"] {
+ aspect-ratio: 1 / 1;
+ padding: 0;
+ justify-content: center;
+ width: auto;
+ border-radius: var(--radius-sm);
+ --ctl-radius: var(--radius-sm);
+
+ flex: 0 0 auto;
+ width: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ min-width: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ max-width: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ min-height: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ max-height: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ }
+ .editable [data-scope="editable"][data-part="cancel-trigger"] {
+ aspect-ratio: 1 / 1;
+ padding: 0;
+ justify-content: center;
+ width: auto;
+ border-radius: var(--radius-sm);
+ --ctl-radius: var(--radius-sm);
+
+ flex: 0 0 auto;
+ width: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ min-width: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ max-width: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ min-height: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ max-height: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ }
+ .editable [data-scope="editable"][data-part="submit-trigger"] {
+ aspect-ratio: 1 / 1;
+ padding: 0;
+ justify-content: center;
+ width: auto;
+ border-radius: var(--radius-sm);
+ --ctl-radius: var(--radius-sm);
+
+ flex: 0 0 auto;
+ width: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ min-width: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ max-width: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ min-height: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ max-height: calc(var(--ctl-size, var(--spacing-size)) * 0.6);
+ }
+
+ .editable [data-scope="editable"][data-part="cancel-trigger"] {
+ @apply ui-alert;
+ }
+
+ .editable [data-scope="editable"][data-part="submit-trigger"] {
+ @apply ui-success;
+ }
+}

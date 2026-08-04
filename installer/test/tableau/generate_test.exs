@@ -176,7 +176,7 @@ defmodule Corex.New.Tableau.GenerateTest do
     end)
   end
 
-  test "run/2 without design skips corex_design" do
+  test "run/2 without design skips corex_design dep and copies static export" do
     Corex.New.MixHelper.in_tmp("tableau generate no design", fn ->
       install_dir = File.cwd!()
       File.mkdir_p!(Path.join(install_dir, "assets/js"))
@@ -188,9 +188,10 @@ defmodule Corex.New.Tableau.GenerateTest do
 
       refute File.read!("config/config.exs") =~ "config :corex_design"
       refute File.read!("mix.exs") =~ "corex_design"
-      refute File.read!("assets/css/site.css") =~ "corex.css"
-      assert File.exists?("assets/css/corex-base.css")
-      assert File.read!("assets/css/site.css") =~ ~s(@import "./corex-base.css")
+      assert File.exists?("assets/corex/corex.css")
+      assert File.read!("assets/css/site.css") =~ "corex.css"
+      refute File.exists?("assets/css/corex-base.css")
+      refute File.read!("assets/css/site.css") =~ "corex-base.css"
     end)
   end
 

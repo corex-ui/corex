@@ -1,0 +1,75 @@
+@import "../main.css";
+
+@layer components {
+  .link {
+    overflow: visible;
+    --ctl-ink-text: var(--color-link);
+    --link-fill: var(--color-ui);
+    --link-fill-hover: var(--color-ui-hover);
+    --link-fill-active: var(--color-ui-active);
+    --link-ink: var(--color-ink);
+    --link-muted: var(--color-ui-muted);
+  }
+
+  .link.ui-nav {
+    padding-inline: 0;
+    color: var(--color-ink);
+    background-color: transparent;
+    border-color: transparent;
+    text-decoration-line: none;
+  }
+
+  .link.ui-nav:is(.ui-accent, .ui-brand, .ui-alert, .ui-info, .ui-success) {
+    color: var(--ctl-ink-text, var(--color-ink));
+  }
+
+  .link.ui-nav:hover,
+  .link.ui-nav:active {
+    color: var(--color-link);
+    text-decoration-line: none;
+    text-decoration-thickness: from-font;
+  }
+
+  .link.ui-nav[aria-current="page"],
+  .link.ui-nav[aria-current="location"] {
+    color: var(--color-link);
+  }
+
+  .link.ui-nav:is(.ui-accent, .ui-brand, .ui-alert, .ui-info, .ui-success):is(
+      :hover,
+      :active
+    ),
+  .link.ui-nav:is(.ui-accent, .ui-brand, .ui-alert, .ui-info, .ui-success)[aria-current="page"],
+  .link.ui-nav:is(.ui-accent, .ui-brand, .ui-alert, .ui-info, .ui-success)[aria-current="location"] {
+    color: var(--ctl-fill);
+  }
+
+  .link.link--skip {
+    position: fixed;
+    inset-inline-start: var(--spacing-space-4);
+    inset-block-start: -9999px;
+    z-index: 10000;
+    max-width: min(100vw - var(--spacing-space-8), var(--container-xs));
+    padding-block: var(--spacing-space-3);
+    padding-inline: var(--spacing-space-4);
+    margin: 0;
+    overflow: visible;
+    background: var(--color-surface);
+    color: var(--color-ink);
+    border: var(--border-width) solid var(--color-border);
+    box-shadow: var(--shadow-ui);
+    transition: inset-block-start var(--duration-normal) ease;
+    text-decoration-line: none;
+  }
+
+  .link.link--skip:focus,
+  .link.link--skip:focus-visible {
+    inset-block-start: var(--spacing-space-4);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .link.link--skip {
+      transition: none;
+    }
+  }
+}

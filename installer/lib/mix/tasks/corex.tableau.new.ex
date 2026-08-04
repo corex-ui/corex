@@ -12,7 +12,7 @@ defmodule Mix.Tasks.Corex.Tableau.New do
 
   ## Corex-only options
 
-  * **`--no-design`** - skip the `corex_design` dependency, token config, and Corex design `@import` blocks in `site.css`. Default is **`--design`** (design on).
+  * **`--no-design`** - skip the `corex_design` dependency and live design build. Ships a static neo/light `assets/corex/` export (all components) you can edit or delete. Cannot combine with `--mode`, `--theme`, or `--a11y`. Default is **`--design`** (design on).
   * **`--mode`** - theme/mode toggle head scripts for light/dark. Implies **`--design`**.
   * **`--theme`** - themes (Neo/Uno/Duo/Leo), theme toggle, layout bridge. Implies **`--design`**.
   * **`--a11y`** - preference axes, head script, panel UI. Default **off**. Implies **`--design`**.

@@ -13,9 +13,9 @@ Defaults: Corex Design, `corex_mcp` + MCP plug in `:dev`/`:test` only.
 
 | Flag | Effect |
 |------|--------|
-| `--no-design` | Skip corex_design dependency and design CSS |
+| `--no-design` | Skip `corex_design` dep; ship static neo/light `assets/corex/` (not compatible with `--mode`/`--theme`/`--a11y`) |
 | `--no-mcp` | Skip `corex_mcp` dep and MCP plug |
-| `--mode` / `--theme` / `--lang` | Mode, theme, localization |
+| `--mode` / `--theme` / `--lang` / `--a11y` | Mode, theme, localization, accessibility (mode/theme/a11y need Design) |
 
 Run `mix help corex.new`. Update generator: `mix local.corex`.
 

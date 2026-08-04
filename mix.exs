@@ -119,7 +119,8 @@ defmodule Corex.MixProject do
         "esbuild hooks",
         "esbuild cdn",
         "esbuild cdn_min",
-        "esbuild main"
+        "esbuild main",
+        &sync_no_design_corex_export/1
       ],
       "assets.watch": "esbuild module --watch",
       "archive.build": &raise_on_archive_build/1,
@@ -173,6 +174,37 @@ defmodule Corex.MixProject do
       File.rm_rf!(chunks)
     end
 
+    :ok
+  end
+
+  # Neo/light full Design tree for `mix corex.new --no-design` (installer archive only).
+  defp sync_no_design_corex_export(_) do
+    design_root = Path.join(__DIR__, "design")
+    config = Path.join(__DIR__, "installer/priv/static/corex_no_design.config.exs")
+    installer_out = Path.join(__DIR__, "installer/priv/static/corex")
+
+    unless File.exists?(config) do
+      Mix.raise("Missing no-design snapshot config at #{config}")
+    end
+
+    Mix.shell().info("Building --no-design Corex CSS snapshot (neo/light)…")
+
+    {_, 0} =
+      System.cmd(
+        "mix",
+        [
+          "corex.design.build",
+          "--config",
+          config,
+          "--output",
+          installer_out
+        ],
+        cd: design_root,
+        into: IO.stream(:stdio, :line),
+        stderr_to_stdout: true
+      )
+
+    Mix.shell().info("Synced no-design export → installer/priv/static/corex")
     :ok
   end
 

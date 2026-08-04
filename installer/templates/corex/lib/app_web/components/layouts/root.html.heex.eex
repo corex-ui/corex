@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html<%= if @lang do %>
   lang={<%= @web_module %>.Locale.lang()}
-  dir={<%= @web_module %>.Locale.dir()}<% else %> lang="en"<% end %><%= if @theme do %>
-  data-theme={@theme}<% else %><%= if @design do %>
-  data-theme="<%= @default_theme %>"<% end %><% end %><%= if @mode do %>
-  data-mode={@mode}<% else %><%= if @design do %>
-  data-mode="light"<% end %><% end %><%= if @a11y do %>
-  {a11y_data_attrs(assigns[:a11y])}<% end %>>
+  dir={<%= @web_module %>.Locale.dir()}<% else %>
+  lang="en"<% end %><%= if @theme do %>
+  data-theme={@theme}<% else %>
+  data-theme="<%= @default_theme %>"<% end %><%= if @mode do %>
+  data-mode={@mode}<% else %>
+  data-mode="light"<% end %><%= if @a11y do %>
+  {a11y_data_attrs(assigns[:a11y])}
+><% else %>
+><% end %>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -177,9 +180,9 @@
         }
 <% end %>      })();
     </script>
-<% end %>
   </head>
-  <body<%= if @design do %> class="typo flex min-h-dvh min-w-0 flex-col overflow-x-hidden bg-root text-ink antialiased scrollbar scrollbar--sm [scrollbar-gutter:stable]"<% end %>>
+<% else %>  </head>
+<% end %>  <body class="typo flex min-h-dvh min-w-0 flex-col overflow-x-hidden bg-root text-ink antialiased scrollbar scrollbar--sm [scrollbar-gutter:stable]">
     {@inner_content}
   </body>
 </html>

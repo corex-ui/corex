@@ -1,0 +1,62 @@
+@import "../main.css";
+
+@layer components {
+ .layout-heading {
+ width: 100%;
+ }
+
+ .layout-heading [data-scope="layout-heading"][data-part="root"] {
+ display: flex;
+ flex-wrap: wrap;
+ align-items: flex-start;
+ justify-content: space-between;
+ gap: var(--spacing-size);
+ width: 100%;
+ padding: var(--spacing-space);
+ }
+
+ .layout-heading [data-scope="layout-heading"][data-part="content"] {
+ display: flex;
+ flex-direction: column;
+ gap: var(--spacing-space);
+ min-width: 0;
+ }
+
+ .layout-heading [data-scope="layout-heading"][data-part="title"],
+ .layout-heading [data-scope="layout-heading"][data-part="subtitle"] {
+ margin: 0;
+ width: auto;
+ max-width: 100%;
+ }
+
+ .layout-heading [data-scope="layout-heading"][data-part="title"] {
+ font-family: var(--font-display);
+ font-size: var(--text-2xl);
+ line-height: var(--text-2xl--line-height);
+ font-weight: var(--font-weight-black);
+ color: var(--ctl-ink-text, var(--color-ink));
+ }
+
+ @media (min-width: theme("breakpoint.md")) {
+ .layout-heading [data-scope="layout-heading"][data-part="title"] {
+ font-size: var(--text-3xl);
+ line-height: var(--text-3xl--line-height);
+ }
+ }
+
+ .layout-heading [data-scope="layout-heading"][data-part="subtitle"] {
+ font-family: var(--font-sans);
+ font-size: var(--text-base);
+ line-height: var(--text-base--line-height);
+ font-weight: var(--font-weight-normal);
+ color: var(--ctl-ink-text, var(--color-ink-muted));
+ }
+
+ .layout-heading [data-scope="layout-heading"][data-part="actions"] {
+ display: flex;
+ flex-wrap: wrap;
+ align-items: flex-start;
+ gap: var(--spacing-space);
+ padding: 0;
+ }
+}

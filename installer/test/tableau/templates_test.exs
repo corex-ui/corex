@@ -141,10 +141,10 @@ defmodule Corex.New.Tableau.TemplatesTest do
       assert out =~ "Open source. MIT License."
     end
 
-    test "omits data-theme when design is off" do
+    test "keeps neo/light data attrs when design is off" do
       out = Templates.root_layout(Keyword.put(@base_assigns, :design, false))
-      refute out =~ "data-theme="
-      refute out =~ "data-mode="
+      assert out =~ "data-theme="
+      assert out =~ ~s(data-mode="light")
     end
 
     test "translates document title and nav aria labels when lang is on" do
@@ -280,10 +280,10 @@ defmodule Corex.New.Tableau.TemplatesTest do
       assert out =~ "@import \"./prose.css\""
     end
 
-    test "omits corex import when design is off" do
+    test "imports corex export when design is off" do
       out = Templates.site_css(Keyword.put(@base_assigns, :design, false))
-      refute out =~ "corex.css"
-      assert out =~ ~s(@import "./corex-base.css")
+      assert out =~ "corex.css"
+      refute out =~ "corex-base.css"
     end
 
     test "includes dark mode variant when mode is on" do

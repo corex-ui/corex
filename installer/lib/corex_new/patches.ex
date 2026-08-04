@@ -1,8 +1,6 @@
 defmodule Corex.New.Patches do
   @moduledoc false
 
-  require Logger
-
   alias Corex.New.Shared
 
   @spec patch_failed!(String.t(), String.t(), String.t()) :: no_return()
@@ -49,7 +47,7 @@ defmodule Corex.New.Patches do
       |> strip_daisyui_dep()
 
     write_if_changed!(path, content, updated)
-    format_elixir_source!(path)
+    Shared.format_elixir_source!(path)
   end
 
   def remove_daisyui_vendor!(install_dir) do
@@ -256,32 +254,7 @@ defmodule Corex.New.Patches do
       |> patch_env_path_lists()
 
     write_if_changed!(path, content, updated)
-    format_elixir_source!(path)
-  end
-
-  defp format_elixir_source!(path) do
-    original = File.read!(path)
-
-    try do
-      formatted =
-        original
-        |> Code.format_string!()
-        |> IO.iodata_to_binary()
-        |> then(fn source ->
-          if String.ends_with?(source, "\n"), do: source, else: source <> "\n"
-        end)
-
-      if formatted != original do
-        File.write!(path, formatted)
-      end
-    rescue
-      e in [SyntaxError, TokenMissingError] ->
-        # Incomplete Mix stubs in unit tests may not parse; leave the file as written.
-        Logger.debug("Skipping format for #{path}: #{Exception.message(e)}")
-        :ok
-    end
-
-    :ok
+    Shared.format_elixir_source!(path)
   end
 
   @doc """
@@ -311,7 +284,7 @@ defmodule Corex.New.Patches do
         content = File.read!(path)
         updated = inject_locales_into_gettext_backend(content)
         write_if_changed!(path, content, updated)
-        format_elixir_source!(path)
+        Shared.format_elixir_source!(path)
       end
     end
 
@@ -370,7 +343,7 @@ defmodule Corex.New.Patches do
           )
 
         write_if_changed!(path, content, updated)
-        format_elixir_source!(path)
+        Shared.format_elixir_source!(path)
       end
     end
 

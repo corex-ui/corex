@@ -1,6 +1,8 @@
 defmodule Corex.New.Shared do
   @moduledoc false
 
+  require Logger
+
   @version Mix.Project.config()[:version]
   @minor_constraint @version |> Version.parse!() |> then(&"~> #{&1.major}.#{&1.minor}")
 
@@ -111,6 +113,46 @@ defmodule Corex.New.Shared do
   def write!(path, contents) do
     File.mkdir_p!(Path.dirname(path))
     File.write!(path, contents)
+
+    if elixir_source_path?(path) do
+      format_elixir_source!(path)
+    end
+
+    :ok
+  end
+
+  @doc """
+  Formats an `.ex`/`.exs` file in place with `Code.format_string!/1`.
+
+  Incomplete Mix stubs in unit tests may not parse; those are left as written.
+  """
+  def format_elixir_source!(path) do
+    original = File.read!(path)
+
+    try do
+      formatted =
+        original
+        |> Code.format_string!()
+        |> IO.iodata_to_binary()
+        |> then(fn source ->
+          if String.ends_with?(source, "\n"), do: source, else: source <> "\n"
+        end)
+
+      if formatted != original do
+        File.write!(path, formatted)
+      end
+    rescue
+      e in [SyntaxError, TokenMissingError] ->
+        Logger.debug("Skipping format for #{path}: #{Exception.message(e)}")
+        :ok
+    end
+
+    :ok
+  end
+
+  defp elixir_source_path?(path) do
+    ext = Path.extname(path)
+    ext in [".ex", ".exs"]
   end
 
   def bundled_gettext_catalog_root do
@@ -138,32 +180,45 @@ defmodule Corex.New.Shared do
     :ok
   end
 
-  def bundled_corex_base_css_path do
+  def bundled_corex_export_root do
     [
-      archive_priv_file("static/corex-base.css"),
-      Path.expand("../../priv/static/corex-base.css", __DIR__),
-      Path.expand("../../../priv/static/corex-base.css", __DIR__)
+      archive_priv_dir("static/corex"),
+      # installer/lib/corex_new → installer/priv/static/corex
+      Path.expand("../../priv/static/corex", __DIR__)
     ]
     |> Enum.reject(&is_nil/1)
-    |> Enum.find(&File.exists?/1)
+    |> Enum.find(&File.dir?/1)
   end
 
-  def copy_corex_base_css!(install_dir) do
-    src = bundled_corex_base_css_path()
+  @doc """
+  Copies the static neo/light Design export into `assets/corex/` for `--no-design` apps.
+  """
+  def copy_corex_export!(install_dir) do
+    src = bundled_corex_export_root()
 
-    unless is_binary(src) and File.exists?(src) do
+    unless is_binary(src) and File.dir?(src) do
       Mix.raise("""
-      Corex base CSS is missing.
+      Corex static design export is missing.
 
-      Expected priv/static/corex-base.css in the installer archive or Corex checkout.
+      Expected installer/priv/static/corex (neo/light snapshot). From the Corex checkout run:
+
+          mix assets.build
       """)
     end
 
-    dest = Path.join([install_dir, "assets", "css", "corex-base.css"])
-    Mix.shell().info([:green, "* copying ", :reset, "corex-base.css → assets/css/"])
+    dest = Path.join([install_dir, "assets", "corex"])
+    Mix.shell().info([:green, "* copying ", :reset, "corex design export → assets/corex/"])
+    File.rm_rf!(dest)
     File.mkdir_p!(Path.dirname(dest))
-    File.cp!(src, dest)
+    _copied = File.cp_r!(src, dest)
     :ok
+  end
+
+  defp archive_priv_dir(rel) do
+    case archive_priv_file(Path.join(rel, "corex.css")) do
+      nil -> nil
+      css -> Path.dirname(css)
+    end
   end
 
   defp archive_priv_file(rel) do

@@ -1,0 +1,19 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+[data-theme="neo"] {
+  --radius-none: 0;
+  --radius-xs: 0.36rem;
+  --radius-sm: 0.54rem;
+  --radius-md: 0.84rem;
+  --radius-lg: 1.14rem;
+  --radius-xl: 1.44rem;
+  --radius-2xl: 1.86rem;
+  --radius-3xl: 2.4rem;
+  --radius-4xl: 3.12rem;
+  --radius-full: 9999px;
+  --border-width: 1px;
+  --ring-width: 2px;
+  --ring-offset: 0px;
+}

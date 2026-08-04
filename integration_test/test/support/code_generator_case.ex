@@ -43,7 +43,6 @@ defmodule Corex.Integration.CodeGeneratorCase do
     end
 
     mix_run!(["compile"], app_root_path)
-    mix_run!(["format"], app_root_path)
 
     {app_root_path, output}
   end
@@ -75,7 +74,6 @@ defmodule Corex.Integration.CodeGeneratorCase do
     end
 
     mix_run!(["compile"], app_root_path)
-    mix_run!(["format"], app_root_path)
 
     {app_root_path, output}
   end
@@ -489,8 +487,11 @@ defmodule Corex.Integration.CodeGeneratorCase do
   def assert_corex_no_design_skipped!(app_root, app_name, opts \\ [])
       when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
     base = app_base_path(app_root, app_name, opts)
-    design_dir = Path.join([base, "assets", "corex"])
-    refute_dir(design_dir)
+    mix = File.read!(Path.join(base, "mix.exs"))
+    refute mix =~ ~r/\{:corex_design,/
+    refute mix =~ ":corex_design"
+    config = File.read!(Path.join(base, "config/config.exs"))
+    refute config =~ "config :corex_design"
   end
 
   def assert_corex_no_design_replace_invariants!(app_root, app_name, opts \\ [])
@@ -512,12 +513,19 @@ defmodule Corex.Integration.CodeGeneratorCase do
     app_css = Path.join([base, "assets", "css", "app.css"])
 
     assert_file(app_css, fn c ->
-      refute c =~ ~s(@import "../corex/)
-      refute c =~ ~s(@import '../corex/)
-      assert c =~ ~s(@import "./corex-base.css")
+      assert c =~ ~s(@import "../corex/corex.css")
+      refute c =~ "corex-base.css"
     end)
 
-    assert_file(Path.join([base, "assets", "css", "corex-base.css"]))
+    assert_file(Path.join([base, "assets", "corex", "corex.css"]))
+    refute_file(Path.join([base, "assets", "css", "corex-base.css"]))
+
+    gitignore = Path.join(base, ".gitignore")
+
+    if File.exists?(gitignore) do
+      refute File.read!(gitignore) =~ ~r{^/?assets/corex/?$}m
+    end
+
     refute_file(Path.join([base, "lib", web, "components", "core_components.ex"]))
 
     assert_file(Path.join(base, "lib/#{web}.ex"), fn c ->

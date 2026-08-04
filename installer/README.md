@@ -34,6 +34,7 @@ mix corex.new my_app
 ```
 
 Design and MCP are on by default. Skip either with `--no-design` or `--no-mcp`.
+`--no-design` ships a static neo/light `assets/corex/` export (no `corex_design` dep); `--mode` / `--theme` / `--a11y` still require Design.
 
 Full feature set (theme / mode / locale scaffolding):
 

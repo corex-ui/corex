@@ -20,10 +20,9 @@ defmodule Mix.Tasks.Corex.Tableau.NewTest do
     assert capture_io(fn -> Mix.Tasks.Corex.Tableau.New.run([]) end) =~ "corex.tableau.new"
   end
 
-  test "lang conflicts with --no-design" do
-    assert_raise Mix.Error, ~r/--lang requires design/, fn ->
-      Mix.Tasks.Corex.Tableau.New.run(["my_blog", "--no-design", "--lang"])
-    end
+  test "lang is allowed with --no-design" do
+    assert :ok ==
+             Corex.New.Cli.validate_corex_flags!(lang: true, design: false)
   end
 
   test "mode conflicts with --no-design" do

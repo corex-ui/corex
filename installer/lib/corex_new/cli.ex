@@ -3,7 +3,11 @@ defmodule Corex.New.Cli do
 
   @elixir_requirement "~> 1.17"
 
-  @design_dependent_flags [:mode, :theme, :lang, :a11y]
+  # Flags that need the live `corex_design` dep / multi-theme CSS — not the static neo/light export.
+  @design_dependent_flags [:mode, :theme, :a11y]
+
+  # Flags that auto-enable `--design` when design is unset (includes lang for Design chrome).
+  @design_auto_enable_flags [:mode, :theme, :lang, :a11y]
 
   def elixir_version_check!(installer_version) do
     unless Version.match?(System.version(), @elixir_requirement) do
@@ -45,14 +49,15 @@ defmodule Corex.New.Cli do
 
   @doc """
   Auto-enable `--design` when `--mode`, `--theme`, `--lang`, or `--a11y` is set
-  (language select and accessibility panel need Design CSS / hooks).
+  and design was not explicitly chosen. Explicit `--no-design` is respected for
+  `--lang`; `--mode` / `--theme` / `--a11y` still conflict via `validate_corex_flags!/1`.
   Prints a one-line notice unless `notify: false` is passed.
   """
   def maybe_auto_enable_design(opts, notify_opts \\ []) when is_list(opts) do
     enable_design(opts, needs_design?(opts), Keyword.get(opts, :design), notify_opts)
   end
 
-  defp needs_design?(opts), do: Enum.any?(@design_dependent_flags, &(opts[&1] == true))
+  defp needs_design?(opts), do: Enum.any?(@design_auto_enable_flags, &(opts[&1] == true))
 
   defp enable_design(opts, false, _design, _notify_opts), do: opts
   defp enable_design(opts, true, design, _notify_opts) when is_boolean(design), do: opts
@@ -64,7 +69,7 @@ defmodule Corex.New.Cli do
 
   defp notify_auto_design(true) do
     Mix.shell().info(
-      "* Corex: enabling --design because --mode/--theme/--lang/--a11y was set; pass --no-design to opt out."
+      "* Corex: enabling --design because --mode/--theme/--lang/--a11y was set; pass --no-design to opt out (not valid with --mode/--theme/--a11y)."
     )
   end
 

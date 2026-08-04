@@ -6,18 +6,12 @@
 @source "../css";
 @source "../js";
 @source "../../lib/<%= @otp_app %>_web";
-<%= if @design do %>
 @source "../corex";
-<% end %>
 
 /* A Tailwind plugin that makes "hero-#{ICON}" classes available.
    The heroicons installation itself is managed by your mix.exs */
 @plugin "../vendor/heroicons";
-<%= if @design do %>
 @import "../corex/corex.css";
-<% else %>
-@import "./corex-base.css";
-<% end %>
 /* Add variants based on LiveView classes */
 @custom-variant phx-click-loading (.phx-click-loading&, .phx-click-loading &);
 @custom-variant phx-submit-loading (.phx-submit-loading&, .phx-submit-loading &);
@@ -30,10 +24,8 @@
 [data-phx-session], [data-phx-teleported-src] { display: contents }
 
 /* This file is for your main application CSS */
-<% else %><%= if @design do %>
-[data-phx-session], [data-phx-teleported-src] { display: contents }
 <% else %>
-@import "./corex-base.css";
+@import "../corex/corex.css";
 
 [data-phx-session], [data-phx-teleported-src] { display: contents }
-<% end %><% end %>
+<% end %>

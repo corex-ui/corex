@@ -189,7 +189,7 @@ defmodule Corex.New.Tableau.Generate do
     )
 
     unless opts[:design] do
-      Shared.copy_corex_base_css!(install_dir)
+      Shared.copy_corex_export!(install_dir)
     end
 
     write!(

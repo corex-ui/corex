@@ -1,0 +1,26 @@
+@import "../main.css";
+
+@layer components {
+  .button {
+    width: fit-content;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .button.ui-trigger--square {
+    aspect-ratio: 1 / 1;
+    padding: 0;
+    justify-content: center;
+    width: auto;
+    border-radius: var(--radius-sm);
+    --ctl-radius: var(--radius-sm);
+  }
+
+  .button.ui-trigger--circle {
+    aspect-ratio: 1 / 1;
+    padding: 0;
+    justify-content: center;
+    width: auto;
+    border-radius: var(--radius-full) !important;
+  }
+}

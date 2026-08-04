@@ -79,10 +79,8 @@ defmodule Corex.New.CliTest do
       end
     end
 
-    test "rejects lang without design when design is explicitly false" do
-      assert_raise Mix.Error, ~r/--lang requires design/, fn ->
-        Cli.validate_corex_flags!(lang: true, design: false)
-      end
+    test "allows lang with explicit --no-design" do
+      assert :ok == Cli.validate_corex_flags!(lang: true, design: false)
     end
   end
 
@@ -107,7 +105,7 @@ defmodule Corex.New.CliTest do
 
       assert_received {:mix_shell, :info,
                        [
-                         "* Corex: enabling --design because --mode/--theme/--lang/--a11y was set; pass --no-design to opt out."
+                         "* Corex: enabling --design because --mode/--theme/--lang/--a11y was set; pass --no-design to opt out (not valid with --mode/--theme/--a11y)."
                        ]}
     end
   end
