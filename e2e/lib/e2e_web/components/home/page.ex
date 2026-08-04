@@ -38,9 +38,9 @@ defmodule E2eWeb.Home.Page do
             >
               <li
                 :for={bullet <- @hero_bullets}
-                class="relative flex items-start gap-x-3 text-pretty text-start text-sm text-ink-muted"
+                class="relative flex items-start gap-x-space text-pretty text-start text-sm text-ink-muted"
               >
-                <span class="mt-0.5 shrink-0 text-success-text">
+                <span class="mt-space-xs shrink-0 text-success-text">
                   <.heroicon name="hero-check" />
                 </span>
                 <span>

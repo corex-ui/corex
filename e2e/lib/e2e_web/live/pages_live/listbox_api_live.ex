@@ -67,7 +67,7 @@ defmodule E2eWeb.ListboxApiLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+            <div class="flex flex-wrap gap-space-sm items-center w-full justify-center">
               <.action
                 phx-click={Corex.Listbox.set_value("listbox-api-sv-client", ["bel"])}
                 class="button ui-size-sm"
@@ -102,7 +102,7 @@ defmodule E2eWeb.ListboxApiLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+            <div class="flex flex-wrap gap-space-sm items-center w-full justify-center">
               <.action phx-click="listbox_api_set_value" class="button ui-size-sm">Belgium</.action>
             </div>
             <.listbox id="listbox-api-sv-server" class="listbox" items={Demo.items_minimal()}>
@@ -148,7 +148,7 @@ defmodule E2eWeb.ListboxApiLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+            <div class="flex flex-wrap gap-space-sm items-center w-full justify-center">
               <.action
                 phx-click={Corex.Listbox.value("listbox-api-val-client")}
                 class="button ui-size-sm"
@@ -177,7 +177,7 @@ defmodule E2eWeb.ListboxApiLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+            <div class="flex flex-wrap gap-space-sm items-center w-full justify-center">
               <.action phx-click="listbox_api_value_server" class="button ui-size-sm">
                 Read selection
               </.action>

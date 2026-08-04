@@ -324,7 +324,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.style_pagination
           id={"pagination-style-max-#{variant.id}"}
@@ -343,7 +343,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.style_pagination
           id={"pagination-style-width-#{variant.id}"}
@@ -417,7 +417,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
     assigns = Map.merge(mount_assigns(), assigns)
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
       <div class="flex flex-wrap items-center gap-space">
         <.action
           phx-click={Corex.Pagination.set_page("pagination-api-bind", 1)}
@@ -483,7 +483,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
       |> Map.put_new(:page, 1)
 
     ~H"""
-    <div class="flex flex-col gap-4 items-center w-full">
+    <div class="flex flex-col gap-space-lg items-center w-full">
       <.action phx-click="pagination_api_page_3" class="button ui-size-sm">Page 3</.action>
       <.pagination
         id="pagination-api-srv"

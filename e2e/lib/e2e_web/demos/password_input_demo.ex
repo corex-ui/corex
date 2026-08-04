@@ -57,7 +57,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
 
   def api_binding_heex do
     ~S"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={Corex.PasswordInput.set_visible("password-input-api-binding", true)} class="button ui-size-sm">
         Show
       </.action>
@@ -95,7 +95,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     assigns = assign_new(assigns, :id, fn -> "password-input-api-binding" end)
 
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={Corex.PasswordInput.set_visible(@id, true)} class="button ui-size-sm">
         Show
       </.action>
@@ -124,7 +124,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
 
   def api_client_heex do
     ~S"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action
         phx-click={
           JS.dispatch("corex:password-input:set-visible",
@@ -202,7 +202,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     assigns = assign_new(assigns, :id, fn -> "password-input-api-client" end)
 
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action
         phx-click={
           JS.dispatch("corex:password-input:set-visible",
@@ -255,7 +255,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
 
   def api_server_heex do
     ~S"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click="api_password_show" phx-value-id="password-input-api-server" class="button ui-size-sm">
         Show
       </.action>
@@ -304,7 +304,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     assigns = assign_new(assigns, :id, fn -> "password-input-api-server" end)
 
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click="api_password_show" phx-value-id={@id} class="button ui-size-sm">
         Show
       </.action>
@@ -1169,7 +1169,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 max-w-md">
+    <div class="flex flex-col gap-space-lg max-w-md">
       <.password_input
         id="password-input-style-color-default"
         name="user[password]"
@@ -1248,7 +1248,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 max-w-md">
+    <div class="flex flex-col gap-space-lg max-w-md">
       <.password_input
         id="password-input-style-variant-subtle"
         name="user[password]"
@@ -1344,7 +1344,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 max-w-md">
+    <div class="flex flex-col gap-space-lg max-w-md">
       <.password_input
         id="password-input-style-sm"
         name="user[password]"
@@ -1420,7 +1420,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 max-w-md">
+    <div class="flex flex-col gap-space-lg max-w-md">
       <.password_input
         id="password-input-style-rounded-none"
         name="user[password]"
@@ -1502,7 +1502,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.password_input
           id={"password-input-style-max-#{variant.id}"}

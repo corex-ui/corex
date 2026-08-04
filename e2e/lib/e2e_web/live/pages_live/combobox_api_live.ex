@@ -64,7 +64,7 @@ defmodule E2eWeb.ComboboxApiLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+            <div class="flex flex-wrap gap-space-sm items-center w-full justify-center">
               <.action
                 phx-click={Corex.Combobox.set_value("combobox-api-sv-client", ["bel"])}
                 class="button ui-size-sm"
@@ -106,7 +106,7 @@ defmodule E2eWeb.ComboboxApiLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+            <div class="flex flex-wrap gap-space-sm items-center w-full justify-center">
               <.action phx-click="combobox_api_set_value" class="button ui-size-sm">Belgium</.action>
               <.action phx-click="combobox_api_clear" class="button ui-size-sm">Clear</.action>
             </div>
@@ -132,7 +132,7 @@ defmodule E2eWeb.ComboboxApiLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+            <div class="flex flex-wrap gap-space-sm items-center w-full justify-center">
               <.action
                 type="button"
                 class="button ui-size-sm"
@@ -182,7 +182,7 @@ defmodule E2eWeb.ComboboxApiLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+            <div class="flex flex-wrap gap-space-sm items-center w-full justify-center">
               <.action
                 phx-click={Corex.Combobox.set_open("combobox-api-open-client", true)}
                 class="button ui-size-sm"
@@ -224,7 +224,7 @@ defmodule E2eWeb.ComboboxApiLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+            <div class="flex flex-wrap gap-space-sm items-center w-full justify-center">
               <.action phx-click="combobox_api_open" class="button ui-size-sm">Open</.action>
               <.action phx-click="combobox_api_close" class="button ui-size-sm">Close</.action>
             </div>

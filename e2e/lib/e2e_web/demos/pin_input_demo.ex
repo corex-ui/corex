@@ -545,7 +545,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def api_set_value_client_js_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action
         phx-click={
           JS.dispatch("corex:pin-input:set-value",
@@ -567,7 +567,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def api_set_value_server_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click="api_pin_set_value_server" class="button ui-size-sm">
         Fill from server
       </.action>
@@ -638,7 +638,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def api_value_client_js_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action
         phx-click={JS.dispatch("corex:pin-input:value", to: "##{@id}", detail: %{}, bubbles: false)}
         class="button ui-size-sm"
@@ -684,7 +684,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def api_set_value_client_binding_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action
         phx-click={Corex.PinInput.set_value(@id, ["1", "2", "3", "4"])}
         class="button ui-size-sm"
@@ -700,7 +700,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def api_value_client_binding_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={Corex.PinInput.value(@id)} class="button ui-size-sm">Value</.action>
       <.action phx-click={Corex.PinInput.value(@id, respond_to: :client)} class="button ui-size-sm">
         Value (client only)
@@ -714,7 +714,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def api_clear_client_binding_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={Corex.PinInput.clear(@id)} class="button ui-size-sm">Clear</.action>
     </div>
     <.pin_input id={@id} count={4} class="pin-input" value={["9", "9", "9", "9"]}>
@@ -725,7 +725,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def api_value_server_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click="api_pin_value_server" class="button ui-size-sm">Read from server</.action>
     </div>
     <.pin_input id={@id} count={4} class="pin-input" value={["5", "6", "7", "8"]}>
@@ -736,7 +736,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def api_clear_server_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click="api_pin_clear_server" class="button ui-size-sm">Clear from server</.action>
     </div>
     <.pin_input id={@id} count={4} class="pin-input" value={["1", "1", "1", "1"]}>
@@ -795,7 +795,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start">
+    <div class="flex flex-wrap gap-space-xl items-start">
       <.pin_input
         id="pin-input-style-color-default"
         count={4}
@@ -864,7 +864,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start">
+    <div class="flex flex-wrap gap-space-xl items-start">
       <.pin_input
         id="pin-input-style-variant-subtle"
         count={4}
@@ -945,7 +945,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 items-start">
+    <div class="flex flex-col gap-space-lg items-start">
       <.pin_input
         id="pin-input-style-size-sm"
         count={4}
@@ -1006,7 +1006,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 items-start">
+    <div class="flex flex-col gap-space-lg items-start">
       <.pin_input
         id="pin-input-style-radius-none"
         count={4}
@@ -1094,7 +1094,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.pin_input
           id={"pin-input-style-width-#{variant.id}"}
@@ -1114,7 +1114,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.pin_input
           id={"pin-input-style-max-#{variant.id}"}
@@ -1151,7 +1151,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 items-start">
+    <div class="flex flex-col gap-space-lg items-start">
       <.pin_input id="pin-input-style-state-empty" count={4} class="pin-input" value={[]}>
         <:label>Empty</:label>
       </.pin_input>

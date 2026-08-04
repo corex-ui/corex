@@ -74,8 +74,8 @@ defmodule E2eWeb.AngleSliderEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
-              <div class="flex flex-wrap gap-6 justify-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
+              <div class="flex flex-wrap gap-space-xl justify-center w-full">
                 <.angle_slider
                   id={@id_server_change}
                   class="angle-slider"
@@ -122,8 +122,8 @@ defmodule E2eWeb.AngleSliderEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
-              <div class="flex flex-wrap gap-6 justify-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
+              <div class="flex flex-wrap gap-space-xl justify-center w-full">
                 <.angle_slider
                   id={@id_client_change}
                   class="angle-slider"

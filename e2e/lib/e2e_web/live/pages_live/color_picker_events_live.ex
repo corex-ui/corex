@@ -97,7 +97,7 @@ defmodule E2eWeb.ColorPickerEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.color_picker
                 id="color-picker-ev-sv"
                 value="#3b82f6"
@@ -133,7 +133,7 @@ defmodule E2eWeb.ColorPickerEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.color_picker
                 id="color-picker-ev-so"
                 value="#3b82f6"
@@ -170,7 +170,7 @@ defmodule E2eWeb.ColorPickerEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.color_picker
                 id="color-picker-ev-cv"
                 value="#3b82f6"
@@ -229,7 +229,7 @@ defmodule E2eWeb.ColorPickerEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.color_picker
                 id="color-picker-ev-co"
                 value="#3b82f6"

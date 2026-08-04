@@ -55,7 +55,7 @@ defmodule E2eWeb.AdminLive.Show do
             <:title>Delete admin?</:title>
             <:description>This action cannot be undone.</:description>
             <:content>
-              <div class="flex flex-wrap justify-end gap-2 mt-4">
+              <div class="flex flex-wrap justify-end gap-space-sm mt-space-lg">
                 <.action
                   id={"admin-delete-#{@admin.id}-cancel"}
                   phx-click={Corex.Dialog.set_open("admin-delete-#{@admin.id}", false)}

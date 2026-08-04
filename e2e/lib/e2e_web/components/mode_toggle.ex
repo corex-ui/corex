@@ -12,12 +12,13 @@ defmodule E2eWeb.ModeToggle do
   )
 
   attr(:id, :string, default: "mode-switcher")
+  attr(:class, :string, default: nil)
 
   def mode_toggle(assigns) do
     ~H"""
     <.toggle
       id={@id}
-      class="toggle ui-ghost ui-size-sm ui-rounded-full [&_[data-part=root]]:aspect-square [&_[data-part=root]]:w-auto [&_[data-part=root]]:justify-center [&_[data-part=root]]:p-0!"
+      class={["toggle ui-ghost ui-size-sm ui-trigger--circle", @class]}
       data-toggle-dual-label
       pressed={@mode == "dark"}
       on_pressed_change_client="phx:set-mode"

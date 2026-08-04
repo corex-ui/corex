@@ -107,7 +107,7 @@ defmodule E2eWeb.DataTableStyleLive do
           code_tabs={E2eWeb.Demos.DataTableDemo.styling_color_code_tabs()}
         >
           <:preview>
-            <div class="flex flex-col gap-4 w-full">
+            <div class="flex flex-col gap-space-lg w-full">
               <.style_table
                 :for={{modifier, id} <- @color_variants}
                 id={id}
@@ -126,7 +126,7 @@ defmodule E2eWeb.DataTableStyleLive do
           code_tabs={E2eWeb.Demos.DataTableDemo.styling_size_code_tabs()}
         >
           <:preview>
-            <div class="flex flex-col gap-4 w-full">
+            <div class="flex flex-col gap-space-lg w-full">
               <.style_table
                 :for={{modifier, id} <- @size_variants}
                 id={id}
@@ -146,7 +146,7 @@ defmodule E2eWeb.DataTableStyleLive do
         >
           <:preview>
             <div {DemoScales.preview_scroll_attrs()}>
-              <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+              <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
                 <p class="typo ui-size-sm font-medium">{variant.label}</p>
                 <.style_table
                   id={"data-table-styling-max-w-#{variant.id}"}
@@ -167,7 +167,7 @@ defmodule E2eWeb.DataTableStyleLive do
         >
           <:preview>
             <div {DemoScales.preview_scroll_attrs()}>
-              <div :for={variant <- @max_height_variants} class="flex flex-col gap-2">
+              <div :for={variant <- @max_height_variants} class="flex flex-col gap-space-sm">
                 <p class="typo ui-size-sm font-medium">{variant.label}</p>
                 <.style_table
                   id={"data-table-styling-max-h-#{variant.id}"}

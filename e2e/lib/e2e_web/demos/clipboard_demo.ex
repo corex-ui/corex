@@ -228,7 +228,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
 
   def api_dispatch_heex do
     ~S"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={Corex.Clipboard.copy("clipboard-api-dispatch")} class="button ui-size-sm">
         Copy
       </.action>
@@ -262,7 +262,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={Corex.Clipboard.copy("clipboard-api-dispatch")} class="button ui-size-sm">
         Copy
       </.action>
@@ -303,7 +303,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
 
   def styling_semantic_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start">
+    <div class="flex flex-wrap gap-space-xl items-start">
       <.clipboard
         id="clipboard-style-semantic-default"
         class="clipboard"
@@ -384,7 +384,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
 
   def styling_variant_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start">
+    <div class="flex flex-wrap gap-space-xl items-start">
       <.clipboard
         id="clipboard-style-variant-subtle"
         class="clipboard"
@@ -471,7 +471,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
 
   def styling_size_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start">
+    <div class="flex flex-wrap gap-space-xl items-start">
       <.clipboard
         id="clipboard-style-sm"
         class="clipboard ui-size-sm"
@@ -543,7 +543,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
 
   def styling_rounded_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start">
+    <div class="flex flex-wrap gap-space-xl items-start">
       <.clipboard
         id="clipboard-style-rounded-none"
         class="clipboard ui-rounded-none"
@@ -654,7 +654,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.clipboard
           id={"clipboard-style-width-#{variant.id}"}
@@ -676,7 +676,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.clipboard
           id={"clipboard-style-max-#{variant.id}"}

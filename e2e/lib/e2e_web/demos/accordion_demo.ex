@@ -345,7 +345,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def api_set_value_client_binding_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={Corex.Accordion.set_value(@id, "lorem")} class="button ui-size-sm">
         Open Lorem
       </.action>
@@ -369,7 +369,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def api_set_value_client_js_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action
         phx-click={
           JS.dispatch("corex:accordion:set-value",
@@ -417,7 +417,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def api_set_value_server_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={@event} value="lorem" class="button ui-size-sm">Open Lorem</.action>
       <.action phx-click={@event} value="lorem,donec" class="button ui-size-sm">
         Lorem and Donec
@@ -476,7 +476,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def api_value_client_binding_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={Corex.Accordion.value(@id)} class="button ui-size-sm">Value</.action>
       <.action
         phx-click={Corex.Accordion.value(@id, respond_to: :client)}
@@ -496,7 +496,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def api_value_client_js_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action
         phx-click={JS.dispatch("corex:accordion:value", to: "##{@id}", detail: %{}, bubbles: false)}
         class="button ui-size-sm"
@@ -527,7 +527,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def api_value_server_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={@event_value} class="button ui-size-sm">Value</.action>
       <.action phx-click={@event_value_client_only} class="button ui-size-sm">
         Value (client only)
@@ -544,7 +544,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def api_focused_client_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={@event_focused} class="button ui-size-sm">Focused</.action>
       <.action phx-click={@event_focused_client_only} class="button ui-size-sm">
         Focused (client only)
@@ -561,7 +561,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def api_focused_client_js_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={@event_focused} class="button ui-size-sm">Focused</.action>
       <.action phx-click={@event_focused_client_only} class="button ui-size-sm">
         Focused (client only)
@@ -578,7 +578,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def api_focused_server_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={@event_focused} class="button ui-size-sm">Focused</.action>
       <.action phx-click={@event_focused_client_only} class="button ui-size-sm">
         Focused (client only)
@@ -595,7 +595,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def api_item_state_client_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={@event_lorem} class="button ui-size-sm">lorem</.action>
       <.action phx-click={@event_duis} class="button ui-size-sm">duis</.action>
       <.action phx-click={@event_donec} class="button ui-size-sm">donec</.action>
@@ -610,7 +610,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def api_item_state_client_js_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={@event_lorem} class="button ui-size-sm">lorem</.action>
       <.action phx-click={@event_duis} class="button ui-size-sm">duis</.action>
       <.action phx-click={@event_donec} class="button ui-size-sm">donec</.action>
@@ -625,7 +625,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def api_item_state_server_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={@event_lorem} class="button ui-size-sm">lorem</.action>
       <.action phx-click={@event_duis} class="button ui-size-sm">duis</.action>
       <.action phx-click={@event_donec} class="button ui-size-sm">donec</.action>
@@ -1464,7 +1464,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.accordion
           id={"accordion-style-max-#{variant.id}"}
@@ -1731,7 +1731,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_height_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_height_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.accordion
           id={"accordion-style-max-h-#{variant.id}"}
@@ -1855,8 +1855,8 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def patterns_dynamic_demo_heex do
     ~S"""
-    <div class="flex flex-col gap-3 w-full max-w-xl">
-      <div class="flex flex-wrap gap-2">
+    <div class="flex flex-col gap-space w-full max-w-xl">
+      <div class="flex flex-wrap gap-space-sm">
         <.action phx-click="add_item" class="button ui-size-sm ui-accent">
           <.heroicon name="hero-plus" /> Add item
         </.action>
@@ -1906,8 +1906,8 @@ defmodule E2eWeb.Demos.AccordionDemo do
       @impl true
       def render(assigns) do
         ~H"""
-        <div class="flex flex-col gap-3 w-full max-w-xl">
-            <div class="flex flex-wrap gap-2">
+        <div class="flex flex-col gap-space w-full max-w-xl">
+            <div class="flex flex-wrap gap-space-sm">
               <.action phx-click="add_item" class="button ui-size-sm ui-accent">
                 <.heroicon name="hero-plus" /> Add item
               </.action>

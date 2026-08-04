@@ -345,7 +345,7 @@ defmodule E2eWeb.Demos.DataListDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.data_list
           id={"data-list-style-max-#{variant.id}"}

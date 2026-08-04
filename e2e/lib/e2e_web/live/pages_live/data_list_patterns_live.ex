@@ -84,7 +84,7 @@ defmodule E2eWeb.DataListPatternsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-4">
+            <div class="flex flex-wrap gap-space-lg">
               <.action phx-click="add" class="button ui-accent">Add row</.action>
               <.action phx-click="reset" class="button ui-alert">Reset</.action>
             </div>

@@ -97,7 +97,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
       input_class = styling_width_input_class(modifier)
 
       """
-      <div class="flex flex-col gap-3 pb-8 last:pb-0">
+      <div class="flex flex-col gap-space pb-size-sm last:pb-0">
         <p class="typo ui-size-sm font-medium">#{label}</p>
         <.anatomy_all_fields
           id_prefix="native-input-style-max-width-#{id}"
@@ -148,7 +148,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
 
     ~H"""
     <div class="w-full max-h-[70vh] overflow-y-auto scrollbar scrollbar--sm" tabindex="0">
-      <div :for={variant <- @variants} class="flex flex-col gap-3 pb-8 last:pb-0">
+      <div :for={variant <- @variants} class="flex flex-col gap-space pb-size-sm last:pb-0">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.anatomy_all_fields
           id_prefix={"#{@id_prefix}-#{variant.id}"}
@@ -251,7 +251,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
 
   def anatomy_text_code do
     ~S"""
-    <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-space-lg">
       <.native_input type="text" name="user[name]" class="native-input">
         <:label>Text</:label>
         <:icon><.heroicon name="hero-pencil-square" class="icon" /></:icon>
@@ -316,7 +316,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-space-lg">
       <.native_input type="text" id="text-with-icon" name="user[name]" class="native-input">
         <:label>Text</:label>
         <:icon><.heroicon name="hero-pencil-square" class="icon" /></:icon>
@@ -397,7 +397,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
 
   def anatomy_date_time_code do
     ~S"""
-    <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-space-lg">
       <.native_input type="date" name="user[date]" class="native-input">
         <:label>Date</:label>
       </.native_input>
@@ -421,7 +421,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-space-lg">
       <.native_input type="date" id="date" name="user[date]" class="native-input">
         <:label>Date</:label>
       </.native_input>
@@ -443,7 +443,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
 
   def anatomy_multiple_code do
     ~S"""
-    <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-space-lg">
       <.native_input
         type="select"
         multiple
@@ -468,7 +468,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-space-lg">
       <.native_input
         type="select"
         multiple
@@ -508,7 +508,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-space-lg">
       <.native_input type="checkbox" id="checkbox" name="user[agree]" class="native-input">
         <:label>I agree</:label>
       </.native_input>
@@ -575,7 +575,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
 
   def styling_variant_example(assigns) do
     ~H"""
-    <div class="flex flex-col gap-4 max-w-md">
+    <div class="flex flex-col gap-space-lg max-w-md">
       <.native_input
         id="native-input-style-variant-subtle"
         type="text"
@@ -788,7 +788,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
       class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-      <div class="flex flex-col gap-3">
+      <div class="flex flex-col gap-space">
         <p class="typo ui-size-sm font-medium">Text</p>
         <.native_input field={@form[:name]} type="text" placeholder="Your name" class="native-input">
           <:label>Name</:label>
@@ -823,7 +823,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
           <:error :let={msg}>{msg}</:error>
         </.native_input>
       </div>
-      <div class="flex flex-col gap-3">
+      <div class="flex flex-col gap-space">
         <p class="typo ui-size-sm font-medium">Date & time</p>
         <.native_input field={@form[:birth_date]} type="date" class="native-input">
           <:label>Birth date</:label>
@@ -846,7 +846,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
           <:error :let={msg}>{msg}</:error>
         </.native_input>
       </div>
-      <div class="flex flex-col gap-3">
+      <div class="flex flex-col gap-space">
         <p class="typo ui-size-sm font-medium">Multiple</p>
         <.native_input
           field={@form[:tags]}
@@ -866,7 +866,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
           <:error :let={msg}>{msg}</:error>
         </.native_input>
       </div>
-      <div class="flex flex-col gap-3">
+      <div class="flex flex-col gap-space">
         <p class="typo ui-size-sm font-medium">Other</p>
         <.native_input field={@form[:color]} type="color" value="#3b82f6" class="native-input">
           <:label>Color</:label>
@@ -985,7 +985,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
       class="flex flex-col gap-space-lg w-full max-w-xl"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-      <div class="flex flex-col gap-3">
+      <div class="flex flex-col gap-space">
         <p class="typo ui-size-sm font-medium">Text</p>
         <.native_input type="text" name="profile[name]" placeholder="Your name" class="native-input">
           <:label>Name</:label>
@@ -1012,7 +1012,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
           <:label>Password</:label>
         </.native_input>
       </div>
-      <div class="flex flex-col gap-3">
+      <div class="flex flex-col gap-space">
         <p class="typo ui-size-sm font-medium">Date & time</p>
         <.native_input type="date" name="profile[birth_date]" class="native-input">
           <:label>Birth date</:label>
@@ -1030,7 +1030,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
           <:label>Week</:label>
         </.native_input>
       </div>
-      <div class="flex flex-col gap-3">
+      <div class="flex flex-col gap-space">
         <p class="typo ui-size-sm font-medium">Multiple</p>
         <.native_input
           type="select"
@@ -1049,7 +1049,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
           <:label>Tags</:label>
         </.native_input>
       </div>
-      <div class="flex flex-col gap-3">
+      <div class="flex flex-col gap-space">
         <p class="typo ui-size-sm font-medium">Other</p>
         <.native_input type="color" name="profile[color]" value="#3b82f6" class="native-input">
           <:label>Color</:label>

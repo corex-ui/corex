@@ -95,7 +95,7 @@ defmodule E2eWeb.DatePickerEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.date_picker
                 id="date-picker-e-sv"
                 translation={
@@ -139,7 +139,7 @@ defmodule E2eWeb.DatePickerEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.date_picker
                 id="date-picker-e-so"
                 translation={
@@ -184,7 +184,7 @@ defmodule E2eWeb.DatePickerEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.date_picker
                 id="date-picker-e-cv"
                 translation={
@@ -249,7 +249,7 @@ defmodule E2eWeb.DatePickerEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.date_picker
                 id="date-picker-e-co"
                 translation={

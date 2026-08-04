@@ -50,7 +50,7 @@ defmodule E2eWeb.AvatarPlayLive do
           <form
             phx-change="avatar_play_changed"
             id="avatar-play-form"
-            class="flex flex-col gap-4 w-full max-w-md"
+            class="flex flex-col gap-space-lg w-full max-w-md"
           >
             <.native_input
               type="url"

@@ -207,7 +207,7 @@ defmodule E2eWeb.TimerApiLive do
           code={@codes.countdown}
         >
           <:preview>
-            <div class="flex w-full max-w-4xl flex-col items-center gap-4">
+            <div class="flex w-full max-w-4xl flex-col items-center gap-space-lg">
               <Demo.api_template_countdown_preview />
             </div>
           </:preview>

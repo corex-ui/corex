@@ -46,7 +46,7 @@ defmodule Corex.Dialog do
     <:description>Choose an action to continue.</:description>
     <:content>
       <p>Are you sure you want to continue?</p>
-      <div class="flex flex-wrap justify-end gap-2 mt-4">
+      <div class="flex flex-wrap justify-end gap-space-sm mt-space-lg">
         <.action phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)} class="button ui-size-sm">
           Cancel
         </.action>
@@ -273,7 +273,7 @@ defmodule Corex.Dialog do
     <:title>Delete this item?</:title>
     <:description>This action cannot be undone.</:description>
     <:content>
-      <div class="flex flex-wrap justify-end gap-2 mt-4">
+      <div class="flex flex-wrap justify-end gap-space-sm mt-space-lg">
         <.action id="delete-item-alert-cancel" phx-click={Corex.Dialog.set_open("delete-item-alert", false)} class="button ui-size-sm">
           Cancel
         </.action>

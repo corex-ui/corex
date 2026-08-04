@@ -142,7 +142,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
       <div class="flex flex-wrap items-center gap-space">
         <button
           type="button"
@@ -187,7 +187,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
       <div class="flex flex-wrap items-center gap-space">
         <.action phx-click="signature_api_clear" class="button ui-size-sm">
           Clear
@@ -1010,7 +1010,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
 
   def styling_variant_example(assigns) do
     ~H"""
-    <div class="flex flex-col gap-4 items-start w-full max-w-xl">
+    <div class="flex flex-col gap-space-lg items-start w-full max-w-xl">
       <.signature_pad
         id="signature-style-variant-subtle"
         class="signature-pad"
@@ -1154,7 +1154,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.signature_pad
           id={"signature-style-max-#{variant.id}"}

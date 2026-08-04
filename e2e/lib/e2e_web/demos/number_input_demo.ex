@@ -117,7 +117,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start">
+    <div class="flex flex-wrap gap-space-xl items-start">
       <.number_input id="number-input-style-color-default" class="number-input" value="1">
         <:label>Default</:label>
         <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
@@ -192,7 +192,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start">
+    <div class="flex flex-wrap gap-space-xl items-start">
       <.number_input id="number-input-style-variant-subtle" class="number-input" value="1">
         <:label>Subtle (default)</:label>
         <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
@@ -286,7 +286,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 max-w-md">
+    <div class="flex flex-col gap-space-lg max-w-md">
       <.number_input id="number-input-style-sm" class="number-input ui-size-sm w-full" value="1">
         <:label>SM</:label>
         <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
@@ -333,7 +333,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.number_input
           id={"number-input-style-max-#{variant.id}"}
@@ -384,7 +384,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 max-w-md">
+    <div class="flex flex-col gap-space-lg max-w-md">
       <.number_input
         id="number-input-style-rounded-none"
         class="number-input ui-rounded-none w-full"
@@ -633,7 +633,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def api_set_value_client_binding_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={Corex.NumberInput.set_value(@id, 42)} class="button ui-size-sm">
         Set 42
       </.action>
@@ -648,7 +648,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def api_set_value_server_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click="api_number_set_value_server" class="button ui-size-sm">
         Set 99
       </.action>
@@ -663,7 +663,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def api_set_value_client_js_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action
         phx-click={
           JS.dispatch("corex:number-input:set-value",
@@ -721,7 +721,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def api_clear_client_binding_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={Corex.NumberInput.clear_value(@id)} class="button ui-size-sm">
         Clear
       </.action>
@@ -736,7 +736,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def api_clear_server_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click="api_number_clear_server" class="button ui-size-sm">
         Clear
       </.action>
@@ -766,7 +766,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def api_commands_client_binding_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={Corex.NumberInput.increment(@id)} class="button ui-size-sm">+</.action>
       <.action phx-click={Corex.NumberInput.decrement(@id)} class="button ui-size-sm">−</.action>
       <.action phx-click={Corex.NumberInput.set_to_min(@id)} class="button ui-size-sm">Min</.action>
@@ -864,7 +864,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def api_state_client_binding_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={Corex.NumberInput.state(@id)} class="button ui-size-sm">
         Read state
       </.action>
@@ -879,7 +879,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def api_state_server_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click="api_number_state_server" class="button ui-size-sm">
         Read state
       </.action>
@@ -894,7 +894,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def api_state_client_js_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action
         phx-click={
           JS.dispatch("corex:number-input:state", to: "##{@id}", detail: %{}, bubbles: false)

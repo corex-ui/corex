@@ -76,7 +76,7 @@ defmodule E2eWeb.FloatingPanelEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.floating_panel
                 id={@id_server}
                 class="floating-panel"
@@ -131,7 +131,7 @@ defmodule E2eWeb.FloatingPanelEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.floating_panel
                 id={@id_client}
                 class="floating-panel"

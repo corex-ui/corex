@@ -104,7 +104,7 @@ defmodule E2eWeb.MenuEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.events_binding_example />
               <.data_table
                 id="menu-events-log-bind"
@@ -131,7 +131,7 @@ defmodule E2eWeb.MenuEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.menu
                 id={@id_server}
                 class="menu"
@@ -169,7 +169,7 @@ defmodule E2eWeb.MenuEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.menu
                 id={@id_client}
                 class="menu"

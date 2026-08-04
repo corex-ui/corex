@@ -156,7 +156,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
 
   def api_controls_client_binding_example(assigns) do
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
       <div class="flex flex-wrap items-center gap-space">
         <.action phx-click={Corex.Marquee.pause("api-controls-client")} class="button ui-size-sm">
           Pause
@@ -223,7 +223,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
 
   def api_controls_client_js_example(assigns) do
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
       <div class="flex flex-wrap items-center gap-space">
         <.action
           phx-click={JS.dispatch("corex:marquee:pause", to: "#api-controls-js", bubbles: false)}
@@ -281,7 +281,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
 
   def api_controls_server_example(assigns) do
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
       <div class="flex flex-wrap items-center gap-space">
         <.action phx-click="marquee_api_server_pause" class="button ui-size-sm">Pause</.action>
         <.action phx-click="marquee_api_server_resume" class="button ui-size-sm">Resume</.action>
@@ -784,7 +784,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
     assigns = assign(assigns, :items, styling_marquee_items())
 
     ~H"""
-    <div class="flex flex-col gap-6 items-start w-full">
+    <div class="flex flex-col gap-space-xl items-start w-full">
       <.marquee
         id="marquee-style-size-sm"
         class="marquee ui-size-sm"
@@ -868,7 +868,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.marquee
           id={"marquee-style-max-#{variant.id}"}

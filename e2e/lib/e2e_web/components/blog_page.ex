@@ -54,14 +54,14 @@ defmodule E2eWeb.BlogPage do
             <.navigate
               :if={@prev}
               to={~p"/blog/#{@prev.slug}"}
-              class="button ui-size-sm flex items-center gap-2 rounded-e-none"
+              class="button ui-size-sm flex items-center gap-space-sm rounded-e-none"
             >
               <.heroicon name="hero-chevron-left" class="shrink-0" title={@prev.label} />
             </.navigate>
             <.navigate
               :if={@next}
               to={~p"/blog/#{@next.slug}"}
-              class="button ui-size-sm flex items-center gap-2 not-only:border-s-0 rounded-s-none"
+              class="button ui-size-sm flex items-center gap-space-sm not-only:border-s-0 rounded-s-none"
             >
               <.heroicon name="hero-chevron-right" class="shrink-0" title={@next.label} />
             </.navigate>

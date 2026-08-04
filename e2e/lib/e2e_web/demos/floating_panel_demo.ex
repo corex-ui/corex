@@ -273,7 +273,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
   def anatomy_no_trigger_code do
     """
     <div class="flex flex-col gap-space">
-      <div class="flex flex-wrap gap-2">
+      <div class="flex flex-wrap gap-space-sm">
         <button type="button" class="button ui-size-sm">
           Open
         </button>
@@ -302,7 +302,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
   def anatomy_no_trigger_example(assigns) do
     ~H"""
     <div class="flex flex-col gap-space">
-      <div class="flex flex-wrap gap-2">
+      <div class="flex flex-wrap gap-space-sm">
         <button type="button" id="floating-panel-anatomy-no-trigger-open" class="button ui-size-sm">
           Open
         </button>
@@ -686,7 +686,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 items-start w-full max-w-md">
+    <div class="flex flex-col gap-space-lg items-start w-full max-w-md">
       <.floating_panel id="floating-panel-style-color-default" class="floating-panel">
         <:trigger class="button ui-size-sm">Default</:trigger>
         <:title>Notes</:title>
@@ -812,7 +812,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 items-start w-full max-w-2xl">
+    <div class="flex flex-col gap-space-lg items-start w-full max-w-2xl">
       <.floating_panel id="floating-panel-style-variant-subtle" class="floating-panel">
         <:trigger class="button ui-size-sm">Subtle (default)</:trigger>
         <:title>Notes</:title>
@@ -936,7 +936,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 items-start w-full max-w-md">
+    <div class="flex flex-col gap-space-lg items-start w-full max-w-md">
       <.floating_panel id="floating-panel-style-sm" class="floating-panel ui-size-sm">
         <:trigger class="button ui-size-sm">SM</:trigger>
         <:title>SM</:title>
@@ -1018,7 +1018,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 items-start w-full max-w-md">
+    <div class="flex flex-col gap-space-lg items-start w-full max-w-md">
       <.floating_panel
         id="floating-panel-style-rounded-none"
         class="floating-panel ui-rounded-none"
@@ -1148,7 +1148,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_height_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_height_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.floating_panel
           id={"floating-panel-style-max-h-#{variant.id}"}

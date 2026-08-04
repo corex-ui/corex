@@ -60,7 +60,7 @@ defmodule E2eWeb.PaginationEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.pagination
                 id={@id_server}
                 class="pagination"

@@ -1960,7 +1960,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start w-full">
+    <div class="flex flex-wrap gap-space-xl items-start w-full">
       <.date_picker
         id="date-picker-style-color-default"
         class="date-picker"
@@ -2063,7 +2063,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
 
   def styling_variant_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
+    <div class="flex flex-wrap gap-space-xl items-start w-full max-w-4xl">
       <.date_picker id="date-picker-style-variant-subtle" class="date-picker" value="2024-06-15">
         <:label>Subtle (default)</:label>
         <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
@@ -2171,7 +2171,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start">
+    <div class="flex flex-wrap gap-space-xl items-start">
       <.date_picker
         id="date-picker-style-size-sm"
         class="date-picker ui-size-sm"
@@ -2269,7 +2269,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start w-full">
+    <div class="flex flex-wrap gap-space-xl items-start w-full">
       <.date_picker
         id="date-picker-style-rounded-none"
         class="date-picker ui-rounded-none"
@@ -2392,7 +2392,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.date_picker
           id={"date-picker-style-width-#{variant.id}"}
@@ -2416,7 +2416,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.date_picker
           id={"date-picker-style-max-#{variant.id}"}
@@ -2456,7 +2456,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_height_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_height_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.date_picker
           id={"date-picker-style-max-h-#{variant.id}"}

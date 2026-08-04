@@ -120,7 +120,7 @@ defmodule E2eWeb.TagsInputEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.tags_input
                 id={@id_server}
                 class="tags-input"
@@ -156,7 +156,7 @@ defmodule E2eWeb.TagsInputEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.tags_input
                 id={@id_client}
                 class="tags-input"
@@ -215,7 +215,7 @@ defmodule E2eWeb.TagsInputEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.tags_input
                 id={@id_invalid_server}
                 class="tags-input"
@@ -254,7 +254,7 @@ defmodule E2eWeb.TagsInputEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.tags_input
                 id={@id_invalid_client}
                 class="tags-input"

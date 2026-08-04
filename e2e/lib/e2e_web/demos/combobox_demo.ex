@@ -304,7 +304,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
 
   def styling_size_example(assigns) do
     ~H"""
-    <div class="flex flex-col gap-4 w-full max-w-md">
+    <div class="flex flex-col gap-space-lg w-full max-w-md">
       <.combobox
         id="combobox-style-sm"
         class="combobox ui-size-sm"
@@ -1180,7 +1180,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
 
   def styling_color_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
+    <div class="flex flex-wrap gap-space-xl items-start w-full max-w-4xl">
       <.combobox
         id="combobox-style-color-default"
         class="combobox"
@@ -1263,7 +1263,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
+    <div class="flex flex-wrap gap-space-xl items-start w-full max-w-4xl">
       <.combobox
         id="combobox-style-variant-subtle"
         class="combobox"
@@ -1366,7 +1366,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.combobox
           id={"combobox-style-max-#{variant.id}"}
@@ -1429,7 +1429,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_height_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_height_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.combobox
           id={"combobox-style-max-h-#{variant.id}"}
@@ -1475,7 +1475,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
 
   def styling_rounded_example(assigns) do
     ~H"""
-    <div class="flex flex-col gap-4 w-full max-w-md">
+    <div class="flex flex-col gap-space-lg w-full max-w-md">
       <.combobox
         id="combobox-style-rounded-none"
         class="combobox ui-rounded-none"

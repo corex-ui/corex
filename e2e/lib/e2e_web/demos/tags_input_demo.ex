@@ -598,7 +598,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def api_set_value_client_js_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action
         phx-click={
           JS.dispatch("corex:tags-input:set-value",
@@ -623,7 +623,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click="api_tags_set_value_server" class="button ui-size-sm">
         Set lorem and duis
       </.action>
@@ -712,7 +712,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def api_add_value_client_binding_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={Corex.TagsInput.add_value(@id, "duis")} class="button ui-size-sm">
         Add duis
       </.action>
@@ -728,7 +728,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click="api_tags_add_value_server" class="button ui-size-sm">
         Add duis
       </.action>
@@ -742,7 +742,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def api_add_value_client_js_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action
         phx-click={
           JS.dispatch("corex:tags-input:add-value",
@@ -846,7 +846,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def api_set_value_client_binding_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action
         phx-click={Corex.TagsInput.set_value(@id, ["lorem", "duis"])}
         class="button ui-size-sm"
@@ -863,7 +863,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def api_clear_client_binding_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={Corex.TagsInput.clear_value(@id)} class="button ui-size-sm">
         Clear all
       </.action>
@@ -880,7 +880,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def api_clear_client_js_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action
         phx-click={JS.dispatch("corex:tags-input:clear-value", to: "##{@id}", bubbles: false)}
         class="button ui-size-sm"
@@ -911,7 +911,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click="api_tags_clear_all_server" class="button ui-size-sm">Clear all</.action>
       <.action phx-click="api_tags_clear_lorem_server" class="button ui-size-sm">Clear lorem</.action>
     </div>
@@ -1304,7 +1304,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.tags_input
           id={"tags-style-max-#{variant.id}"}

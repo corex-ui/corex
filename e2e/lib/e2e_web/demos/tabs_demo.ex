@@ -164,7 +164,7 @@ defmodule E2eWeb.Demos.TabsDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
       <div class="flex flex-wrap items-center gap-space">
         <.action phx-click={Corex.Tabs.set_value("tabs-api-cb", "lorem")} class="button ui-size-sm">
           Lorem
@@ -250,7 +250,7 @@ defmodule E2eWeb.Demos.TabsDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
       <div class="flex flex-wrap items-center gap-space">
         <.action
           phx-click={
@@ -332,7 +332,7 @@ defmodule E2eWeb.Demos.TabsDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
       <div class="flex flex-wrap items-center gap-space">
         <.action phx-click="tabs_api_lorem" class="button ui-size-sm">Lorem</.action>
         <.action phx-click="tabs_api_duis" class="button ui-size-sm">Duis</.action>
@@ -456,7 +456,7 @@ defmodule E2eWeb.Demos.TabsDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
+    <div class="flex flex-wrap gap-space-xl items-start w-full max-w-4xl">
       <.tabs
         id="tabs-style-color-default"
         class="tabs"
@@ -535,7 +535,7 @@ defmodule E2eWeb.Demos.TabsDemo do
 
   def styling_variant_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
+    <div class="flex flex-wrap gap-space-xl items-start w-full max-w-4xl">
       <.tabs
         id="tabs-style-variant-subtle"
         class="tabs"
@@ -618,7 +618,7 @@ defmodule E2eWeb.Demos.TabsDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-space-lg">
       <.tabs
         id="tabs-style-sm"
         class="tabs ui-size-sm"
@@ -681,7 +681,7 @@ defmodule E2eWeb.Demos.TabsDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-space-lg">
       <.tabs
         id="tabs-style-rounded-none"
         class="tabs ui-rounded-none"
@@ -735,7 +735,7 @@ defmodule E2eWeb.Demos.TabsDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.tabs
           id={"tabs-style-max-#{variant.id}"}

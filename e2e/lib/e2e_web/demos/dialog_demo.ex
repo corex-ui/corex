@@ -79,7 +79,7 @@ defmodule E2eWeb.Demos.DialogDemo do
       <:description>Choose an action to continue.</:description>
       <:content>
         <p>Are you sure you want to continue?</p>
-        <div class="flex flex-wrap justify-end gap-2 mt-4">
+        <div class="flex flex-wrap justify-end gap-space-sm mt-space-lg">
           <.action phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)} class="button ui-size-sm">
             Cancel
           </.action>
@@ -105,7 +105,7 @@ defmodule E2eWeb.Demos.DialogDemo do
         <p>
           Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
         </p>
-        <div class="flex flex-wrap justify-end gap-2 mt-4">
+        <div class="flex flex-wrap justify-end gap-space-sm mt-space-lg">
           <.action
             phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)}
             class="button ui-size-sm"
@@ -141,7 +141,7 @@ defmodule E2eWeb.Demos.DialogDemo do
       <:description>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</:description>
       <:content>
         <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
-        <div class="flex flex-wrap justify-end gap-2 mt-4">
+        <div class="flex flex-wrap justify-end gap-space-sm mt-space-lg">
           <.action phx-click={Corex.Dialog.set_open("dialog-api", false)} class="button ui-size-sm">
             Close
           </.action>
@@ -170,7 +170,7 @@ defmodule E2eWeb.Demos.DialogDemo do
         <p>
           Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
         </p>
-        <div class="flex flex-wrap justify-end gap-2 mt-4">
+        <div class="flex flex-wrap justify-end gap-space-sm mt-space-lg">
           <.action phx-click={Corex.Dialog.set_open("dialog-api", false)} class="button ui-size-sm">
             Close
           </.action>
@@ -206,7 +206,7 @@ defmodule E2eWeb.Demos.DialogDemo do
       <:description>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</:description>
       <:content>
         <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
-        <div class="flex flex-wrap justify-end gap-2 mt-4">
+        <div class="flex flex-wrap justify-end gap-space-sm mt-space-lg">
           <.action
             phx-click={
               Phoenix.LiveView.JS.dispatch("corex:dialog:set-open",
@@ -277,7 +277,7 @@ defmodule E2eWeb.Demos.DialogDemo do
         <p>
           Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
         </p>
-        <div class="flex flex-wrap justify-end gap-2 mt-4">
+        <div class="flex flex-wrap justify-end gap-space-sm mt-space-lg">
           <.action
             phx-click={
               Phoenix.LiveView.JS.dispatch("corex:dialog:set-open",
@@ -311,7 +311,7 @@ defmodule E2eWeb.Demos.DialogDemo do
       <:description>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</:description>
       <:content>
         <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
-        <div class="flex flex-wrap justify-end gap-2 mt-4">
+        <div class="flex flex-wrap justify-end gap-space-sm mt-space-lg">
           <.action phx-click="dialog_api_close" class="button ui-size-sm">Close</.action>
         </div>
       </:content>
@@ -348,7 +348,7 @@ defmodule E2eWeb.Demos.DialogDemo do
         <p>
           Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
         </p>
-        <div class="flex flex-wrap justify-end gap-2 mt-4">
+        <div class="flex flex-wrap justify-end gap-space-sm mt-space-lg">
           <.action phx-click="dialog_api_close" class="button ui-size-sm">Close</.action>
         </div>
       </:content>
@@ -533,7 +533,7 @@ defmodule E2eWeb.Demos.DialogDemo do
 
   def styling_color_example(assigns) do
     ~H"""
-    <div class="flex flex-col gap-4 items-start w-full max-w-2xl">
+    <div class="flex flex-col gap-space-lg items-start w-full max-w-2xl">
       <.dialog id="dialog-style-color-default" class="dialog" modal>
         <:trigger>Open default</:trigger>
         <:title>{style_dialog_title()}</:title>
@@ -623,7 +623,7 @@ defmodule E2eWeb.Demos.DialogDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 items-start w-full max-w-2xl">
+    <div class="flex flex-col gap-space-lg items-start w-full max-w-2xl">
       <.dialog id="dialog-style-variant-subtle" class="dialog" modal>
         <:trigger>Subtle (default)</:trigger>
         <:title>{style_dialog_title()}</:title>
@@ -737,7 +737,7 @@ defmodule E2eWeb.Demos.DialogDemo do
 
   def styling_size_example(assigns) do
     ~H"""
-    <div class="flex flex-col gap-4 items-start w-full max-w-2xl">
+    <div class="flex flex-col gap-space-lg items-start w-full max-w-2xl">
       <.dialog id="dialog-style-sm" class="dialog ui-size-sm" modal>
         <:trigger>Open (sm)</:trigger>
         <:title>{style_dialog_title()}</:title>
@@ -827,7 +827,7 @@ defmodule E2eWeb.Demos.DialogDemo do
 
   def styling_radius_example(assigns) do
     ~H"""
-    <div class="flex flex-col gap-4 items-start w-full max-w-2xl">
+    <div class="flex flex-col gap-space-lg items-start w-full max-w-2xl">
       <.dialog id="dialog-style-rounded-none" class="dialog ui-rounded-none" modal>
         <:trigger>Open (rounded-none)</:trigger>
         <:title>{style_dialog_title()}</:title>
@@ -939,7 +939,7 @@ defmodule E2eWeb.Demos.DialogDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_height_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_height_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.dialog
           id={"dialog-style-max-h-#{variant.id}"}
@@ -1090,7 +1090,7 @@ defmodule E2eWeb.Demos.DialogDemo do
       <:title>Delete this item?</:title>
       <:description>This action cannot be undone.</:description>
       <:content>
-        <div class="flex flex-wrap justify-end gap-2 mt-4">
+        <div class="flex flex-wrap justify-end gap-space-sm mt-space-lg">
           <.action id="patterns-dialog-alert-cancel" phx-click={Corex.Dialog.set_open("patterns-dialog-alert", false)} class="button ui-size-sm">
             Cancel
           </.action>
@@ -1118,7 +1118,7 @@ defmodule E2eWeb.Demos.DialogDemo do
       <:title>Delete this item?</:title>
       <:description>This action cannot be undone.</:description>
       <:content>
-        <div class="flex flex-wrap justify-end gap-2 mt-4">
+        <div class="flex flex-wrap justify-end gap-space-sm mt-space-lg">
           <.action id="patterns-dialog-alert-cancel" phx-click={Corex.Dialog.set_open("patterns-dialog-alert", false)} class="button ui-size-sm">
             Cancel
           </.action>

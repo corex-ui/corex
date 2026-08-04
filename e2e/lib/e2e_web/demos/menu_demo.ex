@@ -735,7 +735,7 @@ defmodule E2eWeb.Demos.MenuDemo do
     assigns = assign(assigns, :items, demo_leaf_items())
 
     ~H"""
-    <div class="flex flex-col gap-4 max-w-md">
+    <div class="flex flex-col gap-space-lg max-w-md">
       <.menu id="menu-style-color-default" class="menu w-full" items={@items} value="menu">
         <:trigger>Default</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
@@ -793,7 +793,7 @@ defmodule E2eWeb.Demos.MenuDemo do
     assigns = assign(assigns, :items, demo_leaf_items())
 
     ~H"""
-    <div class="flex flex-col gap-4 max-w-md">
+    <div class="flex flex-col gap-space-lg max-w-md">
       <.menu id="menu-style-variant-subtle" class="menu w-full" items={@items} value="menu">
         <:trigger>Subtle (default)</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
@@ -890,7 +890,7 @@ defmodule E2eWeb.Demos.MenuDemo do
     assigns = assign(assigns, :items, demo_leaf_items())
 
     ~H"""
-    <div class="flex flex-col gap-4 max-w-md">
+    <div class="flex flex-col gap-space-lg max-w-md">
       <.menu id="menu-style-size-sm" class="menu ui-size-sm w-full" items={@items}>
         <:trigger>SM</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
@@ -946,7 +946,7 @@ defmodule E2eWeb.Demos.MenuDemo do
     assigns = assign(assigns, :items, demo_leaf_items())
 
     ~H"""
-    <div class="flex flex-col gap-4 max-w-md">
+    <div class="flex flex-col gap-space-lg max-w-md">
       <.menu id="menu-style-rounded-none" class="menu ui-rounded-none w-full" items={@items}>
         <:trigger>None</:trigger>
         <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
@@ -1042,7 +1042,7 @@ defmodule E2eWeb.Demos.MenuDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_height_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_height_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.menu
           id={"menu-style-max-h-#{variant.id}"}

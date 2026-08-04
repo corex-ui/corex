@@ -208,8 +208,8 @@ defmodule E2eWeb.Demos.ListboxDemo do
 
   def patterns_dynamic_demo_heex do
     ~S"""
-    <div class="flex flex-col gap-3 w-full max-w-xl">
-      <div class="flex flex-wrap gap-2">
+    <div class="flex flex-col gap-space w-full max-w-xl">
+      <div class="flex flex-wrap gap-space-sm">
         <.action phx-click="add_item" class="button ui-size-sm ui-accent">
           <.heroicon name="hero-plus" /> Add item
         </.action>
@@ -273,8 +273,8 @@ defmodule E2eWeb.Demos.ListboxDemo do
       @impl true
       def render(assigns) do
         ~H"""
-        <div class="flex flex-col gap-3 w-full max-w-xl">
-            <div class="flex flex-wrap gap-2">
+        <div class="flex flex-col gap-space w-full max-w-xl">
+            <div class="flex flex-wrap gap-space-sm">
               <.action phx-click="add_item" class="button ui-size-sm ui-accent">
                 <.heroicon name="hero-plus" /> Add item
               </.action>
@@ -296,8 +296,8 @@ defmodule E2eWeb.Demos.ListboxDemo do
 
   def patterns_dynamic_grouped_demo_heex do
     ~S"""
-    <div class="flex flex-col gap-3 w-full max-w-xl">
-      <div class="flex flex-wrap gap-2">
+    <div class="flex flex-col gap-space w-full max-w-xl">
+      <div class="flex flex-wrap gap-space-sm">
         <.action
           phx-click="add_to_group"
           phx-value-group="Europe"
@@ -376,8 +376,8 @@ defmodule E2eWeb.Demos.ListboxDemo do
       @impl true
       def render(assigns) do
         ~H"""
-        <div class="flex flex-col gap-3 w-full max-w-xl">
-            <div class="flex flex-wrap gap-2">
+        <div class="flex flex-col gap-space w-full max-w-xl">
+            <div class="flex flex-wrap gap-space-sm">
               <.action
                 phx-click="add_to_group"
                 phx-value-group="Europe"
@@ -461,7 +461,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       @impl true
       def render(assigns) do
         ~H"""
-        <div class="flex flex-col gap-3 w-full items-center">
+        <div class="flex flex-col gap-space w-full items-center">
           <div class="w-full max-w-md">
             <.listbox
               id="listbox-patterns-controlled-field"
@@ -752,7 +752,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       |> assign(:value, ["fra"])
 
     ~H"""
-    <div class="flex flex-col gap-4 w-full max-w-md">
+    <div class="flex flex-col gap-space-lg w-full max-w-md">
       <.listbox id="listbox-style-color-default" class="listbox" items={@items} value={@value}>
         <:label>Default</:label>
         <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
@@ -834,7 +834,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       |> assign(:value, ["fra"])
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
+    <div class="flex flex-wrap gap-space-xl items-start w-full max-w-4xl">
       <.listbox id="listbox-style-variant-subtle" class="listbox" items={@items} value={@value}>
         <:label>Subtle (default)</:label>
         <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
@@ -933,7 +933,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
     assigns = assign(assigns, :items, items_minimal())
 
     ~H"""
-    <div class="flex flex-col gap-4 w-full max-w-md">
+    <div class="flex flex-col gap-space-lg w-full max-w-md">
       <.listbox id="listbox-style-size-sm" class="listbox ui-size-sm" items={@items}>
         <:label>SM</:label>
         <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
@@ -985,7 +985,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.listbox
           id={"listbox-style-max-#{variant.id}"}
@@ -1057,7 +1057,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_height_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_height_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.listbox
           id={"listbox-style-max-h-#{variant.id}"}
@@ -1104,7 +1104,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
     assigns = assign(assigns, :items, items_minimal())
 
     ~H"""
-    <div class="flex flex-col gap-4 w-full max-w-md">
+    <div class="flex flex-col gap-space-lg w-full max-w-md">
       <.listbox id="listbox-style-rounded-none" class="listbox ui-rounded-none" items={@items}>
         <:label>None</:label>
         <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>

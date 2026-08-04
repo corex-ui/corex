@@ -153,7 +153,7 @@ defmodule E2eWeb.Demos.EditableDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start">
+    <div class="flex flex-wrap gap-space-xl items-start">
       <.editable id="editable-style-color-default" class="editable w-3xs" value="Default">
         <:label>Label</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
@@ -214,7 +214,7 @@ defmodule E2eWeb.Demos.EditableDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start">
+    <div class="flex flex-wrap gap-space-xl items-start">
       <.editable id="editable-style-variant-subtle" class="editable w-3xs" value="Subtle (default)">
         <:label>Label</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
@@ -320,7 +320,7 @@ defmodule E2eWeb.Demos.EditableDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 items-start">
+    <div class="flex flex-col gap-space-lg items-start">
       <.editable id="editable-style-sm" class="editable w-3xs ui-size-sm" value="SM">
         <:label>Label</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
@@ -378,7 +378,7 @@ defmodule E2eWeb.Demos.EditableDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 items-start">
+    <div class="flex flex-col gap-space-lg items-start">
       <.editable id="editable-style-radius-none" class="editable w-3xs ui-rounded-none" value="None">
         <:label>Label</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
@@ -440,7 +440,7 @@ defmodule E2eWeb.Demos.EditableDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.editable
           id={"editable-style-max-#{variant.id}"}
@@ -477,7 +477,7 @@ defmodule E2eWeb.Demos.EditableDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
       <div class="flex flex-wrap items-center gap-space">
         <.action
           phx-click={Corex.Editable.set_value("editable-api-cb", "Lorem")}
@@ -561,7 +561,7 @@ defmodule E2eWeb.Demos.EditableDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
       <div class="flex flex-wrap items-center gap-space">
         <.action
           phx-click={
@@ -646,7 +646,7 @@ defmodule E2eWeb.Demos.EditableDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
       <div class="flex flex-wrap items-center gap-space">
         <.action phx-click="editable_api_lorem" class="button ui-size-sm">Lorem</.action>
         <.action phx-click="editable_api_duis" class="button ui-size-sm">Duis</.action>

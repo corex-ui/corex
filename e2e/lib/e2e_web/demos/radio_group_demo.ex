@@ -194,7 +194,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
       <div class="flex flex-wrap items-center gap-space">
         <.action
           phx-click={Corex.RadioGroup.set_value("radio-group-api-cb", "lorem")}
@@ -308,7 +308,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
       <div class="flex flex-wrap items-center gap-space">
         <.action
           phx-click={
@@ -421,7 +421,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
       <div class="flex flex-wrap items-center gap-space">
         <.action phx-click="radio_group_api_lorem" class="button ui-size-sm">Lorem</.action>
         <.action phx-click="radio_group_api_duis" class="button ui-size-sm">Duis</.action>
@@ -468,7 +468,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
       <div class="flex flex-wrap items-center gap-space">
         <.action
           phx-click={Corex.RadioGroup.clear_value("radio-group-api-clear")}
@@ -516,7 +516,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
       <div class="flex flex-wrap items-center gap-space">
         <.action phx-click={Corex.RadioGroup.focus("radio-group-api-focus")} class="button ui-size-sm">
           Focus group
@@ -638,8 +638,8 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
 
   def patterns_dynamic_demo_heex do
     ~S"""
-    <div class="flex flex-col gap-3 w-full max-w-xl">
-      <div class="flex flex-wrap gap-2">
+    <div class="flex flex-col gap-space w-full max-w-xl">
+      <div class="flex flex-wrap gap-space-sm">
         <.action phx-click="add_item" class="button ui-size-sm ui-accent">
           <.heroicon name="hero-plus" /> Add item
         </.action>
@@ -720,8 +720,8 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       @impl true
       def render(assigns) do
         ~H"""
-        <div class="flex flex-col gap-3 w-full max-w-xl">
-          <div class="flex flex-wrap gap-2">
+        <div class="flex flex-col gap-space w-full max-w-xl">
+          <div class="flex flex-wrap gap-space-sm">
             <.action phx-click="add_item" class="button ui-size-sm ui-accent">
               <.heroicon name="hero-plus" /> Add item
             </.action>
@@ -1503,7 +1503,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-6 w-full max-w-md">
+    <div class="flex flex-col gap-space-xl w-full max-w-md">
       <.radio_group
         id="radio-group-style-variant-subtle"
         name="rg-style-variant-subtle"
@@ -1661,7 +1661,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.radio_group
           id={"radio-group-style-max-#{variant.id}"}
@@ -1682,7 +1682,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.radio_group
           id={"radio-group-style-width-#{variant.id}"}
@@ -1725,7 +1725,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 max-w-md">
+    <div class="flex flex-col gap-space-lg max-w-md">
       <.radio_group
         id="radio-group-style-rounded-none"
         name="rg-style-rounded-none"

@@ -315,7 +315,7 @@ defmodule E2eWeb.Demos.ActionDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.action class={DemoScales.join_modifiers("button", variant.modifier)}>
           {DemoScales.block_demo_label()}
@@ -330,7 +330,7 @@ defmodule E2eWeb.Demos.ActionDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.action class={DemoScales.join_block_modifiers("button", variant.modifier)}>
           {DemoScales.block_demo_label()}

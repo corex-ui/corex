@@ -49,7 +49,7 @@ defmodule E2eWeb.SelectApiLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+            <div class="flex flex-wrap gap-space-sm items-center w-full justify-center">
               <.action
                 phx-click={Corex.Select.set_value("select-api-cb", ["fra"])}
                 class="button ui-size-sm"
@@ -88,7 +88,7 @@ defmodule E2eWeb.SelectApiLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+            <div class="flex flex-wrap gap-space-sm items-center w-full justify-center">
               <.action phx-click="select_api_set_value" class="button ui-size-sm">
                 France
               </.action>
@@ -115,7 +115,7 @@ defmodule E2eWeb.SelectApiLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+            <div class="flex flex-wrap gap-space-sm items-center w-full justify-center">
               <.action
                 type="button"
                 class="button ui-size-sm"

@@ -96,7 +96,7 @@ defmodule E2eWeb.ListboxPatternsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+            <div class="flex flex-wrap gap-space-sm items-center w-full justify-center">
               <.action phx-click="add_item" class="button ui-size-sm ui-accent">
                 <.heroicon name="hero-plus" /> Add item
               </.action>
@@ -131,7 +131,7 @@ defmodule E2eWeb.ListboxPatternsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+            <div class="flex flex-wrap gap-space-sm items-center w-full justify-center">
               <.action
                 phx-click="add_to_group"
                 phx-value-group="Europe"
@@ -181,7 +181,7 @@ defmodule E2eWeb.ListboxPatternsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-3 w-full items-center">
+            <div class="flex flex-col gap-space w-full items-center">
               <div class="w-full max-w-md">
                 <.listbox
                   id="listbox-patterns-controlled-field"

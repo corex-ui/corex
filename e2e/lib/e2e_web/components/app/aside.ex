@@ -74,7 +74,7 @@ defmodule E2eWeb.App.Aside do
     assigns = assign(assigns, :badges, badges) |> assign(:id_base, id_base)
 
     ~H"""
-    <div :if={@badges != []} class="flex shrink-0 items-center gap-1">
+    <div :if={@badges != []} class="flex shrink-0 items-center gap-space-xs">
       <.aside_menu_tree_badge
         :for={kind <- @badges}
         kind={kind}
@@ -90,7 +90,7 @@ defmodule E2eWeb.App.Aside do
 
   def aside_menu_tree_label_row(assigns) do
     ~H"""
-    <span class="flex w-full min-w-0 items-center gap-2">
+    <span class="flex w-full min-w-0 items-center gap-space-sm">
       <span class="min-w-0 flex-1 truncate">{@node.label}</span>
       <.aside_menu_tree_meta node={@node} tip_scope={@tip_scope} />
     </span>

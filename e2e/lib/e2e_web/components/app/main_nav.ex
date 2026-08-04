@@ -16,7 +16,7 @@ defmodule E2eWeb.App.MainNav do
     nav_class =
       case assigns.orientation do
         :vertical -> "flex flex-col gap-space-sm w-full"
-        :horizontal -> "hidden md:flex items-center gap-4 lg:gap-6 min-w-0"
+        :horizontal -> "hidden md:flex items-center gap-space-lg lg:gap-space-xl min-w-0"
       end
 
     link_class = "link ui-nav ui-size-md"

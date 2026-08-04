@@ -83,7 +83,7 @@ defmodule E2eWeb.TooltipPatternsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full max-w-xl">
+            <div class="flex flex-col gap-space-lg items-center w-full max-w-xl">
               <.tooltip
                 id="tooltip-pattern-users"
                 class="tooltip"
@@ -120,7 +120,7 @@ defmodule E2eWeb.TooltipPatternsLive do
           ]}
         >
           <:preview>
-            <ul class="flex flex-col gap-2 list-none p-0 m-0 w-full max-w-xl">
+            <ul class="flex flex-col gap-space-sm list-none p-0 m-0 w-full max-w-xl">
               <li :for={user <- @users}>
                 <.tooltip
                   id={"tooltip-profile-" <> user.id}
@@ -161,7 +161,7 @@ defmodule E2eWeb.TooltipPatternsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-2 items-start w-full max-w-xl">
+            <div class="flex flex-col gap-space-sm items-start w-full max-w-xl">
               <.tooltip
                 id="tooltip-pattern-profile-link-multi-tool"
                 class="tooltip"

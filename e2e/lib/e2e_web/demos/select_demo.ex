@@ -319,7 +319,7 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def styling_color_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
+    <div class="flex flex-wrap gap-space-xl items-start w-full max-w-4xl">
       <.select
         id="select-style-color-default"
         class="select"
@@ -405,7 +405,7 @@ defmodule E2eWeb.Demos.SelectDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
+    <div class="flex flex-wrap gap-space-xl items-start w-full max-w-4xl">
       <.select id="select-style-variant-subtle" class="select" items={items()} value={["fra"]}>
         <:label>Subtle (default)</:label>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
@@ -500,7 +500,7 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def styling_size_example(assigns) do
     ~H"""
-    <div class="flex flex-col gap-4 w-full max-w-md">
+    <div class="flex flex-col gap-space-lg w-full max-w-md">
       <.select id="select-style-sm" class="select ui-size-sm" items={items()}>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
       </.select>
@@ -542,7 +542,7 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def styling_radius_example(assigns) do
     ~H"""
-    <div class="flex flex-col gap-4 w-full max-w-md">
+    <div class="flex flex-col gap-space-lg w-full max-w-md">
       <.select id="select-style-rounded-none" class="select ui-rounded-none" items={items()}>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
       </.select>
@@ -584,7 +584,7 @@ defmodule E2eWeb.Demos.SelectDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.select
           id={"select-style-max-#{variant.id}"}
@@ -644,7 +644,7 @@ defmodule E2eWeb.Demos.SelectDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_height_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_height_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.select
           id={"select-style-max-h-#{variant.id}"}
@@ -1617,8 +1617,8 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def patterns_dynamic_demo_heex do
     ~S"""
-    <div class="flex flex-col gap-3 w-full max-w-xl">
-      <div class="flex flex-wrap gap-2">
+    <div class="flex flex-col gap-space w-full max-w-xl">
+      <div class="flex flex-wrap gap-space-sm">
         <.action phx-click="add_item" class="button ui-size-sm ui-accent">
           <.heroicon name="hero-plus" /> Add item
         </.action>
@@ -1695,8 +1695,8 @@ defmodule E2eWeb.Demos.SelectDemo do
       @impl true
       def render(assigns) do
         ~H"""
-        <div class="flex flex-col gap-3 w-full max-w-xl">
-          <div class="flex flex-wrap gap-2">
+        <div class="flex flex-col gap-space w-full max-w-xl">
+          <div class="flex flex-wrap gap-space-sm">
             <.action phx-click="add_item" class="button ui-size-sm ui-accent">
               <.heroicon name="hero-plus" /> Add item
             </.action>

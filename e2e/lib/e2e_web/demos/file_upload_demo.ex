@@ -480,7 +480,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4 items-center w-full justify-center">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg items-center w-full justify-center">
       <.action
         phx-click={Corex.FileUpload.open_file_picker("file-upload-api-phx")}
         class="button ui-size-sm"
@@ -501,7 +501,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4 items-center w-full justify-center">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg items-center w-full justify-center">
       <.action
         phx-click="api_fu_open_server"
         phx-value-id="file-upload-api-server"
@@ -523,7 +523,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4 items-center w-full justify-center">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg items-center w-full justify-center">
       <.action
         type="button"
         class="button ui-size-sm"
@@ -892,7 +892,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 max-w-md">
+    <div class="flex flex-col gap-space-lg max-w-md">
       <.file_upload id="file-upload-style-color-default" name="document" class="file-upload w-full">
         <:label>Default</:label>
         <:close><.heroicon name="hero-x-mark" /></:close>
@@ -961,7 +961,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 max-w-md">
+    <div class="flex flex-col gap-space-lg max-w-md">
       <.file_upload id="file-upload-style-variant-subtle" name="document" class="file-upload w-full">
         <:label>Subtle (default)</:label>
         <:close><.heroicon name="hero-x-mark" /></:close>
@@ -1047,7 +1047,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 max-w-md">
+    <div class="flex flex-col gap-space-lg max-w-md">
       <.file_upload
         id="file-upload-style-sm"
         name="document"
@@ -1119,7 +1119,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 max-w-md">
+    <div class="flex flex-col gap-space-lg max-w-md">
       <.file_upload
         id="file-upload-style-rounded-none"
         name="document"
@@ -1194,7 +1194,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.file_upload
           id={"file-upload-style-max-#{variant.id}"}

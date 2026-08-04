@@ -74,7 +74,7 @@ defmodule E2eWeb.SignatureEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.signature_pad
                 id={@id_server}
                 class="signature-pad"
@@ -110,7 +110,7 @@ defmodule E2eWeb.SignatureEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.signature_pad
                 id={@id_client}
                 class="signature-pad"

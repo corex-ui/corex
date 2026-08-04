@@ -152,7 +152,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def styling_color_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start">
+    <div class="flex flex-wrap gap-space-xl items-start">
       <.checkbox id="checkbox-style-color-default" class="checkbox" checked>
         <:label>Default</:label>
         <:indicator>
@@ -237,7 +237,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def styling_variant_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start">
+    <div class="flex flex-wrap gap-space-xl items-start">
       <.checkbox id="checkbox-style-variant-subtle" class="checkbox" checked>
         <:label>Subtle (default)</:label>
         <:indicator>
@@ -339,7 +339,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def styling_size_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-6 items-end">
+    <div class="flex flex-wrap gap-space-xl items-end">
       <.checkbox id="checkbox-style-sm" class="checkbox ui-size-sm">
         <:label>Small</:label>
         <:indicator>
@@ -399,7 +399,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def styling_rounded_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start">
+    <div class="flex flex-wrap gap-space-xl items-start">
       <.checkbox id="checkbox-style-rounded-none" class="checkbox ui-rounded-none" checked>
         <:label>None</:label>
         <:indicator><.heroicon name="hero-check" /></:indicator>
@@ -448,7 +448,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.checkbox
           id={"checkbox-style-max-#{variant.id}"}
@@ -490,7 +490,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def api_client_binding_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={Corex.Checkbox.set_checked(@id, true)} class="button ui-size-sm">
         Set checked
       </.action>
@@ -682,7 +682,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def api_js_dispatch_heex do
     ~S"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <button
         type="button"
         class="button ui-size-sm"
@@ -753,7 +753,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <button
         type="button"
         class="button ui-size-sm"

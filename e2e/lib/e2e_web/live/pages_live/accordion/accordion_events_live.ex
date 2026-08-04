@@ -93,7 +93,7 @@ defmodule E2eWeb.AccordionEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.accordion
                 id={@id_server}
                 class="accordion"
@@ -131,7 +131,7 @@ defmodule E2eWeb.AccordionEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.accordion
                 id={@id_client}
                 class="accordion"

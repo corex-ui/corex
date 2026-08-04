@@ -77,7 +77,7 @@ defmodule E2eWeb.Demos.TooltipDemo do
 
   def anatomy_positioning_code do
     ~S"""
-    <div class="flex-wrap gap-2">
+    <div class="flex-wrap gap-space-sm">
       <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "top", gutter: 4}}>
         <:trigger>Gutter 4</:trigger>
         <:content>Tight gap between trigger and tooltip</:content>
@@ -102,7 +102,7 @@ defmodule E2eWeb.Demos.TooltipDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex-wrap gap-2">
+    <div class="flex-wrap gap-space-sm">
       <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "top", gutter: 4}}>
         <:trigger>Gutter 4</:trigger>
         <:content>Tight gap between trigger and tooltip</:content>
@@ -175,7 +175,7 @@ defmodule E2eWeb.Demos.TooltipDemo do
 
   def patterns_profile_links_heex do
     ~S"""
-    <ul class="flex flex-col gap-2 list-none p-0 m-0 w-full max-w-xl">
+    <ul class="flex flex-col gap-space-sm list-none p-0 m-0 w-full max-w-xl">
       <li :for={user <- @users}>
         <.tooltip
           id={"tooltip-profile-" <> user.id}
@@ -219,7 +219,7 @@ defmodule E2eWeb.Demos.TooltipDemo do
 
   def patterns_profile_links_multi_heex do
     ~S"""
-    <div class="flex flex-col gap-2 items-start w-full max-w-xl">
+    <div class="flex flex-col gap-space-sm items-start w-full max-w-xl">
       <.tooltip
         class="tooltip"
         show_arrow={false}
@@ -335,7 +335,7 @@ defmodule E2eWeb.Demos.TooltipDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
       <div class="flex flex-wrap items-center gap-space">
         <.action phx-click={Corex.Tooltip.set_open("tooltip-api-cb", true)} class="button ui-size-sm">
           Open
@@ -399,7 +399,7 @@ defmodule E2eWeb.Demos.TooltipDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
       <div class="flex flex-wrap items-center gap-space">
         <button
           type="button"
@@ -453,7 +453,7 @@ defmodule E2eWeb.Demos.TooltipDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
       <div class="flex flex-wrap items-center gap-space">
         <.action phx-click="tooltip_api_open" class="button ui-size-sm">Open</.action>
         <.action phx-click="tooltip_api_close" class="button ui-size-sm">Close</.action>
@@ -510,7 +510,7 @@ defmodule E2eWeb.Demos.TooltipDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+    <div class="w-full max-w-4xl flex flex-col gap-space-lg items-center">
       <div class="flex flex-wrap items-center gap-space">
         <.action
           phx-click={Corex.Tooltip.set_open("tooltip-patterns-set-open", true)}
@@ -564,7 +564,7 @@ defmodule E2eWeb.Demos.TooltipDemo do
 
   def styling_color_code do
     ~S"""
-    <div class="flex-wrap gap-2">
+    <div class="flex-wrap gap-space-sm">
       <.tooltip class="tooltip">
         <:trigger>Default</:trigger>
         <:content>Neutral surface</:content>
@@ -597,7 +597,7 @@ defmodule E2eWeb.Demos.TooltipDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex-wrap gap-2">
+    <div class="flex-wrap gap-space-sm">
       <.tooltip class="tooltip">
         <:trigger>Default</:trigger>
         <:content>Neutral surface</:content>
@@ -641,7 +641,7 @@ defmodule E2eWeb.Demos.TooltipDemo do
 
   def styling_variant_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2">
+    <div class="flex flex-wrap gap-space-sm">
       <.tooltip class="tooltip">
         <:trigger>Subtle (default)</:trigger>
         <:content>Subtle (default)</:content>
@@ -692,7 +692,7 @@ defmodule E2eWeb.Demos.TooltipDemo do
 
   def styling_size_code do
     ~S"""
-    <div class="flex-wrap gap-2">
+    <div class="flex-wrap gap-space-sm">
       <.tooltip class="tooltip ui-size-sm">
         <:trigger>Sm</:trigger>
         <:content>ui-size-sm</:content>
@@ -717,7 +717,7 @@ defmodule E2eWeb.Demos.TooltipDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex-wrap gap-2">
+    <div class="flex-wrap gap-space-sm">
       <.tooltip class="tooltip ui-size-sm">
         <:trigger>Sm</:trigger>
         <:content>ui-size-sm</:content>
@@ -771,7 +771,7 @@ defmodule E2eWeb.Demos.TooltipDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-4 items-center">
+    <div class="flex flex-wrap gap-space-lg items-center">
       <.tooltip class="tooltip ui-rounded-none">
         <:trigger>None</:trigger>
         <:content>ui-rounded-none</:content>

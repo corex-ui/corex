@@ -87,7 +87,7 @@ defmodule E2eWeb.DialogPatternsLive do
               <:title>Delete this item?</:title>
               <:description>This action cannot be undone.</:description>
               <:content>
-                <div class="flex flex-wrap justify-end gap-2 mt-4">
+                <div class="flex flex-wrap justify-end gap-space-sm mt-space-lg">
                   <.action
                     id="patterns-dialog-alert-cancel"
                     phx-click={Corex.Dialog.set_open(@id_alert, false)}

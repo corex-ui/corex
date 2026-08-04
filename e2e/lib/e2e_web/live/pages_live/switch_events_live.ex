@@ -80,7 +80,7 @@ defmodule E2eWeb.SwitchEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.switch id={@id_server} class="switch" on_checked_change="switch_changed">
                 <:label>Subscribe</:label>
               </.switch>
@@ -111,7 +111,7 @@ defmodule E2eWeb.SwitchEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.switch id={@id_client} class="switch" on_checked_change_client={@client_event}>
                 <:label>Subscribe</:label>
               </.switch>

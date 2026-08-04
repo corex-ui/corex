@@ -1026,7 +1026,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     assigns = assign(assigns, :presets, @presets)
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start w-full">
+    <div class="flex flex-wrap gap-space-xl items-start w-full">
       <.color_picker
         id="color-picker-style-color-default"
         class="color-picker"
@@ -1094,7 +1094,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     assigns = assign(assigns, :presets, @presets)
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start w-full">
+    <div class="flex flex-wrap gap-space-xl items-start w-full">
       <.color_picker
         id="color-picker-style-variant-subtle"
         class="color-picker"
@@ -1175,7 +1175,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     assigns = assign(assigns, :presets, @presets)
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start w-full">
+    <div class="flex flex-wrap gap-space-xl items-start w-full">
       <.color_picker
         id="color-picker-style-size-sm"
         class="color-picker ui-size-sm"
@@ -1239,7 +1239,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     assigns = assign(assigns, :presets, @presets)
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start w-full">
+    <div class="flex flex-wrap gap-space-xl items-start w-full">
       <.color_picker
         id="color-picker-style-rounded-none"
         class="color-picker ui-rounded-none"
@@ -1332,7 +1332,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.color_picker
           id={"color-picker-style-width-#{variant.id}"}
@@ -1355,7 +1355,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.color_picker
           id={"color-picker-style-max-#{variant.id}"}
@@ -1394,7 +1394,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_height_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_height_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.color_picker
           id={"color-picker-style-max-h-#{variant.id}"}

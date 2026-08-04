@@ -101,7 +101,7 @@ defmodule E2eWeb.MarqueeEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.marquee
                 id={@id_server}
                 class="marquee"
@@ -152,7 +152,7 @@ defmodule E2eWeb.MarqueeEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.marquee
                 id={@id_client}
                 class="marquee"

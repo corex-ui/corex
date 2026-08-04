@@ -126,7 +126,7 @@ defmodule E2eWeb.ComboboxEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.combobox
                 id="combobox-events-server-field"
                 class="combobox"
@@ -166,7 +166,7 @@ defmodule E2eWeb.ComboboxEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.combobox
                 id="combobox-events-client-field"
                 class="combobox"
@@ -226,7 +226,7 @@ defmodule E2eWeb.ComboboxEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.combobox
                 id="combobox-events-open-server-field"
                 class="combobox"
@@ -265,7 +265,7 @@ defmodule E2eWeb.ComboboxEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.combobox
                 id="combobox-events-open-client-field"
                 class="combobox"
@@ -327,7 +327,7 @@ defmodule E2eWeb.ComboboxEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.combobox
                 id="combobox-events-input-server-field"
                 class="combobox"
@@ -367,7 +367,7 @@ defmodule E2eWeb.ComboboxEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.combobox
                 id="combobox-events-highlight-server-field"
                 class="combobox"
@@ -406,7 +406,7 @@ defmodule E2eWeb.ComboboxEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.combobox
                 id="combobox-events-select-server-field"
                 class="combobox"

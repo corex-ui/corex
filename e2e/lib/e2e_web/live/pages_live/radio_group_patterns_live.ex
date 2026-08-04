@@ -110,8 +110,8 @@ defmodule E2eWeb.RadioGroupPatternsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-3 w-full max-w-xl">
-              <div class="flex flex-wrap gap-2">
+            <div class="flex flex-col gap-space w-full max-w-xl">
+              <div class="flex flex-wrap gap-space-sm">
                 <.action phx-click="add_item" class="button ui-size-sm ui-accent">
                   <.heroicon name="hero-plus" /> Add item
                 </.action>

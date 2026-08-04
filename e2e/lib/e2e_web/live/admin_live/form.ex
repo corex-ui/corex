@@ -47,7 +47,7 @@ defmodule E2eWeb.AdminLive.Form do
             <:title>Delete admin?</:title>
             <:description>This action cannot be undone.</:description>
             <:content>
-              <div class="flex flex-wrap justify-end gap-2 mt-4">
+              <div class="flex flex-wrap justify-end gap-space-sm mt-space-lg">
                 <.action
                   id={"admin-delete-#{@admin.id}-cancel"}
                   phx-click={Corex.Dialog.set_open("admin-delete-#{@admin.id}", false)}
@@ -308,7 +308,7 @@ defmodule E2eWeb.AdminLive.Form do
           </:error>
         </.file_upload>
 
-        <footer class="flex w-full justify-between gap-2">
+        <footer class="flex w-full justify-between gap-space-sm">
           <.navigate to={return_path(@return_to, @admin)} type="navigate" class="button">
             Cancel
           </.navigate>

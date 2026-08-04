@@ -386,7 +386,7 @@ defmodule E2eWeb.DemoPage do
   attr(:default_value, :string, default: "preview")
   attr(:trigger_class, :string, default: nil)
   attr(:tabs_id, :string, default: nil)
-  attr(:class, :string, default: "flex flex-col gap-4 items-start w-full")
+  attr(:class, :string, default: "flex flex-col gap-space-lg items-start w-full")
 
   attr(:tabs_class, :string,
     default:
@@ -489,7 +489,7 @@ defmodule E2eWeb.DemoPage do
   attr(:id, :string, required: true)
   attr(:events, :list, required: true)
   attr(:empty_label, :string, default: "Interact with the component to see events here.")
-  attr(:class, :string, default: "flex flex-col w-full max-w-6xl gap-2")
+  attr(:class, :string, default: "flex flex-col w-full max-w-6xl gap-space-sm")
 
   def demo_event_log(assigns) do
     ~H"""
@@ -497,9 +497,9 @@ defmodule E2eWeb.DemoPage do
       <h4 class="text-sm font-medium text-ink-muted">Event log</h4>
       <ol
         :if={@events != []}
-        class="flex flex-col gap-1 max-h-64 overflow-auto rounded-md border border-border bg-ui p-2 text-sm font-mono"
+        class="flex flex-col gap-space-xs max-h-64 overflow-auto rounded-md border border-border bg-ui p-space-sm text-sm font-mono"
       >
-        <li :for={event <- @events} class="flex gap-2 items-start">
+        <li :for={event <- @events} class="flex gap-space-sm items-start">
           <span class="text-ink-muted">{event.name}</span>
           <span class="text-ink">{inspect(event.payload)}</span>
         </li>
@@ -515,7 +515,7 @@ defmodule E2eWeb.DemoPage do
   attr(:id, :string, required: true)
   attr(:title, :string, required: true)
   attr(:description, :string, default: nil)
-  attr(:class, :string, default: "flex flex-col gap-2")
+  attr(:class, :string, default: "flex flex-col gap-space-sm")
   slot(:actions, required: true)
   slot(:result)
 
@@ -524,7 +524,7 @@ defmodule E2eWeb.DemoPage do
     <div id={@id} class={@class}>
       <h4 class="text-sm font-medium">{@title}</h4>
       <p :if={@description} class="text-sm text-ink-muted">{@description}</p>
-      <div class="flex flex-wrap gap-2">
+      <div class="flex flex-wrap gap-space-sm">
         {render_slot(@actions)}
       </div>
       <div :if={@result != []} class="text-sm font-mono text-ink-muted">
@@ -543,7 +543,7 @@ defmodule E2eWeb.DemoPage do
   """
   attr(:id, :string, required: true)
   attr(:loading, :boolean, default: false)
-  attr(:class, :string, default: "flex flex-col gap-2 w-full")
+  attr(:class, :string, default: "flex flex-col gap-space-sm w-full")
   slot(:inner_block, required: true)
 
   def demo_pattern_async(assigns) do
@@ -559,7 +559,7 @@ defmodule E2eWeb.DemoPage do
   toolbar actions, then the live component.
   """
   attr(:id, :string, required: true)
-  attr(:class, :string, default: "flex flex-col gap-3 w-full max-w-6xl")
+  attr(:class, :string, default: "flex flex-col gap-space w-full max-w-6xl")
 
   slot(:state)
   slot(:toolbar)
@@ -568,10 +568,10 @@ defmodule E2eWeb.DemoPage do
   def demo_pattern_controlled(assigns) do
     ~H"""
     <div id={@id} class={@class}>
-      <div :if={@state != []} class="flex flex-wrap items-center gap-2 text-sm">
+      <div :if={@state != []} class="flex flex-wrap items-center gap-space-sm text-sm">
         {render_slot(@state)}
       </div>
-      <div :if={@toolbar != []} class="flex flex-wrap gap-2">
+      <div :if={@toolbar != []} class="flex flex-wrap gap-space-sm">
         {render_slot(@toolbar)}
       </div>
       {render_slot(@inner_block)}

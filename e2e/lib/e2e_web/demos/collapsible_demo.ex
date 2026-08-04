@@ -390,7 +390,7 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
 
   def styling_color_example(assigns) do
     ~H"""
-    <div class="flex flex-col gap-4 items-start w-full max-w-xl">
+    <div class="flex flex-col gap-space-lg items-start w-full max-w-xl">
       <.collapsible id="collapsible-style-default" class="collapsible ui-size-md">
         <:trigger>Default width</:trigger>
         <:content>Content</:content>
@@ -433,7 +433,7 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
 
   def styling_variant_example(assigns) do
     ~H"""
-    <div class="flex flex-col gap-4 items-start w-full max-w-xl">
+    <div class="flex flex-col gap-space-lg items-start w-full max-w-xl">
       <.collapsible id="collapsible-style-variant-subtle" class="collapsible ui-size-md">
         <:trigger>Subtle (default)</:trigger>
         <:content>Content</:content>
@@ -515,7 +515,7 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
 
   def styling_size_example(assigns) do
     ~H"""
-    <div class="flex flex-col gap-4 items-start w-full">
+    <div class="flex flex-col gap-space-lg items-start w-full">
       <.collapsible id="collapsible-style-sm" class="collapsible ui-size-sm">
         <:trigger>Small</:trigger>
         <:content>
@@ -564,7 +564,7 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.collapsible
           id={"collapsible-style-max-#{variant.id}"}
@@ -605,7 +605,7 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_height_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_height_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.collapsible
           id={"collapsible-style-max-h-#{variant.id}"}

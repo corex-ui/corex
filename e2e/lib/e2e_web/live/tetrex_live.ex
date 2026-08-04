@@ -708,7 +708,7 @@ defmodule E2eWeb.TetrexLive do
                 </div>
               </div>
 
-              <aside class="flex flex-col gap-1 md:gap-space-sm w-full md:min-w-56 md:w-56 shrink-0 min-h-0">
+              <aside class="flex flex-col gap-space-xs md:gap-space-sm w-full md:min-w-56 md:w-56 shrink-0 min-h-0">
                 <.tetrex_hud
                   score={@score}
                   level={@level}
@@ -893,7 +893,7 @@ defmodule E2eWeb.TetrexLive do
       class="flex flex-col gap-space-sm border-t border-border pt-space-sm"
     >
       <p class="text-ink-muted text-xs uppercase tracking-wider m-0">{~t"Replay"}</p>
-      <div class="flex flex-wrap items-center gap-1">
+      <div class="flex flex-wrap items-center gap-space-xs">
         <.toggle
           id="tetrex-replay-play"
           class="toggle ui-size-sm"
@@ -937,8 +937,8 @@ defmodule E2eWeb.TetrexLive do
 
   defp tetrex_hud(assigns) do
     ~H"""
-    <div class="flex flex-row md:flex-col items-center md:items-stretch justify-between gap-2 md:gap-space-sm w-full min-w-0 shrink-0">
-      <div class="grid grid-cols-3 gap-x-2 gap-y-0 flex-1 min-w-0 md:grid-cols-2 md:gap-space-sm">
+    <div class="flex flex-row md:flex-col items-center md:items-stretch justify-between gap-space-sm md:gap-space-sm w-full min-w-0 shrink-0">
+      <div class="grid grid-cols-3 gap-x-space-sm gap-y-0 flex-1 min-w-0 md:grid-cols-2 md:gap-space-sm">
         <div>
           <p class="text-ink-muted text-[0.65rem] md:text-xs uppercase tracking-wider m-0">
             {~t"Score"}
@@ -980,7 +980,7 @@ defmodule E2eWeb.TetrexLive do
         </p>
         <div
           id="tetrex-next"
-          class="border border-border rounded-md bg-root p-0.5 w-12 md:w-16 mt-0.5 ms-auto md:ms-0"
+          class="border border-border rounded-md bg-root p-0.5 w-12 md:w-16 mt-space-xs ms-auto md:ms-0"
           aria-label={~t"Next piece"}
         >
           <div class="grid gap-px w-full" style="grid-template-columns: repeat(4, minmax(0, 1fr));">
@@ -996,10 +996,10 @@ defmodule E2eWeb.TetrexLive do
     ~H"""
     <div
       id="tetrex-touch-controls"
-      class="md:hidden flex flex-col gap-1 touch-manipulation select-none shrink-0 pb-[max(0px,env(safe-area-inset-bottom))]"
+      class="md:hidden flex flex-col gap-space-xs touch-manipulation select-none shrink-0 pb-[max(0px,env(safe-area-inset-bottom))]"
     >
       <p class="sr-only">{~t"Controls"}</p>
-      <div class="grid grid-cols-3 gap-1.5 max-w-[10.5rem] mx-auto w-full">
+      <div class="grid grid-cols-3 gap-space-sm max-w-[10.5rem] mx-auto w-full">
         <.action
           type="button"
           data-tetrex-cmd="rotate"
@@ -1041,7 +1041,7 @@ defmodule E2eWeb.TetrexLive do
     ~H"""
     <div class="hidden md:flex flex-col gap-space-sm border-t border-border pt-space-sm">
       <p class="text-ink-muted text-xs uppercase tracking-wider m-0">{~t"Keyboard"}</p>
-      <ul class="flex flex-col gap-1 m-0 p-0 list-none">
+      <ul class="flex flex-col gap-space-xs m-0 p-0 list-none">
         <.keyboard_row keys={["←", "→"]} label={~t"Move"} />
         <.keyboard_row keys={["↓"]} label={~t"Soft drop"} />
         <.keyboard_row keys={["Space"]} label={~t"Rotate"} />
@@ -1057,7 +1057,7 @@ defmodule E2eWeb.TetrexLive do
   defp keyboard_row(assigns) do
     ~H"""
     <li class="flex items-center justify-between gap-space-sm min-w-0">
-      <span class="inline-flex flex-wrap items-center gap-1 shrink-0">
+      <span class="inline-flex flex-wrap items-center gap-space-xs shrink-0">
         <span :for={key <- @keys} class="badge font-mono">{key}</span>
       </span>
       <span class="text-sm text-ink-muted text-end">{@label}</span>

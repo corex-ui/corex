@@ -70,7 +70,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def styling_variant_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
+    <div class="flex flex-wrap gap-space-xl items-start w-full max-w-4xl">
       <.switch id="switch-style-variant-subtle" class="switch" checked>
         <:label>Subtle (default)</:label>
       </.switch>
@@ -138,7 +138,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-center w-full max-w-4xl">
+    <div class="flex flex-wrap gap-space-xl items-center w-full max-w-4xl">
       <.switch id="switch-style-sm" class="switch ui-size-sm" checked>
         <:label>SM</:label>
       </.switch>
@@ -182,7 +182,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
+    <div class="flex flex-wrap gap-space-xl items-start w-full max-w-4xl">
       <.switch id="switch-style-c-default" class="switch" checked>
         <:label>Default</:label>
       </.switch>
@@ -232,7 +232,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
+    <div class="flex flex-wrap gap-space-xl items-start w-full max-w-4xl">
       <.switch id="switch-style-rounded-none" class="switch ui-rounded-none" checked>
         <:label>None</:label>
       </.switch>
@@ -298,7 +298,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.switch
           id={"switch-style-width-#{variant.id}"}
@@ -317,7 +317,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
     ~H"""
     <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_width_variants} class="flex flex-col gap-2">
+      <div :for={variant <- @max_width_variants} class="flex flex-col gap-space-sm">
         <p class="typo ui-size-sm font-medium">{variant.label}</p>
         <.switch
           id={"switch-style-max-#{variant.id}"}
@@ -333,7 +333,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def api_set_checked_client_binding_heex do
     ~S"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={Corex.Switch.set_checked("switch-api-cb", true)} class="button ui-size-sm">On</.action>
       <.action phx-click={Corex.Switch.set_checked("switch-api-cb", false)} class="button ui-size-sm">Off</.action>
       <.action phx-click={Corex.Switch.toggle_checked("switch-api-cb")} class="button ui-size-sm">Toggle</.action>
@@ -348,8 +348,8 @@ defmodule E2eWeb.Demos.SwitchDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 items-center w-full">
-      <div class="flex flex-wrap gap-2 items-center">
+    <div class="flex flex-col gap-space-lg items-center w-full">
+      <div class="flex flex-wrap gap-space-sm items-center">
         <.action phx-click={Corex.Switch.set_checked("switch-api-cb", true)} class="button ui-size-sm">
           On
         </.action>
@@ -372,7 +372,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def api_set_checked_client_js_heex do
     ~S"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <button
         type="button"
         class="button ui-size-sm"
@@ -437,8 +437,8 @@ defmodule E2eWeb.Demos.SwitchDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 items-center w-full">
-      <div class="flex flex-wrap gap-2 items-center">
+    <div class="flex flex-col gap-space-lg items-center w-full">
+      <div class="flex flex-wrap gap-space-sm items-center">
         <button
           type="button"
           class="button ui-size-sm"
@@ -470,7 +470,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def api_set_checked_server_heex do
     ~S"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click="switch_api_on" class="button ui-size-sm">On</.action>
       <.action phx-click="switch_api_off" class="button ui-size-sm">Off</.action>
       <.action phx-click="switch_api_toggle" class="button ui-size-sm">Toggle</.action>
@@ -501,8 +501,8 @@ defmodule E2eWeb.Demos.SwitchDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 items-center w-full">
-      <div class="flex flex-wrap gap-2 items-center">
+    <div class="flex flex-col gap-space-lg items-center w-full">
+      <div class="flex flex-wrap gap-space-sm items-center">
         <.action phx-click="switch_api_on" class="button ui-size-sm">On</.action>
         <.action phx-click="switch_api_off" class="button ui-size-sm">Off</.action>
         <.action phx-click="switch_api_toggle" class="button ui-size-sm">Toggle</.action>
@@ -529,7 +529,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def api_client_binding_example(assigns) do
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-space-sm mb-space-lg">
       <.action phx-click={Corex.Switch.set_checked(@id, true)} class="button ui-size-sm">On</.action>
       <.action phx-click={Corex.Switch.set_checked(@id, false)} class="button ui-size-sm">
         Off

@@ -75,7 +75,7 @@ defmodule E2eWeb.RadioGroupEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.radio_group
                 id="radio-group-events-server"
                 name="rg-events-server"
@@ -113,7 +113,7 @@ defmodule E2eWeb.RadioGroupEventsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
+            <div class="flex flex-col gap-space-lg items-center w-full">
               <.radio_group
                 id="radio-group-events-client"
                 name="rg-events-client"

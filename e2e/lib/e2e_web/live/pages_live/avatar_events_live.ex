@@ -51,11 +51,11 @@ defmodule E2eWeb.AvatarEventsLive do
           code={E2eWeb.Demos.AvatarDemo.events_server_heex()}
         >
           <:preview>
-            <div class="flex flex-col gap-4 items-center w-full max-w-3xl mx-auto">
+            <div class="flex flex-col gap-space-lg items-center w-full max-w-3xl mx-auto">
               <form
                 phx-change="avatar_events_changed"
                 id="avatar-events-form"
-                class="flex flex-col gap-4 w-full"
+                class="flex flex-col gap-space-lg w-full"
               >
                 <.native_input
                   type="url"

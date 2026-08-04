@@ -68,7 +68,7 @@ defmodule E2eWeb.ClipboardApiLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 mb-4">
+            <div class="flex flex-wrap gap-space-sm mb-space-lg">
               <.action phx-click="clipboard_api_server_copy" class="button ui-size-sm">
                 Push copy
               </.action>
