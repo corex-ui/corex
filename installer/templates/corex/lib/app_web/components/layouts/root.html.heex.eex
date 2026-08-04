@@ -1,25 +1,34 @@
 <!DOCTYPE html>
 <html<%= if @lang do %>
   lang={<%= @web_module %>.Locale.lang()}
-  dir={<%= @web_module %>.Locale.dir()}
-<% else %> lang="en"<% end %><%= if @design do %>
-  data-theme="<%= @default_theme %>"
-  data-mode="light"
-<% end %><%= if @a11y do %>
-  {a11y_data_attrs(assigns[:a11y])}
-<% end %>>
+  dir={<%= @web_module %>.Locale.dir()}<% else %> lang="en"<% end %><%= if @theme do %>
+  data-theme={@theme}<% else %><%= if @design do %>
+  data-theme="<%= @default_theme %>"<% end %><% end %><%= if @mode do %>
+  data-mode={@mode}<% else %><%= if @design do %>
+  data-mode="light"<% end %><% end %><%= if @a11y do %>
+  {a11y_data_attrs(assigns[:a11y])}<% end %>>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content={get_csrf_token()} />
+<%= if @lang do %>    <meta
+      name="description"
+      content={~t"#{name = "<%= @app_module %>"}: a Phoenix app powered by Corex."}
+    />
+    <.live_title default="<%= @app_module %>" suffix={~t" · Phoenix Framework"}>
+      {assigns[:page_title]}
+    </.live_title>
+<% else %>    <meta
+      name="description"
+      content="<%= @app_module %>: a Phoenix app powered by Corex."
+    />
     <.live_title default="<%= @app_module %>" suffix=" · Phoenix Framework">
       {assigns[:page_title]}
     </.live_title>
-    <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />
+<% end %>    <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />
     <script defer phx-track-static type="module" src={~p"/assets/js/app.js"}>
     </script>
-    <%= if @mode or @theme or @a11y do %>
-    <script>
+<%= if @mode or @theme or @a11y do %>    <script>
       (() => {<%= if @mode do %>
         const getSystemMode = () =>
           window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";

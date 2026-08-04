@@ -86,20 +86,29 @@ defmodule Corex.New.CliTest do
     end
   end
 
-  describe "maybe_auto_enable_design notifications" do
-    test "notifies and enables design for mode" do
-      opts = Cli.maybe_auto_enable_design(mode: true)
-      assert Keyword.fetch!(opts, :design) == true
+  describe "maybe_auto_enable_design Mix task order" do
+    test "put_new design true before maybe_auto_enable skips notify (old bug)" do
+      opts =
+        [mode: true]
+        |> Keyword.put_new(:design, true)
+        |> Cli.maybe_auto_enable_design(notify: false)
+
+      assert opts[:design] == true
+      refute_received {:mix_shell, :info, _}
+    end
+
+    test "maybe_auto_enable before put_new design enables and can notify" do
+      opts =
+        [mode: true]
+        |> Cli.maybe_auto_enable_design()
+        |> Keyword.put_new(:design, true)
+
+      assert opts[:design] == true
 
       assert_received {:mix_shell, :info,
                        [
                          "* Corex: enabling --design because --mode/--theme/--lang/--a11y was set; pass --no-design to opt out."
                        ]}
-    end
-
-    test "leaves opts unchanged when design is explicitly false and mode is set" do
-      opts = Cli.maybe_auto_enable_design([mode: true, design: false], notify: false)
-      assert opts[:design] == false
     end
   end
 

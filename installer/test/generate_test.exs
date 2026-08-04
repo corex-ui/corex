@@ -15,6 +15,8 @@ defmodule Corex.New.GenerateTest do
     assert pot =~ ~s(msgid "The Phoenix UI with a")
     assert pot =~ ~s(msgid "real API")
     assert pot =~ ~s(msgid "Open menu")
+    assert pot =~ ~s(msgid " · Phoenix Framework")
+    assert pot =~ ~s(msgid "%{name}: a Phoenix app powered by Corex.")
     refute pot =~ ~s(msgid "Corex for Phoenix")
     refute pot =~ ~s(msgid "Demo Site")
     refute pot =~ ~s(msgid "Hex Doc")
@@ -22,6 +24,8 @@ defmodule Corex.New.GenerateTest do
     fr = File.read!(Path.join(root, "fr/LC_MESSAGES/default.po"))
     assert fr =~ ~s(msgid "The Phoenix UI with a")
     assert fr =~ ~s(msgstr "L'UI Phoenix avec une")
+    assert fr =~ ~s(msgid "%{name}: a Phoenix app powered by Corex.")
+    assert fr =~ "une application Phoenix"
 
     ar = File.read!(Path.join(root, "ar/LC_MESSAGES/default.po"))
     assert ar =~ ~s(msgid "real API")
@@ -137,6 +141,35 @@ defmodule Corex.New.GenerateTest do
       assert File.exists?(Path.join(["priv", "gettext", "en", "LC_MESSAGES", "default.po"]))
       assert File.exists?(Path.join(["priv", "gettext", "fr", "LC_MESSAGES", "default.po"]))
       assert File.exists?(Path.join(["priv", "gettext", "ar", "LC_MESSAGES", "default.po"]))
+
+      layouts = File.read!("lib/my_app_web/components/layouts.ex")
+      assert layouts =~ ~S[~t"Site"]
+      assert layouts =~ ~S[~t"Primary"]
+      assert layouts =~ ~S[aria-label={~t"Primary"}]
+      assert layouts =~ "class=\"hidden items-center gap-space-lg md:flex lg:gap-space-xl\""
+      assert layouts =~ ~s|%{label: "Neo", value: "neo"}|
+
+      home = File.read!("lib/my_app_web/controllers/page_html/home.html.heex")
+      assert home =~ ~S[~t"API"]
+      assert home =~ ~S[~t"Accordion"]
+      assert home =~ ~S[content: ~t"Structure, custom slots, and compound mode for full control."]
+
+      root = File.read!("lib/my_app_web/components/layouts/root.html.heex")
+      assert root =~ ~S[~t" · Phoenix Framework"]
+      assert root =~ ~S|~t"#{name = "MyApp"}: a Phoenix app powered by Corex."|
+      refute root =~ ~r/dir=\{MyAppWeb\.Locale\.dir\(\)\}\n\n/
+
+      assert File.exists?("lib/my_app_web/controllers/error_html.ex")
+      assert File.exists?("lib/my_app_web/controllers/error_html/404.html.heex")
+
+      assert File.read!("lib/my_app_web/controllers/error_html/404.html.heex") =~
+               ~S[~t"Page not found"]
+
+      refute File.read!("lib/my_app_web/controllers/error_html/404.html.heex") =~ ~r/\A\s*\n/
+
+      fr_po = File.read!("priv/gettext/fr/LC_MESSAGES/default.po")
+      assert fr_po =~ ~s(msgid "Site")
+      assert fr_po =~ ~s(msgid " · Phoenix Framework")
     end)
   end
 
@@ -345,6 +378,8 @@ defmodule Corex.New.GenerateTest do
       assert mix_exs =~ "{:corex_design,"
       assert mix_exs =~ "{:corex_mcp,"
       refute mix_exs =~ "{:daisyui"
+      refute mix_exs =~ "localize_web"
+      refute mix_exs =~ "gettext_sigils"
 
       endpoint_ex = File.read!("lib/my_app_web/endpoint.ex")
       assert endpoint_ex =~ "plug Corex.MCP"
@@ -374,10 +409,21 @@ defmodule Corex.New.GenerateTest do
       assert layouts =~ "Hexdocs"
       refute layouts =~ ~S[~p"/design"]
       refute layouts =~ ~S[~p"/guides"]
+      refute layouts =~ "~t\""
+      refute layouts =~ "Locale"
 
       home = File.read!("lib/my_app_web/controllers/page_html/home.html.heex")
       assert home =~ "The Phoenix UI"
       assert home =~ ~s(id="home-accordion")
+      refute home =~ "~t\""
+
+      root = File.read!("lib/my_app_web/components/layouts/root.html.heex")
+      assert root =~ ~s(suffix=" · Phoenix Framework")
+      refute root =~ "~t\""
+
+      refute File.dir?("priv/gettext")
+      refute File.exists?("lib/my_app_web/locale.ex")
+      refute File.exists?("lib/my_app_web/controllers/error_html/404.html.heex")
     end)
   end
 
@@ -414,6 +460,8 @@ defmodule Corex.New.GenerateTest do
       assert File.exists?("lib/my_app_web/plugs/theme.ex")
       assert File.exists?("lib/my_app_web/locale.ex")
       assert File.exists?("lib/my_app_web/hooks/layout.ex")
+      assert File.exists?("lib/my_app_web/controllers/error_html.ex")
+      assert File.exists?("lib/my_app_web/controllers/error_html/404.html.heex")
     end)
   end
 end

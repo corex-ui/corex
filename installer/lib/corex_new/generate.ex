@@ -20,6 +20,7 @@ defmodule Corex.New.Generate do
     write_layouts_ex(install_dir, opts)
     write_root_heex(install_dir, opts)
     write_home_heex(install_dir, opts)
+    write_error_html(install_dir, opts)
     write_plugs(install_dir, opts)
     write_locale_helpers(install_dir, opts)
     write_a11y_helpers(install_dir, opts)
@@ -39,6 +40,7 @@ defmodule Corex.New.Generate do
     Patches.patch_gitignore(install_dir, opts)
     Patches.patch_gettext_backend(install_dir, opts[:web_module], opts)
     Patches.patch_page_controller_test(install_dir, opts[:web_module])
+    Patches.patch_error_html_test(install_dir, opts[:web_module], opts)
 
     if opts[:lang] do
       Patches.patch_verified_routes_path_prefixes!(install_dir, opts[:web_module], opts)
@@ -102,6 +104,25 @@ defmodule Corex.New.Generate do
 
     if File.exists?(target) do
       write!(target, Templates.home_heex(template_assigns(install_dir, opts)))
+    end
+  end
+
+  defp write_error_html(install_dir, opts) do
+    if opts[:lang] do
+      web = web_underscore(opts)
+      controllers = Path.join([install_dir, "lib", web, "controllers"])
+      error_dir = Path.join(controllers, "error_html")
+      File.mkdir_p!(error_dir)
+
+      write!(
+        Path.join(controllers, "error_html.ex"),
+        Templates.error_html_ex(template_assigns(install_dir, opts))
+      )
+
+      write!(
+        Path.join(error_dir, "404.html.heex"),
+        Templates.error_html_404(template_assigns(install_dir, opts))
+      )
     end
   end
 

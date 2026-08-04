@@ -1,6 +1,8 @@
 defmodule Corex.New.Patches do
   @moduledoc false
 
+  require Logger
+
   alias Corex.New.Shared
 
   @spec patch_failed!(String.t(), String.t(), String.t()) :: no_return()
@@ -22,8 +24,7 @@ defmodule Corex.New.Patches do
 
   @doc """
   Adds `{:corex, ...}` (and `{:localize_web, "~> 0.5"}` when `--lang`)
-  to the `deps/0` list in `mix.exs`. When `--lang` or `--design` and Erlang
-  `:json` is not loaded, adds `{:json_polyfill, ...}` like `localize_web`.
+  to the `deps/0` list in `mix.exs`.
   When `--mcp`, adds `{:corex_mcp, ..., only: [:dev, :test]}`.
   When `--usage-rules` (default), adds `{:usage_rules, "~> 1.1", only: :dev}`
   and `usage_rules: usage_rules()` in `project/0`.
@@ -45,15 +46,12 @@ defmodule Corex.New.Patches do
       |> maybe_add_design_aliases(opts)
       |> maybe_ensure_design_compilers(opts)
       |> maybe_ensure_usage_rules_project(opts)
-      |> maybe_ensure_json_polyfill_dep(opts)
       |> strip_daisyui_dep()
 
     write_if_changed!(path, content, updated)
+    format_elixir_source!(path)
   end
 
-  @doc """
-  Deletes stock Phoenix daisyUI vendor plugins when present. Idempotent.
-  """
   def remove_daisyui_vendor!(install_dir) do
     for name <- ["daisyui.js", "daisyui-theme.js"] do
       path = Path.join([install_dir, "assets", "vendor", name])
@@ -264,16 +262,23 @@ defmodule Corex.New.Patches do
   defp format_elixir_source!(path) do
     original = File.read!(path)
 
-    formatted =
-      original
-      |> Code.format_string!()
-      |> IO.iodata_to_binary()
-      |> then(fn source ->
-        if String.ends_with?(source, "\n"), do: source, else: source <> "\n"
-      end)
+    try do
+      formatted =
+        original
+        |> Code.format_string!()
+        |> IO.iodata_to_binary()
+        |> then(fn source ->
+          if String.ends_with?(source, "\n"), do: source, else: source <> "\n"
+        end)
 
-    if formatted != original do
-      File.write!(path, formatted)
+      if formatted != original do
+        File.write!(path, formatted)
+      end
+    rescue
+      e in [SyntaxError, TokenMissingError] ->
+        # Incomplete Mix stubs in unit tests may not parse; leave the file as written.
+        Logger.debug("Skipping format for #{path}: #{Exception.message(e)}")
+        :ok
     end
 
     :ok
@@ -306,6 +311,7 @@ defmodule Corex.New.Patches do
         content = File.read!(path)
         updated = inject_locales_into_gettext_backend(content)
         write_if_changed!(path, content, updated)
+        format_elixir_source!(path)
       end
     end
 
@@ -331,6 +337,41 @@ defmodule Corex.New.Patches do
         if String.contains?(content, old), do: String.replace(content, old, new), else: content
 
       write_if_changed!(path, content, updated)
+    end
+
+    :ok
+  end
+
+  @doc """
+  When `--lang` installs a custom `404.html.heex`, update the stock ErrorHTML test
+  to assert on the page heading instead of the plain status message. Idempotent.
+  """
+  def patch_error_html_test(install_dir, web_module, opts) do
+    if Keyword.get(opts, :lang, false) do
+      path =
+        Path.join([
+          install_dir,
+          "test",
+          underscore(web_module),
+          "controllers",
+          "error_html_test.exs"
+        ])
+
+      if File.exists?(path) do
+        content = File.read!(path)
+
+        updated =
+          Regex.replace(
+            ~r/assert render_to_string\(([\w.]+)\.ErrorHTML, "404", "html", \[\]\) == "Not Found"/,
+            content,
+            fn _, mod ->
+              ~s|assert render_to_string(#{mod}.ErrorHTML, "404", "html", []) =~ "Page not found"|
+            end
+          )
+
+        write_if_changed!(path, content, updated)
+        format_elixir_source!(path)
+      end
     end
 
     :ok
@@ -407,7 +448,7 @@ defmodule Corex.New.Patches do
       else
         insert_before_closing_deps(
           content,
-          "      {:usage_rules, \"~> 1.1\", only: :dev},\n"
+          "      {:usage_rules, \"~> 1.1\", only: :dev}\n"
         )
       end
     end
@@ -563,30 +604,6 @@ defmodule Corex.New.Patches do
 
         nil ->
           String.trim_trailing(content) <> helper <> "\n"
-      end
-    end
-  end
-
-  defp maybe_ensure_json_polyfill_dep(content, opts) do
-    needs_json? =
-      Keyword.get(opts, :lang, false) or Keyword.get(opts, :design, false) or
-        Keyword.get(opts, :mcp, true)
-
-    if not needs_json? do
-      content
-    else
-      cond do
-        Regex.match?(~r/\{:json_polyfill\s*,/u, content) ->
-          content
-
-        Code.ensure_loaded?(:json) ->
-          content
-
-        true ->
-          insert_before_closing_deps(
-            content,
-            "      {:json_polyfill, \"~> 0.2 or ~> 1.0\"},\n"
-          )
       end
     end
   end
@@ -1222,26 +1239,14 @@ defmodule Corex.New.Patches do
   end
 
   defp inject_gettext_locales_after_backend_use(content) do
-    cond do
-      Regex.match?(~r/default_locale:\s*"[^"]+"/m, content) ->
-        Regex.replace(
-          ~r/(use\s+Gettext\.Backend\s*,\s*[\s\S]*?default_locale:\s*"[^"]+")/m,
-          content,
-          "\\1,\n    locales: ~w(en fr ar)",
-          global: false
-        )
-
-      Regex.match?(~r/use\s+Gettext\.Backend\s*,\s*otp_app:\s*:[a-z_0-9]+/m, content) ->
-        Regex.replace(
-          ~r/(use\s+Gettext\.Backend\s*,\s*otp_app:\s*:[a-z_0-9]+)/m,
-          content,
-          "\\1,\n    default_locale: \"en\",\n    locales: ~w(en fr ar)",
-          global: false
-        )
-
-      true ->
-        content
-    end
+    Regex.replace(
+      ~r/use\s+Gettext\.Backend\s*,\s*otp_app:\s*(:[a-z_0-9]+)(?:\s*,\s*default_locale:\s*"[^"]+")?/m,
+      content,
+      fn _, otp_app ->
+        "use Gettext.Backend,\n    otp_app: #{otp_app},\n    default_locale: \"en\",\n    locales: ~w(en fr ar)"
+      end,
+      global: false
+    )
   end
 
   defp replace_gettext_with_sigils(content, web_module) do

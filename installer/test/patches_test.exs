@@ -432,23 +432,7 @@ defmodule Corex.New.PatchesTest do
       end)
     end
 
-    test "skips json_polyfill when dependency is already listed" do
-      mix_exs =
-        @stock_mix_exs
-        |> String.replace(
-          "{:phoenix_live_view, \"~> 1.1.0\"}",
-          "{:phoenix_live_view, \"~> 1.1.0\"},\n      {:json_polyfill, \"~> 0.2 or ~> 1.0\"}"
-        )
-
-      in_tmp(:patch_json_present, fn ->
-        File.write!("mix.exs", mix_exs)
-        Patches.patch_mix_exs(File.cwd!(), lang: true)
-        body = File.read!("mix.exs")
-        assert length(String.split(body, "{:json_polyfill")) == 2
-      end)
-    end
-
-    test "adds json_polyfill when --lang and :json is not loaded" do
+    test "does not inject json_polyfill (comes transitively via corex packages)" do
       mix_exs = """
       defmodule MyApp.MixProject do
         use Mix.Project
@@ -470,51 +454,11 @@ defmodule Corex.New.PatchesTest do
       end
       """
 
-      in_tmp(:patch_mix_exs_json_polyfill, fn ->
+      in_tmp(:patch_mix_exs_no_json_polyfill, fn ->
         File.write!("mix.exs", mix_exs)
-        Patches.patch_mix_exs(File.cwd!(), lang: true)
+        Patches.patch_mix_exs(File.cwd!(), lang: true, design: true)
         body = File.read!("mix.exs")
-
-        if Code.ensure_loaded?(:json) do
-          refute body =~ ~r/\{:json_polyfill,/
-        else
-          assert body =~ ~r/\{:json_polyfill,\s*"~> 0\.2 or ~> 1\.0"\}/
-        end
-      end)
-    end
-
-    test "adds json_polyfill when --design and :json is not loaded" do
-      mix_exs = """
-      defmodule MyApp.MixProject do
-        use Mix.Project
-
-        def project do
-          [app: :my_app, version: "0.1.0", deps: deps()]
-        end
-
-        def application do
-          [mod: {MyApp.Application, []}, extra_applications: [:logger, :runtime_tools]]
-        end
-
-        defp deps do
-          [
-            {:phoenix, "~> 1.8.1"},
-            {:jason, "~> 1.2"}
-          ]
-        end
-      end
-      """
-
-      in_tmp(:patch_mix_exs_json_polyfill_design, fn ->
-        File.write!("mix.exs", mix_exs)
-        Patches.patch_mix_exs(File.cwd!(), design: true)
-        body = File.read!("mix.exs")
-
-        if Code.ensure_loaded?(:json) do
-          refute body =~ ~r/\{:json_polyfill,/
-        else
-          assert body =~ ~r/\{:json_polyfill,\s*"~> 0\.2 or ~> 1\.0"\}/
-        end
+        refute body =~ ~r/\{:json_polyfill,/
       end)
     end
   end
@@ -1214,6 +1158,35 @@ defmodule Corex.New.PatchesTest do
         Patches.patch_gettext_backend(File.cwd!(), MyAppWeb, lang: true)
         body = File.read!("lib/my_app_web/gettext.ex")
         assert body =~ "locales: ~w(en fr ar)"
+        assert body =~ "use Gettext.Backend,"
+        assert body =~ "otp_app: :my_app"
+      end)
+    end
+  end
+
+  describe "patch_error_html_test/3" do
+    test "updates 404 assertion when lang is on" do
+      in_tmp(:patch_error_html_test, fn ->
+        path = "test/my_app_web/controllers/error_html_test.exs"
+        File.mkdir_p!(Path.dirname(path))
+
+        File.write!(
+          path,
+          """
+          defmodule MyAppWeb.ErrorHTMLTest do
+            use MyAppWeb.ConnCase, async: true
+
+            test "renders 404.html" do
+              assert render_to_string(MyAppWeb.ErrorHTML, "404", "html", []) == "Not Found"
+            end
+          end
+          """
+        )
+
+        Patches.patch_error_html_test(File.cwd!(), MyAppWeb, lang: true)
+        body = File.read!(path)
+        assert body =~ ~s|=~ "Page not found"|
+        refute body =~ ~s|== "Not Found"|
       end)
     end
   end

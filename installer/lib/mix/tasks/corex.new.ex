@@ -122,9 +122,9 @@ defmodule Mix.Tasks.Corex.New do
       |> Keyword.put_new(:theme, false)
       |> Keyword.put_new(:a11y, false)
       |> Keyword.put_new(:mode, false)
-      |> Keyword.put_new(:design, true)
       |> Keyword.put_new(:tailwind, true)
       |> Cli.maybe_auto_enable_design()
+      |> Keyword.put_new(:design, true)
 
     Cli.validate_corex_flags!(opts)
     Cli.validate_phx_new_flags!(opts)

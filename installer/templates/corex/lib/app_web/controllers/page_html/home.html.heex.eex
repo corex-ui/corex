@@ -30,36 +30,36 @@
 <% end %>          </p>
 
           <ul
-            class="m-0 mt-2 grid w-full max-w-xl list-none grid-cols-1 gap-x-8 gap-y-4 p-0 sm:grid-cols-2"
+            class="m-0 mt-space-sm grid w-full max-w-xl list-none grid-cols-1 gap-x-size-sm gap-y-space-lg p-0 sm:grid-cols-2"
 <%= if @lang do %>            aria-label={~t"Highlights"}
 <% else %>            aria-label="Highlights"
 <% end %>          >
-            <li class="relative flex items-start gap-x-3 text-pretty text-start text-sm text-ink-muted">
-              <span class="mt-0.5 shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
+            <li class="relative flex items-start gap-x-space text-pretty text-start text-sm text-ink-muted">
+              <span class="mt-space-xs shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
               <span>
                 <strong class="font-semibold text-ink"><%= if @lang do %>{~t"Server & client API."}<% else %>Server & client API.<% end %></strong>
 <%= if @lang do %>                {~t"Drive every component from LiveView or JavaScript and listen back from either side."}
 <% else %>                Drive every component from LiveView or JavaScript and listen back from either side.
 <% end %>              </span>
             </li>
-            <li class="relative flex items-start gap-x-3 text-pretty text-start text-sm text-ink-muted">
-              <span class="mt-0.5 shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
+            <li class="relative flex items-start gap-x-space text-pretty text-start text-sm text-ink-muted">
+              <span class="mt-space-xs shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
               <span>
                 <strong class="font-semibold text-ink"><%= if @lang do %>{~t"LiveView-native."}<% else %>LiveView-native.<% end %></strong>
 <%= if @lang do %>                {~t"Update props at runtime without resetting component state."}
 <% else %>                Update props at runtime without resetting component state.
 <% end %>              </span>
             </li>
-            <li class="relative flex items-start gap-x-3 text-pretty text-start text-sm text-ink-muted">
-              <span class="mt-0.5 shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
+            <li class="relative flex items-start gap-x-space text-pretty text-start text-sm text-ink-muted">
+              <span class="mt-space-xs shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
               <span>
                 <strong class="font-semibold text-ink"><%= if @lang do %>{~t"Truly unstyled."}<% else %>Truly unstyled.<% end %></strong>
 <%= if @lang do %>                {~t"Bring your own CSS or opt into Corex Design tokens, themes and modes."}
 <% else %>                Bring your own CSS or opt into Corex Design tokens, themes and modes.
 <% end %>              </span>
             </li>
-            <li class="relative flex items-start gap-x-3 text-pretty text-start text-sm text-ink-muted">
-              <span class="mt-0.5 shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
+            <li class="relative flex items-start gap-x-space text-pretty text-start text-sm text-ink-muted">
+              <span class="mt-space-xs shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
               <span>
                 <strong class="font-semibold text-ink"><%= if @lang do %>{~t"Accessible by default."}<% else %>Accessible by default.<% end %></strong>
 <%= if @lang do %>                {~t"Keyboard, focus and ARIA wired in by Zag.js state machines."}
@@ -95,7 +95,7 @@
 
           <div class="flex flex-wrap items-center gap-space-sm">
             <span class="badge ui-ghost ui-size-sm">
-              <.heroicon name="hero-command-line" /> API
+              <.heroicon name="hero-command-line" /> <%= if @lang do %>{~t"API"}<% else %>API<% end %>
             </span>
             <.action
               phx-click={Corex.Accordion.set_value("home-accordion", "anatomy")}
@@ -120,7 +120,7 @@
           </div>
 
           <span class="badge ui-ghost ui-size-sm self-start">
-            <.heroicon name="hero-bars-3-bottom-left" /> Accordion
+            <.heroicon name="hero-bars-3-bottom-left" /> <%= if @lang do %>{~t"Accordion"}<% else %>Accordion<% end %>
           </span>
 
           <.accordion
@@ -132,8 +132,7 @@
                 %{
                   value: "anatomy",
                   label: <%= if @lang do %>~t"Anatomy & slots"<% else %>"Anatomy & slots"<% end %>,
-                  content:
-                    <%= if @lang do %>~t"Structure, custom slots, and compound mode for full control."<% else %>"Structure, custom slots, and compound mode for full control."<% end %>
+                  content: <%= if @lang do %>~t"Structure, custom slots, and compound mode for full control."<% else %>"Structure, custom slots, and compound mode for full control."<% end %>
                 },
                 %{
                   value: "machine",
@@ -143,8 +142,7 @@
                 %{
                   value: "replace",
                   label: <%= if @lang do %>~t"Replace this page"<% else %>"Replace this page"<% end %>,
-                  content:
-                    <%= if @lang do %>~t"Keep the shell (header, footer, Design tokens) and ship your product UI."<% else %>"Keep the shell (header, footer, Design tokens) and ship your product UI."<% end %>
+                  content: <%= if @lang do %>~t"Keep the shell (header, footer, Design tokens) and ship your product UI."<% else %>"Keep the shell (header, footer, Design tokens) and ship your product UI."<% end %>
                 }
               ])
             }

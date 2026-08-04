@@ -68,7 +68,10 @@ defmodule <%= @web_module %>.Layouts do
                 >
                   <.heroicon name="hero-x-mark" />
                 </.dialog_close_trigger>
-                <span class="link ui-nav ui-brand ui-size-lg flex flex-nowrap items-center gap-space font-semibold uppercase">
+                <.navigate
+                  to={~p"/"}
+                  class="link ui-nav ui-brand ui-size-xl flex flex-nowrap items-center gap-space font-semibold uppercase"
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 136 136"
@@ -81,14 +84,16 @@ defmodule <%= @web_module %>.Layouts do
                     </path>
                   </svg>
                   Corex
-                </span>
+                </.navigate>
               </div>
-              <nav class="flex flex-col gap-space-sm px-space-xl py-space" aria-label="Site">
-                <.navigate class="link ui-nav ui-size-sm" external to={@demo}>
-<%= if @lang do %>                  {~t"Components"} <.heroicon name="hero-arrow-top-right-on-square" />
-<% else %>                  Components <.heroicon name="hero-arrow-top-right-on-square" />
-<% end %>                </.navigate>
-              </nav>
+              <div class="flex min-h-0 flex-1 flex-col gap-space overflow-y-auto px-space-xl py-space">
+                <nav class="flex w-full flex-col gap-space-sm" aria-label={<%= if @lang do %>~t"Site"<% else %>"Site"<% end %>}>
+                  <.navigate class="link ui-nav ui-size-md" external to={@demo}>
+<%= if @lang do %>                    {~t"Components"} <.heroicon name="hero-arrow-top-right-on-square" />
+<% else %>                    Components <.heroicon name="hero-arrow-top-right-on-square" />
+<% end %>                  </.navigate>
+                </nav>
+              </div>
 <%= if @mode or @theme or @a11y do %>              <div class="mt-auto flex shrink-0 items-center gap-space border-t border-border px-space-xl py-space">
 <%= if @theme do %>                <.theme_toggle id="theme-select-mobile" theme={@theme} />
 <% end %><%= if @mode do %>                <.mode_toggle id="mode-switcher-mobile" mode={@mode} />
@@ -99,7 +104,7 @@ defmodule <%= @web_module %>.Layouts do
 
           <.navigate
             to={~p"/"}
-            class="link ui-nav ui-brand ui-size-lg flex flex-nowrap items-center gap-space font-semibold uppercase"
+            class="link ui-nav ui-brand ui-size-xl flex flex-nowrap items-center gap-space font-semibold uppercase"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 136 136" class="icon ui-size-lg">
               <path
@@ -111,8 +116,11 @@ defmodule <%= @web_module %>.Layouts do
             Corex
           </.navigate>
 
-          <nav class="hidden items-center gap-space-lg md:flex" aria-label="Primary">
-            <.navigate class="link ui-nav ui-size-sm" external to={@demo}>
+          <nav
+            class="hidden items-center gap-space-lg md:flex lg:gap-space-xl"
+            aria-label={<%= if @lang do %>~t"Primary"<% else %>"Primary"<% end %>}
+          >
+            <.navigate class="link ui-nav ui-size-md" external to={@demo}>
 <%= if @lang do %>              {~t"Components"} <.heroicon name="hero-arrow-top-right-on-square" />
 <% else %>              Components <.heroicon name="hero-arrow-top-right-on-square" />
 <% end %>            </.navigate>
@@ -128,7 +136,7 @@ defmodule <%= @web_module %>.Layouts do
 <% end %>      </div>
     </header>
 
-    <main class="relative flex w-full min-w-0 flex-1 flex-col pt-space-xl">
+    <main class="relative flex w-full min-w-0 flex-1 flex-col min-h-[calc(100dvh-var(--spacing-size-lg))] pt-space-xl">
       {render_slot(@inner_block)}
     </main>
 
@@ -218,12 +226,12 @@ defmodule <%= @web_module %>.Layouts do
       %{label: <%= if @lang do %>~t"Accessibility"<% else %>"Accessibility"<% end %>, to: "#{hex}/accessibility.html"}
     ]
   end
-
 <%= if @mode do %>
   @doc """
   Provides dark vs light mode toggle using toggle.
   """
   attr :id, :string, default: "mode-switcher"
+  attr :class, :string, default: nil
 
   attr :mode, :string,
     default: "light",
@@ -234,7 +242,7 @@ defmodule <%= @web_module %>.Layouts do
     ~H"""
     <.toggle
       id={@id}
-      class="toggle ui-size-sm shrink-0"
+      class={["toggle ui-ghost ui-size-sm ui-trigger--circle", @class]}
       data-toggle-dual-label
       pressed={@mode == "dark"}
       on_pressed_change_client="phx:set-mode"
@@ -266,7 +274,9 @@ defmodule <%= @web_module %>.Layouts do
     <.select
       id={@id}
       class="select ui-size-sm w-auto"
-      items={<%= inspect(Enum.map(@themes, fn t -> %{value: t, label: String.capitalize(t)} end)) %>}
+      items={[
+<%= Enum.map_join(@themes, ",\n", fn t -> ~s|        %{label: "#{String.capitalize(t)}", value: "#{t}"}| end) %>
+      ]}
       value={[@theme]}
       positioning={%Corex.Positioning{same_width: false}}
       on_value_change_client="phx:set-theme"
@@ -339,7 +349,8 @@ defmodule <%= @web_module %>.Layouts do
   def accessibility_dialog_id, do: @accessibility_dialog_id
 
   attr :trigger_class, :string,
-    default: "button ui-ghost ui-size-sm ui-trigger--circle p-0 [--ctl-text:calc(var(--spacing-size-sm)*0.65)]"
+    default:
+      "button ui-ghost ui-size-sm ui-trigger--circle p-0 [--ctl-text:calc(var(--spacing-size-sm)*0.65)]"
 
   def accessibility_panel(assigns) do
     assigns = assign(assigns, :axes, Accessibility.axes())
@@ -414,7 +425,8 @@ defmodule <%= @web_module %>.Layouts do
   end
 
   attr :class, :string,
-    default: "button ui-ghost ui-size-sm ui-trigger--circle p-0 [--ctl-text:calc(var(--spacing-size-sm)*0.65)]"
+    default:
+      "button ui-ghost ui-size-sm ui-trigger--circle p-0 [--ctl-text:calc(var(--spacing-size-sm)*0.65)]"
 
   def accessibility_open_button(assigns) do
     ~H"""

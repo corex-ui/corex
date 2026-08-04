@@ -9,6 +9,8 @@ defmodule Corex.New.Templates do
     layouts_ex: "corex/lib/app_web/components/layouts.ex.eex",
     root_heex: "corex/lib/app_web/components/layouts/root.html.heex.eex",
     home_heex: "corex/lib/app_web/controllers/page_html/home.html.heex.eex",
+    error_html_ex: "corex/lib/app_web/controllers/error_html.ex.eex",
+    error_html_404: "corex/lib/app_web/controllers/error_html/404.html.heex.eex",
     plug_mode: "corex/lib/app_web/plugs/mode.ex.eex",
     plug_theme: "corex/lib/app_web/plugs/theme.ex.eex",
     plug_accessibility: "corex/lib/app_web/plugs/accessibility.ex.eex",

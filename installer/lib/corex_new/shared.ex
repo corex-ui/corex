@@ -6,10 +6,6 @@ defmodule Corex.New.Shared do
 
   @default_themes ["neo", "uno", "duo", "leo"]
 
-  def default_themes, do: @default_themes
-
-  def version_constraint, do: @minor_constraint
-
   @doc """
   Resolves the theme list and the default theme from generator options.
 

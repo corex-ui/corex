@@ -5,36 +5,104 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #, elixir-autogen, elixir-format
-msgid "Accessibility"
-msgstr "Accessibility"
+msgid " · Phoenix Framework"
+msgstr " · Phoenix Framework"
 
 #, elixir-autogen, elixir-format
-msgid "Accessible Phoenix UI with a real server-and-client API."
-msgstr "Accessible Phoenix UI with a real server-and-client API."
+msgid "%{name} - Corex for Tableau"
+msgstr "%{name} - Corex for Tableau"
+
+#, elixir-autogen, elixir-format
+msgid "%{name}: a Phoenix app powered by Corex."
+msgstr "%{name}: a Phoenix app powered by Corex."
+
+#, elixir-autogen, elixir-format
+msgid "%{name}: a Tableau static site powered by Corex, Phoenix components, and design tokens."
+msgstr "%{name}: a Tableau static site powered by Corex, Phoenix components, and design tokens."
+
+#, elixir-autogen, elixir-format
+msgid "%{tag} - Tags - %{name}"
+msgstr "%{tag} - Tags - %{name}"
+
+#, elixir-autogen, elixir-format
+msgid "A Tableau static site powered by Corex."
+msgstr "A Tableau static site powered by Corex."
+
+#, elixir-autogen, elixir-format
+msgid "Accessibility"
+msgstr "Accessibility"
 
 #, elixir-autogen, elixir-format
 msgid "Accessible by default."
 msgstr "Accessible by default."
 
 #, elixir-autogen, elixir-format
+msgid "Accessible Phoenix UI with a real server-and-client API."
+msgstr "Accessible Phoenix UI with a real server-and-client API."
+
+#, elixir-autogen, elixir-format
 msgid "Accessible, unstyled Phoenix components with a full server-and-client API, powered by"
 msgstr "Accessible, unstyled Phoenix components with a full server-and-client API, powered by"
+
+#, elixir-autogen, elixir-format
+msgid "Accordion"
+msgstr "Accordion"
+
+#, elixir-autogen, elixir-format
+msgid "All"
+msgstr "All"
+
+#, elixir-autogen, elixir-format
+msgid "All tags"
+msgstr "All tags"
 
 #, elixir-autogen, elixir-format
 msgid "Anatomy & slots"
 msgstr "Anatomy & slots"
 
 #, elixir-autogen, elixir-format
+msgid "API"
+msgstr "API"
+
+#, elixir-autogen, elixir-format
 msgid "Back to blog"
 msgstr "Back to blog"
+
+#, elixir-autogen, elixir-format
+msgid "Back to home"
+msgstr "Back to home"
 
 #, elixir-autogen, elixir-format
 msgid "Blog"
 msgstr "Blog"
 
 #, elixir-autogen, elixir-format
+msgid "Blog - %{name}"
+msgstr "Blog - %{name}"
+
+#, elixir-autogen, elixir-format
+msgid "Blog posts on the %{name} static site."
+msgstr "Blog posts on the %{name} static site."
+
+#, elixir-autogen, elixir-format
 msgid "Bring your own CSS or opt into Corex Design tokens, themes and modes."
 msgstr "Bring your own CSS or opt into Corex Design tokens, themes and modes."
+
+#, elixir-autogen, elixir-format
+msgid "Browse"
+msgstr "Browse"
+
+#, elixir-autogen, elixir-format
+msgid "Browse post tags on the %{name} static site."
+msgstr "Browse post tags on the %{name} static site."
+
+#, elixir-autogen, elixir-format
+msgid "Browse tags"
+msgstr "Browse tags"
+
+#, elixir-autogen, elixir-format
+msgid "Browse topics across your posts. Every tag is a static Tableau page."
+msgstr "Browse topics across your posts. Every tag is a static Tableau page."
 
 #, elixir-autogen, elixir-format
 msgid "Close all"
@@ -47,6 +115,10 @@ msgstr "Components"
 #, elixir-autogen, elixir-format
 msgid "Contrast"
 msgstr "Contrast"
+
+#, elixir-autogen, elixir-format
+msgid "Copy code"
+msgstr "Copy code"
 
 #, elixir-autogen, elixir-format
 msgid "Cursor"
@@ -69,8 +141,16 @@ msgid "Design"
 msgstr "Design"
 
 #, elixir-autogen, elixir-format
+msgid "directory."
+msgstr "directory."
+
+#, elixir-autogen, elixir-format
 msgid "Docs"
 msgstr "Docs"
+
+#, elixir-autogen, elixir-format
+msgid "documentation"
+msgstr "documentation"
 
 #, elixir-autogen, elixir-format
 msgid "Drive every component from LiveView or JavaScript and listen back from either side."
@@ -105,12 +185,20 @@ msgid "Highlights"
 msgstr "Highlights"
 
 #, elixir-autogen, elixir-format
+msgid "Home"
+msgstr "Home"
+
+#, elixir-autogen, elixir-format
 msgid "Installation"
 msgstr "Installation"
 
 #, elixir-autogen, elixir-format
 msgid "Interactive preview"
 msgstr "Interactive preview"
+
+#, elixir-autogen, elixir-format
+msgid "Journal"
+msgstr "Journal"
 
 #, elixir-autogen, elixir-format
 msgid "Keep the shell (header, footer, Design tokens) and ship your product UI."
@@ -141,6 +229,10 @@ msgid "Links"
 msgstr "Links"
 
 #, elixir-autogen, elixir-format
+msgid "list to post front matter."
+msgstr "list to post front matter."
+
+#, elixir-autogen, elixir-format
 msgid "LiveView-native."
 msgstr "LiveView-native."
 
@@ -151,6 +243,10 @@ msgstr "Motion"
 #, elixir-autogen, elixir-format
 msgid "No posts yet. Add Markdown files to"
 msgstr "No posts yet. Add Markdown files to"
+
+#, elixir-autogen, elixir-format
+msgid "No tags yet. Add a"
+msgstr "No tags yet. Add a"
 
 #, elixir-autogen, elixir-format
 msgid "Open all"
@@ -169,8 +265,40 @@ msgid "Open source. MIT License."
 msgstr "Open source. MIT License."
 
 #, elixir-autogen, elixir-format
+msgid "Page not found"
+msgstr "Page not found"
+
+#, elixir-autogen, elixir-format
+msgid "Page not found - %{name}"
+msgstr "Page not found - %{name}"
+
+#, elixir-autogen, elixir-format
+msgid "Post"
+msgstr "Post"
+
+#, elixir-autogen, elixir-format
+msgid "post"
+msgstr "post"
+
+#, elixir-autogen, elixir-format
+msgid "posts"
+msgstr "posts"
+
+#, elixir-autogen, elixir-format
 msgid "Posts are Markdown files in the"
 msgstr "Posts are Markdown files in the"
+
+#, elixir-autogen, elixir-format
+msgid "Posts tagged %{tag} on the %{name} static site."
+msgstr "Posts tagged %{tag} on the %{name} static site."
+
+#, elixir-autogen, elixir-format
+msgid "Primary"
+msgstr "Primary"
+
+#, elixir-autogen, elixir-format
+msgid "real API"
+msgstr "real API"
 
 #, elixir-autogen, elixir-format
 msgid "Reduced"
@@ -189,12 +317,20 @@ msgid "Server & client API."
 msgstr "Server & client API."
 
 #, elixir-autogen, elixir-format
+msgid "Site"
+msgstr "Site"
+
+#, elixir-autogen, elixir-format
 msgid "Standard"
 msgstr "Standard"
 
 #, elixir-autogen, elixir-format
 msgid "State machines"
 msgstr "State machines"
+
+#, elixir-autogen, elixir-format
+msgid "state machines."
+msgstr "state machines."
 
 #, elixir-autogen, elixir-format
 msgid "Strong"
@@ -205,8 +341,28 @@ msgid "Structure, custom slots, and compound mode for full control."
 msgstr "Structure, custom slots, and compound mode for full control."
 
 #, elixir-autogen, elixir-format
+msgid "Tag"
+msgstr "Tag"
+
+#, elixir-autogen, elixir-format
+msgid "Tags"
+msgstr "Tags"
+
+#, elixir-autogen, elixir-format
+msgid "tags"
+msgstr "tags"
+
+#, elixir-autogen, elixir-format
+msgid "Tags - %{name}"
+msgstr "Tags - %{name}"
+
+#, elixir-autogen, elixir-format
 msgid "The Phoenix UI with a"
 msgstr "The Phoenix UI with a"
+
+#, elixir-autogen, elixir-format
+msgid "The URL may be mistyped, or the page may have moved. Try the home page."
+msgstr "The URL may be mistyped, or the page may have moved. Try the home page."
 
 #, elixir-autogen, elixir-format
 msgid "Theme"
@@ -217,8 +373,16 @@ msgid "Theming"
 msgstr "Theming"
 
 #, elixir-autogen, elixir-format
+msgid "This URL is not available on the %{name} static site."
+msgstr "This URL is not available on the %{name} static site."
+
+#, elixir-autogen, elixir-format
 msgid "To enable Corex Accessibility, see the"
 msgstr "To enable Corex Accessibility, see the"
+
+#, elixir-autogen, elixir-format
+msgid "to get started."
+msgstr "to get started."
 
 #, elixir-autogen, elixir-format
 msgid "Truly unstyled."
@@ -235,6 +399,10 @@ msgstr "Untitled"
 #, elixir-autogen, elixir-format
 msgid "Update props at runtime without resetting component state."
 msgstr "Update props at runtime without resetting component state."
+
+#, elixir-autogen, elixir-format
+msgid "View all posts tagged with"
+msgstr "View all posts tagged with"
 
 #, elixir-autogen, elixir-format
 msgid "Visit Hexdocs"
@@ -255,23 +423,3 @@ msgstr "Zag.js powers accessibility, keyboard, and focus."
 #, elixir-autogen, elixir-format
 msgid "Zoom"
 msgstr "Zoom"
-
-#, elixir-autogen, elixir-format
-msgid "directory."
-msgstr "directory."
-
-#, elixir-autogen, elixir-format
-msgid "documentation"
-msgstr "documentation"
-
-#, elixir-autogen, elixir-format
-msgid "real API"
-msgstr "real API"
-
-#, elixir-autogen, elixir-format
-msgid "state machines."
-msgstr "state machines."
-
-#, elixir-autogen, elixir-format
-msgid "to get started."
-msgstr "to get started."
