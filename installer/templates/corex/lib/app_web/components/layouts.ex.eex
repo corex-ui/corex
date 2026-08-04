@@ -87,7 +87,7 @@ defmodule <%= @web_module %>.Layouts do
                 </.navigate>
               </div>
               <div class="flex min-h-0 flex-1 flex-col gap-space overflow-y-auto px-space-xl py-space">
-                <nav class="flex w-full flex-col gap-space-sm" aria-label={<%= if @lang do %>~t"Site"<% else %>"Site"<% end %>}>
+                <nav class="flex w-full flex-col gap-space-sm" <%= if @lang do %>aria-label={~t"Site"}<% else %>aria-label="Site"<% end %>>
                   <.navigate class="link ui-nav ui-size-md" external to={@demo}>
 <%= if @lang do %>                    {~t"Components"} <.heroicon name="hero-arrow-top-right-on-square" />
 <% else %>                    Components <.heroicon name="hero-arrow-top-right-on-square" />
@@ -118,7 +118,7 @@ defmodule <%= @web_module %>.Layouts do
 
           <nav
             class="hidden items-center gap-space-lg md:flex lg:gap-space-xl"
-            aria-label={<%= if @lang do %>~t"Primary"<% else %>"Primary"<% end %>}
+            <%= if @lang do %>aria-label={~t"Primary"}<% else %>aria-label="Primary"<% end %>
           >
             <.navigate class="link ui-nav ui-size-md" external to={@demo}>
 <%= if @lang do %>              {~t"Components"} <.heroicon name="hero-arrow-top-right-on-square" />

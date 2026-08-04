@@ -90,7 +90,9 @@ config :corex_design,
   themes: <%= "[" <> Enum.map_join(@themes, ", ", &":#{&1}") <> "]" %>,
   modes: [:light, :dark],
   scales: [],
-  components: <%= inspect(@components) %>,
+  components: [
+<%= Enum.map_join(@components, ",\n", &("    " <> inspect(&1))) %>
+  ],
   semantics: [:accent, :brand, :alert]<%= if @a11y do %>,
   accessibility: [:text, :contrast, :motion, :cursor, :focus, :links]<% end %>
 <% end %>

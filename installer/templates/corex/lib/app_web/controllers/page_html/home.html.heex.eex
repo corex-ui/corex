@@ -1,10 +1,11 @@
-<Layouts.app
+<%= if @mode or @theme or @lang do %><Layouts.app
   flash={@flash}
 <%= if @mode do %>  mode={@mode}
 <% end %><%= if @theme do %>  theme={@theme}
 <% end %><%= if @lang do %>  current_path={@conn.request_path}
 <% end %>>
-  <div id="home" class="w-full text-ink">
+<% else %><Layouts.app flash={@flash}>
+<% end %>  <div id="home" class="w-full text-ink">
     <section
       class="relative isolate flex min-h-[calc(100dvh-var(--spacing-size-lg))] w-full flex-col justify-center overflow-x-hidden py-size-xl"
       aria-labelledby="home-hero-heading"
@@ -74,19 +75,17 @@
               class="button ui-accent ui-solid ui-size-lg"
               external
             >
-<%= if @lang do %>              {~t"Demo site"}
-<% else %>              Demo site
-<% end %>              <.heroicon name="hero-arrow-top-right-on-square" />
-            </.navigate>
+<%= if @lang do %>              {~t"Demo site"} <.heroicon name="hero-arrow-top-right-on-square" />
+<% else %>              Demo site <.heroicon name="hero-arrow-top-right-on-square" />
+<% end %>            </.navigate>
             <.navigate
               to="https://hexdocs.pm/corex/installation.html"
               class="button ui-ghost ui-size-lg"
               external
             >
-<%= if @lang do %>              {~t"Visit Hexdocs"}
-<% else %>              Visit Hexdocs
-<% end %>              <.heroicon name="hero-arrow-top-right-on-square" />
-            </.navigate>
+<%= if @lang do %>              {~t"Visit Hexdocs"} <.heroicon name="hero-arrow-top-right-on-square" />
+<% else %>              Visit Hexdocs <.heroicon name="hero-arrow-top-right-on-square" />
+<% end %>            </.navigate>
           </div>
         </div>
 
@@ -142,7 +141,8 @@
                 %{
                   value: "replace",
                   label: <%= if @lang do %>~t"Replace this page"<% else %>"Replace this page"<% end %>,
-                  content: <%= if @lang do %>~t"Keep the shell (header, footer, Design tokens) and ship your product UI."<% else %>"Keep the shell (header, footer, Design tokens) and ship your product UI."<% end %>
+                  content:
+                    <%= if @lang do %>~t"Keep the shell (header, footer, Design tokens) and ship your product UI."<% else %>"Keep the shell (header, footer, Design tokens) and ship your product UI."<% end %>
                 }
               ])
             }

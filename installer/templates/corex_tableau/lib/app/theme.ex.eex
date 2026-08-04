@@ -43,8 +43,8 @@ defmodule <%= @app_module %>.Theme do
     |> Corex.List.new()
   end
 
-  attr :id, :string, default: "theme-select"
-  attr :theme, :string, required: true
+  attr(:id, :string, default: "theme-select")
+  attr(:theme, :string, required: true)
 
   def theme_toggle(assigns) do
     ~H"""

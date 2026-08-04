@@ -23,9 +23,9 @@ defmodule <%= @app_module %>.Mode do
     end
   end
 
-  attr :id, :string, default: "mode-switcher"
-  attr :mode, :string, required: true
-  attr :class, :string, default: nil
+  attr(:id, :string, default: "mode-switcher")
+  attr(:mode, :string, required: true)
+  attr(:class, :string, default: nil)
 
   def mode_toggle(assigns) do
     ~H"""
