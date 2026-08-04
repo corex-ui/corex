@@ -8,15 +8,20 @@ defmodule Corex.New.Tableau.TemplatesTest do
 
     assert :root_layout in keys
     assert :post_layout in keys
+    assert :tag_layout in keys
+    assert :shell in keys
     assert :home_page in keys
     refute :design_page in keys
     refute :guides_page in keys
     assert :blog_index_page in keys
+    assert :tags_index_page in keys
     assert :not_found_page in keys
     assert :config_module in keys
     assert :application_module in keys
     assert :mcp_module in keys
     assert :md_ex_converter in keys
+    assert :code_blocks in keys
+    assert :block_renderer in keys
     assert :theme_module in keys
     assert :mode_module in keys
     assert :accessibility_module in keys
@@ -33,7 +38,7 @@ defmodule Corex.New.Tableau.TemplatesTest do
     assert :mix_exs in keys
     assert :sample_post in keys
     assert :gen_post_task in keys
-    assert length(keys) == 25
+    assert length(keys) == 30
   end
 
   @base_assigns [
@@ -75,14 +80,34 @@ defmodule Corex.New.Tableau.TemplatesTest do
       assert out =~ "use Tableau.Layout"
       assert out =~ "use Corex"
       assert out =~ ~s(id="site-nav-dialog")
-      assert out =~ "Components"
-      assert out =~ "Hexdocs"
+      assert out =~ ~s(to={@home_path})
+      assert out =~ ~s(to={@blog_path})
+      assert out =~ ~s(to={@tags_path})
+      assert out =~ "Home"
       assert out =~ "Blog"
+      assert out =~ "Tags"
+      assert out =~ "Hexdocs"
+      assert out =~ "Components"
       assert out =~ "corex.gigalixirapp.com"
+      assert out =~ "ui-size-xl"
+      assert out =~ "ui-size-md"
+      assert out =~ "gap-space-lg md:flex lg:gap-space-xl"
+      assert out =~ "overflow-y-auto"
+      assert out =~ "min-h-[calc(100dvh-var(--spacing-size-lg))]"
       refute out =~ ~S[to={"/design"}]
       refute out =~ ~S[to={"/guides"}]
       assert out =~ "<.toast_group"
       assert out =~ "<.toast_client_error"
+      assert out =~ "defp page_path_from_page"
+    end
+
+    test "lang layout omits page_path_from_page and sets locale path assigns" do
+      out = Templates.root_layout(@lang_assigns)
+      refute out =~ "defp page_path_from_page"
+      assert out =~ "Locale.swap_path(\"/blog\", locale)"
+      refute out =~ "Locale.swap_path(\"/tags\", locale)"
+      refute out =~ ":tags_path"
+      refute out =~ ~S[~t"Tags"]
     end
 
     test "includes theme/mode head scripts when enabled" do
@@ -121,15 +146,43 @@ defmodule Corex.New.Tableau.TemplatesTest do
       refute out =~ "data-theme="
       refute out =~ "data-mode="
     end
+
+    test "translates document title and nav aria labels when lang is on" do
+      out = Templates.root_layout(@lang_assigns)
+      assert out =~ ~S|~t"#{name = site_name} - Corex for Tableau"|
+      assert out =~ ~S[~t"Site"]
+      assert out =~ ~S[~t"Primary"]
+    end
+
+    test "keeps plain English document title when lang is off" do
+      out = Templates.root_layout(@base_assigns)
+      assert out =~ ~S["#{site_name} - Corex for Tableau"]
+      refute out =~ ~S|~t"#{name = site_name} - Corex for Tableau"|
+    end
   end
 
   describe "post_layout/1" do
-    test "renders a valid post layout with typo prose" do
+    test "renders a valid post layout with typo markdown prose" do
       out = Templates.post_layout(@base_assigns)
       assert out =~ "defmodule MyBlog.PostLayout do"
       assert out =~ "use Tableau.Layout, layout: MyBlog.RootLayout"
-      assert out =~ "typo prose"
+      assert out =~ "typo markdown prose"
       assert out =~ "Back to blog"
+      assert out =~ "Browse tags"
+      assert out =~ "blog__nav"
+      assert out =~ "link ui-nav"
+      assert out =~ "blog__hero--post"
+      assert out =~ "blog__display"
+    end
+
+    test "omits tags UI when lang is on" do
+      out = Templates.post_layout(@lang_assigns)
+      refute out =~ "Browse tags"
+      refute out =~ "post_tags"
+      refute out =~ "tag_permalink"
+      assert out =~ "Back to blog"
+      assert out =~ "blog__nav"
+      assert out =~ "link ui-nav"
     end
   end
 
@@ -164,12 +217,39 @@ defmodule Corex.New.Tableau.TemplatesTest do
       assert out =~ "defmodule MyBlog.BlogIndexPage do"
       assert out =~ "permalink: \"/blog\""
       assert out =~ "sorted_posts"
+      assert out =~ "blog__nav"
+      assert out =~ "link ui-nav"
+      assert out =~ "Browse tags"
+      assert out =~ "blog__hero"
+      assert out =~ "blog__display"
+      assert out =~ "blog__card"
+      assert out =~ "blog__grid"
     end
 
     test "emits per-locale blog permalinks when lang is on" do
       out = Templates.blog_index_page(@lang_assigns)
       assert out =~ "Module.create"
       assert out =~ ~S[permalink = "/#{locale}/blog/"]
+      assert out =~ "String.starts_with?"
+      assert out =~ "post[:permalink]"
+      assert out =~ "blog__nav"
+      assert out =~ "link ui-nav"
+      refute out =~ "Browse tags"
+      refute out =~ "post_tags"
+      refute out =~ "tags_path"
+    end
+  end
+
+  describe "tags_index_page/1" do
+    test "renders tags as cards not badges" do
+      out = Templates.tags_index_page(@base_assigns)
+      assert out =~ "defmodule MyBlog.TagsIndexPage do"
+      assert out =~ "blog__nav"
+      assert out =~ "link ui-nav"
+      assert out =~ "blog__hero"
+      assert out =~ "blog__card"
+      assert out =~ "blog__grid"
+      refute out =~ "badge ui-brand ui-size-md"
     end
   end
 
@@ -196,6 +276,8 @@ defmodule Corex.New.Tableau.TemplatesTest do
       out = Templates.site_css(@base_assigns)
       assert out =~ "@import \"../corex/corex.css\""
       assert out =~ "@import \"tailwindcss\""
+      assert out =~ "@import \"./blog.css\""
+      assert out =~ "@import \"./prose.css\""
     end
 
     test "omits corex import when design is off" do
@@ -216,10 +298,12 @@ defmodule Corex.New.Tableau.TemplatesTest do
       assert out =~ ~S[import {Toast} from "corex/toast"]
       assert out =~ ~S[import {Dialog} from "corex/dialog"]
       assert out =~ ~S[import {Accordion} from "corex/accordion"]
+      assert out =~ ~S[import {Clipboard} from "corex/clipboard"]
       assert out =~ "LiveSocket"
       assert out =~ "Toast,"
       assert out =~ "Dialog,"
       assert out =~ "Accordion,"
+      assert out =~ "Clipboard,"
       assert out =~ "disableDebug"
       refute out =~ "longPollFallbackMs"
       refute out =~ "corex/hooks"
@@ -260,6 +344,10 @@ defmodule Corex.New.Tableau.TemplatesTest do
       assert out =~ "config :tailwind"
       assert out =~ "config :my_blog"
       assert out =~ "site_name"
+      assert out =~ "header_id_prefix"
+      refute out =~ "header_ids:"
+      assert out =~ "Tableau.TagExtension"
+      assert out =~ "MyBlog.TagLayout"
     end
 
     test "includes corex_design config when design is on" do
@@ -267,9 +355,10 @@ defmodule Corex.New.Tableau.TemplatesTest do
       assert out =~ "config :corex_design"
     end
 
-    test "omits corex_design config when design is off" do
-      out = Templates.config_exs(Keyword.put(@base_assigns, :design, false))
-      refute out =~ "config :corex_design"
+    test "omits TagExtension when lang is on" do
+      out = Templates.config_exs(@lang_assigns)
+      refute out =~ "Tableau.TagExtension"
+      refute out =~ "TagLayout"
     end
   end
 
@@ -283,6 +372,10 @@ defmodule Corex.New.Tableau.TemplatesTest do
       assert out =~ "corex_mcp"
       assert out =~ "usage_rules"
       assert out =~ "package_skills: [:corex]"
+      assert out =~ ~s({:mdex, "~> 0.13.5", override: true})
+      assert out =~ ~s({:makeup, "~> 1.2"})
+      assert out =~ "makeup_syntect"
+      refute out =~ "json_polyfill"
     end
 
     test "includes corex_design compiler when design is on" do
@@ -338,6 +431,62 @@ defmodule Corex.New.Tableau.TemplatesTest do
       assert out =~ "Welcome to your new blog"
       assert out =~ "permalink: /blog/welcome/"
     end
+
+    test "uses locale-prefixed permalink when lang is on" do
+      out = Templates.sample_post(Keyword.merge(@lang_assigns, locale: "fr"))
+      assert out =~ "permalink: /fr/blog/welcome/"
+      assert out =~ "Bienvenue sur votre nouveau blog"
+      assert out =~ "permalink: /fr/blog/mon-article/"
+      refute out =~ "tags:"
+    end
+
+    test "uses Arabic title and body for ar locale" do
+      out = Templates.sample_post(Keyword.merge(@lang_assigns, locale: "ar"))
+      assert out =~ "permalink: /ar/blog/welcome/"
+      assert out =~ "مرحبًا بك في مدونتك الجديدة"
+      refute out =~ "tags:"
+    end
+
+    test "includes tags when lang is off" do
+      out = Templates.sample_post(@base_assigns)
+      assert out =~ "tags:"
+      assert out =~ "Elixir"
+    end
+  end
+
+  describe "md_ex_converter/1" do
+    test "pipes markdown HTML through CodeBlocks.transform" do
+      out = Templates.md_ex_converter(@base_assigns)
+      assert out =~ "defmodule MyBlog.MDExConverter do"
+      assert out =~ "alias MyBlog.Markdown.CodeBlocks"
+      assert out =~ "CodeBlocks.transform()"
+    end
+  end
+
+  describe "code_blocks/1" do
+    test "renders markdown code block transformer" do
+      out = Templates.code_blocks(@base_assigns)
+      assert out =~ "defmodule MyBlog.Markdown.CodeBlocks do"
+      assert out =~ "my_blog-md-"
+      assert out =~ "BlockRenderer.render_fence_html"
+    end
+  end
+
+  describe "block_renderer/1" do
+    test "renders Corex code and clipboard fence" do
+      out = Templates.block_renderer(@base_assigns)
+      assert out =~ "defmodule MyBlog.Markdown.BlockRenderer do"
+      assert out =~ "<.code"
+      assert out =~ "<.clipboard"
+      refute out =~ "GettextSigil"
+      assert out =~ ~s(trigger_aria_label={"Copy code"})
+    end
+
+    test "uses gettext for copy label when lang is on" do
+      out = Templates.block_renderer(@lang_assigns)
+      assert out =~ "GettextSigil"
+      assert out =~ ~S[~t"Copy code"]
+    end
   end
 
   describe "support modules" do
@@ -368,6 +517,15 @@ defmodule Corex.New.Tableau.TemplatesTest do
       assert out =~ "head_script"
       assert out =~ "theme_toggle"
       assert out =~ "select_items"
+      refute out =~ "GettextSigil"
+      refute out =~ "~t\""
+      assert out =~ "Theme"
+    end
+
+    test "theme module uses gettext when lang is on" do
+      out = Templates.theme_module(@lang_assigns)
+      assert out =~ "GettextSigil"
+      assert out =~ ~S[~t"Theme"]
     end
 
     test "mode module renders head script and toggle" do
@@ -376,6 +534,17 @@ defmodule Corex.New.Tableau.TemplatesTest do
       assert out =~ "head_script"
       assert out =~ "mode_toggle"
       assert out =~ "prefers-color-scheme"
+      assert out =~ "ui-trigger--circle"
+      assert out =~ "ui-ghost"
+      refute out =~ "GettextSigil"
+      refute out =~ "~t\""
+    end
+
+    test "mode module uses gettext when lang is on" do
+      out = Templates.mode_module(@lang_assigns)
+      assert out =~ "GettextSigil"
+      assert out =~ ~S[~t"Dark mode"]
+      assert out =~ ~S[~t"Light mode"]
     end
 
     test "accessibility module derives bridge from Accessibility and localizes with lang" do

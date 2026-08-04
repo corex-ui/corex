@@ -4,6 +4,7 @@ import {LiveSocket} from "phoenix_live_view"
 import {Toast} from "corex/toast"
 import {Dialog} from "corex/dialog"
 import {Accordion} from "corex/accordion"
+import {Clipboard} from "corex/clipboard"
 <%= if @theme or @lang do %>import {Select} from "corex/select"
 <% end %><%= if @mode do %>import {Toggle} from "corex/toggle"
 <% end %><%= if @a11y do %>import {ToggleGroup} from "corex/toggle-group"
@@ -11,6 +12,7 @@ import {Accordion} from "corex/accordion"
 import {Toast} from <%= inspect(String.replace(@corex_js_import, "corex.mjs", "toast.mjs")) %>
 import {Dialog} from <%= inspect(String.replace(@corex_js_import, "corex.mjs", "dialog.mjs")) %>
 import {Accordion} from <%= inspect(String.replace(@corex_js_import, "corex.mjs", "accordion.mjs")) %>
+import {Clipboard} from <%= inspect(String.replace(@corex_js_import, "corex.mjs", "clipboard.mjs")) %>
 <%= if @theme or @lang do %>import {Select} from <%= inspect(String.replace(@corex_js_import, "corex.mjs", "select.mjs")) %>
 <% end %><%= if @mode do %>import {Toggle} from <%= inspect(String.replace(@corex_js_import, "corex.mjs", "toggle.mjs")) %>
 <% end %><%= if @a11y do %>import {ToggleGroup} from <%= inspect(String.replace(@corex_js_import, "corex.mjs", "toggle-group.mjs")) %>
@@ -28,6 +30,7 @@ const liveSocket = new LiveSocket("/live", Socket, {
     Toast,
     Dialog,
     Accordion,
+    Clipboard,
 <%= if @theme or @lang do %>    Select,
 <% end %><%= if @mode do %>    Toggle,
 <% end %><%= if @a11y do %>    ToggleGroup,

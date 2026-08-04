@@ -110,7 +110,8 @@ defmodule <%= @app_module %>.Accessibility do
   def accessibility_dialog_id, do: "a11y-dialog"
 
   attr :trigger_class, :string,
-    default: "button ui-ghost ui-size-sm ui-trigger--circle p-0 [--ctl-text:calc(var(--spacing-size-sm)*0.65)]"
+    default:
+      "button ui-ghost ui-size-sm ui-trigger--circle p-0 [--ctl-text:calc(var(--spacing-size-sm)*0.65)]"
 
   def accessibility_panel(assigns) do
     assigns = assign(assigns, :axes, Accessibility.axes())
@@ -182,7 +183,8 @@ defmodule <%= @app_module %>.Accessibility do
   end
 
   attr :class, :string,
-    default: "button ui-ghost ui-size-sm ui-trigger--circle p-0 [--ctl-text:calc(var(--spacing-size-sm)*0.65)]"
+    default:
+      "button ui-ghost ui-size-sm ui-trigger--circle p-0 [--ctl-text:calc(var(--spacing-size-sm)*0.65)]"
 
   def accessibility_open_button(assigns) do
     ~H"""

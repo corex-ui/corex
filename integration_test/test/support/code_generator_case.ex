@@ -48,6 +48,50 @@ defmodule Corex.Integration.CodeGeneratorCase do
     {app_root_path, output}
   end
 
+  def generate_corex_tableau_app(tmp_dir, app_name, opts \\ [])
+      when is_binary(app_name) and is_list(opts) do
+    app_path = Path.expand(app_name, tmp_dir)
+    integration_root = Corex.Integration.Paths.integration_root()
+    app_root_path = Path.expand(app_name, tmp_dir)
+    local_corex = Corex.Integration.Paths.corex_repo_root()
+
+    ensure_corex_mjs!(local_corex)
+
+    output =
+      mix_run!(
+        ["corex.tableau.new", app_path, "--no-install", "--dev", local_corex] ++ opts,
+        integration_root
+      )
+
+    Corex.Integration.ArtifactSync.copy_hex_artifacts_from_integration!(
+      integration_root,
+      app_root_path
+    )
+
+    mix_run!(["deps.get"], app_root_path)
+
+    unless "--no-design" in opts do
+      mix_run!(["corex.design.build"], app_root_path, env: [{"MIX_ENV", "dev"}])
+    end
+
+    mix_run!(["compile"], app_root_path)
+    mix_run!(["format"], app_root_path)
+
+    {app_root_path, output}
+  end
+
+  defp ensure_corex_mjs!(corex_root) do
+    mjs = Path.join([corex_root, "priv", "static", "corex.mjs"])
+
+    unless File.exists?(mjs) do
+      mix_run!(["assets.build"], corex_root, env: [{"MIX_ENV", "dev"}])
+    end
+
+    unless File.exists?(mjs) do
+      raise "expected Corex bundle at #{mjs} after mix assets.build"
+    end
+  end
+
   def generate_corex_app_dev_corex(tmp_dir, app_name, opts \\ [])
       when is_binary(app_name) and is_list(opts) do
     app_path = Path.expand(app_name, tmp_dir)

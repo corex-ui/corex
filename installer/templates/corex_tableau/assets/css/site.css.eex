@@ -6,6 +6,9 @@
 @source "../../lib";
 <% else %>
 @import "./corex-base.css";
-<% end %><%= if @mode do %>
+<% end %>
+@import "./blog.css";
+@import "./prose.css";
+<%= if @mode do %>
 @custom-variant dark (&:where([data-mode=dark], [data-mode=dark] *));
 <% end %>

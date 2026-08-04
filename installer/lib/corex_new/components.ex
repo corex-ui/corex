@@ -10,6 +10,7 @@ defmodule Corex.New.Components do
   @default ~w(
     toast layout-heading typo icon link button dialog
     scrollbar checkbox native-input select toggle badge menu accordion
+    code clipboard
   )a
 
   def installer_components(opts \\ []) do

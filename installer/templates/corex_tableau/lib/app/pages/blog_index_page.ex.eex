@@ -5,36 +5,75 @@ defmodule <%= @app_module %>.BlogIndexPage do
   use Corex
   use <%= @app_module %>.GettextSigil
 
+  alias <%= @app_module %>.Layouts.Shell
+  alias <%= @app_module %>.Locale
+
   def template(assigns) do
+    locale = Locale.current(assigns.page)
+
     posts =
       assigns
       |> Map.get(:posts, [])
+      |> Enum.filter(fn post ->
+        String.starts_with?(to_string(post[:permalink] || ""), "/#{locale}/")
+      end)
       |> Enum.sort_by(& &1[:date], {:desc, DateTime})
 
-    assigns = Map.put(assigns, :sorted_posts, posts)
+    assigns =
+      assigns
+      |> Map.put(:sorted_posts, posts)
+      |> Map.put(:blog_count, length(posts))
+      |> Map.put(:home_path, Locale.swap_path("/", locale))
 
     ~H"""
-    <div class="flex w-full max-w-3xl flex-col gap-size">
-      <header class="flex flex-col gap-space border-b border-border pb-space-lg">
-        <h1 class="m-0">{~t"Blog"}</h1>
-        <p class="m-0 max-w-prose leading-relaxed text-ink-muted">
-          {~t"Posts are Markdown files in the"} <code class="rounded-md bg-surface px-1 py-0.5 text-sm">_posts/</code> {~t"directory."}
-        </p>
+    <article class={"#{Shell.stage()} flex flex-col gap-space-xl pb-size-xl"}>
+      <nav class="blog__nav" aria-label={~t"Blog"}>
+        <.navigate to={@home_path} class="link ui-nav w-fit">
+          <.heroicon name="hero-arrow-left" /> {~t"Back to home"}
+        </.navigate>
+      </nav>
+
+      <header class="blog__hero" aria-labelledby="blog-index-heading">
+        <div class="blog__head">
+          <p class="blog__eyebrow">{~t"Journal"}</p>
+          <h1 id="blog-index-heading" class="blog__display">
+            {~t"All"} <span class="blog__display__accent">{~t"posts"}</span>
+          </h1>
+          <p class="blog__lede">
+            {~t"Posts are Markdown files in the"}
+            <code class="rounded-md bg-surface px-space-xs py-space-xs text-sm">_posts/</code> {~t"directory."}
+          </p>
+          <p class="blog__meta">
+            <span>
+              {@blog_count} {if @blog_count == 1, do: ~t"post", else: ~t"posts"}
+            </span>
+          </p>
+        </div>
       </header>
-      <ul :if={@sorted_posts != []} class="m-0 flex list-none flex-col gap-space-lg p-0">
-        <li :for={post <- @sorted_posts} class="flex flex-col gap-space-sm">
-          <.navigate to={post.permalink} class="link text-lg font-semibold">
-            {post[:title] || ~t"Untitled"}
+
+      <ul :if={@sorted_posts != []} class="blog__grid m-0 list-none p-0">
+        <li :for={post <- @sorted_posts}>
+          <.navigate to={post.permalink} class={"#{Shell.card()}"}>
+            <div class="blog__card__top">
+              <p :if={post_date_label(post)} class="blog__card__date">{post_date_label(post)}</p>
+              <span :if={is_nil(post_date_label(post))}></span>
+              <.heroicon name="hero-arrow-right" class="blog__card__arrow" />
+            </div>
+            <h2 class="blog__card__title">{post[:title] || ~t"Untitled"}</h2>
+            <p :if={post[:description]} class="blog__card__excerpt">{post[:description]}</p>
           </.navigate>
-          <p :if={post[:description]} class="m-0 text-ink-muted">{post[:description]}</p>
         </li>
       </ul>
       <p :if={@sorted_posts == []} class="m-0 text-ink-muted">
-        {~t"No posts yet. Add Markdown files to"} <code class="rounded-md bg-surface px-1 py-0.5 text-sm">_posts/</code> {~t"to get started."}
+        {~t"No posts yet. Add Markdown files to"}
+        <code class="rounded-md bg-surface px-space-xs py-space-xs text-sm">_posts/</code> {~t"to get started."}
       </p>
-    </div>
+    </article>
     """
   end
+
+  defp post_date_label(%{date: %DateTime{} = date}), do: Calendar.strftime(date, "%Y-%m-%d")
+  defp post_date_label(_), do: nil
 end
 
 for locale <- <%= @app_module %>.Locale.locales() do
@@ -66,35 +105,85 @@ end
   use Phoenix.Component
   use Corex
 
+  alias <%= @app_module %>.Layouts.Shell
+
   def template(assigns) do
     posts =
       assigns
       |> Map.get(:posts, [])
       |> Enum.sort_by(& &1[:date], {:desc, DateTime})
 
-    assigns = Map.put(assigns, :sorted_posts, posts)
+    assigns =
+      assigns
+      |> Map.put(:sorted_posts, posts)
+      |> Map.put(:blog_count, length(posts))
 
     ~H"""
-    <div class="flex w-full max-w-3xl flex-col gap-size">
-      <header class="flex flex-col gap-space border-b border-border pb-space-lg">
-        <h1 class="m-0">Blog</h1>
-        <p class="m-0 max-w-prose leading-relaxed text-ink-muted">
-          Posts are Markdown files in the <code class="rounded-md bg-surface px-1 py-0.5 text-sm">_posts/</code> directory.
-        </p>
+    <article class={"#{Shell.stage()} flex flex-col gap-space-xl pb-size-xl"}>
+      <nav class="blog__nav" aria-label="Blog">
+        <.navigate to="/" class="link ui-nav w-fit">
+          <.heroicon name="hero-arrow-left" /> Back to home
+        </.navigate>
+        <.navigate to="/tags" class="link ui-nav w-fit">
+          Browse tags
+        </.navigate>
+      </nav>
+
+      <header class="blog__hero" aria-labelledby="blog-index-heading">
+        <div class="blog__head">
+          <p class="blog__eyebrow">Journal</p>
+          <h1 id="blog-index-heading" class="blog__display">
+            All <span class="blog__display__accent">posts</span>
+          </h1>
+          <p class="blog__lede">
+            Posts are Markdown files in the
+            <code class="rounded-md bg-surface px-space-xs py-space-xs text-sm">_posts/</code> directory.
+          </p>
+          <p class="blog__meta">
+            <span>
+              {@blog_count} {if @blog_count == 1, do: "post", else: "posts"}
+            </span>
+          </p>
+        </div>
       </header>
-      <ul :if={@sorted_posts != []} class="m-0 flex list-none flex-col gap-space-lg p-0">
-        <li :for={post <- @sorted_posts} class="flex flex-col gap-space-sm">
-          <.navigate to={post.permalink} class="link text-lg font-semibold">
-            {post[:title] || "Untitled"}
+
+      <ul :if={@sorted_posts != []} class="blog__grid m-0 list-none p-0">
+        <li :for={post <- @sorted_posts}>
+          <.navigate to={post.permalink} class={"#{Shell.card()}"}>
+            <div class="blog__card__top">
+              <p :if={post_date_label(post)} class="blog__card__date">{post_date_label(post)}</p>
+              <span :if={is_nil(post_date_label(post))}></span>
+              <.heroicon name="hero-arrow-right" class="blog__card__arrow" />
+            </div>
+            <h2 class="blog__card__title">{post[:title] || "Untitled"}</h2>
+            <p :if={post[:description]} class="blog__card__excerpt">{post[:description]}</p>
+            <ul
+              :if={post_tags(post) != []}
+              class="m-0 flex list-none flex-wrap gap-space-sm p-0 blog__card__tags"
+            >
+              <li :for={tag <- post_tags(post)}>
+                <span class="badge ui-size-sm">{tag}</span>
+              </li>
+            </ul>
           </.navigate>
-          <p :if={post[:description]} class="m-0 text-ink-muted">{post[:description]}</p>
         </li>
       </ul>
       <p :if={@sorted_posts == []} class="m-0 text-ink-muted">
-        No posts yet. Add Markdown files to <code class="rounded-md bg-surface px-1 py-0.5 text-sm">_posts/</code> to get started.
+        No posts yet. Add Markdown files to
+        <code class="rounded-md bg-surface px-space-xs py-space-xs text-sm">_posts/</code> to get started.
       </p>
-    </div>
+    </article>
     """
+  end
+
+  defp post_date_label(%{date: %DateTime{} = date}), do: Calendar.strftime(date, "%Y-%m-%d")
+  defp post_date_label(_), do: nil
+
+  defp post_tags(post) do
+    post
+    |> Map.get(:tags, [])
+    |> List.wrap()
+    |> Enum.filter(&is_binary/1)
   end
 end
 <% end %>

@@ -23,10 +23,13 @@ config :esbuild,
     cd: Path.expand("../assets", __DIR__),
     env: %{
       "NODE_PATH" =>
-        Enum.join([
-          Path.expand("../deps", __DIR__),
-          Path.expand("../node_modules", __DIR__)
-        ], ":")
+        Enum.join(
+          [
+            Path.expand("../deps", __DIR__),
+            Path.expand("../node_modules", __DIR__)
+          ],
+          ":"
+        )
     }
   ]
 
@@ -53,7 +56,7 @@ config :tableau, :config,
     mdex: [
       extension: [
         table: true,
-        header_ids: "",
+        header_id_prefix: "",
         tasklist: true,
         strikethrough: true,
         autolink: true,
@@ -68,7 +71,13 @@ config :tableau, Tableau.PageExtension, enabled: true
 config :tableau, Tableau.PostExtension, enabled: true
 config :tableau, Tableau.DataExtension, enabled: true
 config :tableau, Tableau.SitemapExtension, enabled: true
-
+<%= unless @lang do %>
+config :tableau, Tableau.TagExtension,
+  enabled: true,
+  layout: <%= @app_module %>.TagLayout,
+  permalink: "/tags",
+  tags: %{}
+<% end %>
 config :tableau, Tableau.RSSExtension,
   enabled: true,
   title: "<%= @app_module %>",

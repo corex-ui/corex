@@ -42,20 +42,29 @@ defmodule Corex.New.Tableau.GenerateTest do
       refute File.exists?("lib/layouts")
       refute File.exists?("lib/pages")
       assert File.exists?("lib/my_blog/layouts/root_layout.ex")
+      assert File.read!(".formatter.exs") =~ "Phoenix.LiveView.HTMLFormatter"
+      assert File.read!(".formatter.exs") =~ "import_deps: [:phoenix]"
+      assert File.read!("config/config.exs") =~ "Enum.join("
+      refute File.read!("config/prod.exs") =~ ~r/\A\s*\n/
       assert File.exists?("lib/my_blog/layouts/post_layout.ex")
-      assert File.exists?("lib/my_blog/pages/home_page.ex")
+      assert File.exists?("lib/my_blog/layouts/tag_layout.ex")
+      assert File.exists?("lib/my_blog/layouts/shell.ex")
       assert File.exists?("lib/my_blog/pages/home_page.ex")
       refute File.exists?("lib/my_blog/pages/design_page.ex")
       refute File.exists?("lib/my_blog/pages/guides_page.ex")
       assert File.exists?("lib/my_blog/pages/blog_index_page.ex")
-      assert File.exists?("lib/my_blog/pages/blog_index_page.ex")
+      assert File.exists?("lib/my_blog/pages/tags_index_page.ex")
       assert File.exists?("lib/my_blog/pages/not_found_page.ex")
       assert File.exists?("lib/my_blog/config.ex")
       assert File.exists?("lib/my_blog/application.ex")
       assert File.exists?("lib/my_blog/mcp.ex")
       assert File.exists?("lib/my_blog/md_ex_converter.ex")
+      assert File.exists?("lib/my_blog/markdown/code_blocks.ex")
+      assert File.exists?("lib/my_blog/markdown/block_renderer.ex")
       assert File.exists?("lib/mix/tasks/post.ex")
       assert File.exists?("assets/css/site.css")
+      assert File.exists?("assets/css/blog.css")
+      assert File.exists?("assets/css/prose.css")
       assert File.exists?("assets/js/site.js")
       assert File.exists?("assets/vendor/heroicons.js")
       assert File.exists?("config/config.exs")
@@ -67,16 +76,38 @@ defmodule Corex.New.Tableau.GenerateTest do
       assert File.dir?("extra")
 
       assert File.read!("lib/my_blog/layouts/root_layout.ex") =~ "defmodule MyBlog.RootLayout"
+      assert File.read!("lib/my_blog/md_ex_converter.ex") =~ "CodeBlocks.transform()"
+      assert File.read!("lib/my_blog/markdown/code_blocks.ex") =~ "MyBlog.Markdown.CodeBlocks"
       assert File.read!("lib/mix/tasks/post.ex") =~ "defmodule Mix.Tasks.MyBlog.Gen.Post"
       assert File.read!("lib/mix/tasks/post.ex") =~ "layout: MyBlog.PostLayout"
       assert File.read!("mix.exs") =~ ":tableau"
+      assert File.read!("mix.exs") =~ ~s({:mdex, "~> 0.13.5", override: true})
+      assert File.read!("mix.exs") =~ ~s({:makeup, "~> 1.2"})
       assert File.read!("mix.exs") =~ "corex_mcp"
       assert File.read!("mix.exs") =~ "usage_rules"
       assert File.read!("mix.exs") =~ "compilers: Mix.compilers() ++ [:corex_design]"
       assert File.read!("config/config.exs") =~ "config :corex_design"
+      assert File.read!("config/config.exs") =~ "header_id_prefix"
+      assert File.read!("config/config.exs") =~ "Tableau.TagExtension"
       assert File.read!("config/config.exs") =~ ~S[import_config "#{config_env()}.exs"]
+      assert File.read!("config/config.exs") =~ ":code"
+      assert File.read!("config/config.exs") =~ ":clipboard"
       assert File.read!("assets/css/site.css") =~ "corex.css"
       assert File.read!("assets/css/site.css") =~ ~s(@source "../corex")
+      assert File.read!("assets/css/site.css") =~ ~s(@import "./prose.css")
+
+      mix_exs = File.read!("mix.exs")
+      refute mix_exs =~ "gettext"
+      refute mix_exs =~ "localize_web"
+      refute mix_exs =~ ":localize"
+
+      root = File.read!("lib/my_blog/layouts/root_layout.ex")
+      refute root =~ "~t\""
+      refute root =~ "GettextSigil"
+      refute root =~ "Locale"
+      refute File.read!("lib/my_blog/pages/home_page.ex") =~ "~t\""
+      refute File.read!("lib/my_blog/markdown/block_renderer.ex") =~ "GettextSigil"
+      refute File.dir?("priv/gettext")
     end)
   end
 
@@ -130,6 +161,14 @@ defmodule Corex.New.Tableau.GenerateTest do
 
       assert File.exists?("lib/my_blog/theme.ex")
       assert File.exists?("lib/my_blog/mode.ex")
+      theme = File.read!("lib/my_blog/theme.ex")
+      mode = File.read!("lib/my_blog/mode.ex")
+      refute theme =~ "GettextSigil"
+      refute theme =~ "~t\""
+      refute mode =~ "GettextSigil"
+      refute mode =~ "~t\""
+      assert theme =~ "Theme"
+      assert mode =~ "Dark mode"
       assert File.read!("lib/my_blog/layouts/root_layout.ex") =~ "Mode.head_script"
       assert File.read!("lib/my_blog/layouts/root_layout.ex") =~ "Theme.head_script"
       assert File.read!("assets/js/site.js") =~ "Select"
@@ -246,6 +285,16 @@ defmodule Corex.New.Tableau.GenerateTest do
       assert root_layout =~ "data-public-path-prefix="
       assert root_layout =~ "id=\"corex-language-switch\""
       assert root_layout =~ "on_value_change_client=\"corex:set-locale\""
+      refute root_layout =~ "defp page_path_from_page"
+      refute root_layout =~ ":tags_path"
+      refute root_layout =~ ~S[~t"Tags"]
+      assert root_layout =~ ~S|~t"#{name = site_name} - Corex for Tableau"|
+      assert root_layout =~ ~S[~t"Site"]
+      assert root_layout =~ ~S[~t"Primary"]
+
+      refute File.exists?("lib/my_blog/pages/tags_index_page.ex")
+      refute File.exists?("lib/my_blog/layouts/tag_layout.ex")
+      refute File.read!("config/config.exs") =~ "Tableau.TagExtension"
 
       home_page = File.read!("lib/my_blog/pages/home_page.ex")
       assert home_page =~ "Module.create"
@@ -254,6 +303,30 @@ defmodule Corex.New.Tableau.GenerateTest do
 
       assert File.read!("lib/my_blog/pages/root_index_page.ex") =~ "permalink: \"/\""
       assert File.read!("lib/my_blog/pages/blog_index_page.ex") =~ "/\#{locale}/blog/"
+      assert File.read!("lib/my_blog/pages/blog_index_page.ex") =~ "String.starts_with?"
+      assert File.read!("lib/my_blog/pages/blog_index_page.ex") =~ "post[:permalink]"
+      refute File.read!("lib/my_blog/pages/blog_index_page.ex") =~ "Browse tags"
+      refute File.read!("lib/my_blog/pages/blog_index_page.ex") =~ "post_tags"
+
+      assert File.exists?("_posts/2026-01-01-welcome.md")
+      assert File.exists?("_posts/2026-01-01-welcome-fr.md")
+      assert File.exists?("_posts/2026-01-01-welcome-ar.md")
+      assert File.read!("_posts/2026-01-01-welcome.md") =~ "permalink: /en/blog/welcome/"
+      refute File.read!("_posts/2026-01-01-welcome.md") =~ "tags:"
+      assert File.read!("_posts/2026-01-01-welcome-fr.md") =~ "permalink: /fr/blog/welcome/"
+      assert File.read!("_posts/2026-01-01-welcome-fr.md") =~ "Bienvenue sur votre nouveau blog"
+      refute File.read!("_posts/2026-01-01-welcome-fr.md") =~ "tags:"
+      assert File.read!("_posts/2026-01-01-welcome-ar.md") =~ "permalink: /ar/blog/welcome/"
+      assert File.read!("_posts/2026-01-01-welcome-ar.md") =~ "مرحبًا بك في مدونتك الجديدة"
+      assert File.read!("lib/mix/tasks/post.ex") =~ "permalink: /en/blog/:title/"
+
+      fr_po = File.read!("priv/gettext/fr/LC_MESSAGES/default.po")
+      assert fr_po =~ ~s(msgid "Home")
+      assert fr_po =~ ~s(msgstr "Accueil")
+      assert fr_po =~ ~s(msgid "Back to home")
+      ar_po = File.read!("priv/gettext/ar/LC_MESSAGES/default.po")
+      assert ar_po =~ ~s(msgid "Tags")
+      assert ar_po =~ ~s(msgstr "الوسوم")
 
       site_js = File.read!("assets/js/site.js")
       assert site_js =~ ~S[import "./locale.js"]

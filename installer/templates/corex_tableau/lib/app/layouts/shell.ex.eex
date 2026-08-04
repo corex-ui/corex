@@ -1,0 +1,7 @@
+defmodule <%= @app_module %>.Layouts.Shell do
+  @moduledoc false
+
+  def stage, do: "mx-auto w-full max-w-7xl px-space-xl"
+
+  def card, do: "blog__card"
+end

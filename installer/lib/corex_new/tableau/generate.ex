@@ -73,6 +73,18 @@ defmodule Corex.New.Tableau.Generate do
       Path.join([app_dir, "layouts", "post_layout.ex"]),
       Templates.post_layout(assigns)
     )
+
+    unless opts[:lang] do
+      write!(
+        Path.join([app_dir, "layouts", "tag_layout.ex"]),
+        Templates.tag_layout(assigns)
+      )
+    end
+
+    write!(
+      Path.join([app_dir, "layouts", "shell.ex"]),
+      Templates.shell(assigns)
+    )
   end
 
   defp write_pages(install_dir, opts, assigns) do
@@ -87,6 +99,13 @@ defmodule Corex.New.Tableau.Generate do
       Path.join([app_dir, "pages", "blog_index_page.ex"]),
       Templates.blog_index_page(assigns)
     )
+
+    unless opts[:lang] do
+      write!(
+        Path.join([app_dir, "pages", "tags_index_page.ex"]),
+        Templates.tags_index_page(assigns)
+      )
+    end
 
     if opts[:lang] do
       write!(
@@ -107,6 +126,16 @@ defmodule Corex.New.Tableau.Generate do
     write!(Path.join(app_dir, "config.ex"), Templates.config_module(assigns))
     write!(Path.join(app_dir, "application.ex"), Templates.application_module(assigns))
     write!(Path.join(app_dir, "md_ex_converter.ex"), Templates.md_ex_converter(assigns))
+
+    write!(
+      Path.join([app_dir, "markdown", "code_blocks.ex"]),
+      Templates.code_blocks(assigns)
+    )
+
+    write!(
+      Path.join([app_dir, "markdown", "block_renderer.ex"]),
+      Templates.block_renderer(assigns)
+    )
 
     if opts[:mcp] do
       write!(Path.join(app_dir, "mcp.ex"), Templates.mcp_module(assigns))
@@ -135,6 +164,28 @@ defmodule Corex.New.Tableau.Generate do
     write!(
       Path.join([install_dir, "assets", "css", "site.css"]),
       Templates.site_css(assigns)
+    )
+
+    blog_css_src =
+      Path.join([
+        Path.expand("../../../templates/corex_tableau/assets/css", __DIR__),
+        "blog.css"
+      ])
+
+    write!(
+      Path.join([install_dir, "assets", "css", "blog.css"]),
+      File.read!(blog_css_src)
+    )
+
+    prose_css_src =
+      Path.join([
+        Path.expand("../../../templates/corex_tableau/assets/css", __DIR__),
+        "prose.css"
+      ])
+
+    write!(
+      Path.join([install_dir, "assets", "css", "prose.css"]),
+      File.read!(prose_css_src)
     )
 
     unless opts[:design] do
@@ -185,10 +236,19 @@ defmodule Corex.New.Tableau.Generate do
   end
 
   defp write_sample_post(install_dir, assigns) do
-    write!(
-      Path.join([install_dir, "_posts", "2026-01-01-welcome.md"]),
-      Templates.sample_post(assigns)
-    )
+    if Keyword.get(assigns, :lang) do
+      for {locale, suffix} <- [{"en", ""}, {"fr", "-fr"}, {"ar", "-ar"}] do
+        write!(
+          Path.join([install_dir, "_posts", "2026-01-01-welcome#{suffix}.md"]),
+          Templates.sample_post(Keyword.put(assigns, :locale, locale))
+        )
+      end
+    else
+      write!(
+        Path.join([install_dir, "_posts", "2026-01-01-welcome.md"]),
+        Templates.sample_post(assigns)
+      )
+    end
   end
 
   defp write_extra_dir(install_dir) do
@@ -202,6 +262,7 @@ defmodule Corex.New.Tableau.Generate do
       write!(path, """
       [
         import_deps: [:phoenix],
+        plugins: [Phoenix.LiveView.HTMLFormatter],
         inputs: ["*.{heex,ex,exs}", "{config,lib,test}/**/*.{heex,ex,exs}"]
       ]
       """)

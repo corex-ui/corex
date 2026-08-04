@@ -44,7 +44,15 @@ defmodule <%= @app_module %>.MixProject do
       {:gettext_sigils, "~> 0.5"},
       {:localize_web, "~> 0.5"},
 <% end %>      {:floki, "~> 0.38"},
-      {:mdex, "~> 0.4"}
+      {:makeup, "~> 1.2"},
+      {:makeup_elixir, "~> 1.0"},
+      {:makeup_eex, "~> 2.0"},
+      {:makeup_html, "~> 0.2"},
+      {:makeup_css, "~> 0.2"},
+      {:makeup_js, "~> 0.1"},
+      {:rustler_precompiled, "~> 0.9", override: true},
+      {:makeup_syntect, "~> 0.1.4"},
+      {:mdex, "~> 0.13.5", override: true}
     ]
   end
 <%= if @usage_rules do %>

@@ -67,14 +67,16 @@ defmodule <%= @app_module %>.RootLayout do
       |> Map.put(:github, @github)
       |> Map.put(:explore_links, explore_links(<%= if @lang do %>locale<% else %>nil<% end %>))
       |> Map.put(:docs_links, docs_links())
-<%= if @design do %>      |> Map.put(:default_theme, <%= @app_module %>.Config.default_theme())
+<%= if @design and not @theme do %>      |> Map.put(:default_theme, <%= @app_module %>.Config.default_theme())
 <% end %><%= if @theme do %>      |> Map.put(:theme, <%= @app_module %>.Theme.current(assigns))
 <% end %><%= if @mode do %>      |> Map.put(:mode, <%= @app_module %>.Mode.current(assigns))
 <% end %><%= if @lang do %>      |> Map.put(:locale, locale)
-      |> Map.put(:page_path, page_path)
       |> Map.put(:rtl_locales, rtl_locales)
       |> Map.put(:home_path, Locale.swap_path("/", locale))
       |> Map.put(:blog_path, Locale.swap_path("/blog", locale))
+<% else %>      |> Map.put(:home_path, "/")
+      |> Map.put(:blog_path, "/blog")
+      |> Map.put(:tags_path, "/tags")
 <% end %>
     ~H"""
     <!DOCTYPE html>
@@ -92,9 +94,7 @@ defmodule <%= @app_module %>.RootLayout do
 <% else %><%= if @design do %>      data-theme={@default_theme}
 <% end %><% end %><%= if @mode do %>      data-mode={@mode}
 <% else %><%= if @design do %>      data-mode="light"
-<% end %><% end %><%= if @a11y do %>
-      {<%= @app_module %>.Accessibility.data_attrs()}
-<% end %>    >
+<% end %><% end %><%= if @a11y do %>      {<%= @app_module %>.Accessibility.data_attrs()}<% end %>    >
       <head>
 <%= if @mode do %>        {<%= @app_module %>.Mode.head_script()}
 <% end %><%= if @theme do %>        {<%= @app_module %>.Theme.head_script()}
@@ -137,7 +137,10 @@ defmodule <%= @app_module %>.RootLayout do
                     >
                       <.heroicon name="hero-x-mark" />
                     </.dialog_close_trigger>
-                    <span class="link ui-nav ui-brand ui-size-lg flex flex-nowrap items-center gap-space font-semibold uppercase">
+                    <.navigate
+                      to={@home_path}
+                      class="link ui-nav ui-brand ui-size-xl flex flex-nowrap items-center gap-space font-semibold uppercase"
+                    >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 136 136"
@@ -150,14 +153,23 @@ defmodule <%= @app_module %>.RootLayout do
                         </path>
                       </svg>
                       {@site_name}
-                    </span>
+                    </.navigate>
                   </div>
-                  <nav class="flex flex-col gap-space-sm px-space-xl py-space" aria-label="Site">
-                    <.navigate class="link ui-nav ui-size-sm" external to={@demo}>
-<%= if @lang do %>                      {~t"Components"} <.heroicon name="hero-arrow-top-right-on-square" />
-<% else %>                      Components <.heroicon name="hero-arrow-top-right-on-square" />
-<% end %>                    </.navigate>
-                  </nav>
+                  <div class="flex min-h-0 flex-1 flex-col gap-space overflow-y-auto px-space-xl py-space">
+                    <nav class="flex w-full flex-col gap-space-sm" aria-label={<%= if @lang do %>~t"Site"<% else %>"Site"<% end %>}>
+                      <.navigate class="link ui-nav ui-size-md" to={@home_path}>
+<%= if @lang do %>                        {~t"Home"}
+<% else %>                        Home
+<% end %>                      </.navigate>
+                      <.navigate class="link ui-nav ui-size-md" to={@blog_path}>
+<%= if @lang do %>                        {~t"Blog"}
+<% else %>                        Blog
+<% end %>                      </.navigate>
+<%= unless @lang do %>                      <.navigate class="link ui-nav ui-size-md" to={@tags_path}>
+                        Tags
+                      </.navigate>
+<% end %>                    </nav>
+                  </div>
 <%= if @mode or @theme or @a11y do %>                  <div class="mt-auto flex shrink-0 items-center gap-space border-t border-border px-space-xl py-space">
 <%= if @theme do %>                    <<%= @app_module %>.Theme.theme_toggle id="theme-select-mobile" theme={@theme} />
 <% end %><%= if @mode do %>                    <<%= @app_module %>.Mode.mode_toggle id="mode-switcher-mobile" mode={@mode} />
@@ -167,10 +179,14 @@ defmodule <%= @app_module %>.RootLayout do
               </.dialog>
 
               <.navigate
-                to={<%= if @lang do %>@home_path<% else %>"/"<% end %>}
-                class="link ui-nav ui-brand ui-size-lg flex flex-nowrap items-center gap-space font-semibold uppercase"
+                to={@home_path}
+                class="link ui-nav ui-brand ui-size-xl flex flex-nowrap items-center gap-space font-semibold uppercase"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 136 136" class="icon ui-size-lg">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 136 136"
+                  class="icon ui-size-lg"
+                >
                   <path
                     d="M70.573 1.67C33.94 1.67 4.243 31.367 4.243 68c0 36.634 29.697 66.33 66.33 66.33s66.33-29.696 66.33-66.33c0-36.633-29.697-66.33-66.33-66.33m.05 102.736c-20.117 0-36.427-16.308-36.427-36.427 0-20.118 16.31-36.427 36.427-36.427 17.055 0 31.37 11.723 35.333 27.55H89.845c-3.365-7.255-10.713-12.301-19.222-12.301-11.678 0-21.179 9.501-21.179 21.18s9.501 21.178 21.18 21.178c8.539 0 15.907-5.08 19.256-12.377h16.095c-3.939 15.864-18.269 27.624-35.352 27.624"
                     fill="currentColor"
@@ -180,12 +196,22 @@ defmodule <%= @app_module %>.RootLayout do
                 {@site_name}
               </.navigate>
 
-              <nav class="hidden items-center gap-space-lg md:flex" aria-label="Primary">
-                <.navigate class="link ui-nav ui-size-sm" external to={@demo}>
-<%= if @lang do %>                  {~t"Components"} <.heroicon name="hero-arrow-top-right-on-square" />
-<% else %>                  Components <.heroicon name="hero-arrow-top-right-on-square" />
+              <nav
+                class="hidden items-center gap-space-lg md:flex lg:gap-space-xl"
+                aria-label={<%= if @lang do %>~t"Primary"<% else %>"Primary"<% end %>}
+              >
+                <.navigate class="link ui-nav ui-size-md" to={@home_path}>
+<%= if @lang do %>                  {~t"Home"}
+<% else %>                  Home
 <% end %>                </.navigate>
-              </nav>
+                <.navigate class="link ui-nav ui-size-md" to={@blog_path}>
+<%= if @lang do %>                  {~t"Blog"}
+<% else %>                  Blog
+<% end %>                </.navigate>
+<%= unless @lang do %>                <.navigate class="link ui-nav ui-size-md" to={@tags_path}>
+                  Tags
+                </.navigate>
+<% end %>              </nav>
             </div>
 <%= if @mode or @theme or @a11y do %>            <div class="flex shrink-0 items-center gap-space-sm">
 <%= if @mode or @theme do %>              <div class="hidden sm:flex items-center gap-space-sm">
@@ -197,7 +223,7 @@ defmodule <%= @app_module %>.RootLayout do
 <% end %>          </div>
         </header>
 
-        <main class="relative flex w-full min-w-0 flex-1 flex-col pt-space-xl">
+        <main class="relative flex w-full min-w-0 flex-1 flex-col min-h-[calc(100dvh-var(--spacing-size-lg))] pt-space-xl">
           {render(@inner_content)}
         </main>
 
@@ -206,10 +232,14 @@ defmodule <%= @app_module %>.RootLayout do
             <div class="grid w-full gap-space-xl sm:grid-cols-2 lg:grid-cols-3">
               <div class="flex min-w-0 flex-col gap-space-sm sm:col-span-2 lg:col-span-1">
                 <.navigate
-                  to={<%= if @lang do %>@home_path<% else %>"/"<% end %>}
+                  to={@home_path}
                   class="link ui-nav ui-brand ui-size-lg flex flex-nowrap items-center gap-space font-semibold uppercase"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 136 136" class="icon ui-size-lg">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 136 136"
+                    class="icon ui-size-lg"
+                  >
                     <path
                       d="M70.573 1.67C33.94 1.67 4.243 31.367 4.243 68c0 36.634 29.697 66.33 66.33 66.33s66.33-29.696 66.33-66.33c0-36.633-29.697-66.33-66.33-66.33m.05 102.736c-20.117 0-36.427-16.308-36.427-36.427 0-20.118 16.31-36.427 36.427-36.427 17.055 0 31.37 11.723 35.333 27.55H89.845c-3.365-7.255-10.713-12.301-19.222-12.301-11.678 0-21.179 9.501-21.179 21.18s9.501 21.178 21.18 21.178c8.539 0 15.907-5.08 19.256-12.377h16.095c-3.939 15.864-18.269 27.624-35.352 27.624"
                       fill="currentColor"
@@ -253,7 +283,10 @@ defmodule <%= @app_module %>.RootLayout do
                   to={link.to}
                 >
                   {link.label}
-                  <.heroicon :if={Map.get(link, :external, false)} name="hero-arrow-top-right-on-square" />
+                  <.heroicon
+                    :if={Map.get(link, :external, false)}
+                    name="hero-arrow-top-right-on-square"
+                  />
                 </.navigate>
               </div>
 
@@ -306,7 +339,12 @@ defmodule <%= @app_module %>.RootLayout do
         to: <%= if @lang do %>Locale.swap_path("/blog", locale)<% else %>"/blog"<% end %>,
         external: false
       },
-      %{label: <%= if @lang do %>~t"GitHub"<% else %>"GitHub"<% end %>, to: @github, external: true},
+<%= unless @lang do %>      %{
+        label: "Tags",
+        to: "/tags",
+        external: false
+      },
+<% end %>      %{label: <%= if @lang do %>~t"GitHub"<% else %>"GitHub"<% end %>, to: @github, external: true},
       %{label: <%= if @lang do %>~t"Hexdocs"<% else %>"Hexdocs"<% end %>, to: @hexdocs, external: true}
     ]
   end
@@ -328,17 +366,25 @@ defmodule <%= @app_module %>.RootLayout do
         page[:title]
 
       page[:page_kind] == :home ->
-        "#{site_name} - Corex for Tableau"
-
+<%= if @lang do %>        ~t"#{name = site_name} - Corex for Tableau"
+<% else %>        "#{site_name} - Corex for Tableau"
+<% end %>
       page[:page_kind] == :not_found ->
-        "Page not found - #{site_name}"
-
+<%= if @lang do %>        ~t"Page not found - #{name = site_name}"
+<% else %>        "Page not found - #{site_name}"
+<% end %>
       page[:page_kind] == :blog_index ->
-        "Blog - #{site_name}"
-
+<%= if @lang do %>        ~t"Blog - #{name = site_name}"
+<% else %>        "Blog - #{site_name}"
+<% end %>
+      page[:page_kind] == :tags_index ->
+<%= if @lang do %>        ~t"Tags - #{name = site_name}"
+<% else %>        "Tags - #{site_name}"
+<% end %>
       tag_page?(page) ->
-        "#{page[:tag]} - Tags - #{site_name}"
-
+<%= if @lang do %>        ~t"#{tag = page[:tag]} - Tags - #{name = site_name}"
+<% else %>        "#{page[:tag]} - Tags - #{site_name}"
+<% end %>
       true ->
         site_name
     end
@@ -347,25 +393,34 @@ defmodule <%= @app_module %>.RootLayout do
   defp meta_description(page, site_name) do
     cond do
       page[:page_kind] == :home ->
-        "#{site_name}: a Tableau static site powered by Corex, Phoenix components, and design tokens."
-
+<%= if @lang do %>        ~t"#{name = site_name}: a Tableau static site powered by Corex, Phoenix components, and design tokens."
+<% else %>        "#{site_name}: a Tableau static site powered by Corex, Phoenix components, and design tokens."
+<% end %>
       page[:page_kind] == :not_found ->
-        "This URL is not available on the #{site_name} static site."
-
+<%= if @lang do %>        ~t"This URL is not available on the #{name = site_name} static site."
+<% else %>        "This URL is not available on the #{site_name} static site."
+<% end %>
       page[:page_kind] == :blog_index ->
-        "Blog posts on the #{site_name} static site."
-
+<%= if @lang do %>        ~t"Blog posts on the #{name = site_name} static site."
+<% else %>        "Blog posts on the #{site_name} static site."
+<% end %>
+      page[:page_kind] == :tags_index ->
+<%= if @lang do %>        ~t"Browse post tags on the #{name = site_name} static site."
+<% else %>        "Browse post tags on the #{site_name} static site."
+<% end %>
       tag_page?(page) ->
-        "Posts tagged #{page[:tag]} on the #{site_name} static site."
-
+<%= if @lang do %>        ~t"Posts tagged #{tag = page[:tag]} on the #{name = site_name} static site."
+<% else %>        "Posts tagged #{page[:tag]} on the #{site_name} static site."
+<% end %>
       present_string?(page[:description]) ->
         page[:description]
 
       true ->
-        "A Tableau static site powered by Corex."
-    end
+<%= if @lang do %>        ~t"A Tableau static site powered by Corex."
+<% else %>        "A Tableau static site powered by Corex."
+<% end %>    end
   end
-
+<%= unless @lang do %>
   defp page_path_from_page(page) when is_map(page) do
     case page[:permalink] do
       perm when is_binary(perm) and perm != "" ->
@@ -377,7 +432,7 @@ defmodule <%= @app_module %>.RootLayout do
   end
 
   defp page_path_from_page(_), do: "/"
-
+<% end %>
   defp md_page?(page), do: page[:__tableau_page_extension__] == true
 
   defp tag_page?(page) do

@@ -103,14 +103,14 @@ defmodule Corex.New.Tableau.PostGenerateTest do
       end)
     end
 
-    test "next steps include localize.download_locales when lang is true" do
+    test "next steps omit separate localize when lang is true (mix setup covers it)" do
       in_tmp("tableau post generate lang", fn ->
         send(self(), {:mix_shell_input, :yes?, false})
 
         PostGenerate.run(File.cwd!(), lang: true, design: true, install: false)
 
         output = shell_info_text()
-        assert output =~ "mix localize.download_locales en fr ar"
+        refute output =~ "mix localize.download_locales"
         assert output =~ "mix setup"
         assert output =~ "mix tableau.server"
       end)

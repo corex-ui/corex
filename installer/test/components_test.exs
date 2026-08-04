@@ -42,4 +42,10 @@ defmodule Corex.New.ComponentsTest do
     toggle_idx = Enum.find_index(with_a11y, &(&1 == :toggle))
     assert Enum.at(with_a11y, toggle_idx + 1) == :"toggle-group"
   end
+
+  test "includes code and clipboard for markdown blog styling" do
+    ids = Components.installer_components()
+    assert :code in ids
+    assert :clipboard in ids
+  end
 end

@@ -627,13 +627,14 @@ jobs:
           mix archive.build -o corex_new.ez
           mix archive.install corex_new.ez --force
 
-      - name: Install Mix archives for corex.new (phx_new)
+      - name: Install Mix archives for corex.new (phx_new, tableau_new)
         run: |
           if [ -n "${{ matrix.phx_new_version }}" ]; then
             mix archive.install hex phx_new ${{ matrix.phx_new_version }} --force
           else
             mix archive.install hex phx_new --force
           fi
+          mix archive.install hex tableau_new --force
 
       - name: Run integration tests (fast)
         working-directory: integration_test

@@ -30,32 +30,32 @@ defmodule <%= @app_module %>.HomePage do
             </p>
 
             <ul
-              class="m-0 mt-2 grid w-full max-w-xl list-none grid-cols-1 gap-x-8 gap-y-4 p-0 sm:grid-cols-2"
+              class="m-0 mt-space-sm grid w-full max-w-xl list-none grid-cols-1 gap-x-size-sm gap-y-space-lg p-0 sm:grid-cols-2"
               aria-label={~t"Highlights"}
             >
-              <li class="relative flex items-start gap-x-3 text-pretty text-start text-sm text-ink-muted">
-                <span class="mt-0.5 shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
+              <li class="relative flex items-start gap-x-space text-pretty text-start text-sm text-ink-muted">
+                <span class="mt-space-xs shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
                 <span>
                   <strong class="font-semibold text-ink">{~t"Server & client API."}</strong>
                   {~t"Drive every component from LiveView or JavaScript and listen back from either side."}
                 </span>
               </li>
-              <li class="relative flex items-start gap-x-3 text-pretty text-start text-sm text-ink-muted">
-                <span class="mt-0.5 shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
+              <li class="relative flex items-start gap-x-space text-pretty text-start text-sm text-ink-muted">
+                <span class="mt-space-xs shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
                 <span>
                   <strong class="font-semibold text-ink">{~t"LiveView-native."}</strong>
                   {~t"Update props at runtime without resetting component state."}
                 </span>
               </li>
-              <li class="relative flex items-start gap-x-3 text-pretty text-start text-sm text-ink-muted">
-                <span class="mt-0.5 shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
+              <li class="relative flex items-start gap-x-space text-pretty text-start text-sm text-ink-muted">
+                <span class="mt-space-xs shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
                 <span>
                   <strong class="font-semibold text-ink">{~t"Truly unstyled."}</strong>
                   {~t"Bring your own CSS or opt into Corex Design tokens, themes and modes."}
                 </span>
               </li>
-              <li class="relative flex items-start gap-x-3 text-pretty text-start text-sm text-ink-muted">
-                <span class="mt-0.5 shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
+              <li class="relative flex items-start gap-x-space text-pretty text-start text-sm text-ink-muted">
+                <span class="mt-space-xs shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
                 <span>
                   <strong class="font-semibold text-ink">{~t"Accessible by default."}</strong>
                   {~t"Keyboard, focus and ARIA wired in by Zag.js state machines."}
@@ -88,7 +88,7 @@ defmodule <%= @app_module %>.HomePage do
 
             <div class="flex flex-wrap items-center gap-space-sm">
               <span class="badge ui-ghost ui-size-sm">
-                <.heroicon name="hero-command-line" /> API
+                <.heroicon name="hero-command-line" /> {~t"API"}
               </span>
               <.action
                 phx-click={Corex.Accordion.set_value("home-accordion", "anatomy")}
@@ -113,7 +113,7 @@ defmodule <%= @app_module %>.HomePage do
             </div>
 
             <span class="badge ui-ghost ui-size-sm self-start">
-              <.heroicon name="hero-bars-3-bottom-left" /> Accordion
+              <.heroicon name="hero-bars-3-bottom-left" /> {~t"Accordion"}
             </span>
 
             <.accordion
@@ -207,32 +207,32 @@ end
             </p>
 
             <ul
-              class="m-0 mt-2 grid w-full max-w-xl list-none grid-cols-1 gap-x-8 gap-y-4 p-0 sm:grid-cols-2"
+              class="m-0 mt-space-sm grid w-full max-w-xl list-none grid-cols-1 gap-x-size-sm gap-y-space-lg p-0 sm:grid-cols-2"
               aria-label="Highlights"
             >
-              <li class="relative flex items-start gap-x-3 text-pretty text-start text-sm text-ink-muted">
-                <span class="mt-0.5 shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
+              <li class="relative flex items-start gap-x-space text-pretty text-start text-sm text-ink-muted">
+                <span class="mt-space-xs shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
                 <span>
                   <strong class="font-semibold text-ink">Server & client API.</strong>
                   Drive every component from LiveView or JavaScript and listen back from either side.
                 </span>
               </li>
-              <li class="relative flex items-start gap-x-3 text-pretty text-start text-sm text-ink-muted">
-                <span class="mt-0.5 shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
+              <li class="relative flex items-start gap-x-space text-pretty text-start text-sm text-ink-muted">
+                <span class="mt-space-xs shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
                 <span>
                   <strong class="font-semibold text-ink">LiveView-native.</strong>
                   Update props at runtime without resetting component state.
                 </span>
               </li>
-              <li class="relative flex items-start gap-x-3 text-pretty text-start text-sm text-ink-muted">
-                <span class="mt-0.5 shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
+              <li class="relative flex items-start gap-x-space text-pretty text-start text-sm text-ink-muted">
+                <span class="mt-space-xs shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
                 <span>
                   <strong class="font-semibold text-ink">Truly unstyled.</strong>
                   Bring your own CSS or opt into Corex Design tokens, themes and modes.
                 </span>
               </li>
-              <li class="relative flex items-start gap-x-3 text-pretty text-start text-sm text-ink-muted">
-                <span class="mt-0.5 shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
+              <li class="relative flex items-start gap-x-space text-pretty text-start text-sm text-ink-muted">
+                <span class="mt-space-xs shrink-0 text-success-text"><.heroicon name="hero-check" /></span>
                 <span>
                   <strong class="font-semibold text-ink">Accessible by default.</strong>
                   Keyboard, focus and ARIA wired in by Zag.js state machines.

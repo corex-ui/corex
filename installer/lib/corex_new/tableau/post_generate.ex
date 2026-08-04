@@ -60,7 +60,6 @@ defmodule Corex.New.Tableau.PostGenerate do
   defp next_steps_message(cd_hint, install?, opts) do
     indent = "    "
     design? = Keyword.get(opts, :design, true)
-    lang? = Keyword.get(opts, :lang, false)
 
     initial =
       IO.iodata_to_binary([
@@ -77,16 +76,6 @@ defmodule Corex.New.Tableau.PostGenerate do
         "#{indent}$ mix assets.build\n"
       ])
 
-    localize_block =
-      if lang? do
-        IO.iodata_to_binary([
-          "\nDownload CLDR data for English, French, and Arabic:\n\n",
-          "#{indent}$ mix localize.download_locales en fr ar\n"
-        ])
-      else
-        ""
-      end
-
     server_block =
       IO.iodata_to_binary([
         "\nStart the Tableau dev server with live reload:\n\n",
@@ -95,7 +84,7 @@ defmodule Corex.New.Tableau.PostGenerate do
         "#{indent}$ mix build\n"
       ])
 
-    IO.iodata_to_binary([initial, assets_block, localize_block, server_block])
+    IO.iodata_to_binary([initial, assets_block, server_block])
   end
 
   defp git_available? do
