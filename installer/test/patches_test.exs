@@ -878,6 +878,31 @@ defmodule Corex.New.PatchesTest do
     end
   end
 
+  describe "write_cursor_mcp_json!/2" do
+    test "writes .cursor/mcp.json for Phoenix port when mcp is true" do
+      in_tmp(:cursor_mcp_json, fn ->
+        Patches.write_cursor_mcp_json!(File.cwd!(), mcp: true)
+        body = File.read!(".cursor/mcp.json")
+        assert body =~ ~s("url": "http://localhost:4000/corex/mcp")
+      end)
+    end
+
+    test "uses mcp_port for Tableau Bandit" do
+      in_tmp(:cursor_mcp_json_tableau, fn ->
+        Patches.write_cursor_mcp_json!(File.cwd!(), mcp: true, mcp_port: 4004)
+        body = File.read!(".cursor/mcp.json")
+        assert body =~ ~s("url": "http://localhost:4004/corex/mcp")
+      end)
+    end
+
+    test "skips when mcp is false" do
+      in_tmp(:cursor_mcp_json_skip, fn ->
+        Patches.write_cursor_mcp_json!(File.cwd!(), mcp: false)
+        refute File.exists?(".cursor/mcp.json")
+      end)
+    end
+  end
+
   describe "patch_config_exs/2" do
     test "adds esbuild ESM flags and /js outdir" do
       in_tmp(:patch_config_esbuild, fn ->

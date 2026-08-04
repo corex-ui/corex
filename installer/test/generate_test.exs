@@ -60,6 +60,8 @@ defmodule Corex.New.GenerateTest do
       mix_exs = File.read!("mix.exs")
       assert mix_exs =~ ~r/\{:corex_design,/
       assert mix_exs =~ ~r/\{:corex_mcp,\s*"~> 0.2",\s*only:\s*\[:dev,\s*:test\]\}/
+      assert File.exists?(".cursor/mcp.json")
+      assert File.read!(".cursor/mcp.json") =~ "http://localhost:4000/corex/mcp"
       assert mix_exs =~ ~r/\{:usage_rules,\s*"~> 1.1",\s*only:\s*:dev\}/
       assert mix_exs =~ "usage_rules: usage_rules()"
       assert mix_exs =~ "compilers: Mix.compilers() ++ [:corex_design]"
@@ -273,6 +275,7 @@ defmodule Corex.New.GenerateTest do
 
       refute File.read!(Path.join("lib/my_app_web", "endpoint.ex")) =~ "plug Corex.MCP"
       refute File.read!("mix.exs") =~ "{:corex_mcp,"
+      refute File.exists?(".cursor/mcp.json")
     end)
   end
 

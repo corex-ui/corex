@@ -26,6 +26,7 @@ defmodule Corex.New.Tableau.Generate do
     end
 
     Patches.patch_gitignore(install_dir, opts)
+    Patches.write_cursor_mcp_json!(install_dir, Keyword.put(opts, :mcp_port, 4004))
 
     :ok
   end

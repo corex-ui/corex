@@ -38,6 +38,7 @@ defmodule Corex.New.Generate do
     Patches.patch_endpoint(install_dir, opts[:web_module], opts)
     Patches.patch_config_exs(install_dir, opts)
     Patches.patch_gitignore(install_dir, opts)
+    Patches.write_cursor_mcp_json!(install_dir, opts)
     Patches.patch_gettext_backend(install_dir, opts[:web_module], opts)
     Patches.patch_page_controller_test(install_dir, opts[:web_module])
     Patches.patch_error_html_test(install_dir, opts[:web_module], opts)

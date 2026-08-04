@@ -220,6 +220,33 @@ defmodule Corex.New.Patches do
   end
 
   @doc """
+  Writes `.cursor/mcp.json` when `:mcp` is true. Port defaults to `4000` (Phoenix);
+  pass `:mcp_port` (e.g. `4004` for Tableau Bandit). Idempotent overwrite.
+  """
+  def write_cursor_mcp_json!(install_dir, opts) do
+    if Keyword.get(opts, :mcp, true) do
+      port = Keyword.get(opts, :mcp_port, 4000)
+      path = Path.join([install_dir, ".cursor", "mcp.json"])
+      url = "http://localhost:#{port}/corex/mcp"
+
+      contents = """
+      {
+        "mcpServers": {
+          "corex": {
+            "url": "#{url}"
+          }
+        }
+      }
+      """
+
+      Shared.write!(path, contents)
+      Mix.shell().info([:green, "* creating ", :reset, Path.relative_to_cwd(path)])
+    else
+      :ok
+    end
+  end
+
+  @doc """
   When `:design` is true, ensures `.gitignore` ignores generated Corex Design CSS
   at `/assets/corex/`. Creates `.gitignore` when missing. Idempotent.
   """

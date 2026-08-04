@@ -25,7 +25,7 @@ defmodule Mix.Tasks.Corex.New do
   * **`--theme`**  -  themes (Neo/Uno/Duo/Leo), plugs, theme toggle, layout bridge. Implies **`--design`**.
   * **`--a11y`**  -  preference axes (text, contrast, motion, cursor, focus, links), plug, LiveView hook, root-layout bridge, panel UI. Default **off**. Implies **`--design`**.
   * **`--lang`**  -  Localize + Gettext, path plug, locale scope helpers, `language_switch`.
-  * **`--mcp`** / **`--no-mcp`**  -  when **`--mcp`** (default), adds `{:corex_mcp, "~> 0.2", only: [:dev, :test]}` and `plug Corex.MCP` on the endpoint in `:dev` / `:test` after `Plug.Static`.
+  * **`--mcp`** / **`--no-mcp`**  -  when **`--mcp`** (default), adds `{:corex_mcp, "~> 0.2", only: [:dev, :test]}`, `plug Corex.MCP` on the endpoint in `:dev` / `:test` after `Plug.Static`, and writes `.cursor/mcp.json` pointing at `http://localhost:4000/corex/mcp`. Use **`--no-mcp`** for locked-down scaffolds. Never enable MCP in `:prod` or set `allow_remote_access: true` casually.
   * **`--usage-rules`** / **`--no-usage-rules`**  -  when **`--usage-rules`** (default), adds `{:usage_rules, "~> 1.1", only: :dev}` and `usage_rules: usage_rules()` (skills under `.cursor/skills`, `package_skills: [:corex]`).
   * **`--dev PATH`**  -  `{:corex, path: PATH}`, `{:corex_design, path: PATH/design}`, and relative `corex.mjs` import when building JS.
   * **`--install`** / **`--no-install`**  -  whether Corex runs **`mix deps.get`** in the new project after generation (prompt if omitted). Does **not** change Phoenix’s **`--no-install`** step.

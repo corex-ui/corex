@@ -58,6 +58,8 @@ defmodule Corex.New.Tableau.GenerateTest do
       assert File.exists?("lib/my_blog/config.ex")
       assert File.exists?("lib/my_blog/application.ex")
       assert File.exists?("lib/my_blog/mcp.ex")
+      assert File.exists?(".cursor/mcp.json")
+      assert File.read!(".cursor/mcp.json") =~ "http://localhost:4004/corex/mcp"
       assert File.exists?("lib/my_blog/md_ex_converter.ex")
       assert File.exists?("lib/my_blog/markdown/code_blocks.ex")
       assert File.exists?("lib/my_blog/markdown/block_renderer.ex")

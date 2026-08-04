@@ -17,7 +17,7 @@ defmodule Mix.Tasks.Corex.Tableau.New do
   * **`--theme`** - themes (Neo/Uno/Duo/Leo), theme toggle, layout bridge. Implies **`--design`**.
   * **`--a11y`** - preference axes, head script, panel UI. Default **off**. Implies **`--design`**.
   * **`--lang`** - Gettext, Localize, per-locale pages (`en` / `fr` / `ar`), language `<.select>`. Implies **`--design`**.
-  * **`--mcp`** / **`--no-mcp`** - when **`--mcp`** (default), a Bandit MCP server starts in dev.
+  * **`--mcp`** / **`--no-mcp`** - when **`--mcp`** (default), a Bandit MCP server starts in dev on port **4004**, and `.cursor/mcp.json` is written for `http://localhost:4004/corex/mcp`. Use **`--no-mcp`** to skip. Never enable remote access casually.
   * **`--usage-rules`** / **`--no-usage-rules`** - when **`--usage-rules`** (default), adds `{:usage_rules, "~> 1.1", only: :dev}` and skills sync config.
   * **`--dev PATH`** - `{:corex, path: PATH}`, `{:corex_design, path: PATH/design}`, and relative `corex.mjs` import when building JS.
   * **`--install`** / **`--no-install`** - whether Corex runs **`mix deps.get`** in the new project after generation (prompt if omitted).
