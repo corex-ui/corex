@@ -75,6 +75,14 @@ defmodule Corex.Toast do
 
   `create` opts: `duration`, `loading: true`, `id: "stable-id"`, `priority:` `1`–`8`, `action:` map with `label` (string or `~H` / safe HTML), `js`, optional `class`.
 
+  **`:action` is server-only.** Pass it on `create/6` / `update/4` (`push_event`). Client
+  bindings (`create/5`, `update/3`) and DOM `CustomEvent`s ignore `:action` so untrusted
+  scripts cannot inject `exec_js` or HTML labels.
+
+  HTML action labels (`~H` / `{:safe, _}`) are rendered with `innerHTML` in the client.
+  Pass **developer-controlled** markup only — never pipe untrusted user input into
+  safe HTML labels.
+
   ## Style
 
   Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `toast.css`, then set `class="toast"` on `<.toast_group>`.
@@ -488,7 +496,7 @@ defmodule Corex.Toast do
   end
 
   api_doc(~S"""
-  Append a toast from `phx-click`. Dispatches `corex:toast:create` on the toast group host (`id`). Optional keyword `opts`: `:id`, `:duration`, `:loading`, `:priority`, `:action`.
+  Append a toast from `phx-click`. Dispatches `corex:toast:create` on the toast group host (`id`). Optional keyword `opts`: `:id`, `:duration`, `:loading`, `:priority`. Prefer `create/6` when you need `:action`.
 
   ```heex
   <.action phx-click={Corex.Toast.create("toast-group-id", "Saved", "Draft stored.", :info, duration: 4_000)}>Notify</.action>
@@ -531,11 +539,15 @@ defmodule Corex.Toast do
   end
 
   api_doc(~S"""
-  Append a toast from `handle_event` (`toast_create`). Payload includes `group_id` plus Zag fields assembled from the same arguments.
+  Append a toast from `handle_event` (`toast_create`). Payload includes `group_id` plus Zag fields assembled from the same arguments. Use this path for `:action` (client `create/5` ignores it).
 
   ```elixir
   def handle_event("notify", _, socket) do
-    {:noreply, Corex.Toast.create(socket, "toast-group-id", "Done", "Completed.", :success, duration: 3_000)}
+    {:noreply,
+     Corex.Toast.create(socket, "toast-group-id", "Done", "Completed.", :success,
+       duration: 3_000,
+       action: %{label: "Undo", js: JS.push("undo"), class: "button ui-size-sm"}
+     )}
   end
   ```
   """)

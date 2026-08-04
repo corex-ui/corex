@@ -1,8 +1,6 @@
 defmodule E2eWeb.Demos.ToastDemo do
   use E2eWeb, :html
 
-  alias Phoenix.LiveView.JS
-
   def layout_flash_code do
     ~S"""
     <.toast_group id="layout-toast" flash={@flash} class="toast">
@@ -695,45 +693,33 @@ defmodule E2eWeb.Demos.ToastDemo do
 
   def anatomy_trigger_redirect_code do
     ~S"""
-    <.action
-      phx-click={
-        Corex.Toast.create("layout-toast", "Saved", "Action redirects to this anatomy page.", :success,
-          id: "toast-anatomy-redirect",
-          duration: 30_000,
-          action: %{
-            label: "Same page",
-            class: "button ui-accent ui-size-sm",
-            js: JS.patch(~p"/toast/anatomy")
-          }
-        )
-      }
-      class="button ui-size-sm"
-    >
+    <.action phx-click="toast_anatomy_redirect" class="button ui-size-sm">
       Toast with redirect
     </.action>
+
+    def handle_event("toast_anatomy_redirect", _params, socket) do
+      {:noreply,
+       Corex.Toast.create(
+         socket,
+         "layout-toast",
+         "Saved",
+         "Action redirects to this anatomy page.",
+         :success,
+         id: "toast-anatomy-redirect",
+         duration: 30_000,
+         action: %{
+           label: "Same page",
+           class: "button ui-accent ui-size-sm",
+           js: JS.patch(~p"/toast/anatomy")
+         }
+       )}
+    end
     """
   end
 
   def anatomy_trigger_redirect_example(assigns) do
     ~H"""
-    <.action
-      phx-click={
-        Corex.Toast.create(
-          "layout-toast",
-          "Saved",
-          "Action redirects to this anatomy page.",
-          :success,
-          id: "toast-anatomy-redirect",
-          duration: 30_000,
-          action: %{
-            label: "Same page",
-            class: "button ui-accent ui-size-sm",
-            js: JS.patch(~p"/toast/anatomy")
-          }
-        )
-      }
-      class="button ui-size-sm"
-    >
+    <.action phx-click="toast_anatomy_redirect" class="button ui-size-sm">
       Toast with redirect
     </.action>
     """
@@ -741,97 +727,74 @@ defmodule E2eWeb.Demos.ToastDemo do
 
   def anatomy_trigger_live_view_js_code do
     ~S"""
-    <.action
-      phx-click={
-        Corex.Toast.create("layout-toast", "Dismiss me", "Action runs a Phoenix.LiveView.JS command.", :info,
-          id: "toast-anatomy-dismiss",
-          duration: :infinity,
-          action: %{
-            label: "Dismiss",
-            class: "button ui-accent ui-size-sm",
-            js: Corex.Toast.dismiss("layout-toast", "toast-anatomy-dismiss")
-          }
-        )
-      }
-      class="button ui-size-sm"
-    >
+    <.action phx-click="toast_anatomy_dismiss" class="button ui-size-sm">
       Toast with Live View JS
     </.action>
+
+    def handle_event("toast_anatomy_dismiss", _params, socket) do
+      {:noreply,
+       Corex.Toast.create(
+         socket,
+         "layout-toast",
+         "Dismiss me",
+         "Action runs a Phoenix.LiveView.JS command.",
+         :info,
+         id: "toast-anatomy-dismiss",
+         duration: :infinity,
+         action: %{
+           label: "Dismiss",
+           class: "button ui-accent ui-size-sm",
+           js: Corex.Toast.dismiss("layout-toast", "toast-anatomy-dismiss")
+         }
+       )}
+    end
     """
   end
 
   def anatomy_trigger_live_view_js_example(assigns) do
     ~H"""
-    <.action
-      phx-click={
-        Corex.Toast.create(
-          "layout-toast",
-          "Dismiss me",
-          "Action runs a Phoenix.LiveView.JS command.",
-          :info,
-          id: "toast-anatomy-dismiss",
-          duration: :infinity,
-          action: %{
-            label: "Dismiss",
-            class: "button ui-accent ui-size-sm",
-            js: Corex.Toast.dismiss("layout-toast", "toast-anatomy-dismiss")
-          }
-        )
-      }
-      class="button ui-size-sm"
-    >
+    <.action phx-click="toast_anatomy_dismiss" class="button ui-size-sm">
       Toast with Live View JS
     </.action>
     """
   end
 
   def anatomy_trigger_custom_label_code do
-    ~S"""
-    <.action
-      phx-click={
-        Corex.Toast.create("layout-toast", "Open docs", "Label is rendered from ~H with a heroicon.", :info,
-          id: "toast-anatomy-custom-label",
-          duration: 30_000,
-          action: %{
-            label: ~H{
-              <.heroicon name="hero-arrow-top-right-on-square" />
-              Open
-            },
-            class: "button ui-accent ui-size-sm",
-            js: JS.patch(~p"/toast/anatomy")
-          }
-        )
-      }
-      class="button ui-size-sm"
-    >
+    ~S'''
+    <.action phx-click="toast_anatomy_custom_label" class="button ui-size-sm">
       Toast with custom label
     </.action>
-    """
+
+    def handle_event("toast_anatomy_custom_label", _params, socket) do
+      assigns = %{}
+
+      label = ~H"""
+      <.heroicon name="hero-arrow-top-right-on-square" />
+      Open
+      """
+
+      {:noreply,
+       Corex.Toast.create(
+         socket,
+         "layout-toast",
+         "Open docs",
+         "Label is rendered from ~H with a heroicon.",
+         :info,
+         id: "toast-anatomy-custom-label",
+         duration: 30_000,
+         action: %{
+           label: label,
+           class: "button ui-accent ui-size-sm",
+           js: JS.patch(~p"/toast/anatomy")
+         }
+       )}
+    end
+    '''
   end
 
   def anatomy_trigger_custom_label_example(assigns) do
     ~H"""
-    <.action
-      phx-click={
-        Corex.Toast.create(
-          "layout-toast",
-          "Open docs",
-          "Label is rendered from ~H with a heroicon.",
-          :info,
-          id: "toast-anatomy-custom-label",
-          duration: 30_000,
-          action: %{
-            label: ~H{
-              <.heroicon name="hero-arrow-top-right-on-square" />
-              Open
-            },
-            class: "button ui-accent ui-size-sm",
-            js: JS.patch(~p"/toast/anatomy")
-          }
-        )
-      }
-      class="button ui-size-sm"
-    >
+    <.action phx-click="toast_anatomy_custom_label" class="button ui-size-sm">
       Toast with custom label
     </.action>
     """
