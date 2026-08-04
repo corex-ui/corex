@@ -19,8 +19,8 @@ defmodule Corex.MCP.Server do
   alias Corex.MCP.Tools.Guides, as: McpToolGuides
   alias Corex.MCP.Tools.Installation, as: McpToolInstallation
 
-  @protocol_version "2025-03-26"
-  @supported_protocol_versions ["2024-11-05", "2025-03-26"]
+  @protocol_version "2025-11-25"
+  @supported_protocol_versions ["2024-11-05", "2025-03-26", "2025-06-18", "2025-11-25"]
   @vsn Mix.Project.config()[:version] || "0.0.0"
   @tools_key {__MODULE__, :tools_and_dispatch}
 
@@ -112,17 +112,16 @@ defmodule Corex.MCP.Server do
     end
   end
 
-  defp validate_protocol_version(client_version) do
+  defp negotiate_protocol_version(client_version) do
     cond do
       is_nil(client_version) ->
         {:error, "Protocol version is required"}
 
       client_version in @supported_protocol_versions ->
-        :ok
+        {:ok, client_version}
 
       true ->
-        {:error,
-         "Unsupported protocol version #{inspect(client_version)}. Server supports #{Enum.join(@supported_protocol_versions, ", ")}"}
+        {:ok, @protocol_version}
     end
   end
 
@@ -131,10 +130,10 @@ defmodule Corex.MCP.Server do
   end
 
   defp handle_initialize(request_id, params) do
-    case validate_protocol_version(params["protocolVersion"]) do
-      :ok ->
+    case negotiate_protocol_version(params["protocolVersion"]) do
+      {:ok, protocol_version} ->
         jsonrpc_result(request_id, %{
-          protocolVersion: @protocol_version,
+          protocolVersion: protocol_version,
           capabilities: %{
             tools: %{listChanged: false},
             prompts: %{listChanged: false}

@@ -80,7 +80,25 @@ defmodule Corex.MCP.ServerTest do
     assert is_binary(decoded["result"]["instructions"])
   end
 
-  test "handle_http_message rejects stale protocol version" do
+  test "handle_http_message initialize echoes 2025-11-25" do
+    body = %{
+      "jsonrpc" => "2.0",
+      "id" => 1,
+      "method" => "initialize",
+      "params" => %{"protocolVersion" => "2025-11-25"}
+    }
+
+    conn =
+      body
+      |> post_conn()
+      |> Server.handle_http_message()
+
+    assert conn.status == 200
+    decoded = Corex.MCP.Json.decode!(conn.resp_body)
+    assert decoded["result"]["protocolVersion"] == "2025-11-25"
+  end
+
+  test "handle_http_message initialize negotiates unknown version to latest" do
     body = %{
       "jsonrpc" => "2.0",
       "id" => 1,
@@ -93,8 +111,9 @@ defmodule Corex.MCP.ServerTest do
       |> post_conn()
       |> Server.handle_http_message()
 
-    assert conn.status == 400
-    assert conn.resp_body =~ "Unsupported protocol version"
+    assert conn.status == 200
+    decoded = Corex.MCP.Json.decode!(conn.resp_body)
+    assert decoded["result"]["protocolVersion"] == "2025-11-25"
   end
 
   test "handle_http_message ping" do
