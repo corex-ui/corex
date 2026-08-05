@@ -43,8 +43,10 @@
  .toast [data-scope="toast"][data-part="content"] {
  display: flex;
  flex-direction: column;
+ position: relative;
 
  padding: 0;
+ border-radius: inherit;
  overflow: hidden;
  }
 
@@ -154,6 +156,7 @@
  position: absolute;
  bottom: 0;
  inset-inline: 0;
+ z-index: 1;
  animation-name: shrink;
  animation-duration: var(--duration);
  animation-fill-mode: forwards;

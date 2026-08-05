@@ -73,9 +73,9 @@ export class ToastItem<T = unknown> extends Component<ToastItemProps<T>, Api, It
 
     this.el.innerHTML = `
       <span data-scope="toast" data-part="ghost-before"></span>
-      <div data-scope="toast" data-part="progressbar"></div>
 
       <div data-scope="toast" data-part="content">
+        <div data-scope="toast" data-part="progressbar"></div>
         <div data-scope="toast" data-part="header">
           <div data-scope="toast" data-part="loading-spinner" style="display: none;"></div>
           <div data-scope="toast" data-part="title"></div>

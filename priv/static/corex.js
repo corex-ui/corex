@@ -41789,9 +41789,9 @@ ${err}`);
           this.el.setAttribute("data-part", "root");
           this.el.innerHTML = `
       <span data-scope="toast" data-part="ghost-before"></span>
-      <div data-scope="toast" data-part="progressbar"></div>
 
       <div data-scope="toast" data-part="content">
+        <div data-scope="toast" data-part="progressbar"></div>
         <div data-scope="toast" data-part="header">
           <div data-scope="toast" data-part="loading-spinner" style="display: none;"></div>
           <div data-scope="toast" data-part="title"></div>
@@ -41942,21 +41942,7 @@ ${err}`);
           return this.zagConnect(group.connect);
         }
         render() {
-          const groupProps = this.api.getGroupProps();
-          const onMouseLeave = groupProps.onMouseLeave;
-          this.spreadProps(this.groupEl, __spreadProps(__spreadValues({}, groupProps), {
-            // Zag expands on enter and collapses on leave. During the expand
-            // animation, gaps between absolutely positioned toasts can fire a
-            // brief mouseleave → collapse → re-enter flash. Defer leave until
-            // the pointer is actually outside the group.
-            onMouseLeave: (event) => {
-              requestAnimationFrame(() => {
-                if (!this.groupEl.matches(":hover")) {
-                  onMouseLeave == null ? void 0 : onMouseLeave(event);
-                }
-              });
-            }
-          }));
+          this.spreadProps(this.groupEl, this.api.getGroupProps());
           const toasts = this.api.getToasts().filter((t2) => typeof t2.id === "string");
           const nextIds = new Set(toasts.map((t2) => t2.id));
           toasts.forEach((toastData, index) => {
