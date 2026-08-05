@@ -180,7 +180,7 @@ defmodule E2eWeb.SelectPlayLive do
             invalid={@controls.invalid}
           >
             <:item :let={item}>
-              <Flagpack.flag name={String.to_existing_atom(to_string(item.value))} />
+              <Flagpack.flag name={flag_name(item.value)} />
               {item.label}
             </:item>
             <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>

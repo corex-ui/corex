@@ -77,6 +77,7 @@ defmodule Corex.Listbox do
   }>
     <:label>Country of residence</:label>
     <:item :let={%{item: entry}}>
+      <% Code.ensure_loaded!(Flagpack) %>
       <Flagpack.flag name={String.to_existing_atom(to_string(entry.value))} />
       {entry.label}
     </:item>

@@ -92,6 +92,7 @@ defmodule E2eWeb do
       alias E2eWeb.Layouts
       alias Phoenix.LiveView.JS
       import E2eWeb.RecordFields
+      import E2eWeb.FlagpackHelpers, only: [flag_name: 1]
 
       # Routes generation with the ~p sigil
       unquote(verified_routes())

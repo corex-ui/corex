@@ -74,6 +74,7 @@ defmodule Corex.Combobox do
         ])}
       >
         <:item :let={item}>
+          <% Code.ensure_loaded!(Flagpack) %>
           <Flagpack.flag name={String.to_existing_atom(to_string(item.value))} />
           {item.label}
         </:item>
@@ -107,6 +108,7 @@ defmodule Corex.Combobox do
         ])}
       >
         <:item :let={item}>
+          <% Code.ensure_loaded!(Flagpack) %>
           <Flagpack.flag name={String.to_existing_atom(to_string(item.value))} />
           {item.label}
         </:item>

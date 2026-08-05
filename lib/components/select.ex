@@ -73,6 +73,7 @@ defmodule Corex.Select do
       Country of residence
     </:label>
     <:item :let={item}>
+      <% Code.ensure_loaded!(Flagpack) %>
       <Flagpack.flag name={String.to_existing_atom(to_string(item.value))} />
       {item.label}
     </:item>
@@ -101,6 +102,7 @@ defmodule Corex.Select do
     ])}
   >
     <:item :let={item}>
+      <% Code.ensure_loaded!(Flagpack) %>
       <Flagpack.flag name={String.to_existing_atom(to_string(item.value))} />
       {item.label}
     </:item>

@@ -152,7 +152,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       ])}
     >
       <:item :let={item}>
-        <Flagpack.flag name={String.to_existing_atom(to_string(item.value))} />
+        <Flagpack.flag name={flag_name(item.value)} />
         {item.label}
       </:item>
       <:trigger>
@@ -177,7 +177,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       items={Corex.List.new(items_minimal())}
     >
       <:item :let={item}>
-        <Flagpack.flag name={String.to_existing_atom(to_string(item.value))} />
+        <Flagpack.flag name={flag_name(item.value)} />
         {item.label}
       </:item>
       <:empty>No results</:empty>
@@ -203,7 +203,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       ])}
     >
       <:item :let={item}>
-        <Flagpack.flag name={String.to_existing_atom(to_string(item.value))} />
+        <Flagpack.flag name={flag_name(item.value)} />
         {item.label}
       </:item>
       <:trigger>
@@ -234,7 +234,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       }
     >
       <:item :let={item}>
-        <Flagpack.flag name={String.to_existing_atom(to_string(item.value))} />
+        <Flagpack.flag name={flag_name(item.value)} />
         {item.label}
       </:item>
       <:empty>No results</:empty>
