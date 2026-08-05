@@ -39,23 +39,28 @@ if Mix.env() in [:dev, :test] do
 end
 ```
 
-Point your MCP client at `http://localhost:4000/corex/mcp`. Prefer `--no-mcp` when scaffolding apps that should not expose the endpoint. Never set `allow_remote_access: true` casually.
+Point your MCP client at Phoenix `http://localhost:4000/corex/mcp` or Tableau `http://localhost:4004/corex/mcp`. Prefer `--no-mcp` when scaffolding apps that should not expose the endpoint. Never set `allow_remote_access: true` casually.
 
-### Cursor
+### Cursor / Claude Desktop / other clients
 
-`mix corex.new` / `mix corex.tableau.new` write `.cursor/mcp.json` when `--mcp` is on (default). Manual example:
+`mix corex.new` / `mix corex.tableau.new` write a **project** `.cursor/mcp.json` with the single URL for that app when `--mcp` is on (default). For a **user-level / shared** config (Cursor, Claude Desktop, VS Code, etc.) when you use both hosts, register both servers:
 
-`.cursor/mcp.json`:
+Cursor `mcp.json`:
 
 ```json
 {
   "mcpServers": {
     "corex": {
       "url": "http://localhost:4000/corex/mcp"
+    },
+    "corex-tableau": {
+      "url": "http://localhost:4004/corex/mcp"
     }
   }
 }
 ```
+
+Claude Desktop uses the same two URLs under `transport.type: "http"`. Other streamable HTTP clients: configure Phoenix on **4000** and Tableau on **4004**; path is always `/corex/mcp`.
 
 Canonical guide (tools, security, Tableau Bandit): [MCP on Hexdocs](https://hexdocs.pm/corex/MCP.html) / repo [`guides/MCP.md`](https://github.com/corex-ui/corex/blob/main/guides/MCP.md).
 

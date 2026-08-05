@@ -20,9 +20,9 @@ if Mix.env() in [:dev, :test] do
 end
 ```
 
-Cursor: `{ "corex": { "url": "http://localhost:4000/corex/mcp" } }` (`mix corex.new` writes `.cursor/mcp.json` when `--mcp`). Prefer `--no-mcp` for locked-down scaffolds.
+Cursor / Claude / other HTTP MCP clients: Phoenix `http://localhost:4000/corex/mcp`, Tableau `http://localhost:4004/corex/mcp`. Project scaffolds write a single `.cursor/mcp.json`; user-level configs that use both hosts should register **both** servers (`corex` + `corex-tableau`). Prefer `--no-mcp` for locked-down scaffolds.
 
-Claude Desktop: `{ "transport": { "type": "http", "url": "…" } }`
+Claude Desktop: wrap each URL in `{ "transport": { "type": "http", "url": "…" } }`.
 
 Call order: `list_components` → `get_component` (kebab or snake ids; structured hook/events/api); `search_docs` / `navigation_guide` as needed; `list_modifiers` / `get_component_style` for `ui-*`; `list_themes` / `design_guide` for theming. Prompts: `corex_form`, `corex_controlled`, `corex_style`. Stale metadata → restart server.
 

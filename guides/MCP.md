@@ -46,25 +46,30 @@ Default URL: `http://localhost:4004`.
 
 Point any client that supports streamable HTTP MCP at the running URL above.
 
+Phoenix serves MCP on the **app port** (`http://localhost:4000/corex/mcp`). Tableau serves MCP on a **dedicated Bandit** (`http://localhost:4004/corex/mcp` by default). Path is always `/corex/mcp`.
+
+Scaffolds write a **project** `.cursor/mcp.json` with the single URL for that app (`mix corex.new` → 4000, `mix corex.tableau.new` → 4004). If you use a **user-level / shared** client config and work on both Phoenix and Tableau apps, register **both** servers (examples below). Prefer `--no-mcp` for locked-down scaffolds. Never set `allow_remote_access: true` casually.
+
 ### Cursor
 
-Create or edit `.cursor/mcp.json` in your project (`mix corex.new` / `mix corex.tableau.new` write this when `--mcp` is on):
+Project file (written by the installer when `--mcp` is on), or user-level `~/.cursor/mcp.json` with both entries:
 
 ```json
 {
   "mcpServers": {
     "corex": {
       "url": "http://localhost:4000/corex/mcp"
+    },
+    "corex-tableau": {
+      "url": "http://localhost:4004/corex/mcp"
     }
   }
 }
 ```
 
-For Tableau Bandit, use `http://localhost:4004/corex/mcp` (or your configured port). Prefer `--no-mcp` for locked-down scaffolds. Never set `allow_remote_access: true` casually.
-
 ### Claude Desktop
 
-Add an entry to `claude_desktop_config.json`:
+Add both servers to `claude_desktop_config.json` when you use Phoenix and Tableau:
 
 ```json
 {
@@ -74,6 +79,12 @@ Add an entry to `claude_desktop_config.json`:
         "type": "http",
         "url": "http://localhost:4000/corex/mcp"
       }
+    },
+    "corex-tableau": {
+      "transport": {
+        "type": "http",
+        "url": "http://localhost:4004/corex/mcp"
+      }
     }
   }
 }
@@ -81,7 +92,7 @@ Add an entry to `claude_desktop_config.json`:
 
 ### VS Code and other HTTP MCP clients
 
-Use the same URL (`http://localhost:4000/corex/mcp` for Phoenix, or your Tableau Bandit URL). Configure the client for streamable HTTP MCP and omit an `Origin` header on requests (see Security).
+Configure streamable HTTP MCP twice if needed — Phoenix at `http://localhost:4000/corex/mcp`, Tableau at `http://localhost:4004/corex/mcp` (or your configured `:mcp_port`). Omit an `Origin` header on requests (see Security).
 
 ## Tools
 

@@ -22,17 +22,20 @@ if Mix.env() in [:dev, :test] do
 end
 ```
 
-URL: `http://localhost:4000/corex/mcp`
+URL: Phoenix `http://localhost:4000/corex/mcp`; Tableau Bandit `http://localhost:4004/corex/mcp` (path always `/corex/mcp`).
 
 ## Cursor
 
-`.cursor/mcp.json` (written by `mix corex.new` / `mix corex.tableau.new` when `--mcp`):
+Project `.cursor/mcp.json` is written by `mix corex.new` / `mix corex.tableau.new` when `--mcp` (single URL for that app). For a **user-level** `~/.cursor/mcp.json` when you use both Phoenix and Tableau:
 
 ```json
 {
   "mcpServers": {
     "corex": {
       "url": "http://localhost:4000/corex/mcp"
+    },
+    "corex-tableau": {
+      "url": "http://localhost:4004/corex/mcp"
     }
   }
 }
@@ -42,6 +45,8 @@ Prefer `--no-mcp` for locked-down scaffolds. Never set `allow_remote_access: tru
 
 ## Claude Desktop
 
+Same two servers in `claude_desktop_config.json`:
+
 ```json
 {
   "mcpServers": {
@@ -50,10 +55,18 @@ Prefer `--no-mcp` for locked-down scaffolds. Never set `allow_remote_access: tru
         "type": "http",
         "url": "http://localhost:4000/corex/mcp"
       }
+    },
+    "corex-tableau": {
+      "transport": {
+        "type": "http",
+        "url": "http://localhost:4004/corex/mcp"
+      }
     }
   }
 }
 ```
+
+Other streamable HTTP clients: configure Phoenix on **4000** and Tableau on **4004** the same way.
 
 ## Tools — call order
 
@@ -73,7 +86,7 @@ Prompts: `corex_form`, `corex_controlled`, `corex_style`.
 
 | Issue | Fix |
 |-------|-----|
-| Connection refused | Start Phoenix (`mix phx.server`); check port |
+| Connection refused | Start the host (`mix phx.server` on 4000, or Tableau MCP Bandit on 4004); check which MCP server URL your client uses |
 | Tools empty / module missing | Add `{:corex_mcp, "~> 0.2", only: [:dev, :test]}` and `plug Corex.MCP` |
 | Design tools error | Add `corex_design` and rebuild |
 | Stale metadata | Restart server after Corex upgrade |
@@ -81,7 +94,7 @@ Prompts: `corex_form`, `corex_controlled`, `corex_style`.
 
 ## Tableau
 
-Separate Bandit port — default `http://localhost:4004`. See https://hexdocs.pm/corex/tableau.html
+Separate Bandit — default `http://localhost:4004/corex/mcp`. Register alongside Phoenix (`4000`) in shared MCP client configs. See https://hexdocs.pm/corex/tableau.html
 
 ## References
 
