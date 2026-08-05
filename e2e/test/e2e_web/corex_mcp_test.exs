@@ -48,12 +48,30 @@ defmodule E2eWeb.CorexMcpTest do
       end
     end
 
-    test "prompts/list, resources/list, resources/templates/list return empty",
+    test "prompts/list returns recipes; resources lists stay empty",
          %{
            conn: conn
          } do
+      prompts_body = %{
+        "jsonrpc" => "2.0",
+        "id" => 1,
+        "method" => "prompts/list",
+        "params" => %{}
+      }
+
+      conn =
+        conn
+        |> put_req_header("content-type", "application/json")
+        |> post(@mcp_path, Jason.encode!(prompts_body))
+
+      assert response(conn, 200)
+      assert %{"result" => %{"prompts" => prompts}} = json_response(conn, 200)
+      names = Enum.map(prompts, & &1["name"])
+      assert "corex_form" in names
+      assert "corex_controlled" in names
+      assert "corex_style" in names
+
       for {method, key} <- [
-            {"prompts/list", "prompts"},
             {"resources/list", "resources"},
             {"resources/templates/list", "templates"}
           ] do
@@ -97,14 +115,14 @@ defmodule E2eWeb.CorexMcpTest do
       assert text =~ "combobox"
     end
 
-    test "tools/call get_component for accordion includes docs", %{conn: conn} do
+    test "tools/call get_component for accordion includes docs when requested", %{conn: conn} do
       body = %{
         "jsonrpc" => "2.0",
         "id" => 3,
         "method" => "tools/call",
         "params" => %{
           "name" => "get_component",
-          "arguments" => %{"id" => "accordion"}
+          "arguments" => %{"id" => "accordion", "include_docs" => true}
         }
       }
 

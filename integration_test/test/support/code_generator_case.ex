@@ -42,7 +42,7 @@ defmodule Corex.Integration.CodeGeneratorCase do
       mix_run!(["corex.design.build"], app_root_path, env: [{"MIX_ENV", "dev"}])
     end
 
-    mix_run!(["compile"], app_root_path)
+    mix_run!(["compile"], app_root_path, env: [{"MIX_ENV", "dev"}])
 
     {app_root_path, output}
   end
@@ -73,7 +73,7 @@ defmodule Corex.Integration.CodeGeneratorCase do
       mix_run!(["corex.design.build"], app_root_path, env: [{"MIX_ENV", "dev"}])
     end
 
-    mix_run!(["compile"], app_root_path)
+    mix_run!(["compile"], app_root_path, env: [{"MIX_ENV", "dev"}])
 
     {app_root_path, output}
   end
@@ -223,7 +223,9 @@ defmodule Corex.Integration.CodeGeneratorCase do
   end
 
   def assert_no_compilation_warnings(app_path) do
-    mix_run!(["do", "clean", "compile", "--warnings-as-errors"], app_path)
+    mix_run!(["do", "clean", "compile", "--warnings-as-errors"], app_path,
+      env: [{"MIX_ENV", "dev"}]
+    )
   end
 
   def drop_test_database(app_path) when is_binary(app_path) do

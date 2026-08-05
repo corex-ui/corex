@@ -95,7 +95,8 @@ defmodule <%= @app_module %>.RootLayout do
 <% end %><%= if @mode do %>      data-mode={@mode}
 <% else %>      data-mode="light"
 <% end %><%= if @a11y do %>      {<%= @app_module %>.Accessibility.data_attrs()}
-    ><% else %>    >
+    >
+<% else %>    >
 <% end %>      <head>
 <%= if @mode do %>        {<%= @app_module %>.Mode.head_script()}
 <% end %><%= if @theme do %>        {<%= @app_module %>.Theme.head_script()}

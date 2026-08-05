@@ -123,6 +123,17 @@ defmodule Corex.New.Tableau.TemplatesTest do
       assert out =~ ~s(id="mode-switcher-mobile")
     end
 
+    test "html open tag and head are on separate lines for mix format" do
+      base = Templates.root_layout(@base_assigns)
+      assert base =~ ~r/>\n\s*<head>/
+      refute base =~ ~r/>\n\n\s*<head>/
+
+      a11y = Templates.root_layout(Keyword.put(@base_assigns, :a11y, true))
+      assert a11y =~ ~r/>\n\s*<head>/
+      refute a11y =~ ~r/>\n\n\s*<head>/
+      assert a11y =~ "Accessibility.data_attrs()"
+    end
+
     test "omits theme/mode when disabled" do
       out = Templates.root_layout(@base_assigns)
       refute out =~ "Mode.head_script"
