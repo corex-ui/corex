@@ -239,6 +239,7 @@ defmodule Corex.MixProject do
   defp docs do
     [
       main: "installation",
+      source_ref: "v#{@version}",
       extras: [
         "guides/installation.md",
         "guides/manual_installation.md",
@@ -347,7 +348,8 @@ defmodule Corex.MixProject do
         Corex.TreeView
       ],
       Form: [
-        Corex.FormField
+        Corex.FormField,
+        Corex.Dataset
       ],
       Content: [
         Corex.Content,

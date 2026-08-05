@@ -115,7 +115,7 @@ defmodule CorexDesign.MixProject do
         "GitHub" => @scm_url,
         "Website" => "https://corex.gigalixirapp.com/en"
       },
-      files: ~w(lib priv mix.exs README.md .formatter.exs guides)
+      files: ~w(lib priv mix.exs README.md CHANGELOG.md LICENSE .formatter.exs guides)
     ]
   end
 

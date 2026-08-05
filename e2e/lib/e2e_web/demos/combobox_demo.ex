@@ -152,7 +152,8 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       ])}
     >
       <:item :let={item}>
-        <Flagpack.flag name={flag_name(item.value)} />
+        <% Code.ensure_loaded!(Flagpack) %>
+        <Flagpack.flag name={String.to_existing_atom(to_string(item.value))} />
         {item.label}
       </:item>
       <:trigger>
@@ -203,7 +204,8 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       ])}
     >
       <:item :let={item}>
-        <Flagpack.flag name={flag_name(item.value)} />
+        <% Code.ensure_loaded!(Flagpack) %>
+        <Flagpack.flag name={String.to_existing_atom(to_string(item.value))} />
         {item.label}
       </:item>
       <:trigger>

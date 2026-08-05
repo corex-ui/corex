@@ -1,27 +1,35 @@
 # Changelog
 
-## 0.2.0 - 2026-07-26
+## 0.2.0 - 2026-08-05
 
 Design and MCP ship as separate Hex packages. Theming is config-driven through an Elixir CSS pipeline.
 
 ### Packages
 
-- **`corex_design`** — optional Design package (`runtime: false`): tokens, themes, modes, and component CSS from `config :corex_design`.
-- **`corex_mcp`** — optional MCP package (`only: [:dev, :test]`) for AI component and design discovery. Never enable in production.
-- **`corex`** — unstyled Phoenix components and Zag.js hooks (unchanged role).
-- **`mix corex.new`** — Design and MCP on by default (`--no-design` / `--no-mcp` to skip).
+- **`corex_design`** — optional Design package (`runtime: false`, **MIT**): tokens, themes, modes, and component CSS from `config :corex_design`.
+- **`corex_mcp`** — optional MCP package (`only: [:dev, :test]`, **Apache-2.0**) for AI component and design discovery. Never enable in production. License differs from the MIT siblings because the HTTP MCP stack follows Tidewave’s Apache-2.0 lineage.
+- **`corex`** — unstyled Phoenix components and Zag.js hooks (unchanged role, **MIT**).
+- **`mix corex.new`** — Design and MCP on by default (`--no-design` / `--no-mcp` to skip). Scaffolds `.cursor/mcp.json` when MCP is enabled; optional **`--a11y`** wires accessibility preference CSS.
 
 ### Design
 
 - Config-driven Elixir pipeline: declare themes, semantics, and modes, then generate CSS with `mix corex.design.build`.
 - Shared `ui-*` modifiers for roles and variants (subtle / `ui-solid` / `ui-ghost`). `ui-outline` and per-component BEM modifiers are gone.
 - Notable renames: `layer` → `surface`; public token names only (no `--theme-*` indirection).
+- Optional accessibility preference CSS (`--a11y` / design accessibility emit).
 
 ### Components
 
-- Several LiveView event and slot names are normalized (toast, toggle group, pagination, color picker, file upload).
-- Form controls need an explicit `id` when you do not pass `field`.
-- Multi-value datasets use JSON in the DOM.
+- Several LiveView event and slot names are normalized (toast, toggle group, pagination, color picker, file upload, marquee). See the [update guide](guides/update.md) rename table.
+- Form controls need an explicit `id` when you do not pass `field`. Opt into `auto_invalid` for alert borders on used invalid fields.
+- Multi-value datasets use JSON in the DOM (`Corex.Dataset.encode_json/1`).
+- `button_group` removed; compose buttons with shared `ui-*` modifiers.
+- Marquee: push payload uses `id` (was `marquee_id`); `auto_fill` defaults for clone settling.
+
+### MCP
+
+- Design and guides tools (`list_modifiers`, `get_component_style`, `list_themes`, `design_guide`, installation/guides helpers).
+- Cursor protocol negotiation; richer component discovery prompts.
 
 ### Requirements
 
@@ -64,7 +72,7 @@ See the [update guide](guides/update.md) when upgrading from 0.1.x.
 - [docs] Restore `mix corex.new` on Hexdocs
 - [mcp] Security hardening
 
-Run `mix corex.design --force` in your app to refresh `assets/corex/` (CSS and tokens).
+After upgrading within 0.1.x, refresh design CSS with `mix corex.design.build` (the old `mix corex.design` task is retired in 0.2.0).
 
 ## 0.1.0
 

@@ -85,6 +85,7 @@ defmodule Corex.New.MixProject do
     [
       main: "readme",
       extras: ["README.md"],
+      source_ref: "v#{@version}",
       source_url_pattern: "#{@scm_url}/blob/v#{@version}/installer/%{path}#L%{line}"
     ]
   end

@@ -139,7 +139,8 @@ defmodule E2eWeb.Demos.ListboxDemo do
     }>
       <:label>Country of residence</:label>
       <:item :let={%{item: entry}}>
-        <Flagpack.flag name={flag_name(entry.value)} />
+        <% Code.ensure_loaded!(Flagpack) %>
+        <Flagpack.flag name={String.to_existing_atom(to_string(entry.value))} />
         {entry.label}
       </:item>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
