@@ -83,7 +83,7 @@ defmodule E2eWeb.CorexMcpTest do
         }
 
         conn =
-          conn
+          build_conn()
           |> put_req_header("content-type", "application/json")
           |> post(@mcp_path, Jason.encode!(body))
 

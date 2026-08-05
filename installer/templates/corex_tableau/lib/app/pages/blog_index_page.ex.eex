@@ -41,7 +41,8 @@ defmodule <%= @app_module %>.BlogIndexPage do
           </h1>
           <p class="blog__lede">
             {~t"Posts are Markdown files in the"}
-            <code class="rounded-md bg-surface px-space-xs py-space-xs text-sm">_posts/</code> {~t"directory."}
+            <code class="rounded-md bg-surface px-space-xs py-space-xs text-sm">_posts/</code>
+            {~t"directory."}
           </p>
           <p class="blog__meta">
             <span>
@@ -66,7 +67,8 @@ defmodule <%= @app_module %>.BlogIndexPage do
       </ul>
       <p :if={@sorted_posts == []} class="m-0 text-ink-muted">
         {~t"No posts yet. Add Markdown files to"}
-        <code class="rounded-md bg-surface px-space-xs py-space-xs text-sm">_posts/</code> {~t"to get started."}
+        <code class="rounded-md bg-surface px-space-xs py-space-xs text-sm">_posts/</code>
+        {~t"to get started."}
       </p>
     </article>
     """
@@ -137,7 +139,8 @@ end
           </h1>
           <p class="blog__lede">
             Posts are Markdown files in the
-            <code class="rounded-md bg-surface px-space-xs py-space-xs text-sm">_posts/</code> directory.
+            <code class="rounded-md bg-surface px-space-xs py-space-xs text-sm">_posts/</code>
+            directory.
           </p>
           <p class="blog__meta">
             <span>
@@ -170,7 +173,8 @@ end
       </ul>
       <p :if={@sorted_posts == []} class="m-0 text-ink-muted">
         No posts yet. Add Markdown files to
-        <code class="rounded-md bg-surface px-space-xs py-space-xs text-sm">_posts/</code> to get started.
+        <code class="rounded-md bg-surface px-space-xs py-space-xs text-sm">_posts/</code>
+        to get started.
       </p>
     </article>
     """

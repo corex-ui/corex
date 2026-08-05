@@ -158,7 +158,7 @@ defmodule <%= @app_module %>.RootLayout do
                     </.navigate>
                   </div>
                   <div class="flex min-h-0 flex-1 flex-col gap-space overflow-y-auto px-space-xl py-space">
-                    <nav class="flex w-full flex-col gap-space-sm" aria-label={<%= if @lang do %>~t"Site"<% else %>"Site"<% end %>}>
+                    <nav class="flex w-full flex-col gap-space-sm" aria-label=<%= if @lang do %>{~t"Site"}<% else %>"Site"<% end %>>
                       <.navigate class="link ui-nav ui-size-md" to={@home_path}>
 <%= if @lang do %>                        {~t"Home"}
 <% else %>                        Home
@@ -200,7 +200,7 @@ defmodule <%= @app_module %>.RootLayout do
 
               <nav
                 class="hidden items-center gap-space-lg md:flex lg:gap-space-xl"
-                aria-label={<%= if @lang do %>~t"Primary"<% else %>"Primary"<% end %>}
+                aria-label=<%= if @lang do %>{~t"Primary"}<% else %>"Primary"<% end %>
               >
                 <.navigate class="link ui-nav ui-size-md" to={@home_path}>
 <%= if @lang do %>                  {~t"Home"}

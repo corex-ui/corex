@@ -77,16 +77,14 @@ defmodule <%= @app_module %>.HomePage do
                 class="button ui-accent ui-solid ui-size-lg"
                 external
               >
-                {~t"Demo site"}
-                <.heroicon name="hero-arrow-top-right-on-square" />
+                {~t"Demo site"} <.heroicon name="hero-arrow-top-right-on-square" />
               </.navigate>
               <.navigate
                 to="https://hexdocs.pm/corex/installation.html"
                 class="button ui-ghost ui-size-lg"
                 external
               >
-                {~t"Visit Hexdocs"}
-                <.heroicon name="hero-arrow-top-right-on-square" />
+                {~t"Visit Hexdocs"} <.heroicon name="hero-arrow-top-right-on-square" />
               </.navigate>
             </div>
           </div>
@@ -262,16 +260,14 @@ end
                 class="button ui-accent ui-solid ui-size-lg"
                 external
               >
-                Demo site
-                <.heroicon name="hero-arrow-top-right-on-square" />
+                Demo site <.heroicon name="hero-arrow-top-right-on-square" />
               </.navigate>
               <.navigate
                 to="https://hexdocs.pm/corex/installation.html"
                 class="button ui-ghost ui-size-lg"
                 external
               >
-                Visit Hexdocs
-                <.heroicon name="hero-arrow-top-right-on-square" />
+                Visit Hexdocs <.heroicon name="hero-arrow-top-right-on-square" />
               </.navigate>
             </div>
           </div>

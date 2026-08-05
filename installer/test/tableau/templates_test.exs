@@ -490,7 +490,7 @@ defmodule Corex.New.Tableau.TemplatesTest do
       assert out =~ "<.code"
       assert out =~ "<.clipboard"
       refute out =~ "GettextSigil"
-      assert out =~ ~s(trigger_aria_label={"Copy code"})
+      assert out =~ ~s(trigger_aria_label="Copy code")
     end
 
     test "uses gettext for copy label when lang is on" do

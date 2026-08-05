@@ -74,6 +74,7 @@ defmodule Corex.Integration.CodeGeneratorCase do
     end
 
     mix_run!(["compile"], app_root_path, env: [{"MIX_ENV", "dev"}])
+    mix_run!(["format"], app_root_path, env: [{"MIX_ENV", "dev"}])
 
     {app_root_path, output}
   end

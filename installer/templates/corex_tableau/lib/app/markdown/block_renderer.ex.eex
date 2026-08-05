@@ -18,7 +18,7 @@ defmodule <%= @app_module %>.Markdown.BlockRenderer do
         class="clipboard ui-size-sm absolute top-2 right-2 z-10"
         value={@code}
         input={false}
-        trigger_aria_label={<%= if @lang do %>~t"Copy code"<% else %>"Copy code"<% end %>}
+        trigger_aria_label=<%= if @lang do %>{~t"Copy code"}<% else %>"Copy code"<% end %>
       >
         <:copy>
           <.heroicon name="hero-clipboard" />

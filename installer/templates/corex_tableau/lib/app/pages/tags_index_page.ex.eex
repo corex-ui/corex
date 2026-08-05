@@ -65,7 +65,8 @@ defmodule <%= @app_module %>.TagsIndexPage do
       </ul>
 
       <p :if={@sorted_tags == []} class="m-0 text-ink-muted">
-        {~t"No tags yet. Add a"} <code class="rounded-md bg-surface px-space-xs py-space-xs text-sm">tags:</code>
+        {~t"No tags yet. Add a"}
+        <code class="rounded-md bg-surface px-space-xs py-space-xs text-sm">tags:</code>
         {~t"list to post front matter."}
       </p>
     </article>
@@ -156,7 +157,8 @@ end
       </ul>
 
       <p :if={@sorted_tags == []} class="m-0 text-ink-muted">
-        No tags yet. Add a <code class="rounded-md bg-surface px-space-xs py-space-xs text-sm">tags:</code>
+        No tags yet. Add a
+        <code class="rounded-md bg-surface px-space-xs py-space-xs text-sm">tags:</code>
         list to post front matter.
       </p>
     </article>

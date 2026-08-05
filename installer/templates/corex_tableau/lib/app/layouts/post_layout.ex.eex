@@ -40,7 +40,7 @@ defmodule <%= @app_module %>.PostLayout do
 <% end %>
     ~H"""
     <article class={"#{Shell.stage()} flex flex-col gap-space-xl pb-size-xl"}>
-      <nav class="blog__nav" aria-label={<%= if @lang do %>~t"Blog"<% else %>"Blog"<% end %>}>
+      <nav class="blog__nav" aria-label=<%= if @lang do %>{~t"Blog"}<% else %>"Blog"<% end %>>
         <.navigate to={@blog_path} class="link ui-nav w-fit">
           <.heroicon name="hero-arrow-left" /><%= if @lang do %> {~t"Back to blog"}<% else %> Back to blog<% end %>
         </.navigate>
