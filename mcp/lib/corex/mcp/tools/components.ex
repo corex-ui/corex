@@ -332,9 +332,9 @@ defmodule Corex.MCP.Tools.Components do
 
   defp attr_type(attr) when is_map(attr) do
     case Map.get(attr, :type) do
+      nil -> nil
       type when is_atom(type) -> to_string(type)
-      type when not is_nil(type) -> inspect(type)
-      _ -> nil
+      type -> inspect(type)
     end
   end
 
