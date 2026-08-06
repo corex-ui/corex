@@ -661,7 +661,7 @@ defmodule Corex.ColorPicker do
 
     initial_value = initial_value(assigns)
     initial = Initial.parse(initial_value)
-    value_str = initial.hex_value || "#000000"
+    value_str = initial.hex_value || fallback_value_str(assigns)
 
     connect_props =
       Connect.props(%Props{
@@ -714,6 +714,9 @@ defmodule Corex.ColorPicker do
   end
 
   defp initial_value(_), do: nil
+
+  defp fallback_value_str(%{form_field: true}), do: nil
+  defp fallback_value_str(_), do: "#000000"
 
   defp normalize_preset_value(preset) when is_binary(preset) do
     case Initial.parse(preset) do

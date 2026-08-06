@@ -159,13 +159,17 @@ defmodule Corex.Editable.Connect do
   @spec form_value(FormValue.t()) :: map()
   def form_value(assigns) do
     %{
-      "type" => "hidden",
+      "type" => "text",
+      "hidden" => true,
+      "tabindex" => "-1",
+      "aria-hidden" => "true",
+      "autocomplete" => "off",
       "data-scope" => "editable",
       "data-part" => "form-value",
       "id" => "#{assigns.id}-value",
-      "name" => assigns.name,
       "value" => assigns.value || ""
     }
+    |> maybe_put("name", assigns.name)
     |> maybe_put("form", assigns.form)
   end
 

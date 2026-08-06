@@ -174,9 +174,9 @@ defmodule Corex.NumberInput.Anatomy do
 
   defmodule TriggerGroup do
     @moduledoc false
-    defstruct dir: "ltr", orientation: "horizontal"
+    defstruct [:id, dir: "ltr", orientation: "horizontal"]
 
-    @type t :: %__MODULE__{dir: String.t(), orientation: String.t()}
+    @type t :: %__MODULE__{id: String.t() | nil, dir: String.t(), orientation: String.t()}
   end
 
   defmodule DecrementTrigger do

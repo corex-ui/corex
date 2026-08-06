@@ -87,7 +87,14 @@ export function syncArrayInputsInPlace(
   let valueNodes = existing.filter((n) => !n.hasAttribute("data-empty"));
 
   while (valueNodes.length < values.length) {
-    const input = createArrayInput(scope, submitName, hostEl, "", false, valueNodes.length);
+    const input = createArrayInput(
+      scope,
+      fieldTouched ? submitName : undefined,
+      hostEl,
+      "",
+      false,
+      valueNodes.length
+    );
     container.appendChild(input);
     valueNodes = Array.from(
       container.querySelectorAll<HTMLInputElement>(
@@ -105,6 +112,13 @@ export function syncArrayInputsInPlace(
   valueNodes.forEach((input, index) => {
     input.id = arrayInputId(scope, hostEl.id, index);
     input.value = values[index] ?? "";
+    if (fieldTouched) {
+      input.name = submitName;
+      associateInputWithFormIfOutside(input, hostEl);
+    } else {
+      input.removeAttribute("name");
+      input.removeAttribute("form");
+    }
   });
 
   return valueNodes[valueNodes.length - 1] ?? null;
@@ -120,9 +134,14 @@ export function syncArrayHiddenInputsForPhoenix(
   if (!submitName) return;
 
   const fixedLength = options.fixedLength;
-  const normalized =
+  const padded =
     fixedLength !== undefined ? padValues(values, fixedLength) : values.map((v) => String(v));
   const fieldTouched = isFormFieldUsed(el, options.fieldTouched === true);
+  const allEmpty = padded.length > 0 && padded.every((v) => String(v).trim() === "");
+  // Cleared fixed-length fields (e.g. pin) must keep a named empty sentinel so
+  // LiveView still receives the field and used_input?/errors stay visible.
+  const normalized =
+    fixedLength !== undefined && fieldTouched && allEmpty ? ([] as string[]) : padded;
 
   const container = el.querySelector<HTMLElement>(
     `[data-scope="${scope}"][data-part="array-inputs"]`

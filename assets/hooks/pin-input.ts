@@ -6,7 +6,12 @@ import {
   mountStringListBinding,
   readUpdatedServerStringList,
 } from "../lib/read-props";
-import { setArrayValues, setScalarValue } from "../lib/phoenix-form-bridge";
+import {
+  bindArrayFieldSubmitIntent,
+  setArrayValues,
+  setScalarValue,
+} from "../lib/phoenix-form-bridge";
+import { isFormFieldUsed } from "../lib/form-array-submit";
 import { createZagLiveHook } from "../lib/zag-live-hook";
 import {
   notifyChange,
@@ -17,8 +22,13 @@ import {
   type RespondTo,
 } from "../lib/respond-to";
 
-function sameStringList(a: ReadonlyArray<string>, b: ReadonlyArray<string>): boolean {
-  return a.length === b.length && a.every((v, i) => v === b[i]);
+/** Classify pin fill state for form notify / tests. */
+export function pinValueCommitKind(
+  values: ReadonlyArray<string>
+): "complete" | "empty" | "partial" {
+  if (values.length === 0 || values.every((v) => String(v).trim() === "")) return "empty";
+  if (values.every((v) => String(v).trim() !== "")) return "complete";
+  return "partial";
 }
 
 export function parseValueWithEmpties(raw: string): string[] {
@@ -61,10 +71,11 @@ export function syncPinInputFormForPhoenix(
   el: HTMLElement,
   values: ReadonlyArray<string>,
   onTouched?: () => void,
-  opts: { notifyLiveView?: boolean } = {}
+  opts: { notifyLiveView?: boolean; fieldTouched?: boolean } = {}
 ): void {
   const submitName = getString(el, "submitName");
   const count = getNumber(el, "count") ?? 0;
+  const fieldTouched = isFormFieldUsed(el, opts.fieldTouched === true);
 
   if (submitName) {
     setArrayValues(el, values, {
@@ -73,7 +84,7 @@ export function syncPinInputFormForPhoenix(
       submitName,
       fixedLength: count,
       notifyLiveView: opts.notifyLiveView,
-      fieldTouched: opts.notifyLiveView === true,
+      fieldTouched,
     });
     return;
   }
@@ -83,7 +94,11 @@ export function syncPinInputFormForPhoenix(
   );
   if (!hiddenInput) return;
   if (opts.notifyLiveView === false) {
-    setScalarValue(hiddenInput, values.join(""), { onTouched, markUsed: false });
+    setScalarValue(hiddenInput, values.join(""), {
+      onTouched,
+      markUsed: false,
+      dispatch: false,
+    });
     return;
   }
   setScalarValue(hiddenInput, values.join(""), { onTouched });
@@ -94,13 +109,18 @@ function zagNameForForm(el: HTMLElement): string | undefined {
   return getString(el, "name");
 }
 
+function sameStringList(a: ReadonlyArray<string>, b: ReadonlyArray<string>): boolean {
+  return a.length === b.length && a.every((v, i) => v === b[i]);
+}
+
 function buildMachineProps(
   el: HTMLElement,
   pushEvent: (name: string, payload: Record<string, unknown>) => void,
   canPush: () => boolean,
   initialValues: ReadonlyArray<string>,
-  isFieldTouched: () => boolean,
-  markFieldTouched: () => void
+  markFieldTouched: () => void,
+  isEdited: () => boolean,
+  markEdited: () => void
 ): Props {
   const count = getNumber(el, "count") ?? 0;
 
@@ -122,17 +142,27 @@ function buildMachineProps(
     type: getString<"alphanumeric" | "numeric" | "alphabetic">(el, "type"),
     placeholder: getString(el, "placeholder"),
     onValueChange: (details: ValueChangeDetails) => {
-      const isMountEcho = !isFieldTouched() && sameStringList(details.value, initialValues);
-      if (!isMountEcho) {
-        markFieldTouched();
+      if (!sameStringList(details.value, initialValues)) {
+        markEdited();
       }
-      // Defer form sync so Zag can advance focus (microtask) before Phoenix/LiveView
-      // input events run and potentially interrupt the next-cell focus.
-      queueMicrotask(() => {
-        syncPinInputFormForPhoenix(el, details.value, undefined, {
-          notifyLiveView: !isMountEcho,
-        });
+      const kind = pinValueCommitKind(details.value);
+
+      // Local DOM always; mid-entry never phx-change.
+      syncPinInputFormForPhoenix(el, details.value, undefined, {
+        notifyLiveView: false,
+        fieldTouched: false,
       });
+
+      // After the user has edited, clearing all cells must notify so
+      // validate_required can show "can't be blank".
+      if (kind === "empty" && isEdited()) {
+        markFieldTouched();
+        syncPinInputFormForPhoenix(el, details.value, undefined, {
+          notifyLiveView: true,
+          fieldTouched: true,
+        });
+      }
+
       notifyChange({
         el,
         canPushServer: canPush(),
@@ -147,6 +177,12 @@ function buildMachineProps(
       });
     },
     onValueComplete: (details: ValueChangeDetails) => {
+      markEdited();
+      markFieldTouched();
+      syncPinInputFormForPhoenix(el, details.value, undefined, {
+        notifyLiveView: true,
+        fieldTouched: true,
+      });
       notifyChange({
         el,
         canPushServer: canPush(),
@@ -166,6 +202,8 @@ function buildMachineProps(
 type PinInputHookState = {
   pinInput?: PinInput;
   fieldTouched?: boolean;
+  hasEdited?: boolean;
+  unbindSubmitIntent?: () => void;
 };
 
 const PinInputHook = createZagLiveHook<PinInputHookState, PinInput>({
@@ -173,7 +211,8 @@ const PinInputHook = createZagLiveHook<PinInputHookState, PinInput>({
   controlledKeys: ["value"],
   mount(hook, { dom, server }) {
     const el = hook.el;
-    hook.fieldTouched = false;
+    hook.fieldTouched = getBoolean(el, "fieldUsed") === true;
+    hook.hasEdited = hook.fieldTouched === true;
     const pushEvent = hook.pushEvent.bind(hook);
     const canPush = () => canPushEvent(hook.liveSocket);
     const count = getNumber(el, "count") ?? 0;
@@ -187,9 +226,12 @@ const PinInputHook = createZagLiveHook<PinInputHookState, PinInput>({
         pushEvent,
         canPush,
         initialValues,
-        () => hook.fieldTouched === true,
         () => {
           hook.fieldTouched = true;
+        },
+        () => hook.hasEdited === true,
+        () => {
+          hook.hasEdited = true;
         }
       )
     );
@@ -210,13 +252,32 @@ const PinInputHook = createZagLiveHook<PinInputHookState, PinInput>({
       });
     };
 
+    const clearAndSync = () => {
+      hook.fieldTouched = true;
+      hook.hasEdited = true;
+      zag.api.clearValue();
+      syncPinInputFormForPhoenix(el, zag.api.value, undefined, {
+        notifyLiveView: true,
+        fieldTouched: true,
+      });
+    };
+
+    hook.unbindSubmitIntent = bindArrayFieldSubmitIntent(el, () => {
+      hook.fieldTouched = true;
+      hook.hasEdited = true;
+      syncPinInputFormForPhoenix(el, zag.api.value, undefined, {
+        notifyLiveView: false,
+        fieldTouched: true,
+      });
+    });
+
     dom.add<CustomEvent<{ value: string[] }>>("corex:pin-input:set-value", (event) => {
       const v = event.detail?.value;
       if (Array.isArray(v)) zag.api.setValue(v);
     });
 
     dom.add<CustomEvent>("corex:pin-input:clear", () => {
-      zag.api.clearValue();
+      clearAndSync();
     });
 
     dom.add<CustomEvent>("corex:pin-input:value", (event) => {
@@ -230,7 +291,7 @@ const PinInputHook = createZagLiveHook<PinInputHookState, PinInput>({
 
     server.add("pin_input_clear", (payload: { id?: string }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
-      zag.api.clearValue();
+      clearAndSync();
     });
 
     server.add("pin_input_value", (payload: { id?: string; respond_to?: string }) => {
@@ -242,15 +303,24 @@ const PinInputHook = createZagLiveHook<PinInputHookState, PinInput>({
   },
 
   afterInit(hook, zag) {
-    syncPinInputFormForPhoenix(hook.el, zag.api.value, undefined, { notifyLiveView: false });
+    syncPinInputFormForPhoenix(hook.el, zag.api.value, undefined, {
+      notifyLiveView: false,
+      fieldTouched: hook.fieldTouched === true,
+    });
   },
 
   update(hook, zag) {
     const el = hook.el;
 
+    if (getBoolean(el, "fieldUsed")) {
+      hook.fieldTouched = true;
+      hook.hasEdited = true;
+    }
+
     const count = getNumber(el, "count") ?? 0;
 
     const valuePatch = readUpdatedServerStringList(el, hook.beforeAttrs);
+    const pinFocused = el.contains(document.activeElement);
 
     zag.updateProps({
       id: el.id,
@@ -268,8 +338,22 @@ const PinInputHook = createZagLiveHook<PinInputHookState, PinInput>({
       dir: getDir(el),
       type: getString<"alphanumeric" | "numeric" | "alphabetic">(el, "type"),
       placeholder: getString(el, "placeholder"),
-      ...(valuePatch.value !== undefined ? { value: padToCount(valuePatch.value, count) } : {}),
+      // Don't clobber in-progress entry when a sibling field re-renders the form.
+      ...(valuePatch.value !== undefined && !pinFocused
+        ? { value: padToCount(valuePatch.value, count) }
+        : {}),
     } as Partial<Props>);
+
+    syncPinInputFormForPhoenix(el, zag.api.value, undefined, {
+      notifyLiveView: false,
+      fieldTouched: hook.fieldTouched === true,
+    });
+    zag.render();
+  },
+
+  destroy(hook) {
+    hook.unbindSubmitIntent?.();
+    hook.unbindSubmitIntent = undefined;
   },
 });
 

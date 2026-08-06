@@ -250,11 +250,11 @@ defmodule Corex.NumberInput do
     attr(:class, :string, required: false)
   end
 
-  slot :decrement_trigger, required: true do
+  slot :decrement_trigger, required: false do
     attr(:class, :string, required: false)
   end
 
-  slot :increment_trigger, required: true do
+  slot :increment_trigger, required: false do
     attr(:class, :string, required: false)
   end
 
@@ -333,7 +333,11 @@ defmodule Corex.NumberInput do
         </label>
         <div {Connect.mounted_control(%Control{id: @id, dir: @dir, orientation: @orientation})}>
           <input value={@display_value || ""} {Connect.mounted_input(%Input{id: @id, disabled: @disabled, required: @required, dir: @dir, orientation: @orientation})} />
-          <div {Connect.trigger_group(%TriggerGroup{dir: @dir, orientation: @orientation})}>
+          <div
+            :if={@increment_trigger != [] and @decrement_trigger != []}
+            phx-update="ignore"
+            {Connect.trigger_group(%TriggerGroup{id: @id, dir: @dir, orientation: @orientation})}
+          >
             <button type="button" {Connect.mounted_increment_trigger(%IncrementTrigger{id: @id, aria_label: @translation.increase, dir: @dir, orientation: @orientation})}>
               {render_slot(@increment_trigger)}
             </button>
@@ -354,9 +358,16 @@ defmodule Corex.NumberInput do
     inc = Map.get(assigns, :increment_trigger, [])
     dec = Map.get(assigns, :decrement_trigger, [])
 
-    if inc == [] or dec == [] do
-      raise ArgumentError,
-            "Corex.NumberInput requires non-empty :increment_trigger and :decrement_trigger slots"
+    cond do
+      inc == [] and dec == [] ->
+        :ok
+
+      inc != [] and dec != [] ->
+        :ok
+
+      true ->
+        raise ArgumentError,
+              "Corex.NumberInput requires both :increment_trigger and :decrement_trigger slots, or neither"
     end
   end
 

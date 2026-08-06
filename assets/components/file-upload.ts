@@ -186,13 +186,15 @@ export class FileUpload extends Component<Props, Api, Schema> {
     this.touchSentinel();
   }
 
-  syncFormSubmitInputs(): void {
+  syncFormSubmitInputs(opts: { forSubmit?: boolean } = {}): void {
     const fileInput = this.el.querySelector<HTMLInputElement>(
       '[data-scope="file-upload"][data-part="hidden-input"]'
     );
     const sentinel = this.el.querySelector<HTMLInputElement>('[data-part="hidden-input-sentinel"]');
     const files = this.api.acceptedFiles;
-    const name = this.el.dataset.name;
+    const name = this.el.dataset.submitName ?? this.el.dataset.name;
+    const fieldUsed = this.el.dataset.fieldUsed === "true";
+    const forSubmit = opts.forSubmit === true;
 
     if (fileInput) {
       setInputFiles(fileInput, files);
@@ -209,8 +211,10 @@ export class FileUpload extends Component<Props, Api, Schema> {
     }
 
     sentinel.disabled = false;
-    if (name) {
+    if (name && (forSubmit || fieldUsed || Boolean(this.el.dataset.name))) {
       sentinel.setAttribute("name", name);
+    } else {
+      sentinel.removeAttribute("name");
     }
   }
 

@@ -57,9 +57,13 @@ defmodule Corex.FileUpload.Connect do
     }
     |> maybe_put_int("data-max-file-size", assigns.max_file_size)
     |> maybe_put_int("data-min-file-size", assigns.min_file_size)
+    |> maybe_put_submit_name(Map.get(assigns, :submit_name))
     |> Map.reject(fn {_k, v} -> is_nil(v) end)
     |> FormField.put_form_field_attrs(assigns)
   end
+
+  defp maybe_put_submit_name(attrs, nil), do: attrs
+  defp maybe_put_submit_name(attrs, name), do: Map.put(attrs, "data-submit-name", name)
 
   def ignore_root(assigns) do
     JS.ignore_attributes(Root.ignored_attrs(), to: Selectors.css_id(zid(assigns.id)))
@@ -152,7 +156,6 @@ defmodule Corex.FileUpload.Connect do
   def input_sentinel(assigns) do
     base = %{
       "type" => "hidden",
-      "name" => assigns.name,
       "form" => assigns.form,
       "value" => "",
       "id" => "#{zid(assigns.id)}:sentinel",
@@ -160,6 +163,12 @@ defmodule Corex.FileUpload.Connect do
       "data-part" => "hidden-input-sentinel",
       "data-corex-file-upload-sentinel" => ""
     }
+
+    base =
+      case assigns.name do
+        name when is_binary(name) and name != "" -> Map.put(base, "name", name)
+        _ -> base
+      end
 
     Map.reject(base, fn {_k, v} -> is_nil(v) end)
   end

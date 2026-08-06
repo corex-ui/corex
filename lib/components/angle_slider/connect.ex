@@ -37,6 +37,13 @@ defmodule Corex.AngleSlider.Connect do
     end
   end
 
+  defp format_optional_number(nil), do: nil
+  defp format_optional_number(value), do: format_number(value)
+
+  defp effective_angle_value(nil), do: 0.0
+  defp effective_angle_value(value) when is_float(value), do: value
+  defp effective_angle_value(value) when is_integer(value), do: value * 1.0
+
   defp display_angle(value, assigns) do
     dir = Map.get(assigns, :dir)
 
@@ -49,7 +56,7 @@ defmodule Corex.AngleSlider.Connect do
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
-    formatted = format_number(assigns.value)
+    formatted = format_optional_number(assigns.value)
     value_dataset = FormField.default_value_dataset(assigns, formatted)
 
     %{
@@ -69,12 +76,16 @@ defmodule Corex.AngleSlider.Connect do
       "data-on-value-change-end-client" => assigns.on_value_change_end_client,
       "data-value-text-as" => assigns.value_text_as
     }
+    |> maybe_put_submit_name(Map.get(assigns, :submit_name))
     |> FormField.put_form_field_attrs(assigns)
   end
 
+  defp maybe_put_submit_name(attrs, nil), do: attrs
+  defp maybe_put_submit_name(attrs, name), do: Map.put(attrs, "data-submit-name", name)
+
   @spec root(Root.t()) :: map()
   def root(assigns) do
-    value = assigns.value
+    value = effective_angle_value(assigns.value)
     angle = "#{format_number(display_angle(value, assigns))}deg"
 
     %{
@@ -119,16 +130,25 @@ defmodule Corex.AngleSlider.Connect do
 
   @spec hidden_input(HiddenInput.t()) :: map()
   def hidden_input(assigns) do
-    %{
+    base = %{
       "data-scope" => "angle-slider",
       "data-part" => "hidden-input",
       "type" => "hidden",
-      "name" => assigns.name,
-      "value" => to_string(assigns.value),
       "disabled" => presence_attr(assigns.disabled),
       "id" => "angle-slider:#{assigns.id}:input",
       "dir" => assigns.dir
     }
+
+    base =
+      case assigns.name do
+        name when is_binary(name) and name != "" -> Map.put(base, "name", name)
+        _ -> base
+      end
+
+    case assigns.value do
+      nil -> base
+      value -> Map.put(base, "value", to_string(value))
+    end
   end
 
   def ignore_hidden_input(assigns) do
@@ -228,10 +248,12 @@ defmodule Corex.AngleSlider.Connect do
 
   @spec marker(Marker.t()) :: map()
   def marker(assigns) do
+    slider_value = effective_angle_value(assigns.slider_value)
+
     state =
       cond do
-        assigns.value < assigns.slider_value -> "under-value"
-        assigns.value > assigns.slider_value -> "over-value"
+        assigns.value < slider_value -> "under-value"
+        assigns.value > slider_value -> "over-value"
         true -> "at-value"
       end
 

@@ -36,6 +36,14 @@ export class AngleSlider extends Component<Props, Api, Schema> {
         (el, props) => this.spreadProps(el, props),
         this.api.getHiddenInputProps() as Record<string, unknown>
       );
+      // data-submit-name is always the form name; data-name is gated until used.
+      // Strip Zag's name until the server/hook has named the input.
+      const submitName = this.el.dataset.submitName;
+      const gatedName = this.el.dataset.name;
+      if (submitName && !gatedName) {
+        hiddenInputEl.removeAttribute("name");
+        hiddenInputEl.removeAttribute("form");
+      }
     }
 
     const controlEl = this.el.querySelector<HTMLElement>(

@@ -130,9 +130,15 @@ defmodule Corex.NumberInput.Connect do
     %{
       "data-scope" => "number-input",
       "data-part" => "trigger-group",
+      "id" =>
+        case Map.get(assigns, :id) do
+          id when is_binary(id) and id != "" -> "number-input:#{id}:trigger-group"
+          _ -> nil
+        end,
       "dir" => Map.get(assigns, :dir),
       "data-orientation" => orientation(assigns)
     }
+    |> Map.reject(fn {_k, v} -> is_nil(v) end)
   end
 
   @spec input(Input.t()) :: map()

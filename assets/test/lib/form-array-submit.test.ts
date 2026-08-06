@@ -101,4 +101,72 @@ describe("syncArrayHiddenInputsForPhoenix", () => {
 
     el.remove();
   });
+
+  it("clears fixed-length pin names when untouched and restores them when touched", () => {
+    const { el, container } = hostWithContainer("pin-input");
+    el.dataset.submitName = "admin[pin][]";
+
+    for (let i = 0; i < 4; i += 1) {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.setAttribute("data-scope", "pin-input");
+      input.setAttribute("data-part", "array-input");
+      input.name = "admin[pin][]";
+      input.value = "";
+      container.appendChild(input);
+    }
+
+    syncArrayHiddenInputsForPhoenix(el, ["", "", "", ""], {
+      scope: "pin-input",
+      fixedLength: 4,
+      notifyLiveView: false,
+      fieldTouched: false,
+    });
+
+    const untouched = container.querySelectorAll<HTMLInputElement>(
+      '[data-scope="pin-input"][data-part="array-input"]'
+    );
+    expect(untouched).toHaveLength(4);
+    untouched.forEach((input) => expect(input.hasAttribute("name")).toBe(false));
+
+    syncArrayHiddenInputsForPhoenix(el, ["1", "2", "", ""], {
+      scope: "pin-input",
+      fixedLength: 4,
+      notifyLiveView: true,
+      fieldTouched: true,
+    });
+
+    const touched = container.querySelectorAll<HTMLInputElement>(
+      '[data-scope="pin-input"][data-part="array-input"]'
+    );
+    expect(touched).toHaveLength(4);
+    touched.forEach((input) => expect(input.getAttribute("name")).toBe("admin[pin][]"));
+    expect(touched[0]?.value).toBe("1");
+    expect(touched[1]?.value).toBe("2");
+
+    el.remove();
+  });
+
+  it("uses named empty sentinel when fixed-length pin is cleared after touch", () => {
+    const { el, container } = hostWithContainer("pin-input");
+    el.dataset.submitName = "admin[pin][]";
+
+    syncArrayHiddenInputsForPhoenix(el, ["", "", "", ""], {
+      scope: "pin-input",
+      fixedLength: 4,
+      notifyLiveView: true,
+      fieldTouched: true,
+    });
+
+    const empty = container.querySelector<HTMLInputElement>(
+      '[data-scope="pin-input"][data-part="array-input"][data-empty]'
+    );
+    expect(empty?.getAttribute("name")).toBe("admin[pin][]");
+    expect(empty?.value).toBe("");
+    expect(
+      container.querySelectorAll('[data-scope="pin-input"][data-part="array-input"]')
+    ).toHaveLength(1);
+
+    el.remove();
+  });
 });

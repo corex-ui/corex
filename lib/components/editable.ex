@@ -275,6 +275,7 @@ defmodule Corex.Editable do
       assigns
       |> Corex.FormField.require_id!("Corex component (editable)")
       |> assign_new(:form_field, fn -> false end)
+      |> assign_new(:field_used, fn -> false end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign_new(:orientation, fn -> "horizontal" end)
       |> assign(:translation, translation)
@@ -293,6 +294,7 @@ defmodule Corex.Editable do
       {Connect.props(%Props{
         id: @id,
         form_field: @form_field,
+        field_used: @field_used,
         value: @value,
         disabled: @disabled,
         read_only: @read_only,

@@ -279,7 +279,7 @@ defmodule Corex.AngleSlider do
   end
 
   def angle_slider(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    value = field.value |> angle_value_to_float() |> clamp_angle()
+    value = angle_field_value(field.value)
 
     assigns
     |> Corex.FormField.assign_form_field(field)
@@ -292,7 +292,10 @@ defmodule Corex.AngleSlider do
       assigns
       |> Corex.FormField.require_id!("Corex component (angle-slider)")
       |> assign_new(:form_field, fn -> false end)
-      |> update(:value, &clamp_angle/1)
+      |> assign_new(:field_used, fn -> false end)
+      |> update(:value, &normalize_angle_value/1)
+
+    hidden_name = angle_hidden_input_name(assigns)
 
     ctx = %{
       id: assigns.id,
@@ -303,12 +306,15 @@ defmodule Corex.AngleSlider do
       disabled: assigns.disabled,
       read_only: assigns.read_only,
       invalid: assigns.invalid,
-      name: assigns.name,
+      name: hidden_name,
       marker_values: assigns.marker_values,
       value_text_as: assigns.value_text_as
     }
 
-    assigns = assign(assigns, :ctx, ctx)
+    assigns =
+      assigns
+      |> assign(:ctx, ctx)
+      |> assign(:hidden_name, hidden_name)
 
     ~H"""
     <div
@@ -319,12 +325,14 @@ defmodule Corex.AngleSlider do
       {Connect.props(%Props{
         id: @id,
         form_field: @form_field,
+        field_used: @field_used,
         value: @value,
         step: @step,
         disabled: @disabled,
         read_only: @read_only,
         invalid: @invalid,
-        name: @name,
+        name: @hidden_name,
+        submit_name: @name,
         dir: @dir,
         orientation: @orientation,
         on_value_change: @on_value_change,
@@ -377,7 +385,7 @@ defmodule Corex.AngleSlider do
           <span :if={@value_text == []} {Connect.value(%Value{})}>{value_text_string(@value, @value_text_as)}</span>
         </div>
         <input
-          {Connect.mounted_hidden_input(%HiddenInput{id: @id, name: @name, value: @value, disabled: @disabled, dir: @dir, orientation: @orientation})}
+          {Connect.mounted_hidden_input(%HiddenInput{id: @id, name: @hidden_name, value: @value, disabled: @disabled, dir: @dir, orientation: @orientation})}
         />
       </div>
 
@@ -778,6 +786,22 @@ defmodule Corex.AngleSlider do
     )
   end
 
+  defp angle_field_value(nil), do: nil
+  defp angle_field_value(""), do: nil
+  defp angle_field_value(value), do: value |> angle_value_to_float() |> clamp_angle()
+
+  defp normalize_angle_value(nil), do: nil
+  defp normalize_angle_value(value), do: clamp_angle(value)
+
+  # Gate the form `name` until the field is used or has a bound value so Zag's
+  # visual default (0°) is not submitted on sibling `phx-change` validates.
+  defp angle_hidden_input_name(%{field_used: used} = assigns) when used not in [nil, false],
+    do: assigns.name
+
+  defp angle_hidden_input_name(%{value: value} = assigns) when not is_nil(value), do: assigns.name
+
+  defp angle_hidden_input_name(_assigns), do: nil
+
   defp angle_value_to_float(value) when is_float(value), do: value
 
   defp angle_value_to_float(value) when is_integer(value), do: value * 1.0
@@ -796,6 +820,8 @@ defmodule Corex.AngleSlider do
   defp clamp_angle(value) when is_integer(value), do: min(max(value * 1.0, 0.0), 359.0)
 
   defp clamp_angle(_), do: 0.0
+
+  defp value_text_string(nil, value_text_as), do: value_text_string(0.0, value_text_as)
 
   defp value_text_string(value, value_text_as) do
     formatted = Connect.format_number(value)

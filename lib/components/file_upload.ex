@@ -322,6 +322,7 @@ defmodule Corex.FileUpload do
       assigns
       |> Corex.FormField.require_id!("Corex component (file-upload)")
       |> assign_new(:form_field, fn -> false end)
+      |> assign_new(:field_used, fn -> false end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign_new(:max_files, fn -> 1 end)
       |> assign_new(:max_file_size, fn -> nil end)
@@ -333,6 +334,10 @@ defmodule Corex.FileUpload do
       |> assign_new(:errors, fn -> [] end)
       |> assign(:translation, translation)
 
+    sentinel_name = file_upload_sentinel_name(assigns)
+
+    assigns = assign(assigns, :sentinel_name, sentinel_name)
+
     ~H"""
     <div
       id={@id}
@@ -342,11 +347,13 @@ defmodule Corex.FileUpload do
       {Connect.props(%Props{
         id: @id,
         form_field: @form_field,
+        field_used: @field_used,
         disabled: @disabled,
         invalid: @invalid,
         read_only: @read_only,
         required: @required,
-        name: @name,
+        name: @sentinel_name,
+        submit_name: @name,
         form: @form,
         dir: @dir,
         max_files: @max_files,
@@ -379,9 +386,9 @@ defmodule Corex.FileUpload do
           <input
             :if={@name}
             phx-mounted={
-              Connect.ignore_input_sentinel(%InputSentinel{id: @id, name: @name, form: @form})
+              Connect.ignore_input_sentinel(%InputSentinel{id: @id, name: @sentinel_name, form: @form})
             }
-            {Connect.input_sentinel(%InputSentinel{id: @id, name: @name, form: @form})}
+            {Connect.input_sentinel(%InputSentinel{id: @id, name: @sentinel_name, form: @form})}
           />
           <input
             phx-mounted={
@@ -410,6 +417,7 @@ defmodule Corex.FileUpload do
           </button>
         </div>
         <ul
+          phx-update="ignore"
           phx-mounted={
             Connect.ignore_item_group(%ItemGroup{
               id: @id,
@@ -535,4 +543,11 @@ defmodule Corex.FileUpload do
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(file_upload_id) do
     LiveView.push_event(socket, "file_upload_open", %{"id" => file_upload_id})
   end
+
+  # Gate the empty-file sentinel until the field is used so sibling validates
+  # do not mark avatar used. Submit-intent JS still names it on save.
+  defp file_upload_sentinel_name(%{field_used: used} = assigns) when used not in [nil, false],
+    do: assigns.name
+
+  defp file_upload_sentinel_name(_assigns), do: nil
 end

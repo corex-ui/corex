@@ -48,7 +48,7 @@ function syncColorHiddenAndNotify(el: HTMLElement, valueAsString: string | undef
     '[data-scope="color-picker"][data-part="hidden-input"]'
   );
   if (hidden) {
-    notifyPhoenixFormChange(hidden, valueAsString, { markUsed: false, force: true });
+    notifyPhoenixFormChange(hidden, valueAsString, { force: true });
   }
 }
 

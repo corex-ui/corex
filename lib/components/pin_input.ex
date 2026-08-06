@@ -220,6 +220,7 @@ defmodule Corex.PinInput do
       assigns
       |> Corex.FormField.require_id!("Corex component (pin-input)")
       |> assign_new(:form_field, fn -> false end)
+      |> assign_new(:field_used, fn -> false end)
       |> assign_new(:errors, fn -> [] end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign_new(:orientation, fn -> "horizontal" end)
@@ -237,10 +238,15 @@ defmodule Corex.PinInput do
       assigns
       |> assign(:padded_digits, padded_digits)
       |> assign(
+        :array_input_name,
+        pin_array_input_name(assigns.field_used, padded_digits, assigns.submit_name)
+      )
+      |> assign(
         :connect_props,
         Connect.props(%Props{
           id: assigns.id,
           form_field: assigns.form_field,
+          field_used: assigns.field_used,
           value: assigns.value,
           count: assigns.count,
           controlled: assigns.controlled,
@@ -290,7 +296,7 @@ defmodule Corex.PinInput do
             id={"pin-input:#{@id}:array-input-#{index}"}
             data-scope="pin-input"
             data-part="array-input"
-            name={@submit_name}
+            name={@array_input_name}
             value={digit}
             phx-mounted={
               JS.ignore_attributes(["value", "name"],
@@ -323,6 +329,18 @@ defmodule Corex.PinInput do
     missing = max(0, count - length(digits))
     (digits ++ List.duplicate("", missing)) |> Enum.take(count)
   end
+
+  # Defer named array inputs until the field is used or the pin is complete so
+  # sibling `phx-change` does not validate a partial pin (and steal focus).
+  defp pin_array_input_name(field_used, _digits, submit_name)
+       when field_used not in [nil, false] and is_binary(submit_name),
+       do: submit_name
+
+  defp pin_array_input_name(_field_used, digits, submit_name) when is_binary(submit_name) do
+    if Enum.all?(digits, &(String.trim(&1) != "")), do: submit_name, else: nil
+  end
+
+  defp pin_array_input_name(_field_used, _digits, _submit_name), do: nil
 
   defp form_field_to_pin_list(%Phoenix.HTML.FormField{} = field) do
     case field.value do

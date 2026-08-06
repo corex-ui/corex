@@ -325,6 +325,8 @@ const NumberInputHook = createZagLiveHook<NumberInputHookState, NumberInput>({
       false,
       zag.api.valueAsNumber
     );
+
+    zag.render();
   },
 });
 

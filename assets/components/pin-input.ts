@@ -43,7 +43,7 @@ export class PinInput extends Component<Props, Api, Schema> {
       }
     }
 
-    stripZagSubmitNames(this.el, "pin-input");
+    stripZagSubmitNames(this.el, "pin-input", ["hidden-input", "input"]);
 
     const controlEl = this.el.querySelector<HTMLElement>(
       '[data-scope="pin-input"][data-part="control"]'
@@ -62,7 +62,11 @@ export class PinInput extends Component<Props, Api, Schema> {
         this.el.querySelector<HTMLElement>(
           `[data-scope="pin-input"][data-part="input"][data-index="${i}"]`
         );
-      if (inputEl) this.spreadProps(inputEl, this.api.getInputProps({ index: i }));
+      if (!inputEl) continue;
+      this.spreadProps(inputEl, this.api.getInputProps({ index: i }));
+      // Cells must not participate in <form phx-change> — hiddens submit instead.
+      inputEl.removeAttribute("name");
+      inputEl.setAttribute("form", "");
     }
   }
 }

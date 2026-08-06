@@ -13,9 +13,11 @@ export function stripZagSubmitNames(
   if (!hasArraySubmitName(el)) return;
 
   for (const part of parts) {
-    const node = el.querySelector<HTMLElement>(`[data-scope="${scope}"][data-part="${part}"]`);
-    if (!node) continue;
-    node.removeAttribute("name");
-    node.removeAttribute("form");
+    el.querySelectorAll<HTMLElement>(`[data-scope="${scope}"][data-part="${part}"]`).forEach(
+      (node) => {
+        node.removeAttribute("name");
+        node.removeAttribute("form");
+      }
+    );
   }
 }

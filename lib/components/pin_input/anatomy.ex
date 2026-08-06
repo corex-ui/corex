@@ -8,6 +8,7 @@ defmodule Corex.PinInput.Anatomy do
     defstruct [
       :id,
       form_field: false,
+      field_used: false,
       value: [],
       count: 4,
       controlled: false,
@@ -35,6 +36,7 @@ defmodule Corex.PinInput.Anatomy do
     @type t :: %__MODULE__{
             id: String.t(),
             form_field: boolean(),
+            field_used: boolean(),
             value: list(String.t()),
             count: non_neg_integer(),
             controlled: boolean(),

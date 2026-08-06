@@ -11,6 +11,8 @@ export type NotifyPhoenixFormChangeOptions = {
   change?: boolean;
   markUsed?: boolean;
   force?: boolean;
+  /** When false, write value only — do not dispatch input/change (no phx-change). */
+  dispatch?: boolean;
 };
 
 export function dispatchFormInputEvents(
@@ -56,10 +58,12 @@ export function notifyPhoenixFormChange(
   }
 
   options.onTouched?.();
-  if (options.markUsed === false) {
+  if (options.markUsed !== false) {
+    reapplyLiveViewValueInputUsage(input);
+  }
+  if (options.dispatch === false) {
     return;
   }
-  reapplyLiveViewValueInputUsage(input);
   dispatchFormInputEvents(input, { change: options.change });
 }
 

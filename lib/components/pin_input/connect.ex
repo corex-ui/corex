@@ -87,10 +87,10 @@ defmodule Corex.PinInput.Connect do
     )
   end
 
-  def ignore_input(assigns) do
-    JS.ignore_attributes(Input.ignored_attrs(),
-      to: Selectors.css_id("pin-input:#{assigns.id}:input:#{assigns.index}")
-    )
+  # Apply to the mounted element itself (no :to) so ignore sticks after Zag
+  # rewrites the cell id to pin-input:<id>:<index>.
+  def ignore_input(_assigns) do
+    JS.ignore_attributes(Input.ignored_attrs())
   end
 
   @spec root(Root.t()) :: map()
@@ -149,7 +149,8 @@ defmodule Corex.PinInput.Connect do
       "data-scope" => "pin-input",
       "data-part" => "input",
       "data-index" => to_string(assigns.index),
-      "id" => "pin-input:#{assigns.id}:input:#{assigns.index}",
+      # Match Zag getInputId (`pin-input:<id>:<index>`) so LV morph keeps the cell.
+      "id" => "pin-input:#{assigns.id}:#{assigns.index}",
       "aria-label" => assigns.aria_label,
       "dir" => assigns.dir,
       "data-orientation" => orientation(assigns)
