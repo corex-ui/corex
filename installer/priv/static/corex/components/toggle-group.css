@@ -7,7 +7,7 @@
 
   .toggle-group {
     width: fit-content;
-    max-width: var(--container-5xs);
+    max-width: var(--container-3xs);
   }
 
   .toggle-group [data-scope="toggle-group"][data-part="root"] {
@@ -30,19 +30,20 @@
   }
 
   .toggle-group [data-scope="toggle-group"][data-part="item"] {
-    flex: 1 1 0;
+    flex: 1 1 auto;
+    width: auto;
     min-width: 0;
     justify-content: center;
-    padding-inline: calc(var(--ctl-space, var(--spacing-space)) * 1.25);
-    padding-block: calc(var(--ctl-space, var(--spacing-space)) * 0.25);
-    gap: var(--spacing-space-sm);
+    text-align: center;
+    /* Segmented control: shared outer radius on root */
+    border-radius: 0;
+    border-color: transparent;
   }
 
   .toggle-group
     [data-scope="toggle-group"][data-part="root"][data-orientation="vertical"]
     [data-scope="toggle-group"][data-part="item"] {
     width: 100%;
-    padding-inline: calc(var(--ctl-space, var(--spacing-space)) * 1.25);
   }
 
   .toggle-group [data-scope="toggle-group"][data-part="item"][data-state="on"] .icon.state-on {

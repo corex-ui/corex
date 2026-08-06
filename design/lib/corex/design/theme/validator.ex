@@ -411,7 +411,7 @@ defmodule Corex.Design.Theme.Validator do
   defp seed_refs(%{palette: seed}), do: [seed]
   defp seed_refs({:l, _l, opts}) when is_list(opts), do: [Keyword.get(opts, :seed)]
   defp seed_refs({:contrast, opts}) when is_list(opts), do: [Keyword.get(opts, :seed)]
-  defp seed_refs(%{} = cfg), do: [Map.get(cfg, :seed), Map.get(cfg, :palette)]
+  defp seed_refs(%{}), do: []
   defp seed_refs(_), do: []
 
   @doc false

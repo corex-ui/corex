@@ -82,7 +82,6 @@ pre.code,
 .file-upload:not(.ui-solid):not(.ui-ghost),
 .floating-panel:not(.ui-solid):not(.ui-ghost),
 .link:not(.ui-solid):not(.ui-ghost),
-.listbox:not(.ui-solid):not(.ui-ghost),
 .menu:not(.ui-solid):not(.ui-ghost),
 .select:not(.ui-solid):not(.ui-ghost),
 .signature-pad:not(.ui-solid):not(.ui-ghost),
@@ -290,7 +289,8 @@ pre.code,
 .timer :where([data-scope="timer"][data-part="action-trigger"]),
 .toast :where([data-scope="toast"][data-part="action-trigger"]),
 .toast :where([data-scope="toast"][data-part="close-trigger"]),
-.toggle :where([data-scope="toggle"][data-part="root"]) {
+.toggle :where([data-scope="toggle"][data-part="root"]),
+.toggle-group :where([data-scope="toggle-group"][data-part="item"]) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -491,7 +491,6 @@ pre.code,
 .pagination :where([data-scope="pagination"][data-part="item"]),
 .select :where([data-scope="select"][data-part="item"]),
 .tabs :where([data-scope="tabs"][data-part="trigger"]),
-.toggle-group :where([data-scope="toggle-group"][data-part="item"]),
 .tree-view :where([data-scope="tree-view"][data-part="item"]),
 .tree-view :where([data-scope="tree-view"][data-part="branch-control"]) {
   width: 100%;

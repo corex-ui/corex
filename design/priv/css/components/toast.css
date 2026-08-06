@@ -34,9 +34,8 @@
  }
  }
 
- /* Expanded stack: bridge full spacing (overrides Zag's gap+2px inline height) */
+ /* Stacked: keep Zag's gap-sized ghost-after as a hover bridge (do not enlarge to --offset) */
  .toast [data-scope="toast"][data-part="root"][data-stack] [data-ghost="after"] {
- height: max(calc(var(--gap) + 2px), var(--offset)) !important;
  pointer-events: auto;
  }
 
@@ -44,6 +43,7 @@
  display: flex;
  flex-direction: column;
  position: relative;
+ z-index: 1;
 
  padding: 0;
  border-radius: inherit;

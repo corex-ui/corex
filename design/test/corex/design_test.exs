@@ -421,7 +421,7 @@ defmodule Corex.Design.ComponentsTest do
       {"select", :fill, {:container, "4xs"}},
       {"native-input", :fill, {:container, "xs"}},
       {"angle-slider", :fit, {:container, "6xs"}},
-      {"toggle-group", :fit, {:container, "5xs"}},
+      {"toggle-group", :fit, {:container, "3xs"}},
       {"pin-input", :fit, {:container, "md"}},
       {"timer", :fit, :none},
       {"editable", :fill, {:container, "3xs"}},

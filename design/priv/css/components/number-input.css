@@ -35,9 +35,17 @@
  .number-input [data-scope="number-input"][data-part="input"] {
  flex: 1;
  min-width: 0;
- min-height: var(--spacing-size);
- max-height: var(--spacing-size);
+ min-height: var(--ctl-size, var(--spacing-size));
+ max-height: var(--ctl-size, var(--spacing-size));
  box-sizing: border-box;
+ border-radius: var(--ctl-radius, var(--radius-md));
+ }
+
+ .number-input
+ [data-scope="number-input"][data-part="control"]:has(
+   [data-scope="number-input"][data-part="trigger-group"]
+ )
+ > [data-scope="number-input"][data-part="input"] {
  border-inline-end: 0;
  border-end-end-radius: 0;
  border-start-end-radius: 0;
@@ -55,10 +63,10 @@
  flex-direction: column;
  flex-shrink: 0;
  gap: 0;
- width: var(--spacing-size);
- min-height: var(--spacing-size);
- height: var(--spacing-size);
- max-height: var(--spacing-size);
+ width: var(--ctl-size, var(--spacing-size));
+ min-height: var(--ctl-size, var(--spacing-size));
+ height: var(--ctl-size, var(--spacing-size));
+ max-height: var(--ctl-size, var(--spacing-size));
  box-sizing: border-box;
  }
 
@@ -67,15 +75,16 @@
  padding: 0;
  justify-content: center;
  width: auto;
- border-radius: var(--radius-sm);
- --ctl-radius: var(--radius-sm);
+ border-radius: var(--ctl-radius, var(--radius-md));
+ --ctl-radius: var(--ctl-radius, var(--radius-md));
 
  flex: 1;
  min-height: 0;
  border-start-start-radius: 0;
  border-end-start-radius: 0;
+ border-end-end-radius: 0;
+ border-block-end: 0;
  margin: 0;
- padding: 0;
  width: fit-content;
  padding-inline: var(--spacing-space);
  }
@@ -84,26 +93,17 @@
  padding: 0;
  justify-content: center;
  width: auto;
- border-radius: var(--radius-sm);
- --ctl-radius: var(--radius-sm);
+ border-radius: var(--ctl-radius, var(--radius-md));
+ --ctl-radius: var(--ctl-radius, var(--radius-md));
 
  flex: 1;
  min-height: 0;
  border-start-start-radius: 0;
  border-end-start-radius: 0;
- margin: 0;
- padding: 0;
- width: fit-content;
- padding-inline: var(--spacing-space);
- }
-
- .number-input [data-scope="number-input"][data-part="increment-trigger"] {
- border-end-end-radius: 0;
- border-block-end: 0;
- }
-
- .number-input [data-scope="number-input"][data-part="decrement-trigger"] {
  border-start-end-radius: 0;
  border-block-start: 0;
+ margin: 0;
+ width: fit-content;
+ padding-inline: var(--spacing-space);
  }
 }

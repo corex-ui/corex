@@ -108,8 +108,8 @@
  [data-scope="data-list"][data-part="root"][dir="rtl"]
  [data-scope="data-list"][data-part="label"] {
  unicode-bidi: plaintext;
- justify-content: flex-start;
- text-align: start;
+ justify-content: flex-end;
+ text-align: end;
  width: 100%;
  }
 

@@ -105,7 +105,8 @@
  min-height: calc(var(--ctl-size, var(--spacing-size)) * 0.55);
  max-width: 100%;
  min-width: 0;
- padding-inline: calc(var(--ctl-space, var(--spacing-space)) * 0.5);
+ padding-inline: calc(var(--ctl-space, var(--spacing-space)) * 0.75);
+ padding-inline-end: calc(var(--ctl-space, var(--spacing-space)) * 0.25);
  border: 1px solid var(--color-border);
  border-radius: var(--ctl-radius, var(--radius-md));
  background: var(--color-ui);
@@ -128,6 +129,7 @@
  }
 
  .tags-input [data-scope="tags-input"][data-part="item-delete-trigger"] {
+ @apply ui-ghost ui-alert;
  flex: 0 0 auto;
  flex-shrink: 0;
  align-self: center;
@@ -137,12 +139,17 @@
  width: auto;
  border-radius: var(--radius-sm);
  --ctl-radius: var(--radius-sm);
- margin-inline-start: calc(var(--ctl-space, var(--spacing-space)) * 0.15);
+ margin-inline-start: 0;
+ margin-inline-end: 0;
 
- min-height: calc(var(--ctl-size, var(--spacing-size)) * 0.45);
- min-width: calc(var(--ctl-size, var(--spacing-size)) * 0.45);
- max-height: calc(var(--ctl-size, var(--spacing-size)) * 0.45);
- max-width: calc(var(--ctl-size, var(--spacing-size)) * 0.45);
+ min-height: calc(var(--ctl-size, var(--spacing-size)) * 0.5);
+ min-width: calc(var(--ctl-size, var(--spacing-size)) * 0.5);
+ max-height: calc(var(--ctl-size, var(--spacing-size)) * 0.5);
+ max-width: calc(var(--ctl-size, var(--spacing-size)) * 0.5);
+ }
+
+ .tags-input [data-scope="tags-input"][data-part="clear-trigger"] {
+ @apply ui-ghost ui-alert;
  }
 
  .tags-input [data-scope="tags-input"][data-part="item-input"][hidden] {

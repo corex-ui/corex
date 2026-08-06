@@ -95,15 +95,46 @@
  opacity: 0.65;
  }
 
- .tree-view [data-scope="tree-view"][data-part="root"][data-loading] {
- @apply ui-loading;
+ /* Skeleton bars only for <.tree_view_skeleton> (root[data-loading]), not hook-host data-loading */
+ .tree-view [data-scope="tree-view"][data-part="root"][data-loading]
+ [data-scope="tree-view"][data-part="branch-text"],
+ .tree-view [data-scope="tree-view"][data-part="root"][data-loading]
+ [data-scope="tree-view"][data-part="item-text"] {
+ display: flex;
+ flex-direction: row;
+ align-items: center;
+ gap: 0;
+ min-height: var(--ctl-size, var(--spacing-size));
+ min-width: var(--container-3xs);
+ width: 100%;
+ max-width: 100%;
+ padding-block: 0;
  }
 
- .tree-view [data-scope="tree-view"][data-part="root"][data-loading] [data-scope="tree-view"][data-part="branch-text"],
- .tree-view [data-scope="tree-view"][data-part="root"][data-loading] [data-scope="tree-view"][data-part="branch-indicator"],
- .tree-view [data-scope="tree-view"][data-part="root"][data-loading] [data-scope="tree-view"][data-part="item-text"] {
+ .tree-view [data-scope="tree-view"][data-part="root"][data-loading]
+ [data-scope="tree-view"][data-part="branch-text"]::before,
+ .tree-view [data-scope="tree-view"][data-part="root"][data-loading]
+ [data-scope="tree-view"][data-part="item-text"]::before {
+ content: "";
+ display: block;
+ height: var(--spacing-space);
+ width: var(--container-2xs);
+ max-width: 100%;
+ background-color: var(--color-ui-active);
+ border-radius: var(--radius-md);
+ animation: corex-skeleton 1.4s ease-in-out infinite;
+ }
+
+ .tree-view [data-scope="tree-view"][data-part="root"][data-loading]
+ [data-scope="tree-view"][data-part="branch-text"]::after {
+ content: none;
+ }
+
+ .tree-view [data-scope="tree-view"][data-part="root"][data-loading]
+ [data-scope="tree-view"][data-part="branch-indicator"] {
  display: inline-block;
- min-height: var(--spacing-size);
+ min-height: calc(var(--ctl-size, var(--spacing-size)) * 0.55);
+ min-width: calc(var(--ctl-size, var(--spacing-size)) * 0.55);
  background-color: var(--color-ui-active);
  border-radius: var(--radius-md);
  animation: corex-skeleton 1.4s ease-in-out infinite;

@@ -42,6 +42,12 @@
  border-color: var(--color-success);
  }
 
+ .clipboard.ui-solid [data-scope="clipboard"][data-part="input"][data-copied] {
+ color: var(--color-success-contrast);
+ background-color: var(--color-success);
+ border-color: var(--color-success);
+ }
+
  .clipboard [data-scope="clipboard"][data-part="trigger"] {
  flex-shrink: 0;
  }
@@ -61,6 +67,10 @@
  .clipboard [data-scope="clipboard"][data-part="trigger"][data-copied] {
  color: var(--color-success-text);
  outline: none;
+ }
+
+ .clipboard.ui-solid [data-scope="clipboard"][data-part="trigger"][data-copied] {
+ color: var(--color-success-contrast);
  }
 
  .clipboard
