@@ -121,7 +121,14 @@ defmodule Corex.NumberInput.Anatomy do
 
   defmodule Input do
     @moduledoc false
-    defstruct [:id, :disabled, :aria_label, required: false, dir: "ltr", orientation: "horizontal"]
+    defstruct [
+      :id,
+      :disabled,
+      :aria_label,
+      required: false,
+      dir: "ltr",
+      orientation: "horizontal"
+    ]
 
     @type t :: %__MODULE__{
             id: String.t(),
