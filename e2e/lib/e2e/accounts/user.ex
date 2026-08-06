@@ -67,14 +67,12 @@ defmodule E2e.Accounts.User do
       :terms,
       :level,
       :currency,
-      :tags,
       :password,
       :role,
       :pin,
       :accent_color,
       :heading_angle,
-      :title,
-      :avatar
+      :title
     ])
     |> validate_acceptance(:terms)
     |> validate_acceptance(:notifications)
@@ -86,6 +84,8 @@ defmodule E2e.Accounts.User do
     |> validate_length(:pin, is: 4)
     |> validate_format(:pin, ~r/^\d+$/, message: "must be digits")
     |> validate_number(:heading_angle, greater_than_or_equal_to: 0, less_than_or_equal_to: 360)
+    |> validate_accent_color_not_default()
+    |> validate_heading_angle_not_default()
     |> validate_signature_present()
     |> validate_tags_present()
     |> validate_avatar_present()
@@ -131,4 +131,41 @@ defmodule E2e.Accounts.User do
       add_error(changeset, :avatar, "can't be blank")
     end
   end
+
+  defp validate_accent_color_not_default(changeset) do
+    validate_change(changeset, :accent_color, fn :accent_color, value ->
+      if default_accent_color?(value) do
+        [accent_color: "can't be blank"]
+      else
+        []
+      end
+    end)
+  end
+
+  defp validate_heading_angle_not_default(changeset) do
+    validate_change(changeset, :heading_angle, fn :heading_angle, value ->
+      if default_heading_angle?(value) do
+        [heading_angle: "can't be blank"]
+      else
+        []
+      end
+    end)
+  end
+
+  defp default_accent_color?(value) when is_binary(value) do
+    normalized = value |> String.trim() |> String.downcase()
+
+    normalized in ["#000000", "#000", "000000", "000"] or
+      Regex.match?(~r/^rgba\(\s*0\s*,\s*0\s*,\s*0\s*,/i, normalized) or
+      Regex.match?(~r/^rgb\(\s*0\s*,\s*0\s*,\s*0\s*\)$/i, normalized)
+  end
+
+  defp default_accent_color?(_), do: false
+
+  defp default_heading_angle?(value) when value in [0, 0.0], do: true
+
+  defp default_heading_angle?(value) when is_binary(value),
+    do: value in ["0", "0.0", "0.00"]
+
+  defp default_heading_angle?(_), do: false
 end

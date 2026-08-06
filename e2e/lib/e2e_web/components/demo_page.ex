@@ -13,7 +13,8 @@ defmodule E2eWeb.DemoPage do
 
   - **Anatomy**  -  `… Anatomy` (or `… · Anatomy` where the product name already contains a dot phrase).
   - **Style**  -  `… Style` for static styling guides.
-  - **Form**  -  `… Form` for controller-rendered form demos.
+  - **Controller Form**  -  `… Controller Form` for controller-rendered form demos.
+  - **Form**  -  legacy suffix; prefer **Controller Form** or **Live Form**.
   - **Playground**  -  `… Playground` for the interactive LiveView.
   - **API**  -  `… API` for imperative `Corex.*` and binding demos.
   - **Events**  -  `… Events` for server and client event logs.
@@ -586,6 +587,7 @@ defmodule E2eWeb.DemoPage do
     "Playground",
     "Anatomy",
     "Style",
+    "Controller Form",
     "Form",
     "Events",
     "Event",

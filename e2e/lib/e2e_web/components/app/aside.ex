@@ -74,7 +74,7 @@ defmodule E2eWeb.App.Aside do
     assigns = assign(assigns, :badges, badges) |> assign(:id_base, id_base)
 
     ~H"""
-    <div :if={@badges != []} class="flex shrink-0 items-center gap-space-xs">
+    <div :if={@badges != []} class="flex shrink-0 items-center gap-space">
       <.aside_menu_tree_badge
         :for={kind <- @badges}
         kind={kind}

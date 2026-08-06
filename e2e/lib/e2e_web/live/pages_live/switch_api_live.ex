@@ -41,7 +41,7 @@ defmodule E2eWeb.SwitchApiLive do
       >
         <.demo_section
           id="switch-api-set-checked-client-binding"
-          title={~t"LiveView binding"}
+          title={~t"Set Checked (Client Binding)"}
           code_tabs={[
             %{
               value: "heex",
@@ -56,7 +56,7 @@ defmodule E2eWeb.SwitchApiLive do
 
         <.demo_section
           id="switch-api-set-checked-client-js"
-          title={~t"Client JS"}
+          title={~t"Set Checked (Client JS)"}
           code_tabs={[
             %{
               value: "heex",
@@ -83,7 +83,7 @@ defmodule E2eWeb.SwitchApiLive do
 
         <.demo_section
           id="switch-api-set-checked-server"
-          title={~t"Server push"}
+          title={~t"Set Checked (Server)"}
           code_tabs={[
             %{
               value: "heex",

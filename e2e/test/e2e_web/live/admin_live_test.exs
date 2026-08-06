@@ -409,6 +409,57 @@ defmodule E2eWeb.AdminLiveTest do
 
       refute html =~
                ~r/<input\b(?=[^>]*\btype="hidden")(?=[^>]*\bname="admin\[level\]")/
+
+      assert html =~
+               ~r/<input\b(?=[^>]*\btype="text")(?=[^>]*\bname="admin\[title\]")[^>]*\bdata-part="form-value"/
+
+      refute html =~
+               ~r/<input\b(?=[^>]*\btype="hidden")(?=[^>]*\bname="admin\[title\]")/
+
+      assert html =~ ~S|data-submit-name="admin[pin][]"|
+
+      refute html =~
+               ~r/<input\b(?=[^>]*\bdata-part="array-input")(?=[^>]*\bname="admin\[pin\]\[\]")/
+
+      refute html =~
+               ~r/<input\b(?=[^>]*\bdata-part="hidden-input")(?=[^>]*\bname="admin\[heading_angle\]")/
+    end
+
+    test "validate on name only does not show errors on untouched pin or editable", %{
+      conn: conn
+    } do
+      {form_live, _html} = live_ok!(conn, ~p"/admins/new")
+
+      html =
+        render_change(form_live, "validate", %{
+          "admin" => %{
+            "name" => "h",
+            "country" => "",
+            "currency" => "",
+            "tags" => [""],
+            "birth_date" => "",
+            "signature" => [],
+            "terms" => "false",
+            "level" => "1",
+            "password" => "",
+            "notifications" => "false",
+            "role" => "",
+            "_unused_country" => "",
+            "_unused_currency" => "",
+            "_unused_tags" => "",
+            "_unused_birth_date" => "",
+            "_unused_signature" => "",
+            "_unused_terms" => "",
+            "_unused_password" => "",
+            "_unused_notifications" => "",
+            "_unused_role" => "",
+            "_unused_pin" => "",
+            "_unused_title" => ""
+          }
+        })
+
+      refute html =~ "can&#39;t be blank"
+      refute html =~ ~S|data-part="error"|
     end
 
     test "radio level stays unused when only name is validated", %{conn: conn} do
@@ -468,6 +519,49 @@ defmodule E2eWeb.AdminLiveTest do
 
       assert html =~ "can&#39;t be blank"
       assert html =~ "data-field-used"
+    end
+
+    test "validate shows pin error after pin was used then cleared", %{conn: conn} do
+      {form_live, _html} = live_ok!(conn, ~p"/admins/new")
+
+      html =
+        render_change(form_live, "validate", %{
+          "admin" => %{
+            "name" => "Ada",
+            "country" => "",
+            "currency" => "",
+            "tags" => [""],
+            "birth_date" => "",
+            "signature" => [],
+            "terms" => "false",
+            "level" => "1",
+            "password" => "",
+            "notifications" => "false",
+            "role" => "",
+            "pin" => [""],
+            "title" => "",
+            "accent_color" => "",
+            "heading_angle" => "",
+            "avatar" => "",
+            "_unused_country" => "",
+            "_unused_currency" => "",
+            "_unused_tags" => "",
+            "_unused_birth_date" => "",
+            "_unused_signature" => "",
+            "_unused_terms" => "",
+            "_unused_password" => "",
+            "_unused_notifications" => "",
+            "_unused_role" => "",
+            "_unused_title" => "",
+            "_unused_accent_color" => "",
+            "_unused_heading_angle" => "",
+            "_unused_avatar" => ""
+          }
+        })
+
+      assert html =~ "can&#39;t be blank"
+      assert html =~ ~r/<div[^>]*data-scope="pin-input"[^>]*data-part="error"/
+      assert html =~ ~S|data-submit-name="admin[pin][]"|
     end
 
     test "invalid save re-renders with validate action and errors for used fields", %{conn: conn} do

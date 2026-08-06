@@ -13,7 +13,7 @@ defmodule E2eWeb.AngleSliderFormLive do
   def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> assign(:page_title, "Angle Slider · Form")
+     |> assign(:page_title, "Angle Slider · Live Form")
      |> assign(:form_ecto, AngleSliderDemo.form_ecto())
      |> assign(:live_phoenix_heex, AngleSliderDemo.form_doc_live_phoenix_heex())
      |> assign(:live_phoenix_elixir, AngleSliderDemo.form_doc_live_phoenix_elixir())
@@ -181,7 +181,7 @@ defmodule E2eWeb.AngleSliderFormLive do
       <.demo_page
         path={@path}
         id="angle-slider-form-live-page"
-        title={~t"Angle Slider form"}
+        title={~t"Angle Slider · Live Form"}
       >
         <.demo_section
           id="angle-slider-live-form-phoenix-section"

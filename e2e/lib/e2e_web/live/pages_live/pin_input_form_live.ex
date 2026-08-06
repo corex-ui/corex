@@ -14,7 +14,7 @@ defmodule E2eWeb.PinInputFormLive do
   def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> assign(:page_title, "Pin Input · Form")
+     |> assign(:page_title, "Pin Input · Live Form")
      |> assign(:form_ecto, PinInputDemo.form_ecto())
      |> assign(:live_phoenix_heex, PinInputDemo.form_doc_live_phoenix_heex())
      |> assign(:live_phoenix_elixir, PinInputDemo.form_doc_live_phoenix_elixir())
@@ -136,7 +136,7 @@ defmodule E2eWeb.PinInputFormLive do
       <.demo_page
         path={@path}
         id="pin-input-form-live-page"
-        title={~t"Pin Input · Form"}
+        title={~t"Pin Input · Live Form"}
       >
         <.demo_section
           id="pin-input-live-form-phoenix-section"

@@ -14,7 +14,7 @@ defmodule E2eWeb.FileUploadFormLive do
   def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> assign(:page_title, "File Upload · Form")
+     |> assign(:page_title, "File Upload · Live Form")
      |> assign(:form_ecto, Demo.form_ecto())
      |> assign(:live_phoenix_heex, Demo.form_doc_live_phoenix_heex())
      |> assign(:live_phoenix_elixir, Demo.form_doc_live_phoenix_elixir())
@@ -159,7 +159,7 @@ defmodule E2eWeb.FileUploadFormLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
-      <.demo_page path={@path} id="file-upload-form-live-page" title={~t"File Upload · Form"}>
+      <.demo_page path={@path} id="file-upload-form-live-page" title={~t"File Upload · Live Form"}>
         <.demo_section
           id="file-upload-live-form-phoenix-section"
           title={~t"Phoenix Form"}

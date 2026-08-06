@@ -116,6 +116,54 @@ defmodule E2eWeb.Demos.MenuDemo do
   def grouped_code, do: anatomy_grouped_code()
   def grouped_example(assigns), do: anatomy_grouped_example(assigns)
 
+  def anatomy_custom_items do
+    [
+      %Corex.Tree.Item{value: "fra", label: "France"},
+      %Corex.Tree.Item{value: "bel", label: "Belgium"},
+      %Corex.Tree.Item{value: "deu", label: "Germany"},
+      %Corex.Tree.Item{value: "nld", label: "Netherlands"}
+    ]
+  end
+
+  def anatomy_custom_item_code do
+    ~S"""
+    <.menu
+      class="menu"
+      items={[
+        %Corex.Tree.Item{value: "fra", label: "France"},
+        %Corex.Tree.Item{value: "bel", label: "Belgium"},
+        %Corex.Tree.Item{value: "deu", label: "Germany"}
+      ]}
+    >
+      <:item :let={item}>
+        <Flagpack.flag name={String.to_existing_atom(to_string(item.value))} />
+        {item.label}
+      </:item>
+      <:trigger>Actions</:trigger>
+      <:indicator>
+        <.heroicon name="hero-chevron-down" />
+      </:indicator>
+    </.menu>
+    """
+  end
+
+  def anatomy_custom_item_example(assigns) do
+    ~H"""
+    <.menu
+      id="menu-anatomy-custom-item"
+      class="menu"
+      items={anatomy_custom_items()}
+    >
+      <:item :let={item}>
+        <Flagpack.flag name={flag_name(item.value)} />
+        {item.label}
+      </:item>
+      <:trigger>Corex</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    """
+  end
+
   def anatomy_nested_code do
     ~S"""
     <.menu

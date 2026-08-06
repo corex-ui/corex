@@ -14,7 +14,7 @@ defmodule E2eWeb.ComboboxForm do
   def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> assign(:page_title, "Combobox · Form")
+     |> assign(:page_title, "Combobox · Live Form")
      |> assign(:form_ecto, Demo.form_ecto())
      |> assign(:live_phoenix_heex, Demo.form_doc_live_phoenix_heex())
      |> assign(:live_phoenix_elixir, Demo.form_doc_live_phoenix_elixir())
@@ -111,7 +111,7 @@ defmodule E2eWeb.ComboboxForm do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
-      <.demo_page path={@path} id="combobox-form-live-page" title={~t"Combobox · Form"}>
+      <.demo_page path={@path} id="combobox-form-live-page" title={~t"Combobox · Live Form"}>
         <.demo_section
           id="combobox-live-form-phoenix-section"
           title={~t"Phoenix Form"}

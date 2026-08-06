@@ -40,7 +40,7 @@ defmodule E2eWeb.PaginationApiLive do
       >
         <.demo_section
           id="pagination-api-client-binding"
-          title="LiveView binding"
+          title="Set Page (Client Binding)"
           code={@codes.binding}
         >
           <:preview><Demo.api_set_page_client_binding_example /></:preview>
@@ -48,7 +48,7 @@ defmodule E2eWeb.PaginationApiLive do
 
         <.demo_section
           id="pagination-api-server"
-          title="Server push"
+          title="Set Page (Server)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @codes.server_heex},
             %{value: "elixir", label: "Elixir", language: :elixir, code: @codes.server_elixir}

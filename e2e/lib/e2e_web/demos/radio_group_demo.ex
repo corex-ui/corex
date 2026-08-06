@@ -548,20 +548,20 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
   def api_overview_example(assigns), do: api_set_value_client_binding_example(assigns)
 
   def events_server_heex do
-    ~S"""
+    items = E2eWeb.Demos.DocExamples.code_radio_items() |> String.trim()
+
+    """
     <.radio_group
       name="rg-events-server"
       class="radio-group"
-      items={[
-        %{value: "a", label: "Option A"},
-        %{value: "b", label: "Option B"}
-      ]}
+      items={#{items}}
       on_value_change="radio_group_changed"
     >
       <:label>Pick</:label>
       <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
     </.radio_group>
     """
+    |> String.trim()
   end
 
   def events_server_elixir do
@@ -572,20 +572,20 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
   end
 
   def events_client_heex do
-    ~S"""
+    items = E2eWeb.Demos.DocExamples.code_radio_items() |> String.trim()
+
+    """
     <.radio_group
       name="rg-events-client"
       class="radio-group"
-      items={[
-        %{value: "a", label: "Option A"},
-        %{value: "b", label: "Option B"}
-      ]}
+      items={#{items}}
       on_value_change_client="radio-group-changed"
     >
       <:label>Pick</:label>
       <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
     </.radio_group>
     """
+    |> String.trim()
   end
 
   def events_client_js do

@@ -42,12 +42,12 @@ defmodule E2eWeb.ToggleGroupApiLive do
       <.demo_page
         path={@path}
         id="toggle-group-api-page"
-        title="Toggle group · API"
+        title="Toggle Group · API"
         subtitle="set_value via LiveView JS, DOM events on the hook root, or server push."
       >
         <.demo_section
           id="toggle-group-api-set-value-client-binding"
-          title="LiveView binding"
+          title="Set Value (Client Binding)"
           code={@codes.set_value_client_binding}
         >
           <:preview><Demo.api_set_value_client_binding_example /></:preview>
@@ -55,7 +55,7 @@ defmodule E2eWeb.ToggleGroupApiLive do
 
         <.demo_section
           id="toggle-group-api-set-value-client-js"
-          title="Client JS"
+          title="Set Value (Client JS)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @codes.set_value_client_js_heex},
             %{value: "js", label: "JS", language: :js, code: @codes.set_value_client_js},
@@ -67,7 +67,7 @@ defmodule E2eWeb.ToggleGroupApiLive do
 
         <.demo_section
           id="toggle-group-api-set-value-server"
-          title="Server push"
+          title="Set Value (Server)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @codes.set_value_server_heex},
             %{

@@ -18,7 +18,7 @@ defmodule E2eWeb.DatePickerFormLive do
 
     {:ok,
      socket
-     |> assign(:page_title, "Date Picker · Form")
+     |> assign(:page_title, "Date Picker · Live Form")
      |> assign(:form_ecto, demo.form_ecto())
      |> assign(:live_phoenix_single_heex, demo.form_doc_live_phoenix_heex())
      |> assign(:live_phoenix_single_elixir, demo.form_doc_live_phoenix_elixir())
@@ -348,7 +348,7 @@ defmodule E2eWeb.DatePickerFormLive do
       <.demo_page
         path={@path}
         id="date-picker-form-live-page"
-        title={~t"Date Picker · Form"}
+        title={~t"Date Picker · Live Form"}
       >
         <.demo_section
           id="date-picker-live-form-phoenix-single-section"

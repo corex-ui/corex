@@ -5,21 +5,19 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def minimal_code do
     ~S"""
-    <.number_input
-      class="number-input"
-      min={0.0}
-      max={100.0}
-      step={5.0}
-      value="10"
-    >
-      <:label>Amount</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    <.number_input class="number-input" />
+    """
+  end
+
+  def with_label_code do
+    ~S"""
+    <.number_input class="number-input">
+      <:label>Quantity</:label>
     </.number_input>
     """
   end
 
-  def anatomy_minimal_quantity_code do
+  def with_triggers_code do
     ~S"""
     <.number_input class="number-input">
       <:label>Quantity</:label>
@@ -29,9 +27,25 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     """
   end
 
+  def anatomy_minimal_quantity_code, do: minimal_code()
+
   def minimal_example(assigns) do
     ~H"""
-    <.number_input id="number-input-anatomy-minimal" class="number-input">
+    <.number_input id="number-input-anatomy-minimal" class="number-input" />
+    """
+  end
+
+  def with_label_example(assigns) do
+    ~H"""
+    <.number_input id="number-input-anatomy-label" class="number-input">
+      <:label>Quantity</:label>
+    </.number_input>
+    """
+  end
+
+  def with_triggers_example(assigns) do
+    ~H"""
+    <.number_input id="number-input-anatomy-triggers" class="number-input">
       <:label>Quantity</:label>
       <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
       <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
@@ -71,9 +85,6 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     </.number_input>
     """
   end
-
-  def with_triggers_code, do: minimal_code()
-  def with_triggers_example(assigns), do: minimal_example(assigns)
 
   defp styling_triggers_code do
     """

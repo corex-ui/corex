@@ -14,7 +14,7 @@ defmodule E2eWeb.SignatureFormLive do
   def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> assign(:page_title, "Signature · Form")
+     |> assign(:page_title, "Signature · Live Form")
      |> assign(:form_ecto, Demo.form_ecto())
      |> assign(:live_phoenix_heex, Demo.form_doc_live_phoenix_heex())
      |> assign(:live_phoenix_elixir, Demo.form_doc_live_phoenix_elixir())
@@ -150,7 +150,7 @@ defmodule E2eWeb.SignatureFormLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
-      <.demo_page path={@path} id="signature-form-live-page" title={~t"Signature · Form"}>
+      <.demo_page path={@path} id="signature-form-live-page" title={~t"Signature · Live Form"}>
         <.demo_section
           id="signature-live-form-phoenix-section"
           title={~t"Phoenix Form"}

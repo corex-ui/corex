@@ -83,7 +83,7 @@ defmodule E2eWeb.Demos.DialogDemo do
           <.action phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)} class="button ui-size-sm">
             Cancel
           </.action>
-          <.action phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)} class="button ui-size-sm">
+          <.action phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)} class="button ui-size-sm ui-solid">
             Continue
           </.action>
         </div>
@@ -114,7 +114,7 @@ defmodule E2eWeb.Demos.DialogDemo do
           </.action>
           <.action
             phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)}
-            class="button ui-size-sm"
+            class="button ui-size-sm ui-solid"
           >
             Continue
           </.action>

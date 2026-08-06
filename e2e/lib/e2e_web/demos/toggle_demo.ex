@@ -278,7 +278,7 @@ defmodule E2eWeb.Demos.ToggleDemo do
     ~S"""
     <.action class="button ui-size-sm" phx-click="toggle_api_on">Pressed</.action>
     <.action class="button ui-size-sm" phx-click="toggle_api_off">Not pressed</.action>
-    <.toggle id="toggle-api-srv" class="toggle" controlled pressed={@api_srv_pressed}>
+    <.toggle id="toggle-api-srv" class="toggle">
       duis
     </.toggle>
     """

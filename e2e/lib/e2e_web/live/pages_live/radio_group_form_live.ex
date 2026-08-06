@@ -16,7 +16,7 @@ defmodule E2eWeb.RadioGroupFormLive do
   def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> assign(:page_title, "Radio Group · Form")
+     |> assign(:page_title, "Radio Group · Live Form")
      |> assign(:form_ecto, Demo.form_ecto())
      |> assign(:live_phoenix_heex, Demo.form_doc_live_phoenix_heex())
      |> assign(:live_phoenix_elixir, Demo.form_doc_live_phoenix_elixir())
@@ -191,7 +191,7 @@ defmodule E2eWeb.RadioGroupFormLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
-      <.demo_page path={@path} id="radio-group-form-live-page" title={~t"Radio Group · Form"}>
+      <.demo_page path={@path} id="radio-group-form-live-page" title={~t"Radio Group · Live Form"}>
         <.demo_section
           id="radio-group-live-form-phoenix-section"
           title={~t"Phoenix Form"}

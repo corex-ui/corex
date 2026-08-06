@@ -63,60 +63,60 @@ defmodule E2eWeb.Demos.CodeDemo do
   end
 
   def anatomy_block_code do
-    """
-    <.code class="code" language={:elixir} code={\"\"\"
+    ~S'''
+    <.code class="code" language={:elixir} code={"""
     defmodule Greeter do
       def hi, do: :ok
     end
-    \"\"\"} />
-    """
+    """} />
+    '''
   end
 
   def anatomy_block_clipboard_code do
-    ~S"""
+    ~S'''
     <div class="relative w-full">
       <.clipboard
         class="clipboard"
-        value={\"\"\"
+        value={"""
     def hello(name) do
       "Hello, #{name}!"
     end
-    \"\"\"}
+    """}
         input={false}
         trigger_aria_label="Copy code"
       >
         <:copy><.heroicon name="hero-clipboard" /></:copy>
         <:copied><.heroicon name="hero-check" /></:copied>
       </.clipboard>
-      <.code class="code" language={:elixir} code={\"\"\"
+      <.code class="code" language={:elixir} code={"""
     def hello(name) do
       "Hello, #{name}!"
     end
-    \"\"\"} />
+    """} />
     </div>
-    """
+    '''
   end
 
   def anatomy_javascript_code do
-    """
-    <.code class="code" language={:js} code={\"\"\"
+    ~S'''
+    <.code class="code" language={:js} code={"""
     export function greet(name) {
       return `Hello, ${name}!`;
     }
-    \"\"\"} />
-    """
+    """} />
+    '''
   end
 
   def anatomy_from_file_code do
-    """
-    <.code class="code" language={:elixir} code={\"\"\"
+    ~S'''
+    <.code class="code" language={:elixir} code={"""
     defmodule Hello do
       def world do
         "Hello, World!"
       end
     end
-    \"\"\"} />
-    """
+    """} />
+    '''
   end
 
   def styling_size_code do

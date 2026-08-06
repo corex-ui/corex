@@ -45,7 +45,7 @@ defmodule E2eWeb.ColorPickerApiLive do
       >
         <.demo_section
           id="color-picker-api-set-value-c"
-          title="set_value (Client binding)"
+          title="Set Value (Client Binding)"
           code={@codes.binding}
         >
           <:preview>
@@ -55,7 +55,7 @@ defmodule E2eWeb.ColorPickerApiLive do
 
         <.demo_section
           id="color-picker-api-set-value-s"
-          title="set_value (Server)"
+          title="Set Value (Server)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @codes.server_heex},
             %{value: "elixir", label: "Elixir", language: :elixir, code: @codes.server_elixir}

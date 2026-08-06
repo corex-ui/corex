@@ -285,21 +285,25 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
 
     """
-    <.combobox class="combobox ui-size-sm" translation={%Corex.Combobox.Translation{placeholder: "SM", empty: "No results"}} #{items_attr}>
+    <.combobox class="combobox ui-size-sm" value={["fra"]} translation={%Corex.Combobox.Translation{placeholder: "SM", empty: "No results"}} #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+      <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
     </.combobox>
-    <.combobox class="combobox ui-size-md" translation={%Corex.Combobox.Translation{placeholder: "MD", empty: "No results"}} #{items_attr}>
+    <.combobox class="combobox ui-size-md" value={["fra"]} translation={%Corex.Combobox.Translation{placeholder: "MD", empty: "No results"}} #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+      <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
     </.combobox>
-    <.combobox class="combobox ui-size-lg" translation={%Corex.Combobox.Translation{placeholder: "LG", empty: "No results"}} #{items_attr}>
+    <.combobox class="combobox ui-size-lg" value={["fra"]} translation={%Corex.Combobox.Translation{placeholder: "LG", empty: "No results"}} #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+      <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
     </.combobox>
-    <.combobox class="combobox ui-size-xl" translation={%Corex.Combobox.Translation{placeholder: "XL", empty: "No results"}} #{items_attr}>
+    <.combobox class="combobox ui-size-xl" value={["fra"]} translation={%Corex.Combobox.Translation{placeholder: "XL", empty: "No results"}} #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+      <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
     </.combobox>
     """
   end
@@ -310,38 +314,46 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       <.combobox
         id="combobox-style-sm"
         class="combobox ui-size-sm"
+        value={["fra"]}
         translation={%Corex.Combobox.Translation{placeholder: "SM", empty: "No results"}}
         items={Corex.List.new(items_minimal())}
       >
         <:empty>No results</:empty>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
       </.combobox>
       <.combobox
         id="combobox-style-md"
         class="combobox ui-size-md"
+        value={["fra"]}
         translation={%Corex.Combobox.Translation{placeholder: "MD", empty: "No results"}}
         items={Corex.List.new(items_minimal())}
       >
         <:empty>No results</:empty>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
       </.combobox>
       <.combobox
         id="combobox-style-lg"
         class="combobox ui-size-lg"
+        value={["fra"]}
         translation={%Corex.Combobox.Translation{placeholder: "LG", empty: "No results"}}
         items={Corex.List.new(items_minimal())}
       >
         <:empty>No results</:empty>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
       </.combobox>
       <.combobox
         id="combobox-style-xl"
         class="combobox ui-size-xl"
+        value={["fra"]}
         translation={%Corex.Combobox.Translation{placeholder: "XL", empty: "No results"}}
         items={Corex.List.new(items_minimal())}
       >
         <:empty>No results</:empty>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
       </.combobox>
     </div>
     """
@@ -1125,9 +1137,10 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
 
     """
-    <.combobox class="combobox" translation={%Corex.Combobox.Translation{placeholder: "Subtle (default)", empty: "No results"}} #{items_attr}>
+    <.combobox class="combobox" value={["fra"]} translation={%Corex.Combobox.Translation{placeholder: "Subtle (default)", empty: "No results"}} #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+      <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
     </.combobox>
     """
   end
@@ -1139,11 +1152,13 @@ defmodule E2eWeb.Demos.ComboboxDemo do
     <.combobox
       id="combobox-style-canonical"
       class="combobox"
+      value={["fra"]}
       translation={%Corex.Combobox.Translation{placeholder: "Subtle (default)", empty: "No results"}}
       items={Corex.List.new(items_minimal())}
     >
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
     </.combobox>
     """
   end
@@ -1153,29 +1168,35 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
 
     """
-    <.combobox class="combobox" translation={%Corex.Combobox.Translation{placeholder: "Default", empty: "No results"}} #{items_attr}>
+    <.combobox class="combobox" value={["fra"]} translation={%Corex.Combobox.Translation{placeholder: "Default", empty: "No results"}} #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+      <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
     </.combobox>
-    <.combobox class="combobox ui-accent" translation={%Corex.Combobox.Translation{placeholder: "Accent", empty: "No results"}} #{items_attr}>
+    <.combobox class="combobox ui-accent" value={["fra"]} translation={%Corex.Combobox.Translation{placeholder: "Accent", empty: "No results"}} #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+      <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
     </.combobox>
-    <.combobox class="combobox ui-brand" translation={%Corex.Combobox.Translation{placeholder: "Brand", empty: "No results"}} #{items_attr}>
+    <.combobox class="combobox ui-brand" value={["fra"]} translation={%Corex.Combobox.Translation{placeholder: "Brand", empty: "No results"}} #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+      <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
     </.combobox>
-    <.combobox class="combobox ui-alert" translation={%Corex.Combobox.Translation{placeholder: "Alert", empty: "No results"}} #{items_attr}>
+    <.combobox class="combobox ui-alert" value={["fra"]} translation={%Corex.Combobox.Translation{placeholder: "Alert", empty: "No results"}} #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+      <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
     </.combobox>
-    <.combobox class="combobox ui-info" translation={%Corex.Combobox.Translation{placeholder: "Info", empty: "No results"}} #{items_attr}>
+    <.combobox class="combobox ui-info" value={["fra"]} translation={%Corex.Combobox.Translation{placeholder: "Info", empty: "No results"}} #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+      <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
     </.combobox>
-    <.combobox class="combobox ui-success" translation={%Corex.Combobox.Translation{placeholder: "Success", empty: "No results"}} #{items_attr}>
+    <.combobox class="combobox ui-success" value={["fra"]} translation={%Corex.Combobox.Translation{placeholder: "Success", empty: "No results"}} #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+      <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
     </.combobox>
     """
   end
@@ -1186,56 +1207,68 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       <.combobox
         id="combobox-style-color-default"
         class="combobox"
+        value={["fra"]}
         translation={%Corex.Combobox.Translation{placeholder: "Default", empty: "No results"}}
         items={Corex.List.new(items_minimal())}
       >
         <:empty>No results</:empty>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
       </.combobox>
       <.combobox
         id="combobox-style-color-accent"
         class="combobox ui-accent"
+        value={["fra"]}
         translation={%Corex.Combobox.Translation{placeholder: "Accent", empty: "No results"}}
         items={Corex.List.new(items_minimal())}
       >
         <:empty>No results</:empty>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
       </.combobox>
       <.combobox
         id="combobox-style-color-brand"
         class="combobox ui-brand"
+        value={["fra"]}
         translation={%Corex.Combobox.Translation{placeholder: "Brand", empty: "No results"}}
         items={Corex.List.new(items_minimal())}
       >
         <:empty>No results</:empty>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
       </.combobox>
       <.combobox
         id="combobox-style-color-alert"
         class="combobox ui-alert"
+        value={["fra"]}
         translation={%Corex.Combobox.Translation{placeholder: "Alert", empty: "No results"}}
         items={Corex.List.new(items_minimal())}
       >
         <:empty>No results</:empty>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
       </.combobox>
       <.combobox
         id="combobox-style-color-info"
         class="combobox ui-info"
+        value={["fra"]}
         translation={%Corex.Combobox.Translation{placeholder: "Info", empty: "No results"}}
         items={Corex.List.new(items_minimal())}
       >
         <:empty>No results</:empty>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
       </.combobox>
       <.combobox
         id="combobox-style-color-success"
         class="combobox ui-success"
+        value={["fra"]}
         translation={%Corex.Combobox.Translation{placeholder: "Success", empty: "No results"}}
         items={Corex.List.new(items_minimal())}
       >
         <:empty>No results</:empty>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
       </.combobox>
     </div>
     """
@@ -1246,17 +1279,20 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
 
     """
-    <.combobox class="combobox" translation={%Corex.Combobox.Translation{placeholder: "Subtle (default)", empty: "No results"}} #{items_attr}>
+    <.combobox class="combobox" value={["fra"]} translation={%Corex.Combobox.Translation{placeholder: "Subtle (default)", empty: "No results"}} #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+      <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
     </.combobox>
-    <.combobox class="combobox ui-solid" translation={%Corex.Combobox.Translation{placeholder: "Solid", empty: "No results"}} #{items_attr}>
+    <.combobox class="combobox ui-solid" value={["fra"]} translation={%Corex.Combobox.Translation{placeholder: "Solid", empty: "No results"}} #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+      <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
     </.combobox>
-    <.combobox class="combobox ui-ghost" translation={%Corex.Combobox.Translation{placeholder: "Ghost", empty: "No results"}} #{items_attr}>
+    <.combobox class="combobox ui-ghost" value={["fra"]} translation={%Corex.Combobox.Translation{placeholder: "Ghost", empty: "No results"}} #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+      <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
     </.combobox>
     """
   end
@@ -1269,6 +1305,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       <.combobox
         id="combobox-style-variant-subtle"
         class="combobox"
+        value={["fra"]}
         translation={
           %Corex.Combobox.Translation{placeholder: "Subtle (default)", empty: "No results"}
         }
@@ -1276,24 +1313,29 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       >
         <:empty>No results</:empty>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
       </.combobox>
       <.combobox
         id="combobox-style-variant-solid"
         class="combobox ui-solid"
+        value={["fra"]}
         translation={%Corex.Combobox.Translation{placeholder: "Solid", empty: "No results"}}
         items={Corex.List.new(items_minimal())}
       >
         <:empty>No results</:empty>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
       </.combobox>
       <.combobox
         id="combobox-style-variant-ghost"
         class="combobox ui-ghost"
+        value={["fra"]}
         translation={%Corex.Combobox.Translation{placeholder: "Ghost", empty: "No results"}}
         items={Corex.List.new(items_minimal())}
       >
         <:empty>No results</:empty>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
       </.combobox>
     </div>
     """
@@ -1308,9 +1350,10 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       class = DemoScales.join_matrix_modifiers("combobox", semantic.modifier, variant.modifier)
 
       """
-      <.combobox class="#{class}" translation={%Corex.Combobox.Translation{placeholder: "#{semantic.label}", empty: "No results"}} #{items_attr}>
+      <.combobox class="#{class}" value={["fra"]} translation={%Corex.Combobox.Translation{placeholder: "#{semantic.label}", empty: "No results"}} #{items_attr}>
         <:empty>No results</:empty>
         <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+        <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
       </.combobox>
       """
     end
@@ -1331,6 +1374,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
             :for={{variant, variant_index} <- Enum.with_index(@matrix_variants)}
             id={"combobox-matrix-#{semantic_index}-#{variant_index}"}
             class={DemoScales.join_matrix_modifiers("combobox", semantic.modifier, variant.modifier)}
+            value={["fra"]}
             translation={
               %Corex.Combobox.Translation{placeholder: semantic.label, empty: "No results"}
             }
@@ -1338,6 +1382,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
           >
             <:empty>No results</:empty>
             <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+            <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
           </.combobox>
         </div>
       </div>
@@ -1354,9 +1399,10 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       class = DemoScales.join_modifiers("combobox", modifier)
 
       """
-      <.combobox class="#{class}" translation={%Corex.Combobox.Translation{placeholder: "Placeholder", empty: "No results"}} #{items_attr}>
+      <.combobox class="#{class}" value={["fra"]} translation={%Corex.Combobox.Translation{placeholder: "Placeholder", empty: "No results"}} #{items_attr}>
         <:empty>No results</:empty>
         <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+        <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
       </.combobox>
       """
     end)
@@ -1373,11 +1419,13 @@ defmodule E2eWeb.Demos.ComboboxDemo do
         <.combobox
           id={"combobox-style-max-#{variant.id}"}
           class={DemoScales.join_modifiers("combobox", variant.modifier)}
+          value={["fra"]}
           translation={%Corex.Combobox.Translation{placeholder: variant.label, empty: "No results"}}
           items={Corex.List.new(items_minimal())}
         >
           <:empty>No results</:empty>
           <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+          <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
         </.combobox>
       </div>
     </div>
@@ -1417,9 +1465,10 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       class = DemoScales.join_modifiers("combobox", modifier)
 
       """
-      <.combobox class="#{class}" translation={%Corex.Combobox.Translation{placeholder: "Placeholder", empty: "No results"}} #{items_attr}>
+      <.combobox class="#{class}" value={["fra"]} translation={%Corex.Combobox.Translation{placeholder: "Placeholder", empty: "No results"}} #{items_attr}>
         <:empty>No results</:empty>
         <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+        <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
       </.combobox>
       """
     end)
@@ -1436,11 +1485,13 @@ defmodule E2eWeb.Demos.ComboboxDemo do
         <.combobox
           id={"combobox-style-max-h-#{variant.id}"}
           class={DemoScales.join_modifiers("combobox", variant.modifier)}
+          value={["fra"]}
           translation={%Corex.Combobox.Translation{placeholder: variant.label, empty: "No results"}}
           items={Corex.List.new(items_scrollable())}
         >
           <:empty>No results</:empty>
           <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+          <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
         </.combobox>
       </div>
     </div>
@@ -1452,25 +1503,30 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
 
     """
-    <.combobox class="combobox ui-rounded-none" translation={%Corex.Combobox.Translation{placeholder: "None", empty: "No results"}} #{items_attr}>
+    <.combobox class="combobox ui-rounded-none" value={["fra"]} translation={%Corex.Combobox.Translation{placeholder: "None", empty: "No results"}} #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+      <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
     </.combobox>
-    <.combobox class="combobox ui-rounded-md" translation={%Corex.Combobox.Translation{placeholder: "MD", empty: "No results"}} #{items_attr}>
+    <.combobox class="combobox ui-rounded-md" value={["fra"]} translation={%Corex.Combobox.Translation{placeholder: "MD", empty: "No results"}} #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+      <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
     </.combobox>
-    <.combobox class="combobox ui-rounded-lg" translation={%Corex.Combobox.Translation{placeholder: "LG", empty: "No results"}} #{items_attr}>
+    <.combobox class="combobox ui-rounded-lg" value={["fra"]} translation={%Corex.Combobox.Translation{placeholder: "LG", empty: "No results"}} #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+      <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
     </.combobox>
-    <.combobox class="combobox ui-rounded-xl" translation={%Corex.Combobox.Translation{placeholder: "XL", empty: "No results"}} #{items_attr}>
+    <.combobox class="combobox ui-rounded-xl" value={["fra"]} translation={%Corex.Combobox.Translation{placeholder: "XL", empty: "No results"}} #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+      <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
     </.combobox>
-    <.combobox class="combobox ui-rounded-full" translation={%Corex.Combobox.Translation{placeholder: "Full", empty: "No results"}} #{items_attr}>
+    <.combobox class="combobox ui-rounded-full" value={["fra"]} translation={%Corex.Combobox.Translation{placeholder: "Full", empty: "No results"}} #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+      <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
     </.combobox>
     """
   end
@@ -1481,47 +1537,57 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       <.combobox
         id="combobox-style-rounded-none"
         class="combobox ui-rounded-none"
+        value={["fra"]}
         translation={%Corex.Combobox.Translation{placeholder: "None", empty: "No results"}}
         items={Corex.List.new(items_minimal())}
       >
         <:empty>No results</:empty>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
       </.combobox>
       <.combobox
         id="combobox-style-rounded-md"
         class="combobox ui-rounded-md"
+        value={["fra"]}
         translation={%Corex.Combobox.Translation{placeholder: "MD", empty: "No results"}}
         items={Corex.List.new(items_minimal())}
       >
         <:empty>No results</:empty>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
       </.combobox>
       <.combobox
         id="combobox-style-rounded-lg"
         class="combobox ui-rounded-lg"
+        value={["fra"]}
         translation={%Corex.Combobox.Translation{placeholder: "LG", empty: "No results"}}
         items={Corex.List.new(items_minimal())}
       >
         <:empty>No results</:empty>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
       </.combobox>
       <.combobox
         id="combobox-style-rounded-xl"
         class="combobox ui-rounded-xl"
+        value={["fra"]}
         translation={%Corex.Combobox.Translation{placeholder: "XL", empty: "No results"}}
         items={Corex.List.new(items_minimal())}
       >
         <:empty>No results</:empty>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
       </.combobox>
       <.combobox
         id="combobox-style-rounded-full"
         class="combobox ui-rounded-full"
+        value={["fra"]}
         translation={%Corex.Combobox.Translation{placeholder: "Full", empty: "No results"}}
         items={Corex.List.new(items_minimal())}
       >
         <:empty>No results</:empty>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
       </.combobox>
     </div>
     """

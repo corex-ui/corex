@@ -42,7 +42,7 @@ defmodule E2eWeb.MenuApiLive do
 
         <.demo_section
           id="menu-api-client-js"
-          title="Open / close (client JS)"
+          title="Open / Close (Client JS)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: Demo.api_client_js_heex()},
             %{value: "js", label: "JS", language: :js, code: Demo.api_client_js_js()},
@@ -54,7 +54,7 @@ defmodule E2eWeb.MenuApiLive do
 
         <.demo_section
           id="menu-api-server-section"
-          title="Open / close (server)"
+          title="Open / Close (Server)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: Demo.api_server_heex()},
             %{value: "elixir", label: "Elixir", language: :elixir, code: Demo.api_server_elixir()}

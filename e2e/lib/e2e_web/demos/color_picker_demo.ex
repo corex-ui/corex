@@ -1369,43 +1369,4 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     </div>
     """
   end
-
-  def styling_max_height_code do
-    label = DemoScales.block_demo_label()
-
-    DemoScales.max_height_variants("color-picker")
-    |> Enum.map(fn %{modifier: modifier} ->
-      class = DemoScales.join_modifiers("color-picker", modifier)
-
-      """
-      <.color_picker class="#{class}" value="#3b82f6" presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}>
-        <:label>#{label}</:label>
-      </.color_picker>
-      """
-    end)
-    |> DemoScales.join_code()
-  end
-
-  def styling_max_height_example(assigns) do
-    assigns =
-      assigns
-      |> assign(:presets, @presets)
-      |> assign(:max_height_variants, DemoScales.max_height_variants("color-picker"))
-
-    ~H"""
-    <div {DemoScales.preview_scroll_attrs()}>
-      <div :for={variant <- @max_height_variants} class="flex flex-col gap-space-sm">
-        <p class="typo ui-size-sm font-medium">{variant.label}</p>
-        <.color_picker
-          id={"color-picker-style-max-h-#{variant.id}"}
-          class={DemoScales.join_modifiers("color-picker", variant.modifier)}
-          value="#3b82f6"
-          presets={@presets}
-        >
-          <:label>{DemoScales.block_demo_label()}</:label>
-        </.color_picker>
-      </div>
-    </div>
-    """
-  end
 end

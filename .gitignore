@@ -69,3 +69,5 @@ corex-*.tar
 
 # Declaration files emitted by `npm run build:types` (packed by prepack).
 /priv/static/types/
+
+.pnpm-store

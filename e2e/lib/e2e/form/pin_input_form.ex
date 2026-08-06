@@ -15,8 +15,30 @@ defmodule E2e.Form.PinInputForm do
     form
     |> cast(attrs, [:pin])
     |> validate_required([:pin], message: "can't be blank")
-    |> validate_length(:pin, is: 4, message: "must be 4 digits")
-    |> validate_pin_digits()
+    |> validate_complete_pin()
+  end
+
+  defp validate_complete_pin(changeset) do
+    case get_field(changeset, :pin) do
+      pin when is_list(pin) ->
+        filled = Enum.reject(pin, &(&1 in [nil, ""]))
+
+        cond do
+          filled == [] ->
+            changeset
+
+          length(filled) < 4 and changeset.action == :validate ->
+            changeset
+
+          true ->
+            changeset
+            |> validate_length(:pin, is: 4, message: "must be 4 digits")
+            |> validate_pin_digits()
+        end
+
+      _ ->
+        changeset
+    end
   end
 
   defp validate_pin_digits(changeset) do

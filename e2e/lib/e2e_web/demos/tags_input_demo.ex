@@ -1118,19 +1118,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def styling_trigger_heex do
     ~S"""
-    <.tags_input class="tags-input w-full ui-accent" value={["lorem", "duis", "donec"]}>
-      <:close><.heroicon name="hero-x-mark" /></:close>
-    </.tags_input>
-    <.tags_input class="tags-input w-full ui-brand" value={["lorem", "duis", "donec"]}>
-      <:close><.heroicon name="hero-x-mark" /></:close>
-    </.tags_input>
-    <.tags_input class="tags-input w-full ui-alert" value={["lorem", "duis", "donec"]}>
-      <:close><.heroicon name="hero-x-mark" /></:close>
-    </.tags_input>
-    <.tags_input class="tags-input w-full ui-success" value={["lorem", "duis", "donec"]}>
-      <:close><.heroicon name="hero-x-mark" /></:close>
-    </.tags_input>
-    <.tags_input class="tags-input w-full ui-info" value={["lorem", "duis", "donec"]}>
+    <.tags_input class="tags-input w-full" value={["lorem", "duis", "donec"]}>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
     """
@@ -1140,43 +1128,9 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     assigns = assign(assigns, :demo_tags, styling_tags_value())
 
     ~H"""
-    <div class="flex flex-col gap-space-lg w-full items-center">
-      <.tags_input
-        id="tags-style-trigger-accent"
-        class="tags-input w-full ui-accent"
-        value={@demo_tags}
-      >
-        <:close><.heroicon name="hero-x-mark" /></:close>
-      </.tags_input>
-      <.tags_input
-        id="tags-style-trigger-brand"
-        class="tags-input w-full ui-brand"
-        value={@demo_tags}
-      >
-        <:close><.heroicon name="hero-x-mark" /></:close>
-      </.tags_input>
-      <.tags_input
-        id="tags-style-trigger-alert"
-        class="tags-input w-full ui-alert"
-        value={@demo_tags}
-      >
-        <:close><.heroicon name="hero-x-mark" /></:close>
-      </.tags_input>
-      <.tags_input
-        id="tags-style-trigger-success"
-        class="tags-input w-full ui-success"
-        value={@demo_tags}
-      >
-        <:close><.heroicon name="hero-x-mark" /></:close>
-      </.tags_input>
-      <.tags_input
-        id="tags-style-trigger-info"
-        class="tags-input w-full ui-info"
-        value={@demo_tags}
-      >
-        <:close><.heroicon name="hero-x-mark" /></:close>
-      </.tags_input>
-    </div>
+    <.tags_input id="tags-style-trigger-default" class="tags-input w-full" value={@demo_tags}>
+      <:close><.heroicon name="hero-x-mark" /></:close>
+    </.tags_input>
     """
   end
 

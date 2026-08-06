@@ -14,7 +14,7 @@ defmodule E2eWeb.PasswordInputFormLive do
   def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> assign(:page_title, "Password Input · Form")
+     |> assign(:page_title, "Password Input · Live Form")
      |> assign(:form_ecto, Demo.form_ecto())
      |> assign(:live_phoenix_heex, Demo.form_doc_live_phoenix_heex())
      |> assign(:live_phoenix_elixir, Demo.form_doc_live_phoenix_elixir())
@@ -111,7 +111,11 @@ defmodule E2eWeb.PasswordInputFormLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
-      <.demo_page path={@path} id="password-input-form-live-page" title={~t"Password Input · Form"}>
+      <.demo_page
+        path={@path}
+        id="password-input-form-live-page"
+        title={~t"Password Input · Live Form"}
+      >
         <.demo_section
           id="password-input-live-form-phoenix-section"
           title={~t"Phoenix Form"}

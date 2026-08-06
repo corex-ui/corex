@@ -53,7 +53,7 @@ defmodule E2eWeb.PasswordInputApiLive do
       >
         <.demo_section
           id="password-input-api-binding-section"
-          title="LiveView binding"
+          title="Set Visibility (Client Binding)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: Demo.api_binding_heex()},
             %{value: "elixir", label: "Elixir", language: :elixir, code: Demo.api_binding_elixir()},
@@ -76,7 +76,7 @@ defmodule E2eWeb.PasswordInputApiLive do
 
         <.demo_section
           id="password-input-api-client-section"
-          title={~t"Client JS"}
+          title={~t"Set Visibility (Client JS)"}
           code_tabs={[
             %{value: "heex", label: ~t"Heex", language: :heex, code: Demo.api_client_heex()},
             %{value: "js", label: ~t"JS", language: :js, code: Demo.api_client_js()},
