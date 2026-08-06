@@ -50,7 +50,7 @@ defmodule Corex.Dialog do
         <.action phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)} class="button ui-size-sm">
           Cancel
         </.action>
-        <.action phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)} class="button ui-size-sm">
+        <.action phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)} class="button ui-size-sm ui-solid">
           Continue
         </.action>
       </div>

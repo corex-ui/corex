@@ -99,6 +99,8 @@ defmodule Corex.Tooltip.Connect do
 
   @spec content(Content.t()) :: map()
   def content(assigns) do
+    closed? = assigns.open != true
+
     %{
       "data-scope" => "tooltip",
       "data-part" => "content",
@@ -107,6 +109,9 @@ defmodule Corex.Tooltip.Connect do
       "data-state" => data_state(assigns.open, "open", "closed"),
       "id" => "tooltip:#{assigns.id}:content"
     }
+    |> then(fn attrs ->
+      if closed?, do: Map.put(attrs, "hidden", true), else: attrs
+    end)
   end
 
   def ignore_content(assigns) do

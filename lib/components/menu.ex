@@ -102,6 +102,30 @@ defmodule Corex.Menu do
   </.menu>
   ```
 
+  ### Custom item
+
+  Use the `:item` slot to customize each menu row (for example icons beside labels).
+
+  ```heex
+  <.menu
+    class="menu"
+    items={[
+      %Corex.Tree.Item{value: "fra", label: "France"},
+      %Corex.Tree.Item{value: "bel", label: "Belgium"},
+      %Corex.Tree.Item{value: "deu", label: "Germany"}
+    ]}
+  >
+    <:item :let={item}>
+      <Flagpack.flag name={String.to_existing_atom(to_string(item.value))} />
+      {item.label}
+    </:item>
+    <:trigger>Actions</:trigger>
+    <:indicator>
+      <.heroicon name="hero-chevron-down" />
+    </:indicator>
+  </.menu>
+  ```
+
   ### Grouped Items
 
   Use `group` in `Corex.Tree.Item` to group related items. The group value is used as the section label (same as select).
