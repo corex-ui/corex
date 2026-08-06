@@ -32254,7 +32254,11 @@ ${err}`);
             const visibleProps = __spreadValues({}, this.api.getInputProps());
             delete visibleProps.name;
             delete visibleProps.form;
+            const ssrAriaLabel = inputEl.getAttribute("aria-label");
             this.spreadProps(inputEl, visibleProps);
+            if (ssrAriaLabel && !inputEl.getAttribute("aria-label")) {
+              inputEl.setAttribute("aria-label", ssrAriaLabel);
+            }
             const formatted = (_b = this.api.value) != null ? _b : "";
             if (inputEl.value !== formatted) {
               inputEl.value = formatted;

@@ -104,7 +104,7 @@ defmodule Corex.EditableTest do
       assert result["name"] == "user[title]"
       assert result["value"] == "Hi"
       assert result["type"] == "text"
-      assert result["hidden"] == true
+      assert result["hidden"] == "true"
       assert result["tabindex"] == "-1"
       assert result["aria-hidden"] == "true"
     end

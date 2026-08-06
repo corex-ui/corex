@@ -35,7 +35,7 @@ defmodule Corex.NumberInput do
 
   <!-- tabs-close -->
 
-  Slots `:decrement_trigger` and `:increment_trigger` are required.
+  Slots `:decrement_trigger` and `:increment_trigger` are optional (provide both or neither). Prefer a `:label` slot; without one the input uses a default `aria-label` from `translation.input`.
 
   ## API
 
@@ -332,7 +332,17 @@ defmodule Corex.NumberInput do
           {render_slot(@label)}
         </label>
         <div {Connect.mounted_control(%Control{id: @id, dir: @dir, orientation: @orientation})}>
-          <input value={@display_value || ""} {Connect.mounted_input(%Input{id: @id, disabled: @disabled, required: @required, dir: @dir, orientation: @orientation})} />
+          <input
+            value={@display_value || ""}
+            {Connect.mounted_input(%Input{
+              id: @id,
+              disabled: @disabled,
+              required: @required,
+              dir: @dir,
+              orientation: @orientation,
+              aria_label: if(@label == [], do: @translation.input, else: nil)
+            })}
+          />
           <div
             :if={@increment_trigger != [] and @decrement_trigger != []}
             phx-update="ignore"

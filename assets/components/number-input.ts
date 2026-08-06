@@ -44,7 +44,12 @@ export class NumberInput extends Component<Props, Api, Schema> {
       const visibleProps = { ...(this.api.getInputProps() as Record<string, unknown>) };
       delete visibleProps.name;
       delete visibleProps.form;
+      const ssrAriaLabel = inputEl.getAttribute("aria-label");
       this.spreadProps(inputEl, visibleProps);
+      // Keep SSR aria-label when there is no label part (Zag input props omit it).
+      if (ssrAriaLabel && !inputEl.getAttribute("aria-label")) {
+        inputEl.setAttribute("aria-label", ssrAriaLabel);
+      }
       const formatted = this.api.value ?? "";
       if (inputEl.value !== formatted) {
         inputEl.value = formatted;

@@ -1365,7 +1365,11 @@ var NumberInput = class extends Component {
       const visibleProps = { ...this.api.getInputProps() };
       delete visibleProps.name;
       delete visibleProps.form;
+      const ssrAriaLabel = inputEl.getAttribute("aria-label");
       this.spreadProps(inputEl, visibleProps);
+      if (ssrAriaLabel && !inputEl.getAttribute("aria-label")) {
+        inputEl.setAttribute("aria-label", ssrAriaLabel);
+      }
       const formatted = this.api.value ?? "";
       if (inputEl.value !== formatted) {
         inputEl.value = formatted;

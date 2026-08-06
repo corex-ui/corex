@@ -160,7 +160,7 @@ defmodule Corex.Editable.Connect do
   def form_value(assigns) do
     %{
       "type" => "text",
-      "hidden" => true,
+      "hidden" => "true",
       "tabindex" => "-1",
       "aria-hidden" => "true",
       "autocomplete" => "off",

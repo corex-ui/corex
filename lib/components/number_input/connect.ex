@@ -143,7 +143,7 @@ defmodule Corex.NumberInput.Connect do
 
   @spec input(Input.t()) :: map()
   def input(assigns) do
-    %{
+    base = %{
       "data-scope" => "number-input",
       "data-part" => "input",
       "disabled" => presence_attr(assigns.disabled),
@@ -159,6 +159,11 @@ defmodule Corex.NumberInput.Connect do
       "pattern" => "-?[0-9]*(.[0-9]+)?",
       "required" => presence_attr(assigns.required)
     }
+
+    case Map.get(assigns, :aria_label) do
+      label when is_binary(label) and label != "" -> Map.put(base, "aria-label", label)
+      _ -> base
+    end
   end
 
   @spec decrement_trigger(DecrementTrigger.t()) :: map()
