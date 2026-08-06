@@ -76,6 +76,12 @@ function queueFormBubblingInputForPhoenix(
   });
 }
 
+function shouldGateHiddenName(el: HTMLElement): boolean {
+  // data-submit-name is always the form name; data-name is set only when the
+  // server intends the field to participate (default/used value).
+  return Boolean(formSubmitName(el)) && getString(el, "name") === undefined;
+}
+
 const AngleSliderHook = createZagLiveHook<AngleSliderHookState, AngleSlider>({
   key: "angleSlider",
   controlledKeys: ["value", "defaultValue"],
@@ -169,7 +175,7 @@ const AngleSliderHook = createZagLiveHook<AngleSliderHookState, AngleSlider>({
   },
 
   afterInit(hook, zag) {
-    if (!hook.fieldTouched) {
+    if (!hook.fieldTouched && shouldGateHiddenName(hook.el)) {
       stripHiddenInputName(hook.el);
       zag.updateProps({ name: undefined } as Partial<Props>);
       zag.render();
@@ -183,7 +189,11 @@ const AngleSliderHook = createZagLiveHook<AngleSliderHookState, AngleSlider>({
       hook.fieldTouched = true;
     }
 
-    const name = hook.fieldTouched ? formSubmitName(el) : zagNameForForm(el);
+    const name = hook.fieldTouched
+      ? formSubmitName(el)
+      : shouldGateHiddenName(el)
+        ? undefined
+        : (getString(el, "name") ?? formSubmitName(el));
 
     zag.updateProps({
       id: el.id,
@@ -198,7 +208,7 @@ const AngleSliderHook = createZagLiveHook<AngleSliderHookState, AngleSlider>({
 
     zag.render();
 
-    if (!hook.fieldTouched) {
+    if (!hook.fieldTouched && shouldGateHiddenName(el)) {
       stripHiddenInputName(el);
     }
   },

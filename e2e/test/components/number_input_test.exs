@@ -18,7 +18,7 @@ defmodule E2eWeb.NumberInputTest do
 
   describe "anatomy" do
     feature "minimal section increments hidden value", %{session: session} do
-      section = "number-input-anatomy-minimal"
+      section = "number-input-anatomy-triggers"
 
       session =
         session

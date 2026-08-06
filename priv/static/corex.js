@@ -4864,6 +4864,9 @@ var Corex = (() => {
       });
     });
   }
+  function shouldGateHiddenName(el) {
+    return Boolean(formSubmitName(el)) && getString(el, "name") === void 0;
+  }
   var anatomy2, parts2, getRootId2, getThumbId, getHiddenInputId, getControlId, getValueTextId, getLabelId, getHiddenInputEl, getControlEl, getThumbEl, MIN_VALUE, MAX_VALUE, machine2, AngleSlider, AngleSliderHook;
   var init_angle_slider = __esm({
     "../priv/static/angle-slider.mjs"() {
@@ -5222,19 +5225,20 @@ var Corex = (() => {
           return zag;
         },
         afterInit(hook, zag) {
-          if (!hook.fieldTouched) {
+          if (!hook.fieldTouched && shouldGateHiddenName(hook.el)) {
             stripHiddenInputName(hook.el);
             zag.updateProps({ name: void 0 });
             zag.render();
           }
         },
         update(hook, zag) {
+          var _a4;
           const el = hook.el;
           const valuePatch = readUpdatedServerNumber(el, hook.beforeAttrs);
           if (getBoolean(el, "fieldUsed")) {
             hook.fieldTouched = true;
           }
-          const name = hook.fieldTouched ? formSubmitName(el) : zagNameForForm(el);
+          const name = hook.fieldTouched ? formSubmitName(el) : shouldGateHiddenName(el) ? void 0 : (_a4 = getString(el, "name")) != null ? _a4 : formSubmitName(el);
           zag.updateProps(__spreadValues(__spreadValues({
             id: el.id,
             disabled: getBoolean(el, "disabled"),
@@ -5244,7 +5248,7 @@ var Corex = (() => {
             dir: getDir(el)
           }, valuePatch.value !== void 0 ? { value: valuePatch.value } : {}), valuePatch.step !== void 0 ? { step: valuePatch.step } : {}));
           zag.render();
-          if (!hook.fieldTouched) {
+          if (!hook.fieldTouched && shouldGateHiddenName(el)) {
             stripHiddenInputName(el);
           }
         }

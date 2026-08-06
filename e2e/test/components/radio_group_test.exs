@@ -134,10 +134,10 @@ defmodule E2eWeb.RadioGroupTest do
 
       session =
         session
-        |> RadioGroup.click_item_in_section(section, "b")
+        |> RadioGroup.click_item_in_section(section, "duis")
         |> RadioGroup.wait_log_rows_grew("radio-group-events-log-server", before, timeout: 10_000)
 
-      RadioGroup.assert_events_log_mentions(session, "radio-group-events-log-server", "b")
+      RadioGroup.assert_events_log_mentions(session, "radio-group-events-log-server", "duis")
     end
 
     feature "client  -  selection appends client log row mentioning value", %{session: session} do
@@ -155,10 +155,10 @@ defmodule E2eWeb.RadioGroupTest do
 
       session =
         session
-        |> RadioGroup.click_item_in_section(section, "b")
+        |> RadioGroup.click_item_in_section(section, "duis")
         |> RadioGroup.wait_log_rows_grew("radio-group-events-log-client", before, timeout: 20_000)
 
-      RadioGroup.assert_events_log_mentions(session, "radio-group-events-log-client", "b")
+      RadioGroup.assert_events_log_mentions(session, "radio-group-events-log-client", "duis")
     end
   end
 

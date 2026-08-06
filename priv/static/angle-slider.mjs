@@ -570,6 +570,9 @@ function queueFormBubblingInputForPhoenix(el, getZag, opts = {}) {
     });
   });
 }
+function shouldGateHiddenName(el) {
+  return Boolean(formSubmitName(el)) && getString(el, "name") === void 0;
+}
 var AngleSliderHook = createZagLiveHook({
   key: "angleSlider",
   controlledKeys: ["value", "defaultValue"],
@@ -654,7 +657,7 @@ var AngleSliderHook = createZagLiveHook({
     return zag;
   },
   afterInit(hook, zag) {
-    if (!hook.fieldTouched) {
+    if (!hook.fieldTouched && shouldGateHiddenName(hook.el)) {
       stripHiddenInputName(hook.el);
       zag.updateProps({ name: void 0 });
       zag.render();
@@ -666,7 +669,7 @@ var AngleSliderHook = createZagLiveHook({
     if (getBoolean(el, "fieldUsed")) {
       hook.fieldTouched = true;
     }
-    const name = hook.fieldTouched ? formSubmitName(el) : zagNameForForm(el);
+    const name = hook.fieldTouched ? formSubmitName(el) : shouldGateHiddenName(el) ? void 0 : getString(el, "name") ?? formSubmitName(el);
     zag.updateProps({
       id: el.id,
       disabled: getBoolean(el, "disabled"),
@@ -678,7 +681,7 @@ var AngleSliderHook = createZagLiveHook({
       ...valuePatch.step !== void 0 ? { step: valuePatch.step } : {}
     });
     zag.render();
-    if (!hook.fieldTouched) {
+    if (!hook.fieldTouched && shouldGateHiddenName(el)) {
       stripHiddenInputName(el);
     }
   }
