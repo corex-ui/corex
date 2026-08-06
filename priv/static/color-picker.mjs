@@ -21,7 +21,7 @@ import {
 import {
   notifyPhoenixFormChange,
   syncHiddenInputValue
-} from "./chunks/chunk-QZUKCXYH.mjs";
+} from "./chunks/chunk-NUQOKDPA.mjs";
 import {
   mountStringBinding,
   readUpdatedServerString
@@ -2408,7 +2408,7 @@ function syncColorHiddenAndNotify(el, valueAsString) {
     '[data-scope="color-picker"][data-part="hidden-input"]'
   );
   if (hidden) {
-    notifyPhoenixFormChange(hidden, valueAsString, { markUsed: false, force: true });
+    notifyPhoenixFormChange(hidden, valueAsString, { force: true });
   }
 }
 function readValueProps(el) {

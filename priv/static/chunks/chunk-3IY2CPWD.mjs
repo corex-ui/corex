@@ -9,10 +9,12 @@ function hasArraySubmitName(el) {
 function stripZagSubmitNames(el, scope, parts = ["hidden-input"]) {
   if (!hasArraySubmitName(el)) return;
   for (const part of parts) {
-    const node = el.querySelector(`[data-scope="${scope}"][data-part="${part}"]`);
-    if (!node) continue;
-    node.removeAttribute("name");
-    node.removeAttribute("form");
+    el.querySelectorAll(`[data-scope="${scope}"][data-part="${part}"]`).forEach(
+      (node) => {
+        node.removeAttribute("name");
+        node.removeAttribute("form");
+      }
+    );
   }
 }
 

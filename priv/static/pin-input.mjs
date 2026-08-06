@@ -3,12 +3,14 @@ import {
 } from "./chunks/chunk-KHEHQE65.mjs";
 import {
   stripZagSubmitNames
-} from "./chunks/chunk-L37AOZQG.mjs";
+} from "./chunks/chunk-3IY2CPWD.mjs";
 import {
+  bindArrayFieldSubmitIntent,
+  isFormFieldUsed,
   setArrayValues,
   setScalarValue,
   syncHiddenInputValue
-} from "./chunks/chunk-QZUKCXYH.mjs";
+} from "./chunks/chunk-NUQOKDPA.mjs";
 import {
   getJsonStringList,
   mountStringListBinding,
@@ -643,7 +645,7 @@ var PinInput = class extends Component {
         hiddenInputEl.removeAttribute("form");
       }
     }
-    stripZagSubmitNames(this.el, "pin-input");
+    stripZagSubmitNames(this.el, "pin-input", ["hidden-input", "input"]);
     const controlEl = this.el.querySelector(
       '[data-scope="pin-input"][data-part="control"]'
     );
@@ -656,14 +658,19 @@ var PinInput = class extends Component {
       const inputEl = inputEls[i] ?? this.el.querySelector(
         `[data-scope="pin-input"][data-part="input"][data-index="${i}"]`
       );
-      if (inputEl) this.spreadProps(inputEl, this.api.getInputProps({ index: i }));
+      if (!inputEl) continue;
+      this.spreadProps(inputEl, this.api.getInputProps({ index: i }));
+      inputEl.removeAttribute("name");
+      inputEl.setAttribute("form", "");
     }
   }
 };
 
 // hooks/pin-input.ts
-function sameStringList(a, b) {
-  return a.length === b.length && a.every((v, i) => v === b[i]);
+function pinValueCommitKind(values) {
+  if (values.length === 0 || values.every((v) => String(v).trim() === "")) return "empty";
+  if (values.every((v) => String(v).trim() !== "")) return "complete";
+  return "partial";
 }
 function parseValueWithEmpties(raw) {
   return raw.split(",").map((v) => v.trim());
@@ -695,6 +702,7 @@ function padStringListBinding(el, count) {
 function syncPinInputFormForPhoenix(el, values, onTouched, opts = {}) {
   const submitName = getString(el, "submitName");
   const count = getNumber(el, "count") ?? 0;
+  const fieldTouched = isFormFieldUsed(el, opts.fieldTouched === true);
   if (submitName) {
     setArrayValues(el, values, {
       onTouched,
@@ -702,7 +710,7 @@ function syncPinInputFormForPhoenix(el, values, onTouched, opts = {}) {
       submitName,
       fixedLength: count,
       notifyLiveView: opts.notifyLiveView,
-      fieldTouched: opts.notifyLiveView === true
+      fieldTouched
     });
     return;
   }
@@ -711,7 +719,11 @@ function syncPinInputFormForPhoenix(el, values, onTouched, opts = {}) {
   );
   if (!hiddenInput) return;
   if (opts.notifyLiveView === false) {
-    setScalarValue(hiddenInput, values.join(""), { onTouched, markUsed: false });
+    setScalarValue(hiddenInput, values.join(""), {
+      onTouched,
+      markUsed: false,
+      dispatch: false
+    });
     return;
   }
   setScalarValue(hiddenInput, values.join(""), { onTouched });
@@ -720,7 +732,10 @@ function zagNameForForm(el) {
   if (getString(el, "submitName")) return void 0;
   return getString(el, "name");
 }
-function buildMachineProps(el, pushEvent, canPush, initialValues, isFieldTouched, markFieldTouched) {
+function sameStringList(a, b) {
+  return a.length === b.length && a.every((v, i) => v === b[i]);
+}
+function buildMachineProps(el, pushEvent, canPush, initialValues, markFieldTouched, isEdited, markEdited) {
   const count = getNumber(el, "count") ?? 0;
   return {
     id: el.id,
@@ -740,15 +755,21 @@ function buildMachineProps(el, pushEvent, canPush, initialValues, isFieldTouched
     type: getString(el, "type"),
     placeholder: getString(el, "placeholder"),
     onValueChange: (details) => {
-      const isMountEcho = !isFieldTouched() && sameStringList(details.value, initialValues);
-      if (!isMountEcho) {
-        markFieldTouched();
+      if (!sameStringList(details.value, initialValues)) {
+        markEdited();
       }
-      queueMicrotask(() => {
-        syncPinInputFormForPhoenix(el, details.value, void 0, {
-          notifyLiveView: !isMountEcho
-        });
+      const kind = pinValueCommitKind(details.value);
+      syncPinInputFormForPhoenix(el, details.value, void 0, {
+        notifyLiveView: false,
+        fieldTouched: false
       });
+      if (kind === "empty" && isEdited()) {
+        markFieldTouched();
+        syncPinInputFormForPhoenix(el, details.value, void 0, {
+          notifyLiveView: true,
+          fieldTouched: true
+        });
+      }
       notifyChange({
         el,
         canPushServer: canPush(),
@@ -763,6 +784,12 @@ function buildMachineProps(el, pushEvent, canPush, initialValues, isFieldTouched
       });
     },
     onValueComplete: (details) => {
+      markEdited();
+      markFieldTouched();
+      syncPinInputFormForPhoenix(el, details.value, void 0, {
+        notifyLiveView: true,
+        fieldTouched: true
+      });
       notifyChange({
         el,
         canPushServer: canPush(),
@@ -783,7 +810,8 @@ var PinInputHook = createZagLiveHook({
   controlledKeys: ["value"],
   mount(hook, { dom, server }) {
     const el = hook.el;
-    hook.fieldTouched = false;
+    hook.fieldTouched = getBoolean(el, "fieldUsed") === true;
+    hook.hasEdited = hook.fieldTouched === true;
     const pushEvent = hook.pushEvent.bind(hook);
     const canPush = () => canPushEvent(hook.liveSocket);
     const count = getNumber(el, "count") ?? 0;
@@ -796,9 +824,12 @@ var PinInputHook = createZagLiveHook({
         pushEvent,
         canPush,
         initialValues,
-        () => hook.fieldTouched === true,
         () => {
           hook.fieldTouched = true;
+        },
+        () => hook.hasEdited === true,
+        () => {
+          hook.hasEdited = true;
         }
       )
     );
@@ -817,12 +848,29 @@ var PinInputHook = createZagLiveHook({
         domDetail: { id: el.id, value, valueAsString }
       });
     };
+    const clearAndSync = () => {
+      hook.fieldTouched = true;
+      hook.hasEdited = true;
+      zag.api.clearValue();
+      syncPinInputFormForPhoenix(el, zag.api.value, void 0, {
+        notifyLiveView: true,
+        fieldTouched: true
+      });
+    };
+    hook.unbindSubmitIntent = bindArrayFieldSubmitIntent(el, () => {
+      hook.fieldTouched = true;
+      hook.hasEdited = true;
+      syncPinInputFormForPhoenix(el, zag.api.value, void 0, {
+        notifyLiveView: false,
+        fieldTouched: true
+      });
+    });
     dom.add("corex:pin-input:set-value", (event) => {
       const v = event.detail?.value;
       if (Array.isArray(v)) zag.api.setValue(v);
     });
     dom.add("corex:pin-input:clear", () => {
-      zag.api.clearValue();
+      clearAndSync();
     });
     dom.add("corex:pin-input:value", (event) => {
       emitValue(parseRespondTo(event.detail));
@@ -833,7 +881,7 @@ var PinInputHook = createZagLiveHook({
     });
     server.add("pin_input_clear", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
-      zag.api.clearValue();
+      clearAndSync();
     });
     server.add("pin_input_value", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
@@ -842,12 +890,20 @@ var PinInputHook = createZagLiveHook({
     return zag;
   },
   afterInit(hook, zag) {
-    syncPinInputFormForPhoenix(hook.el, zag.api.value, void 0, { notifyLiveView: false });
+    syncPinInputFormForPhoenix(hook.el, zag.api.value, void 0, {
+      notifyLiveView: false,
+      fieldTouched: hook.fieldTouched === true
+    });
   },
   update(hook, zag) {
     const el = hook.el;
+    if (getBoolean(el, "fieldUsed")) {
+      hook.fieldTouched = true;
+      hook.hasEdited = true;
+    }
     const count = getNumber(el, "count") ?? 0;
     const valuePatch = readUpdatedServerStringList(el, hook.beforeAttrs);
+    const pinFocused = el.contains(document.activeElement);
     zag.updateProps({
       id: el.id,
       count,
@@ -864,14 +920,25 @@ var PinInputHook = createZagLiveHook({
       dir: getDir(el),
       type: getString(el, "type"),
       placeholder: getString(el, "placeholder"),
-      ...valuePatch.value !== void 0 ? { value: padToCount(valuePatch.value, count) } : {}
+      // Don't clobber in-progress entry when a sibling field re-renders the form.
+      ...valuePatch.value !== void 0 && !pinFocused ? { value: padToCount(valuePatch.value, count) } : {}
     });
+    syncPinInputFormForPhoenix(el, zag.api.value, void 0, {
+      notifyLiveView: false,
+      fieldTouched: hook.fieldTouched === true
+    });
+    zag.render();
+  },
+  destroy(hook) {
+    hook.unbindSubmitIntent?.();
+    hook.unbindSubmitIntent = void 0;
   }
 });
 export {
   PinInputHook as PinInput,
   padToCount,
   parseValueWithEmpties,
+  pinValueCommitKind,
   readDefaultValueList,
   readPinValueList,
   syncPinInputFormForPhoenix

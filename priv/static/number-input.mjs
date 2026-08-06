@@ -16,7 +16,7 @@ import {
   markUsed,
   syncFormInput,
   syncHiddenInputValue
-} from "./chunks/chunk-QZUKCXYH.mjs";
+} from "./chunks/chunk-NUQOKDPA.mjs";
 import {
   formatDisplayValue,
   formatSubmitValue,
@@ -1627,6 +1627,7 @@ var NumberInputHook = createZagLiveHook({
       false,
       zag.api.valueAsNumber
     );
+    zag.render();
   }
 });
 export {

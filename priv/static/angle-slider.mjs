@@ -7,7 +7,7 @@ import {
 import {
   notifyPhoenixFormChange,
   syncHiddenInputValue
-} from "./chunks/chunk-QZUKCXYH.mjs";
+} from "./chunks/chunk-NUQOKDPA.mjs";
 import {
   mountNumberBinding,
   readUpdatedServerNumber
@@ -484,6 +484,12 @@ var AngleSlider = class extends Component {
         (el, props) => this.spreadProps(el, props),
         this.api.getHiddenInputProps()
       );
+      const submitName = this.el.dataset.submitName;
+      const gatedName = this.el.dataset.name;
+      if (submitName && !gatedName) {
+        hiddenInputEl.removeAttribute("name");
+        hiddenInputEl.removeAttribute("form");
+      }
     }
     const controlEl = this.el.querySelector(
       '[data-scope="angle-slider"][data-part="control"]'
@@ -527,14 +533,41 @@ function valueChangePayload(el, details) {
     valueAsDegree: details.valueAsDegree
   };
 }
-function queueFormBubblingInputForPhoenix(el, getZag) {
+function formSubmitName(el) {
+  return getString(el, "submitName") ?? getString(el, "name");
+}
+function hiddenInput(el) {
+  return el.querySelector(
+    '[data-scope="angle-slider"][data-part="hidden-input"]'
+  );
+}
+function ensureHiddenInputName(el) {
+  const input = hiddenInput(el);
+  if (!input) return null;
+  const name = formSubmitName(el);
+  if (name && !input.getAttribute("name")) {
+    input.setAttribute("name", name);
+  }
+  return input;
+}
+function stripHiddenInputName(el) {
+  const input = hiddenInput(el);
+  if (!input) return;
+  input.removeAttribute("name");
+  input.removeAttribute("form");
+}
+function zagNameForForm(el) {
+  return hiddenInput(el)?.getAttribute("name") ?? void 0;
+}
+function queueFormBubblingInputForPhoenix(el, getZag, opts = {}) {
   queueMicrotask(() => {
     const zag = getZag();
-    const input = el.querySelector(
-      '[data-scope="angle-slider"][data-part="hidden-input"]'
-    );
+    const input = ensureHiddenInputName(el);
     if (!input) return;
-    notifyPhoenixFormChange(input, String(zag.api.value), { markUsed: false, force: true });
+    notifyPhoenixFormChange(input, String(zag.api.value), {
+      force: true,
+      markUsed: opts.markUsed
+    });
   });
 }
 var AngleSliderHook = createZagLiveHook({
@@ -544,17 +577,19 @@ var AngleSliderHook = createZagLiveHook({
     const el = hook.el;
     const pushEvent = hook.pushEvent.bind(hook);
     const canPush = () => canPushEvent(hook.liveSocket);
+    hook.fieldTouched = getBoolean(el, "fieldUsed") === true;
     const zag = new AngleSlider(el, {
       id: el.id,
       ...mountNumberBinding(el),
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readonly"),
       invalid: getBoolean(el, "invalid"),
-      name: getString(el, "name"),
+      name: zagNameForForm(el),
       dir: getDir(el),
       "aria-label": getString(el, "aria-label"),
       "aria-labelledby": getString(el, "aria-labelledby"),
       onValueChange: (details) => {
+        hook.fieldTouched = true;
         notifyChange({
           el,
           canPushServer: canPush(),
@@ -565,6 +600,7 @@ var AngleSliderHook = createZagLiveHook({
         });
       },
       onValueChangeEnd: (details) => {
+        hook.fieldTouched = true;
         notifyChange({
           el,
           canPushServer: canPush(),
@@ -599,6 +635,7 @@ var AngleSliderHook = createZagLiveHook({
       });
     };
     dom.add("corex:angle-slider:set-value", (event) => {
+      hook.fieldTouched = true;
       zag.api.setValue(event.detail.value);
       queueFormBubblingInputForPhoenix(el, () => zag);
     });
@@ -608,7 +645,7 @@ var AngleSliderHook = createZagLiveHook({
     server.add("angle_slider_set_value", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.setValue(payload.value);
-      queueFormBubblingInputForPhoenix(el, () => zag);
+      queueFormBubblingInputForPhoenix(el, () => zag, { markUsed: false });
     });
     server.add("angle_slider_value", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
@@ -616,19 +653,34 @@ var AngleSliderHook = createZagLiveHook({
     });
     return zag;
   },
+  afterInit(hook, zag) {
+    if (!hook.fieldTouched) {
+      stripHiddenInputName(hook.el);
+      zag.updateProps({ name: void 0 });
+      zag.render();
+    }
+  },
   update(hook, zag) {
     const el = hook.el;
     const valuePatch = readUpdatedServerNumber(el, hook.beforeAttrs);
+    if (getBoolean(el, "fieldUsed")) {
+      hook.fieldTouched = true;
+    }
+    const name = hook.fieldTouched ? formSubmitName(el) : zagNameForForm(el);
     zag.updateProps({
       id: el.id,
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readonly"),
       invalid: getBoolean(el, "invalid"),
-      name: getString(el, "name"),
+      name,
       dir: getDir(el),
       ...valuePatch.value !== void 0 ? { value: valuePatch.value } : {},
       ...valuePatch.step !== void 0 ? { step: valuePatch.step } : {}
     });
+    zag.render();
+    if (!hook.fieldTouched) {
+      stripHiddenInputName(el);
+    }
   }
 });
 export {

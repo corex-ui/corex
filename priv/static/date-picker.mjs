@@ -23,7 +23,7 @@ import {
 import {
   setArrayValues,
   setScalarValue
-} from "./chunks/chunk-QZUKCXYH.mjs";
+} from "./chunks/chunk-NUQOKDPA.mjs";
 import {
   mountStringListBinding,
   readDatasetStringList,
@@ -4507,13 +4507,36 @@ var DATE_PICKER_UPDATE_ATTR_KEYS = [
   "positionFitViewport",
   "positionHideWhenDetached"
 ];
+var DATE_PICKER_PRESENCE_ATTR_KEYS = /* @__PURE__ */ new Set([
+  "disabled",
+  "readonly",
+  "required",
+  "invalid",
+  "outsideDaySelectable",
+  "closeOnSelect",
+  "fixedWeeks",
+  "inline",
+  "positionFlip",
+  "positionSlide",
+  "positionOverlap",
+  "positionSameWidth",
+  "positionFitViewport",
+  "positionHideWhenDetached"
+]);
+function dataAttrName(camelKey) {
+  return `data-${camelKey.replace(/([A-Z])/g, "-$1").toLowerCase()}`;
+}
 function datePickerUpdateAttrsKey(el) {
   const d = el.dataset;
   let out = "";
   for (const key of DATE_PICKER_UPDATE_ATTR_KEYS) {
     out += key;
     out += "=";
-    out += d[key] ?? "";
+    if (DATE_PICKER_PRESENCE_ATTR_KEYS.has(key)) {
+      out += el.hasAttribute(dataAttrName(key)) ? "1" : "0";
+    } else {
+      out += d[key] ?? "";
+    }
     out += ";";
   }
   return out;
@@ -4763,6 +4786,7 @@ var DatePickerHook = createZagLiveHook({
       }
     });
     hook.lastUpdateAttrsKey = datePickerUpdateAttrsKey(el);
+    hook.locale = getString(el, "locale");
     return datePickerInstance;
   },
   update(hook, zag) {
@@ -4773,6 +4797,9 @@ var DatePickerHook = createZagLiveHook({
     const min = getString(el, "min");
     const max = getString(el, "max");
     const valuePatch = readUpdatedServerStringList(el, hook.beforeAttrs);
+    const locale = getString(el, "locale");
+    const localeChanged = hook.locale !== void 0 && hook.locale !== locale;
+    hook.locale = locale;
     zag.updateProps({
       dir: getString(el, "dir"),
       locale: getString(el, "locale"),
@@ -4797,6 +4824,11 @@ var DatePickerHook = createZagLiveHook({
       ...resolveZagDatePickerTranslations(el),
       ...valuePatch.value !== void 0 ? { value: tryParseDateList(valuePatch.value) } : {}
     });
+    const currentValue = zag.api.value;
+    if (localeChanged && currentValue?.length) {
+      zag.api.setValue(currentValue);
+    }
+    zag.render();
     const submitName = getString(el, "submitName");
     const isoList = isoListFromValues(zag.api.value);
     if (submitName) {

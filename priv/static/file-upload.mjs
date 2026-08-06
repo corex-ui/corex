@@ -1,6 +1,8 @@
 import {
-  bindArrayFieldSubmitIntent
-} from "./chunks/chunk-QZUKCXYH.mjs";
+  bindArrayFieldSubmitIntent,
+  notifyPhoenixFormChange,
+  reapplyLiveViewValueInputUsage
+} from "./chunks/chunk-NUQOKDPA.mjs";
 import {
   idMatches,
   notifyChange,
@@ -996,13 +998,15 @@ var FileUpload = class extends Component {
     this.syncFormSubmitInputs();
     this.touchSentinel();
   }
-  syncFormSubmitInputs() {
+  syncFormSubmitInputs(opts = {}) {
     const fileInput = this.el.querySelector(
       '[data-scope="file-upload"][data-part="hidden-input"]'
     );
     const sentinel = this.el.querySelector('[data-part="hidden-input-sentinel"]');
     const files = this.api.acceptedFiles;
-    const name = this.el.dataset.name;
+    const name = this.el.dataset.submitName ?? this.el.dataset.name;
+    const fieldUsed = this.el.dataset.fieldUsed === "true";
+    const forSubmit = opts.forSubmit === true;
     if (fileInput) {
       setInputFiles2(fileInput, files);
     }
@@ -1014,8 +1018,10 @@ var FileUpload = class extends Component {
       return;
     }
     sentinel.disabled = false;
-    if (name) {
+    if (name && (forSubmit || fieldUsed || Boolean(this.el.dataset.name))) {
       sentinel.setAttribute("name", name);
+    } else {
+      sentinel.removeAttribute("name");
     }
   }
   syncAcceptedNamesHidden(fieldName, files) {
@@ -1176,6 +1182,20 @@ function fileRejectPayload(el, details) {
     count: details.files.length
   };
 }
+function formSubmitName(el) {
+  return getString(el, "submitName") ?? getString(el, "name");
+}
+function ensureEmptySentinelNamed(el, zag, markUsed) {
+  zag.syncFormSubmitInputs({ forSubmit: true });
+  const sentinel = el.querySelector('[data-part="hidden-input-sentinel"]');
+  if (!sentinel || zag.api.acceptedFiles.length > 0) return;
+  const name = formSubmitName(el);
+  if (name) sentinel.setAttribute("name", name);
+  if (markUsed) {
+    reapplyLiveViewValueInputUsage(sentinel);
+    notifyPhoenixFormChange(sentinel, "", { force: true });
+  }
+}
 var FileUploadHook = createZagLiveHook({
   key: "fileUpload",
   mount(hook, { dom, server }) {
@@ -1188,13 +1208,14 @@ var FileUploadHook = createZagLiveHook({
     const allowDropRaw = el.dataset.allowDrop;
     const preventDropRaw = el.dataset.preventDocumentDrop;
     const dropzoneI18n = getString(el, "translationDropzone");
+    hook.fieldTouched = getBoolean(el, "fieldUsed") === true;
     const zag = new FileUpload(el, {
       id: el.id,
       disabled: getBoolean(el, "disabled"),
       invalid: getBoolean(el, "invalid"),
       readOnly: getBoolean(el, "readonly"),
       required: getBoolean(el, "required"),
-      name: getString(el, "name"),
+      name: formSubmitName(el),
       dir: getDir(el),
       allowDrop: allowDropRaw === void 0 ? true : allowDropRaw !== "false",
       preventDocumentDrop: preventDropRaw === void 0 ? true : preventDropRaw !== "false",
@@ -1205,6 +1226,7 @@ var FileUploadHook = createZagLiveHook({
       directory: getBoolean(el, "directory"),
       translations: dropzoneI18n ? { dropzone: dropzoneI18n } : void 0,
       onFileChange: (details) => {
+        hook.fieldTouched = true;
         notifyChange({
           el,
           canPushServer: canPush(),
@@ -1213,8 +1235,10 @@ var FileUploadHook = createZagLiveHook({
           serverEventName: getString(el, "onFileChange"),
           clientEventName: getString(el, "onFileChangeClient")
         });
+        queueMicrotask(() => ensureEmptySentinelNamed(el, zag, true));
       },
       onFileAccept: (details) => {
+        hook.fieldTouched = true;
         notifyChange({
           el,
           canPushServer: canPush(),
@@ -1236,10 +1260,12 @@ var FileUploadHook = createZagLiveHook({
       }
     });
     hook.unbindSubmitIntent = bindArrayFieldSubmitIntent(el, () => {
-      zag.syncFormSubmitInputs();
+      zag.syncFormSubmitInputs({ forSubmit: true });
     });
     dom.add("corex:file-upload:clear-files", () => {
+      hook.fieldTouched = true;
       zag.api.clearFiles();
+      queueMicrotask(() => ensureEmptySentinelNamed(el, zag, true));
     });
     dom.add("corex:file-upload:clear-rejected", () => {
       zag.api.clearRejectedFiles();
@@ -1249,7 +1275,9 @@ var FileUploadHook = createZagLiveHook({
     });
     server.add("file_upload_clear_files", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
+      hook.fieldTouched = true;
       zag.api.clearFiles();
+      queueMicrotask(() => ensureEmptySentinelNamed(el, zag, true));
     });
     server.add("file_upload_clear_rejected", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
@@ -1261,14 +1289,22 @@ var FileUploadHook = createZagLiveHook({
     });
     return zag;
   },
+  afterInit(hook, zag) {
+    zag.syncFormSubmitInputs({
+      forSubmit: hook.fieldTouched === true || getBoolean(hook.el, "fieldUsed")
+    });
+  },
   update(hook, zag) {
+    if (getBoolean(hook.el, "fieldUsed")) {
+      hook.fieldTouched = true;
+    }
     zag.updateProps({
       id: hook.el.id,
       disabled: getBoolean(hook.el, "disabled"),
       invalid: getBoolean(hook.el, "invalid"),
       readOnly: getBoolean(hook.el, "readonly"),
       required: getBoolean(hook.el, "required"),
-      name: getString(hook.el, "name"),
+      name: formSubmitName(hook.el),
       dir: getDir(hook.el),
       allowDrop: hook.el.dataset.allowDrop === void 0 ? true : hook.el.dataset.allowDrop !== "false",
       preventDocumentDrop: hook.el.dataset.preventDocumentDrop === void 0 ? true : hook.el.dataset.preventDocumentDrop !== "false",
@@ -1277,6 +1313,10 @@ var FileUploadHook = createZagLiveHook({
       minFileSize: getNumber(hook.el, "minFileSize") ?? 0,
       accept: getString(hook.el, "accept"),
       directory: getBoolean(hook.el, "directory")
+    });
+    zag.render();
+    zag.syncFormSubmitInputs({
+      forSubmit: hook.fieldTouched === true || getBoolean(hook.el, "fieldUsed")
     });
   },
   destroy(hook, zag) {

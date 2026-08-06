@@ -38,10 +38,12 @@ function notifyPhoenixFormChange(input, value, options = {}) {
     return;
   }
   options.onTouched?.();
-  if (options.markUsed === false) {
+  if (options.markUsed !== false) {
+    reapplyLiveViewValueInputUsage(input);
+  }
+  if (options.dispatch === false) {
     return;
   }
-  reapplyLiveViewValueInputUsage(input);
   dispatchFormInputEvents(input, { change: options.change });
 }
 function syncLiveViewFormInput(input, getValue, onTouched) {
@@ -95,7 +97,14 @@ function syncArrayInputsInPlace(container, scope, submitName, hostEl, values, fi
   emptyNodes.forEach((n) => n.remove());
   let valueNodes = existing.filter((n) => !n.hasAttribute("data-empty"));
   while (valueNodes.length < values.length) {
-    const input = createArrayInput(scope, submitName, hostEl, "", false, valueNodes.length);
+    const input = createArrayInput(
+      scope,
+      fieldTouched ? submitName : void 0,
+      hostEl,
+      "",
+      false,
+      valueNodes.length
+    );
     container.appendChild(input);
     valueNodes = Array.from(
       container.querySelectorAll(
@@ -111,6 +120,13 @@ function syncArrayInputsInPlace(container, scope, submitName, hostEl, values, fi
   valueNodes.forEach((input, index) => {
     input.id = arrayInputId(scope, hostEl.id, index);
     input.value = values[index] ?? "";
+    if (fieldTouched) {
+      input.name = submitName;
+      associateInputWithFormIfOutside(input, hostEl);
+    } else {
+      input.removeAttribute("name");
+      input.removeAttribute("form");
+    }
   });
   return valueNodes[valueNodes.length - 1] ?? null;
 }
@@ -119,8 +135,10 @@ function syncArrayHiddenInputsForPhoenix(el, values, options = {}) {
   const submitName = options.submitName ?? getString(el, "submitName");
   if (!submitName) return;
   const fixedLength = options.fixedLength;
-  const normalized = fixedLength !== void 0 ? padValues(values, fixedLength) : values.map((v) => String(v));
+  const padded = fixedLength !== void 0 ? padValues(values, fixedLength) : values.map((v) => String(v));
   const fieldTouched = isFormFieldUsed(el, options.fieldTouched === true);
+  const allEmpty = padded.length > 0 && padded.every((v) => String(v).trim() === "");
+  const normalized = fixedLength !== void 0 && fieldTouched && allEmpty ? [] : padded;
   const container = el.querySelector(
     `[data-scope="${scope}"][data-part="array-inputs"]`
   );
